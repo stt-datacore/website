@@ -13,8 +13,15 @@ import { Button } from "semantic-ui-react";
 
 export interface QuestSolverProps {
     setResults: (value: QuestSolverResult) => void;    
+    clearResults?: () => void;
     config: QuestFilterConfig;
     setConfig?: (value: QuestFilterConfig) => void;
+    disabled?: boolean;
+    clearDisabled?: boolean;
+    style?: React.CSSProperties;
+    buttonCaption?: string;
+    clearCaption?: string;
+    setRunning?: (value: boolean) => void;
 }
 
 interface QuestSolverState {
@@ -41,6 +48,7 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
         const { setResults } = this.props;
 
 		worker.addEventListener('message', (message: { data: { result: QuestSolverResult } }) => {            
+            if (this.props.setRunning) this.props.setRunning(false);
             if (setResults) {
                 setResults(message.data.result);
             }
@@ -48,7 +56,9 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
             this.setState({ results: message.data.result });            
 		});
 
-		worker.postMessage({
+        if (this.props.setRunning) this.props.setRunning(true);
+
+        worker.postMessage({
 			worker: 'questSolver',
 			config: { 
                 buffs: this.context.player.buffConfig,
@@ -74,25 +84,16 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
             } as QuestSolverConfig
 		});
 	}
-
-    // componentDidMount(): void {
-    //     this.initData();
-    // }
-
-    // componentDidUpdate(prevProps: Readonly<QuestSolverProps>, prevState: Readonly<QuestSolverState>, snapshot?: any): void {
-    //     this.initData();
-    // }
-
-    // private initData() {
-    //     if (this._irun !== this.state.runCount) {
-    //         this._irun = this.state.runCount;
-    //         this.runWorker();
-    //     }
-    // }
-
+   
     render() {
-        return <div>
-            <Button color="blue" onClick={(e) => this.runWorker()}>Click to Find Crew</Button>
+        const caption = this.props.buttonCaption ?? 'Click to Find Crew';
+        const clear = this.props.clearCaption ?? 'Clear Results';
+
+        return <div style={this.props.style}>
+            <Button disabled={this.props.disabled} color="blue" onClick={(e) => this.runWorker()}>{caption}</Button>
+            {!!this.props.clearResults && 
+                <Button disabled={this.props.clearDisabled} onClick={(e) => this.props.clearResults ? this.props.clearResults() : null}>{clear}</Button>
+            }
         </div>
     }
 }

@@ -13,7 +13,7 @@ import { HighlightItem, MissionMapComponent, cleanTraitSelection } from "./missi
 import { QuestSolverComponent } from "./solver_component";
 import { IQuestCrew, QuestSolverResult } from "../../model/worker";
 import { CrewConfigTable } from "../crewtables/crewconfigtable";
-import { Checkbox, Grid, Table } from "semantic-ui-react";
+import { Checkbox, Grid, Message, Table } from "semantic-ui-react";
 import { IRosterCrew } from "../crewtables/model";
 import { CrewItemsView } from "../item_presenters/crew_items";
 import { Skills } from "../item_presenters/classic_presenter";
@@ -49,6 +49,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     );
 
     const missionUrl = `/structured/continuum/${continuum_missions[continuum_missions.length - 1].id}.json`;
+    const [running, setRunning] = React.useState(false);
 
     /* Missions Data Initialization & Persistence */
 
@@ -66,7 +67,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             m.mission.discover_date = new Date(m.mission.discover_date);
         }
         if (m.remoteQuests?.length !== m.mission.quests?.length) {
-            m.remoteQuests = m.mission.quests?.map(q => false) ?? [];            
+            m.remoteQuests = m.mission.quests?.map(q => false) ?? [];
         }
     })
 
@@ -80,7 +81,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         let x = 0;
         let data = getMissionData();
         if (!data) return;
-        
+
         data.remoteQuests ??= [];
 
         for (let q of mission?.quests ?? []) {
@@ -90,7 +91,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             x++;
         }
 
-        setGroupedMissions([ ...groupedMissions ]);
+        setGroupedMissions([...groupedMissions]);
         internalSetRemoteQuestFlags(data.remoteQuests);
     }
 
@@ -108,7 +109,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             value.discover_date = new Date(value.discover_date);
         }
 
-        let ng = [...groupedMissions ];
+        let ng = [...groupedMissions];
         const f = groupedMissions.findIndex(f => f.mission.discover_date?.getTime() === value.discover_date?.getTime());
 
         if (f === -1) {
@@ -129,7 +130,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         });
 
         ng = ng.filter((t, idx) => ng.findIndex(q => q.mission.discover_date?.getTime() === t.mission.discover_date?.getTime()) === idx)
-        setGroupedMissions(ng);        
+        setGroupedMissions(ng);
     }
 
     React.useEffect(() => {
@@ -159,7 +160,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const [highlighted, setHighlighted] = useStateWithStorage<HighlightItem[]>('continuum/selected', []);
 
     const [solverResults, setSolverResults] = React.useState<QuestSolverResult | undefined>(undefined);
-    const [missionConfig, setMissionConfig] = useStateWithStorage<QuestFilterConfig>('continuum/missionConfig', { mastery: 0, idleOnly: true });
+    const [missionConfig, setMissionConfig] = useStateWithStorage<QuestFilterConfig>('continuum/missionConfig', { mastery: 0, idleOnly: true, showAllSkills: false });
 
     const setIdleOnly = (value: boolean) => {
         setMissionConfig({ ...missionConfig, idleOnly: value });
@@ -168,15 +169,15 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const setConsiderFrozen = (value: boolean) => {
         setMissionConfig({ ...missionConfig, considerFrozen: value });
     }
-    
+
     const setQpOnly = (value: boolean) => {
         setMissionConfig({ ...missionConfig, qpOnly: value });
     }
-    
+
     const setIncludeCurrentQp = (value: boolean) => {
         setMissionConfig({ ...missionConfig, includeCurrentQp: value });
     }
-    
+
     const setIgnoreQpConstraint = (value: boolean) => {
         setMissionConfig({ ...missionConfig, ignoreQpConstraint: value });
     }
@@ -185,8 +186,12 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         setMissionConfig({ ...missionConfig, mastery: value });
     }
 
-    const { mastery, idleOnly, considerFrozen, qpOnly, ignoreQpConstraint, includeCurrentQp } = missionConfig;
-    
+    const setShowAllSkills = (value: boolean) => {
+        setMissionConfig({ ...missionConfig, showAllSkills: value });
+    }
+
+    const { showAllSkills, mastery, idleOnly, considerFrozen, qpOnly, ignoreQpConstraint, includeCurrentQp } = missionConfig;
+
     /* Component Initialization & State Management */
 
     React.useEffect(() => {
@@ -244,9 +249,9 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
                 if (result.quests) {
                     for (let i = 0; i < result.quests.length; i++) {
-                        if (!remotes[i] || 
+                        if (!remotes[i] ||
                             (current?.mission.quests && rq[result.quests[i].id].challenges?.length !== current.mission.quests[i].challenges?.length)) {
-                            
+
                             result.quests[i].challenges = rq[result.quests[i].id].challenges;
                             challenges[i].forEach(ch => {
                                 ch.trait_bonuses = [];
@@ -259,7 +264,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                         }
                     }
                 }
-                if (!result?.discover_date) {                    
+                if (!result?.discover_date) {
                     result.discover_date = current?.mission?.discover_date ?? mostRecentDate;
                 }
 
@@ -280,6 +285,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     const clearRemote = () => {
         setRemoteQuestFlags([]);
+        setSolverResults(undefined);
         setTimeout(() => {
             setClearFlag(clearFlag + 1);
         });
@@ -287,11 +293,11 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     const setRemoteQuest = (quest: Quest) => {
         if (mission?.quests?.length && remoteQuestFlags?.length === mission?.quests?.length) {
-            for (let i = 0; i < mission.quests.length; i++) {                
+            for (let i = 0; i < mission.quests.length; i++) {
                 if (mission.quests[i].id === quest.id) {
                     mission.quests[i] = quest;
                     remoteQuestFlags[i] = true;
-                    setMissionAndRemotes({ ...mission}, [...remoteQuestFlags]);                    
+                    setMissionAndRemotes({ ...mission }, [...remoteQuestFlags]);
                     return;
                 }
             }
@@ -309,85 +315,89 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     const renderTableCells = (row: IRosterCrew): JSX.Element => {
         let crew = row as IQuestCrew;
-		return (
+        return (
             <React.Fragment>
                 <Table.Cell>
-                    <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "center"}}>
-			            {row.score}
+                    <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
+                        {row.score}
                     </div>
-		        </Table.Cell>
+                </Table.Cell>
                 <Table.Cell>
-                    <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "center", minWidth: "192px"}}>
-    			        <CrewItemsView printNA={includeCurrentQp ? <>N/A</> : <br />} crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: crew.added_kwipment_expiration ?? [] }} quipment={true} />
+                    <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", minWidth: "192px" }}>
+                        <CrewItemsView printNA={includeCurrentQp ? <span style={{ color: 'cyan' }}>New</span> : <br />} crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: crew.added_kwipment_expiration ?? [] }} quipment={true} />
                     </div>
-		        </Table.Cell>
+                </Table.Cell>
                 <Table.Cell>
-                        <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "flex-start"}}>
-                            {Object.entries(crew.skills).sort(([akey, askill], [bkey, bskill]) => {
-                                return (bskill as Skill).core - (askill as Skill).core;                            
-                            }).map(([key, skill]) => {                            
-                                return (
-                                    <div style={{display:"flex", flexDirection:"column", justifyContent: "flex-start", alignItems: "center"}}>
-                                    <CrewStat                                
-                                        quipmentMode={true}
-                                        key={"continuum_crew_" + key}
-                                        skill_name={key}
-                                        data={skill}
-                                        scale={0.75}
-                                    />                          
-                                    {crew.challenges?.map((ch) => {
-                                        let challenge = quest?.challenges?.find(f => f.id === ch && f.skill === key);
-                                        let ctraits = (arrayIntersect(challenge?.trait_bonuses?.map(t => t.trait) ?? [], crew.traits.concat(crew.traits_hidden))
-                                                        .map(ct => challenge?.trait_bonuses?.filter(f => f.trait === ct)))?.flat() as MissionTraitBonus[];
-                                        
-                                        if (!challenge || !ctraits?.length) {
-                                            return <></>
-                                        }
-                                        return (
-                                            <div style={{color:'lightgreen', textAlign:'center', fontWeight:'bold', fontStyle: 'italic', fontSize: "0.75em"}}>
-                                            +&nbsp;{ctraits.map(ct => ct.bonuses[mastery]).reduce((p, n) => p + n, 0)}&nbsp;({ctraits.map(ct => <>{appelate(ct.trait)}</>).reduce((p, n) => p ? <>{p}, {n}</> : n)})
-                                            </div>)
-                                    })}
+                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start" }}>
+                        {crew.challenges?.map((challenge, idx) => {
 
-                                </div>)
-                            })}
+                            return (
+                                <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "flex-start" }}>
+                                    {Object.values(challenge.skills).map(((skill: Skill) => {
+                                        const key = skill.skill ?? '';
+                                        if (!showAllSkills && key !== challenge.challenge.skill) return <></>
+                                        return (
+                                            <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}>
+                                                <CrewStat
+                                                    style={{
+                                                        color: !!idx ? 'orange' : undefined
+                                                    }}
+                                                    quipmentMode={true}
+                                                    key={"continuum_crew_" + key}
+                                                    skill_name={key}
+                                                    data={skill}
+                                                    scale={0.75}
+                                                />
+                                                {challenge.challenge.skill === skill.skill && !!challenge.trait_bonuses?.length &&
+                                                    <div style={{ color: 'lightgreen', textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic', fontSize: "0.75em" }}>
+                                                        +&nbsp;{challenge.trait_bonuses?.map(ct => ct.bonuses[mastery]).reduce((p, n) => p + n, 0)}&nbsp;({challenge.trait_bonuses?.map(ct => <>{appelate(ct.trait)}</>).reduce((p, n) => p ? <>{p}, {n}</> : n)})
+                                                    </div>}
+
+                                            </div>
+                                        )
+
+                                    })).reduce((p, n) => p ? <>{p}{n}</> : n)}
+                                </div>
+                            )
+                        }).reduce((p, n) => p ? <div>{p}<br />{n}</div> : n)}
                     </div>
-		        </Table.Cell>
+                </Table.Cell>
                 <Table.Cell>
-                    <div style={{display:"flex", flexDirection:"row", justifyContent: "flex-start", alignItems: "center"}}>
+                    <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
                         {crew.challenges?.map((ch) => {
-                            let challenge = quest?.challenges?.find(f => f.id === ch);
+                            let challenge = quest?.challenges?.find(f => f.id === ch.challenge.id);
                             let ctraits = arrayIntersect(challenge?.trait_bonuses?.map(t => t.trait) ?? [], crew.traits.concat(crew.traits_hidden));
-                            
+
                             if (!challenge) {
-                                return <></>    
+                                return <></>
                             }
-                            
+
                             return (
                                 <div style={{
-                                    display: 'grid', 
-                                    gridTemplateAreas: `'image text' 'image traits'`, 
-                                    gridTemplateColumns: '32px auto'}}>
-                                    <div style={{gridArea: 'image', display:'flex', flexDirection: 'row', alignItems: 'center'}}>
-                                        <img style={{height:'16px'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
+                                    display: 'grid',
+                                    gridTemplateAreas: `'image text' 'image traits'`,
+                                    gridTemplateColumns: '32px auto'
+                                }}>
+                                    <div style={{ gridArea: 'image', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                        <img style={{ height: '16px' }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
                                     </div>
-                                    <div style={{gridArea: 'text'}}>
-                                    <b>{challenge.name}</b>
+                                    <div style={{ gridArea: 'text' }}>
+                                        <b>{challenge.name}</b>
                                     </div>
-                                    <div style={{gridArea: 'traits'}}>
-                                    {ctraits?.length ? 
-                                        <i style={{color:"lightgreen", fontWeight: "bold"}}>
-                                            ({ctraits.map(t => appelate(t)).join(", ")})
-                                        </i> 
-                                        : <></>}
+                                    <div style={{ gridArea: 'traits' }}>
+                                        {ctraits?.length ?
+                                            <i style={{ color: "lightgreen", fontWeight: "bold" }}>
+                                                ({ctraits.map(t => appelate(t)).join(", ")})
+                                            </i>
+                                            : <></>}
                                     </div>
                                 </div>
                             )
-                        }).reduce((p, n) => p ? <div>{p}<br/><br/>{n}</div> : n)}
+                        }).reduce((p, n) => p ? <div>{p}<br />{n}</div> : n)}
                     </div>
                 </Table.Cell>
             </React.Fragment>)
-	}
+    }
 
     /* Render */
 
@@ -485,12 +495,21 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                         <span>&nbsp;&nbsp;Use Current Quipment on Crew</span>
                                     </div>
                                 </Table.Cell>
+                                <Table.Cell>
+                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
+                                        <Checkbox checked={showAllSkills} onChange={(e, { checked }) => setShowAllSkills(!!checked)} />
+                                        <span>&nbsp;&nbsp;Show All Skills</span>
+                                    </div>
+                                </Table.Cell>
                             </Table.Row>
                         </Table>
                         <div style={{ justifyContent: "center", alignItems: "center", display: "flex", flexDirection: "column" }}>
                             <QuestSolverComponent
                                 setResults={setSolverResults}
                                 setConfig={setMissionConfig}
+                                clearResults={() => setSolverResults(undefined)}
+                                setRunning={setRunning}
+                                disabled={!quest?.challenges?.some(ch => ch.difficulty_by_mastery?.some(d => !!d))}
                                 config={{
                                     quest,
                                     challenges: (highlighted.map(h => quest?.challenges?.filter(ch => ch.id === h.challenge))?.flat() ?? []) as MissionChallenge[],
@@ -499,21 +518,40 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                     qpOnly,
                                     ignoreQpConstraint,
                                     mastery,
-                                    includeCurrentQp                       
+                                    includeCurrentQp
                                 }}
-                                 />
+                            />
                         </div>
                     </div>
                 </div>
-
-                <CrewConfigTable
-                    tableConfig={crewTableCells}
-                    renderTableCells={renderTableCells}
-                    rosterCrew={solverResults?.crew ?? []}
-                    pageId={'continuum'}
-                    rosterType={'profileCrew'}
-                    crewFilters={[]}
-                />
+                {running &&
+                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                        {context.core.spin()}
+                    </div>}
+                {!!solverResults && !solverResults?.fulfilled && (
+                    <Message warning>
+                        <Message.Header>
+                            Quest Solve Incomplete
+                        </Message.Header>
+                        <Message.Content>
+                            Could not find crew to complete all challenges. Try adjusting your calculation options, and try again.
+                        </Message.Content>
+                    </Message>
+                )}
+                {!!solverResults &&
+                    <CrewConfigTable
+                        initOptions={{
+                            column: 'score',
+                            direction: 'ascending'
+                        }}
+                        tableConfig={crewTableCells}
+                        renderTableCells={renderTableCells}
+                        rosterCrew={solverResults?.crew ?? []}
+                        pageId={'continuum'}
+                        rosterType={'profileCrew'}
+                        crewFilters={[]}
+                    />}
+                {!solverResults && <><br /><br /><br /><br /><br /></>}
             </div>
         </>
     );

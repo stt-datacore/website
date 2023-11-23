@@ -1,5 +1,5 @@
 import CONFIG from "../components/CONFIG";
-import { ComputedBuff, CrewMember, PlayerSkill } from "../model/crew";
+import { ComputedBuff, CrewMember, PlayerSkill, Skill } from "../model/crew";
 import { MissionChallenge, MissionTraitBonus } from "../model/missions";
 import { PlayerCrew } from "../model/player";
 import { IQuestCrew, QuestSolverConfig, QuestSolverResult } from "../model/worker";
@@ -166,12 +166,17 @@ const QuestSolver = {
                     }
                 }
 
-                if (!crew.challenges.includes(challenge.id)) crew.challenges.push(challenge.id);
+                if (!crew.challenges.some(ch => ch.challenge.id === challenge.id)) {
+                    crew.challenges.push({
+                        challenge,
+                        skills: {},
+                        trait_bonuses: ttraits,
+                        power_decrease: 0.20 * crew.challenges?.length ?? 0
+                    });
+                }
 
                 crew.metasort += n;
-                if (crew.symbol.includes("jvini")) {
-                    console.log("Break");
-                }
+
                 if (slots.length) {
                     Object.entries(quips).forEach(([symbol, qp]) => {
                         
@@ -208,6 +213,7 @@ const QuestSolver = {
             if (!playerData?.player?.character?.crew?.length) {
                 resolve({
                     status: false,
+                    fulfilled: false,
                     crew: [],
                     error: "No player crew roster"
                 });
@@ -239,6 +245,7 @@ const QuestSolver = {
             if (!config.challenges?.length && !config.quest?.challenges?.length) {
                 resolve({
                     status: false,
+                    fulfilled: false,
                     crew: [],
                     error: "No quest or challenges provided"
                 });
@@ -277,7 +284,7 @@ const QuestSolver = {
             challenges.forEach((challenge) => {
                 ach[challenge.id] = false;
                 for (let c of crew) {
-                    if (c.challenges?.includes(challenge.id)) {
+                    if (c.challenges?.some(ch => ch.challenge.id === challenge.id)) {
                         if (chfill.findIndex(tc => tc.symbol === c.symbol) === -1) {
                             chfill.push(c);
                         }                 
@@ -313,13 +320,30 @@ const QuestSolver = {
                     c.skills[skill].core = c[skill].core;
                     c.skills[skill].range_max = c[skill].max;
                     c.skills[skill].range_min = c[skill].min;
-                })
+                });
+
+                c.challenges?.forEach((ch, idx) => {
+                    getSkillOrder(c).forEach((skill) => {
+                        let core = c.skills[skill].core;
+                        let max = c.skills[skill].range_max;
+                        let min = c.skills[skill].range_min;
+                        
+                        core -= Math.round(core * (ch.power_decrease ?? 0));
+                        max -= Math.round(max * (ch.power_decrease ?? 0));
+                        min -= Math.round(min * (ch.power_decrease ?? 0));
+                        ch.skills[skill] = {
+                            core,
+                            range_min: min,
+                            range_max: max,
+                            skill
+                        };                        
+                    });
+                });
             });
-
-
 
             resolve({
                 status: true,
+                fulfilled: allchallenges,
                 crew
             });
         });
