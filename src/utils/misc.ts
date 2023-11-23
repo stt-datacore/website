@@ -132,7 +132,7 @@ export const mobileCheck = function () {
 	return check || iOS();
 };
 
-function iOS() {
+export function iOS() {
 	if (typeof navigator === 'undefined' || typeof navigator.userAgent === 'undefined') return false;
 	return [
 		'iPad Simulator',
