@@ -100,6 +100,7 @@ const QuestSolver = {
                 const nslots = (!!config.ignoreQpConstraint || crew.immortal > 0) ? 4 : qbitsToSlots(crew.q_bits);
 
                 crew.challenges ??= [];                
+                if (crew[challenge.skill].core < challenge.difficulty_by_mastery[mastery]) return false;
 
                 let n = crew[challenge.skill].core + crew[challenge.skill].min;
                 let ttraits = getTraits(crew, useTraits);
