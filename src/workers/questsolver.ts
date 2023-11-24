@@ -98,9 +98,9 @@ const QuestSolver = {
            
             let qpass = questcrew.filter((crew) => {
                 const nslots = (!!config.ignoreQpConstraint || crew.immortal > 0) ? 4 : qbitsToSlots(crew.q_bits);
-                if (crew.symbol.includes("valeo")) {
-                    console.log("pause");
-                }
+                // if (crew.symbol.includes("sisko_ishan_chaye_crew")) {
+                //     console.log("pause");
+                // }
                 crew.challenges ??= [];                
                 let n = crew[challenge.skill].core + crew[challenge.skill].min;
                 let ttraits = getTraits(crew, useTraits);
@@ -134,9 +134,9 @@ const QuestSolver = {
                 while (n <= (challenge.difficulty_by_mastery[mastery] + [250, 275, 300][mastery])) {
                     if (!nslots) return false;
                     if (1 + slots.length + currslots.length > nslots) return false;
-                    if (crew.symbol === 'nancy_hedford_crew') {
-                        console.log("nancy");
-                    }
+                    // if (crew.symbol === 'nancy_hedford_crew') {
+                    //     console.log("nancy");
+                    // }
 
                     let qps = getPossibleQuipment(crew, quipment)
                         .filter((item) => !slots.includes(item.symbol) && !currslots?.includes(item.symbol))
@@ -190,7 +190,7 @@ const QuestSolver = {
                     
                     let j = 0;
                     for (let i = 0; i < 4; i++) {
-                        if (added[crew.symbol][i] === '') {
+                        if (added[crew.symbol][i] === '' || added[crew.symbol][i] === undefined) {
                             added[crew.symbol][i] = slots[j++];
                         }
                     }                    
