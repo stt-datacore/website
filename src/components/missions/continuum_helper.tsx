@@ -316,9 +316,9 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     const crewTableCells = [
         { width: 2, column: 'score', title: 'Rank' },
-        { width: 2, column: 'added_kwipment.length', title: 'Suggested Quipment' },
+        { width: 2, column: 'added_kwipment_key', title: 'Suggested Quipment' },
         { width: 2, column: 'metasort', title: 'Computed Skills' },
-        { width: 2, column: 'challenges.length', title: 'Challenges' }
+        { width: 2, column: 'challenge_key', title: 'Challenges' }
     ]
 
     const renderTableCells = (row: IRosterCrew): JSX.Element => {

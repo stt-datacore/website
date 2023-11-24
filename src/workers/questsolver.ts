@@ -303,7 +303,7 @@ const QuestSolver = {
                 let retest = challenges.filter(ch => !crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)));
 
                 for (let ch of retest) {
-                    let eligCrew = crew.filter(f => ch.skill in f.base_skills && f.challenges && !f.challenges.some(ft => ft.challenge.skill === ch.skill));
+                    let eligCrew = crew.filter(f => ch.skill in f.base_skills && f.challenges && f.challenges.some(ft => ft.challenge.skill === ch.skill));
                     if (!eligCrew?.length) {
                         eligCrew = roster.filter(f => ch.skill in f.base_skills);
                     }
@@ -312,20 +312,28 @@ const QuestSolver = {
                     let ci = 0;
 
                     while (ci < eligCrew.length && !crew.some(c => c.challenges?.some(chc => chc.challenge.id === ch.id))) 
-                    {             
-                        let oldCrew = JSON.parse(JSON.stringify(eligCrew[ci]));
-                        resetCrew(eligCrew[ci]);
-                        crew = processChallenge(ch, eligCrew, crew);
-                        if (!eligCrew[ci].challenges?.length) {
-                            oldCrew.date_added = new Date(oldCrew.date_added);
-                            eligCrew[ci] = oldCrew;
+                    {   
+                        let mfind = crew.findIndex(c => c.symbol === eligCrew[ci].symbol);
+                        if (mfind !== -1) {
+                            eligCrew[ci] = JSON.parse(JSON.stringify(eligCrew[ci]));
+                            eligCrew[ci].date_added = new Date(eligCrew[ci].date_added);
+                            resetCrew(eligCrew[ci]);                   
+                            crew = processChallenge(ch, eligCrew, crew);
+                            if (!eligCrew[ci].challenges?.length) {
+                                eligCrew[ci] = crew[mfind];
+                            }
+                            else {
+                                crew[mfind] = eligCrew[ci];
+                            }
                         }
                         ci++;
                     }
                 }
             }
             
-            crew = crew.sort((a, b) => {
+            crew = crew
+                    .filter(c => !!c.challenges?.length)
+                    .sort((a, b) => {
                 let r = 0;
                 
                 let ca = 0;
@@ -358,7 +366,7 @@ const QuestSolver = {
 
             crew = chfill.concat(crew.filter(f => !chfill.some(chf => chf.symbol === f.symbol)));
             crew.forEach((c, idx) => {                
-                c.score = idx + 1;
+                c.score = idx + 1;                
                 const slots = added[c.symbol];
                 if (slots?.length) {
                     c.added_kwipment = slots.map((symbol, idx) => {
@@ -372,7 +380,19 @@ const QuestSolver = {
                         else {
                             return 0;
                         }
-                    });                    
+                    });           
+                    
+                    c.added_kwipment_key = c.added_kwipment?.map((quip) => {
+                        let f = config.context.core.items.find(i => i.kwipment_id?.toString() === quip.toString());
+                        if (f) {
+                            let bonuses = getItemBonuses(f);
+                            return Object.values(bonuses.bonuses).map((b) => {
+                                return `${b.core+b.range_max+b.range_min}_${b.skill}`
+                            }).join("_");
+                        }
+                        return '';
+                    }).join("_");
+                    c.challenge_key = c.challenges?.map(ch => `${ch.challenge.id.toString()}_${ch.challenge.skill}`).join("_");
                 }
 
                 Object.keys(c.skills).forEach((skill) => {

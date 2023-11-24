@@ -403,6 +403,9 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 						<Grid columns={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 1 : 3} padded>
 							{demands.map((entry, idx) => {
 								if (!entry.equipment) return <></>
+								const hc = this.haveCount(entry.equipment.symbol);
+								const scolor = hc < entry.count ? 'tomato' : undefined;
+
 								return <Grid.Column key={idx}>
 									<Popup
 										trigger={
@@ -422,7 +425,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 													/>
 												}
 												content={entry.equipment.name}
-												subheader={`Need ${entry.count} ${playerData?.player ? "(Have " + this.haveCount(entry.equipment.symbol) + ")" : ""} ${entry.factionOnly ? ' (Faction Only)' : ''}`}
+												subheader={<div style={{fontSize:"0.8em"}}>Need {entry.count} {playerData?.player ? <>(Have <span style={{color:scolor}}>{hc}</span>)</> : ""} {entry.factionOnly ? ' (Faction Only)' : ''}</div>}
 											/>
 										}
 										header={
