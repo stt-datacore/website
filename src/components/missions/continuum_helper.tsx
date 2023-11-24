@@ -546,7 +546,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                             Quest Solve Incomplete
                         </Message.Header>
                         <Message.Content>
-                            Could not find crew to complete all challenges. Try adjusting your calculation options, and try again.
+                            Could not find crew to complete all challenges. Try adjusting your calculation options, and try again.<br />
+                            Failed Challenges: <b>{solverResults?.failed?.map(fid => quest?.challenges?.find(ch => ch.id === fid)?.name)?.reduce((p, n) => p ? `${p}, ${n}` : n, '')}</b>
                         </Message.Content>
                     </Message>
                 )}
