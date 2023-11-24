@@ -205,7 +205,7 @@ const QuestSolver = {
             //     crews[crew.symbol] ??= [];
             // }
             
-            return qpass;
+            return qpass.filter(c => !!c.challenges?.length);
         }
 
         return new Promise<QuestSolverResult>((resolve, reject) => {            
@@ -312,9 +312,14 @@ const QuestSolver = {
                     let ci = 0;
 
                     while (ci < eligCrew.length && !crew.some(c => c.challenges?.some(chc => chc.challenge.id === ch.id))) 
-                    {                        
+                    {             
+                        let oldCrew = JSON.parse(JSON.stringify(eligCrew[ci]));
                         resetCrew(eligCrew[ci]);
                         crew = processChallenge(ch, eligCrew, crew);
+                        if (!eligCrew[ci].challenges?.length) {
+                            oldCrew.date_added = new Date(oldCrew.date_added);
+                            eligCrew[ci] = oldCrew;
+                        }
                         ci++;
                     }
                 }
@@ -352,7 +357,6 @@ const QuestSolver = {
             let allchallenges = challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)));
 
             crew = chfill.concat(crew.filter(f => !chfill.some(chf => chf.symbol === f.symbol)));
-
             crew.forEach((c, idx) => {                
                 c.score = idx + 1;
                 const slots = added[c.symbol];
@@ -399,7 +403,8 @@ const QuestSolver = {
             resolve({
                 status: true,
                 fulfilled: allchallenges,
-                crew
+                crew,
+                failed: allchallenges ? undefined : challenges.filter(ch => !crew.some(c => c.challenges?.some(ch2 => ch2.challenge.id === ch.id))).map(ch => ch.id)
             });
         });
     },
