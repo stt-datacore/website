@@ -1,25 +1,24 @@
-import React, { useState } from "react";
-import { PlayerCrew, Reward } from "../../model/player";
+import React from "react";
+import { PlayerCrew } from "../../model/player";
 import { CrewMember, Skill } from "../../model/crew";
 import { GlobalContext } from "../../context/globalcontext";
 import { ContinuumMission } from "../../model/continuum";
-import { MissionChallenge, MissionTraitBonus, Quest, QuestFilterConfig } from "../../model/missions";
+import { MissionChallenge, Quest, QuestFilterConfig } from "../../model/missions";
 import { Notification } from "../page/notification";
-import { ChallengeNodeInfo } from "./challenge_node";
 import { useStateWithStorage } from "../../utils/storage";
 import { QuestImportComponent } from "./quest_importer";
-import { NavMapItem, PathInfo, getNodePaths, makeNavMap } from "../../utils/episodes";
+import { NavMapItem, getNodePaths, makeNavMap } from "../../utils/episodes";
 import { HighlightItem, MissionMapComponent, cleanTraitSelection } from "./mission_map";
 import { QuestSolverComponent } from "./solver_component";
 import { IQuestCrew, QuestSolverResult } from "../../model/worker";
 import { CrewConfigTable } from "../crewtables/crewconfigtable";
-import { Checkbox, Grid, Message, Table } from "semantic-ui-react";
+import { Checkbox, Message, Table } from "semantic-ui-react";
 import { IRosterCrew } from "../crewtables/model";
 import { CrewItemsView } from "../item_presenters/crew_items";
-import { Skills } from "../item_presenters/classic_presenter";
 import CrewStat from "../crewstat";
-import { appelate, arrayIntersect, arrayUnion } from "../../utils/misc";
+import { appelate, arrayIntersect } from "../../utils/misc";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { ItemHoverStat } from "../hovering/itemhoverstat";
 
 export interface ContinuumComponentProps {
     roster: (PlayerCrew | CrewMember)[];
@@ -333,7 +332,11 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 </Table.Cell>
                 <Table.Cell>
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", minWidth: "192px" }}>
-                        <CrewItemsView printNA={includeCurrentQp ? <span style={{ color: 'cyan' }}>New</span> : <br />} crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: crew.added_kwipment_expiration ?? [] }} quipment={true} />
+                        <CrewItemsView 
+                            targetGroup={'continuum_items_1'}
+                            printNA={includeCurrentQp ? <span style={{ color: 'cyan' }}>New</span> : <br />} 
+                            crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: crew.added_kwipment_expiration ?? [] }} 
+                            quipment={true} />
                     </div>
                 </Table.Cell>
                 <Table.Cell>
@@ -548,6 +551,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     </Message>
                 )}
                 {!!solverResults &&
+                <React.Fragment>
+                    <ItemHoverStat targetGroup={'continuum_items_1'} />
                     <CrewConfigTable
                         initOptions={{
                             column: 'score',
@@ -559,7 +564,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                         pageId={'continuum'}
                         rosterType={'profileCrew'}
                         crewFilters={[]}
-                    />}
+                    />
+                    </React.Fragment>}
                 {!solverResults && <><br /><br /><br /><br /><br /></>}
             </div>
         </>

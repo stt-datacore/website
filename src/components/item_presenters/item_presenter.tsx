@@ -235,9 +235,9 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     style={{
                         display: "flex",
                         flexDirection: "column",
-                        minHeight: "8em",
+                        minHeight: !empty ? "8em" : "5em",
                         justifyContent: "space-between",                        
-                        maxWidth: window.innerWidth < mobileWidth ? "15m" : "34em",
+                        maxWidth: window.innerWidth < mobileWidth ? "15em" : ( !empty ? "34em" : "24em"),
                         minWidth: "15m",
                     }}
                 >
