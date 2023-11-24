@@ -19,6 +19,7 @@ export interface CrewItemsViewProps {
     mobileSize?: number;
     quipment?: boolean;
     printNA?: string | JSX.Element;
+    targetGroup?: string;
 }
 
 
@@ -56,13 +57,13 @@ function printShortDistance(d: Date) {
     hours *= 24;
 
     if (days) {
-        hours = Math.round(hours);
+        hours = Math.floor(hours);
         return `${days} d ${hours} h`;
     }
     else {
         let min = (hours - Math.floor(hours)) * 60;
         hours = Math.floor(hours);
-        min = Math.round(min);
+        min = Math.floor(min);
 
         if (hours >= 1) {
             return `${hours} h ${min} m`;
@@ -81,6 +82,8 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 
     const crew = props.crew as PlayerCrew;
     const quip = !!props.quipment;
+    
+    const { targetGroup } = props;
 
     const maxqIdx = (!quip ? 0 : (crew ? qbitsToSlots(crew.q_bits) : 0)) - 1;
 
@@ -194,6 +197,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             }}>
             {equip.map((item, idx) => (
                     <CrewItemDisplay                       
+                        targetGroup={targetGroup}
                         style={(quip && maxqIdx < idx) ? { opacity: "0.25"} : undefined} 
                         itemSize={props.itemSize} 
                         mobileSize={props.mobileSize} 
@@ -216,9 +220,13 @@ export interface CrewItemDisplayProps extends CrewItemsViewProps {
     itemSize?: number;
     mobileSize?: number;
     style?: React.CSSProperties;
+    targetGroup?: string;
 }
 
 export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
+
     constructor(props: CrewItemDisplayProps) {
         super(props);
     }
@@ -226,6 +234,8 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
 
     render() {
         const entry = this.props;
+        const { targetGroup } = entry;
+
         const itemSize = window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (this.props.mobileSize ?? 24) : (this.props.itemSize ?? 32);
 
         return (<div 
@@ -242,6 +252,10 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
             <div style={{display:'flex', flexDirection:'column'}}>
             {!!entry.expiration && <div style={{fontSize: "0.75em", textAlign: 'center'}}>{entry.expiration}</div>}           
             <ItemDisplay
+                targetGroup={targetGroup}
+                itemSymbol={entry.equipment?.symbol}
+                allItems={this.context.core.items}    
+                playerData={this.context.player.playerData}            
                 src={`${process.env.GATSBY_ASSETS_URL}${entry?.equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
                 size={itemSize}
                 maxRarity={entry?.equipment?.rarity ?? 0}

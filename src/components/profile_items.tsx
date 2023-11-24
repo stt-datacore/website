@@ -852,7 +852,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				gap: "1em",
 				flexDirection: "column"}}>
 				<CrewPresenter selfRender quipmentMode hideStats compact plugins={[]} crew={selCrew} hover={false} storeName='items_quip' />
-				<CrewItemsView itemSize={48} crew={selCrew} quipment />
+				<CrewItemsView targetGroup='profile_items' itemSize={48} crew={selCrew} quipment />
 				</div>
 			}
 
