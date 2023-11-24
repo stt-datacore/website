@@ -231,9 +231,11 @@ export interface CrewChallengeInfo {
 
 export interface IQuestCrew extends PlayerCrew {
     challenges?: CrewChallengeInfo[];
+    challenge_key?: string;
     added_kwipment?: number[][] | number[];
     added_kwipment_expiration?: number[][] | number[];
     metasort?: number;
+    added_kwipment_key?: string;
 }
 
 export interface QuestSolverResult {
