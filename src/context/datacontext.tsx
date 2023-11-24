@@ -225,14 +225,17 @@ export const DataProvider = (props: DataProviderProperties) => {
 			});
 
 			// Post-process interdependent demands
-			if (unsatisfied.includes('ship_schematics') && unsatisfied.includes('battle_stations')) {
-				postProcessShipBattleStations(newData);
-			}
 			if (unsatisfied.includes('items') && unsatisfied.includes('cadet')) {
 				postProcessCadetItems(newData);
 			}
 			if (unsatisfied.includes('crew') && unsatisfied.some(u => u.startsWith("translation_"))) {
 				postProcessCrewTranslations(newData);
+			}
+			if (unsatisfied.includes('ship_schematics') && unsatisfied.some(u => u.startsWith("translation_"))) {
+				postProcessShipTranslations(newData);
+			}
+			if (unsatisfied.includes('ship_schematics') && unsatisfied.includes('battle_stations')) {
+				postProcessShipBattleStations(newData);
 			}
 
 			setData({...newData});
@@ -297,7 +300,25 @@ export const DataProvider = (props: DataProviderProperties) => {
 				let arch = data.translation.crew_archetypes.find(f => f.symbol === crew.symbol);
 				crew.traits_named = crew.traits.map(t => data.translation.trait_names[t]);
 				crew.name = arch?.name ?? crew.name;
-				crew.short_name = arch?.short_name ?? crew.short_name;
+				crew.short_name = arch?.short_name ?? crew.short_name;				
+			});
+		}
+	}
+
+	
+	function postProcessShipTranslations(data: ICoreData): void {
+		if (data.ship_schematics.length && data.translation.ship_archetypes) {
+			data.ship_schematics.forEach((ship) => {
+				let arch = data.translation.ship_archetypes.find(f => f.symbol === ship.ship.symbol);
+				ship.ship.flavor = arch?.flavor ?? ship.ship.flavor;				
+				ship.ship.traits_named = ship.ship.traits?.map(t => data.translation.ship_trait_names[t]);
+				ship.ship.name = arch?.name ?? ship.ship.name;				
+				arch?.actions?.forEach((action) => {
+					let act = ship.ship.actions?.find(f => f.symbol === action.symbol);
+					if (act) {
+						act.name = action.name;
+					}
+				});				
 			});
 		}
 	}
