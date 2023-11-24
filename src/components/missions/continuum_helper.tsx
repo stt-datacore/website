@@ -371,7 +371,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                     })).reduce((p, n) => p ? <>{p}{n}</> : n, <></>)}
                                 </div>
                             )
-                        }).reduce((p, n) => p ? <div>{p}<br />{n}</div> : n, <></>)}
+                        }).reduce((p, n, idx) => idx ? <div>{p}<br />{n}</div> : n, <></>)}
                     </div>
                 </Table.Cell>
                 <Table.Cell>
