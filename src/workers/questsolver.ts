@@ -222,6 +222,24 @@ const QuestSolver = {
                 return;
             }
             
+            const resetCrew = (crew: IQuestCrew) => {                
+                delete crew.metasort;
+                delete crew.added_kwipment;
+                delete crew.added_kwipment_expiration;
+                delete crew.challenges;
+                delete added[crew.symbol];
+                if (!config.includeCurrentQp) {
+                    applyCrewBuffs(crew, config.buffs);
+                }
+                else {
+                    for(let skill of getSkillOrder(crew)) {
+                        crew[skill].core = crew.skills[skill].core;
+                        crew[skill].min = crew.skills[skill].range_min;
+                        crew[skill].max = crew.skills[skill].range_max;
+                    }
+                }
+            }
+
             const roster = playerData.player.character.crew
                     .filter(f => !ephemeral?.activeCrew?.some(c => c.symbol === f.symbol) || !idleOnly)
                     .filter(f => !!f.immortal && ((f.immortal === -1) || considerFrozen))
@@ -233,16 +251,7 @@ const QuestSolver = {
                             crew.active_status = ac.active_status;
                         }
                         crew.date_added = new Date(crew.date_added); 
-                        if (!config.includeCurrentQp) {
-                            applyCrewBuffs(crew, config.buffs);
-                        }
-                        else {
-                            for(let skill of getSkillOrder(crew)) {
-                                crew[skill].core = crew.skills[skill].core;
-                                crew[skill].min = crew.skills[skill].range_min;
-                                crew[skill].max = crew.skills[skill].range_max;
-                            }
-                        }
+                        resetCrew(crew);
                         return crew;
                     });
 
@@ -258,25 +267,57 @@ const QuestSolver = {
             
             const challenges = config.challenges?.length ? config.challenges : (config.quest?.challenges ?? []);
             let crew = [] as IQuestCrew[];
-
-            for (let ch of challenges) {
-                
+            
+            challenges.sort((a, b) => a.id - b.id);
+            
+            const processChallenge = (ch: MissionChallenge, roster: PlayerCrew[], crew: IQuestCrew[]) => {
                 roster.sort((a, b) => {
                     let ask = ch.skill in a.skills;
-                    let bsk = ch.skill in a.skills;
+                    let bsk = ch.skill in b.skills;
                     if (ask != bsk) {
                         if (ask) return -1;
                         else return 1;
                     }
                     
                     let ac = ch.trait_bonuses?.filter(t => a.traits.concat(a.traits_hidden).includes(t.trait))?.length ?? 0;
-                    let bc = ch.trait_bonuses?.filter(t => a.traits.concat(a.traits_hidden).includes(t.trait))?.length ?? 0;
+                    let bc = ch.trait_bonuses?.filter(t => b.traits.concat(b.traits_hidden).includes(t.trait))?.length ?? 0;
 
                     return bc - ac;
                 });
 
                 let chcrew = solveChallenge(roster, ch, config.mastery);
-                if (chcrew?.length) crew = crew.concat(chcrew);
+                
+                if (chcrew?.length) {
+                    crew = crew.filter(c => !chcrew.some(chc => chc.symbol === c.symbol));
+                    crew = crew.concat(chcrew);
+                    crew = crew.filter((c, i) => crew.findIndex(c2 => c2.symbol === c.symbol) === i);
+                }
+                return crew;
+            }
+
+            for (let ch of challenges) {                
+                crew = processChallenge(ch, roster, crew);
+            }
+
+            if (!challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)))) {                
+                let retest = challenges.filter(ch => !crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)));
+
+                for (let ch of retest) {
+                    let eligCrew = crew.filter(f => ch.skill in f.base_skills && f.challenges && !f.challenges.some(ft => ft.challenge.skill === ch.skill));
+                    if (!eligCrew?.length) {
+                        eligCrew = roster.filter(f => ch.skill in f.base_skills);
+                    }
+                    
+                    if (!eligCrew?.length) continue;
+                    let ci = 0;
+
+                    while (ci < eligCrew.length && !crew.some(c => c.challenges?.some(chc => chc.challenge.id === ch.id))) 
+                    {                        
+                        resetCrew(eligCrew[ci]);
+                        crew = processChallenge(ch, eligCrew, crew);
+                        ci++;
+                    }
+                }
             }
             
             crew = crew.sort((a, b) => {
@@ -296,25 +337,19 @@ const QuestSolver = {
                 return r;
             });
 
-            crew = crew.filter((c, i) => crew.findIndex(c2 => c2.symbol === c.symbol) === i);
-
             let chfill = [] as IQuestCrew[];
-            let ach = {} as { [key: number]: boolean };
             challenges.forEach((challenge) => {
-                ach[challenge.id] = false;
-
                 for (let c of crew) {
                     if (c.challenges?.some(ch => ch.challenge.id === challenge.id)) {
                         if (chfill.findIndex(tc => tc.symbol === c.symbol) === -1) {
                             chfill.push(c);
                         }                 
-                        ach[challenge.id] = true;       
                         break;
                     }
                 }
             });
 
-            let allchallenges = Object.values(ach).every(t => t);
+            let allchallenges = challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)));
 
             crew = chfill.concat(crew.filter(f => !chfill.some(chf => chf.symbol === f.symbol)));
 
