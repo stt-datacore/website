@@ -241,4 +241,5 @@ export interface QuestSolverResult {
     crew: IQuestCrew[];
     error?: string;
     fulfilled: boolean;
+    failed?: number[];
 }
