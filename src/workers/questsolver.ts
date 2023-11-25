@@ -347,10 +347,6 @@ const QuestSolver = {
 
                 for (let ch of retest) {
                     let eligCrew = crew.filter(f => ch.skill in f.base_skills && f.challenges && f.challenges.some(ft => ft.challenge.skill === ch.skill));
-                    if (!eligCrew?.length) {
-                        eligCrew = roster.filter(f => ch.skill in f.base_skills);
-                    }
-                    
                     if (!eligCrew?.length) continue;
                     let ci = 0;
 
@@ -360,10 +356,14 @@ const QuestSolver = {
                         if (mfind !== -1) {
                             eligCrew[ci] = JSON.parse(JSON.stringify(eligCrew[ci]));
                             eligCrew[ci].date_added = new Date(eligCrew[ci].date_added);
-                            resetCrew(eligCrew[ci]);                   
+                            resetCrew(eligCrew[ci]);
                             crew = processChallenge(ch, eligCrew, crew);
                             if (!eligCrew[ci].challenges?.length) {
                                 eligCrew[ci] = crew[mfind];
+                                if (eligCrew[ci].added_kwipment && config.buildableOnly) {
+                                    let undos = eligCrew[ci].added_kwipment?.map(qid => allQuipment.find(f => f.kwipment_id?.toString() === qid.toString()))
+                                    undos?.forEach(i => { if (i) deductItem(i) });
+                                }
                             }
                             else {
                                 crew[mfind] = eligCrew[ci];
@@ -377,21 +377,21 @@ const QuestSolver = {
             crew = crew
                     .filter(c => !!c.challenges?.length)
                     .sort((a, b) => {
-                let r = 0;
-                
-                let ca = 0;
-                let cb = 0;
+                        let r = 0;
+                        
+                        let ca = 0;
+                        let cb = 0;
 
-                ca = a.challenges?.length ?? 0;
-                cb = b.challenges?.length ?? 0;
-                r = cb - ca;
-                if (r) return r;
+                        ca = a.challenges?.length ?? 0;
+                        cb = b.challenges?.length ?? 0;
+                        r = cb - ca;
+                        if (r) return r;
 
-                ca = a.added_kwipment?.length ?? 0;
-                cb = b.added_kwipment?.length ?? 0;
-                r = ca - cb;
-                return r;
-            });
+                        ca = a.added_kwipment?.length ?? 0;
+                        cb = b.added_kwipment?.length ?? 0;
+                        r = ca - cb;
+                        return r;
+                    });
 
             let chfill = [] as IQuestCrew[];
             challenges.forEach((challenge) => {
