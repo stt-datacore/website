@@ -154,7 +154,7 @@ const BossBattleSpotter = (props: BossBattleSpotterProps) => {
 
 	const [bossBattle, setBossBattle] = React.useState<BossBattle | undefined>(undefined);
 	const [spotter, setSpotter] = useStateWithStorage<Spotter | undefined>(`fbb/${bossBattleId}/spotter`, undefined);
-	const [spotterBattleId, setSpotterBattleId] = useStateWithStorage<number | undefined>(`fbb/spotterBattleId`, undefined);
+	const [spotterBattleId, setSpotterBattleId] = useStateWithStorage<string | undefined>(`fbb/spotterBattleId`, undefined);
 
 	React.useEffect(() => {
 		if (!playerData || !ephemeral) return;
@@ -180,7 +180,7 @@ const BossBattleSpotter = (props: BossBattleSpotterProps) => {
 		} as BossBattle;
 		setBossBattle({...bossBattle});
 
-		if (!spotter || ((!collaborationEnabled) && spotterBattleId !== bossBattleId)) {
+		if (!spotter || ((!collaborationEnabled) && spotterBattleId !== bossBattle.chain.id)) {
 			setSpotter({
 				id: bossBattle.chain.id,
 				solves: [],
@@ -188,9 +188,9 @@ const BossBattleSpotter = (props: BossBattleSpotterProps) => {
 				pendingCrew: [],
 				ignoredTraits: []
 			});
-			setSpotterBattleId(bossBattleId);
+			setSpotterBattleId(bossBattle.chain.id);
 		}
-	}, [ephemeral, bossBattleId]);
+	}, [ephemeral, playerData, bossBattleId]);
 
 	if (!bossBattle || !spotter) return <></>;
 
