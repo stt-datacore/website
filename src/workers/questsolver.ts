@@ -612,6 +612,9 @@ const QuestSolver = {
                             failbuff.push(quip);
                             buildcount++;
                         }
+                        else {
+                            return false;
+                        }
                     }        
                     if (total !== buildcount) {
                         for (let quip of failbuff) {
