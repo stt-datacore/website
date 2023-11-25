@@ -174,11 +174,14 @@ const QuestSolver = {
                     .map((t => t.bonuses[mastery]))                        
                     .reduce((p, n) => p + n, 0);
 
+                let cfactor = 0;
                 if (crew.challenges?.length && crew.challenges[crew.challenges.length - 1].challenge.children.includes(challenge.id)) {
-                    cpmin -= (0.20 * cpmin);
-                    cpmax -= (0.20 * cpmax);    
+                    cfactor = 0.20;
                 }
                 
+                cpmin -= (cfactor * cpmin);
+                cpmax -= (cfactor * cpmax);    
+
                 cpmin += tpower;
                 cpmax += tpower;
                 
@@ -250,7 +253,7 @@ const QuestSolver = {
                                         
                     if (qps?.length) {
                         let qpower = qps[0].bonusInfo.bonuses[challenge.skill].core + qps[0].bonusInfo.bonuses[challenge.skill].range_min;
-                        qpower -= (0.20 * (crew.challenges?.length ?? 0) * qpower);
+                        qpower -= (cfactor * qpower);
                         cpmin += qpower;
 
                         quips[qps[0].item.symbol] = qps[0].bonusInfo;
@@ -266,7 +269,7 @@ const QuestSolver = {
                         challenge,
                         skills: {},
                         trait_bonuses: ttraits,
-                        power_decrease: 0.20 * crew.challenges?.length ?? 0,
+                        power_decrease: cfactor,
                         max_solve: maxsolve
                     });
                 }
