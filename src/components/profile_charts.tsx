@@ -13,7 +13,8 @@ import CONFIG from '../components/CONFIG';
 import ErrorBoundary from './errorboundary';
 import themes from './nivo_themes';
 import { sortedStats, insertInStatTree, StatTreeNode } from '../utils/statutils';
-import { DemandCounts, demandsPerSlot, IDemand } from '../utils/equipment';
+import { demandsPerSlot } from '../utils/equipment';
+import { DemandCounts, IDemand } from '../model/equipment';
 import { PlayerCrew, PlayerEquipmentItem } from '../model/player'
 import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';

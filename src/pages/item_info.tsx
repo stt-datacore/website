@@ -6,7 +6,7 @@ import ItemSources from '../components/itemsources';
 import ItemDisplay from '../components/itemdisplay';
 import CONFIG from '../components/CONFIG';
 import { CompletionState, Demand, PlayerCrew, PlayerData } from '../model/player';
-import { IDemand } from '../utils/equipment';
+import { IDemand } from '../model/equipment';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { DataContext } from '../context/datacontext';
 import { GlobalContext } from '../context/globalcontext';

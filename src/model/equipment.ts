@@ -1,5 +1,33 @@
-import { Icon } from "./game-elements"
-import { PlayerCrew, PlayerEquipmentItem } from "./player"
+import { PlayerEquipmentItem } from "./player"
+
+
+export interface IDemand {
+	count: number;
+	symbol: string;
+	equipment?: EquipmentItem;
+	factionOnly: boolean;
+	have: number;
+	crewSymbols: string[];	
+}
+
+export interface ICrewDemandsMeta {
+	factionOnlyTotal: number;
+	totalChronCost: number;
+	craftCost: number;
+}
+
+export interface ICrewDemands extends ICrewDemandsMeta {
+	demands: IDemand[];
+	factionOnlyTotal: number;
+	totalChronCost: number;
+	craftCost: number;
+}
+
+export interface DemandCounts {
+	name: string;
+	count: number;
+}
+
 
 export interface EquipmentCommon extends PlayerEquipmentItem {
   symbol: string
@@ -40,6 +68,7 @@ export interface EquipmentItem extends EquipmentCommon {
 
   item_sources: EquipmentItemSource[]
   recipe?: EquipmentRecipe
+  demands?: IDemand[];
 
   empty?: boolean;
   isReward?: boolean;
