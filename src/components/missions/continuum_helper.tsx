@@ -1,6 +1,6 @@
 import React from "react";
 import { PlayerCrew } from "../../model/player";
-import { CrewMember, Skill } from "../../model/crew";
+import { CrewMember } from "../../model/crew";
 import { GlobalContext } from "../../context/globalcontext";
 import { ContinuumMission } from "../../model/continuum";
 import { MissionChallenge, Quest, QuestFilterConfig } from "../../model/missions";
@@ -10,16 +10,12 @@ import { QuestImportComponent } from "./quest_importer";
 import { NavMapItem, getNodePaths, makeNavMap } from "../../utils/episodes";
 import { HighlightItem, MissionMapComponent, cleanTraitSelection } from "./mission_map";
 import { QuestSolverComponent } from "./solver_component";
-import { IQuestCrew, QuestSolverResult } from "../../model/worker";
-import { CrewConfigTable } from "../crewtables/crewconfigtable";
-import { Checkbox, Message, Table } from "semantic-ui-react";
-import { IRosterCrew } from "../crewtables/model";
-import { CrewItemsView } from "../item_presenters/crew_items";
-import CrewStat from "../crewstat";
-import { appelate, arrayIntersect } from "../../utils/misc";
+import { QuestSolverResult } from "../../model/worker";
+import { Checkbox, Message, Step } from "semantic-ui-react";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
-import PowerExplanation, { GradeSwatch } from "../powerexplanation";
+import { QuestCrewTable } from "./quest_crew_table";
+import { v4 } from "uuid";
 
 export interface ContinuumComponentProps {
     roster: (PlayerCrew | CrewMember)[];
@@ -153,8 +149,9 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     /* Component State */
 
+    const [showPane, setShowPane] = useStateWithStorage('continuum/showPane', 0);
     const [errorMsg, setErrorMsg] = React.useState<string | undefined>(undefined);
-    const [clearFlag, setClearFlag] = React.useState(0);
+    const [clearInc, setClearInc] = React.useState(0);
 
     const [questIndex, setQuestIndex] = useStateWithStorage('continuum/questIndex', undefined as number | undefined);
     const [quest, setQuest] = useStateWithStorage<Quest | undefined>('continuum/currentQuest', undefined);
@@ -162,8 +159,20 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const [selectedTraits, setSelectedTraits] = useStateWithStorage('continuum/selectedTraits', [] as TraitSelection[]);
     const [highlighted, setHighlighted] = useStateWithStorage<HighlightItem[]>('continuum/selected', []);
 
-    const [solverResults, setSolverResults] = React.useState<QuestSolverResult | undefined>(undefined);
+    const [solverResults, internalSetSolverResults] = React.useState<QuestSolverResult | undefined>(undefined);
     const [missionConfig, setMissionConfig] = useStateWithStorage<QuestFilterConfig>('continuum/missionConfig', { mastery: 0, idleOnly: true, showAllSkills: false });
+
+
+    const setSolverResults = (value?: QuestSolverResult) => {
+
+        if (!value && showPane === 1) {
+            setShowPane(0);
+        }
+        else if (value && showPane === 0) {
+            setShowPane(1);
+        }
+        internalSetSolverResults(value);
+    }
 
     const setIdleOnly = (value: boolean) => {
         setMissionConfig({ ...missionConfig, idleOnly: value });
@@ -290,7 +299,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             .catch((e) => {
                 setErrorMsg(e?.toString() + " : " + missionUrl);
             });
-    }, [clearFlag]);
+    }, [clearInc]);
 
     /* Remote */
 
@@ -298,7 +307,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         setRemoteQuestFlags([]);
         setSolverResults(undefined);
         setTimeout(() => {
-            setClearFlag(clearFlag + 1);
+            setClearInc(clearInc + 1);
         });
     }
 
@@ -321,110 +330,91 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         }
     }
 
-    /* Crew Tables */
-
-    const crewTableCells = [
-        { width: 2, column: 'score', title: 'Rank' },
-        { width: 2, column: 'added_kwipment_key', title: 'Suggested Quipment' },
-        { width: 2, column: 'metasort', title: <>Computed Skills <PowerExplanation /></> },
-        { width: 2, column: 'challenge_key', title: 'Challenges' }
-    ]
-
-    const renderTableCells = (row: IRosterCrew): JSX.Element => {
-        let crew = row as IQuestCrew;
-        return (
-            <React.Fragment>
-                <Table.Cell>
-                    <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
-                        {row.score}
-                    </div>
-                </Table.Cell>
-                <Table.Cell>
-                    <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", minWidth: "192px" }}>
-                        <CrewItemsView 
-                            targetGroup={'continuum_items_1'}
-                            printNA={includeCurrentQp ? <span style={{ color: 'cyan' }}>New</span> : <br />} 
-                            crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: crew.added_kwipment_expiration ?? [] }} 
-                            quipment={true} />
-                    </div>
-                </Table.Cell>
-                <Table.Cell>
-                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start" }}>
-                        {crew.challenges?.map((challenge, idx) => {
-                            
-                            const grade = ((!!challenge.max_solve && !!challenge.power_decrease)) ? 'D' : (challenge.max_solve ? 'B' : (!!challenge.power_decrease ? 'C' : 'A'));
-
-                            return (
-                                <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
-                                    <GradeSwatch grade={grade} style={{marginRight:"1em"}} />
-                                    {Object.values(challenge.skills).map(((skill: Skill) => {
-                                        const key = skill.skill ?? '';
-                                        if (!showAllSkills && key !== challenge.challenge.skill) return <></>
-                                        return (
-                                            <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}>
-                                                <CrewStat
-                                                    style={{
-                                                        color: ((!!challenge.max_solve && !!challenge.power_decrease)) ? 'orange' : (challenge.max_solve ? 'aqua' : (!!challenge.power_decrease ? 'yellow' : 'lightgreen'))
-                                                    }}
-                                                    quipmentMode={true}
-                                                    key={"continuum_crew_" + key}
-                                                    skill_name={key}
-                                                    data={skill}
-                                                    scale={0.75}
-                                                />
-                                                {challenge.challenge.skill === skill.skill && !!challenge.trait_bonuses?.length &&
-                                                    <div style={{ color: 'lightgreen', textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic', fontSize: "0.75em" }}>
-                                                        +&nbsp;{challenge.trait_bonuses?.map(ct => ct.bonuses[mastery]).reduce((p, n) => p + n, 0)}&nbsp;({challenge.trait_bonuses?.map(ct => <>{appelate(ct.trait)}</>).reduce((p, n) => p ? <>{p}, {n}</> : n)})
-                                                    </div>}
-
-                                            </div>
-                                        )
-
-                                    })).reduce((p, n) => p ? <>{p}{n}</> : n, <></>)}
-                                </div>
-                            )
-                        }).reduce((p, n, idx) => idx ? <div>{p}<br />{n}</div> : n, <></>)}
-                    </div>
-                </Table.Cell>
-                <Table.Cell>
-                    <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
-                        {crew.challenges?.map((ch) => {
-                            let challenge = quest?.challenges?.find(f => f.id === ch.challenge.id);
-                            let ctraits = arrayIntersect(challenge?.trait_bonuses?.map(t => t.trait) ?? [], crew.traits.concat(crew.traits_hidden));
-
-                            if (!challenge) {
-                                return <></>
-                            }
-
-                            return (
-                                <div style={{
-                                    display: 'grid',
-                                    gridTemplateAreas: `'image text' 'image traits'`,
-                                    gridTemplateColumns: '32px auto'
-                                }}>
-                                    <div style={{ gridArea: 'image', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                        <img style={{ height: '16px' }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
-                                    </div>
-                                    <div style={{ gridArea: 'text' }}>
-                                        <b>{challenge.name}</b>
-                                    </div>
-                                    <div style={{ gridArea: 'traits' }}>
-                                        {ctraits?.length ?
-                                            <i style={{ color: "lightgreen", fontWeight: "bold" }}>
-                                                ({ctraits.map(t => appelate(t)).join(", ")})
-                                            </i>
-                                            : <></>}
-                                    </div>
-                                </div>
-                            )
-                        }).reduce((p, n) => p ? <div>{p}<br />{n}</div> : n, <></>)}
-                    </div>
-                </Table.Cell>
-            </React.Fragment>)
-    }
-
     /* Render */
     const boardFail = solverResults?.failed?.some(fid => quest?.challenges?.find(ch => ch.id === fid)?.children?.length === 0);
+
+    type SolverOption = {
+        title: string,
+        description: string,
+        value: boolean,
+        setValue: (value: boolean) => void;
+        type: string;
+    }
+
+    const solverOptions = [
+        { 
+            title: "Only Idle Crew",
+            description: "Only consider crew that are idle (not on shuttles or voyages.)",
+            value: idleOnly,
+            setValue: setIdleOnly,
+            type: 'checkbox'
+        },
+        { 
+            title: "Quippable Only (>= 100 QBits)",
+            description: "Consider crew with at least 1 quipment slot unlocked.",
+            value: qpOnly,
+            setValue: setQpOnly,
+            type: 'checkbox'
+        },
+        { 
+            title: "Consider Frozen Crew",
+            description: "Consider frozen crew (frozen crew are considered with all 4 quipment slots)",
+            value: considerFrozen,
+            setValue: setConsiderFrozen,
+            type: 'checkbox'
+        },
+        { 
+            title: "Assume Max QBits (Ignore Limit)",
+            description: "Assume all eligible crew have all 4 quipment slots unlocked.",
+            value: ignoreQpConstraint,
+            setValue: setIgnoreQpConstraint,
+            type: 'checkbox'
+        },
+        { 
+            title: "Use Current Quipment on Crew",
+            description: "Keep current quipment on crew. If this option is not checked, current quipment is ignored and overwritten.",
+            value: includeCurrentQp,
+            setValue: setIncludeCurrentQp,
+            type: 'checkbox'
+        },
+        { 
+            title: "Show All Skills",
+            description: "Show all crew skills.",
+            value: showAllSkills,
+            setValue: setShowAllSkills,
+            type: 'checkbox'
+        },
+        { 
+            title: "Use Cheapest Quipment First",
+            description: "Normally, the quipment with the greatest boost is used, first. Check this box to sort quipment by cheapest to build, instead. Note that this is not optimal for crew with fewer crew slots as less-powerful components will use slots, first.",
+            value: cheapestFirst,
+            setValue: setCheapestFirst,
+            type: 'checkbox'
+        },
+        { 
+            title: "Consider Only Buildable Quipment",
+            description: "Only consider Quipment that you can currently build. Items will be deducted as the calculations are made.",
+            value: buildableOnly,
+            setValue: setBuildableOnly,
+            type: 'checkbox'
+        }
+        
+    ] as SolverOption[];
+
+    const SolverOptionComponent = (props: { config: SolverOption }) => {
+        const { title, description, value, setValue, type } = props.config;
+        const id = v4();
+        return (
+            <React.Fragment>
+                <div 
+                    title={description}
+                    style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
+                    <Checkbox id={id} checked={value} onChange={(e, { checked }) => setValue(!!checked)} />
+                    <label htmlFor={id}>&nbsp;&nbsp;{title}</label>
+                </div>
+            </React.Fragment>
+        )
+    }
 
     return (
         <>
@@ -456,23 +446,6 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 <div style={{ color: "tomato" }}>{errorMsg}</div>
                 <br />
 
-                {mission &&
-                    <MissionMapComponent
-                        autoTraits={true}
-                        pageId={'continuum'}
-                        mission={mission}
-                        showChainRewards={true}
-                        isRemote={remoteQuestFlags}
-                        questIndex={questIndex}
-                        setQuestIndex={setQuestIndex}
-                        mastery={mastery}
-                        setMastery={setMastery}
-                        selectedTraits={selectedTraits}
-                        setSelectedTraits={setSelectedTraits}
-                        highlighted={highlighted}
-                        setHighlighted={setHighlighted}
-                    />}
-
                 <div style={{
                     display: "flex",
                     flexDirection: "row",
@@ -484,80 +457,23 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 }}>
 
                     <div style={{ display: "inline-block" }}>
-                        <Table>
-                            <Table.Row>
-                                <Table.Cell>
-                                    <div 
-                                        title={'Only consider crew that are idle (not on shuttles or voyages.)'}
-                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
-                                        <Checkbox id="chk1" checked={idleOnly} onChange={(e, { checked }) => setIdleOnly(!!checked)} />
-                                        <label htmlFor="chk1">&nbsp;&nbsp;Only Idle Crew</label>
-                                    </div>
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <div 
-                                        title={'Consider crew with at least 1 quipment slot unlocked.'}
-                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: "flex-start", margin: "0.5em" }}>
-                                        <Checkbox id="chk2" checked={qpOnly} onChange={(e, { checked }) => setQpOnly(!!checked)} />
-                                        <label htmlFor="chk2">&nbsp;&nbsp;Quippable Only (&gt;= 100 QBits)</label>
-                                    </div>
-                                </Table.Cell>
-                            </Table.Row>
-                            <Table.Row>
-                                <Table.Cell>
-                                    <div 
-                                        title={'Consider frozen crew (frozen crew are considered with all 4 quipment slots)'}
-                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
-                                        <Checkbox id="chk3" checked={considerFrozen} onChange={(e, { checked }) => setConsiderFrozen(!!checked)} />
-                                        <label htmlFor="chk3">&nbsp;&nbsp;Consider Frozen Crew</label>
-                                    </div>
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <div 
-                                        title={'Assume all eligible crew have all 4 quipment slots unlocked.'}
-                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em", justifyContent: 'flex-start' }}>
-                                        <Checkbox id="chk4" checked={ignoreQpConstraint} onChange={(e, { checked }) => setIgnoreQpConstraint(!!checked)} />
-                                        <label htmlFor="chk4">&nbsp;&nbsp;Assume Max QBits (Ignore Limit)</label>
-                                    </div>
-                                </Table.Cell>
-                            </Table.Row>
-                            <Table.Row>
-                                <Table.Cell>
-                                    <div 
-                                        title={'Keep current quipment on crew. If this option is not checked, current quipment is ignored and overwritten.'}
-                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
-                                        <Checkbox id="chk5" checked={includeCurrentQp} onChange={(e, { checked }) => setIncludeCurrentQp(!!checked)} />
-                                        <label htmlFor="chk5">&nbsp;&nbsp;Use Current Quipment on Crew</label>
-                                    </div>
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <div 
-                                        title={'Show all crew skills'}
-                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
-                                        <Checkbox id="chk6" checked={showAllSkills} onChange={(e, { checked }) => setShowAllSkills(!!checked)} />
-                                        <label htmlFor="chk6">&nbsp;&nbsp;Show All Skills</label>
-                                    </div>
-                                </Table.Cell>
-                            </Table.Row>
-                            <Table.Row>
-                                <Table.Cell>
-                                    <div 
-                                        title={'Normally, the quipment with the greatest boost is used, first. Check this box to sort quipment by cheapest to build, instead. Note that this is not optimal for crew with fewer crew slots as less-powerful components will use slots, first.'}
-                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
-                                        <Checkbox id="chk7" checked={cheapestFirst} onChange={(e, { checked }) => setCheapestFirst(!!checked)} />
-                                        <label htmlFor="chk7">&nbsp;&nbsp;Use Cheapest Quipment First</label>
-                                    </div>
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <div 
-                                        title={'Only consider Quipment that you can currently build. Items will be deducted as the calculations are made.'}
-                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
-                                        <Checkbox id="chk8" checked={buildableOnly} onChange={(e, { checked }) => setBuildableOnly(!!checked)} />
-                                        <label htmlFor="chk8">&nbsp;&nbsp;Consider Only Buildable Quipment</label>
-                                    </div>
-                                </Table.Cell>
-                            </Table.Row>
-                        </Table>
+                        
+                        <div style={{
+                            display: 'flex', 
+                            flexDirection: 'row',
+                            flexWrap: 'wrap',
+                            alignItems: 'center',
+                            justifyContent: 'space-between'
+                        }}>
+                        {solverOptions.map((opt, idx) => (
+                            <div key={`solveopt_${idx}`} style={{
+                                width: isMobile ? '100%' : '25%',
+                                margin: "1em 0em"
+                            }}>
+                                <SolverOptionComponent config={opt} />
+                            </div>
+                        ))}
+                        </div>
                         <div style={{ justifyContent: "center", alignItems: "center", display: "flex", flexDirection: "column" }}>
                             <QuestSolverComponent
                                 setResults={setSolverResults}
@@ -585,7 +501,49 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                         {context.core.spin()}
                     </div>}
-                {!!solverResults && !solverResults?.fulfilled && (
+
+                    <Step.Group fluid>
+                    <Step
+                        onClick={(e) => setShowPane(0)}
+                        active={showPane === 0}
+                    >
+                        <Step.Content>
+                            <Step.Title>Mission Board</Step.Title>
+                            <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Show the mission map and select which challenges to solve.</Step.Description>
+                        </Step.Content>
+                    </Step>
+                    <Step
+                        onClick={(e) => setShowPane(1)}
+                        active={showPane === 1}
+                    >
+                        <Step.Content>
+                            <Step.Title>Quest Solver Results</Step.Title>
+                            <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Show the crew and quipment calculated by the quest solver.</Step.Description>
+                        </Step.Content>
+                    </Step>
+                </Step.Group>
+
+                {mission && 
+                    <div style={{display: showPane === 1 ? 'none' : undefined}}>
+                        <MissionMapComponent
+                            autoTraits={true}
+                            pageId={'continuum'}
+                            mission={mission}
+                            showChainRewards={true}
+                            isRemote={remoteQuestFlags}
+                            questIndex={questIndex}
+                            setQuestIndex={setQuestIndex}
+                            mastery={mastery}
+                            setMastery={setMastery}
+                            selectedTraits={selectedTraits}
+                            setSelectedTraits={setSelectedTraits}
+                            highlighted={highlighted}
+                            setHighlighted={setHighlighted}
+                        />
+                        
+                    </div>}
+
+                {showPane === 1 && !!solverResults && !solverResults?.fulfilled && (
                     <Message warning={!boardFail} error={boardFail}>
                         <Message.Header>
                             Quest Solve Incomplete
@@ -598,22 +556,11 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                         </Message.Content>
                     </Message>
                 )}
-                {!!solverResults &&
-                <React.Fragment>
+                
+                <div style={{display: showPane === 0 ? 'none' : undefined}}>
                     <ItemHoverStat targetGroup={'continuum_items_1'} />
-                    <CrewConfigTable
-                        initOptions={{
-                            column: 'score',
-                            direction: 'ascending'
-                        }}
-                        tableConfig={crewTableCells}
-                        renderTableCells={renderTableCells}
-                        rosterCrew={solverResults?.crew ?? []}
-                        pageId={'continuum'}
-                        rosterType={'profileCrew'}
-                        crewFilters={[]}
-                    />
-                    </React.Fragment>}
+                    <QuestCrewTable solverResults={solverResults} pageId={'continuume'} config={missionConfig} />
+                </div>
                 {!solverResults && <><br /><br /><br /><br /><br /></>}
             </div>
         </>
