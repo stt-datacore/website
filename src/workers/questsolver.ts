@@ -159,7 +159,7 @@ const QuestSolver = {
                     .map(c => c as IQuestCrew);
            
             let qpass = questcrew.filter((crew) => {
-                if (crew.symbol === 'archer_zero_hour_crew') {
+                if (crew.symbol === 'dsc_jvini_crew') {
                     console.log("break");
                 }
                 const nslots = (!!config.ignoreQpConstraint || crew.immortal > 0) ? 4 : qbitsToSlots(crew.q_bits);
@@ -253,8 +253,12 @@ const QuestSolver = {
                                         
                     if (qps?.length) {
                         let qpower = qps[0].bonusInfo.bonuses[challenge.skill].core + qps[0].bonusInfo.bonuses[challenge.skill].range_min;
+                        let mpower = qps[0].bonusInfo.bonuses[challenge.skill].core + qps[0].bonusInfo.bonuses[challenge.skill].range_max;
                         qpower -= (cfactor * qpower);
+                        mpower -= (cfactor * mpower);
+
                         cpmin += qpower;
+                        cpmax += qpower;
 
                         quips[qps[0].item.symbol] = qps[0].bonusInfo;
                         slots.push(qps[0].item.symbol);
@@ -386,10 +390,10 @@ const QuestSolver = {
                 let chcrew = solveChallenge(roster, ch, config.mastery);
                 
                 if (chcrew?.length) {
-                    crew = crew.filter(c => !chcrew.some(chc => chc.symbol === c.symbol));
-                    crew = crew.concat(chcrew);
-                
                     // dupes are a thing, so identical symbols are okay, identical object references are not.
+
+                    crew = crew.filter(c => !chcrew.includes(c));
+                    crew = crew.concat(chcrew);
                     crew = [ ... new Set(crew) ];                    
                 }
 
