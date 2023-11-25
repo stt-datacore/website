@@ -10,9 +10,9 @@ import PowerExplanation, { GradeSwatch } from '../powerexplanation';
 import { CrewConfigTable } from '../crewtables/crewconfigtable';
 import { Quest, QuestFilterConfig } from '../../model/missions';
 
-export interface QuestCrewTableProps {    
+export interface QuestCrewTableProps {
     solverResults?: QuestSolverResult;
-    config: QuestFilterConfig;    
+    config: QuestFilterConfig;
     pageId: string;
     quest?: Quest;
 }
@@ -40,22 +40,22 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                 </Table.Cell>
                 <Table.Cell>
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", minWidth: "192px" }}>
-                        <CrewItemsView 
+                        <CrewItemsView
                             targetGroup={'continuum_items_1'}
-                            printNA={includeCurrentQp ? <span style={{ color: 'cyan' }}>New</span> : <br />} 
-                            crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: crew.added_kwipment_expiration ?? [] }} 
+                            printNA={includeCurrentQp ? <span style={{ color: 'cyan' }}>New</span> : <br />}
+                            crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: crew.added_kwipment_expiration ?? [] }}
                             quipment={true} />
                     </div>
                 </Table.Cell>
                 <Table.Cell>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start" }}>
                         {crew.challenges?.map((challenge, idx) => {
-                            
+
                             const grade = ((!!challenge.max_solve && !!challenge.power_decrease)) ? 'D' : (challenge.max_solve ? 'B' : (!!challenge.power_decrease ? 'C' : 'A'));
 
                             return (
                                 <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
-                                    <GradeSwatch grade={grade} style={{marginRight:"1em"}} />
+                                    <GradeSwatch grade={grade} style={{ marginRight: "1em" }} />
                                     {Object.values(challenge.skills).map(((skill: Skill) => {
                                         const key = skill.skill ?? '';
                                         if (!showAllSkills && key !== challenge.challenge.skill) return <></>
@@ -123,18 +123,18 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
     }
 
     return (<React.Fragment>
-            <CrewConfigTable
-                initOptions={{
-                    column: 'score',
-                    direction: 'ascending'
-                }}
-                tableConfig={crewTableCells}
-                renderTableCells={renderTableCells}
-                rosterCrew={solverResults?.crew ?? []}
-                pageId={pageId}
-                rosterType={'profileCrew'}
-                crewFilters={[]}
-            />
-        </React.Fragment>)
+        <CrewConfigTable
+            initOptions={{
+                column: 'score',
+                direction: 'ascending'
+            }}
+            tableConfig={crewTableCells}
+            renderTableCells={renderTableCells}
+            rosterCrew={solverResults?.crew ?? []}
+            pageId={pageId}
+            rosterType={'profileCrew'}
+            crewFilters={[]}
+        />
+    </React.Fragment>)
 
 }
