@@ -559,9 +559,9 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 
                 <div style={{display: showPane === 0 ? 'none' : undefined}}>
                     <ItemHoverStat targetGroup={'continuum_items_1'} />
-                    <QuestCrewTable solverResults={solverResults} pageId={'continuume'} config={missionConfig} />
+                    <QuestCrewTable quest={quest} solverResults={solverResults} pageId={'continuume'} config={missionConfig} />
                 </div>
-                {!solverResults && <><br /><br /><br /><br /><br /></>}
+                {!solverResults && <div style={{height: '50vh'}}>&nbsp;</div>}
             </div>
         </>
     );
