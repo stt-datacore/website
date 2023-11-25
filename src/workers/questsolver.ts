@@ -12,41 +12,41 @@ import { arrayIntersect } from "../utils/misc";
 import { applyCrewBuffs } from "./betatachyon";
 
 export function getSkillOrder<T extends CrewMember>(crew: T) {
-	const sk = [] as ComputedBuff[];
+    const sk = [] as ComputedBuff[];
 
-	for (let skill of Object.keys(CONFIG.SKILLS)) {
-		if (skill in crew.base_skills && !!crew.base_skills[skill].core) {
-			sk.push({ ...crew.base_skills[skill], skill: skill });
-		}
-	}
-	
-	sk.sort((a, b) => b.core - a.core);                
-	const output = [] as string[];
+    for (let skill of Object.keys(CONFIG.SKILLS)) {
+        if (skill in crew.base_skills && !!crew.base_skills[skill].core) {
+            sk.push({ ...crew.base_skills[skill], skill: skill });
+        }
+    }
 
-	if (sk.length > 0 && sk[0].skill) {
-		output.push(sk[0].skill);
-	}
-	if (sk.length > 1 && sk[1].skill) {
-		output.push(sk[1].skill);
-	}
-	if (sk.length > 2 && sk[2].skill) {
-		output.push(sk[2].skill);
-	}
+    sk.sort((a, b) => b.core - a.core);
+    const output = [] as string[];
 
-	return output;
+    if (sk.length > 0 && sk[0].skill) {
+        output.push(sk[0].skill);
+    }
+    if (sk.length > 1 && sk[1].skill) {
+        output.push(sk[1].skill);
+    }
+    if (sk.length > 2 && sk[2].skill) {
+        output.push(sk[2].skill);
+    }
+
+    return output;
 }
 
 export function getTraits<T extends CrewMember>(crew: T, traits: MissionTraitBonus[]) {
     if (!traits.length) return [];
-    
+
     let intersect = arrayIntersect(crew.traits.concat(crew.traits_hidden), (traits as MissionTraitBonus[]).map(t => t.trait));
     return traits.filter(f => intersect.includes(f.trait));
 }
 
-const QuestSolver = {        
+const QuestSolver = {
 
-    solveQuest: (config: QuestSolverConfig) => {        
-        
+    solveQuest: (config: QuestSolverConfig) => {
+
         const quest = config.quest;
 
         function qbitsToSlots(q_bits: number | undefined) {
@@ -58,14 +58,14 @@ const QuestSolver = {
             else if (q_bits < 1300) return 3;
             return 4;
         }
-        
+
         const added = {} as { [key: string]: string[] };
 
         const playerItems = JSON.parse(JSON.stringify(config.context.player.playerData.player.character.items)) as PlayerEquipmentItem[];
         const allQuipment = JSON.parse(JSON.stringify(config.context.core.items.filter(f => f.type === 14))) as EquipmentItem[];
 
         const deductHistory = {} as { [key: string]: boolean[] };
-        
+
         function newQuip(crew: IQuestCrew) {
             let e = 0;
             if (crew.added_kwipment && crew.added_kwipment_expiration) {
@@ -74,7 +74,7 @@ const QuestSolver = {
                         e++;
                     }
                 }
-                
+
             }
             return e;
         }
@@ -106,13 +106,13 @@ const QuestSolver = {
             const solveCrew = [] as IQuestCrew[];
 
             let wcrew = crew.slice(startIndex);
-            
-            for(let ch of path) {
+
+            for (let ch of path) {
                 for (let c of wcrew) {
                     if (c.challenges?.some(chc => chc.challenge.id == ch.id)) {
                         solved.push(ch);
                         if (!solveCrew.some(sc => sc.symbol === c.symbol)) {
-                            solveCrew.push(c);                            
+                            solveCrew.push(c);
                         }
                         break;
                     }
@@ -140,51 +140,51 @@ const QuestSolver = {
                 claimf = ((quest.mastery_levels[mastery].jackpots as Jackpot[]).find(f => f.id === challenge.id)?.claimed ?? false) ? 0 : 1;
             }
 
-            questcrew = roster.filter(c => 
-                    (challenge.skill in c.skills) && (!config.qpOnly || c.q_bits >= 100))
-                    .sort((a, b) => {
-                        let maxa = a[challenge.skill].core + ((a[challenge.skill].max + a[challenge.skill].min) / 2);
-                        let maxb = b[challenge.skill].core + ((b[challenge.skill].max + b[challenge.skill].min) / 2);
+            questcrew = roster.filter(c =>
+                (challenge.skill in c.skills) && (!config.qpOnly || c.q_bits >= 100))
+                .sort((a, b) => {
+                    let maxa = a[challenge.skill].core + ((a[challenge.skill].max + a[challenge.skill].min) / 2);
+                    let maxb = b[challenge.skill].core + ((b[challenge.skill].max + b[challenge.skill].min) / 2);
 
-                        for (let trait of useTraits) {
-                            if (a.traits.includes(trait.trait) || a.traits_hidden.includes(trait.trait)) {
-                                maxa += trait.bonuses[mastery];
-                            }
-                            if (b.traits.includes(trait.trait) || b.traits_hidden.includes(trait.trait)) {
-                                maxb += trait.bonuses[mastery];
-                            }
+                    for (let trait of useTraits) {
+                        if (a.traits.includes(trait.trait) || a.traits_hidden.includes(trait.trait)) {
+                            maxa += trait.bonuses[mastery];
                         }
-                        return maxb - maxa;
-                    })
-                    .map(c => c as IQuestCrew);
-           
+                        if (b.traits.includes(trait.trait) || b.traits_hidden.includes(trait.trait)) {
+                            maxb += trait.bonuses[mastery];
+                        }
+                    }
+                    return maxb - maxa;
+                })
+                .map(c => c as IQuestCrew);
+
             let qpass = questcrew.filter((crew) => {
                 if (crew.symbol === 'dsc_jvini_crew') {
                     console.log("break");
                 }
                 const nslots = (!!config.ignoreQpConstraint || crew.immortal > 0) ? 4 : qbitsToSlots(crew.q_bits);
-               
-                crew.challenges ??= [];                
+
+                crew.challenges ??= [];
                 let cpmin = crew[challenge.skill].core + crew[challenge.skill].min;
                 let cpmax = crew[challenge.skill].core + crew[challenge.skill].max;
 
                 let ttraits = getTraits(crew, useTraits);
 
-                let tpower = ttraits                        
-                    .map((t => t.bonuses[mastery]))                        
+                let tpower = ttraits
+                    .map((t => t.bonuses[mastery]))
                     .reduce((p, n) => p + n, 0);
 
                 let cfactor = 0;
                 if (crew.challenges?.length && crew.challenges[crew.challenges.length - 1].challenge.children.includes(challenge.id)) {
                     cfactor = 0.20;
                 }
-                
+
                 cpmin -= (cfactor * cpmin);
-                cpmax -= (cfactor * cpmax);    
+                cpmax -= (cfactor * cpmax);
 
                 cpmin += tpower;
                 cpmax += tpower;
-                
+
                 crew.metasort ??= 0;
                 if (config.includeCurrentQp && (!crew.added_kwipment || !(crew.symbol in added))) {
                     crew.added_kwipment = crew.kwipment.map((qp: number | number[]) => typeof qp === 'number' ? qp : qp[1]);
@@ -201,8 +201,8 @@ const QuestSolver = {
                     crew.added_kwipment_expiration ??= [0, 0, 0, 0];
                     added[crew.symbol] ??= ['', '', '', ''];
                 }
-                
-                const currslots = added[crew.symbol].filter(a=> !!a && a != '');
+
+                const currslots = added[crew.symbol].filter(a => !!a && a != '');
                 const slots = [] as string[];
                 const quips = {} as { [key: string]: ItemBonusInfo };
                 const solvePower = (challenge.difficulty_by_mastery[mastery] + (claimf * [250, 275, 300][mastery]));
@@ -223,14 +223,14 @@ const QuestSolver = {
                             if (!i.kwipment_id || !Object.keys(getItemBonuses(i).bonuses).includes(challenge.skill)) return false;
                             return true;
                         }) as EquipmentItem[];
-        
+
                     let qps = getPossibleQuipment(crew, quipment)
                         .filter((item) => !slots.includes(item.symbol) && !currslots?.includes(item.symbol))
-                        .map((qp) => { 
+                        .map((qp) => {
                             return { item: qp, bonusInfo: getItemBonuses(qp) }
                         })
                         .filter((qp) => challenge.skill in qp.bonusInfo.bonuses)
-                        .sort((a, b) => {                            
+                        .sort((a, b) => {
                             let r = 0;
 
                             if (config.cheapestFirst) {
@@ -250,7 +250,7 @@ const QuestSolver = {
                             }
                             return r;
                         });
-                                        
+
                     if (qps?.length) {
                         let qpower = qps[0].bonusInfo.bonuses[challenge.skill].core + qps[0].bonusInfo.bonuses[challenge.skill].range_min;
                         let mpower = qps[0].bonusInfo.bonuses[challenge.skill].core + qps[0].bonusInfo.bonuses[challenge.skill].range_max;
@@ -286,24 +286,24 @@ const QuestSolver = {
                         crew[challenge.skill].min += qp.bonuses[challenge.skill].range_min;
                         crew[challenge.skill].max += qp.bonuses[challenge.skill].range_max;
                     });
-                    
+
                     let j = 0;
                     for (let i = 0; i < 4; i++) {
                         if (added[crew.symbol][i] === '' || added[crew.symbol][i] === undefined) {
                             added[crew.symbol][i] = slots[j++];
                         }
-                    }                    
+                    }
                 }
-                
+
                 return true;
             });
 
             return qpass.filter(c => !!c.challenges?.length);
         }
 
-        return new Promise<QuestSolverResult>((resolve, reject) => {            
+        return new Promise<QuestSolverResult>((resolve, reject) => {
             const { items } = config.context.core;
-			const { playerData, ephemeral } = config.context.player;
+            const { playerData, ephemeral } = config.context.player;
             const { considerFrozen, idleOnly } = config;
             if (!playerData?.player?.character?.crew?.length) {
                 resolve({
@@ -314,8 +314,8 @@ const QuestSolver = {
                 });
                 return;
             }
-            
-            const resetCrew = (crew: IQuestCrew) => {                
+
+            const resetCrew = (crew: IQuestCrew) => {
                 delete crew.metasort;
                 delete crew.added_kwipment;
                 delete crew.added_kwipment_expiration;
@@ -323,12 +323,12 @@ const QuestSolver = {
                 delete added[crew.symbol];
                 if (!config.includeCurrentQp || (!("skills" in crew) || !Object.keys(crew.skills).length || crew.immortal !== -1)) {
                     if (!crew.skills) {
-                        crew.skills = { ... JSON.parse(JSON.stringify(crew.base_skills)) };
+                        crew.skills = { ...JSON.parse(JSON.stringify(crew.base_skills)) };
                     }
                     applyCrewBuffs(crew, config.buffs);
                 }
                 else {
-                    for(let skill of getSkillOrder(crew)) {
+                    for (let skill of getSkillOrder(crew)) {
                         if ("skills" in crew && skill in crew.skills) {
                             crew[skill].core = crew.skills[skill].core;
                             crew[skill].min = crew.skills[skill].range_min;
@@ -339,19 +339,19 @@ const QuestSolver = {
             }
 
             const roster = playerData.player.character.crew
-                    .filter(f => !ephemeral?.activeCrew?.some(c => c.symbol === f.symbol) || !idleOnly)
-                    .filter(f => !!f.immortal && ((f.immortal === -1) || considerFrozen))
-                    .map((crew) => {
+                .filter(f => !ephemeral?.activeCrew?.some(c => c.symbol === f.symbol) || !idleOnly)
+                .filter(f => !!f.immortal && ((f.immortal === -1) || considerFrozen))
+                .map((crew) => {
 
-                        crew = JSON.parse(JSON.stringify(crew));                         
-                        let ac = ephemeral?.activeCrew?.find(c => c.symbol === crew.symbol);
-                        if (ac?.active_status) {
-                            crew.active_status = ac.active_status;
-                        }
-                        crew.date_added = new Date(crew.date_added); 
-                        resetCrew(crew);
-                        return crew;
-                    });
+                    crew = JSON.parse(JSON.stringify(crew));
+                    let ac = ephemeral?.activeCrew?.find(c => c.symbol === crew.symbol);
+                    if (ac?.active_status) {
+                        crew.active_status = ac.active_status;
+                    }
+                    crew.date_added = new Date(crew.date_added);
+                    resetCrew(crew);
+                    return crew;
+                });
 
             if (!config.challenges?.length && !config.quest?.challenges?.length) {
                 resolve({
@@ -362,16 +362,16 @@ const QuestSolver = {
                 });
                 return;
             }
-            
+
             const challenges = config.challenges?.length ? config.challenges : (config.quest?.challenges ?? []);
-            
+
             const map = makeNavMap(challenges);
             const paths = getNodePaths(map[0], map).map(p => p.ids.map(id => challenges.find(f => f.id === id))) as MissionChallenge[][];
-            
+
             let crew = [] as IQuestCrew[];
-            
+
             challenges.sort((a, b) => a.id - b.id);
-            
+
             const processChallenge = (ch: MissionChallenge, roster: PlayerCrew[], crew: IQuestCrew[]) => {
                 roster.sort((a, b) => {
                     let ask = ch.skill in a.skills;
@@ -380,7 +380,7 @@ const QuestSolver = {
                         if (ask) return -1;
                         else return 1;
                     }
-                    
+
                     let ac = ch.trait_bonuses?.filter(t => a.traits.concat(a.traits_hidden).includes(t.trait))?.length ?? 0;
                     let bc = ch.trait_bonuses?.filter(t => b.traits.concat(b.traits_hidden).includes(t.trait))?.length ?? 0;
 
@@ -388,13 +388,13 @@ const QuestSolver = {
                 });
 
                 let chcrew = solveChallenge(roster, ch, config.mastery);
-                
+
                 if (chcrew?.length) {
                     // dupes are a thing, so identical symbols are okay, identical object references are not.
 
                     crew = crew.filter(c => !chcrew.includes(c));
                     crew = crew.concat(chcrew);
-                    crew = [ ... new Set(crew) ];                    
+                    crew = [... new Set(crew)];
                 }
 
                 return crew.sort((a, b) => {
@@ -407,15 +407,15 @@ const QuestSolver = {
 
                     r = b.q_bits - a.q_bits;
                     return r;
-                    
+
                 });
             }
 
-            for (let ch of challenges) {                
+            for (let ch of challenges) {
                 crew = processChallenge(ch, roster, crew);
             }
 
-            if (!challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)))) {                
+            if (!challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)))) {
                 let retest = challenges.filter(ch => !crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)));
 
                 for (let fch of retest) {
@@ -434,15 +434,14 @@ const QuestSolver = {
                     if (!eligCrew?.length) continue;
                     let ci = 0;
 
-                    while (ci < eligCrew.length && !crew.some(c => c.challenges?.some(chc => chc.challenge.id === fch.id))) 
-                    {   
+                    while (ci < eligCrew.length && !crew.some(c => c.challenges?.some(chc => chc.challenge.id === fch.id))) {
                         let mfind = crew.findIndex(c => c.symbol === eligCrew[ci].symbol);
                         if (mfind !== -1) {
                             eligCrew[ci] = JSON.parse(JSON.stringify(eligCrew[ci]));
                             eligCrew[ci].date_added = new Date(eligCrew[ci].date_added);
                             let oldAdded = added[eligCrew[ci].symbol];
                             crew = processChallenge(fch, eligCrew, crew);
-                            if (!eligCrew[ci].challenges?.length) {                            
+                            if (!eligCrew[ci].challenges?.length) {
                                 resetCrew(eligCrew[ci]);
                                 crew = processChallenge(fch, eligCrew, crew);
                             }
@@ -460,23 +459,23 @@ const QuestSolver = {
             }
 
             crew = crew
-                    .filter(c => !!c.challenges?.length)
-                    .sort((a, b) => {
-                        let r = 0;
-                        
-                        let ca = 0;
-                        let cb = 0;
+                .filter(c => !!c.challenges?.length)
+                .sort((a, b) => {
+                    let r = 0;
 
-                        ca = a.challenges?.length ?? 0;
-                        cb = b.challenges?.length ?? 0;
-                        r = cb - ca;
-                        if (r) return r;
+                    let ca = 0;
+                    let cb = 0;
 
-                        ca = newQuip(a);
-                        cb = newQuip(b);
-                        r = ca - cb;
-                        return r;
-                    });
+                    ca = a.challenges?.length ?? 0;
+                    cb = b.challenges?.length ?? 0;
+                    r = cb - ca;
+                    if (r) return r;
+
+                    ca = newQuip(a);
+                    cb = newQuip(b);
+                    r = ca - cb;
+                    return r;
+                });
 
             let chfill = [] as IQuestCrew[];
             challenges.forEach((challenge) => {
@@ -484,7 +483,7 @@ const QuestSolver = {
                     if (c.challenges?.some(ch => ch.challenge.id === challenge.id)) {
                         if (chfill.findIndex(tc => tc.symbol === c.symbol) === -1) {
                             chfill.push(c);
-                        }                 
+                        }
                         break;
                     }
                 }
@@ -527,8 +526,8 @@ const QuestSolver = {
                 }
             }
 
-            crew.forEach((c, idx) => {                
-                c.score = idx + 1;                
+            crew.forEach((c, idx) => {
+                c.score = idx + 1;
                 const slots = added[c.symbol];
                 if (slots?.length) {
                     c.added_kwipment = slots.map((symbol, idx) => {
@@ -542,14 +541,14 @@ const QuestSolver = {
                         else {
                             return 0;
                         }
-                    });           
-                    
+                    });
+
                     c.added_kwipment_key = c.added_kwipment?.map((quip) => {
                         let f = allQuipment.find(i => i.kwipment_id?.toString() === quip.toString());
                         if (f) {
                             let bonuses = getItemBonuses(f);
                             return Object.values(bonuses.bonuses).map((b) => {
-                                return `${b.core+b.range_max+b.range_min}_${b.skill}`
+                                return `${b.core + b.range_max + b.range_min}_${b.skill}`
                             }).join("_");
                         }
                         return '';
@@ -568,7 +567,7 @@ const QuestSolver = {
                         let core = c.skills[skill].core;
                         let max = c.skills[skill].range_max;
                         let min = c.skills[skill].range_min;
-                        
+
                         core -= Math.round(core * (ch.power_decrease ?? 0));
                         max -= Math.round(max * (ch.power_decrease ?? 0));
                         min -= Math.round(min * (ch.power_decrease ?? 0));
@@ -577,7 +576,7 @@ const QuestSolver = {
                             range_min: min,
                             range_max: max,
                             skill
-                        };                        
+                        };
                     });
                 });
             });
@@ -615,19 +614,19 @@ const QuestSolver = {
                         else {
                             return false;
                         }
-                    }        
+                    }
                     if (total !== buildcount) {
                         for (let quip of failbuff) {
                             reverseItem(quip);
                         }
                     }
-                    return total === buildcount;                                                    
+                    return total === buildcount;
                 });
                 crew.forEach((c, idx) => c.score = idx + 1);
             }
-            
+
             let allPass = !!threegroups.length && challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)));
-            
+
             resolve({
                 status: true,
                 fulfilled: allPass,
@@ -637,7 +636,7 @@ const QuestSolver = {
             });
         });
     },
-    
+
 }
 
 export default QuestSolver;
