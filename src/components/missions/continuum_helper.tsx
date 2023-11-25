@@ -420,6 +420,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     }
 
     /* Render */
+    const boardFail = solverResults?.failed?.some(fid => quest?.challenges?.find(ch => ch.id === fid)?.children?.length === 0);
 
     return (
         <>
@@ -581,13 +582,15 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                         {context.core.spin()}
                     </div>}
                 {!!solverResults && !solverResults?.fulfilled && (
-                    <Message warning>
+                    <Message warning={!boardFail} error={boardFail}>
                         <Message.Header>
                             Quest Solve Incomplete
                         </Message.Header>
                         <Message.Content>
-                            Could not find crew to complete all challenges. Try adjusting your calculation options, and try again.<br />
-                            Failed Challenges: <b>{solverResults?.failed?.map(fid => quest?.challenges?.find(ch => ch.id === fid)?.name)?.reduce((p, n) => p ? `${p}, ${n}` : n, '')}</b>
+                            {boardFail && <><b>Final challenges failed.</b></> || <>Could not find crew to complete all challenges.</>}
+                            Try adjusting your calculation options, and try again.<br />
+                            {!!solverResults?.failed?.length && <>Failed Challenges: <b>{solverResults?.failed?.map(fid => quest?.challenges?.find(ch => ch.id === fid)?.name)?.reduce((p, n) => p ? `${p}, ${n}` : n, '')}</b></>}
+                            
                         </Message.Content>
                     </Message>
                 )}
