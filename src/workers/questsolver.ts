@@ -65,6 +65,19 @@ const QuestSolver = {
         const allQuipment = JSON.parse(JSON.stringify(config.context.core.items.filter(f => f.type === 14))) as EquipmentItem[];
 
         const deductHistory = {} as { [key: string]: boolean[] };
+        
+        function newQuip(crew: IQuestCrew) {
+            let e = 0;
+            if (crew.added_kwipment && crew.added_kwipment_expiration) {
+                for (let i = 0; i < crew.added_kwipment.length; i++) {
+                    if (crew.added_kwipment[i] && !crew.added_kwipment_expiration[i]) {
+                        e++;
+                    }
+                }
+                
+            }
+            return e;
+        }
 
         function deductItem(item: EquipmentItem) {
             deductHistory[item.symbol] ??= [];
@@ -380,9 +393,9 @@ const QuestSolver = {
                 return crew.sort((a, b) => {
                     let r = 0;
 
-                    let lax = (a.added_kwipment_expiration as number[])?.filter(x => !!x)?.length ?? 0;
-                    let lbx = (b.added_kwipment_expiration as number[])?.filter(x => !!x)?.length ?? 0;
-                    r = lbx - lax;
+                    let lax = newQuip(a);
+                    let lbx = newQuip(b);
+                    r = lax - lbx;
                     if (r) return r;
 
                     r = b.q_bits - a.q_bits;
@@ -452,8 +465,8 @@ const QuestSolver = {
                         r = cb - ca;
                         if (r) return r;
 
-                        ca = a.added_kwipment_expiration?.filter(f => !!f)?.length ?? 0;
-                        cb = b.added_kwipment_expiration?.filter(f => !!f)?.length ?? 0;
+                        ca = newQuip(a);
+                        cb = newQuip(b);
                         r = ca - cb;
                         return r;
                     });
