@@ -14,6 +14,8 @@ export interface QuestFilterConfig {
   ignoreQpConstraint?: boolean;
   includeCurrentQp?: boolean;
   showAllSkills?: boolean;
+  cheapestFirst?: boolean;
+  buildableOnly?: boolean;
 }
 
 export interface ProtoMission {

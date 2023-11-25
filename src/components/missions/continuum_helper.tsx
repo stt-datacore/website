@@ -191,8 +191,16 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const setShowAllSkills = (value: boolean) => {
         setMissionConfig({ ...missionConfig, showAllSkills: value });
     }
+    
+    const setCheapestFirst = (value: boolean) => {
+        setMissionConfig({ ...missionConfig, cheapestFirst: value });
+    }
 
-    const { showAllSkills, mastery, idleOnly, considerFrozen, qpOnly, ignoreQpConstraint, includeCurrentQp } = missionConfig;
+    const setBuildableOnly = (value: boolean) => {
+        setMissionConfig({ ...missionConfig, buildableOnly: value });
+    }
+
+    const { buildableOnly, cheapestFirst, showAllSkills, mastery, idleOnly, considerFrozen, qpOnly, ignoreQpConstraint, includeCurrentQp } = missionConfig;
 
     /* Component Initialization & State Management */
 
@@ -474,43 +482,73 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                         <Table>
                             <Table.Row>
                                 <Table.Cell>
-                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
-                                        <Checkbox checked={idleOnly} onChange={(e, { checked }) => setIdleOnly(!!checked)} />
-                                        <span>&nbsp;&nbsp;Only Idle Crew</span>
+                                    <div 
+                                        title={'Only consider crew that are idle (not on shuttles or voyages.)'}
+                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
+                                        <Checkbox id="chk1" checked={idleOnly} onChange={(e, { checked }) => setIdleOnly(!!checked)} />
+                                        <label htmlFor="chk1">&nbsp;&nbsp;Only Idle Crew</label>
                                     </div>
                                 </Table.Cell>
                                 <Table.Cell>
-                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: "flex-start", margin: "0.5em" }}>
-                                        <Checkbox checked={qpOnly} onChange={(e, { checked }) => setQpOnly(!!checked)} />
-                                        <span>&nbsp;&nbsp;Quippable Only</span>
-                                    </div>
-                                </Table.Cell>
-                            </Table.Row>
-                            <Table.Row>
-                                <Table.Cell>
-                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
-                                        <Checkbox checked={considerFrozen} onChange={(e, { checked }) => setConsiderFrozen(!!checked)} />
-                                        <span>&nbsp;&nbsp;Consider Frozen Crew</span>
-                                    </div>
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em", justifyContent: 'flex-start' }}>
-                                        <Checkbox checked={ignoreQpConstraint} onChange={(e, { checked }) => setIgnoreQpConstraint(!!checked)} />
-                                        <span>&nbsp;&nbsp;Assume Max QBits (Ignore Limit)</span>
+                                    <div 
+                                        title={'Consider crew with at least 1 quipment slot unlocked.'}
+                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: "flex-start", margin: "0.5em" }}>
+                                        <Checkbox id="chk2" checked={qpOnly} onChange={(e, { checked }) => setQpOnly(!!checked)} />
+                                        <label htmlFor="chk2">&nbsp;&nbsp;Quippable Only (&gt;= 100 QBits)</label>
                                     </div>
                                 </Table.Cell>
                             </Table.Row>
                             <Table.Row>
                                 <Table.Cell>
-                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
-                                        <Checkbox checked={includeCurrentQp} onChange={(e, { checked }) => setIncludeCurrentQp(!!checked)} />
-                                        <span>&nbsp;&nbsp;Use Current Quipment on Crew</span>
+                                    <div 
+                                        title={'Consider frozen crew (frozen crew are considered with all 4 quipment slots)'}
+                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
+                                        <Checkbox id="chk3" checked={considerFrozen} onChange={(e, { checked }) => setConsiderFrozen(!!checked)} />
+                                        <label htmlFor="chk3">&nbsp;&nbsp;Consider Frozen Crew</label>
                                     </div>
                                 </Table.Cell>
                                 <Table.Cell>
-                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
-                                        <Checkbox checked={showAllSkills} onChange={(e, { checked }) => setShowAllSkills(!!checked)} />
-                                        <span>&nbsp;&nbsp;Show All Skills</span>
+                                    <div 
+                                        title={'Assume all eligible crew have all 4 quipment slots unlocked.'}
+                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em", justifyContent: 'flex-start' }}>
+                                        <Checkbox id="chk4" checked={ignoreQpConstraint} onChange={(e, { checked }) => setIgnoreQpConstraint(!!checked)} />
+                                        <label htmlFor="chk4">&nbsp;&nbsp;Assume Max QBits (Ignore Limit)</label>
+                                    </div>
+                                </Table.Cell>
+                            </Table.Row>
+                            <Table.Row>
+                                <Table.Cell>
+                                    <div 
+                                        title={'Keep current quipment on crew. If this option is not checked, current quipment is ignored and overwritten.'}
+                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
+                                        <Checkbox id="chk5" checked={includeCurrentQp} onChange={(e, { checked }) => setIncludeCurrentQp(!!checked)} />
+                                        <label htmlFor="chk5">&nbsp;&nbsp;Use Current Quipment on Crew</label>
+                                    </div>
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <div 
+                                        title={'Show all crew skills'}
+                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
+                                        <Checkbox id="chk6" checked={showAllSkills} onChange={(e, { checked }) => setShowAllSkills(!!checked)} />
+                                        <label htmlFor="chk6">&nbsp;&nbsp;Show All Skills</label>
+                                    </div>
+                                </Table.Cell>
+                            </Table.Row>
+                            <Table.Row>
+                                <Table.Cell>
+                                    <div 
+                                        title={'Normally, the quipment with the greatest boost is used, first. Check this box to sort quipment by cheapest to build, instead. Note that this is not optimal for crew with fewer crew slots as less-powerful components will use slots, first.'}
+                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
+                                        <Checkbox id="chk7" checked={cheapestFirst} onChange={(e, { checked }) => setCheapestFirst(!!checked)} />
+                                        <label htmlFor="chk7">&nbsp;&nbsp;Use Cheapest Quipment First</label>
+                                    </div>
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <div 
+                                        title={'Only consider Quipment that you can currently build. Items will be deducted as the calculations are made.'}
+                                        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: "0.5em" }}>
+                                        <Checkbox id="chk8" checked={buildableOnly} onChange={(e, { checked }) => setBuildableOnly(!!checked)} />
+                                        <label htmlFor="chk8">&nbsp;&nbsp;Consider Only Buildable Quipment</label>
                                     </div>
                                 </Table.Cell>
                             </Table.Row>
@@ -530,7 +568,9 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                     qpOnly,
                                     ignoreQpConstraint,
                                     mastery,
-                                    includeCurrentQp
+                                    includeCurrentQp,
+                                    buildableOnly,
+                                    cheapestFirst
                                 }}
                             />
                         </div>

@@ -1,8 +1,10 @@
 import CONFIG from "../components/CONFIG";
 import { ComputedBuff, CrewMember, PlayerSkill, Skill } from "../model/crew";
+import { EquipmentItem } from "../model/equipment";
 import { MissionChallenge, MissionTraitBonus } from "../model/missions";
-import { PlayerCrew } from "../model/player";
+import { PlayerCrew, PlayerEquipmentItem } from "../model/player";
 import { IQuestCrew, QuestSolverConfig, QuestSolverResult } from "../model/worker";
+import { calcItemDemands, canBuildItem, deductDemands, reverseDeduction } from "../utils/equipment";
 
 import { getPossibleQuipment, getItemBonuses, ItemBonusInfo } from "../utils/itemutils";
 import { arrayIntersect } from "../utils/misc";
@@ -55,16 +57,34 @@ const QuestSolver = {
         }
         
         const added = {} as { [key: string]: string[] };
+        const deductHistory = {} as { [key: string]: boolean[] };
+
+        const playerItems = JSON.parse(JSON.stringify(config.context.player.playerData.player.character.items)) as PlayerEquipmentItem[];
+        const allQuipment = JSON.parse(JSON.stringify(config.context.core.items.filter(f => f.type === 14))) as EquipmentItem[];
+
+        function deductItem(item: EquipmentItem) {
+            deductHistory[item.symbol] ??= [];
+            let r = deductDemands(item, playerItems);
+            deductHistory[item.symbol].push(r);
+        }
+
+        function reverseItem(item: EquipmentItem) {
+            deductHistory[item.symbol] ??= [];
+            if (!deductHistory[item.symbol].length) return;
+            let b = deductHistory[item.symbol].splice(deductHistory[item.symbol].length - 1, 1);
+            if (!b) {
+                item.quantity ??= 0;
+                item.quantity++;
+            }
+            else {
+                reverseDeduction(item, playerItems);
+            }
+        }
 
         function solveChallenge(roster: PlayerCrew[], challenge: MissionChallenge, mastery: number, traits?: MissionTraitBonus[]) {
 
             const useTraits = traits ?? challenge.trait_bonuses ?? [];
-            const quipment = config.context.core.items.filter(i => {
-                if ((!i.max_rarity_requirement && !i.traits_requirement?.length)) return false;
-                if (!i.kwipment_id || !Object.keys(getItemBonuses(i).bonuses).includes(challenge.skill)) return false;                
-                return true;
-            });
-
+           
             let questcrew = [] as IQuestCrew[];
 
             // let prefilter = roster.filter(c => {
@@ -116,7 +136,7 @@ const QuestSolver = {
                     crew.added_kwipment_expiration = crew.kwipment_expiration.map((qp: number | number[]) => typeof qp === 'number' ? qp : qp[1]);
                     added[crew.symbol] = crew.added_kwipment.map(n => {
                         if (!n) return "";
-                        let item = config.context.core.items.find(f => f.kwipment_id?.toString() === n.toString());
+                        let item = allQuipment.find(f => f.kwipment_id?.toString() === n.toString());
                         if (item) return item.symbol;
                         return "";
                     });
@@ -137,21 +157,39 @@ const QuestSolver = {
                     // if (crew.symbol === 'nancy_hedford_crew') {
                     //     console.log("nancy");
                     // }
-
+                    const quipment = allQuipment
+                        .filter((i: EquipmentItem) => {
+                            if ((!i.max_rarity_requirement && !i.traits_requirement?.length)) return false;
+                            if (!i.kwipment_id || !Object.keys(getItemBonuses(i).bonuses).includes(challenge.skill)) return false;
+                            if (!i.demands) calcItemDemands(i, config.context.core.items, playerItems);
+                            if (config.buildableOnly) return canBuildItem(i);
+                            return true;
+                        }) as EquipmentItem[];
+        
                     let qps = getPossibleQuipment(crew, quipment)
                         .filter((item) => !slots.includes(item.symbol) && !currslots?.includes(item.symbol))
                         .map((qp) => { 
                             return { item: qp, bonusInfo: getItemBonuses(qp) }
                         })
                         .filter((qp) => challenge.skill in qp.bonusInfo.bonuses)
-                        .sort((a, b) => {
+                        .sort((a, b) => {                            
                             let r = 0;
+
+                            if (config.cheapestFirst) {
+                                let ac = a.item.demands?.map(d => d.count * (d.equipment?.rarity ?? 1)).reduce((p, n) => p + n, 0) ?? 0;
+                                let bc = b.item.demands?.map(d => d.count * (d.equipment?.rarity ?? 1)).reduce((p, n) => p + n, 0) ?? 0;
+                                r = ac - bc;
+                                if (r) return r;
+                            }
+
                             let an = Object.values(a.bonusInfo.bonuses).map(v => v.core + v.range_max + v.range_min).reduce((p, n) => p + n, 0);
                             let bn = Object.values(b.bonusInfo.bonuses).map(v => v.core + v.range_max + v.range_min).reduce((p, n) => p + n, 0);
-                            let ac = Object.keys(a.bonusInfo.bonuses) ?? [];
-                            let bc = Object.keys(b.bonusInfo.bonuses) ?? [];
                             r = bn - an;
-                            if (!r) r = bc.length - ac.length;
+                            if (!r) {
+                                let ac = Object.keys(a.bonusInfo.bonuses) ?? [];
+                                let bc = Object.keys(b.bonusInfo.bonuses) ?? [];
+                                r = bc.length - ac.length;
+                            }
                             return r;
                         });
                                         
@@ -162,6 +200,7 @@ const QuestSolver = {
 
                         quips[qps[0].item.symbol] = qps[0].bonusInfo;
                         slots.push(qps[0].item.symbol);
+                        if (config.buildableOnly) deductItem(qps[0].item);
                     }
                     else {
                         return false;
@@ -223,6 +262,10 @@ const QuestSolver = {
             }
             
             const resetCrew = (crew: IQuestCrew) => {                
+                if (crew.added_kwipment && config.buildableOnly) {
+                    let undos = crew.added_kwipment.map(qid => allQuipment.find(f => f.kwipment_id?.toString() === qid.toString()))
+                    undos?.forEach(i => { if (i) reverseItem(i) });
+                }
                 delete crew.metasort;
                 delete crew.added_kwipment;
                 delete crew.added_kwipment_expiration;
@@ -370,7 +413,7 @@ const QuestSolver = {
                 const slots = added[c.symbol];
                 if (slots?.length) {
                     c.added_kwipment = slots.map((symbol, idx) => {
-                        let item = config.context.core.items.find(f => f.symbol === symbol);
+                        let item = allQuipment.find(f => f.symbol === symbol);
                         if (typeof item?.kwipment_id === 'string') {
                             return Number.parseInt(item.kwipment_id);
                         }
@@ -383,7 +426,7 @@ const QuestSolver = {
                     });           
                     
                     c.added_kwipment_key = c.added_kwipment?.map((quip) => {
-                        let f = config.context.core.items.find(i => i.kwipment_id?.toString() === quip.toString());
+                        let f = allQuipment.find(i => i.kwipment_id?.toString() === quip.toString());
                         if (f) {
                             let bonuses = getItemBonuses(f);
                             return Object.values(bonuses.bonuses).map((b) => {
