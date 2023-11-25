@@ -12,6 +12,7 @@ import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { NavMapItem, PathInfo, getNodePaths, makeNavMap } from "../../utils/episodes";
 import { TraitSelection, TraitSelectorComponent } from "./trait_selector";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { QuestSelector } from "./quest_selector";
 
 export interface HighlightItem { 
     quest: number, 
@@ -21,11 +22,13 @@ export interface HighlightItem {
 export interface MissionComponentProps {
     mission: Mission | ContinuumMission;
     
-    questIndex?: number;
-    setQuestIndex: (value?: number) => void;
+    showSelector?: boolean;
+
+    questId?: number;
+    setQuestId?: (value?: number) => void;
     
     mastery: number;
-    setMastery: (value: number) => void;
+    setMastery?: (value: number) => void;
 
     highlighted: HighlightItem[];
     setHighlighted: (value: HighlightItem[]) => void;
@@ -51,8 +54,8 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         isRemote, 
         mastery, 
         setMastery, 
-        questIndex, 
-        setQuestIndex, 
+        questId, 
+        setQuestId, 
         pageId, 
         mission, 
         showChainRewards,
@@ -60,7 +63,8 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         selectedTraits,
         setSelectedTraits,
         highlighted,
-        setHighlighted
+        setHighlighted,
+        showSelector
     } = props;
 
     const [quest, setQuest] = React.useState<Quest | undefined>(undefined);
@@ -167,8 +171,8 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
     }
 
     React.useEffect(() => {
-        if (!!mission?.quests?.length && questIndex !== undefined && questIndex >= 0 && questIndex < (mission?.quests?.length ?? 0)) {
-            const mquest = mission.quests[questIndex];
+        if (!!mission?.quests?.length && questId !== undefined && questId >= 0 && questId < (mission?.quests?.length ?? 0)) {
+            const mquest = mission.quests[questId];
             const navmap = makeNavMap(mquest);
             const pathInfo = getNodePaths(navmap[0], navmap);
 
@@ -187,12 +191,14 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
             setQuest(undefined);
             setStages(undefined);
         }
-    }, [questIndex]);
+    }, [questId]);
 
     React.useEffect(() => {
         if (!!mission?.quests?.length) {
-            setQuestIndex(undefined);
-            setTimeout(() => setQuestIndex(questIndex ?? 0));
+            if (setQuestId) {
+                setQuestId(undefined);
+                setTimeout(() => setQuestId(questId ?? 0));
+            }
         }
     }, [mission]);
 
@@ -201,50 +207,17 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
             <div>
                 <ItemHoverStat targetGroup={pageId + "_items"} />
                 <CrewHoverStat targetGroup={pageId + "_helper"} />
-                <Step.Group fluid>
-                    <Step
-                        onClick={(e) => setMastery(0)}
-                        active={mastery === 0}
-                    >
-                        <Step.Content>
-                            <Step.Title>Standard</Step.Title>
-                            <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Standard Difficulty</Step.Description>
-                        </Step.Content>
-                    </Step>
-                    <Step
-                        onClick={(e) => setMastery(1)}
-                        active={mastery === 1}
-                    >
-                        <Step.Content>
-                            <Step.Title>Elite</Step.Title>
-                            <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Elite Difficulty</Step.Description>
-                        </Step.Content>
-                    </Step>
-                    <Step
-                        onClick={(e) => setMastery(2)}
-                        active={mastery === 2}
-                    >
-                        <Step.Content>
-                            <Step.Title>Epic</Step.Title>
-                            <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Epic Difficulty</Step.Description>
-                        </Step.Content>
-                    </Step>
-                </Step.Group>
-                <Step.Group fluid>
-                    {mission?.quests?.map((quest, idx) => (
-                        <Step
-                            key={pageId + "quest_" + idx + "_" + quest.id} active={questIndex === idx}
-                            onClick={() => setQuestIndex(idx)}>
-                            <Step.Content>
-                                <Step.Title>{(isRemote && isRemote[idx] === true) ? <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>{quest.name}</span> : quest.name}</Step.Title>
-                                <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >{quest.description}</Step.Description>
-                            </Step.Content>
-                        </Step>
-                    ))}
-
-                </Step.Group>
-
-                {!!quest && typeof questIndex !== 'undefined' &&
+                {!!showSelector && !!setQuestId && !!setMastery &&
+                    <QuestSelector 
+                        pageId={pageId}
+                        mission={mission}
+                        questId={questId}
+                        setQuestId={setQuestId}
+                        mastery={mastery}
+                        setMastery={setMastery}
+                        highlighted={isRemote}
+                        />}
+                {!!quest && typeof questId !== 'undefined' &&
                 <div className={"ui segment"}>
                     <Table style={{ margin: 0, padding: 0 }} striped>
                         <Table.Body>
@@ -258,7 +231,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                             alignItems: "center",
                                         }}
                                     >
-                                        <h3>{isRemote && isRemote[questIndex] ? <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>{quest.name}</span> : quest.name}</h3>
+                                        <h3>{isRemote && isRemote[questId] ? <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>{quest.name}</span> : quest.name}</h3>
                                         <div style={{ margin: "0.5em 0" }}>                                    
                                             <TraitSelectorComponent
                                                 style={{

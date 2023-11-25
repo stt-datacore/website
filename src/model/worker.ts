@@ -253,3 +253,8 @@ export interface QuestSolverResult {
     failed?: number[];
     paths?: PathGroup[];
 }
+
+export interface QuestSolverCacheItem {
+    key: string;
+    result: QuestSolverResult;    
+}
