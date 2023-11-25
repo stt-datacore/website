@@ -1,33 +1,6 @@
 import { CrewMember, EquipmentSlot } from '../model/crew';
-import { EquipmentItem } from '../model/equipment';
-import { PlayerCrew } from '../model/player';
-
-export interface IDemand {
-	count: number;
-	symbol: string;
-	equipment?: EquipmentItem;
-	factionOnly: boolean;
-	have: number;
-	crewSymbols: string[];	
-}
-
-export interface ICrewDemandsMeta {
-	factionOnlyTotal: number;
-	totalChronCost: number;
-	craftCost: number;
-}
-
-export interface ICrewDemands extends ICrewDemandsMeta {
-	demands: IDemand[];
-	factionOnlyTotal: number;
-	totalChronCost: number;
-	craftCost: number;
-}
-
-export interface DemandCounts {
-	name: string;
-	count: number;
-}
+import { EquipmentCommon, EquipmentItem, ICrewDemands, IDemand } from '../model/equipment';
+import { BuffBase, PlayerCrew, PlayerEquipmentItem } from '../model/player';
 
 export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[], crewSymbol: string): number {
 	let equipment = items.find(item => item.symbol === es.symbol);
@@ -278,4 +251,70 @@ export function calculateRosterDemands(crew: (CrewMember | PlayerCrew)[], items:
 		}
 	}	
 	return result;
+}
+
+export function haveCount<T extends BuffBase>(symbol: string, playerItems: T[]) {
+	return playerItems.find(f => f.symbol === symbol)?.quantity ?? 0;
+}
+
+export function calcItemDemands(item: EquipmentItem, coreItems: EquipmentItem[], playerItems?: PlayerEquipmentItem[]) {
+	let demands = [] as IDemand[];
+	if (item.recipe) {
+		for (let iter of item.recipe.list) {
+			let recipeEquipment = coreItems?.find(item => item.symbol === iter.symbol);
+			if (recipeEquipment) {
+				demands.push({
+					crewSymbols: [],
+					count: iter.count,
+					symbol: iter.symbol,
+					equipment: recipeEquipment,
+					factionOnly: iter.factionOnly,
+					have: playerItems ? haveCount(iter.symbol, playerItems) : 0
+				});
+			}
+		}
+	}
+
+	item.demands = demands;
+	return demands;
+}
+
+export function canBuildItem(item: EquipmentItem) {
+	if (!item.demands) return false;
+	else if (!item.demands.length) return !!item.quantity;
+	return item.demands.every(d => d.have && d.have >= d.count);
+}
+
+/** Returns true if demands were deducted, or false if the item, itself, was deducted */
+export function deductDemands<T extends BuffBase>(item: EquipmentItem, items: T[]) {	
+	let f = items.find(f => f.symbol === item.symbol);	
+	if (f && f.quantity) {
+		f.quantity--;
+		return false;
+	}
+
+	if (!item.demands?.length) return false;
+
+	item.demands.forEach((d) => {
+		let item = items.find(f => f.symbol === d.symbol);
+		if (item?.quantity && item.quantity >= d.count) {
+			item.quantity -= d.count;
+		}
+	});
+
+	return true;
+}
+
+export function reverseDeduction<T extends BuffBase>(item: EquipmentItem, items: T[]) {	
+	if (!item.demands?.length) return false;
+
+	item.demands.forEach((d) => {
+		let item = items.find(f => f.symbol === d.symbol);
+		if (item) {
+			item.quantity ??= 0;
+			item.quantity += d.count;
+		}
+	});
+
+	return true;
 }

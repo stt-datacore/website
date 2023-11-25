@@ -14,7 +14,8 @@ import ProfileCharts from '../components/profile_charts';
 import { downloadData, download, exportCrew, exportCrewFields, prepareProfileData } from '../utils/crewutils';
 import { mergeShips, exportShips, exportShipFields } from '../utils/shiputils';
 import { mergeItems, exportItems, exportItemFields } from '../utils/itemutils';
-import { demandsPerSlot, IDemand } from '../utils/equipment';
+import { IDemand } from '../model/equipment';
+import { demandsPerSlot } from '../utils/equipment';
 
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
