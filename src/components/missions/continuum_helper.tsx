@@ -19,6 +19,7 @@ import CrewStat from "../crewstat";
 import { appelate, arrayIntersect } from "../../utils/misc";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
+import PowerExplanation, { GradeSwatch } from "../powerexplanation";
 
 export interface ContinuumComponentProps {
     roster: (PlayerCrew | CrewMember)[];
@@ -325,7 +326,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const crewTableCells = [
         { width: 2, column: 'score', title: 'Rank' },
         { width: 2, column: 'added_kwipment_key', title: 'Suggested Quipment' },
-        { width: 2, column: 'metasort', title: 'Computed Skills' },
+        { width: 2, column: 'metasort', title: <>Computed Skills <PowerExplanation /></> },
         { width: 2, column: 'challenge_key', title: 'Challenges' }
     ]
 
@@ -350,9 +351,12 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 <Table.Cell>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start" }}>
                         {crew.challenges?.map((challenge, idx) => {
+                            
+                            const grade = ((!!challenge.max_solve && !!challenge.power_decrease)) ? 'D' : (challenge.max_solve ? 'B' : (!!challenge.power_decrease ? 'C' : 'A'));
 
                             return (
-                                <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "flex-start" }}>
+                                <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
+                                    <GradeSwatch grade={grade} style={{marginRight:"1em"}} />
                                     {Object.values(challenge.skills).map(((skill: Skill) => {
                                         const key = skill.skill ?? '';
                                         if (!showAllSkills && key !== challenge.challenge.skill) return <></>
@@ -360,7 +364,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                             <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}>
                                                 <CrewStat
                                                     style={{
-                                                        color: !!idx ? 'orange' : undefined
+                                                        color: ((!!challenge.max_solve && !!challenge.power_decrease)) ? 'orange' : (challenge.max_solve ? 'aqua' : (!!challenge.power_decrease ? 'yellow' : 'lightgreen'))
                                                     }}
                                                     quipmentMode={true}
                                                     key={"continuum_crew_" + key}
