@@ -24,15 +24,15 @@ export interface NavMapItem {
     children?: number[];
 }
 
-export function makeNavMap(quest: Quest): NavMapItem[] {
+export function makeNavMap(quest: Quest | MissionChallenge[]): NavMapItem[] {
 
-    function _internalMakeNavMap(quest: Quest, startId?: number, currentStage?: number, parent?: NavMapItem, currentData?: NavMapItem[]): NavMapItem[] {
+    function _internalMakeNavMap(quest: Quest | MissionChallenge[], startId?: number, currentStage?: number, parent?: NavMapItem, currentData?: NavMapItem[]): NavMapItem[] {
         currentData ??= [];
         startId ??= 0;
         currentStage ??= 0;
-
-        if (!quest.challenges?.length) return currentData;
-        let ch = quest.challenges?.find(f => f.id === startId);
+        const challenges = !("length" in quest) ? quest.challenges : (quest as MissionChallenge[]);
+        if (!challenges?.length) return currentData;
+        let ch = challenges?.find(f => f.id === startId);
         if (!ch) return currentData;
 
         const item = {
