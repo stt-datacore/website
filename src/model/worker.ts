@@ -227,6 +227,7 @@ export interface CrewChallengeInfo {
     skills: BaseSkills;
     trait_bonuses?: MissionTraitBonus[];
     power_decrease?: number;
+    max_solve?: boolean;
 }
 
 export interface IQuestCrew extends PlayerCrew {
@@ -236,12 +237,19 @@ export interface IQuestCrew extends PlayerCrew {
     added_kwipment_expiration?: number[][] | number[];
     metasort?: number;
     added_kwipment_key?: string;
+    associated_paths?: string[];
+}
+
+export interface PathGroup {
+    path: string;
+    crew: IQuestCrew[];
 }
 
 export interface QuestSolverResult {
     status: boolean;
-    crew: IQuestCrew[];
+    crew: IQuestCrew[];    
     error?: string;
     fulfilled: boolean;
     failed?: number[];
+    paths?: PathGroup[];
 }
