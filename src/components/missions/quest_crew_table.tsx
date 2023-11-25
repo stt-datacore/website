@@ -8,18 +8,19 @@ import { IRosterCrew } from '../crewtables/model';
 import { CrewItemsView } from '../item_presenters/crew_items';
 import PowerExplanation, { GradeSwatch } from '../powerexplanation';
 import { CrewConfigTable } from '../crewtables/crewconfigtable';
-import { QuestFilterConfig } from '../../model/missions';
+import { Quest, QuestFilterConfig } from '../../model/missions';
 
 export interface QuestCrewTableProps {    
     solverResults?: QuestSolverResult;
     config: QuestFilterConfig;    
     pageId: string;
+    quest?: Quest;
 }
 
 export const QuestCrewTable = (props: QuestCrewTableProps) => {
 
-    const { config, solverResults, pageId } = props;
-    const { mastery, includeCurrentQp, showAllSkills, quest } = config;
+    const { quest, config, solverResults, pageId } = props;
+    const { mastery, includeCurrentQp, showAllSkills } = config;
 
     const crewTableCells = [
         { width: 2, column: 'score', title: 'Rank' },
