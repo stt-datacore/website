@@ -271,14 +271,19 @@ const QuestSolver = {
                 delete crew.added_kwipment_expiration;
                 delete crew.challenges;
                 delete added[crew.symbol];
-                if (!config.includeCurrentQp) {
+                if (!config.includeCurrentQp || (!("skills" in crew) || !Object.keys(crew.skills).length || crew.immortal !== -1)) {
+                    if (!crew.skills) {
+                        crew.skills = { ... JSON.parse(JSON.stringify(crew.base_skills)) };
+                    }
                     applyCrewBuffs(crew, config.buffs);
                 }
                 else {
                     for(let skill of getSkillOrder(crew)) {
-                        crew[skill].core = crew.skills[skill].core;
-                        crew[skill].min = crew.skills[skill].range_min;
-                        crew[skill].max = crew.skills[skill].range_max;
+                        if ("skills" in crew && skill in crew.skills) {
+                            crew[skill].core = crew.skills[skill].core;
+                            crew[skill].min = crew.skills[skill].range_min;
+                            crew[skill].max = crew.skills[skill].range_max;
+                        }
                     }
                 }
             }
@@ -337,8 +342,11 @@ const QuestSolver = {
                 if (chcrew?.length) {
                     crew = crew.filter(c => !chcrew.some(chc => chc.symbol === c.symbol));
                     crew = crew.concat(chcrew);
-                    crew = crew.filter((c, i) => crew.findIndex(c2 => c2.symbol === c.symbol) === i);
+                
+                    // dupes are a thing, so identical symbols are okay, identical object references are not.
+                    crew = [ ... new Set(crew) ];                    
                 }
+
                 return crew.sort((a, b) => {
                     let r = 0;
 
@@ -353,37 +361,42 @@ const QuestSolver = {
                 });
             }
 
-            // solve the last one first!
             for (let ch of challenges) {                
-                if (!ch.children.length) {
-                    crew = processChallenge(ch, roster, crew);
-                }            
-            }
-
-            for (let ch of challenges) {                
-                if (!!ch.children.length) {
-                    crew = processChallenge(ch, roster, crew);
-                }            
+                crew = processChallenge(ch, roster, crew);
             }
 
             if (!challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)))) {                
                 let retest = challenges.filter(ch => !crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)));
 
-                for (let ch of retest) {
-                    let eligCrew = crew.filter(f => ch.skill in f.base_skills && f.challenges && f.challenges.some(ft => ft.challenge.skill === ch.skill));
+                for (let fch of retest) {
+                    let eligCrew = crew.filter(f => fch.skill in f.base_skills && f.challenges && f.challenges.some(ft => ft.challenge.skill === fch.skill));
+                    if (!eligCrew?.length) {
+                        eligCrew = crew.filter(f => fch.skill in f.base_skills);
+                    }
+                    if (!eligCrew?.length) {
+                        eligCrew = roster.filter(f => fch.skill in f.base_skills);
+                        eligCrew?.forEach((c) => {
+                            if (!crew.some(c2 => c2.symbol === c.symbol)) {
+                                crew.push(c);
+                            }
+                        });
+                    }
                     if (!eligCrew?.length) continue;
                     let ci = 0;
 
-                    while (ci < eligCrew.length && !crew.some(c => c.challenges?.some(chc => chc.challenge.id === ch.id))) 
+                    while (ci < eligCrew.length && !crew.some(c => c.challenges?.some(chc => chc.challenge.id === fch.id))) 
                     {   
                         let mfind = crew.findIndex(c => c.symbol === eligCrew[ci].symbol);
                         if (mfind !== -1) {
                             eligCrew[ci] = JSON.parse(JSON.stringify(eligCrew[ci]));
                             eligCrew[ci].date_added = new Date(eligCrew[ci].date_added);
                             let oldAdded = added[eligCrew[ci].symbol];
-                            resetCrew(eligCrew[ci]);
-                            crew = processChallenge(ch, eligCrew, crew);
-                            if (!eligCrew[ci].challenges?.length) {
+                            crew = processChallenge(fch, eligCrew, crew);
+                            if (!eligCrew[ci].challenges?.length) {                            
+                                resetCrew(eligCrew[ci]);
+                                crew = processChallenge(fch, eligCrew, crew);
+                            }
+                            if (!eligCrew[ci].challenges?.some(chc => chc.challenge.id === fch.id)) {
                                 eligCrew[ci] = crew[mfind];
                                 added[eligCrew[ci].symbol] = oldAdded;
                             }
