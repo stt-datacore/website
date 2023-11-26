@@ -113,29 +113,27 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
             return undefined;
         }).filter(f => !!f) as NavMapItem[];
 
-        if (!hasCurrent || !!newHighlights.length) {
-            let allHighlights = getHighlightNodesFromNode(selMap);
-            newHighlights = newHighlights.concat(allHighlights?.map(h => {
-                let selInCurr = currSelection.some(s => s.challenge === h?.id && s.clicked);
-                if (!!autoTraits && !!h?.trait_bonuses?.length && !!quest) {
-                    ptrait = ptrait.concat(h.trait_bonuses.map(t => {
-                        return {
-                            trait: t.trait,
-                            selected: true,
-                            questId: quest.id,
-                            clicked: false
-                        } as TraitSelection;
-                    }));
-                    ptrait = ptrait.filter((p, i) => ptrait.findIndex(x => x.trait === p.trait && x.questId === p.questId) === i);
-                }
-                return {
-                    quest: quest?.id ?? -1,
-                    challenge: h?.id ?? -1,
-                    selected: currSelection.some(sel => sel.quest === quest?.id && sel.challenge === h?.id && sel.clicked),
-                    clicked: selInCurr
-                }
-            }));
-        }
+        let allHighlights = getHighlightNodesFromNode(selMap);
+        newHighlights = newHighlights.concat(allHighlights?.map(h => {
+            let selInCurr = currSelection.some(s => s.challenge === h?.id && s.clicked);
+            if (!!autoTraits && !!h?.trait_bonuses?.length && !!quest) {
+                ptrait = ptrait.concat(h.trait_bonuses.map(t => {
+                    return {
+                        trait: t.trait,
+                        selected: true,
+                        questId: quest.id,
+                        clicked: false
+                    } as TraitSelection;
+                }));
+                ptrait = ptrait.filter((p, i) => ptrait.findIndex(x => x.trait === p.trait && x.questId === p.questId) === i);
+            }
+            return {
+                quest: quest?.id ?? -1,
+                challenge: h?.id ?? -1,
+                selected: currSelection.some(sel => sel.quest === quest?.id && sel.challenge === h?.id && sel.clicked),
+                clicked: selInCurr
+            }
+        }));
 
         setHighlighted(newHighlights);
 
