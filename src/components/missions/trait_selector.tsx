@@ -5,6 +5,7 @@ export interface TraitSelection {
     trait: string;
     selected: boolean;
     questId: number;
+    clicked: boolean;
 }
 
 export interface TraitSelectorProps {
@@ -27,7 +28,7 @@ export const TraitSelectorComponent = (props: TraitSelectorProps) => {
             setSelectedTraits(selectedTraits.filter(f => f.trait !== trait) ?? []);
         }
         else {
-            setSelectedTraits([ ...selectedTraits ?? []].concat([{ trait, questId, selected: true }]));
+            setSelectedTraits([ ...selectedTraits ?? []].concat([{ trait, questId, selected: true, clicked: true }]));
         }
     }
 

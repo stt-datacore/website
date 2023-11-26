@@ -62,7 +62,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         showChainRewards,
         autoTraits,
         selectedTraits,
-        setSelectedTraits,
+        setSelectedTraits: internalSetSelectedTraits,
         highlighted,
         setHighlighted,
         showSelector
@@ -80,14 +80,15 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         return highlighted.some(h => h.quest === quest?.id && h.challenge === item.id && h.clicked);
     }
 
-    const clickNode = (e: Event, data: ChallengeNodeInfo) => {
-        e.stopPropagation();
+    const selectChallenge = (data: ChallengeNodeInfo) => {
         let ptrait = [] as TraitSelection[];
+        let hasCurrent = !!highlighted.length;
+        
         let newHighlights = highlighted.filter(h => h.quest !== quest?.id) ?? [];
         let currSelection = highlighted.filter(h => h.quest === quest?.id && h.clicked) ?? [];
 
         if (!data.quest.challenges) return;
-        let id = data.quest.challenges.find(i => i.id === data.index)?.id ?? -1;
+        let id = data.quest.challenges.find(i => i.id === data.challengeId)?.id ?? -1;
         
         let selNode = highlighted?.find(h => h.quest === quest?.id && h.challenge === id);
         
@@ -99,44 +100,74 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
 
             selNode = {
                 quest: data.quest.id,
-                challenge: data.index,
+                challenge: data.challengeId,
                 clicked: true
             };
 
             currSelection.push(selNode);
         }
 
-        let map = currSelection.map((sel) => {
+        let selMap = currSelection.map((sel) => {
             let found = stages?.map(st => st.find(sa => sa.id === sel.challenge))?.filter(f => !!f) as NavMapItem[];
             if (found?.length) return found[0];
             return undefined;
         }).filter(f => !!f) as NavMapItem[];
-        
-        let allHighlights = getHighlightNodesFromNode(map);      
-        
-        newHighlights = newHighlights.concat(allHighlights?.map(h => {
-            if (!!autoTraits && !!h?.trait_bonuses?.length && !!quest) {
-                ptrait = ptrait.concat(h.trait_bonuses.map(t => {
-                    return {
-                        trait: t.trait,
-                        selected: true,
-                        questId: quest.id
-                    } as TraitSelection;
-                }));
-                ptrait = ptrait.filter((p, i) => ptrait.findIndex(x => x.trait === p.trait && x.questId === p.questId) === i);
-            }
-            return {
-                quest: quest?.id ?? -1,
-                challenge: h?.id ?? -1,
-                clicked: currSelection.some(sel => sel.quest === quest?.id && sel.challenge === h?.id && sel.clicked)
-            }
-        }));
+
+        if (!hasCurrent || !!newHighlights.length) {
+            let allHighlights = getHighlightNodesFromNode(selMap);
+            newHighlights = newHighlights.concat(allHighlights?.map(h => {
+                let selInCurr = currSelection.some(s => s.challenge === h?.id && s.clicked);
+                if (!!autoTraits && !!h?.trait_bonuses?.length && !!quest) {
+                    ptrait = ptrait.concat(h.trait_bonuses.map(t => {
+                        return {
+                            trait: t.trait,
+                            selected: true,
+                            questId: quest.id,
+                            clicked: false
+                        } as TraitSelection;
+                    }));
+                    ptrait = ptrait.filter((p, i) => ptrait.findIndex(x => x.trait === p.trait && x.questId === p.questId) === i);
+                }
+                return {
+                    quest: quest?.id ?? -1,
+                    challenge: h?.id ?? -1,
+                    selected: currSelection.some(sel => sel.quest === quest?.id && sel.challenge === h?.id && sel.clicked),
+                    clicked: selInCurr
+                }
+            }));
+        }
 
         setHighlighted(newHighlights);
 
         if (!!autoTraits && !!quest) {
             const newtraits = selectedTraits.filter(t => t.questId !== quest.id).concat(ptrait);
-            setSelectedTraits(newtraits);
+            internalSetSelectedTraits(newtraits);
+        }
+    }
+
+    const clickNode = (e: Event, data: ChallengeNodeInfo) => {
+        selectChallenge(data);
+    }
+    const setSelectedTraits = (value: TraitSelection[]) => {
+        if (!!quest && !!autoTraits && value.some(t => t.clicked) && value[value.length - 1].clicked) {
+            let f1 = value.filter(f => f.clicked);
+            let f2 = selectedTraits.filter(f => f.clicked);
+            
+            if (f1.length && JSON.stringify(f1) != JSON.stringify(f2)) {
+                let lastclick = f1[f1.length - 1];
+                let ch = quest?.challenges?.filter(f => f.trait_bonuses?.some(t => t.trait === lastclick.trait));
+                if (ch?.length) {
+                    selectChallenge({ 
+                            quest,
+                            challengeId: ch[0].id,
+                            mastery    
+                        });
+                }
+
+            }
+        }
+        else {
+            internalSetSelectedTraits(value);
         }
     }
 
@@ -153,6 +184,11 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         }) ?? [];
 
         return [...new Set(involved.map(i => i.ids)?.flat() ?? [])].map(id => quest?.challenges?.find(q => q.id === id))?.filter(q => !!q) ?? [];
+    }
+    
+
+    const getHighlightNodesFromClickedTrait = (trait: string) => {
+        
     }
 
     const getContinuumChainRewards = () => {
@@ -277,7 +313,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                                     mastery={mastery}
                                                                     style={{ width: `${800 / stages.length}px`, textAlign: "center" }}
                                                                     quest={quest}
-                                                                    index={item.id}
+                                                                    challengeId={item.id}
                                                                 />
                                                             </div>
                                                         ))}
@@ -301,7 +337,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                                     mastery={mastery}
                                                                     style={{ width: `${800 / stages.length}px`, textAlign: "center" }}
                                                                     quest={quest}
-                                                                    index={item.id}
+                                                                    challengeId={item.id}
                                                                 />
                                                             </div>
                                                         ))}
