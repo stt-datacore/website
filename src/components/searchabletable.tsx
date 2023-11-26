@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Input, Pagination, Dropdown, Popup, Icon, Button, Message, Checkbox } from 'semantic-ui-react';
+import { Table, Input, Pagination, Dropdown, Popup, Icon, Button, Message, Checkbox, DropdownItemProps } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 import { Link } from 'gatsby';
 
@@ -18,12 +18,12 @@ const filterTypeOptions = [
     { key : '2', value : 'Any match', text : 'Match any text' }
 ];
 
-const pagingOptions = [
+const defaultPagingOptions = [
 	{ key: '0', value: 10, text: '10' },
 	{ key: '1', value: 25, text: '25' },
 	{ key: '2', value: 50, text: '50' },
 	{ key: '3', value: 100, text: '100' }
-];
+] as DropdownItemProps[];
 
 export enum SortDirection {
 	Ascending = 'ascending',
@@ -70,17 +70,21 @@ export interface SearchableTableProps {
 	dropDownChoices?: string[];
 	dropDownValue?: string;
 	setDropDownValue?: (value?: string) => void;
+
+	pagingOptions?: DropdownItemProps[];
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
 	let data = [...props.data];
 	const tableId = props.id ?? '';
 
+	const pagingOptions = props.pagingOptions?.length ? props.pagingOptions : defaultPagingOptions;
+
 	const [searchFilter, setSearchFilter] = useStateWithStorage(tableId+'searchFilter', '');
 	const [filterType, setFilterType] = useStateWithStorage(tableId+'filterType', 'Any match');
 	const [column, setColumn] = useStateWithStorage<string | undefined>(tableId+'column', undefined);
 	const [direction, setDirection] = useStateWithStorage<SortDirection | 'ascending' | 'descending' | undefined>(tableId+'direction', undefined);
-	const [pagination_rows, setPaginationRows] = useStateWithStorage(tableId+'paginationRows', 10);
+	const [pagination_rows, setPaginationRows] = useStateWithStorage(tableId+'paginationRows', pagingOptions[0].value as number ?? 10);
 	const [pagination_page, setPaginationPage] = useStateWithStorage(tableId+'paginationPage', 1);
 
 	const [activeLock, setActiveLock] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);

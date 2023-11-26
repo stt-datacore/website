@@ -110,7 +110,7 @@ const QuestSolver = {
             for (let ch of path) {
                 for (let c of wcrew) {
                     if (c.challenges?.some(chc => chc.challenge.id == ch.id)) {
-                        solved.push(ch);
+                        if (!solved.includes(ch)) solved.push(ch);
                         if (!solveCrew.includes(c)) {
                             solveCrew.push(c);
                         }
@@ -118,7 +118,8 @@ const QuestSolver = {
                     }
                 }
             }
-            if (solved.length === path.length && solveCrew.length < 3) {
+
+            if (path.every(p => solved.includes(p)) && solveCrew.length < 3) {
                 for (let c of crew) {
                     if (!solveCrew.includes(c)) {
                         solveCrew.push(c);
@@ -126,7 +127,7 @@ const QuestSolver = {
                     }
                 }
             }
-            if (solved.length === path.length && solveCrew.length <= 3) return solveCrew;
+            if (path.every(p => solved.includes(p)) && solveCrew.length <= 3) return solveCrew;
             return false;
         }
 
@@ -505,23 +506,26 @@ const QuestSolver = {
                         if (!threekeys.includes(key)) {
                             threegroups.push(tg);
                             threekeys.push(key);
+                            
                             if (!sp.includes(path)) {
                                 sp.push(path);
-                                let pathstr = path.map(p => p.id).join("_");
-
-                                tg.forEach((c) => {
-                                    c.associated_paths ??= [];
-                                    if (!c.associated_paths.includes(pathstr)) {
-                                        c.associated_paths.push(pathstr);
-                                    }
-                                });
-
-                                pathSolves.push({
-                                    path: pathstr,
-                                    crew: tg,
-                                    mastery: config.mastery
-                                });
                             }
+                            
+                            let pathstr = path.map(p => p.id).join("_");
+
+                            tg.forEach((c) => {
+                                c.associated_paths ??= [];
+                                if (!c.associated_paths.includes(pathstr)) {
+                                    c.associated_paths.push(pathstr);
+                                }
+                            });
+
+                            pathSolves.push({
+                                path: pathstr,
+                                crew: tg,
+                                mastery: config.mastery
+                            });
+                        
                         }
                     }
                 }
