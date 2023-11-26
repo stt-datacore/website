@@ -184,11 +184,6 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         return [...new Set(involved.map(i => i.ids)?.flat() ?? [])].map(id => quest?.challenges?.find(q => q.id === id))?.filter(q => !!q) ?? [];
     }
     
-
-    const getHighlightNodesFromClickedTrait = (trait: string) => {
-        
-    }
-
     const getContinuumChainRewards = () => {
         let result = undefined as Reward[] | undefined;
         if ("chain_rewards" in mission) {

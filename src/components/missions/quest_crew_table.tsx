@@ -15,12 +15,15 @@ export interface QuestCrewTableProps {
     config: QuestFilterConfig;
     pageId: string;
     quest?: Quest;
+    targetGroup?: string;
 }
 
 export const QuestCrewTable = (props: QuestCrewTableProps) => {
 
     const { quest, config, solverResults, pageId } = props;
     const { mastery, includeCurrentQp, showAllSkills } = config;
+
+    const itemTargetGroup  = props.targetGroup ?? `${pageId}_quest_crew_items`;
 
     const crewTableCells = [
         { width: 2, column: 'score', title: 'Rank' },
@@ -41,7 +44,7 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                 <Table.Cell>
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", minWidth: "192px" }}>
                         <CrewItemsView
-                            targetGroup={'continuum_items_1'}
+                            targetGroup={itemTargetGroup}
                             printNA={includeCurrentQp ? <span style={{ color: 'cyan' }}>New</span> : <br />}
                             crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: crew.added_kwipment_expiration ?? [] }}
                             quipment={true} />
