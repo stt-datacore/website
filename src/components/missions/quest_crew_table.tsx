@@ -6,7 +6,7 @@ import { appelate, arrayIntersect } from '../../utils/misc';
 import CrewStat from '../crewstat';
 import { IRosterCrew } from '../crewtables/model';
 import { CrewItemsView } from '../item_presenters/crew_items';
-import PowerExplanation, { GradeSwatch } from '../powerexplanation';
+import PowerExplanation, { GradeSwatch } from '../explanations/powerexplanation';
 import { CrewConfigTable } from '../crewtables/crewconfigtable';
 import { Quest, QuestFilterConfig } from '../../model/missions';
 
