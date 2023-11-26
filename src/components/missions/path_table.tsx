@@ -1,6 +1,6 @@
 import React from "react";
 import { MissionChallenge, Quest, QuestFilterConfig } from "../../model/missions";
-import { PathGroup } from "../../model/worker";
+import { PathGroup, QuestSolverResult } from "../../model/worker";
 import { GlobalContext } from "../../context/globalcontext";
 import { Pagination, Table } from "semantic-ui-react";
 import { useStateWithStorage } from "../../utils/storage";
@@ -14,7 +14,7 @@ import { splitPath } from "../../utils/episodes";
 
 
 export interface PathTableProps {
-    pathGroups?: PathGroup[],
+    solverResults?: QuestSolverResult,
     quest?: Quest,
     targetGroup?: string;
     pageId: string;
@@ -24,18 +24,18 @@ export interface PathTableProps {
 
 export const PathTable = (props: PathTableProps) => {
     const context = React.useContext(GlobalContext);
-    const { pageId, quest, config } = props;
+    const { solverResults, pageId, quest, config } = props;
 
     const targetGroup = props.targetGroup ?? pageId + '_threeView_target';
     const itemTargetGroup = props.itemTargetGroup ?? pageId + '_threeView_item_target';
 
-    const [pathOption, setPathOption] = useStateWithStorage<string | undefined>(pageId + "/pathOption", undefined);
-    const [pathGroups, setPathGroups] = React.useState<PathGroup[]>(props.pathGroups ?? []);
+    const [pathOption, setPathOption] = React.useState<string | undefined>(undefined);
+    const [pathGroups, setPathGroups] = React.useState<PathGroup[]>(solverResults?.paths ?? []);
 
     const pathOpts = ["All"] as string[];
     const pathMap = {} as { [key: string]: string };
-
-    props.pathGroups?.forEach((p) => {
+    
+    solverResults?.paths?.forEach((p) => {
         if (!p.path_expanded) {
             p.path_expanded = splitPath(p.path).map(p => quest?.challenges?.find(f => f.id === p)).filter(f => !!f) as MissionChallenge[];
         }
@@ -49,13 +49,13 @@ export const PathTable = (props: PathTableProps) => {
     });
 
     React.useEffect(() => {
-        if (pathOption?.length && props.pathGroups?.length && pathOption !== "All") {
-            setPathGroups(props.pathGroups.filter(f => f.path === pathMap[pathOption]));
+        if (!!pathOption?.length && solverResults?.paths?.length && pathOption !== "All" && pathMap[pathOption]) {
+            setPathGroups(solverResults?.paths?.filter(f => f.path === pathMap[pathOption]));
         }
         else {
-            setPathGroups(props.pathGroups ?? []);
+            setPathGroups(solverResults?.paths ?? []);
         }
-    }, [pathOption])
+    }, [pathOption, solverResults])
 
     if (pathOption?.length && !pathOpts.includes(pathOption)) {
         setTimeout(() => {

@@ -576,7 +576,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 />
 
                 {mission &&
-                    <div style={{ display: showPane === 1 ? 'none' : undefined }}>
+                    <div style={{ display: showPane !== 0 ? 'none' : undefined }}>
                         <MissionMapComponent
                             autoTraits={true}
                             pageId={'continuum'}
@@ -609,7 +609,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     </Message>
                 )}
 
-                <div style={{ display: showPane === 0 ? 'none' : undefined }}>
+                <div style={{ display: showPane !== 1 ? 'none' : undefined }}>
                     <ItemHoverStat targetGroup={'continuum_quest_crew_items'} />
 
                     <Step.Group fluid>
@@ -633,21 +633,23 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                         </Step>
                     </Step.Group>
 
-                    {showResults === 0 &&
+                    <div style={{ display: showResults !== 0 ? 'none' : undefined }}>
                         <QuestCrewTable
                             quest={quest}
                             solverResults={solverResults}
                             pageId={'continuum'}
-                            config={missionConfig} />}
+                            config={missionConfig} />
+                    </div>
 
-                    {showResults === 1 &&
+                    <div style={{ display: showResults !== 1 ? 'none' : undefined }}>
                         <PathTable
                             quest={quest}
-                            pathGroups={solverResults?.paths}
+                            solverResults={solverResults}
                             config={missionConfig}
                             pageId={'continuum'}
                         />
-                    }
+                    </div>
+                    
                     {!solverResults && <div style={{ height: '50vh' }}>&nbsp;</div>}
                 </div>
 
