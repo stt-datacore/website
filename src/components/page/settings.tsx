@@ -147,13 +147,13 @@ const NavigationSettings = <T extends OptionsBase>(props: NavigationSettingsProp
             maxHeight: '15em'
         }}>
                 {opts.map((current, idx) =>
-                    <React.Fragment>
+                    <React.Fragment key={'page_setting_menu_option'+idx.toString()}>
                     <h4>{titles[idx]}</h4>
                     <Grid style={{margin: 0, padding:0}}>
 
-                    {menuItems.map((item) => {
+                    {menuItems.map((item, navIdx) => {
                         return (
-                            <Grid.Row style={{margin: 0, padding:0}}>
+                            <Grid.Row style={{margin: 0, padding:0}} key={'page_setting_menu_option_item'+idx.toString()+navIdx.toString()}>
 
                             <div style={{
                                 display:"flex",

@@ -162,14 +162,14 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const { alwaysCrit, buildableOnly, cheapestFirst, showAllSkills, mastery, idleOnly, considerFrozen, qpOnly, ignoreQpConstraint, includeCurrentQp } = missionConfig;
 
     const [internalSolverResults, internalSetSolverResults] = React.useState<QuestSolverCacheItem[]>([]);
-    
+
     const getCurrentKey = () => {
         return `${mission?.id}/${quest?.id}/${mastery}`;
     }
 
     const getSolverResults = () => {
         let key = getCurrentKey();
-        if (Array.isArray(internalSolverResults) === false) {            
+        if (Array.isArray(internalSolverResults) === false) {
             internalSetSolverResults([]);
             return undefined;
         }
@@ -184,18 +184,18 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         else if (value && showPane === 0) {
             setShowPane(1);
         }
-        
-        let sr = [ ... internalSolverResults ];
+
+        let sr = [...internalSolverResults];
         let key = getCurrentKey();
         let idx = sr.findIndex(r => r.key === key);
 
-        if (idx !== -1) {            
+        if (idx !== -1) {
             if (value) {
                 sr[idx].result = value;
             }
             else {
                 sr.splice(idx, 1);
-            }            
+            }
         }
         else if (value) {
             sr.push({
@@ -474,16 +474,15 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     warning={true}
                 />
 
-                {questId !== undefined && !!remoteQuestFlags &&
-                    <QuestImportComponent
-                        defaultCollapsed={remoteQuestFlags[questId]}
-                        setQuest={setRemoteQuest}
-                        quest={quest}
-                        questId={quest?.id}
-                        setError={setErrorMsg}
-                        clearQuest={clearRemote}
-                    />
-                }
+                <QuestImportComponent
+                    defaultCollapsed={false}
+                    setQuest={setRemoteQuest}
+                    quest={quest}
+                    questId={quest?.id}
+                    setError={setErrorMsg}
+                    clearQuest={clearRemote}
+                />
+
                 Current Continuum Mission: {mission?.discover_date?.toDateString()}
                 <br />
                 <div style={{ color: "tomato" }}>{errorMsg}</div>
@@ -633,24 +632,25 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                             </Step.Content>
                         </Step>
                     </Step.Group>
-                    
+
                     {showResults === 0 &&
-                    <QuestCrewTable
-                        quest={quest}
-                        solverResults={solverResults}
-                        pageId={'continuum'}
-                        config={missionConfig} />}
+                        <QuestCrewTable
+                            quest={quest}
+                            solverResults={solverResults}
+                            pageId={'continuum'}
+                            config={missionConfig} />}
 
                     {showResults === 1 &&
-                        <PathTable 
+                        <PathTable
                             quest={quest}
                             pathGroups={solverResults?.paths}
+                            config={missionConfig}
                             pageId={'continuum'}
-                            />
+                        />
                     }
                     {!solverResults && <div style={{ height: '50vh' }}>&nbsp;</div>}
                 </div>
-                
+
             </div>
         </>
     );

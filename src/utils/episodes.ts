@@ -128,3 +128,7 @@ export function getNodePaths(item: NavMapItem, stack: NavMapItem[], parentStack?
         return stacks;        
     }    
 }
+
+export function splitPath(path: string): number[] {
+    return path.split("_").map(p => Number.parseInt(p));
+}
