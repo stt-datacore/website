@@ -15,19 +15,20 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { QuestSelector } from "./quest_selector";
 import MapExplanation from "../explanations/mapexplanation";
 
-export interface HighlightItem { 
-    quest: number, 
-    challenge: number, 
-    clicked?: boolean };
+export interface HighlightItem {
+    quest: number,
+    challenge: number,
+    clicked?: boolean
+};
 
 export interface MissionComponentProps {
     mission: Mission | ContinuumMission;
-    
+
     showSelector?: boolean;
-    
+
     questId?: number;
     setQuestId?: (value?: number) => void;
-    
+
     mastery: number;
     setMastery?: (value: number) => void;
 
@@ -36,7 +37,7 @@ export interface MissionComponentProps {
 
     selectedTraits: TraitSelection[];
     setSelectedTraits: (value: TraitSelection[]) => void;
-    
+
     isRemote?: boolean[];
     showChainRewards?: boolean;
     pageId: string;
@@ -51,14 +52,14 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
     const context = React.useContext(GlobalContext);
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
-    const { 
-        isRemote, 
-        mastery, 
-        setMastery, 
-        questId, 
-        setQuestId, 
-        pageId, 
-        mission, 
+    const {
+        isRemote,
+        mastery,
+        setMastery,
+        questId,
+        setQuestId,
+        pageId,
+        mission,
         showChainRewards,
         autoTraits,
         selectedTraits,
@@ -83,15 +84,15 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
     const selectChallenge = (data: ChallengeNodeInfo) => {
         let ptrait = [] as TraitSelection[];
         let hasCurrent = !!highlighted.length;
-        
+
         let newHighlights = highlighted.filter(h => h.quest !== quest?.id) ?? [];
         let currSelection = highlighted.filter(h => h.quest === quest?.id && h.clicked) ?? [];
 
         if (!data.quest.challenges) return;
         let id = data.quest.challenges.find(i => i.id === data.challengeId)?.id ?? -1;
-        
+
         let selNode = highlighted?.find(h => h.quest === quest?.id && h.challenge === id);
-        
+
         if (selNode && selNode.clicked) {
             currSelection = currSelection.filter(f => f.challenge !== selNode?.challenge);
         }
@@ -150,16 +151,16 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         if (!!quest && !!autoTraits && value.some(t => t.clicked) && value[value.length - 1].clicked) {
             let f1 = value.filter(f => f.clicked);
             let f2 = selectedTraits.filter(f => f.clicked);
-            
+
             if (f1.length && JSON.stringify(f1) != JSON.stringify(f2)) {
                 let lastclick = f1[f1.length - 1];
                 let ch = quest?.challenges?.filter(f => f.trait_bonuses?.some(t => t.trait === lastclick.trait));
                 if (ch?.length) {
-                    selectChallenge({ 
-                            quest,
-                            challengeId: ch[0].id,
-                            mastery    
-                        });
+                    selectChallenge({
+                        quest,
+                        challengeId: ch[0].id,
+                        mastery
+                    });
                 }
 
             }
@@ -183,11 +184,11 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
 
         return [...new Set(involved.map(i => i.ids)?.flat() ?? [])].map(id => quest?.challenges?.find(q => q.id === id))?.filter(q => !!q) ?? [];
     }
-    
+
     const getContinuumChainRewards = () => {
         let result = undefined as Reward[] | undefined;
         if ("chain_rewards" in mission) {
-            if (mastery === 0) {                
+            if (mastery === 0) {
                 result = mission?.chain_rewards?.standard?.map(e => e.potential_rewards?.map(le => le as Reward))?.flat()
             }
             else if (mastery === 1) {
@@ -238,7 +239,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                 <ItemHoverStat targetGroup={pageId + "_items"} />
                 <CrewHoverStat targetGroup={pageId + "_helper"} />
                 {!!showSelector && !!setQuestId && !!setMastery &&
-                    <QuestSelector 
+                    <QuestSelector
                         pageId={pageId}
                         mission={mission}
                         questId={questId}
@@ -246,107 +247,13 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                         mastery={mastery}
                         setMastery={setMastery}
                         highlighted={isRemote}
-                        />}                
+                    />}
                 {!!quest && typeof questId !== 'undefined' &&
-                <div className={"ui segment"}>
-                    <Table style={{ margin: 0, padding: 0 }} striped>
-                        <Table.Body>
-                            <Table.Row>
-                                <Table.Cell>
-                                    <div
-                                        style={{
-                                            width: "100%",
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <div style={{display:'flex', width: "100%", flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-                                            <div style={{width: "32px"}}></div>
-                                            <div>
-                                                <h3>{isRemote && isRemote[questId] ? <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>{quest.name}</span> : quest.name}</h3>
-                                            </div>
-                                            <div>
-                                                <MapExplanation header="Continuum Mission Map" />
-                                            </div>
-                                        </div>
-                                    
-                                        <div style={{ margin: "0.5em 0" }}>                                    
-                                            <TraitSelectorComponent
-                                                style={{
-                                                    fontSize: "12pt",
-                                                    fontStyle: "italic",
-                                                    flexDirection: isMobile ? 'column' : 'row'
-                                                }}
-                                                questId={quest.id}
-                                                traits={quest.traits_used ?? []}
-                                                setSelectedTraits={setSelectedTraits}
-                                                selectedTraits={selectedTraits}
-                                            />
-                                        </div>
-                                    </div>
-                                </Table.Cell>
-                            </Table.Row>
-                            <Table.Row>
-                                <Table.Cell>
-                                    <Table>
-                                        {!isMobile &&
-                                        <Table.Row>
-                                            {!!stages && stages.map((tier, idx) => (
-                                                <Table.Cell key={pageId + "table_tier_" + idx}>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                                                        {tier.map((item) => (
-                                                            <div key={pageId + 'table_tier_item_' + item.id} style={{ margin: "0.5em" }}>
-                                                                <ChallengeNode
-                                                                    tapped={isTapped(item)}
-                                                                    highlight={isHighlighted(item)}
-                                                                    onClick={clickNode}
-                                                                    targetGroup={pageId + "_items"}
-                                                                    crewTargetGroup={pageId + "_helper"}
-                                                                    mastery={mastery}
-                                                                    style={{ width: `${800 / stages.length}px`, textAlign: "center" }}
-                                                                    quest={quest}
-                                                                    challengeId={item.id}
-                                                                />
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </Table.Cell>
-                                            ))}
-                                        </Table.Row>}
-                                        {isMobile &&
-                                            !!stages && stages.map((tier, idx) => (
-                                                <Table.Row>
-                                                <Table.Cell key={pageId + "table_tier_" + idx}>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                                                        {tier.map((item) => (
-                                                            <div key={pageId + 'table_tier_item_' + item.id} style={{ margin: "0.5em" }}>
-                                                                <ChallengeNode
-                                                                    tapped={isTapped(item)}
-                                                                    highlight={isHighlighted(item)}
-                                                                    onClick={clickNode}
-                                                                    targetGroup={pageId + "_items"}
-                                                                    crewTargetGroup={pageId + "_helper"}
-                                                                    mastery={mastery}
-                                                                    style={{ width: `${800 / stages.length}px`, textAlign: "center" }}
-                                                                    quest={quest}
-                                                                    challengeId={item.id}
-                                                                />
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </Table.Cell>
-                                                </Table.Row>
-                                            ))
-                                        }                                    
-                                    </Table>
-                                </Table.Cell>
-
-                            </Table.Row>
-                            {showChainRewards && "chain_rewards" in mission &&
+                    <div className={"ui segment"}>
+                        <Table style={{ margin: 0, padding: 0 }} striped>
+                            <Table.Body>
                                 <Table.Row>
                                     <Table.Cell>
-
                                         <div
                                             style={{
                                                 width: "100%",
@@ -355,16 +262,112 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                 alignItems: "center",
                                             }}
                                         >
-                                            <hr style={{ width: "calc(100% - 10em)" }} />
-                                            <h3>Chain Rewards</h3>
-                                            <RewardsGrid
-                                                targetGroup="continuum_items"
-                                                crewTargetGroup="continuum_helper"
-                                                rewards={getContinuumChainRewards() ?? []} />
-                                        </div>
+                                            <div style={{ display: 'flex', width: "100%", flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                <div style={{ width: "32px" }}></div>
+                                                <div>
+                                                    <h3>{isRemote && isRemote[questId] ? <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>{quest.name}</span> : quest.name}</h3>
+                                                </div>
+                                                <div>
+                                                    <MapExplanation header="Continuum Mission Map" />
+                                                </div>
+                                            </div>
 
+                                            <div style={{ margin: "0.5em 0" }}>
+                                                <TraitSelectorComponent
+                                                    style={{
+                                                        fontSize: "12pt",
+                                                        fontStyle: "italic",
+                                                        flexDirection: isMobile ? 'column' : 'row'
+                                                    }}
+                                                    questId={quest.id}
+                                                    traits={quest.traits_used ?? []}
+                                                    setSelectedTraits={setSelectedTraits}
+                                                    selectedTraits={selectedTraits}
+                                                />
+                                            </div>
+                                        </div>
                                     </Table.Cell>
-                                </Table.Row>}
+                                </Table.Row>
+                                <Table.Row>
+                                    <Table.Cell>
+                                        <Table>
+                                            <Table.Body>
+                                                {!isMobile &&
+                                                    <Table.Row>
+                                                        {!!stages && stages.map((tier, idx) => (
+                                                            <Table.Cell key={pageId + "table_tier_" + idx}>
+                                                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                                                    {tier.map((item) => (
+                                                                        <div key={pageId + 'table_tier_item_' + item.id} style={{ margin: "0.5em" }}>
+                                                                            <ChallengeNode
+                                                                                tapped={isTapped(item)}
+                                                                                highlight={isHighlighted(item)}
+                                                                                onClick={clickNode}
+                                                                                targetGroup={pageId + "_items"}
+                                                                                crewTargetGroup={pageId + "_helper"}
+                                                                                mastery={mastery}
+                                                                                style={{ width: `${800 / stages.length}px`, textAlign: "center" }}
+                                                                                quest={quest}
+                                                                                challengeId={item.id}
+                                                                            />
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </Table.Cell>
+                                                        ))}
+                                                    </Table.Row>}
+                                                {isMobile &&
+                                                    !!stages && stages.map((tier, idx) => (
+                                                        <Table.Row>
+                                                            <Table.Cell key={pageId + "table_tier_" + idx}>
+                                                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                                                    {tier.map((item) => (
+                                                                        <div key={pageId + 'table_tier_item_' + item.id} style={{ margin: "0.5em" }}>
+                                                                            <ChallengeNode
+                                                                                tapped={isTapped(item)}
+                                                                                highlight={isHighlighted(item)}
+                                                                                onClick={clickNode}
+                                                                                targetGroup={pageId + "_items"}
+                                                                                crewTargetGroup={pageId + "_helper"}
+                                                                                mastery={mastery}
+                                                                                style={{ width: `${800 / stages.length}px`, textAlign: "center" }}
+                                                                                quest={quest}
+                                                                                challengeId={item.id}
+                                                                            />
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </Table.Cell>
+                                                        </Table.Row>
+                                                    ))
+                                                }
+                                            </Table.Body>
+                                        </Table>
+                                    </Table.Cell>
+
+                                </Table.Row>
+                                {showChainRewards && "chain_rewards" in mission &&
+                                    <Table.Row>
+                                        <Table.Cell>
+
+                                            <div
+                                                style={{
+                                                    width: "100%",
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    alignItems: "center",
+                                                }}
+                                            >
+                                                <hr style={{ width: "calc(100% - 10em)" }} />
+                                                <h3>Chain Rewards</h3>
+                                                <RewardsGrid
+                                                    targetGroup="continuum_items"
+                                                    crewTargetGroup="continuum_helper"
+                                                    rewards={getContinuumChainRewards() ?? []} />
+                                            </div>
+
+                                        </Table.Cell>
+                                    </Table.Row>}
                             </Table.Body>
                         </Table>
                     </div>}

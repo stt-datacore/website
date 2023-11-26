@@ -63,6 +63,8 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const [currentLanguage, setCurrentLanguage] = useStateWithStorage('currentLanguage', getNavigatorLanguage(), { rememberForever: true });
 	//const currentLanguage = 'fr'
 	const { children, pageId, pageTitle, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
+	
+	const [isReady, setIsReady] = React.useState(false);
 
 	const demands = props.demands ?? [] as ValidDemands[];
 	const i18nDemand = 'translation_' + currentLanguage;
@@ -71,7 +73,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 		if (!demands.includes(required))
 			demands.push(required);
 	});
-	const isReady = !!globalContext.core.ready && !!globalContext.core.ready(demands);
+
 
 	const [dashboardPanel, setDashboardPanel] = React.useState<string | undefined>(undefined);
 	const [playerPanel, setPlayerPanel] = React.useState<string | undefined>(undefined);
@@ -79,6 +81,11 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	// topAnchor div styled to scroll properly with a fixed header
 	const topAnchor = React.useRef<HTMLDivElement>(null);
 	const contentAnchor = React.useRef<HTMLDivElement>(null);
+
+	setTimeout(() => {
+		setIsReady(!!globalContext.core.ready && !!globalContext.core.ready(demands));
+	})
+
 	return (
 		<div ref={topAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
 			<DataPageHelmet

@@ -84,7 +84,7 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
 
                 {!!challenge?.trait_bonuses?.length &&
                     <><b>Traits:&nbsp;</b><i>{challenge.trait_bonuses.map((t, idx) => {
-                        return <><br/><i>{appelate(t.trait)} (+{t.bonuses[mastery]})</i></>
+                        return <React.Fragment key={'trait_' + idx + t.trait}><br/><i>{appelate(t.trait)} (+{t.bonuses[mastery]})</i></React.Fragment>
                     })}</i></>
                 }
                 <img style={{ height: "2em", margin: "0.5em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
