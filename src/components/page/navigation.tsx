@@ -336,7 +336,7 @@ export const Navigation = (props: NavigationProps) => {
 						as={Grid}
 						animation='overlay'
 						onHide={() => setOpenBar(false)}
-						vertical
+						vertical="true"
 						visible={openBar}>
 						<Menu size={'large'} vertical style={{width: "300px"}}>
 							{sidebarItems}

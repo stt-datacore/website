@@ -244,6 +244,7 @@ export interface PathGroup {
     path: string;
     crew: IQuestCrew[];
     mastery: number;
+    path_expanded?: MissionChallenge[];
 }
 
 export interface QuestSolverResult {
