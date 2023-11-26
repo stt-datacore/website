@@ -630,11 +630,17 @@ const QuestSolver = {
                     }
                     return total === buildcount;
                 });
-                crew.forEach((c, idx) => c.score = idx + 1);
             }
+
+            crew.forEach((c, idx) => c.score = idx + 1);
 
             let allPass = !!threegroups.length && challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)));
 
+            pathSolves?.sort((a, b) => {
+                let ar = a.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
+                let br = b.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
+                return ar - br;
+            });
             resolve({
                 status: true,
                 fulfilled: allPass,
