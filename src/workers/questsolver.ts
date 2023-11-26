@@ -111,7 +111,7 @@ const QuestSolver = {
                 for (let c of wcrew) {
                     if (c.challenges?.some(chc => chc.challenge.id == ch.id)) {
                         solved.push(ch);
-                        if (!solveCrew.some(sc => sc.symbol === c.symbol)) {
+                        if (!solveCrew.includes(c)) {
                             solveCrew.push(c);
                         }
                         break;
