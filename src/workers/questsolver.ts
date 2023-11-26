@@ -592,15 +592,16 @@ const QuestSolver = {
                     let total = 0;
                     let slot = 0;
                     let failbuff = [] as EquipmentItem[];
-
+                    if (c.symbol === 'winn_kai_crew') {
+                        console.log("Break");
+                    }                    
                     for (let id of c.added_kwipment) {
                         if (c.added_kwipment_expiration && c.added_kwipment_expiration[slot]) {
                             slot++;
-                            buildcount++;
                             continue;
                         }
                         slot++;
-                        if (!id) continue;
+                        if (!id) continue;                        
                         total++;
 
                         let quip = allQuipment.find(q => q.kwipment_id?.toString() === id.toString());
