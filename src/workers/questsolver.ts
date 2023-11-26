@@ -561,7 +561,9 @@ const QuestSolver = {
                     c.skills[skill].range_max = c[skill].max;
                     c.skills[skill].range_min = c[skill].min;
                 });
-
+                if (c.symbol === 'winn_kai_crew') {
+                    console.log("break");
+                }
                 c.challenges?.forEach((ch, idx) => {
                     Object.keys(c.skills).forEach((skill) => {
                         let core = c.skills[skill].core;
