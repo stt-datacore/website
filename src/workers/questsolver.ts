@@ -518,7 +518,8 @@ const QuestSolver = {
 
                                 pathSolves.push({
                                     path: pathstr,
-                                    crew: tg
+                                    crew: tg,
+                                    mastery: config.mastery
                                 });
                             }
                         }
