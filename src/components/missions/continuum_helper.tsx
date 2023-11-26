@@ -162,9 +162,9 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     const [missionConfig, setMissionConfig] = useStateWithStorage<QuestFilterConfig>('continuum/missionConfig', { mastery: 0, idleOnly: true, showAllSkills: false });
 
-    const { buildableOnly, cheapestFirst, showAllSkills, mastery, idleOnly, considerFrozen, qpOnly, ignoreQpConstraint, includeCurrentQp } = missionConfig;
+    const { alwaysCrit, buildableOnly, cheapestFirst, showAllSkills, mastery, idleOnly, considerFrozen, qpOnly, ignoreQpConstraint, includeCurrentQp } = missionConfig;
 
-    const [internalSolverResults, internalSetSolverResults] = useStateWithStorage<QuestSolverCacheItem[]>(`continuum/solverCache`, []);
+    const [internalSolverResults, internalSetSolverResults] = React.useState<QuestSolverCacheItem[]>([]);
     
     const getCurrentKey = () => {
         return `${mission?.id}/${quest?.id}/${mastery}`;
@@ -244,6 +244,10 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     const setBuildableOnly = (value: boolean) => {
         setMissionConfig({ ...missionConfig, buildableOnly: value });
+    }
+
+    const setAlwaysCrit = (value: boolean) => {
+        setMissionConfig({ ...missionConfig, alwaysCrit: value });
     }
 
     /* Component Initialization & State Management */
@@ -432,6 +436,13 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             value: buildableOnly,
             setValue: setBuildableOnly,
             type: 'checkbox'
+        },
+        {
+            title: "Always Calculate Crit",
+            description: "Calculate crit even if the challenges are solved.",
+            value: alwaysCrit,
+            setValue: setAlwaysCrit,
+            type: 'checkbox'
         }
 
     ] as SolverOption[];
@@ -526,7 +537,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                     mastery,
                                     includeCurrentQp,
                                     buildableOnly,
-                                    cheapestFirst
+                                    cheapestFirst,
+                                    alwaysCrit
                                 }}
                             />
                         </div>
