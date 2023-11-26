@@ -5,7 +5,7 @@ import { Link } from 'gatsby';
 import { CrewMember } from '../../model/crew';
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 import { CrewHoverStat, CrewTarget } from '../../components/hovering/crewhoverstat';
-import CABExplanation from '../../components/cabexplanation';
+import CABExplanation from '../explanations/cabexplanation';
 import CONFIG from '../../components/CONFIG';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import { formatTierLabel } from '../../utils/crewutils';

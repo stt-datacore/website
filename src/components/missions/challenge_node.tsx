@@ -8,7 +8,7 @@ import { Icon } from "semantic-ui-react";
 
 export interface ChallengeNodeInfo {
     quest: Quest;
-    index: number;
+    challengeId: number;
     mastery: number;
 }
 
@@ -23,19 +23,19 @@ export interface ChallengeNodeProps extends ChallengeNodeInfo {
 
 export const ChallengeNode = (props: ChallengeNodeProps) => {
 
-    const { tapped, mastery, style, quest, index, targetGroup, crewTargetGroup } = props;
+    const { tapped, mastery, style, quest, challengeId, targetGroup, crewTargetGroup } = props;
 
     const challenges = quest.challenges ?? [];
     let reward = undefined as MissionReward | undefined;
     let rc = false;
-    const idx = quest.challenges?.findIndex(f => f.id === index) ?? 0;
+    const idx = quest.challenges?.findIndex(f => f.id === challengeId) ?? 0;
 
     if (quest.mastery_levels && quest.mastery_levels[mastery] && quest.mastery_levels[mastery].jackpots && quest.mastery_levels[mastery].jackpots?.length) {
         rc = (quest.mastery_levels[mastery].jackpots as Jackpot[])[idx].claimed;
-        reward = (quest.mastery_levels[mastery].jackpots as Jackpot[]).find(j => j.id === index)?.reward[0];
+        reward = (quest.mastery_levels[mastery].jackpots as Jackpot[]).find(j => j.id === challengeId)?.reward[0];
     }
 
-    const challenge = challenges.find(f => f.id === index) as MissionChallenge;
+    const challenge = challenges.find(f => f.id === challengeId) as MissionChallenge;
     const children = challenges.filter((c) => challenge.children.includes(c.id));
     const claimed = rc;
     const rewards = reward;
@@ -47,7 +47,7 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
         if (props.onClick) {
             props.onClick(e.nativeEvent, {
                 quest,
-                index,
+                challengeId: challengeId,
                 mastery
             });
         }

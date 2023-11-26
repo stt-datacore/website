@@ -17,15 +17,10 @@ import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { QuestCrewTable } from "./quest_crew_table";
 import { v4 } from "uuid";
 import { QuestSelector } from "./quest_selector";
+import { TraitSelection } from "./trait_selector";
 
 export interface ContinuumComponentProps {
     roster: (PlayerCrew | CrewMember)[];
-}
-
-export interface TraitSelection {
-    trait: string;
-    selected: boolean;
-    questId: number;
 }
 
 export interface DiscoveredMissionInfo {
