@@ -311,7 +311,8 @@ const QuestSolver = {
                     status: false,
                     fulfilled: false,
                     crew: [],
-                    error: "No player crew roster"
+                    error: "No player crew roster",
+                    paths: []
                 });
                 return;
             }
@@ -359,7 +360,8 @@ const QuestSolver = {
                     status: false,
                     fulfilled: false,
                     crew: [],
-                    error: "No quest or challenges provided"
+                    error: "No quest or challenges provided",
+                    paths: []
                 });
                 return;
             }
