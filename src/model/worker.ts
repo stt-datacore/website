@@ -253,7 +253,7 @@ export interface QuestSolverResult {
     error?: string;
     fulfilled: boolean;
     failed?: number[];
-    paths?: PathGroup[];
+    paths: PathGroup[];
 }
 
 export interface QuestSolverCacheItem {

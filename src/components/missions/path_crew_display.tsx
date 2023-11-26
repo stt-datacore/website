@@ -1,11 +1,11 @@
 import React from "react";
 import { PathInfo } from "../../utils/episodes";
 import { GlobalContext } from "../../context/globalcontext";
-import { IQuestCrew, PathGroup } from "../../model/worker";
+import { CrewChallengeInfo, IQuestCrew, PathGroup } from "../../model/worker";
 import { MissionChallenge, Quest, QuestFilterConfig } from "../../model/missions";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import ItemDisplay from "../itemdisplay";
-import { Skill } from "../../model/crew";
+import { BaseSkills, Skill } from "../../model/crew";
 import CrewStat from "../crewstat";
 import { appelate } from "../../utils/misc";
 import { CrewItemsView } from "../item_presenters/crew_items";
@@ -30,6 +30,47 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
     const path = pathGroup.path.split("_").map(t => quest.challenges?.find(f => f.id.toString() === t)) as MissionChallenge[];
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
+    const getCrewPower = (crew: IQuestCrew, stage: number, challenge: CrewChallengeInfo) => {
+        let newskill = {} as BaseSkills;
+        
+        try {
+            if (stage === 0 || !crew.challenges?.some(c => c.challenge.id === path[stage - 1].id)) {
+                challenge.power_decrease = 0;
+                Object.keys(crew.skills).forEach((skill) => {
+                    newskill[skill] = {
+                        core: Math.round(crew[skill].core),
+                        range_min: Math.round(crew[skill].min),
+                        range_max: Math.round(crew[skill].max),
+                        skill
+                    }
+                });
+            }
+            else {               
+                challenge.power_decrease = 0.2;
+                Object.keys(crew.skills).forEach((skill) => {
+                    newskill[skill] = {
+                        core: Math.round(crew[skill].core - (crew[skill].core * 0.2)),
+                        range_min: Math.round(crew[skill].min - (crew[skill].min * 0.2)),
+                        range_max: Math.round(crew[skill].max - (crew[skill].max * 0.2)),
+                        skill
+                    }
+                });
+            }
+        }
+        catch {
+            return crew.skills;
+        }
+
+        let cm = newskill[challenge.challenge.skill].core + newskill[challenge.challenge.skill].min;
+        let cx = newskill[challenge.challenge.skill].core + newskill[challenge.challenge.skill].max;
+
+        let ct = challenge.challenge.difficulty_by_mastery[mastery] + [250, 275, 300][mastery];
+
+        challenge.max_solve = cm < ct;
+
+        return newskill;
+    }
+
     return <React.Fragment>
 
         <div style={{
@@ -39,9 +80,8 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
             justifyContent: 'space-evenly'
         }}>
 
-            {path.map((challenge) => {
+            {path.map((challenge, pathIdx) => {
                 const pathCrew = crew.filter(c => c.challenges?.some(ch => ch.challenge.id === challenge.id));
-
 
                 return (<React.Fragment key={'path_challenge_crew_group' + challenge.id.toString()}>
                     <div style={{
@@ -81,7 +121,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                                             crew={{ ...c, kwipment: c.added_kwipment ?? [], kwipment_expiration: c.added_kwipment_expiration ?? [] }}
                                             quipment={true} />
 
-                                        {c.challenges && Object.values(c.challenges?.find(ch => ch.challenge.id === challenge.id)?.skills ?? {}).map(((skill: Skill) => {
+                                        {c.challenges && crewChallenge && Object.values(getCrewPower(c, pathIdx, crewChallenge)).map(((skill: Skill) => {
                                             const key = skill.skill ?? '';
                                             if (key !== challenge.skill) return <></>
                                             return (
