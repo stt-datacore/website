@@ -243,6 +243,7 @@ export interface IQuestCrew extends PlayerCrew {
 export interface PathGroup {
     path: string;
     crew: IQuestCrew[];
+    mastery: number;
 }
 
 export interface QuestSolverResult {
