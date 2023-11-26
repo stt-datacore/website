@@ -5,11 +5,11 @@ import CONFIG from '../../../components/CONFIG';
 
 import { IRosterCrew } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
-import CABExplanation from '../../../components/cabexplanation';
+import CABExplanation from '../../explanations/cabexplanation';
 import { formatTierLabel, getSkillOrder, printPortalStatus, printSkillOrder, qbitsToSlots, skillToRank } from '../../../utils/crewutils';
 import { navigate } from 'gatsby';
 import { TinyStore } from '../../../utils/tiny';
-import VoyageExplanation from '../../voyexplanation';
+import VoyageExplanation from '../../explanations/voyexplanation';
 
 export const getBaseTableConfig = (tableType: 'allCrew' | 'myCrew' | 'profileCrew') => {
 	const tableConfig = [] as ITableConfigRow[];

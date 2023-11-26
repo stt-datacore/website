@@ -13,6 +13,7 @@ import { NavMapItem, PathInfo, getNodePaths, makeNavMap } from "../../utils/epis
 import { TraitSelection, TraitSelectorComponent } from "./trait_selector";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { QuestSelector } from "./quest_selector";
+import MapExplanation from "../explanations/mapexplanation";
 
 export interface HighlightItem { 
     quest: number, 
@@ -23,7 +24,7 @@ export interface MissionComponentProps {
     mission: Mission | ContinuumMission;
     
     showSelector?: boolean;
-
+    
     questId?: number;
     setQuestId?: (value?: number) => void;
     
@@ -216,7 +217,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                         mastery={mastery}
                         setMastery={setMastery}
                         highlighted={isRemote}
-                        />}
+                        />}                
                 {!!quest && typeof questId !== 'undefined' &&
                 <div className={"ui segment"}>
                     <Table style={{ margin: 0, padding: 0 }} striped>
@@ -231,7 +232,16 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                             alignItems: "center",
                                         }}
                                     >
-                                        <h3>{isRemote && isRemote[questId] ? <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>{quest.name}</span> : quest.name}</h3>
+                                        <div style={{display:'flex', width: "100%", flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+                                            <div style={{width: "32px"}}></div>
+                                            <div>
+                                                <h3>{isRemote && isRemote[questId] ? <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>{quest.name}</span> : quest.name}</h3>
+                                            </div>
+                                            <div>
+                                                <MapExplanation header="Continuum Mission Map" />
+                                            </div>
+                                        </div>
+                                    
                                         <div style={{ margin: "0.5em 0" }}>                                    
                                             <TraitSelectorComponent
                                                 style={{
