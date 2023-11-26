@@ -18,6 +18,7 @@ import { QuestCrewTable } from "./quest_crew_table";
 import { v4 } from "uuid";
 import { QuestSelector } from "./quest_selector";
 import { TraitSelection } from "./trait_selector";
+import { PathTable } from "./path_table";
 
 export interface ContinuumComponentProps {
     roster: (PlayerCrew | CrewMember)[];
@@ -146,6 +147,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     /* Component State */
 
     const [showPane, setShowPane] = useStateWithStorage('continuum/showPane', 0);
+    const [showResults, setShowResults] = useStateWithStorage('continuum/showResults', 0);
     const [errorMsg, setErrorMsg] = React.useState<string | undefined>(undefined);
     const [clearInc, setClearInc] = React.useState(0);
 
@@ -524,7 +526,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                 disabled={!quest?.challenges?.some(ch => ch.difficulty_by_mastery?.some(d => !!d))}
                                 config={{
                                     quest,
-                                    challenges: (highlighted.map(h => quest?.challenges?.filter(ch => ch.id === h.challenge))?.flat() ?? []) as MissionChallenge[],
+                                    challenges: (highlighted.map(h => quest?.challenges?.filter(ch => h.quest === quest?.id && ch.id === h.challenge))?.flat() ?? []) as MissionChallenge[],
                                     idleOnly,
                                     considerFrozen,
                                     qpOnly,
@@ -609,14 +611,46 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 )}
 
                 <div style={{ display: showPane === 0 ? 'none' : undefined }}>
-                    <ItemHoverStat targetGroup={'continuum_items_1'} />
+                    <ItemHoverStat targetGroup={'continuum_quest_crew_items'} />
+
+                    <Step.Group fluid>
+                        <Step
+                            onClick={(e) => setShowResults(0)}
+                            active={showResults === 0}
+                        >
+                            <Step.Content>
+                                <Step.Title>All Crew Results</Step.Title>
+                                <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Show all crew results from the crew finder run.</Step.Description>
+                            </Step.Content>
+                        </Step>
+                        <Step
+                            onClick={(e) => setShowResults(1)}
+                            active={showResults === 1}
+                        >
+                            <Step.Content>
+                                <Step.Title>Path Results</Step.Title>
+                                <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Show crew grouped into paths.</Step.Description>
+                            </Step.Content>
+                        </Step>
+                    </Step.Group>
+                    
+                    {showResults === 0 &&
                     <QuestCrewTable
                         quest={quest}
                         solverResults={solverResults}
                         pageId={'continuum'}
-                        config={missionConfig} />
+                        config={missionConfig} />}
+
+                    {showResults === 1 &&
+                        <PathTable 
+                            quest={quest}
+                            pathGroups={solverResults?.paths}
+                            pageId={'continuum'}
+                            />
+                    }
+                    {!solverResults && <div style={{ height: '50vh' }}>&nbsp;</div>}
                 </div>
-                {!solverResults && <div style={{ height: '50vh' }}>&nbsp;</div>}
+                
             </div>
         </>
     );

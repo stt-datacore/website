@@ -4,12 +4,14 @@ import { PathGroup } from "../../model/worker";
 import { GlobalContext } from "../../context/globalcontext";
 import { Pagination, Table } from "semantic-ui-react";
 import { useStateWithStorage } from "../../utils/storage";
+import { ITableConfigRow, SearchableTable } from "../searchabletable";
+import { PathCrewDisplay } from "./path_crew_display";
 
 
 
 export interface PathTableProps {
-    pathGroups: PathGroup[],
-    quest: Quest,
+    pathGroups?: PathGroup[],
+    quest?: Quest,
     targetGroup?: string;
     pageId: string;
 }
@@ -17,55 +19,60 @@ export interface PathTableProps {
 
 export const PathTable = (props: PathTableProps) => {
     const context = React.useContext(GlobalContext);
-    const { pageId, pathGroups, quest, targetGroup } = props;
+    const { pageId, quest, targetGroup } = props;
 
-    const [page, setPage] = useStateWithStorage<number>(`${pageId}/pathTablePage`, 0);
-    const [pageSize, setPageSize] = useStateWithStorage<number>(`${pageId}/pathTablePage`, 10);
-    const [data, setData] = React.useState<PathGroup[]>([]);
-
-    const [totalPages, setTotalPages] = React.useState(0);
-
-    React.useEffect(() => {
-        const tp = Math.ceil(pathGroups.length / pageSize);
-        if (tp != totalPages) {
-            setTotalPages(tp);
-            setPage(1);
-        }
-    }, [pathGroups, pageSize])
-
-    React.useEffect(() => {
-        if (page === 0) {
-            setData([]);
-        }
-        else {
-            let idx = (page - 1) * pageSize;
-            let newdata = pathGroups.slice(idx, idx + pageSize);
-            setData(newdata);
-        }
-    }, [pathGroups, pageSize, page]);
-
+    const pathGroups = props.pathGroups ?? [];
+    
     const sizeChoices = [1, 5, 10, 20, 50, 100].map((n) => {
         return {
             key: "page" + n.toString(),
             value: n,
             text: n.toString()
         }
-    })
+    });
+
+    const rowConfig = [
+        { width: 1, column: '', title: 'Paths' }
+    ] as ITableConfigRow[]
+
+    function renderRow(data: PathGroup, idx: number): JSX.Element {
+
+        if (!quest) return <></>
+        
+		return (
+			<Table.Row key={data.path + data.mastery.toString()}>
+				<Table.Cell>
+                    <PathCrewDisplay 
+                        quest={quest}
+                        compact={false}
+                        pathGroup={data}
+                        targetGroup={pageId + '_threeView_target'}
+                        />
+				</Table.Cell>
+			</Table.Row>
+		);
+	}
+
+    const filterRow = (data: PathGroup, filter: any) => {
+        return true;
+    }
 
     return (
         <React.Fragment>
-            
-            <Pagination fluid totalPages={totalPages} activePage={page} onPageChange={(e, data) => setPage(data.activePage as number)} />
 
-            <Table>
-                <Table.Header>
-                    <Table.Row>
-                        <Table.HeaderCell>
-
-                        </Table.HeaderCell>
-                    </Table.Row>
-                </Table.Header>
-            </Table>
+            <SearchableTable
+				id='collections/progress'
+                pagingOptions={sizeChoices}
+				data={pathGroups}
+				config={rowConfig}
+				renderTableRow={(data: any, idx?: number, isActive?: boolean) => renderRow(data, idx ?? -1)}
+				filterRow={(collection, filter) => filterRow(collection, filter)}
+				explanation={
+					<div>
+						<p>Search for solves by crew name, challenge name, or trait.</p>
+					</div>
+				}
+			/>
         </React.Fragment>
     )
 }
