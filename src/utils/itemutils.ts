@@ -242,6 +242,26 @@ export function getPossibleQuipment<T extends CrewMember>(crew: T, quipment: Equ
 	});
 }
 
+export function addItemBonus<T extends PlayerCrew>(crew: T, source: EquipmentItem | ItemBonusInfo, skill?: string) {
+	let bonuses = "bonusText" in source ? source : getItemBonuses(source);
+	Object.keys(bonuses.bonuses).forEach((sk) => {
+		if (!!skill && sk != skill) return;
+		crew[sk].core += bonuses.bonuses[sk].core;
+		crew[sk].max += bonuses.bonuses[sk].range_max;
+		crew[sk].min += bonuses.bonuses[sk].range_min;
+	});
+}
+
+export function subtractItemBonus<T extends PlayerCrew>(crew: T, source: EquipmentItem | ItemBonusInfo, skill?: string) {
+	let bonuses = "bonusText" in source ? source : getItemBonuses(source);
+	Object.keys(bonuses.bonuses).forEach((sk) => {
+		if (!!skill && sk != skill) return;
+		crew[sk].core -= bonuses.bonuses[sk].core;
+		crew[sk].max -= bonuses.bonuses[sk].range_max;
+		crew[sk].min -= bonuses.bonuses[sk].range_min;
+	});
+}
+
 export function getQuipmentCrew<T extends CrewMember>(item: EquipmentItem, crew: T[]): T[] {
 	if (item.kwipment) {
 		const bonus = getItemBonuses(item);

@@ -230,6 +230,11 @@ export interface CrewChallengeInfo {
     max_solve?: boolean;
 }
 
+export interface AssociatedPath {
+    path: string;
+    needed_kwipment?: number[];
+}
+
 export interface IQuestCrew extends PlayerCrew {
     challenges?: CrewChallengeInfo[];
     challenge_key?: string;
@@ -237,7 +242,7 @@ export interface IQuestCrew extends PlayerCrew {
     added_kwipment_expiration?: number[][] | number[];
     metasort?: number;
     added_kwipment_key?: string;
-    associated_paths?: string[];
+    associated_paths?: AssociatedPath[];
 }
 
 export interface PathGroup {

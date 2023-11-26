@@ -94,7 +94,8 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                         {pathCrew.map((c) => {
 
                             let crewChallenge = c.challenges?.find(ch => ch.challenge.id === challenge.id);
-
+                            let crewpaths = c.associated_paths?.find(ap => ap.path === pathGroup.path);
+                            
                             return (
                                 <React.Fragment key={'path_challenge_crew_group' + challenge.id.toString() + c.symbol}>
                                     <div style={{
@@ -118,7 +119,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                                         <CrewItemsView
                                             targetGroup={itemTargetGroup}
                                             printNA={config.includeCurrentQp ? <span style={{ color: 'cyan' }}>New</span> : <br />}
-                                            crew={{ ...c, kwipment: c.added_kwipment ?? [], kwipment_expiration: c.added_kwipment_expiration ?? [] }}
+                                            crew={{ ...c, kwipment: crewpaths?.needed_kwipment ?? c.added_kwipment ?? [], kwipment_expiration: c.added_kwipment_expiration ?? [] }}
                                             quipment={true} />
 
                                         {c.challenges && crewChallenge && Object.values(getCrewPower(c, pathIdx, crewChallenge)).map(((skill: Skill) => {

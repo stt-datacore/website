@@ -7,7 +7,7 @@ import { IQuestCrew, PathGroup, QuestSolverConfig, QuestSolverResult } from "../
 import { getNodePaths, makeNavMap } from "../utils/episodes";
 import { calcItemDemands, canBuildItem, deductDemands, reverseDeduction } from "../utils/equipment";
 
-import { getPossibleQuipment, getItemBonuses, ItemBonusInfo } from "../utils/itemutils";
+import { getPossibleQuipment, getItemBonuses, ItemBonusInfo, addItemBonus } from "../utils/itemutils";
 import { arrayIntersect } from "../utils/misc";
 import { applyCrewBuffs } from "./betatachyon";
 
@@ -144,18 +144,19 @@ const QuestSolver = {
             questcrew = roster.filter(c =>
                 (challenge.skill in c.skills) && (!config.qpOnly || c.q_bits >= 100))
                 .sort((a, b) => {
-                    let maxa = a[challenge.skill].core + ((a[challenge.skill].max + a[challenge.skill].min) / 2);
-                    let maxb = b[challenge.skill].core + ((b[challenge.skill].max + b[challenge.skill].min) / 2);
+                    let ba = a[challenge.skill].core + a[challenge.skill].min;
+                    let bb = b[challenge.skill].core + b[challenge.skill].min;
 
                     for (let trait of useTraits) {
                         if (a.traits.includes(trait.trait) || a.traits_hidden.includes(trait.trait)) {
-                            maxa += trait.bonuses[mastery];
+                            ba += trait.bonuses[mastery];
                         }
                         if (b.traits.includes(trait.trait) || b.traits_hidden.includes(trait.trait)) {
-                            maxb += trait.bonuses[mastery];
+                            bb += trait.bonuses[mastery];
                         }
                     }
-                    return maxb - maxa;
+
+                    return bb - ba;
                 })
                 .map(c => c as IQuestCrew);
 
@@ -282,10 +283,9 @@ const QuestSolver = {
                 crew.metasort += cpmin;
 
                 if (slots.length) {
+                    
                     Object.entries(quips).forEach(([symbol, qp]) => {
-                        crew[challenge.skill].core += qp.bonuses[challenge.skill].core;
-                        crew[challenge.skill].min += qp.bonuses[challenge.skill].range_min;
-                        crew[challenge.skill].max += qp.bonuses[challenge.skill].range_max;
+                        addItemBonus(crew, qp, challenge.skill);
                     });
 
                     let j = 0;
@@ -494,44 +494,7 @@ const QuestSolver = {
 
             crew = chfill.concat(crew.filter(f => !chfill.some(chf => chf.symbol === f.symbol)));
 
-            const threegroups = [] as IQuestCrew[][];
-            const threekeys = [] as string[];
-            const sp = [] as MissionChallenge[][];
-            const pathSolves = [] as PathGroup[];
-
-            for (let i = 0; i < crew.length; i++) {
-                for (let path of paths) {
-                    let tg = anyThree(crew, path, i);
-                    if (tg) {
-                        tg.sort((a, b) => a.symbol.localeCompare(b.symbol));
-                        let key = tg.map(c => c.symbol).join("_");
-                        if (!threekeys.includes(key)) {
-                            threegroups.push(tg);
-                            threekeys.push(key);
-                            
-                            if (!sp.includes(path)) {
-                                sp.push(path);
-                            }
-                            
-                            let pathstr = path.map(p => p.id).join("_");
-
-                            tg.forEach((c) => {
-                                c.associated_paths ??= [];
-                                if (!c.associated_paths.includes(pathstr)) {
-                                    c.associated_paths.push(pathstr);
-                                }
-                            });
-
-                            pathSolves.push({
-                                path: pathstr,
-                                crew: tg,
-                                mastery: config.mastery
-                            });
-                        
-                        }
-                    }
-                }
-            }
+        
 
             crew.forEach((c, idx) => {
                 c.score = idx + 1;
@@ -635,6 +598,64 @@ const QuestSolver = {
             }
 
             crew.forEach((c, idx) => c.score = idx + 1);
+
+            const threegroups = [] as IQuestCrew[][];
+            const threekeys = [] as string[];
+            const sp = [] as MissionChallenge[][];
+            const pathSolves = [] as PathGroup[];
+
+            for (let i = 0; i < crew.length; i++) {
+                for (let path of paths) {
+                    let tg = anyThree(crew, path, i);
+                    if (tg) {
+                        tg.sort((a, b) => a.symbol.localeCompare(b.symbol));
+                        let key = tg.map(c => c.symbol).join("_");
+                        if (!threekeys.includes(key)) {
+                            threegroups.push(tg);
+                            threekeys.push(key);
+                            
+                            if (!sp.includes(path)) {
+                                sp.push(path);
+                            }
+                            
+                            let pathstr = path.map(p => p.id).join("_");
+
+                            tg.forEach((c) => {
+
+                                c.associated_paths ??= [];
+                                let added = c.added_kwipment?.filter((q, idx) => c.added_kwipment_expiration && !c.added_kwipment_expiration[idx]) as number[];
+
+                                if (c.added_kwipment?.some(q => !!q) && c.added_kwipment_expiration?.some(q => !!q)) {
+                                    let nc = JSON.parse(JSON.stringify(c)) as IQuestCrew;
+                                    resetCrew(nc);
+
+                                    for (let ch of path) {
+                                        if (c.challenges?.some(cc => cc.challenge.id === ch.id)) {
+                                            let ca = [nc];
+                                            ca = processChallenge(ch, ca, ca);
+                                        }
+                                    }
+                                    added = nc.added_kwipment as number[];
+                                }
+
+                                if (!c.associated_paths.find(ap => ap.path === pathstr)) {
+                                    c.associated_paths.push({
+                                        path: pathstr,
+                                        needed_kwipment: added
+                                    });
+                                }
+                            });
+
+                            pathSolves.push({
+                                path: pathstr,
+                                crew: tg,
+                                mastery: config.mastery
+                            });
+                        
+                        }
+                    }
+                }
+            }
 
             let allPass = !!threegroups.length && challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)));
 
