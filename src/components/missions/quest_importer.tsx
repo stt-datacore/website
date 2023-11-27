@@ -21,10 +21,14 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
     const context = React.useContext(GlobalContext);
     const { playerData} = context.player;
 	
-	const [collapsed, setCollapsed] = React.useState(!!currentHasRemote);
+	const [collapsed, setCollapsed] = React.useState<boolean | undefined>(undefined);
 
     const hasPlayer = !!playerData;
     
+    React.useEffect(() => {
+        if (collapsed === undefined) setCollapsed(true);
+    }, [currentHasRemote]);
+
 	const validateMission = (json: Quest) => {
         if (!json) {
             return ("No data");                        
