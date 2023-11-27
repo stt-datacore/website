@@ -72,6 +72,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     const [remoteQuestFlags, internalSetRemoteQuestFlags] = React.useState<boolean[] | undefined>(mlookup?.remoteQuests);
     const [mission, internalSetMission] = React.useState<ContinuumMission | undefined>(startMission);
+    const [currentHasRemote, setCurrentHasRemote] = React.useState(false);
 
     const setRemoteQuestFlags = (value: boolean[]) => {
         let x = 0;
@@ -140,6 +141,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         if (!!fmission.mission.quests?.length && fmission.mission.quests.length !== fmission?.remoteQuests?.length) {
             fmission.remoteQuests = fmission.mission.quests.map(q => false);
         }
+
         internalSetRemoteQuestFlags(fmission.remoteQuests);
         internalSetMission(fmission.mission);
     }, [groupedMissions]);
@@ -271,7 +273,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     React.useEffect(() => {
         if (!!mission?.quests?.length) {
-            setQuestId(undefined);
+            setQuestId(undefined);            
             setTimeout(() => setQuestId(questId ?? 0));
         }
     }, [mission]);
@@ -365,10 +367,14 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         }
     }
 
+    React.useEffect(() => {
+        if (!mission || !quest || !remoteQuestFlags) return;
+        const hasRemote = !!mission?.quests?.find((q, idx) => q.id === quest?.id && remoteQuestFlags && remoteQuestFlags[idx])
+        setCurrentHasRemote(hasRemote);
+    }, [mission, quest, remoteQuestFlags])
+
     /* Render */
-
-
-    const currentHasRemote = !!mission?.quests?.find((q, idx) => q.id === quest?.id && remoteQuestFlags && remoteQuestFlags[idx])
+    
     const solverResults = getSolverResults()?.result;
     const boardFail = solverResults?.failed?.filter(fid => quest?.challenges?.find(ch => ch.id === fid)?.children?.length === 0)?.length === quest?.challenges?.filter(ch => !ch.children?.length)?.length;
 
@@ -461,9 +467,9 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             </React.Fragment>
         )
     }
-
+    
     return (
-        <>
+        <>        
             <div>
                 <Notification
                     header="Work In Progress"
@@ -478,7 +484,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 />
 
                 <QuestImportComponent
-                    currentHasRemote={currentHasRemote}
+                    currentHasRemote={currentHasRemote}                    
                     setQuest={setRemoteQuest}
                     quest={quest}
                     questId={quest?.id}
@@ -579,7 +585,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                         </Step.Content>
                     </Step>
                 </Step.Group>
-                {mission &&
+                {!!mission &&
                     <div style={{ display: showPane !== 0 ? 'none' : undefined }}>
                         <MissionMapComponent
                             autoTraits={true}

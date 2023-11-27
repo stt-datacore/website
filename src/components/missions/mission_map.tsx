@@ -224,15 +224,6 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         }
     }, [questId]);
 
-    React.useEffect(() => {
-        if (!!mission?.quests?.length) {
-            if (setQuestId) {
-                setQuestId(undefined);
-                setTimeout(() => setQuestId(questId ?? 0));
-            }
-        }
-    }, [mission]);
-
     return (
         <>
             <div>
