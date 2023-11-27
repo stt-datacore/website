@@ -533,8 +533,8 @@ const QuestSolver = {
                 c.challenges?.forEach((ch, idx) => {
                     Object.keys(c.skills).forEach((skill) => {
                         let core = c[skill].core;
-                        let max = c[skill].range_max;
-                        let min = c[skill].range_min;
+                        let max = c[skill].max;
+                        let min = c[skill].min;
 
                         core -= Math.round(core * (ch.power_decrease ?? 0));
                         max -= Math.round(max * (ch.power_decrease ?? 0));
