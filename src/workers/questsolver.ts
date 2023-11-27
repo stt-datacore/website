@@ -79,16 +79,17 @@ const QuestSolver = {
             return e;
         }
 
-        function deductItem(item: EquipmentItem) {
-            deductHistory[item.symbol] ??= [];
+        function deductItem(item: EquipmentItem, history: { [key: string]: boolean[]} ) {
+            history[item.symbol] ??= [];
             let r = deductDemands(item, playerItems);
-            deductHistory[item.symbol].push(r);
+            history[item.symbol].push(r);
+            return r;
         }
 
-        function reverseItem(item: EquipmentItem) {
-            deductHistory[item.symbol] ??= [];
-            if (!deductHistory[item.symbol].length) return;
-            let b = deductHistory[item.symbol].splice(deductHistory[item.symbol].length - 1, 1);
+        function reverseItem(item: EquipmentItem, history: { [key: string]: boolean[]}) {
+            history[item.symbol] ??= [];
+            if (!history[item.symbol].length) return;
+            let b = history[item.symbol].splice(history[item.symbol].length - 1, 1);
             if (!b) {
                 item.quantity ??= 0;
                 item.quantity++;
@@ -100,7 +101,7 @@ const QuestSolver = {
 
         function anyThree(crew: IQuestCrew[], path: MissionChallenge[], startIndex?: number) {
             startIndex ??= 0;
-            if (startIndex >= (crew.length - 3)) return false;
+            if (startIndex > (crew.length - 3)) return false;
 
             const solved = [] as MissionChallenge[];
             const solveCrew = [] as IQuestCrew[];
@@ -553,51 +554,49 @@ const QuestSolver = {
                 });
             });
 
-            if (config.buildableOnly) {
-                crew = crew.filter((c) => {
-                    if (!c.added_kwipment) return true;
-                    if (c.added_kwipment.filter(c => !!c).length === c.added_kwipment_expiration?.filter(c => !!c)?.length) return true;
+            const buildQuipment = (c: IQuestCrew, allQuipment: EquipmentItem[], deductHistory: { [key: string]: boolean[] }, altItems?: number[]) => {
+                altItems ??= c.added_kwipment as number[] ?? [];
+                if (!altItems?.length) return true;
+                if (altItems.filter(c => !!c).length === c.added_kwipment_expiration?.filter(c => !!c)?.length) return true;
 
-                    let buildcount = 0;
-                    let total = 0;
-                    let slot = 0;
-                    let failbuff = [] as EquipmentItem[];
-                    if (c.symbol === 'winn_kai_crew') {
-                        console.log("Break");
-                    }
-                    for (let id of c.added_kwipment) {
-                        if (c.added_kwipment_expiration && c.added_kwipment_expiration[slot]) {
-                            slot++;
-                            continue;
-                        }
+                let buildcount = 0;
+                let total = 0;
+                let slot = 0;
+                let failbuff = [] as EquipmentItem[];
+                if (c.symbol === 'winn_kai_crew') {
+                    console.log("Break");
+                }
+                for (let id of altItems) {
+                    if (c.added_kwipment_expiration && c.added_kwipment_expiration[slot]) {
                         slot++;
-                        if (!id) continue;
-                        total++;
-
-                        let quip = allQuipment.find(q => q.kwipment_id?.toString() === id.toString());
-                        if (quip && !quip.demands) {
-                            quip.demands = calcItemDemands(quip, config.context.core.items, playerItems);
-                        }
-
-                        if (quip && canBuildItem(quip)) {
-                            deductItem(quip);
-                            failbuff.push(quip);
-                            buildcount++;
-                        }
-                        else {
-                            return false;
-                        }
+                        continue;
                     }
-                    if (total !== buildcount) {
-                        for (let quip of failbuff) {
-                            reverseItem(quip);
-                        }
+                    
+                    slot++;
+                    if (!id) continue;
+                    total++;
+
+                    let quip = allQuipment.find(q => q.kwipment_id?.toString() === id.toString());
+                    if (quip && !quip.demands) {
+                        quip.demands = calcItemDemands(quip, config.context.core.items, playerItems);
                     }
-                    return total === buildcount;
-                });
+
+                    if (quip && canBuildItem(quip)) {
+                        deductItem(quip, deductHistory);
+                        failbuff.push(quip);
+                        buildcount++;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                if (total !== buildcount) {
+                    for (let quip of failbuff) {
+                        reverseItem(quip, deductHistory);
+                    }
+                }
+                return total === buildcount;
             }
-
-            crew.forEach((c, idx) => c.score = idx + 1);
 
             const threegroups = [] as IQuestCrew[][];
             const threekeys = [] as string[];
@@ -606,8 +605,10 @@ const QuestSolver = {
 
             for (let i = 0; i < crew.length; i++) {
                 for (let path of paths) {
-                    let tg = anyThree(crew, path, i);
-                    if (tg) {
+                    let testcrew = anyThree(crew, path, i);
+
+                    if (testcrew) {
+                        const tg = testcrew;
                         tg.sort((a, b) => a.symbol.localeCompare(b.symbol));
                         let key = tg.map(c => c.symbol).join("_");
                         if (!threekeys.includes(key)) {
@@ -635,6 +636,7 @@ const QuestSolver = {
                                             ca = processChallenge(ch, ca, ca);
                                         }
                                     }
+
                                     added = nc.added_kwipment as number[];
                                 }
 
@@ -646,24 +648,64 @@ const QuestSolver = {
                                 }
                             });
 
-                            pathSolves.push({
-                                path: pathstr,
-                                crew: tg,
-                                mastery: config.mastery
-                            });
-                        
+                            let pass = true;
+
+                            if (config.buildableOnly && typeof tg !== 'boolean') {
+                                pass = false;
+                                const tghist = {} as { [key: string]: boolean[] };
+                                const pretendItems = allQuipment
+                                    .filter((quip) => {
+                                        return tg.some(c => c.associated_paths?.some(pt => pt.path === pathstr && quip.kwipment_id && pt.needed_kwipment?.includes(Number.parseInt(quip.kwipment_id as string))))
+                                    })
+                                    .map((quip) => {
+                                    return { ... quip, demands: calcItemDemands(quip, config.context.core.items, playerItems) }
+                                });    
+                                
+                                let tc = tg.filter((c) => buildQuipment(c, pretendItems, tghist, c.associated_paths?.find(fp => fp.path === pathstr)?.needed_kwipment));
+                                pass = tc.length === tg.filter(g => g.challenges?.some(gch => path.includes(gch.challenge)))?.length;
+                            }
+
+                            if (pass) {
+                                pathSolves.push({
+                                    path: pathstr,
+                                    crew: tg,
+                                    mastery: config.mastery
+                                });
+                            }
                         }
                     }
                 }
             }
 
-            let allPass = !!threegroups.length && challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)));
+            if (config.buildableOnly) {
+                crew = crew.filter((c) => buildQuipment(c, allQuipment, deductHistory));
+            }
+            if (!pathSolves.length && challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)))) {
+                let rpaths = [ ... new Set(crew.map(c => c.associated_paths ?? []).flat()) ];
+                let rchallenges = [ ... new Set(crew.map(c => c.challenges ?? []).flat()) ];
+                for (let path of rpaths) {
+                    let ci = path.path.split("_").map(d => rchallenges.find(e => e.challenge.id.toString() === d)?.challenge) as MissionChallenge[];
+                    let rcrew = anyThree(crew, ci)
+                    if (rcrew) {
+                        if (!pathSolves.some(ps => ps.path === path.path)) {
+                            pathSolves.push({
+                                path: path.path,
+                                crew: rcrew,
+                                mastery: config.mastery
+                            })
+                        }
+                    }
+                }
+            }
+            let allPass = !!pathSolves.length && challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)));
 
+            crew.forEach((c, idx) => c.score = idx + 1);
             pathSolves?.sort((a, b) => {
                 let ar = a.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
                 let br = b.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
                 return ar - br;
             });
+
             resolve({
                 status: true,
                 fulfilled: allPass,

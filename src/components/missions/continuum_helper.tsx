@@ -367,7 +367,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     /* Render */
     const solverResults = getSolverResults()?.result;
-    const boardFail = solverResults?.failed?.some(fid => quest?.challenges?.find(ch => ch.id === fid)?.children?.length === 0);
+    const boardFail = solverResults?.failed?.filter(fid => quest?.challenges?.find(ch => ch.id === fid)?.children?.length === 0)?.length === quest?.challenges?.filter(ch => !ch.children?.length)?.length;
 
     type SolverOption = {
         title: string,
@@ -618,8 +618,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                             active={showResults === 0}
                         >
                             <Step.Content>
-                                <Step.Title>All Crew Results</Step.Title>
-                                <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Show all crew results from the crew finder run.</Step.Description>
+                                <Step.Title>Path Results</Step.Title>
+                                <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Show crew and quipment solutions for distinct paths.</Step.Description>
                             </Step.Content>
                         </Step>
                         <Step
@@ -627,21 +627,13 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                             active={showResults === 1}
                         >
                             <Step.Content>
-                                <Step.Title>Path Results</Step.Title>
-                                <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Show crew grouped into paths.</Step.Description>
+                                <Step.Title>All Crew Results</Step.Title>
+                                <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Show all crew solutions with maximum possible usable quipment.</Step.Description>
                             </Step.Content>
                         </Step>
                     </Step.Group>
 
                     <div style={{ display: showResults !== 0 ? 'none' : undefined }}>
-                        <QuestCrewTable
-                            quest={quest}
-                            solverResults={solverResults}
-                            pageId={'continuum'}
-                            config={missionConfig} />
-                    </div>
-
-                    <div style={{ display: showResults !== 1 ? 'none' : undefined }}>
                         <PathTable
                             quest={quest}
                             solverResults={solverResults}
@@ -650,6 +642,14 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                         />
                     </div>
                     
+                    <div style={{ display: showResults !== 1 ? 'none' : undefined }}>
+                        <QuestCrewTable
+                            quest={quest}
+                            solverResults={solverResults}
+                            pageId={'continuum'}
+                            config={missionConfig} />
+                    </div>
+
                     {!solverResults && <div style={{ height: '50vh' }}>&nbsp;</div>}
                 </div>
 
