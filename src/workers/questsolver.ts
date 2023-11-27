@@ -600,8 +600,8 @@ const QuestSolver = {
 
             const threegroups = [] as IQuestCrew[][];
             const threekeys = [] as string[];
-            const sp = [] as MissionChallenge[][];
-            const pathSolves = [] as PathGroup[];
+            const seenPaths = [] as MissionChallenge[][];
+            const pathSolutions = [] as PathGroup[];
 
             for (let i = 0; i < crew.length; i++) {
                 for (let path of paths) {
@@ -614,10 +614,6 @@ const QuestSolver = {
                         if (!threekeys.includes(key)) {
                             threegroups.push(tg);
                             threekeys.push(key);
-                            
-                            if (!sp.includes(path)) {
-                                sp.push(path);
-                            }
                             
                             let pathstr = path.map(p => p.id).join("_");
 
@@ -658,15 +654,19 @@ const QuestSolver = {
                                         return tg.some(c => c.associated_paths?.some(pt => pt.path === pathstr && quip.kwipment_id && pt.needed_kwipment?.includes(Number.parseInt(quip.kwipment_id as string))))
                                     })
                                     .map((quip) => {
-                                    return { ... quip, demands: calcItemDemands(quip, config.context.core.items, playerItems) }
-                                });    
+                                        return { ... quip, demands: calcItemDemands(quip, config.context.core.items, playerItems) }
+                                    });    
                                 
                                 let tc = tg.filter((c) => buildQuipment(c, pretendItems, tghist, c.associated_paths?.find(fp => fp.path === pathstr)?.needed_kwipment));
-                                pass = tc.length === tg.filter(g => g.challenges?.some(gch => path.includes(gch.challenge)))?.length;
+                                pass = tc.length === tg.filter(c => c.challenges?.some(gch => path.includes(gch.challenge)))?.length;
                             }
 
                             if (pass) {
-                                pathSolves.push({
+                                if (!seenPaths.includes(path)) {
+                                    seenPaths.push(path);
+                                }
+                                
+                                pathSolutions.push({
                                     path: pathstr,
                                     crew: tg,
                                     mastery: config.mastery
@@ -681,15 +681,16 @@ const QuestSolver = {
                 crew = crew.filter((c) => buildQuipment(c, allQuipment, deductHistory));
             }
 
-            if (!pathSolves.length && challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)))) {
+            if (!pathSolutions.length && challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)))) {
                 let rpaths = [ ... new Set(crew.map(c => c.associated_paths ?? []).flat()) ];
                 let rchallenges = [ ... new Set(crew.map(c => c.challenges ?? []).flat()) ];
+
                 for (let path of rpaths) {
                     let ci = path.path.split("_").map(d => rchallenges.find(e => e.challenge.id.toString() === d)?.challenge) as MissionChallenge[];
                     let rcrew = anyThree(crew, ci)
                     if (rcrew) {
-                        if (!pathSolves.some(ps => ps.path === path.path)) {
-                            pathSolves.push({
+                        if (!pathSolutions.some(ps => ps.path === path.path)) {
+                            pathSolutions.push({
                                 path: path.path,
                                 crew: rcrew,
                                 mastery: config.mastery
@@ -698,22 +699,24 @@ const QuestSolver = {
                     }
                 }
             }
-
-            let allPass = !!pathSolves.length && challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)));
-
+            else {
+                crew = [ ... new Set(crew.concat([...pathSolutions.map(ps => ps.crew).flat()])) ];
+            }
+         
             crew.forEach((c, idx) => c.score = idx + 1);
-            pathSolves?.sort((a, b) => {
+            pathSolutions?.sort((a, b) => {
                 let ar = a.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
                 let br = b.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
                 return ar - br;
             });
 
-            let failed = allPass ? [] : challenges.filter(ch => !crew.some(c => c.challenges?.some(ch2 => ch2.challenge.id === ch.id)) && !pathSolves.some(ps => ps.crew.some(c => c.challenges?.some(ch2 => ch2.challenge.id === ch.id)))).map(ch => ch.id);
+            let seen = [ ...new Set(pathSolutions.map(ps => ps.path.split("_")).flat().map(s => Number.parseInt(s))) ];
+            let failed = challenges.filter(ch => !seen.includes(ch.id)).map(ch => ch.id);
 
             resolve({
                 status: true,
-                fulfilled: allPass,
-                paths: pathSolves,
+                fulfilled: !failed.length,
+                paths: pathSolutions,
                 crew,
                 failed: failed
             });
