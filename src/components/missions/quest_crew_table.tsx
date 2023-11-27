@@ -1,5 +1,5 @@
 import React from 'react';
-import { IQuestCrew, QuestSolverResult } from "../../model/worker"
+import { CrewChallengeInfo, IQuestCrew, QuestSolverResult } from "../../model/worker"
 import { Table } from 'semantic-ui-react';
 import { Skill } from '../../model/crew';
 import { appelate, arrayIntersect } from '../../utils/misc';
@@ -8,7 +8,8 @@ import { IRosterCrew } from '../crewtables/model';
 import { CrewItemsView } from '../item_presenters/crew_items';
 import PowerExplanation, { GradeSwatch } from '../explanations/powerexplanation';
 import { CrewConfigTable } from '../crewtables/crewconfigtable';
-import { Quest, QuestFilterConfig } from '../../model/missions';
+import { MissionChallenge, Quest, QuestFilterConfig } from '../../model/missions';
+import { pathToChallenges, pathToNames } from '../../utils/episodes';
 
 export interface QuestCrewTableProps {
     solverResults?: QuestSolverResult;
@@ -27,13 +28,29 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
 
     const crewTableCells = [
         { width: 2, column: 'score', title: 'Rank' },
-        { width: 2, column: 'added_kwipment_key', title: 'Suggested Quipment' },
         { width: 2, column: 'metasort', title: <>Computed Skills <PowerExplanation /></> },
+        { width: 2, column: 'associated_paths.length', title: 'Paths' },
         { width: 2, column: 'challenge_key', title: 'Challenges' }
     ]
+    const groupCrew = [] as { crew: IQuestCrew, paths: MissionChallenge[][] }[];
 
     const renderTableCells = (row: IRosterCrew): JSX.Element => {
         let crew = row as IQuestCrew;
+        
+
+        crew.challenges ??= [];
+        crew.associated_paths ??= [];
+        let chs = quest?.challenges ?? [];
+
+        const pathMap = {} as { [key: string]: CrewChallengeInfo[] };
+
+        for (let ch of crew.challenges) {
+            if (ch.path) {
+                pathMap[ch.path] ??= [];
+                pathMap[ch.path].push(ch);
+            }
+        }
+
         return (
             <React.Fragment>
                 <Table.Cell>
@@ -42,22 +59,12 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                     </div>
                 </Table.Cell>
                 <Table.Cell>
-                    <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", minWidth: "192px" }}>
-                        <CrewItemsView
-                            targetGroup={itemTargetGroup}
-                            printNA={includeCurrentQp ? <span style={{ color: 'cyan' }}>New</span> : <br />}
-                            crew={{ ...crew, kwipment: crew.added_kwipment ?? [], kwipment_expiration: crew.added_kwipment_expiration ?? [] }}
-                            quipment={true} />
-                    </div>
-                </Table.Cell>
-                <Table.Cell>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start" }}>
                         {crew.challenges?.map((challenge, idx) => {
-
                             const grade = ((!!challenge.max_solve && !!challenge.power_decrease)) ? 'D' : (challenge.max_solve ? 'B' : (!!challenge.power_decrease ? 'C' : 'A'));
 
                             return (
-                                <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
+                                <div style={{ height: "130px", display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
                                     <GradeSwatch grade={grade} style={{ marginRight: "1em" }} />
                                     {Object.values(challenge.skills).map(((skill: Skill) => {
                                         const key = skill.skill ?? '';
@@ -89,6 +96,29 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                     </div>
                 </Table.Cell>
                 <Table.Cell>
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        justifyContent: "center",
+                        height: "100%"
+                    }}>
+                    {[ ...(crew.challenges?.map(ch => ch.path) ?? []) ].map((path, idx) => {
+                        let st = {
+                            fontStyle: "italic",
+                            fontSize: "0.8em",
+                            marginTop: "1em",
+                            marginBottom: "1em",
+                            height: "130px"
+                        } as React.CSSProperties;
+                        if (quest?.challenges && path) {
+                            return <div style={st}>{pathToNames(path, quest.challenges, ", ")}</div>
+                        }
+                        return <div style={st}>{path}</div>
+                    })}
+                    </div>
+                </Table.Cell>
+                <Table.Cell>
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
                         {crew.challenges?.map((ch) => {
                             let challenge = quest?.challenges?.find(f => f.id === ch.challenge.id);
@@ -99,23 +129,25 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                             }
 
                             return (
-                                <div style={{
-                                    display: 'grid',
-                                    gridTemplateAreas: `'image text' 'image traits'`,
-                                    gridTemplateColumns: '32px auto'
-                                }}>
-                                    <div style={{ gridArea: 'image', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                        <img style={{ height: '16px' }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
-                                    </div>
-                                    <div style={{ gridArea: 'text' }}>
-                                        <b>{challenge.name}</b>
-                                    </div>
-                                    <div style={{ gridArea: 'traits' }}>
-                                        {ctraits?.length ?
-                                            <i style={{ color: "lightgreen", fontWeight: "bold" }}>
-                                                ({ctraits.map(t => appelate(t)).join(", ")})
-                                            </i>
-                                            : <></>}
+                                <div style={{height: "130px"}}>
+                                    <div style={{
+                                        display: 'grid',
+                                        gridTemplateAreas: `'image text' 'image traits'`,
+                                        gridTemplateColumns: '32px auto'
+                                    }}>
+                                        <div style={{ gridArea: 'image', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                            <img style={{ height: '16px' }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
+                                        </div>
+                                        <div style={{ gridArea: 'text' }}>
+                                            <b>{challenge.name}</b>
+                                        </div>
+                                        <div style={{ gridArea: 'traits' }}>
+                                            {ctraits?.length ?
+                                                <i style={{ color: "lightgreen", fontWeight: "bold" }}>
+                                                    ({ctraits.map(t => appelate(t)).join(", ")})
+                                                </i>
+                                                : <></>}
+                                        </div>
                                     </div>
                                 </div>
                             )
