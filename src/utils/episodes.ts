@@ -1,4 +1,4 @@
-import { MissionChallenge, Quest } from "../model/missions";
+import { Mission, MissionChallenge, Quest } from "../model/missions";
 
 export function getEpisodeName(node: any) {
     let name = '';
@@ -131,4 +131,29 @@ export function getNodePaths(item: NavMapItem, stack: NavMapItem[], parentStack?
 
 export function splitPath(path: string): number[] {
     return path.split("_").map(p => Number.parseInt(p));
+}
+
+
+export function pathToNames(path: string, challenges: MissionChallenge[], split?: string) {
+    
+    split ??= " - "
+    
+    let sp = path.split("_").map(p => Number.parseInt(p)).map(q => challenges.find(f => f.id === q));
+    
+    if (sp?.every(s => !!s)) {
+        return sp.map(ch => ch?.name).join(split);
+    }
+
+    else return path;
+}
+
+export function pathToChallenges(path: string, challenges: MissionChallenge[]) {
+    
+    let sp = path.split("_").map(p => Number.parseInt(p)).map(q => challenges.find(f => f.id === q));
+    
+    if (sp?.every(s => !!s)) {
+        return sp as MissionChallenge[];
+    }
+
+    else return null;
 }
