@@ -63,7 +63,7 @@ export const PathTable = (props: PathTableProps) => {
         });
     }
 
-    const sizeChoices = [1, 5, 10, 20, 50, 100].map((n) => {
+    const sizeChoices = [1, 2, 5, 10, 20, 50, 100].map((n) => {
         return {
             key: "page" + n.toString(),
             value: n,
