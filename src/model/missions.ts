@@ -17,6 +17,7 @@ export interface QuestFilterConfig {
   cheapestFirst?: boolean;
   buildableOnly?: boolean;
   alwaysCrit?: boolean;
+  noTraitBonus?: boolean;
 }
 
 export interface ProtoMission {
