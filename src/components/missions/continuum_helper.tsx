@@ -162,7 +162,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     const [missionConfig, setMissionConfig] = useStateWithStorage<QuestFilterConfig>('continuum/missionConfig', { mastery: 0, idleOnly: true, showAllSkills: false }, { rememberForever: true });
 
-    const { alwaysCrit, buildableOnly, cheapestFirst, showAllSkills, mastery, idleOnly, considerFrozen, qpOnly, ignoreQpConstraint, includeCurrentQp } = missionConfig;
+    const { noTraitBonus, alwaysCrit, buildableOnly, cheapestFirst, showAllSkills, mastery, idleOnly, considerFrozen, qpOnly, ignoreQpConstraint, includeCurrentQp } = missionConfig;
 
     const [internalSolverResults, internalSetSolverResults] = React.useState<QuestSolverCacheItem[]>([]);
 
@@ -249,6 +249,11 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const setAlwaysCrit = (value: boolean) => {
         setMissionConfig({ ...missionConfig, alwaysCrit: value });
     }
+
+    const setNoTraitBonus = (value: boolean) => {
+        setMissionConfig({ ...missionConfig, noTraitBonus: value });
+    }
+
 
     /* Component Initialization & State Management */
 
@@ -450,6 +455,13 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             value: alwaysCrit,
             setValue: setAlwaysCrit,
             type: 'checkbox'
+        },
+        {
+            title: "Exclude Trait Bonuses",
+            description: "Exclude incorporating trait bonus numbers into the crew solver calculation.",
+            value: noTraitBonus,
+            setValue: setNoTraitBonus,
+            type: 'checkbox'
         }
 
     ] as SolverOption[];
@@ -545,7 +557,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                     includeCurrentQp,
                                     buildableOnly,
                                     cheapestFirst,
-                                    alwaysCrit
+                                    alwaysCrit,
+                                    noTraitBonus
                                 }}
                             />
                         </div>

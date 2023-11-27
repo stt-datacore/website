@@ -131,7 +131,7 @@ const QuestSolver = {
 
         function solveChallenge(roster: PlayerCrew[], challenge: MissionChallenge, mastery: number, traits?: MissionTraitBonus[]) {
 
-            const useTraits = traits ?? challenge.trait_bonuses ?? [];
+            const useTraits = config.noTraitBonus ? [] : (traits ?? challenge.trait_bonuses ?? []);
             let questcrew = [] as IQuestCrew[];
             let claimf = 1;
 
