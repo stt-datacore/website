@@ -101,7 +101,7 @@ const QuestSolver = {
 
         function anyThree(crew: IQuestCrew[], path: MissionChallenge[], startIndex?: number) {
             startIndex ??= 0;
-            if (startIndex > (crew.length - 3)) return false;
+            if (startIndex >= crew.length) return false;
 
             const solved = [] as MissionChallenge[];
             const solveCrew = [] as IQuestCrew[];
@@ -687,7 +687,20 @@ const QuestSolver = {
 
                 for (let path of rpaths) {
                     let ci = path.path.split("_").map(d => rchallenges.find(e => e.challenge.id.toString() === d)?.challenge) as MissionChallenge[];
-                    let rcrew = anyThree(crew, ci)
+                    if (crew.length < 3) {
+                        roster.sort((a, b) => b.q_bits - a.q_bits);
+                        let x = 0;
+                        for (let i = crew.length; i < 3; i++) {
+                            while (x < roster.length && crew.some(c => c.symbol === roster[x].symbol)) {
+                                x++;
+                            }
+                            if (x >= roster.length) break;
+                            crew.push(roster[x]);
+                        }
+                    }
+
+                    let rcrew = anyThree(crew, ci);
+
                     if (rcrew) {
                         if (!pathSolutions.some(ps => ps.path === path.path)) {
                             pathSolutions.push({
@@ -711,6 +724,7 @@ const QuestSolver = {
             });
 
             let seen = [ ...new Set(pathSolutions.map(ps => ps.path.split("_")).flat().map(s => Number.parseInt(s))) ];
+            seen = seen.concat(crew?.map(c => c.challenges?.map(ch => ch.challenge?.id)?.flat() ?? [])?.flat() ?? [])
             let failed = challenges.filter(ch => !seen.includes(ch.id)).map(ch => ch.id);
 
             resolve({
