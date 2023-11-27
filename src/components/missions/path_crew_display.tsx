@@ -99,7 +99,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                         <h3>{challenge.name}</h3>
                         {pathCrew.map((c) => {
 
-                            let crewChallenge = c.challenges?.find(ch => ch.challenge.id === challenge.id);
+                            let crewChallenge = c.challenges?.find(ch => ch.challenge.id === challenge.id) ?? null;
                             let crewpaths = c.associated_paths?.find(ap => ap.path === pathGroup.path);
                             
                             return (
@@ -144,9 +144,9 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                                                         data={skill}
                                                         scale={0.75}
                                                     />
-                                                    {challenge.skill === skill.skill && !!challenge.trait_bonuses?.length &&
+                                                    {challenge.skill === skill.skill && !!crewChallenge?.trait_bonuses?.length &&
                                                         <div style={{ color: 'lightgreen', textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic', fontSize: "0.75em" }}>
-                                                            +&nbsp;{challenge.trait_bonuses?.map(ct => ct.bonuses[mastery]).reduce((p, n) => p + n, 0)}&nbsp;({challenge.trait_bonuses?.map(ct => <>{appelate(ct.trait)}</>).reduce((p, n) => p ? <>{p}, {n}</> : n)})
+                                                            +&nbsp;{crewChallenge.trait_bonuses?.map(ct => ct.bonuses[mastery]).reduce((p, n) => p + n, 0)}&nbsp;({crewChallenge.trait_bonuses?.map(ct => <>{appelate(ct.trait)}</>).reduce((p, n) => p ? <>{p}, {n}</> : n)})
                                                         </div>}
 
                                                 </div>
