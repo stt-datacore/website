@@ -28,6 +28,8 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
     const { crew, mastery } = pathGroup;
 
     const path = pathGroup.path.split("_").map(t => quest.challenges?.find(f => f.id.toString() === t)) as MissionChallenge[];
+    if (path.some(p => p === undefined)) return <></>
+    
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
     const getCrewPower = (crew: IQuestCrew, stage: number, challenge: CrewChallengeInfo) => {
@@ -81,7 +83,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
         }}>
 
             {path.map((challenge, pathIdx) => {
-                const pathCrew = crew.filter(c => c.challenges?.some(ch => ch.challenge.id === challenge.id));
+                const pathCrew = crew.filter(c => c.challenges?.some(ch => ch.challenge?.id === challenge?.id));
 
                 return (<React.Fragment key={'path_challenge_crew_group' + challenge.id.toString()}>
                     <div style={{
