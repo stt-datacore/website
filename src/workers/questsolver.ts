@@ -37,10 +37,7 @@ export function getSkillOrder<T extends CrewMember>(crew: T) {
 }
 
 export function getTraits<T extends CrewMember>(crew: T, traits: MissionTraitBonus[]) {
-    if (!traits.length) return [];
-
-    let intersect = arrayIntersect(crew.traits.concat(crew.traits_hidden), (traits as MissionTraitBonus[]).map(t => t.trait));
-    return traits.filter(f => intersect.includes(f.trait));
+    return traits.filter(f => crew.traits.includes(f.trait) || crew.traits_hidden.includes(f.trait));
 }
 
 const QuestSolver = {
