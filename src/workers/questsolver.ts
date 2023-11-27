@@ -680,6 +680,7 @@ const QuestSolver = {
             if (config.buildableOnly) {
                 crew = crew.filter((c) => buildQuipment(c, allQuipment, deductHistory));
             }
+
             if (!pathSolves.length && challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)))) {
                 let rpaths = [ ... new Set(crew.map(c => c.associated_paths ?? []).flat()) ];
                 let rchallenges = [ ... new Set(crew.map(c => c.challenges ?? []).flat()) ];
@@ -697,7 +698,8 @@ const QuestSolver = {
                     }
                 }
             }
-            let allPass = !!pathSolves.length && challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)));
+
+            let allPass = !!pathSolves.length;
 
             crew.forEach((c, idx) => c.score = idx + 1);
             pathSolves?.sort((a, b) => {
@@ -711,7 +713,7 @@ const QuestSolver = {
                 fulfilled: allPass,
                 paths: pathSolves,
                 crew,
-                failed: allPass ? undefined : challenges.filter(ch => !crew.some(c => c.challenges?.some(ch2 => ch2.challenge.id === ch.id))).map(ch => ch.id)
+                failed: allPass ? undefined : challenges.filter(ch => !pathSolves.some(ps => ps.crew.some(c => c.challenges?.some(ch2 => ch2.challenge.id === ch.id)))).map(ch => ch.id)
             });
         });
     },
