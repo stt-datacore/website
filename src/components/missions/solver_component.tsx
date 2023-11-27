@@ -44,7 +44,7 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
 
     private runWorker() {
 		const worker = new UnifiedWorker();
-		const { alwaysCrit, buildableOnly, cheapestFirst, includeCurrentQp, qpOnly, ignoreQpConstraint, considerFrozen, idleOnly, mastery, challenges, quest, paths, traits } = this.props.config;
+		const { noTraitBonus, alwaysCrit, buildableOnly, cheapestFirst, includeCurrentQp, qpOnly, ignoreQpConstraint, considerFrozen, idleOnly, mastery, challenges, quest, paths, traits } = this.props.config;
         const { setResults } = this.props;
 
 		worker.addEventListener('message', (message: { data: { result: QuestSolverResult } }) => {            
@@ -83,7 +83,8 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
                 includeCurrentQp,
                 buildableOnly,
                 cheapestFirst, 
-                alwaysCrit
+                alwaysCrit,
+                noTraitBonus
             } as QuestSolverConfig
 		});
 	}
