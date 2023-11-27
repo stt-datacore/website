@@ -239,7 +239,7 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
         const itemSize = window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (this.props.mobileSize ?? 24) : (this.props.itemSize ?? 32);
 
         return (<div 
-            onClick={(e) => navigate("/item_info?symbol=" + this.props.equipment?.symbol)}
+            onClick={(e) => !targetGroup ? navigate("/item_info?symbol=" + this.props.equipment?.symbol) : null}
             title={this.props.equipment?.name}
             style={{
             cursor: "pointer",
