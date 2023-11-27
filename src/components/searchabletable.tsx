@@ -336,7 +336,8 @@ export const SearchableTable = (props: SearchableTableProps) => {
 								placeholder={caption}
 								options={props.dropDownChoices.map((c) => {return {
 									content: c,
-									value: c,text: c
+									value: c,
+									text: c
 								}})}
 								value={props.dropDownValue}
 								onChange={(event, {value}) => {
