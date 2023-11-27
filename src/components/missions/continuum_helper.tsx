@@ -49,9 +49,10 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     /* Missions Data Initialization & Persistence */
 
-    const [groupedMissions, internalSetGroupedMissions] = useStateWithStorage('continuum/discoveredMissions', [] as DiscoveredMissionInfo[], { rememberForever: true });
-    const setGroupedMissions = (value: DiscoveredMissionInfo[]) => {
-        value = value.filter(f => f.mission.discover_date.getTime() === mostRecentDate.getTime());
+    const [groupedMissions, internalSetGroupedMissions] = useStateWithStorage('continuum/discoveredMissions', [] as DiscoveredMissionInfo[], { rememberForever: true, compress: true });
+    const setGroupedMissions = (value: DiscoveredMissionInfo[]) => {        
+        if (!mostRecentDate || !value) return;
+        value = value.filter(f => f.mission.discover_date.toDateString() === mostRecentDate.toDateString());
         internalSetGroupedMissions(value);
     }
     const getMissionData = () => {
