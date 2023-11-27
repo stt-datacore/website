@@ -34,28 +34,32 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
 
     const getCrewPower = (crew: IQuestCrew, stage: number, challenge: CrewChallengeInfo) => {
         let newskill = {} as BaseSkills;
-        
-        try {
-            if (stage === 0 || !crew.challenges?.some(c => c.challenge.id === path[stage - 1].id)) {
-                challenge.power_decrease = 0;
-                Object.keys(crew.skills).forEach((skill) => {
+
+        try {            
+            let assoc = crew.associated_paths?.find(a => a.path === pathGroup.path)?.skills;
+            Object.keys(crew.skills).forEach((skill) => {
+                if (assoc) {
+                    newskill[skill] = JSON.parse(JSON.stringify(assoc[skill]));
+                }
+                else {
                     newskill[skill] = {
                         core: Math.round(crew[skill].core),
                         range_min: Math.round(crew[skill].min),
                         range_max: Math.round(crew[skill].max),
                         skill
                     }
-                });
+                }
+            });
+
+            if (stage === 0 || !crew.challenges?.some(c => c.challenge.id === path[stage - 1].id)) {
+                challenge.power_decrease = 0;
             }
             else {               
                 challenge.power_decrease = 0.2;
                 Object.keys(crew.skills).forEach((skill) => {
-                    newskill[skill] = {
-                        core: Math.round(crew[skill].core - (crew[skill].core * 0.2)),
-                        range_min: Math.round(crew[skill].min - (crew[skill].min * 0.2)),
-                        range_max: Math.round(crew[skill].max - (crew[skill].max * 0.2)),
-                        skill
-                    }
+                    newskill[skill].core = Math.round(newskill[skill].core - newskill[skill].core * 0.2);
+                    newskill[skill].range_max = Math.round(newskill[skill].range_max - newskill[skill].range_max * 0.2);
+                    newskill[skill].range_min = Math.round(newskill[skill].range_min - newskill[skill].range_min * 0.2); 
                 });
             }
         }
@@ -63,8 +67,8 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
             return crew.skills;
         }
 
-        let cm = newskill[challenge.challenge.skill].core + newskill[challenge.challenge.skill].min;
-        let cx = newskill[challenge.challenge.skill].core + newskill[challenge.challenge.skill].max;
+        let cm = newskill[challenge.challenge.skill].core + newskill[challenge.challenge.skill].range_min;
+        //let cx = newskill[challenge.challenge.skill].core + newskill[challenge.challenge.skill].max;
 
         let ct = challenge.challenge.difficulty_by_mastery[mastery] + [250, 275, 300][mastery];
 
