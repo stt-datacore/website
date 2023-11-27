@@ -366,6 +366,9 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     }
 
     /* Render */
+
+
+    const currentHasRemote = !!mission?.quests?.find((q, idx) => q.id === quest?.id && remoteQuestFlags && remoteQuestFlags[idx])
     const solverResults = getSolverResults()?.result;
     const boardFail = solverResults?.failed?.filter(fid => quest?.challenges?.find(ch => ch.id === fid)?.children?.length === 0)?.length === quest?.challenges?.filter(ch => !ch.children?.length)?.length;
 
@@ -475,7 +478,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 />
 
                 <QuestImportComponent
-                    defaultCollapsed={false}
+                    currentHasRemote={currentHasRemote}
                     setQuest={setRemoteQuest}
                     quest={quest}
                     questId={quest?.id}
@@ -484,6 +487,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 />
 
                 Current Continuum Mission: {mission?.discover_date?.toDateString()}
+
                 <br />
                 <div style={{ color: "tomato" }}>{errorMsg}</div>
                 <br />
@@ -498,8 +502,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     gap: "0.5em"
                 }}>
 
-                    <div style={{ display: "inline-block" }}>
-
+                    <div style={{ display: "inline-block", textAlign: 'center' }}>
+                        <h3>Crew Finder Options</h3>
                         <div style={{
                             display: 'flex',
                             flexDirection: 'row',
@@ -510,7 +514,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                             {solverOptions.map((opt, idx) => (
                                 <div key={`solveopt_${idx}`} style={{
                                     width: isMobile ? '100%' : '25%',
-                                    margin: "1em 0em"
+                                    margin: "1em 0em 0.5em 0em"
                                 }}>
                                     <SolverOptionComponent config={opt} />
                                 </div>
@@ -545,6 +549,16 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                         {context.core.spin()}
                     </div>}
 
+
+                <QuestSelector
+                    pageId={'continuum'}
+                    mission={mission}
+                    questId={questId}
+                    setQuestId={setQuestId}
+                    mastery={mastery}
+                    setMastery={setMastery}
+                    highlighted={remoteQuestFlags}
+                />
                 <Step.Group fluid>
                     <Step
                         onClick={(e) => setShowPane(0)}
@@ -565,16 +579,6 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                         </Step.Content>
                     </Step>
                 </Step.Group>
-                <QuestSelector
-                    pageId={'continuum'}
-                    mission={mission}
-                    questId={questId}
-                    setQuestId={setQuestId}
-                    mastery={mastery}
-                    setMastery={setMastery}
-                    highlighted={remoteQuestFlags}
-                />
-
                 {mission &&
                     <div style={{ display: showPane !== 0 ? 'none' : undefined }}>
                         <MissionMapComponent
@@ -598,12 +602,14 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 {showPane === 1 && !!solverResults && !solverResults?.fulfilled && (
                     <Message warning={!boardFail} error={boardFail}>
                         <Message.Header>
-                            Quest Solve Incomplete
+                            {!!boardFail && <>Quest Solve Failed</>}
+                            {!boardFail && <>Quest Solve Incomplete</>}
                         </Message.Header>
                         <Message.Content>
-                            {boardFail && <><b>Final challenges failed.</b></> || <>Could not find crew to complete all challenges.</>}
-                            Try adjusting your calculation options, and try again.<br />
-                            {!!solverResults?.failed?.length && <>Failed Challenges: <b>{solverResults?.failed?.map(fid => quest?.challenges?.find(ch => ch.id === fid)?.name)?.reduce((p, n) => p ? `${p}, ${n}` : n, '')}</b></>}
+                            {boardFail && <p><b>Final challenges failed.</b></p> || <p>Could not find crew to complete all selected challenges.</p>}
+                            <p>Try adjusting your challenge selections and/or finder options, and try again.</p>
+                            {!highlighted?.length && <p><b><i>(Hint: Try narrowing your scope by selecting a path from the mission board)</i></b></p>}
+                            {!!solverResults?.failed?.length && <>Failed Challenges: <p>{solverResults?.failed?.map(fid => quest?.challenges?.find(ch => ch.id === fid)?.name)?.reduce((p, n) => p ? `${p}, ${n}` : n, '')}</p></>}
 
                         </Message.Content>
                     </Message>
@@ -641,7 +647,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                             pageId={'continuum'}
                         />
                     </div>
-                    
+
                     <div style={{ display: showResults !== 1 ? 'none' : undefined }}>
                         <QuestCrewTable
                             quest={quest}
