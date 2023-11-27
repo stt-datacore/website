@@ -699,7 +699,7 @@ const QuestSolver = {
                 }
             }
 
-            let allPass = !!pathSolves.length;
+            let allPass = !!pathSolves.length && challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)));
 
             crew.forEach((c, idx) => c.score = idx + 1);
             pathSolves?.sort((a, b) => {
@@ -708,12 +708,14 @@ const QuestSolver = {
                 return ar - br;
             });
 
+            let failed = allPass ? [] : challenges.filter(ch => !crew.some(c => c.challenges?.some(ch2 => ch2.challenge.id === ch.id)) && !pathSolves.some(ps => ps.crew.some(c => c.challenges?.some(ch2 => ch2.challenge.id === ch.id)))).map(ch => ch.id);
+
             resolve({
                 status: true,
                 fulfilled: allPass,
                 paths: pathSolves,
                 crew,
-                failed: allPass ? undefined : challenges.filter(ch => !pathSolves.some(ps => ps.crew.some(c => c.challenges?.some(ch2 => ch2.challenge.id === ch.id)))).map(ch => ch.id)
+                failed: failed
             });
         });
     },
