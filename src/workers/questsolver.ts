@@ -1,5 +1,5 @@
 import CONFIG from "../components/CONFIG";
-import { ComputedBuff, CrewMember } from "../model/crew";
+import { BaseSkills, ComputedBuff, CrewMember, Skill } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { Jackpot, MissionChallenge, MissionTraitBonus } from "../model/missions";
 import { PlayerCrew, PlayerEquipmentItem } from "../model/player";
@@ -526,20 +526,15 @@ const QuestSolver = {
                     }).join("_");
                     c.challenge_key = c.challenges?.map(ch => `${ch.challenge.id.toString()}_${ch.challenge.skill}`).join("_");
                 }
-
-                Object.keys(c.skills).forEach((skill) => {
-                    c.skills[skill].core = c[skill].core;
-                    c.skills[skill].range_max = c[skill].max;
-                    c.skills[skill].range_min = c[skill].min;
-                });
+                
                 // if (c.symbol === 'winn_kai_crew') {
                 //     console.log("break");
                 // }
                 c.challenges?.forEach((ch, idx) => {
                     Object.keys(c.skills).forEach((skill) => {
-                        let core = c.skills[skill].core;
-                        let max = c.skills[skill].range_max;
-                        let min = c.skills[skill].range_min;
+                        let core = c[skill].core;
+                        let max = c[skill].range_max;
+                        let min = c[skill].range_min;
 
                         core -= Math.round(core * (ch.power_decrease ?? 0));
                         max -= Math.round(max * (ch.power_decrease ?? 0));
@@ -618,18 +613,19 @@ const QuestSolver = {
                             let pathstr = path.map(p => p.id).join("_");
 
                             tg.forEach((c) => {
-
+                                let nc = JSON.parse(JSON.stringify(c)) as IQuestCrew;
+                                
                                 c.associated_paths ??= [];
                                 let added = c.added_kwipment?.filter((q, idx) => c.added_kwipment_expiration && !c.added_kwipment_expiration[idx]) as number[];
 
                                 if (c.added_kwipment?.some(q => !!q) && c.added_kwipment_expiration?.some(q => !!q)) {
-                                    let nc = JSON.parse(JSON.stringify(c)) as IQuestCrew;
                                     resetCrew(nc);
 
                                     for (let ch of path) {
                                         if (c.challenges?.some(cc => cc.challenge.id === ch.id)) {
                                             let ca = [nc];
                                             ca = processChallenge(ch, ca, ca);
+                                            nc.added_kwipment = added[nc.symbol];
                                         }
                                     }
 
@@ -637,9 +633,20 @@ const QuestSolver = {
                                 }
 
                                 if (!c.associated_paths.find(ap => ap.path === pathstr)) {
+                                    let sk = {} as BaseSkills;
+                                    Object.keys(nc.skills).forEach((skill) => {
+                                        sk[skill] = {
+                                            core: nc[skill].core,
+                                            range_min: nc[skill].min,
+                                            range_max: nc[skill].max,
+                                            skill
+                                        }
+                                    });
+
                                     c.associated_paths.push({
                                         path: pathstr,
-                                        needed_kwipment: added
+                                        needed_kwipment: added,
+                                        skills: sk                                        
                                     });
                                 }
                             });
@@ -716,7 +723,15 @@ const QuestSolver = {
                 crew = [ ... new Set(crew.concat([...pathSolutions.map(ps => ps.crew).flat()])) ];
             }
          
-            crew.forEach((c, idx) => c.score = idx + 1);
+            crew.forEach((c, idx) => {
+                c.score = idx + 1;
+                Object.keys(c.skills).forEach((skill) => {
+                    c.skills[skill].core = c[skill].core;
+                    c.skills[skill].range_max = c[skill].max;
+                    c.skills[skill].range_min = c[skill].min;
+                });
+            });
+
             pathSolutions?.sort((a, b) => {
                 let ar = a.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
                 let br = b.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
@@ -729,7 +744,7 @@ const QuestSolver = {
 
             resolve({
                 status: true,
-                fulfilled: !failed.length,
+                fulfilled: !failed.length && pathSolutions.length >= paths.length,
                 paths: pathSolutions,
                 crew,
                 failed: failed
