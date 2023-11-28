@@ -3,7 +3,7 @@ name: Nemesis Sacrifice Data
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 events: 33
 in_portal: true
 date: 23/09/2021

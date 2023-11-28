@@ -3,8 +3,8 @@ name: Commander Keras
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 10
-events: 17
+bigbook_tier: 9
+events: 18
 in_portal: true
 date: 18/04/2018
 obtained: Event
