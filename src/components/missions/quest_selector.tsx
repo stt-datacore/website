@@ -28,8 +28,8 @@ export const QuestSelector = (props: QuestSelectorProps) => {
                 active={mastery === 0}
             >
                 <Step.Content>
-                    <Step.Title>Standard</Step.Title>
-                    <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Standard Difficulty</Step.Description>
+                    <Step.Title>Normal</Step.Title>
+                    <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Normal Difficulty</Step.Description>
                 </Step.Content>
             </Step>
             <Step
