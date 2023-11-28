@@ -51,7 +51,8 @@ export const QuestSelector = (props: QuestSelectorProps) => {
                 </Step.Content>
             </Step>
         </Step.Group>
-        <Step.Group fluid>
+        <Step.Group fluid style={{display: 'flex', flexWrap: 'wrap'}}>
+            
             {mission?.quests?.map((quest, idx) => (
                 <Step
                     key={pageId + "quest_" + idx + "_" + quest.id} active={questId === idx}
