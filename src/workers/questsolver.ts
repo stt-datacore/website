@@ -161,7 +161,7 @@ const QuestSolver = {
                 .map(c => c as IQuestCrew);
 
             let qpass = questcrew.filter((crew) => {
-                if (crew.symbol === 'barclay_neelix_crew') {
+                if (crew.symbol === 'pascal_fullerton_crew') {
                     console.log("break");
                 }
                 const nslots = (!!config.ignoreQpConstraint || crew.immortal > 0) ? 4 : qbitsToSlots(crew.q_bits);
@@ -181,8 +181,8 @@ const QuestSolver = {
                     cfactor = 0.20;
                 }
 
-                cpmin -= (cfactor * cpmin);
-                cpmax -= (cfactor * cpmax);
+                // cpmin -= (cfactor * cpmin);
+                // cpmax -= (cfactor * cpmax);
 
                 cpmin += tpower;
                 cpmax += tpower;
@@ -258,8 +258,8 @@ const QuestSolver = {
                     if (qps?.length) {
                         let qpower = qps[0].bonusInfo.bonuses[challenge.skill].core + qps[0].bonusInfo.bonuses[challenge.skill].range_min;
                         let mpower = qps[0].bonusInfo.bonuses[challenge.skill].core + qps[0].bonusInfo.bonuses[challenge.skill].range_max;
-                        qpower -= (cfactor * qpower);
-                        mpower -= (cfactor * mpower);
+                        // qpower -= (cfactor * qpower);
+                        // mpower -= (cfactor * mpower);
 
                         cpmin += qpower;
                         cpmax += qpower;
