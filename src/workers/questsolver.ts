@@ -47,7 +47,7 @@ const QuestSolver = {
         const quest = config.quest;
 
         function qbitsToSlots(q_bits: number | undefined) {
-            // 100/250/500/1300
+            // 100/200/500/1300
             q_bits ??= 0;
             if (q_bits < 100) return 0;
             else if (q_bits < 200) return 1;
@@ -60,9 +60,7 @@ const QuestSolver = {
 
         const playerItems = JSON.parse(JSON.stringify(config.context.player.playerData.player.character.items)) as PlayerEquipmentItem[];
         const allQuipment = JSON.parse(JSON.stringify(config.context.core.items.filter(f => f.type === 14))) as EquipmentItem[];
-
-        const deductHistory = {} as { [key: string]: boolean[] };
-        
+ 
         function makeAddedKey(crew: IQuestCrew, path: string) {
             return crew.id.toString() + crew.symbol + path;
         }
@@ -430,7 +428,7 @@ const QuestSolver = {
                 pathMap[key] = path;
                 for (let ch of path) {
                     pathCrew[key] = processChallenge(ch, tempRoster, pathCrew[key], key);
-                }
+                }              
             }
 
             Object.keys(pathCrew).forEach((path) => {
@@ -621,8 +619,8 @@ const QuestSolver = {
             const pathSolutions = [] as PathGroup[];
 
             for (let path of paths) {
-                let key = path.map(p => p.id).join("_");
-                let crew = pathCrew[key];
+                let path_key = path.map(p => p.id).join("_");
+                let crew = pathCrew[path_key];
 
                 for (let i = 0; i < crew.length; i++) {
                     let testcrew = anyThree(crew, path, i);
@@ -630,13 +628,12 @@ const QuestSolver = {
                     if (testcrew) {
                         const tg = testcrew;
                         tg.sort((a, b) => a.symbol.localeCompare(b.symbol));
-                        let crews_key = tg.map(c => c.symbol).join("_");
+                        let crews_key = tg.map(c => c.symbol).join("_")+path_key;
                         if (!threekeys.includes(crews_key)) {
                             threegroups.push(tg);
                             threekeys.push(crews_key);
                             
-                            let path_key = path.map(p => p.id).join("_");
-
+                            
                             tg.forEach((c) => {
                                 let nc = JSON.parse(JSON.stringify(c)) as IQuestCrew;
                                 let added_key = makeAddedKey(c, path_key);
@@ -691,7 +688,7 @@ const QuestSolver = {
                                 let tc = tg.filter((c) => buildQuipment(c, pretendItems, tghist, c.associated_paths?.find(fp => fp.path === path_key)?.needed_kwipment));
                                 pass = tc.length === tg.filter(c => c.challenges?.some(gch => path.includes(gch.challenge)))?.length;
                             }
-
+                            
                             if (pass) {
                                 if (!seenPaths.includes(path)) {
                                     seenPaths.push(path);
@@ -763,7 +760,9 @@ const QuestSolver = {
 
             });
 
-            if (!pathSolutions.length && challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)))) {
+            let solved = [... new Set(pathSolutions.map(p => p.path)) ];
+
+            if (solved.length !== paths.length && challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)))) {
                 let rpaths = [ ... new Set(crew.map(c => c.associated_paths ?? []).flat()) ];
                 let rchallenges = [ ... new Set(crew.map(c => c.challenges ?? []).flat()) ];
 
