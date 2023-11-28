@@ -3,7 +3,7 @@ name: Belle Q
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 19
 in_portal: true
 date: 20/01/2020
