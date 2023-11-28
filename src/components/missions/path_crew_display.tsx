@@ -123,6 +123,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                                         />
 
                                         <CrewItemsView
+                                            locked={true}
                                             targetGroup={itemTargetGroup}
                                             printNA={config.includeCurrentQp ? <span style={{ color: 'cyan' }}>New</span> : <br />}
                                             crew={{ ...c, kwipment: crewpaths?.needed_kwipment ?? c.added_kwipment ?? [], kwipment_expiration: c.added_kwipment_expiration ?? [] }}
