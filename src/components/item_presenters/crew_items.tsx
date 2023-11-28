@@ -20,6 +20,7 @@ export interface CrewItemsViewProps {
     quipment?: boolean;
     printNA?: string | JSX.Element;
     targetGroup?: string;
+    locked?: boolean;
 }
 
 
@@ -83,7 +84,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
     const crew = props.crew as PlayerCrew;
     const quip = !!props.quipment;
     
-    const { targetGroup } = props;
+    const { targetGroup, locked } = props;
 
     const maxqIdx = (!quip ? 0 : (crew ? qbitsToSlots(crew.q_bits) : 0)) - 1;
 
@@ -198,7 +199,8 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             {equip.map((item, idx) => (
                     <CrewItemDisplay                       
                         targetGroup={targetGroup}
-                        style={(quip && maxqIdx < idx) ? { opacity: "0.25"} : undefined} 
+                        style={(quip && maxqIdx < idx) ? { opacity: locked ? "0.50" : "0.25"} : undefined} 
+                        locked={locked && (quip && maxqIdx < idx)}
                         itemSize={props.itemSize} 
                         mobileSize={props.mobileSize} 
                         key={item.symbol + "_equip" + idx} 
@@ -247,11 +249,12 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
             flexDirection: "row",
             justifyContent: "center",            
             margin: window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
-            ...this.props.style
+            //...this.props.style
         }}>
-            <div style={{display:'flex', flexDirection:'column'}}>
+            <div style={{display:'flex', flexDirection:'column', alignItems: 'center', justifyContent: "center"}}>
             {!!entry.expiration && <div style={{fontSize: "0.75em", textAlign: 'center'}}>{entry.expiration}</div>}           
             <ItemDisplay
+                style={this.props.style}
                 targetGroup={targetGroup}
                 itemSymbol={entry.equipment?.symbol}
                 allItems={this.context.core.items}    
@@ -261,6 +264,7 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
                 maxRarity={entry?.equipment?.rarity ?? 0}
                 rarity={entry?.equipment?.rarity ?? 0}                
             />    
+            {this.props.locked && <img style={{position: "relative", marginTop:"-16px", height: "16px"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/lock_icon.png`}/>}
             </div>
         </div>)
     }
