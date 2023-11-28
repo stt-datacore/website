@@ -102,10 +102,30 @@ const QuestSolver = {
             startIndex ??= 0;
             if (startIndex >= crew.length) return false;
 
-            const solved = [] as MissionChallenge[];
-            const solveCrew = [] as IQuestCrew[];
+            let c1 = [ ... crew ];
 
-            let wcrew = crew.slice(startIndex);
+            c1.sort((a, b) => {
+                let r = 0;
+                let an = 0;
+                let bn = 0;
+                if (!r) {
+                    an = path.filter(p => a.challenges?.some(c => c.challenge.id === p.id))?.length ?? 0;
+                    bn = path.filter(p => a.challenges?.some(c => c.challenge.id === p.id))?.length ?? 0;
+                    r = bn - an;
+                }
+                if (!r) {
+                    an = a.challenges?.length ?? 0;
+                    bn = b.challenges?.length ?? 0;
+                    r = bn - an;
+                }
+                return r;
+            });
+
+            let c2 = c1.splice(startIndex);
+            let wcrew = c2.concat(c1);
+
+            let solved = [] as MissionChallenge[];
+            let solveCrew = [] as IQuestCrew[];
 
             for (let ch of path) {
                 for (let c of wcrew) {
@@ -161,7 +181,7 @@ const QuestSolver = {
                 .map(c => c as IQuestCrew);
 
             let qpass = questcrew.filter((crew) => {
-                if (crew.symbol === 'pascal_fullerton_crew') {
+                if (crew.symbol === 'doopler_crew') {
                     console.log("break");
                 }
                 const nslots = (!!config.ignoreQpConstraint || crew.immortal > 0) ? 4 : qbitsToSlots(crew.q_bits);
@@ -411,7 +431,9 @@ const QuestSolver = {
                     let lax = newQuip(a);
                     let lbx = newQuip(b);
                     r = lax - lbx;
-                    if (r) return r;
+                    if (r) {
+                        return r;
+                    }
 
                     r = b.q_bits - a.q_bits;
                     return r;
@@ -620,7 +642,7 @@ const QuestSolver = {
 
             for (let path of paths) {
                 let path_key = path.map(p => p.id).join("_");
-                let crew = pathCrew[path_key];
+                const crew = pathCrew[path_key];
 
                 for (let i = 0; i < crew.length; i++) {
                     let testcrew = anyThree(crew, path, i);
@@ -640,18 +662,18 @@ const QuestSolver = {
                                 c.associated_paths ??= [];
                                 let adquip = added[added_key].filter(f => !!f).map(sym => Number.parseInt(allQuipment.find(q => q.symbol === sym)?.kwipment_id as string)) as number[];
 
-                                if (c.added_kwipment?.some(q => !!q) && c.added_kwipment_expiration?.some(q => !!q)) {
-                                    resetCrew(nc, path_key);
+                                // if (c.added_kwipment?.some(q => !!q) && c.added_kwipment_expiration?.some(q => !!q)) {
+                                //     resetCrew(nc, path_key);
 
-                                    for (let ch of path) {
-                                        if (c.challenges?.some(cc => cc.challenge.id === ch.id)) {
-                                            let ca = [nc];
-                                            ca = processChallenge(ch, ca, ca, path_key);
-                                        }
-                                    }
+                                //     for (let ch of path) {
+                                //         if (c.challenges?.some(cc => cc.challenge.id === ch.id)) {
+                                //             let ca = [nc];
+                                //             ca = processChallenge(ch, ca, ca, path_key);
+                                //         }
+                                //     }
 
-                                    adquip = added[added_key].map(sym => Number.parseInt(allQuipment.find(q => q.symbol === sym)?.kwipment_id as string)) as number[];
-                                }
+                                //     adquip = added[added_key].map(sym => Number.parseInt(allQuipment.find(q => q.symbol === sym)?.kwipment_id as string)) as number[];
+                                // }
 
                                 if (!c.associated_paths.find(ap => ap.path === path_key)) {
                                     let sk = {} as BaseSkills;
