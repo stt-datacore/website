@@ -109,10 +109,10 @@ export function getNodePaths(item: NavMapItem, stack: NavMapItem[], parentStack?
     parentStack ??= [];
     parentStack.push(item);
     
-    if (!item.children?.length) {
+    if (!item?.children?.length) {
         return [{
-            ids: parentStack.map(p => p.id),
-            path: parentStack.map(p => p.id).join("_")
+            ids: parentStack.map(p => p?.id),
+            path: parentStack.map(p => p?.id).join("_")
         }]
     }
     else {
