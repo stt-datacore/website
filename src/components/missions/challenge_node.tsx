@@ -15,6 +15,7 @@ export interface ChallengeNodeInfo {
 export interface ChallengeNodeProps extends ChallengeNodeInfo {
     highlight?: boolean;
     tapped?: boolean;
+    excluded?: boolean;
     style?: React.CSSProperties;
     targetGroup?: string;
     crewTargetGroup?: string;
@@ -23,7 +24,7 @@ export interface ChallengeNodeProps extends ChallengeNodeInfo {
 
 export const ChallengeNode = (props: ChallengeNodeProps) => {
 
-    const { tapped, mastery, style, quest, challengeId, targetGroup, crewTargetGroup } = props;
+    const { excluded, tapped, mastery, style, quest, challengeId, targetGroup, crewTargetGroup } = props;
 
     const challenges = quest.challenges ?? [];
     let reward = undefined as MissionReward | undefined;
@@ -74,7 +75,10 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
                     ...style ?? {}
                 }}>
                 <span>
-                {tapped && <span style={{position:'relative', left: "0px", top: "0px", textAlign: "left"}}><Icon name='star' color='green' size='small' /></span>}
+                
+                {tapped && !excluded && <span style={{position:'relative', left: "0px", top: "0px", textAlign: "left"}}><Icon name='star' color='green' size='small' /></span>}
+                {tapped && excluded && <span style={{position:'relative', left: "0px", top: "0px", textAlign: "left"}}><Icon name='ban' color='red' size='small' /></span>}
+
                 <b>{challenge.name}</b>
                 </span>
                 <span style={{ fontSize: "0.9em" }}>

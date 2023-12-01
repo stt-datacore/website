@@ -18,7 +18,8 @@ import MapExplanation from "../explanations/mapexplanation";
 export interface HighlightItem {
     quest: number,
     challenge: number,
-    clicked?: boolean
+    clicked?: boolean,
+    excluded?: boolean;
 };
 
 export interface MissionComponentProps {
@@ -77,6 +78,10 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         return highlighted.some(h => h.quest === quest?.id && h.challenge === item.id);
     }
 
+    const isExcluded = (item: NavMapItem) => {
+        return highlighted.some(h => h.quest === quest?.id && h.challenge === item.id && h.excluded);
+    }
+
     const isTapped = (item: NavMapItem) => {
         return highlighted.some(h => h.quest === quest?.id && h.challenge === item.id && h.clicked);
     }
@@ -89,20 +94,24 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         let currSelection = highlighted.filter(h => h.quest === quest?.id && h.clicked) ?? [];
 
         if (!data.quest.challenges) return;
+        let mch = data.quest.challenges.find(i => i.id === data.challengeId);
         let id = data.quest.challenges.find(i => i.id === data.challengeId)?.id ?? -1;
+        
+        let haschildren = !!mch?.children?.length;
 
         let selNode = highlighted?.find(h => h.quest === quest?.id && h.challenge === id);
 
-        if (selNode && selNode.clicked) {
+        if (selNode && selNode.clicked && (selNode.excluded || !haschildren)) {
             currSelection = currSelection.filter(f => f.challenge !== selNode?.challenge);
         }
-        else {
+        else {            
             currSelection = currSelection.filter(f => f.challenge !== selNode?.challenge);
 
             selNode = {
                 quest: data.quest.id,
                 challenge: data.challengeId,
-                clicked: true
+                clicked: true,
+                excluded: haschildren && selNode?.clicked ? !selNode.excluded : false
             };
 
             currSelection.push(selNode);
@@ -117,13 +126,15 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         let allHighlights = getHighlightNodesFromNode(selMap);
         newHighlights = newHighlights.concat(allHighlights?.map(h => {
             let selInCurr = currSelection.some(s => s.challenge === h?.id && s.clicked);
+            let exclude = currSelection.some(s => s.challenge === h?.id && s.clicked && s.excluded);
             if (!!autoTraits && !!h?.trait_bonuses?.length && !!quest) {
                 ptrait = ptrait.concat(h.trait_bonuses.map(t => {
                     return {
                         trait: t.trait,
                         selected: true,
                         questId: quest.id,
-                        clicked: false
+                        clicked: false, 
+                        excluded: false
                     } as TraitSelection;
                 }));
                 ptrait = ptrait.filter((p, i) => ptrait.findIndex(x => x.trait === p.trait && x.questId === p.questId) === i);
@@ -132,7 +143,8 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                 quest: quest?.id ?? -1,
                 challenge: h?.id ?? -1,
                 selected: currSelection.some(sel => sel.quest === quest?.id && sel.challenge === h?.id && sel.clicked),
-                clicked: selInCurr
+                clicked: selInCurr,
+                excluded: exclude
             }
         }));
 
@@ -293,6 +305,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                                             <ChallengeNode
                                                                                 tapped={isTapped(item)}
                                                                                 highlight={isHighlighted(item)}
+                                                                                excluded={isExcluded(item)}
                                                                                 onClick={clickNode}
                                                                                 targetGroup={pageId + "_items"}
                                                                                 crewTargetGroup={pageId + "_helper"}
@@ -317,6 +330,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                                             <ChallengeNode
                                                                                 tapped={isTapped(item)}
                                                                                 highlight={isHighlighted(item)}
+                                                                                excluded={isExcluded(item)}
                                                                                 onClick={clickNode}
                                                                                 targetGroup={pageId + "_items"}
                                                                                 crewTargetGroup={pageId + "_helper"}
