@@ -6,6 +6,7 @@ export interface QuestFilterConfig {
   traits?: MissionTraitBonus[];
   quest?: Quest;
   challenges?: MissionChallenge[];    
+  ignoreChallenges?: number[];
   paths?: number[][];    
   mastery: number;
   idleOnly?: boolean;

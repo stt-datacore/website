@@ -9,6 +9,8 @@ import { BaseSkills, Skill } from "../../model/crew";
 import CrewStat from "../crewstat";
 import { appelate } from "../../utils/misc";
 import { CrewItemsView } from "../item_presenters/crew_items";
+import { GradeSwatch } from "../explanations/powerexplanation";
+import { Icon } from "semantic-ui-react";
 
 export interface PathCrewDisplayProps {
     pathGroup: PathGroup,
@@ -97,6 +99,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                         alignItems: "center"
                     }}>
                         <h3>{challenge.name}</h3>
+                        {!pathCrew?.length && <Icon name='ban' color='red' size='large' />}
                         {pathCrew.map((c) => {
 
                             let crewChallenge = c.challenges?.find(ch => ch.challenge.id === challenge.id) ?? null;
@@ -135,6 +138,8 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                                             return (
                                                 <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}>
                                                     <h4>{c.name}</h4>
+                                                    <div style={{display:'flex', gap: "0.5em", flexDirection: 'row', alignItems: "center"}}>
+                                                    <GradeSwatch grade={crewChallenge?.max_solve && crewChallenge.power_decrease ? "D" : crewChallenge?.max_solve ? "C" : crewChallenge?.power_decrease ? "B" : "A"} />
                                                     <CrewStat
                                                         style={{
                                                             color: ((!!crewChallenge?.max_solve && !!crewChallenge?.power_decrease)) ? 'orange' : (crewChallenge?.max_solve ? 'aqua' : (!!crewChallenge?.power_decrease ? 'yellow' : 'lightgreen'))
@@ -145,6 +150,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                                                         data={skill}
                                                         scale={0.75}
                                                     />
+                                                    </div>
                                                     {challenge.skill === skill.skill && !!crewChallenge?.trait_bonuses?.length &&
                                                         <div style={{ color: 'lightgreen', textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic', fontSize: "0.75em" }}>
                                                             +&nbsp;{crewChallenge.trait_bonuses?.map(ct => ct.bonuses[mastery]).reduce((p, n) => p + n, 0)}&nbsp;({crewChallenge.trait_bonuses?.map(ct => <>{appelate(ct.trait)}</>).reduce((p, n) => p ? <>{p}, {n}</> : n)})
