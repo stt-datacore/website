@@ -10,6 +10,7 @@ import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { Filter } from "../../model/game-elements";
 import { splitPath } from "../../utils/episodes";
+import PowerExplanation from "../explanations/powerexplanation";
 
 
 
@@ -72,7 +73,7 @@ export const PathTable = (props: PathTableProps) => {
     });
 
     const rowConfig = [
-        { width: 1, column: '', title: 'Paths' }
+        { width: 1, column: '', title: <>Paths <PowerExplanation /></> }
     ] as ITableConfigRow[]
 
     function renderRow(data: PathGroup, idx: number): JSX.Element {

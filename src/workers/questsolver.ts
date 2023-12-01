@@ -147,12 +147,11 @@ const QuestSolver = {
                     }
                 }
             }
-            if (path.every(p => solved.includes(p)) && solveCrew.length <= 3) return solveCrew;
+            if (path.every(p => solved.includes(p) || config.ignoreChallenges?.includes(p.id)) && solveCrew.length <= 3) return solveCrew;
             return false;
         }
 
         function solveChallenge(roster: PlayerCrew[], challenge: MissionChallenge, mastery: number, path: string, traits?: MissionTraitBonus[]) {
-
             const useTraits = config.noTraitBonus ? [] : (traits ?? challenge.trait_bonuses ?? []);
             let questcrew = [] as IQuestCrew[];
             let critmult = 1;
@@ -392,6 +391,7 @@ const QuestSolver = {
             }
 
             const challenges = config.challenges?.length ? config.challenges : (config.quest?.challenges ?? []);
+            const ignoreChallenges = config.ignoreChallenges ?? [];
 
             const map = makeNavMap(challenges);
             const paths = getNodePaths(map[0], map).map(p => p.ids.map(id => challenges.find(f => f.id === id))) as MissionChallenge[][];
@@ -415,6 +415,7 @@ const QuestSolver = {
                     return bc - ac;
                 });
 
+                if (ignoreChallenges.includes(ch.id)) return [];
                 let chcrew = solveChallenge(roster, ch, config.mastery, path);
 
                 if (chcrew?.length) {
@@ -457,8 +458,8 @@ const QuestSolver = {
                 let challenges = pathMap[path];
                 let crew = pathCrew[path];
                 
-                if (!challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)))) {
-                    let retest = challenges.filter(ch => !crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)));
+                if (!challenges.filter(f => !ignoreChallenges.includes(f.id)).every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)))) {
+                    let retest = challenges.filter(ch => !crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)) && !ignoreChallenges.includes(ch.id));
     
                     for (let fch of retest) {
                         let eligCrew = crew.filter(f => fch.skill in f.base_skills && f.challenges && f.challenges.some(ft => ft.challenge.skill === fch.skill));
@@ -523,6 +524,8 @@ const QuestSolver = {
     
                 let chfill = [] as IQuestCrew[];
                 challenges.forEach((challenge) => {
+                    if (ignoreChallenges.includes(challenge.id)) return;
+
                     for (let c of crew) {
                         if (c.challenges?.some(ch => ch.challenge.id === challenge.id)) {
                             if (chfill.findIndex(tc => tc.symbol === c.symbol) === -1) {
@@ -566,9 +569,6 @@ const QuestSolver = {
                         c.challenge_key = c.challenges?.map(ch => `${ch.challenge.id.toString()}_${ch.challenge.skill}`).join("_");
                     }
                     
-                    // if (c.symbol === 'winn_kai_crew') {
-                    //     console.log("break");
-                    // }
                     c.challenges?.forEach((ch, idx) => {
                         Object.keys(c.skills).forEach((skill) => {
                             let core = c[skill].core;
@@ -653,27 +653,13 @@ const QuestSolver = {
                         let crews_key = tg.map(c => c.symbol).join("_")+path_key;
                         if (!threekeys.includes(crews_key)) {
                             threegroups.push(tg);
-                            threekeys.push(crews_key);
-                            
+                            threekeys.push(crews_key);                            
                             
                             tg.forEach((c) => {
                                 let nc = JSON.parse(JSON.stringify(c)) as IQuestCrew;
                                 let added_key = makeAddedKey(c, path_key);
                                 c.associated_paths ??= [];
                                 let adquip = added[added_key].filter(f => !!f).map(sym => Number.parseInt(allQuipment.find(q => q.symbol === sym)?.kwipment_id as string)) as number[];
-
-                                // if (c.added_kwipment?.some(q => !!q) && c.added_kwipment_expiration?.some(q => !!q)) {
-                                //     resetCrew(nc, path_key);
-
-                                //     for (let ch of path) {
-                                //         if (c.challenges?.some(cc => cc.challenge.id === ch.id)) {
-                                //             let ca = [nc];
-                                //             ca = processChallenge(ch, ca, ca, path_key);
-                                //         }
-                                //     }
-
-                                //     adquip = added[added_key].map(sym => Number.parseInt(allQuipment.find(q => q.symbol === sym)?.kwipment_id as string)) as number[];
-                                // }
 
                                 if (!c.associated_paths.find(ap => ap.path === path_key)) {
                                     let sk = {} as BaseSkills;
@@ -726,11 +712,7 @@ const QuestSolver = {
                     }
                 }
             }
-            
-            // if (config.buildableOnly) {
-            //     crew = crew.filter((c) => buildQuipment(c, allQuipment, deductHistory));
-            // }
-
+        
             const flatCrew = pathSolutions.map(p => p.crew).flat();
 
             crew = roster.map((c, idx) => {
@@ -784,7 +766,7 @@ const QuestSolver = {
 
             let solved = [... new Set(pathSolutions.map(p => p.path)) ];
 
-            if (solved.length !== paths.length && challenges.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)))) {
+            if (solved.length !== paths.length && challenges.filter(f => !ignoreChallenges.includes(f.id))?.every(ch => crew.some(c => c.challenges?.some(cha => cha.challenge.id === ch.id)))) {
                 let rpaths = [ ... new Set(crew.map(c => c.associated_paths ?? []).flat()) ];
                 let rchallenges = [ ... new Set(crew.map(c => c.challenges ?? []).flat()) ];
 
@@ -833,7 +815,7 @@ const QuestSolver = {
 
             let seen = [ ...new Set(pathSolutions.map(ps => ps.path.split("_")).flat().map(s => Number.parseInt(s))) ];
             seen = seen.concat(crew?.map(c => c.challenges?.map(ch => ch.challenge?.id)?.flat() ?? [])?.flat() ?? [])
-            let failed = challenges.filter(ch => !seen.includes(ch.id)).map(ch => ch.id);
+            let failed = challenges.filter(ch => !seen.includes(ch.id) && !ignoreChallenges.includes(ch.id)).map(ch => ch.id);
 
             resolve({
                 status: true,

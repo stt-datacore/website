@@ -52,7 +52,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const [groupedMissions, internalSetGroupedMissions] = useStateWithStorage('continuum/discoveredMissions', [] as DiscoveredMissionInfo[], { rememberForever: true, compress: true });
     const setGroupedMissions = (value: DiscoveredMissionInfo[]) => {        
         if (!mostRecentDate || !value) return;
-        value = value.filter(f => f.mission.discover_date.toDateString() === mostRecentDate.toDateString());
+        value = value.filter(f => f.mission.discover_date.toString() === mostRecentDate.toString());
         internalSetGroupedMissions(value);
     }
     const getMissionData = () => {
@@ -66,7 +66,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         if (m.remoteQuests?.length !== m.mission.quests?.length) {
             m.remoteQuests = m.mission.quests?.map(q => false) ?? [];
         }
-    })
+    });
 
     const mlookup = getMissionData();
     const startMission = mlookup?.mission;
@@ -549,6 +549,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                 config={{
                                     quest,
                                     challenges: (highlighted.map(h => quest?.challenges?.filter(ch => h.quest === quest?.id && ch.id === h.challenge))?.flat() ?? []) as MissionChallenge[],
+                                    ignoreChallenges: (highlighted.map(h => quest?.challenges?.filter(ch => h.quest === quest?.id && ch.id === h.challenge && h.excluded)?.map(q2 => q2.id ?? 0) ?? [])?.flat() ?? []) as number[],
                                     idleOnly,
                                     considerFrozen,
                                     qpOnly,
