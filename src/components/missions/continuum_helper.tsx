@@ -204,7 +204,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     React.useEffect(() => {
         if (!!mission?.quests?.length && questId !== undefined && questId >= 0 && questId < (mission?.quests?.length ?? 0)) {
-            const mquest = mission.quests[questId];
+            const mquest = remoteQuests?.find(f => f.id === questId)?.quest ?? mission.quests[questId];
+
             const navmap = makeNavMap(mquest);
             const pathInfo = getNodePaths(navmap[0], navmap);
 
@@ -273,7 +274,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     result.discover_date = new Date(result.discover_date);
                 }
 
-                setMissionAndRemotes(result, [...remoteQuests]);
+                setMissionAndRemotes(result);
                 setSelectedTraits(selTraits ?? []);
                 setErrorMsg("");
             })
@@ -429,6 +430,22 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         )
     }
     
+    const activeConfig = {
+        quest,
+        challenges: (highlighted.map(h => quest?.challenges?.filter(ch => h.quest === quest?.id && ch.id === h.challenge))?.flat() ?? []) as MissionChallenge[],
+        ignoreChallenges: (highlighted.map(h => quest?.challenges?.filter(ch => h.quest === quest?.id && ch.id === h.challenge && h.excluded)?.map(q2 => q2.id ?? 0) ?? [])?.flat() ?? []) as number[],
+        idleOnly,
+        considerFrozen,
+        qpOnly,
+        ignoreQpConstraint,
+        mastery,
+        includeCurrentQp,
+        buildableOnly,
+        cheapestFirst,
+        alwaysCrit,
+        noTraitBonus
+    } as QuestFilterConfig;
+
     return (
         <>        
             <div>
@@ -494,21 +511,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                 clearResults={() => setSolverResults(undefined)}
                                 setRunning={setRunning}
                                 disabled={!quest?.challenges?.some(ch => ch.difficulty_by_mastery?.some(d => !!d))}
-                                config={{
-                                    quest,
-                                    challenges: (highlighted.map(h => quest?.challenges?.filter(ch => h.quest === quest?.id && ch.id === h.challenge))?.flat() ?? []) as MissionChallenge[],
-                                    ignoreChallenges: (highlighted.map(h => quest?.challenges?.filter(ch => h.quest === quest?.id && ch.id === h.challenge && h.excluded)?.map(q2 => q2.id ?? 0) ?? [])?.flat() ?? []) as number[],
-                                    idleOnly,
-                                    considerFrozen,
-                                    qpOnly,
-                                    ignoreQpConstraint,
-                                    mastery,
-                                    includeCurrentQp,
-                                    buildableOnly,
-                                    cheapestFirst,
-                                    alwaysCrit,
-                                    noTraitBonus
-                                }}
+                                config={activeConfig}
                             />
                         </div>
                     </div>
@@ -615,7 +618,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                         <PathTable
                             quest={quest}
                             solverResults={solverResults}
-                            config={missionConfig}
+                            config={activeConfig}
                             pageId={'continuum'}
                         />
                     </div>
@@ -625,7 +628,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                             quest={quest}
                             solverResults={solverResults}
                             pageId={'continuum'}
-                            config={missionConfig} />
+                            config={activeConfig} />
                     </div>
 
                     {!solverResults && <div style={{ height: '50vh' }}>&nbsp;</div>}
