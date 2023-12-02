@@ -29,7 +29,7 @@ const VoyagePage = () => {
 		const activeVoyageId = ephemeral?.voyage?.length ? ephemeral.voyage[0].id : 0;
 		setActiveVoyageId(activeVoyageId);
 		setShowCalculator(activeVoyageId === 0);
-	}, [playerData]);
+	}, [playerData, ephemeral]);
 
 	return (
 		<DataPageLayout
@@ -41,7 +41,7 @@ const VoyagePage = () => {
 			<React.Fragment>
 				<CrewHoverStat targetGroup='voyageLineup' />
 
-				{playerData &&
+				{playerData && ephemeral &&
 					<PlayerActiveVoyage
 						key={`${playerData.player.dbid}`}
 						dbid={`${playerData.player.dbid}`}
@@ -71,6 +71,7 @@ const PlayerActiveVoyage = (props: PlayerActiveVoyageProps) => {
 
 	const actionButtons = [
 		<Button key='toggler'
+			style={{margin:"0.25em"}}
 			content={!props.showCalculator ? 'View crew calculator' : 'View active voyage'}
 			icon='exchange'
 			size='large'
@@ -80,6 +81,7 @@ const PlayerActiveVoyage = (props: PlayerActiveVoyageProps) => {
 	if (history.voyages.length > 0) {
 		actionButtons.unshift(
 			<Button key='history'
+				style={{margin:"0.25em"}}
 				content='View voyage history'
 				icon='history'
 				size='large'
@@ -91,7 +93,7 @@ const PlayerActiveVoyage = (props: PlayerActiveVoyageProps) => {
 	return (
 		<React.Fragment>
 			{props.activeVoyageId > 0 &&
-				<ActiveVoyage
+				<ActiveVoyage					
 					history={historyReady ? history : undefined}
 					setHistory={setHistory}
 					showDetails={!props.showCalculator}

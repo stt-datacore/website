@@ -13,7 +13,8 @@ import { Ship } from '../../model/ship';
 import { Estimate, VoyageStatsConfig } from '../../model/worker';
 import { CrewMember } from '../../model/crew';
 import { EquipmentCommon } from '../../model/equipment';
-import { checkReward } from '../../utils/itemutils';
+import { checkReward, mergeItems } from '../../utils/itemutils';
+import { GlobalContext } from '../../context/globalcontext';
 
 type VoyageStatsProps = {
 	voyageData: Voyage;	// Note: non-active voyage being passed here as IVoyageCalcConfig
@@ -47,6 +48,9 @@ interface Bins {
 }
 
 export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
+
 	worker: Worker;
 	ship?: Ship;
 	config: VoyageStatsConfig;
@@ -111,6 +115,13 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			this.worker.terminate();
 	}
 
+	componentDidUpdate(prevProps: Readonly<VoyageStatsProps>, prevState: Readonly<VoyageStatsState>, snapshot?: any): void {
+		if (prevProps.playerData !== this.props.playerData) {
+			if (this.worker) {
+				this.worker.postMessage({ worker: 'voyageEstimate', config: this.config });
+			}
+		}
+	}
 	_formatTime(time: number) {
 		let hours = Math.floor(time);
 		let minutes = Math.floor((time-hours)*60);
@@ -222,13 +233,54 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			: 'Estimate: ' + this._formatTime(estimate['refills'][0].result);
 	}
 
+	_renderPrettyCost(cost: number, idx: number) {
+		if (this.context.player.playerData && cost) {
+
+			let revivals = this.context.player.playerData.player.character.items.find(f => f.symbol === 'voyage_revival');
+
+			if (revivals && revivals.quantity && revivals.quantity >= idx) {
+				let globalItem = this.context.core.items.find(f => f.symbol === 'voyage_revival');
+				if (globalItem) {
+					revivals = mergeItems([revivals], [globalItem])[0];
+					return <div style={{
+						display: "flex",
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "left"
+					}}>
+						<div style={{width: "32px"}}>
+						<img style={{height:"24px", margin:"0.5em"}} src={`${process.env.GATSBY_ASSETS_URL}${revivals.imageUrl}`} />
+						</div>
+						<span>{idx} / {revivals.quantity} Voyage Revivals</span>
+					</div>				
+				}
+			}
+			else {
+				return <div style={{
+					display: "flex",
+					flexDirection: "row",
+					alignItems: "center",
+					justifyContent: "left"
+				}}>
+					<div style={{width: "32px"}}>
+					<img style={{height:"24px", margin:"0.5em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} />
+					</div>
+					<span>{cost} Dilithium</span>
+				</div>				
+			}
+		}	
+
+
+		return <>{cost == 0 || 'Costing ' + cost + ' dilithium'}</>
+	}
+
 	_renderEstimate(needsRevive: boolean = false) {
 		const estimate  = this.props.estimate ?? this.state.estimate;
 
 		if (!estimate)
 			return (<div>Calculating estimate. Please wait...</div>);
 
-		const renderEst = (label, refills) => {
+		const renderEst = (label, refills, idx) => {
 			if (refills >= estimate['refills'].length) return (<></>);
 			const est = estimate['refills'][refills];
 			return (
@@ -237,7 +289,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					{!isMobile && <td>90%: {this._formatTime(est.safeResult)}</td>}
 					<td>99%: {this._formatTime(est.saferResult)}</td>
 					<td>Chance of {est.lastDil} hour dilemma: {Math.floor(est.dilChance)}%</td>
-					<td>{est.refillCostResult == 0 || 'Costing ' + est.refillCostResult + ' dilithium'}</td>
+					<td>{this._renderPrettyCost(est.refillCostResult, idx)}</td>
 				</tr>
 			);
 		};
@@ -258,11 +310,11 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			return (
 				<div>
 					<Table><tbody>
-						{!needsRevive && renderEst("Estimate", refill++)}
-						{renderEst("1 Refill", refill++)}
-						{renderEst("2 Refills", refill++)}
+						{!needsRevive && renderEst("Estimate", refill++, 0)}
+						{renderEst("1 Refill", refill++, 1)}
+						{renderEst("2 Refills", refill++, 2)}
 					</tbody></Table>
-					<p>The 20 hour voyage needs {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium.</p>
+					<p>A 20 hour voyage will need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.)</p>
 					{estimate.final && this._renderChart()}
 				</div>
 			);
