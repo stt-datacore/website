@@ -27,6 +27,10 @@ export interface VoyageStatsConfig {
     ss?: Skill;
 }
 
+export interface ExtendedVoyageStatsConfig extends VoyageStatsConfig{
+    selectedTime?: number;
+}
+
 export interface GameWorkerOptions {
     strategy?: string;
     searchDepth?: number;
