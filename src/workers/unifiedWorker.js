@@ -2,6 +2,7 @@
 
 import voymod from './voymod.js';
 import transwarp from './transwarp.js';
+import sporedrive from './sporedrive.js';
 import voyagers from './voyagers.js';
 import Optimizer from './optimizer.js';
 import BetaTachyon from './betatachyon.ts';
@@ -16,6 +17,9 @@ self.addEventListener('message', message => {
   };
   const messageHandlers = {
     'voyageEstimate': () => voyageEstimate(message.data.config, est => postResult(est, true)).then(estimate =>
+      postResult(estimate, false)
+    ),
+    'voyageEstimateExtended': () => voyageEstimateExtended(message.data.config, est => postResult(est, true)).then(estimate =>
       postResult(estimate, false)
     ),
     'citeOptimizer': () => citeOptimizer(message.data.playerData, message.data.allCrew).then(data => postResult(data, false)),
@@ -41,6 +45,14 @@ self.addEventListener('message', message => {
 const voyageEstimate = (config, progress) => {
   return new Promise((resolve, reject) => {
     let estimate = transwarp.getEstimate(config, progress);
+    resolve(estimate);
+  });
+};
+
+// This worker can estimate a single lineup from input config
+const voyageEstimateExtended = (config, progress) => {
+  return new Promise((resolve, reject) => {
+    let estimate = sporedrive.getEstimate(config, progress);
     resolve(estimate);
   });
 };

@@ -10,7 +10,7 @@ import { ResponsiveLineCanvas } from '@nivo/line';
 import themes from '../nivo_themes';
 import { PlayerCrew, PlayerData, PlayerEquipmentItem, Reward, Voyage } from '../../model/player';
 import { Ship } from '../../model/ship';
-import { Estimate, VoyageStatsConfig } from '../../model/worker';
+import { Estimate, ExtendedVoyageStatsConfig, VoyageStatsConfig } from '../../model/worker';
 import { CrewMember } from '../../model/crew';
 import { EquipmentCommon } from '../../model/equipment';
 import { checkReward, mergeItems } from '../../utils/itemutils';
@@ -53,7 +53,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	worker: Worker;
 	ship?: Ship;
-	config: VoyageStatsConfig;
+	config: ExtendedVoyageStatsConfig;
 
 	static defaultProps = {
 		roster: [],
@@ -106,8 +106,25 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 			this.worker = new Worker();
 			this.worker.addEventListener('message', message => this.setState({ estimate: message.data.result }));
+			this.beginCalc();
+		}	
+	}
+
+	private beginCalc() {
+		if (this.config.elapsedSeconds) {
+			let nextHour = Math.ceil(this.config.elapsedSeconds);
+
+			if (this.config.selectedTime !== undefined) {
+				if (this.config.selectedTime <= nextHour) {
+					this.config.selectedTime = nextHour + 2;
+				}
+			}
+			this.worker.postMessage({ worker: 'voyageEstimateExtended', config: this.config });
+		}
+		else {
 			this.worker.postMessage({ worker: 'voyageEstimate', config: this.config });
 		}
+		
 	}
 
 	componentWillUnmount() {
@@ -118,10 +135,11 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	componentDidUpdate(prevProps: Readonly<VoyageStatsProps>, prevState: Readonly<VoyageStatsState>, snapshot?: any): void {
 		if (prevProps.playerData !== this.props.playerData) {
 			if (this.worker) {
-				this.worker.postMessage({ worker: 'voyageEstimate', config: this.config });
+				this.beginCalc();
 			}
 		}
 	}
+
 	_formatTime(time: number) {
 		let hours = Math.floor(time);
 		let minutes = Math.floor((time-hours)*60);
@@ -301,7 +319,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				<div>
 					The voyage will end at {this._formatTime(estimate['refills'][0].result)}.
 					Subsequent refills will extend it by {this._formatTime(extendTime)}.
-					For a 20 hour voyage you need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium.
+					For a {this.config.selectedTime ?? 20} hour voyage you need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.)
 				</div>
 			);
 		} else {
@@ -314,7 +332,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 						{renderEst("1 Refill", refill++, 1)}
 						{renderEst("2 Refills", refill++, 2)}
 					</tbody></Table>
-					<p>A 20 hour voyage will need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.)</p>
+					<p>For a {this.config.selectedTime ?? 20} hour voyage you will need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.)</p>
 					{estimate.final && this._renderChart()}
 				</div>
 			);
