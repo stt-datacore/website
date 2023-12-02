@@ -169,7 +169,7 @@ const QuestSolver = {
                 for (let ch of path) {
                     if (config.ignoreChallenges?.includes(ch.id)) continue;
                     if (!solveCrew.some(sc => sc.challenges?.some(sch => sch.challenge.id === ch.id))) {
-                        unmet.push(ch);
+                        if (!unmet.includes(ch)) unmet.push(ch);
                     }
                 }
                 
