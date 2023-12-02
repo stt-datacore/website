@@ -34,6 +34,7 @@ function getEstimate(config, reportProgress = () => true) {
   
     if (elapsedSeconds) {
         let nextHour = Math.ceil(elapsedSeconds / 3600);
+        if (nextHour % 1) nextHour++;
         if (selectedTime < nextHour) {
             selectedTime = nextHour + 2;
         }

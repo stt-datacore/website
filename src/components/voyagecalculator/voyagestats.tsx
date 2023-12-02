@@ -113,18 +113,23 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	private beginCalc() {
 		if (this.config.elapsedSeconds) {
 			let nextHour = Math.ceil(this.config.elapsedSeconds);
+			if (nextHour % 1) nextHour++;
+
+			if (nextHour >= 20 && (this.config.selectedTime === undefined || this.config.selectedTime <= nextHour)) {
+				this.config.selectedTime = nextHour + 2;
+			}
 
 			if (this.config.selectedTime !== undefined) {
 				if (this.config.selectedTime <= nextHour) {
 					this.config.selectedTime = nextHour + 2;
 				}
 			}
+
 			this.worker.postMessage({ worker: 'voyageEstimateExtended', config: this.config });
-		}
-		else {
-			this.worker.postMessage({ worker: 'voyageEstimate', config: this.config });
+			return;
 		}
 		
+		this.worker.postMessage({ worker: 'voyageEstimate', config: this.config });		
 	}
 
 	componentWillUnmount() {
