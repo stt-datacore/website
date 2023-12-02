@@ -215,6 +215,9 @@ export interface CiteData {
     skillOrderRarities: SkillOrderRarity[];
 }
 
+
+export type ThreeSolveResult = 'full' | 'partial' | 'none';
+
 export interface QuestSolverConfig extends QuestFilterConfig {
     buffs: BuffStatTable;
     context: {
@@ -255,6 +258,7 @@ export interface PathGroup {
     path: string;
     crew: IQuestCrew[];
     mastery: number;
+    completeness: ThreeSolveResult;
     path_expanded?: MissionChallenge[];
 }
 
@@ -265,6 +269,7 @@ export interface QuestSolverResult {
     fulfilled: boolean;
     failed?: number[];
     paths: PathGroup[];
+    pathspartial: boolean;
 }
 
 export interface QuestSolverCacheItem {
