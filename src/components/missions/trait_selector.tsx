@@ -47,6 +47,8 @@ export const TraitSelectorComponent = (props: TraitSelectorProps) => {
         alignItems: 'center',
         justifyContent: 'center',
         textAlign: 'center',
+        flexWrap: 'wrap',
+        gap: "0.25em",
         ... style ?? {},
     }}>
         {traits.map((trait) => {
