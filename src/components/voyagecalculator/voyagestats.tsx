@@ -123,11 +123,10 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				if (this.config.selectedTime <= nextHour) {
 					this.config.selectedTime = nextHour + 2;
 				}
+				this.worker.postMessage({ worker: 'voyageEstimateExtended', config: this.config });
+				return;
 			}
-
-			this.worker.postMessage({ worker: 'voyageEstimateExtended', config: this.config });
-			return;
-		}
+		}		
 		
 		this.worker.postMessage({ worker: 'voyageEstimate', config: this.config });		
 	}
