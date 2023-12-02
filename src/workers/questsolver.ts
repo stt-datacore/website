@@ -140,7 +140,7 @@ const QuestSolver = {
             }
             else {
                 wcrew = [ ... solveCrew ];
-                solveCrew.length = 0;
+                solveCrew.length = 0;                
     
                 // Make sure final challenges can be solved.
                 for (let c of wcrew) {
@@ -167,13 +167,21 @@ const QuestSolver = {
                 }
 
                 for (let ch of path) {
-                    if (config.ignoreChallenges?.includes(ch.id)) continue;
-                    if (!solveCrew.some(sc => sc.challenges?.some(sch => sch.challenge.id === ch.id))) {
+                    if (!solveCrew.some(sc => sc.challenges?.some(sch => sch.challenge.id === ch.id)) && !config.ignoreChallenges?.includes(ch.id)) {
                         if (!unmet.includes(ch)) unmet.push(ch);
                     }
                 }
+                solved = solveCrew.map(sc => sc.challenges?.map(ch => ch.challenge)).flat() as MissionChallenge[];
                 
-                return [solveCrew, 'partial'];
+                if (path.every(p => solved.includes(p) || config.ignoreChallenges?.includes(p.id)) && solveCrew.length <= 3) {
+                    return [solveCrew, 'full'];
+                }
+                else if (solveCrew.some(sc => sc.challenges?.some(ch => !ch.challenge?.children?.length))) {
+                    return [solveCrew, 'partial'];
+                }
+                else {
+                    return [solveCrew, 'none'];
+                }
             }
         }
 
@@ -442,8 +450,7 @@ const QuestSolver = {
 
                     return bc - ac;
                 });
-
-                if (ignoreChallenges.includes(ch.id)) return [];
+                
                 let chcrew = solveChallenge(roster, ch, config.mastery, path);
 
                 if (chcrew?.length) {
