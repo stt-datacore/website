@@ -17,7 +17,7 @@ export interface QuestImporterProps {
 
 export const QuestImportComponent = (props: QuestImporterProps) => {
 
-    const { currentHasRemote, questId, quest, setQuest, setError } = props;
+    const { currentHasRemote, questId, quest, setQuest, setError, clearQuest } = props;
     const context = React.useContext(GlobalContext);
     const { playerData} = context.player;
 	
@@ -74,7 +74,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
                             Current Quest Data: <b><a onClick={() => setCollapsed(false)} target='_blank' href={`https://app.startrektimelines.com/quest/conflict_info?id=${quest?.id}&client_api=22&continuum=true`}>{quest?.name}</a></b>
                         </p>
                         <p style={{textAlign: "right"}}>
-							<b style={{fontSize:"0.8em"}}>(To clear your all quest data, <a title={'Clear All Quest Data'} onClick={() => setQuest(undefined)}>Click Here</a>)</b>
+							<b style={{fontSize:"0.8em"}}>(To clear your all quest data, <a title={'Clear All Quest Data'} onClick={() => clearQuest()}>Click Here</a>)</b>
                         </p>
 
                         </div>

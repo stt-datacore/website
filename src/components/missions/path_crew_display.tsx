@@ -99,7 +99,10 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                         alignItems: "center"
                     }}>
                         <h3>{challenge.name}</h3>
-                        {!pathCrew?.length && <Icon name='ban' color='red' size='large' />}
+                        {!pathCrew?.length && (<><Icon name='ban' color='red' size='large' /> 
+                        {config.ignoreChallenges?.includes(challenge.id) && <h4>(Challenge Ignored)</h4> || <h4>(Challenge Failed)</h4>}</>)
+                        }
+                        
                         {pathCrew.map((c) => {
 
                             let crewChallenge = c.challenges?.find(ch => ch.challenge.id === challenge.id) ?? null;
@@ -124,6 +127,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                                             rarity={c.rarity}
                                             maxRarity={c.max_rarity}
                                         />
+                                        <h4 style={{margin:"0"}}>{c.name}</h4>
 
                                         <CrewItemsView
                                             locked={true}
@@ -137,7 +141,6 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                                             if (key !== challenge.skill) return <></>
                                             return (
                                                 <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}>
-                                                    <h4>{c.name}</h4>
                                                     <div style={{display:'flex', gap: "0.5em", flexDirection: 'row', alignItems: "center"}}>
                                                     <GradeSwatch grade={crewChallenge?.max_solve && crewChallenge.power_decrease ? "D" : crewChallenge?.max_solve ? "C" : crewChallenge?.power_decrease ? "B" : "A"} />
                                                     <CrewStat
