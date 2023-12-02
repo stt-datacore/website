@@ -115,11 +115,11 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			let nextHour = Math.ceil(this.config.elapsedSeconds / 3600);
 			if (nextHour % 1) nextHour++;
 
-			if (nextHour >= 20 && (this.config.selectedTime === undefined || this.config.selectedTime <= nextHour)) {
+			if (nextHour >= 20 && (this.config?.selectedTime === undefined || this.config.selectedTime <= nextHour)) {
 				this.config.selectedTime = nextHour + 2;
 			}
 
-			if (this.config.selectedTime !== undefined) {
+			if (this.config?.selectedTime !== undefined) {
 				if (this.config.selectedTime <= nextHour) {
 					this.config.selectedTime = nextHour + 2;
 				}
@@ -323,7 +323,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				<div>
 					The voyage will end at {this._formatTime(estimate['refills'][0].result)}.
 					Subsequent refills will extend it by {this._formatTime(extendTime)}.
-					For a {this.config.selectedTime ?? 20} hour voyage you need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.)
+					For a {this.config?.selectedTime ?? 20} hour voyage you need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.)
 				</div>
 			);
 		} else {
@@ -336,7 +336,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 						{renderEst("1 Refill", refill++, 1)}
 						{renderEst("2 Refills", refill++, 2)}
 					</tbody></Table>
-					<p>For a {this.config.selectedTime ?? 20} hour voyage you will need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.)</p>
+					<p>For a {this.config?.selectedTime ?? 20} hour voyage you will need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.)</p>
 					{estimate.final && this._renderChart()}
 				</div>
 			);
