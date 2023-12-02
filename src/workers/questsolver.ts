@@ -1,9 +1,9 @@
 import CONFIG from "../components/CONFIG";
 import { BaseSkills, ComputedBuff, CrewMember, Skill } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
-import { Jackpot, MissionChallenge, MissionTraitBonus } from "../model/missions";
+import { Jackpot, Mission, MissionChallenge, MissionTraitBonus } from "../model/missions";
 import { PlayerCrew, PlayerEquipmentItem } from "../model/player";
-import { IQuestCrew, PathGroup, QuestSolverConfig, QuestSolverResult } from "../model/worker";
+import { IQuestCrew, PathGroup, QuestSolverConfig, QuestSolverResult, ThreeSolveResult } from "../model/worker";
 import { getNodePaths, makeNavMap } from "../utils/episodes";
 import { calcItemDemands, canBuildItem, deductDemands, reverseDeduction } from "../utils/equipment";
 
@@ -97,31 +97,17 @@ const QuestSolver = {
                 reverseDeduction(item, playerItems);
             }
         }
+        
+        const unmet = [] as MissionChallenge[];
 
-        function anyThree(crew: IQuestCrew[], path: MissionChallenge[], startIndex?: number) {
+        function anyThree(crew: IQuestCrew[], path: MissionChallenge[], startIndex?: number): [IQuestCrew[], ThreeSolveResult] {
             startIndex ??= 0;
-            if (startIndex >= crew.length) return false;
-
+            if (!startIndex) unmet.length = 0;
+            if (startIndex >= crew.length) return [[], 'none'];
+            
             let c1 = [ ... crew ];
-
-            c1.sort((a, b) => {
-                let r = 0;
-                let an = 0;
-                let bn = 0;
-                if (!r) {
-                    an = path.filter(p => a.challenges?.some(c => c.challenge.id === p.id))?.length ?? 0;
-                    bn = path.filter(p => a.challenges?.some(c => c.challenge.id === p.id))?.length ?? 0;
-                    r = bn - an;
-                }
-                if (!r) {
-                    an = a.challenges?.length ?? 0;
-                    bn = b.challenges?.length ?? 0;
-                    r = bn - an;
-                }
-                return r;
-            });
-
             let c2 = c1.splice(startIndex);
+
             let wcrew = c2.concat(c1);
 
             let solved = [] as MissionChallenge[];
@@ -130,11 +116,12 @@ const QuestSolver = {
             for (let ch of path) {
                 for (let c of wcrew) {
                     if (c.challenges?.some(chc => chc.challenge.id == ch.id)) {
-                        if (!solved.includes(ch)) solved.push(ch);
-                        if (!solveCrew.includes(c)) {
-                            solveCrew.push(c);
+                        if (!solved.includes(ch)) {
+                            solved.push(ch);
+                            if (!solveCrew.includes(c)) {
+                                solveCrew.push(c);                            
+                            }                        
                         }
-                        break;
                     }
                 }
             }
@@ -147,8 +134,47 @@ const QuestSolver = {
                     }
                 }
             }
-            if (path.every(p => solved.includes(p) || config.ignoreChallenges?.includes(p.id)) && solveCrew.length <= 3) return solveCrew;
-            return false;
+            
+            if (path.every(p => solved.includes(p) || config.ignoreChallenges?.includes(p.id)) && solveCrew.length <= 3) {
+                return [solveCrew, 'full'];
+            }
+            else {
+                wcrew = [ ... solveCrew ];
+                solveCrew.length = 0;
+    
+                // Make sure final challenges can be solved.
+                for (let c of wcrew) {
+                    if (solveCrew.length === 3) break;
+                    if (c.challenges?.some(ch => !ch.challenge.children?.length)) {
+                        solveCrew.push(c);
+                    }                
+                }
+    
+                if (solveCrew.length < 3) {
+                    for (let c of wcrew) {
+                        if (solveCrew.length === 3) break;
+                        if (c.challenges?.some(ch => unmet.some(um => um.id === ch.challenge.id))) {
+                            solveCrew.push(c);
+                        }
+                    }   
+
+                    for (let c of wcrew) {
+                        if (solveCrew.length === 3) break;
+                        if (!c.challenges?.some(ch => !ch.challenge.children?.length)) {
+                            solveCrew.push(c);                        
+                        }                
+                    }   
+                }
+
+                for (let ch of path) {
+                    if (config.ignoreChallenges?.includes(ch.id)) continue;
+                    if (!solveCrew.some(sc => sc.challenges?.some(sch => sch.challenge.id === ch.id))) {
+                        unmet.push(ch);
+                    }
+                }
+                
+                return [solveCrew, 'partial'];
+            }
         }
 
         function solveChallenge(roster: PlayerCrew[], challenge: MissionChallenge, mastery: number, path: string, traits?: MissionTraitBonus[]) {
@@ -231,7 +257,7 @@ const QuestSolver = {
                 const solvePower = (challenge.difficulty_by_mastery[mastery] + (critmult * [250, 275, 300][mastery]));
                 let maxsolve = false;
 
-                while (cpmin <= solvePower) {
+                while (cpmin < solvePower) {
                     if (!nslots || (1 + slots.length + currslots.length > nslots)) {
                         if (cpmax >= solvePower) {
                             maxsolve = true;
@@ -334,7 +360,8 @@ const QuestSolver = {
                     fulfilled: false,
                     crew: [],
                     error: "No player crew roster",
-                    paths: []
+                    paths: [],
+                    pathspartial: false
                 });
                 return;
             }
@@ -385,7 +412,8 @@ const QuestSolver = {
                     fulfilled: false,
                     crew: [],
                     error: "No quest or challenges provided",
-                    paths: []
+                    paths: [],
+                    pathspartial: false
                 });
                 return;
             }
@@ -645,7 +673,7 @@ const QuestSolver = {
                 const crew = pathCrew[path_key];
 
                 for (let i = 0; i < crew.length; i++) {
-                    let testcrew = anyThree(crew, path, i);
+                    let [testcrew, complete] = anyThree(crew, path, i);
 
                     if (testcrew) {
                         const tg = testcrew;
@@ -705,7 +733,8 @@ const QuestSolver = {
                                 pathSolutions.push({
                                     path: path_key,
                                     crew: tg,
-                                    mastery: config.mastery
+                                    mastery: config.mastery,
+                                    completeness: complete
                                 });
                             }
                         }
@@ -784,14 +813,15 @@ const QuestSolver = {
                         }
                     }
 
-                    let rcrew = anyThree(crew, ci);
+                    let [rcrew, complete] = anyThree(crew, ci);
 
                     if (rcrew) {
                         if (!pathSolutions.some(ps => ps.path === path.path)) {
                             pathSolutions.push({
                                 path: path.path,
                                 crew: rcrew,
-                                mastery: config.mastery
+                                mastery: config.mastery,
+                                completeness: complete
                             })
                         }
                     }
@@ -813,16 +843,16 @@ const QuestSolver = {
                 return ar - br;
             });
 
-            let seen = [ ...new Set(pathSolutions.map(ps => ps.path.split("_")).flat().map(s => Number.parseInt(s))) ];
-            seen = seen.concat(crew?.map(c => c.challenges?.map(ch => ch.challenge?.id)?.flat() ?? [])?.flat() ?? [])
+            let seen = [ ...new Set(pathSolutions.map(ps => ps.crew.map(cr => cr.challenges?.map(crc => crc.challenge.id)?.flat() ?? [])?.flat()).flat()) ];
             let failed = challenges.filter(ch => !seen.includes(ch.id) && !ignoreChallenges.includes(ch.id)).map(ch => ch.id);
-
+            let partial = pathSolutions.every(p => p.completeness !== 'full');
             resolve({
                 status: true,
                 fulfilled: !failed.length && pathSolutions.length >= paths.length,
                 paths: pathSolutions,
                 crew,
-                failed: failed
+                failed: failed,
+                pathspartial: partial
             });
         });
     },

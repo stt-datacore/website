@@ -253,8 +253,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     for (let i = 0; i < result.quests.length; i++) {
                         let quests = result.quests;
                         let fremote = remoteQuests.find(f => f.id === quests[i].id)
-                        if (!fremote ||
-                            (mission?.quests && rq[result.quests[i].id].challenges?.length !== mission.quests[i].challenges?.length)) {
+                        if (!fremote) {
                             result.quests[i].challenges = rq[result.quests[i].id].challenges;
                             challenges[i].forEach(ch => {
                                 ch.trait_bonuses = [];
@@ -262,8 +261,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                             });
                         }
                         else if (fremote && mission?.quests) {
-                            result.quests[i] = fremote.quest;
-                            remoteQuests.push(fremote);
+                            result.quests[i] = fremote.quest;                            
                         }
                     }
                 }
@@ -570,18 +568,21 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
                     </div>}
 
-                {showPane === 1 && !!solverResults && !solverResults?.fulfilled && (
+                {showPane === 1 && !!solverResults && (!solverResults?.fulfilled || solverResults?.pathspartial) && (
                     <Message warning={!boardFail} error={boardFail}>
                         <Message.Header>
                             {!!boardFail && <>Quest Solve Failed</>}
                             {!boardFail && <>Quest Solve Incomplete</>}
                         </Message.Header>
                         <Message.Content>
+                            {(!boardFail && solverResults?.fulfilled && solverResults?.pathspartial &&
+                            <p>No combinations of 3 crew could be found to completely succeed at every challenge in the selected paths.</p>
+                            ) || <>
                             {boardFail && <p><b>Final challenges failed.</b></p> || <p>Could not find crew to complete all selected challenges.</p>}
                             <p>Try adjusting your challenge selections and/or finder options, and try again.</p>
                             {!highlighted?.length && <p><b><i>(Hint: Try narrowing your scope by selecting a path from the mission board)</i></b></p>}
                             {!!solverResults?.failed?.length && <>Failed Challenges: <p>{solverResults?.failed?.map(fid => quest?.challenges?.find(ch => ch.id === fid)?.name)?.reduce((p, n) => p ? `${p}, ${n}` : n, '')}</p></>}
-
+                            </>}
                         </Message.Content>
                     </Message>
                 )}
