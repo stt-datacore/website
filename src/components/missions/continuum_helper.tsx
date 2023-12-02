@@ -20,6 +20,11 @@ import { QuestSelector } from "./quest_selector";
 import { TraitSelection } from "./trait_selector";
 import { PathTable } from "./path_table";
 
+export interface RemoteQuestStore {
+    id: number,
+    quest: Quest
+}
+
 export interface ContinuumComponentProps {
     roster: (PlayerCrew | CrewMember)[];
 }
@@ -43,60 +48,34 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const mostRecentDate = new Date(
         continuum_missions[continuum_missions.length - 1].discover_date
     );
+    
+    const missionId = continuum_missions[continuum_missions.length - 1].id;
+    const missionUrl = `/structured/continuum/${missionId}.json`;
 
-    const missionUrl = `/structured/continuum/${continuum_missions[continuum_missions.length - 1].id}.json`;
     const [running, setRunning] = React.useState(false);
 
     /* Missions Data Initialization & Persistence */
 
-    const [groupedMissions, internalSetGroupedMissions] = useStateWithStorage('continuum/discoveredMissions', [] as DiscoveredMissionInfo[], { rememberForever: true, compress: true });
-    const setGroupedMissions = (value: DiscoveredMissionInfo[]) => {        
-        if (!mostRecentDate || !value) return;
-        value = value.filter(f => f.mission.discover_date.toString() === mostRecentDate.toString());
-        internalSetGroupedMissions(value);
-    }
-    const getMissionData = () => {
-        return groupedMissions.find(f => f.mission.discover_date?.getTime() === mostRecentDate?.getTime()) ?? (groupedMissions.length ? groupedMissions[groupedMissions.length - 1] : undefined);
-    }
-
-    groupedMissions?.forEach(m => {
-        if (typeof m.mission.discover_date === 'string') {
-            m.mission.discover_date = new Date(m.mission.discover_date);
-        }
-        if (m.remoteQuests?.length !== m.mission.quests?.length) {
-            m.remoteQuests = m.mission.quests?.map(q => false) ?? [];
-        }
-    });
-
-    const mlookup = getMissionData();
-    const startMission = mlookup?.mission;
-
-    const [remoteQuestFlags, internalSetRemoteQuestFlags] = React.useState<boolean[] | undefined>(mlookup?.remoteQuests);
-    const [mission, internalSetMission] = React.useState<ContinuumMission | undefined>(startMission);
+    const [remoteQuests, setRemoteQuests] = useStateWithStorage<RemoteQuestStore[]>('continuum/remoteQuests', [], { rememberForever: true, compress: true });
+    const [mission, internalSetMission] = React.useState<ContinuumMission | undefined>();
     const [currentHasRemote, setCurrentHasRemote] = React.useState(false);
 
-    const setRemoteQuestFlags = (value: boolean[]) => {
-        let x = 0;
-        let data = getMissionData();
-        if (!data) return;
-
-        data.remoteQuests ??= [];
-
-        for (let q of mission?.quests ?? []) {
-            if (data.remoteQuests.length < x) data.remoteQuests.push(false);
-            if (value.length < x) value.push(false);
-            data.remoteQuests[x] = value[x];
-            x++;
+    const getRemoteQuestFlags = () => {
+        if (mission?.quests?.length) {
+            let b = [] as boolean[];
+            for (let i = 0; i < mission.quests.length; i++) {
+                if (mission.quests[i]) {
+                    b[i] = remoteQuests.some(rq => rq.id === (mission.quests as Quest[])[i].id);
+                }                
+            }
+            return b;
         }
-
-        setGroupedMissions([...groupedMissions]);
-        internalSetRemoteQuestFlags(data.remoteQuests);
+        return mission?.quests?.map(q => false);
     }
 
-    const setMissionAndRemotes = (value?: ContinuumMission, remotes?: boolean[]) => {
+    const setMissionAndRemotes = (value?: ContinuumMission, remotes?: RemoteQuestStore[]) => {
         if (!value) {
             internalSetMission(undefined);
-            setRemoteQuestFlags([]);
             return;
         }
 
@@ -107,45 +86,11 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             value.discover_date = new Date(value.discover_date);
         }
 
-        let ng = [...groupedMissions];
-        const f = groupedMissions.findIndex(f => f.mission.discover_date?.getTime() === value.discover_date?.getTime());
-
-        if (f === -1) {
-            ng.push({
-                mission: value,
-                remoteQuests: remotes ?? value.quests?.map(q => false) ?? []
-            });
+        if (remotes) {
+            setRemoteQuests(remotes);
         }
-        else {
-            ng[f].mission = value;
-            ng[f].remoteQuests = remotes ?? ng[f].remoteQuests ?? value.quests?.map(q => false) ?? [];
-        }
-
-        ng.sort((a, b) => {
-            if (!a.mission.discover_date) a.mission.discover_date = mostRecentDate;
-            if (!b.mission.discover_date) b.mission.discover_date = mostRecentDate;
-            return a.mission.discover_date.getTime() - b.mission.discover_date.getTime()
-        });
-
-        ng = ng.filter((t, idx) => ng.findIndex(q => q.mission.discover_date?.getTime() === t.mission.discover_date?.getTime()) === idx)
-        setGroupedMissions(ng);
-    }
-
-    React.useEffect(() => {
-        if (!groupedMissions.length) return;
-
-        let fmission = groupedMissions.find(f => f.mission.discover_date?.getTime() === mostRecentDate?.getTime());
-
-        if (!fmission) {
-            fmission = groupedMissions[groupedMissions.length - 1];
-        }
-        if (!!fmission.mission.quests?.length && fmission.mission.quests.length !== fmission?.remoteQuests?.length) {
-            fmission.remoteQuests = fmission.mission.quests.map(q => false);
-        }
-
-        internalSetRemoteQuestFlags(fmission.remoteQuests);
-        internalSetMission(fmission.mission);
-    }, [groupedMissions]);
+        internalSetMission(value);
+   }
 
     /* Component State */
 
@@ -303,39 +248,34 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     });
 
                 let selTraits = cleanTraitSelection(result?.quests ?? [], selectedTraits);
-                let remotes = result?.quests?.map(q => false) ?? [] as boolean[];
-                let current = getMissionData();
-
-                if (result.quests?.length && !!quest && !!remoteQuestFlags?.length && remoteQuestFlags.length === result.quests.length) {
-                    remotes = remoteQuestFlags;
-                }
 
                 if (result.quests) {
                     for (let i = 0; i < result.quests.length; i++) {
-                        if (!remotes[i] ||
-                            (current?.mission.quests && rq[result.quests[i].id].challenges?.length !== current.mission.quests[i].challenges?.length)) {
-
+                        let quests = result.quests;
+                        let fremote = remoteQuests.find(f => f.id === quests[i].id)
+                        if (!fremote ||
+                            (mission?.quests && rq[result.quests[i].id].challenges?.length !== mission.quests[i].challenges?.length)) {
                             result.quests[i].challenges = rq[result.quests[i].id].challenges;
                             challenges[i].forEach(ch => {
                                 ch.trait_bonuses = [];
                                 ch.difficulty_by_mastery = [];
                             });
-                            remotes[i] = false;
                         }
-                        else if (remotes[i] && current?.mission?.quests) {
-                            result.quests[i] = current.mission.quests[i];
+                        else if (fremote && mission?.quests) {
+                            result.quests[i] = fremote.quest;
+                            remoteQuests.push(fremote);
                         }
                     }
                 }
                 if (!result?.discover_date) {
-                    result.discover_date = current?.mission?.discover_date ?? mostRecentDate;
+                    result.discover_date = mission?.discover_date ?? mostRecentDate;
                 }
 
                 if (typeof result.discover_date === 'string') {
                     result.discover_date = new Date(result.discover_date);
                 }
 
-                setMissionAndRemotes(result, remotes);
+                setMissionAndRemotes(result, [...remoteQuests]);
                 setSelectedTraits(selTraits ?? []);
                 setErrorMsg("");
             })
@@ -347,7 +287,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     /* Remote */
 
     const clearRemote = () => {
-        setRemoteQuestFlags([]);
+        setRemoteQuests([]);
         setSolverResults(undefined);
         setTimeout(() => {
             setClearInc(clearInc + 1);
@@ -357,16 +297,26 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const setRemoteQuest = (quest?: Quest) => {
         if (!quest) {
             if (mission) {
-                setMissionAndRemotes({ ...mission }, [])
+                setMissionAndRemotes({ ...mission })
             };
             return;
         }
-        if (mission?.quests?.length && remoteQuestFlags?.length === mission?.quests?.length) {
+        if (mission?.quests?.length) {
             for (let i = 0; i < mission.quests.length; i++) {
                 if (mission.quests[i].id === quest.id) {
                     mission.quests[i] = quest;
-                    remoteQuestFlags[i] = true;
-                    setMissionAndRemotes({ ...mission }, [...remoteQuestFlags]);
+                    let fi = remoteQuests.findIndex(f => f.id === quest.id);
+                    if (fi !== -1) {
+                        remoteQuests[fi].quest = quest;
+                    }
+                    else {
+                        remoteQuests.push({
+                            id: quest.id,
+                            quest
+                        });
+                    }
+                    
+                    setMissionAndRemotes({ ...mission }, [...remoteQuests]);
                     return;
                 }
             }
@@ -374,10 +324,10 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     }
 
     React.useEffect(() => {
-        if (!mission || !quest || !remoteQuestFlags) return;
-        const hasRemote = !!mission?.quests?.find((q, idx) => q.id === quest?.id && remoteQuestFlags && remoteQuestFlags[idx])
+        if (!mission || !quest || !remoteQuests) return;
+        const hasRemote = !!mission?.quests?.find((q, idx) => q.id === quest?.id && remoteQuests && remoteQuests.some(rq => rq.id === q.id))
         setCurrentHasRemote(hasRemote);
-    }, [mission, quest, remoteQuestFlags])
+    }, [mission, quest, remoteQuests])
 
     /* Render */
     
@@ -578,7 +528,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     setQuestId={setQuestId}
                     mastery={mastery}
                     setMastery={setMastery}
-                    highlighted={remoteQuestFlags}
+                    highlighted={getRemoteQuestFlags()}
                 />
                 <Step.Group fluid>
                     <Step
@@ -607,7 +557,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                             pageId={'continuum'}
                             mission={mission}
                             showChainRewards={true}
-                            isRemote={remoteQuestFlags}
+                            isRemote={getRemoteQuestFlags()}
                             questId={questId}
                             setQuestId={setQuestId}
                             mastery={mastery}
