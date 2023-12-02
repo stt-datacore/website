@@ -28,8 +28,8 @@ import { IRosterCrew } from '../components/crewtables/model';
 import { CrewConfigTable } from '../components/crewtables/crewconfigtable';
 import { TinyStore } from '../utils/tiny';
 
-export interface CrewLevel { crew: PlayerCrew, level: number };
 
+export interface CrewLevel { crew: PlayerCrew, level: number, owned: boolean };
 export interface EquipmentItemData {
 	item: EquipmentItem;
 	crew_levels: CrewLevel[];
@@ -117,7 +117,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		if (item_symbol) {
 			const item = items?.find(entry => entry.symbol === item_symbol);
 
-			const crew_levels = [] as { crew: PlayerCrew, level: number }[];
+			const crew_levels = [] as { crew: PlayerCrew, level: number, owned: boolean }[];
 			allcrew.forEach(crew => {
 				crew.equipment_slots.forEach(es => {
 					if (es.symbol === item_symbol) {
@@ -126,18 +126,17 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 							if (owned) {
 								crew_levels.push({
 									crew: { ...JSON.parse(JSON.stringify(crew)), ...owned, rarity: owned?.rarity ?? 0 },
-									level: es.level
+									level: es.level,
+									owned: !!owned
 								});
 								return;
-							}
-							else {
-								if (this.state.owned) return;
 							}
 						}
 
 						crew_levels.push({
 							crew: { ...JSON.parse(JSON.stringify(crew)), immortal: CompletionState.DisplayAsImmortalStatic, rarity: 0 },
-							level: es.level
+							level: es.level,
+							owned: false
 						});
 					}
 				});
@@ -158,28 +157,24 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 			} else {
 				if (item.kwipment) {
 					const kwipment_levels = getQuipmentCrew(item, this.context.core.crew)
-						.filter((f) => {
-							if (this.state.owned === true && !!this.context.player.playerData) {
-								if (!this.context.player.playerData.player.character.crew.find(o => o.symbol === f.symbol)) return false;
-							}
-							return true;
-						})
 						.map(crew => {
 							if (this.context.player.playerData) {
-							let owned = this.context.player.playerData?.player.character.crew.find(fcrew => fcrew.symbol === crew.symbol);
-							if (owned) {								
-								return {
-									crew: { ...crew as PlayerCrew, ...owned, rarity: owned?.rarity ?? 0 },
-									level: 100
+								let owned = this.context.player.playerData?.player.character.crew.find(fcrew => fcrew.symbol === crew.symbol);
+								if (owned) {								
+									return {
+										crew: { ...crew as PlayerCrew, ...owned, rarity: owned?.rarity ?? 0 },
+										level: 100,
+										owned: !!owned
+									}
 								}
 							}
-						}
 
-						return {
-							crew: { ...crew, immortal: CompletionState.DisplayAsImmortalStatic, rarity: 0 } as PlayerCrew,
-							level: 100
-						}
-					});
+							return {
+								crew: { ...crew, immortal: CompletionState.DisplayAsImmortalStatic, rarity: 0 } as PlayerCrew,
+								level: 100,
+								owned: false
+							}
+						});
 					this.setState({ item_data: { item, crew_levels: kwipment_levels, builds } });
 				}
 				else {
@@ -194,7 +189,11 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 	private makeCrewFlavors = (crew_levels: CrewLevel[]) => {
 
 		let crews = {} as { [key: string]: number[] };
+		let owned = !!this.state.owned;
+
 		for (let cl of crew_levels) {
+			if (owned && !cl.owned) continue;
+			
 			crews[cl.crew.symbol] ??= [];
 			crews[cl.crew.symbol].push(cl.level);
 		}
