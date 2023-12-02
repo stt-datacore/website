@@ -38,8 +38,8 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 	React.useEffect(() => {
 		if (!playerData || !ephemeral) return;
 		const rosterCrew = rosterizeMyCrew(playerData.player.character.crew, ephemeral.activeCrew ?? []);
-		setMyCrew([...rosterCrew]);		
-	}, []);
+		setMyCrew([...rosterCrew]);
+	}, [playerData, ephemeral]);
 
 	if (!playerData || !ephemeral || ephemeral.voyage.length === 0)
 		return (<></>);
