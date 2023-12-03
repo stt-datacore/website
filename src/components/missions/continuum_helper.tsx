@@ -484,6 +484,16 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 <br />
                 <div style={{ color: "tomato" }}>{errorMsg}</div>
                 <br />
+                <QuestSelector
+                    masteryPlacement="bottom"
+                    pageId={'continuum'}
+                    mission={mission}
+                    questId={questId}
+                    setQuestId={setQuestId}
+                    mastery={mastery}
+                    setMastery={setMastery}
+                    highlighted={getRemoteQuestFlags()}
+                />
 
                 <div style={{
                     display: "flex",
@@ -494,7 +504,6 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     flexWrap: "wrap",
                     gap: "0.5em"
                 }}>
-
                     <div style={{ display: "inline-block", textAlign: 'center' }}>
                         <h3>Crew Finder Options</h3>
                         <div style={{
@@ -531,15 +540,6 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     </div>}
 
 
-                <QuestSelector
-                    pageId={'continuum'}
-                    mission={mission}
-                    questId={questId}
-                    setQuestId={setQuestId}
-                    mastery={mastery}
-                    setMastery={setMastery}
-                    highlighted={getRemoteQuestFlags()}
-                />
                 <Step.Group fluid>
                     <Step
                         onClick={(e) => setShowPane(0)}
