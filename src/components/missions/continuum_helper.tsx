@@ -240,7 +240,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     React.useEffect(() => {
         if (mission) {
-            setMission({ ...mission } as ContinuumMission);
+            setMission({ ...mission });
         }
     }, [remoteQuests]);
 
