@@ -87,6 +87,14 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         }
 
         if (remotes) {
+            if (value.quests) {
+                for (let rem of remotes) {
+                    let f = value.quests?.findIndex(q => q.id === rem.id);
+                    if (f !== -1) {
+                        value.quests[f] = rem.quest;
+                    }
+                }
+            }
             setRemoteQuests(remotes);
         }
         internalSetMission(value);
