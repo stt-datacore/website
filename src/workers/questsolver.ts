@@ -395,16 +395,14 @@ const QuestSolver = {
             }
 
             const roster = playerData.player.character.crew
-                .filter(f => !ephemeral?.activeCrew?.some(c => c.symbol === f.symbol) || !idleOnly)
+                .filter(f => !ephemeral?.activeCrew?.some(c => c.id === f.id) || !idleOnly)
                 .filter(f => !!f.immortal && ((f.immortal === -1) || considerFrozen))
                 .concat(!!config.considerUnowned ? (playerData.player.character.unOwnedCrew ?? []) : [])
-                .map((crew, idx) => {
-
+                .map((crew) => {
                     crew = JSON.parse(JSON.stringify(crew));
-                    crew.id = idx;
 
                     if (crew.immortal === -1) {
-                        let ac = ephemeral?.activeCrew?.find(c => c.symbol === crew.symbol);
+                        let ac = ephemeral?.activeCrew?.find(c => c.id === crew.id);
                         if (ac?.active_status) {
                             crew.active_status = ac.active_status;
                         }
@@ -714,8 +712,8 @@ const QuestSolver = {
 
                     if (testcrew) {
                         const tg = testcrew;
-                        tg.sort((a, b) => a.symbol.localeCompare(b.symbol));
-                        let crews_key = tg.map(c => c.symbol).join("_")+path_key;
+                        tg.sort((a, b) => a.id - b.id);
+                        let crews_key = tg.map(c => c.id.toString()).join("_") + path_key;
                         if (!threekeys.includes(crews_key)) {
                             threegroups.push(tg);
                             threekeys.push(crews_key);                            
@@ -842,7 +840,7 @@ const QuestSolver = {
                         roster.sort((a, b) => b.q_bits - a.q_bits);
                         let x = 0;
                         for (let i = crew.length; i < 3; i++) {
-                            while (x < roster.length && crew.some(c => c.symbol === roster[x].symbol)) {
+                            while (x < roster.length && crew.some(c => c.id === roster[x].id)) {
                                 x++;
                             }
                             if (x >= roster.length) break;

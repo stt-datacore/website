@@ -315,11 +315,14 @@ export function isImmortal(crew: PlayerCrew): boolean {
 	return crew.level === 100 && crew.rarity === crew.max_rarity && (crew.equipment?.length === 4 || !crew.equipment)
 }
 
-export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number): PlayerCrew[] {
+export function prepareOne(origCrew: CrewMember, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number): PlayerCrew[] {
 	// Create a copy of crew instead of directly modifying the source (allcrew)
-	let templateCrew = JSON.parse(JSON.stringify(oricrew)) as PlayerCrew;
+	let templateCrew = JSON.parse(JSON.stringify(origCrew)) as PlayerCrew;
 	let outputcrew = [] as PlayerCrew[];
 
+	if (origCrew.symbol === 'torres_injured_crew') {
+		console.log("break");
+	}
 	if (buffConfig && !Object.keys(buffConfig)?.length) buffConfig = undefined;
 
 	templateCrew.rarity = templateCrew.max_rarity;
@@ -366,7 +369,7 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 
 	let maxowned = crew.highest_owned_rarity as number | undefined;
 	let maxlevel = crew.highest_owned_level as number | undefined;
-
+	
 	for (let owned of inroster ?? []) {
 		if (!maxowned || owned.rarity > maxowned) maxowned = owned.rarity;
 		if (!maxlevel || owned.level > maxlevel) maxlevel = owned.level;
@@ -374,6 +377,8 @@ export function prepareOne(oricrew: CrewMember, playerData?: PlayerData, buffCon
 			crew = JSON.parse(JSON.stringify(templateCrew));
 		}
 		let workitem: PlayerCrew = owned;
+		
+		crew.id = owned.id;
 
 		if (workitem.immortal > 0) crew.immortal = workitem.immortal;
 		if (rarity !== 6) {
@@ -522,13 +527,18 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	// Merge with player crew
 	let ownedCrew = [] as PlayerCrew[];
 	let unOwnedCrew = [] as PlayerCrew[];
+	let cidx = -1;
 
 	for (let c of allcrew) {
-		for (let crew of prepareOne(c, playerData, buffConfig)) {
+		for (let crew of prepareOne(c, playerData, buffConfig)) {			
 			if (crew.have) {
+				if (!crew.id) {
+					crew.id = cidx--;
+				}
 				ownedCrew.push(crew);
 			}
 			else {
+				crew.id = crew.archetype_id;
 				unOwnedCrew.push(crew);
 			}
 		}
