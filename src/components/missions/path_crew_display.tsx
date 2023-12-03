@@ -9,7 +9,7 @@ import { BaseSkills, Skill } from "../../model/crew";
 import CrewStat from "../crewstat";
 import { appelate } from "../../utils/misc";
 import { CrewItemsView } from "../item_presenters/crew_items";
-import { GradeSwatch } from "../explanations/powerexplanation";
+import { GradeSwatch, gradeCrew } from "../explanations/powerexplanation";
 import { Icon } from "semantic-ui-react";
 
 export interface PathCrewDisplayProps {
@@ -145,7 +145,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                                             return (
                                                 <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}>
                                                     <div style={{display:'flex', gap: "0.5em", flexDirection: 'row', alignItems: "center"}}>
-                                                    <GradeSwatch grade={crewChallenge?.max_solve && crewChallenge.power_decrease ? "D" : crewChallenge?.max_solve ? "C" : crewChallenge?.power_decrease ? "B" : "A"} />
+                                                    {crewChallenge && <GradeSwatch grade={gradeCrew(crewChallenge)} />}
                                                     <CrewStat
                                                         style={{
                                                             color: ((!!crewChallenge?.max_solve && !!crewChallenge?.power_decrease)) ? 'orange' : (crewChallenge?.max_solve ? 'aqua' : (!!crewChallenge?.power_decrease ? 'yellow' : 'lightgreen'))

@@ -230,13 +230,13 @@ const QuestSolver = {
                     .map((t => t.bonuses[mastery]))
                     .reduce((p, n) => p + n, 0);
 
-                let cfactor = 0;
-                if (crew.challenges?.length && crew.challenges[crew.challenges.length - 1].challenge.children.includes(challenge.id)) {
-                    cfactor = 0.20;
-                }
+                // let cfactor = 0;
+                // if (crew.challenges?.length && crew.challenges[crew.challenges.length - 1].challenge.children.includes(challenge.id)) {
+                //     cfactor = 0.20;
+                // }
 
-                // cpmin -= (cfactor * cpmin);
-                // cpmax -= (cfactor * cpmax);
+                // // cpmin -= (cfactor * cpmin);
+                // // cpmax -= (cfactor * cpmax);
 
                 cpmin += tpower;
                 cpmax += tpower;
@@ -327,7 +327,7 @@ const QuestSolver = {
                         challenge,
                         skills: {},
                         trait_bonuses: ttraits,
-                        power_decrease: cfactor,
+                        power_decrease: 0,
                         max_solve: cpmin < solvePower,
                         path: path
                     });
@@ -504,17 +504,9 @@ const QuestSolver = {
                 let repro = false;
 
                 for (let ch of path) {
+                    pathCrew[key] = processChallenge(ch, tempRoster, pathCrew[key], key, true);
                     pathCrew[key] = processChallenge(ch, tempRoster, pathCrew[key], key);                    
                 }              
-
-                let [cr, res] = anyThree(pathCrew[key], path);
-
-                if (res !== 'full') {
-                    tempRoster.forEach((r) => resetCrew(r, key));
-                    for (let ch of path) {
-                        pathCrew[key] = processChallenge(ch, tempRoster, pathCrew[key], key, true);
-                    }              
-                }
             }
 
             Object.keys(pathCrew).forEach((path) => {
@@ -781,7 +773,7 @@ const QuestSolver = {
 
             crew = roster.map((c, idx) => {
                 let crew = c as IQuestCrew;
-                let finds = flatCrew.filter(f => f.id === idx);
+                let finds = flatCrew.filter(f => f.id === c.id);
 
                 if (!finds.length) {
                     delete c["challenges"];
