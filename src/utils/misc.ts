@@ -147,11 +147,11 @@ export function iOS() {
 }
 
 
-export function makeAllCombos<T>(source: T[], maxResults?: number, current?: T[][], index?: number): T[][] {
+export function makeAllCombos<T>(source: T[], maxResults?: number, current?: T[][], index?: number, maxArrLen?: number): T[][] {
 	current ??= [];
 	index ??= 0;
 	maxResults ??= 5000;
-
+	
 	let i = 0;
 	let c = current.length;
 	let newc = [...current];
@@ -159,6 +159,7 @@ export function makeAllCombos<T>(source: T[], maxResults?: number, current?: T[]
 	newc.push([source[index]]);
 
 	for (i = 0; i < c; i++) {
+		if (maxArrLen && current[i].length + 1 > maxArrLen) continue;
 		newc.push([...current[i], source[index]]);
 	}
 
@@ -166,7 +167,7 @@ export function makeAllCombos<T>(source: T[], maxResults?: number, current?: T[]
 	if (Number.isFinite(maxResults) && current.length >= maxResults) return current;
 
 	if (index < source.length - 1) {
-		current = makeAllCombos(source, maxResults, current, index + 1);
+		current = makeAllCombos(source, maxResults, current, index + 1, maxArrLen);
 	}
 
 	return current;
