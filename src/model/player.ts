@@ -398,6 +398,7 @@ export interface Player {
    * PlayerCrew derives from this and CrewMember
    */
   export interface CompactCrew {
+    id: number;
     symbol: string;
     name?: string;
     archetype_id?: number;

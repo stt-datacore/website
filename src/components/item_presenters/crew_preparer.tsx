@@ -160,13 +160,26 @@ export class CrewPreparer {
 
             if (hasPlayer) {
                 if (useInputQuip) {
-                    item = playerData.player.character.crew.find((xcrew) => xcrew.symbol === dataIn.symbol) ?? dataIn as PlayerCrew;
+                    item = playerData.player.character.crew.find((xcrew) => {
+                        if ("id" in dataIn) {
+                            return xcrew.id === dataIn.id;
+                        }
+                        else {
+                            return xcrew.symbol === dataIn.symbol;
+                        }
+                    }) ?? dataIn as PlayerCrew;
                     item = { ...dataIn, ...item, kwipment: dataIn.kwipment };                    
                 }
                 else {
-                    item = playerData.player.character.crew.find((xcrew) => xcrew.symbol === dataIn.symbol) ?? dataIn as PlayerCrew;
-                    item = { ...dataIn, ...item };                
-    
+                    item = playerData.player.character.crew.find((xcrew) => {
+                        if ("id" in dataIn) {
+                            return xcrew.id === dataIn.id;
+                        }
+                        else {
+                            return xcrew.symbol === dataIn.symbol;
+                        }
+                    }) ?? dataIn as PlayerCrew;
+                    item = { ...dataIn, ...item };                    
                 }
             }
             else {
