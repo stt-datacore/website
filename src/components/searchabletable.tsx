@@ -72,6 +72,7 @@ export interface SearchableTableProps {
 	setDropDownValue?: (value?: string) => void;
 
 	pagingOptions?: DropdownItemProps[];
+	defaultPaginationRows?: number;
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
@@ -84,7 +85,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	const [filterType, setFilterType] = useStateWithStorage(tableId+'filterType', 'Any match');
 	const [column, setColumn] = useStateWithStorage<string | undefined>(tableId+'column', undefined);
 	const [direction, setDirection] = useStateWithStorage<SortDirection | 'ascending' | 'descending' | undefined>(tableId+'direction', undefined);
-	const [pagination_rows, setPaginationRows] = useStateWithStorage(tableId+'paginationRows', pagingOptions[0].value as number ?? 10);
+	const [pagination_rows, setPaginationRows] = useStateWithStorage(tableId+'paginationRows', props.defaultPaginationRows ?? pagingOptions[0].value as number ?? 10, { rememberForever: true });
 	const [pagination_page, setPaginationPage] = useStateWithStorage(tableId+'paginationPage', 1);
 
 	const [activeLock, setActiveLock] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);

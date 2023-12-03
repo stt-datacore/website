@@ -99,8 +99,11 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                         alignItems: "center"
                     }}>
                         <h3>{challenge.name}</h3>
-                        {!pathCrew?.length && (<><Icon name='ban' color='red' size='large' /> 
-                        {config.ignoreChallenges?.includes(challenge.id) && <h4>(Challenge Ignored)</h4> || <h4>(Challenge Failed)</h4>}</>)
+                        {!pathCrew?.length && (<div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                            <Icon style={{margin:"0.5em"}} name='ban' color='red' size='large' /> 
+                            <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} style={{ height: `1.5em`, margin :"0.25em" }} />
+                            {config.ignoreChallenges?.includes(challenge.id) && <h4>(Challenge Ignored)</h4> || <h4>(Challenge Failed)</h4>}
+                            </div>)                        
                         }
                         
                         {pathCrew.map((c) => {

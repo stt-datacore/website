@@ -156,8 +156,9 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
         <CrewConfigTable
             initOptions={{
                 column: 'score',
-                direction: 'ascending'
-            }}
+                direction: 'ascending',
+                rows: 5
+            }}                    
             tableConfig={crewTableCells}
             renderTableCells={renderTableCells}
             rosterCrew={solverResults?.crew ?? []}
