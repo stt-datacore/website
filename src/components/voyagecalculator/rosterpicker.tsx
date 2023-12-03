@@ -141,7 +141,7 @@ export function rosterizeMyCrew(myCrew: PlayerCrew[], activeCrew: CompactCrew[])
 	// Create fake ids for active crew based on rarity, level, and equipped status
 	const activeCrewIds = activeCrew.map(ac => {
 		return {
-			id: ac.symbol+','+ac.rarity+','+ac.level+','+ac.equipment.join(''),
+			id: ac.id,
 			active_status: ac.active_status
 		};
 	});
@@ -149,7 +149,7 @@ export function rosterizeMyCrew(myCrew: PlayerCrew[], activeCrew: CompactCrew[])
 	let crewmanId = 1;
 	myCrew.forEach(crew => {
 		const crewman = JSON.parse(JSON.stringify(crew)) as IVoyageCrew;
-		crewman.id = crewmanId++;
+		//crewman.id = crewmanId++;
 
 		// Voyage calculator looks for skills, range_min, range_max properties
 		crewman.skills = {};
@@ -166,11 +166,11 @@ export function rosterizeMyCrew(myCrew: PlayerCrew[], activeCrew: CompactCrew[])
 		// Re-attach active_status property
 		crewman.active_status = 0;
 		if (crew.immortal <= 0) {
-			const activeCrewId = crew.symbol+','+crew.rarity+','+crew.level+','+crew.equipment.join('');
+			const activeCrewId = crew.id;
 			const active = activeCrewIds.find(ac => ac.id === activeCrewId);
 			if (active) {
 				crewman.active_status = active.active_status ?? 0;
-				active.id = '';	// Clear this id so that dupes are counted properly
+				active.id = 0;	// Clear this id so that dupes are counted properly
 			}
 		}
 

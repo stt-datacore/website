@@ -195,6 +195,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     p.player.character.crew = p.player.character.crew
         .filter((crew) => !crew.in_buy_back_state)
         .map((crew) => ({
+            id: crew.id,
             symbol: crew.symbol,
             archetype_id: crew.archetype_id,
             level: crew.level,
