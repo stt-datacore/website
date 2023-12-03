@@ -22,9 +22,7 @@ export interface QuestCrewTableProps {
 export const QuestCrewTable = (props: QuestCrewTableProps) => {
 
     const { quest, config, solverResults, pageId } = props;
-    const { mastery, includeCurrentQp, showAllSkills } = config;
-
-    const itemTargetGroup  = props.targetGroup ?? `${pageId}_quest_crew_items`;
+    const { mastery, showAllSkills } = config;
 
     const crewTableCells = [
         { width: 2, column: 'score', title: 'Rank' },
@@ -32,15 +30,12 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
         { width: 2, column: 'associated_paths.length', title: 'Paths' },
         { width: 2, column: 'challenge_key', title: 'Challenges' }
     ]
-    const groupCrew = [] as { crew: IQuestCrew, paths: MissionChallenge[][] }[];
 
     const renderTableCells = (row: IRosterCrew): JSX.Element => {
         let crew = row as IQuestCrew;
-        
 
         crew.challenges ??= [];
         crew.associated_paths ??= [];
-        let chs = quest?.challenges ?? [];
 
         const pathMap = {} as { [key: string]: CrewChallengeInfo[] };
 

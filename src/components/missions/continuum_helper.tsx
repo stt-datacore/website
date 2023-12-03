@@ -113,8 +113,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const [selectedTraits, setSelectedTraits] = useStateWithStorage('continuum/selectedTraits', [] as TraitSelection[]);
     const [highlighted, setHighlighted] = useStateWithStorage<HighlightItem[]>('continuum/selected', []);
 
-    const [missionConfig, setMissionConfig] = useStateWithStorage<QuestFilterConfig>('continuum/missionConfig', { mastery: 0, idleOnly: true, showAllSkills: false }, { rememberForever: true });
-
+    const [missionConfig, setMissionConfig] = useStateWithStorage<QuestFilterConfig>('continuum/missionConfig', { mastery: 0, idleOnly: true, showAllSkills: false, includeCurrentQp: true }, { rememberForever: true });
+    const [activeConfig, setActiveConfig] = React.useState<QuestFilterConfig>(missionConfig);
     const { noTraitBonus, alwaysCrit, buildableOnly, cheapestFirst, showAllSkills, mastery, idleOnly, considerFrozen, qpOnly, ignoreQpConstraint, includeCurrentQp } = missionConfig;
 
     const [internalSolverResults, internalSetSolverResults] = React.useState<QuestSolverCacheItem[]>([]);
@@ -206,7 +206,6 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const setNoTraitBonus = (value: boolean) => {
         setMissionConfig({ ...missionConfig, noTraitBonus: value });
     }
-
 
     /* Component Initialization & State Management */
 
@@ -438,22 +437,16 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             </React.Fragment>
         )
     }
-    
-    const activeConfig = {
-        quest,
-        challenges: (highlighted.map(h => quest?.challenges?.filter(ch => h.quest === quest?.id && ch.id === h.challenge))?.flat() ?? []) as MissionChallenge[],
-        ignoreChallenges: (highlighted.map(h => quest?.challenges?.filter(ch => h.quest === quest?.id && ch.id === h.challenge && h.excluded)?.map(q2 => q2.id ?? 0) ?? [])?.flat() ?? []) as number[],
-        idleOnly,
-        considerFrozen,
-        qpOnly,
-        ignoreQpConstraint,
-        mastery,
-        includeCurrentQp,
-        buildableOnly,
-        cheapestFirst,
-        alwaysCrit,
-        noTraitBonus
-    } as QuestFilterConfig;
+
+    React.useEffect(() => {
+        setActiveConfig({
+            ...missionConfig,
+            challenges: (highlighted.map(h => quest?.challenges?.filter(ch => h.quest === quest?.id && ch.id === h.challenge))?.flat() ?? []) as MissionChallenge[],
+            ignoreChallenges: (highlighted.map(h => quest?.challenges?.filter(ch => h.quest === quest?.id && ch.id === h.challenge && h.excluded)?.map(q2 => q2.id ?? 0) ?? [])?.flat() ?? []) as number[],
+            quest,
+            mastery,
+        } as QuestFilterConfig);
+    }, [missionConfig, quest, highlighted]);
 
     return (
         <>        
@@ -635,9 +628,10 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     <div style={{ display: showResults !== 1 ? 'none' : undefined }}>
                         <QuestCrewTable
                             quest={quest}
+                            config={activeConfig}
                             solverResults={solverResults}
                             pageId={'continuum'}
-                            config={activeConfig} />
+                            />
                     </div>
 
                     {!solverResults && <div style={{ height: '50vh' }}>&nbsp;</div>}
