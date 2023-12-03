@@ -11,6 +11,7 @@ export interface QuestFilterConfig {
   mastery: number;
   idleOnly?: boolean;
   considerFrozen?: boolean;
+  considerUnowned?: boolean;
   qpOnly?: boolean;
   ignoreQpConstraint?: boolean;
   includeCurrentQp?: boolean;
@@ -19,6 +20,7 @@ export interface QuestFilterConfig {
   buildableOnly?: boolean;
   alwaysCrit?: boolean;
   noTraitBonus?: boolean;
+  includePartials?: boolean;
 }
 
 export interface ProtoMission {
@@ -141,6 +143,7 @@ export interface Jackpot {
   id: number
   reward: MissionReward[]
   claimed: boolean
+  can_reclaim?: boolean
 }
 
 

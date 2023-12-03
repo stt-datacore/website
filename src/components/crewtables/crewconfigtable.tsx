@@ -54,6 +54,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	return (
 		<React.Fragment>
 			<SearchableTable
+				defaultPaginationRows={props.initOptions?.rows}
 				id={`${pageId}/table_`}
 				data={rosterCrew}
 				config={tableConfig}

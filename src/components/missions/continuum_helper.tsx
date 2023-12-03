@@ -115,8 +115,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     const [missionConfig, setMissionConfig] = useStateWithStorage<QuestFilterConfig>('continuum/missionConfig', { mastery: 0, idleOnly: true, showAllSkills: false, includeCurrentQp: true }, { rememberForever: true });
     const [activeConfig, setActiveConfig] = React.useState<QuestFilterConfig>(missionConfig);
-    const { noTraitBonus, alwaysCrit, buildableOnly, cheapestFirst, showAllSkills, mastery, idleOnly, considerFrozen, qpOnly, ignoreQpConstraint, includeCurrentQp } = missionConfig;
-
+      
     const [internalSolverResults, internalSetSolverResults] = React.useState<QuestSolverCacheItem[]>([]);
 
     const getCurrentKey = () => {
@@ -163,12 +162,22 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         internalSetSolverResults(sr);
     }
 
+    const { includePartials, noTraitBonus, alwaysCrit, buildableOnly, cheapestFirst, showAllSkills, mastery, idleOnly, considerUnowned, considerFrozen, qpOnly, ignoreQpConstraint, includeCurrentQp } = missionConfig;
+
+    const setIncludePartials = (value: boolean) => {
+        setMissionConfig({ ...missionConfig, includePartials: value });
+    }
+
     const setIdleOnly = (value: boolean) => {
         setMissionConfig({ ...missionConfig, idleOnly: value });
     }
 
     const setConsiderFrozen = (value: boolean) => {
         setMissionConfig({ ...missionConfig, considerFrozen: value });
+    }
+
+    const setConsiderUnowned = (value: boolean) => {
+        setMissionConfig({ ...missionConfig, considerUnowned: value });
     }
 
     const setQpOnly = (value: boolean) => {
@@ -372,6 +381,13 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             type: 'checkbox'
         },
         {
+            title: "Consider Unowned Crew",
+            description: "Consider unowned crew (unowned crew are considered with all 4 quipment slots)",
+            value: considerUnowned,
+            setValue: setConsiderUnowned,
+            type: 'checkbox'
+        },
+        {
             title: "Assume Max QBits (Ignore Limit)",
             description: "Assume all eligible crew have all 4 quipment slots unlocked.",
             value: ignoreQpConstraint,
@@ -418,6 +434,13 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             description: "Exclude incorporating trait bonus numbers into the crew solver calculation.",
             value: noTraitBonus,
             setValue: setNoTraitBonus,
+            type: 'checkbox'
+        },
+        {
+            title: "Include Partial Solves",
+            description: "Include partial solves even if complete solves are found.",
+            value: includePartials,
+            setValue: setIncludePartials,
             type: 'checkbox'
         }
 
