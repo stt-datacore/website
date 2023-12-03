@@ -874,16 +874,6 @@ const QuestSolver = {
                 });
             });
 
-            pathSolutions?.sort((a, b) => {
-                let ar = a.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
-                let br = b.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
-                return ar - br;
-            });
-
-            let seen = [ ...new Set(pathSolutions.map(ps => ps.crew.map(cr => cr.challenges?.map(crc => crc.challenge.id)?.flat() ?? [])?.flat()).flat()) ];
-            let failed = challenges.filter(ch => !seen.includes(ch.id) && !ignoreChallenges.includes(ch.id)).map(ch => ch.id);
-            let partial = pathSolutions.every(p => p.completeness !== 'full');
-
             let finalpss = [ ... pathSolutions ];
 
             if (!config.includePartials) {
@@ -895,6 +885,16 @@ const QuestSolver = {
                     }
                 }
             }
+            
+            finalpss?.sort((a, b) => {
+                let ar = a.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
+                let br = b.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
+                return ar - br;
+            });
+
+            let seen = [ ...new Set(finalpss.map(ps => ps.crew.map(cr => cr.challenges?.map(crc => crc.challenge.id)?.flat() ?? [])?.flat()).flat()) ];
+            let failed = challenges.filter(ch => !seen.includes(ch.id) && !ignoreChallenges.includes(ch.id)).map(ch => ch.id);
+            let partial = finalpss.every(p => p.completeness !== 'full');
 
             resolve({
                 status: true,
