@@ -3,7 +3,7 @@ import { BaseSkills, ComputedBuff, CrewMember, Skill } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { Jackpot, Mission, MissionChallenge, MissionTraitBonus } from "../model/missions";
 import { PlayerCrew, PlayerEquipmentItem } from "../model/player";
-import { IQuestCrew, PathGroup, QuestSolverConfig, QuestSolverResult, ThreeSolveResult } from "../model/worker";
+import { AssociatedPath, IQuestCrew, PathGroup, QuestSolverConfig, QuestSolverResult, ThreeSolveResult } from "../model/worker";
 import { getNodePaths, makeNavMap } from "../utils/episodes";
 import { calcItemDemands, canBuildItem, deductDemands, reverseDeduction } from "../utils/equipment";
 
@@ -38,6 +38,18 @@ export function getSkillOrder<T extends CrewMember>(crew: T) {
 
 export function getTraits<T extends CrewMember>(crew: T, traits: MissionTraitBonus[]) {
     return traits.filter(f => crew.traits.includes(f.trait) || crew.traits_hidden.includes(f.trait));
+}
+
+export function gradeCrew(crew: IQuestCrew, ch: number) {
+    let f = crew.challenges?.find(f => f.challenge.id === ch);
+    let z = 0;
+
+    if (f) {
+        if (f.max_solve) z++;
+        if (f.power_decrease) z++;
+    }
+
+    return z;
 }
 
 const QuestSolver = {
@@ -805,6 +817,7 @@ const QuestSolver = {
             .filter(c => !!c.associated_paths?.length || !!c.challenges?.length)
             .sort((a, b) => {
                 let r = 0;
+
                 if (!r && a.associated_paths && b.associated_paths) {
                     r = b.associated_paths.length - a.associated_paths.length;                    
                 }
@@ -876,9 +889,17 @@ const QuestSolver = {
                 }
             }
             
-            finalpss?.sort((a, b) => {
-                let ar = a.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
-                let br = b.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
+            finalpss?.sort((a, b) => {                                
+                let ar = 0;
+                let br = 0;
+                let r = 0;                
+                ar = a.path.split("_")?.map(p => a.crew.map(c => gradeCrew(c, Number.parseInt(p))))?.flat().reduce((p, n) => p + n, 0) ?? 4;
+                br = b.path.split("_")?.map(p => b.crew.map(c => gradeCrew(c, Number.parseInt(p))))?.flat().reduce((p, n) => p + n, 0) ?? 4;
+                r = ar - br;
+                if (!r) {
+                    ar = a.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
+                    br = b.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
+                }
                 return ar - br;
             });
 
