@@ -605,7 +605,6 @@ const QuestSolver = {
                 });
     
                 crew = chfill.concat(crew.filter(f => !chfill.some(chf => chf.symbol === f.symbol)));
-                if (crew.length > maxpool) crew.length = maxpool;
 
                 crew.forEach((c, idx) => {
                     c.score = idx + 1;
@@ -718,7 +717,10 @@ const QuestSolver = {
                     let nx = 0;
 
                     if (mode === 0)  {
-                        cba = makeAllCombos(pathCrew[path_key].map(r => r.id), Number.POSITIVE_INFINITY, undefined, undefined, 3);
+                        let maxcrew = [ ...pathCrew[path_key] ];
+                        if (maxcrew.length > maxpool) maxcrew.length = maxpool;
+
+                        cba = makeAllCombos(maxcrew.map(r => r.id), Number.POSITIVE_INFINITY, undefined, undefined, 3);
                         cba = cba.filter(x => x.length === 3);
                         cba.forEach(x => {
                             x.sort((a, b) => a - b);
