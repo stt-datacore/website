@@ -113,7 +113,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	private beginCalc() {
 		if (this.config.elapsedSeconds) {
 			let nextHour = Math.ceil(this.config.elapsedSeconds / 3600);
-			if (nextHour % 1) nextHour++;
+			if (nextHour % 2) nextHour++;
 
 			if (nextHour >= 20 && (this.config?.selectedTime === undefined || this.config.selectedTime <= nextHour)) {				
 				this.config.selectedTime = nextHour + 2;
