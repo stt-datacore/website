@@ -9,6 +9,7 @@ export interface QuestFilterConfig {
   ignoreChallenges?: number[];
   paths?: number[][];    
   mastery: number;
+  maxpool?: number;
   idleOnly?: boolean;
   considerFrozen?: boolean;
   considerUnowned?: boolean;
