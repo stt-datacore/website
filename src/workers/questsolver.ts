@@ -57,7 +57,6 @@ const QuestSolver = {
     solveQuest: (config: QuestSolverConfig) => {
 
         const quest = config.quest;
-        const maxpool = config.maxpool ?? 36;
 
         function qbitsToSlots(q_bits: number | undefined) {
             // 100/200/500/1300
@@ -707,117 +706,88 @@ const QuestSolver = {
             const threekeys = [] as string[];
             const seenPaths = [] as MissionChallenge[][];
             const pathSolutions = [] as PathGroup[];            
+
             for (let path of paths) {
                 let path_key = path.map(p => p.id).join("_");
                 const crew = pathCrew[path_key];
+                let nx = crew.length;
+
+                for (let i = 0; i < nx; i++) {
+                    let threeCrew = [] as IQuestCrew[];
+                    threeCrew = crew;
                 
+                    let [testcrew, complete] = anyThree(threeCrew, path, i);
+                    if (testcrew.length !== 3) continue;
 
-                for (let mode = 0; mode < 2; mode++) {
-                    let cba = [] as number[][];
-                    let nx = 0;
+                    if (testcrew) {
+                        const tg = testcrew;
+                        tg.sort((a, b) => a.id - b.id);
+                        let crews_key = tg.map(c => c.id.toString()).join("_") + path_key;
+                        if (!threekeys.includes(crews_key)) {
+                            threegroups.push(tg);
+                            threekeys.push(crews_key);                            
+                            
+                            tg.forEach((c) => {
+                                let nc = JSON.parse(JSON.stringify(c)) as IQuestCrew;
+                                let added_key = makeAddedKey(c, path_key);
+                                c.associated_paths ??= [];
+                                let adquip = added[added_key].filter(f => true).map(sym => Number.parseInt(allQuipment.find(q => q.symbol === sym)?.kwipment_id as string)) as number[];
 
-                    if (mode === 0)  {
-                        let maxcrew = [ ...pathCrew[path_key] ];
-                        if (maxcrew.length > maxpool) maxcrew.length = maxpool;
+                                if (!c.associated_paths.find(ap => ap.path === path_key)) {
+                                    let sk = {} as BaseSkills;
+                                    Object.keys(nc.skills).forEach((skill) => {
+                                        sk[skill] = {
+                                            core: nc[skill].core,
+                                            range_min: nc[skill].min,
+                                            range_max: nc[skill].max,
+                                            skill
+                                        }
+                                    });
 
-                        cba = makeAllCombos(maxcrew.map(r => r.id), Number.POSITIVE_INFINITY, undefined, undefined, 3);
-                        cba = cba.filter(x => x.length === 3);
-                        cba.forEach(x => {
-                            x.sort((a, b) => a - b);
-                        });
-                        nx = cba.length;
-                    }
-                    else {
-                        nx = crew.length;
-                    }
-    
-                    for (let i = 0; i < nx; i++) {
-                        let threeCrew = [] as IQuestCrew[];
-                        if (mode === 0) {
-                            threeCrew = crew.filter(f => cba[i].includes(f.id));
-                            if (!path.every(p => ignoreChallenges.includes(p.id) || threeCrew.some(tc => tc.challenges?.some(tcc => tcc.challenge.id === p.id)))) {
-                                continue;
-                            }
-                        }
-                        else {
-                            threeCrew = crew;
-                        }
-                        
-                        let [testcrew, complete] = anyThree(threeCrew, path, mode === 0 ? 0 : i);
-                        if (testcrew.length !== 3) continue;
-    
-                        if (testcrew) {
-                            const tg = testcrew;
-                            tg.sort((a, b) => a.id - b.id);
-                            let crews_key = tg.map(c => c.id.toString()).join("_") + path_key;
-                            if (!threekeys.includes(crews_key)) {
-                                threegroups.push(tg);
-                                threekeys.push(crews_key);                            
-                                
-                                tg.forEach((c) => {
-                                    let nc = JSON.parse(JSON.stringify(c)) as IQuestCrew;
-                                    let added_key = makeAddedKey(c, path_key);
-                                    c.associated_paths ??= [];
-                                    let adquip = added[added_key].filter(f => true).map(sym => Number.parseInt(allQuipment.find(q => q.symbol === sym)?.kwipment_id as string)) as number[];
-    
-                                    if (!c.associated_paths.find(ap => ap.path === path_key)) {
-                                        let sk = {} as BaseSkills;
-                                        Object.keys(nc.skills).forEach((skill) => {
-                                            sk[skill] = {
-                                                core: nc[skill].core,
-                                                range_min: nc[skill].min,
-                                                range_max: nc[skill].max,
-                                                skill
-                                            }
-                                        });
-    
-                                        c.associated_paths.push({
-                                            path: path_key,
-                                            needed_kwipment: adquip,
-                                            skills: sk                                        
-                                        });
-                                    }
-                                });
-    
-                                let pass = true;
-    
-                                if (config.buildableOnly && typeof tg !== 'boolean') {
-                                    pass = false;
-                                    const tghist = {} as { [key: string]: boolean[] };
-                                    const pretendItems = allQuipment
-                                        .filter((quip) => {
-                                            return tg.some(c => c.associated_paths?.some(pt => pt.path === path_key && quip.kwipment_id && pt.needed_kwipment?.includes(Number.parseInt(quip.kwipment_id as string))))
-                                        })
-                                        .map((quip) => {
-                                            return { ... quip, demands: calcItemDemands(quip, config.context.core.items, playerItems) }
-                                        });    
-                                    
-                                    let tc = tg.filter((c) => buildQuipment(c, pretendItems, tghist, c.associated_paths?.find(fp => fp.path === path_key)?.needed_kwipment));
-                                    pass = tc.length === tg.filter(c => c.challenges?.some(gch => path.includes(gch.challenge)))?.length;
-                                }
-                                
-                                if (pass) {
-                                    if (!seenPaths.includes(path)) {
-                                        seenPaths.push(path);
-                                    }
-                                    
-                                    pathSolutions.push({
+                                    c.associated_paths.push({
                                         path: path_key,
-                                        crew: tg,
-                                        mastery: config.mastery,
-                                        completeness: complete
+                                        needed_kwipment: adquip,
+                                        skills: sk                                        
                                     });
                                 }
+                            });
+
+                            let pass = true;
+
+                            if (config.buildableOnly && typeof tg !== 'boolean') {
+                                pass = false;
+                                const tghist = {} as { [key: string]: boolean[] };
+                                const pretendItems = allQuipment
+                                    .filter((quip) => {
+                                        return tg.some(c => c.associated_paths?.some(pt => pt.path === path_key && quip.kwipment_id && pt.needed_kwipment?.includes(Number.parseInt(quip.kwipment_id as string))))
+                                    })
+                                    .map((quip) => {
+                                        return { ... quip, demands: calcItemDemands(quip, config.context.core.items, playerItems) }
+                                    });    
+                                
+                                let tc = tg.filter((c) => buildQuipment(c, pretendItems, tghist, c.associated_paths?.find(fp => fp.path === path_key)?.needed_kwipment));
+                                pass = tc.length === tg.filter(c => c.challenges?.some(gch => path.includes(gch.challenge)))?.length;
+                            }
+                            
+                            if (pass) {
+                                if (!seenPaths.includes(path)) {
+                                    seenPaths.push(path);
+                                }
+                                
+                                pathSolutions.push({
+                                    path: path_key,
+                                    crew: tg,
+                                    mastery: config.mastery,
+                                    completeness: complete
+                                });
                             }
                         }
                     }
-
-                    if (pathSolutions.some(p => p.path === path_key && p.completeness === 'full')) {
-                        if (!config.includePartials) break;
-                    }
-    
                 }
 
+                if (pathSolutions.some(p => p.path === path_key && p.completeness === 'full')) {
+                    if (!config.includePartials) break;
+                }
             }
         
             const flatCrew = pathSolutions.map(p => p.crew).flat();

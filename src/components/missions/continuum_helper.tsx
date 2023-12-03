@@ -113,7 +113,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const [selectedTraits, setSelectedTraits] = useStateWithStorage('continuum/selectedTraits', [] as TraitSelection[]);
     const [highlighted, setHighlighted] = useStateWithStorage<HighlightItem[]>('continuum/selected', []);
 
-    const [missionConfig, setMissionConfig] = useStateWithStorage<QuestFilterConfig>('continuum/missionConfig', { mastery: 0, idleOnly: true, showAllSkills: false, includeCurrentQp: true, maxpool: 12 }, { rememberForever: true });
+    const [missionConfig, setMissionConfig] = useStateWithStorage<QuestFilterConfig>('continuum/missionConfig', { mastery: 0, idleOnly: true, showAllSkills: false, includeCurrentQp: true }, { rememberForever: true });
     const [activeConfig, setActiveConfig] = React.useState<QuestFilterConfig>(missionConfig);
       
     const [internalSolverResults, internalSetSolverResults] = React.useState<QuestSolverCacheItem[]>([]);
@@ -162,7 +162,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         internalSetSolverResults(sr);
     }
 
-    const { maxpool, includePartials, noTraitBonus, alwaysCrit, buildableOnly, cheapestFirst, showAllSkills, mastery, idleOnly, considerUnowned, considerFrozen, qpOnly, ignoreQpConstraint, includeCurrentQp } = missionConfig;
+    const { includePartials, noTraitBonus, alwaysCrit, buildableOnly, cheapestFirst, showAllSkills, mastery, idleOnly, considerUnowned, considerFrozen, qpOnly, ignoreQpConstraint, includeCurrentQp } = missionConfig;
 
     const setIncludePartials = (value: boolean) => {
         setMissionConfig({ ...missionConfig, includePartials: value });
@@ -215,18 +215,6 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const setNoTraitBonus = (value: boolean) => {
         setMissionConfig({ ...missionConfig, noTraitBonus: value });
     }
-
-    const setMaxPool = (value: number) => {
-        setMissionConfig({ ...missionConfig, maxpool: value });
-    }
-
-    const poolChoices = [1,2,3,4,5,6,7,8,9,10,11,12].map((n) => {
-        return {
-            key: "n" + n.toString(),
-            value: n * 3,
-            text: n.toString()
-        }
-    })
 
     /* Component Initialization & State Management */
 
@@ -550,13 +538,14 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                 </div>
                             ))}
                         </div>
-                        <div
+                        {/* <div
                             title={"The number of groups of 3 crew to assemble into different combinations."}
                             style={{ margin: "0.5em", display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: "center", gap: "1em"}}>
                             <label>Max Pool Depth:</label>
                             <Dropdown 
+                                disabled={activeConfig.considerFrozen || activeConfig.considerUnowned}
                                 options={poolChoices} value={maxpool ?? 36} onChange={(e, { value }) => setMaxPool(value as number)} />
-                        </div>
+                        </div> */}
                         <div style={{ justifyContent: "center", alignItems: "center", display: "flex", flexDirection: "column" }}>
                             <QuestSolverComponent
                                 setResults={setSolverResults}
