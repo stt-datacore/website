@@ -6,7 +6,7 @@ import { appelate, arrayIntersect } from '../../utils/misc';
 import CrewStat from '../crewstat';
 import { IRosterCrew } from '../crewtables/model';
 import { CrewItemsView } from '../item_presenters/crew_items';
-import PowerExplanation, { GradeSwatch } from '../explanations/powerexplanation';
+import PowerExplanation, { GradeSwatch, gradeCrew } from '../explanations/powerexplanation';
 import { CrewConfigTable } from '../crewtables/crewconfigtable';
 import { MissionChallenge, Quest, QuestFilterConfig } from '../../model/missions';
 import { pathToChallenges, pathToNames } from '../../utils/episodes';
@@ -56,7 +56,7 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                 <Table.Cell>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start" }}>
                         {crew.challenges?.map((challenge, idx) => {
-                            const grade = ((!!challenge.max_solve && !!challenge.power_decrease)) ? 'D' : (challenge.max_solve ? 'B' : (!!challenge.power_decrease ? 'C' : 'A'));
+                            const grade = gradeCrew(challenge);
 
                             return (
                                 <div style={{ height: "130px", display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>

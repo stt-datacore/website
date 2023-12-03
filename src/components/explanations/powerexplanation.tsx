@@ -1,5 +1,6 @@
 import React from 'react';
 import { Icon, Popup } from "semantic-ui-react";
+import { CrewChallengeInfo, IQuestCrew } from '../../model/worker';
 
 export const PowerColors = {
     MinRoll: 'lightgreen',
@@ -29,6 +30,19 @@ const swatchStyle = {
     padding: 0,
     fontWeight: 'bold'
 } as React.CSSProperties;
+
+export const gradeCrew = (info: CrewChallengeInfo) => {
+    if (info.max_solve && info.power_decrease) {
+        return "D";
+    }
+    else if (info.power_decrease) {
+        return "C";
+    }
+    else if (info.max_solve) {
+        return "B";    
+    }
+    return "A";
+}
 
 export const GradeSwatch = (props: { grade: 'A' | 'B' | 'C' | 'D', style?: React.CSSProperties }) => {
     const { grade, style } = props;
