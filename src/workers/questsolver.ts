@@ -57,6 +57,7 @@ const QuestSolver = {
     solveQuest: (config: QuestSolverConfig) => {
 
         const quest = config.quest;
+        const maxpool = config.maxpool ?? 36;
 
         function qbitsToSlots(q_bits: number | undefined) {
             // 100/200/500/1300
@@ -604,6 +605,7 @@ const QuestSolver = {
                 });
     
                 crew = chfill.concat(crew.filter(f => !chfill.some(chf => chf.symbol === f.symbol)));
+                if (crew.length > maxpool) crew.length = maxpool;
 
                 crew.forEach((c, idx) => {
                     c.score = idx + 1;
