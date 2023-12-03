@@ -695,7 +695,7 @@ const QuestSolver = {
                                 let nc = JSON.parse(JSON.stringify(c)) as IQuestCrew;
                                 let added_key = makeAddedKey(c, path_key);
                                 c.associated_paths ??= [];
-                                let adquip = added[added_key].filter(f => !!f).map(sym => Number.parseInt(allQuipment.find(q => q.symbol === sym)?.kwipment_id as string)) as number[];
+                                let adquip = added[added_key].filter(f => true).map(sym => Number.parseInt(allQuipment.find(q => q.symbol === sym)?.kwipment_id as string)) as number[];
 
                                 if (!c.associated_paths.find(ap => ap.path === path_key)) {
                                     let sk = {} as BaseSkills;

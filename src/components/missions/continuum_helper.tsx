@@ -73,7 +73,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         return mission?.quests?.map(q => false);
     }
 
-    const setMissionAndRemotes = (value?: ContinuumMission, remotes?: RemoteQuestStore[]) => {
+    const setMission = (value?: ContinuumMission) => {
         if (!value) {
             internalSetMission(undefined);
             return;
@@ -86,9 +86,17 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             value.discover_date = new Date(value.discover_date);
         }
 
-        if (remotes) {
-            setRemoteQuests(remotes);
+        if (remoteQuests.length) {
+            if (value.quests) {                
+                for (let rem of remoteQuests) {
+                    let f = value.quests?.findIndex(q => q.id === rem.id);
+                    if (f !== -1) {
+                        value.quests[f] = rem.quest;
+                    }
+                }
+            }
         }
+
         internalSetMission(value);
    }
 
@@ -231,6 +239,12 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     }, [mission]);
 
     React.useEffect(() => {
+        if (mission) {
+            setMission({ ...mission });
+        }
+    }, [remoteQuests]);
+
+    React.useEffect(() => {
         fetch(missionUrl)
             .then((response) => response.json())
             .then((result: ContinuumMission) => {
@@ -274,7 +288,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     result.discover_date = new Date(result.discover_date);
                 }
 
-                setMissionAndRemotes(result);
+                setMission(result);
                 setSelectedTraits(selTraits ?? []);
                 setErrorMsg("");
             })
@@ -296,37 +310,32 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const setRemoteQuest = (quest?: Quest) => {
         if (!quest) {
             if (mission) {
-                setMissionAndRemotes({ ...mission })
+                setMission({ ...mission })
             };
             return;
         }
-        if (mission?.quests?.length) {
-            for (let i = 0; i < mission.quests.length; i++) {
-                if (mission.quests[i].id === quest.id) {
-                    mission.quests[i] = quest;
-                    let fi = remoteQuests.findIndex(f => f.id === quest.id);
-                    if (fi !== -1) {
-                        remoteQuests[fi].quest = quest;
-                    }
-                    else {
-                        remoteQuests.push({
-                            id: quest.id,
-                            quest
-                        });
-                    }
-                    
-                    setMissionAndRemotes({ ...mission }, [...remoteQuests]);
-                    return;
-                }
-            }
+
+        let rq = [ ...remoteQuests ];
+        let fi = rq.findIndex(f => f.id === quest.id);
+        
+        if (fi !== -1) {
+            rq[fi].quest = quest;
         }
+        else {
+            rq.push({
+                id: quest.id,
+                quest
+            });
+        }
+
+        setRemoteQuests(rq);
     }
 
     React.useEffect(() => {
         if (!mission || !quest || !remoteQuests) return;
         const hasRemote = !!mission?.quests?.find((q, idx) => q.id === quest?.id && remoteQuests && remoteQuests.some(rq => rq.id === q.id))
         setCurrentHasRemote(hasRemote);
-    }, [mission, quest, remoteQuests])
+    }, [mission, quest, remoteQuests]);
 
     /* Render */
     
@@ -475,6 +484,16 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 <br />
                 <div style={{ color: "tomato" }}>{errorMsg}</div>
                 <br />
+                <QuestSelector
+                    masteryPlacement="bottom"
+                    pageId={'continuum'}
+                    mission={mission}
+                    questId={questId}
+                    setQuestId={setQuestId}
+                    mastery={mastery}
+                    setMastery={setMastery}
+                    highlighted={getRemoteQuestFlags()}
+                />
 
                 <div style={{
                     display: "flex",
@@ -485,7 +504,6 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     flexWrap: "wrap",
                     gap: "0.5em"
                 }}>
-
                     <div style={{ display: "inline-block", textAlign: 'center' }}>
                         <h3>Crew Finder Options</h3>
                         <div style={{
@@ -522,15 +540,6 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     </div>}
 
 
-                <QuestSelector
-                    pageId={'continuum'}
-                    mission={mission}
-                    questId={questId}
-                    setQuestId={setQuestId}
-                    mastery={mastery}
-                    setMastery={setMastery}
-                    highlighted={getRemoteQuestFlags()}
-                />
                 <Step.Group fluid>
                     <Step
                         onClick={(e) => setShowPane(0)}
