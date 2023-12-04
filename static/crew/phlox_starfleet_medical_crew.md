@@ -3,7 +3,7 @@ name: Starfleet Medical Phlox
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 32
 in_portal:
 date: 31/05/2023
