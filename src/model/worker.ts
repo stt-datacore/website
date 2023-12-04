@@ -233,7 +233,6 @@ export interface CrewChallengeInfo {
     challenge: MissionChallenge;
     skills: BaseSkills;
     trait_bonuses?: MissionTraitBonus[];
-    power_decrease?: number;
     max_solve?: boolean;
     path?: string;
 }
