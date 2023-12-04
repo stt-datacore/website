@@ -68,7 +68,7 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                                             <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}>
                                                 <CrewStat
                                                     style={{
-                                                        color: ((!!challenge.max_solve && !!challenge.power_decrease)) ? 'orange' : (challenge.max_solve ? 'aqua' : (!!challenge.power_decrease ? 'yellow' : 'lightgreen'))
+                                                        color: (challenge.max_solve ? 'aqua' : 'lightgreen')
                                                     }}
                                                     quipmentMode={true}
                                                     key={"continuum_crew_" + key}

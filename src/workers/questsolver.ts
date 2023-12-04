@@ -519,10 +519,7 @@ const QuestSolver = {
                             let core = c[skill].core;
                             let max = c[skill].max;
                             let min = c[skill].min;
-    
-                            core -= Math.round(core);
-                            max -= Math.round(max);
-                            min -= Math.round(min);
+                                
                             ch.skills[skill] = {
                                 core,
                                 range_min: min,
@@ -591,19 +588,9 @@ const QuestSolver = {
                 let nx = pathCrew[path_key].length;
                 let unique = [ ... new Set(pathCrew[path_key].map(c => c.id)) ];
                 let combos = [] as number[][];
+                unique = unique.slice(0, 50);
+                combos = makeAllCombos(unique, Number.POSITIVE_INFINITY, undefined, undefined, 3);
 
-                // for (let e = 0; e < unique.length; e++) {
-                //     for (let f = 0; f < unique.length; f++) {
-                //         for (let g = 0; g < unique.length; g++) {
-                //             if (unique[e] != unique[f] && unique[f] != unique[g] && unique[e] != unique[g]) {
-                //                 combos.push([unique[e], unique[f], unique[g]]);
-                //             }                            
-                //         }
-                //     }
-                // }
-
-                combos = makeAllCombos(unique, 5000, undefined, undefined, 3);
-                // let combos = makeAllCombos(unique, Number.POSITIVE_INFINITY, undefined, undefined, 3);
                 let cbs = combos;
                 combos = cbs
                     .filter(f => f.length === 3)
