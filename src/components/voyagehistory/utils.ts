@@ -14,8 +14,8 @@ export const defaultHistory = {
 export async function getRemoteHistory(trackerId?: string, dbid?: number): Promise<IVoyageHistory | undefined> {
 
 	let url = `${process.env.GATSBY_DATACORE_URL}api/getTrackedData?`;
-	if (trackerId) {
-		url += `trackerId=${trackerId}`;
+	if (trackerId && dbid) {
+		url += `dbid=${dbid}&trackerId=${trackerId}`;
 	}
 	else if (dbid) {
 		url += `dbid=${dbid}`;
