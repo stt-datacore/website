@@ -6,8 +6,8 @@ memory_alpha:
 bigbook_tier: 6
 events: 21
 in_portal:
-date: 04/12/2023
-obtained: Giveaway
+date: 05/12/2023
+obtained: Event
 mega: false
 published: true
 ---
