@@ -49,7 +49,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 			const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 			if (activeEvent) {
 				const crewIds = props.rosterCrew.filter(c => activeEvent.bonus.includes(c.symbol)).sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
-				updateExclusions([...crewIds]);
+				updateExclusions([...new Set(crewIds)]);
 			}
 		}
 		else {
