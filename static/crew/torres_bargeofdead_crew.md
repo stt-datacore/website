@@ -3,7 +3,7 @@ name: Barge of the Dead Torres
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 events: 38
 in_portal: true
 date: 22/06/2022
