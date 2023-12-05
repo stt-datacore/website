@@ -29,7 +29,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 
 	const excludeQuipped = () => {
 		const quipped = props.rosterCrew.filter(f => !excludedCrewIds?.includes(f.id) && f.kwipment?.some(k => typeof k === 'number' ? !!k : !!k[1]))?.map(c => c.id);
-		updateExclusions([...excludedCrewIds, ...quipped]);
+		updateExclusions([ ... new Set([...excludedCrewIds, ...quipped])] );
 	}
 
 	React.useEffect(() => {
@@ -49,7 +49,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 			const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 			if (activeEvent) {
 				const crewIds = props.rosterCrew.filter(c => activeEvent.bonus.includes(c.symbol)).sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
-				updateExclusions([...crewIds]);
+				updateExclusions([...new Set(crewIds)]);
 			}
 		}
 		else {
