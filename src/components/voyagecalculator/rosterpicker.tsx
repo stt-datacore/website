@@ -84,7 +84,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			let crewmanId = 1;
 			globalContext.core.crew.forEach(crew => {
 				const crewman = JSON.parse(JSON.stringify(crew)) as IVoyageCrew;
-				crewman.id = crewmanId++;
+				crewman.id = crewman.archetype_id;
 
 				const buffedSkills = globalContext.maxBuffs ? applyCrewBuffs(crewman, globalContext.maxBuffs) : undefined;
 				// Voyage calculator looks for skills, range_min, range_max properties
