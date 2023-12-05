@@ -29,7 +29,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 
 	const excludeQuipped = () => {
 		const quipped = props.rosterCrew.filter(f => !excludedCrewIds?.includes(f.id) && f.kwipment?.some(k => typeof k === 'number' ? !!k : !!k[1]))?.map(c => c.id);
-		updateExclusions([...excludedCrewIds, ...quipped]);
+		updateExclusions([ ... new Set([...excludedCrewIds, ...quipped])] );
 	}
 
 	React.useEffect(() => {
