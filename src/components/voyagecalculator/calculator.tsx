@@ -333,8 +333,13 @@ const CrewOptions = (props: CrewOptionsProps) => {
 	const [considerActive, setConsiderActive] = React.useState(false);
 	const [considerFrozen, setConsiderFrozen] = React.useState(false);
 	const [preExcludedCrew, setPreExcludedCrew] = React.useState<IVoyageCrew[]>([] as IVoyageCrew[]);
-	const [excludedCrewIds, setExcludedCrewIds] = React.useState<number[]>([] as number[]);
+	const [excludedCrewIds, internalSetExcludedCrewIds] = React.useState<number[]>([] as number[]);
 	const [consideredCount, setConsideredCount] = React.useState(0);
+
+	const setExcludedCrewIds = (ids: number[]) => {
+		internalSetExcludedCrewIds([ ... new Set(ids) ]);
+	}
+
 
 	React.useEffect(() => {
 		setPreConsideredCrew([...calculatorContext.crew]);
