@@ -1388,10 +1388,11 @@ export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
 	long ??= false;
 	let obstr = `${crew.obtained}`;
 	if (obstr === 'HonorHall') obstr = 'Honor Hall';
-	else if (obstr === 'FactionStore') obstr = 'Faction Store';
+	else if (obstr === 'FactionStore') obstr = 'Faction';
 
 	if (long) {
 		if (obstr === 'Voyage' || obstr === 'Gauntlet') obstr += " Exclusive";
+		else if (obstr === 'Faction') obstr = 'Faction Store';
 		else if (obstr === 'Fuse') obstr = 'Exclusive Fusion';
 		else if (obstr === 'BossBattle') obstr = 'Captain\'s Bridge';
 		else if (obstr === 'Collection') obstr = 'Collection Milestone';
