@@ -54,8 +54,8 @@ export const Recommender = (props: RecommenderProps) => {
 	let frozenGolds = [ ... new Set(globalContext.playerData?.player.character.crew.filter(f => f.max_rarity === 5 && f.immortal && f.immortal > 0)?.map(c => c.symbol) ?? []) ];
 
 	let goldCount = allGolds.length;
-	let frozenCount = frozenGolds.length;
-	let maxxedCount = maxxedGolds.filter(c => !frozenGolds.includes(c)).length;
+	let frozenCount = frozenGolds.filter(c => !maxxedGolds.includes(c)).length;
+	let maxxedCount = maxxedGolds.length;
 
 	const immortalRatio = maxxedCount / goldCount;
 	const frozenRatio = frozenCount / goldCount;
