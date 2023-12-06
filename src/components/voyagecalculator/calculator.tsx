@@ -432,19 +432,36 @@ type ResultsGroupProps = {
 };
 
 const ResultsGroup = (props: ResultsGroupProps) => {
+	const globalContext = React.useContext(GlobalContext);
+
 	const calculatorContext = React.useContext(CalculatorContext);
 	const userPrefs = React.useContext(UserPrefsContext);
 	const { requests, results, setResults } = props;
 
 	const [trackerId, setTrackerId] = React.useState(0);
 
-	if (results.length === 0)
-		return (<></>);
-
 	const analyses = [] as string[];
 
 	// In-game voyage crew picker ignores frozen crew and crew active on shuttles
 	const availableRoster = calculatorContext.crew.filter(c => c.immortal <= 0 && c.active_status !== 2);
+
+	let allGolds = globalContext.core.crew.filter(f => f.max_rarity === 5)?.map(c => c.symbol) ?? [];
+	let maxxedGolds = [ ... new Set(globalContext.player.playerData?.player.character.crew.filter(f => f.max_rarity === 5 && f.immortal && f.immortal < 0)?.map(c => c.symbol) ?? []) ];
+	let frozenGolds = [ ... new Set(globalContext.player.playerData?.player.character.crew.filter(f => f.max_rarity === 5 && f.immortal && f.immortal > 0)?.map(c => c.symbol) ?? []) ];
+
+	let goldCount = allGolds.length;
+	let frozenCount = frozenGolds.length;
+	let maxxedCount = maxxedGolds.filter(c => !frozenGolds.includes(c)).length;
+
+	const immortalRatio = maxxedCount / goldCount;
+	const frozenRatio = frozenCount / goldCount;
+
+	React.useEffect(() => {
+		if (results?.length && userPrefs.telemetryOptIn) sendTelemetry(0);
+	}, [results])	
+
+	if (results.length === 0)
+		return (<></>);
 
 	// Compare best values among ALL results
 	interface IBestValues {
@@ -527,14 +544,7 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 			);
 		}
 	}));
-
-	return (
-		<React.Fragment>
-			<Header as='h3'>Recommended Lineups</Header>
-			<Tab menu={{ pointing: true }} panes={panes} />
-		</React.Fragment>
-	);
-
+	
 	function renderMenuItem(name: string, analysis: string): JSX.Element {
 		if (analysis !== '') {
 			return (
@@ -619,8 +629,6 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 			result.trackState = idx === resultIndex ? 1 : 0;
 		});
 		setResults([...results]);
-
-		if (userPrefs.telemetryOptIn) sendTelemetry(resultIndex);
 	}
 
 	function estimateResult(resultIndex: number, voyageConfig: IVoyageCalcConfig, numSims: number): void {
@@ -661,7 +669,10 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 	function sendTelemetry(resultIndex: number): void {
 		const result = results[resultIndex];
 		if (!result.result) return;
+		
 		const request = requests.find(r => r.id === result.requestId);
+		if (request?.calcOptions.strategy === 'peak-antimatter') return;
+		
 		const estimatedDuration = result.result.estimate.refills[0].result*60*60;
 		try {
 			fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry`, {
@@ -672,9 +683,16 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 				body: JSON.stringify({
 					type: 'voyageCalc',
 					data: {
-						voyagers: result.result.entries.map((entry) => entry.choice.symbol),
+						voyagers: result.result?.entries.map((entry) => entry.choice.symbol),
 						estimatedDuration,
-						calculator: request ? request.calculator : ''
+						calculator: request ? request.calculator : '',
+						am_traits: request?.voyageConfig?.crew_slots?.map(cs => cs.trait),
+						ship_trait: request?.voyageConfig.ship_trait,
+						... request?.voyageConfig.skills,
+						extra_stats: {
+							immortalRatio,
+							frozenRatio
+						}
 					}
 				})
 			});
@@ -683,6 +701,15 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 			console.log('An error occurred while sending telemetry', err);
 		}
 	}
+
+	
+	return (
+		<React.Fragment>
+			<Header as='h3'>Recommended Lineups</Header>
+			<Tab menu={{ pointing: true }} panes={panes} />
+		</React.Fragment>
+	);
+
 };
 
 type ResultPaneProps = {
