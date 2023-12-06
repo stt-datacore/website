@@ -22,6 +22,7 @@ import { Skill } from '../../model/crew';
 import { AllData, CalcConfig, CalcResult, Calculation, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
 import { InitialOptions } from '../../model/game-elements';
 import { Helper } from './Helper';
+import { MergedContext } from '../../context/mergedcontext';
 
 export const RecommenderContext = React.createContext<AllData>({} as AllData);
 
@@ -33,6 +34,8 @@ export type RecommenderProps = {
 };
 
 export const Recommender = (props: RecommenderProps) => {
+	const globalContext = React.useContext(MergedContext);
+
 	const { voyageConfig, myCrew, useInVoyage, allData } = props;
 
 	const allShips = allData.allShips;
@@ -45,6 +48,17 @@ export const Recommender = (props: RecommenderProps) => {
 	const [telemetryOptOut, setTelemetryOptOut] = useStateWithStorage('telemetryOptOut', false, { rememberForever: true });
 	const [requests, setRequests] = React.useState<Helper[]>([]);
 	const [results, setResults] = React.useState<Calculation[]>([]);
+
+	let allGolds = globalContext.allCrew.filter(f => f.max_rarity === 5)?.map(c => c.symbol) ?? [];
+	let maxxedGolds = [ ... new Set(globalContext.playerData?.player.character.crew.filter(f => f.max_rarity === 5 && f.immortal && f.immortal < 0)?.map(c => c.symbol) ?? []) ];
+	let frozenGolds = [ ... new Set(globalContext.playerData?.player.character.crew.filter(f => f.max_rarity === 5 && f.immortal && f.immortal > 0)?.map(c => c.symbol) ?? []) ];
+
+	let goldCount = allGolds.length;
+	let frozenCount = frozenGolds.length;
+	let maxxedCount = maxxedGolds.filter(c => !frozenGolds.includes(c)).length;
+
+	const immortalRatio = maxxedCount / goldCount;
+	const frozenRatio = frozenCount / goldCount;
 
 	React.useEffect(() => {
 		const consideredShips = [] as VoyageConsideration[];
@@ -413,6 +427,7 @@ export const Recommender = (props: RecommenderProps) => {
 	function sendTelemetry(requestId: string, result: any): void {
 		if (telemetryOptOut) return;
 		const request = requests.find(r => r.id === requestId);
+		
 		const estimatedDuration = result.estimate.refills[0].result*60*60;
 		try {
 			fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry`, {
@@ -425,7 +440,14 @@ export const Recommender = (props: RecommenderProps) => {
 					data: {
 						voyagers: result.entries.map((entry) => entry.choice.symbol),
 						estimatedDuration,
-						calculator: request ? request.calculator : ''
+						calculator: request ? request.calculator : '',
+						am_traits: request?.voyageConfig?.crew_slots?.map(cs => cs.trait),
+						ship_trait: request?.voyageConfig.ship_trait,
+						... request?.voyageConfig.skills,
+						extra_stats: {
+							immortalRatio,
+							frozenRatio
+						}
 					}
 				})
 			});
