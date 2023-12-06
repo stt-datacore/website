@@ -69,7 +69,7 @@ export interface Calculation {
     errorMessage?: string;
 }
 
-export interface CalcResult {
+export interface CalcResult extends Calculation {
     estimate: Estimate;
     entries: CalcResultEntry[];
     aggregates: Aggregates;
