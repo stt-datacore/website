@@ -1388,6 +1388,7 @@ export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
 	long ??= false;
 	let obstr = `${crew.obtained}`;
 	if (obstr === 'HonorHall') obstr = 'Honor Hall';
+	else if (obstr === 'FactionStore') obstr = 'Faction Store';
 
 	if (long) {
 		if (obstr === 'Voyage' || obstr === 'Gauntlet') obstr += " Exclusive";
@@ -1423,7 +1424,7 @@ export function printPortalStatus(crew: PlayerCrew | CrewMember, showNever?: boo
 	if (obstr !== "") obstr = ` (${obstr})`;
 	let ob = crew.obtained.toLowerCase();
 
-	if (showNever && (ob.includes("missions") || ob.includes("fuse") || ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection"))) {
+	if (showNever && (ob.includes("factionstore") || ob.includes("missions") || ob.includes("fuse") || ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection"))) {
 		return (withPortal ? "In Portal: " : "") + `Never${obstr}`;
 	}
 
