@@ -387,6 +387,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 	const [halfMatrix, setHalfMatrix] = useStateWithStorage<boolean>('eventHalfMatrix', false, { rememberForever: true });
 	
 	const matrixSkills = halfMatrix ? [ ... CONFIG.SKILLS_SHORT ].reverse() : CONFIG.SKILLS_SHORT;
+	const comboSeen = {} as { [key: string]: boolean };
 
 	return (
 		<React.Fragment>
@@ -407,11 +408,11 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 					{CONFIG.SKILLS_SHORT.map((skillA, rowId) => (
 						<Table.Row key={rowId}>
 							<Table.Cell width={1} textAlign='center'><img alt={`${skillA.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillA.name}.png`} style={{ height: '1.1em' }} /></Table.Cell>
-							{matrixSkills.map((skillB, cellId) => {								
-								if (halfMatrix) {
-									if (cellId < rowId) return <></>
-								}
-								return renderCell(skillA.name, skillB.name);
+							{matrixSkills.map((skillB, cellId) => {							
+								let cbkey = [skillA.name, skillB.name].sort().join("");
+								let cbs = comboSeen[cbkey];
+								comboSeen[cbkey] = true;
+								return renderCell(skillA.name, skillB.name, halfMatrix && (cbs));
 							})}
 						</Table.Row>
 					))}
@@ -419,12 +420,12 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 			</Table>
 			<div title={"Show combinations only once"} style={{cursor: 'pointer', marginTop: "0.5em", display: 'flex', gap:"0.5em", flexDirection:'row', alignItems:'center'}}>
 				<Checkbox id="eventHelperHalfMatrixCheck" checked={halfMatrix} onChange={(e, { checked }) => setHalfMatrix(checked as boolean)} />
-				<label style={{cursor: 'pointer'}} htmlFor="eventHelperHalfMatrixCheck">Remove Duplicate Pairs</label>
+				<label style={{cursor: 'pointer'}} htmlFor="eventHelperHalfMatrixCheck">Hide Duplicate Pairs</label>
 			</div>
 		</React.Fragment>
 	);
 
-	function renderCell(skillA: string, skillB: string) : JSX.Element {
+	function renderCell(skillA: string, skillB: string, invisible: boolean) : JSX.Element {
 		let key: string, best: IBestCombo;
 		if (skillA === skillB) {
 			key = skillA;
@@ -441,7 +442,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 			if (bestCrew && bestCrew.immortal > 0) icon = (<Icon name='snowflake' />);
 			if (bestCrew?.statusIcon) icon = (<Icon name={bestCrew.statusIcon} />);
 			return (
-				<Table.Cell key={key} textAlign='center' style={{ cursor: 'pointer' }} onClick={() => handleClick(skillA, skillB)}>
+				<Table.Cell key={key} textAlign='center' style={{ cursor: 'pointer', opacity: invisible ? "0" : undefined }} onClick={() => handleClick(skillA, skillB)}>
 					<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${bestCrew?.imageUrlPortrait}`} />
 					<br/>{icon} {bestCrew?.name} <small>({phaseType === 'gather' ? `${calculateGalaxyChance(best.score)}%` : Math.floor(best.score)})</small>
 				</Table.Cell>
