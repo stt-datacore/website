@@ -46,7 +46,7 @@ export const EventPicker = (props: EventPickerProps) => {
 		const eventData = events[eventIndex];
 		const bonusCrew = globalContext.core.crew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0);
 		bonusCrew.sort((a, b)=>a.name.localeCompare(b.name));
-		setBonusCrew([...bonusCrew]);
+		setBonusCrew([...bonusCrew.map(b => b as IRosterCrew)]);
 	}, [events, eventIndex]);
 
 	React.useEffect(() => {
