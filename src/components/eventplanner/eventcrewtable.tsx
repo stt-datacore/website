@@ -384,6 +384,8 @@ type EventCrewMatrixProps = {
 const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 	const { crew, bestCombos, phaseType, handleClick } = props;
 
+	const [halfMatrix, setHalfMatrix] = useStateWithStorage<boolean>('eventHalfMatrix', false, { rememberForever: true });
+
 	return (
 		<React.Fragment>
 			<Header as='h4'>Skill Matrix</Header>
@@ -403,11 +405,21 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 					{CONFIG.SKILLS_SHORT.map((skillA, rowId) => (
 						<Table.Row key={rowId}>
 							<Table.Cell width={1} textAlign='center'><img alt={`${skillA.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillA.name}.png`} style={{ height: '1.1em' }} /></Table.Cell>
-							{CONFIG.SKILLS_SHORT.map((skillB, cellId) => renderCell(skillA.name, skillB.name))}
+							{CONFIG.SKILLS_SHORT.map((skillB, cellId) => {
+								
+								if (halfMatrix) {
+									if (cellId > rowId) return <></>
+								}
+								return renderCell(skillA.name, skillB.name);
+							})}
 						</Table.Row>
 					))}
 				</Table.Body>
 			</Table>
+			<div title={"Show combinations only once"} style={{marginTop: "0.5em", display: 'flex', gap:"0.5em", flexDirection:'row', alignItems:'center'}}>
+				<Checkbox checked={halfMatrix} onChange={(e, { checked }) => setHalfMatrix(checked as boolean)} />
+				Half-Matrix
+			</div>
 		</React.Fragment>
 	);
 
