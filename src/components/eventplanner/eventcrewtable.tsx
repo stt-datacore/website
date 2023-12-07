@@ -385,6 +385,8 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 	const { crew, bestCombos, phaseType, handleClick } = props;
 
 	const [halfMatrix, setHalfMatrix] = useStateWithStorage<boolean>('eventHalfMatrix', false, { rememberForever: true });
+	
+	const matrixSkills = halfMatrix ? [ ... CONFIG.SKILLS_SHORT ].reverse() : CONFIG.SKILLS_SHORT;
 
 	return (
 		<React.Fragment>
@@ -394,7 +396,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell />
-						{CONFIG.SKILLS_SHORT.map((skill, cellId) => (
+						{matrixSkills.map((skill, cellId) => (
 							<Table.HeaderCell key={cellId} width={2} textAlign='center'>
 								<img alt={`${skill.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />
 							</Table.HeaderCell>
@@ -405,10 +407,9 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 					{CONFIG.SKILLS_SHORT.map((skillA, rowId) => (
 						<Table.Row key={rowId}>
 							<Table.Cell width={1} textAlign='center'><img alt={`${skillA.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillA.name}.png`} style={{ height: '1.1em' }} /></Table.Cell>
-							{CONFIG.SKILLS_SHORT.map((skillB, cellId) => {
-								
+							{matrixSkills.map((skillB, cellId) => {								
 								if (halfMatrix) {
-									if (cellId > rowId) return <></>
+									if (cellId < rowId) return <></>
 								}
 								return renderCell(skillA.name, skillB.name);
 							})}
@@ -416,9 +417,9 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 					))}
 				</Table.Body>
 			</Table>
-			<div title={"Show combinations only once"} style={{marginTop: "0.5em", display: 'flex', gap:"0.5em", flexDirection:'row', alignItems:'center'}}>
-				<Checkbox checked={halfMatrix} onChange={(e, { checked }) => setHalfMatrix(checked as boolean)} />
-				Half-Matrix
+			<div title={"Show combinations only once"} style={{cursor: 'pointer', marginTop: "0.5em", display: 'flex', gap:"0.5em", flexDirection:'row', alignItems:'center'}}>
+				<Checkbox id="eventHelperHalfMatrixCheck" checked={halfMatrix} onChange={(e, { checked }) => setHalfMatrix(checked as boolean)} />
+				<label style={{cursor: 'pointer'}} htmlFor="eventHelperHalfMatrixCheck">Remove Duplicate Pairs</label>
 			</div>
 		</React.Fragment>
 	);
