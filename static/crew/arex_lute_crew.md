@@ -4,7 +4,7 @@ rarity: 4
 series: tas
 memory_alpha:
 bigbook_tier: 9
-events: 20
+events: 21
 in_portal: true
 date: 25/09/2017
 obtained: Event

@@ -4,7 +4,7 @@ rarity: 5
 series: snw
 memory_alpha:
 bigbook_tier: 3
-events: 27
+events: 28
 in_portal:
 date: 19/09/2023
 obtained: Voyage
