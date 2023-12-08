@@ -54,10 +54,10 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
             });
 
             if (stage === 0 || !crew.challenges?.some(c => c.challenge.id === path[stage - 1].id)) {
-                challenge.power_decrease = 0;
+                //challenge.power_decrease = 0;
             }
             else {               
-                challenge.power_decrease = 0.2;
+                //challenge.power_decrease = 0.2;
                 Object.keys(crew.skills).forEach((skill) => {
                     newskill[skill].core = Math.round(newskill[skill].core - newskill[skill].core * 0.2);
                     newskill[skill].range_max = Math.round(newskill[skill].range_max - newskill[skill].range_max * 0.2);
