@@ -3,7 +3,7 @@ name: Tourist Hoshi Sato
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 23
 in_portal:
 date: 25/07/2023

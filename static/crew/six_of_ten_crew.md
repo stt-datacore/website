@@ -3,7 +3,7 @@ name: Six of Ten
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 events: 32
 in_portal:
 date: 05/04/2023
