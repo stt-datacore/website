@@ -235,6 +235,9 @@ export interface CrewChallengeInfo {
     trait_bonuses?: MissionTraitBonus[];
     max_solve?: boolean;
     path?: string;
+    power_decrease?: number;
+    kwipment: number[];
+    kwipment_expiration: number[];
 }
 
 export interface AssociatedPath {
