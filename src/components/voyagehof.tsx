@@ -27,12 +27,22 @@ import ItemDisplay from "./itemdisplay";
  
 type VoyageHOFProps = {};
 
+type VoyageStatSeat = {
+    seat_skill: string;
+    seat_index: number;
+    averageDuration: number;
+    crewCount: number;
+}
+
 type VoyageStatEntry = {
     crewSymbol: string;
     crewCount: number;
     estimatedDuration?: number;
     averageDuration?: number;
-};
+    startDate?: Date;
+    endDate?: Date;
+    seats: VoyageStatSeat[];
+}
 
 type VoyageHOFState = {
     voyageStats?: {
@@ -108,7 +118,9 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy }: VoyageStatsPro
         );
     };
 
-
+    rankedCrew.forEach((rc) => {
+        rc.seats.sort((a, b) => b.crewCount - a.crewCount);
+    })
 
     return (
         <>
@@ -124,6 +136,7 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy }: VoyageStatsPro
                 </Table.Header>
                 <Table.Body>
                     {rankedCrew.map((crew, index) => (
+                        <React.Fragment>
                         <Table.Row key={crew?.symbol + "_" + period}>
                             <Table.Cell>
                                 <Header
@@ -139,7 +152,7 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy }: VoyageStatsPro
                                     style={{
                                         display: "grid",
                                         gridTemplateColumns: "80px auto",
-                                        gridTemplateAreas: `'icon name'`,
+                                        gridTemplateAreas: `'icon name' 'footer footer'`,
                                         gridGap: "1px",
                                     }}
                                 >
@@ -177,9 +190,26 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy }: VoyageStatsPro
                                         )}
                                         {crew?.have && <OwnedLabel statsPopup crew={crew as IRosterCrew} />}
                                     </div>
+                                    <div style={{marginTop: "0.5em", gridArea: "footer", display:'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center'}}>
+                                    {crew.seats.map((seat, idx) => {
+
+                                        return (<div 
+                                            title={`${seat.crewCount.toLocaleString()} voyages.`}
+                                            key={`${idx}_${crew.symbol}_seat_${seat.seat_skill}`} style={{display:'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center'}}>
+                                            <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${seat.seat_skill}.png`} 
+                                                style={{height: "24px", margin: "0.5em"}} />
+                                            
+                                            <div>{Math.round(100 * (seat.crewCount / crew.crewCount))}%</div>
+                                        </div>)
+                                    })}
+                                    
+
+                                </div>
+
                                 </div>
                             </Table.Cell>
                         </Table.Row>
+                        </React.Fragment>
                     ))}
                 </Table.Body>
             </Table>
