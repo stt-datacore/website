@@ -59,9 +59,23 @@ function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: P
     });
 
     less = [ ...new Set(less.map(l => l.split(" / ")).flat())];
-    let eOut = exact.map(e => e.split(" / "));
+    let eOut = exact.map(e => e.split(" / ")).filter(n => !n.some(nc => nc === colOptimized.name));
+    
     if (!less.length) return eOut;
-    return eOut.concat(makeAllCombos(less, Number.POSITIVE_INFINITY));
+    //console.log(`${colOptimized.name}: Size of 'less': ${less.length}`);        
+    let limit = Number.POSITIVE_INFINITY;
+
+    if (less.length >= 10) {
+        limit = Math.min(Math.pow(less.length, 3), 1000);
+    }
+
+    let results = eOut.concat(makeAllCombos(less, limit));
+    if (Number.isFinite(limit)) {
+        results.unshift(less);
+    }
+    //console.log(`Combos: ${results.length}`);
+    return results;
+    
 }
 
 function normalCollectionSort<T extends PlayerCrew>(crew: T[], searchFilter?: string, searches?: string[]) {
