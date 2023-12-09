@@ -1,4 +1,5 @@
 import CONFIG from '../components/CONFIG';
+import { CrewMember, BaseSkills, Skill } from '../model/crew';
 import { AllBuffsCapHash, Player, PlayerCrew } from '../model/player';
 import { Estimate } from '../model/worker';
 
@@ -114,4 +115,43 @@ export function formatCrewStats(crew: PlayerCrew, use_base:boolean = false): str
 		}
 	}
 	return result;
+}
+
+
+export interface RawVoyageRecord {
+    estimatedDuration?: number;
+    voyageDate: Date;
+    crew: string[];
+    createdAt: Date;
+    am_traits?: string[];
+    primary_skill?: string;
+    secondary_skill?: string;
+    ship_trait?: string;
+    extra_stats?: any
+}
+
+export function guessSkillsFromCrew<T extends CrewMember>(voyage: RawVoyageRecord, crew: T[]) {
+
+    let sk = {} as BaseSkills;
+    let voycrew = crew.filter(f => voyage.crew.includes(f.symbol));
+    voycrew.forEach((c) => {
+        Object.keys(c.base_skills).forEach((skill) => {
+            sk[skill] ??= {
+                core: 0,
+                range_min: 0,
+                range_max: 0,
+                skill
+            }
+            sk[skill].core += c.base_skills[skill].core;
+            sk[skill].range_max += c.base_skills[skill].range_max;
+            sk[skill].range_min += c.base_skills[skill].range_min;
+        })
+    });
+
+    let skills = Object.values(sk) as Skill[];
+    skills.sort((a, b) => {
+        return (b.core + (b.range_max * 0.10) + (b.range_min * 0.10)) - (a.core + (a.range_max * 0.10) + (a.range_min * 0.10))
+    })
+
+    return skills.slice(0, 2).map(sk => sk.skill as string);
 }
