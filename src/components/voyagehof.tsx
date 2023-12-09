@@ -46,26 +46,28 @@ type VoyageStatEntry = {
 
 type VoyageHOFState = {
     voyageStats?: {
-        allTime?: VoyageStatEntry[];
-        lastYear?: VoyageStatEntry[];
-        lastSixMonths?: VoyageStatEntry[];
         lastSevenDays: VoyageStatEntry[];
         lastThirtyDays: VoyageStatEntry[];
+        lastNinetyDays: VoyageStatEntry[];
+        lastSixMonths?: VoyageStatEntry[];
+        oneYear?: VoyageStatEntry[];
+        allTime?: VoyageStatEntry[];
     };
     allCrew?: (CrewMember | PlayerCrew)[];
     errorMessage?: string;
     rankBy: RankMode;
 };
 
-const niceNamesForPeriod = {
-    allTime: "All Time",
-    lastSevenDays: "Last 7 days",
-    lastThirtyDays: "Last 30 days",
-    lastSixMonths: "Last 6 Months",
-    lastYear: "Last Year",
-};
+export type VoyageHOFPeriod = "allTime" | "lastSevenDays" | "lastThirtyDays" | "lastSixMonths" | "lastNinetyDays" | "oneYear";
 
-export type VoyageHOFPeriod = "allTime" | "lastSevenDays" | "lastThirtyDays" | "lastSixMonths" | "lastYear";
+const niceNamesForPeriod = {
+    lastNinetyDays: "Last 90 days",
+    lastThirtyDays: "Last 30 days",
+    lastSevenDays: "Last 7 days",
+    lastSixMonths: "Last 6 Months",
+    oneYear: "Last Year",
+//    allTime: "All Time",
+};
 
 export interface VoyageStatsProps {
     period: VoyageHOFPeriod;
@@ -251,6 +253,8 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         this.setState({ ...this.state, rankBy: rank });
     };
 
+    
+
     render() {
         const { rankBy, voyageStats, allCrew } = this.state;
 
@@ -260,6 +264,13 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                     Loading hall of fame...
                 </div>
             );
+        }
+        
+        let rows = [] as { stats: VoyageStatEntry[], key: VoyageHOFPeriod }[][];
+        let stats = Object.keys(niceNamesForPeriod)?.filter(p => !!p?.length);
+       
+        while (stats.length) {
+            rows.push(stats.splice(0, 3).map(p => { return { stats: (voyageStats as Object)[p] as VoyageStatEntry[], key: p as VoyageHOFPeriod } } ))
         }
 
         return (
@@ -296,56 +307,33 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                     />
                 </div>
                 <Grid columns={3} divided>
-                    <Grid.Row>
-                        {voyageStats?.allTime && (
-                            <Grid.Column>
-                                <VoyageStatsForPeriod
-                                    rankBy={rankBy}
-                                    period="allTime"
-                                    stats={voyageStats?.allTime ?? []}
-                                    allCrew={allCrew ?? []}
+                    {rows.map((row) => {
 
-                                />
-                            </Grid.Column>
-                        )}
-                        {voyageStats?.lastYear && (
-                            <Grid.Column>
-                                <VoyageStatsForPeriod
-                                    rankBy={rankBy}
-                                    period="lastYear"
-                                    stats={voyageStats?.lastYear ?? []}
-                                    allCrew={allCrew ?? []}
+                        return (
+                            <Grid.Row>
 
-                                />
-                            </Grid.Column>
-                        )}
-                        {voyageStats?.lastSixMonths && (
-                            <Grid.Column>
-                                <VoyageStatsForPeriod
-                                    rankBy={rankBy}
-                                    period="lastSixMonths"
-                                    stats={voyageStats?.lastSixMonths ?? []}
-                                    allCrew={allCrew ?? []}
-                                />
-                            </Grid.Column>
-                        )}
-                        <Grid.Column>
-                            <VoyageStatsForPeriod
-                                rankBy={rankBy}
-                                period="lastThirtyDays"
-                                stats={voyageStats?.lastThirtyDays ?? []}
-                                allCrew={allCrew ?? []}
-                            />
-                        </Grid.Column>
-                        <Grid.Column>
-                            <VoyageStatsForPeriod
-                                rankBy={rankBy}
-                                period="lastSevenDays"
-                                stats={voyageStats?.lastSevenDays ?? []}
-                                allCrew={allCrew ?? []}
-                            />
-                        </Grid.Column>
-                    </Grid.Row>
+                                {row.map((stats) => {
+
+                                    if (!niceNamesForPeriod[stats.key]) return <></>
+                                    return (
+                                        <Grid.Column>
+                                        <VoyageStatsForPeriod
+                                            rankBy={rankBy}
+                                            period={stats.key}
+                                            stats={stats.stats}
+                                            allCrew={allCrew ?? []}
+
+                                        />
+
+                                        </Grid.Column>
+                                    )
+                                })}
+
+                            </Grid.Row>
+                        )
+                    })}
+                    
+                       
                 </Grid>
             </>
         );
