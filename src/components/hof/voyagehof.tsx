@@ -22,10 +22,10 @@ export interface VoyageStatsProps {
     allCrew: (PlayerCrew | CrewMember)[];
     stats: VoyageStatEntry[];
     rankBy: RankMode;
-    setGlance: (value: string) => void;
+    clickCrew: (value: string) => void;
 }
 
-const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, setGlance }: VoyageStatsProps) => {
+const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGlance }: VoyageStatsProps) => {
     
     const context = React.useContext(GlobalContext);    
     const myCrew = context.player.playerData?.player.character.crew ?? [];
@@ -175,13 +175,36 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         };
     }
 
-    readonly setGlance = (crew?: string) => {
-        navigate(`/hall_of_fame?crew=${crew}`);
+    readonly setGlance = (crew?: string[]) => {
+        navigate(`/hall_of_fame?crew=${crew?.join(",")}`);
+        crew = crew?.filter(f => !!f?.length && f !== 'undefined');
         this.setState({ ...this.state, crewSymbol: crew, rawVoyages: undefined });
     }
 
-    readonly loadCrew = (crew: string) => {
-        fetch(`${process.env.GATSBY_DATACORE_URL}api/voyagesByCrew?crew=${crew}&days=${this.state.glanceDays}`)
+    readonly clickCrew = (crew?: string) => {
+        let current = [ ... this.state.crewSymbol ?? [] ];        
+        if (crew) {
+            if (!current.includes(crew)) {
+                current.push(crew);
+            }
+            else if (current.includes(crew)) {
+                current = current.filter(f => f !== crew);
+            }
+        }
+        current = current?.filter(f => !!f?.length && f !== 'undefined');
+        if (current?.length === 0) {
+            navigate("/hall_of_fame");
+            this.setState({ ... this.state, crewSymbol: undefined })
+        }
+        else {
+            navigate(`/hall_of_fame?crew=${current?.join(",")}`);
+            this.setState({ ... this.state, crewSymbol: current })
+        }
+        
+    }
+
+    readonly loadCrew = (crew: string[]) => {
+        fetch(`${process.env.GATSBY_DATACORE_URL}api/voyagesByCrew?opand=1&crew=${crew.join(",")}&days=${this.state.glanceDays}`)
             .then((response) => response.json())
             .then((rawVoyages) => this.setState({ ... this.state, rawVoyages }));
 
@@ -211,7 +234,8 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                         let search = new URLSearchParams(window.location.search);
                         let crew = search.get("crew");
                         if (crew) {
-                            this.setState({ ...this.state, crewSymbol: crew, rawVoyages: undefined })
+                            let crsplit = crew.split(",")
+                            this.setState({ ...this.state, crewSymbol: crsplit, rawVoyages: undefined })
                         }
                     }
                 });
@@ -251,9 +275,9 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                     Voyage Hall of Fame
                 </Header>
 
-                <HofDetails crewClick={this.setGlance} hofState={this.state} />
+                <HofDetails crewClick={this.clickCrew} hofState={this.state} />
 
-                {!!crewSymbol && !!rawVoyages && 
+                {!!crewSymbol?.length && !!rawVoyages && 
                 <Button style={{margin: "0.5em"}} onClick={(e) => this.setGlance()}>{"Clear Details View"}</Button>
                 }
                 <div
@@ -296,7 +320,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                                     return (
                                         <Grid.Column>
                                         <VoyageStatsForPeriod
-                                            setGlance={this.setGlance}
+                                            clickCrew={this.clickCrew}
                                             rankBy={rankBy}
                                             period={stats.key}
                                             stats={stats.stats}
