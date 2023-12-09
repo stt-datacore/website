@@ -54,10 +54,7 @@ export function compareRewards(mapFilter: MapFilterOptions, colGroup1: PlayerCol
         byes = bfilter?.length ?? 0;
     }
 
-    let r = byes - ayes;
-    if (r) {
-        let n = "this";
-    }
+    let r = byes - ayes;    
     return r;
 }
 
