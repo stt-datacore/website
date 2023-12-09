@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import voymod from './voymod.js';
+import iampicard from './iampicard.js';
 import transwarp from './transwarp.js';
 import voyagers from './voyagers.js';
 import Optimizer from './optimizer.js';
@@ -23,12 +23,12 @@ self.addEventListener('message', message => {
     'ironywrit': () => BetaTachyon.scanCrew(message.data.config).then(data => postResult(data, false)),
     'colOptimizer': () => CollectionOptimizer.scanAll(message.data.config).then(data => postResult(data, false)),
     'equipmentWorker': () => ItemsWorker.processItems(message.data.config).then(data => postResult(data, false)),
-    'iampicard': () => voymod().then(mod => {
-        let result = mod.calculate(JSON.stringify(message.data), res => {
+    'iampicard': () => { 
+        let result = iampicard.calculate(message.data, res => {
           postResult(res, true);
-        });
+        }, transwarp.getEstimate);
         postResult(result, false);
-      }),
+      },
     'ussjohnjay': () =>  voyagers.forDataCore(message.data, postResult, transwarp.getEstimate)
   };
 

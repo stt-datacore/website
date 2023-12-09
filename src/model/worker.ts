@@ -245,3 +245,18 @@ export interface QuestSolverResult {
     fulfilled: boolean;
     failed?: number[];
 }
+
+export interface IAmPicardConfig {
+    crew: ExportCrew[]
+    searchDepth: number;
+	extendsTarget: number;
+	shipAM: number;
+	skillPrimaryMultiplier: number;
+	skillSecondaryMultiplier:number;
+	skillMatchingMultiplier: number;
+    traitScoreBoost: number;
+	primarySkill: number;
+	secondarySkill: number;
+	slotSkills: number[];
+	worker: string;
+};
