@@ -176,8 +176,15 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
     }
 
     readonly setGlance = (crew?: string[]) => {
-        navigate(`/hall_of_fame?crew=${crew?.join(",")}`);
         crew = crew?.filter(f => !!f?.length && f !== 'undefined');
+
+        if (crew?.length) {
+            navigate(`/hall_of_fame?crew=${crew?.join(",")}`);
+        }
+        else {
+            navigate(`/hall_of_fame`);
+        }
+                
         this.setState({ ...this.state, crewSymbol: crew, rawVoyages: undefined });
     }
 
