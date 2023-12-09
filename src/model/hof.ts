@@ -34,7 +34,7 @@ export interface VoyageHOFState {
     allCrew?: (CrewMember | PlayerCrew)[];
     errorMessage?: string;
     rankBy: RankMode;
-    crewSymbol?: string;
+    crewSymbol?: string[];
     rawVoyages?: RawVoyageRecord[];
     glanceDays: number;
 };
