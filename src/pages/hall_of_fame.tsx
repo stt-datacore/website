@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 
-import VoyageHOF from '../components/voyagehof';
+import VoyageHOF from '../components/hof/voyagehof';
 import DataPageLayout from '../components/page/datapagelayout';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 
