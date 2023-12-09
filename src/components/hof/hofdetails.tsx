@@ -139,7 +139,7 @@ export const HofDetails = (props: HofDetailsProps) => {
                     maxWidth: "50em",
                     margin: "0.5em"
                 }}>
-                    {countKeys.slice(0,3).map((skills) => {
+                    {countKeys.filter(f => voyCounts[f]).slice(0,3).map((skills) => {
                         return <div
                             className={'ui label'}
                             style={{ width: "10em", fontSize: "1.25em", height: "2em", display: 'grid', gridTemplateAreas: "'skills value'" }}
@@ -161,10 +161,10 @@ export const HofDetails = (props: HofDetailsProps) => {
                     maxWidth: "50em",
                     margin: "0.5em"
                 }}>
-                    {countKeys.slice(3).map((skills) => {
+                    {countKeys.filter(f => voyCounts[f]).slice(3).map((skills) => {
                         return <div
                             className={'ui label'}
-                            style={{ width: "8em", fontSize: "1em", height: "2em", display: 'grid', gridTemplateAreas: "'skills value'" }}
+                            style={{ width: "9em", fontSize: "1em", height: "2em", display: 'grid', gridTemplateAreas: "'skills value'" }}
                             key={`voycountskill_${skills}`}>
                             <div style={{ gridArea: 'skills' }}>{skills}</div>
                             <div style={{ gridArea: 'value', textAlign: 'right' }}>{Math.round(100 * (voyCounts[skills] / rawVoyages.length))}%</div>
@@ -184,7 +184,7 @@ export const HofDetails = (props: HofDetailsProps) => {
                     maxWidth:"50em",
                     margin: "0.5em"
                 }}>
-                    {seatKeys.slice(0, 5).map((seat, idx) => {
+                    {seatKeys.slice(0, 6).map((seat, idx) => {
                         let bidx = CONFIG.VOYAGE_CREW_SLOTS.indexOf(seat);
                         let skill = VoyageSeats[bidx];
                         return <div> <div
