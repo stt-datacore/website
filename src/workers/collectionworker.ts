@@ -65,7 +65,7 @@ function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: P
     //console.log(`${colOptimized.name}: Size of 'less': ${less.length}`);        
     let limit = Number.POSITIVE_INFINITY;
 
-    if (less.length >= 10) {
+    if (less.length >= 8) {
         limit = Math.min(Math.pow(less.length, 3), 1000);
     }
 
@@ -130,6 +130,7 @@ function normalCollectionSort<T extends PlayerCrew>(crew: T[], searchFilter?: st
 
 const CollectionOptimizer = {
     scanAll: (config: CollectionWorkerConfig) => {
+        console.log("Collections Worker Invoked!");
         return new Promise<CollectionWorkerResult>((resolve, reject) => {
             const { playerData, filterProps } = config;
             const { playerCollections, collectionCrew, matchMode, byCost } = config;
