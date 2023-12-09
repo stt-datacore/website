@@ -42,6 +42,7 @@ export interface ITableConfigRow {
 	pseudocolumns?: string[];
 	reverse?: boolean;
 	tiebreakers?: string[];
+	customCompare?: (a: any, b: any) => number;
 }
 
 export interface SearchableTableProps {
@@ -219,16 +220,20 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		const columnConfig = props.config.find(col => col.column === sortColumn);
 		sortDirection = columnConfig?.reverse ? 'descending' : 'ascending';
 	}
+	
+	const columnConfig = props.config.find(col => col.column === sortColumn);
+	
 	const sortConfig: IConfigSortData = {
 		field: sortColumn,
 		direction: sortDirection,
-		keepSortOptions: true
+		keepSortOptions: true,
+		customCompare: columnConfig?.customCompare
 	};
 
 	// Define tiebreaker rules with names in alphabetical order as default
 	//	Hack here to sort rarity in the same direction as max_rarity
 	let subsort = [] as SortConfig[];
-	const columnConfig = props.config.find(col => col.column === sortColumn);
+	
 	if (columnConfig && columnConfig.tiebreakers) {
 		subsort = columnConfig.tiebreakers.map(subfield => {
 			const subdirection = subfield.slice(subfield.length-6) === 'rarity' ? sortDirection : 'ascending';

@@ -11,6 +11,7 @@ import CollectionsCrewCard from './crewcard';
 import { CollectionMap } from '../../model/collectionfilter';
 import { getOwnedCites, makeCiteNeeds } from '../../utils/collectionutils';
 import { CollectionCard } from './collectioncard';
+import { RewardFilter } from './rewardfilter';
 
 export interface GroupTableProps {
 	playerCollections: PlayerCollection[];
@@ -70,6 +71,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 				<i className='ui segment' style={{color:"goldenrod", fontWeight: 'bold', margin: "0.5em 0"}}>
 					The grouped collection view shows only owned crew if the collections list is not filtered.
 				</i>}
+
 			<div style={{
 				display: "flex",
 				flexDirection: 
@@ -78,38 +80,19 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 					window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'flex-start' : 'center',
 				justifyContent: "flex-start"			
 			}}>
-				<Dropdown
-					multiple
-					style={{ width: narrow ? '100%' : '30%', margin: "0.5em 0" }}
-					iconPosition="left"
-					scrolling		
-					options={allCrew?.map(ca => {
-						return {
-							key: ca.name,
-							value: ca.name,
-							text: 
-								<div key={"dropdown_opt_"+ca.symbol} style={{display:"inline-flex", alignItems:"center", flexDirection:"row"}}>
-									<img 
-										src={`${process.env.GATSBY_ASSETS_URL}${ca.imageUrlPortrait}`} 
-										style={{height:'2em', marginRight:"0.5em"}} />
-									{ca.name}
-								</div>
-						}
-					}) ?? []}
-					//placeholder="Click crew name to filter..."
-					value={searchFilter.split(";").map(s => s.trim())}
-					onChange={(e, { value }) => setSearchFilter((value as string[])?.join("; "))} />
+				
+				<RewardFilter 
+					narrow={narrow}
+					grouped={short}
+					setGrouped={setShort}
+					searchFilter={searchFilter}
+					setSearchFilter={setSearchFilter}
+					collectionSource={playerCollections}
+					crewSource={allCrew}
+					selection={mapFilter?.rewardFilter}
+					setSelection={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
+				/>
 
-
-				<RewardPicker 
-					short={short}
-					setShort={setShort}
-					source={playerCollections} 
-					icons
-					value={mapFilter?.rewardFilter} 
-					onChange={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
-					 />
-				<Checkbox style={{margin: "0.5em 1em"}} label={"Group rewards"} checked={short} onChange={(e, { checked }) => setShort(checked ?? false)} />
 				<Checkbox style={{margin: "0.5em 1em"}} label={"Honor Sale Pricing"} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
 
 			</div>

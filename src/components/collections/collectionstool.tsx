@@ -24,6 +24,8 @@ import { CollectionGroupTable } from './groupview';
 import { CollectionOptimizerTable } from './optimizerview';
 import CollectionsOverviewComponent from './overview';
 import { CollectionFilterContext, CollectionFilterProvider } from './filtercontext';
+import { RewardFilter } from './rewardfilter';
+import { compareRewards } from '../../utils/collectionutils';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);	
@@ -390,7 +392,7 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 	const [costMap, setCostMap] = React.useState<ComboCostMap[]>([]);
 
 	const { playerCollections: tempCol, collectionCrew } = props;
-	const { tierFilter, setTierFilter, byCost, matchMode, checkCommonFilter, costMode, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
+	const { tierFilter, setTierFilter, byCost, matchMode, checkCommonFilter, costMode, setShort, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
 	
 	const playerCollections = [ ...tempCol ];
 	const tierOpts = [] as DropdownItemProps[];
@@ -424,11 +426,28 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	const [tabIndex, setTabIndex] = useStateWithStorage('collectionstool/tabIndex', 0, { rememberForever: true });
 
+	const compareCrewRewards = (a: PlayerCrew, b: PlayerCrew): number => {
+		if (!!a.immortalRewards?.length != !!b.immortalRewards?.length) {
+			if (a.immortalRewards?.length) return 1;
+			else if (b.immortalRewards?.length) return -1;
+		}
+		let acol = a.unmaxedIds?.map(ci => playerCollections.find(f => f.id === ci) as PlayerCollection) ?? [];
+		let bcol = b.unmaxedIds?.map(ci => playerCollections.find(f => f.id === ci) as PlayerCollection) ?? [];
+		let r = compareRewards(mapFilter, acol, bcol, short);		
+		return -r;
+	}
+
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 2, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'date_added'] },
 		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['highest_owned_rarity'] },
 		{ width: 1, column: 'unmaxedIds.length', title: 'Collections', reverse: true },
-		{ width: 3, column: 'immortalRewards.length', title: <span>Immortal Rewards <Popup trigger={<Icon name='help' />} content='Rewards you can claim if you immortalize this crew right now' /></span>, reverse: true }
+		{ 
+			width: 3, 
+			column: 'immortalRewards.length', 
+			title: <span>Immortal Rewards <Popup trigger={<Icon name='help' />} content='Rewards you can claim if you immortalize this crew right now' /></span>, 
+			reverse: true,
+			customCompare: !!mapFilter?.rewardFilter?.length ? compareCrewRewards : undefined
+		}
 	];
 
 	const collectionsOptions = playerCollections.filter(collection => collection.milestone.goal != 'n/a' && collection.milestone.goal > 0).sort((a, b) => a.name.localeCompare(b.name)).map(collection => {
@@ -497,6 +516,8 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 	}
 
 	const runWorker = () => {
+		if (workerRunning) return;
+
 		const worker = new UnifiedWorker();
 		worker.addEventListener('message', (message: { data: { result: CollectionWorkerResult; }; }) => processWorkerResult(message.data.result));
 		const workerName = 'colOptimizer';
@@ -525,15 +546,31 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 	const buffConfig = calculateBuffConfig(playerData.player);
 
 	const renderTable = (workerRunning: boolean) => {		
-		if (workerRunning) return context.core.spin("Calculating Crew...");
+		return (
+		
+		<React.Fragment>
 
-		return (<SearchableTable
+			<RewardFilter 					
+					grouped={short}
+					setGrouped={setShort}
+					searchFilter={searchFilter}
+					setSearchFilter={setSearchFilter}
+					collectionSource={playerCollections}
+					crewSource={collectionCrew}
+					selection={mapFilter?.rewardFilter}
+					setSelection={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
+				/>
+
+			{workerRunning && context.core.spin("Calculating Crew...")}
+			{!workerRunning && <SearchableTable
 				id='collections/crew'
 				data={collectionCrew}
 				config={tableConfig}
 				renderTableRow={(crew, idx) => renderCrewRow(crew, idx ?? -1)}
 				filterRow={(crew, filters, filterType) => showThisCrew(crew, filters, filterType)}
-			/>)
+			/>}
+		</React.Fragment>
+)
 	}
 
 	const tabPanes = [
@@ -780,7 +817,7 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 					)}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					<RewardsGrid rewards={crew.immortalRewards as Reward[]} />
+					<RewardsGrid wrap={true} rewards={crew.immortalRewards as Reward[]} />
 				</Table.Cell>
 			</Table.Row>
 		);
