@@ -128,6 +128,31 @@ export const HofDetails = (props: HofDetailsProps) => {
                     <p>{glanceDays} Day Details: {formatNumber(rawVoyages.length, Math.max(rawVoyages.length, voyageStats?.lastThirtyDays?.length ?? rawVoyages.length), 1)} Voyages</p>
                     <p>Average Duration:{" "}{formatNumber(rawVoyages.map(r => r.estimatedDuration ?? 0).reduce((p, n, idx) => ((p * idx) + n) / (idx + 1), 0), 0, 1 / 3600, "h")}</p>
                 </div>
+                <h3 style={{textAlign:'center', margin: "1.5em 0em"}}><b>Seating Frequency</b></h3>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-evenly',
+                    flexWrap: 'wrap',
+                    gap: "0.5em",
+                    maxWidth:"50em",
+                    margin: "0.5em"
+                }}>
+                    {seatKeys.slice(0, 6).map((seat, idx) => {
+                        let bidx = CONFIG.VOYAGE_CREW_SLOTS.indexOf(seat);
+                        let skill = VoyageSeats[bidx];
+                        return <div> <div
+                            className={'ui label'}
+                            style={{ width: "16em", fontSize: "1em", height: "4em", display: 'grid', gridTemplateAreas: "'skill seat value'", alignItems: "center" }}
+                            key={`voycountseat_${seat}`}>
+                            <img style={{ gridArea: 'skill', height: "24px", margin: "0.5em 1em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} />
+                            <div style={{ gridArea: 'seat' }}>{appelate(seat)}</div>
+                            <div style={{ gridArea: 'value', textAlign: 'right' }}>{Math.round(100 * (seatMap[seat] / rawVoyages.length))}%</div>
+                        </div></div>
+                    })}
+                </div>
+                
                 <h3 style={{textAlign:'center', margin: "1.5em 0em"}}><b>Most Frequent Voyages</b></h3>
                 <div style={{
                     display: 'flex',
@@ -173,30 +198,7 @@ export const HofDetails = (props: HofDetailsProps) => {
                 </div>
             </div>
             <div>
-                <h3 style={{textAlign:'center', margin: "1.5em 0em"}}><b>Seating Frequency</b></h3>
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-evenly',
-                    flexWrap: 'wrap',
-                    gap: "0.5em",
-                    maxWidth:"50em",
-                    margin: "0.5em"
-                }}>
-                    {seatKeys.slice(0, 6).map((seat, idx) => {
-                        let bidx = CONFIG.VOYAGE_CREW_SLOTS.indexOf(seat);
-                        let skill = VoyageSeats[bidx];
-                        return <div> <div
-                            className={'ui label'}
-                            style={{ width: "16em", fontSize: "1em", height: "4em", display: 'grid', gridTemplateAreas: "'skill seat value'", alignItems: "center" }}
-                            key={`voycountseat_${seat}`}>
-                            <img style={{ gridArea: 'skill', height: "24px", margin: "0.5em 1em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} />
-                            <div style={{ gridArea: 'seat' }}>{appelate(seat)}</div>
-                            <div style={{ gridArea: 'value', textAlign: 'right' }}>{Math.round(100 * (seatMap[seat] / rawVoyages.length))}%</div>
-                        </div></div>
-                    })}
-                </div>
+                
                 <h3 style={{textAlign:'center', margin: "1.5em 0em"}}><b>Most Frequent Co-Voyagers</b></h3>
                 <div style={{
                     display: 'flex',
