@@ -25,7 +25,7 @@ import { CollectionOptimizerTable } from './optimizerview';
 import CollectionsOverviewComponent from './overview';
 import { CollectionFilterContext, CollectionFilterProvider } from './filtercontext';
 import { RewardFilter } from './rewardfilter';
-import { compareRewards, rewardsFilterPassFail } from '../../utils/collectionutils';
+import { compareRewards, rewardsFilterPassFail, starCost } from '../../utils/collectionutils';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);	
@@ -407,6 +407,8 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	let tscore = 0;
 	let tscoren = 0;
+	
+	const costs = [0, 0, 500, 4500, 18000, costMode === 'sale' ? 40000 : 50000];
 
 	collectionCrew.forEach((crew) => {
 		if (!showThisCrew(crew, [], 'Exact')) return;
@@ -415,8 +417,10 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 		crew.collectionIds = crew.collectionIds?.filter(c => playerCollections.some(col => col.id === c));
 		crew.collections = crew.collections?.filter(c => playerCollections.some(col => col.name === c));
 		
-		if (crew.rarity === undefined) {
-			return 0;
+		let crare = crew.rarity;
+		let max_rare = crew.max_rarity;
+		if (crare === undefined) {
+			crare = 1;
 		}
 		
 		let pfilter = playerCollections.filter((col) => crew.collectionIds?.some(nid => nid === col.id) && !!col.needed);
@@ -434,7 +438,7 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 		let cscore = ascores.reduce((p, n) => p + n, 0);
 
 		crew.collectionScore = Math.round(cscore * 10000);
-		crew.collectionScoreN = Math.round((cscore * (crew.rarity / crew.max_rarity)) * 10000);
+		crew.collectionScoreN = Math.round((cscore * ((costs[max_rare] * crare) / (costs[max_rare] * max_rare))) * 10000);
 
 		if (crew.collectionScore > tscore) {
 			tscore = crew.collectionScore;
