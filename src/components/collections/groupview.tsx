@@ -24,7 +24,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
     const colContext = React.useContext(CollectionFilterContext);
     const context = React.useContext(GlobalContext);
     const { workerRunning, playerCollections, colGroups } = props;
-    const { costMode, setCostMode, setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
+    const { hardFilter, setHardFilter, costMode, setCostMode, setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 	const [pageSize, setPageSize] = useStateWithStorage("colGroups/itemsPerPage", 1, { rememberForever: true });
@@ -82,6 +82,8 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 			}}>
 				
 				<RewardFilter 
+					hardFilter={hardFilter}		
+					setHardFilter={setHardFilter}
 					narrow={narrow}
 					grouped={short}
 					setGrouped={setShort}

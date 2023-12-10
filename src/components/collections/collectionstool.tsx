@@ -13,7 +13,7 @@ import { CrewMember } from '../../model/crew';
 import { Filter } from '../../model/game-elements';
 import { BuffBase, CompletionState, ImmortalReward, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../../model/player';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
-import { crewCopy, navToCrewPage, oneCrewCopy } from '../../utils/crewutils';
+import { crewCopy, gradeToColor, navToCrewPage, oneCrewCopy } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
 import { TinyStore } from '../../utils/tiny';
 import { calculateBuffConfig } from '../../utils/voyageutils';
@@ -25,7 +25,7 @@ import { CollectionOptimizerTable } from './optimizerview';
 import CollectionsOverviewComponent from './overview';
 import { CollectionFilterContext, CollectionFilterProvider } from './filtercontext';
 import { RewardFilter } from './rewardfilter';
-import { compareRewards } from '../../utils/collectionutils';
+import { compareRewards, rewardsFilterPassFail } from '../../utils/collectionutils';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);	
@@ -150,10 +150,12 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 	const { allCrew, playerCollections, collectionCrew } = props;
 	const tinyCol = TinyStore.getStore('collections');   
 
+	// TODO: Getting then immediately removing. must be transient. figure out where this goes.
 	const offsel = tinyCol.getValue<string | undefined>("collectionsTool/selectedCollection");
+	tinyCol.removeValue("collectionsTool/selectedCollection");
+
 	const selColId = playerCollections.find(f => f.name === offsel)?.id;
 
-	tinyCol.removeValue("collectionsTool/selectedCollection");
 
 	const { setSearchFilter, mapFilter, setMapFilter } = colContext;
 	const crewAnchor = React.useRef<HTMLDivElement>(null);
@@ -392,9 +394,60 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 	const [costMap, setCostMap] = React.useState<ComboCostMap[]>([]);
 
 	const { playerCollections: tempCol, collectionCrew } = props;
-	const { tierFilter, setTierFilter, byCost, matchMode, checkCommonFilter, costMode, setShort, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
+	const { hardFilter, setHardFilter, tierFilter, setTierFilter, byCost, matchMode, checkCommonFilter, costMode, setShort, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
 	
-	const playerCollections = [ ...tempCol ];
+	const playerCollections = tempCol.filter((col) => {
+		if (hardFilter && mapFilter?.rewardFilter) {
+			return rewardsFilterPassFail(mapFilter, [col], short);
+		}
+		else {
+			return true;
+		}
+	});
+
+	let tscore = 0;
+	let tscoren = 0;
+
+	collectionCrew.forEach((crew) => {
+		if (!showThisCrew(crew, [], 'Exact')) return;
+		crew.collectionScore = 0;
+		crew.collectionScoreN = 0;
+		crew.collectionIds = crew.collectionIds?.filter(c => playerCollections.some(col => col.id === c));
+		crew.collections = crew.collections?.filter(c => playerCollections.some(col => col.name === c));
+		
+		if (crew.rarity === undefined) {
+			return 0;
+		}
+		
+		let pfilter = playerCollections.filter((col) => crew.collectionIds?.some(nid => nid === col.id) && !!col.needed);
+		if (!pfilter.length) {
+			return;
+		}
+		let ascores = [] as number[];
+		pfilter.forEach((col) => {
+			if (col.milestone.goal === 'n/a') return;
+			if (!col.needed) return;
+
+			ascores.push(1 / (col.milestone.goal - col.needed))
+		})
+		
+		let cscore = ascores.reduce((p, n) => p + n, 0);
+
+		crew.collectionScore = Math.round(cscore * 10000);
+		crew.collectionScoreN = Math.round((cscore * (crew.rarity / crew.max_rarity)) * 10000);
+
+		if (crew.collectionScore > tscore) {
+			tscore = crew.collectionScore;
+		}
+		if (crew.collectionScoreN > tscoren) {
+			tscoren = crew.collectionScoreN;
+		}
+		
+	});
+
+	const topscore = tscore;
+	const topscoren = tscoren;
+
 	const tierOpts = [] as DropdownItemProps[];
 
 	if (mapFilter.collectionsFilter?.length === 1) {
@@ -440,7 +493,9 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 2, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'date_added'] },
 		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['highest_owned_rarity'] },
-		{ width: 1, column: 'unmaxedIds.length', title: 'Collections', reverse: true },
+		{ width: 2, column: 'unmaxedIds.length', title: 'Collections', reverse: true },
+		{ width: 1, column: 'collectionScore', title: 'Grade' },
+		{ width: 1, column: 'collectionScoreN', title: 'Star Grade' },
 		{ 
 			width: 3, 
 			column: 'immortalRewards.length', 
@@ -550,7 +605,9 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 		
 		<React.Fragment>
 
-			<RewardFilter 					
+			<RewardFilter 			
+					hardFilter={hardFilter}		
+					setHardFilter={setHardFilter}
 					grouped={short}
 					setGrouped={setShort}
 					searchFilter={searchFilter}
@@ -816,8 +873,26 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 						</table>
 					)}
 				</Table.Cell>
+				<Table.Cell>
+					<div style={{color: gradeToColor(crew.collectionScore as number / topscore) ?? undefined}}>
+						{crew.collectionScore?.toLocaleString() ?? ''}
+					</div>
+				</Table.Cell>
+				<Table.Cell>
+					<div style={{color: gradeToColor(crew.collectionScoreN as number / topscoren) ?? undefined}}>
+						{crew.collectionScoreN?.toLocaleString() ?? ''}
+					</div>
+				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					<RewardsGrid wrap={true} rewards={crew.immortalRewards as Reward[]} />
+					<div style={{
+						margin: "1em",
+						display: 'flex',
+						flexDirection: 'row',
+						justifyContent: 'center',
+						alignItems: 'center'
+					}}>
+						<RewardsGrid wrap={true} rewards={crew.immortalRewards as Reward[]} />
+					</div>
 				</Table.Cell>
 			</Table.Row>
 		);

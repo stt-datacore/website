@@ -14,11 +14,13 @@ export interface RewardFilterProps {
     setGrouped: (value: boolean) => void;
     selection?: string[];
     setSelection: (value?: string[]) => void;
+    hardFilter: boolean;
+    setHardFilter: (value: boolean) => void;
 }
 
 export const RewardFilter = (props: RewardFilterProps) => {
 
-    const { searchFilter, setSearchFilter, crewSource, collectionSource, narrow, grouped, setGrouped, selection, setSelection } = props;
+    const { hardFilter, setHardFilter, searchFilter, setSearchFilter, crewSource, collectionSource, narrow, grouped, setGrouped, selection, setSelection } = props;
 
     return <React.Fragment>
                 <div style={{
@@ -62,7 +64,10 @@ export const RewardFilter = (props: RewardFilterProps) => {
                         value={selection} 
                         onChange={(value) => setSelection(value as string[] | undefined )}
                         />
-                    <Checkbox style={{margin: "0.5em 1em"}} label={"Group rewards"} checked={grouped} onChange={(e, { checked }) => setGrouped(checked ?? false)} />
+                    <div style={{display:'grid', gridTemplateAreas: "'hard' 'grouped'"}}>
+                        <Checkbox style={{gridArea: 'hard', margin: "0.5em 1em"}} label={"Hard filter"} checked={hardFilter} onChange={(e, { checked }) => setHardFilter(checked ?? false)} />
+                        <Checkbox style={{gridArea: 'grouped', margin: "0.5em 1em"}} label={"Group rewards"} checked={grouped} onChange={(e, { checked }) => setGrouped(checked ?? false)} />
+                    </div>
             </div>
     </React.Fragment>
 }

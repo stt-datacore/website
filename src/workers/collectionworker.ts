@@ -66,7 +66,7 @@ function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: P
     let limit = Number.POSITIVE_INFINITY;
 
     if (less.length >= 8) {
-        limit = Math.min(Math.pow(less.length, 3), 1000);
+        limit = 1000;
     }
 
     let results = eOut.concat(makeAllCombos(less, limit));
@@ -218,6 +218,7 @@ const CollectionOptimizer = {
                         } as CollectionMap;
                     })
                     .filter((fc) => {
+                        if (!fc?.collection) return false;
                         if (fc.crew.length < (fc.collection.needed ?? 0) && !searchFilter?.length) return false;
                         if (!fc.collection.milestone.goal) return false;
                         return true;
@@ -767,7 +768,6 @@ const CollectionOptimizer = {
                     })
                 }
             }
-    
     
             let fc = colOptimized.filter((col) => {		
                 if (searches?.length) {
