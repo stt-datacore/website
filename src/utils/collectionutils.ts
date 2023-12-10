@@ -58,11 +58,28 @@ export function compareRewards(mapFilter: MapFilterOptions, colGroup1: PlayerCol
     return r;
 }
 
+export function rewardsFilterPassFail(mapFilter: MapFilterOptions, colGroup: PlayerCollection[], short?: boolean): boolean {
+    if (!mapFilter?.rewardFilter?.length) return true;
 
+    let ayes = 0;
 
+    if (short) {
+        for (let col1 of colGroup) {
+            if (!col1) continue;
+            ayes += checkRewardFilter(col1, mapFilter.rewardFilter) ? 1 : 0;
+        }
+    }
+    else {
+        let afilter = getCollectionRewards(colGroup)?.filter(r => mapFilter.rewardFilter?.includes(r.symbol ?? ''));
+        ayes = afilter?.length ?? 0;
+
+    }
+
+    let r = ayes;    
+    return !!r;
+}
 
 export const citeSymbols = ['', '', 'honorable_citation_quality2', 'honorable_citation_quality3', 'honorable_citation_quality4', 'honorable_citation_quality5'];
-
 
 export interface CiteInventory { 
     quantity: number, 

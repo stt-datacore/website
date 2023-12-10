@@ -518,6 +518,10 @@ export interface Player {
     /** Collection rewards for immortalizing this crew. Used internally. Not part of source data.  */
     immortalRewards?: ImmortalReward[];
 
+    /** Collection improvement score. Used internally. Not part of source data.  */
+    collectionScore?: number;
+    collectionScoreN?: number;
+
     /** Crew is an inserted prospect on the crew table. Used internally. Not part of source data.  */
     prospect?: boolean;
 

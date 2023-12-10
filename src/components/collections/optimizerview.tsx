@@ -32,7 +32,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
     const colContext = React.useContext(CollectionFilterContext);
     const context = React.useContext(GlobalContext);
     const { workerRunning, playerCollections } = props;
-    const { byCost, setByCost, matchMode, setMatchMode, costMode, setCostMode, setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
+    const { hardFilter, setHardFilter, byCost, setByCost, matchMode, setMatchMode, costMode, setCostMode, setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     
@@ -130,6 +130,8 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 		}}>
 							
 				<RewardFilter 
+					hardFilter={hardFilter}		
+					setHardFilter={setHardFilter}
 					narrow={narrow}
 					grouped={short}
 					setGrouped={setShort}

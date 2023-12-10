@@ -19,6 +19,7 @@ const DefaultData = {
     matchMode: 'normal',    
     byCost: false,
     tierFilter: 1,
+    hardFilter: false,
     setMapFilter: (value) => null,
     setSearchFilter: (value) => null,
     setRarityFilter: (value) => null,
@@ -30,7 +31,8 @@ const DefaultData = {
     setCostMode: (value) => false,
     setMatchMode: (value) => false,
     setByCost: (value) => false,
-    setTierFilter: (value) => 1
+    setTierFilter: (value) => 1,
+    setHardFilter: (value) => null,
 } as CollectionFilterContextProps;
 
 export const CollectionFilterContext = React.createContext<CollectionFilterContextProps>(DefaultData);
@@ -59,6 +61,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
     const [searchFilter, setSearchFilter] = useStateWithStorage(pageId + 'collectionstool/searchFilter', '');
     const [mapFilter, setMapFilter] = useStateWithStorage(pageId + 'collectionstool/mapFilter', defaultMap);
 	const [short, internalSetShort] = useStateWithStorage('collectionstool/colGroupShort', false, { rememberForever: true });
+    const [hardFilter, internalSetHardFilter] = useStateWithStorage('collectionstool/colHardFilter', false, { rememberForever: true });
 	const [costMode, setCostMode] = useStateWithStorage<'normal' | 'sale'>("collectionstool/costMode", 'normal', { rememberForever: true });
 	const [matchMode, setMatchMode] = useStateWithStorage<CollectionMatchMode>("colOptimizer/matchMode", 'normal', { rememberForever: true });
     const [byCost, internalSetByCost] = useStateWithStorage("colOptimizer/sortByCost", false, { rememberForever: true });
@@ -67,7 +70,13 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
 		internalSetByCost(value);
 		setMapFilter({ ... mapFilter });
 	}
-	
+
+    const setHardFilter = (value: boolean) => {
+		internalSetHardFilter(value);
+		setMapFilter({ ... mapFilter });
+	}
+
+    
     const data = {
         mapFilter,
         searchFilter,
@@ -79,6 +88,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
         matchMode,
         byCost,
         tierFilter,
+        hardFilter,
 
         setMapFilter,
         setSearchFilter,
@@ -87,6 +97,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
         setOwnedFilter,
         setByCost,
         setTierFilter,
+        setHardFilter,
 
         checkCommonFilter,
         checkRewardFilter,
