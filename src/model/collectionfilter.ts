@@ -50,10 +50,14 @@ export interface CollectionFilterProps {
     ownedFilter: string;
     costMode: 'normal' | 'sale';
     matchMode: CollectionMatchMode;
+    hardFilter: boolean;
 };
 
 
 export interface CollectionFilterContextProps extends CollectionFilterProps {
+    hardFilter: boolean;	
+    setHardFilter: (value: boolean) => void;
+
     short: boolean;	
     setShort: (value: boolean) => void;
 
