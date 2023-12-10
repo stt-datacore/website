@@ -23,6 +23,8 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
 
+	oldPlayer: PlayerData | undefined = undefined;
+
 	constructor(props: UnneededItemsProps | Readonly<UnneededItemsProps>) {
 		super(props);
 
@@ -33,8 +35,19 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		};
 	}
 
+	componentDidUpdate(prevProps: Readonly<UnneededItemsProps>, prevState: Readonly<UnneededItemsState>, snapshot?: any): void {
+		if (this.oldPlayer !== this.context.player.playerData) {
+			this.initData();
+		}
+	}
+
 	async componentDidMount() {
+		this.initData();
+	}
+
+	private async initData() {
 		const { playerData } = this.context.player;
+		this.oldPlayer = playerData;
 
 		const [itemsResponse, shipsResponse] = await Promise.all([
 			fetch('/structured/items.json'),
