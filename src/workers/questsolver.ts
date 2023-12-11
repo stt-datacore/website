@@ -557,7 +557,7 @@ const QuestSolver = {
                         quip.demands = calcItemDemands(quip, config.context.core.items, playerItems);
                     }
 
-                    if (quip && canBuildItem(quip)) {
+                    if (quip && canBuildItem(quip, true)) {
                         deductItem(quip, deductHistory);
                         failbuff.push(quip);
                         buildcount++;
