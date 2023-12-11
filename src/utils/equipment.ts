@@ -279,10 +279,10 @@ export function calcItemDemands(item: EquipmentItem, coreItems: EquipmentItem[],
 	return demands;
 }
 
-export function canBuildItem(item: EquipmentItem) {
+export function canBuildItem(item: EquipmentItem, ignoreNonQuipment?: boolean) {
 	if (!item.demands) return false;
 	else if (!item.demands.length) return !!item.quantity;
-	return item.demands.every(d => d.have && d.have >= d.count);
+	return item.demands.every(d => (d.have && d.have >= d.count) || (d.equipment !== undefined && d.equipment.type !== 15 && ignoreNonQuipment));
 }
 
 /** Returns true if demands were deducted, or false if the item, itself, was deducted */
