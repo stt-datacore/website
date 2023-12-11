@@ -432,7 +432,7 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 			if (col.milestone.goal === 'n/a') return;
 			if (!col.needed) return;
 
-			ascores.push(1 / (col.milestone.goal - col.needed))
+			ascores.push(1 / col.needed);
 		})
 		
 		let cscore = ascores.reduce((p, n) => p + n, 0);
