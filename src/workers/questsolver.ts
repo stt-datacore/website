@@ -590,14 +590,14 @@ const QuestSolver = {
 
                 let cbs = combos;
                 combos = cbs
-                    .filter(f => f.length === 3)
-                    .filter((num) => {
-                        let cr = pathCrew[path_key].find(c => c.id === num[0]);
-                        if (cr) {
-                            return cr.challenges?.some(ch => ch.challenge.id === path[0].id)
-                        }
-                        return false;
-                    });
+                    .filter(f => f.length === 3);
+                    // .filter((num) => {
+                    //     let cr = pathCrew[path_key].find(c => c.id === num[0]);
+                    //     if (cr) {
+                    //         return cr.challenges?.some(ch => ch.challenge.id === path[0].id)
+                    //     }
+                    //     return false;
+                    // });
                 
                 combos = combos.concat(cbs
                     .filter(f => f.length === 3)
