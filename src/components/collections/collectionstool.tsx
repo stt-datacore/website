@@ -436,27 +436,32 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 		})
 		
 		let cscore = ascores.reduce((p, n) => p + n, 0);
-
 		crew.collectionScore = Math.round(cscore * 10000);
-		if (max_rare !== crare) {
-			crew.collectionScoreN = Math.round(cscore / ((costs[max_rare] * (max_rare - crare))) * 1000000000);
-		}
-		else {
-			crew.collectionScoreN = costs[max_rare];
-		}
-		
 
 		if (crew.collectionScore > tscore) {
 			tscore = crew.collectionScore;
 		}
-		if (crew.collectionScoreN > tscoren) {
-			tscoren = crew.collectionScoreN;
+
+		if (max_rare !== crare) {
+			crew.collectionScoreN = Math.round(cscore / ((costs[max_rare] * (max_rare - crare))) * 1000000000);
+			if (crew.collectionScoreN > tscoren) {
+				tscoren = crew.collectionScoreN;
+			}
+		}
+		else {
+			crew.collectionScoreN = -1;
 		}
 		
 	});
 
 	const topscore = tscore;
 	const topscoren = tscoren;
+
+	collectionCrew.forEach((crew) => {
+		if (crew.collectionScoreN === -1 && crew.collectionScore) {
+			crew.collectionScoreN = Math.round(crew.collectionScore * (topscoren/topscore));
+		}
+	})
 
 	const tierOpts = [] as DropdownItemProps[];
 
