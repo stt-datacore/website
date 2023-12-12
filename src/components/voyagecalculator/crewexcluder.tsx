@@ -90,10 +90,13 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 								value={selectedEvent}
 								onChange={(e, { value }) => setSelectedEvent(value as string)}
 							/>
-							<Button color='blue' onClick={(e) => excludeQuipped()}>Exclude Quipped Crew</Button>	
+							
 						</Form.Group>
 						
 					)}
+					<div style={{marginTop:"0.5em"}}>
+					<Button color='blue' onClick={(e) => excludeQuipped()}>Exclude Quipped Crew</Button>	
+					</div>
 				</Message.Content>
 			</Message>
 			<Segment attached='bottom'>
