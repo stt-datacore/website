@@ -276,8 +276,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                     for (let i = 0; i < result.quests.length; i++) {
                         let quests = result.quests;
                         let fremote = remoteQuests.find(f => f.id === quests[i].id)
-                        if (!fremote) {
-                            result.quests[i].challenges = rq[result.quests[i].id].challenges;
+                        if (!fremote || !fremote.quest.challenges?.length) {
+                            result.quests[i].challenges = rq[quests[i].id].challenges;
                             challenges[i].forEach(ch => {
                                 ch.trait_bonuses = [];
                                 ch.difficulty_by_mastery = [];
@@ -327,7 +327,9 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         let fi = rq.findIndex(f => f.id === quest.id);
         
         if (fi !== -1) {
+            rq[fi].quest.challenges = quest.challenges;
             rq[fi].quest = quest;
+            rq[fi].id = quest.id;
         }
         else {
             rq.push({
@@ -336,7 +338,10 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             });
         }
 
-        setRemoteQuests(rq);
+        setRemoteQuests([ ...rq ]);
+        if (questId && !rq.some(r => r.id === questId)) {
+            setQuestId(quest?.id);
+        }
     }
 
     React.useEffect(() => {

@@ -404,7 +404,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						<Table.Cell>
 
 						<Grid doubling columns={3} textAlign='center'>
-								{voyage.crew.map((crew) => (
+								{voyage.crew.filter(c => !!c).map((crew) => (
 									<div style={{margin: "1.5em", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
 									<ItemDisplay
 										size={64}
@@ -630,7 +630,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						const skp = engine === 'beta_tachyon_pulse' && !!crew ? printSkillOrder(crew).replace(/_skill/g, '') : 'no_order';
 						const sko = engine === 'beta_tachyon_pulse' && !!crew ? getSkillOrder(crew) : 'no_order';
 
-						return (crew && sko && skp &&
+						return (!!crew && !!sko && !!skp &&
 							<Table.Row key={crew.symbol + idx + tabName} positive={this.getChecked(crew.symbol)}>
 
 								<Table.Cell>{row.pickerId}</Table.Cell>
@@ -723,7 +723,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 													/>))}
 												</div>
 
-												<div>
+
+												{!!skoMap[skp] && <div>
 													<Popup trigger={
 														<div style={{textAlign:'center'}}>
 															<hr style={{width: "100px", height:"2px", borderRadius:"2px"}} color={CONFIG.RARITIES[skoMap[skp].rarity].color} />
@@ -754,7 +755,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 															</div>
 														} />
 													
-												</div>
+												</div>}
 											</div>
 										</div>
 										</Table.Cell>
