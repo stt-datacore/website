@@ -509,8 +509,8 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 		{ width: 2, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'date_added'] },
 		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['highest_owned_rarity'] },
 		{ width: 2, column: 'unmaxedIds.length', title: 'Collections', reverse: true },
-		{ width: 1, column: 'collectionScore', title: 'Grade' },
-		{ width: 1, column: 'collectionScoreN', title: 'Star Grade' },
+		{ width: 1, column: 'collectionScore', title: 'Grade', reverse: true },
+		{ width: 1, column: 'collectionScoreN', title: 'Star Grade', reverse: true },
 		{ 
 			width: 3, 
 			column: 'immortalRewards.length', 
