@@ -42,56 +42,21 @@ export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[]) {
     let i = 0;
     let protosolves = [] as IQuestCrew[][];
     let q = 0;
-    let solveKeys = {} as { [key: number]: IQuestCrew[] };
+    const solveKeys = {} as { [key: string]: IQuestCrew[] };
     const skos = {} as { [key: symbol]: string[] };
 
     for (i = 0; i < c; i++) {
+        let cx1 = crew.slice(0, i);
+        let cx2 = crew.slice(i);
+        let mcrew = cx2.concat(cx1);
 
         for (let ch of path) {
-                
-            crew.sort((a, b) => {
-                if (!skos[a.symbol]) {
-                    skos[a.symbol] = getSkillOrder(a);
-                }        
-                if (!skos[b.symbol]) {
-                    skos[b.symbol] = getSkillOrder(b);
-                }        
-
-                let ska = skos[a.symbol].join("/");
-                let skb = skos[b.symbol].join("/");
-
-                let fa = ska.indexOf(ch.skill);
-                let fb = skb.indexOf(ch.skill);
-
-                if (fa === -1 && fb === -1) {
-                    return 0;
-                }
-                else if (fa === -1) {
-                    return 1;
-                }
-                else if (fb === -1) {
-                    return -1;
-                }
-                else if (fa === fb) {
-                    return b.base_skills[ch.skill].core - a.base_skills[ch.skill].core;
-                }
-                else {
-                    return fa - fb;
-                }
-            });
-
-            let cx1 = crew.slice(0, i);
-            let cx2 = crew.slice(i);
-            let mcrew = cx2.concat(cx1);
-    
             for (let j = 0; j < c; j++) {
                 let wc = mcrew[j];
-                if (wc.challenges?.some(wch => wch.challenge.id === ch.id)) {
-                    
+                if (wc.challenges?.some(wch => wch.challenge.id === ch.id)) {                    
                     if (protosolves.length === q) {
                         protosolves.push([]);
                     }                
-
                     if (!protosolves[q].some(pc => pc.challenges?.some(pch => pch.challenge.id === ch.id))) {
                         if (!protosolves[q].includes(wc)) {
                             protosolves[q].push(wc);
@@ -104,11 +69,75 @@ export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[]) {
     }
 
     let lastch = path[path.length - 1].id;
-    protosolves = protosolves.filter(s => s.length === 3 && s.some(ch => ch.challenges?.some(sch => sch.challenge.id === lastch)));
+    protosolves = protosolves.filter(s => s.some(ch => ch.challenges?.some(sch => sch.challenge.id === lastch)));
+    const fsolves = [] as IQuestCrew[][];
 
-    protosolves.forEach((p) => {
-        let k = p.sort((a, b) => a.id - b.id).map(qc => qc.id).join("_");
+    protosolves.forEach((s) => {
+        if (s.length < 3) {
+            let vcrew = crew.filter(f => !s.some(sc => sc.id === f.id));
+            i = 0;
+            while (s.length < 3 && i < vcrew.length) {
+                s.push(vcrew[i++]);
+            }
+            fsolves.push(s);
+            return;
+        }
+        else if (s.length > 3) {
+            let hasend = s.filter(se => se.challenges?.some(che => che.challenge.id === lastch));
+            let noend = s.filter(se => !se.challenges?.some(che => che.challenge.id === lastch));
+            let newcrew = [] as IQuestCrew[];
+            
+            i = 0;
+            newcrew.push(hasend[i]);
+            while (newcrew.length < 3 && i < noend.length) {
+                if (!newcrew.includes(noend[i])) {
+                    newcrew.push(noend[i]);
+                }
+                i++;
+            }            
+            if (newcrew.length < 3 && hasend.length > 1) {
+                i = 1;
+                while (newcrew.length < 3 && i < hasend.length) {
+                    if (!newcrew.includes(hasend[i])) {
+                        newcrew.push(hasend[i]);
+                    }
+                    i++;
+                }   
+            }
+            if (newcrew.length === 3) {
+                fsolves.push(newcrew);
+            }
+            newcrew = [];
+            i = hasend.length - 1;
+            newcrew.push(hasend[i]);
+            i = noend.length - 1;
+            while (newcrew.length < 3 && i >= 0) {
+                if (!newcrew.includes(noend[i])) {
+                    newcrew.push(noend[i]);
+                }
+                i--;
+            }            
+            if (newcrew.length < 3 && hasend.length > 1) {
+                i = 0;
+                while (newcrew.length < 3 && i < hasend.length) {
+                    if (!newcrew.includes(hasend[i])) {
+                        newcrew.push(hasend[i]);
+                    }
+                    i++;
+                }   
+            }
+            if (newcrew.length === 3) {
+                fsolves.push(newcrew);
+            }
+        }
+        else {
+            fsolves.push(s);
+        }
         
+    });
+
+    fsolves.forEach((p) => {
+        let k = p.sort((a, b) => a.id - b.id).map(qc => qc.id).join("_");        
         if (!(k in solveKeys)) solveKeys[k] = p;
     });
 
@@ -531,7 +560,8 @@ const QuestSolver = {
                         let sko = getSkillOrder(fc);
                         if (!sko?.length) return false;
                         if (sko[0] === ch.skill) return true;
-                        //if (sko.length > 1 && sko[1] === ch.skill) return true;
+                        if (sko.length > 1 && sko[1] === ch.skill) return true;
+                        return false;
                     });
                     
                     //let myroster = tempRoster;
