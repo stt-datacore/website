@@ -3,7 +3,7 @@ name: Lucille Davenport
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 27
 in_portal:
 date: 23/10/2018

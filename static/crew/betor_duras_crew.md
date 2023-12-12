@@ -3,9 +3,9 @@ name: B'Etor Duras
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 21
-in_portal: true
+in_portal:
 date: 01/01/2016
 obtained: Launch
 mega: false

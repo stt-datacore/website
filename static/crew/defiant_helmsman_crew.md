@@ -1,11 +1,11 @@
 ---
 name: Helmsman Wyatt
 rarity: 5
-series: tng
+series:
 memory_alpha:
 bigbook_tier: 9
 events: 12
-in_portal: true
+in_portal:
 date: 24/09/2019
 obtained: Pack
 mega: false

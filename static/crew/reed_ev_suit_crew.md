@@ -3,9 +3,9 @@ name: EV Suit Reed
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 events: 17
-in_portal: true
+in_portal:
 date: 26/04/2022
 obtained: Pack
 mega: false

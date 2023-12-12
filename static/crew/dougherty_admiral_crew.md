@@ -5,7 +5,7 @@ series: tng
 memory_alpha:
 bigbook_tier: 9
 events: 14
-in_portal: true
+in_portal:
 date: 11/12/2018
 obtained: Pack
 mega: false

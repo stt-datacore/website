@@ -3,7 +3,7 @@ name: Chief Engineer Scott
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 events: 18
 in_portal:
 date: 01/03/2023

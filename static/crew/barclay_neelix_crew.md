@@ -3,9 +3,9 @@ name: Barclay and Neelix
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 26
-in_portal: true
+in_portal:
 date: 30/09/2022
 obtained: Campaign
 mega: false

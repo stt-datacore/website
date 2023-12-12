@@ -5,7 +5,7 @@ series: original
 memory_alpha:
 bigbook_tier: 6
 events: 32
-in_portal: true
+in_portal:
 date: 13/11/2018
 obtained: Giveaway
 mega: false
