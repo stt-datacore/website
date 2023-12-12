@@ -38,39 +38,81 @@ export function getSkillOrder<T extends CrewMember>(crew: T) {
 
 export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[]) {
 
-    let collects = [] as IQuestCrew[][];
-    let unseen = [] as IQuestCrew[][];
-    let seen = [] as IQuestCrew[][];
+    let c = crew.length;
+    let i = 0;
+    let protosolves = [] as IQuestCrew[][];
+    let q = 0;
+    let solveKeys = {} as { [key: number]: IQuestCrew[] };
+    const skos = {} as { [key: symbol]: string[] };
 
-    for (let p of path) {
-        let filtered = crew.filter(f => f.challenges?.some(ch => ch.challenge.id === p.id));
+    for (i = 0; i < c; i++) {
 
-        let funseen = filtered.filter(f => !collects.some(c => c.some(d => d.id === f.id)));
-        unseen.push(funseen);
+        for (let ch of path) {
+                
+            crew.sort((a, b) => {
+                if (!skos[a.symbol]) {
+                    skos[a.symbol] = getSkillOrder(a);
+                }        
+                if (!skos[b.symbol]) {
+                    skos[b.symbol] = getSkillOrder(b);
+                }        
 
-        let fseen = filtered.filter(f => collects.some(c => c.some(d => d.id === f.id)));
-        seen.push(fseen);
+                let ska = skos[a.symbol].join("/");
+                let skb = skos[b.symbol].join("/");
 
-        collects.push(filtered);
-    }
+                let fa = ska.indexOf(ch.skill);
+                let fb = skb.indexOf(ch.skill);
 
-    // the last node must be hit so let's get crew for that.
-    // let lasts = seen[path.length - 1];
-    // if (!lasts.length) lasts = unseen[path.length - 1];
-    // if (!lasts.length) lasts = collects[path.length - 1];
+                if (fa === -1 && fb === -1) {
+                    return 0;
+                }
+                else if (fa === -1) {
+                    return 1;
+                }
+                else if (fb === -1) {
+                    return -1;
+                }
+                else if (fa === fb) {
+                    return b.base_skills[ch.skill].core - a.base_skills[ch.skill].core;
+                }
+                else {
+                    return fa - fb;
+                }
+            });
+
+            let cx1 = crew.slice(0, i);
+            let cx2 = crew.slice(i);
+            let mcrew = cx2.concat(cx1);
     
-    let lasts = collects[path.length - 1];
+            for (let j = 0; j < c; j++) {
+                let wc = mcrew[j];
+                if (wc.challenges?.some(wch => wch.challenge.id === ch.id)) {
+                    
+                    if (protosolves.length === q) {
+                        protosolves.push([]);
+                    }                
 
-    for (let i = 0; i < path.length - 1; i++) {
-        collects[i] = collects[i].filter(f => !lasts.some(l => l.id === f.id));
+                    if (!protosolves[q].some(pc => pc.challenges?.some(pch => pch.challenge.id === ch.id))) {
+                        if (!protosolves[q].includes(wc)) {
+                            protosolves[q].push(wc);
+                        }
+                    }
+                }
+            }            
+        }
+        q++;
     }
-    let stinct = [ ... new Set(collects.map(col => col.map(c => c.id)).flat()) ].map(cid => crew.find(cf => cf.id === cid));
-    stinct = stinct.filter(st => !st?.challenges?.every(ch => lasts.some(lch => lch.challenges?.some (lchc => lchc.challenge.id === ch.challenge.id))));
-    console.log("break here to study data");
 
-    let ids = [ ... new Set(stinct.concat(lasts).map(l => l?.id ?? 0).filter(l => l)) ];
-    let combos = makeAllCombos(ids, Number.POSITIVE_INFINITY, undefined, undefined, 3).filter(c => c.length === 3);
-    return combos;
+    let lastch = path[path.length - 1].id;
+    protosolves = protosolves.filter(s => s.length === 3 && s.some(ch => ch.challenges?.some(sch => sch.challenge.id === lastch)));
+
+    protosolves.forEach((p) => {
+        let k = p.sort((a, b) => a.id - b.id).map(qc => qc.id).join("_");
+        
+        if (!(k in solveKeys)) solveKeys[k] = p;
+    });
+
+    return Object.values(solveKeys).map(c => c.map(d => d.id));
 }
 
 export function getTraits<T extends CrewMember>(crew: T, traits: MissionTraitBonus[]) {
