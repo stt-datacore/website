@@ -99,9 +99,11 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                         justifyContent: "center",
                         alignItems: "center"
                     }}>
-                        <h3>{challenge.name}</h3>
+                        <h3 style={{margin: "0.5em", marginBottom: 0}}>{challenge.name}</h3>
                         <div style={{
                             fontSize: "0.8em",
+                            margin: "0.5em",
+                            marginTop: "0",
                             fontStyle: "italic"
                         }}>
                             {challenge.difficulty_by_mastery[mastery]} (Crit: <span style={{color: CONFIG.RARITIES[5].color}}>{challenge.difficulty_by_mastery[mastery] + [250, 275, 300][mastery]})</span>
