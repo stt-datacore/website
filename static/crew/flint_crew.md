@@ -3,9 +3,9 @@ name: Flint
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 24
-in_portal: true
+in_portal:
 date: 14/12/2021
 obtained: Pack
 mega: false

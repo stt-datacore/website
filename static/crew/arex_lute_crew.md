@@ -5,7 +5,7 @@ series: tas
 memory_alpha:
 bigbook_tier: 9
 events: 21
-in_portal: true
+in_portal:
 date: 25/09/2017
 obtained: Event
 mega: false

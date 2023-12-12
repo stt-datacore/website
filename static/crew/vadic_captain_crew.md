@@ -3,7 +3,7 @@ name: Captain Vadic
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 events: 23
 in_portal:
 date: 06/07/2023

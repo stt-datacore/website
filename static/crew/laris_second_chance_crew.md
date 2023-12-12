@@ -3,9 +3,9 @@ name: Second Chance Laris
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 22
-in_portal: true
+in_portal:
 date: 22/03/2022
 obtained: Campaign
 mega: false

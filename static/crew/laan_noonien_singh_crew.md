@@ -1,5 +1,5 @@
 ---
-name: La'an Noonien Singh
+name: La’an Noonien Singh
 rarity: 4
 series: snw
 memory_alpha:

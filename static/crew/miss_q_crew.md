@@ -3,9 +3,9 @@ name: Miss Q
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 23
-in_portal: true
+in_portal:
 date: 29/08/2019
 obtained: Event
 mega: false
