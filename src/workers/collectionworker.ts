@@ -705,6 +705,9 @@ const CollectionOptimizer = {
                 colOptimized.forEach(col => {
                     let map = newCostMap.filter(f => f.collection === col.collection.name);
                     map = map.filter(mf => (!byCost || (byCost && !!mf.cost)) && mf.crew.length <= (col.collection.needed ?? 0));
+                    map.sort((a, b) => {
+                        return b.combo.count - a.combo.count
+                    })
                     col.combos = map.map(m => m.combo);
                     col.comboCost = map.map(m => m.cost);
                 });	
@@ -740,41 +743,28 @@ const CollectionOptimizer = {
                     });	
                 }
                 else if (!filterProps.mapFilter.rewardFilter?.length) {
+                    const honor = playerData.player.honor;
                     colOptimized.sort((a, b) => {
-                        let anum = 0;
-                        let bnum = 0;
                         let r = 0;
 
+                        let aneeded = a.collection.neededCost ?? 0;
+                        let bneeded = b.collection.neededCost ?? 0;
+
+                        let amuch = aneeded > honor;
+                        let bmuch = bneeded > honor;
+
+                        if (amuch !== bmuch) {
+                            if (amuch) return 1;
+                            else if (bmuch) return -1;
+                        }
+
                         if (a.combos?.length && b.combos?.length) {
+                            let maxa = a.combos.map(c => c.count).reduce((p, n) => p > n ? p : n, 0);
+                            let maxb = b.combos.map(c => c.count).reduce((p, n) => p > n ? p : n, 0);
 
-                            let aneeded = a.combos[0].names.map(name => playerCollections.find(fc => fc.name === name)?.needed ?? 0).reduce((prev, next) => prev + next, 0);
-                            let bneeded = b.combos[0].names.map(name => playerCollections.find(fc => fc.name === name)?.needed ?? 0).reduce((prev, next) => prev + next, 0);
+                            r = (aneeded / maxa) - (bneeded / maxb);                       
+                            if (!r) r = aneeded - bneeded;
 
-                            if (!r && a.comboCost && b.comboCost) {
-
-                                // if (playerData.player.honor) {
-                                //     let p = playerData.player.honor;
-                                //     let afforda = a.comboCost[0] <= p;
-                                //     let affordb = b.comboCost[0] <= p;
-                                //     if (afforda !== affordb) {
-                                //         if (afforda) return -1;
-                                //         else if (affordb) return 1;
-                                //     }
-                                // }
-
-                                anum = (aneeded / a.combos[0].count);
-                                bnum = (bneeded / b.combos[0].count);
-                                //anum = a.comboCost[0] / (a.comboCost[0] / aneeded) * ((a.collection.needed ?? 0) / aneeded);
-                                //bnum = b.comboCost[0] / (b.comboCost[0] / bneeded) * ((b.collection.needed ?? 0) / bneeded);
-                                r = anum - bnum;
-                            }
-                            
-                            if (!r) {
-                                anum = (a.collection.needed ?? 0) / aneeded;
-                                bnum = (b.collection.needed ?? 0) / bneeded;
-                                
-                                r = anum - bnum;    
-                            }
                         }
 
                         return r;
