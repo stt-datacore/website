@@ -320,15 +320,24 @@ const BetaTachyon = {
                 return lvls.reduce((p, n) => p + n, 0) / 3;
             };
 
-            const evalCrew = playerData.player.character.crew.filter((crew) => !isImmortal(crew) && countSkills(crew) === 3);
+            const evalCrew = playerData?.player?.character?.crew?.filter((crew) => !isImmortal(crew) && countSkills(crew) === 3) ?? [];
+
+            if (!evalCrew?.length) {
+                resolve({
+                    crewToCite: [],
+                    crewToTrain: [],
+                    skillOrderRarities: [],
+                } as CiteData);
+                return;
+            }
 
             const skillbest = {} as { [key: string]: PlayerCrew[] };
             const besttrips = {} as { [key: string]: PlayerCrew[] };
             const skillout = {} as { [key: string]: PlayerCrew[] };
 
-            let immo1 = playerData.player.character.crew.filter(c => isImmortal(c));
+            let immo1 = playerData?.player?.character?.crew?.filter(c => c && isImmortal(c)) ?? [];
             
-            const immoCrew = immo1?.length ? immo1 : playerData.player.character.crew;
+            const immoCrew = immo1?.length ? immo1 : playerData?.player?.character?.crew ?? [];
 
             skillPairs.forEach((sk) => {
                 skillbest[`${sk[0]}/${sk[1]}`] = findBest(immoCrew, sk, magic);
@@ -354,6 +363,7 @@ const BetaTachyon = {
             const doubleRare = [] as SkillOrderRarity[];
 
             allCrew.forEach(ac => {
+                if (!ac) return;
                 let csk = printSkillOrder(ac);
                 let dsk = printSkillOrder(ac, true);
                 if (!uniqueSkillOrders.includes(csk)) {
