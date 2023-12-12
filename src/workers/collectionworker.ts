@@ -751,15 +751,28 @@ const CollectionOptimizer = {
                             let bneeded = b.combos[0].names.map(name => playerCollections.find(fc => fc.name === name)?.needed ?? 0).reduce((prev, next) => prev + next, 0);
 
                             if (!r && a.comboCost && b.comboCost) {
-                                anum = a.comboCost[0] * (a.comboCost[0] / aneeded) * ((a.collection.needed ?? 0) / aneeded);
-                                bnum = b.comboCost[0] * (b.comboCost[0] / bneeded) * ((b.collection.needed ?? 0) / bneeded);
+
+                                // if (playerData.player.honor) {
+                                //     let p = playerData.player.honor;
+                                //     let afforda = a.comboCost[0] <= p;
+                                //     let affordb = b.comboCost[0] <= p;
+                                //     if (afforda !== affordb) {
+                                //         if (afforda) return -1;
+                                //         else if (affordb) return 1;
+                                //     }
+                                // }
+
+                                anum = (aneeded / a.combos[0].count);
+                                bnum = (bneeded / b.combos[0].count);
+                                //anum = a.comboCost[0] / (a.comboCost[0] / aneeded) * ((a.collection.needed ?? 0) / aneeded);
+                                //bnum = b.comboCost[0] / (b.comboCost[0] / bneeded) * ((b.collection.needed ?? 0) / bneeded);
                                 r = anum - bnum;
                             }
                             
                             if (!r) {
                                 anum = (a.collection.needed ?? 0) / aneeded;
                                 bnum = (b.collection.needed ?? 0) / bneeded;
-    
+                                
                                 r = anum - bnum;    
                             }
                         }
