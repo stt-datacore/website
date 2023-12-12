@@ -1,11 +1,11 @@
 ---
 name: Rescue Team Uhura
 rarity: 5
-series: tos
+series: tas
 memory_alpha:
 bigbook_tier: 6
 events: 19
-in_portal:
+in_portal: true
 date: 12/12/2019
 obtained: Event
 mega: false

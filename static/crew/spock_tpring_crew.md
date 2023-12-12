@@ -5,7 +5,7 @@ series: snw
 memory_alpha:
 bigbook_tier: 6
 events: 43
-in_portal:
+in_portal: true
 date: 31/10/2022
 obtained: Campaign
 mega: false
