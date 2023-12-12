@@ -340,6 +340,13 @@ const QuestSolver = {
                             return { item: qp, bonusInfo: getItemBonuses(qp) }
                         })
                         .filter((qp) => challenge.skill in qp.bonusInfo.bonuses)
+                        .filter((qp) => {
+                            if (!config.buildableOnly) return true;
+                            if (!qp.item.demands) {
+                                qp.item.demands = calcItemDemands(qp.item, config.context.core.items);
+                            } 
+                            return canBuildItem(qp.item);
+                        })
                         .sort((a, b) => {
                             let r = 0;
 
