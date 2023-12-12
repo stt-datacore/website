@@ -544,16 +544,13 @@ const QuestSolver = {
             challenges.sort((a, b) => a.id - b.id);
 
             const processChallenge = (ch: MissionChallenge, roster: PlayerCrew[], crew: IQuestCrew[], path: string, maxIsGood?: boolean, lastSkill?: string) => {                
-                let chcrew = solveChallenge(roster, ch, config.mastery, path, undefined, maxIsGood, lastSkill);
                 
-                if (chcrew?.length) {
-                    // dupes are a thing, so identical symbols are okay, identical object references are not.
+                let chcrew = solveChallenge(roster, ch, config.mastery, path, undefined, maxIsGood, lastSkill);
 
+                if (chcrew?.length) {
                     crew = crew.filter(c => !chcrew.includes(c));
                     crew = crew.concat(chcrew);
-                    crew = [... new Set(crew)];
                 }
-
                 return standardSort(crew, ch, config.mastery, undefined, true);
             }
 
@@ -574,28 +571,18 @@ const QuestSolver = {
                 tempRoster = JSON.parse(JSON.stringify(roster));
 
                 let lastSkill = undefined as string | undefined;
+                let pcrew = [] as IQuestCrew[];
+
                 for (let ch of path) {
-                    let myroster = tempRoster.filter(fc => {
-                        let sko = getSkillOrder(fc);
-                        if (!sko?.length) return false;
-                        if (sko[0] === ch.skill) return true;
-                        if (sko.length > 1 && sko[1] === ch.skill) return true;
-                        return false;
-                    });
-                    
-                    //let myroster = tempRoster;
-                    pathCrew[key] = processChallenge(ch, myroster, pathCrew[key], key, undefined, lastSkill);
-                    
-                    if (!pathCrew[key].some(pc => pc.challenges?.some(chc => chc.challenge.id === ch.id))) {
-                        pathCrew[key] = processChallenge(ch, tempRoster, pathCrew[key], key);
-                        if (!pathCrew[key].some(pc => pc.challenges?.some(chc => chc.challenge.id === ch.id))) {
-                            pathCrew[key] = processChallenge(ch, tempRoster, pathCrew[key], key, true);
-                        }
+                    pcrew = processChallenge(ch, tempRoster, pcrew, key, false, lastSkill);
+                    if (!pcrew.some(pc => pc.challenges?.some(chc => chc.challenge.id === ch.id))) {
+                        pcrew = processChallenge(ch, tempRoster, pcrew, key, true);
                     }
 
                     lastSkill = ch.skill;
                 }
                 
+                pathCrew[key] = pcrew;
                 pathCrew[key].sort((a, b) => (a.added_kwipment?.filter(f => !!f)?.length ?? 0) - (b.added_kwipment?.filter(f => !!f)?.length ?? 0));
             }
 
