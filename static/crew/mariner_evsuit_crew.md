@@ -5,7 +5,7 @@ series: low
 memory_alpha:
 bigbook_tier: 8
 events: 13
-in_portal: true
+in_portal:
 date: 08/08/2022
 obtained: Campaign
 mega: false

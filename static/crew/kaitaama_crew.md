@@ -3,9 +3,9 @@ name: First Monarch Kaitaama
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 events: 20
-in_portal: true
+in_portal:
 date: 09/08/2022
 obtained: Pack
 mega: false

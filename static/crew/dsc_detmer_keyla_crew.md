@@ -3,9 +3,9 @@ name: Keyla Detmer
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 events: 42
-in_portal: true
+in_portal:
 date: 09/05/2019
 obtained: Event
 mega: false

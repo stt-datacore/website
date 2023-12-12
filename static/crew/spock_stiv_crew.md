@@ -3,9 +3,9 @@ name: Recovering Spock
 rarity: 2
 series: tos
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 events: 50
-in_portal: true
+in_portal:
 date: 01/01/2016
 obtained: Launch
 mega: false

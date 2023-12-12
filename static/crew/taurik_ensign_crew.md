@@ -3,9 +3,9 @@ name: Ensign Taurik
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 26
-in_portal: true
+in_portal:
 date: 02/03/2022
 obtained: Event
 mega: false

@@ -1,11 +1,11 @@
 ---
-name: Huntress Z'ymira
+name: Huntress Z’ymira
 rarity: 4
 series: snw
 memory_alpha:
 bigbook_tier: 6
 events: 13
-in_portal: true
+in_portal:
 date: 29/12/2022
 obtained: Pack
 mega: false

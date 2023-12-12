@@ -3,9 +3,9 @@ name: CMO 'Bones' McCoy
 rarity: 1
 series: tos
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 32
-in_portal: true
+in_portal:
 date: 01/01/2016
 obtained: Launch
 mega: false

@@ -5,7 +5,7 @@ series: pic
 memory_alpha:
 bigbook_tier: 8
 events: 19
-in_portal: true
+in_portal:
 date: 27/04/2021
 obtained: Pack
 mega: false
