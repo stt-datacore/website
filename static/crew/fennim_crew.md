@@ -3,9 +3,9 @@ name: Fennim
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 events: 20
-in_portal: true
+in_portal:
 date: 23/10/2018
 obtained: Pack
 mega: false

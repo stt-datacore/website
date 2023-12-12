@@ -5,7 +5,7 @@ series: tos
 memory_alpha:
 bigbook_tier: 4
 events: 6
-in_portal: true
+in_portal:
 date: 01/04/2021
 obtained: Giveaway
 mega: false

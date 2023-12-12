@@ -5,7 +5,7 @@ series: dsc
 memory_alpha:
 bigbook_tier: 7
 events: 33
-in_portal: true
+in_portal:
 date: 22/03/2022
 obtained: Pack
 mega: false

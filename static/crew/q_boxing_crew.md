@@ -5,7 +5,7 @@ series: ds9
 memory_alpha:
 bigbook_tier: 6
 events: 41
-in_portal: true
+in_portal:
 date: 27/09/2018
 obtained: Event
 mega: false

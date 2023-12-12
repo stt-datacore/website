@@ -3,9 +3,9 @@ name: Commander Maddox
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 events: 8
-in_portal: true
+in_portal:
 date: 26/05/2016
 obtained: Post-Launch
 mega: false

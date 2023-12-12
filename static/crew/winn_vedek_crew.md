@@ -3,9 +3,9 @@ name: Vedek Winn Adami
 rarity: 3
 series: ds9
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 events: 11
-in_portal: true
+in_portal:
 date: 01/01/2016
 obtained: Launch
 mega: false

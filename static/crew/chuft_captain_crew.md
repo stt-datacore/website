@@ -5,7 +5,7 @@ series: tas
 memory_alpha:
 bigbook_tier: 8
 events: 10
-in_portal: true
+in_portal:
 date: 11/05/2021
 obtained: Pack
 mega: false
