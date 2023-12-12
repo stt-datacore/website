@@ -1,11 +1,11 @@
 ---
-name: Meditative T’Pol
+name: Meditative T'Pol
 rarity: 4
 series: ent
 memory_alpha:
 bigbook_tier: 5
 events: 42
-in_portal:
+in_portal: true
 date: 31/05/2022
 obtained: Pack
 mega: false

@@ -5,7 +5,7 @@ series: tos
 memory_alpha:
 bigbook_tier: 5
 events: 25
-in_portal:
+in_portal: true
 date: 14/09/2022
 obtained: Event
 mega: false

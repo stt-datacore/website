@@ -1,11 +1,11 @@
 ---
 name: Lonzak
 rarity: 5
-series:
+series: voy
 memory_alpha:
 bigbook_tier: 7
 events: 18
-in_portal:
+in_portal: true
 date: 08/01/2019
 obtained: Pack
 mega: false
