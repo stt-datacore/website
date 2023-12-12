@@ -11,6 +11,19 @@ import { getPossibleQuipment, getItemBonuses, ItemBonusInfo, addItemBonus, check
 import { arrayIntersect, makeAllCombos } from "../utils/misc";
 import { applyCrewBuffs } from "./betatachyon";
 
+function newQuip(crew: IQuestCrew) {
+    let e = 0;
+    if (crew.added_kwipment && crew.added_kwipment_expiration) {
+        for (let i = 0; i < crew.added_kwipment.length; i++) {
+            if (crew.added_kwipment[i] && !crew.added_kwipment_expiration[i]) {
+                e++;
+            }
+        }
+
+    }
+    return e;
+}
+
 export function getSkillOrder<T extends CrewMember>(crew: T) {
     const sk = [] as ComputedBuff[];
 
@@ -170,8 +183,9 @@ export function gradeCrew(crew: IQuestCrew, ch: number) {
         if (f.max_solve) z++;
         if (crew.challenges?.some(f => f.challenge.children.includes(ch))) z++;
         if (cc > 1 && crew.challenges?.every(f => f.challenge.id === ch || f.challenge.children.includes(ch))) z++;        
-    }
-
+    }    
+    let nk = newQuip(crew);
+    z += (nk * 0.5);
     return z;
 }
 
@@ -193,19 +207,6 @@ const QuestSolver = {
 
         const playerItems = JSON.parse(JSON.stringify(config.context.player.playerData.player.character.items)) as PlayerEquipmentItem[];
         const allQuipment = JSON.parse(JSON.stringify(config.context.core.items.filter(f => f.type === 14))) as EquipmentItem[];
-
-        function newQuip(crew: IQuestCrew) {
-            let e = 0;
-            if (crew.added_kwipment && crew.added_kwipment_expiration) {
-                for (let i = 0; i < crew.added_kwipment.length; i++) {
-                    if (crew.added_kwipment[i] && !crew.added_kwipment_expiration[i]) {
-                        e++;
-                    }
-                }
-
-            }
-            return e;
-        }
 
         function deductItem(item: EquipmentItem, history: { [key: string]: boolean[]} ) {
             history[item.symbol] ??= [];
