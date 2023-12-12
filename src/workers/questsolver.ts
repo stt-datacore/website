@@ -46,6 +46,10 @@ export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[], node
     const solveKeys = {} as { [key: string]: IQuestCrew[] };
     const skos = {} as { [key: symbol]: string[] };
 
+    crew = crew.sort((a, b) => {
+        return (b.challenges?.length ?? 0) - (a.challenges?.length ?? 0);        
+    });
+
     for (i = 0; i < c; i++) {
         let cx1 = crew.slice(0, i);
         let cx2 = crew.slice(i);
@@ -246,11 +250,7 @@ const QuestSolver = {
                     if (na) return na;
 
                     na = bb - ba;
-                    if (na) return na;
-                    
-                    // if (a.challenges?.length && b.challenges?.length) {
-                    //     return b.challenges.length - a.challenges.length;
-                    // }
+                    if (na) return na;                
                 }
                 
                 if (challenge) {
@@ -273,7 +273,7 @@ const QuestSolver = {
             });
         }
 
-        function solveChallenge(roster: PlayerCrew[], challenge: MissionChallenge, mastery: number, path: string, traits?: MissionTraitBonus[], maxIsGood?: boolean, lastSkill?: string) {
+        function solveChallenge(roster: PlayerCrew[], challenge: MissionChallenge, mastery: number, path: string, traits?: MissionTraitBonus[], maxIsGood?: boolean, lastChallenge?: MissionChallenge) {
             const useTraits = config.noTraitBonus ? [] : (traits ?? challenge.trait_bonuses ?? []);
             let questcrew = [] as IQuestCrew[];
             let critmult = 1;
@@ -305,9 +305,13 @@ const QuestSolver = {
                 let tpower = ttraits
                     .map((t => t.bonuses[mastery]))
                     .reduce((p, n) => p + n, 0);
-
-                cpmin += tpower;
-                cpmax += tpower;
+                
+                const fatigue = lastChallenge && (lastChallenge.skill === challenge.skill) && crew.challenges?.some(ch => ch.challenge === lastChallenge);
+                
+                if (fatigue) {
+                    cpmin -= (cpmin * 0.2);
+                    cpmax -= (cpmax * 0.2);
+                }
 
                 crew.metasort ??= 0;
 
@@ -326,11 +330,14 @@ const QuestSolver = {
                 const slots = [] as string[];
                 const quips = {} as { [key: string]: ItemBonusInfo };
                 const solvePower = (challenge.difficulty_by_mastery[mastery] + (critmult * [250, 275, 300][mastery]));
-                
-                if (lastSkill === challenge.skill) cpmin -= (cpmin * 0.20);
 
                 while (cpmin < solvePower && (!maxIsGood || cpmax < solvePower)) {
                     if (!nslots || (1 + usedSlots + slots.length > nslots)) {
+                        
+                        cpmax += tpower;
+                        if (cpmin >= solvePower) {
+                            break;
+                        }
                         if (cpmax >= solvePower) {
                             break;
                         }
@@ -356,7 +363,7 @@ const QuestSolver = {
                             if (!qp.item.demands) {
                                 qp.item.demands = calcItemDemands(qp.item, config.context.core.items);
                             } 
-                            return canBuildItem(qp.item);
+                            return canBuildItem(qp.item, true);
                         })
                         .sort((a, b) => {
                             let r = 0;
@@ -388,6 +395,11 @@ const QuestSolver = {
                     if (qps?.length) {
                         let qpower = qps[0].bonusInfo.bonuses[challenge.skill].core + qps[0].bonusInfo.bonuses[challenge.skill].range_min;
                         let mpower = qps[0].bonusInfo.bonuses[challenge.skill].core + qps[0].bonusInfo.bonuses[challenge.skill].range_max;
+
+                        if (fatigue) {
+                            qpower -= (qpower * 0.2);
+                            mpower -= (mpower * 0.2);
+                        }
 
                         cpmin += qpower;
                         cpmax += mpower;
@@ -434,6 +446,7 @@ const QuestSolver = {
                         challenge,
                         skills: {},
                         trait_bonuses: ttraits,
+                        power_decrease: fatigue ? 0.20 : 0,
                         max_solve: cpmin < solvePower,
                         path: path,
                         kwipment: (crew.added_kwipment ?? []) as number[],
@@ -543,9 +556,9 @@ const QuestSolver = {
 
             challenges.sort((a, b) => a.id - b.id);
 
-            const processChallenge = (ch: MissionChallenge, roster: PlayerCrew[], crew: IQuestCrew[], path: string, maxIsGood?: boolean, lastSkill?: string) => {                
+            const processChallenge = (ch: MissionChallenge, roster: PlayerCrew[], crew: IQuestCrew[], path: string, maxIsGood?: boolean, lastChallenge?: MissionChallenge) => {                
                 
-                let chcrew = solveChallenge(roster, ch, config.mastery, path, undefined, maxIsGood, lastSkill);
+                let chcrew = solveChallenge(roster, ch, config.mastery, path, undefined, maxIsGood, lastChallenge);
 
                 if (chcrew?.length) {
                     crew = crew.filter(c => !chcrew.includes(c));
@@ -570,16 +583,16 @@ const QuestSolver = {
 
                 tempRoster = JSON.parse(JSON.stringify(roster));
 
-                let lastSkill = undefined as string | undefined;
+                let lastChallenge = undefined as MissionChallenge | undefined;
                 let pcrew = [] as IQuestCrew[];
 
                 for (let ch of path) {
-                    pcrew = processChallenge(ch, tempRoster, pcrew, key, false, lastSkill);
+                    pcrew = processChallenge(ch, tempRoster, pcrew, key, false, lastChallenge);
                     if (!pcrew.some(pc => pc.challenges?.some(chc => chc.challenge.id === ch.id))) {
                         pcrew = processChallenge(ch, tempRoster, pcrew, key, true);
                     }
 
-                    lastSkill = ch.skill;
+                    lastChallenge = ch;
                 }
                 
                 pathCrew[key] = pcrew;
@@ -663,32 +676,10 @@ const QuestSolver = {
                 let path_key = path.map(p => p.id).join("_");
                 const wpCrew = pathCrew[path_key];
                 let nx = pathCrew[path_key].length;
-                let unique = [ ... new Set(pathCrew[path_key].map(c => c.id)) ];
                 let combos = [] as number[][];
                 
                 combos = findAllCombos(wpCrew, path);
 
-                let cbs = combos;
-                combos = cbs
-                    .filter(f => f.length === 3);
-                    // .filter((num) => {
-                    //     let cr = pathCrew[path_key].find(c => c.id === num[0]);
-                    //     if (cr) {
-                    //         return cr.challenges?.some(ch => ch.challenge.id === path[0].id)
-                    //     }
-                    //     return false;
-                    // });
-                
-                combos = combos.concat(cbs
-                    .filter(f => f.length === 3)
-                    .filter((num) => {
-                        let cr = pathCrew[path_key].find(c => c.id === num[0]);
-                        if (cr) {
-                            return cr.challenges?.some(ch => ch.challenge.id === path[path.length - 1].id)
-                        }
-                        return false;
-                    }));
-                
                 let complete = 'full' as ThreeSolveResult;
                 let numbers = combos.filter ((num) => {
                     return path.every((ch) => {
