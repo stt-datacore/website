@@ -36,9 +36,10 @@ export function getSkillOrder<T extends CrewMember>(crew: T) {
     return output;
 }
 
-export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[]) {
+export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[], nodescend?: boolean) {
 
     let c = crew.length;
+    let d = path.length;
     let i = 0;
     let protosolves = [] as IQuestCrew[][];
     let q = 0;
@@ -49,15 +50,17 @@ export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[]) {
         let cx1 = crew.slice(0, i);
         let cx2 = crew.slice(i);
         let mcrew = cx2.concat(cx1);
-
-        for (let ch of path) {
+        let n = 0;
+        
+        for (n = 0; n < d; n++) {
+            let ch = path[n];
             for (let j = 0; j < c; j++) {
                 let wc = mcrew[j];
                 if (wc.challenges?.some(wch => wch.challenge.id === ch.id)) {                    
                     if (protosolves.length === q) {
                         protosolves.push([]);
                     }                
-                    if (!protosolves[q].some(pc => pc.challenges?.some(pch => pch.challenge.id === ch.id))) {
+                    if (!protosolves[q].some(pc => pc.challenges?.some(pch => pch.challenge.id === ch.id)) || (n > 0 && path[n - 1].skill === ch.skill)) {
                         if (!protosolves[q].includes(wc)) {
                             protosolves[q].push(wc);
                         }
@@ -83,52 +86,58 @@ export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[]) {
             return;
         }
         else if (s.length > 3) {
-            let hasend = s.filter(se => se.challenges?.some(che => che.challenge.id === lastch));
-            let noend = s.filter(se => !se.challenges?.some(che => che.challenge.id === lastch));
-            let newcrew = [] as IQuestCrew[];
-            
-            i = 0;
-            newcrew.push(hasend[i]);
-            while (newcrew.length < 3 && i < noend.length) {
-                if (!newcrew.includes(noend[i])) {
-                    newcrew.push(noend[i]);
-                }
-                i++;
-            }            
-            if (newcrew.length < 3 && hasend.length > 1) {
-                i = 1;
-                while (newcrew.length < 3 && i < hasend.length) {
-                    if (!newcrew.includes(hasend[i])) {
-                        newcrew.push(hasend[i]);
-                    }
-                    i++;
-                }   
-            }
-            if (newcrew.length === 3) {
-                fsolves.push(newcrew);
-            }
-            newcrew = [];
-            i = hasend.length - 1;
-            newcrew.push(hasend[i]);
-            i = noend.length - 1;
-            while (newcrew.length < 3 && i >= 0) {
-                if (!newcrew.includes(noend[i])) {
-                    newcrew.push(noend[i]);
-                }
-                i--;
-            }            
-            if (newcrew.length < 3 && hasend.length > 1) {
+            if (!nodescend) {
+                let results = findAllCombos(s, path, true);
+                results.forEach(r => fsolves.push(r.map(p => crew.find(f => f.id === p) as IQuestCrew)))
+            }   
+            else {
+                let hasend = s.filter(se => se.challenges?.some(che => che.challenge.id === lastch));
+                let noend = s.filter(se => !se.challenges?.some(che => che.challenge.id === lastch));
+                let newcrew = [] as IQuestCrew[];
+                
                 i = 0;
-                while (newcrew.length < 3 && i < hasend.length) {
-                    if (!newcrew.includes(hasend[i])) {
-                        newcrew.push(hasend[i]);
+                newcrew.push(hasend[i]);
+                while (newcrew.length < 3 && i < noend.length) {
+                    if (!newcrew.includes(noend[i])) {
+                        newcrew.push(noend[i]);
                     }
                     i++;
-                }   
-            }
-            if (newcrew.length === 3) {
-                fsolves.push(newcrew);
-            }
+                }            
+                if (newcrew.length < 3 && hasend.length > 1) {
+                    i = 1;
+                    while (newcrew.length < 3 && i < hasend.length) {
+                        if (!newcrew.includes(hasend[i])) {
+                            newcrew.push(hasend[i]);
+                        }
+                        i++;
+                    }   
+                }
+                if (newcrew.length === 3) {
+                    fsolves.push(newcrew);
+                }
+                newcrew = [];
+                i = hasend.length - 1;
+                newcrew.push(hasend[i]);
+                i = noend.length - 1;
+                while (newcrew.length < 3 && i >= 0) {
+                    if (!newcrew.includes(noend[i])) {
+                        newcrew.push(noend[i]);
+                    }
+                    i--;
+                }            
+                if (newcrew.length < 3 && hasend.length > 1) {
+                    i = 0;
+                    while (newcrew.length < 3 && i < hasend.length) {
+                        if (!newcrew.includes(hasend[i])) {
+                            newcrew.push(hasend[i]);
+                        }
+                        i++;
+                    }   
+                }
+                if (newcrew.length === 3) {
+                    fsolves.push(newcrew);
+                }
+            }         
         }
         else {
             fsolves.push(s);
@@ -264,7 +273,7 @@ const QuestSolver = {
             });
         }
 
-        function solveChallenge(roster: PlayerCrew[], challenge: MissionChallenge, mastery: number, path: string, traits?: MissionTraitBonus[], maxIsGood?: boolean) {
+        function solveChallenge(roster: PlayerCrew[], challenge: MissionChallenge, mastery: number, path: string, traits?: MissionTraitBonus[], maxIsGood?: boolean, lastSkill?: string) {
             const useTraits = config.noTraitBonus ? [] : (traits ?? challenge.trait_bonuses ?? []);
             let questcrew = [] as IQuestCrew[];
             let critmult = 1;
@@ -282,7 +291,7 @@ const QuestSolver = {
             questcrew = standardSort(questcrew, challenge, mastery, traits);
 
             let qpass = questcrew.filter((crew) => {
-                if (crew.symbol === 'crusher_riker_brain_drain_crew') {
+                if (crew.symbol === 'tribble_captain_crew') {
                     console.log("break");
                 }
                 const nslots = (!!config.ignoreQpConstraint || crew.immortal > 0) ? 4 : qbitsToSlots(crew.q_bits);
@@ -317,6 +326,8 @@ const QuestSolver = {
                 const slots = [] as string[];
                 const quips = {} as { [key: string]: ItemBonusInfo };
                 const solvePower = (challenge.difficulty_by_mastery[mastery] + (critmult * [250, 275, 300][mastery]));
+                
+                if (lastSkill === challenge.skill) cpmin -= (cpmin * 0.20);
 
                 while (cpmin < solvePower && (!maxIsGood || cpmax < solvePower)) {
                     if (!nslots || (1 + usedSlots + slots.length > nslots)) {
@@ -532,8 +543,8 @@ const QuestSolver = {
 
             challenges.sort((a, b) => a.id - b.id);
 
-            const processChallenge = (ch: MissionChallenge, roster: PlayerCrew[], crew: IQuestCrew[], path: string, maxIsGood?: boolean) => {                
-                let chcrew = solveChallenge(roster, ch, config.mastery, path, undefined, maxIsGood);
+            const processChallenge = (ch: MissionChallenge, roster: PlayerCrew[], crew: IQuestCrew[], path: string, maxIsGood?: boolean, lastSkill?: string) => {                
+                let chcrew = solveChallenge(roster, ch, config.mastery, path, undefined, maxIsGood, lastSkill);
                 
                 if (chcrew?.length) {
                     // dupes are a thing, so identical symbols are okay, identical object references are not.
@@ -562,6 +573,7 @@ const QuestSolver = {
 
                 tempRoster = JSON.parse(JSON.stringify(roster));
 
+                let lastSkill = undefined as string | undefined;
                 for (let ch of path) {
                     let myroster = tempRoster.filter(fc => {
                         let sko = getSkillOrder(fc);
@@ -572,7 +584,7 @@ const QuestSolver = {
                     });
                     
                     //let myroster = tempRoster;
-                    pathCrew[key] = processChallenge(ch, myroster, pathCrew[key], key);
+                    pathCrew[key] = processChallenge(ch, myroster, pathCrew[key], key, undefined, lastSkill);
                     
                     if (!pathCrew[key].some(pc => pc.challenges?.some(chc => chc.challenge.id === ch.id))) {
                         pathCrew[key] = processChallenge(ch, tempRoster, pathCrew[key], key);
@@ -580,8 +592,10 @@ const QuestSolver = {
                             pathCrew[key] = processChallenge(ch, tempRoster, pathCrew[key], key, true);
                         }
                     }
-                }
 
+                    lastSkill = ch.skill;
+                }
+                
                 pathCrew[key].sort((a, b) => (a.added_kwipment?.filter(f => !!f)?.length ?? 0) - (b.added_kwipment?.filter(f => !!f)?.length ?? 0));
             }
 
