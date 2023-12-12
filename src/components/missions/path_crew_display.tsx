@@ -11,6 +11,7 @@ import { appelate } from "../../utils/misc";
 import { CrewItemsView } from "../item_presenters/crew_items";
 import { GradeSwatch, gradeCrew } from "../explanations/powerexplanation";
 import { Icon } from "semantic-ui-react";
+import CONFIG from "../CONFIG";
 
 export interface PathCrewDisplayProps {
     pathGroup: PathGroup,
@@ -98,7 +99,16 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                         justifyContent: "center",
                         alignItems: "center"
                     }}>
-                        <h3>{challenge.name}</h3>
+                        <h3 style={{margin: "0.5em", marginBottom: 0}}>{challenge.name}</h3>
+                        <div style={{
+                            fontSize: "0.8em",
+                            margin: "0.5em",
+                            marginTop: "0",
+                            fontStyle: "italic"
+                        }}>
+                            {challenge.difficulty_by_mastery[mastery]} (Crit: <span style={{color: CONFIG.RARITIES[5].color}}>{challenge.difficulty_by_mastery[mastery] + [250, 275, 300][mastery]})</span>
+
+                        </div>
                         {!pathCrew?.length && (<div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                             <Icon style={{margin:"0.5em"}} name='ban' color='red' size='large' /> 
                             <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} style={{ height: `1.5em`, margin :"0.25em" }} />
