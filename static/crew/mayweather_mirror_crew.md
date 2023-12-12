@@ -5,7 +5,7 @@ series: ent
 memory_alpha:
 bigbook_tier: 5
 events: 30
-in_portal:
+in_portal: true
 date: 21/12/2017
 obtained: Event
 mega: false

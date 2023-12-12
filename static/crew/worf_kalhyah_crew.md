@@ -1,5 +1,5 @@
 ---
-name: Kal’Hyah Worf
+name: Kal'Hyah Worf
 rarity: 5
 series: ds9
 memory_alpha:
