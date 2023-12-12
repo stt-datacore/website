@@ -5,7 +5,7 @@ series: voy
 memory_alpha:
 bigbook_tier: 7
 events: 32
-in_portal:
+in_portal: true
 date: 30/07/2019
 obtained: Pack
 mega: false

@@ -5,7 +5,7 @@ series: low
 memory_alpha:
 bigbook_tier: 4
 events: 27
-in_portal:
+in_portal: true
 date: 25/01/2023
 obtained: Event
 mega: false

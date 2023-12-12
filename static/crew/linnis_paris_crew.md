@@ -5,7 +5,7 @@ series: voy
 memory_alpha:
 bigbook_tier: 10
 events: 18
-in_portal:
+in_portal: true
 date: 04/06/2020
 obtained: Event
 mega: false
