@@ -509,7 +509,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				if (a.in_portal) r--;
 				if (b.in_portal) r++;
 
-				if (!r) r = a.obtained.localeCompare(b.obtained);
+				//if (!r) r = a.obtained.localeCompare(b.obtained);
 			}
 			else if (sort === 'compare') {
 				if (this.getChecked(a.symbol)) r--;

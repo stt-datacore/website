@@ -69,9 +69,10 @@ export function crewMatchesSearchFilter(crew: PlayerCrew | CrewMember, filters: 
 				} else if (condition.keyword === 'skill_order' || condition.keyword === 'order') {
 					let sko = getSkillOrder(crew).map(v => skillToRank(v)).join("/").toLowerCase();
 					conditionResult = sko.startsWith(condition.value.toLowerCase());
-				} else if (condition.keyword === 'obtained') {					
-					conditionResult = crew.obtained.toLowerCase().includes(condition.value.toLowerCase());
-				}
+				} 
+				// else if (condition.keyword === 'obtained') {					
+				// 	conditionResult = crew.obtained.toLowerCase().includes(condition.value.toLowerCase());
+				// }
 				meetsAllConditions = meetsAllConditions && (condition.negated ? !conditionResult : conditionResult);
 			}
 

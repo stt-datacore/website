@@ -4,11 +4,8 @@ rarity: 5
 series: low
 memory_alpha:
 bigbook_tier: 6
-events: 16
 in_portal:
 date: 31/08/2023
-obtained: Giveaway
-mega: false
 published: true
 ---
 

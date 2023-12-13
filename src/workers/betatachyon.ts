@@ -126,7 +126,7 @@ const BetaTachyon = {
             
             
             function isNever(crew: PlayerCrew | CrewMember) {
-                let ob = crew.obtained.toLowerCase();	
+                let ob = crew?.obtained?.toLowerCase() ?? "Unknown";	
                 return (ob.includes("bossbattle") || ob.includes("honor") || ob.includes("gauntlet") || ob.includes("voyage") || ob.includes("collection"));
             }
            

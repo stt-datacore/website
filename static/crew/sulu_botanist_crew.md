@@ -4,11 +4,8 @@ rarity: 4
 series: tos
 memory_alpha:
 bigbook_tier: 4
-events: 20
 in_portal: true
 date: 19/04/2022
-obtained: Pack
-mega: false
 published: true
 ---
 

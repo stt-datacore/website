@@ -109,7 +109,6 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 export function descriptionLabel(crew: IRosterCrew, showOwned?: boolean): JSX.Element {
 
 	const counts = [
-		{ name: 'event', count: crew.events },
 		{ name: 'collection', count: crew.collections.length }
 	];
 	const formattedCounts = counts.map((count, idx) => (

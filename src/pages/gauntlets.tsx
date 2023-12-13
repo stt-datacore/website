@@ -29,6 +29,18 @@ type SortDirection = 'ascending' | 'descending' | undefined;
 
 const isWindow = typeof window !== 'undefined';
 
+export const GauntletCrew = ["archer_first_flight_crew",
+"dsc_burnham_red_angel_crew",
+"balok_crew",
+"koloth_korax_tribbled_crew",
+"locutus_crew",
+"ransom_power_crew",
+"caretaker_crew",
+"armus_crew",
+"guinan_bartender_crew",
+"mariner_mirror_crew"];
+
+
 export const SKILLS = {
 	command_skill: 'CMD',
 	science_skill: 'SCI',
@@ -1198,7 +1210,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					case 'nonportal':
 						return !crew.have && !crew.in_portal; 
 					case 'gauntlet':
-						return !crew.have && !crew.in_portal && crew.obtained.toLowerCase().includes("gauntlet");
+					 	return !crew.have && !crew.in_portal && GauntletCrew.includes(crew.symbol);
 					
 				}
 			}
@@ -1729,7 +1741,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		
 		if (idx === 3) {
 			jp = this.context.core.crew.filter((crew) => {
-				return (crew.obtained.toLowerCase().includes("gauntlet"));
+				return GauntletCrew.includes(crew.symbol);
 			})
 			.sort((a, b) => {
 				return a.date_added.getTime() - b.date_added.getTime();
@@ -2705,11 +2717,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	whyNoPortal(crew: PlayerCrew | CrewMember) {
-		if (crew.obtained?.toLowerCase().includes("gauntlet")) return "Unowned (Gauntlet Exclusive)";
-		else if (crew.obtained?.toLowerCase().includes("voyage")) return "Unowned (Voyage Exclusive)";
-		else if (crew.obtained?.toLowerCase().includes("honor")) return "Unowned (Honor Hall)";
-		else if (crew.obtained?.toLowerCase().includes("boss")) return "Unowned (Fleet Boss Exclusive)";
-		else return "Unowned (Not in Portal)";
+		// if (crew.obtained?.toLowerCase().includes("gauntlet")) return "Unowned (Gauntlet Exclusive)";
+		// else if (crew.obtained?.toLowerCase().includes("voyage")) return "Unowned (Voyage Exclusive)";
+		// else if (crew.obtained?.toLowerCase().includes("honor")) return "Unowned (Honor Hall)";
+		// else if (crew.obtained?.toLowerCase().includes("boss")) return "Unowned (Fleet Boss Exclusive)";
+		// else
+		return "Unowned (Not in Portal)";
 
 	}
 

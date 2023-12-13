@@ -4,11 +4,8 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 7
-events: 32
 in_portal: true
 date: 14/01/2020
-obtained: Giveaway
-mega: false
 published: true
 ---
 

@@ -4,11 +4,8 @@ rarity: 4
 series: tas
 memory_alpha:
 bigbook_tier: 4
-events: 7
 in_portal: true
 date: 23/12/2021
-obtained: Event
-mega: false
 published: true
 ---
 
