@@ -4,11 +4,8 @@ rarity: 3
 series: tos
 memory_alpha:
 bigbook_tier: 4
-events: 6
 in_portal: true
 date: 01/04/2021
-obtained: Giveaway
-mega: false
 published: true
 ---
 

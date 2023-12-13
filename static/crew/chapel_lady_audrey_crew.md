@@ -4,11 +4,8 @@ rarity: 5
 series: snw
 memory_alpha:
 bigbook_tier: 5
-events: 24
 in_portal:
 date: 04/08/2023
-obtained: Campaign
-mega: false
 published: true
 ---
 

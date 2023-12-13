@@ -4,11 +4,8 @@ rarity: 4
 series: original
 memory_alpha:
 bigbook_tier: 7
-events: 24
 in_portal: true
 date: 31/08/2016
-obtained: Post-Launch
-mega: false
 published: true
 ---
 

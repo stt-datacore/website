@@ -4,11 +4,8 @@ rarity: 5
 series: ent
 memory_alpha:
 bigbook_tier: 6
-events: 17
 in_portal: true
 date: 26/04/2022
-obtained: Pack
-mega: false
 published: true
 ---
 
