@@ -4,11 +4,8 @@ rarity: 4
 series: voy
 memory_alpha:
 bigbook_tier: 8
-events: 23
 in_portal: true
 date: 05/09/2016
-obtained: Pack
-mega: false
 published: true
 ---
 

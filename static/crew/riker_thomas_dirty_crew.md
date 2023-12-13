@@ -4,11 +4,8 @@ rarity: 1
 series: tng
 memory_alpha:
 bigbook_tier: 3
-events: 35
 in_portal: true
 date: 04/01/2016
-obtained: Launch
-mega: false
 published: true
 ---
 

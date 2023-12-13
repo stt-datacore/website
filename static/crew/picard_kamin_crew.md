@@ -4,11 +4,8 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 8
-events: 18
 in_portal: true
 date: 08/07/2020
-obtained: Event
-mega: false
 published: true
 ---
 
