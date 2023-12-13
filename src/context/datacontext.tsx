@@ -303,7 +303,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 				crew.short_name = arch?.short_name ?? crew.short_name;				
 
 				crew.events ??= 0;
-				crew.obtained = getObtained(crew);
+				if (!crew.obtained?.length) {
+					crew.obtained = getObtained(crew);
+				}				
 			});
 		}
 	}
