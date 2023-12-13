@@ -303,7 +303,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 				crew.short_name = arch?.short_name ?? crew.short_name;				
 
 				crew.events ??= 0;
-				crew.obtained = getObtained(crew);
+				if (!crew.obtained?.length) {
+					crew.obtained = getObtained(crew);
+				}				
 			});
 		}
 	}
@@ -332,6 +334,12 @@ export const DataProvider = (props: DataProviderProperties) => {
 		}
 		else if (data.symbol === "tuvok_mirror_crew") {
 			return "Faction";
+		}
+		else if (data.symbol === "boimler_evsuit_crew") {
+			return "WebStore";
+		}
+		else if (data.symbol === "quinn_crew") {
+			return "Missions";
 		}
 		else {
 			return "Event/Pack";
