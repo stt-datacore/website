@@ -296,11 +296,14 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 	function postProcessCrewTranslations(data: ICoreData): void {
 		if (data.crew.length && data.translation.crew_archetypes) {
-			data.crew.forEach((crew) => {
+			data.crew.forEach((crew) => {				
 				let arch = data.translation.crew_archetypes.find(f => f.symbol === crew.symbol);
 				crew.traits_named = crew.traits.map(t => data.translation.trait_names[t]);
 				crew.name = arch?.name ?? crew.name;
 				crew.short_name = arch?.short_name ?? crew.short_name;				
+
+				crew.events ??= 0;
+				crew.obtained ??= 'Unknown';
 			});
 		}
 	}
