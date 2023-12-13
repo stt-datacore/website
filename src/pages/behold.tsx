@@ -277,7 +277,6 @@ const CrewTable = (props: CrewTableProps) => {
 		{ width: 1, column: 'ranks.voyRank', title: 'Voyage' },
 		{ width: 1, column: 'ranks.gauntletRank', title: 'Gauntlet' },
 		{ width: 1, column: 'collections.length', title: 'Collections', reverse: true },
-		{ width: 1, column: 'events', title: 'Events', reverse: true },
 		{ width: 1, column: 'unique_polestar_combos.length', title: <>Unique<br />Retrievals</>, reverse: true, tiebreakers: ['in_portal'] },
 		{ width: 1, column: 'factionOnlyTotal', title: <>Faction Items<br /><small>Build Cost</small></> },
 		{ width: 1, column: 'totalChronCost', title: <><img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} alt='Chroniton' style={{ height: '1em' }} /><br /><small>Build Cost</small></> },
@@ -359,9 +358,6 @@ const CrewTable = (props: CrewTableProps) => {
 				</Table.Cell>
 				<Table.Cell style={{ textAlign: 'center' }}>
 					{crew.collections.length}
-				</Table.Cell>
-				<Table.Cell style={{ textAlign: 'center' }}>
-					{crew.events}
 				</Table.Cell>
 				<Table.Cell style={{ textAlign: 'center' }}>
 					{!crew.in_portal ? 'N/A' : (crew.unique_polestar_combos?.length ?? 0)}

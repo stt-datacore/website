@@ -150,7 +150,7 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 			window.history.replaceState(null, '');
 
 		const tableConfig: ITableConfigRow[] = [
-			{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'events', 'collections.length', 'date_added'] },
+			{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'collections.length', 'date_added'] },
 			{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true },
 			{ width: 1, column: 'bigbook_tier', title: 'Tier' },
 			{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
@@ -204,7 +204,6 @@ class CrewStats extends Component<CrewStatsProps, CrewStatsState> {
 		const { playerData } = this.context;
 
 		const counts = [
-			{ name: 'event', count: crew.events },
 			{ name: 'collection', count: crew.collections.length }
 		];
 		const formattedCounts = counts.map((count, idx) => (

@@ -108,7 +108,6 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 export function descriptionLabel(crew: PlayerCrew, showOwned?: boolean): JSX.Element {
 	const immortal = isImmortal(crew);
 	const counts = [
-		{ name: 'event', count: crew.events },
 		{ name: 'collection', count: crew.collections.length }
 	];
 	const formattedCounts = counts.map((count, idx) => (
