@@ -27,9 +27,7 @@ interface InternalSettings {
     // Power Rank Within Skill Order
     triplet: number | string,
     // Magic Number    
-    magic: number | string,
-    // Event Weight
-    event: number | string,
+    magic: number | string
 }
 
 export interface BetaTachyonSettingsConfig {
@@ -126,9 +124,7 @@ export const defaultSettings = {
     // Power Rank Within Skill Order
     triplet: 3,
     // Magic number
-    magic: 10,
-    // Event weight
-    event: 2.5,
+    magic: 10
 } as BetaTachyonSettings;
 
 const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSettingsProps) => {
@@ -282,16 +278,6 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                 </div>
                
                 <div style={rowStyle}>
-                    <div style={textStyle}>Event Score:</div>
-                    <Input
-                        style={inputStyle}
-                        placeholder="Value"
-                        value={innerSettings.event}
-                        onChange={(e, { value }) => setCurrent({ ... innerSettings, event: value })}>
-                    </Input>                        
-                </div>
-               
-                <div style={rowStyle}>
                     <div style={textStyle}>Effort To Max:</div>
                     <Input
                         style={inputStyle}
@@ -411,7 +397,6 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
             score: Number.parseFloat(innerSettings.score as string),
             triplet: Number.parseFloat(innerSettings.triplet as string),
             magic: Number.parseFloat(innerSettings.magic as string),
-            event: Number.parseFloat(innerSettings.event as string)
         } as BetaTachyonSettings;
     }
 	function confirmSelection(): void {		

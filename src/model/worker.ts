@@ -184,9 +184,6 @@ export interface BetaTachyonSettings {
     triplet: number,
     // Magic number
     magic: number,
-    // Event Weight
-    event: number,
-
 }
 
 export interface SkillOrderRarity {
