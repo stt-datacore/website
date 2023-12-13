@@ -333,6 +333,12 @@ export const DataProvider = (props: DataProviderProperties) => {
 		else if (data.symbol === "tuvok_mirror_crew") {
 			return "Faction";
 		}
+		else if (data.symbol === "boimler_evsuit_crew") {
+			return "WebStore";
+		}
+		else if (data.symbol === "quinn_crew") {
+			return "Missions";
+		}
 		else {
 			return "Event/Pack";
 		}
