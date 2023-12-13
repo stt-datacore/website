@@ -303,11 +303,40 @@ export const DataProvider = (props: DataProviderProperties) => {
 				crew.short_name = arch?.short_name ?? crew.short_name;				
 
 				crew.events ??= 0;
-				crew.obtained ??= 'Unknown';
+				crew.obtained = getObtained(crew);
 			});
 		}
 	}
 
+	function getObtained(data: CrewMember) {
+		if (data.traits_hidden.includes("exclusive_honorhall") || data.symbol === "vox_crew") {
+			return "HonorHall";
+		}
+		else if (data.traits_hidden.includes("exclusive_gauntlet")) {
+			return "Gauntlet";
+		}
+		else if (data.traits_hidden.includes("exclusive_voyage")) {
+			return "Voyage";
+		}
+		else if (data.traits_hidden.includes("exclusive_collection")) {
+			return "Collection";
+		}
+		else if (data.traits_hidden.includes("exclusive_bridge")) {
+			return "BossBattle";
+		}
+		else if (data.traits_hidden.includes("exclusive_fusion")) {
+			return "Fuse";
+		}
+		else if (data.traits_hidden.includes("exclusive_achievement")) {
+			return "Achievement";
+		}
+		else if (data.symbol === "tuvok_mirror_crew") {
+			return "Faction";
+		}
+		else {
+			return "Event/Pack";
+		}
+	}
 	
 	function postProcessShipTranslations(data: ICoreData): void {
 		if (data.ship_schematics.length && data.translation.ship_archetypes) {
