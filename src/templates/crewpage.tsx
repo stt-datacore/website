@@ -165,6 +165,9 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 		const userName = this._getCurrentUsername();
 
 		const crew = crewJson.edges[0].node as PlayerCrew;
+		const crewFind = this.context.core.crew.find(f => f.symbol === crew.symbol);
+		crew.obtained = crewFind?.obtained ?? "Unknown";
+
 		crew.immortal = CompletionState.DisplayAsImmortalStatic;
 
 		let arch = translation.crew_archetypes.find(f => f.symbol === crew.symbol);
