@@ -347,7 +347,9 @@ function main() {
 					crew.date_added = new Date(m[3], m[2] - 1, m[1]);
 				}
 			}
-			crew.obtained = mdData.meta.obtained ? mdData.meta.obtained : 'N/A';
+			if (!crew.obtained) {
+				crew.obtained = mdData.meta.obtained ? mdData.meta.obtained : 'N/A';
+			}			
 			crew.markdownContent = mdData.markdownContent;
 		}
 	}
