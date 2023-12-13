@@ -303,7 +303,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 				crew.short_name = arch?.short_name ?? crew.short_name;				
 
 				crew.events ??= 0;
-				if (!crew.obtained?.length) {
+				if (!crew.obtained?.length || crew.obtained === "N/A") {
 					crew.obtained = getObtained(crew);
 				}				
 			});
@@ -342,7 +342,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			return "Missions";
 		}
 		else {
-			return "Event/Pack";
+			return "Event/Pack/Giveaway";
 		}
 	}
 	
