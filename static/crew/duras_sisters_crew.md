@@ -4,11 +4,8 @@ rarity: 4
 series: tng
 memory_alpha:
 bigbook_tier: 9
-events: 21
 in_portal:
 date: 01/01/2016
-obtained: Fuse
-mega: false
 published: true
 ---
 
