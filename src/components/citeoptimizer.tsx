@@ -493,6 +493,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			else if (sort === 'colIncreased' && engine === 'beta_tachyon_pulse') {
 				r = (a.collectionsIncreased?.length ?? 0) - (b.collectionsIncreased?.length ?? 0);
 			}
+			else if (sort === 'eventScore' && engine === 'beta_tachyon_pulse') {
+				r = (a.events ?? 0) - (b.events ?? 0);
+			}
 			else if (sort === 'skillOrder' && engine === 'beta_tachyon_pulse') {
 				let ska = crewSkills[a.symbol];
 				let skb = crewSkills[b.symbol];
@@ -595,6 +598,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						{engine === 'beta_tachyon_pulse' &&
 							<React.Fragment>
 							<Table.HeaderCell
+								onClick={(e) => sort === 'eventScore' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('eventScore')}
+								sorted={sort === 'eventScore' ? direction : undefined}>
+								Events
+							</Table.HeaderCell>
+							<Table.HeaderCell
 								onClick={(e) => sort === 'amTraits' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('amTraits')}
 								sorted={sort === 'amTraits' ? direction : undefined}>
 								Antimatter<br />Traits
@@ -682,7 +690,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								</Table.Cell>
 								{engine === 'beta_tachyon_pulse' &&
 									<React.Fragment>
-
+										<Table.Cell>
+											{row.events}
+										</Table.Cell>
 										<Table.Cell>
 											<Popup trigger={<b>{row.amTraits?.length}</b>} content={row.amTraits?.join(', ')} />
 										</Table.Cell>
@@ -722,7 +732,6 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 													/>))}
 												</div>
-
 
 												{!!skoMap[skp] && <div>
 													<Popup trigger={
