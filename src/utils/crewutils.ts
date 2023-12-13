@@ -784,9 +784,9 @@ export function getCrewQuipment(crew: PlayerCrew, items: EquipmentItem[]): Equip
 }
 
 export function formatTierLabel(crew: PlayerCrew | CrewMember): string {
-	if (!crew.in_portal && crew.obtained === "WebStore") {
-		return '$';
-	}
+	// if (!crew.in_portal && crew.obtained === "WebStore") {
+	// 	return '$';
+	// }
 	if (!crew.bigbook_tier || crew.bigbook_tier === -1) {
 		return '?';
 	}
@@ -1385,25 +1385,26 @@ export function printSkillOrder(crew: PlayerCrew | CrewMember) {
 
 
 export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
-	long ??= false;
-	let obstr = `${crew.obtained}`;
-	if (obstr === 'HonorHall') obstr = 'Honor Hall';
-	else if (obstr === 'FactionStore') obstr = 'Faction';
+	return 'Unknown';
+	// long ??= false;
+	// let obstr = `${crew.obtained}`;
+	// if (obstr === 'HonorHall') obstr = 'Honor Hall';
+	// else if (obstr === 'FactionStore') obstr = 'Faction';
 
-	if (long) {
-		if (obstr === 'Voyage' || obstr === 'Gauntlet') obstr += " Exclusive";
-		else if (obstr === 'Faction') obstr = 'Faction Store';
-		else if (obstr === 'Fuse') obstr = 'Exclusive Fusion';
-		else if (obstr === 'BossBattle') obstr = 'Captain\'s Bridge';
-		else if (obstr === 'Collection') obstr = 'Collection Milestone';
-		else if (obstr === 'Missions') obstr = 'Main Board Mission';
-	}
-	else {
-		if (obstr === 'BossBattle') obstr = 'Bridge';
-		if (obstr === 'Fuse') obstr = 'Fusion';
-	}
+	// if (long) {
+	// 	if (obstr === 'Voyage' || obstr === 'Gauntlet') obstr += " Exclusive";
+	// 	else if (obstr === 'Faction') obstr = 'Faction Store';
+	// 	else if (obstr === 'Fuse') obstr = 'Exclusive Fusion';
+	// 	else if (obstr === 'BossBattle') obstr = 'Captain\'s Bridge';
+	// 	else if (obstr === 'Collection') obstr = 'Collection Milestone';
+	// 	else if (obstr === 'Missions') obstr = 'Main Board Mission';
+	// }
+	// else {
+	// 	if (obstr === 'BossBattle') obstr = 'Bridge';
+	// 	if (obstr === 'Fuse') obstr = 'Fusion';
+	// }
 
-	return obstr;
+	// return obstr;
 }
 
 export function printPortalStatus(crew: PlayerCrew | CrewMember, showNever?: boolean, obtainedIfNo?: boolean, long?: boolean, withPortal?: boolean) {
@@ -1423,7 +1424,7 @@ export function printPortalStatus(crew: PlayerCrew | CrewMember, showNever?: boo
 	}
 
 	if (obstr !== "") obstr = ` (${obstr})`;
-	let ob = crew.obtained.toLowerCase();
+	let ob = crew.obtained?.toLowerCase() ?? "Unknown";
 
 	if (showNever && (ob.includes("factionstore") || ob.includes("missions") || ob.includes("fuse") || ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection"))) {
 		return (withPortal ? "In Portal: " : "") + `Never${obstr}`;
