@@ -311,7 +311,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 	}
 
 	function getObtained(data: CrewMember) {
-		if (data.traits_hidden.includes("exclusive_honorhall") || data.symbol === "vox_crew") {
+		if (data.traits_hidden.includes("exclusive_honorhall") || data.symbol === "crusher_j_vox_crew") {
 			return "HonorHall";
 		}
 		else if (data.traits_hidden.includes("exclusive_gauntlet")) {
