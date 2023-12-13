@@ -1387,26 +1387,25 @@ export function printSkillOrder(crew: PlayerCrew | CrewMember) {
 
 
 export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
-	return 'Unknown';
-	// long ??= false;
-	// let obstr = `${crew.obtained}`;
-	// if (obstr === 'HonorHall') obstr = 'Honor Hall';
-	// else if (obstr === 'FactionStore') obstr = 'Faction';
+	long ??= false;
+	let obstr = `${crew.obtained}`;
+	if (obstr === 'HonorHall') obstr = 'Honor Hall';
+	else if (obstr === 'FactionStore') obstr = 'Faction';
 
-	// if (long) {
-	// 	if (obstr === 'Voyage' || obstr === 'Gauntlet') obstr += " Exclusive";
-	// 	else if (obstr === 'Faction') obstr = 'Faction Store';
-	// 	else if (obstr === 'Fuse') obstr = 'Exclusive Fusion';
-	// 	else if (obstr === 'BossBattle') obstr = 'Captain\'s Bridge';
-	// 	else if (obstr === 'Collection') obstr = 'Collection Milestone';
-	// 	else if (obstr === 'Missions') obstr = 'Main Board Mission';
-	// }
-	// else {
-	// 	if (obstr === 'BossBattle') obstr = 'Bridge';
-	// 	if (obstr === 'Fuse') obstr = 'Fusion';
-	// }
+	if (long) {
+		if (obstr === 'Voyage' || obstr === 'Gauntlet') obstr += " Exclusive";
+		else if (obstr === 'Faction') obstr = 'Faction Store';
+		else if (obstr === 'Fuse') obstr = 'Exclusive Fusion';
+		else if (obstr === 'BossBattle') obstr = 'Captain\'s Bridge';
+		else if (obstr === 'Collection') obstr = 'Collection Milestone';
+		else if (obstr === 'Missions') obstr = 'Main Board Mission';
+	}
+	else {
+		if (obstr === 'BossBattle') obstr = 'Bridge';
+		if (obstr === 'Fuse') obstr = 'Fusion';
+	}
 
-	// return obstr;
+	return obstr;
 }
 
 export function printPortalStatus(crew: PlayerCrew | CrewMember, showNever?: boolean, obtainedIfNo?: boolean, long?: boolean, withPortal?: boolean) {
