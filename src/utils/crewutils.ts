@@ -331,9 +331,9 @@ export function prepareOne(origCrew: CrewMember, playerData?: PlayerData, buffCo
 	templateCrew.equipment = [0, 1, 2, 3];
 	templateCrew.favorite = false;
 	templateCrew.action.cycle_time = templateCrew.action.cooldown + templateCrew.action.duration;
-	templateCrew.events = 0;
-	templateCrew.obtained = "Unknown";
-	
+	templateCrew.events ??= 0;
+	templateCrew.obtained ??= "Unknown";
+
 	let inroster = [] as PlayerCrew[];
 
 	let crew = templateCrew;
