@@ -4,11 +4,8 @@ rarity: 5
 series: pic
 memory_alpha:
 bigbook_tier: 4
-events: 40
 in_portal:
 date: 22/08/2023
-obtained: Honor Hall
-mega: false
 published: true
 ---
 

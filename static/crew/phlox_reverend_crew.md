@@ -4,11 +4,8 @@ rarity: 5
 series: ent
 memory_alpha:
 bigbook_tier: 8
-events: 22
 in_portal: true
 date: 16/08/2018
-obtained: Event
-mega: false
 published: true
 ---
 

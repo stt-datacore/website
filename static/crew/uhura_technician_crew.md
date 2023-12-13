@@ -4,11 +4,8 @@ rarity: 5
 series: tos
 memory_alpha:
 bigbook_tier: 6
-events: 18
 in_portal:
 date: 06/12/2022
-obtained: Honor Hall
-mega: false
 published: true
 ---
 

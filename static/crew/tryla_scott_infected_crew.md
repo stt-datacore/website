@@ -4,11 +4,8 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 6
-events: 13
 in_portal: true
 date: 01/06/2022
-obtained: Mega
-mega: true
 published: true
 ---
 

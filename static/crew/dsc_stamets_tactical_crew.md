@@ -4,11 +4,8 @@ rarity: 5
 series: dsc
 memory_alpha:
 bigbook_tier: 6
-events: 29
 in_portal: true
 date: 06/04/2021
-obtained: Pack
-mega: false
 published: true
 ---
 
