@@ -444,7 +444,7 @@ export const ProfileCrewTable = (props: ProfileCrewTableProps) => {
 	];
 
 	const tableConfig: ITableConfigRow[] = [
-		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'events', 'collections.length'] },
+		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'collections.length'] },
 		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['rarity'] },
 	];
 

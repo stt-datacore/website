@@ -430,7 +430,7 @@ class CommonCrewData extends Component<CommonCrewDataProps> {
 				)}
 
 				<p>
-					<b>Date added: </b>{new Date(crew.date_added).toLocaleDateString("en-US")} (<b>Obtained: </b>{prettyObtained(crew, true)})
+					<b>Date added: </b>{new Date(crew.date_added).toLocaleDateString("en-US")}
 				</p>
 
 				{crew.nicknames && crew.nicknames.length > 0 && (
