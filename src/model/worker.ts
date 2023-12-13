@@ -183,7 +183,10 @@ export interface BetaTachyonSettings {
     // Power Rank Within Skill Order
     triplet: number,
     // Magic number
-    magic: number
+    magic: number,
+    // Event Weight
+    event: number,
+
 }
 
 export interface SkillOrderRarity {

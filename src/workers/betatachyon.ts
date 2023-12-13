@@ -511,6 +511,7 @@ const BetaTachyon = {
                 crew.scoreTrip = getDistanceFromTop(cf, skillOrderCrew);                
             }
 
+            const maxevents = resultCrew.map(c => c.events ?? 0).reduce((a, b) => a > b ? a : b);
             const maxvoy = resultCrew.map(c => c.voyagesImproved?.length ?? 0).reduce((a, b) => a > b ? a : b);
             const maxev = resultCrew.map(c => c.totalEVContribution ?? 0).reduce((a, b) => a > b ? a : b);
             const maxremain = resultCrew.map(c => c.totalEVRemaining ?? 0).reduce((a, b) => a > b ? a : b);
@@ -521,6 +522,9 @@ const BetaTachyon = {
 
                 let multConf = settings;
 
+                // more gives weight
+                let escore = multConf.event * ((crew.events ?? 0) / (maxevents ? maxevents : 1));
+                
                 // more gives weight
                 let improve = multConf.improved * ((crew.voyagesImproved?.length ?? 0) / (maxvoy ? maxvoy : 1));
                 
@@ -567,7 +571,7 @@ const BetaTachyon = {
                 // more gives weight
                 let adist2 = crew.scoreTrip ? (crew.scoreTrip * multConf.triplet) : 1;
 
-                let fin = (100 * (amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 10;
+                let fin = (100 * (escore + amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 11;
 
                 //fin *= ((adist + adist2) / 2);
 
