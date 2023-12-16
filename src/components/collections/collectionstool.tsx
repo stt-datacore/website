@@ -407,13 +407,14 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	let tscore = 0;
 	let tscoren = 0;
+	let tstars = [1,1,1,1,1,1];
 	
 	const costs = [0, 0, 500, 4500, 18000, costMode === 'sale' ? 40000 : 50000];
 
 	collectionCrew.forEach((crew) => {
-		if (!showThisCrew(crew, [], 'Exact')) return;
 		crew.collectionScore = 0;
 		crew.collectionScoreN = 0;
+		if (!showThisCrew(crew, [], 'Exact')) return;
 		crew.collectionIds = crew.collectionIds?.filter(c => playerCollections.some(col => col.id === c));
 		crew.collections = crew.collections?.filter(c => playerCollections.some(col => col.name === c));
 		
@@ -443,6 +444,11 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 		}
 
 		if (max_rare !== crare) {
+			
+			if (tstars[max_rare] < crare) {
+				tstars[max_rare] = crare;
+			}
+
 			crew.collectionScoreN = Math.round(cscore / ((costs[max_rare] * (max_rare - crare))) * 1000000000);
 			if (crew.collectionScoreN > tscoren) {
 				tscoren = crew.collectionScoreN;
@@ -456,12 +462,13 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	const topscore = tscore;
 	const topscoren = tscoren;
+	// const topstars = tstars;
 
-	collectionCrew.forEach((crew) => {
-		if (crew.collectionScoreN === -1 && crew.collectionScore) {
-			crew.collectionScoreN = Math.round(crew.collectionScore * (topscoren/topscore));
-		}
-	})
+	// collectionCrew.forEach((crew) => {
+	// 	if (crew.collectionScoreN === -1 && crew.collectionScore) {
+	// 		crew.collectionScoreN = Math.round(topscoren * (10 + crew.collectionScore/topscore));
+	// 	}
+	// })
 
 	const tierOpts = [] as DropdownItemProps[];
 
@@ -509,8 +516,37 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 		{ width: 2, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'date_added'] },
 		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['highest_owned_rarity'] },
 		{ width: 2, column: 'unmaxedIds.length', title: 'Collections', reverse: true },
-		{ width: 1, column: 'collectionScore', title: 'Grade', reverse: true },
-		{ width: 1, column: 'collectionScoreN', title: 'Star Grade', reverse: true },
+		{ 
+			width: 1, 
+			column: 'collectionScore', 
+			title: 'Grade', 
+			reverse: true
+		},
+		{ 
+			width: 1, 
+			column: 'collectionScoreN', 
+			title: 'Star Grade', 
+			reverse: true,
+			customCompare: (a: PlayerCrew, b: PlayerCrew) => {
+				if (a.collectionScoreN !== undefined && b.collectionScoreN !== undefined) {
+					if (a.collectionScoreN === -1 && b.collectionScoreN === -1) {
+						if (a.collectionScore !== undefined && b.collectionScore !== undefined) {
+							return a.collectionScore - b.collectionScore;
+						}	
+					}	
+					else if (a.collectionScoreN === -1) {
+						return 1;
+					}
+					else if (b.collectionScoreN === -1) {
+						return -1;
+					}
+					else {
+						return a.collectionScoreN - b.collectionScoreN;
+					}
+				}
+				return 0;
+			}
+		},
 		{ 
 			width: 3, 
 			column: 'immortalRewards.length', 
@@ -894,8 +930,9 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 					</div>
 				</Table.Cell>
 				<Table.Cell>
-					<div style={{color: gradeToColor(crew.collectionScoreN as number / topscoren) ?? undefined}}>
-						{crew.collectionScoreN?.toLocaleString() ?? ''}
+					<div style={{color: gradeToColor(crew.collectionScoreN === -1 ? 1 : (crew.collectionScoreN as number / topscoren)) ?? undefined}}>
+						{crew.collectionScoreN === -1 && <Icon name='check' color='green' /> ||
+						 (crew.collectionScoreN?.toLocaleString() ?? '')}
 					</div>
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
