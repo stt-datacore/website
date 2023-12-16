@@ -5,6 +5,7 @@ import { CalcResult, Aggregates, CalcResultEntry as VoyageSlotEntry, VoyageStats
 import { CalculatorState } from './calchelpers';
 import { HelperProps, Helper } from "./Helper";
 import { VoyageDescription } from '../../../model/player';
+import { IVoyageCrew } from '../../../model/voyage';
 
 // This code is heavily inspired from IAmPicard's work and released under the GPL-V3 license. Huge thanks for all his contributions!
 const SLOT_COUNT = 12;
@@ -97,8 +98,8 @@ export class IAmPicardHelper extends Helper {
 		const worker = new UnifiedWorker();
 		worker.addEventListener('message', message => {
 			if (message.data.result) {
-				const result = new DataView(Uint8Array.from(message.data.result).buffer);
-				const score = result.getFloat32(0, true);
+				const result = message.data.result;
+				const { score } = result;
 				// Progress
 				if (message.data.inProgress) {
 					// ignore marginal gains (under 5 minutes)
@@ -117,50 +118,8 @@ export class IAmPicardHelper extends Helper {
 		this.calcWorker = worker;
 	}
 
-	_finaliseIAPEstimate(result: DataView, inProgress: boolean = false): void {
-
-		let entries = [] as VoyageSlotEntry[];
-		let aggregates = {} as Aggregates;
-
-		Object.keys(CONFIG.SKILLS).forEach(s => aggregates[s] = { skill: s, core: 0, range_min: 0, range_max: 0 } as AggregateSkill
-		);
-
-		let config = {
-			numSims: inProgress ? 200 : 5000,
-			startAm: this.bestShip.score
-		} as VoyageStatsConfig;
-
-		for (let i = 0; i < 12; i++) {
-			let crew = this.consideredCrew.find(c => c.id === result.getUint32(4 + i * 4, true));
-			if (!crew)
-				continue;
-
-			let entry = {
-				slotId: i,
-				choice: crew,
-				hasTrait: crew?.traits.includes(this.voyageConfig.crew_slots[i].trait)
-			} as VoyageSlotEntry;
-
-			for (let skill in CONFIG.SKILLS) {
-				aggregates[skill].core += crew[skill].core;
-				aggregates[skill].range_min += crew[skill].min;
-				aggregates[skill].range_max += crew[skill].max;
-			}
-
-			if (entry.hasTrait)
-				config.startAm += 25;
-
-			entries.push(entry);
-		}
-
-		const { primary_skill, secondary_skill } = this.voyageConfig.skills;
-		config.ps = aggregates[primary_skill];
-		config.ss = aggregates[secondary_skill];
-
-		config.others =
-			Object.values(aggregates)
-				.filter(value => value.skill != primary_skill && value.skill != secondary_skill);
-
+	_finaliseIAPEstimate(result: any, inProgress: boolean = false): void {
+		const { considered, config } = result;
 		const VoyageEstConfig = {
 			config,
 			worker: 'voyageEstimate'
@@ -171,10 +130,15 @@ export class IAmPicardHelper extends Helper {
 			if (!message.data.inProgress) {
 				let finalResult = {
 					estimate: message.data.result,
-					entries: entries,
-					aggregates: aggregates,
+					entries: considered.map((crew, slotId) => ({
+						slotId,
+						choice: this.consideredCrew.find(c => c.id === crew.id) ?? {} as IVoyageCrew,
+						hasTrait: crew.traitIds & slotId
+					})),
+					aggregates: config.aggregates,
 					startAM: config.startAm
 				} as CalcResult;
+				//console.log(finalResult);
 				if (!inProgress) {
 					this.perf.end = performance.now();
 					this.calcState = CalculatorState.Done;

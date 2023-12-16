@@ -1,10 +1,10 @@
 
 class Log {
-    constructor(enabled) {
-        this.enabled = enabled;
+    constructor(level) {
+        this.level = level;
     }
-    log(message) {
-        if (this.enabled) {
+    log(message, level = 1) {
+        if (this.level >= level) {
             console.log(message);
         }
     }
@@ -50,11 +50,16 @@ class Result {
     }
 }
 class VoyageCalculator {
-    constructor(jsonInput, callback, transwarp, debug) {
-        this.progressUpdate = callback;
+    constructor(jsonInput, callback, transwarp, debugLevel) {
+        this.progressUpdate = (newBest) => {
+            if (newBest.score > this.realbest.score) {
+                this.realbest = newBest;
+                callback(newBest);
+            }
+        };
+        this.realbest = { score : 0};
         this.transwarp = transwarp;
-        this.debug = debug;
-        this.log = new Log(this.debug);
+        this.log = new Log(debugLevel);
         this.abort = false;
         this.binaryConfig = jsonInput;
         this.estimateBinaryConfig = {
@@ -64,10 +69,14 @@ class VoyageCalculator {
             slotCrewIds: new Array(5).fill(0)
         };
         this.roster = [];
-        this.slotRosters = Array.from({length: SLOT_COUNT }, () => (new Array(this.roster.length)));
-        this.sortedSlotRosters = Array.from({length: SLOT_COUNT }, () => (new Array(this.roster.length)));
-        this.bestconsidered = new Array(SLOT_COUNT).fill(null);
-        this.bestscore = 0;
+        this.slotRosters = Array.from({length: SLOT_COUNT }, () => (new Array()));
+        this.sortedSlotRosters = Array.from({length: SLOT_COUNT }, () => (new Array()));
+        this.best = {
+            considered: new Array(SLOT_COUNT).fill(null),
+            score: 0,
+            result: undefined,
+            config: undefined
+        };
         this.binaryConfig = jsonInput;
         this.considered = Array.from({length: 20}, () => new Array(12)); 
 
@@ -90,7 +99,7 @@ class VoyageCalculator {
                 c.skills[i] = {core: skillData[i * 3], range_min: skillData[i * 3 + 1], range_max: skillData[i * 3 + 2]};
             
             c.slotCrew = new Array(12);
-            this.log.log(c.name + " " + c.skills[0] + " " + c.skills[1] + " " + c.skills[2] + " " + c.skills[3] + " " + c.skills[4] + " " + c.skills[5] + " ");
+            this.log.log(c.name + " " + c.skills[0] + " " + c.skills[1] + " " + c.skills[2] + " " + c.skills[3] + " " + c.skills[4] + " " + c.skills[5] + " ", 1);
             this.roster.push(c);
         }
         
@@ -98,12 +107,15 @@ class VoyageCalculator {
             const slotRoster = this.slotRosters[iSlot];
 
             for (let iCrew = 0; iCrew < this.roster.length; iCrew++) {
-                const crew = JSON.parse(JSON.stringify(this.roster[iCrew]));
+                const crew = Object.assign({}, this.roster[iCrew]);
                 crew.score = this.computeScore(crew, this.binaryConfig.slotSkills[iSlot], iSlot);
-                //console.log(`${crew.name} (${SKILLS[this.binaryConfig.slotSkills[iSlot]]}): ${crew.score}`);
-                crew.original = this.roster[iCrew];
-                crew.slotCrew[iSlot] = crew;
-                slotRoster[iCrew] = crew;
+                this.log.log(`${crew.name} (${SKILLS[this.binaryConfig.slotSkills[iSlot]]}): ${crew.score}`, 1);
+                if (crew.score > 0) {
+                    crew.original = this.roster[iCrew];
+                    crew.slot = iSlot;
+                    crew.original.slotCrew[iSlot] = crew;
+                    slotRoster.push(crew);
+                }
                 //this.sortedSlotRosters[iSlot].push(crew);
             }
             this.sortedSlotRosters[iSlot] = slotRoster.sort((left, right) => right.score - left.score);
@@ -154,7 +166,7 @@ class VoyageCalculator {
                     break;
                 }
                 for (let bestslot = 0; bestslot < 5; bestslot++) {
-                    if (this.bestconsidered[slot].id === crew.id) {
+                    if (this.best.considered[slot].id === crew.id) {
                         best = true;
                         break;
                     }
@@ -185,32 +197,34 @@ class VoyageCalculator {
                 this.log.log("");
             }
             const vt = this.calculateDuration(assignments, false);
-            this.bestconsidered = assignments;
-            this.bestscore = vt - elapsedHours;
-            this.log.log("final result: " + vt + " - est time remaining:" + this.bestscore);
-            this.progressUpdate(this.bestconsidered, this.bestscore);
+            this.best.considered = assignments;
+            this.best.score = vt - elapsedHours;
+            this.log.log("final result: " + vt + " - est time remaining:" + this.best.score);
+            this.progressUpdate(this.best.considered, this.best.score);
             return;
         }*/
 
         for (let iteration = 1;; ++iteration) {
-            this.log.log("iteration " + iteration);
-            const prevBest = this.bestscore;
+            this.log.log("iteration " + iteration, 1);
+            const prevBest = this.best;
             this.resetRosters();
             this.updateSlotRosterScores();
             this.findBest();
-            this.log.log("Best: " + this.bestscore);
-            this.log.log("Previous: " + prevBest);
-            if (this.bestscore > prevBest) {
-                this.progressUpdate(this.bestconsidered, this.bestscore);
+            this.log.log("Best: " + this.best.score, 1);
+            this.log.log("Previous: " + prevBest.score, 1);
+            if (this.best.score > prevBest.score) {
+                this.progressUpdate(this.best);
                 continue;
             }
             else {
-                const vt = this.calculateDuration(this.bestconsidered, this.debug);
-                this.log.log("final result: " + vt);
-                this.log.log("stopping after " + iteration + " iterations");
+                const newBest = this.realbest;
+                this.log.log("final result: " + newBest.score, 1);
+                this.log.log("stopping after " + iteration + " iterations", 1);
                 break;
             }
         }
+
+        return this.realbest;
     }
 
     resetRosters() {
@@ -225,14 +239,15 @@ class VoyageCalculator {
             for (const crew of slotRoster) {
                 if (crew.score === 0)
                     continue;
-                if (this.bestconsidered.includes(crew)) {
+                if (this.best.considered.includes(crew)) {
                     crew.score = Number.MAX_SAFE_INTEGER;
                     continue;
                 }
 
-                const newConsidered = this.bestconsidered.slice();
+                const newConsidered = this.best.considered.slice();
                 newConsidered[iSlot] = crew;
-                crew.score = Math.round(this.calculateDuration(newConsidered) * 60 * 60);
+                const result = this.calculateDuration(newConsidered);
+                crew.score = Math.round(result.score * 60 * 60);
             }
             this.sortedSlotRosters[iSlot] = slotRoster.sort((left, right) => right.score - left.score);
         }
@@ -246,139 +261,142 @@ class VoyageCalculator {
             }
         }
         slotCrewScores.sort((a, b) => b - a);
-        const minScore = slotCrewScores[Math.min(slotCrewScores.length - 1, this.binaryConfig.searchDepth * 5)];
+        const minScore = slotCrewScores[Math.max(slotCrewScores.length - 1, this.binaryConfig.searchDepth * 5)];
         let minDepth = MIN_SCAN_DEPTH;
         let deepSlot = 0;
         let maxDepth = 0;
 
+        this.log.log("minScore: " + minScore, 1);
+        this.log.log("primary: " + SkillName(this.binaryConfig.primarySkill), 1);
+        this.log.log("secondary: " + SkillName(this.binaryConfig.secondarySkill), 1);
+
         for (let iSlot = 0; iSlot < SLOT_COUNT; iSlot++) {
-            this.log.log(SkillName(this.binaryConfig.slotSkills[iSlot]));
+            this.log.log(SkillName(this.binaryConfig.slotSkills[iSlot]), 2);
             let iCrew;
             for (iCrew = 0; iCrew < this.sortedSlotRosters[iSlot].length; iCrew++) {
                 const crew = this.sortedSlotRosters[iSlot][iCrew];
+                this.log.log(`${crew.name} - ${crew.score}`, 2);
                 if (iCrew >= minDepth && crew.score < minScore) {
                     break;
                 }
-                this.log.log("  " + crew.score + " - " + crew.name);
             }
-            this.log.log("");
+            this.log.log("", 2);
             if (iCrew > maxDepth) {
                 deepSlot = iSlot;
                 maxDepth = iCrew;
             }
         }
-        this.log.log("minScore: " + minScore);
-        this.log.log("primary: " + SkillName(this.binaryConfig.primarySkill));
-        this.log.log("secondary: " + SkillName(this.binaryConfig.secondarySkill));
         for (let iMinDepth = minDepth; iMinDepth < MAX_SCAN_DEPTH; iMinDepth++) {
-            this.log.log("depth " + iMinDepth);
+            this.log.log("depth " + iMinDepth, 5);
             if (maxDepth < iMinDepth)
                 maxDepth = iMinDepth;
             resize_array(this.considered, maxDepth, new Array(SLOT_COUNT));
             this.roster.forEach(crew => resize_array(crew.considered, maxDepth, false));
-            this.fillSlot(0, minScore, iMinDepth, deepSlot);
-            if (this.bestscore > 0)
+            this.fillInitSlot(minScore, iMinDepth, deepSlot);
+            if (this.best.score > 0)
                 break;
         }
     }
 
-    fillSlot(iSlot, minScore, minDepth, seedSlot, thread) {
-        let slot;
-        if (iSlot === 0) {
-            slot = seedSlot;
-        }
-        else if (iSlot === seedSlot) {
-            slot = 0;
-        } else {
-            slot = iSlot;
-        }
-        
-        for (let iCrew = 0; iCrew < this.sortedSlotRosters[slot].length; iCrew++) {
-            const crew = this.sortedSlotRosters[slot][iCrew];
+    fillInitSlot(minScore, minDepth, seedSlot) {
+        const rosters = this.sortedSlotRosters
+            .map(roster => roster.filter((crew, i) => i < minDepth))
+            //.reduce((ros, roster, i) => i == seedSlot ? [roster].concat(ros) : ros.concat([roster]), []);
+        const slotMap = Array.from({length: 12}, (_, i) => i == seedSlot ? 0 : i );
 
-            if (iCrew >= minDepth && minScore > crew.score) {
-                break;
-            }
-            if (slot == seedSlot) {
-                thread = iCrew;
-            } else if (crew.original.considered[thread]) {
+        for (let iCrew = 0; iCrew < rosters[0].length; iCrew++) {
+            const thread = iCrew;
+            const crew = rosters[seedSlot][iCrew];
+            this.considered[thread][seedSlot] = crew;
+            crew.original.considered[thread] = true;
+            this.fillSlot(1, rosters, thread, slotMap);
+            crew.original.considered[thread] = false;              
+        }
+    }
+
+    fillSlot(iSlot, rosters, thread, slotMap) {
+        const slot = slotMap[iSlot];
+
+        for (let iCrew = 0; iCrew < rosters[slot].length; iCrew++) {
+            const crew = rosters[slot][iCrew];
+
+            if (crew.original.considered[thread]) 
                 continue;
-            }
 
             this.considered[thread][slot] = crew;
             
             crew.original.considered[thread] = true;
-            if (iSlot < SLOT_COUNT - 1) {
-                this.fillSlot(iSlot + 1, minScore, minDepth, seedSlot, thread); 
+            if (slot < SLOT_COUNT - 1) {
+                this.fillSlot(iSlot + 1, rosters, thread, slotMap); 
             } else {
                 const crewToConsider = this.considered[thread].slice();
-                const score = this.calculateDuration(crewToConsider);
-                //this.log.log(this.considered[thread]);
-                //this.log.log(score);
-                if (score > this.bestscore) {
-                    this.log.log("new best found: " + score);
+                const best = this.calculateDuration(crewToConsider);
+                this.log.log(this.considered[thread], 4);
+                this.log.log(best.score, 4);
+                if (best.score > this.best.score) {
+                    this.log.log("new best found: " + best.score, 1);
+                    
                     for (let i = 0; i < crewToConsider.length; i++) {
                         for (let j = i + 1; j < crewToConsider.length; j++) {
                             if (crewToConsider[i].original === crewToConsider[j].original) {
-                                this.log.log("ERROR - DUPE CREW IN RESULT");
+                                this.log.log("ERROR - DUPE CREW IN RESULT", 1);
                             }
                         }
                     }
-                    this.bestconsidered = crewToConsider;
-                    this.bestscore = score;
-                    this.progressUpdate(this.bestconsidered, this.bestscore);
+                    this.best = best;
+                    this.progressUpdate(this.refine(this.best));
                     //this.calculateDuration(crewToConsider, true);
                 }
             }
-            if (slot !== seedSlot)
-                crew.original.considered[thread] = false;
+            crew.original.considered[thread] = false;
         }
     }
 
     refine() {
-        this.log.log("refining");
+        let refinementFound = false;
+        let best = this.best;
+        this.log.log("refining", 1);
         for (const crew of this.roster) {
             crew.considered.fill(false);
         }
-        let considered = this.bestconsidered;
+        let considered = this.best.considered;
         for (let iSlot = 0; iSlot < SLOT_COUNT; iSlot++) {
             considered[iSlot].original.considered[0] = true;
         }
-        for (;;) {
-            let refinementFound = false;
-            const fUpdateBest = () => {
-                refinementFound = true;
-                const score = this.calculateDuration(considered);
-                this.log.log("new best found: " + score);
-                for (let i = 0; i < considered.length; i++) {
-                    for (let j = i + 1; j < considered.length; j++) {
-                        if (considered[i].original === considered[j].original) {
-                            this.log.log("ERROR - DUPE CREW IN RESULT");
-                        }
+        const fUpdateBest = (newBest) => {
+            refinementFound = true;
+            this.log.log("new best found: " + newBest.score, 1);
+            for (let i = 0; i < considered.length; i++) {
+                for (let j = i + 1; j < considered.length; j++) {
+                    if (considered[i].original === considered[j].original) {
+                        this.log.log("ERROR - DUPE CREW IN RESULT", 1);
                     }
                 }
-                this.bestconsidered = considered;
-                this.bestscore = score;
-                this.progressUpdate(this.bestconsidered, this.bestscore);
-                this.calculateDuration(this.bestconsidered, this.debug);
-            };
+            }
+            best = newBest;
+            //this.progressUpdate(this.best);
+            //this.calculateDuration(this.best.considered, this.debug);
+        };
+
+        for (;;) {
+            refinementFound = false;
             for (let iSlot = 0; iSlot < SLOT_COUNT; iSlot++) {
                 for (const crew of this.sortedSlotRosters[iSlot]) {
                     if (crew.original.considered[0])
                         continue;
                     const prevCrew = considered[iSlot];
                     considered[iSlot] = crew;
-                    const score = this.calculateDuration(considered, false);
-                    if (score <= this.bestscore) {
+                    const newBest = this.calculateDuration(considered);
+                    if (newBest.score <= best.score) {
                         considered[iSlot] = prevCrew;
                         continue;
                     }
-                    fUpdateBest();
+                    fUpdateBest(newBest);
                     prevCrew.original.considered[0] = false;
                     crew.original.considered[0] = true;
                 }
                 for (let jSlot = 0; jSlot < SLOT_COUNT; jSlot++) {
-                    if (jSlot === iSlot)
+                    if (jSlot === iSlot || considered[iSlot].original.slotCrew[jSlot] === undefined || considered[jSlot].original.slotCrew[iSlot] === undefined)
                         continue;
                     if (considered[iSlot].score + considered[jSlot].score
                         < considered[iSlot].original.slotCrew[jSlot].score
@@ -386,16 +404,19 @@ class VoyageCalculator {
                         const prevI = considered[iSlot];
                         considered[iSlot] = considered[jSlot].original.slotCrew[iSlot];
                         considered[jSlot] = prevI.original.slotCrew[jSlot];
-                        fUpdateBest();
+                        fUpdateBest(this.calculateDuration(considered, this.debug));
                     }
                 }
             }
             if (!refinementFound)
                 break;
         }
+        this.log.log("Refining end", 1);
+        console.log("Refined best found: " + best.score);
+        return best;
     }
 
-    generateEstConfig(complement, debug) {
+    generateEstConfig(complement) {
         let config = {
             startAm: this.binaryConfig.shipAM,
             numExtends: this.binaryConfig.extendsTarget,
@@ -415,37 +436,42 @@ class VoyageCalculator {
                 skills[iSkill].range_min += crew.skills[iSkill].range_min;
                 skills[iSkill].range_max += crew.skills[iSkill].range_max; 
             }
-            if (crew.traitIds & iSlot) {
+            if (crew.traitIds & crew.slot) {
                 config.startAm += ANTIMATTER_FOR_SKILL_MATCH;
             }
         }
 
-        if (debug) {
-            this.log.log(config.startAm);
-            skills.forEach(skill => this.log.log(skill));
-        }
+        this.log.log(config.startAm, 6);
+        skills.forEach(skill => this.log.log(skill, 6));
+        config.aggregates = Object.fromEntries(skills.map((v, i) => ([SKILLS[i].toLowerCase()+"_skill", v])));
 
         for (let iSkill = 0; iSkill < 6; iSkill++) {
             if (iSkill === this.binaryConfig.primarySkill) {
                 config.ps = skills[iSkill];
-                debug ? this.log.log("pri: " +  skills[iSkill].core) : undefined;
+                this.log.log("pri: " +  skills[iSkill].core, 6);
             }
             else if (iSkill === this.binaryConfig.secondarySkill) {
                 config.ss = skills[iSkill];
-                debug ? this.log.log("sec: " + skills[iSkill].core) : undefined;
+                this.log.log("sec: " + skills[iSkill].core, 6);
             } else {
                 config.others.push(skills[iSkill]);
-                debug ? this.log.log("other: " + skills[iSkill].core) : undefined;
+                this.log.log("other: " + skills[iSkill].core, 6);
             }
         }
         
         return config;
     }
 
-    calculateDuration(complement, debug = false) {
-        const config = this.generateEstConfig(complement, debug);
+    calculateDuration(considered, debug = false) {
+        const config = this.generateEstConfig(considered, debug);
         const result = this.transwarp(config);
-        return result.refills[config.numExtends].result;
+
+        return {
+            considered,
+            config,
+            result,
+            score: result.refills[config.numExtends].result
+        };
     }
 }
 
@@ -453,9 +479,9 @@ function SkillName(skillId) {
     return skillId <= 5 ? SKILLS[skillId] : ""
 }
 
-function calculate(input, callback, transwarp)
+function calculate(input, callback, transwarp, logLevel)
 {   
-    const voyageCalculator = new VoyageCalculator(input, callback, transwarp, true)	
+    const voyageCalculator = new VoyageCalculator(input, callback, transwarp, logLevel ?? 0);
     return voyageCalculator.calculate();
 }
 
