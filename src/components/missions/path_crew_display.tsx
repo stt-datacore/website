@@ -99,7 +99,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                         justifyContent: "center",
                         alignItems: "center"
                     }}>
-                        <h3 style={{margin: "0.5em", marginBottom: 0}}>{challenge.name}</h3>
+                        <h3 style={{margin: "0.5em", marginBottom: 0, textAlign: "center"}}>{challenge.name}</h3>
                         <div style={{
                             fontSize: "0.8em",
                             margin: "0.5em",
