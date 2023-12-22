@@ -121,7 +121,7 @@ export class IAmPicardHelper extends Helper {
 	_finaliseIAPEstimate(result: any, inProgress: boolean = false): void {
 		const { considered, config } = result;
 		const VoyageEstConfig = {
-			config,
+			config: {...config, vfast: false},
 			worker: 'voyageEstimate'
 		};
 
