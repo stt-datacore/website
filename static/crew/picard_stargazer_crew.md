@@ -3,7 +3,7 @@ name: Stargazer Picard
 rarity: 1
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal:
 date: 27/04/2017
 published: true
