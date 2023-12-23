@@ -3,7 +3,7 @@ name: Mutated Paris
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 22/03/2018
 published: true
