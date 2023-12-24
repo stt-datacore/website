@@ -180,6 +180,13 @@ export function gradeCrew(crew: IQuestCrew, ch: number) {
     let z = 0;
 
     if (f) {
+        z -= Object.values(f.skills)
+                    .map(sk => Object.values(sk))
+                    .flat()
+                    .filter(n => typeof n === 'number')
+                    .map(n => n as number)
+                    .reduce((p, n) => p + n, 0);
+
         if (f.max_solve) z++;
         if (crew.challenges?.some(f => f.challenge.children.includes(ch))) z++;
         if (cc > 1 && crew.challenges?.every(f => f.challenge.id === ch || f.challenge.children.includes(ch))) z++;        
@@ -359,13 +366,13 @@ const QuestSolver = {
                             return { item: qp, bonusInfo: getItemBonuses(qp) }
                         })
                         .filter((qp) => challenge.skill in qp.bonusInfo.bonuses)
-                        .filter((qp) => {
-                            if (!config.buildableOnly) return true;
-                            if (!qp.item.demands) {
-                                qp.item.demands = calcItemDemands(qp.item, config.context.core.items);
-                            } 
-                            return canBuildItem(qp.item, true);
-                        })
+                        // .filter((qp) => {
+                        //     if (!config.buildableOnly) return true;
+                        //     if (!qp.item.demands) {
+                        //         qp.item.demands = calcItemDemands(qp.item, config.context.core.items);
+                        //     } 
+                        //     return canBuildItem(qp.item, true);
+                        // })
                         .sort((a, b) => {
                             let r = 0;
 
@@ -905,6 +912,7 @@ const QuestSolver = {
                 ar = asp.map(p => a.crew.map(c => gradeCrew(c, Number.parseInt(p))))?.flat().reduce((p, n) => p + n, 0) ?? 10;
                 br = bsp.map(p => b.crew.map(c => gradeCrew(c, Number.parseInt(p))))?.flat().reduce((p, n) => p + n, 0) ?? 10;
                 r = ar - br;
+
                 if (!r) {
                     ar = a.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
                     br = b.crew.map(c => c.score ?? 0).reduce((p, n) => p + n, 0);
