@@ -1,6 +1,6 @@
 import CONFIG from "../components/CONFIG";
 import { BaseSkills, ComputedBuff, CrewMember, Skill } from "../model/crew";
-import { Collection } from "../model/game-elements";
+import { Collection, PolestarCombo } from "../model/game-elements";
 import { PlayerCrew, PlayerData } from "../model/player";
 import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity } from "../model/worker";
 import { findPolestars } from "../utils/retrieval";
@@ -513,6 +513,12 @@ const BetaTachyon = {
                 crew.scoreTrip = getDistanceFromTop(cf, skillOrderCrew);                
             }
 
+            const polestars = {} as { [key: string]: PolestarCombo[] };
+
+            resultCrew.forEach((crew) => {
+                polestars[crew.symbol] = findPolestars(crew, allCrew);
+            })
+
             const maxevents = resultCrew.map(c => c.events ?? 0).reduce((a, b) => a > b ? a : b);
             const maxvoy = resultCrew.map(c => c.voyagesImproved?.length ?? 0).reduce((a, b) => a > b ? a : b);
             const maxev = resultCrew.map(c => c.totalEVContribution ?? 0).reduce((a, b) => a > b ? a : b);
@@ -524,7 +530,7 @@ const BetaTachyon = {
 
                 let multConf = settings;
 
-                let pss = findPolestars(crew, allCrew);
+                let pss = polestars[crew.symbol];
                 let max = 0;
                 pss.forEach((ps) => {
                     let pcomp = (1/ps.count*100);
@@ -532,7 +538,7 @@ const BetaTachyon = {
                 });
                 
                 // less gives weight
-                let retrieval = multConf.retrieval * (max/100);
+                let retrieval = crew.in_portal ? multConf.retrieval * (1 - (max/100)) : 0;
 
                 // more gives weight
                 let improve = multConf.improved * ((crew.voyagesImproved?.length ?? 0) / (maxvoy ? maxvoy : 1));
@@ -579,8 +585,13 @@ const BetaTachyon = {
 
                 // more gives weight
                 let adist2 = crew.scoreTrip ? (crew.scoreTrip * multConf.triplet) : 1;
-
-                let fin = (100 * (retrieval + amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 11;
+                let fin = 0;
+                if (!crew.in_portal) {
+                    fin = (100 * (amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 10;
+                }
+                else {
+                    fin = (100 * (retrieval + amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 11;
+                }
 
                 //fin *= ((adist + adist2) / 2);
 
