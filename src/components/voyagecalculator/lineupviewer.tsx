@@ -550,6 +550,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 			}
 			<div style={{ margin: '0 auto' }}>
 				<ItemDisplay
+				crewBackground='rich'
 					allCrew={context.core.crew}
 					playerData={context.player.playerData}
 					targetGroup='voyageLineup'

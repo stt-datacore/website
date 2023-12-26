@@ -21,11 +21,13 @@ type ItemDisplayProps = {
 	allCrew?: CrewMember[];
 	allItems?: EquipmentCommon[];		
 	quantity?: number;
+	crewBackground?: 'normal' | 'rich';
 };
 
 class ItemDisplay extends PureComponent<ItemDisplayProps> {
 	render() {
 		const { quantity, playerData, allCrew, allItems, targetGroup, itemSymbol } = this.props;
+		const crewBackground = this.props.crewBackground ?? 'normal';
 
 		let borderWidth = Math.ceil(this.props.size / 34);
 		let starSize = Math.floor(this.props.size / 6);
@@ -55,7 +57,7 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 			alignItems: "center",
 			width: this.props.size + 'px',
 			height: this.props.size + 'px',
-		};
+		} as React.CSSProperties;
 
 		const imgStyle = {
 			borderStyle: 'solid',
@@ -83,6 +85,17 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 			if (!crew) {
 				crew = allCrew.find(crew => crew.symbol === itemSymbol) as PlayerCrew | undefined;
 				if (crew) crew.immortal = CompletionState.DisplayAsImmortalUnowned;
+			}
+			else if (crew.immortal && crewBackground === 'rich') {
+				if (crew.kwipment?.every((qs) => typeof qs === 'number' ? !!qs : !!qs[1])) {
+					imgStyle.backgroundImage = `url(${process.env.GATSBY_ASSETS_URL}collection_vault_vault_item_bg_postimmortalized_256.png)`;
+				}
+				else {
+					imgStyle.backgroundImage = `url(${process.env.GATSBY_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png)`;
+				}
+				imgStyle.backgroundSize = (this.props.size) + "px";
+				imgStyle.backgroundRepeat = "no-repeat";					
+				imgStyle.backgroundClip = 'border-box';
 			}
 		}
 
