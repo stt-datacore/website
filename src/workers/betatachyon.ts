@@ -3,6 +3,7 @@ import { BaseSkills, ComputedBuff, CrewMember, Skill } from "../model/crew";
 import { Collection } from "../model/game-elements";
 import { PlayerCrew, PlayerData } from "../model/player";
 import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity } from "../model/worker";
+import { findPolestars } from "../utils/retrieval";
 import { BuffStatTable } from "../utils/voyageutils";
 
 export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable, nowrite?: boolean) {
@@ -263,7 +264,7 @@ const BetaTachyon = {
             
             const acc = {} as { [key: string]: CrewMember };
 
-            const compareCrew = (crewSymbol: string, skills: string[], allCrew: CrewMember[], best: (PlayerCrew | CrewMember)[], buffs: BuffStatTable) => {
+            const compareCrew = (crewSymbol: string, skills: string[], allCrew: CrewMember[], best: (PlayerCrew | CrewMember)[]) => {
             
                 if (!(crewSymbol in acc)) {
                     let cfe = allCrew.find(c => c.symbol === crewSymbol);
@@ -364,6 +365,7 @@ const BetaTachyon = {
 
             allCrew.forEach(ac => {
                 if (!ac) return;
+                applyCrewBuffs(ac, buffs);
                 let csk = printSkillOrder(ac);
                 let dsk = printSkillOrder(ac, true);
                 if (!uniqueSkillOrders.includes(csk)) {
@@ -452,7 +454,7 @@ const BetaTachyon = {
                 });
 
                 evalCrew.forEach((crew) => {
-                    let c = compareCrew(crew.symbol, skp, allCrew, skillbest[skill], buffs);
+                    let c = compareCrew(crew.symbol, skp, allCrew, skillbest[skill]);
                     if (c >= 0 && c < magic) {                        
                         skillout[skill].push(crew);
                         crew.voyScores ??= {};
@@ -462,7 +464,7 @@ const BetaTachyon = {
                     }                    
         
                     for (let t of triplets) {
-                        let d = compareCrew(crew.symbol, t.split("/"), allCrew, besttrips[t], buffs);
+                        let d = compareCrew(crew.symbol, t.split("/"), allCrew, besttrips[t]);
                         if (d >= 0 && d < 1) {
                             crew.voyScores ??= {};
                             let vt = t.split("/").slice(0, 2).reduce((a, b) => a + "/" + b);
@@ -477,7 +479,7 @@ const BetaTachyon = {
             });
            
             const rc1 = Object.values(skillout).reduce((p, c) => p ? p.concat(c) : c);
-            const resultCrew = rc1.filter((fc, idx) => rc1.findIndex(g => g.symbol === fc.symbol) === idx);
+            const resultCrew = rc1.filter((fc, idx) => rc1.findIndex(g => g.id === fc.id) === idx);
 
             for (let crew of resultCrew) {
                 let cf = allCrew.find(c => c.symbol === crew.symbol);
@@ -521,7 +523,17 @@ const BetaTachyon = {
             const scoreCrew = (crew: PlayerCrew) => {
 
                 let multConf = settings;
+
+                let pss = findPolestars(crew, allCrew);
+                let max = 0;
+                pss.forEach((ps) => {
+                    let pcomp = (1/ps.count*100);
+                    if (max < pcomp) max = pcomp;
+                });
                 
+                // less gives weight
+                let retrieval = multConf.retrieval * (max/100);
+
                 // more gives weight
                 let improve = multConf.improved * ((crew.voyagesImproved?.length ?? 0) / (maxvoy ? maxvoy : 1));
                 
@@ -568,7 +580,7 @@ const BetaTachyon = {
                 // more gives weight
                 let adist2 = crew.scoreTrip ? (crew.scoreTrip * multConf.triplet) : 1;
 
-                let fin = (100 * (amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 10;
+                let fin = (100 * (retrieval + amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 11;
 
                 //fin *= ((adist + adist2) / 2);
 
