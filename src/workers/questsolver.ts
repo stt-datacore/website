@@ -51,6 +51,8 @@ export function getSkillOrder<T extends CrewMember>(crew: T) {
 
 export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[], nodescend?: boolean) {
 
+    let mk = makeAllCombos(crew.map(c => c.id), undefined, undefined, undefined, 3);
+    mk = mk.filter(m => m.length === 3);
     let c = crew.length;
     let d = path.length;
     let i = 0;
@@ -63,15 +65,17 @@ export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[], node
         return (b.challenges?.length ?? 0) - (a.challenges?.length ?? 0);        
     });
 
+    c = mk.length;
     for (i = 0; i < c; i++) {
-        let cx1 = crew.slice(0, i);
-        let cx2 = crew.slice(i);
-        let mcrew = cx2.concat(cx1);
+        // let cx1 = crew.slice(0, i);
+        // let cx2 = crew.slice(i);
+        // let mcrew = cx2.concat(cx1);
+        let mcrew = mk[i].map(num => crew.find(f => f.id === num) as IQuestCrew);
         let n = 0;
         
         for (n = 0; n < d; n++) {
             let ch = path[n];
-            for (let j = 0; j < c; j++) {
+            for (let j = 0; j < 3; j++) {
                 let wc = mcrew[j];
                 if (wc.challenges?.some(wch => wch.challenge.id === ch.id)) {                    
                     if (protosolves.length === q) {
@@ -233,6 +237,21 @@ const QuestSolver = {
             else {
                 reverseDeduction(item, playerItems);
             }
+        }
+
+        function pathPrice(path: string, crew: IQuestCrew[]) {
+            let qp = [] as number[];
+
+            crew.forEach((crew) => {
+                let ap = crew.associated_paths?.find(f => f.path === path);
+                if (ap) {
+                    if (ap.needed_kwipment?.length) {
+                        let nc = newQuip({ ...crew, added_kwipment: ap.needed_kwipment });
+                        qp.push(nc);
+                    }
+                }
+            });
+            return qp.reduce((p, n) => p + n, 0);
         }
 
         function standardSort(roster: IQuestCrew[], challenge?: MissionChallenge, mastery?: number, traits?: MissionTraitBonus[], testPostProcess?: boolean): IQuestCrew[] {
@@ -707,7 +726,7 @@ const QuestSolver = {
                 let combos = [] as number[][];
                 
                 combos = findAllCombos(wpCrew, path);
-
+                let debug_symbols = combos.map(c => c.map(cid => wpCrew.find(f => f.id === cid)?.symbol));
                 let complete = 'full' as ThreeSolveResult;
                 let numbers = combos.filter ((num) => {
                     return path.every((ch) => {
@@ -804,9 +823,9 @@ const QuestSolver = {
                                 pass = false;
                                 const tghist = {} as { [key: string]: boolean[] };
                                 const pretendItems = allQuipment
-                                    // .filter((quip) => {
-                                    //     return tg.some(c => c.associated_paths?.some(pt => pt.path === path_key && quip.kwipment_id && pt.needed_kwipment?.includes(Number.parseInt(quip.kwipment_id as string))))
-                                    // })
+                                    .filter((quip) => {
+                                        return tg.some(c => c.associated_paths?.some(pt => pt.path === path_key && quip.kwipment_id && pt.needed_kwipment?.includes(Number.parseInt(quip.kwipment_id as string))))
+                                    })
                                     .map((quip) => {
                                         return { ... quip, demands: calcItemDemands(quip, config.context.core.items, playerItems) }
                                     });    
@@ -925,6 +944,11 @@ const QuestSolver = {
                 let br = 0;                
                 let r = 0; 
 
+                let pa = pathPrice(a.path, a.crew);
+                let pb = pathPrice(b.path, b.crew);
+                r = pa - pb;
+                if (r) return r;
+                
                 // make sure we get a variety of every sort floated to the top
                 let asp = a.path.split("_") ?? [];
                 let bsp = b.path.split("_") ?? [];
