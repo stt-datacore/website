@@ -34,26 +34,18 @@ export const CollectionCard = (props: CollectionCardProps) => {
     const { collection } = col;
 
     const honorQ = ownedCites?.map(o => {
-        
         if (col.neededStars) {
             if (o.quantity >= col.neededStars[o.rarity]) {
                 return col.neededStars[o.rarity] * o.cost;
             }
             else {
                 return o.quantity * o.cost;
-            }
-            
+            }            
         }
-        // for (let i = 0; i < (col?.collection?.needed ?? 0); i++) {
-        //     if (col.crew && o.rarity === col.crew[i].max_rarity) {
-        //         return o.cost;
-        //     }
-        // }
-        
         return 0;
     }).reduce((p, n) => p + n, 0) ?? 0;
-    const neededCost = Math.max((collection.neededCost ?? 0) - honorQ, 0);
 
+    const neededCost = Math.max((collection.neededCost ?? 0) - honorQ, 0);
     const allStars = !col.neededStars;
 
     if (!collection?.totalRewards || !collection.milestone) return <></>;

@@ -132,7 +132,7 @@ export const getOwnedCites = (items: BuffBase[], sale?: boolean) => {
             ownedCites[rare].quantity += item.quantity ?? 0;
         }
     });
-    ownedCites.forEach((cite) => cite.cost *= cite.quantity);
+    //ownedCites.forEach((cite) => cite.cost *= cite.quantity);
     return ownedCites;
 }
 
