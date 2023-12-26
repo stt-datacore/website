@@ -602,7 +602,27 @@ const QuestSolver = {
 
                     lastChallenge = ch;
                 }
-                
+                if (config.buildableOnly) {
+                    pcrew = pcrew.filter((crew) => {
+                        let aq = crew.added_kwipment ?? [0,0,0,0];
+                        let aqn = crew.added_kwipment_expiration ?? [0,0,0,0];
+                        let n = aq.length;
+                        let cb = true;
+                        for (let i = 0; i < n; i++) {
+                            if (aqn[i] !== 0 || !aq[i]) continue;
+                            let qp = allQuipment.find((f) => f.kwipment_id === aq[i].toString());
+                            if (qp) {                                
+                                qp = { ...qp, demands: calcItemDemands(qp, config.context.core.items, config.context.player.playerData.player.character.items) };
+                                if (!qp.demands) qp.demands = calcItemDemands(qp, config.context.core.items, config.context.player.playerData.player.character.items);
+                                if (!canBuildItem(qp, true)) {
+                                    cb = false;
+                                    break;
+                                }
+                            }
+                        }
+                        return cb;
+                    });
+                }
                 pathCrew[key] = pcrew;
                 pathCrew[key].sort((a, b) => (a.added_kwipment?.filter(f => !!f)?.length ?? 0) - (b.added_kwipment?.filter(f => !!f)?.length ?? 0));
             }
@@ -640,7 +660,7 @@ const QuestSolver = {
                 let total = 0;
                 let slot = 0;
                 let failbuff = [] as EquipmentItem[];
-                if (c.symbol === 'winn_kai_crew') {
+                if (c.symbol === 'vedala_elder_crew') {
                     console.log("Break");
                 }
                 for (let id of altItems) {
@@ -784,9 +804,9 @@ const QuestSolver = {
                                 pass = false;
                                 const tghist = {} as { [key: string]: boolean[] };
                                 const pretendItems = allQuipment
-                                    .filter((quip) => {
-                                        return tg.some(c => c.associated_paths?.some(pt => pt.path === path_key && quip.kwipment_id && pt.needed_kwipment?.includes(Number.parseInt(quip.kwipment_id as string))))
-                                    })
+                                    // .filter((quip) => {
+                                    //     return tg.some(c => c.associated_paths?.some(pt => pt.path === path_key && quip.kwipment_id && pt.needed_kwipment?.includes(Number.parseInt(quip.kwipment_id as string))))
+                                    // })
                                     .map((quip) => {
                                         return { ... quip, demands: calcItemDemands(quip, config.context.core.items, playerItems) }
                                     });    

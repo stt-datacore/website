@@ -87,7 +87,7 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 				if (crew) crew.immortal = CompletionState.DisplayAsImmortalUnowned;
 			}
 			else if (crew.immortal && crewBackground === 'rich') {
-				if (crew.kwipment?.every((qs) => typeof qs === 'number' ? !!qs : !!qs[1])) {
+				if (crew.kwipment?.length === 4 && crew.kwipment?.every((qs) => typeof qs === 'number' ? !!qs : !!qs[1])) {
 					imgStyle.backgroundImage = `url(${process.env.GATSBY_ASSETS_URL}collection_vault_vault_item_bg_postimmortalized_256.png)`;
 				}
 				else {
