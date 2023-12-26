@@ -27,7 +27,9 @@ interface InternalSettings {
     // Power Rank Within Skill Order
     triplet: number | string,
     // Magic Number    
-    magic: number | string
+    magic: number | string,
+    // Retrieval Odds
+    retrieval: number | string,
 }
 
 export interface BetaTachyonSettingsConfig {
@@ -124,7 +126,9 @@ export const defaultSettings = {
     // Power Rank Within Skill Order
     triplet: 3,
     // Magic number
-    magic: 10
+    magic: 10,
+    // Retrieval odds
+    retrieval: 3,
 } as BetaTachyonSettings;
 
 const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSettingsProps) => {
@@ -138,13 +142,12 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
 
     const [showCopied, setShowCopied] = React.useState(false);
     
-    if (typeof window !== 'undefined' && document.location.search) {
-        let parm = new URLSearchParams();
-        if (parm.get("pmc")?.length) {
-            let value = parm.get("pmc");
-
-        }
-    }
+    // if (typeof window !== 'undefined' && document.location.search) {
+    //     let parm = new URLSearchParams();
+    //     if (parm.get("pmc")?.length) {
+    //         let value = parm.get("pmc");
+    //     }
+    // }
 
 	React.useEffect(() => {
 		if (modalIsOpen) inputRef.current?.focus();
@@ -316,6 +319,16 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                         onChange={(e, { value }) => setCurrent({ ... innerSettings, never: value })}>
                     </Input>                        
                 </div>
+               
+                <div style={rowStyle}>
+                    <div style={textStyle}>Retrieval Odds:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.retrieval}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, retrieval: value })}>
+                    </Input>                        
+                </div>
     
                 <div style={rowStyle}>
                     <div style={textStyle}>Collections:</div>
@@ -397,6 +410,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
             score: Number.parseFloat(innerSettings.score as string),
             triplet: Number.parseFloat(innerSettings.triplet as string),
             magic: Number.parseFloat(innerSettings.magic as string),
+            retrieval: Number.parseFloat(innerSettings.retrieval as string),
         } as BetaTachyonSettings;
     }
 	function confirmSelection(): void {		
