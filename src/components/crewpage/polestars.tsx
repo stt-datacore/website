@@ -5,6 +5,7 @@ import { Segment, Header, Grid, Table, Pagination, Dropdown } from 'semantic-ui-
 import { CrewMember } from '../../model/crew';
 import { Constellation, ConstellationMap, Polestar, PolestarCombo, categorizeKeystones } from '../../model/game-elements';
 import { GlobalContext } from '../../context/globalcontext';
+import { findPolestars } from '../../utils/retrieval';
 
 type PolestarsProps = {
 	crew: CrewMember;
@@ -59,7 +60,7 @@ export const Polestars = (props: PolestarsProps) => {
 		</React.Fragment>
 	);
 
-	function optimizeUniquePolestars(crewPolestarCombos: any[]): PolestarCombo[] {
+	function optimizeUniquePolestars(crewPolestarCombos: string[][]): PolestarCombo[] {
 		// Find optimal polestars, i.e. smallest combinations with best chance of retrieving this crew
 		let optimals = [] as PolestarCombo[];
 		for (let i = 0; i < crewPolestarCombos.length; i++) {
@@ -74,98 +75,7 @@ export const Polestars = (props: PolestarsProps) => {
 	}
 
 	function findOptimalPolestars(): PolestarCombo[] {
-		// Generate crewman's list of polestars (traits + rarity + skills)
-		let polestars = crew.traits.slice();
-		polestars.push('crew_max_rarity_'+crew.max_rarity);
-		for (let skill in crew.base_skills) {
-			if (crew.base_skills[skill]) polestars.push(skill);
-		}
-		polestars = polestars.sort((a, b) => a.localeCompare(b));
-		// Initialize all valid combinations of polestars with a zero count
-		let crewPolestarCombos: PolestarCombo[] = [];
-		let f = function(prepoles: string[], traits: string[]) {
-			for (let t = 0; t < traits.length; t++) {
-				const newpoles = prepoles.slice();
-				newpoles.push(traits[t]);
-				if (newpoles.length <= 4) {
-					crewPolestarCombos.push({
-						'count': 0,
-						'alts': [],
-						'polestars': newpoles
-					});
-				}
-				f(newpoles, traits.slice(t+1));
-			}
-		}
-		f([] as string[], polestars);
-
-		// Find all crew who have any polestars in common
-		for (let i = 0; i < globalContext.core.crew.length; i++) {
-			if (!globalContext.core.crew[i].in_portal) continue;
-			let polesInCommon = [] as string[];
-			for (let t = 0; t < crew.traits.length; t++) {
-				if (globalContext.core.crew[i].traits.indexOf(crew.traits[t]) >= 0)
-					polesInCommon.push(crew.traits[t]);
-			}
-			// Add 1 to count of every polestar combination in common
-			if (polesInCommon.length > 0) {
-				// Only consider rarity and skills if at least 1 trait in common
-				if (globalContext.core.crew[i].max_rarity == crew.max_rarity)
-					polesInCommon.push('crew_max_rarity_'+crew.max_rarity);
-				for (let skill in globalContext.core.crew[i].base_skills) {
-					if (globalContext.core.crew[i].base_skills[skill] && crew.base_skills[skill])
-						polesInCommon.push(skill);
-				}
-				crewPolestarCombos.forEach(combo => {
-					if (polesInCommon.length >= (combo.polestars?.length ?? 0)) {
-						if (combo.polestars?.every(polestar => polesInCommon.indexOf(polestar) >= 0)) {
-							combo.count++;
-							if (globalContext.core.crew[i].archetype_id != crew.archetype_id) {
-								if (!combo.alts) combo.alts = [];
-								combo.alts.push({
-									'symbol': globalContext.core.crew[i].symbol,
-									'name': globalContext.core.crew[i].name
-								});
-							}
-						}
-					}
-				});
-			}
-		}
-
-		// Find optimal polestars, i.e. smallest combinations with best chance of retrieving this crew
-		crewPolestarCombos.sort((a, b) => {
-			if (a.count == b.count && a.polestars && b.polestars)
-				return a.polestars.length - b.polestars.length;
-			return a.count - b.count;
-		});
-
-		let iBestCount = crewPolestarCombos[0].count;
-
-		let optimals = [] as PolestarCombo[];
-		for (let i = 0; i < crewPolestarCombos.length; i++) {
-			let testcombo = crewPolestarCombos[i];
-
-			// We stop looking for optimals if:
-			//	test count is worse than current best count
-			if (testcombo.count > iBestCount)
-				break;
-
-			// Ignore supersets of an already optimal subset
-			let bIsSuperset = false;
-			for (let j = 0; j < optimals.length; j++) {
-				if (testcombo.polestars.length <= optimals[j].polestars.length) continue;
-				bIsSuperset = true;
-				optimals[j].polestars.forEach(polestar => {
-					bIsSuperset = bIsSuperset && testcombo.polestars.indexOf(polestar) >= 0;
-				});
-				if (bIsSuperset) break;
-			}
-			if (bIsSuperset) continue;
-
-			optimals.push(crewPolestarCombos[i]);
-		}
-		return optimals;
+		return findPolestars(crew, globalContext.core.crew);
 	}
 
 	function renderConstellation(): JSX.Element {
@@ -254,7 +164,7 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 										<Link key={alt.symbol} to={`/crew/${alt.symbol}/`}>
 											{alt.name}
 										</Link>
-									)).reduce((prev, curr) => <>{prev}, {curr}</>, <></>)}
+									)).reduce((prev, curr) => prev ? <>{prev}, {curr}</> : curr)}
 								</div>
 								)}
 							</Table.Cell>
