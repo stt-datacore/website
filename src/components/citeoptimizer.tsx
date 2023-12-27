@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dropdown, Grid, Table, Icon, Rating, Popup, Pagination, Segment, Tab, Label, Accordion, Checkbox, Input } from 'semantic-ui-react';
+import { Dropdown, Grid, Table, Icon, Rating, Popup, Pagination, Segment, Tab, Label, Accordion, Checkbox, Input, Button } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import { calculateBuffConfig } from '../utils/voyageutils';
 
@@ -7,9 +7,9 @@ import '../typings/worker';
 import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
 
 import { StatLabelProps } from '../components/statlabel';
-import { getSkillOrder, navToCrewPage, printPortalStatus, printSkillOrder } from '../utils/crewutils';
+import { applyCrewBuffs, getSkillOrder, navToCrewPage, printPortalStatus, printSkillOrder } from '../utils/crewutils';
 import { CrewMember, Skill } from '../model/crew';
-import { CiteEngine, CiteMode, PlayerCrew } from '../model/player';
+import { CiteEngine, CiteMode, PlayerCrew, PlayerData } from '../model/player';
 import { gradeToColor } from '../utils/crewutils';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { GlobalContext } from '../context/globalcontext';
@@ -21,6 +21,8 @@ import { TinyStore } from '../utils/tiny';
 import BetaTachyonSettingsPopup, { defaultSettings, permalinkToSettings } from './optimizer/btsettings';
 import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity, VoyageImprovement } from '../model/worker';
 import CONFIG from './CONFIG';
+import ProspectPicker from './prospectpicker';
+import { LockedProspect } from '../model/game-elements';
 
 const pagingOptions = [
 	{ key: '0', value: 10, text: '10' },
@@ -50,6 +52,9 @@ type CiteOptimizerState = {
 	betaTachyonSettings: BetaTachyonSettings;
 	skoMap: { [key: string]: SkillOrderRarity }
 	crewSkills: { [key: string]: string };
+	prospects: LockedProspect[];
+	appliedProspects: PlayerCrew[];
+	unownedProspects: boolean;
 };
 
 export class StatLabel extends React.Component<StatLabelProps> {
@@ -77,6 +82,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		if (plink) {
 			this.tiny.setValue<BetaTachyonSettings>('betaTachyonSettings', plink);
 		}
+		
+		let prospects: LockedProspect[] = this.tiny.getValue<LockedProspect[]>('lockedProspects', []) ?? [];
+		
 		this.state = {
 			citePage: 1,
 			trainingPage: 1,
@@ -93,8 +101,74 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			settingsOpen: false,
 			betaTachyonSettings: this.tiny.getValue<BetaTachyonSettings>('betaTachyonSettings', defaultSettings) ?? defaultSettings,
 			skoMap: {},
-			crewSkills: {}
+			crewSkills: {},
+			prospects,
+			unownedProspects: this.tiny.getValue('unowned', false) ?? false,
+			appliedProspects: []
 		};
+	}
+
+	readonly setUnowned = (value: boolean) => {
+		this.tiny.setValue('unowned', value, true);
+		this.setState({ ...this.state, unownedProspects: value });
+	}
+
+	readonly setProspects = (value: LockedProspect[]) => {
+		value.forEach(f => {
+			if (f.rarity === f.max_rarity) {
+				f.rarity = f.max_rarity - 1;
+			}
+		});
+		this.tiny.setValue('lockedProspects', value, true);
+		this.setState({ ...this.state, prospects: value });
+	}
+
+	readonly applyProspects = () => {
+		const { crew } = this.context.core;
+		const { buffConfig } = this.context.player;
+		const { prospects } = this.state;
+
+		if (!crew) return;
+		let outcrew = [] as PlayerCrew[];
+		let nid = -90000;
+
+		prospects.forEach((p) => {
+			let c = crew.find(f => f.symbol === p.symbol) as PlayerCrew;
+			if (c) {
+				c = JSON.parse(JSON.stringify(c)) as PlayerCrew;
+				c.id = nid--;
+				c.date_added = new Date(c?.date_added);
+				c.level = 100;
+				c.rarity = p.rarity;
+				c.prospect = true;
+				c.equipment = [0, 1, 2, 3];
+				let skillset = c.skill_data.find(f => f.rarity === p.rarity);
+				if (skillset) {
+					c.base_skills = skillset.base_skills;
+				}
+				if (buffConfig) {					
+					applyCrewBuffs(c, buffConfig);
+				}
+				Object.keys(c.base_skills).forEach((skill) => {
+					c.skills ??= {}
+					if (c[skill]) {
+						c.skills[skill] = {
+							core: c[skill].core,
+							range_min: c[skill].min,
+							range_max: c[skill].max
+						}
+					}
+				});
+
+				outcrew.push(c);
+			}
+		});
+
+		this.setState({ ... this.state, appliedProspects: outcrew, citeData: undefined });
+		setTimeout(() =>{
+			const { citeMode } = this.state;
+			this.runWorker(citeMode);
+		});
 	}
 
 	readonly getSettingsOpen = () => {
@@ -108,7 +182,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		if (JSON.stringify(value) !== JSON.stringify(this.state.betaTachyonSettings)) {
 			this.tiny.setValue('betaTachyonSettings', value, true);
 			this.setState({ ...this.state, betaTachyonSettings: value, citeData: undefined });
-			window.setTimeout(() =>{
+			setTimeout(() =>{
 				const { citeMode } = this.state;
 				this.runWorker(citeMode);
 			});
@@ -124,10 +198,17 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				crewsk[crew.symbol] = sko;
 				
 			}
+			
 			this.setState({ ... this.state, crewSkills: crewsk });
-			window.setTimeout(() => {
-				this.runWorker(citeMode);
-			});
+			
+			if (this.state.prospects.length && this.state.appliedProspects.length !== this.state.prospects.length) {
+				this.applyProspects();
+			}
+			else {
+				window.setTimeout(() => {
+					this.runWorker(citeMode);
+				});
+			}
 		}
 		else {
 			this.runWorker(citeMode);
@@ -189,12 +270,21 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	private runWorker(citeMode?: CiteMode) {
 		const worker = new UnifiedWorker();
-		const { playerData, buffConfig } = this.context.player;
+		const { buffConfig } = this.context.player;
 		const allCrew = this.context.core.crew;
 		const collections = this.context.core.collections;
 
+		if (!this.context.player.playerData) return;
+
+		let playerData = JSON.parse(JSON.stringify(this.context.player.playerData)) as PlayerData;		
+
+		if (this.state.appliedProspects?.length) {
+			playerData.player.character.crew = playerData.player.character.crew.concat(this.state.appliedProspects);
+		}
+
 		const engine = this.state.citeMode?.engine ?? "original";
-		if (playerData) playerData.citeMode = citeMode;
+		
+		playerData.citeMode = citeMode;
 
 		worker.addEventListener('message', (message: { data: { result: any; }; }) => {
 			const result = message.data.result as CiteData;
@@ -229,11 +319,10 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					inputCrew: allCrew,
 					collections,
 					buffs: buffConfig,
-					settings: this.state.betaTachyonSettings	
+					settings: this.state.betaTachyonSettings					
 				} as BetaTachyonRunnerConfig
 			});	
 		}
-
 	}
 
 	cc = false;
@@ -633,10 +722,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				</Table.Header>
 				<Table.Body>
 					{data.slice(baseRow, baseRow + paginationRows).map((row, idx: number) => {
-						const crew = this.context.player.playerData?.player.character.crew.find(c => c.name == row.name);
-
+						const crew = this.context.player.playerData?.player.character.crew.find(c => c.name == row.name) ?? this.state.appliedProspects.find(c => c.name === row.name);
+						
 						const skp = engine === 'beta_tachyon_pulse' && !!crew ? printSkillOrder(crew).replace(/_skill/g, '') : 'no_order';
 						const sko = engine === 'beta_tachyon_pulse' && !!crew ? getSkillOrder(crew) : 'no_order';
+						const isProspect = !!crew?.prospect;
 
 						return (!!crew && !!sko && !!skp &&
 							<Table.Row key={crew.symbol + idx + tabName} positive={this.getChecked(crew.symbol)}>
@@ -843,6 +933,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const buffConfig = calculateBuffConfig(this.context.player.playerData.player);
 		const [citeMode, setCiteMode] = this.createStateAccessors<CiteMode>('citeMode');
 		const { engine } = citeMode;
+		const { prospects, unownedProspects } = this.state;
 
 		const [preFilterData, setCiteData] = this.createStateAccessors<CiteData | undefined>('citeData');
 
@@ -932,8 +1023,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		}
 
 		if (workset && citeMode?.portal !== undefined && this.context?.player?.playerData?.player?.character?.crew?.length) {
-			workset.crewToCite = workset.crewToCite.filter((crew) => this.context.player.playerData?.player.character.crew.find(c => c.name === crew.name)?.in_portal === citeMode.portal);
-			workset.crewToTrain = workset.crewToTrain.filter((crew) => this.context.player.playerData?.player.character.crew.find(c => c.name === crew.name)?.in_portal === citeMode.portal);
+			workset.crewToCite = workset.crewToCite.filter((crew) => this.context.core.crew.find(c => c.name === crew.name)?.in_portal === citeMode.portal);
+			workset.crewToTrain = workset.crewToTrain.filter((crew) => this.context.core.crew.find(c => c.name === crew.name)?.in_portal === citeMode.portal);
 		}
 
 		if (workset && citeMode?.nameFilter) {
@@ -1050,7 +1141,6 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						</div>
 						<div style={{ display: "flex", height: "3em", flexDirection: "row", justifyContent: "center", alignItems: "center", marginLeft: "1em"}}>
 							<Input
-
 								label={"Search"}
 								value={citeMode.nameFilter}
 								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, nameFilter: value })}
@@ -1105,7 +1195,38 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 					</div>
 				</Segment>
+				<Segment>
+					<h3>Prospects</h3>
+					
+					<Checkbox checked={unownedProspects} onChange={(e, { checked }) => this.setUnowned(!!checked)} 
+							label={'Unowned Crew Only'} />
 
+					<div style={{ display: "flex", flexDirection: "row", gap: "1em", alignItems: "center", marginTop: "0.5em"}}>
+					
+						<div style={{display: "block"}}>
+						<ProspectPicker
+							prospects={prospects}
+							setProspects={this.setProspects}
+							pool={
+								this.context.core.crew.filter(c => 
+									{
+										let res = Object.keys(c.base_skills).length === 3 && (!citeMode.rarities?.length || citeMode.rarities.includes(c.max_rarity));
+										if (res && unownedProspects) {
+											res &&= !!this.context.player.playerData?.player.character.unOwnedCrew?.find(f => f.symbol === c.symbol)
+										}
+										return res;
+									}
+								)} />
+						</div>
+						<div style={{display: "flex", flexDirection: "column", gap: "0.25em"}}>
+						<Button onClick={(e) => this.applyProspects()}>Apply Prospect State</Button>
+						<i>(State will only reflect in list once button is tapped)</i>
+
+						</div>
+
+					</div>
+
+				</Segment>
 				<Segment>
 					{!citeData &&
 						<>
