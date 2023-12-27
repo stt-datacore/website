@@ -370,6 +370,7 @@ class VoyageCalculator {
                 for (let j = i + 1; j < considered.length; j++) {
                     if (considered[i].original === considered[j].original) {
                         this.log.log("ERROR - DUPE CREW IN RESULT", 1);
+                        return;
                     }
                 }
             }
