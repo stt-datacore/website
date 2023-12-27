@@ -352,11 +352,6 @@ const BetaTachyon = {
 
             const topCrew = {} as { [key: string]: CrewMember };
             const skillOrderCrew = {} as { [key: string]: CrewMember[] };
-
-            allCrew.forEach((f) => {
-                f.date_added = new Date(f.date_added);
-                applyCrewBuffs(f, buffs);
-            });
             
             const uniqueSkillOrders = [] as string[];
             const uniqueTwoSkills = [] as string[];
@@ -365,6 +360,7 @@ const BetaTachyon = {
 
             allCrew.forEach(ac => {
                 if (!ac) return;
+                ac.date_added = new Date(ac.date_added);
                 applyCrewBuffs(ac, buffs);
                 let csk = printSkillOrder(ac);
                 let dsk = printSkillOrder(ac, true);

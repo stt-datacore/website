@@ -197,6 +197,7 @@ export interface SkillOrderRarity {
 
 export interface BetaTachyonRunnerConfig {
     playerData: PlayerData;
+    prospects: PlayerCrew[];
     collections: Collection[];
     inputCrew: CrewMember[];
     buffs: BuffStatTable;
