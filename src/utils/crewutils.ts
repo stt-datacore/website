@@ -1400,6 +1400,7 @@ export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
 		else if (obstr === 'BossBattle') obstr = 'Captain\'s Bridge';
 		else if (obstr === 'Collection') obstr = 'Collection Milestone';
 		else if (obstr === 'Missions') obstr = 'Main Board Mission';
+		else if (obstr === 'Mega') obstr = 'Recurring Mega';
 	}
 	else {
 		if (obstr === 'BossBattle') obstr = 'Bridge';
