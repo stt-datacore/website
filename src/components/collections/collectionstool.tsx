@@ -383,10 +383,11 @@ export interface CollectionsViewsProps {
 const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	const context = React.useContext(GlobalContext);
-	const colContext = React.useContext(CollectionFilterContext);
 
 	const { playerData } = context.player;
 	if (!playerData) return <></>;
+
+	const colContext = React.useContext(CollectionFilterContext);
 
 	const [workerRunning, setWorkerRunning] = React.useState(false);
 	const [colGroups, setColGroups] = React.useState<CollectionMap[]>([]);
@@ -618,7 +619,9 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 		setColGroups(result.maps);
 		setColOptimized(result.groups);
 		setCostMap(result.costMap);
-		setWorkerRunning(false);
+		setTimeout(() => {
+			setWorkerRunning(false);
+		});		
 	}
 
 	const runWorker = () => {
