@@ -30,6 +30,7 @@ import {
     nextImmortalState,
     nextBuffState,
     CrewPreparer,
+    ProspectImmortalNames,
 } from "./crew_preparer";
 import {
     PresenterPlugin,
@@ -152,6 +153,7 @@ export interface BuffSelectorProps {
 
 export interface ImmortalSelectorProps {
     immoed?: boolean;
+    prospect?: boolean;
     immortalMode: PlayerImmortalMode;
     setImmortalMode: (value: PlayerImmortalMode) => void;
     style?: React.CSSProperties | undefined;
@@ -237,7 +239,8 @@ function drawImmo(
     key: string | number,
     data: PlayerImmortalMode,
     immoClick?: (value: PlayerImmortalMode) => void,
-    immoed?: boolean
+    immoed?: boolean,
+    prospect?: boolean
 ): JSX.Element {
     const immoclick = (
         e: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -262,7 +265,7 @@ function drawImmo(
                         marginRight: "0.5em",
                     }}
                 />
-                {!immoed && "Shown "}{ImmortalNames[data]}
+                {!immoed && "Shown "}{prospect ? ProspectImmortalNames[data] : ImmortalNames[data]}
             </div>
         );
     } else if (data === "frozen") {
@@ -274,7 +277,7 @@ function drawImmo(
                     title="Frozen"
                     style={{ ...frozenStyle, fontSize: "0.8em", marginRight: "0.5em" }}
                 />
-                {ImmortalNames[data]}
+                {prospect ? ProspectImmortalNames[data] : ImmortalNames[data]}
             </div>
         );
     } else {
@@ -286,7 +289,7 @@ function drawImmo(
                     title=""
                     style={{ ...dormantStyle, fontSize: "0.8em", marginRight: "0.5em" }}
                 />
-                {ImmortalNames[data]}
+                {prospect ? ProspectImmortalNames[data] : ImmortalNames[data]}
             </div>
         );
     }
@@ -323,7 +326,8 @@ export class ImmortalSelector extends React.Component<ImmortalSelectorProps> {
                         "immoTrig",
                         this.props.immortalMode,
                         undefined,
-                        this.props.immoed
+                        this.props.immoed,
+                        this.props.prospect
                     )}
                     options={this.props.available}
                     value={this.props.immortalMode}
@@ -615,10 +619,10 @@ export class CrewPresenter extends React.Component<
             let immo = {
                 key: data,
                 value: data,
-                text: ImmortalNames[data],
+                text: crew.prospect ? ProspectImmortalNames[data] : ImmortalNames[data],
             } as HoverSelectorConfig<PlayerImmortalMode>;
 
-            immo.content = drawImmo(idx, data, clickImmo, immoed);
+            immo.content = drawImmo(idx, data, clickImmo, immoed, crew.prospect);
             return immo;
         });
 
@@ -653,8 +657,14 @@ export class CrewPresenter extends React.Component<
             "immortal" in crew &&
             crew.immortal === CompletionState.DisplayAsImmortalUnowned
         ) {
-            pt = "Unowned (Available in the Portal)";
-            npt = "Unowned (Not in the Portal)";
+            if (crew.prospect) {
+                pt = "Prospective Crew (Available in the Portal)";
+                npt = "Prospective Crew (Not in the Portal)";    
+            }
+            else {
+                pt = "Unowned (Available in the Portal)";
+                npt = "Unowned (Not in the Portal)";    
+            }
         } else if (
             !("immortal" in crew) ||
             ("immortal" in crew &&
@@ -844,7 +854,7 @@ export class CrewPresenter extends React.Component<
                                             CompletionState.DisplayAsImmortalStatic ? (
                                             <>
                                                 {" "}
-                                                {(crew.in_portal && (
+                                                {((crew.in_portal && !crew.prospect) && (
                                                     <div
                                                         style={{
                                                             alignSelf: "center",
@@ -865,7 +875,7 @@ export class CrewPresenter extends React.Component<
                                                     </div>
                                                 )) || (
                                                         <i
-                                                            className="lock icon"
+                                                            className={crew.prospect ? "add user icon" : "lock icon"}
                                                             style={frozenStyle}
                                                             title={noPortalText}
                                                         />
@@ -913,6 +923,7 @@ export class CrewPresenter extends React.Component<
                             >
                                 <ImmortalSelector
                                     immoed={immoed}
+                                    prospect={crew.prospect}
                                     available={availImmos}
                                     immortalMode={me.immortalMode}
                                     setImmortalMode={(e) => clickImmo(e)}
