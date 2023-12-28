@@ -57,6 +57,7 @@ export function settingsToPermalink(settings: BetaTachyonSettings) {
     params.set("rare", settings.skillRare.toString());
     params.set("score", settings.score.toString());
     params.set("tri", settings.triplet.toString());
+    params.set("odds", settings.retrieval.toString());
     params.set("magic", settings.magic.toString());
 
     if (settings.name) {
@@ -89,6 +90,7 @@ export function permalinkToSettings() {
         score: Number.parseFloat(params.get("score") ?? ""),
         triplet: Number.parseFloat(params.get("tri") ?? ""),
         magic: Number.parseFloat(params.get("magic") ?? ""),
+        retrieval: Number.parseFloat(params.get("odds") ?? "")
     } as BetaTachyonSettings;
 
     Object.keys(newConfig).forEach(k => {
