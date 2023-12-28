@@ -19,7 +19,7 @@ export const BuffNames = {
 }
 
 export const ImmortalNames = {
-    "owned": "Owned",
+    "owned": "Owned Rarity",
     "min": "Unfused",
     "full": "Immortalized",
     2: "2 Stars", 
@@ -27,6 +27,17 @@ export const ImmortalNames = {
     4: "4 Stars", 
     "frozen": "Frozen",    
 }
+
+export const ProspectImmortalNames = {
+    "owned": "Prospect Rarity",
+    "min": "Unfused",
+    "full": "Immortalized",
+    2: "2 Stars", 
+    3: "3 Stars", 
+    4: "4 Stars", 
+    "frozen": "Frozen",    
+}
+
 
 export function getAvailableBuffStates(playerData?: PlayerData, buffConfig?: BuffStatTable, crew?: PlayerCrew): PlayerBuffMode[] {
     const hasPlayer = !!playerData?.player?.character?.crew?.length;
