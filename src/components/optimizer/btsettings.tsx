@@ -377,7 +377,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
 
     function copyPermalink() {
         let url = settingsToPermalink(innerSettingsToSettings());
-        if (typeof navigator !== 'undefined') {
+        if (typeof navigator?.clipboard !== 'undefined') {
             navigator.clipboard.writeText(url);
             setShowCopied(true);
             window.setTimeout(() => {
