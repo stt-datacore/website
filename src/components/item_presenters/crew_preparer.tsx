@@ -1,7 +1,7 @@
 import React from "react";
 import { CrewMember, Skill } from "../../model/crew";
 import { PlayerData, PlayerCrew, CompletionState } from "../../model/player";
-import { prepareOne, applyCrewBuffs, getSkills } from "../../utils/crewutils";
+import { prepareOne, applyCrewBuffs, getSkills, PREPARE_MAX_RARITY } from "../../utils/crewutils";
 import { BuffStatTable } from "../../utils/voyageutils";
 import { IDefaultGlobal } from "../../context/globalcontext";
 import { EquipmentItem } from "../../model/equipment";
@@ -126,7 +126,7 @@ export function applyImmortalState(state: PlayerImmortalMode, reference: CrewMem
         pres = prepareOne(reference, playerData, buffConfig);
     }
     else if (state === 'full' || state === 'frozen') {
-        pres = prepareOne(reference, playerData, buffConfig, 6);
+        pres = prepareOne(reference, playerData, buffConfig, PREPARE_MAX_RARITY);
     }
     else if (state === 'min') {
         pres = prepareOne(reference, playerData, buffConfig, 1);

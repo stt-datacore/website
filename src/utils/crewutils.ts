@@ -315,7 +315,9 @@ export function isImmortal(crew: PlayerCrew): boolean {
 	return crew.level === 100 && crew.rarity === crew.max_rarity && (crew.equipment?.length === 4 || !crew.equipment)
 }
 
-export function prepareOne(origCrew: CrewMember, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number): PlayerCrew[] {
+export const PREPARE_MAX_RARITY = 6;
+
+export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number): PlayerCrew[] {
 	// Create a copy of crew instead of directly modifying the source (allcrew)
 	let templateCrew = JSON.parse(JSON.stringify(origCrew)) as PlayerCrew;
 	let outputcrew = [] as PlayerCrew[];
@@ -325,7 +327,14 @@ export function prepareOne(origCrew: CrewMember, playerData?: PlayerData, buffCo
 	}
 	if (buffConfig && !Object.keys(buffConfig)?.length) buffConfig = undefined;
 
-	templateCrew.rarity = templateCrew.max_rarity;
+	if ("prospect" in origCrew && origCrew.prospect && origCrew.rarity) {
+		templateCrew.rarity = origCrew.rarity;
+		templateCrew.prospect = origCrew.prospect;
+	}
+	else {
+		templateCrew.rarity = templateCrew.max_rarity;
+	}
+	
 	templateCrew.level = 100;
 	templateCrew.have = false;
 	templateCrew.equipment = [0, 1, 2, 3];
@@ -440,7 +449,7 @@ export function prepareOne(origCrew: CrewMember, playerData?: PlayerData, buffCo
 			}
 			crew.base_skills = workitem.skill_data[rarity].base_skills;
 		}
-		else if (workitem.skills && rarity !== 6) {
+		else if (workitem.skills && rarity !== PREPARE_MAX_RARITY) {
 			for (let skill in CONFIG.SKILLS) {
 				crew[skill] = { core: 0, min: 0, max: 0 } as ComputedBuff;
 			}
@@ -460,7 +469,7 @@ export function prepareOne(origCrew: CrewMember, playerData?: PlayerData, buffCo
 			applyCrewBuffs(crew, buffConfig);
 		}
 
-		if (rarity !== 6) {
+		if (rarity !== PREPARE_MAX_RARITY) {
 			if (crew.immortal <= 0 || crew.immortal === undefined) {
 				crew.immortal = isImmortal(crew) ? CompletionState.Immortalized : CompletionState.NotComplete;
 			}
