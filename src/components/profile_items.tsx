@@ -512,7 +512,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						rr &&= item.traits_requirement?.some(t => f.traits.includes(t) || f.traits_hidden.includes(t));
 					}
 				}
-				rr &&= Object.keys(bonus.bonuses).every(skill => skill in f.base_skills);
+				rr &&= Object.keys(bonus.bonuses).some(skill => skill in f.base_skills);
 
 				return rr;
 				

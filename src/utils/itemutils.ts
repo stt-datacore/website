@@ -278,7 +278,7 @@ export function getQuipmentCrew<T extends CrewMember>(item: EquipmentItem, crew:
 				}
 			}
 
-			rr &&= Object.keys(bonus.bonuses).every(skill => skill in f.base_skills);
+			rr &&= Object.keys(bonus.bonuses).some(skill => skill in f.base_skills);
 
 			return rr;
 		});
