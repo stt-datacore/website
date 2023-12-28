@@ -93,7 +93,7 @@ export function permalinkToSettings() {
         retrieval: Number.parseFloat(params.get("odds") ?? "")
     } as BetaTachyonSettings;
 
-    Object.keys(newConfig).forEach(k => {
+    Object.keys(defaultSettings).forEach(k => {
         if (k !== 'name') {
             if (newConfig[k] === undefined || Number.isNaN(newConfig[k])) {
                 newConfig[k] = defaultSettings[k];
@@ -140,7 +140,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
 	const inputRef = React.createRef<Input>();
 
     const [workConf, setWorkConf] = React.useState(config);
-    const [innerSettings, setInnerSettings] = React.useState<InternalSettings>(config.current);
+    const [innerSettings, setInnerSettings] = React.useState<InternalSettings>({ ... defaultSettings, ... config.current });
 
     const [showCopied, setShowCopied] = React.useState(false);
     
