@@ -108,7 +108,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		};
 	}
 
-	readonly setUnowned = (value: boolean) => {
+	readonly setUnowned = (value: boolean) => {		
 		this.tiny.setValue('unowned', value, true);
 		this.setState({ ...this.state, unownedProspects: value });
 	}
@@ -116,7 +116,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 	readonly setProspects = (value: LockedProspect[]) => {
 		value.forEach(f => {
 			if (f.rarity === f.max_rarity) {
-				f.rarity = f.max_rarity - 1;
+				f.rarity = 1;
 			}
 		});
 		this.tiny.setValue('lockedProspects', value, true);
@@ -142,6 +142,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				c.rarity = p.rarity;
 				c.prospect = true;
 				c.equipment = [0, 1, 2, 3];
+				c.immortal = 0;
 				let skillset = c.skill_data.find(f => f.rarity === p.rarity);
 				if (skillset) {
 					c.base_skills = skillset.base_skills;
@@ -722,8 +723,17 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				</Table.Header>
 				<Table.Body>
 					{data.slice(baseRow, baseRow + paginationRows).map((row, idx: number) => {
-						const crew = this.context.player.playerData?.player.character.crew.find(c => c.name == row.name) ?? this.state.appliedProspects.find(c => c.name === row.name);
+						let cop: PlayerCrew | undefined;
 						
+						if (this.state.citeMode?.engine === 'beta_tachyon_pulse') {
+							cop = this.state.appliedProspects.find(c => c.id === row.id) ?? this.context.player.playerData?.player.character.crew.find(c => c.id == row.id);
+						}
+						else {
+							cop = this.state.appliedProspects.find(c => c.name === row.name) ?? this.context.player.playerData?.player.character.crew.find(c => c.name == row.name);
+						}
+						
+						const crew = cop;
+
 						const skp = engine === 'beta_tachyon_pulse' && !!crew ? printSkillOrder(crew).replace(/_skill/g, '') : 'no_order';
 						const sko = engine === 'beta_tachyon_pulse' && !!crew ? getSkillOrder(crew) : 'no_order';
 						const isProspect = !!crew?.prospect;
