@@ -9,6 +9,4 @@ date: 05/12/2023
 published: true
 ---
 
-Very closely related in Skill set and Voyage power to Admiral Robert April, released in the same Mega Event, Kalar Pike does have a few differences to highlight, but in general he may sit in the shadow of his commanding officer, who you can get 80% Fully Fused with little to no effort.
-
-Strong enough Voyage power to make you slightly overlook his rotten Skill set, Pike enjoys a better chance to find weekend work than April given his Main Cast pedigree and popularity as the star of Strange New Worlds, plus his additional Traits give him both Trait-based bonus opportunities and more Collection chances. Three debut Collections and two more hiding for later give him the ability for long term value, but you’ll need to devote more resources to getting him finished than April. A strong enough crew to consider Citations, if you have extra, but if you don’t have many, April may be a better bet.
+Is Jenna looking back over her shoulder at all the Super Rares that are objectively worse than she is? Maybe, but there are quite a few better as well. Jenna Mitchell-watch-watch-watch (no relation to Gary so far in canon), is a bit of a one-trick pony, with a 250% Instant Damage Ship Ability with a 10s Initialization, Accuracy Boost, and no Limit or Triggers. Sure, there are better but there are also a lot worse. So for the new player, Jenna will get lots of use in your Skirmishes and Arena Battles, and consider her passable Voyage power, single Collection, and non-CDS Skill set all bonuses for the early game.
