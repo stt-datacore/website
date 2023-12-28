@@ -99,9 +99,27 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 
     if (!quip) {
         if (!crew.equipment_slots[startlevel] || !context.core.items?.length) {
-            //console.error(`Missing equipment slots information for crew '${crew.name}'`);
-            //console.log(crew);
+
+            // some crew have incomplete slots.
+            // since in most cases, these crew are for show, only,
+            // their level will be 100. We'll look for crew around
+            // the given level and see if it's there.
             [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
+
+            let lvl = crew.level;
+            if (lvl % 10) lvl = lvl - (lvl % 10);
+            if (lvl === 100) lvl = 90;
+            let ceq = crew.equipment_slots.filter(eq => eq.level >= lvl && eq.level <= lvl + 10);
+            if (ceq?.length && ceq.length >= 4) {
+                ceq = ceq.slice(ceq.length - 4);
+                let i = 0;
+                for (let eq of ceq) {
+                    let ef = context.core.items.find(item => item.symbol === eq.symbol);
+                    if (ef) {
+                        equip[i++] = (JSON.parse(JSON.stringify(ef)));
+                    }
+                }
+            }
         } else {
             
             [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
