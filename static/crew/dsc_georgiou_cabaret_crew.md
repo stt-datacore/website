@@ -14,17 +14,17 @@ Come hear the whales pay,
 Six packs are a cabaret, old chum, 
 Come to the Cabaret! 
 
-Put down the event golds, the giveaways and the campaigns, 
+Put down the Event Crew, the Giveaways and the Campaigns, 
 It's time for a holiday, 
-Six packs are a cabaret, old chum! 
+Six Packs are a cabaret, old chum! 
 Come to the Cabaret! 
 
 Come taste the CMD! 
 Come hear the DIP! 
 Come blow chunks at the SUCK, start self-flagellating! 
-Right this way, your mediocre gold's waiting! 
+Right this way, your mediocre Crew's waiting! 
 
 What good's permitting some Big Booker of doom, 
 To wipe every smile away, 
-Six packs are a cabaret, old chum, 
+Six Packs are a cabaret, old chum, 
 So come to the Cabaret!
