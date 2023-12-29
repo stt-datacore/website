@@ -9,6 +9,6 @@ date: 27/07/2022
 published: true
 ---
 
-Akin to Seska’s Doc in Worst Case Scenario, Badgey is looking forward to teaching you a lesson with twenty cc's of nitric acid. His Good Doc, Bad Doc routine is fortuitous when it’s paired with a top ten voyage score on debut. 
+Akin to Seska’s Doc in Worst Case Scenario, Badgey is looking forward to teaching you a lesson with twenty cc's of nitric acid. His Good Doc, Bad Doc routine is fortuitous when it’s paired with a more than capable Voyage rating.
 
-A 7/7 hit rate on anti-matter traits help make him an overall voyage package with reasonable collection potential moving forward. Given the ubiquity of SEC and CMD shuttle seats, Badgey will perform well there too, even if his event chances remain hinged on his visible traits and don’t pick up any help from Lower Decks show megas.
+A 7/7 hit rate on Anti-matter Traits help make him an overall Voyage package with reasonable Collection potential moving forward. Given the ubiquity of SEC and CMD Shuttle seats, Badgey will perform well there too, even if his Event chances remain hinged on his visible Traits and don’t pick up any help from Lower Decks Show Mega Events.

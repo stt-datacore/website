@@ -9,6 +9,6 @@ date: 22/08/2018
 published: true
 ---
 
-Something of a man for all seasons, Martok offers voyage, shuttle, collection, and arena value in varying degrees. A competitive SECondary and handful of galaxy map node unlocks should earn him at least some level of work on fresh rosters.
+Something of a man for all seasons, Martok offers Voyage, Shuttle, Collection, and Ship Ability value in varying degrees. A competitive SECondary and handful of Galaxy Map Node unlocks should earn him at least some level of work on fresh rosters.
 
-Only eligible for Tuesday cadets and requiring a smattering of Klingon and KCA faction items, it’s understandable if you’d rather save your precious trainers for other crew, though he’s not an objectively poor choice for early immortalization.
+Only eligible for Tuesday Cadet Missions and requiring a smattering of Klingon and KCA Faction Items, it’s understandable if you’d rather save your precious Trainers for other crew, though he’s not an objectively poor choice for early Immortalization.
