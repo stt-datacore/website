@@ -5,6 +5,7 @@ import { CompletionState, PlayerCrew } from '../../model/player';
 import { IRosterCrew } from './model';
 import { Skills } from '../item_presenters/classic_presenter';
 import { GlobalContext } from '../../context/globalcontext';
+import { printShortDistance } from '../../utils/misc';
 
 export interface TraitOptions {
 	key: string;
@@ -120,6 +121,7 @@ export function descriptionLabel(crew: IRosterCrew, showOwned?: boolean): JSX.El
 	return (
 		<div>
 			<React.Fragment>
+				{!!crew.expires_in && <Icon name='warning sign' title={`Crew expires in ${printShortDistance(undefined, crew.expires_in * 1000)}`} />}
 				{crew.favorite && <Icon name='heart' />}
 				{crew.prospect && <Icon name='add user' />}
 				{crew.active_status > 0 && <Icon name='space shuttle' />}
