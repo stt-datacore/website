@@ -1064,6 +1064,15 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const compareCount = this.state.checks?.filter(z => z.checked)?.length;
 		const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
+		const corePool = this.context.core.crew.filter(c => 
+		{
+			let res = Object.keys(c.base_skills).length === 3 && (!citeMode.rarities?.length || citeMode.rarities.includes(c.max_rarity));
+			if (res && unownedProspects) {
+				res &&= !!this.context.player.playerData?.player.character.unOwnedCrew?.find(f => f.symbol === c.symbol)
+			}
+			return res;
+		});
+
 		return (
 			<>
 				<Accordion
@@ -1217,16 +1226,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						<ProspectPicker
 							prospects={prospects}
 							setProspects={this.setProspects}
-							pool={
-								this.context.core.crew.filter(c => 
-									{
-										let res = Object.keys(c.base_skills).length === 3 && (!citeMode.rarities?.length || citeMode.rarities.includes(c.max_rarity));
-										if (res && unownedProspects) {
-											res &&= !!this.context.player.playerData?.player.character.unOwnedCrew?.find(f => f.symbol === c.symbol)
-										}
-										return res;
-									}
-								)} />
+							pool={corePool} />
 						</div>
 						<div style={{display: "flex", flexDirection: "column", gap: "0.25em"}}>
 						<Button onClick={(e) => this.applyProspects()}>Apply Prospect State</Button>

@@ -27,6 +27,12 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 		list: [] as DropDownItem[]
 	});
 
+	React.useEffect(() => {
+		if (options.state !== OptionsState.Uninitialized) {
+			setOptions({ ... options, state: OptionsState.Uninitialized });
+		}		
+	}, [pool]);
+
 	if (pool.length == 0) return (<></>);
 
 	const placeholder = options.state === OptionsState.Initializing ? 'Loading. Please wait...' : 'Select Crew';
