@@ -1,28 +1,27 @@
-import React from 'react';
-import { Dropdown, Grid, Table, Icon, Rating, Popup, Pagination, Segment, Tab, Label, Accordion, Checkbox, Input, Button } from 'semantic-ui-react';
 import { Link } from 'gatsby';
+import React from 'react';
+import { Accordion, Button, Checkbox, Dropdown, Grid, Icon, Input, Label, Pagination, Popup, Rating, Segment, Tab, Table } from 'semantic-ui-react';
 import { calculateBuffConfig } from '../utils/voyageutils';
 
-import '../typings/worker';
 import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
+import '../typings/worker';
 
 import { StatLabelProps } from '../components/statlabel';
-import { applyCrewBuffs, getSkillOrder, navToCrewPage, printPortalStatus, printSkillOrder } from '../utils/crewutils';
-import { CrewMember, Skill } from '../model/crew';
-import { CiteEngine, CiteMode, PlayerCrew, PlayerData } from '../model/player';
-import { gradeToColor } from '../utils/crewutils';
-import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { GlobalContext } from '../context/globalcontext';
-import { PortalFilter, RarityFilter, descriptionLabel } from './crewtables/commonoptions';
-import { appelate } from '../utils/misc';
-import ItemDisplay from './itemdisplay';
-import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
-import { TinyStore } from '../utils/tiny';
-import BetaTachyonSettingsPopup, { defaultSettings, permalinkToSettings } from './optimizer/btsettings';
-import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity, VoyageImprovement } from '../model/worker';
-import CONFIG from './CONFIG';
-import ProspectPicker from './prospectpicker';
+import { CrewMember } from '../model/crew';
 import { LockedProspect } from '../model/game-elements';
+import { CiteEngine, CiteMode, PlayerCrew, PlayerData } from '../model/player';
+import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity, VoyageImprovement } from '../model/worker';
+import { applyCrewBuffs, getSkillOrder, gradeToColor, navToCrewPage, printPortalStatus, printSkillOrder } from '../utils/crewutils';
+import { appelate } from '../utils/misc';
+import { TinyStore } from '../utils/tiny';
+import CONFIG from './CONFIG';
+import { PortalFilter, RarityFilter, descriptionLabel } from './crewtables/commonoptions';
+import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
+import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
+import ItemDisplay from './itemdisplay';
+import BetaTachyonSettingsPopup, { defaultSettings, permalinkToSettings } from './optimizer/btsettings';
+import ProspectPicker from './prospectpicker';
 
 const pagingOptions = [
 	{ key: '0', value: 10, text: '10' },

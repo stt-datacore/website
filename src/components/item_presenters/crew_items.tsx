@@ -1,16 +1,16 @@
 import * as React from 'react';
 
-import { CrewMember, EquipmentSlot } from "../../model/crew";
-import { PlayerCrew, PlayerData } from "../../model/player"
-import { GlobalContext } from '../../context/globalcontext';
-import { BuffStatTable } from '../../utils/voyageutils';
-import { EquipmentItem } from '../../model/equipment';
-import ItemDisplay from '../itemdisplay';
-import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { navigate } from 'gatsby';
-import { getCrewQuipment, qbitsToSlots } from '../../utils/crewutils';
+import { GlobalContext } from '../../context/globalcontext';
+import { CrewMember, EquipmentSlot } from "../../model/crew";
+import { EquipmentItem } from '../../model/equipment';
+import { PlayerCrew, PlayerData } from "../../model/player";
+import { qbitsToSlots } from '../../utils/crewutils';
 import { getItemBonuses } from '../../utils/itemutils';
 import { printShortDistance } from '../../utils/misc';
+import { BuffStatTable } from '../../utils/voyageutils';
+import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import ItemDisplay from '../itemdisplay';
 
 export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
