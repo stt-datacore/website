@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Dropdown, Icon, Label, Rating, Popup } from 'semantic-ui-react';
 
-import { CompletionState, PlayerCrew } from '../../model/player';
+import { CompletionState } from '../../model/player';
 import { IRosterCrew } from './model';
 import { Skills } from '../item_presenters/classic_presenter';
 import { GlobalContext } from '../../context/globalcontext';
