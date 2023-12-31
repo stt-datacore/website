@@ -7,7 +7,7 @@ import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
 import '../typings/worker';
 
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
-import { exportItemsAlt, getItemBonuses } from '../utils/itemutils';
+import { exportItemsAlt, getItemBonuses, isQuipmentMatch } from '../utils/itemutils';
 
 import CONFIG from '../components/CONFIG';
 import { GlobalContext } from '../context/globalcontext';
@@ -177,6 +177,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		const { playerData } = this.context.player;
 		const { crewType, skills, traits } = this.state;
 
+		let data = this._getFilteredItems(true) as EquipmentItem[];
+
 		if (this.props?.crewMode && crew?.length) {
 			[ ...crew ].sort((a, b) => a.name.localeCompare(b.name)).forEach((c) => {
 
@@ -196,7 +198,12 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				}
 
 				if (traits?.length) {
-					if (!traits.some(trait => c.traits.includes(trait) || c.traits_hidden.includes(trait))) return;
+					if (!traits.includes("any") && !traits.includes("none")) {
+						if (!traits.some(trait => c.traits.includes(trait) || c.traits_hidden.includes(trait))) return;
+					}					
+					else if (data && traits.includes("any")) {
+						if (!data.some(d => isQuipmentMatch(c, d))) return;
+					}
 				}
 
 				crewChoices.push(
@@ -444,6 +451,24 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 
 	private _handleTraits = (values: string[] | undefined) => {
+		if (values?.length) {
+			if (values[values.length - 1] === 'none') {
+				values = ['none'];
+			}
+			else if (values[values.length - 1] === 'any') {
+				values = ['any'];
+			}
+			else if (values.some(v => v !== 'none' && v !== 'any')) {
+				values = values.filter(v => v !== 'none' && v !== 'any');
+			}
+			else if (values?.includes('none')) {
+				values = ['none'];
+			}
+			else if (values?.includes('any')) {
+				values = ['any'];
+			}	
+		}
+		
 		const searchOpts = { ...(this.state.searchOpts ?? {}), filterText: !!values?.length ? "trait:" + values?.join(",") : '' };
 		this.tiny.setValue('searchOptions', searchOpts);
 
@@ -486,8 +511,137 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		this.setState({ ... this.state, data: undefined, addNeeded: value ?? false });
 	}
 
+	private _getFilteredItems(ignoreCrewSelection?: boolean) {
+	
+		const { ownedQuipment, crewSelection } = this.state;
+		let data = [ ...this.state.data ?? [] ];
+		
+		const filterText = this.state.searchOpts?.filterText?.toLocaleLowerCase();
+		const { types, crewMode } = this.props;
+
+		const { rarity, itemType } = this.state.searchOpts ?? {};
+		const { playerData } = this.context.player;
+	
+		if ((filterText && filterText !== '') || !!rarity?.length || !!itemType?.length || !!types?.length || !!crewSelection?.length) {
+				
+			data = data.filter(f => {
+
+				if (ownedQuipment !== 'all' && f.type === 14 && playerData) {
+					let g = f as EquipmentItem;
+					if (!g.demands?.some(d => d.have)) {
+						g.demands = calcItemDemands(g, this.context.core.items, playerData.player.character.items);
+					}
+					if (ownedQuipment === 'both') {
+						if (!canBuildItem(g, true) && !playerData.player.character.items.some((item) => item.archetype_id?.toString() === f.kwipment_id?.toString())) return false;
+					}
+					else if (ownedQuipment === 'buildable') {
+						if (!canBuildItem(g, true)) return false;
+					}
+					else if (ownedQuipment === 'owned') {
+						if (!playerData.player.character.items.some((item) => item.archetype_id?.toString() === f.kwipment_id?.toString())) return false;
+					}
+				}
+
+				let textPass = true;
+				let rarePass = true;
+				let itemPass = true;
+				let crewPass = true;
+
+				if (!!types?.length && !types.includes(f.type)) return false;
+
+				if (filterText && filterText !== '') {
+					if (filterText.includes(":")) {
+						let sp = filterText.split(":");
+						if (sp?.length === 2) {
+							if (sp[0] === 'trait') {
+								sp = sp[1].split(",");
+
+								let trait_any = false;
+								let trait_none = false;
+
+								sp = sp.filter(f => {
+									if (f === 'any') {
+										trait_any = true;
+									}
+									else if (f === 'none') {
+										trait_none = true;
+									}
+									else {
+										return true;
+									}
+									return false;
+								});
+
+								if (trait_any) {
+									if (!f.traits_requirement?.length) return false;
+								}
+								else if (trait_none) {
+									if (!!f.traits_requirement?.length) return false;
+								}
+								else {
+									if (sp?.length) {									
+										if (!f.traits_requirement?.some(g => sp.some(s => s === g))) return false;
+									}
+								}
+							}
+							else if (sp[0] === 'skill' && f.bonuses) {
+								let bmap = getItemBonuses(f as EquipmentItem);									
+								if (bmap?.bonuses) {
+									sp = sp[1].split(",");
+									if (!Object.keys(bmap?.bonuses).some(sk => sp.some(b => b.toLowerCase() === skillToRank(sk)?.toLowerCase()))) return false;
+								}									
+							}
+						}
+					}
+					else {
+						textPass = f.name?.toLowerCase().includes(filterText) || 
+						f.short_name?.toLowerCase().includes(filterText) ||
+						f.flavor?.toLowerCase().includes(filterText) ||
+						CONFIG.RARITIES[f.rarity].name.toLowerCase().includes(filterText) ||
+						CONFIG.REWARDS_ITEM_TYPE[f.type].toLowerCase().includes(filterText);	
+					}
+				}
+
+				if (!!rarity?.length) {
+					rarePass = rarity?.some(r => f.rarity == r);
+				}
+				if (!!itemType?.length) {
+					itemPass = itemType?.some(t => f.type == t);
+				}
+
+				if (!ignoreCrewSelection && !!crewMode && !!crewSelection?.length && typeof crewSelection === 'string') {
+					let selCrew = this.context.core.crew.find(crew => crew.symbol === crewSelection);
+					if (selCrew) {
+						if (f.type === 14) {								
+							if (!!f.max_rarity_requirement && f.max_rarity_requirement < selCrew.max_rarity) return false;
+							if (f.traits_requirement?.length) {
+								if (f.traits_requirement_operator === 'and') {
+									if (!(f.traits_requirement?.every((t) => selCrew?.traits.includes(t) || selCrew?.traits_hidden.includes(t)))) return false;
+								}
+								else {
+									if (!(f.traits_requirement?.some((t) => selCrew?.traits.includes(t) || selCrew?.traits_hidden.includes(t)))) return false;
+								}
+							}									
+							let bonuses = getItemBonuses(f as EquipmentItem)?.bonuses;								
+							if (bonuses) crewPass = Object.keys(bonuses).some(skill => !!selCrew && skill in selCrew.base_skills);
+							
+						}
+						else {
+							crewPass = false;
+						}
+					}
+				}
+				
+				return textPass && rarePass && itemPass && crewPass;
+			});
+		}
+
+		return data;
+	}	
+
+
 	renderBuffs(item: EquipmentItem | EquipmentCommon) {
-		const { bonusText, bonuses } = getItemBonuses(item as EquipmentItem);
+		const { bonuses } = getItemBonuses(item as EquipmentItem);
 		return renderBonuses(bonuses, "1em", "0.25em");
 	}
 
@@ -582,7 +736,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 
 	render() {
-		const { ownedQuipment, skills, traits, crewType, crewSelection, addNeeded, column, direction, pagination_rows, pagination_page } = this.state;
+		const { ownedQuipment, skills, traits: pftraits, crewType, crewSelection, addNeeded, column, direction, pagination_rows, pagination_page } = this.state;
 		let data = [ ...this.state.data ?? [] ];
 		
 		const filterText = this.state.searchOpts?.filterText?.toLocaleLowerCase();
@@ -592,7 +746,11 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		const { playerData } = this.context.player;
 	
 		let bReady: boolean = !!data?.length;
-	
+		let traits = pftraits;
+		if (!traits?.length && filterText?.includes("trait:")) {
+			let sp = filterText.split(":");
+			traits = sp[1].split(",");
+		}
 		const skillmap = ['CMD','SCI','SEC','DIP','ENG','MED'].map(r => {
 			return {
 				key: r.toLowerCase(),
@@ -611,14 +769,27 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 		let totalPages = 0;
 		let traitFilterOpts = [] as DropdownItemProps[];
+
 		if (buffs) {
-			traitFilterOpts = [ ...new Set(data.map(d => d.traits_requirement ?? []).flat()) ]?.map(trait => {
+			traitFilterOpts.push({
+				key: 'any',
+				value: 'any',
+				text: 'Any Trait-Limited Quipment'
+			});
+			
+			traitFilterOpts.push({
+				key: 'none',
+				value: 'none',
+				text: 'Any Non-Trait-Limited Quipment'
+			});
+
+			traitFilterOpts = traitFilterOpts.concat([ ...new Set(data.map(d => d.traits_requirement ?? []).flat()) ]?.map(trait => {
 				return {
 					key: trait,
 					value: trait,
 					text: appelate(trait)
 				}
-			});
+			}));
 		}
 
 		const presentTypes = [...new Set(data?.filter((d) => !types?.length || types.includes(d.type)).map(d => d.type) ?? Object.keys(CONFIG.REWARDS_ITEM_TYPE).map(k => Number.parseInt(k)))];
@@ -640,102 +811,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			});
 		}
 		if (bReady) {		
-			
-			if ((filterText && filterText !== '') || !!rarity?.length || !!itemType?.length || !!types?.length || !!crewSelection?.length) {
-				
-				data = data.filter(f => {
-
-					if (ownedQuipment !== 'all' && f.type === 14 && playerData) {
-						let g = f as EquipmentItem;
-						if (!g.demands?.some(d => d.have)) {
-							g.demands = calcItemDemands(g, this.context.core.items, playerData.player.character.items);
-						}
-						if (ownedQuipment === 'both') {
-							if (!canBuildItem(g, true) && !playerData.player.character.items.some((item) => item.archetype_id?.toString() === f.kwipment_id?.toString())) return false;
-						}
-						else if (ownedQuipment === 'buildable') {
-							if (!canBuildItem(g, true)) return false;
-						}
-						else if (ownedQuipment === 'owned') {
-							if (!playerData.player.character.items.some((item) => item.archetype_id?.toString() === f.kwipment_id?.toString())) return false;
-						}
-					}
-
-					let textPass = true;
-					let rarePass = true;
-					let itemPass = true;
-
-					if (!!types?.length && !types.includes(f.type)) return false;
-
-					if (filterText && filterText !== '') {
-						if (filterText.includes(":")) {
-							let sp = filterText.split(":");
-							if (sp?.length === 2) {
-								if (sp[0] === 'trait') {
-									sp = sp[1].split(",");
-									if (sp?.length) {
-										if (!f.traits_requirement?.some(g => sp.some(s => s === g))) return false;
-									}
-								}
-								else if (sp[0] === 'skill' && f.bonuses) {
-									let bmap = getItemBonuses(f as EquipmentItem);									
-									if (bmap?.bonuses) {
-										sp = sp[1].split(",");
-										if (!Object.keys(bmap?.bonuses).some(sk => sp.some(b => b.toLowerCase() === skillToRank(sk)?.toLowerCase()))) return false;
-									}									
-								}
-							}
-						}
-						else {
-							textPass = f.name?.toLowerCase().includes(filterText) || 
-							f.short_name?.toLowerCase().includes(filterText) ||
-							f.flavor?.toLowerCase().includes(filterText) ||
-							CONFIG.RARITIES[f.rarity].name.toLowerCase().includes(filterText) ||
-							CONFIG.REWARDS_ITEM_TYPE[f.type].toLowerCase().includes(filterText);	
-						}
-					}
-
-					if (!!rarity?.length) {
-						rarePass = rarity?.some(r => f.rarity == r);
-					}
-					if (!!itemType?.length) {
-						itemPass = itemType?.some(t => f.type == t);
-					}
-
-					if (!!crewMode && !!crewSelection?.length && typeof crewSelection === 'string') {
-						let selCrew = this.context.core.crew.find(crew => crew.symbol === crewSelection);
-						if (selCrew) {
-							if (f.type === 14) {								
-								if (!!f.max_rarity_requirement && f.max_rarity_requirement < selCrew.max_rarity) return false;
-								if (f.traits_requirement?.length) {
-									if (f.traits_requirement_operator === 'and') {
-										if (!(f.traits_requirement?.every((t) => selCrew?.traits.includes(t) || selCrew?.traits_hidden.includes(t)))) return false;
-									}
-									else {
-										if (!(f.traits_requirement?.some((t) => selCrew?.traits.includes(t) || selCrew?.traits_hidden.includes(t)))) return false;
-									}
-								}									
-								let bonuses = getItemBonuses(f as EquipmentItem)?.bonuses;								
-								if (bonuses) return Object.keys(bonuses).every(skill => !!selCrew && skill in selCrew.base_skills);
-								return true;
-							}
-							else {
-								return false;
-							}
-						}
-					}
-					
-					return textPass && rarePass && itemPass;
-				});
-			}
-			// if (rarity?.length) {
-
-			// }
-
-			// if (crewMode) {
-				
-			// }
-
+			data = this._getFilteredItems();
 			totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
 			// Pagination
