@@ -1,13 +1,12 @@
 import React from 'react';
-import { DropdownItemProps, Step } from 'semantic-ui-react';
+import { Step } from 'semantic-ui-react';
 
-
-import { EquipmentItem } from '../model/equipment';
-import { GlobalContext } from '../context/globalcontext';
 import DataPageLayout from '../components/page/datapagelayout';
+import ProfileItems, { CustomFieldDef } from '../components/profile_items';
+import { GlobalContext } from '../context/globalcontext';
+import { EquipmentItem } from '../model/equipment';
 import { binaryLocate, formatDuration } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
-import ProfileItems, { CustomFieldDef } from '../components/profile_items';
 
 export interface ItemsPageProps {}
 

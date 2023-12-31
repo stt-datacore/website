@@ -1,31 +1,31 @@
-import React, { Component } from 'react';
-import { Table, Icon, Pagination, Dropdown, Input, Checkbox, DropdownItemProps, SemanticWIDTHS } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
+import React, { Component } from 'react';
+import { Checkbox, Dropdown, DropdownItemProps, Icon, Input, Pagination, SemanticWIDTHS, Table } from 'semantic-ui-react';
 
 
-import '../typings/worker';
 import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
+import '../typings/worker';
 
-import { binaryLocate, exportItems, exportItemsAlt, getItemBonuses, mergeItems } from '../utils/itemutils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
+import { exportItemsAlt, getItemBonuses } from '../utils/itemutils';
 
 import CONFIG from '../components/CONFIG';
-import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
-import ItemDisplay from './itemdisplay';
-import { EquipmentCommon, EquipmentItem } from '../model/equipment';
-import { calcItemDemands, calculateRosterDemands, canBuildItem } from '../utils/equipment';
-import { TinyStore } from '../utils/tiny';
-import { downloadData, oneCrewCopy, qbitsToSlots, rankToSkill, skillToRank } from '../utils/crewutils';
-import { ItemHoverStat } from './hovering/itemhoverstat';
-import { CrewHoverStat } from './hovering/crewhoverstat';
-import { EquipmentWorkerConfig, EquipmentWorkerResults } from '../model/worker';
-import { PlayerCrew } from '../model/player';
-import { appelate } from '../utils/misc';
+import { GlobalContext } from '../context/globalcontext';
 import { CrewMember } from '../model/crew';
-import { renderBonuses } from './item_presenters/item_presenter';
-import { CrewPresenter } from './item_presenters/crew_presenter';
+import { EquipmentCommon, EquipmentItem } from '../model/equipment';
+import { PlayerCrew } from '../model/player';
+import { EquipmentWorkerConfig, EquipmentWorkerResults } from '../model/worker';
+import { downloadData, oneCrewCopy, qbitsToSlots, rankToSkill, skillToRank } from '../utils/crewutils';
+import { calcItemDemands, canBuildItem } from '../utils/equipment';
+import { appelate } from '../utils/misc';
+import { TinyStore } from '../utils/tiny';
+import { CrewHoverStat } from './hovering/crewhoverstat';
+import { ItemHoverStat } from './hovering/itemhoverstat';
 import { CrewItemsView } from './item_presenters/crew_items';
 import { CrewPreparer } from './item_presenters/crew_preparer';
+import { CrewPresenter } from './item_presenters/crew_presenter';
+import { renderBonuses } from './item_presenters/item_presenter';
+import ItemDisplay from './itemdisplay';
 
 export interface CustomFieldDef {
 	field: string;

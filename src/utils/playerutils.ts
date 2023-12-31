@@ -1,4 +1,4 @@
-import { CompactCrew, PlayerEquipmentItem, PlayerCrew, PlayerData, AcceptedMission } from "../model/player";
+import { PlayerEquipmentItem, PlayerCrew, PlayerData, AcceptedMission } from "../model/player";
 
 // Remove any unnecessary fields from the player data
 export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): any {
