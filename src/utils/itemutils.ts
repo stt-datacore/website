@@ -219,27 +219,30 @@ export function getItemBonuses(item: EquipmentItem): ItemBonusInfo {
 }
 
 export function getPossibleQuipment<T extends CrewMember>(crew: T, quipment: EquipmentItem[]): EquipmentItem[] {
-	return quipment.filter((item) => {
-		if (item.kwipment) {
-			const bonus = getItemBonuses(item);
-			
-			let mrq = item.max_rarity_requirement ?? crew.max_rarity;
-			let rr = mrq >= crew.max_rarity;
+	return quipment.filter((item) => isQuipmentMatch(crew, item));
+}
 
-			if (!!item.traits_requirement?.length) {
-				if (item.traits_requirement_operator === "and") {
-					rr &&= item.traits_requirement?.every(t => crew.traits.includes(t) || crew.traits_hidden.includes(t));
-				}
-				else {
-					rr &&= item.traits_requirement?.some(t => crew.traits.includes(t) || crew.traits_hidden.includes(t));
-				}
+export function isQuipmentMatch<T extends CrewMember>(crew: T, item: EquipmentItem): boolean {
+	if (item.kwipment) {
+		const bonus = getItemBonuses(item);
+		
+		let mrq = item.max_rarity_requirement ?? crew.max_rarity;
+		let rr = mrq >= crew.max_rarity;
+
+		if (!!item.traits_requirement?.length) {
+			if (item.traits_requirement_operator === "and") {
+				rr &&= item.traits_requirement?.every(t => crew.traits.includes(t) || crew.traits_hidden.includes(t));
 			}
-
-			rr &&= Object.keys(bonus.bonuses).every(skill => skill in crew.base_skills);
-			return rr;
+			else {
+				rr &&= item.traits_requirement?.some(t => crew.traits.includes(t) || crew.traits_hidden.includes(t));
+			}
 		}
-		return false;
-	});
+
+		rr &&= Object.keys(bonus.bonuses).every(skill => skill in crew.base_skills);
+		return rr;
+	}
+
+	return false;
 }
 
 export function addItemBonus<T extends PlayerCrew>(crew: T, source: EquipmentItem | ItemBonusInfo, skill?: string) {
