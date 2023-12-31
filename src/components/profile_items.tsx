@@ -85,6 +85,8 @@ interface CrewKwipTrial {
 	kwipment_expiration: number[];
 }
 
+type OwnedType = 'all' | 'owned' | 'buildable' | 'both';
+
 type ProfileItemsState = {
 	column: any;
 	direction: 'descending' | 'ascending' | null;
@@ -101,7 +103,7 @@ type ProfileItemsState = {
 	traits?: string[];
 	skills?: string[];
 	trials?: CrewKwipTrial[];
-	ownedQuipment?: boolean;
+	ownedQuipment?: OwnedType;
 };
 
 export function printRequiredTraits(item: EquipmentCommon): JSX.Element {
@@ -150,7 +152,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			pagination_page: 1,
 			data: props.data,
 			addNeeded: props.addNeeded ?? this.tiny.getValue<boolean>('addNeeded', false),
-			ownedQuipment: false
+			ownedQuipment: 'all'
 		};
 	}
 
@@ -467,7 +469,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		this.setState({ ...this.state, searchOpts, pagination_page: 1 });
 	}
 
-	private _handleOwned = (value: boolean) => {
+	private _handleOwned = (value: OwnedType) => {
 		this.tiny.setValue('ownedQuipment', value, true);
 		this.setState({ ...this.state, ownedQuipment: value });
 	}
@@ -643,12 +645,20 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				
 				data = data.filter(f => {
 
-					if (ownedQuipment && f.type === 14 && playerData) {
+					if (ownedQuipment !== 'all' && f.type === 14 && playerData) {
 						let g = f as EquipmentItem;
 						if (!g.demands?.some(d => d.have)) {
-							g.demands = calcItemDemands(g, this.context.core.items, playerData.player.character.items);							
+							g.demands = calcItemDemands(g, this.context.core.items, playerData.player.character.items);
 						}
-						if (!canBuildItem(g, true) && !playerData.player.character.items.some((item) => item.archetype_id?.toString() === f.kwipment_id?.toString())) return false;						
+						if (ownedQuipment === 'both') {
+							if (!canBuildItem(g, true) && !playerData.player.character.items.some((item) => item.archetype_id?.toString() === f.kwipment_id?.toString())) return false;
+						}
+						else if (ownedQuipment === 'buildable') {
+							if (!canBuildItem(g, true)) return false;
+						}
+						else if (ownedQuipment === 'owned') {
+							if (!playerData.player.character.items.some((item) => item.archetype_id?.toString() === f.kwipment_id?.toString())) return false;
+						}
 					}
 
 					let textPass = true;
@@ -733,7 +743,29 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		}		
 
 		const rewardFilterOpts = [] as DropdownItemProps[];
-		
+		const ownedOpts = [
+			{
+				key: 'all',
+				value: 'all',
+				text: 'All Quipment'
+			},
+			{
+				key: 'owned',
+				value: 'owned',
+				text: 'Owned Only'
+			},
+			{
+				key: 'buildable',
+				value: 'buildable',
+				text: 'Buildable Only'
+			},
+			{
+				key: 'both',
+				value: 'both',
+				text: 'Owned or Buildable'
+			}
+		] as DropdownItemProps[];
+
 		const rarities = [] as DropdownItemProps[];
 		presentTypes.sort((a, b) => {
 			let atext = CONFIG.REWARDS_ITEM_TYPE[a];
@@ -849,14 +881,12 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						/>
 					</div>}
 					{buffs && <div style={{marginLeft: "0.5em"}}>
-						<Checkbox
-							label={"Owned or Craftable"}
-							multiple
-							clearable
+						<Dropdown 
+							placeholder={"Owned status"}							
 							scrolling
-							options={skillmap}
-							checked={ownedQuipment}
-							onChange={(e, { checked }) => this._handleOwned(checked as boolean)}
+							options={ownedOpts}
+							value={ownedQuipment}
+							onChange={(e, { value }) => this._handleOwned(value as OwnedType)}
 						/>
 					</div>}
 				</div>}
