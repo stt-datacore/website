@@ -208,6 +208,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
             base_skills: crew.base_skills,
             skills: crew.skills,
             favorite: crew.favorite,
+            expires_in: crew.expires_in,
             action: {
                 bonus_amount: crew.action?.bonus_amount,
             },

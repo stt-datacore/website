@@ -390,7 +390,8 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		let workitem: PlayerCrew = owned;
 		
 		crew.id = owned.id;
-
+		crew.expires_in = owned.expires_in;
+		
 		if (workitem.immortal > 0) crew.immortal = workitem.immortal;
 		if (rarity !== 6) {
 			crew.rarity = workitem.rarity;
