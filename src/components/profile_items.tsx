@@ -13,7 +13,7 @@ import CONFIG from '../components/CONFIG';
 import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
 import ItemDisplay from './itemdisplay';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
-import { calculateRosterDemands } from '../utils/equipment';
+import { calcItemDemands, calculateRosterDemands, canBuildItem } from '../utils/equipment';
 import { TinyStore } from '../utils/tiny';
 import { downloadData, oneCrewCopy, qbitsToSlots, rankToSkill, skillToRank } from '../utils/crewutils';
 import { ItemHoverStat } from './hovering/itemhoverstat';
@@ -101,6 +101,7 @@ type ProfileItemsState = {
 	traits?: string[];
 	skills?: string[];
 	trials?: CrewKwipTrial[];
+	ownedQuipment?: boolean;
 };
 
 export function printRequiredTraits(item: EquipmentCommon): JSX.Element {
@@ -148,7 +149,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			pagination_rows: 10,
 			pagination_page: 1,
 			data: props.data,
-			addNeeded: props.addNeeded ?? this.tiny.getValue<boolean>('addNeeded', false)
+			addNeeded: props.addNeeded ?? this.tiny.getValue<boolean>('addNeeded', false),
+			ownedQuipment: false
 		};
 	}
 
@@ -465,6 +467,10 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		this.setState({ ...this.state, searchOpts, pagination_page: 1 });
 	}
 
+	private _handleOwned = (value: boolean) => {
+		this.tiny.setValue('ownedQuipment', value, true);
+		this.setState({ ...this.state, ownedQuipment: value });
+	}
 
 	private _handleAddNeeded = (value: boolean | undefined) => {
 		if (this.state.addNeeded === value) return;		
@@ -504,7 +510,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				let mrq = item.max_rarity_requirement ?? f.max_rarity;
 				let rr = mrq >= f.max_rarity;
 
-				if (item.traits_requirement) {
+				if (item.traits_requirement?.length) {
 					if (item.traits_requirement_operator === "and") {
 						rr &&= item.traits_requirement?.every(t => f.traits.includes(t) || f.traits_hidden.includes(t));
 					}
@@ -574,7 +580,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 
 	render() {
-		const { skills, traits, crewType, crewSelection, addNeeded, column, direction, pagination_rows, pagination_page } = this.state;
+		const { ownedQuipment, skills, traits, crewType, crewSelection, addNeeded, column, direction, pagination_rows, pagination_page } = this.state;
 		let data = [ ...this.state.data ?? [] ];
 		
 		const filterText = this.state.searchOpts?.filterText?.toLocaleLowerCase();
@@ -636,6 +642,15 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			if ((filterText && filterText !== '') || !!rarity?.length || !!itemType?.length || !!types?.length || !!crewSelection?.length) {
 				
 				data = data.filter(f => {
+
+					if (ownedQuipment && f.type === 14 && playerData) {
+						let g = f as EquipmentItem;
+						if (!g.demands?.some(d => d.have)) {
+							g.demands = calcItemDemands(g, this.context.core.items, playerData.player.character.items);							
+						}
+						if (!canBuildItem(g, true) && !playerData.player.character.items.some((item) => item.archetype_id?.toString() === f.kwipment_id?.toString())) return false;						
+					}
+
 					let textPass = true;
 					let rarePass = true;
 					let itemPass = true;
@@ -831,6 +846,17 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							options={skillmap}
 							value={skills}
 							onChange={(e, { value }) => this._handleSkills(value as string[] | undefined)}
+						/>
+					</div>}
+					{buffs && <div style={{marginLeft: "0.5em"}}>
+						<Checkbox
+							label={"Owned or Craftable"}
+							multiple
+							clearable
+							scrolling
+							options={skillmap}
+							checked={ownedQuipment}
+							onChange={(e, { checked }) => this._handleOwned(checked as boolean)}
 						/>
 					</div>}
 				</div>}
