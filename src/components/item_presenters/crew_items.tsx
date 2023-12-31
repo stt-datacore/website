@@ -10,6 +10,7 @@ import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { navigate } from 'gatsby';
 import { getCrewQuipment, qbitsToSlots } from '../../utils/crewutils';
 import { getItemBonuses } from '../../utils/itemutils';
+import { printShortDistance } from '../../utils/misc';
 
 export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
@@ -46,35 +47,6 @@ function expToDate(playerData: PlayerData, crew: PlayerCrew) {
     return undefined;
 }
 
-function printShortDistance(d: Date) {
-    let now = new Date();
-    let n = d.getTime() - now.getTime();
-    let days = n / (24 * 60 * 60 * 1000);
-    let hours = days;
-
-    days = Math.floor(days);
-
-    hours = hours - days;
-    hours *= 24;
-
-    if (days) {
-        hours = Math.floor(hours);
-        return `${days} d ${hours} h`;
-    }
-    else {
-        let min = (hours - Math.floor(hours)) * 60;
-        hours = Math.floor(hours);
-        min = Math.floor(min);
-
-        if (hours >= 1) {
-            return `${hours} h ${min} m`;
-        }
-        else {
-            return `${min} m`;
-        }
-    }
-    
-}
 
 export const CrewItemsView = (props: CrewItemsViewProps) => {
 	const context = React.useContext(GlobalContext);
