@@ -136,7 +136,7 @@ export const defaultSettings = {
     // Retrieval odds
     retrieval: 3,
     // Quipment Score
-    quipment: 2
+    quipment: 0.5
 } as BetaTachyonSettings;
 
 const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSettingsProps) => {
