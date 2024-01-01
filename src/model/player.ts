@@ -565,6 +565,8 @@ export interface Player {
     voyScores?: { [key: string]: number };
     /** Used internally. Not part of source data.  */
     collectionsIncreased?: string[];
+    /** Used internally. Not part of source data.  */
+    quipmentScore?: number;
 
     /** Used internally. Not part of source data.  */
     ssId?: string;

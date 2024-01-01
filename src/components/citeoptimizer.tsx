@@ -98,7 +98,10 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				engine: this.tiny.getValue<CiteEngine>('engine', "original") ?? "original"
 			},
 			settingsOpen: false,
-			betaTachyonSettings: this.tiny.getValue<BetaTachyonSettings>('betaTachyonSettings', defaultSettings) ?? defaultSettings,
+			betaTachyonSettings: {
+				... defaultSettings,
+				... this.tiny.getValue<BetaTachyonSettings>('betaTachyonSettings', defaultSettings) ?? defaultSettings
+			},
 			skoMap: {},
 			crewSkills: {},
 			prospects,
@@ -319,7 +322,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					inputCrew: allCrew,
 					collections,
 					buffs: buffConfig,
-					settings: this.state.betaTachyonSettings					
+					settings: this.state.betaTachyonSettings,
+					coreItems: this.context.core.items
 				} as BetaTachyonRunnerConfig
 			});	
 		}
@@ -562,6 +566,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				r = a.max_rarity - b.max_rarity;				
 				if (!r) r = a.rarity - b.rarity;
 			}
+			else if (sort === 'quipmentScore') {
+				r = Math.ceil(a.quipmentScore ?? 0) - Math.ceil(b.quipmentScore ?? 0);
+			}
 			else if (sort === 'finalEV') {
 				let aev = Math.ceil(training ? (a.addedEV ?? a.totalEVContribution ?? 0) : (a.totalEVContribution ?? 0));
 				let bev = Math.ceil(training ? (b.addedEV ?? b.totalEVContribution ?? 0) : (b.totalEVContribution ?? 0));
@@ -636,7 +643,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			// 	window.location.href = "/crew/" + data.symbol;
 			// }
 		}
-
+		const maxQuip = data.map(d => d.quipmentScore ?? 0).reduce((p, n) => p > n ? p : n, 0);
 		const { sort, direction } = this.state;
 		data = this.sortcrew(data ?? [], training, engine);
 
@@ -660,11 +667,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							sorted={sort === 'rarity' ? direction : undefined}>
 							Rarity
 						</Table.HeaderCell>
-						<Table.HeaderCell 
+						{<Table.HeaderCell 
 							onClick={(e) => sort === 'finalEV' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('finalEV')}
 							sorted={sort === 'finalEV' ? direction : undefined}>
 							Final EV
-						</Table.HeaderCell>
+						</Table.HeaderCell>}
 						{!training &&
 						<React.Fragment>
 							<Table.HeaderCell
@@ -706,6 +713,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								sorted={sort === 'skillOrder' ? direction : undefined}>
 								Skill Order
 							</Table.HeaderCell>
+							<Table.HeaderCell
+								onClick={(e) => sort === 'quipmentScore' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('quipmentScore')}
+								sorted={sort === 'quipmentScore' ? direction : undefined}>
+								Quipment Score
+							</Table.HeaderCell>
 							</React.Fragment>
 							}
 						<Table.HeaderCell
@@ -732,7 +744,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						}
 						
 						const crew = cop;
-
+						const cqp = Math.round(((row.quipmentScore ?? 0) / maxQuip) * 1000) / 10;
 						const skp = engine === 'beta_tachyon_pulse' && !!crew ? printSkillOrder(crew).replace(/_skill/g, '') : 'no_order';
 						const sko = engine === 'beta_tachyon_pulse' && !!crew ? getSkillOrder(crew) : 'no_order';
 						const isProspect = !!crew?.prospect;
@@ -770,11 +782,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								<Table.Cell>
 									<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
 								</Table.Cell>
-								<Table.Cell>
+								{<Table.Cell>
 									{Math.ceil(training ? (row.addedEV ?? row.totalEVContribution ?? 0) : (row.totalEVContribution ?? 0))}
-								</Table.Cell>
+								</Table.Cell>}
 								{
-									!training &&
+									!training && 
 									<React.Fragment>
 										<Table.Cell>
 											{Math.ceil(row.totalEVRemaining ?? 0)}
@@ -866,6 +878,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 												</div>}
 											</div>
 										</div>
+										</Table.Cell>
+										<Table.Cell>
+											<div style={{
+												color: gradeToColor(cqp / 100) ?? undefined
+											}}>
+												{cqp.toLocaleString()}
+											</div>
 										</Table.Cell>
 									</React.Fragment>
 
