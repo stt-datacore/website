@@ -112,6 +112,7 @@ export function getSkillsRanked(skills: BaseSkills) {
   return mskills;
 }
 
+
 export interface Skill {
   core: number
   range_min: number

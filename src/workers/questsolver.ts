@@ -7,7 +7,7 @@ import { AssociatedPath, IQuestCrew, PathGroup, QuestSolverConfig, QuestSolverRe
 import { getNodePaths, makeNavMap } from "../utils/episodes";
 import { calcItemDemands, canBuildItem, deductDemands, reverseDeduction } from "../utils/equipment";
 
-import { getPossibleQuipment, getItemBonuses, ItemBonusInfo, addItemBonus, checkReward } from "../utils/itemutils";
+import { getPossibleQuipment, getItemBonuses, ItemBonusInfo, addItemBonus, checkReward, ItemWithBonus, sortItemsWithBonus, getItemWithBonus } from "../utils/itemutils";
 import { arrayIntersect, makeAllCombos } from "../utils/misc";
 import { applyCrewBuffs } from "./betatachyon";
 
@@ -382,43 +382,20 @@ const QuestSolver = {
                         .filter((item) => !slots.includes(item.symbol))
                         .filter((item) => !(crew.added_kwipment as number[])?.includes(Number.parseInt(item.kwipment_id as string)))
                         .map((qp) => {
-                            return { item: qp, bonusInfo: getItemBonuses(qp) }
+                            if (!qp.demands) {
+                                qp.demands = calcItemDemands(qp, config.context.core.items, playerItems)
+                            }
+                            return getItemWithBonus(qp);
                         })
-                        .filter((qp) => challenge.skill in qp.bonusInfo.bonuses)
-                        // .filter((qp) => {
-                        //     if (!config.buildableOnly) return true;
-                        //     if (!qp.item.demands) {
-                        //         qp.item.demands = calcItemDemands(qp.item, config.context.core.items);
-                        //     } 
-                        //     return canBuildItem(qp.item, true);
-                        // })
-                        .sort((a, b) => {
-                            let r = 0;
-
-                            if (config.cheapestFirst) {
-                                if (!a.item.demands) {
-                                    a.item.demands = calcItemDemands(a.item, config.context.core.items, playerItems);
-                                }
-                                if (!b.item.demands) {
-                                    b.item.demands = calcItemDemands(b.item, config.context.core.items, playerItems);
-                                }
-                                let ac = a.item.demands?.map(d => d.count * (d.equipment?.rarity ?? 1)).reduce((p, n) => p + n, 0) ?? 0;
-                                let bc = b.item.demands?.map(d => d.count * (d.equipment?.rarity ?? 1)).reduce((p, n) => p + n, 0) ?? 0;
-                                r = ac - bc;                                
-                                if (r) return r;
-                            }
-
-                            let an = [a.bonusInfo.bonuses[challenge.skill]].map(v => v.core + v.range_max).reduce((p, n) => p + n, 0);
-                            let bn = [b.bonusInfo.bonuses[challenge.skill]].map(v => v.core + v.range_max).reduce((p, n) => p + n, 0);
-                            r = bn - an;
-                            if (!r) {
-                                let ac = Object.keys(a.bonusInfo.bonuses) ?? [];
-                                let bc = Object.keys(b.bonusInfo.bonuses) ?? [];
-                                r = bc.length - ac.length;
-                            }
-                            return r;
-                        });
-
+                        .filter((qp) => challenge.skill in qp.bonusInfo.bonuses);
+                    
+                    if (config.cheapestFirst) {
+                        qps = sortItemsWithBonus(qps, true, challenge.skill);
+                    }
+                    else {
+                        qps = sortItemsWithBonus(qps, false, challenge.skill, -1);
+                    }
+                    
                     if (qps?.length) {
                         let qpower = qps[0].bonusInfo.bonuses[challenge.skill].core + qps[0].bonusInfo.bonuses[challenge.skill].range_min;
                         let mpower = qps[0].bonusInfo.bonuses[challenge.skill].core + qps[0].bonusInfo.bonuses[challenge.skill].range_max;

@@ -30,6 +30,8 @@ interface InternalSettings {
     magic: number | string,
     // Retrieval Odds
     retrieval: number | string,
+    // Quipment Score
+    quipment: number | string,
 }
 
 export interface BetaTachyonSettingsConfig {
@@ -59,6 +61,7 @@ export function settingsToPermalink(settings: BetaTachyonSettings) {
     params.set("tri", settings.triplet.toString());
     params.set("odds", settings.retrieval.toString());
     params.set("magic", settings.magic.toString());
+    params.set("quip", settings.quipment.toString());
 
     if (settings.name) {
         params.set('name', settings.name);
@@ -90,7 +93,8 @@ export function permalinkToSettings() {
         score: Number.parseFloat(params.get("score") ?? ""),
         triplet: Number.parseFloat(params.get("tri") ?? ""),
         magic: Number.parseFloat(params.get("magic") ?? ""),
-        retrieval: Number.parseFloat(params.get("odds") ?? "")
+        retrieval: Number.parseFloat(params.get("odds") ?? ""),
+        quipment: Number.parseFloat(params.get("quip") ?? "")
     } as BetaTachyonSettings;
 
     Object.keys(defaultSettings).forEach(k => {
@@ -131,6 +135,8 @@ export const defaultSettings = {
     magic: 10,
     // Retrieval odds
     retrieval: 3,
+    // Quipment Score
+    quipment: 2
 } as BetaTachyonSettings;
 
 const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSettingsProps) => {
@@ -303,6 +309,16 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                 </div>
                
                 <div style={rowStyle}>
+                    <div style={textStyle}>Quipment Score:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.quipment}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, quipment: value })}>
+                    </Input>                        
+                </div>
+               
+                <div style={rowStyle}>
                     <div style={textStyle}>Not In Portal:</div>
                     <Input
                         style={inputStyle}
@@ -413,6 +429,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
             triplet: Number.parseFloat(innerSettings.triplet as string),
             magic: Number.parseFloat(innerSettings.magic as string),
             retrieval: Number.parseFloat(innerSettings.retrieval as string),
+            quipment: Number.parseFloat(innerSettings.quipment as string),
         } as BetaTachyonSettings;
     }
 	function confirmSelection(): void {		

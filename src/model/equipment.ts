@@ -103,3 +103,5 @@ export interface EquipmentIngredient {
 export interface EquipmentBonuses {
     [key: string]: number;
 }
+
+
