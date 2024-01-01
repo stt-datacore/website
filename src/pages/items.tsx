@@ -131,6 +131,8 @@ const ItemsPage = (props: ItemsPageProps) => {
 				flavor={false}			
 				customFields={quipCust}	
 				/>
+				<br />
+				<br />
 
 			</React.Fragment>
 		</DataPageLayout>

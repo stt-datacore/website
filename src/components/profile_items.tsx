@@ -875,7 +875,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 		return (
 			<div style={{ margin: 0, padding: 0 }}>
-				<div className='ui segment'
+				{!hideSearch &&<div className='ui segment'
 					style={{
 						display: "flex",
 						flexDirection: isMobile ? "column" : "row",
@@ -988,7 +988,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					{!hideOwnedInfo && <div style={{ display: 'flex', flexDirection: 'row', justifyItems: 'flex-end', alignItems: 'center' }}>
 						<Checkbox checked={addNeeded} onChange={(e, { value }) => this._handleAddNeeded(!addNeeded)} /><span style={{ marginLeft: "0.5em", cursor: "pointer" }} onClick={(e) => this._handleAddNeeded(!addNeeded)}>Show Unowned Needed Items</span>
 					</div>}
-				</div>
+				</div>}
 				{(!data || !bReady) && <div className='ui medium centered text active inline loader'>{"Calculating crew demands..."}</div>}
 
 				{!!selCrew &&
@@ -1197,8 +1197,6 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							<span style={{ margin: '0 2em 0 0' }}>Copy to Clipboard</span><i className='clipboard icon' />
 						</div>
 					</div>}
-				<br />
-				<br />
 			</div>
 		);
 	}
