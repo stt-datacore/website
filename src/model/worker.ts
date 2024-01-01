@@ -186,6 +186,8 @@ export interface BetaTachyonSettings {
     magic: number,
     // Retrieval Odds
     retrieval: number,
+    // Quipment Score
+    quipment: number,
 }
 
 export interface SkillOrderRarity {
@@ -202,6 +204,7 @@ export interface BetaTachyonRunnerConfig {
     inputCrew: CrewMember[];
     buffs: BuffStatTable;
     settings: BetaTachyonSettings;
+    coreItems: EquipmentItem[];
 }
 
 

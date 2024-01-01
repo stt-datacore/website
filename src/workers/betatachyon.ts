@@ -1,8 +1,11 @@
 import CONFIG from "../components/CONFIG";
 import { BaseSkills, ComputedBuff, CrewMember, Skill } from "../model/crew";
+import { EquipmentItem } from "../model/equipment";
 import { Collection, PolestarCombo } from "../model/game-elements";
 import { PlayerCrew, PlayerData } from "../model/player";
 import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity } from "../model/worker";
+import { calcItemDemands } from "../utils/equipment";
+import { ItemWithBonus, getItemWithBonus, isQuipmentMatch } from "../utils/itemutils";
 import { findPolestars } from "../utils/retrieval";
 import { BuffStatTable } from "../utils/voyageutils";
 
@@ -349,6 +352,9 @@ const BetaTachyon = {
             });
 
             const allCrew = JSON.parse(JSON.stringify(inputCrew)) as CrewMember[];
+            const quipment = JSON.parse(JSON.stringify(config.coreItems.filter(f => f.type === 14).map(f => getItemWithBonus(f)))) as ItemWithBonus[];
+
+            quipment.forEach(q => q.item.demands = calcItemDemands(q.item, config.coreItems, playerData.player.character.items));
 
             const topCrew = {} as { [key: string]: CrewMember };
             const skillOrderCrew = {} as { [key: string]: CrewMember[] };
@@ -500,6 +506,9 @@ const BetaTachyon = {
                         return false;
                     }
                 });
+                
+                let qps = quipment.filter(f => isQuipmentMatch(crew, f.item));
+                crew.quipmentScore = qps.map(m => Object.values(m.bonusInfo.bonuses).map((n: Skill) => n.core + n.range_min + n.range_max)).flat().reduce((p, n) => p + n, 0)
                 crew.collectionsIncreased = mcols.map(mc => mc.name);
                 crew.totalEVContribution = evibe;
                 crew.evPerCitation = evibe / crew.max_rarity;
@@ -520,6 +529,7 @@ const BetaTachyon = {
             const maxev = resultCrew.map(c => c.totalEVContribution ?? 0).reduce((a, b) => a > b ? a : b);
             const maxremain = resultCrew.map(c => c.totalEVRemaining ?? 0).reduce((a, b) => a > b ? a : b);
             const maxam = resultCrew.map(c => c.amTraits?.length ?? 0).reduce((a, b) => a > b ? a : b);
+            const maxquip = resultCrew.map(c => c.quipmentScore ?? 0).reduce((a, b) => a > b ? a : b);
             const maxcols = resultCrew.map(c => c.collectionsIncreased?.length ?? 0).reduce((a, b) => a > b ? a : b);
             
             const scoreCrew = (crew: PlayerCrew) => {
@@ -532,7 +542,10 @@ const BetaTachyon = {
                     let pcomp = (1/ps.count*100);
                     if (max < pcomp) max = pcomp;
                 });
-                
+        
+                // more gives weight
+                let quip = multConf.quipment * ((crew.quipmentScore ?? 0) / (maxquip ? maxquip : 1));
+
                 // less gives weight
                 let retrieval = crew.in_portal ? multConf.retrieval * (1 - (max/100)) : 0;
 
@@ -583,10 +596,10 @@ const BetaTachyon = {
                 let adist2 = crew.scoreTrip ? (crew.scoreTrip * multConf.triplet) : 1;
                 let fin = 0;
                 if (!crew.in_portal) {
-                    fin = (100 * (amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 10;
+                    fin = (100 * (quip + amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 11;
                 }
                 else {
-                    fin = (100 * (retrieval + amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 11;
+                    fin = (100 * (retrieval + quip + amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 12;
                 }
 
                 //fin *= ((adist + adist2) / 2);

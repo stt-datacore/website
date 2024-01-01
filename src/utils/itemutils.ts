@@ -7,6 +7,17 @@ import { AtlasIcon, BuffBase, CompactCrew, PlayerCollection, PlayerCrew, PlayerE
 import { getIconPath } from './assets';
 import { simplejson2csv, ExportField } from './misc';
 
+
+export interface ItemBonusInfo {
+    bonusText: string[];
+    bonuses: { [key: string]: Skill };
+}
+
+export interface ItemWithBonus {
+	item: EquipmentItem;
+	bonusInfo: ItemBonusInfo;
+}
+
 export function mergeItems(player_items: PlayerEquipmentItem[], items: EquipmentItem[]) {
 	let data = [] as EquipmentCommon[];
 	player_items.forEach(item => {
@@ -154,13 +165,6 @@ export function populateItemCadetSources(items: EquipmentItem[], episodes: Missi
 	}
 }
 
-
-
-
-export interface ItemBonusInfo {
-    bonusText: string[];
-    bonuses: { [key: string]: Skill };
-}
 
 export function combineItemBonuses(a: { [key: string]: Skill }, b: { [key: string]: Skill }) {
 	let result = { ...a, ...b };
@@ -357,3 +361,50 @@ export function formatDuration(time: number) {
 	}
 };
 
+export function getItemWithBonus(item: EquipmentItem) {
+	return {
+		item,
+		bonusInfo: getItemBonuses(item)
+	} as ItemWithBonus;
+}
+
+
+export function sortItemsWithBonus(quipment: ItemWithBonus[], byItemCost?: boolean, skill?: string, sortFactor?: number) {
+	const sf = sortFactor === -1 ? -1 : 1;
+
+	return quipment.sort((a, b) => {
+		let r = 0;
+
+		if (byItemCost) {
+			let ac = a.item.demands?.map(d => d.count * (d.equipment?.rarity ?? 1)).reduce((p, n) => p + n, 0) ?? 0;
+			let bc = b.item.demands?.map(d => d.count * (d.equipment?.rarity ?? 1)).reduce((p, n) => p + n, 0) ?? 0;
+			r = ac - bc;                                
+			if (r) return r;
+		}
+
+		let an = 0;
+		let bn = 0;
+		
+		if (skill && skill in a.bonusInfo.bonuses && skill in b.bonusInfo.bonuses) {
+			let ask = a.bonusInfo.bonuses[skill];
+			let bsk = a.bonusInfo.bonuses[skill];
+
+			an = ask.core + ask.range_max + ask.range_min;
+			bn = bsk.core + bsk.range_max + bsk.range_min;
+		}
+		else {
+			an = Object.values(a.bonusInfo.bonuses).map((sk: Skill) => sk.core + sk.range_max + sk.range_min).reduce((p, n) => p + n, 0);
+			bn = Object.values(b.bonusInfo.bonuses).map((sk: Skill) => sk.core + sk.range_max + sk.range_min).reduce((p, n) => p + n, 0);
+		}
+
+		r = an - bn;
+
+		if (!r) {
+			let ac = Object.keys(a.bonusInfo.bonuses) ?? [];
+			let bc = Object.keys(b.bonusInfo.bonuses) ?? [];
+			r = bc.length - ac.length;
+		}
+		return r * sf;
+
+	});
+}

@@ -1,5 +1,5 @@
 import { CrewMember, EquipmentSlot } from '../model/crew';
-import { EquipmentCommon, EquipmentItem, ICrewDemands, IDemand } from '../model/equipment';
+import { EquipmentItem, ICrewDemands, IDemand } from '../model/equipment';
 import { BuffBase, PlayerCrew, PlayerEquipmentItem } from '../model/player';
 
 export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[], crewSymbol: string): number {
@@ -318,3 +318,4 @@ export function reverseDeduction<T extends BuffBase>(item: EquipmentItem, items:
 
 	return true;
 }
+
