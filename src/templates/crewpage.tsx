@@ -14,6 +14,7 @@ import DataPageLayout from '../components/page/datapagelayout';
 import { EquipmentBuilds } from '../components/crewpage/equipmentbuilds';
 import { Polestars } from '../components/crewpage/polestars';
 import { CrewVariants } from '../components/crewpage/crewvariants';
+import { CrewQuipment } from '../components/crewpage/crewquipment';
 
 const DEFAULT_MOBILE_WIDTH = 768;
 const isWindow = typeof window !== 'undefined';
@@ -431,6 +432,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 				<Divider horizontal hidden style={{ marginTop: '4em' }} />
 				<EquipmentBuilds crew={crew} />
 				<Polestars crew={crew} />
+				<CrewQuipment crew={crew} />
 				<CrewVariants traits_hidden={crew.traits_hidden} />
 			</>
 		);
