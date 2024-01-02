@@ -15,6 +15,7 @@ import { EquipmentBuilds } from '../components/crewpage/equipmentbuilds';
 import { Polestars } from '../components/crewpage/polestars';
 import { CrewVariants } from '../components/crewpage/crewvariants';
 import { CrewQuipment } from '../components/crewpage/crewquipment';
+import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 
 const DEFAULT_MOBILE_WIDTH = 768;
 const isWindow = typeof window !== 'undefined';
@@ -429,6 +430,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 							))}
 						</Comment.Group>
 							)*/}
+				<ItemHoverStat targetGroup={'crew_quipment'} />
 				<Divider horizontal hidden style={{ marginTop: '4em' }} />
 				<EquipmentBuilds crew={crew} />
 				<Polestars crew={crew} />
