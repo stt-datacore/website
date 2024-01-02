@@ -68,6 +68,9 @@ type ProfileItemsProps = {
 
 	types?: number[];
 
+	itemTargetGroup?: string;
+
+	crewTargetGroup?: string;
 
 	customFields?: CustomFieldDef[];
 };
@@ -741,7 +744,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		let data = [...this.state.data ?? []];
 
 		const filterText = this.state.searchOpts?.filterText?.toLocaleLowerCase();
-		const { types, crewMode, buffs, customFields } = this.props;
+		const { crewTargetGroup, itemTargetGroup, types, crewMode, buffs, customFields } = this.props;
 
 		const { rarity, itemType } = this.state.searchOpts ?? {};
 		const { playerData } = this.context.player;
@@ -1003,7 +1006,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							flexDirection: "column"
 						}}>
 						<CrewPresenter selfRender quipmentMode hideStats compact plugins={[]} crew={selCrew} hover={false} storeName='items_quip' />
-						<CrewItemsView targetGroup='profile_items' itemSize={48} crew={selCrew} quipment />
+						<CrewItemsView targetGroup={'profile_items'} itemSize={48} crew={selCrew} quipment />
 					</div>
 				}
 
@@ -1106,7 +1109,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 											}
 
 											<ItemDisplay
-												targetGroup='profile_items'
+												targetGroup={itemTargetGroup ?? 'profile_items'}
 												style={{
 													opacity: !item.quantity && !hideOwnedInfo ? '0.20' : '1'
 												}}
@@ -1173,8 +1176,11 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						</Table.Row>
 					</Table.Footer>
 				</Table>}
-				<ItemHoverStat targetGroup='profile_items' navigate={this._handleNavigate} />
-				<CrewHoverStat targetGroup='profile_items_crew' />
+				
+				{!itemTargetGroup && 
+					<ItemHoverStat targetGroup='profile_items' navigate={this._handleNavigate} />}
+
+				{!crewTargetGroup && <CrewHoverStat targetGroup='profile_items_crew' />}
 				<br />
 				{!hideOwnedInfo && !!(data?.length) && bReady &&
 					<div style={{

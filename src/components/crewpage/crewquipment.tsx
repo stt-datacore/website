@@ -26,8 +26,9 @@ export const CrewQuipment = (props: CrewQuipmentProps) => {
 
     return (
         <div className={'ui segment'}>                
-            <h4>Compatible Quipment</h4>
-            <ProfileItems                    
+            <h4>Compatible Quipment</h4>            
+            <ProfileItems
+                itemTargetGroup={'crew_quipment'}
                 types={[14]}
                 pageName={'crew_' + crew.symbol} 
                 hideOwnedInfo={true}
