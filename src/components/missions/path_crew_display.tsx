@@ -98,7 +98,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
 
         let ct =
             challenge.challenge.difficulty_by_mastery[mastery] +
-            [250, 275, 300][mastery];
+            [150, 275, 300][mastery];
 
         challenge.max_solve = cm < ct;
 
@@ -151,7 +151,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                             {challenge.difficulty_by_mastery[mastery]} (Crit:{" "}
                             <span style={{ color: CONFIG.RARITIES[5].color }}>
                                 {challenge.difficulty_by_mastery[mastery] +
-                                    [250, 275, 300][mastery]}
+                                    [150, 275, 300][mastery]}
                                 )
                             </span>
                         </div>
