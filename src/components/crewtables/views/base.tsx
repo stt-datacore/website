@@ -58,6 +58,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 		let sko = getSkillOrder(crew).map(sk => skillToRank(sk)).join("/").toUpperCase();
 		tiny.setRapid("search", "skill_order:" + sko);
 	};
+	const qbslots = qbitsToSlots(crew.q_bits);
 
 	return (
 		<React.Fragment>
@@ -88,9 +89,20 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 			<Table.Cell textAlign='center'>
 				<b title={printPortalStatus(crew, true, true, true)}>{printPortalStatus(crew, true, false)}</b>
 			</Table.Cell>
-			<Table.Cell textAlign='center'>
+			<Table.Cell textAlign='center' width={2}>
 				{tableType === 'allCrew' && new Date(crew.date_added).toLocaleDateString()}
-				{tableType !== 'allCrew' && <div title={crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbitsToSlots(crew.q_bits) + " Slot(s) Open"}>{crew.immortal !== -1 ? 'N/A' : crew.q_bits}</div>}
+				{tableType !== 'allCrew' && 
+					<div title={
+						crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
+						}>
+						<div>
+							{crew.immortal !== -1 ? 'N/A' : crew.q_bits}
+						</div>
+						{crew.immortal === -1 &&
+						<div style={{fontSize:"0.8em"}}>
+							({qbitsToSlots(crew.q_bits)} Slot{qbslots != 1 ? 's' : ''})
+						</div>}
+					</div>}
 			</Table.Cell>
 		</React.Fragment>
 	);
