@@ -600,6 +600,9 @@ const QuestSolver = {
                 }
                 if (config.buildableOnly) {
                     pcrew = pcrew.filter((crew) => {
+                        if (crew.symbol === "winn_kai_crew") {
+                            console.log("Break here.")
+                        }
                         let aq = crew.added_kwipment ?? [0,0,0,0];
                         let aqn = crew.added_kwipment_expiration ?? [0,0,0,0];
                         let n = aq.length;
@@ -649,6 +652,9 @@ const QuestSolver = {
 
             const buildQuipment = (c: IQuestCrew, allQuipment: EquipmentItem[], deductHistory: { [key: string]: boolean[] }, altItems?: number[]) => {
                 altItems ??= c.added_kwipment as number[] ?? [];
+                if (c.symbol === "winn_kai_crew") {
+                    console.log("Break here");
+                }
                 if (!altItems?.length) return true;
                 if (altItems.filter(c => !!c).length === c.added_kwipment_expiration?.filter(c => !!c)?.length) return true;
 
@@ -702,7 +708,7 @@ const QuestSolver = {
                 let nx = pathCrew[path_key].length;
                 let combos = [] as number[][];
                 
-                combos = findAllCombos(wpCrew, path);
+                combos = findAllCombos(wpCrew, path).filter(f => f.length === 3);
                 let debug_symbols = combos.map(c => c.map(cid => wpCrew.find(f => f.id === cid)?.symbol));
                 let complete = 'full' as ThreeSolveResult;
                 let numbers = combos.filter ((num) => {
@@ -921,10 +927,10 @@ const QuestSolver = {
                 let br = 0;                
                 let r = 0; 
 
-                let pa = pathPrice(a.path, a.crew);
-                let pb = pathPrice(b.path, b.crew);
-                r = pa - pb;
-                if (r) return r;
+                // let pa = pathPrice(a.path, a.crew);
+                // let pb = pathPrice(b.path, b.crew);
+                // r = pa - pb;
+                // if (r) return r;
                 
                 // make sure we get a variety of every sort floated to the top
                 let asp = a.path.split("_") ?? [];
