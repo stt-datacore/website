@@ -42,7 +42,7 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
     const rewards = reward;
 
     const difficulty = challenge.difficulty_by_mastery[mastery];
-    const crit = difficulty + ([250, 275, 300][mastery]);
+    const crit = difficulty + ([150, 275, 300][mastery]);
 
     const handleClick = (e: React.MouseEvent) => {
         if (props.onClick) {
