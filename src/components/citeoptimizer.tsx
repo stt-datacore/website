@@ -904,7 +904,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				</Table.Body>
 				<Table.Footer>
 					<Table.Row>
-						<Table.HeaderCell colSpan={engine === 'beta_tachyon_pulse' ? 12 : 9}>
+						<Table.HeaderCell colSpan={engine === 'beta_tachyon_pulse' ? 14 : 9}>
 							<div style={{ paddingLeft: '2em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 
 							<Pagination
