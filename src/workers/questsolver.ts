@@ -356,7 +356,7 @@ const QuestSolver = {
                 const usedSlots = crew.added_kwipment.filter(aq => !!aq)?.length ?? 0;
                 const slots = [] as string[];
                 const quips = {} as { [key: string]: ItemBonusInfo };
-                const solvePower = (challenge.difficulty_by_mastery[mastery] + (critmult * [250, 275, 300][mastery]));
+                const solvePower = (challenge.difficulty_by_mastery[mastery] + (critmult * [150, 275, 300][mastery]));
 
                 while (cpmin < solvePower && (!maxIsGood || cpmax < solvePower)) {
                     if (!nslots || (1 + usedSlots + slots.length > nslots)) {
