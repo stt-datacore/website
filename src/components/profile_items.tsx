@@ -1,6 +1,6 @@
 import { Link, navigate } from 'gatsby';
 import React, { Component } from 'react';
-import { Checkbox, Dropdown, DropdownItemProps, Icon, Input, Pagination, SemanticWIDTHS, Table } from 'semantic-ui-react';
+import { Checkbox, Dropdown, DropdownItemProps, Icon, Input, Pagination, Rating, SemanticWIDTHS, Table } from 'semantic-ui-react';
 
 
 import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
@@ -81,7 +81,7 @@ interface ItemSearchOpts {
 	rarity?: number[];
 }
 
-export type CrewType = 'all' | 'owned' | 'quippable'
+export type CrewType = 'all' | 'owned' | 'quippable' | 'frozen';
 
 interface CrewKwipTrial {
 	symbol: string;
@@ -186,14 +186,18 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		if (this.props?.crewMode && crew?.length) {
 			[...crew].sort((a, b) => a.name.localeCompare(b.name)).forEach((c) => {
 
-				if (playerData && ['owned', 'quippable'].includes(crewType)) {
-
+				if (playerData && ['owned', 'quippable', 'frozen'].includes(crewType)) {
 					const found = playerData.player.character.crew.find(d => d.symbol === c.symbol);
-
 					if (!found) return;
 
-					if (crewType === 'quippable') {
+					if (crewType === 'frozen') {
+						if (!found.immortal || found.immortal <= 0) return;
+					}
+					else if (crewType === 'quippable') {
 						if (!found.q_bits || found.q_bits < 100) return;
+					}
+					else {
+						if (found.immortal !== -1) return;
 					}
 				}
 
@@ -214,8 +218,31 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					{
 						key: c.symbol,
 						value: c.symbol,
-						image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` },
-						text: c.name
+						content: <React.Fragment>
+							<div style={{
+								display: 'grid',
+								gridTemplateColumns: '48px auto',								
+								gridTemplateAreas: "'img text' 'img rarity'",
+							}}>
+								<img src={`${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}`}
+									 style={{
+										height: "32px",
+										gridArea: 'img'
+									}}/>
+								<div style={{
+									gridArea: 'text',
+									textAlign: 'left',
+									marginBottom: "0.25em"
+									}}>
+										{c.name}
+								</div>
+								<div style={{gridArea: 'rarity'}}>
+									<Rating icon={'star'} maxRating={c.max_rarity} rating={c.max_rarity} size={'tiny'} />
+								</div>
+							</div>
+						</React.Fragment>,
+						// image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` },
+						// text: c.name
 					});
 			});
 		}
@@ -811,7 +838,12 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			crewTypes.push({
 				key: 'owned',
 				value: 'owned',
-				text: 'Owned Crew'
+				text: 'Immortalized Crew'
+			});
+			crewTypes.push({
+				key: 'frozen',
+				value: 'frozen',
+				text: 'Frozen Crew'
 			});
 		}
 		if (bReady) {
