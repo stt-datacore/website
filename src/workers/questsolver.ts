@@ -65,8 +65,12 @@ function makeSmartCombos(source: IQuestCrew[], path: MissionChallenge[], maxSolv
                     let cbs = [... new Set(newcombo.map(n => n.challenges?.map(c => c.challenge?.id ?? -1) ?? []).flat()) ].sort();
                     let key = cbs.join("_");
                     counts[key] ??= 0;
-                    if (counts[key] < maxSolves) {
+                    if (counts[key] < maxSolves || newcombo.every(nc => nc.challenges?.some(ncc => cbs.includes(ncc.challenge.id) && !ncc.max_solve))) {
                         combos.push(newcombo);
+                        counts[key]++;
+                    }
+                    else if (newcombo.every(nc => nc.challenges?.some(ncc => cbs.includes(ncc.challenge.id) && !ncc.max_solve))) {
+                        combos.unshift(newcombo);
                         counts[key]++;
                     }
                 }
@@ -77,9 +81,31 @@ function makeSmartCombos(source: IQuestCrew[], path: MissionChallenge[], maxSolv
     return combos.map(c => c.map(d => d.id));
 }
 
-export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[], nodescend?: boolean) {
+const skillSum = (crew: IQuestCrew, skill?: string): number => {
+    if (skill) {
+        return crew[skill].core + crew[skill].max + crew[skill].min;
+    }
+    else {
+        let sko = getSkillOrder(crew);
+        return sko.map(sk => crew[sk].core + crew[sk].min + crew[sk].max).reduce((p: number, n: number) => p + n, 0);
+    }
+}
 
-    let mk = makeSmartCombos(crew, path);
+
+export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[]) {
+
+    crew = [...crew].sort((a, b) => {
+        let askill = getSkillOrder(a);
+        let bskill = getSkillOrder(b);
+        if (askill[0] === bskill[0]) {
+            return -1 * (skillSum(a, askill[0]) - skillSum(b, bskill[0]));
+        }
+        else {
+            return -1 * (skillSum(a) - skillSum(b));
+        }
+    });
+
+    let mk = makeSmartCombos(crew, path, 100);
     mk = mk.filter(m => m.length === 3);
     let c = crew.length;
     let d = path.length;
@@ -120,86 +146,86 @@ export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[], node
         q++;
     }
 
-    let lastch = path[path.length - 1].id;
-    protosolves = protosolves.filter(s => s.some(ch => ch.challenges?.some(sch => sch.challenge.id === lastch)));
-    const fsolves = [] as IQuestCrew[][];
+    // let lastch = path[path.length - 1].id;
+    // protosolves = protosolves.filter(s => s.some(ch => ch.challenges?.some(sch => sch.challenge.id === lastch)));
+    // const fsolves = [] as IQuestCrew[][];
 
-    protosolves.forEach((s) => {
-        if (s.length < 3) {
-            let vcrew = crew.filter(f => !s.some(sc => sc.id === f.id));
-            i = 0;
-            while (s.length < 3 && i < vcrew.length) {
-                s.push(vcrew[i++]);
-            }
-            fsolves.push(s);
-            return;
-        }
-        else if (s.length > 3) {
-            if (!nodescend) {
-                let results = findAllCombos(s, path, true);
-                results.forEach(r => fsolves.push(r.map(p => crew.find(f => f.id === p) as IQuestCrew)))
-            }   
-            else {
-                let hasend = s.filter(se => se.challenges?.some(che => che.challenge.id === lastch));
-                let noend = s.filter(se => !se.challenges?.some(che => che.challenge.id === lastch));
-                let newcrew = [] as IQuestCrew[];
+    // protosolves.forEach((s) => {
+    //     if (s.length < 3) {
+    //         let vcrew = crew.filter(f => !s.some(sc => sc.id === f.id));
+    //         i = 0;
+    //         while (s.length < 3 && i < vcrew.length) {
+    //             s.push(vcrew[i++]);
+    //         }
+    //         fsolves.push(s);
+    //         return;
+    //     }
+    //     else if (s.length > 3) {
+    //         if (!nodescend) {
+    //             let results = findAllCombos(s, path, true);
+    //             results.forEach(r => fsolves.push(r.map(p => crew.find(f => f.id === p) as IQuestCrew)))
+    //         }   
+    //         else {
+    //             let hasend = s.filter(se => se.challenges?.some(che => che.challenge.id === lastch));
+    //             let noend = s.filter(se => !se.challenges?.some(che => che.challenge.id === lastch));
+    //             let newcrew = [] as IQuestCrew[];
                 
-                i = 0;
-                newcrew.push(hasend[i]);
-                while (newcrew.length < 3 && i < noend.length) {
-                    if (!newcrew.includes(noend[i])) {
-                        newcrew.push(noend[i]);
-                    }
-                    i++;
-                }            
-                if (newcrew.length < 3 && hasend.length > 1) {
-                    i = 1;
-                    while (newcrew.length < 3 && i < hasend.length) {
-                        if (!newcrew.includes(hasend[i])) {
-                            newcrew.push(hasend[i]);
-                        }
-                        i++;
-                    }   
-                }
-                if (newcrew.length === 3) {
-                    fsolves.push(newcrew);
-                }
-                newcrew = [];
-                i = hasend.length - 1;
-                newcrew.push(hasend[i]);
-                i = noend.length - 1;
-                while (newcrew.length < 3 && i >= 0) {
-                    if (!newcrew.includes(noend[i])) {
-                        newcrew.push(noend[i]);
-                    }
-                    i--;
-                }            
-                if (newcrew.length < 3 && hasend.length > 1) {
-                    i = 0;
-                    while (newcrew.length < 3 && i < hasend.length) {
-                        if (!newcrew.includes(hasend[i])) {
-                            newcrew.push(hasend[i]);
-                        }
-                        i++;
-                    }   
-                }
-                if (newcrew.length === 3) {
-                    fsolves.push(newcrew);
-                }
-            }         
-        }
-        else {
-            fsolves.push(s);
-        }
+    //             i = 0;
+    //             newcrew.push(hasend[i]);
+    //             while (newcrew.length < 3 && i < noend.length) {
+    //                 if (!newcrew.includes(noend[i])) {
+    //                     newcrew.push(noend[i]);
+    //                 }
+    //                 i++;
+    //             }            
+    //             if (newcrew.length < 3 && hasend.length > 1) {
+    //                 i = 1;
+    //                 while (newcrew.length < 3 && i < hasend.length) {
+    //                     if (!newcrew.includes(hasend[i])) {
+    //                         newcrew.push(hasend[i]);
+    //                     }
+    //                     i++;
+    //                 }   
+    //             }
+    //             if (newcrew.length === 3) {
+    //                 fsolves.push(newcrew);
+    //             }
+    //             newcrew = [];
+    //             i = hasend.length - 1;
+    //             newcrew.push(hasend[i]);
+    //             i = noend.length - 1;
+    //             while (newcrew.length < 3 && i >= 0) {
+    //                 if (!newcrew.includes(noend[i])) {
+    //                     newcrew.push(noend[i]);
+    //                 }
+    //                 i--;
+    //             }            
+    //             if (newcrew.length < 3 && hasend.length > 1) {
+    //                 i = 0;
+    //                 while (newcrew.length < 3 && i < hasend.length) {
+    //                     if (!newcrew.includes(hasend[i])) {
+    //                         newcrew.push(hasend[i]);
+    //                     }
+    //                     i++;
+    //                 }   
+    //             }
+    //             if (newcrew.length === 3) {
+    //                 fsolves.push(newcrew);
+    //             }
+    //         }         
+    //     }
+    //     else {
+    //         fsolves.push(s);
+    //     }
         
-    });
+    // });
 
-    fsolves.forEach((p) => {
-        let k = p.sort((a, b) => a.id - b.id).map(qc => qc.id).join("_");        
-        if (!(k in solveKeys)) solveKeys[k] = p;
-    });
+    // fsolves.forEach((p) => {
+    //     let k = p.sort((a, b) => a.id - b.id).map(qc => qc.id).join("_");        
+    //     if (!(k in solveKeys)) solveKeys[k] = p;
+    // });
 
-    return Object.values(solveKeys).map(c => c.map(d => d.id));
+    return Object.values(protosolves).map(c => c.map(d => d.id));
 }
 
 export function getTraits<T extends CrewMember>(crew: T, traits: MissionTraitBonus[]) {

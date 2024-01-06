@@ -45,24 +45,25 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
         typeof window !== "undefined" && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
     const getCrewPower = (
-        crew: IQuestCrew,
+        calcCrew: IQuestCrew,
         stage: number,
-        challenge: CrewChallengeInfo
+        challenge: CrewChallengeInfo,
+        pathCrew: IQuestCrew[]
     ) => {
         let newskill = {} as BaseSkills;
 
         try {
-            let assoc = crew.associated_paths?.find(
+            let assoc = calcCrew.associated_paths?.find(
                 (a) => a.path === pathGroup.path
             )?.skills;
-            Object.keys(crew.skills).forEach((skill) => {
+            Object.keys(calcCrew.skills).forEach((skill) => {
                 if (assoc) {
                     newskill[skill] = JSON.parse(JSON.stringify(assoc[skill]));
                 } else {
                     newskill[skill] = {
-                        core: Math.round(crew[skill].core),
-                        range_min: Math.round(crew[skill].min),
-                        range_max: Math.round(crew[skill].max),
+                        core: Math.round(calcCrew[skill].core),
+                        range_min: Math.round(calcCrew[skill].min),
+                        range_max: Math.round(calcCrew[skill].max),
                         skill,
                     };
                 }
@@ -70,12 +71,13 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
 
             if (
                 stage === 0 ||
-                !crew.challenges?.some((c) => c.challenge.id === path[stage - 1].id)
+                !calcCrew.challenges?.some((c) => c.challenge.id === path[stage - 1].id) ||
+                pathCrew.some((c) => c.id !== calcCrew.id && c.challenges?.some(e => e.challenge.id === path[stage - 1].id))
             ) {
-                //challenge.power_decrease = 0;
+                challenge.power_decrease = 0;
             } else {
-                //challenge.power_decrease = 0.2;
-                Object.keys(crew.skills).forEach((skill) => {
+                challenge.power_decrease = 0.2;
+                Object.keys(calcCrew.skills).forEach((skill) => {
                     newskill[skill].core = Math.round(
                         newskill[skill].core - newskill[skill].core * 0.2
                     );
@@ -88,7 +90,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                 });
             }
         } catch {
-            return crew.skills;
+            return calcCrew.skills;
         }
 
         let cm =
@@ -239,7 +241,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
 
                                     {c.challenges &&
                                         crewChallenge &&
-                                        Object.values(getCrewPower(c, pathIdx, crewChallenge))
+                                        Object.values(getCrewPower(c, pathIdx, crewChallenge, pathCrew))
                                             .map((skill: Skill) => {
                                                 const key = skill.skill ?? "";
                                                 if (key !== challenge.skill) return <></>;
