@@ -3,7 +3,7 @@ name: Devor
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal:
 date: 14/11/2023
 published: true
