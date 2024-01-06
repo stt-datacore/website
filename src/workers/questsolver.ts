@@ -49,9 +49,37 @@ export function getSkillOrder<T extends CrewMember>(crew: T) {
     return output;
 }
 
+function makeSmartCombos(source: IQuestCrew[], path: MissionChallenge[], maxSolves?: number) {
+    maxSolves ??= 10;
+    let c = source.length;
+    let counts = {} as { [key: string]: number };
+    let combos = [] as IQuestCrew[][];
+    let last = path[path.length - 1];
+    for (let i = 0; i < c; i++) {
+        for (let j = 0; j < c; j++) {
+            for (let k = 0; k < c; k++) {
+                if (j === i || j === k || k === i) continue;
+                let newcombo = [source[i], source[j], source[k]];
+                
+                if (newcombo.some(n => n.challenges?.some(c => c.challenge.id === last.id))) {
+                    let cbs = [... new Set(newcombo.map(n => n.challenges?.map(c => c.challenge?.id ?? -1) ?? []).flat()) ].sort();
+                    let key = cbs.join("_");
+                    counts[key] ??= 0;
+                    if (counts[key] < maxSolves) {
+                        combos.push(newcombo);
+                        counts[key]++;
+                    }
+                }
+            }
+        }
+    }
+
+    return combos.map(c => c.map(d => d.id));
+}
+
 export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[], nodescend?: boolean) {
 
-    let mk = makeAllCombos(crew.map(c => c.id), undefined, undefined, undefined, 3);
+    let mk = makeSmartCombos(crew, path);
     mk = mk.filter(m => m.length === 3);
     let c = crew.length;
     let d = path.length;
@@ -318,9 +346,9 @@ const QuestSolver = {
             questcrew = standardSort(questcrew, challenge, mastery, traits);
 
             let qpass = questcrew.filter((crew) => {
-                if (crew.symbol === 'tribble_captain_crew') {
-                    console.log("break");
-                }
+                // if (crew.symbol === 'tribble_captain_crew') {
+                //     console.log("break");
+                // }
                 const nslots = (!!config.ignoreQpConstraint || crew.immortal > 0) ? 4 : qbitsToSlots(crew.q_bits);
 
                 crew.challenges ??= [];
@@ -600,9 +628,9 @@ const QuestSolver = {
                 }
                 if (config.buildableOnly) {
                     pcrew = pcrew.filter((crew) => {
-                        if (crew.symbol === "winn_kai_crew") {
-                            console.log("Break here.")
-                        }
+                        // if (crew.symbol === "winn_kai_crew") {
+                        //     console.log("Break here.")
+                        // }
                         let aq = crew.added_kwipment ?? [0,0,0,0];
                         let aqn = crew.added_kwipment_expiration ?? [0,0,0,0];
                         let n = aq.length;
@@ -652,9 +680,9 @@ const QuestSolver = {
 
             const buildQuipment = (c: IQuestCrew, allQuipment: EquipmentItem[], deductHistory: { [key: string]: boolean[] }, altItems?: number[]) => {
                 altItems ??= c.added_kwipment as number[] ?? [];
-                if (c.symbol === "winn_kai_crew") {
-                    console.log("Break here");
-                }
+                // if (c.symbol === "winn_kai_crew") {
+                //     console.log("Break here");
+                // }
                 if (!altItems?.length) return true;
                 if (altItems.filter(c => !!c).length === c.added_kwipment_expiration?.filter(c => !!c)?.length) return true;
 
@@ -662,9 +690,9 @@ const QuestSolver = {
                 let total = 0;
                 let slot = 0;
                 let failbuff = [] as EquipmentItem[];
-                if (c.symbol === 'vedala_elder_crew') {
-                    console.log("Break");
-                }
+                // if (c.symbol === 'vedala_elder_crew') {
+                //     console.log("Break");
+                // }
                 for (let id of altItems) {
                     if (c.added_kwipment_expiration && c.added_kwipment_expiration[slot]) {
                         slot++;
