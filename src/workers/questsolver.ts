@@ -510,6 +510,7 @@ const QuestSolver = {
                         kwipment: (crew.added_kwipment ?? []) as number[],
                         kwipment_expiration: (crew.added_kwipment_expiration ?? []) as number[]
                     });
+                    crew.added_kwipment = [0, 0, 0, 0];
                 }
 
                 return true;
@@ -763,7 +764,7 @@ const QuestSolver = {
                 let combos = [] as number[][];
                 
                 combos = findAllCombos(wpCrew, path).filter(f => f.length === 3);
-                let debug_symbols = combos.map(c => c.map(cid => wpCrew.find(f => f.id === cid)?.symbol));
+                //let debug_symbols = combos.map(c => c.map(cid => wpCrew.find(f => f.id === cid)?.symbol));
                 let complete = 'full' as ThreeSolveResult;
                 let numbers = combos.filter ((num) => {
                     return path.every((ch) => {
@@ -981,10 +982,10 @@ const QuestSolver = {
                 let br = 0;                
                 let r = 0; 
 
-                // let pa = pathPrice(a.path, a.crew);
-                // let pb = pathPrice(b.path, b.crew);
-                // r = pa - pb;
-                // if (r) return r;
+                let pa = pathPrice(a.path, a.crew);
+                let pb = pathPrice(b.path, b.crew);
+                r = pa - pb;
+                if (r) return r;
                 
                 // make sure we get a variety of every sort floated to the top
                 let asp = a.path.split("_") ?? [];
