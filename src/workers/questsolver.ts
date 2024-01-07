@@ -509,8 +509,7 @@ const QuestSolver = {
                         path: path,
                         kwipment: (crew.added_kwipment ?? []) as number[],
                         kwipment_expiration: (crew.added_kwipment_expiration ?? []) as number[]
-                    });
-                    crew.added_kwipment = [0, 0, 0, 0];
+                    });                    
                 }
 
                 return true;
