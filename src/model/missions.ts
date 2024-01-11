@@ -21,6 +21,7 @@ export interface QuestFilterConfig {
   alwaysCrit?: boolean;
   noTraitBonus?: boolean;
   includePartials?: boolean;
+  requiredCrew?: number[];
 }
 
 export interface ProtoMission {
