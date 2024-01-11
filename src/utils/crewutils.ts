@@ -371,6 +371,9 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		if (crew.immortal > 0) {
 			crew.highest_owned_rarity = crew.max_rarity ?? crew.rarity;
 			crew.highest_owned_level = crew.max_level ?? 100;
+			crew.q_bits = 0;
+			crew.kwipment = [0, 0, 0, 0];
+			crew.kwipment_expiration = [0, 0, 0, 0];
 			inroster.push(crew);
 			crew = templateCrew;
 		}
@@ -398,7 +401,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 			crew.base_skills = workitem.base_skills;
 			if (rarity === undefined) crew.level = workitem.level;
 			crew.equipment = workitem.equipment;
-			crew.q_bits = workitem.q_bits;
+			crew.q_bits = workitem.q_bits ?? 0;
 			crew.kwipment_slots = workitem.kwipment_slots;
 			crew.kwipment = [0, 0, 0, 0];
 			crew.kwipment_expiration = [0, 0, 0, 0];
