@@ -319,6 +319,13 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				keywords: ['ranking'],
 				filter: (crew: IVoyageCrew) => crew.ranks.gauntletRank <= 20 || Object.keys(crew.ranks).filter(r => r.startsWith("G_"))?.some(key => crew.ranks[key] <= 20)
 			},
+			{
+				key: 'noquip',
+				name: 'Corporate Reach-back',
+				description: 'Crew with no unlocked quipment slots',
+				keywords: ['ranking'],
+				filter: (crew: IVoyageCrew) => !crew.immortal || crew.q_bits < 100
+			},
 		] as ICustomTheme[];
 
 		if (props.rosterType === 'myCrew') {
