@@ -49,7 +49,7 @@ export function getSkillOrder<T extends CrewMember>(crew: T) {
     return output;
 }
 
-function makeSmartCombos(source: IQuestCrew[], path: MissionChallenge[], maxSolves?: number) {
+function makeSmartCombos(source: IQuestCrew[], path: MissionChallenge[], maxSolves?: number, required?: number[]) {
     maxSolves ??= 10;
     let c = source.length;
     let counts = {} as { [key: string]: number };
@@ -60,6 +60,7 @@ function makeSmartCombos(source: IQuestCrew[], path: MissionChallenge[], maxSolv
             for (let k = 0; k < c; k++) {
                 if (j === i || j === k || k === i) continue;
                 let newcombo = [source[i], source[j], source[k]];
+                if (required?.length && !required.every(r => newcombo.some(c => c.id === r))) continue;
                 
                 if (newcombo.some(n => n.challenges?.some(c => c.challenge.id === last.id))) {
                     let cbs = [... new Set(newcombo.map(n => n.challenges?.map(c => c.challenge?.id ?? -1) ?? []).flat()) ].sort();
@@ -92,7 +93,7 @@ const skillSum = (crew: IQuestCrew, skill?: string): number => {
 }
 
 
-export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[]) {
+export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[], required?: number[]) {
 
     crew = [...crew].sort((a, b) => {
         let askill = getSkillOrder(a);
@@ -105,7 +106,7 @@ export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[]) {
         }
     });
 
-    let mk = makeSmartCombos(crew, path, 100);
+    let mk = makeSmartCombos(crew, path, 100, required);
     mk = mk.filter(m => m.length === 3);
     let c = crew.length;
     let d = path.length;
@@ -762,7 +763,7 @@ const QuestSolver = {
                 let nx = pathCrew[path_key].length;
                 let combos = [] as number[][];
                 
-                combos = findAllCombos(wpCrew, path).filter(f => f.length === 3);
+                combos = findAllCombos(wpCrew, path, config.requiredCrew).filter(f => f.length === 3);
                 //let debug_symbols = combos.map(c => c.map(cid => wpCrew.find(f => f.id === cid)?.symbol));
                 let complete = 'full' as ThreeSolveResult;
                 let numbers = combos.filter ((num) => {

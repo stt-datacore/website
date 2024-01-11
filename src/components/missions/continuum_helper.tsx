@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { PlayerCrew } from "../../model/player";
 import { CrewMember } from "../../model/crew";
 import { GlobalContext } from "../../context/globalcontext";
@@ -10,7 +10,7 @@ import { QuestImportComponent } from "./quest_importer";
 import { NavMapItem, getNodePaths, makeNavMap } from "../../utils/episodes";
 import { HighlightItem, MissionMapComponent, cleanTraitSelection } from "./mission_map";
 import { QuestSolverComponent } from "./solver_component";
-import { QuestSolverCacheItem, QuestSolverResult } from "../../model/worker";
+import { IQuestCrew, QuestSolverCacheItem, QuestSolverResult } from "../../model/worker";
 import { Checkbox, Dropdown, Message, Step } from "semantic-ui-react";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
@@ -19,6 +19,9 @@ import { v4 } from "uuid";
 import { QuestSelector } from "./quest_selector";
 import { TraitSelection } from "./trait_selector";
 import { PathTable } from "./path_table";
+import { CrewPicker } from "../base/crewpicker";
+import ItemDisplay from "../itemdisplay";
+import { CrewHoverStat } from "../hovering/crewhoverstat";
 
 export interface RemoteQuestStore {
     id: number,
@@ -106,6 +109,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const [showResults, setShowResults] = useStateWithStorage('continuum/showResults', 0);
     const [errorMsg, setErrorMsg] = React.useState<string | undefined>(undefined);
     const [clearInc, setClearInc] = React.useState(0);
+    const [missionPool, setMissionPool] = React.useState([] as IQuestCrew[]);
+    const [selCrew, setSelCrew] = useStateWithStorage('continuum/selCrew', [] as number[] | undefined);
 
     const [questId, setQuestId] = useStateWithStorage('continuum/questIndex', undefined as number | undefined);
     const [quest, setQuest] = useStateWithStorage<Quest | undefined>('continuum/currentQuest', undefined);
@@ -217,6 +222,34 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     }
 
     /* Component Initialization & State Management */
+
+    React.useEffect(() => {
+        let crew = context.player.playerData?.player.character.crew;
+        if (crew?.length) {
+            crew = crew.filter(f => {
+                f.q_bits ??= 0;
+                if (!f.immortal) return false;
+                if (!considerFrozen && f.immortal > 0) return false;
+                if (qpOnly && f.q_bits < 100) return false; 
+                return true;
+            });
+
+            if (considerUnowned) {
+                crew = crew.concat(context.player.playerData?.player.character.unOwnedCrew ?? []);
+            }
+
+            crew.sort((a, b) => {
+                let an = a.q_bits ?? 0;
+                let bn = b.q_bits ?? 0;
+                let r = bn - an;
+                if (r) return r;
+                return a.name.localeCompare(b.name);
+            })
+
+            setMissionPool(crew);            
+            setSelCrew(selCrew?.filter(f => crew?.some(c => c.id === f)));
+        }
+    }, [missionConfig, context]);
 
     React.useEffect(() => {
         if (!!mission?.quests?.length && questId !== undefined && questId >= 0 && questId < (mission?.quests?.length ?? 0)) {
@@ -543,14 +576,64 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                 </div>
                             ))}
                         </div>
-                        {/* <div
-                            title={"The number of groups of 3 crew to assemble into different combinations."}
-                            style={{ margin: "0.5em", display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: "center", gap: "1em"}}>
-                            <label>Max Pool Depth:</label>
-                            <Dropdown 
-                                disabled={activeConfig.considerFrozen || activeConfig.considerUnowned}
-                                options={poolChoices} value={maxpool ?? 36} onChange={(e, { value }) => setMaxPool(value as number)} />
-                        </div> */}
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            textAlign: "center"
+                        }}>
+                            
+                            <div style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                textAlign: "center",
+                                gap:"1em"
+                            }}>
+                            {selCrew?.map((cn) => {
+
+                                const crew = missionPool.find(f => f.id === cn);
+                                if (!crew) return <></>
+                                return <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        textAlign: "center"
+                                    }}
+                                >
+                                    
+                                <ItemDisplay
+                                        src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+                                        size={64}
+                                        rarity={crew.rarity ?? crew.max_rarity}
+                                        maxRarity={crew.max_rarity}
+                                        targetGroup={'continuum_quest_crew'}
+                                        allCrew={context.core.crew}
+                                        />
+                                    <i style={{marginTop: "0.25em"}}>{crew.name}</i>
+                                </div>
+                            })                            
+                            }
+                            </div>
+                            <CrewPicker pool={missionPool}
+                                style={{
+                                    margin: "0.5em",
+                                    maxWidth: isMobile ? "100%" : "50%",
+                                    minWidth: isMobile ? "100%" : "25%"
+                                }}
+                                placeholder={"Select up to 2 quest crew..."}
+                                setSelection={setSelCrew}
+                                selection={selCrew}
+                                multiple={true}
+                                maxSelection={2}
+                                />
+                            
+                        </div>
+                        
                         <div style={{ justifyContent: "center", alignItems: "center", display: "flex", flexDirection: "column" }}>
                             <QuestSolverComponent
                                 setResults={setSolverResults}
@@ -558,7 +641,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                 clearResults={() => setSolverResults(undefined)}
                                 setRunning={setRunning}
                                 disabled={!quest?.challenges?.some(ch => ch.difficulty_by_mastery?.some(d => !!d))}
-                                config={activeConfig}
+                                config={{ ...activeConfig, requiredCrew: selCrew }}
                             />
                         </div>
                     </div>
@@ -630,6 +713,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
                 <div style={{ display: showPane !== 1 ? 'none' : undefined }}>
                     <ItemHoverStat targetGroup={'continuum_quest_crew_items'} />
+                    <CrewHoverStat targetGroup={'continuum_quest_crew'} />
 
                     <Step.Group fluid>
                         <Step
