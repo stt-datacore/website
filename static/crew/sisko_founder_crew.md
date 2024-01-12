@@ -5,7 +5,7 @@ series: original
 memory_alpha:
 bigbook_tier: 2
 in_portal:
-date: 08/01/2024
+date: 11/01/2024
 published: true
 ---
 
