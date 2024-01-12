@@ -3,7 +3,7 @@ name: Mirror Archer
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 02/01/2016
 published: true
