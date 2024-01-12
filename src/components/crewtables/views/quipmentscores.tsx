@@ -12,21 +12,21 @@ export interface QuipmentScoreProps {
 
 export const getQuipmentTableConfig = () => {
     const config = [] as ITableConfigRow[];
-    config.push({ width: 1, column: 'quipmentScore', title: "Quipment Score" });
+    config.push({ width: 1, column: 'quipmentScore', title: "Quipment Score", reverse: true });
 
     CONFIG.SKILLS_SHORT.map(p => p.name).forEach((skill) => {
         config.push({ 
-            width: 1, 
-            column: `quipmentScores.${skill}`, 
+            width: 1,
+            column: `quipmentScores.${skill}`,
+            reverse: true,
             title: <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-                <img 
-                    style={{ height: '16px'}} 
+                <img
+                    style={{ height: '16px'}}
                     src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`}
                     />
                 <span>
                 &nbsp;Quipment Score
-                </span>
-                
+                </span>                
             </div>
         })
     })    
