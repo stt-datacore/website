@@ -30,7 +30,7 @@ type CrewRankCellsProps = {
 
 export const CrewRankCells = (props: CrewRankCellsProps) => {
 	const { crew, prefix } = props;
-	const totalRank = prefix === 'G_' ? 'gauntletRank' : 'voyRank';
+	const totalRank = prefix === 'G_' ? 'gauntletRank' : 'voyRank';	
 	return (
 		<React.Fragment>
 			<Table.Cell textAlign='center'>

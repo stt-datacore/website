@@ -13,7 +13,7 @@ export interface CrewPickerProperties {
     maxSelection?: number;
 }
 
-export const CrewPicker = (props: CrewPickerProperties) => {
+export const CrewDropDown = (props: CrewPickerProperties) => {
     const { pool, multiple, setSelection, style, placeholder, maxSelection } = props;
     const [crewChoices, setCrewChoices] = React.useState([] as DropdownItemProps[]);
 
