@@ -3,7 +3,7 @@ name: Deela
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal:
 date: 21/11/2023
 published: true

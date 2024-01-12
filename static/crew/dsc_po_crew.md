@@ -3,7 +3,7 @@ name: Queen Po
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal: true
 date: 06/08/2019
 published: true
