@@ -25,6 +25,9 @@ import { getRanksTableConfig, CrewRankCells } from './views/ranks';
 import { CrewUtilityForm, getCrewUtilityTableConfig, CrewUtilityCells } from './views/crewutility';
 
 import RosterSummary from './rostersummary';
+import { QuipmentScoreCells, getQuipmentTableConfig as getQuipmentTableConfig } from './views/quipmentscores';
+import { calcQuipmentScore } from '../../utils/equipment';
+import { getItemWithBonus } from '../../utils/itemutils';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -230,6 +233,10 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					});
 				});
 			}
+			const quipment = globalContext.core.items.map(item => getItemWithBonus(item));
+			preparedCrew.forEach(crew => {
+				calcQuipmentScore(crew, quipment);
+			});
 			setPreparedCrew([...preparedCrew]);
 		};
 		applyMarkups();
@@ -277,6 +284,14 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
 			tableConfig: getRanksTableConfig('voyage'),
 			renderTableCells: (crew: IRosterCrew) => <CrewRankCells crew={crew} prefix='V_' />
+		},
+		{
+			id: 'qp_ranks',
+			available: true,
+			optionText: 'Show quipment ranks',
+			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
+			tableConfig: getQuipmentTableConfig(),
+			renderTableCells: (crew: IRosterCrew) => <QuipmentScoreCells crew={crew} />
 		},
 		{
 			id: 'crew_utility',

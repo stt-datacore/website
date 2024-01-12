@@ -19,7 +19,7 @@ import { v4 } from "uuid";
 import { QuestSelector } from "./quest_selector";
 import { TraitSelection } from "./trait_selector";
 import { PathTable } from "./path_table";
-import { CrewPicker } from "../base/crewpicker";
+import { CrewDropDown } from "../base/crewdropdown";
 import ItemDisplay from "../itemdisplay";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 
@@ -619,7 +619,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                             })                            
                             }
                             </div>
-                            <CrewPicker pool={missionPool}
+                            <CrewDropDown pool={missionPool}
                                 style={{
                                     margin: "0.5em",
                                     maxWidth: isMobile ? "100%" : "50%",

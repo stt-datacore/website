@@ -567,7 +567,14 @@ export interface Player {
     collectionsIncreased?: string[];
     /** Used internally. Not part of source data.  */
     quipmentScore?: number;
-
+    quipmentScores?: {
+        command_skill: number,
+        security_skill: number,
+        diplomacy_skill: number,
+        engineering_skill: number,
+        medicine_skill: number,
+        science_skill: number;
+    }
     /** Used internally. Not part of source data.  */
     ssId?: string;
 

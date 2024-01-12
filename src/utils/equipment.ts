@@ -1,6 +1,8 @@
-import { CrewMember, EquipmentSlot } from '../model/crew';
+import CONFIG from '../components/CONFIG';
+import { CrewMember, EquipmentSlot, Skill } from '../model/crew';
 import { EquipmentItem, ICrewDemands, IDemand } from '../model/equipment';
 import { BuffBase, PlayerCrew, PlayerEquipmentItem } from '../model/player';
+import { ItemWithBonus, isQuipmentMatch } from './itemutils';
 
 export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[], crewSymbol: string): number {
 	let equipment = items.find(item => item.symbol === es.symbol);
@@ -319,3 +321,21 @@ export function reverseDeduction<T extends BuffBase>(item: EquipmentItem, items:
 	return true;
 }
 
+export function calcQuipmentScore<T extends PlayerCrew>(crew: T, quipment: ItemWithBonus[]) {
+	let qps = quipment.filter(f => isQuipmentMatch(crew, f.item));
+	crew.quipmentScore = qps.map(m => Object.values(m.bonusInfo.bonuses).map((n: Skill) => n.core + n.range_min + n.range_max)).flat().reduce((p, n) => p + n, 0)
+	crew.quipmentScores ??= {
+		command_skill: 0,
+		medicine_skill: 0,
+		diplomacy_skill: 0,
+		science_skill: 0,
+		security_skill: 0,
+		engineering_skill: 0
+	};
+
+	CONFIG.SKILLS_SHORT.forEach(sk => {
+		if (crew.quipmentScores) {
+			crew.quipmentScores[sk.name] = qps.map(m => Object.values(m.bonusInfo.bonuses).filter(f => f.skill === sk.name).map((n: Skill) => n.core + n.range_min + n.range_max)).flat().reduce((p, n) => p + n, 0);
+		}
+	});
+}
