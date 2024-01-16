@@ -3,7 +3,7 @@ name: Handler Worf
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 in_portal:
 date: 06/07/2023
 published: true
