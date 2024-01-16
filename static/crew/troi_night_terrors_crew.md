@@ -18,6 +18,6 @@ Let’s start with the thing that stands out immediately: that art. It feels lik
 
 If you can take your eyes (in the dark) away from her glowiness, you’ll find Troi’s stats to be equally deserving of attention. Coming at you hard and fast is a hearty DIP Base that anchors a top notch Triplet/Skill Pairing Voyage score! Move over Tribble Quark, it’s Troi’s time to shine! With a trait set and MED tertiary that will help earn plenty of extra seats, Night Moves Troi will punch above her weight for ages to come.
 
-Perhaps a bit locked out on potential future Collections, she only has one for now (but at least it’s a Stat-Booster). Meanwhile, her Ship Ability may seem decent at first glance with its decent Crit boost and speedy Initialisation time, however that god-awful cool down time removes essentially all usefulness. So, let’s just ignore this and look back at the art shall we?
+Perhaps a bit locked out on potential future Collections, she only has two for now (but at least they are Stat-Boosters). Meanwhile, her Ship Ability may seem decent at first glance with its decent Crit boost and speedy Initialisation time, however that god-awful cool down time removes essentially all usefulness. So, let’s just ignore this and look back at the art shall we?
 
 PS: Just had a crazy dream and turns out all this is is a metaphor for Hydrogen?! How’s that gonna win a Nobel Prize?
