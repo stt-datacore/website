@@ -3,7 +3,7 @@ name: Nexus Guinan
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 in_portal: true
 date: 10/09/2019
 published: true
