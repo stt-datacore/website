@@ -87,7 +87,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				)
 			)}
 			<Table.Cell textAlign='center'>
-				<b title={printPortalStatus(crew, true, true, true)}>{printPortalStatus(crew, true, false)}</b>
+				<b title={printPortalStatus(crew, true, true, true)}>{printPortalStatus(crew, true, true)}</b>
 			</Table.Cell>
 			<Table.Cell textAlign='center' width={2}>
 				{tableType === 'allCrew' && new Date(crew.date_added).toLocaleDateString()}
