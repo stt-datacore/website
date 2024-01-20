@@ -13,7 +13,7 @@ import { CrewMember } from '../../model/crew';
 import { Filter } from '../../model/game-elements';
 import { BuffBase, CompletionState, ImmortalReward, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../../model/player';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
-import { crewCopy, gradeToColor, navToCrewPage, oneCrewCopy } from '../../utils/crewutils';
+import { crewCopy, gradeToColor, oneCrewCopy } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
 import { TinyStore } from '../../utils/tiny';
 import { calculateBuffConfig } from '../../utils/voyageutils';
@@ -26,6 +26,7 @@ import CollectionsOverviewComponent from './overview';
 import { CollectionFilterContext, CollectionFilterProvider } from './filtercontext';
 import { RewardFilter } from './rewardfilter';
 import { compareRewards, rewardsFilterPassFail, starCost } from '../../utils/collectionutils';
+import { navToCrewPage } from '../../utils/nav';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);	

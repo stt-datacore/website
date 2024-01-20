@@ -6,22 +6,27 @@ import { TranslationSet } from '../model/traits';
 
 import { randomCrew } from '../context/datacontext';
 import { GlobalContext } from '../context/globalcontext';
-import { CompletionState, PlayerCrew } from '../model/player';
+import { CompletionState, PlayerBuffMode, PlayerCrew, PlayerImmortalMode } from '../model/player';
 import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
 import { ComputedBuff, ComputedSkill, CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet, GauntletRoot, Opponent } from '../model/gauntlets';
 import { applyCrewBuffs, comparePairs, dynamicRangeColor, getPlayerPairs, getSkills, gradeToColor, isImmortal, updatePairScore, rankToSkill, skillToRank, getCrewPairScore, getPairScore, emptySkill as EMPTY_SKILL, printPortalStatus, getCrewQuipment } from '../utils/crewutils';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
-import { BuffNames, PlayerBuffMode, PlayerImmortalMode } from '../components/item_presenters/crew_preparer';
+import { BuffNames } from '../components/item_presenters/crew_preparer';
 
 import { GauntletSkill } from '../components/item_presenters/gauntletskill';
 import { ShipSkill } from '../components/item_presenters/shipskill';
 import DataPageLayout from '../components/page/datapagelayout';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import ItemDisplay from '../components/itemdisplay';
-import GauntletSettingsPopup, { GauntletSettings, defaultSettings } from '../components/gauntlet/settings';
-import { getItemBonuses } from '../utils/itemutils';
+import GauntletSettingsPopup from '../components/gauntlet/settings';
+import { ItemBonusInfo, getItemBonuses } from '../utils/itemutils';
+import { GauntletSettings, defaultSettings } from '../utils/gauntlet';
+import { EquipmentItem } from '../model/equipment';
+import { GauntletPairCard } from '../components/gauntlet/paircard';
+import { GauntletPairTable } from '../components/gauntlet/pairtable';
+import { GauntletCrewTable } from '../components/gauntlet/gauntlettable';
 
 export type GauntletViewMode = 'big' | 'small' | 'table' | 'pair_cards';
 
@@ -468,8 +473,20 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	componentDidUpdate() {
 		if (this.state.lastPlayerDate !== this.context.player.playerData?.calc?.lastModified) {
 			this.inited = false;
+            let cp = Object.keys(this.crewQuip);
+            let bi = Object.keys(this.bonusInfo);
+            if (cp?.length) {
+                for (let key of cp) {
+                    delete this.crewQuip[key];
+                }
+            }
+            if (bi?.length) {
+                for (let key of bi) {
+                    delete this.bonusInfo[key];
+                }
+            }            
 		}
-		window.setTimeout(() => this.initData());
+		setTimeout(() => this.initData());
 	}
 
 	readonly discoverPairs = (crew: (PlayerCrew | CrewMember)[], featuredSkill?: string) => {
@@ -682,7 +699,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		return pairGroups;
 	}
-	
+
 	readonly getGauntletCrew = (gauntlet: Gauntlet, rankByPair?: string, range_max?: number, filter?: FilterProps, textFilter?: string) => {
 		if (rankByPair === '' || rankByPair === 'none') rankByPair = undefined;
 
@@ -694,7 +711,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const availBuffs = ['none'] as PlayerBuffMode[];
 		const oppo = [] as PlayerCrew[];
-	
+
 		if (gauntlet.opponents?.length && !this.state.hideOpponents) {
 			for (let op of gauntlet.opponents){
 				const ocrew = op.crew_contest_data.crew[0];
@@ -794,13 +811,20 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						}
 						else if (buffConfig && buffMode === 'quipment') {
 							if (crew.kwipment?.length) {
-								let cq = getCrewQuipment(crew, this.context.core.items);
-								let bn = cq?.map(q => getItemBonuses(q)) ?? undefined;
-								applyCrewBuffs(crew, buffConfig, undefined, bn);
-							}
-							else {
-								applyCrewBuffs(crew, buffConfig);
-							}
+                                if (!this.crewQuip[crew.symbol]) {
+                                    this.crewQuip[crew.symbol] = getCrewQuipment(crew, this.context.core.items);
+                                }
+                                let cq = this.crewQuip[crew.symbol];
+                                let bn = cq?.map(q => {
+                                    this.bonusInfo[q.symbol] ??= getItemBonuses(q);
+                                    return this.bonusInfo[q.symbol];
+                                }) ?? undefined;
+                                
+                                applyCrewBuffs(crew, buffConfig, undefined, bn);
+                            }
+                            else {
+                                applyCrewBuffs(crew, buffConfig);
+                            }
 						}
 						else if (maxBuffs && buffMode === 'max') {
 							applyCrewBuffs(crew, maxBuffs);
@@ -1023,11 +1047,14 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		gauntlet.prettyTraits = prettyTraits;
 	}
 
+    private readonly crewQuip = {} as { [key: string]: EquipmentItem[] };
+    private readonly bonusInfo = {} as { [key: string]: ItemBonusInfo };
+
 	initData() {
 		const { crew: allCrew, gauntlets: gauntsin, translation: allTraits } = this.context.core;
 		const { playerData } = this.context.player;
 		const { textFilter } = this.state;
-
+        
 		if (!(allCrew?.length) || !(gauntsin?.length)) return;
 		if (gauntsin.length && this.inited) return;
 
@@ -1348,158 +1375,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		{ title: "In Portal", key: "in_portal" },
 	]
 
-	private columnClick = (key: string, tabidx: number) => {
-		const { today, yesterday, activePrevGauntlet, browsingGauntlet, liveGauntlet, sortDirection, sortKey, rankByPair } = this.state;
-		const pages = [today, yesterday, activePrevGauntlet, browsingGauntlet, liveGauntlet];
-
-		if (tabidx in pages && pages[tabidx]) {
-
-			rankByPair[tabidx] = 'none';
-
-			const page = pages[tabidx] ?? {} as Gauntlet;
-			const prettyTraits = page?.prettyTraits;
-
-			var newarr = JSON.parse(JSON.stringify(pages[tabidx]?.matchedCrew ?? [])) as PlayerCrew[];
-
-			if (sortDirection[tabidx] === undefined) {
-				if (key === 'name') {
-					sortDirection[tabidx] = 'ascending';
-				}
-				else {
-					sortDirection[tabidx] = 'descending';
-				}
-			}
-			else if (key === sortKey[tabidx]) {
-				if (sortDirection[tabidx] === 'descending') {
-					sortDirection[tabidx] = 'ascending';
-				}
-				else {
-					sortDirection[tabidx] = 'descending';
-				}
-			}
-
-			sortKey[tabidx] = key;
-
-			const dir = sortDirection[tabidx] === 'descending' ? -1 : 1;
-
-			if (key === 'index' && page.origRanks) {
-				newarr = newarr.sort((a, b) => {
-					if (page.origRanks) {
-						if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
-							return dir * (page.origRanks[a.symbol] - page.origRanks[b.symbol]);
-						}
-					}
-
-					return 0;
-				})
-			}
-			else if (key === 'name') {
-				newarr = newarr.sort((a, b) => dir * a.name.localeCompare(b.name));
-			}
-			else if (key === 'rarity') {
-				newarr = newarr.sort((a, b) => {
-					let r = a.max_rarity - b.max_rarity;
-					if (r === 0 && "rarity" in a && "rarity" in b) {
-						r = (a.rarity ?? 0) - (b.rarity ?? 0);
-					}
-					if (!r) {
-						if (page.origRanks) {
-							if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
-								return (page.origRanks[a.symbol] - page.origRanks[b.symbol]);
-							}
-						}
-					}
-					return dir * r;
-				});
-			}
-			else if (key === 'crit') {
-				newarr = newarr.sort((a, b) => {
-					let atr = prettyTraits?.filter(t => a.traits_named.includes(t))?.length ?? 0;
-					let btr = prettyTraits?.filter(t => b.traits_named.includes(t))?.length ?? 0;
-					let answer = atr - btr;
-					if (!answer) {
-						if (page.origRanks) {
-							if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
-								return (page.origRanks[a.symbol] - page.origRanks[b.symbol]);
-							}
-						}
-					}
-					return dir * answer;
-				});
-			}
-			else if (key.startsWith("pair_")) {
-				let pairIdx = Number.parseInt(key.slice(5)) - 1;
-				newarr = newarr.sort((a, b) => {
-					let apairs = getPlayerPairs(a);
-					let bpairs = getPlayerPairs(b);
-
-					if (apairs && bpairs) {
-						let pa = [...apairs ?? []];
-						let pb = [...bpairs ?? []];
-						return dir * (-1 * comparePairs(pa[pairIdx], pb[pairIdx]));
-					}
-					else if (apairs) {
-						return dir * -1;
-					}
-					else if (bpairs) {
-						return dir * 1;
-					}
-					else {
-						return 0;
-					}
-				});
-			}
-			else if (key === 'have') {
-				newarr = newarr.sort((a, b) => {
-					let r = 0;
-					if ("have" in a && "have" in b) {
-						if (a.have != b.have) {
-							if (a.have) r = 1;
-							else r = -1;
-						}
-					}
-					else if ("have" in a) {
-						if (a.have) r = 1;
-					}
-					else if ("have" in b) {
-						if (b.have) r = -1;
-					}
-
-					if (r === 0 && page.origRanks) {
-						if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
-							return (page.origRanks[a.symbol] - page.origRanks[b.symbol]);
-						}
-					}
-
-					if (r === 0 && page.origRanks) {
-						if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
-							return (page.origRanks[a.symbol] - page.origRanks[b.symbol]);
-						}
-					}
-
-					return r * dir;
-				})
-			}
-			else if (key === 'in_portal') {
-				newarr = newarr.sort((a, b) => {
-					let r = (a.in_portal ? 1 : 0) - (b.in_portal ? 1 : 0);
-					if (!r) {
-						if (page.origRanks) {
-							if (a.symbol in page.origRanks && b.symbol in page.origRanks) {
-								return (page.origRanks[a.symbol] - page.origRanks[b.symbol]);
-							}
-						}
-
-						return 0;
-					}
-					return dir * r;
-				})
-			}
-
-			this.updatePaging(true, undefined, { ...page, matchedCrew: newarr }, tabidx, 'none');
-		}
-	}
-
 	readonly getSkillUrl = (skill: string | Skill): string => {
 		let skilluse: string | undefined = undefined;
 
@@ -1563,152 +1438,29 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		)
 	}
 
-	renderTable(gauntlet: Gauntlet, data: PlayerCrew[], idx: number) {
-		if (!data) return <></>;
+	renderTable(gauntlet: Gauntlet, data: (PlayerCrew | CrewMember)[], idx: number) {
+		
+        
+        if (!data) return <></>;
 
 		const { textFilter, totalPagesTab, activePageIndexTab, sortDirection, sortKey, filterProps } = this.state;
 		const filter = filterProps[idx];
 		
 		const pageIdx = idx;
-		let pp = this.state.activePageIndexTab[idx] - 1;
-		pp *= this.state.itemsPerPageTab[idx];
 
-		const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
-			console.log("imageClick");
-			// if (matchMedia('(hover: hover)').matches) {
-			// 	window.location.href = "/crew/" + data.symbol;
-			// }
-		}
 
-		const prettyTraits = gauntlet.prettyTraits;
-		const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+        return <GauntletCrewTable 
+            pageId={`gauntletPage_${idx}`}
+            mode={idx === 4 ? 'live' : 'normal'}
+            gauntlet={gauntlet}
+            data={data.map(d => d as PlayerCrew)}
+            textFilter={textFilter[idx]}
+            setTextFilter={(value) => this.setTextFilter(value, idx)}
+            rankByPair={this.state.rankByPair}
+            filter={filter}
+            setRankByPair={(value) => this.setState({...this.state, rankByPair: value})}
+            />
 
-		return (<div style={{ overflowX: "auto" }}>
-			<Input
-				style={{ width: isMobile ? '100%' : '50%' }}
-				iconPosition="left"
-				placeholder="Search..."
-				value={textFilter[idx]}
-				onChange={(e, { value }) => this.setTextFilter(value, idx)}>
-					<input />
-					<Icon name='search' />
-					<Button icon onClick={() => this.setTextFilter('', idx)} >
-						<Icon name='delete' />
-					</Button>
-			</Input>
-
-			<Table sortable celled selectable striped collapsing unstackable compact="very">
-				<Table.Header>
-					<Table.Row>
-						<Table.HeaderCell colSpan={9}>
-							<div style={{ margin: "1em 0", width: "100%" }}>
-								<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
-							</div>
-						</Table.HeaderCell>
-					</Table.Row>
-					<Table.Row>
-						{this.columns.map((col, hidx) =>
-							<Table.HeaderCell
-								width={col.width}
-								sorted={sortKey[idx] === col.key ? sortDirection[idx] : undefined}
-								onClick={(e) => this.columnClick(col.key, idx)}
-								key={"k_" + hidx}>
-								{col.title}
-							</Table.HeaderCell>)}
-					</Table.Row>
-				</Table.Header>
-				<Table.Body>
-					{data.map((row, idx: number) => {
-						const crew = row;
-						const pairs = crew.pairs ?? getPlayerPairs(crew);
-						const rank = gauntlet.origRanks ? gauntlet.origRanks[crew.symbol] : idx + pp + 1;
-						const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol);
-
-						return (crew &&
-							<Table.Row key={idx}
-								negative={crew.isOpponent}
-								positive={
-									
-									(pageIdx !== 4 && (filter?.ownedStatus === 'maxall' || filter?.ownedStatus === 'ownedmax') && crew.immortal === CompletionState.DisplayAsImmortalOwned)
-									|| (pageIdx === 4 && inMatch)
-								}
-							>
-								<Table.Cell>{rank}</Table.Cell>
-								<Table.Cell>
-									<div
-										style={{
-											display: 'grid',
-											gridTemplateColumns: '60px auto',
-											gridTemplateAreas: `'icon stats' 'icon description'`,
-											gridGap: '1px'
-										}}>
-										<div style={{ gridArea: 'icon' }}
-
-										>
-											<CrewTarget targetGroup='gauntletTable'
-												inputItem={crew}
-											>
-												<img
-													onClick={(e) => imageClick(e, crew)}
-													width={48}
-													src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
-												/>
-											</CrewTarget>
-											{crew.immortal > 0 &&
-												<div style={{
-													marginTop: "-16px",
-													color: "white",
-													display: "flex",
-													flexDirection: "row",
-													justifyContent: "flex-end"
-												}}>
-													<i className="snowflake icon" />
-												</div>}
-										</div>
-										<div style={{ gridArea: 'stats' }}>
-											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
-										</div>
-									</div>
-								</Table.Cell>
-								<Table.Cell>
-									<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
-								</Table.Cell>
-								<Table.Cell>
-									{((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
-								</Table.Cell>
-								<Table.Cell width={2}>
-									{pairs && pairs.length >= 1 && this.formatPair(pairs[0])}
-								</Table.Cell>
-								<Table.Cell width={2}>
-									{pairs && pairs.length >= 2 && this.formatPair(pairs[1])}
-								</Table.Cell>
-								<Table.Cell width={2}>
-									{pairs && pairs.length >= 3 && this.formatPair(pairs[2])}
-								</Table.Cell>
-								{/* <Table.Cell width={2}>
-									{crew.have === true ? "Yes" : "No"}
-								</Table.Cell> */}
-								<Table.Cell width={2}>
-									<span title={printPortalStatus(crew, true, true, true)}>
-										{printPortalStatus(crew, true, false)}
-									</span>
-								</Table.Cell>
-							</Table.Row>
-						);
-					})}
-				</Table.Body>
-				<Table.Footer>
-					<Table.Row>
-						<Table.Cell colSpan={9}>
-							<div style={{ margin: "1em 0", width: "100%" }}>
-								<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
-							</div>
-						</Table.Cell>
-					</Table.Row>
-				</Table.Footer>
-			</Table>
-			<CrewHoverStat targetGroup='gauntletTable' />
-		</div>);
 	}	
 
 	renderGauntlet(gauntletIn: Gauntlet | undefined, idx: number) {
@@ -2323,7 +2075,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						</div>}
 
 						<div style={{marginTop:"1.5em"}}>
-							{viewModes[idx] === 'table' && this.renderTable(gauntlet, activePageTabs[idx] as PlayerCrew[], idx)}
+							{viewModes[idx] === 'table' && this.renderTable(gauntlet, gauntlet.matchedCrew ?? [], idx)}
 						</div>
 
 						{viewModes[idx] === 'pair_cards' &&
@@ -2338,49 +2090,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							}}>
 								{this.getPairGroups(gauntlet.matchedCrew ?? [], gauntlet, gauntlet.contest_data?.featured_skill, tops[idx], filterProps[idx].maxResults)
 									.map((pairGroup, pk) => {
-									return (<div
-										key={"pairGroup_" + pk}
-										style={{
-											padding: 0,
-											margin: 0,
-											display: "flex",										
-											width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "100%" : undefined,
-											flexDirection: "column",
-											justifyContent: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "center" : "stretch",
-										}}>
-
-										<div
-											className='ui segment'
-											style={{
-												textAlign: "center",
-												display: "flex",
-												flexDirection: "row",
-												fontSize: "18pt",
-												marginTop: "1em",
-												marginBottom: "0.5em",
-												justifyContent: "center",
-												paddingTop: "0.6em",
-												paddingBottom: "0.5em",
-												backgroundColor: 
-													currContest === pairGroup.pair.map(e => rankToSkill(e)).sort().join() ? 'royalblue' : (pairGroup.pair.includes(skillToRank(gauntlet.contest_data?.featured_skill as string) as string) ? "slateblue" : undefined),
-
-											}}>
-											{pairGroup.pair.map((p, ik) => {
-												return (
-													<div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
-														<img key={ik} src={this.getSkillUrl(p)} style={{ height: "1em", maxWidth: "1em", marginLeft: "0.25em", marginRight: "0.25em" }} /> {p} {ik === 0 && <span>&nbsp;/&nbsp;</span>}
-													</div>
-												)
-											})}
-										</div>
-										{pairGroup.crew.map((crew) => (
-											this.renderPairCard(crew, gauntlet, pairGroup.pair)))}
-									</div>)
+									return (<GauntletPairTable gauntlet={gauntlet}
+                                            key={"pairGroup_" + pk}
+                                            currContest={currContest === pairGroup.pair.map(e => rankToSkill(e)).sort().join()}
+                                            pairGroup={pairGroup}
+                                            boostMode={this.getBuffState()}
+                                            onlyActiveRound={this.state.onlyActiveRound}
+                                            />)
 								})}
-
-
 							</div>
-
 						}
 
 						{viewModes[idx] !== 'table' && viewModes[idx] !== 'pair_cards' && <div style={{ margin: "1em 0", width: "100%" }}>
@@ -2451,258 +2169,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		</>)
 	}
 
-	renderPairCard(crew: CrewMember | PlayerCrew, gauntlet: Gauntlet, pair: string[]) {
-		const skills = pair.map(m => rankToSkill(m));
-		const crewpair = [] as Skill[];
-		const prettyTraits = gauntlet.prettyTraits;
-		const crit = ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5);
-		const critColor = gradeToColor(crit);
-		const gmin = getPairScore(gauntlet.pairMin ?? [], pair.join("_"));
-		const gmax = getPairScore(gauntlet.pairMax ?? [], pair.join("_"));
-		const crewPairScore = getCrewPairScore(crew as PlayerCrew, pair.join("_"));
-		const bigNumberColor = dynamicRangeColor("score" in crew ? (crewPairScore?.score ?? 0) : 0, gmax?.score ?? 0, gmin?.score ?? 0);
-		const critString = crit + "%";
-		const boostMode = this.getBuffState();
-		const powerColor = ("immortal" in crew && crew.immortal === CompletionState.DisplayAsImmortalOwned) ? 'lightgreen' : undefined;
-		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
-		const foreColor = theme === 'dark' ? 'white' : 'black';
-		
-		const roundPair = gauntlet?.contest_data?.secondary_skill ? [gauntlet?.contest_data?.primary_skill, gauntlet?.contest_data?.secondary_skill] : []
-		const isRound = !this.state.onlyActiveRound || (skills.every(s => roundPair.some(e => s === e)));
-		const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol);
-		const isOpponent = "isOpponent" in crew && crew.isOpponent;
-		let tempicon = "";
-		if (inMatch && this.context.player.playerData) {
-			tempicon = this.context.player.playerData.player.character.crew_avatar.portrait.file;
-		}
-		const myIcon = tempicon;
-		let tempoppo: Opponent | undefined = undefined;
-		if (isOpponent) {
-			tempoppo = gauntlet.opponents?.find(o => o.player_id === Number.parseInt(crew?.ssId ?? "0"));	
-			if (tempoppo?.icon?.file && !tempoppo.icon.file.includes(".png")) {
-				tempoppo.icon.file = tempoppo.icon.file.replace("/crew_icons/", "crew_icons_") + ".png";
-			}		
-		}
-		
-		const opponent = tempoppo;
-
-		let pstr = "G_" + pair.join("_");
-		let rnk = 0;
-
-		if (pstr in crew.ranks) {
-			rnk = crew.ranks[pstr] as number;
-		}
-
-		for (let skill of skills) {
-			if (boostMode === 'player' && "skills" in crew && skill && skill in crew.skills) {
-				let cp = JSON.parse(JSON.stringify(crew.skills[skill] as Skill));
-				cp.skill = skill;
-				crewpair.push(cp);
-			}
-			else if (boostMode !== 'none' && skill && skill in crew && ((crew[skill] as ComputedSkill).core)) {
-				let cp = JSON.parse(JSON.stringify(crew[skill] as ComputedSkill)) as ComputedSkill;
-				cp.skill = skill;
-				crewpair.push({
-					core: cp.core,
-					range_max: cp.max,
-					range_min: cp.min,
-					skill: skill
-				});
-			}
-			else if (skill && skill in crew.base_skills) {
-				let cp = JSON.parse(JSON.stringify(crew.base_skills[skill] as Skill)) as Skill;
-				cp.skill = skill;
-				crewpair.push(cp);
-			}
-		}
-
-		return (
-			<div 
-				className="ui segment" 
-				key={crew.symbol + pstr + (opponent?.name ?? "")}
-				title={crew.name 
-					+ (("isDisabled" in crew && crew.isDisabled) ? " (Disabled)" : "") 
-					+ (("isDebuffed" in crew && crew.isDebuffed) ? " (Reduced Power)" : "")
-					+ ((opponent?.name) ? ` (Opponent: ${opponent.name})` : "")
-				}
-				style={{
-					display: "flex",
-					flexDirection:"column",
-					width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "100%" : "28em",
-					padding: 0,
-					margin: 0,
-					marginBottom: "0.5em",
-				}}>
-				
-				{((inMatch || isOpponent) && isRound) && 
-				<div style={{
-					flexGrow: 1,
-					display: "flex",
-					flexDirection: "row",
-					justifyContent: "space-between",
-					alignItems: "center",
-					margin: 0,
-					padding: "2px 4px",
-					backgroundColor: isRound ? (("isDisabled" in crew && crew.isDisabled) ? "#003300" : (isOpponent ? 'darkred' : (inMatch ? 'darkgreen' : undefined))) : undefined	
-				}}>
-					{isOpponent && 
-						<>
-							<span>
-								{opponent?.rank}
-							</span>
-							<div style={{
-								flexGrow: 1,								
-								justifyContent:"center", 
-								display:"flex",
-								flexDirection:"row", 
-								alignItems:"center"}}>
-									{opponent?.name}
-									<img className="ui" style={{margin: "4px 8px", borderRadius: "3px", height:"16px"}} src={`${process.env.GATSBY_ASSETS_URL}${opponent?.icon.file}`} />
-							</div>
-							<span>
-								[{opponent?.level}]
-							</span>
-						</>}
-
-					{inMatch && !isOpponent &&
-						<>
-							<span>
-								{gauntlet?.rank}
-							</span>
-							<div style={{
-								flexGrow: 1,								
-								justifyContent:"center", 
-								display:"flex",
-								flexDirection:"row", 
-								alignItems:"center"}}>
-									{this.context.player.playerData?.player.character.display_name}
-									<img className="ui" style={{margin: "4px 8px", borderRadius: "3px", height:"16px"}} src={`${process.env.GATSBY_ASSETS_URL}${myIcon}`} />
-							</div>
-							<span>
-								[{this.context.player.playerData?.player.character.level}]
-							</span>
-						</>}
-
-				</div>}
-				<div 
-					style={{
-						flexGrow: 1,
-						display: "flex",
-						flexDirection: "row",
-						justifyContent: "space-between",
-						alignItems: "center",
-						width: "100%",
-						padding: '0.5em',
-						paddingBottom: 0,
-						margin: 0,
-						// backgroundColor: isRound ? (("isDisabled" in crew && crew.isDisabled) ? "transparent" : (isOpponent ? '#990000' : (inMatch ? '#008800' : undefined))) : undefined,
-						}}
-				>
-					<div style={{
-						width: "2em",
-						textAlign: "center",
-						display: "flex",
-						flexDirection: "column",
-						justifyContent: "center",
-						alignItems: "center"
-					}}>
-						<div
-							style={{color: foreColor}}
-							title={`Rank ${rnk} for ${pstr.slice(2).replace("_", "/")}`}
-						>{rnk}</div>
-					</div>
-					<div style={{ margin: 0, marginRight: "0.25em", width: "68px" }}>
-						<ItemDisplay
-							playerData={this.context.player.playerData}
-							itemSymbol={crew.symbol}
-							targetGroup='gauntletsHover'
-							allCrew={this.context.core.crew}
-							src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
-							rarity={"rarity" in crew ? crew.rarity : crew.max_rarity}
-							maxRarity={crew.max_rarity}
-							size={64}
-						/>
-					</div>
-					<div style={{
-						display: "flex",
-						flexDirection: "column",
-						justifyContent: "center",
-						alignItems: "center",
-						width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "15em" : "16em",
-					}}>
-						<div style={{
-							margin: 0,
-							marginLeft: "0.25em",
-							marginBottom: "0.25em",
-						}}>
-							{this.formatPair(crewpair, {
-								flexDirection: "row",
-								display: "flex",
-								justifyContent: "space-evenly",
-								textDecoration: powerColor ? 'underline' : undefined,
-								color: powerColor,
-								fontSize: "8pt"
-							}, isRound && ("isDebuffed" in crew && crew.isDebuffed), 
-							isRound && ("isDisabled" in crew && crew.isDisabled))}
-						</div>
-						<div style={{
-							display: "flex",
-							flexDirection: "row",
-							justifyContent: "space-evenly",
-							margin: 0,
-							fontSize: "10pt",
-							marginLeft: "0.25em",
-							marginRight: "0.25em",
-							marginTop: "0.25em",
-							width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "14em" : "15em",
-							cursor: "default"
-							
-						}}>
-						{"score" in crew && crew.score && 
-							<div
-								title={`${Math.round(crewPairScore?.score ?? 0).toLocaleString()} Overall Estimated Damage for ${pair.join("/")}`}
-								style={{
-									margin: "0 0.5em",
-									color: bigNumberColor ?? undefined,
-									display: "flex",
-									flexDirection:"row",
-									justifyContent: "center",
-									width: "4em",
-									alignItems: "center"							
-									}}>
-								<img style={{margin: "0 0.25em", maxHeight: "1em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/anomally_icon.png`} />
-								{Math.round(crewPairScore?.score ?? 0).toLocaleString()}
-							</div>} 
-								
-							<div
-								title={`${crit}% Crit Chance`}
-								style={{
-									fontWeight: crit > 25 ? "bold" : undefined,
-									margin: "0 0.5em",
-									color: critColor ?? undefined
-									}}>
-								{critString}
-							</div>
-						</div>
-					</div>
-					<div style={{ marginRight: "0.25em" }}>
-						{"immortal" in crew && (crew.immortal > 0 && <i title={"Owned (Frozen, " + crew.immortal + " copies)"} className='snowflake icon' />) ||
-							("immortal" in crew && crew.have && (isImmortal(crew) && <i title={"Owned (Immortalized)"} style={{ color: "lightgreen" }} className='check icon' />))}
-						{"immortal" in crew && crew.have && (!isImmortal(crew) && <span title={"Owned (Not Immortalized)"}>{crew.level}</span>)}
-						{(isOpponent) &&
-							<span>
-								<img title={"Opponent (" + opponent?.name + ")"} style={{ height: "16px" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/warning_icon.png`} />
-							</span>}
-
-						{!("immortal" in crew) || !(crew.have) && !(isOpponent) &&
-							<span>
-								{crew.in_portal && <img title={"Unowned (Available in Portal)"} style={{ height: "16px" }} src='/media/portal.png' />}
-								{!crew.in_portal && <i title={this.whyNoPortal(crew)} className='lock icon' />}
-							</span>}
-					</div>
-				</div>
-			</div>)
-	}
 
 	whyNoPortal(crew: PlayerCrew | CrewMember) {
 		if (crew.obtained?.toLowerCase().includes("gauntlet")) return "Unowned (Gauntlet Exclusive)";

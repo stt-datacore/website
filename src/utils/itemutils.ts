@@ -3,7 +3,7 @@ import { CrewMember, Skill } from '../model/crew';
 import { EquipmentCommon, EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { ISymbol } from '../model/game-elements';
 import { Mission } from '../model/missions';
-import { AtlasIcon, BuffBase, CompactCrew, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward } from '../model/player';
+import { AtlasIcon, BuffBase, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward } from '../model/player';
 import { getIconPath } from './assets';
 import { simplejson2csv, ExportField } from './misc';
 
