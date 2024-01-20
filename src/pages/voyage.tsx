@@ -121,7 +121,7 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 	React.useEffect(() => {
 		getDefaultConfig();
 		getEvents();
-	}, [playerData]);
+	}, [playerData, ephemeral]);
 
 	const calculatorContext = {
 		rosterType,
