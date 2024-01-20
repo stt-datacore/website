@@ -6,7 +6,7 @@ import { CompactCrew, CompletionState, GauntletPairScore, PlayerCrew, PlayerData
 import { BaseSkills, ComputedBuff, CrewMember, PlayerSkill, Skill } from '../model/crew';
 import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
 import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
-import { navigate } from 'gatsby';
+//import { navigate } from 'gatsby';
 import { ItemBonusInfo } from './itemutils';
 import { EquipmentItem } from '../model/equipment';
 
@@ -1050,18 +1050,6 @@ export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): s
 	}
 
 	return variantTraits;
-}
-
-/**
- * Navigate to the crew page, sending over information about owned variants and fusables.
- * Any missing information is simply ignored.
- * @param crew The crew member to navigate to
- * @param ownedCrew Your owned crew
- * @param buffs Your active buffs
- * @param allCrew All crew
- */
-export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: (CrewMember | PlayerCrew)[] | undefined = undefined, buffs: BuffStatTable | undefined = undefined, allCrew: (CrewMember | PlayerCrew)[] | undefined = undefined) {
-	navigate('/crew/' + crew.symbol);
 }
 
 export function printImmoText(immo: number | CompletionState, item?: string, immoText?: string) {

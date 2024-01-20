@@ -13,9 +13,10 @@ import CONFIG from '../../components/CONFIG';
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import { useStateWithStorage } from '../../utils/storage';
-import { applySkillBuff, navToCrewPage } from '../../utils/crewutils';
+import { applySkillBuff } from '../../utils/crewutils';
 
 import { IEventData, IRosterCrew, IEventScoredCrew, IEventCombos, IEventSkill, IEventPair, IBestCombos, IBestCombo } from './model';
+import { navToCrewPage } from '../../utils/nav';
 
 type EventCrewTableProps = {
 	rosterType: string;

@@ -1,13 +1,13 @@
 import * as React from "react";
 import { CrewMember } from "../../model/crew";
-import { PlayerCrew } from "../../model/player";
+import { PlayerBuffMode, PlayerCrew, PlayerImmortalMode } from "../../model/player";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
-import { navToCrewPage } from "../../utils/crewutils";
+import { navToCrewPage } from "../../utils/nav";
 import { CrewPlugins, CrewPresenter } from "../item_presenters/crew_presenter";
 import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
 import { GlobalContext } from "../../context/globalcontext";
-import { PlayerBuffMode, PlayerImmortalMode, getAvailableImmortalStates, applyImmortalState, CrewPreparer } from "../item_presenters/crew_preparer";
+import { CrewPreparer } from "../item_presenters/crew_preparer";
 import { toDataURL } from "../item_presenters/shipskill";
 
 const isWindow = typeof window !== 'undefined';

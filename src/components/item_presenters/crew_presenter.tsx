@@ -1,6 +1,6 @@
 import * as React from "react";
 import { CrewMember, Skill, SkillData } from "../../model/crew";
-import { CompletionState, PlayerCrew } from "../../model/player";
+import { CompletionState, PlayerBuffMode, PlayerCrew, PlayerImmortalMode } from "../../model/player";
 import { Dropdown, Rating } from "semantic-ui-react";
 import CrewStat from "../crewstat";
 import {
@@ -22,8 +22,6 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { GlobalContext } from "../../context/globalcontext";
 import { CrewItemsView } from "./crew_items";
 import {
-    PlayerBuffMode,
-    PlayerImmortalMode,
     BuffNames,
     ImmortalNames,
     getAvailableBuffStates,
