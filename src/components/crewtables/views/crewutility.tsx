@@ -11,10 +11,12 @@ import { getBernardsNumber } from '../../../pages/gauntlets';
 import { useStateWithStorage } from '../../../utils/storage';
 
 import { IRosterCrew, ICrewMarkup, ICrewFilter, ICrewUtilityRanks } from '../../../components/crewtables/model';
+import { CrewBaseCells, getBaseTableConfig } from './base';
 
 interface IUtilityUserPrefs {
 	thresholds: IUtilityThresholds;
 	prefer_versatile: boolean;
+	include_base: boolean;
 };
 
 interface IUtilityThresholds {
@@ -31,7 +33,8 @@ const defaultPrefs = {
 		gauntlet: 10,
 		voyage: 10
 	},
-	prefer_versatile: true
+	prefer_versatile: true,
+	include_base: false
 } as IUtilityUserPrefs;
 
 type CrewUtilityFormProps = {
@@ -41,12 +44,14 @@ type CrewUtilityFormProps = {
 	setCrewMarkups: (crewMarkups: ICrewMarkup[]) => void;
 	crewFilters: ICrewFilter[];
 	setCrewFilters: (crewFilters: ICrewFilter[]) => void;
+	showBase: boolean;
+	setShowBase: (value: boolean) => void;
 };
 
 export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
-	const { rosterCrew, crewMarkups, setCrewMarkups, crewFilters, setCrewFilters } = props;
+	const { rosterCrew, crewMarkups, setCrewMarkups, crewFilters, setCrewFilters, showBase, setShowBase } = props;
 
 	const dbid = playerData?.player.dbid ?? '';
 
@@ -93,6 +98,12 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 	React.useEffect(() => {
 		scoreUtility();
 	}, [rosterCrew, userPrefs]);
+
+	React.useEffect(() => {
+		if (userPrefs.include_base !== showBase) {
+			setShowBase(userPrefs.include_base);
+		}
+	}, [userPrefs]);
 
 	React.useEffect(() => {
 		const markupIndex = crewMarkups.findIndex(crewMarkup => crewMarkup.id === 'crew_utility');
@@ -188,6 +199,14 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 						onChange={(e, { checked }) => setUserPrefs({...userPrefs, prefer_versatile: checked})}
 					/>
 				</div>
+				<div style={{ marginTop: '1em' }}>
+					<Form.Field
+						control={Checkbox}
+						label={<label>Include base ranks in crew utility table</label>}
+						checked={userPrefs.include_base ?? defaultPrefs.include_base}
+						onChange={(e, { checked }) => setUserPrefs({...userPrefs, include_base: checked})}
+					/>
+				</div>
 			</Form>
 		)
 	}
@@ -273,25 +292,36 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 	}
 };
 
-export const getCrewUtilityTableConfig = () => {
-	const tableConfig = [] as ITableConfigRow[];
+export const getCrewUtilityTableConfig = (include_base: boolean) => {
+	const tableConfig = [] as ITableConfigRow[];	
+
+	if (include_base) {
+		let base = getBaseTableConfig('profileCrew');
+		for (let column of base) {
+			tableConfig.push(column);
+		}
+	}
+
 	tableConfig.push(
-		{ width: 1, column: 'markup.crew_utility.thresholds.length', title: 'Utility', reverse: true, tiebreakers: ['max_rarity'] },
-		{ width: 1, column: 'markup.crew_utility.counts.shuttle', title: 'Shuttle Ranks', reverse: true, tiebreakers: ['max_rarity'] },
-		{ width: 1, column: 'markup.crew_utility.counts.gauntlet', title: 'Gauntlet Ranks', reverse: true, tiebreakers: ['max_rarity'] },
-		{ width: 1, column: 'markup.crew_utility.counts.voyage', title: 'Voyage Ranks', reverse: true, tiebreakers: ['max_rarity'] },
+		{ width: 1, column: 'markup.crew_utility.thresholds.length', title: include_base ? 'U' : 'Utility', reverse: true, tiebreakers: ['max_rarity'] },
+		{ width: 1, column: 'markup.crew_utility.counts.shuttle', title: include_base ? 'S' : 'Shuttle Ranks', reverse: true, tiebreakers: ['max_rarity'] },
+		{ width: 1, column: 'markup.crew_utility.counts.gauntlet', title: include_base ? 'G' : 'Gauntlet Ranks', reverse: true, tiebreakers: ['max_rarity'] },
+		{ width: 1, column: 'markup.crew_utility.counts.voyage', title: include_base ? 'V' : 'Voyage Ranks', reverse: true, tiebreakers: ['max_rarity'] },
 	)
 	return tableConfig;
 };
 
 type CrewCellProps = {
+	pageId: string;
 	crew: IRosterCrew;
+	showBase: boolean;
 };
 
 export const CrewUtilityCells = (props: CrewCellProps) => {
-	const { crew } = props;
+	const { crew, showBase, pageId } = props;
 	return (
 		<React.Fragment>
+			{showBase && <CrewBaseCells crew={crew} pageId={pageId} tableType='profileCrew' />}
 			<Table.Cell textAlign='center'>
 				<RanksModal crew={crew} />
 			</Table.Cell>

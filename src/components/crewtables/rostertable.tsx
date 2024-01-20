@@ -197,6 +197,8 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 	const [crewMarkups, setCrewMarkups] = React.useState<ICrewMarkup[]>([] as ICrewMarkup[]);
 	const [crewFilters, setCrewFilters] = React.useState<ICrewFilter[]>([] as ICrewFilter[]);
 
+	const [showBase, setShowBase] = React.useState<boolean>(false);
+
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
 
 	React.useEffect(() => {
@@ -264,7 +266,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					playerData={playerData}
 					ships={playerShips ?? globalContext.core.ships}
 					crewFilters={crewFilters}
-					setCrewFilters={setCrewFilters}
+					setCrewFilters={setCrewFilters}					
 				/>,
 			tableConfig: shipTableConfig,
 			renderTableCells: (crew: IRosterCrew) => <CrewShipCells crew={crew} />
@@ -305,9 +307,11 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					setCrewMarkups={setCrewMarkups}
 					crewFilters={crewFilters}
 					setCrewFilters={setCrewFilters}
+					showBase={showBase}
+					setShowBase={setShowBase}
 				/>,
-			tableConfig: getCrewUtilityTableConfig(),
-			renderTableCells: (crew: IRosterCrew) => <CrewUtilityCells crew={crew} />
+			tableConfig: getCrewUtilityTableConfig(showBase),
+			renderTableCells: (crew: IRosterCrew) => <CrewUtilityCells pageId={pageId} showBase={showBase} crew={crew} />
 		},
 	] as ITableView[];
 
