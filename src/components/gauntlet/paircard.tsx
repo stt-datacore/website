@@ -1,0 +1,339 @@
+import React from 'react';
+import { Skill, ComputedSkill, CrewMember } from '../../model/crew';
+import { Gauntlet, Opponent } from '../../model/gauntlets';
+import { PlayerCrew, CompletionState, PlayerBuffMode } from '../../model/player';
+import { rankToSkill, gradeToColor, getPairScore, getCrewPairScore, dynamicRangeColor, isImmortal } from '../../utils/crewutils';
+import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import ItemDisplay from '../itemdisplay';
+import { GlobalContext } from '../../context/globalcontext';
+
+export interface PairCardProps {
+    crew: CrewMember | PlayerCrew;
+    gauntlet: Gauntlet; 
+    pair: string[];
+    boostMode: PlayerBuffMode;
+    onlyActiveRound?: boolean;
+}
+
+export const formatPair = (pair: Skill[], style?: React.CSSProperties, debuff?: boolean, disabled?: boolean): JSX.Element => {
+    if (!pair[0].skill) return <></>
+    
+    const disabledOpacity = 0.5;
+
+    const orangeColor = 'orange';
+    const redColor = '#ff3300';
+
+    return (
+        <div style={{
+            ...style,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center"
+        }}>
+            {debuff && <i title={"Crew power is reduced"} className="down arrow icon" style={{margin: "0.375em 0", fontSize: "10pt", color: orangeColor}} />}
+            {disabled && <i title={"Crew is disabled"} className="exclamation circle icon" style={{margin: "0.375em 0", fontSize: "10pt", color: redColor }} />}
+            <div style={{
+                display: "flex",
+                flexDirection: "row",
+                opacity: disabled ? disabledOpacity : undefined
+            }}>
+                <img style={{ maxHeight: '1.5em', margin: "0.25em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[0].skill}.png`} />
+                <div style={{
+                    margin: "0.5em"
+                }}>
+                    {pair[0].range_min}-{pair[0].range_max}
+                </div>
+            </div>
+            {pair.length > 1 &&
+                <div style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    opacity: disabled ? disabledOpacity : undefined
+                }}>
+                    <img style={{ maxHeight: '1.5em', margin: "0.25em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[1].skill}.png`} />
+                    <div style={{
+                        margin: "0.5em"
+                    }}>
+                        {pair[1].range_min}-{pair[1].range_max}
+                    </div>
+                </div>}
+        </div>
+
+    )
+}
+
+
+export function whyNoPortal(crew: PlayerCrew | CrewMember) {
+    if (crew.obtained?.toLowerCase().includes("gauntlet")) return "Unowned (Gauntlet Exclusive)";
+    else if (crew.obtained?.toLowerCase().includes("voyage")) return "Unowned (Voyage Exclusive)";
+    else if (crew.obtained?.toLowerCase().includes("honor")) return "Unowned (Honor Hall)";
+    else if (crew.obtained?.toLowerCase().includes("boss")) return "Unowned (Fleet Boss Exclusive)";
+    else
+    return "Unowned (Not in Portal)";
+
+}
+
+
+export const GauntletPairCard = (props: PairCardProps) => {
+
+    const context = React.useContext(GlobalContext);
+    const { crew, pair, gauntlet, boostMode, onlyActiveRound } = props;
+
+    const skills = pair.map(m => rankToSkill(m));
+    const crewpair = [] as Skill[];
+    const prettyTraits = gauntlet.prettyTraits;
+    const crit = ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5);
+    const critColor = gradeToColor(crit);
+    const gmin = getPairScore(gauntlet.pairMin ?? [], pair.join("_"));
+    const gmax = getPairScore(gauntlet.pairMax ?? [], pair.join("_"));
+    const crewPairScore = getCrewPairScore(crew as PlayerCrew, pair.join("_"));
+    const bigNumberColor = dynamicRangeColor("score" in crew ? (crewPairScore?.score ?? 0) : 0, gmax?.score ?? 0, gmin?.score ?? 0);
+    const critString = crit + "%";
+    
+    const powerColor = ("immortal" in crew && crew.immortal === CompletionState.DisplayAsImmortalOwned) ? 'lightgreen' : undefined;
+    const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
+    const foreColor = theme === 'dark' ? 'white' : 'black';
+    
+    const roundPair = gauntlet?.contest_data?.secondary_skill ? [gauntlet?.contest_data?.primary_skill, gauntlet?.contest_data?.secondary_skill] : []
+    const isRound = !onlyActiveRound || (skills.every(s => roundPair.some(e => s === e)));
+    const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol);
+    const isOpponent = "isOpponent" in crew && crew.isOpponent;
+
+    
+    let tempicon = "";
+
+    if (inMatch && context.player.playerData) {
+        tempicon = context.player.playerData.player.character.crew_avatar.portrait.file;
+    }
+
+    const myIcon = tempicon;
+
+    let tempoppo: Opponent | undefined = undefined;
+
+    if (isOpponent) {
+        tempoppo = gauntlet.opponents?.find(o => o.player_id === Number.parseInt(crew?.ssId ?? "0"));	
+        if (tempoppo?.icon?.file && !tempoppo.icon.file.includes(".png")) {
+            tempoppo.icon.file = tempoppo.icon.file.replace("/crew_icons/", "crew_icons_") + ".png";
+        }		
+    }
+    
+    const opponent = tempoppo;
+
+    let pstr = "G_" + pair.join("_");
+    let rnk = 0;
+
+    if (pstr in crew.ranks) {
+        rnk = crew.ranks[pstr] as number;
+    }
+
+    for (let skill of skills) {
+        if (boostMode === 'player' && "skills" in crew && skill && skill in crew.skills) {
+            let cp = JSON.parse(JSON.stringify(crew.skills[skill] as Skill));
+            cp.skill = skill;
+            crewpair.push(cp);
+        }
+        else if (boostMode !== 'none' && skill && skill in crew && ((crew[skill] as ComputedSkill).core)) {
+            let cp = JSON.parse(JSON.stringify(crew[skill] as ComputedSkill)) as ComputedSkill;
+            cp.skill = skill;
+            crewpair.push({
+                core: cp.core,
+                range_max: cp.max,
+                range_min: cp.min,
+                skill: skill
+            });
+        }
+        else if (skill && skill in crew.base_skills) {
+            let cp = JSON.parse(JSON.stringify(crew.base_skills[skill] as Skill)) as Skill;
+            cp.skill = skill;
+            crewpair.push(cp);
+        }
+    }
+
+    return (
+        <div 
+            className="ui segment" 
+            key={crew.symbol + pstr + (opponent?.name ?? "")}
+            title={crew.name 
+                + (("isDisabled" in crew && crew.isDisabled) ? " (Disabled)" : "") 
+                + (("isDebuffed" in crew && crew.isDebuffed) ? " (Reduced Power)" : "")
+                + ((opponent?.name) ? ` (Opponent: ${opponent.name})` : "")
+            }
+            style={{
+                display: "flex",
+                flexDirection:"column",
+                width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "100%" : "28em",
+                padding: 0,
+                margin: 0,
+                marginBottom: "0.5em",
+            }}>
+            
+            {((inMatch || isOpponent) && isRound) && 
+            <div style={{
+                flexGrow: 1,
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                margin: 0,
+                padding: "2px 4px",
+                backgroundColor: isRound ? (("isDisabled" in crew && crew.isDisabled) ? "#003300" : (isOpponent ? 'darkred' : (inMatch ? 'darkgreen' : undefined))) : undefined	
+            }}>
+                {isOpponent && 
+                    <>
+                        <span>
+                            {opponent?.rank}
+                        </span>
+                        <div style={{
+                            flexGrow: 1,								
+                            justifyContent:"center", 
+                            display:"flex",
+                            flexDirection:"row", 
+                            alignItems:"center"}}>
+                                {opponent?.name}
+                                <img className="ui" style={{margin: "4px 8px", borderRadius: "3px", height:"16px"}} src={`${process.env.GATSBY_ASSETS_URL}${opponent?.icon.file}`} />
+                        </div>
+                        <span>
+                            [{opponent?.level}]
+                        </span>
+                    </>}
+
+                {inMatch && !isOpponent &&
+                    <>
+                        <span>
+                            {gauntlet?.rank}
+                        </span>
+                        <div style={{
+                            flexGrow: 1,								
+                            justifyContent:"center", 
+                            display:"flex",
+                            flexDirection:"row", 
+                            alignItems:"center"}}>
+                                {context.player.playerData?.player.character.display_name}
+                                <img className="ui" style={{margin: "4px 8px", borderRadius: "3px", height:"16px"}} src={`${process.env.GATSBY_ASSETS_URL}${myIcon}`} />
+                        </div>
+                        <span>
+                            [{context.player.playerData?.player.character.level}]
+                        </span>
+                    </>}
+
+            </div>}
+            <div 
+                style={{
+                    flexGrow: 1,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "100%",
+                    padding: '0.5em',
+                    paddingBottom: 0,
+                    margin: 0,
+                    // backgroundColor: isRound ? (("isDisabled" in crew && crew.isDisabled) ? "transparent" : (isOpponent ? '#990000' : (inMatch ? '#008800' : undefined))) : undefined,
+                    }}
+            >
+                <div style={{
+                    width: "2em",
+                    textAlign: "center",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center"
+                }}>
+                    <div
+                        style={{color: foreColor}}
+                        title={`Rank ${rnk} for ${pstr.slice(2).replace("_", "/")}`}
+                    >{rnk}</div>
+                </div>
+                <div style={{ margin: 0, marginRight: "0.25em", width: "68px" }}>
+                    <ItemDisplay
+                        playerData={context.player.playerData}
+                        itemSymbol={crew.symbol}
+                        targetGroup='gauntletsHover'
+                        allCrew={context.core.crew}
+                        src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+                        rarity={"rarity" in crew ? crew.rarity : crew.max_rarity}
+                        maxRarity={crew.max_rarity}
+                        size={64}
+                    />
+                </div>
+                <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "15em" : "16em",
+                }}>
+                    <div style={{
+                        margin: 0,
+                        marginLeft: "0.25em",
+                        marginBottom: "0.25em",
+                    }}>
+                        {formatPair(crewpair, {
+                            flexDirection: "row",
+                            display: "flex",
+                            justifyContent: "space-evenly",
+                            textDecoration: powerColor ? 'underline' : undefined,
+                            color: powerColor,
+                            fontSize: "8pt"
+                        }, isRound && ("isDebuffed" in crew && crew.isDebuffed), 
+                        isRound && ("isDisabled" in crew && crew.isDisabled))}
+                    </div>
+                    <div style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-evenly",
+                        margin: 0,
+                        fontSize: "10pt",
+                        marginLeft: "0.25em",
+                        marginRight: "0.25em",
+                        marginTop: "0.25em",
+                        width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "14em" : "15em",
+                        cursor: "default"
+                        
+                    }}>
+                    {"score" in crew && crew.score && 
+                        <div
+                            title={`${Math.round(crewPairScore?.score ?? 0).toLocaleString()} Overall Estimated Damage for ${pair.join("/")}`}
+                            style={{
+                                margin: "0 0.5em",
+                                color: bigNumberColor ?? undefined,
+                                display: "flex",
+                                flexDirection:"row",
+                                justifyContent: "center",
+                                width: "4em",
+                                alignItems: "center"							
+                                }}>
+                            <img style={{margin: "0 0.25em", maxHeight: "1em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/anomally_icon.png`} />
+                            {Math.round(crewPairScore?.score ?? 0).toLocaleString()}
+                        </div>} 
+                            
+                        <div
+                            title={`${crit}% Crit Chance`}
+                            style={{
+                                fontWeight: crit > 25 ? "bold" : undefined,
+                                margin: "0 0.5em",
+                                color: critColor ?? undefined
+                                }}>
+                            {critString}
+                        </div>
+                    </div>
+                </div>
+                <div style={{ marginRight: "0.25em" }}>
+                    {"immortal" in crew && (crew.immortal > 0 && <i title={"Owned (Frozen, " + crew.immortal + " copies)"} className='snowflake icon' />) ||
+                        ("immortal" in crew && crew.have && (isImmortal(crew) && <i title={"Owned (Immortalized)"} style={{ color: "lightgreen" }} className='check icon' />))}
+                    {"immortal" in crew && crew.have && (!isImmortal(crew) && <span title={"Owned (Not Immortalized)"}>{crew.level}</span>)}
+                    {(isOpponent) &&
+                        <span>
+                            <img title={"Opponent (" + opponent?.name + ")"} style={{ height: "16px" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/warning_icon.png`} />
+                        </span>}
+
+                    {!("immortal" in crew) || !(crew.have) && !(isOpponent) &&
+                        <span>
+                            {crew.in_portal && <img title={"Unowned (Available in Portal)"} style={{ height: "16px" }} src='/media/portal.png' />}
+                            {!crew.in_portal && <i title={whyNoPortal(crew)} className='lock icon' />}
+                        </span>}
+                </div>
+            </div>
+        </div>)
+
+}

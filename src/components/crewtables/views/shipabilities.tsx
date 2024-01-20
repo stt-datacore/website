@@ -1,14 +1,12 @@
 import React from 'react';
 import { Form, Table, Checkbox } from 'semantic-ui-react';
 
-import { GlobalContext } from '../../../context/globalcontext';
 
 import CONFIG from '../../../components/CONFIG';
 
 import { RarityFilter } from '../../../components/crewtables/commonoptions';
 
-import { ShipSkillRanking, ShipStatMap, applySkillBuff, createShipStatMap, crewCopy, getShipBonus, getShipChargePhases, getSkills, gradeToColor, isImmortal, mapToRankings, navToCrewPage, oneCrewCopy } from '../../../utils/crewutils';
-import { useStateWithStorage } from '../../../utils/storage';
+import { ShipSkillRanking, ShipStatMap, createShipStatMap, getShipBonus, getSkills, mapToRankings } from '../../../utils/crewutils';
 import { Ship } from '../../../model/ship';
 import { ShipPickerFilter, findPotentialCrew, printTriggers } from '../../../utils/shiputils';
 import { AbilityUses, BonusPicker, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker, TriggerPicker } from '../../../components/crewtables/shipoptions';

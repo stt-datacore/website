@@ -2,69 +2,7 @@ import React from 'react';
 import { Modal, Input, Button } from 'semantic-ui-react';
 import { GlobalContext } from '../../context/globalcontext';
 import { OptionsBase } from '../base/optionsmodal_base';
-
-export interface InternalSettings {    
-    crit5: number | string;
-    crit25: number | string;
-    crit45: number | string;
-    crit65: number | string;
-    minWeight: number | string;
-    maxWeight: number | string;
-    linearSkillIncidenceWeightPrimary: number | string;
-    linearSkillIndexWeightPrimary: number | string;
-    linearSkillIncidenceWeightSecondary: number | string;
-    linearSkillIndexWeightSecondary: number | string;
-    linearSkillIncidenceWeightTertiary: number | string;
-    linearSkillIndexWeightTertiary: number | string;
-}
-
-export interface GauntletSettings extends InternalSettings {    
-    crit5: number;
-    crit25: number;
-    crit45: number;
-    crit65: number;
-    minWeight: number;
-    maxWeight: number;
-    linearSkillIncidenceWeightPrimary: number;
-    linearSkillIndexWeightPrimary: number;
-    linearSkillIncidenceWeightSecondary: number;
-    linearSkillIndexWeightSecondary: number;
-    linearSkillIncidenceWeightTertiary: number;
-    linearSkillIndexWeightTertiary: number;
-}
-
-export interface GauntletSettingsConfig {
-	current: GauntletSettings;
-	setCurrent: (value: GauntletSettings) => void;
-	defaultOptions: GauntletSettings;
-}
-
-export interface GauntletSettingsProps {	
-    config: GauntletSettingsConfig;    
-	renderTrigger?: () => JSX.Element;
-	setIsOpen: (value: boolean) => void;
-	isOpen: boolean;
-};
-
-export const crit65 = 2;
-export const crit45 = 1.85;
-export const crit25 = 1.45;
-export const crit5 = 1;
-
-export const defaultSettings = {
-	crit5,
-	crit25,
-	crit45,
-	crit65,
-	minWeight: 1,
-	maxWeight: 1,
-    linearSkillIncidenceWeightPrimary: 1.25,
-    linearSkillIndexWeightPrimary: 0.75,
-    linearSkillIncidenceWeightSecondary: 1.1,
-    linearSkillIndexWeightSecondary: 0.9,
-    linearSkillIncidenceWeightTertiary: 1.05,
-    linearSkillIndexWeightTertiary: 0.95,
-} as GauntletSettings;
+import { GauntletSettingsProps, InternalSettings, defaultSettings, GauntletSettings } from '../../utils/gauntlet';
 
 const GauntletSettingsPopup = <T extends OptionsBase>(props: GauntletSettingsProps) => {
 	const context = React.useContext(GlobalContext);

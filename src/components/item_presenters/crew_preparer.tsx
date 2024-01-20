@@ -1,15 +1,11 @@
 import React from "react";
-import { CrewMember, Skill } from "../../model/crew";
-import { PlayerData, PlayerCrew, CompletionState } from "../../model/player";
+import { CrewMember } from "../../model/crew";
+import { PlayerData, PlayerCrew, CompletionState, PlayerBuffMode, PlayerImmortalMode } from "../../model/player";
 import { prepareOne, applyCrewBuffs, getSkills, PREPARE_MAX_RARITY } from "../../utils/crewutils";
 import { BuffStatTable } from "../../utils/voyageutils";
 import { IDefaultGlobal } from "../../context/globalcontext";
 import { EquipmentItem } from "../../model/equipment";
 import { ItemBonusInfo, getItemBonuses } from "../../utils/itemutils";
-
-export type PlayerBuffMode = 'none' | 'player' | 'max' | 'quipment';
-
-export type PlayerImmortalMode = 'owned' | 'min' | 2 | 3 | 4 | 'full' | 'frozen'
 
 export const BuffNames = {
     'none': "Unboosted",

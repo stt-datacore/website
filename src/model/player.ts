@@ -10,6 +10,10 @@ import { Collection, Icon } from "./game-elements"
 import { ShuttleAdventure } from "./shuttle";
 import { Archetype17, ArchetypeRoot17, ArchetypeRoot20 } from "./archetype";
 
+export type PlayerBuffMode = 'none' | 'player' | 'max' | 'quipment';
+
+export type PlayerImmortalMode = 'owned' | 'min' | 2 | 3 | 4 | 'full' | 'frozen'
+
 export interface AtlasIcon extends Icon {
     atlas_info: string
 }

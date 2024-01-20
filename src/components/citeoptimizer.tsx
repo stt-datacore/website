@@ -12,7 +12,7 @@ import { CrewMember } from '../model/crew';
 import { LockedProspect } from '../model/game-elements';
 import { CiteEngine, CiteMode, PlayerCrew, PlayerData } from '../model/player';
 import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity, VoyageImprovement } from '../model/worker';
-import { applyCrewBuffs, getSkillOrder, gradeToColor, navToCrewPage, printPortalStatus, printSkillOrder } from '../utils/crewutils';
+import { applyCrewBuffs, getSkillOrder, gradeToColor, printPortalStatus, printSkillOrder } from '../utils/crewutils';
 import { appelate } from '../utils/misc';
 import { TinyStore } from '../utils/tiny';
 import CONFIG from './CONFIG';
@@ -22,6 +22,7 @@ import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 import ItemDisplay from './itemdisplay';
 import BetaTachyonSettingsPopup, { defaultSettings, permalinkToSettings } from './optimizer/btsettings';
 import ProspectPicker from './prospectpicker';
+import { navToCrewPage } from '../utils/nav';
 
 const pagingOptions = [
 	{ key: '0', value: 10, text: '10' },

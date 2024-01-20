@@ -6,7 +6,7 @@ import ItemDisplay from '../components/itemdisplay';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
-import { formatTierLabel, navToCrewPage } from '../utils/crewutils';
+import { formatTierLabel } from '../utils/crewutils';
 import { getCoolStats } from '../utils/misc';
 import { useStateWithStorage } from '../utils/storage';
 import { categorizeKeystones, Constellation, Filter, FuseGroup as FuseGroups, KeystoneBase, NumericOptions, Polestar, rarityLabels, RarityOptions, RetrievalOptions } from '../model/game-elements';
@@ -17,6 +17,7 @@ import { calculateBuffConfig } from '../utils/voyageutils';
 import { Energy } from '../model/boss';
 import { DataContext } from '../context/datacontext';
 import { GlobalContext } from '../context/globalcontext';
+import { navToCrewPage } from '../utils/nav';
 
 const RECURSION_WARN = 1000000;
 const RECURSION_FORBID = 10000000;

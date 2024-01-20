@@ -1,6 +1,6 @@
 import { BossBattlesRoot } from "./boss";
 import { BaseSkills, CrewMember, PlayerSkill, Skill } from "./crew";
-import { PlayerCollection, PlayerCrew, PlayerData } from "./player";
+import { PlayerBuffMode, PlayerCollection, PlayerCrew, PlayerData } from "./player";
 import { Ship } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
 import { EquipmentCommon, EquipmentItem } from "./equipment";
@@ -10,6 +10,8 @@ import { ICoreData } from "../context/datacontext";
 import { Mission, MissionChallenge, MissionTraitBonus, ProtoMission, Quest, QuestFilterConfig } from "./missions";
 import { ContinuumMission } from "./continuum";
 import { IEphemeralData } from "../context/playercontext";
+import { Gauntlet, GauntletFilterProps, PairGroup } from "./gauntlets";
+import { GauntletSettings } from "../utils/gauntlet";
 
 export interface GameWorkerOptionsList {
     key: number;
@@ -284,3 +286,40 @@ export interface QuestSolverCacheItem {
     key: string;
     result: QuestSolverResult;    
 }
+
+
+export interface GauntletCalcConfig {
+    settings: GauntletSettings;
+    context: IDefaultGlobal;
+    crew: (PlayerCrew | CrewMember)[];
+    
+    gauntlet: Gauntlet;
+    
+    buffMode: PlayerBuffMode;
+
+    rankByPair?: string;
+    range_max?: number;
+    filter?: GauntletFilterProps;
+    textFilter?: string
+    featuredSkill?: string;
+    top?: number;
+    maxResults?: number
+
+    onlyActiveRound?: boolean;
+    hideOpponents?: boolean;
+
+}
+
+export interface GauntletCalcResults {
+    error?: string;
+    gauntlet: Gauntlet;
+    matchedCrew: PlayerCrew[];
+    pairGroups: PairGroup[];
+}
+
+export const EMPTY_SKILL = {
+	skill: undefined,
+	core: 0,
+	range_max: 0,
+	range_min: 0
+} as Skill;
