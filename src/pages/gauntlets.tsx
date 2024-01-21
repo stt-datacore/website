@@ -1236,7 +1236,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	private readonly setSkillPairs = (pairs: string[], idx: number) => {
 		const newOwned = [ ... this.state.filterProps ];
 		newOwned[idx] = { ... newOwned[idx], skillPairs: pairs };
-		this.tiny.setValue("gauntletFilter_" + idx, newOwned[idx]);
+		this.tiny.setValue("gauntletFilter_" + idx, newOwned[idx], true);
 		this.inited = false;
 		this.setState({ ...this.state, loading: true });
 		window.setTimeout(() => {
@@ -1247,7 +1247,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	private readonly setOwnedStatus = (status: OwnedStatus, idx: number) => {
 		const newOwned = [ ... this.state.filterProps ];
 		newOwned[idx] = { ... newOwned[idx], ownedStatus: status };
-		this.tiny.setValue("gauntletFilter_" + idx, newOwned[idx]);
+		this.tiny.setValue("gauntletFilter_" + idx, newOwned[idx], true);
 		this.inited = false;
 		this.setState({ ...this.state, loading: true });
 		window.setTimeout(() => {
@@ -1258,7 +1258,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	private readonly setMaxResults = (max: number, idx: number) => {
 		const newOwned = [ ... this.state.filterProps ];
 		newOwned[idx] = { ... newOwned[idx], maxResults: max };
-		this.tiny.setValue("gauntletFilter_" + idx, newOwned[idx]);
+		this.tiny.setValue("gauntletFilter_" + idx, newOwned[idx], true);
 		this.setState({... this.state, loading: true });
 		window.setTimeout(() => {
 			this.setState({... this.state, filterProps: newOwned, loading: false });
