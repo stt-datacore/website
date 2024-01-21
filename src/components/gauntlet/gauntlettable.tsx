@@ -9,12 +9,14 @@ import { Button, Dropdown, DropdownItemProps, Icon, Input, Pagination, Rating, S
 import { Gauntlet, GauntletFilterProps } from "../../model/gauntlets";
 import { CompletionState, PlayerCrew } from "../../model/player";
 
-import { comparePairs, getPlayerPairs, printPortalStatus } from "../../utils/crewutils";
+import { comparePairs, getPlayerPairs, prettyObtained, printPortalStatus } from "../../utils/crewutils";
 
 import { formatPair } from "./paircard";
 
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
+import { arrayIntersect } from "../../utils/misc";
+import CONFIG from "../CONFIG";
 
 type SortDirection = 'ascending' | 'descending' | undefined;
 
@@ -22,7 +24,8 @@ export type GauntletTableHighlightMode = 'normal' | 'live';
 
 export interface GauntletTableProps {
     pageId: string;
-    gauntlet: Gauntlet;
+    gauntlet: Gauntlet;    
+    gauntlets?: Gauntlet[]
     data: PlayerCrew[];
     mode: GauntletTableHighlightMode;
     filter: GauntletFilterProps;
@@ -33,7 +36,7 @@ export interface GauntletTableProps {
 }
 
 export const GauntletCrewTable = (props: GauntletTableProps) => {
-    const { filter, pageId, gauntlet, data, mode, textFilter, setTextFilter, rankByPair, setRankByPair } = props;
+    const { filter, pageId, gauntlet, gauntlets, data, mode, textFilter, setTextFilter, rankByPair, setRankByPair } = props;
     if (!data) return <></>;
 
     const targetGroup = `${pageId}_gauntletTable`;
@@ -51,6 +54,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
     const [sortKey, setSortKey] = useStateWithStorage<string | undefined>(`${pageId}/sortKey`, undefined);
 
     const pageStartIdx = (activePage - 1) * itemsPerPage;
+    const [elevated, setElevated] = React.useState({} as { [key: string]: number });
 
     const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
         console.log("imageClick");
@@ -61,11 +65,9 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
 
 
     const columnClick = (key: string) => {
-
-        setRankByPair([]);        
-
+        if (rankByPair?.length) setRankByPair([]);
         if (sortDirection === undefined) {
-            if (key === 'name') {
+            if (['name', 'rank'].includes(key)) {
                 setSortDirection('ascending');
             }
             else {
@@ -80,9 +82,9 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                 setSortDirection('descending');
             }
         }
-
-        setSortKey(key);
-
+        else if (sortKey !== key) {
+            setSortKey(key);
+        }
     }
 
     const prettyTraits = gauntlet.prettyTraits;
@@ -91,14 +93,14 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
     const columns = [
         { title: "Rank", key: "index" },
         { title: "Crew", key: "name", width: 3 as SemanticWIDTHS },
-        { title: "Rarity", key: "rarity" },
-        { title: "Crit Chance", key: "crit" },
-        { title: "1st Pair", key: "pair_1" },
-        { title: "2nd Pair", key: "pair_2" },
-        { title: "3rd Pair", key: "pair_3" },
+        { title: "Rarity", key: "rarity", reverse: true  },
+        { title: gauntlets?.length ? "45% + 65% Crits" : "Crit Chance", key: "crit", reverse: true },
+        { title: "1st Pair", key: "pair_1", reverse: true  },
+        { title: "2nd Pair", key: "pair_2", reverse: true  },
+        { title: "3rd Pair", key: "pair_3", reverse: true  },
         // { title: "Owned", key: "have" },
         { title: "In Portal", key: "in_portal" },
-    ]
+    ];
     const pageSizes = [1, 5, 10, 20, 50, 100].map(size => {
         return {
             key: `pageSize_${size}`,
@@ -107,8 +109,20 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
         } as DropdownItemProps;
     });
     
-    React.useEffect(() => {
-        setCrew(data);        
+    React.useEffect(() => {        
+        if (gauntlets?.length) {
+            const elev = { ... elevated };            
+            let uniques = [ ... new Set(gauntlets.map(g => g.contest_data?.traits?.sort() ?? []).map(f => f.sort().join("_"))) ].map(after => after.split("_"));
+
+            for (let c of data) {                
+                let elcrit = uniques.map(f => arrayIntersect(f, c.traits)?.length).filter(f => f > 1)?.length ?? 0;                
+                if (elcrit) {
+                    elev[c.symbol] = elcrit;                    
+                }
+            }
+            setElevated(elev);
+        }
+       
     }, [data]);
 
     React.useEffect(() => {
@@ -129,7 +143,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
     React.useEffect(() => {
         const prettyTraits = gauntlet?.prettyTraits;
 
-        var newarr = JSON.parse(JSON.stringify(data)) as PlayerCrew[];
+        var newarr =  [...data]; // JSON.parse(JSON.stringify(data)) as PlayerCrew[];
 
         const dir = sortDirection === 'descending' ? -1 : 1;
         let key = sortKey;
@@ -165,19 +179,36 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
             });
         }
         else if (key === 'crit') {
-            newarr = newarr.sort((a, b) => {
-                let atr = prettyTraits?.filter(t => a.traits_named.includes(t))?.length ?? 0;
-                let btr = prettyTraits?.filter(t => b.traits_named.includes(t))?.length ?? 0;
-                let answer = atr - btr;
-                if (!answer) {
-                    if (gauntlet.origRanks) {
-                        if (a.symbol in gauntlet.origRanks && b.symbol in gauntlet.origRanks) {
-                            return (gauntlet.origRanks[a.symbol] - gauntlet.origRanks[b.symbol]);
+            if (gauntlets?.length) {
+                newarr = newarr.sort((a, b) => {
+                    let atr = elevated[a.symbol] ?? 0;
+                    let btr = elevated[b.symbol] ?? 0;
+                    let answer = atr - btr;
+                    if (!answer) {
+                        if (gauntlet.origRanks) {
+                            if (a.symbol in gauntlet.origRanks && b.symbol in gauntlet.origRanks) {
+                                return (gauntlet.origRanks[a.symbol] - gauntlet.origRanks[b.symbol]);
+                            }
                         }
                     }
-                }
-                return dir * answer;
-            });
+                    return dir * answer;
+                });
+            }
+            else {
+                newarr = newarr.sort((a, b) => {
+                    let atr = prettyTraits?.filter(t => a.traits_named.includes(t))?.length ?? 0;
+                    let btr = prettyTraits?.filter(t => b.traits_named.includes(t))?.length ?? 0;
+                    let answer = atr - btr;
+                    if (!answer) {
+                        if (gauntlet.origRanks) {
+                            if (a.symbol in gauntlet.origRanks && b.symbol in gauntlet.origRanks) {
+                                return (gauntlet.origRanks[a.symbol] - gauntlet.origRanks[b.symbol]);
+                            }
+                        }
+                    }
+                    return dir * answer;
+                });
+            }
         }
         else if (key?.startsWith("pair_")) {
             let pairIdx = Number.parseInt(key.slice(5)) - 1;
@@ -249,8 +280,8 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
         }
 
         setCrew(newarr);
-    }, [sortKey, sortDirection]);
-
+    }, [sortKey, sortDirection, elevated, data]);
+    
     return (<div style={{ overflowX: "auto" }}>
         <Input
             style={{ width: isMobile ? '100%' : '50%' }}
@@ -279,7 +310,15 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                         <Table.HeaderCell
                             width={col.width}
                             sorted={sortKey === col.key ? sortDirection : undefined}
-                            onClick={(e) => columnClick(col.key)}
+                            onClick={(e) => {
+                                columnClick(col.key);
+                                if (!!col.reverse && col.key !== sortKey && sortDirection !== 'descending') {
+                                    setSortDirection('descending');
+                                }
+                                else if (!col.reverse && col.key !== sortKey && sortDirection !== 'ascending') {
+                                    setSortDirection('ascending');
+                                }
+                            }}
                             key={"k_" + hidx}>
                             {col.title}
                         </Table.HeaderCell>)}
@@ -291,6 +330,8 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                     const pairs = crew.pairs ?? getPlayerPairs(crew);
                     const rank = gauntlet.origRanks ? gauntlet.origRanks[crew.symbol] : idx + pageStartIdx + 1;
                     const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol);
+                    const obtained = prettyObtained(crew);
+                    const color = printPortalStatus(crew, true, false) === 'Never' ? CONFIG.RARITIES[5].color : undefined;
 
                     return (crew &&
                         <Table.Row key={idx}
@@ -341,7 +382,8 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                                 <Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
                             </Table.Cell>
                             <Table.Cell>
-                                {((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
+                                {gauntlets?.length && <>{elevated[crew.symbol]}</>}
+                                {!gauntlets?.length && ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
                             </Table.Cell>
                             <Table.Cell width={2}>
                                 {pairs && pairs.length >= 1 && formatPair(pairs[0])}
@@ -358,6 +400,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                             <Table.Cell width={2}>
                                 <span title={printPortalStatus(crew, true, true, true)}>
                                     {printPortalStatus(crew, true, false)}
+                                    {!!color && <div style={{color: color}}>{obtained}</div>}
                                 </span>
                             </Table.Cell>
                         </Table.Row>
