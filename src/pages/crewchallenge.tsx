@@ -104,7 +104,7 @@ const CrewChallenge = () => {
 
 	React.useEffect(() => {
 		fetchAllCrew();
-	}, []);
+	});
 
 	if (!portalCrew) {
 		context.core.spin();

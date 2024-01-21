@@ -361,7 +361,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		[data.crewToCite, data.crewToTrain].forEach((dataSet) => {
 			for (let voycrew of dataSet) {
-				const findcrew = playerData?.player.character.crew.find((c) => c.name === voycrew.name);
+				const findcrew = playerData?.player.character.crew.find((c) => c.name === voycrew.name) ?? this.context.core.crew.find(f => f.symbol === voycrew.symbol);
 
 				if (!findcrew) continue;
 
