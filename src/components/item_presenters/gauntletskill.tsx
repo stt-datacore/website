@@ -6,11 +6,12 @@ import { PlayerCrew } from "../../model/player";
 import { PresenterPlugin, PresenterPluginBase, PresenterPluginProps, PresenterPluginState } from "./presenter_plugin";
 import { getPlayerPairs, getSkills } from "../../utils/crewutils";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { StatLabel } from "../statlabel";
 
 
 
 export interface GauntletSkillProps extends PresenterPluginProps<PlayerCrew | CrewMember> {
-    data: Gauntlet;            
+    data: Gauntlet | Gauntlet[];
 }
 
 export interface GauntletSkillsState extends PresenterPluginState {
@@ -26,10 +27,72 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
         super(props);
     }
     
+    private readonly drawRightArea = () => {
+
+        const { context: crew, data: node } = this.props;
+
+        if (Array.isArray(node)) {
+
+            let highGaunt = [ ... new Set(node.filter(f => f.contest_data?.traits.some(t => crew.traits.includes(t))).map(t => t.contest_data?.traits ?? [])) ];
+            highGaunt = [ ... new Set(highGaunt.map(m => m.join("_"))) ].map(m => m.split("_"));
+            let critters = {} as { [key: string]: number };
+
+            for (let gaunt of highGaunt) {
+                let tf = gaunt.filter(t => crew.traits.includes(t));
+                if (tf) {
+                    let pct = `${tf.length * 20 + 5}%`;
+                    critters[pct] ??= 0;
+                    critters[pct]++;
+                }                
+            }
+
+            return (<div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                marginBottom: "0.25em",                
+                flexGrow: 1
+            }}>
+                {Object.keys(critters).sort().reverse().map((crit) => {
+
+                    let text = crit;
+                    let count = critters[crit];
+
+                    return (
+                        <div style={{margin:"0.25em 0 0 0", width: '100%', height: '32px'}}>
+                        <StatLabel    
+                            size={'medium'}                        
+                            title={`${text} Crit`}
+                            value={count}
+                        />
+                        </div>)
+                })}
+            </div>)
+        }
+        else {
+            const prettyTraits = node.prettyTraits;
+
+            return (<React.Fragment>
+                <div style={{margin: "0.5em"}}>
+                
+                {((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
+                </div>
+                <div style={{margin: "0.5em"}}>
+                    {crew.base_skills[node.contest_data?.featured_skill ?? "_invalid"] ? 
+                    <img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} /> 
+                    : ''}
+                </div>
+            </React.Fragment>)
+        }
+
+    }
+
     render() {
         const { context: crew, data: node } = this.props;
-        const prettyTraits = node.prettyTraits;
+        if (!Array.isArray(node)) {
 
+        }
         const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
         const skills = getSkills(crew);
@@ -72,16 +135,8 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
                 alignItems: "center",
                 fontSize: "3em",
 //                minHeight: "4em"
-            }}>
-
-                <div style={{margin: "0.5em"}}>
-                {((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
-                </div>
-                <div style={{margin: "0.5em"}}>
-                    {crew.base_skills[node.contest_data?.featured_skill ?? ""] ? 
-                    <img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} /> 
-                    : ''}
-                </div>
+            }}>                
+                {this.drawRightArea()}                
                 <div style={{fontSize: "12pt", marginTop: "1em", marginBottom: "1em"}} title="Best Pair">                    
                     <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairs[0][0].skill}.png`} /> 
                     <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairs[0][1].skill}.png`} /> 
