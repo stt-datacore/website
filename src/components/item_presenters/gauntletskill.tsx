@@ -39,7 +39,7 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
 
             for (let gaunt of highGaunt) {
                 let tf = gaunt.filter(t => crew.traits.includes(t));
-                if (tf) {
+                if (tf?.length) {
                     let pct = `${tf.length * 20 + 5}%`;
                     critters[pct] ??= 0;
                     critters[pct]++;
