@@ -192,7 +192,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const tf = [] as string[];
 		for (let i = 0; i < GauntletTabCount; i++) {
 			vmodes.push(this.tiny.getValue<GauntletViewMode>('viewMode_' + i, 'pair_cards') ?? 'pair_cards')
-			rmax.push(this.tiny.getValue('gauntletRangeMax_' + i, 500) ?? 500);
+			rmax.push(this.tiny.getValue('gauntletRangeMax_' + i, 100) ?? 100);
 			tops.push(this.tiny.getValue('gauntletTops_' + i, 100) ?? 100);			
 			fprops.push(this.tiny.getValue('gauntletFilter_' + i, DEFAULT_FILTER_PROPS) ?? DEFAULT_FILTER_PROPS);
 			tf.push(this.tiny.getValue('textFilter_' + i, '') ?? '');
@@ -703,7 +703,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	readonly getGauntletCrew = (gauntlet: Gauntlet, rankByPair?: string, range_max?: number, filter?: FilterProps, textFilter?: string) => {
 		if (rankByPair === '' || rankByPair === 'none') rankByPair = undefined;
 
-		const rmax = range_max ?? 500;
+		const rmax = range_max ?? 100;
 		const search = textFilter;
 
 		const { buffConfig, maxBuffs } = this.context.player;		
@@ -1452,6 +1452,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
         return <GauntletCrewTable 
             pageId={`gauntletPage_${idx}`}
             mode={idx === 4 ? 'live' : 'normal'}
+			gauntlets={idx === 3 ? this.context.core.gauntlets : undefined}
             gauntlet={gauntlet}
             data={data.map(d => d as PlayerCrew)}
             textFilter={textFilter[idx]}
@@ -2029,7 +2030,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									width={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "100%"}
 									imageWidth="50%"
 									plugins={[GauntletSkill, ShipSkill]}
-									pluginData={[gauntlet, undefined]}
+									pluginData={[idx === 3 ? this.context.core.gauntlets : gauntlet, undefined]}
 									selfRender={true}
 									selfPrepare={true}
 									onBuffToggle={this.onBuffToggle}
