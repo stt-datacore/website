@@ -104,7 +104,7 @@ const CrewChallenge = () => {
 
 	React.useEffect(() => {
 		fetchAllCrew();
-	});
+	}, [context]);
 
 	if (!portalCrew) {
 		context.core.spin();
@@ -824,10 +824,19 @@ const CrewPicker = (props: CrewPickerProps) => {
 					iconPosition='left'
 					placeholder='Search for crew by name'
 					value={searchFilter}
-					onChange={(e, { value }) => { setSearchFilter(value); setPaginationPage(1); setSelectedCrew(undefined); }}>
+					onChange={(e, { value }) => { 
+							setSearchFilter(value); 
+							setPaginationPage(1); 
+							setSelectedCrew(undefined); 
+							}}>
 						<input />
 						<Icon name='search' />
-						<Button icon onClick={() => { setSearchFilter(''); setPaginationPage(1); setSelectedCrew(undefined); inputRef.current?.focus(); }} >
+						<Button icon onClick={() => { 
+							setSearchFilter(''); 
+							setPaginationPage(1); 
+							setSelectedCrew(undefined); 
+							inputRef.current?.focus(); 
+							}} >
 							<Icon name='delete' />
 						</Button>
 				</Input>
