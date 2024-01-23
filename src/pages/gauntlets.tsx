@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pagination, PaginationProps, Table, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox, DropdownItemProps, SemanticWIDTHS, Step, Input } from 'semantic-ui-react';
+import { Pagination, PaginationProps, Table, Icon, Message, Dropdown, Rating, Button, Form, TextArea, Header, Accordion, Checkbox, DropdownItemProps, SemanticWIDTHS, Step, Input, FormInput } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import * as moment from 'moment';
 import { TranslationSet } from '../model/traits';
@@ -1452,7 +1452,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
         return <GauntletCrewTable 
             pageId={`gauntletPage_${idx}`}
             mode={idx === 4 ? 'live' : 'normal'}
-			gauntlets={idx === 3 ? this.context.core.gauntlets : undefined}
+			gauntlets={idx === 3 && this.state.browsingGauntlet?.state === 'POWER' ? this.context.core.gauntlets : undefined}
             gauntlet={gauntlet}
             data={data.map(d => d as PlayerCrew)}
             textFilter={textFilter[idx]}
@@ -1622,6 +1622,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}
 
 		const currContest = [gauntlet?.contest_data?.primary_skill ?? "", gauntlet?.contest_data?.secondary_skill ?? ""].sort().join()
+		const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
 		return (
 
@@ -2009,6 +2010,20 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				{(!loading) && (<div>
 
 					{viewModes[idx] !== 'table' && viewModes[idx] !== 'pair_cards' && <div style={{ margin: "1em 0", width: "100%" }}>
+					<div style={{marginBottom: "0.5em"}}>
+						<Input
+							style={{ width: isMobile ? '100%' : '50%'}}
+							iconPosition="left"
+							placeholder="Search..."
+							value={this.state.textFilter[idx]}
+							onChange={(e, { value }) => this.setTextFilter(value, idx)}>
+							<input />
+							<Icon name='search' />
+							<Button icon onClick={() => this.setTextFilter('', idx)} >
+								<Icon name='delete' />
+							</Button>
+						</Input>
+					</div>
 					<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
 					</div>}
 			
@@ -2030,7 +2045,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									width={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "100%"}
 									imageWidth="50%"
 									plugins={[GauntletSkill, ShipSkill]}
-									pluginData={[idx === 3 ? this.context.core.gauntlets : gauntlet, undefined]}
+									pluginData={[idx === 3 && this.state.browsingGauntlet?.state === 'POWER' ? this.context.core.gauntlets : gauntlet, undefined]}
 									selfRender={true}
 									selfPrepare={true}
 									onBuffToggle={this.onBuffToggle}
@@ -2063,7 +2078,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 										compact
 										proficiencies
 										plugins={[GauntletSkill]}
-										pluginData={[gauntlet]}
+										pluginData={[idx === 3 && this.state.browsingGauntlet?.state === 'POWER' ? this.context.core.gauntlets : gauntlet, undefined]}
 										selfRender={true}
 										selfPrepare={true}
 										onBuffToggle={this.onBuffToggle}
@@ -2160,7 +2175,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						selection={searching}
 						search={searching}
 						options={gauntOpts}
-						value={browsing ? (browsingGauntlet?.date ?? "g_0") : (activePrevGauntlet?.date ?? "")}
+						value={browsing ? (browsingGauntlet?.date ?? "gt_0") : (activePrevGauntlet?.date ?? "")}
 						onChange={(e, { value }) => this.changeGauntlet(value as string, browsing ? true : false)}
 					/>
 
