@@ -27,7 +27,7 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
         super(props);
     }
     
-    private readonly drawRightArea = () => {
+    private readonly drawLeftArea = () => {
 
         const { context: crew, data: node } = this.props;
 
@@ -47,6 +47,7 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
             }
 
             return (<div style={{
+                gridArea: 'left',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-start',
@@ -73,7 +74,7 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
         else {
             const prettyTraits = node.prettyTraits;
 
-            return (<React.Fragment>
+            return (<div style={{gridArea: 'left', display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center'}}>
                 <div style={{margin: "0.5em"}}>
                 
                 {((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
@@ -83,7 +84,7 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
                     <img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} /> 
                     : ''}
                 </div>
-            </React.Fragment>)
+            </div>)
         }
 
     }
@@ -127,17 +128,20 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
         }}>
             
             <div style={{
-                display: "flex",
-                flexDirection: isMobile ? 'column' : "row",
-                justifyContent: isMobile ? 'center' : "space-evenly",
-                justifyItems: 'center',
-                alignContent: 'center',
-                alignItems: "center",
+                display: 'grid',
+                gridTemplateAreas: "'left right'",
+                gridTemplateColumns: "75% auto",
+                // display: "flex",
+                // flexDirection: isMobile ? 'column' : "row",
+                // justifyContent: isMobile ? 'center' : "space-evenly",
+                // justifyItems: 'center',
+                // alignContent: 'center',
+                // alignItems: "center",
                 fontSize: "3em",
 //                minHeight: "4em"
             }}>                
-                {this.drawRightArea()}                
-                <div style={{fontSize: "12pt", marginTop: "1em", marginBottom: "1em"}} title="Best Pair">                    
+                {this.drawLeftArea()}                
+                <div style={{gridArea: 'right', fontSize: "12pt", marginTop: "1em", marginBottom: "1em"}} title="Best Pair">                    
                     <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairs[0][0].skill}.png`} /> 
                     <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairs[0][1].skill}.png`} /> 
                     <div style={{margin: "0.25em"}}>{"Best Pair"}</div>
