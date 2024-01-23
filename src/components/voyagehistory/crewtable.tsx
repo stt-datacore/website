@@ -13,6 +13,7 @@ import { formatTime } from '../../utils/voyageutils';
 
 import { HistoryContext } from './context';
 import { VoyageModal } from './voyagemodal';
+import { CrewPreparer } from '../item_presenters/crew_preparer';
 
 export const CrewTable = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -39,8 +40,10 @@ export const CrewTable = () => {
 
 		const crewData = [] as ITrackedCrewMember[];
 		Object.keys(history.crew).forEach(crewSymbol => {
-			// TODO: Get crew from playerData instead of coreData
-			const crew = globalContext.core.crew.find(crew => crew.symbol === crewSymbol) as PlayerCrew;
+			
+			let crewIn = globalContext.player.playerData?.player.character.crew.find(crew => crew.symbol === crewSymbol) ?? globalContext.core.crew.find(crew => crew.symbol === crewSymbol);
+			const crew = CrewPreparer.prepareCrewMember(crewIn as PlayerCrew, 'quipment', 'owned', globalContext)[0] as PlayerCrew;
+			
 			if (crew) {
 				const assignments = history.crew[crewSymbol].filter(assignment => {
 					const trackedVoyage = voyages.find(voyage => voyage.tracker_id === assignment.tracker_id);
