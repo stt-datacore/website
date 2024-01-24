@@ -371,28 +371,28 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                 <div>
                     <div style={{ marginBottom: ".25em", marginTop: "0.25em" }}>{!isShip && "Equipment Bonus"}</div>
                     <p>
-                        {ship_battle.crit_bonus && (
+                        {!!ship_battle.crit_bonus && (
                             <span>
                                 <b>Crit Bonus:</b> +
                                 {ship_battle.crit_bonus}
                                 {` `}
                             </span>
                         )}
-                        {ship_battle.crit_chance && (
+                        {!!ship_battle.crit_chance && (
                             <span>
                                 <b>Crit Rating:</b> +
                                 {ship_battle.crit_chance}
                                 {` `}
                             </span>
                         )}
-                        {!isShip && ship_battle.accuracy &&
+                        {!isShip && !!ship_battle.accuracy &&
                             <span>
                             <b>Accuracy:</b> +
                             {ship_battle.accuracy}
                             {` `}
                             </span>
                         }
-                        {!isShip && ship_battle.evasion &&
+                        {!isShip && !!ship_battle.evasion &&
                             <span>
                             <b>Evasion:</b> +
                             {ship_battle.evasion}
