@@ -1528,5 +1528,22 @@
                 "skill": "engineering_skill"
             }
         ]
+    },
+    {
+        "symbol": "enterprise_c_ship",
+        "battle_stations": [
+            {
+                "skill": "command_skill"
+            },
+            {
+                "skill": "security_skill"
+            },
+            {
+                "skill": "science_skill"
+            },
+            {
+                "skill": "engineering_skill"
+            }
+        ]
     }
 ]
