@@ -175,6 +175,7 @@ export const Navigation = (props: NavigationProps) => {
 				{ title: 'Events', link: '/events', sidebarRole: 'item' },
 				{ title: 'Voyage Hall of Fame', link: '/hall_of_fame', sidebarRole: 'item' },
 				{ title: "Misc Game Stats", link: "/stats", sidebarRole: 'item' },
+				{ title: "Bridge Crew Tool", link: "/bridgecrew", sidebarRole: 'item' },
 			]
 		},
 		// TODO: Use later?
