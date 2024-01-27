@@ -92,7 +92,7 @@ const CardCrew = (props: CardCrewProps) => {
 						compact={true}
 					/>
 					<div style={{ marginTop: '1em' }}>
-						{crew.markdownContent && <div dangerouslySetInnerHTML={{ __html: marked.parse(crew.markdownContent) }} />}
+						{!!crew.markdownContent && <div dangerouslySetInnerHTML={{ __html: marked.parse(crew.markdownContent) }} />}
 						<div style={{ marginTop: '1em', textAlign: 'right' }}>
 							<a href={`https://www.bigbook.app/crew/${crew.symbol}`} target='_blank'>
 								View {crew.name} on Big Book
