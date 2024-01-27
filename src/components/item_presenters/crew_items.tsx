@@ -72,26 +72,47 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
     if (!quip) {
         if (!crew.equipment_slots[startlevel] || !context.core.items?.length) {
 
-            // some crew have incomplete slots.
-            // since in most cases, these crew are for show, only,
-            // their level will be 100. We'll look for crew around
-            // the given level and see if it's there.
-            [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
-
-            let lvl = crew.level;
-            if (lvl % 10) lvl = lvl - (lvl % 10);
-            if (lvl === 100) lvl = 90;
-            let ceq = crew.equipment_slots.filter(eq => eq.level >= lvl && eq.level <= lvl + 10);
-            if (ceq?.length && ceq.length >= 4) {
-                ceq = ceq.slice(ceq.length - 4);
-                let i = 0;
-                for (let eq of ceq) {
-                    let ef = context.core.items.find(item => item.symbol === eq.symbol);
-                    if (ef) {
-                        equip[i++] = (JSON.parse(JSON.stringify(ef)));
+            if (crew.qm) {
+                // some crew were processed via Qowat Milot (temporarily)
+                // These crew have no equipment slots but the have known equipment
+                // for their current level.  Let's try to give them that.
+                [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
+                
+                for (let e of crew.equipment ?? []) {
+                    if (typeof e[0] === 'number') {
+                        let fitem = context.player.playerData?.player.character.items.find(f => f.archetype_id?.toString() === e[1].toString());
+                        if (fitem) {
+                            let found = context.core.items.find(f => f.symbol === fitem?.symbol);
+                            if (found) {
+                                equip[e[0]] = found;
+                            }
+                        }
                     }
                 }
             }
+            else {
+                // some crew have incomplete slots.
+                // since in most cases, these crew are for show, only,
+                // their level will be 100. We'll look for crew around
+                // the given level and see if it's there.
+                [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
+
+                let lvl = crew.level;
+                if (lvl % 10) lvl = lvl - (lvl % 10);
+                if (lvl === 100) lvl = 90;
+                let ceq = crew.equipment_slots.filter(eq => eq.level >= lvl && eq.level <= lvl + 10);
+                if (ceq?.length && ceq.length >= 4) {
+                    ceq = ceq.slice(ceq.length - 4);
+                    let i = 0;
+                    for (let eq of ceq) {
+                        let ef = context.core.items.find(item => item.symbol === eq.symbol);
+                        if (ef) {
+                            equip[i++] = (JSON.parse(JSON.stringify(ef)));
+                        }
+                    }
+                }
+            }
+
         } else {
             
             [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));

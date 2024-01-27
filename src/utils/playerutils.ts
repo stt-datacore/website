@@ -1,7 +1,8 @@
+import { CrewMember } from "../model/crew";
 import { PlayerEquipmentItem, PlayerCrew, PlayerData, AcceptedMission } from "../model/player";
 
 // Remove any unnecessary fields from the player data
-export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): any {
+export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData, roster: CrewMember[]): any {
     // prevent this method from being called on previous-stripped player data.
     if (p.stripped) return;
     p.stripped = true;
@@ -194,26 +195,36 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
 
     p.player.character.crew = p.player.character.crew
         .filter((crew) => !crew.in_buy_back_state)
-        .map((crew) => ({
-            id: crew.id,
-            symbol: crew.symbol,
-            archetype_id: crew.archetype_id,
-            level: crew.level,
-            max_level: crew.max_level,
-            rarity: crew.rarity,
-            equipment: crew.equipment.map((eq) => eq[0]),
-            kwipment: crew.kwipment,
-            kwipment_expiration: crew.kwipment_expiration,
-            q_bits: crew.q_bits,
-            base_skills: crew.base_skills,
-            skills: crew.skills,
-            favorite: crew.favorite,
-            expires_in: crew.expires_in,
-            action: {
-                bonus_amount: crew.action?.bonus_amount,
-            },
-            ship_battle: crew.ship_battle,
-        } as PlayerCrew));
+        .map((crew) => {
+            
+            let fcrew = roster.find(f => f.symbol === crew.symbol && f.qm);
+            if (fcrew) {
+                console.log("break");
+            }
+            let newObj = ({
+                id: crew.id,
+                symbol: crew.symbol,
+                archetype_id: crew.archetype_id,
+                level: crew.level,
+                max_level: crew.max_level,
+                rarity: crew.rarity,
+                equipment: fcrew ? crew.equipment : crew.equipment.map((eq) => eq[0]),
+                kwipment: crew.kwipment,
+                kwipment_expiration: crew.kwipment_expiration,
+                q_bits: crew.q_bits,
+                base_skills: crew.base_skills,
+                skills: crew.skills,
+                favorite: crew.favorite,
+                expires_in: crew.expires_in,
+                action: {
+                    bonus_amount: crew.action?.bonus_amount,
+                },
+                ship_battle: crew.ship_battle,
+                qm: !!fcrew
+            } as PlayerCrew);
+            
+            return newObj;
+        });
 
     let c_stored_immortals = p.player.character.stored_immortals
         .filter((im) => im.quantity === 1)

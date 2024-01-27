@@ -396,6 +396,9 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		crew.expires_in = owned.expires_in;
 		
 		if (workitem.immortal > 0) crew.immortal = workitem.immortal;
+		if (crew.qm) {
+			console.log("break here");
+		}
 		if (rarity !== 6) {
 			crew.rarity = workitem.rarity;
 			crew.base_skills = workitem.base_skills;

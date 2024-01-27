@@ -64,6 +64,13 @@ export interface CrewMember {
   /** Used internally, not part of incoming data */
   pickerId?: number;
   pairs?: Skill[][];  
+
+  
+  /**
+   * Indicates this crew was processed into the system via Qowat Milot
+   */
+  qm?: boolean;
+
 }
 
 export interface EquipmentSlot {
