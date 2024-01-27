@@ -24,7 +24,7 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 				<StatLabel title="Voyage rank" value={crew.ranks.voyRank} />
 				<StatLabel title="Gauntlet rank" value={crew.ranks.gauntletRank} />
 				<StatLabel title="Big book tier" value={formatTierLabel(crew)} />
-				{crew.events && <StatLabel title="Events" value={crew.events} />}
+				{!!crew.events && <StatLabel title="Events" value={crew.events} />}
 				{markdownRemark && markdownRemark.frontmatter.events !== null && (
 					<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
 				)}
