@@ -275,6 +275,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 				item.type = (item["item_type"] as number);
 				delete item["item_type"];
 			}
+			item.imageUrl = item.imageUrl.replace(decodeURI('%E2%80%8B%E2%80%8B'), '')
 		})
 		return result ?? [];
 	}
