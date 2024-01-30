@@ -274,7 +274,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if ("item_type" in item) {
 				item.type = (item["item_type"] as number);
 				delete item["item_type"];
-			}
+			}			
 		})
 		return result ?? [];
 	}
