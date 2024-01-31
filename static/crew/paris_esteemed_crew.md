@@ -3,7 +3,7 @@ name: Esteemed Tom Paris
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal: true
 date: 07/09/2022
 published: true
