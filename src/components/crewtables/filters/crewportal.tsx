@@ -2,6 +2,7 @@ import React from 'react';
 import { Form, Dropdown } from 'semantic-ui-react';
 
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
+import { printPortalStatus } from '../../../utils/crewutils';
 
 type CrewPortalFilterProps = {
 	pageId: string;
@@ -19,11 +20,15 @@ export const CrewPortalFilter = (props: CrewPortalFilterProps) => {
 		{ key: 'none', value: '', text: 'Show all crew' },
 		{ key: 'inportal', value: 'inportal', text: 'In portal' },
 		{ key: 'noninportal', value: 'notinportal', text: 'Not in portal' },
+		{ key: 'neverportal', value: 'neverportal', text: 'Never in portal' },
 	];
 
 	const filterByPortal = (crew: IRosterCrew) => {
 		if (portalFilter === 'inportal' && !crew.in_portal) return false;
 		if (portalFilter === 'notinportal' && crew.in_portal) return false;
+		if (portalFilter === 'neverportal') {
+			if (!printPortalStatus(crew, true, false, false, false).includes("Never")) return false;
+		}
 		return true;
 	};
 

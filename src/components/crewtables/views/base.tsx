@@ -10,6 +10,8 @@ import { formatTierLabel, getSkillOrder, printPortalStatus, printSkillOrder, qbi
 import { navigate } from 'gatsby';
 import { TinyStore } from '../../../utils/tiny';
 import VoyageExplanation from '../../explanations/voyexplanation';
+import { PlayerCrew } from '../../../model/player';
+import { CrewMember } from '../../../model/crew';
 
 export const getBaseTableConfig = (tableType: 'allCrew' | 'myCrew' | 'profileCrew') => {
 	const tableConfig = [] as ITableConfigRow[];
@@ -27,7 +29,14 @@ export const getBaseTableConfig = (tableType: 'allCrew' | 'myCrew' | 'profileCre
 		});
 	});
 	tableConfig.push(
-		{ width: 1, column: 'in_portal', title: 'In Portal' },
+		{ 
+			width: 1, 
+			column: 'in_portal', 
+			title: 'In Portal',
+			customCompare: (a: PlayerCrew | CrewMember, b: PlayerCrew | CrewMember) => {				
+				return printPortalStatus(a, true, true, false, true).localeCompare(printPortalStatus(b, true, true, false, true));
+			}
+		},
 	);
 	if (tableType === 'allCrew') {
 		tableConfig.push(
