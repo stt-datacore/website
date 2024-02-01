@@ -16,6 +16,8 @@ import { navigate } from "gatsby";
 import CONFIG from "../CONFIG";
 import { VoyageHOFPeriod, VoyageStatEntry, niceNamesForPeriod, VoyageHOFProps, VoyageHOFState } from "../../model/hof";
 import { HofDetails, formatNumber } from "./hofdetails";
+import { CrewDropDown } from "../base/crewdropdown";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
  
 export interface VoyageStatsProps {
     period: VoyageHOFPeriod;
@@ -169,7 +171,6 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         this.state = {
             voyageStats: undefined,
             errorMessage: undefined,
-            allCrew: undefined,
             rankBy: this.tiny.getValue<RankMode>('rankMode', 'voyages') ?? 'voyages',
             glanceDays: 31
         };
@@ -186,6 +187,12 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         }
                 
         this.setState({ ...this.state, crewSymbol: crew, rawVoyages: undefined });
+    }
+
+    readonly setSelection = (crew?: number[]) => {
+        const { crew: allCrew } = this.context.core;
+        const maps = allCrew?.filter(f => crew?.includes((f as PlayerCrew).id)).map(m => (m as PlayerCrew).symbol);
+        this.setGlance(maps);
     }
 
     readonly clickCrew = (crew?: string) => {
@@ -229,9 +236,6 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
     }
 
     componentDidMount() {
-        fetch("/structured/crew.json")
-            .then((response) => response.json())
-            .then((allCrew) => this.setState({ allCrew }));
         fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry?type=voyage`)
             .then((response) => response.json())
             .then((voyageStats) => {
@@ -258,17 +262,34 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         this.setState({ ...this.state, rankBy: rank });
     };
 
-    render() {
-        const { crewSymbol, rawVoyages, rankBy, voyageStats, allCrew } = this.state;
+    private getFilteredCrew() {
+        const { voyageStats } = this.state;
+        const { crew: allCrew } = this.context.core;
 
-        if (!this.state.voyageStats || !this.state.allCrew) {
+        if (!allCrew || !voyageStats) return [];
+        
+        let pcn = [ ... new Set(Object.values(voyageStats).map(v => v.map(q => q.crewSymbol)).flat()) ];
+        return allCrew
+                    .filter(f => pcn.includes(f.symbol))
+                    .sort((a, b) => {
+                        return pcn.findIndex(f => f === a.symbol) - pcn.findIndex(f => f === b.symbol);
+                    });
+    }
+
+    render() {
+        const { crewSymbol, rawVoyages, rankBy, voyageStats } = this.state;
+        const { crew: allCrew } = this.context.core;
+
+        if (!this.state.voyageStats || !allCrew) {
             return (
                 <div className="ui medium centered text active inline loader">
                     Loading hall of fame...
                 </div>
             );
         }
-        
+        allCrew.forEach(c => {
+            if (!c.id) c.id = c.archetype_id;
+        })
         let rows = [] as { stats: VoyageStatEntry[], key: VoyageHOFPeriod }[][];
         let stats = Object.keys(niceNamesForPeriod)?.filter(p => !!p?.length);
        
@@ -276,12 +297,35 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
             rows.push(stats.splice(0, 3).map(p => { return { stats: (voyageStats as Object)[p] as VoyageStatEntry[], key: p as VoyageHOFPeriod } } ))
         }
 
+        const filteredCrew = this.getFilteredCrew();
+        const selection = filteredCrew?.filter(s => crewSymbol?.includes(s.symbol)).map(m => m?.id ?? 0);
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
         return (
             <div style={{display:'flex',flexDirection:'column',alignItems:'center', justifyContent: 'center'}}>
                 <Header as="h1" textAlign="center">
                     Voyage Hall of Fame
                 </Header>
 
+                <div style={{
+                    width: isMobile ? "100%" : "50%",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    margin: "0.5em"
+                }}>
+                    <CrewDropDown 
+                        placeholder={"Select crew to see detailed stats..."}
+                        plain
+                        fluid
+                        multiple={true}
+                        pool={filteredCrew} 
+                        selection={selection} 
+                        setSelection={this.setSelection}  
+                        />
+                </div>
+                
                 <HofDetails crewClick={this.clickCrew} hofState={this.state} />
 
                 {!!crewSymbol?.length && !!rawVoyages && 

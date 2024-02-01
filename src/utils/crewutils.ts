@@ -1412,7 +1412,16 @@ export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
 	return obstr;
 }
 
-export function printPortalStatus(crew: PlayerCrew | CrewMember, showNever?: boolean, obtainedIfNo?: boolean, long?: boolean, withPortal?: boolean) {
+/**
+ * Print the portal status for a crew member
+ * @param crew The target crew member
+ * @param showNever True to show "Never" in lieu of "No" for crew that will never be in the portal
+ * @param obtainedIfNo True to print the route of obtaining the crew if not in portal, or chance of retrieval if in portal.
+ * @param long True to print long-form obtained information.
+ * @param withPortal True to prepend the string with "In Portal: "
+ * @returns A formatted string conveying the portal status
+ */
+export function printPortalStatus<T extends CrewMember>(crew: T, showNever?: boolean, obtainedIfNo?: boolean, long?: boolean, withPortal?: boolean) {
 	showNever ??= true;
 	long ??= false;
 	obtainedIfNo ??= false;
@@ -1431,7 +1440,7 @@ export function printPortalStatus(crew: PlayerCrew | CrewMember, showNever?: boo
 	if (obstr !== "") obstr = ` (${obstr})`;
 	let ob = crew.obtained?.toLowerCase() ?? "Unknown";
 
-	if (showNever && (ob.includes("factionstore") || ob.includes("missions") || ob.includes("fuse") || ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection"))) {
+	if (showNever && (ob.includes("faction") || ob.includes("missions") || ob.includes("fuse") || ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection"))) {
 		return (withPortal ? "In Portal: " : "") + `Never${obstr}`;
 	}
 
