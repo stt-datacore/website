@@ -18,6 +18,7 @@ export interface MarkdownInfo {
  * PlayerCrew derives from this and CompactCrew.
  */
 export interface CrewMember {
+  id?: number;
   symbol: string
   name: string
   short_name: string

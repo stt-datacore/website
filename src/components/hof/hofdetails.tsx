@@ -119,13 +119,6 @@ export const HofDetails = (props: HofDetailsProps) => {
         });
     }
 
-    const renderCrew = (idx: number) => {
-
-
-
-    }
-
-
     return (<React.Fragment>
 
         {!!crewSymbol?.length && (!rawVoyages || (featuredList?.length !== crewSymbol?.length)) && context.core.spin(`Loading details for '${featuredList?.map(f => f.name)?.join(", ") ?? crewSymbol}' ...`)}

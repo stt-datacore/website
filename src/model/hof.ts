@@ -31,7 +31,6 @@ export interface VoyageHOFState {
         oneYear?: VoyageStatEntry[];
         allTime?: VoyageStatEntry[];
     };
-    allCrew?: (CrewMember | PlayerCrew)[];
     errorMessage?: string;
     rankBy: RankMode;
     crewSymbol?: string[];

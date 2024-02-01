@@ -2,19 +2,22 @@ import React from "react";
 import { Dropdown, DropdownItemProps, Rating } from "semantic-ui-react";
 import { PlayerCrew } from "../../model/player";
 import { qbitsToSlots } from "../../utils/crewutils";
+import { CrewMember } from "../../model/crew";
 
 export interface CrewPickerProperties {
     selection?: number[];
     setSelection: (value?: number[]) => void;
-    pool: PlayerCrew[];
+    pool: (PlayerCrew | CrewMember)[];
     multiple?: boolean;
     placeholder?: string;
     style?: React.CSSProperties;
     maxSelection?: number;
+    fluid?: boolean;
+    plain?: boolean;
 }
 
 export const CrewDropDown = (props: CrewPickerProperties) => {
-    const { pool, multiple, setSelection, style, placeholder, maxSelection } = props;
+    const { pool, multiple, setSelection, style, placeholder, maxSelection, fluid, plain } = props;
     const [crewChoices, setCrewChoices] = React.useState([] as DropdownItemProps[]);
 
     const selection = !!props.selection && typeof props.selection !== 'number' && !props.multiple ? props.selection[0] : props.selection;
@@ -59,9 +62,10 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
                                     rating={c.max_rarity}
                                     size={"tiny"}
                                 />
+                                {!plain && 
                                 <div style={{alignSelf: 'right'}}>
                                     {c.q_bits} ({qbitsToSlots(c.q_bits)})
-                                </div>
+                                </div>}
                                 
                             </div>
                             
@@ -93,6 +97,7 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
         search 
         selection        
         clearable
+        fluid={fluid}
         multiple={multiple}
         placeholder={placeholder ?? "Search for a crew member..."}
         labeled
