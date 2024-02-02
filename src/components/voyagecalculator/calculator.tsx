@@ -673,14 +673,20 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 		const request = requests.find(r => r.id === result.requestId);
 		if (request?.calcOptions.strategy === 'peak-antimatter') return;
 		
+		const resultCrew = result?.result?.entries.map(e => e.choice) ?? [];
 		const estimatedDuration = result.result.estimate.refills[0].result*60*60;
-		const playerCrewChoices = globalContext.player.playerData?.player.character.crew.filter(f => result.result?.entries.some(e => e.choice.symbol === f.symbol));
-		const quipment = playerCrewChoices?.map(c => {
+		if (resultCrew && globalContext.player.playerData) {
+			for (let i = 0; i < resultCrew.length; i++) {
+				resultCrew[i] = globalContext.player.playerData.player.character.crew.find(f => f.id === resultCrew[i].id) ?? resultCrew[i];
+			}
+		}
+
+		const quipment = resultCrew?.map(c => {
 			if (typeof c.kwipment[0] === 'number') {
-				return ({ symbol: c.symbol, kwipment: c.kwipment });
+				return c.kwipment;
 			}
 			else {
-				return ({ symbol: c.symbol, kwipment: c.kwipment.map(q => q[1]) });
+				return c.kwipment.map(q => q[1]);
 			}
 		});
 
