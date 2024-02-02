@@ -708,7 +708,8 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 						extra_stats: {
 							immortalRatio,
 							frozenRatio,
-							quipment
+							quipment,
+							buffs: globalContext.player.buffConfig
 						}
 					}
 				})
