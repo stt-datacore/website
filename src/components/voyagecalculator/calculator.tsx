@@ -8,7 +8,7 @@ import { IVoyageInputConfig, IVoyageCalcConfig, IVoyageCrew, IVoyageHistory } fr
 import { CalcResult, Calculation, Estimate, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
 import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
-import { formatTime, flattenEstimate } from '../../utils/voyageutils';
+import { formatTime, flattenEstimate, BuffStatTable } from '../../utils/voyageutils';
 import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 
 import { CalculatorContext } from './context';
@@ -20,6 +20,7 @@ import { VoyageStats } from './voyagestats';
 import { CIVASMessage } from './civas';
 
 import { defaultHistory, addVoyageToHistory, addCrewToHistory, removeVoyageFromHistory } from '../voyagehistory/utils';
+import CONFIG from '../CONFIG';
 
 // These preferences are per-user, so they need separate handlers when there's no player data
 interface IUserPrefsContext {
@@ -436,6 +437,7 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 
 	const calculatorContext = React.useContext(CalculatorContext);
 	const userPrefs = React.useContext(UserPrefsContext);
+	
 	const { requests, results, setResults } = props;
 
 	const [trackerId, setTrackerId] = React.useState(0);
@@ -457,8 +459,10 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 	const frozenRatio = frozenCount / goldCount;
 
 	React.useEffect(() => {
-		if (results?.length && userPrefs.telemetryOptIn) sendTelemetry(0);
-	}, [results])	
+		if (results?.length && userPrefs.telemetryOptIn) {
+			sendTelemetry(0);
+		}
+	}, [results]);
 
 	if (results.length === 0)
 		return (<></>);
@@ -665,7 +669,7 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 		results.splice(resultIndex, 1);
 		setResults([...results]);
 	}
-
+	
 	function sendTelemetry(resultIndex: number): void {
 		const result = results[resultIndex];
 		if (!result.result) return;
@@ -673,7 +677,23 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 		const request = requests.find(r => r.id === result.requestId);
 		if (request?.calcOptions.strategy === 'peak-antimatter') return;
 		
+		const resultCrew = result?.result?.entries.map(e => e.choice) ?? [];
 		const estimatedDuration = result.result.estimate.refills[0].result*60*60;
+		if (resultCrew && globalContext.player.playerData) {
+			for (let i = 0; i < resultCrew.length; i++) {
+				resultCrew[i] = globalContext.player.playerData.player.character.crew.find(f => f.id === resultCrew[i].id) ?? resultCrew[i];
+			}
+		}
+
+		const quipment = resultCrew?.map(c => {
+			if (typeof c.kwipment[0] === 'number') {
+				return c.kwipment;
+			}
+			else {
+				return c.kwipment.map(q => q[1]);
+			}
+		});
+
 		try {
 			fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry`, {
 				method: 'post',
@@ -691,7 +711,9 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 						... request?.voyageConfig.skills,
 						extra_stats: {
 							immortalRatio,
-							frozenRatio
+							frozenRatio,
+							quipment,
+							buffs: shrinkBuffs(globalContext.player.buffConfig)
 						}
 					}
 				})
@@ -701,7 +723,21 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 			console.log('An error occurred while sending telemetry', err);
 		}
 	}
+	
+	function shrinkBuffs(buffs?: BuffStatTable) {
+		if (!buffs) return undefined;
+		let output = {} as { [key: string]: { core: number, min: number, max: number } };
 
+		CONFIG.SKILLS_SHORT.forEach((skill) => {
+			output[skill.short] = {
+				core: buffs[`${skill.name}_core`].percent_increase,
+				max: buffs[`${skill.name}_range_max`].percent_increase,
+				min: buffs[`${skill.name}_range_min`].percent_increase,				
+			}
+		})
+		
+		return output;
+	}
 	
 	return (
 		<React.Fragment>
