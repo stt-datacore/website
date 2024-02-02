@@ -674,6 +674,16 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 		if (request?.calcOptions.strategy === 'peak-antimatter') return;
 		
 		const estimatedDuration = result.result.estimate.refills[0].result*60*60;
+		const playerCrewChoices = globalContext.player.playerData?.player.character.crew.filter(f => result.result?.entries.some(e => e.choice.symbol === f.symbol));
+		const quipment = playerCrewChoices?.map(c => {
+			if (typeof c.kwipment[0] === 'number') {
+				return ({ symbol: c.symbol, kwipment: c.kwipment });
+			}
+			else {
+				return ({ symbol: c.symbol, kwipment: c.kwipment.map(q => q[1]) });
+			}
+		});
+
 		try {
 			fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry`, {
 				method: 'post',
@@ -691,7 +701,8 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 						... request?.voyageConfig.skills,
 						extra_stats: {
 							immortalRatio,
-							frozenRatio
+							frozenRatio,
+							quipment
 						}
 					}
 				})
