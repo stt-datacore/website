@@ -235,10 +235,6 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					});
 				});
 			}
-			const quipment = globalContext.core.items.map(item => getItemWithBonus(item));
-			preparedCrew.forEach(crew => {
-				calcQuipmentScore(crew, quipment);
-			});
 			setPreparedCrew([...preparedCrew]);
 		};
 		applyMarkups();
