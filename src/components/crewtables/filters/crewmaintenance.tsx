@@ -39,7 +39,7 @@ export const CrewMaintenanceFilter = (props: CrewMaintenanceFilterProps) => {
 		if (maintenanceFilter === 'priority' && (crew.immortal === CompletionState.Immortalized || crew.immortal >= CompletionState.Frozen || crew.max_rarity !== crew.rarity)) return false;
 		if (maintenanceFilter === 'threshold' && crew.max_rarity - crew.rarity !== 2) return false;
 		if (maintenanceFilter === 'impact' && crew.max_rarity - crew.rarity !== 1) return false;
-		if (maintenanceFilter === 'fodder' && (crew.max_rarity === 1 || crew.rarity !== 1 || crew.level >= 10)) return false;
+		if (maintenanceFilter === 'fodder' && !crew.expires_in && (crew.max_rarity === 1 || crew.rarity !== 1)) return false;
 		if (maintenanceFilter === 'dupes' && props.rosterCrew.filter((c) => c.symbol === crew.symbol).length === 1) return false;
 		return true;
 	};
