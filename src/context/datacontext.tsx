@@ -10,6 +10,8 @@ import { Icon } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 import { TranslationSet } from '../model/traits';
 import { ContinuumMission } from '../model/continuum';
+import { calcQuipmentScore } from '../utils/equipment';
+import { getItemWithBonus } from '../utils/itemutils';
 
 export type ValidDemands =
 	'all_buffs' |
@@ -228,6 +230,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (unsatisfied.includes('items') && unsatisfied.includes('cadet')) {
 				postProcessCadetItems(newData);
 			}
+			if (unsatisfied.includes('items') && unsatisfied.includes('crew')) {
+				postProcessQuipmentScores(newData.crew, newData.items);
+			}
 			if (unsatisfied.includes('crew') && unsatisfied.some(u => u.startsWith("translation_"))) {
 				postProcessCrewTranslations(newData);
 			}
@@ -262,6 +267,13 @@ export const DataProvider = (props: DataProviderProperties) => {
 			}
 		});
 		return result;
+	}
+
+	function postProcessQuipmentScores(crew: CrewMember[], items: EquipmentItem[]) {
+		const quipment = items.filter(f => f.type === 14).map(item => getItemWithBonus(item));
+		crew.forEach(crew => {
+			calcQuipmentScore(crew, quipment);
+		});
 	}
 
 	function processGauntlets(result: Gauntlet[] | undefined): Gauntlet[] {
