@@ -444,6 +444,7 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 	const { requests, results, setResults } = props;
 
 	const [trackerId, setTrackerId] = React.useState(0);
+	const [requested, setRequested] = React.useState([] as number[]);
 
 	const analyses = [] as string[];
 
@@ -463,9 +464,15 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 
 	React.useEffect(() => {
 		if (results?.length && userPrefs.telemetryOptIn) {
-			sendTelemetry(0);
+			if (!requested.includes(0)) {
+				setRequested([0, ...requested]);
+			}
 		}
 	}, [results]);
+
+	React.useEffect(() => {
+		sendTelemetry(requested[0]);
+	}, [requested])
 
 	if (results.length === 0)
 		return (<></>);
