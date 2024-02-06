@@ -461,7 +461,7 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 
 	React.useEffect(() => {
 		if (results?.length && userPrefs.telemetryOptIn) {
-			if (!requested.some(r => r === 0)) {
+			if (!requested.includes(0)) {
 				setRequested([0, ...requested]);
 			}
 		}
