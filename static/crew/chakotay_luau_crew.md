@@ -3,7 +3,7 @@ name: Luau Chakotay
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 in_portal:
 date: 09/08/2023
 published: true

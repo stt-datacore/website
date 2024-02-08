@@ -3,7 +3,7 @@ name: Chuft-Captain
 rarity: 5
 series: tas
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 11/05/2021
 published: true
