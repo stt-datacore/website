@@ -440,8 +440,7 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 	
 	const { requests, results, setResults } = props;
 
-	const [trackerId, setTrackerId] = React.useState(0);
-	const [requested, setRequested] = React.useState([] as number[]);
+	const [trackerId, setTrackerId] = React.useState(0);	
 
 	const analyses = [] as string[];
 
@@ -460,17 +459,10 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 	const frozenRatio = frozenCount / goldCount;
 
 	React.useEffect(() => {
-		if (results?.length && userPrefs.telemetryOptIn) {
+		if (results?.length && userPrefs.telemetryOptIn && results[0].result) {
 			sendTelemetry(0);
-			// if (!requested.includes(0)) {
-			// 	setRequested([0, ...requested]);
-			// }
 		}
 	}, [results]);
-
-	// React.useEffect(() => {
-	// 	sendTelemetry(requested[0]);
-	// }, [requested])
 
 	if (results.length === 0)
 		return (<></>);
