@@ -3,7 +3,7 @@ name: La Sirena Borg Queen
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal:
 date: 05/04/2023
 published: true

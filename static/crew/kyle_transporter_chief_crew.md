@@ -3,7 +3,7 @@ name: Transporter Chief Kyle
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 26/10/2021
 published: true
