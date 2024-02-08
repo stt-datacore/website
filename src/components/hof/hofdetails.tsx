@@ -16,8 +16,10 @@ export const formatNumber = (value: number, max: number, mult?: number, suffix?:
     if (suffix) suffix = " " + suffix;
     else suffix = "";
     let fmt = Math.round((value * mult) * 10) / 10;
+    let grade = value / max;
+    if (grade > 1) grade = 1;
     return (
-        <span style={{ color: gradeToColor(value / max) ?? undefined }}>
+        <span style={{ color: gradeToColor(grade) ?? undefined }}>
             {fmt.toLocaleString() + suffix}
         </span>
     );
@@ -133,7 +135,7 @@ export const HofDetails = (props: HofDetailsProps) => {
 
                 {featuredList.length > 1 && <h3>Shared Voyages</h3>}
 
-                <p>{glanceDays} Day Details: {formatNumber(rawVoyages.length, Math.max(rawVoyages.length, voyageStats?.lastThirtyDays?.length ?? rawVoyages.length), 1)} Voyages</p>
+                <p>{glanceDays} Day Details: {rawVoyages.length.toLocaleString()} Voyages</p>
                 <p>Average Duration:{" "}{formatNumber(rawVoyages.map(r => r.estimatedDuration ?? 0).reduce((p, n, idx) => ((p * idx) + n) / (idx + 1), 0), 0, 1 / 3600, "h")}</p>
 
                 <div style={{

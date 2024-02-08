@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import {
-    Table, Dropdown, Header, Grid, Button
+    Table, Dropdown, Header, Grid, Button, DropdownItemProps
 } from "semantic-ui-react";
 import { RankMode, appelate } from "../../utils/misc";
 import { CrewMember } from "../../model/crew";
@@ -46,7 +46,34 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGl
             };
         })
         .filter((s) => s)
-        .sort((a, b) => rankBy === 'voyages' ? (b?.crewCount ?? 0) - (a?.crewCount ?? 0) : (b?.averageDuration ?? 0) - (a?.averageDuration ?? 0))
+        .sort((a, b) => {
+            if (!a || !b) {
+                if (!a) {
+                    return 1;
+                }
+                else {
+                    return -1;
+                }
+            }
+            
+            a.averageDuration ??= 1;
+            b.averageDuration ??= 1;
+            
+            a.crewCount ??= 0;
+            b.crewCount ??= 0;
+
+            if (rankBy === 'voyages') {
+                return b.crewCount - a.crewCount;
+            }
+            else if (rankBy === 'duration') {
+                return b.averageDuration - a.averageDuration;
+            }
+            else {
+                let ac = a.crewCount * a.averageDuration;
+                let bc = b.crewCount * b.averageDuration;
+                return bc - ac;
+            }            
+        })
         .slice(0, 100) as (PlayerCrew & VoyageStatEntry)[];
     const rowColors = {
         "0": "#AF9500",
@@ -56,6 +83,7 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGl
 
     const maxDuration = rankedCrew.map(rc => rc?.averageDuration ?? 0).reduce((p, n) => p > n ? p : n, 0);
     const maxVoy = rankedCrew.map(rc => rc?.crewCount ?? 0).reduce((p, n) => p > n ? p : n, 0);
+    const minVoy = rankedCrew.map(rc => rc?.crewCount ?? 0).reduce((p, n) => p < n ? p : n, maxVoy);
 
     rankedCrew.forEach((rc) => {
         rc.seats.sort((a, b) => b.crewCount - a.crewCount);
@@ -172,7 +200,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
             voyageStats: undefined,
             errorMessage: undefined,
             rankBy: this.tiny.getValue<RankMode>('rankMode', 'voyages') ?? 'voyages',
-            glanceDays: 31
+            glanceDays: this.tiny.getValue<number>('glanceDays', 28) ?? 28
         };
     }
 
@@ -187,6 +215,11 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         }
                 
         this.setState({ ...this.state, crewSymbol: crew, rawVoyages: undefined });
+    }
+
+    readonly setGlanceDays = (glanceDays: number) => {
+        this.tiny.setValue('glanceDays', glanceDays, true);
+        this.setState({ ...this.state, glanceDays, rawVoyages: undefined });
     }
 
     readonly setSelection = (crew?: number[]) => {
@@ -220,12 +253,22 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
     readonly loadCrew = (crew: string[]) => {
         fetch(`${process.env.GATSBY_DATACORE_URL}api/voyagesByCrew?opand=1&crew=${crew.join(",")}&days=${this.state.glanceDays}`)
             .then((response) => response.json())
-            .then((rawVoyages) => this.setState({ ... this.state, rawVoyages }));
+            .then((rawVoyages: RawVoyageRecord[]) => {
+                let codict = {} as { [key: string]: RawVoyageRecord }
+                rawVoyages.forEach((voy) => {
+                    if (typeof voy.voyageDate === 'string') {
+                        voy.voyageDate = new Date(voy.voyageDate);
+                    }
+                    codict[voy.voyageDate.getTime().toString()] = voy;
+                })
+                rawVoyages = Object.values(codict);
+                this.setState({ ... this.state, rawVoyages })
+            });
 
     }
 
     componentDidUpdate(prevProps: Readonly<VoyageHOFProps>, prevState: Readonly<VoyageHOFState>, snapshot?: any): void {
-        if (prevState.crewSymbol !== this.state.crewSymbol) {
+        if (prevState.crewSymbol !== this.state.crewSymbol || prevState.glanceDays !== this.state.glanceDays) {
             const crew = this.state.crewSymbol;
             if (!crew) {
                 this.setState({ ...this.state, rawVoyages: undefined });
@@ -277,7 +320,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
     }
 
     render() {
-        const { crewSymbol, rawVoyages, rankBy, voyageStats } = this.state;
+        const { crewSymbol, rawVoyages, rankBy, voyageStats, glanceDays } = this.state;
         const { crew: allCrew } = this.context.core;
 
         if (!this.state.voyageStats || !allCrew) {
@@ -300,6 +343,54 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         const filteredCrew = this.getFilteredCrew();
         const selection = filteredCrew?.filter(s => crewSymbol?.includes(s.symbol)).map(m => m?.id ?? 0);
         const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+        
+        const glanceDaysChoices = [
+            {
+                key: 'day1',
+                value: 1,
+                text: "1 Day"
+            },
+            {
+                key: 'day2',
+                value: 2,
+                text: "2 Days"
+            },
+            {
+                key: 'week1',
+                value: 7,
+                text: "1 Week"
+            },
+            {
+                key: 'week2',
+                value: 14,
+                text: "2 Weeks"
+            },
+            {
+                key: 'week3',
+                value: 21,
+                text: "3 Weeks"
+            },
+            {
+                key: 'week4',
+                value: 28,
+                text: "4 Weeks"
+            },
+            // {
+            //     key: 'days30',
+            //     value: 30,
+            //     text: "30 Days"
+            // },
+            // {
+            //     key: 'days45',
+            //     value: 45,
+            //     text: "45 Days"
+            // },
+            // {
+            //     key: 'days60',
+            //     value: 60,
+            //     text: "60 Days"
+            // }
+        ] as DropdownItemProps[];
 
         return (
             <div style={{display:'flex',flexDirection:'column',alignItems:'center', justifyContent: 'center'}}>
@@ -324,6 +415,18 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                         selection={selection} 
                         setSelection={this.setSelection}  
                         />
+                    <div style={{margin: "0.5em"}}>
+                        <h4>Details Time Frame:</h4>
+                        <Dropdown
+                            placeholder={"Select a timeframe to view..."}
+                            fluid
+                            options={glanceDaysChoices}
+                            value={glanceDays}
+                            onChange={(e, { value }) => this.setGlanceDays(value as number)}
+                        />
+
+                    </div>
+
                 </div>
                 
                 <HofDetails crewClick={this.clickCrew} hofState={this.state} />
@@ -353,6 +456,11 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                                 key: "duration",
                                 value: "duration",
                                 text: "Average Duration",
+                            },
+                            {
+                                key: "voydur",
+                                value: "voydur",
+                                text: "Voyages * Duration",
                             },
                         ]}
                         value={rankBy}
