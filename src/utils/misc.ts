@@ -3,7 +3,7 @@ import { CrewMember } from '../model/crew';
 import { AvatarIcon } from '../model/game-elements';
 import { PlayerCrew } from '../model/player';
 
-export type RankMode = "voyages" | "duration";
+export type RankMode = "voyages" | "duration" | "voydur";
 
 
 export interface DropDownItem {
