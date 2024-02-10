@@ -84,7 +84,7 @@ const NonPlayerCalculator = (props: CalculatorProps) => {
 	const [calcOptions, setCalcOptions] = React.useState<GameWorkerOptions>({} as GameWorkerOptions);
 	const [telemetryOptIn, setTelemetryOptIn] = React.useState(false);
 	const [history, setHistory] = React.useState<IVoyageHistory>(defaultHistory);
-
+	
 	const userPrefs = {
 		calculator, setCalculator,
 		calcOptions, setCalcOptions,
@@ -102,7 +102,7 @@ const NonPlayerCalculator = (props: CalculatorProps) => {
 };
 
 const CalculatorForm = (props: CalculatorProps) => {
-	const calculatorContext = React.useContext(CalculatorContext);
+	const calculatorContext = React.useContext(CalculatorContext);	
 	const { rosterType } = calculatorContext;
 	const userPrefs = React.useContext(UserPrefsContext);
 	const { voyageConfig } = props;
