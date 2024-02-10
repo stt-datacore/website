@@ -318,12 +318,21 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 		if (estimate.deterministic) {
 			let extendTime = estimate['refills'][1].result - estimate['refills'][0].result;
+			let refill = 0;
 
 			return (
 				<div>
 					The voyage will end at {this._formatTime(estimate['refills'][0].result)}.
 					Subsequent refills will extend it by {this._formatTime(extendTime)}.
-					For a {this.config?.selectedTime ?? 20} hour voyage you need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.)
+					{/* 
+					For a {this.config?.selectedTime ?? 20} hour voyage you need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.) */}
+										<Table style={{marginTop:"0.5em"}}><tbody>
+						{!needsRevive && renderEst("Estimate", refill++, 0)}
+						{renderEst("1 Refill", refill++, 1)}
+						{renderEst("2 Refills", refill++, 2)}
+					</tbody></Table>
+					<p>For a {this.config?.selectedTime ?? 20} hour voyage you will need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.)</p>
+
 				</div>
 			);
 		} else {
