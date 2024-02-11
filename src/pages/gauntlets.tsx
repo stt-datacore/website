@@ -27,6 +27,7 @@ import { EquipmentItem } from '../model/equipment';
 import { GauntletPairCard } from '../components/gauntlet/paircard';
 import { GauntletPairTable } from '../components/gauntlet/pairtable';
 import { GauntletCrewTable } from '../components/gauntlet/gauntlettable';
+import { GauntletImportComponent } from '../components/gauntlet/gauntletimporter';
 
 export type GauntletViewMode = 'big' | 'small' | 'table' | 'pair_cards';
 
@@ -68,8 +69,7 @@ export interface FilterProps {
 	skillPairs?: string[];
 }
 
-export interface GauntletsPageState {
-	gauntletJson?: string;
+export interface GauntletsPageState {	
 	liveGauntletRoot?: GauntletRoot;
 
 	gauntlets: Gauntlet[];
@@ -232,7 +232,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			loading: true,
 			onlyActiveRound: this.tiny.getValue<boolean>('activeRound', true),
 			liveGauntlet: lg,
-			gauntletJson: '',
 			sortKey: skeys,
 			sortDirection: sdir,
 			itemsPerPage: 10,
@@ -1268,15 +1267,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	private readonly setTextFilter = (value: string, idx: number) => {
 		let filters = this.state.textFilter;
 		filters[idx] = value;
-
 		this.tiny.setValue('textFilter', filters);
-
-		//this.setState({... this.state, textFilter: value });
 		this.updatePaging(false, undefined, undefined, idx, undefined, filters);
 	}
 
 	private readonly updatePaging = (preSorted: boolean, newSelGauntlet?: Gauntlet, replaceGauntlet?: Gauntlet, replaceIndex?: number, replaceRank?: string, textFilter?: string[]) => {
-		const { activeTabIndex, filterProps, today, yesterday, activePrevGauntlet, liveGauntlet, sortKey, sortDirection, browsingGauntlet, rankByPair } = this.state;
+		const { filterProps, today, yesterday, activePrevGauntlet, liveGauntlet, sortKey, sortDirection, browsingGauntlet, rankByPair } = this.state;
 
 		let newBrowseGauntlet: Gauntlet | undefined = undefined;
 		let newToday: Gauntlet | undefined = undefined;
@@ -1363,18 +1359,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		});
 	}
 
-	private readonly columns = [
-		{ title: "Rank", key: "index" },
-		{ title: "Crew", key: "name", width: 3 as SemanticWIDTHS },
-		{ title: "Rarity", key: "rarity" },
-		{ title: "Crit Chance", key: "crit" },
-		{ title: "1st Pair", key: "pair_1" },
-		{ title: "2nd Pair", key: "pair_2" },
-		{ title: "3rd Pair", key: "pair_3" },
-		// { title: "Owned", key: "have" },
-		{ title: "In Portal", key: "in_portal" },
-	]
-
 	readonly getSkillUrl = (skill: string | Skill): string => {
 		let skilluse: string | undefined = undefined;
 
@@ -1391,65 +1375,14 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		return `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skilluse}.png`;
 	}
 
-	private formatPair(pair: Skill[], style?: React.CSSProperties, debuff?: boolean, disabled?: boolean): JSX.Element {
-		if (!pair[0].skill) return <></>
-		
-		const disabledOpacity = 0.5;
-
-		const orangeColor = 'orange';
-		const redColor = '#ff3300';
-
-		return (
-			<div style={{
-				...style,
-				display: "flex",
-				flexDirection: "row",
-				justifyContent: "center"
-			}}>
-				{debuff && <i title={"Crew power is reduced"} className="down arrow icon" style={{margin: "0.375em 0", fontSize: "10pt", color: orangeColor}} />}
-				{disabled && <i title={"Crew is disabled"} className="exclamation circle icon" style={{margin: "0.375em 0", fontSize: "10pt", color: redColor }} />}
-				<div style={{
-					display: "flex",
-					flexDirection: "row",
-					opacity: disabled ? disabledOpacity : undefined
-				}}>
-					<img style={{ maxHeight: '1.5em', margin: "0.25em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[0].skill}.png`} />
-					<div style={{
-						margin: "0.5em"
-					}}>
-						{pair[0].range_min}-{pair[0].range_max}
-					</div>
-				</div>
-				{pair.length > 1 &&
-					<div style={{
-						display: "flex",
-						flexDirection: "row",
-						opacity: disabled ? disabledOpacity : undefined
-					}}>
-						<img style={{ maxHeight: '1.5em', margin: "0.25em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[1].skill}.png`} />
-						<div style={{
-							margin: "0.5em"
-						}}>
-							{pair[1].range_min}-{pair[1].range_max}
-						</div>
-					</div>}
-			</div>
-
-		)
-	}
-
 	renderTable(gauntlet: Gauntlet, data: (PlayerCrew | CrewMember)[], idx: number) {
 		
-        
         if (!data) return <></>;
 
-		const { textFilter, totalPagesTab, activePageIndexTab, sortDirection, sortKey, filterProps } = this.state;
+		const { textFilter, filterProps } = this.state;
 		const filter = filterProps[idx];
 		
-		const pageIdx = idx;
-
-
-        return <GauntletCrewTable 
+		return <GauntletCrewTable 
             pageId={`gauntletPage_${idx}`}
             mode={idx === 4 ? 'live' : 'normal'}
 			gauntlets={idx === 3 && this.state.browsingGauntlet?.state === 'POWER' ? this.context.core.gauntlets : undefined}
@@ -2185,7 +2118,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		</>)
 	}
 
-
 	whyNoPortal(crew: PlayerCrew | CrewMember) {
 		if (crew.obtained?.toLowerCase().includes("gauntlet")) return "Unowned (Gauntlet Exclusive)";
 		else if (crew.obtained?.toLowerCase().includes("voyage")) return "Unowned (Voyage Exclusive)";
@@ -2200,23 +2132,25 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		this.tiny.setValue('liveGauntlet', undefined);
 		this.inited = false;
 		this.tiny.setValue('activeTabIndex', 0);
-		this.setState({ ... this.state, gauntletJson: '', liveGauntlet: undefined, activeTabIndex: 0 });
+		this.setState({ ... this.state, liveGauntlet: undefined, liveGauntletRoot: undefined, activeTabIndex: 0 });
 	}
 
-	private readonly parseGauntlet = (json?: string) => {
-		const gauntletJson = json ?? this.state.gauntletJson;
-		if (!gauntletJson || gauntletJson === '') return;
+	private readonly parseGauntlet = (live: GauntletRoot | undefined) => {
+
+		if (!live) {
+			this.setState({ ...this.state, liveGauntlet: null, activeTabIndex: 0 });
+			return;
+		}
 
 		try {
-			const root = JSON.parse(gauntletJson) as GauntletRoot | Gauntlet;
-
-			const gauntlet = "state" in root ? root : root.character.gauntlets[0];
+			const root = live;
+			const gauntlet = root.character.gauntlets[0];
 
 			if (gauntlet.state?.includes("ENDED")) {
 				this.inited = false;
 				this.tiny.setValue('liveGauntlet', '', false);
 				this.tiny.setValue('activeTabIndex', 0);
-				this.setState({ ... this.state, gauntletJson: '', liveGauntlet: null, activeTabIndex: 0 });	
+				this.setState({ ... this.state, liveGauntlet: null, activeTabIndex: 0 });	
 				return;
 			}
 			
@@ -2265,79 +2199,19 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			// gauntlet.opponents = prevoppos;
 
 			//this.tiny.setValue('liveGauntlet', JSON.stringify(gauntlet), false);
-			this.tiny.setValue('liveGauntlet', gauntletJson, false);
+			this.tiny.setValue('liveGauntlet', gauntlet, false);
 			this.tiny.setValue('activeTabIndex', 4);
 
-			this.setState({ ... this.state, gauntletJson: '', liveGauntlet: gauntlet, activeTabIndex: 4 });			
+			this.setState({ ... this.state, liveGauntlet: gauntlet, liveGauntletRoot: live, activeTabIndex: 4 });			
 		}
 		catch {
 			this.tiny.setValue('activeTabIndex', 0);
-			this.setState({ ... this.state, gauntletJson: '(**)', liveGauntlet: null, activeTabIndex: 0 });
+			this.setState({ ... this.state, liveGauntlet: null, liveGauntletRoot: undefined, activeTabIndex: 0 });
 		}
 	}
 
-	
-
-	renderCopyPaste(): JSX.Element {
-		const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=20&only_read_state=true';
-		const { liveGauntlet, gauntletJson } = this.state;
-
-		return (
-			<React.Fragment>
-				<Header icon>
-					<Icon name='paste' />
-					Copy and Paste
-				</Header>
-				<p>
-					Copy the contents of
-					{` `}<a href={PLAYERLINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
-						your player data
-					</a>,
-					<br />then paste everything into the text box below.
-				</p>
-				<Form>
-				<TextArea
-						placeholder='Paste a gauntlet, here'
-						id='__zzpp'
-						value={liveGauntlet || gauntletJson?.startsWith("(**)") ? '' : gauntletJson ?? ''}
-						onChange={(e, { value }) => this.setState({ ... this.state, gauntletJson: value as string })}
-						onPaste={(e: ClipboardEvent) => this.parseGauntlet(e.clipboardData?.getData('text') as string)}
-					/>
-				</Form>
-				<Accordion style={{ marginTop: '1em' }}>
-					<Accordion.Title
-						
-					>
-						<Icon name={'caret down'} />
-						Post, Update or Clear Live Gauntlet Data (Click Here)
-					</Accordion.Title>
-					<Accordion.Content style={{ textAlign: 'left' }}>
-						<p>You can access your live gauntlet matches in a similar way to how you access your player data, currently.</p>
-						<ul>
-							<li>
-								Open this page in your browser:{' '}
-								<a href={PLAYERLINK} target='_blank'>
-									{PLAYERLINK}
-								</a>
-							</li>
-							<li>
-								Log in if asked, then wait for the page to finish loading. It should start with:{' '}
-								<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","character":'}</span> ...
-							</li>
-							<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C)</li>
-							<li>Paste it (Ctrl+V) in the text box below. Note that DataCore will intentionally display less data here to speed up the process</li>
-							<li>Click the 'Import data' button</li>
-						</ul>
-						<p>If you have multiple accounts, we recommend using your browser in incognito mode (Chrome) or in private mode (Edge / Firefox) to avoid caching your account credentials, making it easier to switch accounts.</p>
-					</Accordion.Content>
-				</Accordion>
-			</React.Fragment>
-		);
-	}
-
-
 	render() {
-		const { gauntlets, today, yesterday, liveGauntlet, gauntletJson, activeTabIndex } = this.state;
+		const { gauntlets, today, yesterday, liveGauntlet, activeTabIndex } = this.state;
 		const isMobile = isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 		const hasPlayer = !!this.context.player.playerData?.player?.character?.crew?.length;
 
@@ -2382,76 +2256,21 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			return this.context.core.spin();
 		}
 
-		const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=20&only_read_state=true';
-
 		if (typeof window !== 'undefined' && hasPlayer) {
-			window["gauntletDataSetter"] = (value: string) => {
-				this.parseGauntlet(value);
+			window["gauntletDataSetter"] = (value: string) => {				
+				this.parseGauntlet(JSON.parse(value));
 			}
 		}
 
 		return (
 			<>
-			{/* {hasPlayer && this.renderCopyPaste()} */}
-			{hasPlayer && <Accordion
-				defaultActiveIndex={(this.state.activeTabIndex === 4 && liveGauntlet) ? 0 : -1}
-				panels={[{
-					index: 0, 
-					key: 0,
-					title: "Post, Update or Clear Live Gauntlet Data (Click Here)",
-					content: {
-						content: <><Header as='h2'>Live Gauntlet Data</Header>				
-						<p>You can access your live gauntlet matches in a similar way to how you access your player data, currently.</p>
-						<ul>
-							<li>
-								Open this page in your browser:{' '}
-								<a href={PLAYERLINK} target='_blank'>
-									{PLAYERLINK}
-								</a>
-							</li>
-							<li>
-								Log in if asked, then wait for the page to finish loading. It should start with:{' '}
-								<span style={{ fontFamily: 'monospace' }}>{'{"action":"update","character":'}</span> ...
-							</li>
-							<li>Select everything in the page (Ctrl+A) and copy it (Ctrl+C)</li>
-							<li>Paste it (Ctrl+V) in the text box below. Note that DataCore will intentionally display less data here to speed up the process</li>
-							<li>Click the 'Import data' button</li>
-						</ul>
-						<Form>
-						<TextArea
-							placeholder='Paste a gauntlet, here'
-							id='__zzpp'
-							value={liveGauntlet || gauntletJson?.startsWith("(**)") ? '' : gauntletJson ?? ''}
-							onChange={(e, { value }) => this.setState({ ... this.state, gauntletJson: value as string })}
-							onPaste={(e: ClipboardEvent) => this.parseGauntlet(e.clipboardData?.getData('text') as string)}
-						/>
-		
-						{gauntletJson?.startsWith("(**)") && <div style={{color: "tomato", fontWeight: "bold", fontStyle: "italic"}}>Invalid JSON detected. Please try again.</div>}
-		
-						<div style={{
-							display:"flex",
-							flexDirection:"row",
-							justifyContent: "flex-start"					
-						}}>
-						<Button
-							onClick={() => this.parseGauntlet()}
-							style={{ marginTop: '1em' }}
-							content='Import data'
-							icon='paste'
-							labelPosition='right'
-						/>
-						{liveGauntlet && <Button
-							onClick={() => this.clearGauntlet()}
-							style={{ marginTop: '1em' }}
-							content='Clear live gauntlet'
-							icon='delete'
-							labelPosition='right'
-						/>}
-						</div>
-						</Form></>
-					}
-				}]}
-				/>}
+			{hasPlayer && 
+					<GauntletImportComponent
+						setGauntlet={(g) => this.parseGauntlet(g)}
+						clearGauntlet={() => this.clearGauntlet()}
+						gauntlet={this.state.liveGauntletRoot}
+						currentHasRemote={!!this.state.liveGauntletRoot}
+					/>}
 				<div style={{margin: "1em 0"}}>
 					<Step.Group fluid>
 						{tabPanes.map((pane, idx) => {
@@ -2467,10 +2286,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						})}						
 					</Step.Group>
 					{tabPanes[activeTabIndex ?? 0].render()}
-					{/* {isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH &&
-						<Tab activeIndex={activeTabIndex} onTabChange={(e, props) => this.setActiveTabIndex(props.activeIndex as number)} menu={{ attached: false, fluid: true, wrap: true }} panes={tabPanes} /> ||
-						<Tab activeIndex={activeTabIndex} onTabChange={(e, props) => this.setActiveTabIndex(props.activeIndex as number)}  menu={{ attached: false }} panes={tabPanes} />
-					} */}
+
 					<GauntletSettingsPopup 
 						isOpen={this.state.settingsOpen}
 						setIsOpen={this.setSettingsOpen}
