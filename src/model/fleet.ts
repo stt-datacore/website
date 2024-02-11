@@ -31,6 +31,7 @@ export interface FleetResponse {
     last_update?: string
     crew_avatar: string
     squad: string
+    squad_id: number
     level: number
     last_active: number
     daily_activity: number
@@ -41,6 +42,8 @@ export interface FleetResponse {
     id: number
     name: string
     cursize: number
+    event_rank: number
+    leader: number
   }
   
   export interface Leaderboard {
