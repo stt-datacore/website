@@ -32,3 +32,12 @@ export interface IEventData {
 	featured: string[];	/* ONLY featured crew by symbol */
 	bonusGuessed?: boolean;
 };
+
+export interface EventInstance {
+  instance_id: number
+  fixed_instance_id: number
+  event_id: number
+  event_name: string
+  image: string
+  event_details?: boolean
+}
