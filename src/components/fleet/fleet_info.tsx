@@ -9,6 +9,8 @@ import { TinyStore } from '../../utils/tiny';
 import { FleetResponse } from '../../model/fleet';
 import { Faction } from '../../model/player';
 import { StaticFaction } from '../../model/shuttle';
+import { formatColString } from '../collections/overview';
+import { ColorName } from './colorname';
 
 type FleetInfoPageProps = {};
 
@@ -22,8 +24,12 @@ type FleetInfoPageState = {
 	access_token?: string;
 	username?: string;
 	password?: string;
+	sortField?: string;
+	sortDirection?: 'ascending' | 'descending';
 };
 //
+const rankOrder = ['ADMIRAL', 'SQUADRON LEADER', 'OFFICER', 'MEMBER'];
+
 class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
@@ -64,8 +70,6 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			factions: this.context.core.factions,
 			events: this.context.core.event_instances,
 			access_token: this.tiny.getValue<string | undefined>('access_token', undefined)
-			//errorTitle: "Fleet Info Returning Soon!!",
-			//errorMessage: "Fleet info will be returning soon, after some server upgrades. Watch this space!"
 		});
 
 		this.refreshData();
@@ -74,6 +78,56 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	componentDidUpdate(prevProps: Readonly<FleetInfoPageProps>, prevState: Readonly<FleetInfoPageState>, snapshot?: any): void {
 		if (prevState.access_token !== this.state.access_token && ((prevState.username && prevState.password) || !prevState.fleet_id)) {
 			this.refreshData();
+		}
+	}
+
+	private processData(fleet?: Fleet) {
+		fleet ??= this.state.fleet_data;
+		if (!fleet) return;
+		fleet.members.forEach((member) => {
+			if (member.rank === "LEADER") {
+				member.rank = "ADMIRAL";
+			}
+			else if (fleet?.squads.some(s => s.leader === member.dbid)) {
+				member.rank = "SQUADRON LEADER";
+			}			
+		});
+
+		const { sortDirection, sortField } = this.state;
+		const mult = sortDirection === 'descending' ? -1 : 1;
+
+		if (!sortField || sortField === 'name') {
+			fleet.members.sort((a, b) => mult * a.display_name.localeCompare(b.display_name));
+		}
+		else if (sortField === 'rank') {
+			fleet.members.sort((a, b) => {
+				let r = (rankOrder.indexOf(a.rank) - rankOrder.indexOf(b.rank));
+				if (r === 0) {
+					r = a.display_name.localeCompare(b.display_name);
+				}
+				return r * mult;
+			});
+		}
+		else if (sortField === 'squad') {
+			fleet.members.sort((a, b) => {
+				let r = a.squad.localeCompare(b.squad);
+				if (r === 0) {
+					r = (rankOrder.indexOf(a.rank) - rankOrder.indexOf(b.rank));
+					if (r === 0) {
+						r = a.display_name.localeCompare(b.display_name);
+					}
+				}
+				return r * mult;
+			});
+		}
+		else {
+			fleet.members.sort((a, b) => {
+				if (a[sortField] === null && b[sortField] === null) return 0;
+				else if (a[sortField] === null) return 1;
+				else if (b[sortField] === null) return -1;
+				let r = (a[sortField] - b[sortField]);
+				return r * mult;
+			});
 		}
 	}
 
@@ -97,7 +151,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			})
 			.then(response => response.json())
 			.then((fleetData: FleetResponse) => {
-				this.tiny.setValue('access_token', fleetData.access_token, true);
+				this.tiny.setValue('access_token', fleetData.access_token, true);				
 				this.setState({ fleet_data: fleetData.fleet, access_token: fleetData.access_token });
 			})
 			.catch(err => {
@@ -140,8 +194,24 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 		this.tiny.removeValue("access_token");
 	}
 
+	private sortClick(field: string) {
+		let { sortDirection, sortField } = this.state;
+		if (sortField === field) {
+			if (sortDirection === 'descending') {
+				sortDirection = 'ascending';
+			}
+			else {
+				sortDirection = 'descending';
+			}
+		}
+		else {
+			sortDirection ??= 'ascending';
+		}
+		this.setState({ ...this.state, sortField: field, sortDirection });
+	}
+
 	render() {
-		const { fleet_id, errorMessage, errorTitle, fleet_data, factions, events, access_token, username, password } = this.state;
+		const { sortDirection, sortField, fleet_id, errorMessage, errorTitle, fleet_data, factions, events, access_token, username, password } = this.state;
 		const { playerData } = this.context.player;
 		
 		if (!playerData) return <></>;
@@ -221,6 +291,8 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			);
 		}
 
+		this.processData(fleet_data);
+
 		let imageUrl = 'icons_icon_faction_starfleet.png';
 		if (factions && factions[fleet_data.nicon_index]) {
 			imageUrl = factions[fleet_data.nicon_index].icon;
@@ -249,7 +321,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 					<Item.Image size="tiny" src={`${process.env.GATSBY_ASSETS_URL}${imageUrl}`} />
 
 					<Item.Content>
-						<Item.Header>{fleet_data.name}</Item.Header>
+						<Item.Header><ColorName text={fleet_data.name} /></Item.Header>
 						<Item.Meta>
 							<Label>Starbase level: {fleet_data.nstarbase_level}</Label>
 							<Label>
@@ -264,49 +336,79 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 				</Item>
 			</Item.Group>
 
-			{event1 && <table>
-				<tbody>
-					<tr>
-						<th>
-							{' '}
-							<Link to={`/event_info?instance_id=${event1?.instance_id}`}>
-								{fleet_data.leaderboard[0].event_name}
-							</Link>
-						</th>
-						<th>
-							{' '}
-							<Link to={`/event_info?instance_id=${event2?.instance_id}`}>
-								{fleet_data.leaderboard[1].event_name}
-							</Link>
-						</th>
-						<th>
-							{' '}
-							<Link to={`/event_info?instance_id=${event3?.instance_id}`}>
-								{fleet_data.leaderboard[2].event_name}
-							</Link>
-						</th>
-					</tr>
-					<tr>
-						<td><Image size="medium" src={`${process.env.GATSBY_ASSETS_URL}${event1?.image}`} /></td>
-						<td><Image size="medium" src={`${process.env.GATSBY_ASSETS_URL}${event2?.image}`} /></td>
-						<td><Image size="medium" src={`${process.env.GATSBY_ASSETS_URL}${event3?.image}`} /></td>
-					</tr>
-					<tr>
-						<td align="center">Fleet rank: {fleet_data.leaderboard[0].fleet_rank}</td>
-						<td align="center">Fleet rank: {fleet_data.leaderboard[1].fleet_rank}</td>
-						<td align="center">Fleet rank: {fleet_data.leaderboard[2].fleet_rank}</td>
-					</tr>
-				</tbody>
-			</table>}
+			{event1 && <div style={{display: 'flex', flexWrap: 'wrap', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+				<table>
+					<tbody>
+						<tr>
+							<th>
+								{' '}
+								<Link to={`/event_info?instance_id=${event1?.instance_id}`}>
+									{fleet_data.leaderboard[0].event_name}
+								</Link>
+							</th>
+							<th>
+								{' '}
+								<Link to={`/event_info?instance_id=${event2?.instance_id}`}>
+									{fleet_data.leaderboard[1].event_name}
+								</Link>
+							</th>
+							<th>
+								{' '}
+								<Link to={`/event_info?instance_id=${event3?.instance_id}`}>
+									{fleet_data.leaderboard[2].event_name}
+								</Link>
+							</th>
+						</tr>
+						<tr>
+							<td><Image size="medium" src={`${process.env.GATSBY_ASSETS_URL}${event1?.image}`} /></td>
+							<td><Image size="medium" src={`${process.env.GATSBY_ASSETS_URL}${event2?.image}`} /></td>
+							<td><Image size="medium" src={`${process.env.GATSBY_ASSETS_URL}${event3?.image}`} /></td>
+						</tr>
+						<tr>
+							<td align="center">Fleet rank: {fleet_data.leaderboard[0].fleet_rank}</td>
+							<td align="center">Fleet rank: {fleet_data.leaderboard[1].fleet_rank}</td>
+							<td align="center">Fleet rank: {fleet_data.leaderboard[2].fleet_rank}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>}
 
 			<Header as="h4">Members</Header>
 
-			<Table celled selectable striped collapsing unstackable compact="very">
+			<Table celled selectable sortable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
-						<Table.HeaderCell width={3}>Name</Table.HeaderCell>
-						<Table.HeaderCell width={1}>Rank</Table.HeaderCell>
-						<Table.HeaderCell width={1}>Profile</Table.HeaderCell>
+						<Table.HeaderCell 							
+							sorted={sortField === 'name' ? sortDirection : undefined} width={3}
+							onClick={(e) => this.sortClick('name')}
+							>
+							Name
+						</Table.HeaderCell>
+						<Table.HeaderCell 
+							sorted={sortField === 'squad' ? sortDirection : undefined} width={1}
+							onClick={(e) => this.sortClick('squad')}
+							>
+							Squadron
+						</Table.HeaderCell>
+						<Table.HeaderCell 
+							sorted={sortField === 'rank' ? sortDirection : undefined} width={1}
+							onClick={(e) => this.sortClick('rank')}
+							>
+							Rank
+						</Table.HeaderCell>
+						<Table.HeaderCell 
+							sorted={sortField === 'event_rank' ? sortDirection : undefined} width={1}
+							onClick={(e) => this.sortClick('event_rank')}
+							>
+							Event Rank
+						</Table.HeaderCell>
+						<Table.HeaderCell 
+							// sorted={sortField === 'profile' ? sortDirection : undefined} 
+							width={1}
+							// onClick={(e) => this.sortClick('profile')}
+							>
+							Profile
+						</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -330,9 +432,9 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 									<div style={{ gridArea: 'stats' }}>
 										<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>
 											{member.last_update ? (
-												<Link to={`/profile?dbid=${member.dbid}`}>{member.display_name}</Link>
+												<Link to={`/profile?dbid=${member.dbid}`}><ColorName text={member.display_name} /></Link>
 											) : (
-													<span>{member.display_name}</span>
+													<ColorName text={member.display_name} />
 												)}
 										</span>
 									</div>
@@ -345,7 +447,9 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 									</div>
 								</div>
 							</Table.Cell>
+							<Table.Cell><ColorName text={member.squad} /></Table.Cell>
 							<Table.Cell>{member.rank}</Table.Cell>
+							<Table.Cell>{member.event_rank}</Table.Cell>							
 							<Table.Cell>
 								{member.last_update
 									? `Last profile upload: ${new Date(Date.parse(member.last_update)).toLocaleDateString()}`
@@ -359,6 +463,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			</React.Fragment>
 		);
 	}
+
 }
 
 export default FleetInfoPage;
