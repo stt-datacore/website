@@ -12,6 +12,9 @@ import { TranslationSet } from '../model/traits';
 import { ContinuumMission } from '../model/continuum';
 import { calcQuipmentScore } from '../utils/equipment';
 import { getItemWithBonus } from '../utils/itemutils';
+import { EventInstance } from '../model/events';
+import { Faction } from '../model/player';
+import { StaticFaction } from '../model/shuttle';
 
 export type ValidDemands =
 	'all_buffs' |
@@ -23,6 +26,7 @@ export type ValidDemands =
 	'dilemmas' |
 	'disputes' |
 	'episodes' |
+	'event_instances' |
 	'factions' |
 	'gauntlets' |
 	'items' |
@@ -49,6 +53,8 @@ export interface ICoreData {
 	collections: Collection[];
 	crew: CrewMember[];
 	episodes: Mission[];
+	event_instances: EventInstance[];
+	factions: StaticFaction[];
 	gauntlets: Gauntlet[];
 	items: EquipmentItem[];
 	keystones: (KeystoneBase | Polestar | Constellation)[];
@@ -78,6 +84,8 @@ const defaultData = {
 	collections: [] as Collection[],
 	crew: [] as CrewMember[],
 	episodes: [] as Mission[],
+	event_instances: [] as EventInstance[],
+	factions: [] as StaticFaction[],
 	gauntlets: [] as Gauntlet[],
 	items: [] as EquipmentItem[],
 	keystones: [] as KeystoneBase[],
@@ -137,6 +145,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'dilemmas',
 			'disputes',
 			'episodes',
+			'event_instances',
 			'factions',
 			'gauntlets',
 			'items',
