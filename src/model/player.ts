@@ -257,7 +257,7 @@ export interface Player {
     id: number
     symbol: string
     name: string
-    traits: any[]
+    traits: string[]
     traits_hidden: string[]
     short_name: string
     max_rarity: number
@@ -266,7 +266,7 @@ export interface Player {
     full_body: Icon
     default_avatar: boolean
     hide_from_cryo: boolean
-    skills: any[]
+    skills: string[]
   }
 
   export interface StoredImmortal {
