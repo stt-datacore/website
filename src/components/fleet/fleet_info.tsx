@@ -123,6 +123,11 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 		});
 	}
 
+	private clearToken() {
+		this.setState({ ... this.state, username: undefined, password: undefined, access_token: undefined });
+		this.tiny.removeValue("access_token");
+	}
+
 	render() {
 		const { fleet_id, errorMessage, errorTitle, fleet_data, factions, events, access_token, username, password } = this.state;
 		const { playerData } = this.context.player;
@@ -219,7 +224,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 
 		return (
 			<React.Fragment>
-				<Button onClick={(e) => this.setState({ ...this.state, access_token: undefined })}>Clear Token</Button>
+				<Button onClick={(e) => this.clearToken()}>Clear Token</Button>
 			<Item.Group>
 				<Item>
 					<Item.Image size="tiny" src={`${process.env.GATSBY_ASSETS_URL}${imageUrl}`} />
