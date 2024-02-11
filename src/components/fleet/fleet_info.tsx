@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Header, Label, Message, Icon, Table, Item, Image, Input, FormInput, Button, Form } from 'semantic-ui-react';
 import { Link } from 'gatsby';
-import DataPageLayout from '../page/datapagelayout';
+
 import { GlobalContext } from '../../context/globalcontext';
 import { Fleet } from '../../model/fleet';
 import { EventInstance } from '../../model/events';
@@ -41,7 +41,9 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			fleet_data: undefined,
 			factions: undefined,
 			events: undefined,
-			access_token: undefined
+			access_token: undefined,
+			username: '',
+			password: '',		
 			//errorTitle: "Fleet Info Returning Soon!!",
 			//errorMessage: "Fleet info will be returning soon, after some server upgrades. Watch this space!"
 		};
@@ -70,7 +72,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	}
 
 	componentDidUpdate(prevProps: Readonly<FleetInfoPageProps>, prevState: Readonly<FleetInfoPageState>, snapshot?: any): void {
-		if (prevState.access_token !== this.state.access_token) {
+		if (prevState.access_token !== this.state.access_token && ((prevState.username && prevState.password) || !prevState.fleet_id)) {
 			this.refreshData();
 		}
 	}
@@ -114,17 +116,27 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 				'Content-type': "application/json"
 			}
 		})
-		.then(response => response.json())
-		.then((fleetData: FleetResponse) => {
-			this.setState({ fleet_data: fleetData.fleet, access_token: fleetData.access_token, username: undefined, password: undefined });
+		.then(response => response.status == 200 ? response.json() : response.text())
+		.then((fleetData: FleetResponse | string) => {
+			if (typeof fleetData !== 'string') {
+				this.setState({ fleet_data: fleetData.fleet, access_token: fleetData.access_token, username: '', password: '' });
+			}
+			else {
+				if (fleetData === "Error: Failed to fetch token: [object Object]") {
+					this.setState({ errorMessage: "Invalid credentials", username: '', password: '', access_token: undefined });
+				}
+				else {
+					this.setState({ errorMessage: fleetData, username: '', password: '', access_token: undefined });
+				}
+			}
 		})
 		.catch(err => {
-			this.setState({ errorMessage: err, username: undefined, password: undefined, access_token: undefined });
+			this.setState({ errorMessage: err, username: '', password: '', access_token: undefined });
 		});
 	}
 
 	private clearToken() {
-		this.setState({ ... this.state, username: undefined, password: undefined, access_token: undefined });
+		this.setState({ ... this.state, username: '', password: '', access_token: undefined });
 		this.tiny.removeValue("access_token");
 	}
 
@@ -137,7 +149,12 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 		if (!access_token) {
 
 			return (<React.Fragment>
-
+				{!!errorMessage && (
+					<Message style={{backgroundColor: 'darkorange'}}>
+						<Message.Header>{errorTitle}</Message.Header>
+						<pre>{errorMessage.toString()}</pre>
+					</Message>
+				)}
 				<Form>
 				<div className={'ui segment'}
 					style={{
@@ -146,18 +163,21 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 						alignItems: 'flex-start',
 						justifyContent: 'left'
 					}}>
-					<h3>{playerData.player.character.display_name} Sign In:</h3>
-					<i>
+					<h3>Sign-in for {playerData.player.character.display_name}</h3>
+					<b>
 						<p>
-							The sign-in must match the DBID of the current player data. 
+							Use your DisruptorBeam sign-in credentials to get a token to retrieve your fleet data.
+						</p>
+						<p>
+							<u>The sign-in credentials must match the DBID of the current player data!</u>
 						</p>
 						<p>
 							This will grant you an access token to view your fleet information that should stay current for quite a while (or until you clear your browser data.)
 						</p>
 						<p>						
-							<b>This token does not enable automatically getting player data! That process is too expensive, and the player can't be known before-hand, anyway.</b>
+							This token does not enable automatically getting player data! That process is too expensive, and the player can't be known beforehand, anyway.
 						</p>						 
-					</i>
+					</b>
 					<h4>Username:</h4>
 					<Input
 						size='large' 						
@@ -183,7 +203,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 		if (fleet_id === undefined || fleet_data === undefined || errorMessage !== undefined) {
 			return (
 				<React.Fragment>
-				{errorMessage && (
+				{!!errorMessage && (
 					<Message style={{backgroundColor: 'darkorange'}}>
 						<Message.Header>{errorTitle}</Message.Header>
 						<pre>{errorMessage.toString()}</pre>
@@ -224,7 +244,6 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 
 		return (
 			<React.Fragment>
-				<Button onClick={(e) => this.clearToken()}>Clear Token</Button>
 			<Item.Group>
 				<Item>
 					<Item.Image size="tiny" src={`${process.env.GATSBY_ASSETS_URL}${imageUrl}`} />
@@ -336,6 +355,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 					))}
 				</Table.Body>
 			</Table>
+			<Button style={{margin: "0.5em 0"}} onClick={(e) => this.clearToken()}>Clear Access Token</Button>
 			</React.Fragment>
 		);
 	}
