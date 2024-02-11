@@ -41,7 +41,9 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			fleet_data: undefined,
 			factions: undefined,
 			events: undefined,
-			access_token: undefined
+			access_token: undefined,
+			username: '',
+			password: '',		
 			//errorTitle: "Fleet Info Returning Soon!!",
 			//errorMessage: "Fleet info will be returning soon, after some server upgrades. Watch this space!"
 		};
@@ -114,17 +116,27 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 				'Content-type': "application/json"
 			}
 		})
-		.then(response => response.json())
-		.then((fleetData: FleetResponse) => {
-			this.setState({ fleet_data: fleetData.fleet, access_token: fleetData.access_token, username: undefined, password: undefined });
+		.then(response => response.status == 200 ? response.json() : response.text())
+		.then((fleetData: FleetResponse | string) => {
+			if (typeof fleetData !== 'string') {
+				this.setState({ fleet_data: fleetData.fleet, access_token: fleetData.access_token, username: '', password: '' });
+			}
+			else {
+				if (fleetData === "Error: Failed to fetch token: [object Object]") {
+					this.setState({ errorMessage: "Invalid credentials", username: '', password: '', access_token: undefined });
+				}
+				else {
+					this.setState({ errorMessage: fleetData, username: '', password: '', access_token: undefined });
+				}
+			}
 		})
 		.catch(err => {
-			this.setState({ errorMessage: err, username: undefined, password: undefined, access_token: undefined });
+			this.setState({ errorMessage: err, username: '', password: '', access_token: undefined });
 		});
 	}
 
 	private clearToken() {
-		this.setState({ ... this.state, username: undefined, password: undefined, access_token: undefined });
+		this.setState({ ... this.state, username: '', password: '', access_token: undefined });
 		this.tiny.removeValue("access_token");
 	}
 
