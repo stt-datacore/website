@@ -25,7 +25,7 @@ export function exportMemberFields(): ExportField[] {
 		},
 		{
 			label: 'Dailies',
-			value: (row: Member) => row.daily_activity
+			value: (row: Member) => `${row.daily_meta_progress?.progress} / ${row.daily_meta_progress?.goal}\n(${row.daily_activity})`
 		},
 		{
 			label: 'Last Active',
