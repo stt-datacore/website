@@ -3,7 +3,7 @@ import { Header, Label, Message, Icon, Table, Item, Image, Input, FormInput, But
 import { Link } from 'gatsby';
 
 import { GlobalContext } from '../../context/globalcontext';
-import { Fleet } from '../../model/fleet';
+import { Fleet, Member } from '../../model/fleet';
 import { EventInstance } from '../../model/events';
 import { TinyStore } from '../../utils/tiny';
 import { FleetResponse } from '../../model/fleet';
@@ -12,6 +12,8 @@ import { StaticFaction } from '../../model/shuttle';
 import { formatColString } from '../collections/overview';
 import { ColorName } from './colorname';
 import { appelate, printShortDistance } from '../../utils/misc';
+import { exportMembers } from '../../utils/fleet';
+import { downloadData } from '../../utils/crewutils';
 
 type FleetInfoPageProps = {};
 
@@ -387,8 +389,30 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 				</table>
 			</div>}
 
-			<Header as="h4">Members</Header>
-
+			<Header as="h3">Members</Header>
+			<div style={{
+				display: 'flex',
+				flexDirection: 'row',
+				alignItems: 'flex-start',
+				justifyContent: 'center',
+				flexWrap: 'wrap',
+				gap: "0em"
+			}}>
+				<div
+					className='ui button'
+					onClick={(e) => { if (this.state.fleet_data?.members) this._exportItems(this.state.fleet_data.members, true) }}
+					style={{ marginRight: "2em", display: 'inline', flexDirection: 'row', justifyContent: 'space-evenly', cursor: 'pointer' }}
+				>
+					<span style={{ margin: '0 2em 0 0' }}>Copy to Clipboard</span><i className='clipboard icon' />
+				</div>
+				<div
+					className='ui button'
+					onClick={(e) => { if (this.state.fleet_data?.members) this._exportItems(this.state.fleet_data.members, false) }}
+					style={{ marginRight: "2em", display: 'inline', flexDirection: 'row', justifyContent: 'space-evenly', cursor: 'pointer' }}
+				>
+					<span style={{ margin: '0 2em 0 0' }}>Download CSV</span><i className='download icon' />
+				</div>
+			</div>
 			<Table celled selectable sortable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
@@ -498,6 +522,16 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 		);
 	}
 
+	_exportItems(data: Member[], clipboard?: boolean) {
+		const { playerData } = this.context.player;
+
+		let text = exportMembers(data, clipboard);
+		if (clipboard) {
+			navigator.clipboard.writeText(text);
+			return;
+		}
+		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'members.csv');
+	}
 }
 
 export default FleetInfoPage;
