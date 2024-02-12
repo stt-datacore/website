@@ -105,6 +105,9 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 					member.squadron_event_rank = squad.event_rank;
 				}
 			}
+			if (member.daily_meta_progress?.goal === -1) {
+				member.daily_meta_progress.goal = 0;
+			}
 			
 			member.rank = appelate(member.rank);
 		});
@@ -142,6 +145,12 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 				else if (a[sortField] === null) return 1;
 				else if (b[sortField] === null) return -1;
 				let r = (a[sortField] - b[sortField]);
+				if (r === 0) {
+					r = (rankOrder.indexOf(a.rank) - rankOrder.indexOf(b.rank));
+					if (r === 0) {
+						r = a.display_name.localeCompare(b.display_name);
+					}
+				}
 				return r * mult;
 			});
 		}
@@ -507,8 +516,9 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 							<Table.Cell>{member.squadron_event_rank}</Table.Cell>							
 							<Table.Cell><ColorName text={member.squad} /></Table.Cell>
 							<Table.Cell>{member.rank}</Table.Cell>
-							<Table.Cell>
-								{member.daily_activity}
+							<Table.Cell>								
+								{member.daily_meta_progress?.progress} / {member.daily_meta_progress?.goal}
+								<br/>({member.daily_activity})
 							</Table.Cell>
 							<Table.Cell>
 								{!!member.last_active && printShortDistance(undefined, member.last_active, true)}
