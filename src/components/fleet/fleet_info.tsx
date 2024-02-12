@@ -389,13 +389,29 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 				</table>
 			</div>}
 
-			<Header as="h4">Members</Header>
-			<div
-				className='ui button'
-				onClick={(e) => { if (this.state.fleet_data?.members) this._exportItems(this.state.fleet_data.members, true) }}
-				style={{ marginRight: "2em", display: 'inline', flexDirection: 'row', justifyContent: 'space-evenly', cursor: 'pointer' }}
-			>
-				<span style={{ margin: '0 2em 0 0' }}>Copy to Clipboard</span><i className='clipboard icon' />
+			<Header as="h3">Members</Header>
+			<div style={{
+				display: 'flex',
+				flexDirection: 'row',
+				alignItems: 'flex-start',
+				justifyContent: 'center',
+				flexWrap: 'wrap',
+				gap: "0em"
+			}}>
+				<div
+					className='ui button'
+					onClick={(e) => { if (this.state.fleet_data?.members) this._exportItems(this.state.fleet_data.members, true) }}
+					style={{ marginRight: "2em", display: 'inline', flexDirection: 'row', justifyContent: 'space-evenly', cursor: 'pointer' }}
+				>
+					<span style={{ margin: '0 2em 0 0' }}>Copy to Clipboard</span><i className='clipboard icon' />
+				</div>
+				<div
+					className='ui button'
+					onClick={(e) => { if (this.state.fleet_data?.members) this._exportItems(this.state.fleet_data.members, false) }}
+					style={{ marginRight: "2em", display: 'inline', flexDirection: 'row', justifyContent: 'space-evenly', cursor: 'pointer' }}
+				>
+					<span style={{ margin: '0 2em 0 0' }}>Download CSV</span><i className='download icon' />
+				</div>
 			</div>
 			<Table celled selectable sortable striped collapsing unstackable compact="very">
 				<Table.Header>
