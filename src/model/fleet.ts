@@ -35,6 +35,11 @@ export interface FleetResponse {
     level: number
     last_active: number
     daily_activity: number
+    daily_meta_progress: {
+      progress: number;
+      goal: number;
+    }
+    starbase_activity: number;
     event_rank: number
     squadron_event_rank?: number;
   }
