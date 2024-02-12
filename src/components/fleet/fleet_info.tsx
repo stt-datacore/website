@@ -85,6 +85,9 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 		fleet ??= this.state.fleet_data;
 		if (!fleet) return;
 		fleet.members.forEach((member) => {
+			if (member.crew_avatar.startsWith("crew_portraits") && !member.crew_avatar.endsWith("_sm.png")) {
+				member.crew_avatar = member.crew_avatar.replace("_icon.png", "_sm.png");
+			}
 			if (member.rank === "LEADER") {
 				member.rank = "ADMIRAL";
 			}
