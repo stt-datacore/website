@@ -36,6 +36,7 @@ export interface FleetResponse {
     last_active: number
     daily_activity: number
     event_rank: number
+    squadron_event_rank?: number;
   }
   
   export interface Squad {

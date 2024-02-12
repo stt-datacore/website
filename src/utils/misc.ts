@@ -211,13 +211,43 @@ export function arraysUnion<T>(arr: T[][]) {
 	return newarr;
 }
 
-export function printShortDistance(d?: Date, n?: number) {
+export function printShortDistance(d?: Date, n?: number, nothousand?: boolean) {
     let now = new Date();
 	
 	if (d) {
 		n ??= d.getTime() - now.getTime();
 	}
     if (!n) return "";
+    let days = n / (24 * 60 * 60 * (nothousand ? 1 : 1000));
+    let hours = days;
+
+    days = Math.floor(days);
+
+    hours = hours - days;
+    hours *= 24;
+
+    if (days) {
+        hours = Math.floor(hours);
+        return `${days} d ${hours} h`;
+    }
+    else {
+        let min = (hours - Math.floor(hours)) * 60;
+        hours = Math.floor(hours);
+        min = Math.floor(min);
+
+        if (hours >= 1) {
+            return `${hours} h ${min} m`;
+        }
+        else {
+            return `${min} m`;
+        }
+    }
+    
+}
+
+
+export function printLastActive(n: number) {
+
     let days = n / (24 * 60 * 60 * 1000);
     let hours = days;
 

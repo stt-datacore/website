@@ -11,6 +11,7 @@ import { Faction } from '../../model/player';
 import { StaticFaction } from '../../model/shuttle';
 import { formatColString } from '../collections/overview';
 import { ColorName } from './colorname';
+import { appelate, printShortDistance } from '../../utils/misc';
 
 type FleetInfoPageProps = {};
 
@@ -28,7 +29,7 @@ type FleetInfoPageState = {
 	sortDirection?: 'ascending' | 'descending';
 };
 //
-const rankOrder = ['ADMIRAL', 'SQUADRON LEADER', 'OFFICER', 'MEMBER'];
+const rankOrder = ['Admiral', 'Squadron Leader', 'Officer', 'Member'];
 
 class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	static contextType = GlobalContext;
@@ -91,9 +92,19 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			if (member.rank === "LEADER") {
 				member.rank = "ADMIRAL";
 			}
-			else if (fleet?.squads.some(s => s.leader === member.dbid)) {
-				member.rank = "SQUADRON LEADER";
-			}			
+
+			if (member.squad_id) {
+				let squad = fleet?.squads.find(s => s.id === member.squad_id)
+				if (squad) {
+					if (squad.leader === member.dbid) {
+						member.rank = "SQUADRON LEADER";
+					}
+
+					member.squadron_event_rank = squad.event_rank;
+				}
+			}
+			
+			member.rank = appelate(member.rank);
 		});
 
 		const { sortDirection, sortField } = this.state;
@@ -382,35 +393,53 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell 							
-							sorted={sortField === 'name' ? sortDirection : undefined} width={3}
+							sorted={sortField === 'name' ? sortDirection : undefined} 
+							width={2}
 							onClick={(e) => this.sortClick('name')}
 							>
 							Name
 						</Table.HeaderCell>
 						<Table.HeaderCell 
-							sorted={sortField === 'squad' ? sortDirection : undefined} width={1}
-							onClick={(e) => this.sortClick('squad')}
-							>
-							Squadron
-						</Table.HeaderCell>
-						<Table.HeaderCell 
-							sorted={sortField === 'rank' ? sortDirection : undefined} width={1}
-							onClick={(e) => this.sortClick('rank')}
-							>
-							Rank
-						</Table.HeaderCell>
-						<Table.HeaderCell 
-							sorted={sortField === 'event_rank' ? sortDirection : undefined} width={1}
+							sorted={sortField === 'event_rank' ? sortDirection : undefined} 
+							width={1}
 							onClick={(e) => this.sortClick('event_rank')}
 							>
 							Event Rank
 						</Table.HeaderCell>
 						<Table.HeaderCell 
-							// sorted={sortField === 'profile' ? sortDirection : undefined} 
+							sorted={sortField === 'squadron_event_rank' ? sortDirection : undefined} 
 							width={1}
-							// onClick={(e) => this.sortClick('profile')}
+							onClick={(e) => this.sortClick('squadron_event_rank')}
 							>
-							Profile
+							Squad Rank
+						</Table.HeaderCell>
+						<Table.HeaderCell 
+							sorted={sortField === 'squad' ? sortDirection : undefined} 
+							width={2}
+							onClick={(e) => this.sortClick('squad')}
+							>
+							Squadron
+						</Table.HeaderCell>
+						<Table.HeaderCell 
+							sorted={sortField === 'rank' ? sortDirection : undefined} 
+							width={1}
+							onClick={(e) => this.sortClick('rank')}
+							>
+							Rank
+						</Table.HeaderCell>
+						<Table.HeaderCell 
+							sorted={sortField === 'daily_activity' ? sortDirection : undefined} 
+							width={1}
+							onClick={(e) => this.sortClick('daily_activity')}
+							>
+							Dailies
+						</Table.HeaderCell>
+						<Table.HeaderCell 
+							sorted={sortField === 'last_active' ? sortDirection : undefined} 
+							width={1}
+							onClick={(e) => this.sortClick('last_active')}
+							>
+							Last Active
 						</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>
@@ -450,13 +479,15 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 									</div>
 								</div>
 							</Table.Cell>
+							<Table.Cell>{member.event_rank}</Table.Cell>							
+							<Table.Cell>{member.squadron_event_rank}</Table.Cell>							
 							<Table.Cell><ColorName text={member.squad} /></Table.Cell>
 							<Table.Cell>{member.rank}</Table.Cell>
-							<Table.Cell>{member.event_rank}</Table.Cell>							
 							<Table.Cell>
-								{member.last_update
-									? `Last profile upload: ${new Date(Date.parse(member.last_update)).toLocaleDateString()}`
-									: 'Never'}
+								{member.daily_activity}
+							</Table.Cell>
+							<Table.Cell>
+								{!!member.last_active && printShortDistance(undefined, member.last_active, true)}
 							</Table.Cell>
 						</Table.Row>
 					))}
