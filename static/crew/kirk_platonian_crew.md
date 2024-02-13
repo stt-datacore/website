@@ -3,7 +3,7 @@ name: Platonian Kirk
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal: true
 date: 27/02/2017
 published: true

@@ -4,7 +4,7 @@ rarity: 4
 series: dsc
 memory_alpha:
 bigbook_tier: 5
-in_portal:
+in_portal: true
 date: 21/06/2023
 published: true
 ---

@@ -9,4 +9,4 @@ date: 27/03/2017
 published: true
 ---
 
-Enough traits to make a brotha go “YI YI YI YI YI!” is the story of this nattily dressed Geordi variant. With a vanity collection in tow and enough value there overall to escape the bottom tier rungs, AoS La Forge is often involved in behold equations where you’re simply weighing collection value vs collection value. He’s caught a strong number of events to date, but weigh his poor bases against your other options before you spend merits thawing him.
+Enough Traits to make a brotha go “YI YI YI YI YI!” is the story of this nattily dressed Geordi variant. With a vanity Collection in tow and enough value there overall to escape the bottom Tier rungs, AoS La Forge is often involved in Vehold equations where you’re simply weighing Collection value vs Collection value. He’s caught a strong number of Events to date, but weigh his poor Bases against your other options before you spend Merits thawing him.
