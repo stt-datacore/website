@@ -46,7 +46,16 @@ export const Navigation = (props: NavigationProps) => {
 	// 	props.requestPanel(target, panel);
 	// 	setOpenBar(false);
 	// }
+	let portrait = `${process.env.GATSBY_ASSETS_URL}${context.player.playerData?.player?.character?.crew_avatar
+		? (context.player.playerData?.player?.character?.crew_avatar?.portrait?.file ?? context.player.playerData?.player?.character?.crew_avatar?.portrait ?? 'crew_portraits_cm_empty_sm.png')
+		: 'crew_portraits_cm_empty_sm.png'}`;
 
+	if (portrait.includes("crew_portraits") && !portrait.endsWith("_sm.png")) {
+		portrait = portrait.replace("_icon.png", "_sm.png");
+	}
+
+	const avatar = portrait;
+	
 	const pages = [
 		{
 			src: '/media/logo.png',
@@ -66,10 +75,7 @@ export const Navigation = (props: NavigationProps) => {
 				return <Menu.Item key={'customInput'} onClick={() => props.requestPanel('player', 'input')}>
 				<img
 					style={{height:"24px", width: "24px"}}
-					src={`${process.env.GATSBY_ASSETS_URL}${context.player.playerData?.player.character.crew_avatar?.icon
-							? context.player.playerData?.player.character.crew_avatar.portrait.file
-							: 'crew_portraits_cm_empty_sm.png'
-						}`}
+					src={`${avatar}`}
 				/>
 				</Menu.Item>
 			}

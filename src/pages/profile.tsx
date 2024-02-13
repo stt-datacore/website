@@ -222,10 +222,15 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 		console.log("Avatar Debug");
 		console.log(playerData?.player?.character?.crew_avatar);
-
-		const avatar = `${process.env.GATSBY_ASSETS_URL}${playerData?.player?.character?.crew_avatar
+		let portrait = `${process.env.GATSBY_ASSETS_URL}${playerData?.player?.character?.crew_avatar
 			? (playerData?.player?.character?.crew_avatar?.portrait?.file ?? playerData?.player?.character?.crew_avatar?.portrait ?? 'crew_portraits_cm_empty_sm.png')
 			: 'crew_portraits_cm_empty_sm.png'}`;
+
+		if (portrait.includes("crew_portraits") && !portrait.endsWith("_sm.png")) {
+			portrait = portrait.replace("_icon.png", "_sm.png");
+		}
+
+		const avatar = portrait;
 
 		return (
 			playerData?.player &&
