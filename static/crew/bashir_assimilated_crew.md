@@ -4,7 +4,7 @@ rarity: 5
 series: original
 memory_alpha:
 bigbook_tier: 4
-in_portal:
+in_portal: true
 date: 19/04/2023
 published: true
 ---

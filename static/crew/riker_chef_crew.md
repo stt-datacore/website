@@ -3,7 +3,7 @@ name: Chef Riker
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 in_portal: true
 date: 14/05/2019
 published: true

@@ -3,7 +3,7 @@ name: 23rd Century Martok
 rarity: 5
 series: original
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 in_portal: true
 date: 12/09/2016
 published: true
