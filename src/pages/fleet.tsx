@@ -21,7 +21,8 @@ const FleetPage = () => {
             demands={['factions', 'event_instances']}
 		>
 			<React.Fragment>
-				{!!playerData && <FleetInfoPage />}
+				Fleet Tool Is Disabled For Security Reasons
+				{/* {!!playerData && <FleetInfoPage />} */}
 				{/* {!playerData && <NonPlayerBossBattle />} */}
 			</React.Fragment>
 		</DataPageLayout>
