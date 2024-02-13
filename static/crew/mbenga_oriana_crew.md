@@ -4,7 +4,7 @@ rarity: 4
 series: snw
 memory_alpha:
 bigbook_tier: 5
-in_portal:
+in_portal: true
 date: 15/08/2023
 published: true
 ---
