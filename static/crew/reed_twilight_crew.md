@@ -3,7 +3,7 @@ name: Twilight Reed
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 in_portal: true
 date: 23/05/2023
 published: true
