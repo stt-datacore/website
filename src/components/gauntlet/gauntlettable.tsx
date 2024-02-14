@@ -9,7 +9,7 @@ import { Button, Dropdown, DropdownItemProps, Icon, Input, Pagination, Rating, S
 import { Gauntlet, GauntletFilterProps } from "../../model/gauntlets";
 import { CompletionState, PlayerCrew } from "../../model/player";
 
-import { comparePairs, getPlayerPairs, prettyObtained, printPortalStatus } from "../../utils/crewutils";
+import { comparePairs, getPlayerPairs, isImmortal, prettyObtained, printPortalStatus, qbitsToSlots } from "../../utils/crewutils";
 
 import { formatPair } from "./paircard";
 
@@ -100,6 +100,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
         { title: "3rd Pair", key: "pair_3", reverse: true  },
         // { title: "Owned", key: "have" },
         { title: "In Portal", key: "in_portal" },
+        { title: "Q-Bits", key: "q_bits" }
     ];
     const pageSizes = [1, 5, 10, 20, 50, 100].map(size => {
         return {
@@ -278,6 +279,24 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                 return dir * r;
             })
         }
+        else if (key === 'q_bits') {
+            newarr = newarr.sort((a, b) => {
+                let r = (a.q_bits - b.q_bits);
+                if (r === 0) {
+                    let aa = 0;
+                    let bb = 0;
+                    if (!a.have) aa++;
+                    if (!b.have) bb++;
+                    if (a.rarity !== a.max_rarity) aa++;
+                    if (b.rarity !== b.max_rarity) bb++;
+                    r = bb - aa;
+                    if (r === 0) {
+                        r = a.name.localeCompare(b.name);
+                    }
+                }
+                return r * dir;
+            });
+        }
 
         setCrew(newarr);
     }, [sortKey, sortDirection, elevated, data]);
@@ -332,6 +351,8 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                     const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol);
                     const obtained = prettyObtained(crew);
                     const color = printPortalStatus(crew, true, false) === 'Never' ? CONFIG.RARITIES[5].color : undefined;
+                    const qbslots = qbitsToSlots(crew.q_bits);
+                    const trueImmo = isImmortal(crew);
 
                     return (crew &&
                         <Table.Row key={idx}
@@ -402,6 +423,19 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                                     {printPortalStatus(crew, true, false)}
                                     {!!color && <div style={{color: color}}>{obtained}</div>}
                                 </span>
+                            </Table.Cell>
+                            <Table.Cell>
+                            <div title={
+                                !trueImmo ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
+                                }>
+                                <div>
+                                    {!trueImmo ? 'N/A' : crew.q_bits}
+                                </div>
+                                {trueImmo &&
+                                <div style={{fontSize:"0.8em"}}>
+                                    ({qbslots} Slot{qbslots != 1 ? 's' : ''})
+                                </div>}
+                            </div>
                             </Table.Cell>
                         </Table.Row>
                     );
