@@ -243,18 +243,22 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			const qpower = {} as { [key: string]: Skill };
 		
 			skills.forEach((skill) => {
-				qlots[skill] ??= [];
-				qpower[skill] ??= {
-					core: crew.base_skills[skill].core,
-					range_max: crew.base_skills[skill].range_max,
-					range_min: crew.base_skills[skill].range_min
-				}
+				qlots[skill] ??= [];				
+				
 				if (globalContext.player.buffConfig) {
-					let buffed = applySkillBuff(globalContext.player.buffConfig, skill, qpower[skill]);
-					qpower[skill].core = buffed.core;
-					qpower[skill].range_max = buffed.max;
-					qpower[skill].range_min = buffed.min;
+					let buffed = applySkillBuff(globalContext.player.buffConfig, skill, crew.base_skills[skill]);
+					qpower[skill] = {
+						core: buffed.core,
+						range_max: buffed.max,
+						range_min: buffed.min
+					}
 				}				
+				else {
+					qpower[skill] = {
+						... crew.base_skills[skill]
+					}
+				}
+
 				let skq = crewQuipment.filter(f => skill in f.bonusInfo.bonuses).map(m => ({ item: m.item, skill: m.bonusInfo.bonuses[skill] }));
 				if (skq?.length) {
 					skq.sort((a, b) => {
@@ -295,15 +299,14 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 	}, [rosterCrew, crewMarkups]);
 
 	React.useEffect(() => {
+
 		setDataPrepared({
 			rosterType,
 			rosterCount: preparedCrew ? preparedCrew.length : 0,
 			tableView,
 			appliedFilters: crewFilters.map(crewFilter => crewFilter.id)
 		});
-		if (tableView.startsWith("qp_")) {
-			
-		}
+		
 	}, [rosterType, preparedCrew, tableView, crewFilters]);
 
 	const tableViews = [
