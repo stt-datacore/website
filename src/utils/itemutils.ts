@@ -228,9 +228,10 @@ export function getPossibleQuipment<T extends CrewMember>(crew: T, quipment: Equ
 
 export function isQuipmentMatch<T extends CrewMember>(crew: T, item: EquipmentItem): boolean {
 	if (item.kwipment) {
+		if (!item.max_rarity_requirement) return false;
 		const bonus = getItemBonuses(item);
-		
-		let mrq = item.max_rarity_requirement ?? crew.max_rarity;
+
+		let mrq = item.max_rarity_requirement;
 		let rr = mrq >= crew.max_rarity;
 
 		if (!!item.traits_requirement?.length) {
