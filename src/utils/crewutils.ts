@@ -1378,7 +1378,7 @@ export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?:
 	return tiers ?? {};
 }
 
-export function getSkillOrder(crew: PlayerCrew | CrewMember) {
+export function getSkillOrder<T extends CrewMember>(crew: T) {
 	const sk = [] as ComputedBuff[];
 
 	for (let skill of Object.keys(CONFIG.SKILLS)) {
