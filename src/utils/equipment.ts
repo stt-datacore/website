@@ -321,21 +321,26 @@ export function reverseDeduction<T extends BuffBase>(item: EquipmentItem, items:
 	return true;
 }
 
-export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemWithBonus[]) {
+export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemWithBonus[], overallOnly?: boolean) {
 	let qps = quipment.filter(f => isQuipmentMatch(crew, f.item));
-	crew.quipmentScore = qps.map(m => Object.values(m.bonusInfo.bonuses).map((n: Skill) => n.core + n.range_min + n.range_max)).flat().reduce((p, n) => p + n, 0)
-	crew.quipmentScores ??= {
+	crew.quipmentScore = qps.map(m => Object.values(m.bonusInfo.bonuses).map((n: Skill) => n.core + n.range_min + n.range_max)).flat().reduce((p, n) => p + n, 0) * crew.max_rarity;
+	if (overallOnly) return;
+
+	crew.quipmentScores ??= {		
 		command_skill: 0,
 		medicine_skill: 0,
 		diplomacy_skill: 0,
 		science_skill: 0,
 		security_skill: 0,
-		engineering_skill: 0
+		engineering_skill: 0,
+		trait_limited: 0
 	};
+
+	crew.quipmentScores.trait_limited = qps.filter(f => !!f.item.traits_requirement?.length).map(m => Object.values(m.bonusInfo.bonuses).map((n: Skill) => n.core + n.range_min + n.range_max)).flat().reduce((p, n) => p + n, 0) * crew.max_rarity;
 
 	CONFIG.SKILLS_SHORT.forEach(sk => {
 		if (crew.quipmentScores) {
-			crew.quipmentScores[sk.name] = qps.map(m => Object.values(m.bonusInfo.bonuses).filter(f => f.skill === sk.name).map((n: Skill) => n.core + n.range_min + n.range_max)).flat().reduce((p, n) => p + n, 0);
+			crew.quipmentScores[sk.name] = qps.map(m => Object.values(m.bonusInfo.bonuses).filter(f => f.skill === sk.name).map((n: Skill) => n.core + n.range_min + n.range_max)).flat().reduce((p, n) => p + n, 0) * crew.max_rarity;
 		}
 	});
 }

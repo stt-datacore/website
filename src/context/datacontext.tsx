@@ -1,6 +1,6 @@
 import React from 'react';
 import { Gauntlet } from '../model/gauntlets';
-import { CrewMember } from '../model/crew';
+import { CrewMember, QuipmentScores } from '../model/crew';
 import { Ship, Schematics, BattleStations } from '../model/ship';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { Collection, Constellation, KeystoneBase, Polestar } from '../model/game-elements';
@@ -63,7 +63,8 @@ export interface ICoreData {
 	continuum_missions: ContinuumMission[];
 	ship_schematics: Schematics[];
 	ships: Ship[];
-	translation: TranslationSet;	
+	translation: TranslationSet;
+	topQuipmentScores: QuipmentScores;
 };
 
 export interface ICoreContext extends ICoreData {
@@ -94,7 +95,13 @@ const defaultData = {
 	continuum_missions: [] as ContinuumMission[],
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
-	translation: {} as TranslationSet
+	translation: {} as TranslationSet,
+	topQuipmentScores: {
+		quipmentScore: 0,
+		quipmentScores: {
+
+		}
+	}
 } as ICoreData;
 
 export const defaultCore = {
@@ -241,6 +248,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			}
 			if (unsatisfied.includes('items') && unsatisfied.includes('crew')) {
 				postProcessQuipmentScores(newData.crew, newData.items);
+				newData.topQuipmentScores = calculateTopQuipment(newData.crew);
 			}
 			if (unsatisfied.includes('crew') && unsatisfied.some(u => u.startsWith("translation_"))) {
 				postProcessCrewTranslations(newData);
@@ -263,6 +271,38 @@ export const DataProvider = (props: DataProviderProperties) => {
 		return false;
 	}
 
+	function calculateTopQuipment(crew: CrewMember[]) {
+
+		const newTop = {
+			quipmentScore: 0,
+			quipmentScores: {
+				command_skill: 0,
+				diplomacy_skill: 0,
+				medicine_skill: 0,
+				science_skill: 0,
+				engineering_skill: 0,
+				security_skill: 0,
+				trait_limited: 0
+			}
+		};
+		
+		const qkeys = Object.keys(newTop.quipmentScores);
+
+		for (let c of crew) {
+			if (!c.quipmentScore || !c.quipmentScores) continue;
+			if (c.quipmentScore > newTop.quipmentScore) {
+				newTop.quipmentScore = c.quipmentScore;
+			}
+			for (let key of qkeys) {
+				if (c.quipmentScores[key] > newTop.quipmentScores[key]) {
+					newTop.quipmentScores[key] = c.quipmentScores[key];
+				}
+			}	
+		}
+		
+		return newTop as QuipmentScores;
+	}
+
 	function reset(): boolean {
 		setData({ ...defaultData });
 		return true;
@@ -275,6 +315,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 				item.date_added = new Date(item.date_added);
 			}
 		});
+
 		return result;
 	}
 
