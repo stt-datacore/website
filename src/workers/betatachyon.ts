@@ -4,7 +4,7 @@ import { EquipmentItem } from "../model/equipment";
 import { Collection, PolestarCombo } from "../model/game-elements";
 import { PlayerCrew, PlayerData } from "../model/player";
 import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity } from "../model/worker";
-import { calcItemDemands } from "../utils/equipment";
+import { calcItemDemands, calcQuipmentScore } from "../utils/equipment";
 import { ItemWithBonus, getItemWithBonus, isQuipmentMatch } from "../utils/itemutils";
 import { findPolestars } from "../utils/retrieval";
 import { BuffStatTable } from "../utils/voyageutils";
@@ -507,8 +507,7 @@ const BetaTachyon = {
                     }
                 });
                 
-                let qps = quipment.filter(f => isQuipmentMatch(crew, f.item));
-                crew.quipmentScore = qps.map(m => Object.values(m.bonusInfo.bonuses).map((n: Skill) => n.core + n.range_min + n.range_max)).flat().reduce((p, n) => p + n, 0)
+                calcQuipmentScore(crew, quipment, true);
                 crew.collectionsIncreased = mcols.map(mc => mc.name);
                 crew.totalEVContribution = evibe;
                 crew.evPerCitation = evibe / crew.max_rarity;

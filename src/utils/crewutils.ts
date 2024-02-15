@@ -935,11 +935,29 @@ export function dynamicRangeColor(grade: number, max: number, min: number): stri
 	return "tomato";
 }
 
+export function numberToGrade(value: number, failtext?: string) {
+	if (value >= 0.97) return "A+";
+	else if (value >= 0.93) return "A";
+	else if (value >= 0.90) return "A-";
+	else if (value >= 0.87) return "B+";
+	else if (value >= 0.83) return "B";
+	else if (value >= 0.80) return "B-";
+	else if (value >= 0.77) return "C+";
+	else if (value >= 0.73) return "C";
+	else if (value >= 0.70) return "C-";
+	else if (value >= 0.67) return "D+";
+	else if (value >= 0.63) return "D";
+	else if (value >= 0.60) return "D-";
+	else return failtext ?? "F";
+}
 
 
-export function gradeToColor(grade: string | number): string | null {
+export function gradeToColor(grade: string | number, dryzero?: boolean): string | null {
+	
+	if (!grade && dryzero) return null;
 
 	if (typeof grade === 'number' && grade < 1 && grade >= 0) {
+		
 		if (grade >= 0.9) return 'lightgreen';
 		else if (grade >= 0.8) return 'aquamarine';
 		else if (grade >= 0.7) return 'yellow';

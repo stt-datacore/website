@@ -96,8 +96,8 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 				<Step active={activeTabIndex === 2} onClick={() => setActiveTabIndex(2)}>
 					<Step.Content>
-						<Step.Title>Quipment Helper</Step.Title>
-						<Step.Description>See quipment that match crew.</Step.Description>
+						<Step.Title>Quipment Browser</Step.Title>
+						<Step.Description>Browse quipment and place potential quipment on crew.</Step.Description>
 					</Step.Content>
 				</Step>
 			</Step.Group>
