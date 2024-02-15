@@ -28,6 +28,7 @@ import RosterSummary from './rostersummary';
 import { QuipmentScoreCells, getQuipmentTableConfig as getQuipmentTableConfig } from './views/quipmentscores';
 import { calcQuipmentScore } from '../../utils/equipment';
 import { getItemWithBonus } from '../../utils/itemutils';
+import { CrewMember, QuipmentScores } from '../../model/crew';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -188,6 +189,7 @@ interface IDataPrepared {
 const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profileCrew' }) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, playerShips } = globalContext.player;
+	const { topQuipmentScores: top } = globalContext.core;
 	const tableContext = React.useContext(RosterTableContext);
 	const { pageId, rosterCrew, rosterType, initOptions, lockableCrew } = tableContext;
 
@@ -196,7 +198,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 
 	const [crewMarkups, setCrewMarkups] = React.useState<ICrewMarkup[]>([] as ICrewMarkup[]);
 	const [crewFilters, setCrewFilters] = React.useState<ICrewFilter[]>([] as ICrewFilter[]);
-
+	
 	const [showBase, setShowBase] = React.useState<boolean>(false);
 
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
@@ -284,12 +286,12 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			renderTableCells: (crew: IRosterCrew) => <CrewRankCells crew={crew} prefix='V_' />
 		},
 		{
-			id: 'qp_ranks',
+			id: 'qp_scores',
 			available: true,
-			optionText: 'Show quipment ranks',
+			optionText: 'Show quipment scores',
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
 			tableConfig: getQuipmentTableConfig(),
-			renderTableCells: (crew: IRosterCrew) => <QuipmentScoreCells crew={crew} />
+			renderTableCells: (crew: IRosterCrew) => <QuipmentScoreCells top={top} crew={crew} />
 		},
 		{
 			id: 'crew_utility',
