@@ -243,7 +243,7 @@ export function isQuipmentMatch<T extends CrewMember>(crew: T, item: EquipmentIt
 			}
 		}
 
-		rr &&= Object.keys(bonus.bonuses).every(skill => skill in crew.base_skills);
+		rr &&= Object.keys(bonus.bonuses).some(skill => skill in crew.base_skills);
 		return rr;
 	}
 
