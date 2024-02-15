@@ -8,7 +8,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';
 import { ITableConfigRow } from '../../components/searchabletable';
 import ProspectPicker from '../../components/prospectpicker';
-import { oneCrewCopy, applyCrewBuffs } from '../../utils/crewutils';
+import { oneCrewCopy, applyCrewBuffs, getSkillOrder, qbitsToSlots } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { IRosterCrew, RosterType, ICrewMarkup, ICrewFilter } from './model';
@@ -27,8 +27,10 @@ import { CrewUtilityForm, getCrewUtilityTableConfig, CrewUtilityCells } from './
 import RosterSummary from './rostersummary';
 import { QuipmentScoreCells, getQuipmentTableConfig as getQuipmentTableConfig } from './views/quipmentscores';
 import { calcQuipmentScore } from '../../utils/equipment';
-import { getItemWithBonus } from '../../utils/itemutils';
-import { CrewMember, QuipmentScores } from '../../model/crew';
+import { getItemWithBonus, isQuipmentMatch } from '../../utils/itemutils';
+import { CrewMember, QuipmentScores, Skill } from '../../model/crew';
+import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from './views/topquipment';
+import { EquipmentItem } from '../../model/equipment';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -156,7 +158,9 @@ type TableView =
 	'ship' |
 	'g_ranks' |
 	'v_ranks' |
-	'crewutility';
+	'crewutility' |
+	'qp_score' |
+	'qp_best';
 
 interface IToggleableFilter {
 	id: string;
@@ -202,7 +206,8 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 	const [showBase, setShowBase] = React.useState<boolean>(false);
 
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
-
+	const quipment = globalContext.core.items.filter(f => f.type === 14 && !!f.max_rarity_requirement).map(m => getItemWithBonus(m));
+	
 	React.useEffect(() => {
 		// Reset table views when not available on updated roster type
 		const activeView = tableViews.find(view => view.id === tableView);
@@ -227,9 +232,50 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 	}, [rosterType]);
 
 	React.useEffect(() => {
+		const calcQLots = (crew: IRosterCrew) => {
+			const allslots = rosterType === 'allCrew';
+			const q_bits = allslots ? 1300 : crew.q_bits;
+			const slots = qbitsToSlots(q_bits);
+			
+			const crewQuipment = quipment.filter(q => isQuipmentMatch(crew, q.item));
+			const skills = getSkillOrder(crew);
+			const qlots = {} as { [key: string]: EquipmentItem[] };
+			const qpower = {} as { [key: string]: Skill };
+		
+			skills.forEach((skill) => {
+				qlots[skill] ??= [];
+				qpower[skill] ??= {
+					core: crew[skill].core,
+					range_max: crew[skill].max,
+					range_min: crew[skill].min
+				}
+				let skq = crewQuipment.filter(f => skill in f.bonusInfo.bonuses).map(m => ({ item: m.item, skill: m.bonusInfo.bonuses[skill] }));
+				if (skq?.length) {
+					skq.sort((a, b) => {
+						let ar = a.skill.core + a.skill.range_max + a.skill.range_min;
+						let br = b.skill.core + b.skill.range_max + b.skill.range_min;
+						return br - ar;
+					});
+					
+					for (let i = 0; i < slots; i++) {                
+						if (i < skq.length) {
+							qlots[skill].push(skq[i].item);
+							
+							qpower[skill].core += skq[i].skill.core;
+							qpower[skill].range_max += skq[i].skill.range_max;
+							qpower[skill].range_min += skq[i].skill.range_min;
+						}
+					}
+				}
+			});
+
+			crew.qlots = qlots;
+			crew.qpower = qpower;
+			return crew;
+		}
 		// Apply roster markups, i.e. add sortable fields to crew
 		const applyMarkups = async () => {
-			const preparedCrew = rosterCrew.slice();
+			const preparedCrew = rosterCrew.slice().map(c => calcQLots(c));
 			if (crewMarkups.length > 0) {
 				preparedCrew.forEach(crew => {
 					crewMarkups.forEach(crewMarkup => {
@@ -249,6 +295,9 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			tableView,
 			appliedFilters: crewFilters.map(crewFilter => crewFilter.id)
 		});
+		if (tableView.startsWith("qp_")) {
+			
+		}
 	}, [rosterType, preparedCrew, tableView, crewFilters]);
 
 	const tableViews = [
@@ -286,12 +335,20 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			renderTableCells: (crew: IRosterCrew) => <CrewRankCells crew={crew} prefix='V_' />
 		},
 		{
-			id: 'qp_scores',
+			id: 'qp_score',
 			available: true,
 			optionText: 'Show quipment scores',
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getQuipmentTableConfig(),
-			renderTableCells: (crew: IRosterCrew) => <QuipmentScoreCells top={top} crew={crew} />
+			tableConfig: getQuipmentTableConfig(),			
+			renderTableCells: (crew: IRosterCrew) => <QuipmentScoreCells excludeSkills={false} top={top} crew={crew} />
+		},
+		{
+			id: 'qp_best',
+			available: true,
+			optionText: 'Show max quipment',
+			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
+			tableConfig: getTopQuipmentTableConfig(),
+			renderTableCells: (crew: IRosterCrew) => <TopQuipmentScoreCells targetGroup={`${pageId}/targetClassItem`} allslots={rosterType === 'allCrew'} top={top}  crew={crew} />
 		},
 		{
 			id: 'crew_utility',

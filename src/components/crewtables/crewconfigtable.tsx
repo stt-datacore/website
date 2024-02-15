@@ -11,6 +11,7 @@ import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import { IRosterCrew, RosterType, ICrewFilter } from './model';
 import { descriptionLabel } from './commonoptions';
 import { CrewTraitMatchesCell } from './filters/crewtraits';
+import { ItemHoverStat } from '../hovering/itemhoverstat';
 
 type CrewConfigTableProps = {
 	pageId: string;
@@ -76,11 +77,12 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 				lockable={lockableCrew}
 			/>
 			<CrewHoverStat targetGroup={pageId+'/targetClass'} />
+			<ItemHoverStat targetGroup={pageId+'/targetClassItem'} />
 		</React.Fragment>
 	);
 
 	function showThisCrew(crew: IRosterCrew, filters: [], filterType: string): boolean {
-		// Apply filters
+		// Apply filters		
 		let showCrew = true;
 		for (let i = 0; i < crewFilters.length; i++) {
 			if (!crewFilters[i].filterTest(crew)) {

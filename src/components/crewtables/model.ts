@@ -1,3 +1,5 @@
+import { Skill } from '../../model/crew';
+import { EquipmentItem } from '../../model/equipment';
 import { PlayerCrew, PlayerUtilityRanks } from '../../model/player';
 
 export interface IRosterCrew extends PlayerCrew {
@@ -6,6 +8,8 @@ export interface IRosterCrew extends PlayerCrew {
 		traits_matched?: string[];
 		crew_utility?: ICrewUtility;
 	}
+	qlots?: { [key: string]: EquipmentItem[] };
+    qpower?: { [key: string]: Skill };
 };
 
 export type RosterType = 'allCrew' | 'myCrew' | 'profileCrew';
