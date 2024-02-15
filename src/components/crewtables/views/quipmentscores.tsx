@@ -11,6 +11,7 @@ import { gradeToColor, numberToGrade, skillToRank } from "../../../utils/crewuti
 export interface QuipmentScoreProps {
     crew: IRosterCrew;
     top: QuipmentScores;
+    excludeSkills: boolean;
 }
 
 export const getQuipmentTableConfig = () => {
@@ -42,7 +43,7 @@ export const getQuipmentTableConfig = () => {
 }
 
 export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
-    const { crew, top } = props;
+    const { excludeSkills, crew, top } = props;
 
     const quipment_score = crew.quipmentScore ?? 0;
     const top_quipment = top.quipmentScore ?? 1;
@@ -73,7 +74,7 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
                 </sub>       
             </div>     
         </Table.Cell>
-        {CONFIG.SKILLS_SHORT.map(p => {
+        {!excludeSkills && CONFIG.SKILLS_SHORT.map(p => {
             
             const top_skill = top.quipmentScores ? top.quipmentScores[p.name] : 1;
             const skill_score = crew.quipmentScores ? crew.quipmentScores[p.name] : 0;
