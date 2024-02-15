@@ -8,7 +8,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';
 import { ITableConfigRow } from '../../components/searchabletable';
 import ProspectPicker from '../../components/prospectpicker';
-import { oneCrewCopy, applyCrewBuffs, getSkillOrder, qbitsToSlots } from '../../utils/crewutils';
+import { oneCrewCopy, applyCrewBuffs, getSkillOrder, qbitsToSlots, applySkillBuff } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { IRosterCrew, RosterType, ICrewMarkup, ICrewFilter } from './model';
@@ -243,12 +243,22 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			const qpower = {} as { [key: string]: Skill };
 		
 			skills.forEach((skill) => {
-				qlots[skill] ??= [];
-				qpower[skill] ??= {
-					core: crew[skill].core,
-					range_max: crew[skill].max,
-					range_min: crew[skill].min
+				qlots[skill] ??= [];				
+				
+				if (globalContext.player.buffConfig) {
+					let buffed = applySkillBuff(globalContext.player.buffConfig, skill, crew.base_skills[skill]);
+					qpower[skill] = {
+						core: buffed.core,
+						range_max: buffed.max,
+						range_min: buffed.min
+					}
+				}				
+				else {
+					qpower[skill] = {
+						... crew.base_skills[skill]
+					}
 				}
+
 				let skq = crewQuipment.filter(f => skill in f.bonusInfo.bonuses).map(m => ({ item: m.item, skill: m.bonusInfo.bonuses[skill] }));
 				if (skq?.length) {
 					skq.sort((a, b) => {
@@ -289,15 +299,14 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 	}, [rosterCrew, crewMarkups]);
 
 	React.useEffect(() => {
+
 		setDataPrepared({
 			rosterType,
 			rosterCount: preparedCrew ? preparedCrew.length : 0,
 			tableView,
 			appliedFilters: crewFilters.map(crewFilter => crewFilter.id)
 		});
-		if (tableView.startsWith("qp_")) {
-			
-		}
+		
 	}, [rosterType, preparedCrew, tableView, crewFilters]);
 
 	const tableViews = [
