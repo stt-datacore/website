@@ -935,7 +935,10 @@ export function dynamicRangeColor(grade: number, max: number, min: number): stri
 	return "tomato";
 }
 
-export function numberToGrade(value: number, failtext?: string) {
+export function numberToGrade(value: number, noneText?: string) {
+
+	if (!value && !!noneText) return noneText;
+
 	if (value >= 0.97) return "A+";
 	else if (value >= 0.93) return "A";
 	else if (value >= 0.90) return "A-";
@@ -948,7 +951,7 @@ export function numberToGrade(value: number, failtext?: string) {
 	else if (value >= 0.67) return "D+";
 	else if (value >= 0.63) return "D";
 	else if (value >= 0.60) return "D-";
-	else return failtext ?? "F";
+	else return "F";
 }
 
 
