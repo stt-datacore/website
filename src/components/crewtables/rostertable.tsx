@@ -8,7 +8,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';
 import { ITableConfigRow } from '../../components/searchabletable';
 import ProspectPicker from '../../components/prospectpicker';
-import { oneCrewCopy, applyCrewBuffs, getSkillOrder, qbitsToSlots } from '../../utils/crewutils';
+import { oneCrewCopy, applyCrewBuffs, getSkillOrder, qbitsToSlots, applySkillBuff } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { IRosterCrew, RosterType, ICrewMarkup, ICrewFilter } from './model';
@@ -245,10 +245,16 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			skills.forEach((skill) => {
 				qlots[skill] ??= [];
 				qpower[skill] ??= {
-					core: crew[skill].core,
-					range_max: crew[skill].max,
-					range_min: crew[skill].min
+					core: crew.base_skills[skill].core,
+					range_max: crew.base_skills[skill].range_max,
+					range_min: crew.base_skills[skill].range_min
 				}
+				if (globalContext.player.buffConfig) {
+					let buffed = applySkillBuff(globalContext.player.buffConfig, skill, qpower[skill]);
+					qpower[skill].core = buffed.core;
+					qpower[skill].range_max = buffed.max;
+					qpower[skill].range_min = buffed.min;
+				}				
 				let skq = crewQuipment.filter(f => skill in f.bonusInfo.bonuses).map(m => ({ item: m.item, skill: m.bonusInfo.bonuses[skill] }));
 				if (skq?.length) {
 					skq.sort((a, b) => {

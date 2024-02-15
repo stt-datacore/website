@@ -11,8 +11,6 @@ import { CrewItemsView } from "../../item_presenters/crew_items";
 import CrewStat from "../../crewstat";
 import { QuipmentScoreCells } from "./quipmentscores";
 
-
-
 export interface TopQuipmentScoreProps {
     crew: IRosterCrew;
     allslots?: boolean;
