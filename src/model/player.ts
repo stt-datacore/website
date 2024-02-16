@@ -590,6 +590,9 @@ export interface Player {
     /** Used internally by gauntlets. Not part of source data.  */
     isDisabled?: boolean;
 
+    /** Used internally by gauntlets. Not part of source data.  */
+    isSelected?: boolean;
+
     /** Used internally. Not part of source data.  */
     utility?: PlayerUtility
 

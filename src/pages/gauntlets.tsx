@@ -207,31 +207,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}
 
 		const settings = this.tiny.getValue<GauntletSettings>('gauntletSettings', defaultSettings) ?? defaultSettings;
-		const liveJson = this.tiny.getValue<string | undefined>('liveGauntlet', undefined);
-		let lg: Gauntlet | undefined = undefined;
 
-		if (liveJson) {
-			try {
-				let lgr = JSON.parse(liveJson) as GauntletRoot | Gauntlet;
-				if ("state" in lgr) {
-					lg = lgr;
-				}
-				else {
-					lg = lgr.character.gauntlets[0];
-				}
-				
-			}
-			catch {
-
-			}
-		}
-
-		const activeTabIndex = this.tiny.getValue<number>("activeTabIndex", lg ? 4 : 0);
+		const activeTabIndex = 0; // this.tiny.getValue<number>("activeTabIndex", lg ? 4 : 0);
 
 		this.state = {
 			loading: true,
 			onlyActiveRound: this.tiny.getValue<boolean>('activeRound', true),
-			liveGauntlet: lg,
+			liveGauntlet: undefined,
 			sortKey: skeys,
 			sortDirection: sdir,
 			itemsPerPage: 10,
@@ -783,17 +765,27 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			return true;
 		}
 	
+		let acc = [] as CrewMember[];
+
+		if (this.context.player.playerData?.player?.character?.crew) {
+			acc = this.context.player.playerData?.player?.character?.crew.concat(this.context.player.playerData?.player?.character?.unOwnedCrew ?? []);
+		}
+		else {
+			acc = allCrew;
+		}
+		
+		const workCrew = acc;
 
 		const matchedCrew1 =
-			allCrew.concat(oppo).map(crewObj => crewObj as PlayerCrew).filter(crew => crew.max_rarity > 3 && (
+			workCrew.concat(oppo).map(crewObj => crewObj as PlayerCrew).filter(crew => crew.max_rarity > 3 && (
 				(!rankByPair || (rankByPair in crew.ranks)) &&
 				(Object.keys(crew.base_skills).some(k => crew.base_skills[k].range_max >= rmax) || !!crew.isOpponent) ||
 				prettyTraits.filter(t => crew.traits_named.includes(t)).length > 1))
 				.map((inputCrew) => {
 					let crew = !!inputCrew.isOpponent ? inputCrew : JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
 
-					if (!inputCrew.isOpponent) {
-						if (buffConfig && buffMode === 'player') {
+					if (!inputCrew.isOpponent && !crew.have) {
+						if (buffConfig && (buffMode === 'player' || buffMode === 'quipment')) {
 							applyCrewBuffs(crew, buffConfig);
 						}
 						else if (maxBuffs && buffMode === 'max') {
@@ -801,10 +793,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						}
 					}
 
-					let c = this.context.player.playerData?.player?.character?.crew?.find(d => d.symbol === crew.symbol);
+					// let c = this.context.player.playerData?.player?.character?.crew?.find(d => d.id === crew.id);
+					
+					if (!crew.isOpponent && crew.have) {						
+						//crew = JSON.parse(JSON.stringify(c)) as PlayerCrew;
 
-					if (!crew.isOpponent && c) {
-						crew = JSON.parse(JSON.stringify(c)) as PlayerCrew;
 						if (buffConfig && buffMode === 'player') {
 							applyCrewBuffs(crew, buffConfig);
 						}
@@ -833,10 +826,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								crew[skill] = { core: crew.base_skills[skill].core, min: crew.base_skills[skill].range_min, max: crew.base_skills[skill].range_max };								
 							}
 						}
-						crew.have = true;
+						// crew.have = true;
 					}
 					else {
-						crew.have = !!c;
+						// crew.have = !!c?.skills;
 						let skills = getSkills(crew);
 						for (let s of skills) {
 							if (!(s in crew)) {
@@ -851,16 +844,21 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 					
 					if (!crew.isOpponent) {
-						if (gauntlet.contest_data?.selected_crew?.length) {
-							let selcrew = gauntlet.contest_data.selected_crew.find((sel) => sel.archetype_symbol === crew.symbol);
-							if (selcrew) {
+						if (gauntlet.contest_data?.selected_crew?.length && crew.immortal <= 0 && crew.have) {
+							let selcrew = gauntlet.contest_data.selected_crew.find((sel) => {
+								return sel.archetype_symbol === crew.symbol;
+							});
+
+							if (selcrew && crew.skills) {
+								crew.isSelected = true;
+
 								if (selcrew.disabled) {
 									crew.isDisabled = true;
 								}
 								else {
 									let oskill = crew.skills;
 									crew.skills = {};
-
+									crew.isDisabled
 									delete crew.command_skill;
 									delete crew.diplomacy_skill;
 									delete crew.engineering_skill;
@@ -879,7 +877,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						}
 				
 						if (!hasPlayer) crew.rarity = crew.max_rarity;
-						else if (!c) crew.rarity = 0;
+						else if (!crew.have) crew.rarity = 0;
 						if (!crew.immortal || crew.immortal < 0) {
 							crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
 						}
@@ -965,7 +963,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					if (!r) r = a.name.localeCompare(b.name);
 					return r;
 				});
-		
+
+		let f = matchedCrew1.find(f => f.id === 118658649);
+
+		f = matchedCrew1.find(f => f.symbol === 'black_admiral_crew');
+
 		let matchedResults: PlayerCrew[] | undefined = undefined;
 
 		if (gauntlet.prettyTraits?.length) {

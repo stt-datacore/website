@@ -348,7 +348,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                     const crew = row;
                     const pairs = crew.pairs ?? getPlayerPairs(crew);
                     const rank = gauntlet.origRanks ? gauntlet.origRanks[crew.symbol] : idx + pageStartIdx + 1;
-                    const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol);
+                    const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol && crew.isSelected);
                     const obtained = prettyObtained(crew);
                     const color = printPortalStatus(crew, true, false) === 'Never' ? CONFIG.RARITIES[5].color : undefined;
                     const qbslots = qbitsToSlots(crew.q_bits);
