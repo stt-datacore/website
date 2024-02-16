@@ -689,6 +689,7 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 		}
 
 		const quipment = resultCrew?.map(c => {
+			if (!c.kwipment) return 0;
 			if (typeof c.kwipment[0] === 'number') {
 				return c.kwipment;
 			}
