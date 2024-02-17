@@ -650,7 +650,7 @@ export function updatePairScore(crew: PlayerCrew, pairScore: GauntletPairScore) 
 
 export function getCrewPairScore(crew: PlayerCrew, pair: string) {
 	pair = (pair.startsWith("G_") ? pair.slice(2) : pair).replace("/", "_");
-	let vp = pair.split("_").map(pp => (rankToSkill(pp))).sort();
+	let vp = pair.split("_").map(pp => (shortToSkill(pp))).sort();
 	for (let cp of crew.pairScores ?? []) {
 		let skills2 = cp.pair.map(p => p.skill ?? "").sort();
 		if (skills2.join() === vp.join()) {
@@ -662,7 +662,7 @@ export function getCrewPairScore(crew: PlayerCrew, pair: string) {
 
 export function getPairScore(scores: GauntletPairScore[], pair: string) {
 	pair = (pair.startsWith("G_") ? pair.slice(2) : pair).replace("/", "_");
-	let vp = pair.split("_").map(pp => (rankToSkill(pp))).sort();
+	let vp = pair.split("_").map(pp => (shortToSkill(pp))).sort();
 	for (let cp of scores ?? []) {
 		let skills2 = cp.pair.map(p => p.skill ?? "").sort();
 		if (skills2.join() === vp.join()) {
@@ -673,7 +673,7 @@ export function getPairScore(scores: GauntletPairScore[], pair: string) {
 }
 
 
-export function rankToSkill(rank: string): PlayerSkill | undefined {
+export function shortToSkill(rank: string): PlayerSkill | undefined {
 	if (rank === "CMD") return "command_skill";
 	else if (rank === "SEC") return "security_skill";
 	else if (rank === "DIP") return "diplomacy_skill";
@@ -682,14 +682,14 @@ export function rankToSkill(rank: string): PlayerSkill | undefined {
 	else if (rank === "ENG") return "engineering_skill";
 }
 
-export function skillToRank(skill: PlayerSkill | string): string | undefined {
+export function skillToShort(skill: PlayerSkill | string): string | undefined {
 	if (!skill) return "";
-	if (skill.includes("command")) return "CMD";
-	else if (skill.includes("security")) return "SEC";
-	else if (skill.includes("diplomacy")) return "DIP";
-	else if (skill.includes("science")) return "SCI";
-	else if (skill.includes("medicine")) return "MED";
-	else if (skill.includes("engineering")) return "ENG";
+	if (skill === "command_skill") return "CMD";
+	else if (skill === "security_skill") return "SEC";
+	else if (skill === "diplomacy_skill") return "DIP";
+	else if (skill === "science_skill") return "SCI";
+	else if (skill === "medicine_skill") return "MED";
+	else if (skill === "engineering_skill") return "ENG";
 }
 
 export function comparePairs(a: Skill[], b: Skill[], featuredSkill?: string, multiplier?: number) {

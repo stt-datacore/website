@@ -2,7 +2,7 @@ import React from 'react';
 import { Skill, ComputedSkill, CrewMember } from '../../model/crew';
 import { Gauntlet, Opponent } from '../../model/gauntlets';
 import { PlayerCrew, CompletionState, PlayerBuffMode } from '../../model/player';
-import { rankToSkill, gradeToColor, getPairScore, getCrewPairScore, dynamicRangeColor, isImmortal } from '../../utils/crewutils';
+import { shortToSkill, gradeToColor, getPairScore, getCrewPairScore, dynamicRangeColor, isImmortal } from '../../utils/crewutils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import ItemDisplay from '../itemdisplay';
 import { GlobalContext } from '../../context/globalcontext';
@@ -80,7 +80,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
     const context = React.useContext(GlobalContext);
     const { crew, pair, gauntlet, boostMode, onlyActiveRound } = props;
 
-    const skills = pair.map(m => rankToSkill(m));
+    const skills = pair.map(m => shortToSkill(m));
     const crewpair = [] as Skill[];
     const prettyTraits = gauntlet.prettyTraits;
     const crit = ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5);

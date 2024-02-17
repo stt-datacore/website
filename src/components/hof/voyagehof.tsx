@@ -9,7 +9,7 @@ import { TinyStore } from "../../utils/tiny";
 import { GlobalContext } from "../../context/globalcontext";
 import { OwnedLabel } from "../crewtables/commonoptions";
 import { IRosterCrew } from "../crewtables/model";
-import { gradeToColor, skillToRank } from "../../utils/crewutils";
+import { gradeToColor, skillToShort } from "../../utils/crewutils";
 import ItemDisplay from "../itemdisplay";
 import { RawVoyageRecord, guessSkillsFromCrew } from "../../utils/voyageutils";
 import { navigate } from "gatsby";
