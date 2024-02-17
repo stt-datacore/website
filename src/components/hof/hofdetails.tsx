@@ -1,7 +1,7 @@
 import React from "react";
 import { guessSkillsFromCrew } from "../../utils/voyageutils";
 import { CrewMember } from "../../model/crew";
-import { gradeToColor, skillToRank } from "../../utils/crewutils";
+import { gradeToColor, skillToShort } from "../../utils/crewutils";
 import CONFIG from "../CONFIG";
 import { GlobalContext } from "../../context/globalcontext";
 import { appelate } from "../../utils/misc";
@@ -99,7 +99,7 @@ export const HofDetails = (props: HofDetailsProps) => {
                 ccount[c]++;
             });
 
-            let key = `${skillToRank(voyage.primary_skill as string)}/${skillToRank(voyage.secondary_skill as string)}`;
+            let key = `${skillToShort(voyage.primary_skill as string)}/${skillToShort(voyage.secondary_skill as string)}`;
 
             voyCounts[key] ??= 0;
             voyCounts[key]++;

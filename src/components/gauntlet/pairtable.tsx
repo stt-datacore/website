@@ -1,5 +1,5 @@
 import React from "react";
-import { rankToSkill, skillToRank } from "../../utils/crewutils";
+import { shortToSkill, skillToShort } from "../../utils/crewutils";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { GauntletPairCard } from "./paircard";
 import { Gauntlet, PairGroup } from "../../model/gauntlets";
@@ -24,7 +24,7 @@ export const GauntletPairTable = (props: GauntletPairTableProps) => {
         let skilluse: string | undefined = undefined;
 
         if (typeof skill === 'string' && skill.length === 3 && skill.toUpperCase() === skill) {
-            skilluse = rankToSkill(skill);
+            skilluse = shortToSkill(skill);
         }
         else if (typeof skill === 'string') {
             skilluse = skill;
@@ -61,7 +61,7 @@ export const GauntletPairTable = (props: GauntletPairTableProps) => {
                 paddingTop: "0.6em",
                 paddingBottom: "0.5em",
                 backgroundColor:
-                    currContest ? 'royalblue' : (pairGroup.pair.includes(skillToRank(gauntlet.contest_data?.featured_skill as string) as string) ? "slateblue" : undefined),
+                    currContest ? 'royalblue' : (pairGroup.pair.includes(skillToShort(gauntlet.contest_data?.featured_skill as string) as string) ? "slateblue" : undefined),
 
             }}>
             {pairGroup.pair.map((p, ik) => {

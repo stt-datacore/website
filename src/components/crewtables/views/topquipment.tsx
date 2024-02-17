@@ -4,7 +4,7 @@ import { ITableConfigRow } from "../../searchabletable";
 import CONFIG from "../../CONFIG";
 import { Table } from "semantic-ui-react";
 import { QuipmentScores } from "../../../model/crew";
-import { qbitsToSlots, skillToRank } from "../../../utils/crewutils";
+import { qbitsToSlots, skillToShort } from "../../../utils/crewutils";
 import { CrewItemsView } from "../../item_presenters/crew_items";
 import CrewStat from "../../crewstat";
 import { QuipmentScoreCells } from "./quipmentscores";
@@ -74,7 +74,7 @@ export const getTopQuipmentTableConfig = (top: QuipmentScores[]) => {
                     src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`}
                     />
                 <span>
-                &nbsp;{skillToRank(skill)}
+                &nbsp;{skillToShort(skill)}
                 </span>                
             </div>
             </div>, 

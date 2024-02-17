@@ -6,7 +6,7 @@ import CONFIG from '../../../components/CONFIG';
 import { IRosterCrew } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
 import CABExplanation from '../../explanations/cabexplanation';
-import { formatTierLabel, printPortalStatus, qbitsToSlots, skillToRank } from '../../../utils/crewutils';
+import { formatTierLabel, printPortalStatus, qbitsToSlots, skillToShort } from '../../../utils/crewutils';
 import { TinyStore } from '../../../utils/tiny';
 import VoyageExplanation from '../../explanations/voyexplanation';
 import { PlayerCrew } from '../../../model/player';
@@ -63,7 +63,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 	const tiny = TinyStore.getStore("index");
 	
 	const navToSearch = (crew: IRosterCrew) => {
-		let sko = crew.skill_order.map(sk => skillToRank(sk)).join("/").toUpperCase();
+		let sko = crew.skill_order.map(sk => skillToShort(sk)).join("/").toUpperCase();
 		tiny.setRapid("search", "skill_order:" + sko);
 	};
 	const qbslots = qbitsToSlots(crew.q_bits);
@@ -78,7 +78,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<small>{rarityLabels[crew.max_rarity-1]} #{crew.cab_ov_rank}</small>
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
-				<div style={{cursor:"pointer"}} onClick={(e) => navToSearch(crew)} title={crew.skill_order.map(sk => skillToRank(sk)).reduce((p, n) => p ? `${p}/${n}` : n)}>
+				<div style={{cursor:"pointer"}} onClick={(e) => navToSearch(crew)} title={crew.skill_order.map(sk => skillToShort(sk)).reduce((p, n) => p ? `${p}/${n}` : n)}>
 					<b>#{crew.ranks.voyRank}</b><br />
 					{crew.ranks.voyTriplet && <small>Triplet #{crew.ranks.voyTriplet.rank}</small>}
 				</div>

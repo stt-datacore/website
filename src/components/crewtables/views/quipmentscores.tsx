@@ -4,7 +4,7 @@ import { ITableConfigRow } from "../../searchabletable";
 import CONFIG from "../../CONFIG";
 import { Table } from "semantic-ui-react";
 import { QuipmentScores } from "../../../model/crew";
-import { gradeToColor, numberToGrade, skillToRank } from "../../../utils/crewutils";
+import { gradeToColor, numberToGrade, skillToShort } from "../../../utils/crewutils";
 
 
 
@@ -32,7 +32,7 @@ export const getQuipmentTableConfig = () => {
                     src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`}
                     />
                 <span>
-                &nbsp;{skillToRank(skill)}
+                &nbsp;{skillToShort(skill)}
                 </span>                
             </div>
             </div>

@@ -7,11 +7,11 @@ import { PlayerUtilityRanks } from '../../../model/player';
 import { GlobalContext } from '../../../context/globalcontext';
 import CONFIG from '../../../components/CONFIG';
 import { ITableConfigRow } from '../../../components/searchabletable';
-import { getBernardsNumber } from '../../../pages/gauntlets';
 import { useStateWithStorage } from '../../../utils/storage';
 
 import { IRosterCrew, ICrewMarkup, ICrewFilter, ICrewUtilityRanks } from '../../../components/crewtables/model';
 import { CrewBaseCells, getBaseTableConfig } from './base';
+import { getBernardsNumber } from '../../../utils/gauntlet';
 
 interface IUtilityUserPrefs {
 	thresholds: IUtilityThresholds;
