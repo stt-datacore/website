@@ -8,8 +8,7 @@ export interface IRosterCrew extends PlayerCrew {
 		traits_matched?: string[];
 		crew_utility?: ICrewUtility;
 	}
-	qlots?: { [key: string]: EquipmentItem[] };
-    qpower?: { [key: string]: Skill };
+
 };
 
 export type RosterType = 'allCrew' | 'myCrew' | 'profileCrew';

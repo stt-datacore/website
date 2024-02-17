@@ -231,61 +231,10 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 		// TODO: Also reset ship options on view change?
 	}, [rosterType]);
 
-	React.useEffect(() => {
-		const calcQLots = (crew: IRosterCrew) => {
-			const allslots = rosterType === 'allCrew';
-			const q_bits = allslots ? 1300 : crew.q_bits;
-			const slots = qbitsToSlots(q_bits);
-			
-			const crewQuipment = quipment.filter(q => isQuipmentMatch(crew, q.item));
-			const skills = getSkillOrder(crew);
-			const qlots = {} as { [key: string]: EquipmentItem[] };
-			const qpower = {} as { [key: string]: Skill };
-		
-			skills.forEach((skill) => {
-				qlots[skill] ??= [];				
-				
-				if (globalContext.player.buffConfig) {
-					let buffed = applySkillBuff(globalContext.player.buffConfig, skill, crew.base_skills[skill]);
-					qpower[skill] = {
-						core: buffed.core,
-						range_max: buffed.max,
-						range_min: buffed.min
-					}
-				}				
-				else {
-					qpower[skill] = {
-						... crew.base_skills[skill]
-					}
-				}
-
-				let skq = crewQuipment.filter(f => skill in f.bonusInfo.bonuses).map(m => ({ item: m.item, skill: m.bonusInfo.bonuses[skill] }));
-				if (skq?.length) {
-					skq.sort((a, b) => {
-						let ar = a.skill.core + a.skill.range_max + a.skill.range_min;
-						let br = b.skill.core + b.skill.range_max + b.skill.range_min;
-						return br - ar;
-					});
-					
-					for (let i = 0; i < slots; i++) {                
-						if (i < skq.length) {
-							qlots[skill].push(skq[i].item);
-							
-							qpower[skill].core += skq[i].skill.core;
-							qpower[skill].range_max += skq[i].skill.range_max;
-							qpower[skill].range_min += skq[i].skill.range_min;
-						}
-					}
-				}
-			});
-
-			crew.qlots = qlots;
-			crew.qpower = qpower;
-			return crew;
-		}
+	React.useEffect(() => {		
 		// Apply roster markups, i.e. add sortable fields to crew
 		const applyMarkups = async () => {
-			const preparedCrew = rosterCrew.slice().map(c => calcQLots(c));
+			const preparedCrew = rosterCrew.slice();
 			if (crewMarkups.length > 0) {
 				preparedCrew.forEach(crew => {
 					crewMarkups.forEach(crewMarkup => {
@@ -356,7 +305,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			available: true,
 			optionText: 'Show max quipment',
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getTopQuipmentTableConfig(),
+			tableConfig: getTopQuipmentTableConfig(top),
 			renderTableCells: (crew: IRosterCrew) => <TopQuipmentScoreCells targetGroup={`${pageId}/targetClassItem`} allslots={rosterType === 'allCrew'} top={top[crew.max_rarity - 1]}  crew={crew} />
 		},
 		{

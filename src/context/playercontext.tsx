@@ -10,6 +10,8 @@ import { stripPlayerData } from '../utils/playerutils';
 import { BossBattlesRoot } from '../model/boss';
 import { ShuttleAdventure } from '../model/shuttle';
 import { Archetype20, ArchetypeBase, Archetype17 } from '../model/archetype';
+import { calcQLots } from '../utils/equipment';
+import { getItemBonuses, getItemWithBonus } from '../utils/itemutils';
 
 export interface PlayerContextData {
 	loaded: boolean;
@@ -76,6 +78,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const [input, setInput] = React.useState<PlayerData | undefined>(stripped);
 	const [loaded, setLoaded] = React.useState(false);
 
+	const quipment = coreData.items.filter(i => i.type === 14).map(i => getItemWithBonus(i));
+
 	React.useEffect(() => {
 		if (!input || !ship_schematics.length || !crew.length) return;
 
@@ -99,7 +103,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				}
 			}
 		}
-
+		
 		input.player.character.crew.forEach(crew => {
 			if (crew.active_status > 0) {
 				activeCrew.push({ id: crew.id, symbol: crew.symbol, rarity: crew.rarity, level: crew.level, equipment: crew.equipment.map((eq) => eq[0]), active_status: crew.active_status });
@@ -130,7 +134,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 		// preparedProfileData is expanded with useful data and helpers for DataCore tools
 		let preparedProfileData = {...strippedData};
-		prepareProfileData('PLAYER_CONTEXT', coreData.crew, preparedProfileData, dtImported);
+		prepareProfileData('PLAYER_CONTEXT', coreData.crew, preparedProfileData, dtImported, quipment);
 		setProfile(preparedProfileData);
 
 		if (preparedProfileData) {

@@ -7,8 +7,9 @@ import { BaseSkills, ComputedBuff, CrewMember, PlayerSkill, Skill } from '../mod
 import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
 import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
 //import { navigate } from 'gatsby';
-import { ItemBonusInfo } from './itemutils';
+import { ItemBonusInfo, ItemWithBonus } from './itemutils';
 import { EquipmentItem } from '../model/equipment';
+import { calcQLots } from './equipment';
 
 export function exportCrewFields(): ExportField[] {
 	return [
@@ -317,7 +318,7 @@ export function isImmortal(crew: PlayerCrew): boolean {
 
 export const PREPARE_MAX_RARITY = 6;
 
-export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number): PlayerCrew[] {
+export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number, quipment?: ItemWithBonus[]): PlayerCrew[] {
 	// Create a copy of crew instead of directly modifying the source (allcrew)
 	let templateCrew = JSON.parse(JSON.stringify(origCrew)) as PlayerCrew;
 	let outputcrew = [] as PlayerCrew[];
@@ -514,12 +515,13 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	outputcrew.forEach(f => {
 		f.highest_owned_rarity = maxowned;
 		f.highest_owned_level = maxlevel;
+		if (quipment) calcQLots(f, quipment, buffConfig, !f.have);
 	});
 
 	return outputcrew;
 }
 
-export function prepareProfileData(caller: string, allcrew: CrewMember[], playerData: PlayerData, lastModified) {
+export function prepareProfileData(caller: string, allcrew: CrewMember[], playerData: PlayerData, lastModified: Date, quipment?: ItemWithBonus[]) {
 	console.log("prepareProfileData enter...");
 	console.log("Caller: " + caller);
 
@@ -545,7 +547,7 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	let cidx = -1;
 
 	for (let c of allcrew) {
-		for (let crew of prepareOne(c, playerData, buffConfig)) {			
+		for (let crew of prepareOne(c, playerData, buffConfig, undefined, quipment)) {			
 			if (crew.have) {
 				if (!crew.id) {
 					crew.id = cidx--;
@@ -1466,4 +1468,15 @@ export function printPortalStatus<T extends CrewMember>(crew: T, showNever?: boo
 	}
 
 	return (withPortal ? "In Portal: " : "") + `${crew.in_portal ? "Yes" : "No"}${obstr}`;
+}
+
+export function getVoyageQuotient<T extends CrewMember>(crew: T) {
+    if (!crew.qpower) return 0;
+	const qpower = crew.qpower;
+    let power = 0;
+	for (let skill in crew.base_skills) {
+		power += qpower[skill].core + (0.5 * (qpower[skill].range_max + qpower[skill].range_min));
+	}
+	
+    return (crew.ranks.voyRank / power);
 }

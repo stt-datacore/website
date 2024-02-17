@@ -2,7 +2,9 @@ import CONFIG from '../components/CONFIG';
 import { CrewMember, EquipmentSlot, Skill } from '../model/crew';
 import { EquipmentItem, ICrewDemands, IDemand } from '../model/equipment';
 import { BuffBase, PlayerCrew, PlayerEquipmentItem } from '../model/player';
+import { applySkillBuff, getSkillOrder, qbitsToSlots } from './crewutils';
 import { ItemWithBonus, isQuipmentMatch } from './itemutils';
+import { BuffStatTable } from './voyageutils';
 
 export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[], crewSymbol: string): number {
 	let equipment = items.find(item => item.symbol === es.symbol);
@@ -343,4 +345,58 @@ export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemW
 			crew.quipmentScores[sk.name] = qps.map(m => Object.values(m.bonusInfo.bonuses).filter(f => f.skill === sk.name).map((n: Skill) => n.core + n.range_min + n.range_max)).flat().reduce((p, n) => p + n, 0) * crew.max_rarity;
 		}
 	});
+}
+
+
+export function calcQLots(crew: CrewMember, quipment: ItemWithBonus[], buffConfig?: BuffStatTable, allSlots?: boolean, nSlots?: number) {
+	//const allslots = rosterType === 'allCrew';
+	const q_bits = allSlots ? 1300 : crew.q_bits;
+	const slots = nSlots ?? qbitsToSlots(q_bits);
+	
+	const crewQuipment = quipment.filter(q => isQuipmentMatch(crew, q.item));
+	const skills = getSkillOrder(crew);
+	const qlots = {} as { [key: string]: EquipmentItem[] };
+	const qpower = {} as { [key: string]: Skill };
+
+	skills.forEach((skill) => {
+		qlots[skill] ??= [];				
+		
+		if (buffConfig) {
+			let buffed = applySkillBuff(buffConfig, skill, crew.base_skills[skill]);
+			qpower[skill] = {
+				core: buffed.core,
+				range_max: buffed.max,
+				range_min: buffed.min
+			}
+		}				
+		else {
+			qpower[skill] = {
+				... crew.base_skills[skill]
+			}
+		}
+
+		let skq = crewQuipment.filter(f => skill in f.bonusInfo.bonuses).map(m => ({ item: m.item, skill: m.bonusInfo.bonuses[skill] }));
+		if (skq?.length) {
+			skq.sort((a, b) => {
+				let ar = a.skill.core + a.skill.range_max + a.skill.range_min;
+				let br = b.skill.core + b.skill.range_max + b.skill.range_min;
+				return br - ar;
+			});
+			
+			for (let i = 0; i < slots; i++) {                
+				if (i < skq.length) {
+					qlots[skill].push(skq[i].item);
+					
+					qpower[skill].core += skq[i].skill.core;
+					qpower[skill].range_max += skq[i].skill.range_max;
+					qpower[skill].range_min += skq[i].skill.range_min;
+					qpower[skill].skill = skill;
+				}
+			}
+		}
+	});
+
+	crew.qlots = qlots;
+	crew.qpower = qpower;
+	return crew;
 }
