@@ -12,7 +12,6 @@ import { QuipmentScoreCells } from "./quipmentscores";
 export interface TopQuipmentScoreProps {
     crew: IRosterCrew;
     allslots?: boolean;
-    nSlots?: number;
     top: QuipmentScores;
     targetGroup: string;
 }
@@ -88,10 +87,9 @@ export const getTopQuipmentTableConfig = (top: QuipmentScores[]) => {
 }
 
 export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
-    const { targetGroup, top, allslots, crew, nSlots } = props;
+    const { targetGroup, top, allslots, crew } = props;
 
     const q_bits = allslots ? 1300 : crew.q_bits;
-    const slots = nSlots ?? qbitsToSlots(q_bits);
     
     const qlots = crew.qlots ?? {}
     const qpower = crew.qpower ?? {}
