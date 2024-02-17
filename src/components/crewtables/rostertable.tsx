@@ -28,6 +28,8 @@ import RosterSummary from './rostersummary';
 import { QuipmentScoreCells, getQuipmentTableConfig as getQuipmentTableConfig } from './views/quipmentscores';
 import { getItemWithBonus } from '../../utils/itemutils';
 import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from './views/topquipment';
+import { QuipmentToolsFilter } from './filters/quipmenttools';
+import { calcQLots } from '../../utils/equipment';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -201,7 +203,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 	const [crewFilters, setCrewFilters] = React.useState<ICrewFilter[]>([] as ICrewFilter[]);
 	
 	const [showBase, setShowBase] = React.useState<boolean>(false);
-
+	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined);
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
 	const quipment = globalContext.core.items.filter(f => f.type === 14 && !!f.max_rarity_requirement).map(m => getItemWithBonus(m));
 	
@@ -212,10 +214,10 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 
 		// Reset toggleable filters on roster type change
 		//	Otherwise hidden filters stay in effect when changing roster type
-		const resetList = [] as string[];
+		const resetList = ['quipmenttools'] as string[];
 		crewFilters.forEach(crewFilter => {
 			const toggleable = toggleableFilters.find(toggleableFilter => toggleableFilter.id === crewFilter.id);
-			if (toggleable && !toggleable.available) resetList.push(crewFilter.id);
+			if ((toggleable && !toggleable.available)) resetList.push(crewFilter.id);
 		});
 		resetList.forEach(filterId => {
 			const filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === filterId);
@@ -239,10 +241,24 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					});
 				});
 			}
+			preparedCrew.forEach((crew) => {
+				calcQLots(crew, quipment, globalContext.player.buffConfig, rosterType === 'allCrew', slots)
+			});
 			setPreparedCrew([...preparedCrew]);
 		};
 		applyMarkups();
-	}, [rosterCrew, crewMarkups]);
+	}, [slots, rosterCrew, crewMarkups]);
+
+	React.useEffect(() => {
+		if (!tableView.startsWith("qp_")) {
+			const filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === 'quipmenttools');
+		
+			if (filterIndex >= 0) {
+				crewFilters.splice(filterIndex, 1);
+				setCrewFilters([ ... crewFilters ]);
+			}
+		}
+	}, [tableView])
 
 	React.useEffect(() => {
 
@@ -293,6 +309,15 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			id: 'qp_score',
 			available: true,
 			optionText: 'Show quipment scores',
+			form: <QuipmentToolsFilter 
+					hideForm={true}
+					slots={slots}
+					setSlots={setSlots}
+					key='qpscore_tool'
+					pageId={pageId}												
+					crewFilters={crewFilters}
+					setCrewFilters={setCrewFilters}	
+				/>,
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
 			tableConfig: getQuipmentTableConfig(),			
 			renderTableCells: (crew: IRosterCrew) => <QuipmentScoreCells excludeSkills={false} top={top[crew.max_rarity - 1]} crew={crew} />
@@ -301,9 +326,23 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			id: 'qp_best',
 			available: true,
 			optionText: 'Show max quipment',
+			form: <QuipmentToolsFilter 
+					slots={slots}
+					setSlots={setSlots}
+					key='qpbest_tool'
+					pageId={pageId}												
+					crewFilters={crewFilters}
+					setCrewFilters={setCrewFilters}	
+				/>,
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
 			tableConfig: getTopQuipmentTableConfig(top),
-			renderTableCells: (crew: IRosterCrew) => <TopQuipmentScoreCells targetGroup={`${pageId}/targetClassItem`} allslots={rosterType === 'allCrew'} top={top[crew.max_rarity - 1]}  crew={crew} />
+			renderTableCells: 
+				(crew: IRosterCrew) => 
+					<TopQuipmentScoreCells 
+						targetGroup={`${pageId}/targetClassItem`} 
+						allslots={rosterType === 'allCrew'}
+						top={top[crew.max_rarity - 1]} 
+						crew={crew} />
 		},
 		{
 			id: 'crew_utility',
