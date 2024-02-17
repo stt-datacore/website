@@ -6,6 +6,7 @@ import { Shuttlers, Shuttle, ShuttleSeat } from './shuttleutils';
 import { ShuttleAdventure } from '../../model/shuttle';
 
 import allFactions from '../../../static/structured/factions.json';
+import { TinyStore } from '../../utils/tiny';
 
 type MissionsListProps = {
 	groupId: string;
@@ -16,16 +17,26 @@ type MissionsListProps = {
 	activeShuttles: ShuttleAdventure[];
 };
 
+interface MissionsListState {
+	data: Shuttle[];
+	column: string;
+	direction: 'ascending' | 'descending' | null
+}
+
 const MissionsList = (props: MissionsListProps) => {
 	const { groupId, shuttlers, setShuttlers, activeShuttles } = props;
 
 	const [editMission, setEditMission] = React.useState<Shuttle | undefined>(undefined);
 
-	const [state, dispatch] = React.useReducer(reducer, {
+	const tiny = TinyStore.getStore('missionslist');
+
+	const initialState = {
 		data: shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId),
-		column: null,
-		direction: null
-	});
+		column: tiny.getValue<string | null>('sortColumn', null),
+		direction: tiny.getValue<'ascending' | 'descending' | null>('sortDirection', 'ascending')
+	} as MissionsListState;
+
+	const [state, dispatch] = React.useReducer(reducer, initialState);
 	const { column, direction } = state;
 	const data: Shuttle[] = state.data;
 
@@ -344,12 +355,13 @@ const MissionsList = (props: MissionsListProps) => {
 		</React.Fragment>
 	);
 
-	function reducer(state, action): any {
+	function reducer(state: MissionsListState, action): any {
 		switch (action.type) {
 			case 'UPDATE_DATA':
 				//const defaultColumn = action.data.filter(shuttle => shuttle.priority > 0).length ? 'priority' : 'name';
 				const updatedData = action.data.slice();
-				firstSort(updatedData, action.column ?? 'name', action.direction ?? 'ascending');
+				firstSort(updatedData, action.column ?? state.column ?? 'name', (action.direction ?? state.direction ?? 'ascending') === 'descending');
+
 				return {
 					column: action.column ?? 'name',
 					data: updatedData,
@@ -357,6 +369,8 @@ const MissionsList = (props: MissionsListProps) => {
 				};
 			case 'CHANGE_SORT':
 				if (!action.column) {
+					firstSort(state.data, state.column, state.direction === 'descending');
+
 					return {
 						column: state.column,
 						data: state.data,
@@ -364,15 +378,25 @@ const MissionsList = (props: MissionsListProps) => {
 					};
 				}
 				if (state.column === action.column && action.column !== 'priority') {
+
+					var newdir = state.direction === 'ascending' ? 'descending' : 'ascending';					
+					tiny.setValue('sortDirection', newdir, true);
+
+					const data = state.data.slice();
+					firstSort(data, state.column, newdir === 'descending');
+				
 					return {
 						...state,
-						data: state.data.slice().reverse(),
-						direction: state.direction === 'ascending' ? 'descending' : 'ascending'
+						data: data,
+						direction: newdir
 					};
 				}
 				else {
+					tiny.setValue('sortColumn', action.column, true);
+
 					const data = state.data.slice();
 					firstSort(data, action.column, action.reverse);
+
 					return {
 						column: action.column,
 						data: data,
@@ -384,9 +408,11 @@ const MissionsList = (props: MissionsListProps) => {
 		}
 	}
 
-	function firstSort(data: any[], column: string, reverse: boolean = false): void {
-		data.sort((a, b) => {
-			if (column === 'name') return a.name.localeCompare(b.name);
+	function firstSort(data: any[], column: string, reverse: boolean = false) {
+		const mult = reverse ? -1 : 1;
+
+		return data.sort((a, b) => {
+			if (column === 'name') return mult * a.name.localeCompare(b.name);
 			let aValue = column.split('.').reduce((prev, curr) => prev.hasOwnProperty(curr) ? prev[curr] : undefined, a);
 			let bValue = column.split('.').reduce((prev, curr) => prev.hasOwnProperty(curr) ? prev[curr] : undefined, b);
 			// Always show selected missions at the top when sorting by priority
@@ -399,9 +425,8 @@ const MissionsList = (props: MissionsListProps) => {
 				bValue = b.seats.length;
 			}
 			// Tiebreaker goes to name ascending
-			if (aValue === bValue) return a.name.localeCompare(b.name);
-			if (reverse) bValue - aValue;
-			return aValue - bValue;
+			if (aValue === bValue) return mult * a.name.localeCompare(b.name);
+			return mult * (aValue - bValue);
 		});
 	}
 
