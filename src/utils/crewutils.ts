@@ -1406,7 +1406,7 @@ export function getSkillOrder<T extends CrewMember>(crew: T) {
 }
 
 export function printSkillOrder(crew: PlayerCrew | CrewMember) {
-	return getSkillOrder(crew).join("/");
+	return crew.skill_order.join("/");
 }
 
 
