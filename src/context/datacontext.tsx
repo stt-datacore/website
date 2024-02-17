@@ -1,21 +1,20 @@
 import React from 'react';
 import { Gauntlet } from '../model/gauntlets';
-import { CrewMember, QuipmentScores, Skill, SkillQuipmentScores } from '../model/crew';
+import { CrewMember, QuipmentScores, SkillQuipmentScores } from '../model/crew';
 import { Ship, Schematics, BattleStations } from '../model/ship';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { Collection, Constellation, KeystoneBase, Polestar } from '../model/game-elements';
-import { BuffStatTable, IBuffStat, calculateMaxBuffs } from '../utils/voyageutils';
+import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
 import { Mission } from '../model/missions';
 import { Icon } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 import { TranslationSet } from '../model/traits';
 import { ContinuumMission } from '../model/continuum';
 import { calcQLots, calcQuipmentScore } from '../utils/equipment';
-import { getItemWithBonus, isQuipmentMatch } from '../utils/itemutils';
+import { getItemWithBonus } from '../utils/itemutils';
 import { EventInstance } from '../model/events';
-import { Faction } from '../model/player';
 import { StaticFaction } from '../model/shuttle';
-import { qbitsToSlots, getSkillOrder, applySkillBuff, getVoyageQuotient } from '../utils/crewutils';
+import { getSkillOrder, getVoyageQuotient } from '../utils/crewutils';
 
 export type ValidDemands =
 	'all_buffs' |
@@ -344,6 +343,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 	function processCrew(result: CrewMember[]): CrewMember[] {
 		result.forEach((item) => {
+			item.skill_order = getSkillOrder(item);
 			item.action.cycle_time = item.action.cooldown + item.action.duration;
 			if (typeof item.date_added === 'string') {
 				item.date_added = new Date(item.date_added);

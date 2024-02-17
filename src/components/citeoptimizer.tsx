@@ -12,7 +12,7 @@ import { CrewMember } from '../model/crew';
 import { LockedProspect } from '../model/game-elements';
 import { CiteEngine, CiteMode, PlayerCrew, PlayerData } from '../model/player';
 import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity, VoyageImprovement } from '../model/worker';
-import { applyCrewBuffs, getSkillOrder, gradeToColor, printPortalStatus, printSkillOrder } from '../utils/crewutils';
+import { applyCrewBuffs, gradeToColor, printPortalStatus, printSkillOrder } from '../utils/crewutils';
 import { appelate } from '../utils/misc';
 import { TinyStore } from '../utils/tiny';
 import CONFIG from './CONFIG';
@@ -747,7 +747,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						const crew = cop;
 						const cqp = Math.round(((row.quipmentScore ?? 0) / maxQuip) * 1000) / 10;
 						const skp = engine === 'beta_tachyon_pulse' && !!crew ? printSkillOrder(crew).replace(/_skill/g, '') : 'no_order';
-						const sko = engine === 'beta_tachyon_pulse' && !!crew ? getSkillOrder(crew) : 'no_order';
+						const sko = engine === 'beta_tachyon_pulse' && !!crew ? crew.skill_order : 'no_order';
 						const isProspect = !!crew?.prospect;
 
 						return (!!crew && !!sko && !!skp &&
@@ -831,7 +831,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 													justifyContent: "space-evenly",
 													alignItems: "center"
 												}}>
-													{getSkillOrder(row).map((mskill, idx) => (
+													{row.skill_order.map((mskill, idx) => (
 													<img
 														title={appelate(mskill)}
 														key={"skimage"+idx+mskill}

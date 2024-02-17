@@ -87,7 +87,7 @@ const skillSum = (crew: IQuestCrew, skill?: string): number => {
         return crew[skill].core + crew[skill].max + crew[skill].min;
     }
     else {
-        let sko = getSkillOrder(crew);
+        let sko = crew.skill_order;
         return sko.map(sk => crew[sk].core + crew[sk].min + crew[sk].max).reduce((p: number, n: number) => p + n, 0);
     }
 }
@@ -96,8 +96,8 @@ const skillSum = (crew: IQuestCrew, skill?: string): number => {
 export function findAllCombos(crew: IQuestCrew[], path: MissionChallenge[], required?: number[]) {
 
     crew = [...crew].sort((a, b) => {
-        let askill = getSkillOrder(a);
-        let bskill = getSkillOrder(b);
+        let askill = a.skill_order;
+        let bskill = b.skill_order;
         if (askill[0] === bskill[0]) {
             return -1 * (skillSum(a, askill[0]) - skillSum(b, bskill[0]));
         }
@@ -548,7 +548,7 @@ const QuestSolver = {
                     applyCrewBuffs(crew, config.buffs);
                 }
                 else {
-                    for (let skill of getSkillOrder(crew)) {
+                    for (let skill of crew.skill_order) {
                         if ("skills" in crew && skill in crew.skills) {
                             crew[skill].core = crew.skills[skill].core;
                             crew[skill].min = crew.skills[skill].range_min;

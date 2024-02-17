@@ -8,7 +8,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';
 import { ITableConfigRow } from '../../components/searchabletable';
 import ProspectPicker from '../../components/prospectpicker';
-import { oneCrewCopy, applyCrewBuffs, getSkillOrder, qbitsToSlots, applySkillBuff } from '../../utils/crewutils';
+import { oneCrewCopy, applyCrewBuffs } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { IRosterCrew, RosterType, ICrewMarkup, ICrewFilter } from './model';
@@ -26,11 +26,8 @@ import { CrewUtilityForm, getCrewUtilityTableConfig, CrewUtilityCells } from './
 
 import RosterSummary from './rostersummary';
 import { QuipmentScoreCells, getQuipmentTableConfig as getQuipmentTableConfig } from './views/quipmentscores';
-import { calcQuipmentScore } from '../../utils/equipment';
-import { getItemWithBonus, isQuipmentMatch } from '../../utils/itemutils';
-import { CrewMember, QuipmentScores, Skill } from '../../model/crew';
+import { getItemWithBonus } from '../../utils/itemutils';
 import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from './views/topquipment';
-import { EquipmentItem } from '../../model/equipment';
 
 interface IRosterTableContext {
 	pageId: string;
