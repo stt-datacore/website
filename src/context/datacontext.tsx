@@ -1,6 +1,6 @@
 import React from 'react';
 import { Gauntlet } from '../model/gauntlets';
-import { CrewMember, QuipmentScores, SkillQuipmentScores } from '../model/crew';
+import { CrewMember, QuipmentScores, Skill, SkillQuipmentScores } from '../model/crew';
 import { Ship, Schematics, BattleStations } from '../model/ship';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { Collection, Constellation, KeystoneBase, Polestar } from '../model/game-elements';
@@ -10,11 +10,12 @@ import { Icon } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 import { TranslationSet } from '../model/traits';
 import { ContinuumMission } from '../model/continuum';
-import { calcQuipmentScore } from '../utils/equipment';
-import { getItemWithBonus } from '../utils/itemutils';
+import { calcQLots, calcQuipmentScore } from '../utils/equipment';
+import { getItemWithBonus, isQuipmentMatch } from '../utils/itemutils';
 import { EventInstance } from '../model/events';
 import { Faction } from '../model/player';
 import { StaticFaction } from '../model/shuttle';
+import { qbitsToSlots, getSkillOrder, applySkillBuff, getVoyageQuotient } from '../utils/crewutils';
 
 export type ValidDemands =
 	'all_buffs' |
@@ -241,8 +242,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (unsatisfied.includes('items') && unsatisfied.includes('cadet')) {
 				postProcessCadetItems(newData);
 			}
-			if (unsatisfied.includes('items') && unsatisfied.includes('crew')) {
+			if (unsatisfied.includes('items') && unsatisfied.includes('crew') && unsatisfied.includes('all_buffs')) {
 				postProcessQuipmentScores(newData.crew, newData.items);
+				calculateQPower(newData.crew, newData.items, newData.all_buffs);
 				newData.topQuipmentScores = calculateTopQuipment(newData.crew);
 			}
 			if (unsatisfied.includes('crew') && unsatisfied.some(u => u.startsWith("translation_"))) {
@@ -266,6 +268,14 @@ export const DataProvider = (props: DataProviderProperties) => {
 		return false;
 	}
 
+	function calculateQPower(crew: CrewMember[], items: EquipmentItem[], buffs: BuffStatTable) {
+		const quipment = items.filter(i => i.type === 14).map(i => getItemWithBonus(i));
+		crew.forEach((c) => {
+			calcQLots(c, quipment, buffs, true);
+			c.voyageQuotient = getVoyageQuotient(c);
+		});
+	}
+
 	function calculateTopQuipment(crew: CrewMember[]) {
 
 		const scores = [] as QuipmentScores[];
@@ -273,6 +283,16 @@ export const DataProvider = (props: DataProviderProperties) => {
 			scores.push({
 				quipmentScore: 0,
 				quipmentScores: {
+					command_skill: 0,
+					diplomacy_skill: 0,
+					medicine_skill: 0,
+					science_skill: 0,
+					engineering_skill: 0,
+					security_skill: 0,
+					trait_limited: 0
+				} as SkillQuipmentScores,
+				voyageQuotient: 0,
+				voyageQuotients: {
 					command_skill: 0,
 					diplomacy_skill: 0,
 					medicine_skill: 0,
@@ -298,12 +318,25 @@ export const DataProvider = (props: DataProviderProperties) => {
 				if (c.quipmentScores[key] > skscore[key]) {
 					skscore[key] = c.quipmentScores[key];
 				}
-			}	
+			}
+			const vqscore = scores[r].voyageQuotients as SkillQuipmentScores;
+
+			if (!c.voyageQuotient) continue;
+			if (scores[r].voyageQuotient === 0 || c.voyageQuotient < (scores[r].voyageQuotient ?? 0)) {
+				scores[r].voyageQuotient = c.voyageQuotient;
+			}
+			if (!c.voyageQuotients) continue;
+			for (let key of qkeys) {				
+				if (c.voyageQuotients[key] > vqscore[key]) {
+					vqscore[key] = c.voyageQuotients[key];
+				}
+			}
 		}
 		
 		return scores;
 	}
 
+	
 	function reset(): boolean {
 		setData({ ...defaultData });
 		return true;
