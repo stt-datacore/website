@@ -349,7 +349,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			optionText: 'Show quipment scores',
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
 			tableConfig: getQuipmentTableConfig(),			
-			renderTableCells: (crew: IRosterCrew) => <QuipmentScoreCells excludeSkills={false} top={top} crew={crew} />
+			renderTableCells: (crew: IRosterCrew) => <QuipmentScoreCells excludeSkills={false} top={top[crew.max_rarity - 1]} crew={crew} />
 		},
 		{
 			id: 'qp_best',
@@ -357,7 +357,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			optionText: 'Show max quipment',
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
 			tableConfig: getTopQuipmentTableConfig(),
-			renderTableCells: (crew: IRosterCrew) => <TopQuipmentScoreCells targetGroup={`${pageId}/targetClassItem`} allslots={rosterType === 'allCrew'} top={top}  crew={crew} />
+			renderTableCells: (crew: IRosterCrew) => <TopQuipmentScoreCells targetGroup={`${pageId}/targetClassItem`} allslots={rosterType === 'allCrew'} top={top[crew.max_rarity - 1]}  crew={crew} />
 		},
 		{
 			id: 'crew_utility',

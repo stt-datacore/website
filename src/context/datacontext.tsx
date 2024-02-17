@@ -1,6 +1,6 @@
 import React from 'react';
 import { Gauntlet } from '../model/gauntlets';
-import { CrewMember, QuipmentScores } from '../model/crew';
+import { CrewMember, QuipmentScores, SkillQuipmentScores } from '../model/crew';
 import { Ship, Schematics, BattleStations } from '../model/ship';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { Collection, Constellation, KeystoneBase, Polestar } from '../model/game-elements';
@@ -64,7 +64,7 @@ export interface ICoreData {
 	ship_schematics: Schematics[];
 	ships: Ship[];
 	translation: TranslationSet;
-	topQuipmentScores: QuipmentScores;
+	topQuipmentScores: QuipmentScores[];
 };
 
 export interface ICoreContext extends ICoreData {
@@ -96,12 +96,7 @@ const defaultData = {
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
 	translation: {} as TranslationSet,
-	topQuipmentScores: {
-		quipmentScore: 0,
-		quipmentScores: {
-
-		}
-	}
+	topQuipmentScores: [] as QuipmentScores[]
 } as ICoreData;
 
 export const defaultCore = {
@@ -273,34 +268,40 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 	function calculateTopQuipment(crew: CrewMember[]) {
 
-		const newTop = {
-			quipmentScore: 0,
-			quipmentScores: {
-				command_skill: 0,
-				diplomacy_skill: 0,
-				medicine_skill: 0,
-				science_skill: 0,
-				engineering_skill: 0,
-				security_skill: 0,
-				trait_limited: 0
-			}
-		};
-		
-		const qkeys = Object.keys(newTop.quipmentScores);
+		const scores = [] as QuipmentScores[];
+		for (let i = 0; i < 5; i++) {
+			scores.push({
+				quipmentScore: 0,
+				quipmentScores: {
+					command_skill: 0,
+					diplomacy_skill: 0,
+					medicine_skill: 0,
+					science_skill: 0,
+					engineering_skill: 0,
+					security_skill: 0,
+					trait_limited: 0
+				} as SkillQuipmentScores
+			} as QuipmentScores);
+		}
+
+		const qkeys = Object.keys(scores[0].quipmentScores as SkillQuipmentScores);
 
 		for (let c of crew) {
+			const r = c.max_rarity - 1;			
+			const skscore = scores[r].quipmentScores as SkillQuipmentScores;
+
 			if (!c.quipmentScore || !c.quipmentScores) continue;
-			if (c.quipmentScore > newTop.quipmentScore) {
-				newTop.quipmentScore = c.quipmentScore;
+			if (c.quipmentScore > (scores[r].quipmentScore ?? 0)) {
+				scores[r].quipmentScore = c.quipmentScore;
 			}
-			for (let key of qkeys) {
-				if (c.quipmentScores[key] > newTop.quipmentScores[key]) {
-					newTop.quipmentScores[key] = c.quipmentScores[key];
+			for (let key of qkeys) {				
+				if (c.quipmentScores[key] > skscore[key]) {
+					skscore[key] = c.quipmentScores[key];
 				}
 			}	
 		}
 		
-		return newTop as QuipmentScores;
+		return scores;
 	}
 
 	function reset(): boolean {
