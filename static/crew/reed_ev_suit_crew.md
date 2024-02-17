@@ -3,7 +3,7 @@ name: EV Suit Reed
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 26/04/2022
 published: true
