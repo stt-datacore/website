@@ -1,5 +1,6 @@
 import { ShipBonus, ShipAction as ShipAction } from "./ship";
 import { Icon } from "./game-elements";
+import { EquipmentItem } from "./equipment";
 
 export interface CrossFuseTarget {
     symbol: string;
@@ -17,13 +18,17 @@ export interface SkillQuipmentScores {
     engineering_skill: number;
     medicine_skill: number;
     science_skill: number;
-    trait_limited: number;
+    trait_limited: number;    
 };
 
 export interface QuipmentScores {
     /** Used internally. Not part of source data.  */
     quipmentScore?: number;
     quipmentScores?: SkillQuipmentScores;
+    voyageQuotient?: number;
+    voyageQuotients?: SkillQuipmentScores;
+    qlots?: { [key: string]: EquipmentItem[] };
+    qpower?: { [key: string]: Skill };
 }
 
 /**
