@@ -381,7 +381,7 @@ const BetaTachyon = {
                 if (!fo) {
                     tripleRare.push({
                         skillorder: csk,
-                        skills: getSkillOrder(ac),
+                        skills: ac.skill_order,
                         rarity: 0,
                         count: 1
                     });

@@ -73,7 +73,7 @@ export interface ShipAction {
   duration: number;
   
   /** Used internally. Not part of source data. */
-  cycle_time?: number;
+  cycle_time: number;
 
   bonus_type: number;
   crew: number;

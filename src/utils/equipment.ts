@@ -2,7 +2,7 @@ import CONFIG from '../components/CONFIG';
 import { CrewMember, EquipmentSlot, Skill } from '../model/crew';
 import { EquipmentItem, ICrewDemands, IDemand } from '../model/equipment';
 import { BuffBase, PlayerCrew, PlayerEquipmentItem } from '../model/player';
-import { applySkillBuff, getSkillOrder, qbitsToSlots } from './crewutils';
+import { applySkillBuff, qbitsToSlots } from './crewutils';
 import { ItemWithBonus, isQuipmentMatch } from './itemutils';
 import { BuffStatTable } from './voyageutils';
 
@@ -354,7 +354,7 @@ export function calcQLots(crew: CrewMember, quipment: ItemWithBonus[], buffConfi
 	const slots = nSlots ?? qbitsToSlots(q_bits);
 	
 	const crewQuipment = quipment.filter(q => isQuipmentMatch(crew, q.item));
-	const skills = getSkillOrder(crew);
+	const skills = crew.skill_order;
 	const qlots = {} as { [key: string]: EquipmentItem[] };
 	const qpower = {} as { [key: string]: Skill };
 
