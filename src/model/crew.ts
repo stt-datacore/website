@@ -10,19 +10,20 @@ export interface MarkdownInfo {
     author: string;
     modified: Date;
 }
+export interface SkillQuipmentScores {
+    command_skill: number;
+    security_skill: number;
+    diplomacy_skill: number;
+    engineering_skill: number;
+    medicine_skill: number;
+    science_skill: number;
+    trait_limited: number;
+};
 
 export interface QuipmentScores {
     /** Used internally. Not part of source data.  */
     quipmentScore?: number;
-    quipmentScores?: {
-        command_skill: number;
-        security_skill: number;
-        diplomacy_skill: number;
-        engineering_skill: number;
-        medicine_skill: number;
-        science_skill: number;
-        trait_limited: number;
-    };
+    quipmentScores?: SkillQuipmentScores;
 }
 
 /**
