@@ -287,36 +287,6 @@ export interface QuestSolverCacheItem {
     result: QuestSolverResult;    
 }
 
-
-export interface GauntletCalcConfig {
-    settings: GauntletSettings;
-    context: IDefaultGlobal;
-    crew: (PlayerCrew | CrewMember)[];
-    
-    gauntlet: Gauntlet;
-    
-    buffMode: PlayerBuffMode;
-
-    rankByPair?: string;
-    range_max?: number;
-    filter?: GauntletFilterProps;
-    textFilter?: string
-    featuredSkill?: string;
-    top?: number;
-    maxResults?: number
-
-    onlyActiveRound?: boolean;
-    hideOpponents?: boolean;
-
-}
-
-export interface GauntletCalcResults {
-    error?: string;
-    gauntlet: Gauntlet;
-    matchedCrew: PlayerCrew[];
-    pairGroups: PairGroup[];
-}
-
 export const EMPTY_SKILL = {
 	skill: undefined,
 	core: 0,

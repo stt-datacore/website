@@ -15,7 +15,7 @@ import { CrewMember } from '../model/crew';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
 import { PlayerCrew } from '../model/player';
 import { EquipmentWorkerConfig, EquipmentWorkerResults } from '../model/worker';
-import { downloadData, oneCrewCopy, qbitsToSlots, rankToSkill, skillToRank } from '../utils/crewutils';
+import { downloadData, oneCrewCopy, qbitsToSlots, shortToSkill, skillToShort } from '../utils/crewutils';
 import { calcItemDemands, canBuildItem } from '../utils/equipment';
 import { appelate } from '../utils/misc';
 import { TinyStore } from '../utils/tiny';
@@ -202,7 +202,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				}
 
 				if (skills?.length) {
-					if (!skills.some(skill => (rankToSkill(skill?.toUpperCase()) ?? '') in c.base_skills)) return;
+					if (!skills.some(skill => (shortToSkill(skill?.toUpperCase()) ?? '') in c.base_skills)) return;
 				}
 
 				if (traits?.length) {
@@ -619,7 +619,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 								let bmap = getItemBonuses(f as EquipmentItem);
 								if (bmap?.bonuses) {
 									sp = sp[1].split(",");
-									if (!Object.keys(bmap?.bonuses).some(sk => sp.some(b => b.toLowerCase() === skillToRank(sk)?.toLowerCase()))) return false;
+									if (!Object.keys(bmap?.bonuses).some(sk => sp.some(b => b.toLowerCase() === skillToShort(sk)?.toLowerCase()))) return false;
 								}
 							}
 						}
@@ -786,7 +786,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			return {
 				key: r.toLowerCase(),
 				value: r.toLowerCase(),
-				text: appelate(rankToSkill(r) ?? '')
+				text: appelate(shortToSkill(r) ?? '')
 			}
 		})
 
