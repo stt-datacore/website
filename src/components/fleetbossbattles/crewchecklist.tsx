@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dropdown, Form } from 'semantic-ui-react';
+import { Button, Dropdown, Form, Popup } from 'semantic-ui-react';
 
 import { RetrievalOptions } from '../../model/game-elements';
 
@@ -26,7 +26,12 @@ const CrewChecklist = (props: CrewChecklistProps) => {
 		populatePlaceholders();
 		return (<></>);
 	}
-
+	const copyFull = () => {
+		let str = props.attemptedCrew.map(symbol => bossCrew.find(c => c.symbol === symbol)?.name ?? '').join(", ");
+		if (navigator.clipboard) {
+			navigator.clipboard.writeText(str);
+		}
+	}
 	return (
 		<div style={{ margin: '2em 0' }}>
 			Keep track of crew who have been tried for this combo chain.
@@ -43,6 +48,17 @@ const CrewChecklist = (props: CrewChecklistProps) => {
 				onFocus={() => { if (!options.initialized) populateOptions(); }}
 				onChange={(e, { value }) => updateAttempts(value) }
 			/>
+			<div style={{marginTop:"0.5em"}}>
+				<Popup
+					content='Copied!'
+					on='click'
+					position='right center'
+					size='tiny'
+					trigger={
+						<Button icon='clipboard' content='Copy attempted crew to clipboard' onClick={() => copyFull()} />
+					}
+				/>
+			</div>
 		</div>
 	);
 
