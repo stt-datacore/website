@@ -241,9 +241,11 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					});
 				});
 			}
-			preparedCrew.forEach((crew) => {
-				calcQLots(crew, quipment, globalContext.player.buffConfig, rosterType === 'allCrew', slots)
-			});
+			if (slots) {
+				preparedCrew.forEach((crew) => {
+					calcQLots(crew, quipment, globalContext.player.buffConfig, rosterType === 'allCrew', slots)
+				});
+			}
 			setPreparedCrew([...preparedCrew]);
 		};
 		applyMarkups();
