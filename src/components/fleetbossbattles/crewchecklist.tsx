@@ -27,7 +27,7 @@ const CrewChecklist = (props: CrewChecklistProps) => {
 		return (<></>);
 	}
 	const copyFull = () => {
-		let str = props.attemptedCrew.map(symbol => bossCrew.find(c => c.symbol === symbol)?.name ?? '').join(", ");
+		let str = "Attempted: " + props.attemptedCrew.map(symbol => bossCrew.find(c => c.symbol === symbol)?.name ?? '').join(", ");
 		if (navigator.clipboard) {
 			navigator.clipboard.writeText(str);
 		}
