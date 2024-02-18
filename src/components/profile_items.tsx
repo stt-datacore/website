@@ -175,6 +175,30 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		this.tiny.setValue('crewType', value);
 		this.setState({ ... this.state, crewType: value });
 	}
+
+	private findFirstCrew = (symbol: string) => {
+		const { playerData } = this.context.player;
+		const { crewType } = this.state;
+
+		const found = playerData?.player.character.crew.find(d => {
+			if (d.symbol !== symbol) return false;
+
+			if (crewType === 'frozen') {
+				if (!d.immortal || d.immortal <= 0) return false;
+			}
+			else if (crewType === 'quippable') {
+				if (!d.q_bits || d.q_bits < 100) return false;
+			}
+			else {
+				if (d.immortal !== -1) return false;
+			}
+
+			return true;
+		});
+
+		return found;
+	}
+
 	private makeCrewChoices = () => {
 		const crewChoices = [] as DropdownItemProps[];
 		const { crew } = this.context.core;
@@ -185,20 +209,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 		if (this.props?.crewMode && crew?.length) {
 			[...crew].sort((a, b) => a.name.localeCompare(b.name)).forEach((c) => {
-
 				if (playerData && ['owned', 'quippable', 'frozen'].includes(crewType)) {
-					const found = playerData.player.character.crew.find(d => d.symbol === c.symbol);
-					if (!found) return;
-
-					if (crewType === 'frozen') {
-						if (!found.immortal || found.immortal <= 0) return;
-					}
-					else if (crewType === 'quippable') {
-						if (!found.q_bits || found.q_bits < 100) return;
-					}
-					else {
-						if (found.immortal !== -1) return;
-					}
+					if (!this.findFirstCrew(c.symbol)) return;
 				}
 
 				if (skills?.length) {
@@ -218,6 +230,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					{
 						key: c.symbol,
 						value: c.symbol,
+						text: c.name,
 						content: <React.Fragment>
 							<div style={{
 								display: 'grid',
@@ -337,6 +350,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 
 	private makeTrialCrew = (crew: PlayerCrew) => {
+		if (!crew) return undefined;
 		crew = oneCrewCopy({ ... this.context.core.crew.find(f => f.symbol === crew.symbol) as PlayerCrew, ...crew }) as PlayerCrew;
 		let trial = this.state.trials?.find(f => f.symbol === crew.symbol)
 		if (!trial) {
@@ -902,7 +916,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		});
 
 		const crewChoices = this.makeCrewChoices();
-		const selCrew = (!!crewMode && !!crewSelection && !!playerData && crewType === 'quippable') ? this.makeTrialCrew(playerData.player.character.crew.find(c => c.symbol === crewSelection) as PlayerCrew) : undefined;
+		const selCrew = (!!crewMode && !!crewSelection && !!playerData && crewType === 'quippable') ? this.makeTrialCrew(this.findFirstCrew(crewSelection) as PlayerCrew) : undefined;
 
 		if (this.props.noRender) return <></>
 
@@ -931,7 +945,10 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							{!!crewMode &&
 								<>
 									<div style={{ marginRight: "0.75em" }}>
-										<Dropdown search selection clearable
+										<Dropdown 
+											search 
+											selection
+											clearable
 											placeholder={"Search for a crew member..."}
 											labeled
 											options={crewChoices}
