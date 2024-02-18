@@ -1,5 +1,5 @@
 import React from "react";
-import { Dropdown, DropdownItemProps, Rating } from "semantic-ui-react";
+import { Dropdown, DropdownItemProps, Icon, Rating } from "semantic-ui-react";
 import { PlayerCrew } from "../../model/player";
 import { qbitsToSlots } from "../../utils/crewutils";
 import { CrewMember } from "../../model/crew";
@@ -51,8 +51,15 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
                                     gridArea: "text",
                                     textAlign: "left",
                                     marginBottom: "0.25em",
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    gap: "0.25em",
+                                    justifyContent: 'flex-start',
+                                    alignItems: 'center'
                                 }}
                             >
+                                {"immortal" in c && c.immortal > 0 && 
+                                <Icon name={'snowflake'} size={'small'} />}
                                 {c.name}
                             </div>
                             <div style={{ gridArea: "rarity", display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>

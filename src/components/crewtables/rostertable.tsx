@@ -241,15 +241,10 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					});
 				});
 			}
-			if (slots) {
-				preparedCrew.forEach((crew) => {
-					calcQLots(crew, quipment, globalContext.player.buffConfig, rosterType === 'allCrew', slots)
-				});
-			}
 			setPreparedCrew([...preparedCrew]);
 		};
 		applyMarkups();
-	}, [slots, rosterCrew, crewMarkups]);
+	}, [rosterCrew, crewMarkups]);
 
 	React.useEffect(() => {
 		if (!tableView.startsWith("qp_")) {
@@ -258,9 +253,16 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			if (filterIndex >= 0) {
 				crewFilters.splice(filterIndex, 1);
 				setCrewFilters([ ... crewFilters ]);
-			}
+			}			
 		}
-	}, [tableView])
+		else {
+			const newCrew = preparedCrew?.slice() ?? rosterCrew;
+			newCrew.forEach((crew) => {
+				calcQLots(crew, quipment, globalContext.player.buffConfig, rosterType === 'allCrew', slots)
+			});
+			setPreparedCrew([...newCrew]);
+		}
+	}, [tableView, slots])
 
 	React.useEffect(() => {
 

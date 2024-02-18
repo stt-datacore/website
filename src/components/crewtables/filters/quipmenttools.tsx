@@ -17,10 +17,10 @@ type QuipmentToolsFilterProps = {
 export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 	const { hideForm, crewFilters, setCrewFilters, slots, setSlots } = props;
 
-	const [slotFilter, setSlotFilter] = React.useState<string>(slots ? `slot${slots}` : '');
+	const [slotFilter, setSlotFilter] = React.useState<string>(slots ? `slot${slots}` : 'slot0');
 
 	const slotFilterOptions = [
-		{ key: 'natural', value: '', text: 'Quip natural slots' },
+		{ key: 'slot0', value: 'slot0', text: 'Quip natural slots' },
 		{ key: 'slot1', value: 'slot1', text: 'Quip at most 1 slot' },
 		{ key: 'slot2', value: 'slot2', text: 'Quip at most 2 slots' },
 		{ key: 'slot3', value: 'slot3', text: 'Quip at most 3 slots' },
@@ -36,7 +36,7 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 		if (index >= 0) crewFilters.splice(index, 1);
         crewFilters.push({ id: 'quipmenttools', filterTest: filterCrew });
         const fidx = slotFilterOptions.findIndex(option => option.value === slotFilter);
-        if (fidx >= 1) {
+        if (fidx >= 0) {
             setSlots(fidx);
         }
         else {
@@ -52,8 +52,7 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 	return (
 		<Form.Field style={{marginBottom: "0.25em"}}>
 			<Dropdown
-				placeholder={props.altTitle ?? 'Set slots'}
-				clearable
+				placeholder={props.altTitle ?? 'Set slots'}				
 				selection
 				multiple={false}
 				options={slotFilterOptions}
