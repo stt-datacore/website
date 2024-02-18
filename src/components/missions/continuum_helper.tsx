@@ -232,11 +232,13 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 if (!considerFrozen && f.immortal > 0) return false;
                 if (qpOnly && f.q_bits < 100) return false; 
                 return true;
-            });
+            }).sort((a, b) => a.immortal - b.immortal);
 
             if (considerUnowned) {
                 crew = crew.concat(context.player.playerData?.player.character.unOwnedCrew ?? []);
             }
+
+            crew = crew.filter((c, i) => crew?.findIndex(c2 => c2.id === c.id) === i);
 
             crew.sort((a, b) => {
                 let an = a.q_bits ?? 0;
@@ -625,11 +627,11 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                     maxWidth: isMobile ? "100%" : "50%",
                                     minWidth: isMobile ? "100%" : "25%"
                                 }}
-                                placeholder={"Select up to 2 quest crew..."}
+                                placeholder={"Select up to 3 quest crew..."}
                                 setSelection={setSelCrew}
                                 selection={selCrew}
                                 multiple={true}
-                                maxSelection={2}
+                                maxSelection={3}
                                 />
                             
                         </div>
