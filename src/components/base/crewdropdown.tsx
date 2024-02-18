@@ -24,10 +24,11 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
 
     React.useEffect(() => {
         const newChoices = [] as DropdownItemProps[];
-
+        
         pool.forEach((c) => {
+            const crewKey = c.symbol + "_" + (c.id?.toString() ?? '_');
             newChoices.push({
-                key: c.symbol,
+                key: crewKey,
                 value: c.id,
                 text: c.name,
                 content: (
