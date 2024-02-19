@@ -4,7 +4,7 @@ import { ITableConfigRow } from "../../searchabletable";
 import CONFIG from "../../CONFIG";
 import { Table } from "semantic-ui-react";
 import { QuipmentScores } from "../../../model/crew";
-import { gradeToColor, numberToGrade, skillToShort } from "../../../utils/crewutils";
+import { gradeToColor, numberToGrade, qbitsToSlots, skillToShort } from "../../../utils/crewutils";
 
 
 
@@ -12,10 +12,11 @@ export interface QuipmentScoreProps {
     crew: IRosterCrew;
     top: QuipmentScores;
     excludeSkills: boolean;
+    excludeQBits?: boolean;
 }
 
-export const getQuipmentTableConfig = () => {
-    const config = [] as ITableConfigRow[];
+export const getQuipmentTableConfig = (excludeQBits?: boolean) => {
+    const config = [] as ITableConfigRow[];    
     config.push({ width: 1, column: 'quipmentScore', title: "Overall", reverse: true });
     config.push({ width: 1, column: 'quipmentScores.trait_limited', title: "Specialty", reverse: true });
 
@@ -39,11 +40,12 @@ export const getQuipmentTableConfig = () => {
         })
     })    
 
+    if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: 'Q-Bits', reverse: true });
     return config;
 }
 
 export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
-    const { excludeSkills, crew, top } = props;
+    const { excludeQBits, excludeSkills, crew, top } = props;
 
     const quipment_score = crew.quipmentScore ?? 0;
     const top_quipment = top.quipmentScore ?? 1;
@@ -53,6 +55,8 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
 
     const q_grade = quipment_score / top_quipment;
     const tr_grade = trait_score / top_trait;
+    const qbslots = crew.q_bits === undefined ? 4 : qbitsToSlots(crew.q_bits);
+
     return <React.Fragment>
         <Table.Cell>
             <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: "0.5em"}}>
@@ -91,6 +95,19 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
                 </div>     
             </Table.Cell>
         })}
+        {!excludeQBits && <Table.Cell>
+           {qbslots !== undefined && <div title={
+                crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
+                }>
+                <div>
+                    {crew.immortal !== -1 ? 'N/A' : crew.q_bits}
+                </div>
+                {crew.immortal === -1 &&
+                <div style={{fontSize:"0.8em"}}>
+                    ({qbslots} Slot{qbslots != 1 ? 's' : ''})
+                </div>}
+            </div> || <>N/A</>}
+        </Table.Cell>}
     </React.Fragment>
 }
 

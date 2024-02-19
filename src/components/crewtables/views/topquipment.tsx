@@ -14,12 +14,15 @@ export interface TopQuipmentScoreProps {
     allslots?: boolean;
     top: QuipmentScores;
     targetGroup: string;
+    excludeQBits?: boolean;
 }
 
-export const getTopQuipmentTableConfig = (top: QuipmentScores[]) => {
+export const getTopQuipmentTableConfig = (top: QuipmentScores[], excludeQBits?: boolean) => {
     const config = [] as ITableConfigRow[];
     config.push({ width: 1, column: 'quipmentScore', title: "Overall", reverse: true });
     config.push({ width: 1, column: 'quipmentScores.trait_limited', title: "Specialty", reverse: true });
+    if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: 'Q-Bits', reverse: true });
+
     // config.push({ 
     //     width: 1, 
     //     column: 'vqx', 
@@ -81,16 +84,14 @@ export const getTopQuipmentTableConfig = (top: QuipmentScores[]) => {
             customCompare: (a: IRosterCrew, b: IRosterCrew) => qpComp(a, b, skill)
         });
     
-    })
-
+    })    
     return config;
 }
 
 export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
-    const { targetGroup, top, allslots, crew } = props;
+    const { excludeQBits, targetGroup, top, allslots, crew } = props;
 
     const q_bits = allslots ? 1300 : crew.q_bits;
-    
     const qlots = crew.qlots ?? {}
     const qpower = crew.qpower ?? {}
     const skills = Object.keys(CONFIG.SKILLS);
@@ -120,7 +121,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
     const printQ = voyQ;
     const qGrade = 1 - (topQ / voyQ);
     return <React.Fragment>
-        <QuipmentScoreCells top={top} crew={crew} excludeSkills={true} />
+        <QuipmentScoreCells top={top} crew={crew} excludeSkills={true} excludeQBits={excludeQBits} />
         {/* <Table.Cell>
             <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                 <div style={{color: gradeToColor(qGrade) ?? undefined}} >
