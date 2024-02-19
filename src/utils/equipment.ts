@@ -352,7 +352,7 @@ export function calcQLots(crew: CrewMember, quipment: ItemWithBonus[], buffConfi
 	//const allslots = rosterType === 'allCrew';
 	const q_bits = max_qbits ? 1300 : crew.q_bits;
 	const qbslots = qbitsToSlots(q_bits);
-	const slots = max_slots ? Math.min(qbslots, max_slots) : qbslots;
+	const slots = max_slots ? (max_slots === 4 ? 4 : Math.min(qbslots, max_slots)) : qbslots;
 	
 	const crewQuipment = quipment.filter(q => isQuipmentMatch(crew, q.item));
 	const skills = crew.skill_order;

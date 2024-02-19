@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Dropdown } from 'semantic-ui-react';
+import { Form, Dropdown, Checkbox } from 'semantic-ui-react';
 
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
 import { printPortalStatus } from '../../../utils/crewutils';
@@ -10,12 +10,14 @@ type QuipmentToolsFilterProps = {
 	setCrewFilters: (crewFilters: ICrewFilter[]) => void;
     slots?: number;
     setSlots: (value?: number) => void;
+	pstMode: boolean;
+    setPstMode: (value: boolean) => void;
 	altTitle?: string;
     hideForm?: boolean;
 };
 
 export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
-	const { hideForm, crewFilters, setCrewFilters, slots, setSlots } = props;
+	const { hideForm, crewFilters, setCrewFilters, slots, setSlots, pstMode, setPstMode } = props;
 
 	const [slotFilter, setSlotFilter] = React.useState<string>(slots ? `slot${slots}` : 'slot0');
 
@@ -24,7 +26,7 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 		{ key: 'slot1', value: 'slot1', text: 'Quip at most 1 slot' },
 		{ key: 'slot2', value: 'slot2', text: 'Quip at most 2 slots' },
 		{ key: 'slot3', value: 'slot3', text: 'Quip at most 3 slots' },
-		{ key: 'slot4', value: 'slot4', text: 'Quip all 4 slots' },
+		{ key: 'slot4', value: 'slot4', text: 'Show at max slots' },
 	];
 
 	const filterCrew = (crew: IRosterCrew) => {
@@ -50,7 +52,7 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
     }
 
 	return (
-		<Form.Field style={{marginBottom: "0.25em"}}>
+		<Form.Field style={{marginBottom: "1em", display: 'flex', flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center', gap: "1em"}}>
 			<Dropdown
 				placeholder={props.altTitle ?? 'Set slots'}				
 				selection
@@ -60,6 +62,9 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 				onChange={(e, { value }) => setSlotFilter(value as string)}
 				closeOnChange
 			/>
+			<Checkbox checked={pstMode} onChange={(e, { checked }) => setPstMode(!!checked)}
+				label={'Skill Order Mode'} />
+				
 		</Form.Field>
 	);
 };

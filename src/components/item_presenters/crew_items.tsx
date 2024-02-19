@@ -22,6 +22,7 @@ export interface CrewItemsViewProps {
     printNA?: string | JSX.Element;
     targetGroup?: string;
     locked?: boolean;
+    vertical?: boolean;
 }
 
 
@@ -56,7 +57,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
     const crew = props.crew as PlayerCrew;
     const quip = !!props.quipment;
     
-    const { targetGroup, locked } = props;
+    const { targetGroup, locked, vertical } = props;
 
     const maxqIdx = (!quip ? 0 : (crew ? qbitsToSlots(crew.q_bits) : 0)) - 1;
 
@@ -180,16 +181,17 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
         ||context.core.items?.length &&
             <div style={{
                 display: "flex",
-                flexDirection: "row",
+                flexDirection: vertical ? 'column' : 'row',
                 justifyContent: "center",
                 alignItems: "center",
                 margin: 0,
                 padding: 0
             }}>
             {equip.map((item, idx) => (
-                    <CrewItemDisplay                       
+                    <CrewItemDisplay               
+                        vertical={!!vertical}        
                         targetGroup={targetGroup}
-                        style={(quip && maxqIdx < idx) ? { opacity: locked ? "0.50" : "0.25"} : undefined} 
+                        style={(quip && maxqIdx < idx) ? { opacity: locked ? "0.50" : "0.25" } : undefined} 
                         locked={locked && (quip && maxqIdx < idx)}
                         itemSize={props.itemSize} 
                         mobileSize={props.mobileSize} 
@@ -208,7 +210,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 export interface CrewItemDisplayProps extends CrewItemsViewProps {
     equipment?: EquipmentItem;
     expiration?: string | JSX.Element;
-
+    vertical: boolean;
     itemSize?: number;
     mobileSize?: number;
     style?: React.CSSProperties;
@@ -226,7 +228,7 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
 
     render() {
         const entry = this.props;
-        const { targetGroup } = entry;
+        const { targetGroup, vertical } = entry;
 
         const itemSize = window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (this.props.mobileSize ?? 24) : (this.props.itemSize ?? 32);
 
@@ -239,6 +241,8 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
             flexDirection: "row",
             justifyContent: "center",            
             margin: window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
+            marginTop: vertical ? 0 : undefined,
+            marginBottom: vertical ? 0 : undefined,
             //...this.props.style
         }}>
             <div style={{display:'flex', flexDirection:'column', alignItems: 'center', justifyContent: "center"}}>
