@@ -8,16 +8,24 @@ import { qbitsToSlots, skillToShort } from "../../../utils/crewutils";
 import { CrewItemsView } from "../../item_presenters/crew_items";
 import CrewStat from "../../crewstat";
 import { QuipmentScoreCells } from "./quipmentscores";
+import { BuffStatTable } from "../../../utils/voyageutils";
+import { ItemWithBonus } from "../../../utils/itemutils";
+import { calcQLots } from "../../../utils/equipment";
+import { appelate } from "../../../utils/misc";
 
 export interface TopQuipmentScoreProps {
     crew: IRosterCrew;
     allslots?: boolean;
+    slots?: number;
     top: QuipmentScores;
     targetGroup: string;
+    buffConfig: BuffStatTable;
+    quipment: ItemWithBonus[];
     excludeQBits?: boolean;
+    pstMode: boolean;
 }
 
-export const getTopQuipmentTableConfig = (top: QuipmentScores[], excludeQBits?: boolean) => {
+export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolean, excludeQBits: boolean) => {
     const config = [] as ITableConfigRow[];
     config.push({ width: 1, column: 'quipmentScore', title: "Overall", reverse: true });
     config.push({ width: 1, column: 'quipmentScores.trait_limited', title: "Specialty", reverse: true });
@@ -45,58 +53,103 @@ export const getTopQuipmentTableConfig = (top: QuipmentScores[], excludeQBits?: 
     //     }
     // });
 
-    const qpComp = (a: IRosterCrew, b: IRosterCrew, skill: string) => {
-        if ((a.qpower && skill in a.qpower) && (b.qpower && skill in b.qpower)) {
-            let askill = a.qpower[skill];
-            let bskill = b.qpower[skill];
+    const qpComp = (a: IRosterCrew, b: IRosterCrew, skill: string | number) => {
+        let askname = undefined as string | undefined;
+        let bskname = undefined as string | undefined;
+        
+        if (typeof skill === 'number') {
+            if (skill < a.skill_order.length) {
+                askname = a.skill_order[skill];
+            }
+            if (skill < b.skill_order.length) {
+                bskname = b.skill_order[skill];
+            }
+        }
+        else {
+            askname = bskname = skill;
+        }
+
+        if ((askname && a.qpower && askname in a.qpower) && (bskname && b.qpower && bskname in b.qpower)) {
+            let askill = a.qpower[askname];
+            let bskill = b.qpower[bskname];
 
             let at = (askill.core + (0.5 * (askill.range_max + askill.range_min)));
             let bt = (bskill.core + (0.5 * (bskill.range_max + bskill.range_min)));
 
             return at - bt;
         }
-        else if (a.qpower && skill in a.qpower) {
+        else if (askname && a.qpower && skill in a.qpower) {
             return 1;
         }
-        else if (b.qpower && skill in b.qpower) {
+        else if (bskname && b.qpower && skill in b.qpower) {
             return -1;
         }
         else {
             return 0;
         }
     };
-    Object.keys(CONFIG.SKILLS).forEach((skill) => {
-        config.push({ 
-            width: 1, 
-            column: 'skill_' + skill, 
-            title: <div style={{display: 'inline-block'}}>
-            <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-                <img
-                    style={{ height: '16px'}}
-                    src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`}
-                    />
-                <span>
-                &nbsp;{skillToShort(skill)}
-                </span>                
-            </div>
-            </div>, 
-            reverse: true,
-            customCompare: (a: IRosterCrew, b: IRosterCrew) => qpComp(a, b, skill)
+
+    if (pstMode) {
+        ['primary', 'secondary', 'tertiary'].forEach((skill, idx) => {
+            config.push({ 
+                width: 1, 
+                column: 'skill_' + skill, 
+                title: <div style={{display: 'inline-block'}}>
+                <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                    <span>
+                    {appelate(skill)}
+                    </span>                
+                </div>
+                </div>, 
+                reverse: true,
+                customCompare: (a: IRosterCrew, b: IRosterCrew) => qpComp(a, b, idx)
+            });
+        
         });
+    }
+    else {
+        Object.keys(CONFIG.SKILLS).forEach((skill) => {
+            config.push({ 
+                width: 1, 
+                column: 'skill_' + skill, 
+                title: <div style={{display: 'inline-block'}}>
+                <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                    <img
+                        style={{ height: '16px'}}
+                        src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`}
+                        />
+                    <span>
+                    &nbsp;{skillToShort(skill)}
+                    </span>                
+                </div>
+                </div>, 
+                reverse: true,
+                customCompare: (a: IRosterCrew, b: IRosterCrew) => qpComp(a, b, skill)
+            });
+        
+        });
+    }
     
-    })    
     return config;
 }
 
 export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
-    const { excludeQBits, targetGroup, top, allslots, crew } = props;
+    const { pstMode, quipment, excludeQBits, targetGroup, top, allslots, crew, buffConfig, slots } = props;
 
     const q_bits = allslots ? 1300 : crew.q_bits;
     const qlots = crew.qlots ?? {}
     const qpower = crew.qpower ?? {}
     const skills = Object.keys(CONFIG.SKILLS);
+    
+    calcQLots(crew, quipment, buffConfig, allslots, slots);
 
-    const printCell = (skill: string) => {        
+    const printCell = (skill: string | number) => {
+
+        if (typeof skill === 'number') {
+            if (skill >= crew.skill_order.length) return <></>;
+            skill = crew.skill_order[skill];
+        }
+
         return <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -105,9 +158,11 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
             justifyContent: 'center'
         }}>
             <CrewItemsView 
+                vertical={!pstMode}
                 crew={{ ...crew, q_bits, kwipment_expiration: [], kwipment: qlots[skill].map(q => Number(q.kwipment_id) as number) }} 
                 targetGroup={targetGroup}
                 itemSize={32}
+                locked
                 quipment={true} />
             <CrewStat
                 quipmentMode={true}
@@ -132,14 +187,21 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
                 </div>
             </div>
         </Table.Cell> */}
-        {skills.map((skill) => {
+        {!pstMode && skills.map((skill) => {
             
             if (!(skill in crew.base_skills)) {
                 return <Table.Cell></Table.Cell>
             }
             return (
                 <Table.Cell key={skill + "_vqntqp"}>
-                    {skills.length >= 1 && printCell(skill)}
+                    {printCell(skill)}
+                </Table.Cell>)
+        })}
+        {pstMode && ['primary', 'secondary', 'tertiary'].map((skill, idx) => {
+                        
+            return (
+                <Table.Cell key={skill + "_vqntqp"}>
+                    {printCell(idx)}
                 </Table.Cell>)
         })}
     </React.Fragment>
