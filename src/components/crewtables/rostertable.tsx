@@ -256,13 +256,11 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			}			
 		}
 		else {
-			const newCrew = (preparedCrew?.slice() ?? rosterCrew).filter(f => rosterType === 'allCrew' || (!!f.immortal && f.immortal < 0));
-			if (newCrew.length !== preparedCrew?.length) {
-				newCrew.forEach((crew) => {
-					calcQLots(crew, quipment, globalContext.player.buffConfig, rosterType === 'allCrew', slots)
-				});
-				setPreparedCrew([...newCrew]);
-			}
+			const newCrew = (preparedCrew ?? rosterCrew).slice();
+			newCrew.forEach((crew) => {
+				calcQLots(crew, quipment, globalContext.player.buffConfig, rosterType === 'allCrew', slots)
+			});
+			setPreparedCrew([...newCrew]);
 		}
 	}, [tableView, slots, rosterType])
 
