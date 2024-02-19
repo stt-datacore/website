@@ -28,7 +28,7 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 	];
 
 	const filterCrew = (crew: IRosterCrew) => {
-        return crew.have ? crew.immortal === -1 : true;
+        return crew.immortal === undefined || crew.immortal < 0;
 	};
 
 	React.useEffect(() => {
