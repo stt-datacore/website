@@ -203,7 +203,8 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 	const [crewFilters, setCrewFilters] = React.useState<ICrewFilter[]>([] as ICrewFilter[]);
 	
 	const [showBase, setShowBase] = React.useState<boolean>(false);
-	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined);
+	const [pstMode, setPstMode] = useStateWithStorage<boolean>('/quipmentTools/pstMode', false, { rememberForever: true });
+	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
 	const quipment = globalContext.core.items.filter(f => f.type === 14 && !!f.max_rarity_requirement).map(m => getItemWithBonus(m));
 	
@@ -255,12 +256,11 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 				setCrewFilters([ ... crewFilters ]);
 			}			
 		}
-		else {
-			const newCrew = (preparedCrew ?? rosterCrew).slice();
-			newCrew.forEach((crew) => {
+		else if (preparedCrew) {
+			preparedCrew.forEach((crew) => {
 				calcQLots(crew, quipment, globalContext.player.buffConfig, rosterType === 'allCrew', slots)
 			});
-			setPreparedCrew([...newCrew]);
+			setPreparedCrew([ ... preparedCrew ]);
 		}
 	}, [tableView, slots, rosterType])
 
@@ -314,6 +314,8 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			available: true,
 			optionText: 'Show quipment scores',
 			form: <QuipmentToolsFilter 
+					pstMode={pstMode}
+					setPstMode={setPstMode}
 					hideForm={true}
 					slots={slots}
 					setSlots={setSlots}
@@ -337,6 +339,8 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			available: true,
 			optionText: 'Show max quipment',
 			form: <QuipmentToolsFilter 
+					pstMode={pstMode}
+					setPstMode={setPstMode}
 					slots={slots}
 					setSlots={setSlots}
 					key='qpbest_tool'
@@ -345,10 +349,14 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					setCrewFilters={setCrewFilters}	
 				/>,
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getTopQuipmentTableConfig(top, rosterType === 'allCrew'),
+			tableConfig: getTopQuipmentTableConfig(top, pstMode, rosterType === 'allCrew'),
 			renderTableCells: 
 				(crew: IRosterCrew) => 
 					<TopQuipmentScoreCells 
+						pstMode={pstMode}
+						slots={slots}
+						buffConfig={globalContext.player.buffConfig ?? globalContext.core.all_buffs}
+						quipment={quipment}
 						excludeQBits={rosterType === 'allCrew'}
 						targetGroup={`${pageId}/targetClassItem`} 
 						allslots={rosterType === 'allCrew'}
