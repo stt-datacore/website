@@ -289,7 +289,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 					engineering_skill: 0,
 					security_skill: 0,
 					trait_limited: 0
-				} as SkillQuipmentScores,
+				} as SkillQuipmentScores,				
 				voyage_quotient: 0,
 				voyage_quotients: {
 					command_skill: 0,
@@ -329,6 +329,31 @@ export const DataProvider = (props: DataProviderProperties) => {
 				if (c.voyage_quotients[key] > vqscore[key]) {
 					vqscore[key] = c.voyage_quotients[key];
 				}
+			}
+		}
+
+		for (let c of crew) {
+			const r = c.max_rarity - 1;			
+			const skscore = scores[r].quipment_scores as SkillQuipmentScores;
+			const escore = scores[r].quipment_score as number;
+			if (c.quipment_score && escore) {
+				c.quipment_grade = c.quipment_score / escore;
+			}
+			if (c.quipment_scores) {
+				Object.keys(c.quipment_scores).forEach((key) => {
+					if (key in skscore) {
+						c.quipment_grades ??= {
+							command_skill: 0,
+							diplomacy_skill: 0,
+							medicine_skill: 0,
+							science_skill: 0,
+							engineering_skill: 0,
+							security_skill: 0,
+							trait_limited: 0
+						}
+						c.quipment_grades[key] = (c.quipment_scores as SkillQuipmentScores)[key] / skscore[key];
+					}
+				})
 			}
 		}
 		

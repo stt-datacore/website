@@ -24,7 +24,9 @@ export interface SkillQuipmentScores {
 export interface QuipmentScores {
     /** Used internally. Not part of source data.  */
     quipment_score?: number;
+    quipment_grade?: number;
     quipment_scores?: SkillQuipmentScores;
+    quipment_grades?: SkillQuipmentScores;
     voyage_quotient?: number;
     voyage_quotients?: SkillQuipmentScores;
     q_lots?: { [key: string]: EquipmentItem[] };
