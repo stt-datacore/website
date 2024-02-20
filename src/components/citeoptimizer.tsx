@@ -55,7 +55,7 @@ type CiteOptimizerState = {
 	prospects: LockedProspect[];
 	appliedProspects: PlayerCrew[];
 	unownedProspects: boolean;
-	hideEV?: boolean;
+	showEV: boolean;
 };
 
 export class StatLabel extends React.Component<StatLabelProps> {
@@ -109,7 +109,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			prospects,
 			unownedProspects: this.tiny.getValue('unowned', false) ?? false,
 			appliedProspects: [],
-			hideEV: this.tiny.getValue('hideEV', true) ?? true
+			showEV: this.tiny.getValue('showEV', false) ?? false
 		};
 	}
 
@@ -633,6 +633,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const [paginationPage, setPaginationPage] = this.createStateAccessors<number>(training ? 'trainingPage' : 'citePage');
 		const [otherPaginationPage, setOtherPaginationPage] = this.createStateAccessors<number>(training ? 'citePage' : 'trainingPage');
 		const [paginationRows, setPaginationRows] = this.createStateAccessors<number>('paginationRows', true);
+		const [showEV, setShowEV] = this.createStateAccessors<boolean>('showEV', true);
 		const [currentCrew, setCurrentCrew] = this.createStateAccessors<(PlayerCrew | CrewMember | null | undefined)>('currentCrew');
 		const engine = this.state.citeMode?.engine ?? 'original';
 		const skoMap = this.state.skoMap;
@@ -647,7 +648,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			// }
 		}
 		const maxQuip = data.map(d => d.quipment_score ?? 0).reduce((p, n) => p > n ? p : n, 0);
-		const { sort, direction, hideEV } = this.state;
+		const { sort, direction } = this.state;
 		data = this.sortcrew(data ?? [], training, engine);
 
 		return (<div style={{overflowX: "auto"}}>
@@ -670,12 +671,12 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							sorted={sort === 'rarity' ? direction : undefined}>
 							Rarity
 						</Table.HeaderCell>
-						{(engine !== 'beta_tachyon_pulse' || !hideEV) && <Table.HeaderCell 
+						{(engine !== 'beta_tachyon_pulse' || showEV) && <Table.HeaderCell 
 							onClick={(e) => sort === 'finalEV' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('finalEV')}
 							sorted={sort === 'finalEV' ? direction : undefined}>
 							Final EV
 						</Table.HeaderCell>}
-						{!training && (engine !== 'beta_tachyon_pulse' || !hideEV) &&
+						{!training && (engine !== 'beta_tachyon_pulse' || showEV) &&
 						<React.Fragment>
 							<Table.HeaderCell
 								onClick={(e) => sort === 'remainingEV' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('remainingEV')}
@@ -780,11 +781,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								<Table.Cell>
 									<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
 								</Table.Cell>
-								{(engine !== 'beta_tachyon_pulse' || !hideEV) &&<Table.Cell>
+								{(engine !== 'beta_tachyon_pulse' || showEV) &&<Table.Cell>
 									{Math.ceil(training ? (row.addedEV ?? row.totalEVContribution ?? 0) : (row.totalEVContribution ?? 0))}
 								</Table.Cell>}
 								{
-									!training && (engine !== 'beta_tachyon_pulse' || !hideEV) &&
+									!training && (engine !== 'beta_tachyon_pulse' || showEV) &&
 									<React.Fragment>
 										<Table.Cell>
 											{Math.ceil(row.totalEVRemaining ?? 0)}
@@ -958,6 +959,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		if (!this.context.player.playerData) return <></>;
 		const buffConfig = calculateBuffConfig(this.context.player.playerData.player);
 		const [citeMode, setCiteMode] = this.createStateAccessors<CiteMode>('citeMode');
+		const [showEV, setShowEV] = this.createStateAccessors<boolean>('showEV', true);
 		const { engine } = citeMode;
 		const { prospects, unownedProspects } = this.state;
 
@@ -1148,7 +1150,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								setCurrent: this.setSettings,
 								defaultOptions: defaultSettings
 								}} />
-							<Checkbox label={'Show EV Columns'} checked={!this.state.hideEV} onChange={(e, { checked }) => this.setState({ ... this.state, hideEV: !checked }) } />
+							<Checkbox label={'Show EV Columns'} checked={showEV} onChange={(e, { checked }) => setShowEV(!!checked) } />
 						</>}
 							
 					</div>
