@@ -241,8 +241,8 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
             flexDirection: "row",
             justifyContent: "center",            
             margin: window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
-            marginTop: vertical ? 0 : undefined,
-            marginBottom: vertical ? 0 : undefined,
+            marginTop: vertical ? 0 : window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
+            marginBottom: vertical ? 0 : window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
             //...this.props.style
         }}>
             <div style={{display:'flex', flexDirection:'column', alignItems: 'center', justifyContent: "center"}}>
