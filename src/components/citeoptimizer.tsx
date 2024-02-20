@@ -12,7 +12,7 @@ import { CrewMember } from '../model/crew';
 import { LockedProspect } from '../model/game-elements';
 import { CiteEngine, CiteMode, PlayerCrew, PlayerData } from '../model/player';
 import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity, VoyageImprovement } from '../model/worker';
-import { applyCrewBuffs, gradeToColor, printPortalStatus, printSkillOrder } from '../utils/crewutils';
+import { applyCrewBuffs, gradeToColor, numberToGrade, printPortalStatus, printSkillOrder } from '../utils/crewutils';
 import { appelate } from '../utils/misc';
 import { TinyStore } from '../utils/tiny';
 import CONFIG from './CONFIG';
@@ -55,6 +55,7 @@ type CiteOptimizerState = {
 	prospects: LockedProspect[];
 	appliedProspects: PlayerCrew[];
 	unownedProspects: boolean;
+	hideEV?: boolean;
 };
 
 export class StatLabel extends React.Component<StatLabelProps> {
@@ -107,7 +108,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			crewSkills: {},
 			prospects,
 			unownedProspects: this.tiny.getValue('unowned', false) ?? false,
-			appliedProspects: []
+			appliedProspects: [],
+			hideEV: this.tiny.getValue('hideEV', true) ?? true
 		};
 	}
 
@@ -645,7 +647,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			// }
 		}
 		const maxQuip = data.map(d => d.quipment_score ?? 0).reduce((p, n) => p > n ? p : n, 0);
-		const { sort, direction } = this.state;
+		const { sort, direction, hideEV } = this.state;
 		data = this.sortcrew(data ?? [], training, engine);
 
 		return (<div style={{overflowX: "auto"}}>
@@ -668,12 +670,12 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							sorted={sort === 'rarity' ? direction : undefined}>
 							Rarity
 						</Table.HeaderCell>
-						{<Table.HeaderCell 
+						{(engine !== 'beta_tachyon_pulse' || !hideEV) && <Table.HeaderCell 
 							onClick={(e) => sort === 'finalEV' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('finalEV')}
 							sorted={sort === 'finalEV' ? direction : undefined}>
 							Final EV
 						</Table.HeaderCell>}
-						{!training &&
+						{!training && (engine !== 'beta_tachyon_pulse' || !hideEV) &&
 						<React.Fragment>
 							<Table.HeaderCell
 								onClick={(e) => sort === 'remainingEV' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('remainingEV')}
@@ -695,11 +697,6 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						{engine === 'beta_tachyon_pulse' &&
 							<React.Fragment>
 							<Table.HeaderCell
-								onClick={(e) => sort === 'eventScore' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('eventScore')}
-								sorted={sort === 'eventScore' ? direction : undefined}>
-								Events
-							</Table.HeaderCell>
-							<Table.HeaderCell
 								onClick={(e) => sort === 'amTraits' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('amTraits')}
 								sorted={sort === 'amTraits' ? direction : undefined}>
 								Antimatter<br />Traits
@@ -717,7 +714,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							<Table.HeaderCell
 								onClick={(e) => sort === 'quipment_score' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('quipment_score')}
 								sorted={sort === 'quipment_score' ? direction : undefined}>
-								Quipment Score
+								Quipment<br />Score
 							</Table.HeaderCell>
 							</React.Fragment>
 							}
@@ -745,7 +742,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						}
 						
 						const crew = cop;
-						const cqp = Math.round(((row.quipment_score ?? 0) / maxQuip) * 1000) / 10;
+						const crew_quipment_score = Math.round(((row.quipment_score ?? 0) / maxQuip) * 1000) / 10;
 						const skp = engine === 'beta_tachyon_pulse' && !!crew ? printSkillOrder(crew).replace(/_skill/g, '') : 'no_order';
 						const sko = engine === 'beta_tachyon_pulse' && !!crew ? crew.skill_order : 'no_order';
 						const isProspect = !!crew?.prospect;
@@ -783,11 +780,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								<Table.Cell>
 									<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
 								</Table.Cell>
-								{<Table.Cell>
+								{(engine !== 'beta_tachyon_pulse' || !hideEV) &&<Table.Cell>
 									{Math.ceil(training ? (row.addedEV ?? row.totalEVContribution ?? 0) : (row.totalEVContribution ?? 0))}
 								</Table.Cell>}
 								{
-									!training && 
+									!training && (engine !== 'beta_tachyon_pulse' || !hideEV) &&
 									<React.Fragment>
 										<Table.Cell>
 											{Math.ceil(row.totalEVRemaining ?? 0)}
@@ -802,9 +799,6 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								</Table.Cell>
 								{engine === 'beta_tachyon_pulse' &&
 									<React.Fragment>
-										<Table.Cell>
-											{row.events}
-										</Table.Cell>
 										<Table.Cell>
 											<Popup trigger={<b>{row.amTraits?.length}</b>} content={row.amTraits?.join(', ')} />
 										</Table.Cell>
@@ -881,10 +875,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										</div>
 										</Table.Cell>
 										<Table.Cell>
-											<div style={{
-												color: gradeToColor(cqp / 100) ?? undefined
+											<div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: "0.25em"}}>
+											<span style={{
+												color: gradeToColor(crew_quipment_score / 100) ?? undefined
 											}}>
-												{cqp.toLocaleString()}
+												{numberToGrade(crew_quipment_score / 100)}
+											</span>
+											<sub><i>({crew_quipment_score.toLocaleString()})</i></sub>
 											</div>
 										</Table.Cell>
 									</React.Fragment>
@@ -1142,7 +1139,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							/>
 
 						{engine === 'beta_tachyon_pulse' && 
-						
+						<>
 						<BetaTachyonSettingsPopup
 							isOpen={this.state.settingsOpen}
 							setIsOpen={this.setSettingsOpen}
@@ -1150,7 +1147,10 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								current: this.state.betaTachyonSettings,
 								setCurrent: this.setSettings,
 								defaultOptions: defaultSettings
-								}} />}
+								}} />
+							<Checkbox label={'Show EV Columns'} checked={!this.state.hideEV} onChange={(e, { checked }) => this.setState({ ... this.state, hideEV: !checked }) } />
+						</>}
+							
 					</div>
 				</Segment>
 				<Segment>
