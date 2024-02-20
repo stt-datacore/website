@@ -507,7 +507,7 @@ const BetaTachyon = {
                     }
                 });
                 
-                calcQuipmentScore(crew, quipment, true);
+                //calcQuipmentScore(crew, quipment, true);
                 crew.collectionsIncreased = mcols.map(mc => mc.name);
                 crew.totalEVContribution = evibe;
                 crew.evPerCitation = evibe / crew.max_rarity;
