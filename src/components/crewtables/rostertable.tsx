@@ -235,17 +235,20 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 		// Apply roster markups, i.e. add sortable fields to crew
 		const applyMarkups = async () => {
 			const preparedCrew = rosterCrew.slice();
-			if (crewMarkups.length > 0) {
-				preparedCrew.forEach(crew => {
-					crewMarkups.forEach(crewMarkup => {
+			preparedCrew.forEach(crew => {
+				if (crewMarkups.length > 0) {
+						crewMarkups.forEach(crewMarkup => {
 						crewMarkup.applyMarkup(crew);
 					});
-				});
-			}
+				}
+				if (tableView.startsWith("qp_")) {
+					calcQLots(crew, quipment, globalContext.player.buffConfig, rosterType === 'allCrew', slots);
+				}					
+			});			
 			setPreparedCrew([...preparedCrew]);
 		};
 		applyMarkups();
-	}, [rosterCrew, crewMarkups]);
+	}, [rosterCrew, crewMarkups, slots, rosterType, tableView]);
 
 	React.useEffect(() => {
 		if (!tableView.startsWith("qp_")) {
@@ -256,13 +259,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 				setCrewFilters([ ... crewFilters ]);
 			}			
 		}
-		else if (preparedCrew) {
-			preparedCrew.forEach((crew) => {
-				calcQLots(crew, quipment, globalContext.player.buffConfig, rosterType === 'allCrew', slots)
-			});
-			setPreparedCrew([ ... preparedCrew ]);
-		}
-	}, [tableView, slots, rosterType])
+	}, [tableView]);
 
 	React.useEffect(() => {
 
@@ -314,6 +311,9 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			available: true,
 			optionText: 'Show quipment scores',
 			form: <QuipmentToolsFilter 
+					maxxed={rosterType === 'allCrew'}
+					quipment={quipment}
+					buffConfig={globalContext.player.buffConfig ?? globalContext.core.all_buffs}
 					pstMode={pstMode}
 					setPstMode={setPstMode}
 					hideForm={true}
@@ -339,6 +339,9 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			available: true,
 			optionText: 'Show max quipment',
 			form: <QuipmentToolsFilter 
+					maxxed={rosterType === 'allCrew'}
+					quipment={quipment}
+					buffConfig={globalContext.player.buffConfig ?? globalContext.core.all_buffs}
 					pstMode={pstMode}
 					setPstMode={setPstMode}
 					slots={slots}
