@@ -11,6 +11,7 @@ import * as localForage from 'localforage';
 import { InitialOptions } from '../model/game-elements';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew } from '../model/player';
+import { appelate } from '../utils/misc';
 
 const filterTypeOptions = [
     { key : '0', value : 'Exact', text : 'Exact match only' },
@@ -156,7 +157,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 						onClick={() => onHeaderClick(cell)}
 						textAlign={cell.width === 1 ? 'center' : 'left'}
 					>
-						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{column.replace('_',' ').replace('.length', '')}</small></>}
+						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{appelate(column.replace('.length', ''))}</small></>}
 					</Table.HeaderCell>
 				))}
 			</Table.Row>
