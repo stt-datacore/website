@@ -141,7 +141,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
     const qpower = crew.qpower ?? {}
     const skills = Object.keys(CONFIG.SKILLS);
     
-    calcQLots(crew, quipment, buffConfig, allslots, slots);
+    // calcQLots(crew, quipment, buffConfig, allslots, slots);
 
     const printCell = (skill: string | number) => {
 
