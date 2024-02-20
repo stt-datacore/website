@@ -3,7 +3,7 @@ name: Captive Bashir
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal: true
 date: 10/04/2019
 published: true
