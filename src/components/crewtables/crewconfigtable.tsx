@@ -36,9 +36,10 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	const showTraitMatches = !!crewFilters.find(crewFilter => crewFilter.id === 'traits_matched');
 
 	const pseudos = ['name'];
-	if (rosterType === 'myCrew') pseudos.push('level');
+	if (rosterType === 'myCrew') pseudos.push('level', 'q_bits');
 	if (rosterType === 'allCrew' && playerData) pseudos.push('highest_owned_rarity');
-	pseudos.push('events', 'collections.length');
+	pseudos.push('quipment_score');
+	pseudos.push('collections.length');
 	pseudos.push('date_added');
 
 	const tableConfig: ITableConfigRow[] = [

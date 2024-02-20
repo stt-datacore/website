@@ -23,12 +23,12 @@ export interface SkillQuipmentScores {
 
 export interface QuipmentScores {
     /** Used internally. Not part of source data.  */
-    quipmentScore?: number;
-    quipmentScores?: SkillQuipmentScores;
-    voyageQuotient?: number;
-    voyageQuotients?: SkillQuipmentScores;
-    qlots?: { [key: string]: EquipmentItem[] };
-    qpower?: { [key: string]: Skill };
+    quipment_score?: number;
+    quipment_scores?: SkillQuipmentScores;
+    voyage_quotient?: number;
+    voyage_quotients?: SkillQuipmentScores;
+    q_lots?: { [key: string]: EquipmentItem[] };
+    q_power?: { [key: string]: Skill };
 }
 
 /**
