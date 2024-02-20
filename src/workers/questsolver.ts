@@ -452,15 +452,15 @@ const QuestSolver = {
                     }
                     
                     if (qps?.length) {
-                        let qpower = qps[0].bonusInfo.bonuses[challenge.skill].core + qps[0].bonusInfo.bonuses[challenge.skill].range_min;
+                        let q_power = qps[0].bonusInfo.bonuses[challenge.skill].core + qps[0].bonusInfo.bonuses[challenge.skill].range_min;
                         let mpower = qps[0].bonusInfo.bonuses[challenge.skill].core + qps[0].bonusInfo.bonuses[challenge.skill].range_max;
 
                         if (fatigue) {
-                            qpower -= (qpower * 0.2);
+                            q_power -= (q_power * 0.2);
                             mpower -= (mpower * 0.2);
                         }
 
-                        cpmin += qpower;
+                        cpmin += q_power;
                         cpmax += mpower;
 
                         quips[qps[0].item.symbol] = qps[0].bonusInfo;

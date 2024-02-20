@@ -17,13 +17,13 @@ export interface QuipmentScoreProps {
 
 export const getQuipmentTableConfig = (excludeQBits?: boolean) => {
     const config = [] as ITableConfigRow[];    
-    config.push({ width: 1, column: 'quipmentScore', title: "Overall", reverse: true });
-    config.push({ width: 1, column: 'quipmentScores.trait_limited', title: "Specialty", reverse: true });
+    config.push({ width: 1, column: 'quipment_score', title: "Overall", reverse: true });
+    config.push({ width: 1, column: 'quipment_scores.trait_limited', title: "Specialty", reverse: true });
 
     CONFIG.SKILLS_SHORT.map(p => p.name).forEach((skill) => {
         config.push({ 
             width: 1,
-            column: `quipmentScores.${skill}`,
+            column: `quipment_scores.${skill}`,
             reverse: true,
             title: 
             <div style={{display: 'inline-block'}}>
@@ -47,11 +47,11 @@ export const getQuipmentTableConfig = (excludeQBits?: boolean) => {
 export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
     const { excludeQBits, excludeSkills, crew, top } = props;
 
-    const quipment_score = crew.quipmentScore ?? 0;
-    const top_quipment = top.quipmentScore ?? 1;
+    const quipment_score = crew.quipment_score ?? 0;
+    const top_quipment = top.quipment_score ?? 1;
     
-    const trait_score = crew.quipmentScores?.trait_limited ?? 0;
-    const top_trait = top.quipmentScores?.trait_limited ?? 1;
+    const trait_score = crew.quipment_scores?.trait_limited ?? 0;
+    const top_trait = top.quipment_scores?.trait_limited ?? 1;
 
     const q_grade = quipment_score / top_quipment;
     const tr_grade = trait_score / top_trait;
@@ -80,8 +80,8 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
         </Table.Cell>
         {!excludeSkills && CONFIG.SKILLS_SHORT.map(p => {
             
-            const top_skill = top.quipmentScores ? top.quipmentScores[p.name] : 1;
-            const skill_score = crew.quipmentScores ? crew.quipmentScores[p.name] : 0;
+            const top_skill = top.quipment_scores ? top.quipment_scores[p.name] : 1;
+            const skill_score = crew.quipment_scores ? crew.quipment_scores[p.name] : 0;
             const sk_grade = skill_score / top_skill;
 
             return <Table.Cell key={p.name+"_quipment_cell"}>

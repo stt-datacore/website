@@ -528,7 +528,7 @@ const BetaTachyon = {
             const maxev = resultCrew.map(c => c.totalEVContribution ?? 0).reduce((a, b) => a > b ? a : b);
             const maxremain = resultCrew.map(c => c.totalEVRemaining ?? 0).reduce((a, b) => a > b ? a : b);
             const maxam = resultCrew.map(c => c.amTraits?.length ?? 0).reduce((a, b) => a > b ? a : b);
-            const maxquip = resultCrew.map(c => c.quipmentScore ?? 0).reduce((a, b) => a > b ? a : b);
+            const maxquip = resultCrew.map(c => c.quipment_score ?? 0).reduce((a, b) => a > b ? a : b);
             const maxcols = resultCrew.map(c => c.collectionsIncreased?.length ?? 0).reduce((a, b) => a > b ? a : b);
             
             const scoreCrew = (crew: PlayerCrew) => {
@@ -543,7 +543,7 @@ const BetaTachyon = {
                 });
         
                 // more gives weight
-                let quip = multConf.quipment * ((crew.quipmentScore ?? 0) / (maxquip ? maxquip : 1));
+                let quip = multConf.quipment * ((crew.quipment_score ?? 0) / (maxquip ? maxquip : 1));
 
                 // less gives weight
                 let retrieval = crew.in_portal ? multConf.retrieval * (1 - (max/100)) : 0;
