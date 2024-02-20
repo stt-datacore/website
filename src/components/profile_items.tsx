@@ -828,7 +828,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				text: 'Any Non-Trait-Limited Quipment'
 			});
 
-			traitFilterOpts = traitFilterOpts.concat([...new Set(data.map(d => d.traits_requirement ?? []).flat())]?.map(trait => {
+			traitFilterOpts = traitFilterOpts.concat([...new Set(data.map(d => d.traits_requirement?.sort() ?? []).flat())]?.map(trait => {
 				return {
 					key: trait,
 					value: trait,
