@@ -7,7 +7,7 @@ import { PlayerCrew } from '../../model/player';
 import CONFIG from '../../components/CONFIG';
 import { StatLabel } from '../../components/statlabel';
 import { getCoolStats } from '../../utils/misc';
-import { formatTierLabel, gradeToColor, prettyObtained, printPortalStatus } from '../../utils/crewutils';
+import { formatTierLabel, gradeToColor, numberToGrade, prettyObtained, printPortalStatus } from '../../utils/crewutils';
 
 type CrewRankHighlightsProps = {
 	crew: CrewMember;
@@ -24,10 +24,7 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 				<StatLabel title="Voyage rank" value={crew.ranks.voyRank} />
 				<StatLabel title="Gauntlet rank" value={crew.ranks.gauntletRank} />
 				<StatLabel title="Big book tier" value={formatTierLabel(crew)} />
-				{!!crew.events && <StatLabel title="Events" value={crew.events} />}
-				{markdownRemark && markdownRemark.frontmatter.events !== null && (
-					<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
-				)}
+				{crew.quipment_grade && <StatLabel title="Quipment Score" value={<span style={{color: gradeToColor(crew.quipment_grade) ?? undefined}}>{numberToGrade(crew.quipment_grade)}</span>} />}
 			</div>
 		);
 	}
@@ -128,10 +125,8 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 
 
 				}
-
-				{crew.events && <StatLabel title="Events" value={crew.events} />}
-				{markdownRemark.frontmatter.events !== null && (
-					<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
+				{crew.quipment_grade && <StatLabel title="Quipment Score" value={<span style={{color: gradeToColor(crew.quipment_grade) ?? undefined}}>{numberToGrade(crew.quipment_grade)}</span>} />}				{markdownRemark.frontmatter.events !== null && (
+				<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
 				)}
 			</div>
 		</React.Fragment>
