@@ -271,7 +271,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		const quipment = items.filter(i => i.type === 14).map(i => getItemWithBonus(i));
 		crew.forEach((c) => {
 			calcQLots(c, quipment, buffs, true);
-			c.voyageQuotient = getVoyageQuotient(c);
+			c.voyage_quotient = getVoyageQuotient(c);
 		});
 	}
 
@@ -280,8 +280,8 @@ export const DataProvider = (props: DataProviderProperties) => {
 		const scores = [] as QuipmentScores[];
 		for (let i = 0; i < 5; i++) {
 			scores.push({
-				quipmentScore: 0,
-				quipmentScores: {
+				quipment_score: 0,
+				quipment_scores: {
 					command_skill: 0,
 					diplomacy_skill: 0,
 					medicine_skill: 0,
@@ -290,8 +290,8 @@ export const DataProvider = (props: DataProviderProperties) => {
 					security_skill: 0,
 					trait_limited: 0
 				} as SkillQuipmentScores,
-				voyageQuotient: 0,
-				voyageQuotients: {
+				voyage_quotient: 0,
+				voyage_quotients: {
 					command_skill: 0,
 					diplomacy_skill: 0,
 					medicine_skill: 0,
@@ -303,31 +303,31 @@ export const DataProvider = (props: DataProviderProperties) => {
 			} as QuipmentScores);
 		}
 
-		const qkeys = Object.keys(scores[0].quipmentScores as SkillQuipmentScores);
+		const qkeys = Object.keys(scores[0].quipment_scores as SkillQuipmentScores);
 
 		for (let c of crew) {
 			const r = c.max_rarity - 1;			
-			const skscore = scores[r].quipmentScores as SkillQuipmentScores;
+			const skscore = scores[r].quipment_scores as SkillQuipmentScores;
 
-			if (!c.quipmentScore || !c.quipmentScores) continue;
-			if (c.quipmentScore > (scores[r].quipmentScore ?? 0)) {
-				scores[r].quipmentScore = c.quipmentScore;
+			if (!c.quipment_score || !c.quipment_scores) continue;
+			if (c.quipment_score > (scores[r].quipment_score ?? 0)) {
+				scores[r].quipment_score = c.quipment_score;
 			}
 			for (let key of qkeys) {				
-				if (c.quipmentScores[key] > skscore[key]) {
-					skscore[key] = c.quipmentScores[key];
+				if (c.quipment_scores[key] > skscore[key]) {
+					skscore[key] = c.quipment_scores[key];
 				}
 			}
-			const vqscore = scores[r].voyageQuotients as SkillQuipmentScores;
+			const vqscore = scores[r].voyage_quotients as SkillQuipmentScores;
 
-			if (!c.voyageQuotient) continue;
-			if (scores[r].voyageQuotient === 0 || c.voyageQuotient < (scores[r].voyageQuotient ?? 0)) {
-				scores[r].voyageQuotient = c.voyageQuotient;
+			if (!c.voyage_quotient) continue;
+			if (scores[r].voyage_quotient === 0 || c.voyage_quotient < (scores[r].voyage_quotient ?? 0)) {
+				scores[r].voyage_quotient = c.voyage_quotient;
 			}
-			if (!c.voyageQuotients) continue;
+			if (!c.voyage_quotients) continue;
 			for (let key of qkeys) {				
-				if (c.voyageQuotients[key] > vqscore[key]) {
-					vqscore[key] = c.voyageQuotients[key];
+				if (c.voyage_quotients[key] > vqscore[key]) {
+					vqscore[key] = c.voyage_quotients[key];
 				}
 			}
 		}

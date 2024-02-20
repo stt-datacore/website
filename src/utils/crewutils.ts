@@ -382,12 +382,14 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 
 	inroster = inroster.concat(playerData?.player?.character?.crew?.filter(c => (c.immortal <= 0 || c.immortal === undefined) && c.archetype_id === crew.archetype_id) ?? []);
 
-	let maxowned = crew.highest_owned_rarity as number | undefined;
-	let maxlevel = crew.highest_owned_level as number | undefined;
+	const maxxed = { 
+		maxowned: crew.highest_owned_rarity as number | undefined,
+		maxlevel: crew.highest_owned_level as number | undefined
+	};
 	
 	for (let owned of inroster ?? []) {
-		if (!maxowned || owned.rarity > maxowned) maxowned = owned.rarity;
-		if (!maxlevel || owned.level > maxlevel) maxlevel = owned.level;
+		if (!maxxed.maxowned || owned.rarity > maxxed.maxowned) maxxed.maxowned = owned.rarity;
+		if (!maxxed.maxlevel || owned.level > maxxed.maxlevel) maxxed.maxlevel = owned.level;
 		if (inroster.length > 1) {
 			crew = JSON.parse(JSON.stringify(templateCrew));
 		}
@@ -406,19 +408,17 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 			crew.kwipment_slots = workitem.kwipment_slots;
 			crew.kwipment = [0, 0, 0, 0];
 			crew.kwipment_expiration = [0, 0, 0, 0];
+
 			if (workitem.kwipment?.length) {
 				if (workitem.kwipment?.length && workitem.kwipment[0] && typeof workitem.kwipment[0] !== 'number') {
-					let qp = workitem.kwipment as number[][];
-					let qe = workitem.kwipment_expiration as number[][];
-
-					for (let nums of qp) {
+					for (let nums of workitem.kwipment as number[][]) {
 						crew.kwipment[nums[0]] = nums[1];
 					}
-					for (let nums of qe) {
+					for (let nums of workitem.kwipment_expiration as number[][]) {
 						crew.kwipment_expiration[nums[0]] = nums[1];
 					}
 				}
-				else {
+				else if (workitem.kwipment?.length) {
 					crew.kwipment = workitem.kwipment;
 					crew.kwipment_expiration = workitem.kwipment_expiration;
 				}
@@ -513,8 +513,8 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	}
 
 	outputcrew.forEach(f => {
-		f.highest_owned_rarity = maxowned;
-		f.highest_owned_level = maxlevel;
+		f.highest_owned_rarity = maxxed.maxowned;
+		f.highest_owned_level = maxxed.maxlevel;
 		if (quipment) calcQLots(f, quipment, buffConfig, !f.have);
 	});
 
@@ -552,6 +552,8 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 				if (!crew.id) {
 					crew.id = cidx--;
 				}
+				c["highest_owned_rarity"] = crew.highest_owned_rarity;
+				c["highest_owned_level"] = crew.highest_owned_level;
 				ownedCrew.push(crew);
 			}
 			else {
@@ -1471,11 +1473,11 @@ export function printPortalStatus<T extends CrewMember>(crew: T, showNever?: boo
 }
 
 export function getVoyageQuotient<T extends CrewMember>(crew: T) {
-    if (!crew.qpower) return 0;
-	const qpower = crew.qpower;
+    if (!crew.q_power) return 0;
+	const q_power = crew.q_power;
     let power = 0;
 	for (let skill in crew.base_skills) {
-		power += qpower[skill].core + (0.5 * (qpower[skill].range_max + qpower[skill].range_min));
+		power += q_power[skill].core + (0.5 * (q_power[skill].range_max + q_power[skill].range_min));
 	}
 	
     return (crew.ranks.voyRank / power);

@@ -27,8 +27,8 @@ export interface TopQuipmentScoreProps {
 
 export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolean, excludeQBits: boolean) => {
     const config = [] as ITableConfigRow[];
-    config.push({ width: 1, column: 'quipmentScore', title: "Overall", reverse: true });
-    config.push({ width: 1, column: 'quipmentScores.trait_limited', title: "Specialty", reverse: true });
+    config.push({ width: 1, column: 'quipment_score', title: "Overall", reverse: true });
+    config.push({ width: 1, column: 'quipment_scores.trait_limited', title: "Specialty", reverse: true });
     if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: 'Q-Bits', reverse: true });
 
     // config.push({ 
@@ -40,12 +40,12 @@ export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolea
     //         let r = 0;
     //         r = a.max_rarity - b.max_rarity;
     //         if (r) return r;
-    //         const va = a.voyageQuotient ?? 1;
-    //         const ta = (top[a.max_rarity - 1].voyageQuotient ? top[a.max_rarity - 1].voyageQuotient : 1) ?? 0;
+    //         const va = a.voyage_quotient ?? 1;
+    //         const ta = (top[a.max_rarity - 1].voyage_quotient ? top[a.max_rarity - 1].voyage_quotient : 1) ?? 0;
     //         const ga = 1 - (ta / va);
 
-    //         const vb = b.voyageQuotient ?? 1;
-    //         const tb = (top[b.max_rarity - 1].voyageQuotient ? top[b.max_rarity - 1].voyageQuotient : 1) ?? 0;
+    //         const vb = b.voyage_quotient ?? 1;
+    //         const tb = (top[b.max_rarity - 1].voyage_quotient ? top[b.max_rarity - 1].voyage_quotient : 1) ?? 0;
     //         const gb = 1 - (tb / vb);
 
     //         r = ga - gb;
@@ -69,19 +69,19 @@ export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolea
             askname = bskname = skill;
         }
 
-        if ((askname && a.qpower && askname in a.qpower) && (bskname && b.qpower && bskname in b.qpower)) {
-            let askill = a.qpower[askname];
-            let bskill = b.qpower[bskname];
+        if ((askname && a.q_power && askname in a.q_power) && (bskname && b.q_power && bskname in b.q_power)) {
+            let askill = a.q_power[askname];
+            let bskill = b.q_power[bskname];
 
             let at = (askill.core + (0.5 * (askill.range_max + askill.range_min)));
             let bt = (bskill.core + (0.5 * (bskill.range_max + bskill.range_min)));
 
             return at - bt;
         }
-        else if (askname && a.qpower && skill in a.qpower) {
+        else if (askname && a.q_power && skill in a.q_power) {
             return 1;
         }
-        else if (bskname && b.qpower && skill in b.qpower) {
+        else if (bskname && b.q_power && skill in b.q_power) {
             return -1;
         }
         else {
@@ -137,8 +137,8 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
     const { pstMode, quipment, excludeQBits, targetGroup, top, allslots, crew, buffConfig, slots } = props;
 
     const q_bits = allslots ? 1300 : crew.q_bits;
-    const qlots = crew.qlots ?? {}
-    const qpower = crew.qpower ?? {}
+    const q_lots = crew.q_lots ?? {}
+    const q_power = crew.q_power ?? {}
     const skills = Object.keys(CONFIG.SKILLS);
     
     // calcQLots(crew, quipment, buffConfig, allslots, slots);
@@ -159,7 +159,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
         }}>
             <CrewItemsView 
                 vertical={!pstMode}
-                crew={{ ...crew, q_bits, kwipment_expiration: [], kwipment: qlots[skill].map(q => Number(q.kwipment_id) as number) }} 
+                crew={{ ...crew, q_bits, kwipment_expiration: [], kwipment: q_lots[skill].map(q => Number(q.kwipment_id) as number) }} 
                 targetGroup={targetGroup}
                 itemSize={32}
                 locked
@@ -167,12 +167,12 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
             <CrewStat
                 quipmentMode={true}
                 style={{fontSize: "0.55em"}}
-            skill_name={skill} data={qpower[skill]} />
+            skill_name={skill} data={q_power[skill]} />
         </div>
     }
 
-    const voyQ = crew.voyageQuotient ?? 1;
-    const topQ = top.voyageQuotient ? top.voyageQuotient : 0;
+    const voyQ = crew.voyage_quotient ?? 1;
+    const topQ = top.voyage_quotient ? top.voyage_quotient : 0;
     const printQ = voyQ;
     const qGrade = 1 - (topQ / voyQ);
     return <React.Fragment>
