@@ -29,10 +29,10 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 
 	const slotFilterOptions = [
 		{ key: 'slot0', value: 'slot0', text: 'Quip natural slots' },
-		{ key: 'slot1', value: 'slot1', text: 'Quip at most 1 slot' },
-		{ key: 'slot2', value: 'slot2', text: 'Quip at most 2 slots' },
-		{ key: 'slot3', value: 'slot3', text: 'Quip at most 3 slots' },
-		{ key: 'slot4', value: 'slot4', text: 'Show at max slots' },
+		{ key: 'slot1', value: 'slot1', text: 'Quip 1 slot' },
+		{ key: 'slot2', value: 'slot2', text: 'Quip 2 slots' },
+		{ key: 'slot3', value: 'slot3', text: 'Quip 3 slots' },
+		{ key: 'slot4', value: 'slot4', text: 'Quip 4 slots' },
 	];
 
 	const filterCrew = (crew: IRosterCrew) => {
