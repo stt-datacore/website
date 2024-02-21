@@ -482,6 +482,7 @@ const BetaTachyon = {
            
             const rc1 = Object.values(skillout).reduce((p, c) => p ? p.concat(c) : c);
             const resultCrew = rc1.filter((fc, idx) => rc1.findIndex(g => g.id === fc.id) === idx);
+            const allGroups = {} as { [key: string]: number };
 
             for (let crew of resultCrew) {
                 let cf = allCrew.find(c => c.symbol === crew.symbol);
@@ -514,23 +515,38 @@ const BetaTachyon = {
                 crew.totalEVRemaining = crew.evPerCitation * (crew.max_rarity - crew.rarity);
                 crew.amTraits = getAMSeats(crew);
                 crew.score = getDistanceFromTop(cf, topCrew);
-                crew.scoreTrip = getDistanceFromTop(cf, skillOrderCrew);                
+                crew.scoreTrip = getDistanceFromTop(cf, skillOrderCrew);
+                
+                if (crew.voyagesImproved?.length) {
+                    for (let vi of crew.voyagesImproved) {
+                        allGroups[vi] ??= 0;
+                        allGroups[vi]++;
+                    }
+                }
             }
 
             const polestars = {} as { [key: string]: PolestarCombo[] };
 
             resultCrew.forEach((crew) => {
                 polestars[crew.symbol] = findPolestars(crew, allCrew);
+                crew.groupSparsity = crew.voyagesImproved?.map(vi => allGroups[vi]).reduce((p, n) => p + n, 0) ?? 0;
+                crew.groupSparsity /= crew.voyagesImproved?.length ?? 1;
             })
 
             const maxevents = resultCrew.map(c => c.events ?? 0).reduce((a, b) => a > b ? a : b);
             const maxvoy = resultCrew.map(c => c.voyagesImproved?.length ?? 0).reduce((a, b) => a > b ? a : b);
             const maxev = resultCrew.map(c => c.totalEVContribution ?? 0).reduce((a, b) => a > b ? a : b);
-            const maxremain = resultCrew.map(c => c.totalEVRemaining ?? 0).reduce((a, b) => a > b ? a : b);
+            const maxsparse = resultCrew.map(c => c.groupSparsity ?? 0).reduce((a, b) => a > b ? a : b);
             const maxam = resultCrew.map(c => c.amTraits?.length ?? 0).reduce((a, b) => a > b ? a : b);
             const maxquip = resultCrew.map(c => c.quipment_score ?? 0).reduce((a, b) => a > b ? a : b);
             const maxcols = resultCrew.map(c => c.collectionsIncreased?.length ?? 0).reduce((a, b) => a > b ? a : b);
             
+            resultCrew.forEach((crew) => {
+                crew.groupSparsity ??= 0;
+                crew.groupSparsity /= maxsparse;
+                crew.groupSparsity = 1 - crew.groupSparsity;
+            })
+
             const scoreCrew = (crew: PlayerCrew) => {
 
                 let multConf = settings;
@@ -542,6 +558,9 @@ const BetaTachyon = {
                     if (max < pcomp) max = pcomp;
                 });
         
+                // less gives weight                
+                let gs = multConf.groupSparsity * (crew.groupSparsity ?? 0);
+                
                 // more gives weight
                 let quip = multConf.quipment * ((crew.quipment_score ?? 0) / (maxquip ? maxquip : 1));
 
@@ -595,10 +614,10 @@ const BetaTachyon = {
                 let adist2 = crew.scoreTrip ? (crew.scoreTrip * multConf.triplet) : 1;
                 let fin = 0;
                 if (!crew.in_portal) {
-                    fin = (100 * (quip + amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 11;
+                    fin = (100 * (gs + quip + amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 12;
                 }
                 else {
-                    fin = (100 * (retrieval + quip + amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 12;
+                    fin = (100 * (gs + retrieval + quip + amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 13;
                 }
 
                 //fin *= ((adist + adist2) / 2);
