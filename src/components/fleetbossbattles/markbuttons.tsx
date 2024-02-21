@@ -161,6 +161,7 @@ export const MarkCrew = (props: MarkCrewProps) => {
 				<div>
 					<span style={{ cursor: 'pointer' }} onClick={() => setShowPicker(true)}>
 						{crew.only_frozen && <Icon name='snowflake' />}
+						{crew.only_expiring && <Icon name='warning sign' />}
 						<span style={{ fontStyle: crew.nodes_rarity > 1 ? 'italic' : 'normal' }}>
 							{crew.name}
 						</span>
