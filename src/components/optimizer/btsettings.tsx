@@ -32,6 +32,8 @@ interface InternalSettings {
     retrieval: number | string,
     // Quipment Score
     quipment: number | string,
+    // Voyage Group Sparsity
+    groupSparsity: number | string
 }
 
 export interface BetaTachyonSettingsConfig {
@@ -62,6 +64,7 @@ export function settingsToPermalink(settings: BetaTachyonSettings) {
     params.set("odds", settings.retrieval.toString());
     params.set("magic", settings.magic.toString());
     params.set("quip", settings.quipment.toString());
+    params.set("gs", settings.groupSparsity.toString());
 
     if (settings.name) {
         params.set('name', settings.name);
@@ -82,19 +85,20 @@ export function permalinkToSettings() {
 
     let newConfig = {
         ... defaultSettings,
-        improved: Number.parseFloat(params.get("imp") ?? ""),
-        power: Number.parseFloat(params.get("pow") ?? ""),
-        citeEffort: Number.parseFloat(params.get("cite") ?? ""),
-        antimatter: Number.parseFloat(params.get("am") ?? ""),
-        portal: Number.parseFloat(params.get("portal") ?? ""),
-        never: Number.parseFloat(params.get("never") ?? ""),
-        collections: Number.parseFloat(params.get("col") ?? ""),
-        skillRare: Number.parseFloat(params.get("rare") ?? ""),
-        score: Number.parseFloat(params.get("score") ?? ""),
-        triplet: Number.parseFloat(params.get("tri") ?? ""),
-        magic: Number.parseFloat(params.get("magic") ?? ""),
-        retrieval: Number.parseFloat(params.get("odds") ?? ""),
-        quipment: Number.parseFloat(params.get("quip") ?? "")
+        improved: Number.parseFloat(params.get("imp") ?? defaultSettings.improved.toString()),
+        power: Number.parseFloat(params.get("pow") ?? defaultSettings.power.toString()),
+        citeEffort: Number.parseFloat(params.get("cite") ?? defaultSettings.citeEffort.toString()),
+        antimatter: Number.parseFloat(params.get("am") ?? defaultSettings.antimatter.toString()),
+        portal: Number.parseFloat(params.get("portal") ?? defaultSettings.portal.toString()),
+        never: Number.parseFloat(params.get("never") ?? defaultSettings.never.toString()),
+        collections: Number.parseFloat(params.get("col") ?? defaultSettings.collections.toString()),
+        skillRare: Number.parseFloat(params.get("rare") ?? defaultSettings.skillRare.toString()),
+        score: Number.parseFloat(params.get("score") ?? defaultSettings.score.toString()),
+        triplet: Number.parseFloat(params.get("tri") ?? defaultSettings.triplet.toString()),
+        magic: Number.parseFloat(params.get("magic") ?? defaultSettings.magic.toString()),
+        retrieval: Number.parseFloat(params.get("odds") ?? defaultSettings.retrieval.toString()),
+        quipment: Number.parseFloat(params.get("quip") ?? defaultSettings.quipment.toString()),
+        groupSparsity: Number.parseFloat(params.get("gs") ?? defaultSettings.groupSparsity.toString()),
     } as BetaTachyonSettings;
 
     Object.keys(defaultSettings).forEach(k => {
@@ -136,7 +140,9 @@ export const defaultSettings = {
     // Retrieval odds
     retrieval: 3,
     // Quipment Score
-    quipment: 0.5
+    quipment: 0.5,
+    // Voyage Group Sparsity
+    groupSparsity: 2,
 } as BetaTachyonSettings;
 
 const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSettingsProps) => {
@@ -275,6 +281,16 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                         placeholder="Value"
                         value={innerSettings.improved}
                         onChange={(e, { value }) => setCurrent({ ... innerSettings, improved: value })}>
+                    </Input>                        
+                </div>
+               
+                <div style={rowStyle}>
+                    <div style={textStyle}>Voyage Group Sparsity:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.groupSparsity}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, groupSparsity: value })}>
                     </Input>                        
                 </div>
                
@@ -430,6 +446,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
             magic: Number.parseFloat(innerSettings.magic as string),
             retrieval: Number.parseFloat(innerSettings.retrieval as string),
             quipment: Number.parseFloat(innerSettings.quipment as string),
+            groupSparsity: Number.parseFloat(innerSettings.groupSparsity as string),
         } as BetaTachyonSettings;
     }
 	function confirmSelection(): void {		

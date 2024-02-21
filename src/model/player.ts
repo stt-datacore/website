@@ -570,6 +570,8 @@ export interface Player {
     /** Used internally. Not part of source data.  */
     collectionsIncreased?: string[];
     /** Used internally. Not part of source data.  */
+    groupSparsity?: number;
+    /** Used internally. Not part of source data.  */
     ssId?: string;
 
     /** Used internally by gauntlets. Not part of source data.  */

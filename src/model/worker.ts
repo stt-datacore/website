@@ -190,6 +190,8 @@ export interface BetaTachyonSettings {
     retrieval: number,
     // Quipment Score
     quipment: number,
+    // Voyage Group Sparsity
+    groupSparsity: number;
 }
 
 export interface SkillOrderRarity {
