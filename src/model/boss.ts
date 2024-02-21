@@ -308,6 +308,7 @@ export interface RuleException {
 export interface BossCrew extends PlayerCrew {
 	highest_owned_rarity: number;
 	only_frozen: boolean;
+	only_expiring: boolean;
 	nodes: number[];
 	nodes_rarity: number;
 	node_matches: NodeMatches;
