@@ -572,6 +572,9 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			else if (sort === 'quipment_score') {
 				r = Math.ceil(a.quipment_score ?? 0) - Math.ceil(b.quipment_score ?? 0);
 			}
+			else if (sort === 'groupSparsity') {
+				r = (a.groupSparsity ?? 0) - (b.groupSparsity ?? 0);
+			}
 			else if (sort === 'finalEV') {
 				let aev = Math.ceil(training ? (a.addedEV ?? a.totalEVContribution ?? 0) : (a.totalEVContribution ?? 0));
 				let bev = Math.ceil(training ? (b.addedEV ?? b.totalEVContribution ?? 0) : (b.totalEVContribution ?? 0));
@@ -698,6 +701,11 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						{engine === 'beta_tachyon_pulse' &&
 							<React.Fragment>
 							<Table.HeaderCell
+								onClick={(e) => sort === 'groupSparsity' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('groupSparsity')}
+								sorted={sort === 'groupSparsity' ? direction : undefined}>
+								Voyage<br />Group<br />Sparsity
+							</Table.HeaderCell>
+							<Table.HeaderCell
 								onClick={(e) => sort === 'amTraits' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('amTraits')}
 								sorted={sort === 'amTraits' ? direction : undefined}>
 								Antimatter<br />Traits
@@ -705,7 +713,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							<Table.HeaderCell
 								onClick={(e) => sort === 'colIncreased' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('colIncreased')}
 								sorted={sort === 'colIncreased' ? direction : undefined}>
-								Stat-Boosting<br />Collections
+								Stat-<br />Boosting<br />Collections
 							</Table.HeaderCell>
 							<Table.HeaderCell
 								onClick={(e) => sort === 'skillOrder' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('skillOrder')}
@@ -744,6 +752,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						
 						const crew = cop;
 						const crew_quipment_score = Math.round(((row.quipment_score ?? 0) / maxQuip) * 1000) / 10;
+						const crew_sparsity = Math.round(((row.groupSparsity ?? 0)) * 1000) / 10;
 						const skp = engine === 'beta_tachyon_pulse' && !!crew ? printSkillOrder(crew).replace(/_skill/g, '') : 'no_order';
 						const sko = engine === 'beta_tachyon_pulse' && !!crew ? crew.skill_order : 'no_order';
 						const isProspect = !!crew?.prospect;
@@ -800,6 +809,16 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 								</Table.Cell>
 								{engine === 'beta_tachyon_pulse' &&
 									<React.Fragment>
+										<Table.Cell>
+										<div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: "0.25em"}}>
+											<span style={{
+												color: gradeToColor(crew_sparsity / 100) ?? undefined
+											}}>
+												{numberToGrade(crew_sparsity / 100)}
+											</span>
+											<sub><i>({crew_sparsity.toLocaleString()})</i></sub>
+											</div>
+										</Table.Cell>
 										<Table.Cell>
 											<Popup trigger={<b>{row.amTraits?.length}</b>} content={row.amTraits?.join(', ')} />
 										</Table.Cell>
@@ -903,7 +922,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				</Table.Body>
 				<Table.Footer>
 					<Table.Row>
-						<Table.HeaderCell colSpan={engine === 'beta_tachyon_pulse' ? 14 : 9}>
+						<Table.HeaderCell colSpan={engine === 'beta_tachyon_pulse' ? 15 : 9}>
 							<div style={{ paddingLeft: '2em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 
 							<Pagination
