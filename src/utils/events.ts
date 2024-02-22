@@ -104,7 +104,7 @@ function guessCurrentEventId(allEvents: EventInstance[]): number {
 	//		and < Monday Noon ET (when event ends)
 	// Otherwise use ultimate event
 	//	Note: DataCore autosyncs events at ~1PM ET every day, so there might be some lag on Wednesday
-	const currentIndex = estDay === 3 && estHour >= 12 ? 1 : 2; // start < 24*60*60 ? 2 : 1;
+	const currentIndex = ((estDay === 3 && estHour >= 12) || estDay > 3 || estDay === 0 || (estDay === 1 && estHour < 12)) ? 1 : 2; // start < 24*60*60 ? 2 : 1;
 	return allEvents[allEvents.length-currentIndex].instance_id;
 }
 
