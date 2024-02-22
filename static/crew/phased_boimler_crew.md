@@ -9,4 +9,4 @@ date: 17/08/2022
 published: true
 ---
 
-This is blue 🖐. And so be will most players who are expecting much of a return on investment from ol’ Boims. He did well to debut as an event crew where his passable base and voyage metrics will play for newer rosters, though he offers nothing unique or hits any power notes. Veteran players will just be looking to pick up some thin collection value here.
+This is blue 🖐. And so be will most players who are expecting much of a return on investment from ol’ Boims. As of this writing, he is still on the edge of Voyage viability for the new player if Fully Fused, but without more long-term value like Collections or Events, phase ol’ Boims to your Cryostasis Vault.
