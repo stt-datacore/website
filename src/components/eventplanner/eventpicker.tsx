@@ -109,9 +109,9 @@ export const EventPicker = (props: EventPickerProps) => {
 	};
 
 	const phaseList = [] as ISelectOptions[];
-	const eventData = eventIndex >= events.length ? events[events.length - 1] : events[eventIndex];
+	const eventData = (eventIndex >= events.length) ? events[0] : events[eventIndex];
 	if (eventIndex >= events.length) {
-		setEventIndex(events.length - 1);
+		setEventIndex(0);
 	}
 	eventData.content_types.forEach((contentType, phaseId) => {
 		if (!phaseList.find((phase) => phase.key === contentType)) {
