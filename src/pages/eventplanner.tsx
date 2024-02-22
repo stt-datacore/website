@@ -10,22 +10,24 @@ import { EventPicker } from '../components/eventplanner/eventpicker';
 import { getRecentEvents, getEventData } from '../utils/events';
 
 import { IEventData } from '../components/eventplanner/model';
+import { Icon } from 'semantic-ui-react';
 
 const EventPlannerPage = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, ephemeral } = globalContext.player;
-
+	const { event_instances } = globalContext.core;
 	const [activeEvents, setActiveEvents] = React.useState<IEventData[] | undefined>(undefined);
 	const [rosterType, setRosterType] = React.useState(playerData ? 'myCrew' : 'allCrew');
 	const [rosterCrew, setRosterCrew] = React.useState<PlayerCrew[] | undefined>(undefined);
 
 	React.useEffect(() => {
 		setRosterType(playerData ? 'myCrew' : 'allCrew');
-		getEvents();
-	}, [playerData]);
+		if (event_instances?.length) getEvents();
+	}, [playerData, event_instances]);
 
 	return (
 		<DataPageLayout
+			demands={['event_instances']}
 			pageTitle='Event Planner'
 			pageDescription='Find the best crew to use during an event.'
 			playerPromptType='recommend'
@@ -57,7 +59,7 @@ const EventPlannerPage = () => {
 		}
 		// Otherwise guess event from autosynced events
 		else {
-			getRecentEvents(globalContext.core.crew).then(recentEvents => {
+			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances).then(recentEvents => {
 				setActiveEvents([...recentEvents]);
 			});
 		}
