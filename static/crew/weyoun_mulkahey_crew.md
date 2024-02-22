@@ -9,4 +9,4 @@ date: 31/08/2022
 published: true
 ---
 
-‘Weyoun as Racist Cop’ finally joins the game as we all wonder “Where’s the ‘Far Beyond the Stars’ Collection?”. While we wait, however, newer players can delight in this easy to obtain event reward and his #3 Uncommon SEC base. He’s gotta be uptown in 15 minutes though, so to everyone else he’s just another freeze-and-forget 2*
+‘Weyoun as Racist Cop’ finally joins the game as we all wonder where the remaining main cast and recurring guest actors from “Far Beyond the Stars” and its ancillary episodes are in the game. Three Traits at least give him a chance for two Stat-Boosting Collections one day, and until then he can hang out in the Cryostasis Vault.
