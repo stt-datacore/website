@@ -1545,5 +1545,22 @@
                 "skill": "engineering_skill"
             }
         ]
+    },
+    {
+        "symbol": "fed_yang_ship",
+        "battle_stations": [
+            {
+                "skill": "diplomacy_skill"
+            },
+            {
+                "skill": "command_skill"
+            },
+            {
+                "skill": "engineering_skill"
+            },
+            {
+                "skill": "science_skill"
+            }
+        ]
     }
 ]
