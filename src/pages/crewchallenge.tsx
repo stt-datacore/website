@@ -708,7 +708,7 @@ const CrewChallengeGame = (props: CrewChallengeGame) => {
 			flavor: crew.flavor,
 			series: crew.series ?? 'original',
 			rarity: crew.max_rarity,
-			skills: crew.skill_order,
+			skills: getSkillOrder(crew.base_skills),
 			traits: getUsableTraits(crew, variantTraits)
 		};
 	}
