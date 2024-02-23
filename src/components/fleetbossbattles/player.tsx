@@ -123,13 +123,13 @@ const BossBattlePicker = () => {
 						value={activeBossBattleId}
 						onChange={(e, { value }) => setActiveBossBattleId(value as number)}
 					/>
-					{activeBossBattleId &&
+					{/* {activeBossBattleId &&
 						<Checkbox toggle
 							label='Collaborate'
 							checked={collaborationEnabled}
 							onClick={() => setCollaborationEnabled(!collaborationEnabled)}
 						/>
-					}
+					} */}
 				</div>
 			}
 			{bossBattleOptions.length === 0 && <Message>You have no open fleet boss battles.</Message>}
