@@ -9,4 +9,4 @@ date: 31/08/2022
 published: true
 ---
 
-‘Weyoun as Racist Cop’ finally joins the game as we all wonder where the remaining main cast and recurring guest actors from “Far Beyond the Stars” and its ancillary episodes are in the game. Three Traits at least give him a chance for two Stat-Boosting Collections one day, and until then he can hang out in the Cryostasis Vault.
+‘Weyoun as Racist Cop’ begs the question “Where’s the ‘Far Beyond the Stars’ Collection?”. While we wait for that, however, we can also wonder why Kevin is still not in the Portal. He’s gotta be uptown in 15 minutes though, so whenever you do get a chance to acquire him, feel free to freeze and forget.

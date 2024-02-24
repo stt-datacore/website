@@ -11,7 +11,7 @@ published: true
 
 Alert: This is not the better of the two Archos! They are not camping!
 
-The CMD/DIP/SEC Skill set simply requires huge raw power and/or a smattering of niche Anti-matter traits to gain any sort of serious traction as a wise Voyage investment. This duo has neither as it stands.
+The CMD/DIP/SEC Skill set simply requires huge raw power and/or a smattering of niche Antimatter traits to gain any sort of serious traction as a wise Voyage investment. This duo has neither as it stands.
 
 As a former Campaign crew, some rosters (and elderly players in your Fleet Discord) will report in with tales of occasional usage for a crew who likely had a star advantage for them, but they simply cannot boast a strong return on investment profile by the numbers.
 

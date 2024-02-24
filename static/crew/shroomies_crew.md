@@ -9,7 +9,7 @@ date: 17/05/2022
 published: true
 ---
 
-Left Shroomie is a monster Voyage and Ship anchor boasting arguably the top spot in both areas. With an upper echelon Voyage score and eight (!!!) Anti-matter traits in a Skill order bereft of choices (Harry loses again), Shroomies will command seats alongside partially-Fused Legendary crew and beat out any CMD/DIP/WHATEVER Event Super Rares that get thrown your way.
+Left Shroomie is a monster Voyage and Ship anchor boasting arguably the top spot in both areas. With an upper echelon Voyage score and eight (!!!) Antimatter traits in a Skill order bereft of choices (Harry loses again), Shroomies will command seats alongside partially-Fused Legendary crew and beat out any CMD/DIP/WHATEVER Event Super Rares that get thrown your way.
 
 He also combines a hefty +9 peanut butter Attack Boost with the velvety chocolate of everybody’s favorite Instant Damage to make him a cornerstone Ship Battles piece if you’d rather spend your early game Crew Retrievals somewhere other than five laborious stars on an otherwise ineffectual Captain Killy.
 
