@@ -9,7 +9,7 @@ date: 12/01/2022
 published: true
 ---
 
-The game’s second Kellie Waymire card is thankfully ‘worth it’ for Trek fans. Still strong Voyage power for her Rarity with plenty of Anti-matter Traits and a nice bit of SEC/SCI should have her bumping shoulders with a few Legendary crew in the early-to-midgame as a great transitional Voyage piece to help grow your roster.
+The game’s second Kellie Waymire card is thankfully ‘worth it’ for Trek fans. Still strong Voyage power for her Rarity with plenty of Antimatter Traits and a nice bit of SEC/SCI should have her bumping shoulders with a few Legendary crew in the early-to-midgame as a great transitional Voyage piece to help grow your roster.
 
 For veterans just browsing Beholds looking for late game assets, Cutler excels there too. Her handful of Collections, which should welcome Explorer to their ranks before too long, serve to make her an attractive pick to help stack Stat boosts.
 

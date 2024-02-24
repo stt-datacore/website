@@ -3,7 +3,7 @@ name: Warship Chakotay
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 in_portal: true
 date: 19/12/2016
 published: true

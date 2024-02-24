@@ -9,7 +9,7 @@ date: 26/03/2020
 published: true
 ---
 
-Aging like a fine wine, not unlike Nicole de Boer herself, Ezri’s dash of MED and competent Voyage power continues to keep her ability in that area the headline for this card and serves rosters of all sizes well. Somewhat light on Anti-matter Traits, she still has other supporting components that should ensure a little bit more time on Voyages before she gets benched in favor of a pinch hitter.
+Aging like a fine wine, not unlike Nicole de Boer herself, Ezri’s dash of MED and competent Voyage power continues to keep her ability in that area the headline for this card and serves rosters of all sizes well. Somewhat light on Antimatter Traits, she still has other supporting components that should ensure a little bit more time on Voyages before she gets benched in favor of a pinch hitter.
 
 In the meantime, Ezri’s Collection count has ticked predictably upward and has room to continue doing so. Those same plus Traits have also been a wonderful Event pillow to ensure more than a few annual bonuses, Dax events notwithstanding.
 
