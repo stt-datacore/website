@@ -51,6 +51,7 @@ export interface CollectionFilterProps {
     costMode: 'normal' | 'sale';
     matchMode: CollectionMatchMode;
     hardFilter: boolean;
+    favorited: boolean;
 };
 
 
@@ -84,6 +85,9 @@ export interface CollectionFilterContextProps extends CollectionFilterProps {
 
     byCost: boolean;
     setByCost: (value: boolean) => void;
+
+    favorited: boolean;
+    setFavorited: (value: boolean) => void;
 
     matchMode: CollectionMatchMode;
     setMatchMode: (value: CollectionMatchMode) => void;

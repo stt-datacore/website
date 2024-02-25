@@ -24,7 +24,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
     const colContext = React.useContext(CollectionFilterContext);
     const context = React.useContext(GlobalContext);
     const { workerRunning, playerCollections, colGroups } = props;
-    const { hardFilter, setHardFilter, costMode, setCostMode, setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
+    const { favorited, setFavorited, hardFilter, setHardFilter, costMode, setCostMode, setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 	const [pageSize, setPageSize] = useStateWithStorage("colGroups/itemsPerPage", 1, { rememberForever: true });
@@ -95,7 +95,10 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 					setSelection={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
 				/>
 
-				<Checkbox style={{margin: "0.5em 1em"}} label={"Honor Sale Pricing"} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
+				<div style={{display: 'grid', gridTemplateAreas: "'a b' 'c d'"}}>
+					<Checkbox style={{margin: "0.5em 1em", gridArea: 'a'}} label={"Honor Sale Pricing"} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
+					<Checkbox style={{margin: "0.5em 1em", gridArea: 'c'}} label={"Prioritize Favorite Crew"} checked={favorited} onChange={(e, { checked }) => setFavorited(!!checked)} />
+				</div>
 
 			</div>
 
