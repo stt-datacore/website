@@ -3,6 +3,7 @@ import { Form, Dropdown } from 'semantic-ui-react';
 
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
 import { CompletionState } from '../../../model/player';
+import { GlobalContext } from '../../../context/globalcontext';
 
 type CrewMaintenanceFilterProps = {
 	pageId: string;
@@ -12,6 +13,7 @@ type CrewMaintenanceFilterProps = {
 };
 
 export const CrewMaintenanceFilter = (props: CrewMaintenanceFilterProps) => {
+	const globalContext = React.useContext(GlobalContext);
 	const { crewFilters, setCrewFilters } = props;
 
 	const [maintenanceFilter, setMaintenanceFilter] = React.useState('');
@@ -27,7 +29,8 @@ export const CrewMaintenanceFilter = (props: CrewMaintenanceFilterProps) => {
 		{ key: 'impact', value: 'impact', text: 'Only show crew needing 1 fuse' },
 		{ key: 'threshold', value: 'threshold', text: 'Only show crew needing 2 fuses' },
 		{ key: 'fodder', value: 'fodder', text: 'Only show unfused crew' },
-		{ key: 'dupes', value: 'dupes', text: 'Only show duplicate crew' }
+		{ key: 'dupes', value: 'dupes', text: 'Only show duplicate crew' },
+		{ key: 'buyback', value: 'buyback', text: 'Show crew with fuses in buy-back well' }
 	];
 
 	const filterByMaintenance = (crew: IRosterCrew) => {
@@ -41,6 +44,11 @@ export const CrewMaintenanceFilter = (props: CrewMaintenanceFilterProps) => {
 		if (maintenanceFilter === 'impact' && crew.max_rarity - crew.rarity !== 1) return false;
 		if (maintenanceFilter === 'fodder' && !crew.expires_in && (crew.max_rarity === 1 || crew.rarity !== 1)) return false;
 		if (maintenanceFilter === 'dupes' && props.rosterCrew.filter((c) => c.symbol === crew.symbol).length === 1) return false;
+		if (maintenanceFilter === 'buyback') {
+			if (!globalContext.player.playerData?.buyback_well?.length) return false;
+			if (crew.rarity === crew.max_rarity) return false;
+			if (!globalContext.player.playerData.buyback_well.includes(crew.symbol)) return false;	
+		}
 		return true;
 	};
 

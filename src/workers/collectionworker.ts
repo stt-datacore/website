@@ -78,7 +78,7 @@ function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: P
     
 }
 
-function normalCollectionSort<T extends PlayerCrew>(crew: T[], searchFilter?: string, searches?: string[]) {
+function normalCollectionSort<T extends PlayerCrew>(crew: T[], searchFilter?: string, searches?: string[], favorites?: boolean) {
     return crew.sort((a, b) => {
         let r = 0;
 
@@ -95,9 +95,11 @@ function normalCollectionSort<T extends PlayerCrew>(crew: T[], searchFilter?: st
             else return -1;
         }
 
-        if (a.favorite !== b.favorite) {
-            if (a.favorite) return -1;
-            else return 1;
+        if (favorites) {
+            if (a.favorite !== b.favorite) {
+                if (a.favorite) return -1;
+                else return 1;
+            }
         }
 
         let acount = a.pickerId ?? 1;
@@ -139,7 +141,8 @@ const CollectionOptimizer = {
                 short,
                 mapFilter,
                 ownedFilter,
-                searchFilter,
+                searchFilter,                
+                favorited: favorites
             } = filterProps;
 
             const searches = searchFilter?.length
@@ -233,7 +236,7 @@ const CollectionOptimizer = {
                         a.pickerId = acount;
                     });
 
-                    col.crew = normalCollectionSort(col.crew, searchFilter, searches);
+                    col.crew = normalCollectionSort(col.crew, searchFilter, searches, favorites);
                     col.neededStars = neededStars(col.crew, col.collection.needed ?? 0);
                 });
 
@@ -333,7 +336,7 @@ const CollectionOptimizer = {
                                 crew.findIndex((cr2) => cr2.symbol === cr.symbol) === idx
                         );
                         
-                        crew = normalCollectionSort(crew, searchFilter, searches);
+                        crew = normalCollectionSort(crew, searchFilter, searches, favorites);
                         //crew.sort((a, b) => a.name.localeCompare(b.name));
 
                         if (!!crew?.length) {
@@ -386,9 +389,11 @@ const CollectionOptimizer = {
                             let ca = 0;
                             let cb = 0;
 
-                            if (a.favorite != b.favorite) {
-                                if (a.favorite) return -1;
-                                else return 1;
+                            if (favorites) {
+                                if (a.favorite != b.favorite) {
+                                    if (a.favorite) return -1;
+                                    else return 1;
+                                }
                             }
 
                             if (!r) {                                

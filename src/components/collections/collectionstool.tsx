@@ -396,7 +396,7 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 	const [costMap, setCostMap] = React.useState<ComboCostMap[]>([]);
 
 	const { playerCollections: tempCol, collectionCrew } = props;
-	const { hardFilter, setHardFilter, tierFilter, setTierFilter, byCost, matchMode, checkCommonFilter, costMode, setShort, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
+	const { favorited, hardFilter, setHardFilter, tierFilter, setTierFilter, byCost, matchMode, checkCommonFilter, costMode, setShort, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
 	
 	const playerCollections = tempCol.filter((col) => {
 		if (hardFilter && mapFilter?.rewardFilter) {
@@ -644,7 +644,8 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 					fuseFilter,
 					ownedFilter,
 					short,
-					costMode,			
+					costMode,
+					favorited
 				},
 				collectionCrew,
 				matchMode: matchMode,

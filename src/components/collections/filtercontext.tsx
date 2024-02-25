@@ -20,6 +20,7 @@ const DefaultData = {
     byCost: false,
     tierFilter: 1,
     hardFilter: false,
+    favorited: true,
     setMapFilter: (value) => null,
     setSearchFilter: (value) => null,
     setRarityFilter: (value) => null,
@@ -33,6 +34,7 @@ const DefaultData = {
     setByCost: (value) => false,
     setTierFilter: (value) => 1,
     setHardFilter: (value) => null,
+    setFavorited: (value) => null
 } as CollectionFilterContextProps;
 
 export const CollectionFilterContext = React.createContext<CollectionFilterContextProps>(DefaultData);
@@ -65,9 +67,15 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
 	const [costMode, setCostMode] = useStateWithStorage<'normal' | 'sale'>("collectionstool/costMode", 'normal', { rememberForever: true });
 	const [matchMode, setMatchMode] = useStateWithStorage<CollectionMatchMode>("colOptimizer/matchMode", 'normal', { rememberForever: true });
     const [byCost, internalSetByCost] = useStateWithStorage("colOptimizer/sortByCost", false, { rememberForever: true });
+    const [favorited, internalSetFavorited] = useStateWithStorage("colOptimizer/favorited", true, { rememberForever: true });
 
 	const setByCost = (value: boolean) => {
 		internalSetByCost(value);
+		setMapFilter({ ... mapFilter });
+	}
+
+	const setFavorited = (value: boolean) => {
+		internalSetFavorited(value);
 		setMapFilter({ ... mapFilter });
 	}
 
@@ -89,6 +97,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
         byCost,
         tierFilter,
         hardFilter,
+        favorited,
 
         setMapFilter,
         setSearchFilter,
@@ -98,6 +107,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
         setByCost,
         setTierFilter,
         setHardFilter,
+        setFavorited,
 
         checkCommonFilter,
         checkRewardFilter,
