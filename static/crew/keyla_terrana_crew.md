@@ -13,4 +13,4 @@ The first of the Young sisters in game, Keyla is a power hitter in the daily use
 
 A strong Voyage debut in a not-useless skill Set is her highlight and leaps off the scoreboard. With a significant gap in score over the rabble beneath, Keyla will perform like a partially-Fused Legendary in that area and should for quite a while.
 
-Her gaggle of Traits, viable for both Voyage Anti-matter and Collections, opens up an avenue for value down the line, though she’s starting off on the back foot in regards to the latter. With strong Shuttle metrics, albeit in Skills that are frequently refreshed, Keyla is a strong option in day to day activities with the tools to be a long term contributor if things break right.
+Her gaggle of Traits, viable for both Voyage Antimatter and Collections, opens up an avenue for value down the line, though she’s starting off on the back foot in regards to the latter. With strong Shuttle metrics, albeit in Skills that are frequently refreshed, Keyla is a strong option in day to day activities with the tools to be a long term contributor if things break right.
