@@ -13,7 +13,7 @@ Can’t you just hear the bell dinging as Hector Salamanca himself, Nel Apgar, c
 
 (Breaking Bad Spoilers below) 
 
-Look out, Gus Fring!  Don Hector has BLOWN UP his skill order upon release - granted his closest competition were decrepit Legendaries like Away Team Burnham, and Mademoiselle de Neuf, but more notably in his SCI/SEC/ENG triplet he easily eclipses recent additions like Mestral and Angel BurnMom, as well as slightly more venerable voyagers like Worst Dad:™: Leucon, and Tactical Stamets.  And what’s more, he has an amazing set of Anti-Matter traits (six), which he is going to further use to steal seating from all of his direct voyage competition.
+Look out, Gus Fring!  Don Hector has BLOWN UP his skill order upon release - granted his closest competition were decrepit Legendaries like Away Team Burnham, and Mademoiselle de Neuf, but more notably in his SCI/SEC/ENG triplet he easily eclipses recent additions like Mestral and Angel BurnMom, as well as slightly more venerable voyagers like Worst Dad:™: Leucon, and Tactical Stamets.  And what’s more, he has an amazing set of Antimatter traits (six), which he is going to further use to steal seating from all of his direct voyage competition.
 
 Did you miss “empty base” Lt. Commander Bryce in a recent event?  Well, that’s fine!  Don Hector has the new #2 SCI base just behind his predecessor, if that’s your bag.  He’ll find plenty of weekend action on non-bonus shuttles and his plethora of traits will surely add more event use.
 

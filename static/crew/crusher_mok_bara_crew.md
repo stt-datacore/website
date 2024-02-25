@@ -9,7 +9,7 @@ date: 20/10/2020
 published: true
 ---
 
-Klingon Judo Crusher, as she is colloquially known, has enjoyed a long life as a viable Voyager, but that time is sadly coming to an end, as her power sags and WRG inevitably prints better crew in her Skill set, order, and to fill the Anti-matter seats she previously clutched so tightly. 
+Klingon Judo Crusher, as she is colloquially known, has enjoyed a long life as a viable Voyager, but that time is sadly coming to an end, as her power sags and WRG inevitably prints better crew in her Skill set, order, and to fill the Antimatter seats she previously clutched so tightly. 
 
 But never fear, Bev has a trio of Collections and one additional viable Trait to give her solid footing in that area, and while Beverly Crusher Events are not plentiful, she can cash in using those four Collection Traits on weekends when they provide a bonus. 
 
