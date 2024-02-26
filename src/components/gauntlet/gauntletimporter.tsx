@@ -84,6 +84,7 @@ export const GauntletImportComponent = (props: GauntletImporterProps) => {
 				<JsonInputForm
 					requestDismiss={() => setCollapsed(!collapsed)}
 					config={{
+                        pasteInMobile: true,
 						dataUrl: PLAYERLINK,
 						dataName: 'Gauntlet',
 						jsonHint: '{"action":"update","character":',

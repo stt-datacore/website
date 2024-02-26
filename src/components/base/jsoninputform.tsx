@@ -8,6 +8,7 @@ export interface JsonImportConfig {
     jsonHint: string;
     androidFileHint: string;
     iOSFileHint: string;
+	pasteInMobile?: boolean;
 }
 
 export interface JsonInputFormProps<T> {
@@ -21,7 +22,7 @@ export interface JsonInputFormProps<T> {
 export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) => {
 	const { setValidInput, requestDismiss } = props;
     
-    const { dataUrl: DATALINK, dataName: caption, jsonHint, androidFileHint: androidHint, iOSFileHint: iosHint } = props.config;
+    const { pasteInMobile, dataUrl: DATALINK, dataName: caption, jsonHint, androidFileHint: androidHint, iOSFileHint: iosHint } = props.config;
 
 	const [inputData, setInputData] = React.useState<T | undefined>(undefined);
 	const [fullInput, setFullInput] = React.useState('');
@@ -73,11 +74,33 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
                         </Grid>
                     </React.Fragment>
 				}
-				{isMobile &&
+				{isMobile && !pasteInMobile &&
 					<div style={{ textAlign: 'center' }}>
                         {!!props.title && <h1 style={{textAlign:'center'}}>{props.title}</h1>}
 						{renderUpload()}
 					</div>
+				}
+				{isMobile && !!pasteInMobile &&
+					<React.Fragment>
+						{!!props.title && <h1 style={{textAlign:'center'}}>{props.title}</h1>}
+						<Grid columns={1} stackable textAlign='center'>
+						<Grid.Row>
+							<Grid.Column>
+								{renderCopyPaste()}
+							</Grid.Column>
+						</Grid.Row>
+						<Grid.Row>
+							<Grid.Column width={1} stretched style={{ position: 'relative' }}>
+								<Divider vertical>Or</Divider>
+							</Grid.Column>
+						</Grid.Row>
+						<Grid.Row>
+							<Grid.Column width={7}>
+								{renderUpload()}
+							</Grid.Column>
+						</Grid.Row>
+						</Grid>
+					</React.Fragment>
 				}
 				{errorMessage && (
 					<Message negative style={{ marginTop: '2em' }}>
