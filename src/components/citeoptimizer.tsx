@@ -756,7 +756,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						const skp = engine === 'beta_tachyon_pulse' && !!crew ? printSkillOrder(crew).replace(/_skill/g, '') : 'no_order';
 						const sko = engine === 'beta_tachyon_pulse' && !!crew ? crew.skill_order : 'no_order';
 						//const isProspect = !!crew?.prospect;
-						const rarecolor = CONFIG.RARITIES[skoMap[skp].rarity].color;
+						const rarecolor = skp !== 'no_order' ? CONFIG.RARITIES[skoMap[skp].rarity].color : undefined;
 
 						return (!!crew && !!sko && !!skp &&
 							<Table.Row key={crew.symbol + idx + tabName} positive={this.getChecked(crew.symbol)}>
