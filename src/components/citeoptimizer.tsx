@@ -755,7 +755,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						const crew_sparsity = Math.round(((row.groupSparsity ?? 0)) * 1000) / 10;
 						const skp = engine === 'beta_tachyon_pulse' && !!crew ? printSkillOrder(crew).replace(/_skill/g, '') : 'no_order';
 						const sko = engine === 'beta_tachyon_pulse' && !!crew ? crew.skill_order : 'no_order';
-						const isProspect = !!crew?.prospect;
+						//const isProspect = !!crew?.prospect;
+						const rarecolor = CONFIG.RARITIES[skoMap[skp].rarity].color;
 
 						return (!!crew && !!sko && !!skp &&
 							<Table.Row key={crew.symbol + idx + tabName} positive={this.getChecked(crew.symbol)}>
@@ -862,7 +863,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 												{!!skoMap[skp] && <div>
 													<Popup trigger={
 														<div style={{textAlign:'center'}}>
-															<hr style={{width: "100px", height:"2px", borderRadius:"2px"}} color={CONFIG.RARITIES[skoMap[skp].rarity].color} />
+															<hr style={{width: "100px", height:"2px", borderRadius:"2px", color: rarecolor, background: rarecolor}} color={rarecolor} />
 															<i style={{
 																fontSize: "0.75em",
 																fontWeight: "bold",
@@ -876,7 +877,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 														content={
 															<div>
 																<b>Skill Order:</b><br/>
-																<b style={{color: CONFIG.RARITIES[skoMap[skp].rarity].color}}>{CONFIG.RARITIES[skoMap[skp].rarity].name}</b>
+																<b style={{color: rarecolor}}>{CONFIG.RARITIES[skoMap[skp].rarity].name}</b>
 																{skoMap[skp].skills.map((sk, idx) => <div key={sk+idx.toString()}>{idx+1}. {appelate(sk)}</div>)}
 																<hr />
 																<div>Crew Rank: <i style={{																
