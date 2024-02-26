@@ -200,6 +200,22 @@ export const Navigation = (props: NavigationProps) => {
 			right: true,
 			link: '/crewchallenge',
 			checkVisible: (data) => !isMobile
+		},		
+		{
+			title: <Icon name='bug' />,
+			textTitle: 'Switch between Production and Beta',
+			right: true,
+			customAction: (e, data) => {
+				if (typeof window !== 'undefined') {
+					if (window.location.href.includes("beta.datacore.app")) {
+						window.location.href = "https://datacore.app/";
+					}
+					else {
+						window.location.href = "https://beta.datacore.app/";
+					}
+				}
+			},
+			checkVisible: (data) => !isMobile
 		},
 	] as NavItem[];
 
@@ -222,7 +238,7 @@ export const Navigation = (props: NavigationProps) => {
 						... fopt,
 						title: undefined,
 						optionKey: undefined,
-						tooltip: fopt.title,
+						tooltip: fopt.textTitle ?? (typeof fopt.title === 'string' ? fopt.title : ''),
 						sidebarRole: undefined
 					}
 				}
@@ -261,7 +277,7 @@ export const Navigation = (props: NavigationProps) => {
 					menuItems.push(page.customRender(page));
 				}
 				else if (page.subMenu) {
-					menuItems.push(createSubMenu(page.title ?? '', page.subMenu));
+					menuItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu));
 				}
 				else {
 					menuItems.push(drawMenuItem(page));
@@ -272,7 +288,7 @@ export const Navigation = (props: NavigationProps) => {
 					sidebarItems.push(page.customRender(page));
 				}
 				else if (page.subMenu) {
-					sidebarItems.push(createSubMenu(page.title ?? '', page.subMenu, true));
+					sidebarItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu, true));
 				}
 				else {
 					sidebarItems.push(drawMenuItem(page));
@@ -284,7 +300,7 @@ export const Navigation = (props: NavigationProps) => {
 				menuItems.push(page.customRender(page));
 			}
 			else if (page.subMenu) {
-				menuItems.push(createSubMenu(page.title ?? '', page.subMenu));
+				menuItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu));
 			}
 			else {
 				menuItems.push(drawMenuItem(page));
@@ -305,7 +321,7 @@ export const Navigation = (props: NavigationProps) => {
 			rightItems.push(page.customRender(page));
 		}
 		else if (page.subMenu) {
-			rightItems.push(createSubMenu(page.title ?? '', page.subMenu));
+			rightItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu));
 		}
 		else {
 			rightItems.push(drawMenuItem(page));
@@ -313,7 +329,8 @@ export const Navigation = (props: NavigationProps) => {
 	}
 
 	if (!isMobile) {
-		rightItems.push(createSubMenu('About', about));
+		rightItems.unshift(createSubMenu('About', about));
+		
 	}
 	else {
 		sidebarItems.push(createSubMenu('About', about, true));
