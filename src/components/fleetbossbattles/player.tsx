@@ -41,7 +41,7 @@ export const PlayerBossBattle = (props: PlayerBossBattleProps) => {
 			const owned = playerData?.player.character.crew.filter(oc => oc.symbol === crew.symbol) ?? [];
 			crew.highest_owned_rarity = owned.length > 0 ? owned.sort((a, b) => b.rarity - a.rarity)[0].rarity : 0;
 			crew.only_frozen = owned.length > 0 && owned.filter(oc => oc.immortal > 0).length === owned.length;
-			crew.only_expiring = owned.every(o => !!o.expires_in);
+			crew.only_expiring = owned.length > 0 && owned.every(o => !!o.expires_in);
 		});
 		setBossCrew([...bossCrew]);
 	}, [playerData]);
