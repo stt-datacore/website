@@ -91,11 +91,11 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 						</Grid.Row>
 						<Grid.Row>
 							<Grid.Column width={1} stretched style={{ position: 'relative' }}>
-								<Divider vertical>Or</Divider>
+								<Divider horizontal>Or</Divider>
 							</Grid.Column>
 						</Grid.Row>
 						<Grid.Row>
-							<Grid.Column width={7}>
+							<Grid.Column width={1}>
 								{renderUpload()}
 							</Grid.Column>
 						</Grid.Row>
