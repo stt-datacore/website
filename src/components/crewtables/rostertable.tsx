@@ -339,6 +339,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			available: true,
 			optionText: 'Show max quipment',
 			form: <QuipmentToolsFilter 
+					immortalOnly={true}
 					maxxed={rosterType === 'allCrew'}
 					quipment={quipment}
 					buffConfig={globalContext.player.buffConfig ?? globalContext.core.all_buffs}
