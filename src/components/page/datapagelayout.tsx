@@ -54,8 +54,9 @@ const getNavigatorLanguage = () => {
 		lang = navigator.language.slice(0, 2).toLowerCase();
 		if (lang === 'es') lang = 'sp';
 	}
-	if (!['sp', 'en', 'fr', 'de'].includes(lang)) lang = 'en';
-	return lang;
+	return 'en';
+	// if (!['sp', 'en', 'fr', 'de'].includes(lang)) lang = 'en';
+	// return lang;
 }
 
 const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
