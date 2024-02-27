@@ -3,7 +3,7 @@ import { Link } from 'gatsby';
 import { Form, Dropdown, Header, Loader } from 'semantic-ui-react';
 
 import { InitialOptions, LockedProspect } from '../../model/game-elements';
-import { CompletionState } from '../../model/player';
+import { CompletionState, PlayerBuffMode } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';
 import { ITableConfigRow } from '../../components/searchabletable';
@@ -30,6 +30,7 @@ import { getItemWithBonus } from '../../utils/itemutils';
 import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from './views/topquipment';
 import { QuipmentToolsFilter } from './filters/quipmenttools';
 import { calcQLots } from '../../utils/equipment';
+import { CrewBuffModes } from './commonoptions';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -37,6 +38,8 @@ interface IRosterTableContext {
 	rosterType: RosterType;
 	initOptions: InitialOptions | undefined;
 	lockableCrew: LockedProspect[];
+	buffMode?: PlayerBuffMode;
+	setBuffMode: (value?: PlayerBuffMode) => void;
 };
 
 const RosterTableContext = React.createContext<IRosterTableContext>({} as IRosterTableContext);
@@ -47,15 +50,17 @@ type RosterTableProps = {
 	rosterType: RosterType;
 	initOptions?: InitialOptions;
 	initHighlight?: string;
+	buffMode?: PlayerBuffMode;
+	setBuffMode: (value?: PlayerBuffMode) => void;
 };
 
 export const RosterTable = (props: RosterTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, buffConfig: playerBuffs } = globalContext.player;
-	const { initHighlight } = props;
+	const { initHighlight, buffMode, setBuffMode } = props;
 
 	const [prospects, setProspects] = React.useState<LockedProspect[]>([] as LockedProspect[]);
-
+	
 	const rosterPlusProspects = props.rosterCrew.slice();
 	const lockableCrew = [] as LockedProspect[];
 
@@ -115,7 +120,9 @@ export const RosterTable = (props: RosterTableProps) => {
 		rosterCrew: rosterPlusProspects,
 		rosterType: props.rosterType,
 		initOptions: props.initOptions,
-		lockableCrew
+		lockableCrew,
+		buffMode,
+		setBuffMode
 	} as IRosterTableContext;
 
 	return (
@@ -194,7 +201,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 	const { playerData, playerShips } = globalContext.player;
 	const { topQuipmentScores: top } = globalContext.core;
 	const tableContext = React.useContext(RosterTableContext);
-	const { pageId, rosterCrew, rosterType, initOptions, lockableCrew } = tableContext;
+	const { pageId, rosterCrew, rosterType, initOptions, lockableCrew, buffMode, setBuffMode } = tableContext;
 
 	const [preparedCrew, setPreparedCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [dataPrepared, setDataPrepared] = React.useState<IDataPrepared>({} as IDataPrepared);
@@ -475,6 +482,12 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 						crewFilters={crewFilters}
 						setCrewFilters={setCrewFilters}
 					/>
+					{rosterType === 'allCrew' && 
+					<CrewBuffModes
+						buffMode={buffMode}
+						setBuffMode={setBuffMode}
+						playerAvailable={!!playerData}
+						/>}
 					{toggleableFilters.map(filter => filter.available && filter.form)}
 					<div style={{ position: 'absolute', right: '0', alignSelf: 'flex-start' }}>
 						<Loader inline active={isPreparing} />

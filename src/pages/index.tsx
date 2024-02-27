@@ -10,6 +10,8 @@ import { RosterPicker } from '../components/crewtables/rosterpicker';
 import { RosterTable } from '../components/crewtables/rostertable';
 import { TinyStore } from '../utils/tiny';
 import { navigate } from 'gatsby';
+import { useStateWithStorage } from '../utils/storage';
+import { PlayerBuffMode } from '../model/player';
 
 type IndexPageProps = {
 	location: any;
@@ -25,6 +27,9 @@ const IndexPage = (props: IndexPageProps) => {
 	const [rosterType, setRosterType] = React.useState<RosterType>(playerData ? 'myCrew' : 'allCrew');
 	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [searchExtra, setSearchExtra] = React.useState<string | undefined>(undefined);
+
+	const [playerBuffMode, setPlayerBuffMode] = useStateWithStorage<PlayerBuffMode | undefined>("roster/buffMode/player", 'player', { rememberForever: true });
+	const [buffMode, setBuffMode] = useStateWithStorage<PlayerBuffMode | undefined>("roster/buffMode/static", 'none', { rememberForever: true });
 
 	const tiny = TinyStore.getStore("index");
 
@@ -55,11 +60,14 @@ const IndexPage = (props: IndexPageProps) => {
 		<DataPageLayout pageTitle='Crew Stats' playerPromptType='recommend'>
 			<React.Fragment>
 				<RosterPicker
+					buffMode={playerData ? playerBuffMode : buffMode}
 					rosterType={rosterType} setRosterType={setRosterType}
 					setRosterCrew={setRosterCrew}
 				/>
 				{rosterCrew &&
 					<RosterTable key={playerData ? 'playerViews' : 'singleView'}
+						buffMode={playerData ? playerBuffMode : buffMode}
+						setBuffMode={playerData ? setPlayerBuffMode : setBuffMode}
 						pageId='index'
 						rosterCrew={rosterCrew} rosterType={rosterType}
 						initOptions={initOptions} initHighlight={initHighlight}
