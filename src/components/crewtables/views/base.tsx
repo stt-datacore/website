@@ -12,7 +12,7 @@ import VoyageExplanation from '../../explanations/voyexplanation';
 import { PlayerCrew } from '../../../model/player';
 import { CrewMember } from '../../../model/crew';
 
-export const getBaseTableConfig = (tableType: 'allCrew' | 'myCrew' | 'profileCrew') => {
+export const getBaseTableConfig = (tableType: 'allCrew' | 'myCrew' | 'profileCrew' | 'buyBack') => {
 	const tableConfig = [] as ITableConfigRow[];
 	tableConfig.push(
 		{ width: 1, column: 'bigbook_tier', title: 'Tier' },
@@ -37,7 +37,7 @@ export const getBaseTableConfig = (tableType: 'allCrew' | 'myCrew' | 'profileCre
 			}
 		},
 	);
-	if (tableType === 'allCrew') {
+	if (tableType === 'allCrew' || tableType === 'buyBack') {
 		tableConfig.push(
 			{ width: 1, column: 'date_added', title: 'Release Date' },
 		);
@@ -54,7 +54,7 @@ export const getBaseTableConfig = (tableType: 'allCrew' | 'myCrew' | 'profileCre
 type CrewCellProps = {
 	pageId: string;
 	crew: IRosterCrew;
-	tableType: 'allCrew' | 'myCrew' | 'profileCrew'
+	tableType: 'allCrew' | 'myCrew' | 'profileCrew' | 'buyBack'
 };
 
 export const CrewBaseCells = (props: CrewCellProps) => {
@@ -98,8 +98,8 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<b title={printPortalStatus(crew, true, true, true)}>{printPortalStatus(crew, true, true)}</b>
 			</Table.Cell>
 			<Table.Cell textAlign='center' width={2}>
-				{tableType === 'allCrew' && new Date(crew.date_added).toLocaleDateString()}
-				{tableType !== 'allCrew' && 
+				{(tableType === 'allCrew' || tableType === 'buyBack') && new Date(crew.date_added).toLocaleDateString()}
+				{tableType !== 'allCrew' && tableType !== 'buyBack' &&
 					<div title={
 						crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
 						}>

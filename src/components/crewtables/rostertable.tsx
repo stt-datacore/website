@@ -196,7 +196,7 @@ interface IDataPrepared {
 	appliedFilters: string[];
 };
 
-const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profileCrew' }) => {
+const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profileCrew' | 'buyBack' }) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, playerShips } = globalContext.player;
 	const { topQuipmentScores: top } = globalContext.core;
@@ -249,7 +249,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					});
 				}
 				if (tableView.startsWith("qp_")) {
-					calcQLots(crew, quipment, globalContext.player.buffConfig, rosterType === 'allCrew', slots);
+					calcQLots(crew, quipment, globalContext.player.buffConfig, rosterType === 'allCrew' || rosterType === 'buyBack', slots);
 				}					
 			});			
 			setPreparedCrew([...preparedCrew]);
@@ -318,7 +318,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			available: true,
 			optionText: 'Show quipment scores',
 			form: <QuipmentToolsFilter 
-					maxxed={rosterType === 'allCrew'}
+					maxxed={rosterType === 'allCrew' || rosterType === 'buyBack'}
 					quipment={quipment}
 					buffConfig={globalContext.player.buffConfig ?? globalContext.core.all_buffs}
 					pstMode={pstMode}
@@ -332,11 +332,11 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					setCrewFilters={setCrewFilters}	
 				/>,
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getQuipmentTableConfig(rosterType === 'allCrew'),			
+			tableConfig: getQuipmentTableConfig(rosterType === 'allCrew' || rosterType === 'buyBack'),			
 			renderTableCells: 
 				(crew: IRosterCrew) => 
 					<QuipmentScoreCells 
-						excludeQBits={rosterType === 'allCrew'}
+						excludeQBits={rosterType === 'allCrew' || rosterType === 'buyBack'}
 						excludeSkills={false} 
 						top={top[crew.max_rarity - 1]} 
 						crew={crew} />
@@ -347,7 +347,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			optionText: 'Show max quipment',
 			form: <QuipmentToolsFilter 
 					immortalOnly={true}
-					maxxed={rosterType === 'allCrew'}
+					maxxed={rosterType === 'allCrew' || rosterType === 'buyBack'}
 					quipment={quipment}
 					buffConfig={globalContext.player.buffConfig ?? globalContext.core.all_buffs}
 					pstMode={pstMode}
@@ -360,7 +360,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					setCrewFilters={setCrewFilters}	
 				/>,
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getTopQuipmentTableConfig(top, pstMode, rosterType === 'allCrew'),
+			tableConfig: getTopQuipmentTableConfig(top, pstMode, rosterType === 'allCrew' || rosterType === 'buyBack'),
 			renderTableCells: 
 				(crew: IRosterCrew) => 
 					<TopQuipmentScoreCells 
@@ -368,9 +368,9 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 						slots={slots}
 						buffConfig={globalContext.player.buffConfig ?? globalContext.core.all_buffs}
 						quipment={quipment}
-						excludeQBits={rosterType === 'allCrew'}
+						excludeQBits={rosterType === 'allCrew' || rosterType === 'buyBack'}
 						targetGroup={`${pageId}/targetClassItem`} 
-						allslots={rosterType === 'allCrew'}
+						allslots={rosterType === 'allCrew' || rosterType === 'buyBack'}
 						top={top[crew.max_rarity - 1]} 
 						crew={crew} />
 		},
@@ -420,7 +420,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 		},
 		{
 			id: 'ownership',
-			available: playerData && rosterType === 'allCrew',
+			available: playerData && (rosterType === 'allCrew' || rosterType === 'buyBack'),
 			form:
 				<CrewOwnershipFilter
 					key='filter_allcrew_ownership'
@@ -482,7 +482,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 						crewFilters={crewFilters}
 						setCrewFilters={setCrewFilters}
 					/>
-					{rosterType === 'allCrew' && 
+					{(rosterType === 'allCrew' || rosterType === 'buyBack') && 
 					<CrewBuffModes
 						buffMode={buffMode}
 						setBuffMode={setBuffMode}

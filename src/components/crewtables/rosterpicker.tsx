@@ -6,6 +6,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import { oneCrewCopy, applyCrewBuffs, getSkills } from '../../utils/crewutils';
 
 import { IRosterCrew, RosterType } from './model';
+import { CrewMember } from '../../model/crew';
 
 type RosterPickerProps = {
 	rosterType: string;
@@ -21,10 +22,12 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	const { rosterType, setRosterType, setRosterCrew, buffMode } = props;
 
 	const [allCrew, setAllCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
+	const [buyBackCrew, setBuyBackCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [myCrew, setMyCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 
 	React.useEffect(() => {
 		const rosterType = playerData ? 'myCrew' : 'allCrew';
+		if (!playerData) setBuyBackCrew(undefined);
 		initializeRoster(rosterType, true);
 		setRosterType(rosterType);
 	}, [playerData]);
@@ -39,9 +42,10 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 	if (!playerData)
 		return (<></>);
+	const hasBuyBack = !!playerData.buyback_well?.length;
 
 	return (
-		<Step.Group fluid widths={2}>
+		<Step.Group fluid widths={hasBuyBack ? 3 : 2}>
 			<Step active={rosterType === 'myCrew'} onClick={() => setRosterType('myCrew')}>
 				<img src='/media/crew_icon.png' style={{ width: '3em', marginRight: '1em' }} />
 				<Step.Content>
@@ -49,6 +53,14 @@ export const RosterPicker = (props: RosterPickerProps) => {
 					<Step.Description>View only your owned crew</Step.Description>
 				</Step.Content>
 			</Step>
+			{hasBuyBack && 
+			<Step active={rosterType === 'buyBack'} onClick={() => setRosterType('buyBack')}>
+				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`} style={{ width: '3em', marginRight: '1em' }} /> 
+				<Step.Content>
+					<Step.Title>Buy-Back Well</Step.Title>
+					<Step.Description>View crew in the buy-back well</Step.Description>
+				</Step.Content>
+			</Step>}
 			<Step active={rosterType === 'allCrew'} onClick={() => setRosterType('allCrew')}>
 				<Icon name='game' />
 				<Step.Content>
@@ -69,6 +81,16 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			}
 			rosterCrew = rosterizeMyCrew(playerData.player.character.crew, ephemeral?.activeCrew ?? []);
 			setMyCrew([...rosterCrew]);
+			setRosterCrew([...rosterCrew]);
+		}
+		else if (rosterType === 'buyBack' && playerData) {
+			if (buyBackCrew && !forceReload) {
+				setRosterCrew([...buyBackCrew]);
+				return;
+			}
+			const crewMap = playerData.buyback_well?.map(b => globalContext.core.crew.find(f => f.symbol === b) as IRosterCrew);			
+			rosterCrew = rosterizeAllCrew(crewMap);
+			setBuyBackCrew([...rosterCrew]);
 			setRosterCrew([...rosterCrew]);
 		}
 		else if (rosterType === 'allCrew') {
@@ -118,11 +140,11 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		return rosterCrew;
 	}
 
-	function rosterizeAllCrew(): IRosterCrew[] {
+	function rosterizeAllCrew(alternativeCrew?: CrewMember[]): IRosterCrew[] {
 		const rosterCrew = [] as IRosterCrew[];
 
 		let crewmanId = 1;
-		globalContext.core.crew.forEach(crew => {
+		(alternativeCrew ?? globalContext.core.crew).forEach(crew => {
 			const crewman = {
 				... oneCrewCopy(crew),
 				id: crewmanId++,
