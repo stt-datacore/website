@@ -416,19 +416,19 @@ export const DataProvider = (props: DataProviderProperties) => {
 	// }
 
 	function postProcessCrewTranslations(data: ICoreData): void {
-		// if (data.crew.length && data.translation.crew_archetypes) {
-		// 	data.crew.forEach((crew) => {				
-		// 		let arch = data.translation.crew_archetypes.find(f => f.symbol === crew.symbol);
-		// 		crew.traits_named = crew.traits.map(t => data.translation.trait_names[t]);
-		// 		crew.name = arch?.name ?? crew.name;
-		// 		crew.short_name = arch?.short_name ?? crew.short_name;				
+		if (data.crew.length && data.translation.crew_archetypes) {
+			data.crew.forEach((crew) => {				
+				let arch = data.translation.crew_archetypes.find(f => f.symbol === crew.symbol);
+				crew.traits_named = crew.traits.map(t => data.translation.trait_names[t]);
+				crew.name = arch?.name ?? crew.name;
+				crew.short_name = arch?.short_name ?? crew.short_name;				
 
-		// 		crew.events ??= 0;
-		// 		if (!crew.obtained?.length || crew.obtained === "N/A") {
-		// 			crew.obtained = getObtained(crew);
-		// 		}				
-		// 	});
-		// }
+				crew.events ??= 0;
+				if (!crew.obtained?.length || crew.obtained === "N/A") {
+					crew.obtained = getObtained(crew);
+				}				
+			});
+		}
 	}
 
 	function getObtained(data: CrewMember) {
@@ -468,20 +468,20 @@ export const DataProvider = (props: DataProviderProperties) => {
 	}
 	
 	function postProcessShipTranslations(data: ICoreData): void {
-		// if (data.ship_schematics.length && data.translation.ship_archetypes) {
-		// 	data.ship_schematics.forEach((ship) => {
-		// 		let arch = data.translation.ship_archetypes.find(f => f.symbol === ship.ship.symbol);
-		// 		ship.ship.flavor = arch?.flavor ?? ship.ship.flavor;				
-		// 		ship.ship.traits_named = ship.ship.traits?.map(t => data.translation.ship_trait_names[t]);
-		// 		ship.ship.name = arch?.name ?? ship.ship.name;				
-		// 		arch?.actions?.forEach((action) => {
-		// 			let act = ship.ship.actions?.find(f => f.symbol === action.symbol);
-		// 			if (act) {
-		// 				act.name = action.name;
-		// 			}
-		// 		});				
-		// 	});
-		// }
+		if (data.ship_schematics.length && data.translation.ship_archetypes) {
+			data.ship_schematics.forEach((ship) => {
+				let arch = data.translation.ship_archetypes.find(f => f.symbol === ship.ship.symbol);
+				ship.ship.flavor = arch?.flavor ?? ship.ship.flavor;				
+				ship.ship.traits_named = ship.ship.traits?.map(t => data.translation.ship_trait_names[t]);
+				ship.ship.name = arch?.name ?? ship.ship.name;				
+				arch?.actions?.forEach((action) => {
+					let act = ship.ship.actions?.find(f => f.symbol === action.symbol);
+					if (act) {
+						act.name = action.name;
+					}
+				});				
+			});
+		}
 	}
 
 	function postProcessShipBattleStations(data: ICoreData): void {
