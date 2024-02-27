@@ -1,7 +1,7 @@
 import React from 'react';
 import { Step, Icon } from 'semantic-ui-react';
 
-import { PlayerCrew, CompactCrew, CompletionState } from '../../model/player';
+import { PlayerCrew, CompactCrew, CompletionState, PlayerBuffMode } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
 import { oneCrewCopy, applyCrewBuffs, getSkills } from '../../utils/crewutils';
 
@@ -11,13 +11,14 @@ type RosterPickerProps = {
 	rosterType: string;
 	setRosterType: (rosterType: RosterType) => void;
 	setRosterCrew: (rosterCrew: IRosterCrew[]) => void;
+	buffMode?: PlayerBuffMode;
 };
 
 export const RosterPicker = (props: RosterPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { maxBuffs } = globalContext;
 	const { playerData, buffConfig: playerBuffs, ephemeral } = globalContext.player;
-	const { rosterType, setRosterType, setRosterCrew } = props;
+	const { rosterType, setRosterType, setRosterCrew, buffMode } = props;
 
 	const [allCrew, setAllCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [myCrew, setMyCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
@@ -31,6 +32,10 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	React.useEffect(() => {
 		initializeRoster(rosterType);
 	}, [rosterType]);
+
+	React.useEffect(() => {
+		initializeRoster(rosterType, true);
+	}, [buffMode]);
 
 	if (!playerData)
 		return (<></>);
@@ -150,10 +155,10 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				if (!(skill in crewman.skills)) crewman.skills[skill] = { ... crew.base_skills[skill] };
 			}
 
-			if (playerData && playerBuffs) {
+			if (buffMode === 'player' && playerData && playerBuffs) {
 				applyCrewBuffs(crewman, playerBuffs);
 			}
-			else if (maxBuffs) {
+			else if (buffMode === 'max' && maxBuffs) {
 				applyCrewBuffs(crewman, maxBuffs);
 			}
 
