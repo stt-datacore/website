@@ -12,13 +12,14 @@ export interface QuipmentScoreProps {
     crew: IRosterCrew;
     top: QuipmentScores;
     excludeSkills: boolean;
+    excludeSpecialty?: boolean;
     excludeQBits?: boolean;
 }
 
-export const getQuipmentTableConfig = (excludeQBits?: boolean) => {
+export const getQuipmentTableConfig = (excludeQBits?: boolean, excludeSpecialty?: boolean) => {
     const config = [] as ITableConfigRow[];    
     config.push({ width: 1, column: 'quipment_score', title: "Overall", reverse: true });
-    config.push({ width: 1, column: 'quipment_scores.trait_limited', title: "Specialty", reverse: true });
+    if (!excludeSpecialty) config.push({ width: 1, column: 'quipment_scores.trait_limited', title: "Specialty", reverse: true });
 
     CONFIG.SKILLS_SHORT.map(p => p.name).forEach((skill) => {
         config.push({ 
@@ -45,7 +46,7 @@ export const getQuipmentTableConfig = (excludeQBits?: boolean) => {
 }
 
 export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
-    const { excludeQBits, excludeSkills, crew, top } = props;
+    const { excludeSpecialty, excludeQBits, excludeSkills, crew, top } = props;
 
     const quipment_score = crew.quipment_score ?? 0;
     const top_quipment = top.quipment_score ?? 1;
@@ -68,7 +69,7 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
                 </sub>       
             </div>     
         </Table.Cell>
-        <Table.Cell>
+        {!excludeSpecialty && <Table.Cell>
             <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: "0.5em"}}>
                 <div style={{color: gradeToColor(tr_grade, true) ?? undefined }}>
                     {numberToGrade(tr_grade, "None")}
@@ -77,7 +78,7 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
                     {trait_score.toLocaleString() ?? "0"}
                 </sub>       
             </div>     
-        </Table.Cell>
+        </Table.Cell>}
         {!excludeSkills && CONFIG.SKILLS_SHORT.map(p => {
             
             const top_skill = top.quipment_scores ? top.quipment_scores[p.name] : 1;

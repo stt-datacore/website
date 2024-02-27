@@ -20,10 +20,11 @@ type QuipmentToolsFilterProps = {
     setPstMode: (value: boolean) => void;
 	altTitle?: string;
     hideForm?: boolean;
+	immortalOnly?: boolean;
 };
 
 export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
-	const { maxxed, quipment, buffConfig, hideForm, crewFilters, setCrewFilters, slots, setSlots, pstMode, setPstMode } = props;
+	const { immortalOnly, maxxed, quipment, buffConfig, hideForm, crewFilters, setCrewFilters, slots, setSlots, pstMode, setPstMode } = props;
 
 	const [slotFilter, setSlotFilter] = React.useState<string>(slots ? `slot${slots}` : 'slot0');
 
@@ -36,7 +37,7 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 	];
 
 	const filterCrew = (crew: IRosterCrew) => {
-        if (crew.immortal === undefined || crew.immortal < 0) {
+        if (!immortalOnly || crew.immortal === undefined || crew.immortal < 0) {
 			//calcQLots(crew, quipment, buffConfig, maxxed, slots);
 			return true;
 		}
