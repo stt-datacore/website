@@ -1,7 +1,7 @@
 import React from 'react';
-import { Form, Dropdown, Icon, Label, Rating, Popup } from 'semantic-ui-react';
+import { Form, Dropdown, Icon, Label, Rating, Popup, DropdownItemProps } from 'semantic-ui-react';
 
-import { CompletionState } from '../../model/player';
+import { CompletionState, PlayerBuffMode } from '../../model/player';
 import { IRosterCrew } from './model';
 import { Skills } from '../item_presenters/classic_presenter';
 import { GlobalContext } from '../../context/globalcontext';
@@ -177,6 +177,40 @@ export const PortalFilter = (props: CrewPortalFilterProps) => {
 				options={portalFilterOptions}
 				value={props.portalFilter}
 				onChange={(e, { value }) => props.setPortalFilter(value === '' ? undefined : value as boolean)}
+				closeOnChange
+			/>
+		</Form.Field>
+	);
+};
+
+export type CrewBuffModesProps = {
+	buffMode?: PlayerBuffMode;
+	setBuffMode: (value?: PlayerBuffMode) => void;
+	playerAvailable?: boolean;
+	altTitle?: string;
+}
+
+export const CrewBuffModes = (props: CrewBuffModesProps) => {
+	const buffModes = [] as DropdownItemProps[];
+
+	buffModes.push({ key: 'none', value: undefined, text: 'No Buffs' })
+
+	if (props.playerAvailable) {
+		buffModes.push({ key: 'player', value: 'player', text: 'Player Buffs' })
+	}
+
+	buffModes.push({ key: 'max', value: 'max', text: 'Max Buffs' })
+
+	return (
+		<Form.Field>
+			<Dropdown
+				placeholder={props.altTitle ?? 'Apply stat buffs'}
+				clearable
+				selection
+				multiple={false}
+				options={buffModes}
+				value={props.buffMode}
+				onChange={(e, { value }) => props.setBuffMode(value === '' ? undefined : value as PlayerBuffMode | undefined)}
 				closeOnChange
 			/>
 		</Form.Field>
