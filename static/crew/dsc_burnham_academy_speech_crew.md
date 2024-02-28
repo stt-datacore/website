@@ -3,7 +3,7 @@ name: Academy Speech Burnham
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 2
 in_portal: true
 date: 11/01/2023
 published: true
