@@ -3,7 +3,7 @@ name: Symbiont Pool Jadzia
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 1
 in_portal: true
 date: 14/02/2023
 published: true

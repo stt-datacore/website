@@ -3,7 +3,7 @@ name: Tee Time Doctor
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal: true
 date: 19/03/2020
 published: true
