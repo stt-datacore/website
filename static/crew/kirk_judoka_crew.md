@@ -3,7 +3,7 @@ name: Judoka Kirk
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 in_portal: true
 date: 02/09/2022
 published: true

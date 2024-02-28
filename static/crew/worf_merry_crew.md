@@ -3,7 +3,7 @@ name: Will Scarlett
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal: true
 date: 21/12/2016
 published: true

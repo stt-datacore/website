@@ -3,7 +3,7 @@ name: Farragut Kirk
 rarity: 4
 series: snw
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 2
 in_portal:
 date: 27/07/2023
 published: true
