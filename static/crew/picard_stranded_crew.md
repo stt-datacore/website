@@ -3,7 +3,7 @@ name: Picard at El-Adrel
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 in_portal: true
 date: 02/04/2020
 published: true

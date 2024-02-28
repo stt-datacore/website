@@ -3,7 +3,7 @@ name: U.S.S. Cabot Janitor
 rarity: 2
 series: dsc
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 in_portal: true
 date: 05/08/2021
 published: true

@@ -3,7 +3,7 @@ name: EV Suit McCoy
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal: true
 date: 22/10/2020
 published: true

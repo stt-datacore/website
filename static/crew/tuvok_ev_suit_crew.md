@@ -3,7 +3,7 @@ name: EV Suit Tuvok
 rarity: 3
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 2
 in_portal: true
 date: 28/04/2020
 published: true

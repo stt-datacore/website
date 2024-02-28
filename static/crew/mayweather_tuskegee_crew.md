@@ -3,7 +3,7 @@ name: Tuskegee Mayweather
 rarity: 4
 series: original
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal: true
 date: 31/08/2016
 published: true
