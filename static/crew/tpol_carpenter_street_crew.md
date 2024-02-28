@@ -3,7 +3,7 @@ name: Carpenter Street T'Pol
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 1
 in_portal: true
 date: 13/04/2022
 published: true
