@@ -3,7 +3,7 @@ name: Temporal Shift Kes
 rarity: 3
 series: voy
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 in_portal: true
 date: 17/11/2016
 published: true

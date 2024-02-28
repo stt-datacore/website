@@ -3,7 +3,7 @@ name: Commander Spock
 rarity: 1
 series: tos
 memory_alpha:
-bigbook_tier: 1
+bigbook_tier: 2
 in_portal: true
 date: 01/01/2016
 published: true

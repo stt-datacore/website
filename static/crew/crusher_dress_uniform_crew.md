@@ -3,7 +3,7 @@ name: Dress Uniform Beverly Crusher
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 in_portal: true
 date: 31/12/2019
 published: true
