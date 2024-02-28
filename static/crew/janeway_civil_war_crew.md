@@ -3,7 +3,7 @@ name: Camp Nurse Janeway
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 in_portal: true
 date: 15/09/2020
 published: true
