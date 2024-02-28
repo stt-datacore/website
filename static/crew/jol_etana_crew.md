@@ -3,7 +3,7 @@ name: Etana Jol
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 9
 in_portal: true
 date: 05/12/2018
 published: true
