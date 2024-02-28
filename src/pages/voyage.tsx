@@ -36,7 +36,7 @@ const VoyagePage = () => {
 			pageTitle='Voyage Calculator'
 			pageDescription='Find the best crew for your voyage and get estimates on how long it will run.'
 			playerPromptType='recommend'
-			demands={['collections']}
+			demands={['collections', 'event_instances']}
 		>
 			<React.Fragment>
 				<CrewHoverStat targetGroup='voyageLineup' />
@@ -176,7 +176,7 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 		}
 		// Otherwise guess event from autosynced events
 		else {
-			getRecentEvents(globalContext.core.crew).then(recentEvents => {
+			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances).then(recentEvents => {
 				setActiveEvents([...recentEvents]);
 			});
 		}
