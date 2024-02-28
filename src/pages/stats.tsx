@@ -4,7 +4,6 @@ import { ResponsiveBar } from '@nivo/bar';
 
 import themes from '../components/nivo_themes';
 
-import Layout from '../components/layout';
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
 import DataPageLayout from '../components/page/datapagelayout';

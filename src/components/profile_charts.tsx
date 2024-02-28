@@ -661,7 +661,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 							data={skill_distribution}
 							theme={themes.dark}
 							margin={{ top: 40, right: 20, bottom: 20, left: 20 }}
-							//identity='name'
+							id='name'
 							value='loc'
 							cornerRadius={2}
 							borderWidth={1}
