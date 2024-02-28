@@ -3,7 +3,7 @@ name: One Way Ticket Chapel
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal:
 date: 19/09/2023
 published: true
