@@ -175,7 +175,7 @@ export class CrewPreparer {
                             return xcrew.symbol === dataIn.symbol;
                         }
                     }) ?? dataIn as PlayerCrew;
-                    item = { ...dataIn, ...item, kwipment: dataIn.kwipment };                    
+                    item = { ...dataIn, ...item, kwipment: dataIn.kwipment, q_bits: dataIn.q_bits };                    
                 }
                 else {
                     item = playerData.player.character.crew.find((xcrew) => {
@@ -227,7 +227,9 @@ export class CrewPreparer {
                     }
                     
                     if ((maxBuffs && Object.keys(maxBuffs)?.length) && ((!hasPlayer && buffMode != 'none') || (buffMode === 'max'))) {
-                        applyCrewBuffs(item, maxBuffs);
+                        if (buffMode === 'quipment' && buffs?.length) applyCrewBuffs(item, maxBuffs, undefined, buffs);
+                        else applyCrewBuffs(item, maxBuffs);
+
                         getSkills(item).forEach(skill => {
                             let sb = item[skill] ?? { core: 0, min: 0, max: 0 };
                             item[skill] = sb;
