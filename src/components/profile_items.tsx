@@ -13,9 +13,9 @@ import CONFIG from '../components/CONFIG';
 import { GlobalContext } from '../context/globalcontext';
 import { CrewMember } from '../model/crew';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
-import { PlayerCrew } from '../model/player';
+import { PlayerBuffMode, PlayerCrew } from '../model/player';
 import { EquipmentWorkerConfig, EquipmentWorkerResults } from '../model/worker';
-import { downloadData, oneCrewCopy, qbitsToSlots, shortToSkill, skillToShort } from '../utils/crewutils';
+import { applyCrewBuffs, downloadData, oneCrewCopy, qbitsToSlots, shortToSkill, skillToShort } from '../utils/crewutils';
 import { calcItemDemands, canBuildItem } from '../utils/equipment';
 import { appelate } from '../utils/misc';
 import { TinyStore } from '../utils/tiny';
@@ -108,6 +108,7 @@ type ProfileItemsState = {
 	skills?: string[];
 	trials?: CrewKwipTrial[];
 	ownedQuipment?: OwnedType;
+	ignoreLimit?: boolean;
 };
 
 export function printRequiredTraits(item: EquipmentCommon): JSX.Element {
@@ -173,14 +174,13 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 	private setCrewType = (value: CrewType) => {
 		this.tiny.setValue('crewType', value);
-		this.setState({ ... this.state, crewType: value });
+		this.setState({ ... this.state, crewType: value, crewSelection: '' });
 	}
 
 	private findFirstCrew = (symbol: string) => {
 		const { playerData } = this.context.player;
 		const { crewType } = this.state;
-
-		const found = playerData?.player.character.crew.find(d => {
+		let found = playerData?.player.character.crew.find(d => {
 			if (d.symbol !== symbol) return false;
 
 			if (crewType === 'frozen') {
@@ -194,9 +194,9 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			}
 
 			return true;
-		});
+		});		
 
-		return found;
+		return found;	
 	}
 
 	private makeCrewChoices = () => {
@@ -251,7 +251,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 								</div>
 								<div style={{gridArea: 'rarity'}}>
 									<Rating icon={'star'} maxRating={c.max_rarity} rating={c.max_rarity} size={'tiny'} />
-								</div>
+								</div>								
 							</div>
 						</React.Fragment>,
 						// image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` },
@@ -351,8 +351,27 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 
 	private makeTrialCrew = (crew: PlayerCrew) => {
 		if (!crew) return undefined;
+
 		crew = oneCrewCopy({ ... this.context.core.crew.find(f => f.symbol === crew.symbol) as PlayerCrew, ...crew }) as PlayerCrew;
+
+		if (crew.level === undefined || crew.rarity === undefined) {
+			crew.kwipment = [0, 0, 0, 0];
+			crew.kwipment_expiration =  [0, 0, 0, 0];
+			crew.rarity = crew.max_rarity;
+			crew.level = 100;
+			crew.skills = crew.base_skills;
+			crew.q_bits = 1300;
+		}
+		else if (crew.immortal > 0) {
+			crew.q_bits = 1300;
+		}
+
+		if (this.state.ignoreLimit) {
+			crew.q_bits = 1300;
+		}
+
 		let trial = this.state.trials?.find(f => f.symbol === crew.symbol)
+
 		if (!trial) {
 			trial = {
 				symbol: crew.symbol,
@@ -916,7 +935,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		});
 
 		const crewChoices = this.makeCrewChoices();
-		const selCrew = (!!crewMode && !!crewSelection && !!playerData && crewType === 'quippable') ? this.makeTrialCrew(this.findFirstCrew(crewSelection) as PlayerCrew) : undefined;
+		const selCrew = (!!crewMode && !!crewSelection) ? this.makeTrialCrew((this.findFirstCrew(crewSelection) ?? this.context.core.crew.find(f => f.symbol === crewSelection)) as PlayerCrew) : undefined;
 
 		if (this.props.noRender) return <></>
 
@@ -1055,7 +1074,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							flexDirection: "column"
 						}}>
 						<CrewPresenter selfRender quipmentMode hideStats compact plugins={[]} crew={selCrew} hover={false} storeName='items_quip' />
-						<CrewItemsView targetGroup={'profile_items'} itemSize={48} crew={selCrew} quipment />
+						<CrewItemsView targetGroup={'profile_items'} itemSize={48} crew={selCrew} quipment />						
+						<Checkbox label={'Assume Max Slots'} checked={!!this.state.ignoreLimit} onChange={(e, { checked }) => this.setState({ ...this.state, ignoreLimit: !!checked })} />
 					</div>
 				}
 
