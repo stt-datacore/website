@@ -3,7 +3,7 @@ name: Armus
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 in_portal:
 date: 27/11/2018
 published: true
