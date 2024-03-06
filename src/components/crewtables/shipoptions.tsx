@@ -246,15 +246,14 @@ export const ShipAbilityRankPicker = (props: ShipAbilityRankPickerProps) => {
 };
 
 export type ShipSeatPickerProps = {
-    playerData?: PlayerData;
-	pool?: Ship[];
     availableSeats?: string[];
     selectedSeats: string[];
     setSelectedSeats: (seat: string[]) => void | React.Dispatch<React.SetStateAction<string[]>>;
+	fluid?: boolean;
 };
 
 export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
-	const { selectedSeats, setSelectedSeats } = props;
+	const { selectedSeats, setSelectedSeats, fluid } = props;
     const availableSeats = props.availableSeats && props.availableSeats.length ? props.availableSeats : Object.keys(CONFIG.SKILLS);
 
 	const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, data: MenuItemProps) => {
@@ -262,7 +261,7 @@ export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
 		let newSeats = [...selectedSeats ?? []];
 		if (newSeats.includes(data.name)) {
 			if (newSeats.length === 1) newSeats = [];
-			else newSeats = newSeats.splice(newSeats.indexOf(data.name));		
+			else newSeats.splice(newSeats.indexOf(data.name), 1);		
 		}
 		else {
 			newSeats.push(data.name);
@@ -287,13 +286,13 @@ export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
 
 	return (
 		<React.Fragment>
-			<Menu fluid>
+			<Menu fluid={fluid !== false}>
 				{availableSeats.map((c, key) => (
 					<Menu.Item
 						as="a"
 						name={c}
-						key={key}
-						index={key}
+						key={'seatindex_' + key}
+						
 						onClick={handleClick}						
 						active={selectedSeats.includes(c)}
                         title={CONFIG.SKILLS[c]}
