@@ -7,6 +7,7 @@ import ProfileItems from "../profile_items";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { ShipSeatPicker } from "../crewtables/shipoptions";
 import { EquipmentItem } from "../../model/equipment";
+import CONFIG from "../CONFIG";
 
 
 
@@ -48,13 +49,18 @@ export const CrewQuipment = (props: CrewQuipmentProps) => {
                 return false;
             }
         });
-        sortItemsWithBonus(qps);
+        sortItemsWithBonus(qps, undefined, undefined, -1);
         setQuips(qps);
     }, [context, skills]);
 
     React.useEffect(() => {
         setQuipment(quips.map(q => q.item));
     }, [quips])
+
+    const formatTitle = (value: string, state: boolean) => {
+        let s = `${state ? 'Hide' : 'Show'} ${CONFIG.SKILLS[value]} Skill`;
+        return s;
+    }
 
     return (
         <div className={'ui segment'}>  
@@ -68,8 +74,16 @@ export const CrewQuipment = (props: CrewQuipmentProps) => {
                 <div>
                     <h4>Compatible Quipment</h4>
                 </div>
-                <div>
-                    <ShipSeatPicker fluid={false} selectedSeats={skills} setSelectedSeats={setSkills} availableSeats={crew_skills}  />
+                <div style={{display:'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                    <div>
+                        <h4 style={{marginRight:"0.5em"}}>Active Quipment Skills:</h4>
+                    </div>
+                    <ShipSeatPicker
+                        formatTitle={formatTitle}
+                        fluid={false} 
+                        selectedSeats={skills} 
+                        setSelectedSeats={setSkills} 
+                        availableSeats={crew_skills}  />
                 </div>
             </div>
             <ProfileItems
