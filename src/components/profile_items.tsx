@@ -73,6 +73,8 @@ type ProfileItemsProps = {
 	crewTargetGroup?: string;
 
 	customFields?: CustomFieldDef[];
+
+	init_rows?: number;
 };
 
 interface ItemSearchOpts {
@@ -153,12 +155,14 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			column: null,
 			direction: null,
 			searchOpts: this.tiny.getValue('searchOptions'),
-			pagination_rows: 10,
+			pagination_rows: props.init_rows ?? this.tiny.getValue<number>('pagination_rows', 10) ?? 10,
 			pagination_page: 1,
 			data: props.data,
 			addNeeded: props.addNeeded ?? this.tiny.getValue<boolean>('addNeeded', false),
 			ownedQuipment: 'all'
 		};
+		
+		this.lastData = undefined;
 	}
 
 	private setCrewSelection = (value: string) => {
@@ -170,6 +174,11 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			this.setState({ ... this.state, crewSelection: value });
 		}
 
+	}
+
+	private setRows = (value: number) => {
+		this.tiny.setValue('pagination_rows', value, true);
+		this.setState({ ...this.state, pagination_rows: value, pagination_page: 1 });
 	}
 
 	private setCrewType = (value: CrewType) => {
@@ -317,7 +326,12 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 
 	componentDidUpdate(prevProps: Readonly<ProfileItemsProps>, prevState: Readonly<ProfileItemsState>, snapshot?: any): void {
-		this.initData();
+		if (this.props.data && this.props.data !== this.state.data) {
+			this.setState({ ... this.state, data: this.props.data });
+		}
+		else {
+			this.initData();
+		}
 	}
 
 	initData() {
@@ -1236,9 +1250,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 										inline
 										options={pagingOptions}
 										value={pagination_rows}
-										onChange={(event, { value }) =>
-											this.setState({ pagination_page: 1, pagination_rows: value as number })
-										}
+										onChange={(event, { value }) => this.setRows(value as number)}
 									/>
 								</span>
 							</Table.HeaderCell>
