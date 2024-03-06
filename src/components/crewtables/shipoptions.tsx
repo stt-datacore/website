@@ -248,12 +248,13 @@ export const ShipAbilityRankPicker = (props: ShipAbilityRankPickerProps) => {
 export type ShipSeatPickerProps = {
     availableSeats?: string[];
     selectedSeats: string[];
+	formatTitle?: (value: string, state: boolean) => string;
     setSelectedSeats: (seat: string[]) => void | React.Dispatch<React.SetStateAction<string[]>>;
 	fluid?: boolean;
 };
 
 export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
-	const { selectedSeats, setSelectedSeats, fluid } = props;
+	const { selectedSeats, setSelectedSeats, fluid, formatTitle } = props;
     const availableSeats = props.availableSeats && props.availableSeats.length ? props.availableSeats : Object.keys(CONFIG.SKILLS);
 
 	const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, data: MenuItemProps) => {
@@ -292,10 +293,9 @@ export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
 						as="a"
 						name={c}
 						key={'seatindex_' + key}
-						
 						onClick={handleClick}						
 						active={selectedSeats.includes(c)}
-                        title={CONFIG.SKILLS[c]}
+                        title={formatTitle ? formatTitle(c, selectedSeats.includes(c)) : CONFIG.SKILLS[c]}
 					>
 						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${c}.png`} style={{width: "1em"}} />
 					</Menu.Item>)
