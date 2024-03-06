@@ -1,7 +1,7 @@
 ---
 name: Data as Masaka
 rarity: 5
-series: pic
+series: tng
 memory_alpha:
 bigbook_tier: 4
 in_portal:
