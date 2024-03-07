@@ -1562,5 +1562,22 @@
                 "skill": "science_skill"
             }
         ]
+    },
+    {
+        "symbol": "vidiian_warship_ship",
+        "battle_stations": [
+            {
+                "skill": "command_skill"
+            },
+            {
+                "skill": "security_skill"
+            },
+            {
+                "skill": "engineering_skill"
+            },
+            {
+                "skill": "medicine_skill"
+            }
+        ]
     }
 ]
