@@ -9,4 +9,4 @@ date: 01/01/2016
 published: true
 ---
 
-Still a useful crew to own for Tuesday’s cadet missions, this time-hopper has seen a bit of his shine wear off as other Uncommons (including some must-have Female Aliens) have exceeded his once notable SCI Base. While he still possess the lowest SEC base of any 2*, the early game Voyage use can’t be discounted and he will tide you over in your quest for Super Rares.
+A handful of yellowy-green attributes on Telek’s scorecard are probably less telling than one might assume. A single star on a Super Rare crew will offer more punch on voyages and shuttles, while R’mor’s hidden traits only afford him cadet eligibility one day per week. This is a card best left as collection fodder to give you something to work on as you’re leaving the early game and already have your roster set up for success.
