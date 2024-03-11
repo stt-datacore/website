@@ -3,7 +3,7 @@ name: Jae Hwang
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal:
 date: 08/11/2023
 published: true

@@ -3,7 +3,7 @@ name: Nightless Neelix
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal:
 date: 10/10/2023
 published: true
