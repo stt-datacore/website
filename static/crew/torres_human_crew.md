@@ -3,7 +3,7 @@ name: Human Torres
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 9
 in_portal: true
 date: 12/03/2019
 published: true

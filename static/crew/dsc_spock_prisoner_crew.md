@@ -3,7 +3,7 @@ name: Prisoner Spock
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 1
+bigbook_tier: 2
 in_portal: true
 date: 26/01/2022
 published: true
