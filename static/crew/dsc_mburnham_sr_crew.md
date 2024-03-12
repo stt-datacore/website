@@ -3,7 +3,7 @@ name: Mike Burnham Sr.
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal: true
 date: 14/01/2021
 published: true
