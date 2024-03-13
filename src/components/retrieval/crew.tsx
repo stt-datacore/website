@@ -30,7 +30,7 @@ export const RetrievalCrew = () => {
 	const [isPreparing, setIsPreparing] = React.useState<boolean>(false);
 	const [filteredCrew, setFilteredCrew] = React.useState<IRosterCrew[]>([]);
 
-	// Calculate roster initially (or playerData change), or on polestar tailoring
+	// Calculate roster on updated keystone owned counts (i.e. playerData change) or on polestar tailoring
 	React.useEffect(() => {
 		setIsPreparing(true);
 		calculateRoster().then((rosterCrew: IRosterCrew[]) => {
@@ -82,7 +82,7 @@ export const RetrievalCrew = () => {
 	}, [rosterCrew, retrievableFilter, ownedFilter, hideFullyFused, rarityFilter, traitFilter, minTraitMatches, collectionFilter, wishlist]);
 
 	if (rosterCrew.length === 0)
-		return (<div style={{ margin: '1em' }}><Icon loading name='spinner' /> Loading...</div>);
+		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> Loading...</div>);
 
 	const retrievableFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },
