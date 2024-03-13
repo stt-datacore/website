@@ -32,6 +32,9 @@ export const CombosPlanner = (props: CombosPlannerProps) => {
 		}
 	});
 
+	if (usefulAloneIds.length === 0 && usefulOtherIds.length === 0)
+		return <></>;
+
 	return (
 		<React.Fragment>
 			Unlock retrieval options for this crew by acquiring 1 or more <Label color='yellow'>needed polestars</Label>
