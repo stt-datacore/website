@@ -297,7 +297,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			)}
 
 		</Table>
-		{!!colOptimized?.length && 			
+		{true &&		
 			<div style={{display:"flex",
 					flexDirection: 
 						window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row', 

@@ -78,10 +78,10 @@ export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolea
 
             return at - bt;
         }
-        else if (askname && a.q_power && skill in a.q_power) {
+        else if (askname && a.q_power && askname in a.q_power) {
             return 1;
         }
-        else if (bskname && b.q_power && skill in b.q_power) {
+        else if (bskname && b.q_power && bskname in b.q_power) {
             return -1;
         }
         else {
