@@ -113,6 +113,7 @@ type VoyageCalculatorProps = {
 
 const VoyageCalculator = (props: VoyageCalculatorProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { player, core } = globalContext;
 	const { playerData, ephemeral } = globalContext.player;
 
 	const [voyageConfig, setVoyageConfig] = React.useState<IVoyageInputConfig | undefined>(undefined);
@@ -121,10 +122,45 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 	const [rosterShips, setRosterShips] = React.useState<Ship[] | undefined>(undefined);
 	const [activeEvents, setActiveEvents] = React.useState<IEventData[] | undefined>(undefined);
 
+	const getDefaultConfig = (): void => {
+		if (!!playerData && !!ephemeral) {
+			const { voyage, voyageDescriptions } = ephemeral;
+			const voyageData = { voyage, voyage_descriptions: voyageDescriptions };
+			if (voyageData.voyage_descriptions?.length) {
+				// Voyage started, config will be full voyage data
+				if (!!voyageData.voyage && voyageData.voyage.length > 0) {
+					setVoyageConfig(voyageData.voyage[0]);
+				}
+				// Voyage awaiting input, config will be input parameters only
+				else {
+					setVoyageConfig(voyageData.voyage_descriptions[0]);
+				}
+			}
+		}
+		// If voyageData not found, initial config will be blank voyage
+	};
+
+	const getEvents = (): void => {
+		// Get event data from recently uploaded playerData
+		if (!!ephemeral?.events?.length) {
+			const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew))
+				.filter(ev => ev !== undefined).map(ev => ev as IEventData)
+				.filter(ev => ev.seconds_to_end > 0)
+				.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);
+			setActiveEvents([...currentEvents]);
+		}
+		// Otherwise guess event from autosynced events
+		else {
+			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances).then(recentEvents => {
+				setActiveEvents([...recentEvents]);
+			});
+		}
+	};
+
 	React.useEffect(() => {
 		getDefaultConfig();
 		getEvents();
-	}, [playerData, ephemeral]);
+	}, [player, core]);
 
 	const calculatorContext = {
 		rosterType,
@@ -141,46 +177,12 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 				setRosterCrew={setRosterCrew}
 				setRosterShips={setRosterShips}
 			/>
-			<CalculatorContext.Provider value={calculatorContext}>
-				{rosterCrew && <ConfigInput key={rosterType} voyageConfig={voyageConfig} />}
-			</CalculatorContext.Provider>
+			{!!rosterCrew && <CalculatorContext.Provider value={calculatorContext}>
+				<ConfigInput key={rosterType} voyageConfig={voyageConfig} />
+			</CalculatorContext.Provider>}
 		</React.Fragment>
 	);
 
-	function getDefaultConfig(): void {
-		if (playerData && ephemeral) {
-			const { voyage, voyageDescriptions } = ephemeral;
-			const voyageData = { voyage, voyage_descriptions: voyageDescriptions };
-			if (voyageData.voyage_descriptions) {
-				// Voyage started, config will be full voyage data
-				if (voyageData.voyage && voyageData.voyage.length > 0) {
-					setVoyageConfig(voyageData.voyage[0]);
-				}
-				// Voyage awaiting input, config will be input parameters only
-				else {
-					setVoyageConfig(voyageData.voyage_descriptions[0]);
-				}
-			}
-		}
-		// If voyageData not found, initial config will be blank voyage
-	}
-
-	function getEvents(): void {
-		// Get event data from recently uploaded playerData
-		if (ephemeral?.events) {
-			const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew))
-				.filter(ev => ev !== undefined).map(ev => ev as IEventData)
-				.filter(ev => ev.seconds_to_end > 0)
-				.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);
-			setActiveEvents([...currentEvents]);
-		}
-		// Otherwise guess event from autosynced events
-		else {
-			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances).then(recentEvents => {
-				setActiveEvents([...recentEvents]);
-			});
-		}
-	}
 };
 
 export default VoyagePage;
