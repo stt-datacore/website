@@ -42,47 +42,42 @@ export const RetrievalCrew = () => {
 
 	// Apply crew filters here
 	React.useEffect(() => {
-		if (rosterCrew) {
-			const filtered = rosterCrew.filter(c =>
-				retrievableFilter === '' ||
-				(retrievableFilter === 'retrievable' && c.retrievable === RetrievableState.Viable) ||
-				(retrievableFilter === 'actionable' &&
-					(c.actionable === ActionableState.Now || c.actionable === ActionableState.PostTailor))
-			).filter(c =>
-				ownedFilter === '' ||
-				(ownedFilter === 'owned' && c.highest_owned_rarity > 0) ||
-				(ownedFilter === 'unowned' && c.highest_owned_rarity === 0) ||
-				(ownedFilter === 'wishlist' && wishlist.includes(c.symbol))
-			).filter(c =>
-				ownedFilter === 'unowned' ||
-					!hideFullyFused ||
-					c.highest_owned_rarity < c.max_rarity
-			).filter(c =>
-				rarityFilter.length === 0 ||
-					rarityFilter.includes(c.max_rarity)
-			).filter(c => {
-				if (traitFilter.length === 0) return true;
-				if (minTraitMatches >= traitFilter.length)
-					return traitFilter.every(trait => c.traits.includes(trait));
-				else if (minTraitMatches === 2) {
-					let matches = 0;
-					traitFilter.forEach(trait => {
-						if (c.traits.includes(trait)) matches++;
-					});
-					return matches >= 2;
-				}
-				return traitFilter.some(trait => c.traits.includes(trait));
-			}).filter(c => {
-				if (collectionFilter === '') return true;
-				const collection = collections.find(collection => collection.name === collectionFilter);
-				return collection?.crew?.includes(c.symbol);
-			});
-			setFilteredCrew([...filtered]);
-		}
+		const filtered = rosterCrew.filter(c =>
+			retrievableFilter === '' ||
+			(retrievableFilter === 'retrievable' && c.retrievable === RetrievableState.Viable) ||
+			(retrievableFilter === 'actionable' &&
+				(c.actionable === ActionableState.Now || c.actionable === ActionableState.PostTailor))
+		).filter(c =>
+			ownedFilter === '' ||
+			(ownedFilter === 'owned' && c.highest_owned_rarity > 0) ||
+			(ownedFilter === 'unowned' && c.highest_owned_rarity === 0) ||
+			(ownedFilter === 'wishlist' && wishlist.includes(c.symbol))
+		).filter(c =>
+			ownedFilter === 'unowned' ||
+				!hideFullyFused ||
+				c.highest_owned_rarity < c.max_rarity
+		).filter(c =>
+			rarityFilter.length === 0 ||
+				rarityFilter.includes(c.max_rarity)
+		).filter(c => {
+			if (traitFilter.length === 0) return true;
+			if (minTraitMatches >= traitFilter.length)
+				return traitFilter.every(trait => c.traits.includes(trait));
+			else if (minTraitMatches === 2) {
+				let matches = 0;
+				traitFilter.forEach(trait => {
+					if (c.traits.includes(trait)) matches++;
+				});
+				return matches >= 2;
+			}
+			return traitFilter.some(trait => c.traits.includes(trait));
+		}).filter(c => {
+			if (collectionFilter === '') return true;
+			const collection = collections.find(collection => collection.name === collectionFilter);
+			return collection?.crew?.includes(c.symbol);
+		});
+		setFilteredCrew([...filtered]);
 	}, [rosterCrew, retrievableFilter, ownedFilter, hideFullyFused, rarityFilter, traitFilter, minTraitMatches, collectionFilter, wishlist]);
-
-	if (rosterCrew.length === 0)
-		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> Loading...</div>);
 
 	const retrievableFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all crew' },

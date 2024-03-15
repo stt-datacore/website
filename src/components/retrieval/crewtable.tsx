@@ -174,13 +174,13 @@ const CollectionsExpanded = (props: CollectionsExpandedProps) => {
 		needed: number;
 	};
 
-	const data = crew.progressable_collections.map(collectionName => {
-		const newData = {
+	const data: ICollectionData[] = crew.progressable_collections.map(collectionName => {
+		const newData: ICollectionData = {
 			name: collectionName,
 			progress: 0,
 			goal: 0,
 			needed: 0
-		} as ICollectionData;
+		};
 
 		if (playerData) {
 			const cryoCollection = playerData.player.character.cryo_collections.find(cc => cc.name === collectionName);
@@ -191,7 +191,7 @@ const CollectionsExpanded = (props: CollectionsExpandedProps) => {
 			}
 		}
 		return newData;
-	}) as ICollectionData[];
+	});
 
 	return (
 		<Table.Cell colSpan={6}>
