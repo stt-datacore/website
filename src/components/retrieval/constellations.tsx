@@ -37,7 +37,7 @@ export const ConstellationPolestars = (props: ConstellationPolestarsProps) => {
 					))}
 				</Label.Group>
 			</div>
-			{constellation.owned > 1 && (<p>You own {constellation.owned} of this constellation.</p>)}
+			{constellation.owned > 1 && <p>You own {constellation.owned} of this constellation.</p>}
 		</div>
 	);
 };
@@ -53,7 +53,7 @@ export const PolestarConstellations = (props: PolestarConstellationsProps) => {
 	const { allKeystones } = React.useContext(RetrievalContext);
 	const { polestar, setActiveConstellation, setActivePolestar } = props;
 
-	const constellations = [] as IConstellation[];
+	const constellations: IConstellation[] = [];
 
 	const ownedConstellations = allKeystones.filter(k => k.type !== 'keystone' && k.owned > 0) as IConstellation[];
 	ownedConstellations.filter(k => k.keystones.includes(polestar.id))

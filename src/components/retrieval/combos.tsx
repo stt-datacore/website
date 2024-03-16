@@ -27,7 +27,7 @@ export const CombosModal = (props: CombosModalProps) => {
 	const addedPolestars = polestarTailors.added;
 	const disabledPolestars = polestarTailors.disabled;
 
- 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
+ 	const [modalIsOpen, setModalIsOpen] = React.useState<boolean>(false);
 
 	// Unique combos consider all polestars
 	const [uniqueCombos, setUniqueCombos] = React.useState<IPolestar[][] | undefined>(undefined);
@@ -36,8 +36,8 @@ export const CombosModal = (props: CombosModalProps) => {
 	const [tailoredCombos, setTailoredCombos] = React.useState<IPolestar[][] | undefined>(undefined);
 	const [tailoredFuseGroups, setTailoredFuseGroups] = React.useState<IFuseGroups | undefined>(undefined);
 
-	const [fuseIndex, setFuseIndex] = React.useState(1);
-	const [groupIndex, setGroupIndex] = React.useState(0);
+	const [fuseIndex, setFuseIndex] = React.useState<number>(1);
+	const [groupIndex, setGroupIndex] = React.useState<number>(0);
 
 	const [actionableOnlyMode, setActionableOnlyMode] = React.useState<boolean>(true);
 
@@ -116,7 +116,7 @@ export const CombosModal = (props: CombosModalProps) => {
 			}
 
 			if (tailoredCombos && tailoredFuseGroups) {
-				const fuseOptions = [] as NumericOptions[];
+				const fuseOptions: NumericOptions[] = [];
 				[1, 2, 3, 4, 5].forEach(fuse => {
 					const fuseId = 'x' + fuse;
 					if (tailoredFuseGroups[fuseId] && tailoredFuseGroups[fuseId].length > 0) {
@@ -125,7 +125,7 @@ export const CombosModal = (props: CombosModalProps) => {
 				});
 
 				const groups = tailoredFuseGroups['x'+fuseIndex];
-				let groupOptions = [] as NumericOptions[];
+				let groupOptions: NumericOptions[] = [];
 				if (fuseIndex > 1) {
 					groupOptions = groups.map((group, groupId) => {
 						return { key: groupId, value: groupId, text: 'Option '+(groupId+1) };
@@ -187,7 +187,7 @@ export const CombosModal = (props: CombosModalProps) => {
 			/>
 		);
 
-		function toggleWishlist() {
+		function toggleWishlist(): void {
 			if (onWishlist) {
 				setWishlist([...wishlist.filter(c => c !== crew.symbol)]);
 				return;
@@ -250,9 +250,9 @@ export const CombosModal = (props: CombosModalProps) => {
 	function preCalculateCombos(): void {
 		if (crew.unique_polestar_combos) {
 			const allPolestars = allKeystones.filter(k => k.type === 'keystone') as IPolestar[];
-			const uniques = [] as IPolestar[][];
+			const uniques: IPolestar[][] = [];
 			crew.unique_polestar_combos.forEach(upc => {
-				const combo = [] as IPolestar[];
+				const combo: IPolestar[] = [];
 				upc.forEach(trait => {
 					const polestar = allPolestars.find(polestar => filterTraits(polestar, trait));
 					if (polestar) combo.push(polestar);
@@ -289,10 +289,10 @@ export const CombosModal = (props: CombosModalProps) => {
 	}
 
 	function getCombos(crew: IRosterCrew, polestars: IPolestar[], knownGroups?: number): [number, IPolestar[][]] {
-		let combos = [] as IPolestar[][];
+		const combos: IPolestar[][] = [];
 		crew.unique_polestar_combos?.forEach(upc => {
 			if (upc.every(trait => polestars.some(polestar => filterTraits(polestar, trait)))) {
-				const combo = [] as IPolestar[];
+				const combo: IPolestar[] = [];
 				upc.forEach(trait => {
 					const polestar = polestars.find(polestar => filterTraits(polestar, trait));
 					if (polestar) combo.push(polestar);

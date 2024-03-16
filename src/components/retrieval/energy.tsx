@@ -8,10 +8,22 @@ export const RetrievalEnergy = () => {
 
 	if (!playerData) return <></>;
 
-	const energy = playerData.crew_crafting_root.energy;
+	const defaultSeconds = 1800;
+	interface CraftingEnergy {
+		id: number;
+		quantity: number;
+		regenerated_at: number;
+		regeneration?: {
+			increment: number;
+			seconds: number;
+			amount: number;
+		};
+		coupons: number;
+	};
+	const energy: CraftingEnergy = playerData.crew_crafting_root.energy as CraftingEnergy;
 
 	const qTarget = 900;
-	const qPerFullDay = (24*60*60)/(energy.regeneration?.seconds ?? 1); // 48
+	const qPerFullDay = (24*60*60)/(energy.regeneration?.seconds ?? defaultSeconds); // 48
 	const qPerBoost = 50;
 
 	let energyMessage = 'You can guarantee a legendary crew retrieval now!';
@@ -33,7 +45,7 @@ export const RetrievalEnergy = () => {
 	);
 
 	function getSecondsRemaining(target: number, quantity: number): number {
-		return ((target-quantity)*(energy.regeneration.seconds ?? 0))+energy.regenerated_at;
+		return ((target-quantity)*(energy.regeneration?.seconds ?? defaultSeconds))+energy.regenerated_at;
 	}
 
 	function formatTime(seconds: number): string {
