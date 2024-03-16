@@ -3,7 +3,7 @@ name: Stranded Craft
 rarity: 3
 series: dsc
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal: true
 date: 09/10/2019
 published: true
