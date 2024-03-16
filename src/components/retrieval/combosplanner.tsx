@@ -12,15 +12,15 @@ type CombosPlannerProps = {
 export const CombosPlanner = (props: CombosPlannerProps) => {
 	const { uniqueCombos } = props;
 
-	const neededIdSets = [] as number[][];
+	const neededIdSets: number[][] = [];
 	uniqueCombos.forEach(combo => {
 		const neededIds = combo.filter(polestar => polestar.owned === 0).map(polestar => polestar.id);
 		if (!neededIdSets.find(ns => ns.length === neededIds.length && ns.every(neededId => neededIds.includes(neededId))))
 		neededIdSets.push(neededIds);
 	});
 
-	const usefulAloneIds = neededIdSets.filter(ns => ns.length === 1).map(ns => ns[0]);
-	const usefulOtherIds = [] as number[];
+	const usefulAloneIds: number[] = neededIdSets.filter(ns => ns.length === 1).map(ns => ns[0]);
+	const usefulOtherIds: number[] = [];
 	neededIdSets.forEach(ns => {
 		if (ns.length > 1) {
 			if (ns.every(neededId => !usefulAloneIds.includes(neededId))) {
@@ -31,6 +31,9 @@ export const CombosPlanner = (props: CombosPlannerProps) => {
 			}
 		}
 	});
+
+	if (usefulAloneIds.length === 0 && usefulOtherIds.length === 0)
+		return <></>;
 
 	return (
 		<React.Fragment>

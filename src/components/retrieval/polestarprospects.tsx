@@ -20,9 +20,9 @@ export const PolestarProspectsModal = () => {
 
 	const addedPolestars = polestarTailors.added;
 
-	const [modalIsOpen, setModalIsOpen] = React.useState(false);
+	const [modalIsOpen, setModalIsOpen] = React.useState<boolean>(false);
 
-	const [crewCrates, setCrewCrates] = React.useState(0);
+	const [crewCrates, setCrewCrates] = React.useState<number>(0);
 	const [ownedConstellations, setOwnedConstellations] = React.useState<IConstellation[]>([]);
 
 	const [activeConstellation, setActiveConstellation] = React.useState<string>('');
@@ -65,7 +65,7 @@ export const PolestarProspectsModal = () => {
 				{renderContent()}
 			</Modal.Content>
 			<Modal.Actions>
-				{activePolestar !== '' && (<Button icon='backward' content='Return to polestars' onClick={() => setActivePolestar('')} />)}
+				{activePolestar !== '' && <Button icon='backward' content='Return to polestars' onClick={() => setActivePolestar('')} />}
 				<Button onClick={() => setModalIsOpen(false)}>Close</Button>
 			</Modal.Actions>
 		</Modal>
@@ -101,7 +101,7 @@ export const PolestarProspectsModal = () => {
 		const allPolestars = allKeystones.filter(k => k.type === 'keystone') as IPolestar[];
 
 		// !! Always filter polestars by crew_count to hide deprecated polestars !!
-		let data = allPolestars.filter(polestar => polestar.crew_count > 0) as IPolestarData[];
+		let data: IPolestarData[] = allPolestars.filter(polestar => polestar.crew_count > 0) as IPolestarData[];
 
 		if (activeConstellation !== '') {
 			const constellation = allKeystones.find(keystone => keystone.symbol === activeConstellation) as IConstellation;
@@ -233,7 +233,7 @@ export const PolestarProspectsModal = () => {
 	}
 
 	function renderPolestarDetail(): JSX.Element {
-		const polestar = allKeystones.find(k => k.symbol === activePolestar) as IPolestarData;
+		const polestar = allKeystones.find(k => k.symbol === activePolestar) as IPolestarData | undefined;
 		if (!polestar) return <></>;
 
 		polestar.loaned = pendingAdded.filter(added => added === polestar.symbol).length;
@@ -332,12 +332,12 @@ type ProspectInventoryProps = {
 const ProspectInventory = (props: ProspectInventoryProps) => {
 	const { polestar, updateProspect } = props;
 
-	const [loaned, setLoaned] = React.useState(props.loaned);
+	const [loaned, setLoaned] = React.useState<number>(props.loaned);
 
 	return (
 		<React.Fragment>
-			{loaned > 0 && (<Button size='mini' circular icon='minus' onClick={(e) => { removeProspect(polestar); e.stopPropagation(); }} />)}
-			{loaned > 0 ? (<span style={{ margin: '0 .5em' }}>{loaned}</span>) : ''}
+			{loaned > 0 && <Button size='mini' circular icon='minus' onClick={(e) => { removeProspect(polestar); e.stopPropagation(); }} />}
+			{loaned > 0 ? <span style={{ margin: '0 .5em' }}>{loaned}</span> : ''}
 			<Button size='mini' circular icon='add' onClick={(e) => { addProspect(polestar); e.stopPropagation(); }} />
 		</React.Fragment>
 	);

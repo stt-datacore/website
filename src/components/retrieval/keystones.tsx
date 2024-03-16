@@ -22,11 +22,11 @@ export const RetrievalKeystones = () => {
 		// Count all possible constellations and zero out owned count
 		let totalCrates = 0, totalDrops = 0;
 		const constellations = allKeystones.filter(k => k.type !== 'keystone') as IConstellation[];
-		constellations.forEach(keystone => {
-			keystone.owned = 0;
-			if (keystone.type === 'crew_keystone_crate') {
+		constellations.forEach(constellation => {
+			constellation.owned = 0;
+			if (constellation.type === 'crew_keystone_crate') {
 				totalCrates++;
-				totalDrops += keystone.keystones.length;
+				totalDrops += constellation.keystones.length;
 			}
 		});
 
@@ -39,14 +39,15 @@ export const RetrievalKeystones = () => {
 			//polestar.scan_odds = nochance ? 0 : crates.length/totalDrops; // equal chance of dropping
 			polestar.scan_odds = nochance ? 0 : crates.reduce((prev, curr) => prev + (1/curr.keystones.length), 0)/totalCrates; // conditional probability
 
-			if (polestar.filter.type === 'rarity' && polestar.filter.rarity) {
-				polestar.crew_count = globalContext.core.crew.filter(c => c.in_portal && c.max_rarity === polestar.filter.rarity).length;
+			polestar.crew_count = 0;
+			if (polestar.filter.type === 'rarity') {
+				polestar.crew_count = globalContext.core.crew.filter(c => polestar.filter.rarity && c.in_portal && c.max_rarity === polestar.filter.rarity).length;
 			}
-			else if (polestar.filter.type === 'skill' && polestar.filter.skill) {
-				polestar.crew_count = globalContext.core.crew.filter(c => c.in_portal && c.base_skills[polestar.filter.skill as string]).length;
+			else if (polestar.filter.type === 'skill') {
+				polestar.crew_count = globalContext.core.crew.filter(c => polestar.filter.skill && c.in_portal && c.base_skills[polestar.filter.skill]).length;
 			}
-			else if (polestar.filter.type === 'trait' && polestar.filter.trait) {
-				polestar.crew_count = globalContext.core.crew.filter(c => c.in_portal && c.traits.some(trait => trait === polestar.filter.trait as string)).length;
+			else if (polestar.filter.type === 'trait') {
+				polestar.crew_count = globalContext.core.crew.filter(c => polestar.filter.trait && c.in_portal && c.traits.some(trait => trait === polestar.filter.trait)).length;
 			}
 		});
 
@@ -54,7 +55,7 @@ export const RetrievalKeystones = () => {
 	}, []);
 
 	if (!allKeystones)
-		return (<div style={{ margin: '1em' }}><Icon loading name='spinner' /> Loading...</div>);
+		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> Loading...</div>);
 
 	if (playerData)
 		return <KeystonesPlayer allKeystones={allKeystones} dbid={`{$playerData.player.dbid}`} />;
@@ -62,12 +63,12 @@ export const RetrievalKeystones = () => {
 	return <KeystonesNonPlayer allKeystones={allKeystones} />;
 };
 
-const polestarTailorDefaults = {
+const polestarTailorDefaults: IPolestarTailors = {
 	disabled: [],
 	added: []
-} as IPolestarTailors;
+};
 
-const crewFilterDefaults = {
+const crewFilterDefaults: ICrewFilters = {
 	retrievable: 'retrievable',
 	owned: '',
 	hideFullyFused: true,
@@ -75,7 +76,7 @@ const crewFilterDefaults = {
 	trait: [],
 	minTraitMatches: 1,
 	collection: ''
-} as ICrewFilters;
+};
 
 type KeystonesPlayerProps = {
 	allKeystones: IKeystone[];
@@ -86,8 +87,8 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
 
-	const [allKeystones, setAllKeystones] = React.useState<IKeystone[]>([] as IKeystone[]);
-	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[]>([] as IRosterCrew[]);
+	const [allKeystones, setAllKeystones] = React.useState<IKeystone[]>([]);
+	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[]>([]);
 
 	const [polestarTailors, setPolestarTailors] = useStateWithStorage<IPolestarTailors>(props.dbid+'retrieval/tailors', polestarTailorDefaults, { rememberForever: true });
 	const [crewFilters, setCrewFilters] = useStateWithStorage<ICrewFilters>(props.dbid+'retrieval/filters', crewFilterDefaults, { rememberForever: true });
@@ -98,13 +99,13 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 
 		// Count owned constellations
 		const constellations = allKeystones.filter(k => k.type !== 'keystone') as IConstellation[];
-		constellations.forEach(keystone => {
+		constellations.forEach(constellation => {
 			if (playerData) {
-				const itemsOwned = playerData.forte_root.items.find(item => item.id === keystone.id);
-				keystone.owned = itemsOwned ? itemsOwned.quantity : 0;
+				const itemsOwned = playerData.forte_root.items.find(item => item.id === constellation.id);
+				constellation.owned = itemsOwned ? itemsOwned.quantity : 0;
 			}
 			else {
-				keystone.owned = 0;
+				constellation.owned = 0;
 			}
 		});
 
@@ -128,14 +129,14 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 		setAllKeystones([...allKeystones]);
 	}, [props.allKeystones, playerData]);
 
-	const retrievalContext = {
+	const retrievalContext: IRetrievalContext = {
 		allKeystones,
 		rosterCrew, setRosterCrew,
 		polestarTailors, setPolestarTailors,
 		getCrewFilter, setCrewFilter,
 		resetForm,
 		wishlist, setWishlist
-	} as IRetrievalContext;
+	};
 
 	return (
 		<RetrievalContext.Provider value={retrievalContext}>
@@ -171,20 +172,20 @@ const KeystonesNonPlayer = (props: KeystonesNonPlayerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
 
-	const [allKeystones, setAllKeystones] = React.useState<IKeystone[]>([] as IKeystone[]);
-	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[]>([] as IRosterCrew[]);
+	const [allKeystones, setAllKeystones] = React.useState<IKeystone[]>([]);
+	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[]>([]);
 
 	// Polestar tailoring not available in non-player mode
 	const [polestarTailors, setPolestarTailors] = React.useState<IPolestarTailors>(polestarTailorDefaults);
 	const [crewFilters, setCrewFilters] = React.useState<ICrewFilters>(crewFilterDefaults);
-	const [wishlist, setWishlist] = React.useState<string[]>([] as string[]);
+	const [wishlist, setWishlist] = React.useState<string[]>([]);
 
 	React.useEffect(() => {
 		const allKeystones = JSON.parse(JSON.stringify(props.allKeystones)) as IKeystone[];
 
 		// Zero out owned constellations
 		const constellations = allKeystones.filter(k => k.type !== 'keystone') as IConstellation[];
-		constellations.forEach(keystone => keystone.owned = 0);
+		constellations.forEach(constellation => constellation.owned = 0);
 
 		// Zero out owned polestars and odds
 		const polestars = allKeystones.filter(k => k.type === 'keystone') as IPolestar[];
@@ -198,14 +199,14 @@ const KeystonesNonPlayer = (props: KeystonesNonPlayerProps) => {
 		setAllKeystones([...allKeystones]);
 	}, [props.allKeystones, playerData]);
 
-	const retrievalContext = {
+	const retrievalContext: IRetrievalContext = {
 		allKeystones,
 		rosterCrew, setRosterCrew,
 		polestarTailors, setPolestarTailors,
 		getCrewFilter, setCrewFilter,
 		resetForm,
 		wishlist, setWishlist
-	} as IRetrievalContext;
+	};
 
 	return (
 		<RetrievalContext.Provider value={retrievalContext}>
