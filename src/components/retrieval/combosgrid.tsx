@@ -21,9 +21,9 @@ export const CombosGrid = (props: CombosGridProps) => {
 	const addedPolestars = polestarTailors.added;
 	const disabledPolestars = polestarTailors.disabled;
 
-	const [paginationPage, setPaginationPage] = React.useState(1);
+	const [paginationPage, setPaginationPage] = React.useState<number>(1);
 
-	let data = combos.slice().sort(sortCombos);
+	const data: IPolestar[][] = combos.slice().sort(sortCombos);
 
 	// Pagination
 	const itemsPerPage = 10, itemsToShow = itemsPerPage*paginationPage;
@@ -93,9 +93,7 @@ export const CombosGrid = (props: CombosGridProps) => {
 	}
 
 	function renderCount(polestar: IPolestar): JSX.Element {
-		type LabelColor = SemanticCOLORS | undefined;
-
-		let color: LabelColor = undefined;
+		let color: SemanticCOLORS | undefined = undefined;
 
 		if (disabledPolestars.includes(polestar.id))
 			color = 'orange';

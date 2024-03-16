@@ -9,7 +9,7 @@ export const PolestarFilterModal = () => {
 
 	const disabledPolestars = polestarTailors.disabled;
 
-	const [modalIsOpen, setModalIsOpen] = React.useState(false);
+	const [modalIsOpen, setModalIsOpen] = React.useState<boolean>(false);
 	const [pendingDisabled, setPendingDisabled] = React.useState<number[]>([]);
 
 	// Update on external changes, e.g. reset request from crew.tsx
@@ -24,22 +24,28 @@ export const PolestarFilterModal = () => {
 		}
 	}, [modalIsOpen]);
 
-	const rarityIds = [14502, 14504, 14506, 14507, 14509];
-	const skillIds = [14511, 14512, 14513, 14514, 14515, 14516];
-	const grouped = [
+	const rarityIds: number[] = [14502, 14504, 14506, 14507, 14509];
+	const skillIds: number[] = [14511, 14512, 14513, 14514, 14515, 14516];
+
+	interface IPolestarGroup {
+		title: string;
+		polestars: IPolestar[];
+		anyDisabled: boolean;
+	};
+	const grouped: IPolestarGroup[] = [
 		{
 			title: 'Rarity',
-			polestars: [] as IPolestar[],
+			polestars: [],
 			anyDisabled: false
 		},
 		{
 			title: 'Skills',
-			polestars: [] as IPolestar[],
+			polestars: [],
 			anyDisabled: false
 		},
 		{
 			title: 'Traits',
-			polestars: [] as IPolestar[],
+			polestars: [],
 			anyDisabled: false
 		},
 	];
@@ -79,7 +85,7 @@ export const PolestarFilterModal = () => {
 	);
 
 	function createFilterCheckboxes(): JSX.Element[] {
-		const checkboxes = [] as JSX.Element[];
+		const checkboxes: JSX.Element[] = [];
 		grouped.map((group) => {
 			if(group.polestars.length > 0) {
 				checkboxes.push(filterCheckboxGroupHeader(group.title));
