@@ -69,6 +69,7 @@ export interface Calculation {
     trackState?: number;
     confidenceState?: number;
     errorMessage?: string;
+    telemetrySent?: boolean;
 }
 
 export interface CalcResult extends Calculation {
