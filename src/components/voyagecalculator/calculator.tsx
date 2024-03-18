@@ -673,12 +673,18 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 	function sendTelemetry(resultIndex: number): void {
 		const result = results[resultIndex];
 		if (!result.result) return;
-		
+
 		const request = requests.find(r => r.id === result.requestId);
+
 		if (request?.calcOptions.strategy === 'peak-antimatter') return;
-		
+		if (request) {
+			if (request.sent) return;
+			request.sent = true;
+		}		
+
 		const resultCrew = result?.result?.entries.map(e => e.choice) ?? [];
 		const estimatedDuration = result.result.estimate.refills[0].result*60*60;
+		
 		if (resultCrew && globalContext.player.playerData) {
 			for (let i = 0; i < resultCrew.length; i++) {
 				resultCrew[i] = globalContext.player.playerData.player.character.crew.find(f => f.id === resultCrew[i].id) ?? resultCrew[i];

@@ -30,6 +30,8 @@ export abstract class Helper {
 
 	perf: { start: number; end: number; } = { start: 0, end: 0 };
 
+	sent: boolean = false;
+
 	constructor(props: HelperProps) {
 		this.voyageConfig = JSON.parse(JSON.stringify(props.voyageConfig));
 		this.bestShip = JSON.parse(JSON.stringify(props.bestShip));
