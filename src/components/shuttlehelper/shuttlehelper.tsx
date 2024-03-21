@@ -47,7 +47,7 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 	// Prune old shuttles from stored values, import open shuttles from player data
 	React.useEffect(() => {
 		if (loadState === 2) initializeShuttlers();
-	}, [loadState]);
+	}, [loadState, activeShuttles]);
 
 	// Prune assignments from other events, dismissed shuttles
 	//	recommendShuttlers will prune assignments from other events anyway

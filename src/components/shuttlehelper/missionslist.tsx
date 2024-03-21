@@ -379,12 +379,12 @@ const MissionsList = (props: MissionsListProps) => {
 				}
 				if (state.column === action.column && action.column !== 'priority') {
 
-					var newdir = state.direction === 'ascending' ? 'descending' : 'ascending';					
+					var newdir = state.direction === 'ascending' ? 'descending' : 'ascending';
 					tiny.setValue('sortDirection', newdir, true);
 
 					const data = state.data.slice();
 					firstSort(data, state.column, newdir === 'descending');
-				
+
 					return {
 						...state,
 						data: data,
@@ -425,7 +425,7 @@ const MissionsList = (props: MissionsListProps) => {
 				bValue = b.seats.length;
 			}
 			// Tiebreaker goes to name ascending
-			if (aValue === bValue) return mult * a.name.localeCompare(b.name);
+			if (aValue === bValue) return a.name.localeCompare(b.name);
 			return mult * (aValue - bValue);
 		});
 	}
