@@ -13,8 +13,11 @@ type ConfigInputProps = {
 };
 
 export const ConfigInput = (props: ConfigInputProps) => {
-	const defaultConfig = props.voyageConfig ? JSON.parse(JSON.stringify(props.voyageConfig)) : undefined;
-	const [voyageConfig, setVoyageConfig] = React.useState<IVoyageInputConfig | undefined>(defaultConfig);
+	const [voyageConfig, setVoyageConfig] = React.useState<IVoyageInputConfig | undefined>(undefined);
+
+	React.useEffect(() => {
+		setVoyageConfig(props.voyageConfig);
+	}, [props.voyageConfig]);
 
 	const hasMinimumConfig = voyageConfig && voyageConfig.skills.primary_skill !== '' && voyageConfig.skills.secondary_skill !== '';
 
