@@ -29,7 +29,7 @@ const VoyagePage = () => {
 		const activeVoyageId = ephemeral?.voyage?.length ? ephemeral.voyage[0].id : 0;
 		setActiveVoyageId(activeVoyageId);
 		setShowCalculator(activeVoyageId === 0);
-	}, [playerData, ephemeral]);
+	}, [playerData]);
 
 	return (
 		<DataPageLayout
@@ -41,7 +41,7 @@ const VoyagePage = () => {
 			<React.Fragment>
 				<CrewHoverStat targetGroup='voyageLineup' />
 
-				{playerData && ephemeral &&
+				{playerData &&
 					<PlayerActiveVoyage
 						key={`${playerData.player.dbid}`}
 						dbid={`${playerData.player.dbid}`}
@@ -72,7 +72,6 @@ const PlayerActiveVoyage = (props: PlayerActiveVoyageProps) => {
 
 	const actionButtons = [
 		<Button key='toggler'
-			style={{margin:"0.25em"}}
 			content={!props.showCalculator ? 'View crew calculator' : 'View active voyage'}
 			icon='exchange'
 			size='large'
@@ -82,7 +81,6 @@ const PlayerActiveVoyage = (props: PlayerActiveVoyageProps) => {
 	if (history.voyages.length > 0) {
 		actionButtons.unshift(
 			<Button key='history'
-				style={{margin:"0.25em"}}
 				content='View voyage history'
 				icon='history'
 				size='large'
@@ -113,7 +111,6 @@ type VoyageCalculatorProps = {
 
 const VoyageCalculator = (props: VoyageCalculatorProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { player, core } = globalContext;
 	const { playerData, ephemeral } = globalContext.player;
 
 	const [voyageConfig, setVoyageConfig] = React.useState<IVoyageInputConfig | undefined>(undefined);
@@ -122,27 +119,58 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 	const [rosterShips, setRosterShips] = React.useState<Ship[] | undefined>(undefined);
 	const [activeEvents, setActiveEvents] = React.useState<IEventData[] | undefined>(undefined);
 
-	const getDefaultConfig = (): void => {
-		if (!!playerData && !!ephemeral) {
-			const { voyage, voyageDescriptions } = ephemeral;
-			const voyageData = { voyage, voyage_descriptions: voyageDescriptions };
-			if (voyageData.voyage_descriptions?.length) {
-				// Voyage started, config will be full voyage data
-				if (!!voyageData.voyage && voyageData.voyage.length > 0) {
-					setVoyageConfig(voyageData.voyage[0]);
-				}
-				// Voyage awaiting input, config will be input parameters only
-				else {
-					setVoyageConfig(voyageData.voyage_descriptions[0]);
-				}
-			}
-		}
-		// If voyageData not found, initial config will be blank voyage
-	};
+	React.useEffect(() => {
+		getDefaultConfig();
+		getEvents();
+	}, [playerData]);
 
-	const getEvents = (): void => {
+	const calculatorContext = {
+		rosterType,
+		crew: rosterCrew,
+		ships: rosterShips,
+		events: activeEvents,
+		activeVoyageId: props.activeVoyageId
+	} as ICalculatorContext;
+
+	// Still loading player data, don't render anything yet
+	if (playerData && !voyageConfig) return <></>;
+
+	return (
+		<React.Fragment>
+			<RosterPicker
+				rosterType={rosterType} setRosterType={setRosterType}
+				setRosterCrew={setRosterCrew}
+				setRosterShips={setRosterShips}
+			/>
+			<CalculatorContext.Provider value={calculatorContext}>
+				{rosterCrew && <ConfigInput key={rosterType} voyageConfig={voyageConfig} />}
+			</CalculatorContext.Provider>
+		</React.Fragment>
+	);
+
+	function getDefaultConfig(): void {
+		// If voyageData not found, initial config will be blank voyage
+		if (!playerData || !ephemeral) {
+			setVoyageConfig(undefined);
+			return;
+		}
+
+		const { voyage, voyageDescriptions } = ephemeral;
+		let voyageConfig: IVoyageInputConfig | undefined;
+
+		// Voyage started, config will be full voyage data
+		if (voyage.length > 0)
+			voyageConfig = voyage[0];
+		// Voyage awaiting input, config will be input parameters only
+		else if (voyageDescriptions.length > 0)
+			voyageConfig = voyageDescriptions[0];
+
+		if (voyageConfig) setVoyageConfig({...voyageConfig});
+	}
+
+	function getEvents(): void {
 		// Get event data from recently uploaded playerData
-		if (!!ephemeral?.events?.length) {
+		if (ephemeral?.events) {
 			const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew))
 				.filter(ev => ev !== undefined).map(ev => ev as IEventData)
 				.filter(ev => ev.seconds_to_end > 0)
@@ -155,34 +183,7 @@ const VoyageCalculator = (props: VoyageCalculatorProps) => {
 				setActiveEvents([...recentEvents]);
 			});
 		}
-	};
-
-	React.useEffect(() => {
-		getDefaultConfig();
-		getEvents();
-	}, [player, core]);
-
-	const calculatorContext = {
-		rosterType,
-		crew: rosterCrew,
-		ships: rosterShips,
-		events: activeEvents,
-		activeVoyageId: props.activeVoyageId
-	} as ICalculatorContext;
-
-	return (
-		<React.Fragment>
-			<RosterPicker
-				rosterType={rosterType} setRosterType={setRosterType}
-				setRosterCrew={setRosterCrew}
-				setRosterShips={setRosterShips}
-			/>
-			{!!rosterCrew && <CalculatorContext.Provider value={calculatorContext}>
-				<ConfigInput key={rosterType} voyageConfig={voyageConfig} />
-			</CalculatorContext.Provider>}
-		</React.Fragment>
-	);
-
+	}
 };
 
 export default VoyagePage;

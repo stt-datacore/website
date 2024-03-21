@@ -39,7 +39,7 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 		if (!playerData || !ephemeral) return;
 		const rosterCrew = rosterizeMyCrew(playerData.player.character.crew, ephemeral.activeCrew ?? []);
 		setMyCrew([...rosterCrew]);
-	}, [playerData, ephemeral]);
+	}, [playerData]);
 
 	if (!playerData || !ephemeral || ephemeral.voyage.length === 0)
 		return (<></>);
@@ -96,7 +96,7 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 								}
 							</p>
 						</div>
-						<div style={{ display: 'flex', flexDirection: 'column' }}>
+						<div style={{ display: 'flex', flexDirection: 'column', gap: '.5em' }}>
 							{actionButtons}
 						</div>
 					</div>
