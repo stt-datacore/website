@@ -58,7 +58,7 @@ export const RetrievalKeystones = () => {
 		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> Loading...</div>);
 
 	if (playerData)
-		return <KeystonesPlayer allKeystones={allKeystones} dbid={`{$playerData.player.dbid}`} />;
+		return <KeystonesPlayer allKeystones={allKeystones} dbid={`${playerData.player.dbid}`} />;
 
 	return <KeystonesNonPlayer allKeystones={allKeystones} />;
 };
