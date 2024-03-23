@@ -10,6 +10,10 @@ import {
 import { CompletionState, PlayerCollection, PlayerCrew } from "../model/player";
 import { makeAllCombos } from "../utils/misc";
 
+function isSubset(set1: string[], set2: string[]) {
+    return set1.length < set2.length && set1.every(s => set2.includes(s));
+}
+
 function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: PlayerCollection[]) {
     let cname = colOptimized.collection.name;
     let mneeded = colOptimized.collection.needed ?? 0;
@@ -69,12 +73,30 @@ function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: P
         limit = 1000;
     }
 
-    let results = eOut.concat(makeAllCombos(less, limit));
+    let rawcombos = eOut.concat(makeAllCombos(less, limit));
+
+    rawcombos.forEach(rc => rc.sort());
+    let stitched = rawcombos.map(rc => rc.sort());
+
+    let finals = [] as string[][];
+
+    let c = stitched.length;
+    for (let i = 0; i < c; i++) {
+        let b = false;
+        for (let j = 0; j < c; j++) {
+            if (j === i) continue;
+            b ||= isSubset(stitched[i], stitched[j]);            
+        }
+        if (!b) {
+            finals.push(stitched[i]);
+        }
+    }
+
     if (Number.isFinite(limit)) {
-        results.unshift(less);
+        finals.unshift(less);
     }
     //console.log(`Combos: ${results.length}`);
-    return results;
+    return finals;
     
 }
 
