@@ -83,10 +83,10 @@ function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: P
     let c = stitched.length;
     for (let i = 0; i < c; i++) {
         let b = false;
-        for (let j = 0; j < c; j++) {
-            if (j === i) continue;
-            b ||= isSubset(stitched[i], stitched[j]);            
-        }
+        // for (let j = 0; j < c; j++) {
+        //     if (j === i) continue;
+        //     b ||= isSubset(stitched[i], stitched[j]);            
+        // }
         if (!b) {
             finals.push(stitched[i]);
         }
