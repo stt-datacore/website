@@ -136,6 +136,10 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                 setActivePage(pages);
                 return;
             }
+            else if (activePage < 1 && pages) {
+                setActivePage(1);
+                return;
+            }
         }
         
         setActivePageCrew(crew.slice(pageStartIdx, pageStartIdx + itemsPerPage));

@@ -214,7 +214,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	public readonly setActivePageTab = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | null, data: PaginationProps, index: number) => {
 
-		const tabs = [this.state.today?.matchedCrew, this.state.yesterday?.matchedCrew, this.state.activePrevGauntlet?.matchedCrew, this.state.browsingGauntlet?.matchedCrew, this.state.liveGauntlet?.matchedCrew];
+		const tabs = [this.state.today?.searchCrew, this.state.yesterday?.searchCrew, this.state.activePrevGauntlet?.searchCrew, this.state.browsingGauntlet?.searchCrew, this.state.liveGauntlet?.searchCrew];
 
 		if (this.inited && tabs[index]) {
 			let crew = tabs[index] ?? [] as PlayerCrew[];
@@ -426,6 +426,19 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		setTimeout(() => this.initData());
 	}
 
+	readonly matchesCrew = (crew: PlayerCrew, value?: string) => {
+		if (value !== '' && value !== undefined) {
+			let ltf = value.toLowerCase();
+			if (crew.name.toLowerCase().includes(ltf)) return true;
+			if (crew.symbol.includes(ltf)) return true;
+			if (crew.traits.some(t => t.toLowerCase().includes(ltf))) return true;
+			if (crew.traits_hidden.some(t => t.toLowerCase().includes(ltf))) return true;
+			if (crew.traits_named.some(t => t.toLowerCase().includes(ltf))) return true;
+			return false;
+		}
+		return true;
+	}
+
 	readonly getGauntletCrew = (
 		gauntlet: Gauntlet, 
 		rankByPair?: string, 
@@ -541,14 +554,14 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let aptabs = [[], [], [], [], []] as (PlayerCrew | CrewMember)[][];
 
 			[today, yesterday, activePrevGauntlet, uniques[0], liveGauntlet].forEach((day, idx) => {
-				if (!day?.matchedCrew) {
+				if (!day?.searchCrew) {
 					return;
 				}
 
 				let ip = this.state.itemsPerPageTab[idx];
-				let pc = Math.ceil(day.matchedCrew.length / ip);
+				let pc = Math.ceil(day.searchCrew.length / ip);
 
-				aptabs[idx] = day.matchedCrew.slice(0, ip);
+				aptabs[idx] = day.searchCrew.slice(0, ip);
 				pcs[idx] = pc;
 			})
 
@@ -627,10 +640,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		let filters = this.state.textFilter;
 		filters[idx] = value;
 		this.tiny.setValue('textFilter', filters);
-		this.updatePaging(false, undefined, undefined, idx, undefined, filters);
+		this.updatePaging(false, undefined, undefined, idx, undefined, filters, true);
 	}
 
-	private readonly updatePaging = (preSorted: boolean, newSelGauntlet?: Gauntlet, replaceGauntlet?: Gauntlet, replaceIndex?: number, replaceRank?: string, textFilter?: string[]) => {
+	private readonly updatePaging = (preSorted: boolean, newSelGauntlet?: Gauntlet, replaceGauntlet?: Gauntlet, replaceIndex?: number, replaceRank?: string, textFilter?: string[], justFilter?: boolean) => {
 		const { filterProps, today, yesterday, activePrevGauntlet, liveGauntlet, sortKey, sortDirection, browsingGauntlet, rankByPair } = this.state;
 
 		let newBrowseGauntlet: Gauntlet | undefined = undefined;
@@ -639,36 +652,39 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		let live: Gauntlet | undefined = undefined;
 
 		if (textFilter && replaceIndex !== undefined && replaceGauntlet === undefined) {
-			if (replaceIndex === 0) replaceGauntlet = today;
-			else if (replaceIndex === 1) replaceGauntlet = yesterday;
-			else if (replaceIndex === 2) replaceGauntlet = activePrevGauntlet;
-			else if (replaceIndex === 3) replaceGauntlet = browsingGauntlet;
-			else if (replaceIndex === 4) replaceGauntlet = liveGauntlet ?? undefined;				
+			if (replaceIndex === 0) replaceGauntlet = today ? { ... today } : undefined;
+			else if (replaceIndex === 1) replaceGauntlet = yesterday ? { ... yesterday } : undefined;
+			else if (replaceIndex === 2) replaceGauntlet = activePrevGauntlet ? { ... activePrevGauntlet } : undefined;
+			else if (replaceIndex === 3) replaceGauntlet = browsingGauntlet ? { ... browsingGauntlet } : undefined;
+			else if (replaceIndex === 4) replaceGauntlet = liveGauntlet ? { ...liveGauntlet } : undefined;
 		}
 
 		textFilter ??= ['', '', '', '', ''];
 
-		if (replaceIndex === 0) newToday = replaceGauntlet;
-		else if (replaceIndex === 1) newYesterday = replaceGauntlet;
-		else if (replaceIndex === 2) newSelGauntlet = replaceGauntlet;
-		else if (replaceIndex === 3) newBrowseGauntlet = replaceGauntlet;
-		else if (replaceIndex === 4) live = replaceGauntlet;
+		if (replaceIndex === 0) newToday = replaceGauntlet ? { ... replaceGauntlet } : undefined;
+		else if (replaceIndex === 1) newYesterday = replaceGauntlet ? { ... replaceGauntlet } : undefined;
+		else if (replaceIndex === 2) newSelGauntlet = replaceGauntlet ? { ... replaceGauntlet } : undefined;
+		else if (replaceIndex === 3) newBrowseGauntlet = replaceGauntlet ? { ... replaceGauntlet } : undefined;
+		else if (replaceIndex === 4) live = replaceGauntlet ? { ... replaceGauntlet } : undefined;
 
-		let rmax = 500;
+		let rmax = 100;
 		if (replaceIndex !== undefined) {
 			rmax = this.state.ranges[replaceIndex];
 		}
-		if (!preSorted && newSelGauntlet) {
-			this.getGauntletCrew(newSelGauntlet, replaceRank, rmax, filterProps[2], textFilter[2]);
-		}
-		else if (!preSorted && newBrowseGauntlet) {
-			this.getGauntletCrew(newBrowseGauntlet, replaceRank, rmax, filterProps[3], textFilter[3]);
-		}
-		else if (!preSorted && live) {
-			this.getGauntletCrew(live, replaceRank, rmax, filterProps[4], textFilter[4]);
-		}
-		else if (!preSorted && replaceGauntlet) {
-			this.getGauntletCrew(replaceGauntlet, replaceRank, rmax, replaceIndex !== undefined ? filterProps[replaceIndex] : undefined, replaceIndex !== undefined ? textFilter[replaceIndex] : undefined);
+
+		if (!justFilter) {
+			if (!preSorted && newSelGauntlet) {
+				this.getGauntletCrew(newSelGauntlet, replaceRank, rmax, filterProps[2], textFilter[2]);
+			}
+			else if (!preSorted && newBrowseGauntlet) {
+				this.getGauntletCrew(newBrowseGauntlet, replaceRank, rmax, filterProps[3], textFilter[3]);
+			}
+			else if (!preSorted && live) {
+				this.getGauntletCrew(live, replaceRank, rmax, filterProps[4], textFilter[4]);
+			}
+			else if (!preSorted && replaceGauntlet) {
+				this.getGauntletCrew(replaceGauntlet, replaceRank, rmax, replaceIndex !== undefined ? filterProps[replaceIndex] : undefined, replaceIndex !== undefined ? textFilter[replaceIndex] : undefined);
+			}
 		}
 
 		let apidx = this.state.activePageIndexTab;
@@ -687,16 +703,19 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 			if (!day) return;
 
-			if (!day.matchedCrew) {
+			if (!day.allCrew) {
 				return;
 			}
 
-			let ip = this.state.itemsPerPageTab[idx];
-			let pc = Math.ceil(day.matchedCrew.length / ip);
+			day.searchCrew = day.allCrew.filter(c => this.matchesCrew(c as PlayerCrew, this.state.textFilter[idx]))
 
-			aptabs[idx] = day.matchedCrew.slice(0, ip);
+			let ip = this.state.itemsPerPageTab[idx];
+			let pc = Math.ceil(day.searchCrew.length / ip);
+
+			aptabs[idx] = day.searchCrew.slice(0, ip);
 			pcs[idx] = pc;
 			if (apidx[idx] > pc) apidx[idx] = pc;
+			if (apidx[idx] < 1 && !!day.searchCrew?.length) apidx[idx] = 1;
 		});
 
 		this.inited = true;
@@ -706,7 +725,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			rankByPair: [...rankByPair],
 			activePageTabs: aptabs,
 			totalPagesTab: pcs,
-			activePageIndexTab: apidx,
+			activePageIndexTab: [ ... apidx ] ,
 			today: replaceIndex === 0 ? replaceGauntlet : today ? { ...today } : undefined,
 			yesterday: replaceIndex === 1 ? replaceGauntlet : yesterday ? { ...yesterday } : undefined,
 			activePrevGauntlet: replaceIndex === 2 ? replaceGauntlet : newSelGauntlet ?? activePrevGauntlet,
@@ -867,7 +886,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const prettyTraits = gauntlet.state === "POWER" ? ["Raw Power Score"] : gauntlet.contest_data?.traits?.map(t => allTraits.trait_names[t]);
 
-		const pairs = discoverPairs(gauntlet.matchedCrew ?? [])
+		const pairs = discoverPairs(gauntlet.searchCrew ?? [])
 			.map((pair) => {
 				let pf = pair === '' ? 'none' : pair;
 				let pn = pair === '' ? '' : pair.slice(2).replace("_", "/");
@@ -968,7 +987,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 										display: "flex",
 										flexDirection:"row",			
 										flexWrap: "wrap",							
-										justifyContent: "space-between",										
+										justifyContent: "flex-start",
+										alignItems: "left"
 									}}>
 										{jackpots.sort((a, b) => b.date_added.getTime() - a.date_added.getTime())
 										.map((jcrew) => {
@@ -1100,7 +1120,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									}}
 									inline
 									direction={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'right' : 'left'}
-									options={[100, 200, 300, 400, 500, 600, 700, 800].map(o => { return { text: o, value: o, key: o } })}
+									options={[0, 100, 200, 300, 400, 500, 600, 700, 800].map(o => { return { text: o, value: o, key: o } })}
 									value={this.getRangeMax(idx)}
 									onChange={(e, { value }) => this.setRangeMax(idx, value as number)} />
 								</div>
@@ -1383,7 +1403,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						</div>}
 
 						<div style={{marginTop:"1.5em"}}>
-							{viewModes[idx] === 'table' && this.renderTable(gauntlet, gauntlet.matchedCrew ?? [], idx)}
+							{viewModes[idx] === 'table' && this.renderTable(gauntlet, gauntlet.searchCrew ?? [], idx)}
 						</div>
 
 						{viewModes[idx] === 'pair_cards' &&
@@ -1396,7 +1416,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								justifyContent: "space-between",
 								flexWrap: "wrap"
 							}}>
-								{getPairGroups(gauntlet.matchedCrew ?? [], gauntlet, this.state.gauntletSettings, this.state.hideOpponents, this.state.onlyActiveRound, gauntlet.contest_data?.featured_skill, tops[idx], filterProps[idx].maxResults)
+								{getPairGroups(gauntlet.searchCrew ?? [], gauntlet, this.state.gauntletSettings, this.state.hideOpponents, this.state.onlyActiveRound, gauntlet.contest_data?.featured_skill, tops[idx], filterProps[idx].maxResults)
 									.map((pairGroup, pk) => {
 									return (<GauntletPairTable gauntlet={gauntlet}
                                             key={"pairGroup_" + pk}
