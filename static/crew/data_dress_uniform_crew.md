@@ -3,7 +3,7 @@ name: Dress Uniform Data
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 in_portal: true
 date: 18/01/2023
 published: true
