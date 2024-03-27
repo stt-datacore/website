@@ -3,7 +3,7 @@ name: Riley Frazier
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 in_portal: true
 date: 29/05/2017
 published: true

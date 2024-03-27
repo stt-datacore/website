@@ -3,7 +3,7 @@ name: Captain Rachel Garrett
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 in_portal: true
 date: 29/05/2018
 published: true

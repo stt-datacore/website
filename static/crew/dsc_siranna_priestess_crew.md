@@ -3,7 +3,7 @@ name: Priestess Siranna
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 in_portal: true
 date: 21/11/2019
 published: true
