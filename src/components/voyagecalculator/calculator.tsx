@@ -29,7 +29,7 @@ interface IUserPrefsContext {
 	calcOptions: GameWorkerOptions;
 	setCalcOptions: (calcOptions: GameWorkerOptions) => void;
 	telemetryOptIn: boolean;
-	setTelemetryOptIn: (telemtryOptOut: boolean) => void;
+	setTelemetryOptIn: (telemetryOptIn: boolean) => void;
 	history: IVoyageHistory;
 	setHistory: (history: IVoyageHistory) => void;
 };
@@ -60,7 +60,7 @@ type PlayerCalculatorProps = {
 const PlayerCalculator = (props: PlayerCalculatorProps) => {
 	const [calculator, setCalculator] = useStateWithStorage(props.dbid+'/voyage/calculator', 'iampicard', { rememberForever: true });
 	const [calcOptions, setCalcOptions] = useStateWithStorage<GameWorkerOptions>(props.dbid+'/voyage/calcOptions', {} as GameWorkerOptions, { rememberForever: true });
-	const [telemetryOptIn, setTelemetryOptIn] = useStateWithStorage(props.dbid+'/voyage/telemetryOptIn', false, { rememberForever: true });
+	const [telemetryOptIn, setTelemetryOptIn] = useStateWithStorage(props.dbid+'/voyage/telemetryOptIn', true, { rememberForever: true });
 	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(props.dbid+'/voyage/history', defaultHistory, { rememberForever: true, compress: true } );
 
 	const userPrefs = {

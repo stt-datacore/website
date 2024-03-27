@@ -30,7 +30,11 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 	}
 
 	return (
-		<DataPageLayout pageTitle='Behold Helper' playerPromptType='recommend'>
+		<DataPageLayout
+			pageTitle='Behold Helper'
+			pageDescription='Compare your Behold choices to help decide who to add to your roster.'
+			playerPromptType='recommend'
+		>
 			<React.Fragment>
 				<BeholdHelper crewList={crewList} initSelection={crewFromUrl} />
 			</React.Fragment>
@@ -62,9 +66,8 @@ const BeholdHelper = (props: BeholdHelperProps) => {
 		const query = (input: string) => input.toLowerCase().replace(/[^a-z0-9]/g, '').indexOf(searchFilter.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
 		data = data.filter(crew =>
 			true
-				&& crew.series
 				&& (options.portal === '' || portalFilter(crew))
-				&& (options.series.length === 0 || options.series.includes(crew.series))
+				&& (options.series.length === 0 || (crew.series && options.series.includes(crew.series)))
 				&& (options.rarities.length === 0 || options.rarities.includes(crew.max_rarity))
 				&& (searchFilter === '' || (query(crew.name) || query(crew.short_name)))
 		);
