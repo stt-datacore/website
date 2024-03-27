@@ -3,7 +3,7 @@ name: Ensign Kim
 rarity: 1
 series: voy
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 02/01/2016
 published: true

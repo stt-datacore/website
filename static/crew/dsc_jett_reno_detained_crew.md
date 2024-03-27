@@ -3,7 +3,7 @@ name: Temporarily Detained Jett Reno
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal: true
 date: 13/06/2022
 published: true
