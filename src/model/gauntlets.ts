@@ -16,7 +16,8 @@ export interface Gauntlet {
     date: string;
     unavailable_msg?: string;
     unavailable_desc_msg?: string;
-    matchedCrew?: (PlayerCrew | CrewMember)[];
+    searchCrew?: (PlayerCrew | CrewMember)[];
+    allCrew?: (PlayerCrew | CrewMember)[];
     prettyTraits: string[] | undefined;
     origRanks?: { [key: string]: number };
     template?: boolean;

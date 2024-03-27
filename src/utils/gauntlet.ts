@@ -460,24 +460,11 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 		return null
 	}
 	
-	delete gauntlet.matchedCrew;
+	delete gauntlet.allCrew;
 	delete gauntlet.maximal;
 	delete gauntlet.minimal;
 	delete gauntlet.pairMax;
 	delete gauntlet.pairMin;
-
-	const matchesCrew = (crew: PlayerCrew, value?: string) => {
-		if (value !== '' && value !== undefined) {
-			let ltf = value.toLowerCase();
-			if (crew.name.toLowerCase().includes(ltf)) return true;
-			if (crew.symbol.includes(ltf)) return true;
-			if (crew.traits.some(t => t.toLowerCase().includes(ltf))) return true;
-			if (crew.traits_hidden.some(t => t.toLowerCase().includes(ltf))) return true;
-			if (crew.traits_named.some(t => t.toLowerCase().includes(ltf))) return true;
-			return false;
-		}
-		return true;
-	}
 
 	let acc = [] as CrewMember[];
 
@@ -491,10 +478,11 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	const workCrew = acc;
 
 	const matchedCrew1 =
-		workCrew.concat(oppo).map(crewObj => crewObj as PlayerCrew).filter(crew => crew.max_rarity > 3 && (
-			(!rankByPair || (rankByPair in crew.ranks)) &&
-			(Object.keys(crew.base_skills).some(k => crew.base_skills[k].range_max >= rmax) || !!crew.isOpponent) ||
-			prettyTraits.filter(t => crew.traits_named.includes(t)).length > 1))
+		workCrew.concat(oppo)
+			.map(crewObj => crewObj as PlayerCrew)
+			.filter(crew => {
+				return (!!crew.isOpponent || crew.max_rarity > 3 || !!crew.kwipment?.length);
+			})
 			.map((inputCrew) => {
 				let crew = !!inputCrew.isOpponent ? inputCrew : JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
 
@@ -604,7 +592,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 				crew.pairs = getPlayerPairs(crew);					
 				return crew;
 			})
-			.filter((crew) => (!filter || testFilterCrew(crew, filter, context)) && matchesCrew(crew, search))
+			.filter((crew) => (!filter || testFilterCrew(crew, filter, context)))
 			.map((crew) => { 
 				if (filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'ownedmax' || filter?.ownedStatus === 'maxall') {
 					if ((crew.level === 100 && crew.equipment?.length === 4) || !crew.have) return crew;
@@ -639,6 +627,17 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 					crew.pairs = getPlayerPairs(crew);
 				}
 				return crew;
+			})
+			.filter(crew => {
+				
+				let result = 
+					(			
+					(!rankByPair || (rankByPair in crew.ranks)) &&
+					(Object.keys(crew.base_skills).some(k => crew.base_skills[k].range_max >= rmax) || !!crew.isOpponent) ||
+					(prettyTraits.length && prettyTraits.filter(t => crew.traits_named.includes(t)).length > 1)
+					);
+
+				return result;
 			})
 			.sort((a, b) => {
 
@@ -678,11 +677,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 				return r;
 			});
 
-	let f = matchedCrew1.find(f => f.id === 118658649);
-
-	f = matchedCrew1.find(f => f.symbol === 'black_admiral_crew');
-
-	let matchedResults: PlayerCrew[] | undefined = undefined;
+			let matchedResults: PlayerCrew[] | undefined = undefined;
 
 	if (gauntlet.prettyTraits?.length) {
 		const maxpg = 10;
@@ -739,7 +734,9 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 
 	const matchedCrew = matchedResults;
 
-	gauntlet.matchedCrew = matchedCrew;
+	gauntlet.allCrew = matchedCrew;
+	gauntlet.searchCrew = matchedCrew;
+
 	gauntlet.origRanks = {};
 	
 	let maximal = 0;
