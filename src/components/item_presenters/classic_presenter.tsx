@@ -270,7 +270,7 @@ export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 				{baseSkills.map(skill => (
 					<Table.Cell key={skill[0]} textAlign='center'>
 						<b>{skill[1].core}</b>
-						<br /><small>+{skill[1].range_min}-{skill[1].range_max}</small>
+						<br /><small>+({skill[1].range_min}-{skill[1].range_max})</small>
 					</Table.Cell>
 				))}
 			</Table.Row>
@@ -313,7 +313,7 @@ type SkillsProps = {
 	crew: CrewMember;
 	rarity: number;
 	compact?: boolean;
-	playerLevels?: boolean;	
+	playerLevels?: boolean;
 };
 
 export const Skills = (props: SkillsProps) => {
@@ -348,7 +348,7 @@ export const Skills = (props: SkillsProps) => {
 			<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-evenly', alignItems: 'center' }}>
 				{baseSkills.map(baseSkill => (
 					<div key={baseSkill[0]} style={{margin: "0.25em 0"}}>
-						<CrewStat							
+						<CrewStat
 							skill_name={baseSkill[0]}
 							data={baseSkill[1]}
 							scale={compact ? .85 : 1}
