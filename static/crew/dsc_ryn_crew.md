@@ -3,7 +3,7 @@ name: Ryn
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal: true
 date: 21/06/2022
 published: true

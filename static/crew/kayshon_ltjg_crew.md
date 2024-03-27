@@ -3,7 +3,7 @@ name: Lt. JG Kayshon
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 in_portal: true
 date: 26/07/2022
 published: true
