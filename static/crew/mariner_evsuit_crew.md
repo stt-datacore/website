@@ -3,7 +3,7 @@ name: EV Suit Mariner
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 in_portal: true
 date: 08/08/2022
 published: true

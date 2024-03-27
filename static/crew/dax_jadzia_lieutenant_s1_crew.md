@@ -3,7 +3,7 @@ name: Lt. Jadzia Dax
 rarity: 1
 series: ds9
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 in_portal: true
 date: 01/01/2016
 published: true

@@ -3,7 +3,7 @@ name: Recovering Spock
 rarity: 2
 series: tos
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal: true
 date: 01/01/2016
 published: true

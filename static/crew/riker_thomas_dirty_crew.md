@@ -3,7 +3,7 @@ name: Lt. Thomas Riker
 rarity: 1
 series: tng
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 2
 in_portal: true
 date: 04/01/2016
 published: true
