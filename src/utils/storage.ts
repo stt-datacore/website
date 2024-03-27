@@ -116,18 +116,23 @@ const storeItem = (itemKey: string, itemValue: any, useLocalStorage: boolean = f
 };
 
 export const getStoredItem = (itemKey: string, itemDefault: any) => {
-	if (windowGlobal && windowGlobal.sessionStorage) {
-		let sessionValue = windowGlobal.sessionStorage.getItem(itemKey);
-		if (!sessionValue) {
-			sessionValue = windowGlobal.sessionStorage.getItem(itemKey + COMPRESSION_SUFFIX);
+	try {
+		if (windowGlobal && windowGlobal.sessionStorage) {
+			let sessionValue = windowGlobal.sessionStorage.getItem(itemKey);
+			if (!sessionValue) {
+				sessionValue = windowGlobal.sessionStorage.getItem(itemKey + COMPRESSION_SUFFIX);
+				if (sessionValue) {
+					sessionValue = lz.decompressFromBase64(sessionValue);
+				}
+			}
 			if (sessionValue) {
-				sessionValue = lz.decompressFromBase64(sessionValue);
+				return JSON.parse(sessionValue);
 			}
 		}
-		if (sessionValue) {
-			return JSON.parse(sessionValue);
-		}
 	}
+	catch {
+	}
+
 	return itemDefault;
 };
 

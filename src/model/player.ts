@@ -31,6 +31,14 @@ export interface CiteMode {
   engine?: CiteEngine;
 }
 
+export interface ForteItem {
+  id: number;
+  quantity: number;
+}
+export interface ForteRoot {
+  id: number;
+  items: ForteItem[];
+}
 
 export interface PlayerData {
     player: Player;
@@ -40,6 +48,7 @@ export interface PlayerData {
     archetype_cache?: ArchetypeRoot20;
     item_archetype_cache?: ArchetypeRoot17;
     [key: string]: any;
+    forte_root: ForteRoot;
     version?: 17 | 20;
     stripped?: boolean;
     citeMode?: CiteMode;
