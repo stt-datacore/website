@@ -9,7 +9,7 @@ import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasor
 import { PlayerCrew, PlayerData } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { BuffStatTable, calculateBuffConfig } from '../utils/voyageutils';
-import { MergedData, MergedContext } from '../context/mergedcontext';
+import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
 import { crewCopy } from '../utils/crewutils';
 
 enum SkillSort {
@@ -45,12 +45,12 @@ type ProfileCrewMobileState = {
 };
 
 class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMobileState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: ProfileCrewMobileProps) {
 		super(props);
-		const buffConfig = this.context?.buffConfig;
+		const buffConfig = this.context?.player.buffConfig;
 
 		this.state = {
 			column: 'bigbook_tier',
@@ -71,8 +71,8 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 	private dataPrepared: boolean = false;
 
 	componentDidUpdate() {
-		const itemsReady = !!this.context?.items;
-		const playerReady = !!this.context?.playerData?.player?.character?.crew?.length;
+		const itemsReady = !!this.context?.core.items;
+		const playerReady = !!this.context?.player.playerData?.player?.character?.crew?.length;
 		if (itemsReady && playerReady && !this.state.itemsReady) {
 			this.initData();
 		}
@@ -82,11 +82,11 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 	}
 
 	private initData() {
-		const itemsReady = !!this.context?.items;
-		const playerReady = !!this.context?.playerData?.player?.character?.crew?.length;
+		const itemsReady = !!this.context?.core.items;
+		const playerReady = !!this.context?.player.playerData?.player?.character?.crew?.length;
 
 		if (!this.state.itemsReady && itemsReady && playerReady) {
-			const data = crewCopy(this.context?.playerData?.player?.character?.crew) as PlayerCrew[];
+			const data = crewCopy(this.context?.player.playerData?.player?.character?.crew ?? []) as PlayerCrew[];
 			data.forEach((crew) => {
 				Object.keys(crew).forEach((p) => {
 					if(p.slice(-6) === '_skill') {
@@ -95,7 +95,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 					}
 				});
 			});
-			this.setState({ ...this.state, data: data, itemsReady: true, buffs: this.context.buffConfig ?? {} });
+			this.setState({ ...this.state, data: data, itemsReady: true, buffs: this.context.player.buffConfig ?? {} });
 			this._handleSortNew({})
 		}		
 	}
@@ -139,7 +139,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		if(config.activeItem) {
 			newActiveItem = activeItem === config.activeItem ? defaultColumn : config.activeItem;
 			newColumn = newActiveItem;
-			sortConfig.field = newColumn + (newColumn.substr(-6) === '_skill' ? (newSortKind || sortKind) : '');
+			sortConfig.field = newColumn + (newColumn.slice(-6) === '_skill' ? (newSortKind || sortKind) : '');
 		}
 		if(config.sortKind) {
 			newSortKind = config.sortKind;
@@ -147,7 +147,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		}
 		if(config.column) {
 			newColumn = column === config.column ? defaultColumn : config.column;
-			sortConfig.field = newColumn + (newColumn.substr(-6) === '_skill' ? (newSortKind || sortKind) : '');
+			sortConfig.field = newColumn + (newColumn.slice(-6) === '_skill' ? (newSortKind || sortKind) : '');
 		}
 		if (!data) return;
 		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
@@ -204,7 +204,8 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 	render() {
 		const { buffs, includeFrozen, excludeFF, onlyEvent, activeItem, searchFilter } = this.state;
-		const { allCrew, playerData, items } = this.context;
+		const { crew: allCrew, items } = this.context.core;
+		const { playerData } = this.context.player;
 
 		const { data: playerCrew, itemsReady } = this.state;
 		const { isMobile } = this.props;
@@ -238,7 +239,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		}
 
 		let settings = ['Include Frozen', 'Exclude FF'];
-		let eventCrew = bonusCrewForCurrentEvent(playerData.player?.character ?? []);
+		let eventCrew = bonusCrewForCurrentEvent(playerData?.player?.character ?? []);
 		if (eventCrew) {
 			console.log(eventCrew);
 			settings.push(`Only event bonus (${eventCrew.eventName})`);

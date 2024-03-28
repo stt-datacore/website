@@ -84,7 +84,7 @@ export const ShipPicker = (props: ShipPickerProps) => {
 			value: c.symbol,
 			image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.icon?.file.slice(1).replace('/', '_')}.png` },
 			text: c.name,
-			title: CONFIG.RARITIES[c.rarity].name + ` Ship / Attack ${c.attack.toLocaleString()} / Shields ${c.shields.toLocaleString()} / Hull ${c.hull.toLocaleString()}`
+			title: CONFIG.RARITIES[c.rarity].name + ` Ship / Attack ${c.attack?.toLocaleString()} / Shields ${c.shields?.toLocaleString()} / Hull ${c.hull?.toLocaleString()}`
 		} as DropDownItem
 	));
 
@@ -246,15 +246,15 @@ export const ShipAbilityRankPicker = (props: ShipAbilityRankPickerProps) => {
 };
 
 export type ShipSeatPickerProps = {
-    playerData?: PlayerData;
-	pool?: Ship[];
     availableSeats?: string[];
     selectedSeats: string[];
+	formatTitle?: (value: string, state: boolean) => string;
     setSelectedSeats: (seat: string[]) => void | React.Dispatch<React.SetStateAction<string[]>>;
+	fluid?: boolean;
 };
 
 export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
-	const { selectedSeats, setSelectedSeats } = props;
+	const { selectedSeats, setSelectedSeats, fluid, formatTitle } = props;
     const availableSeats = props.availableSeats && props.availableSeats.length ? props.availableSeats : Object.keys(CONFIG.SKILLS);
 
 	const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, data: MenuItemProps) => {
@@ -262,7 +262,7 @@ export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
 		let newSeats = [...selectedSeats ?? []];
 		if (newSeats.includes(data.name)) {
 			if (newSeats.length === 1) newSeats = [];
-			else newSeats = newSeats.splice(newSeats.indexOf(data.name));		
+			else newSeats.splice(newSeats.indexOf(data.name), 1);		
 		}
 		else {
 			newSeats.push(data.name);
@@ -287,16 +287,15 @@ export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
 
 	return (
 		<React.Fragment>
-			<Menu fluid>
+			<Menu fluid={fluid !== false}>
 				{availableSeats.map((c, key) => (
 					<Menu.Item
 						as="a"
 						name={c}
-						key={key}
-						index={key}
+						key={'seatindex_' + key}
 						onClick={handleClick}						
 						active={selectedSeats.includes(c)}
-                        title={CONFIG.SKILLS[c]}
+                        title={formatTitle ? formatTitle(c, selectedSeats.includes(c)) : CONFIG.SKILLS[c]}
 					>
 						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${c}.png`} style={{width: "1em"}} />
 					</Menu.Item>)

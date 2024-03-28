@@ -5,8 +5,8 @@ import { ResponsiveLine } from '@nivo/line'
 import themes from '../components/nivo_themes';
 import ErrorBoundary from '../components/errorboundary';
 
-import Layout from '../components/layout';
 import { CrewBonuses } from '../model/player';
+import DataPageLayout from '../components/page/datapagelayout';
 
 type EventInfoPageProps = {};
 
@@ -301,8 +301,8 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 
 		if (event_instace === undefined || event_data === undefined || errorMessage !== undefined) {
 			return (
-				<Layout title='Event information'>
-					<Header as='h4'>Event information</Header>
+				<DataPageLayout pageTitle='Event information'>
+					<React.Fragment>
 					{errorMessage && (
 						<Message negative>
 							<Message.Header>Unable to load event information</Message.Header>
@@ -314,13 +314,14 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 							<Icon loading name='spinner' /> Loading...
 						</div>
 					)}
-				</Layout>
+					</React.Fragment>
+				</DataPageLayout>
 			);
 		}
 
 		return (
-			<Layout title={event_data.ev_inst.event_name}>
-				<Header as='h3'>{event_data.ev_inst.event_name}</Header>
+			<DataPageLayout pageTitle={event_data.ev_inst.event_name}>
+				<React.Fragment>
 				<Image size='large' src={`${process.env.GATSBY_ASSETS_URL}${event_data.ev_inst.image}`} />
 
 				{this.renderEventDetails()}
@@ -351,7 +352,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 										<div style={{ gridArea: 'icon' }}>
 											<img
 												width={48}
-												src={`${process.env.GATSBY_ASSETS_URL}${member.avatar ? member.avatar.file.substr(1).replace(/\//g, '_') + '.png' : 'crew_portraits_cm_empty_sm.png'
+												src={`${process.env.GATSBY_ASSETS_URL}${member.avatar ? member.avatar.file.slice(1).replace(/\//g, '_') + '.png' : 'crew_portraits_cm_empty_sm.png'
 													}`}
 											/>
 										</div>
@@ -413,7 +414,8 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 							</Table.Body>
 						</Table>
 					</div>}
-			</Layout>
+				</React.Fragment>
+			</DataPageLayout>
 		);
 	}
 }

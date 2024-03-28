@@ -7,15 +7,28 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { EquipmentItem } from "../../model/equipment";
 import ItemDisplay from "../itemdisplay";
 import ItemSources from "../itemsources";
-import { MergedContext } from "../../context/mergedcontext";
-import { navigate } from "gatsby";
+import { GlobalContext } from "../../context/globalcontext";
+import { Link, navigate } from "gatsby";
 import { PresenterProps } from "./ship_presenter";
 import { Skill } from "../../model/crew";
 import { appelate } from "../../utils/misc";
 import CONFIG from "../CONFIG";
-import { getItemBonuses } from "../../utils/itemutils";
+import { ItemBonusInfo, combineBonuses, formatDuration, getItemBonuses } from "../../utils/itemutils";
+import { printRequiredTraits } from "../profile_items";
 
-export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: string) {
+
+export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[]) {
+    if (!kwipment || kwipment.every(k => !k)) return <></>;
+    let quip = items.filter(f => kwipment.some(q => !!q && q.toString() === f.kwipment_id?.toString()));
+    let bonuses = [] as ItemBonusInfo[];
+    for (let q of quip) {
+        bonuses.push(getItemBonuses(q));
+    }
+    let combined = combineBonuses(bonuses.map(b => b.bonuses));
+    return renderBonuses(combined);
+}
+
+export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: string, margin?: string) {
 
     return (<div style={{
         display: "flex",
@@ -37,11 +50,11 @@ export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: strin
                         alignContent: "center"
                     }}
                 >
-                    <div style={{width: "2em", marginRight: "0.5em"}}>
-                    <img style={{ maxHeight: "2em", maxWidth: maxWidth ?? "2em", margin: "0.5em", marginLeft: "0"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.skill}.png`} />
+                    <div style={{width: maxWidth ?? "2em", marginRight: "0.5em"}}>
+                    <img style={{ maxHeight: "2em", maxWidth: maxWidth ?? "2em", margin: margin ?? "0.5em", marginLeft: "0"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.skill}.png`} />
                     </div>
-                    <h4 style={{ margin: "0.5em"}} >+{skill.core ?? 0} +({skill.range_min ?? 0}-{skill.range_max ?? 0})</h4>
-                    <h4 style={{ margin: "0.5em"}} >{atext}</h4>
+                    <h4 style={{ margin: margin ?? "0.5em"}} >+{skill.core ?? 0} +({skill.range_min ?? 0}-{skill.range_max ?? 0})</h4>
+                    <h4 style={{ margin: margin ?? "0.5em"}} >{atext}</h4>
                 </div>)
         }))}
     </div>)
@@ -61,8 +74,8 @@ export interface ItemPresenterState {
 }
 
 export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterState> {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     tiny: TinyStore;
 
@@ -88,10 +101,11 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
 
     render(): JSX.Element {
         const { item: item, touched, tabs, showIcon } = this.props;
-        const { playerData, items } = this.context;
+        const { playerData } = this.context.player;
+        const { items } = this.context.core;
         const { mobileWidth } = this.state;
         const compact = this.props.hover;    
-        const roster = playerData?.player?.character?.crew;
+        const roster = playerData?.player?.character?.crew ?? [];
         const mode = this.demandMode;
 
         if (!item) {
@@ -167,7 +181,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                         <ItemDisplay
                             targetGroup={this.props.crewTargetGroup}
                             playerData={playerData}
-                            allCrew={this.context.allCrew}
+                            allCrew={this.context.core.crew}
                             itemSymbol={sym}
                             rarity={crew.rarity}
                             maxRarity={crew.max_rarity}
@@ -183,10 +197,12 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
 
         if (!item) return <></>;
         const { bonuses, bonusText } = getItemBonuses(item);
+		const ltMargin = 0;
 
         return (<div style={{ 
                         fontSize: "12pt", 
                         display: "flex", 
+                        textAlign: 'left',
                         flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
                         //width: window.innerWidth < mobileWidth ? "calc(100vw - 16px)" : undefined
                         
@@ -209,7 +225,8 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"8px"}}>
                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", fontStyle: "italic", fontSize: "0.8em" }}>
                             {!!item.quantity && !!item.needed && <div>{item.quantity} Owned, {item.needed} Needed</div>}
-                            {!!item.quantity && !item.needed && <div>{item.quantity} Owned</div>}
+                            {!!item.quantity && !item.needed && !!item.isReward && <div>{item.quantity} Rewarded</div>}
+                            {!!item.quantity && !item.needed && !item.isReward && <div>{item.quantity} Owned</div>}
                             {!item.quantity && !!item.needed && <div>{item.needed} Needed</div>}                                                    
                         </div>
                     </div>
@@ -218,9 +235,9 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     style={{
                         display: "flex",
                         flexDirection: "column",
-                        minHeight: "8em",
+                        minHeight: !empty ? "8em" : "5em",
                         justifyContent: "space-between",                        
-                        maxWidth: window.innerWidth < mobileWidth ? "15m" : "34em",
+                        maxWidth: window.innerWidth < mobileWidth ? "15em" : ( !empty ? "34em" : "24em"),
                         minWidth: "15m",
                     }}
                 >
@@ -238,22 +255,70 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                                 size='large' 
                                 disabled />
                         </div>
-                        {!!bonusText.length && renderBonuses(bonuses)}
+                        <div
+                            style={{
+                                textAlign: "left",
+                                fontStyle: "italic",
+                                fontSize: "0.85em",
+                                marginTop: "2px",
+                                marginBottom: "4px",
+                            }}
+                        >
+                        <i>{item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '')}</i>
+                        </div>
+
+                        {!!bonusText.length && renderBonuses(bonuses, "1em", "0.25em")}
                     </div>
-                    <div
-                        style={{
-                            textAlign: "left",
-                            fontStyle: "italic",
-                            fontSize: "0.85em",
-                            marginTop: "2px",
-                            marginBottom: "4px",
-                        }}
-                    >
-                       <i>{item.flavor}</i>
-                    </div>
-                    <div>
-                    {!!((item.item_sources?.length ?? 0) > 0) && (
-                            <div style={{fontSize: "8pt",marginRight: "1em"}}>
+                    {!!item.duration && 
+							<div
+								style={{
+									textAlign: "left",
+									//fontStyle: "italic",
+									fontSize: "0.75em",
+									marginTop: "2px",
+									marginBottom: "4px",
+									marginLeft: ltMargin
+								}}
+								>
+								<div><b>Duration:</b>&nbsp;
+								<i>{formatDuration(item.duration)}</i></div>
+							</div>}
+							{!!item.max_rarity_requirement && 
+								<div style={{
+									textAlign: "left",
+									//fontStyle: "italic",
+									fontSize: "0.75em",
+									marginTop: "2px",
+									marginBottom: "4px",
+									marginLeft: ltMargin
+								}}>
+								Equippable by up to&nbsp;<span style={{
+									color: CONFIG.RARITIES[item.max_rarity_requirement].color,
+									fontWeight: 'bold'
+								}}>
+								{CONFIG.RARITIES[item.max_rarity_requirement].name}
+								</span>
+								&nbsp;crew.
+							</div>}
+							{!!item.kwipment && !!item.traits_requirement?.length &&
+								<div
+									style={{
+										textAlign: "left",
+										//fontStyle: "italic",
+										fontSize: "0.75em",
+										marginTop: "2px",
+										marginBottom: "4px",
+										marginLeft: ltMargin
+									}}
+									>
+									<div><b>Required Traits:</b>&nbsp;
+									<i>
+                                        {printRequiredTraits(item)}
+                                    </i></div>
+								</div>}             
+                            <div>
+                            {!!((item.item_sources?.length ?? 0) > 0) && (
+                            <div style={{fontSize: "8pt",marginRight: "1em", marginTop : "0.5em"}}>
                                 <Header as="h3">Item sources:</Header>
                                 <ItemSources refItem={item.symbol} brief={true} item_sources={item.item_sources} />
                                 <br />

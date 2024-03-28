@@ -1,34 +1,34 @@
 import * as React from "react";
-import { CrewMember, SkillData } from "../../model/crew";
-import { CompletionState, PlayerCrew } from "../../model/player";
+import { CrewMember, Skill, SkillData } from "../../model/crew";
+import { CompletionState, PlayerBuffMode, PlayerCrew, PlayerImmortalMode } from "../../model/player";
 import { Dropdown, Rating } from "semantic-ui-react";
 import CrewStat from "../crewstat";
 import {
     formatTierLabel,
     getSkills,
     gradeToColor,
+    prettyObtained,
     printPortalStatus,
 } from "../../utils/crewutils";
 import { printImmoText } from "../../utils/crewutils";
 import { ShipSkill } from "./shipskill";
 import { TinyStore } from "../../utils/tiny";
 import { PresenterProps } from "./ship_presenter";
-import { StatLabelProps } from "../commoncrewdata";
+import { StatLabelProps } from "../statlabel";
 import { Label } from "semantic-ui-react";
 
 import { Image } from "semantic-ui-react";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { MergedContext } from "../../context/mergedcontext";
+import { GlobalContext } from "../../context/globalcontext";
 import { CrewItemsView } from "./crew_items";
 import {
-    PlayerBuffMode,
-    PlayerImmortalMode,
     BuffNames,
     ImmortalNames,
     getAvailableBuffStates,
     nextImmortalState,
     nextBuffState,
     CrewPreparer,
+    ProspectImmortalNames,
 } from "./crew_preparer";
 import {
     PresenterPlugin,
@@ -37,6 +37,7 @@ import {
 } from "./presenter_plugin";
 import { Ship } from "../../model/ship";
 import { navigate } from "gatsby";
+import CONFIG from "../CONFIG";
 
 const dormantStyle: React.CSSProperties = {
     background: "transparent",
@@ -58,6 +59,11 @@ const activeStyle: React.CSSProperties = {
 const ownedGreenStyle: React.CSSProperties = {
     ...activeStyle,
     color: "lightgreen",
+};
+
+const ownedBlueStyle: React.CSSProperties = {
+    ...activeStyle,
+    color: "orange",
 };
 
 const completeStyle: React.CSSProperties = {
@@ -82,7 +88,7 @@ export class StatLabel extends React.Component<StatLabelProps> {
     render() {
         const { title, value } = this.props;
 
-        return (
+        return (            
             <Label
                 size={window.innerWidth < DEFAULT_MOBILE_WIDTH ? "small" : "medium"}
                 style={{
@@ -109,17 +115,17 @@ export interface CollectionDisplayProps {
 }
 
 export const CollectionDisplay = (props: CollectionDisplayProps) => {
-    const tinyCol = TinyStore.getStore('collections');    
+    const tinyCol = TinyStore.getStore('collections');
     const dispClick = (e, col: string) => {
-        tinyCol.setValue('selectedCollection', col);
-        navigate("/playertools/?tool=collections");
+        
+        navigate("/collections?select=" + encodeURIComponent(col));
     }
 
     const { crew, style } = props;
     if (!crew.collections?.length) return <></>;
     return (<div style={{
-        ... (style ?? {}),  
-        cursor: "pointer"      
+        ... (style ?? {}),
+        cursor: "pointer"
     }}>
         {crew.collections?.map((col, idx) => (
             <a onClick={(e) => dispClick(e, col)} key={"collectionText_" + crew.symbol + idx}>
@@ -145,6 +151,7 @@ export interface BuffSelectorProps {
 
 export interface ImmortalSelectorProps {
     immoed?: boolean;
+    prospect?: boolean;
     immortalMode: PlayerImmortalMode;
     setImmortalMode: (value: PlayerImmortalMode) => void;
     style?: React.CSSProperties | undefined;
@@ -194,6 +201,22 @@ function drawBuff(
                 {BuffNames[data]}
             </div>
         );
+    } else if (data === "quipment") {
+        return (
+            <div key={key} style={{ display: "inline-flex" }}>
+                <i
+                    onClick={(e) => buffclick(e, "player")}
+                    className="arrow alternate circle up icon"
+                    title="Quipment Boosts Applied"
+                    style={{
+                        ...ownedBlueStyle,
+                        fontSize: "0.8em",
+                        marginRight: "0.5em",
+                    }}
+                />
+                {BuffNames[data]}
+            </div>
+        );
     } else if (data === "max") {
         return (
             <div key={key} style={{ display: "inline-flex" }}>
@@ -214,7 +237,8 @@ function drawImmo(
     key: string | number,
     data: PlayerImmortalMode,
     immoClick?: (value: PlayerImmortalMode) => void,
-    immoed?: boolean
+    immoed?: boolean,
+    prospect?: boolean
 ): JSX.Element {
     const immoclick = (
         e: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -239,7 +263,7 @@ function drawImmo(
                         marginRight: "0.5em",
                     }}
                 />
-                {!immoed && "Shown "}{ImmortalNames[data]}
+                {!immoed && "Shown "}{prospect ? ProspectImmortalNames[data] : ImmortalNames[data]}
             </div>
         );
     } else if (data === "frozen") {
@@ -251,7 +275,7 @@ function drawImmo(
                     title="Frozen"
                     style={{ ...frozenStyle, fontSize: "0.8em", marginRight: "0.5em" }}
                 />
-                {ImmortalNames[data]}
+                {prospect ? ProspectImmortalNames[data] : ImmortalNames[data]}
             </div>
         );
     } else {
@@ -263,7 +287,7 @@ function drawImmo(
                     title=""
                     style={{ ...dormantStyle, fontSize: "0.8em", marginRight: "0.5em" }}
                 />
-                {ImmortalNames[data]}
+                {prospect ? ProspectImmortalNames[data] : ImmortalNames[data]}
             </div>
         );
     }
@@ -300,7 +324,8 @@ export class ImmortalSelector extends React.Component<ImmortalSelectorProps> {
                         "immoTrig",
                         this.props.immortalMode,
                         undefined,
-                        this.props.immoed
+                        this.props.immoed,
+                        this.props.prospect
                     )}
                     options={this.props.available}
                     value={this.props.immortalMode}
@@ -330,6 +355,7 @@ export interface CrewPresenterProps extends PresenterProps, CrewPlugins {
     hideStats?: boolean;
     showPortrait?: boolean;
     proficiencies?: boolean;
+    quipmentMode?: boolean;
 }
 
 export interface CrewPresenterState {
@@ -346,8 +372,8 @@ export class CrewPresenter extends React.Component<
     CrewPresenterProps,
     CrewPresenterState
 > {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     private readonly tiny: TinyStore;
     constructor(props: CrewPresenterProps) {
@@ -367,7 +393,7 @@ export class CrewPresenter extends React.Component<
             selectedPlugin: 0,
         };
 
-        this.tiny = TinyStore.getStore(props.storeName);
+        this.tiny = TinyStore.getStore(props.storeName);       
     }
 
     private setSelectedPlugin = (index: number) => {
@@ -378,40 +404,64 @@ export class CrewPresenter extends React.Component<
     };
 
     protected get playerBuffMode(): PlayerBuffMode {
-        return this.tiny.getValue<PlayerBuffMode>("buffmode", "player") ?? "player";
+        if (this.props.quipmentMode) return 'quipment'
+        let key = "buffmode";
+        let def = "max" as PlayerBuffMode;
+        if (this.context.player.playerData) {
+            key += "_player";
+            def = 'player';
+        }
+
+        let result = this.tiny.getValue<PlayerBuffMode>(key, def) ?? def;
+        if (result === 'quipment' && !(this.props.crew as PlayerCrew)?.immortal) result = 'player';
+
+        return result;
     }
 
-    protected set playerBuffMode(value: PlayerBuffMode) {
-        this.tiny.setValue<PlayerBuffMode>("buffmode", value, true);
+    protected set playerBuffMode(value: PlayerBuffMode) {        
+        let key = "buffmode";
+        if (this.context.player.playerData) key += "_player";
+        this.tiny.setValue<PlayerBuffMode>(key, value, true);
         if (this.props.selfRender) this.forceUpdate();
     }
 
     protected get immortalMode(): PlayerImmortalMode {
+        let key = "immomode";
+        let mode = "full" as PlayerImmortalMode;
+
+        if (this.context.player.playerData) {
+            key += "_player";
+            mode = 'owned';
+        }
+
         let value: PlayerImmortalMode;
         if (this.props.crew) {
             value =
                 this.tiny.getValue<PlayerImmortalMode>(
-                    "immomode/" + this.props.crew.symbol,
-                    "owned"
-                ) ?? "owned";
+                    key + "/" + this.props.crew.symbol,
+                    mode
+                ) ?? mode;
         } else {
             value =
-                this.tiny.getValue<PlayerImmortalMode>("immomode", "owned") ?? "owned";
+                this.tiny.getValue<PlayerImmortalMode>(key, mode) ?? mode;
         }
 
         return value;
     }
 
     protected set immortalMode(value: PlayerImmortalMode) {
+        let key = "immomode";
+        if (this.context.player.playerData) key += "_player";
+
         if (value == this.immortalMode) return;
         if (this.props.crew) {
             this.tiny.setValue<PlayerImmortalMode>(
-                "immomode/" + this.props.crew.symbol,
+                key + "/" + this.props.crew.symbol,
                 value,
                 true
             );
         } else {
-            this.tiny.setValue<PlayerImmortalMode>("immomode", value, true);
+            this.tiny.setValue<PlayerImmortalMode>(key, value, true);
         }
         if (this.props.selfRender) this.forceUpdate();
     }
@@ -445,6 +495,11 @@ export class CrewPresenter extends React.Component<
         }
     }
 
+    componentDidMount(): void {
+        if (this.props.quipmentMode && this.playerBuffMode !== 'quipment' && !!this.context.player.playerData) {
+            this.playerBuffMode = 'quipment';
+        }
+    }
     render(): JSX.Element {
         const {
             proficiencies,
@@ -468,9 +523,10 @@ export class CrewPresenter extends React.Component<
 
         var me = this;
 
-        const availstates = getAvailableBuffStates(
-            this.context.playerData,
-            this.context.maxBuffs
+        const availstates = this.props.quipmentMode ? ['quipment' as PlayerBuffMode] : getAvailableBuffStates(
+            this.context.player.playerData,
+            this.context.maxBuffs,
+            inputCrew as PlayerCrew
         );
 
         if (availstates?.includes(me.playerBuffMode) !== true) {
@@ -524,8 +580,10 @@ export class CrewPresenter extends React.Component<
         const nextBuff = (e) => {
             me.playerBuffMode = nextBuffState(
                 me.playerBuffMode,
-                me.context.playerData,
-                me.context.maxBuffs
+                me.context.player.playerData,
+                me.context.maxBuffs,
+                undefined,
+                crew
             );
             if (this.props.onBuffToggle) {
                 this.props.onBuffToggle(me.playerBuffMode);
@@ -559,26 +617,29 @@ export class CrewPresenter extends React.Component<
             let immo = {
                 key: data,
                 value: data,
-                text: ImmortalNames[data],
+                text: crew.prospect ? ProspectImmortalNames[data] : ImmortalNames[data],
             } as HoverSelectorConfig<PlayerImmortalMode>;
 
-            immo.content = drawImmo(idx, data, clickImmo, immoed);
+            immo.content = drawImmo(idx, data, clickImmo, immoed, crew.prospect);
             return immo;
         });
 
         let immo = me.immortalMode;
         let sd = JSON.parse(JSON.stringify(crew)) as SkillData;
-
+        let sc = 0;
         getSkills(crew).forEach((skill) => {
             if (!(skill in crew)) return;
+            if (!crew[skill].core) return;
             sd.base_skills[skill] = {
                 core: crew[skill].core,
                 range_min: crew[skill].min,
                 range_max: crew[skill].max,
             };
+            sc++;
         });
 
         const skillData = sd;
+        const skillCount = sc;
 
         const getStars = () => {
             if (me.immortalMode === "min") return 1;
@@ -594,8 +655,14 @@ export class CrewPresenter extends React.Component<
             "immortal" in crew &&
             crew.immortal === CompletionState.DisplayAsImmortalUnowned
         ) {
-            pt = "Unowned (Available in the Portal)";
-            npt = "Unowned (Not in the Portal)";
+            if (crew.prospect) {
+                pt = "Prospective Crew (Available in the Portal)";
+                npt = "Prospective Crew (Not in the Portal)";    
+            }
+            else {
+                pt = "Unowned (Available in the Portal)";
+                npt = "Unowned (Not in the Portal)";    
+            }
         } else if (
             !("immortal" in crew) ||
             ("immortal" in crew &&
@@ -607,6 +674,7 @@ export class CrewPresenter extends React.Component<
 
         const portalText = pt;
         const noPortalText = npt;
+        const isNever = printPortalStatus(crew) === 'Never';
         const isMobile = this.props.forceVertical || typeof window !== 'undefined' && window.innerWidth < mobileWidth;
 
         return crew ? (
@@ -617,6 +685,7 @@ export class CrewPresenter extends React.Component<
                     display: "flex",
                     flexDirection: "row", // window.innerWidth < mobileWidth ? "column" : "row",
                     width: hover ? undefined : width,
+                    textAlign: 'left'
                 }}
             >
                 <div
@@ -700,7 +769,8 @@ export class CrewPresenter extends React.Component<
                         )}
                     </div>
                     {!compact && (
-                        <div style={{ marginBottom: "0.13em", marginRight: "0.5em" }}>
+                        <div style={{ marginBottom: "0.13em", marginRight: "0.5em", fontSize: "9pt", fontWeight: 'normal' }}>
+                            {crew.immortal === -1 && this.validImmortalModes[0] !== 'frozen' && !!crew.kwipment?.length && <CrewItemsView crew={crew} quipment={true} />}
                             <CrewItemsView crew={crew} />
                         </div>
                     )}
@@ -782,7 +852,7 @@ export class CrewPresenter extends React.Component<
                                             CompletionState.DisplayAsImmortalStatic ? (
                                             <>
                                                 {" "}
-                                                {(crew.in_portal && (
+                                                {((crew.in_portal && !crew.prospect) && (
                                                     <div
                                                         style={{
                                                             alignSelf: "center",
@@ -803,7 +873,7 @@ export class CrewPresenter extends React.Component<
                                                     </div>
                                                 )) || (
                                                         <i
-                                                            className="lock icon"
+                                                            className={crew.prospect ? "add user icon" : "lock icon"}
                                                             style={frozenStyle}
                                                             title={noPortalText}
                                                         />
@@ -851,6 +921,7 @@ export class CrewPresenter extends React.Component<
                             >
                                 <ImmortalSelector
                                     immoed={immoed}
+                                    prospect={crew.prospect}
                                     available={availImmos}
                                     immortalMode={me.immortalMode}
                                     setImmortalMode={(e) => clickImmo(e)}
@@ -866,64 +937,26 @@ export class CrewPresenter extends React.Component<
                             flexWrap: "wrap",
                             fontSize: hover ? "1.2em" : "0.9em",
                             flexDirection: isMobile ? "column" : "row",
-                            justifyContent: "space-evenly",
+                            justifyContent: skillCount < 3 ? "flex-start" : 'space-evenly',
                             marginTop: "4px",
                             marginBottom: "2px",
                         }}
                     >
-                        {skillData.base_skills.security_skill && (
-                            <CrewStat
-                                proficiencies={proficiencies}
-                                skill_name="security_skill"
-                                data={skillData.base_skills.security_skill}
-                                scale={hover ? 0.75 : 1}
-                            />
-                        )}
+                        {Object.entries(skillData.base_skills).sort(([akey, askill], [bkey, bskill]) => {
+                            return (bskill as Skill).core - (askill as Skill).core;
+                            
+                        }).map(([key, skill]) => {
 
-                        {skillData.base_skills.command_skill && (
-                            <CrewStat
+                            return <CrewStat
+                                quipmentMode={this.props.quipmentMode}
+                                key={"crewpresent_skill_" + key}
                                 proficiencies={proficiencies}
-                                skill_name="command_skill"
-                                data={skillData.base_skills.command_skill}
+                                skill_name={key}
+                                data={skill}
                                 scale={hover ? 0.75 : 1}
                             />
-                        )}
+                        })}
 
-                        {skillData.base_skills.diplomacy_skill && (
-                            <CrewStat
-                                proficiencies={proficiencies}
-                                skill_name="diplomacy_skill"
-                                data={skillData.base_skills.diplomacy_skill}
-                                scale={hover ? 0.75 : 1}
-                            />
-                        )}
-
-                        {skillData.base_skills.science_skill && (
-                            <CrewStat
-                                proficiencies={proficiencies}
-                                skill_name="science_skill"
-                                data={skillData.base_skills.science_skill}
-                                scale={hover ? 0.75 : 1}
-                            />
-                        )}
-
-                        {skillData.base_skills.medicine_skill && (
-                            <CrewStat
-                                proficiencies={proficiencies}
-                                skill_name="medicine_skill"
-                                data={skillData.base_skills.medicine_skill}
-                                scale={hover ? 0.75 : 1}
-                            />
-                        )}
-
-                        {skillData.base_skills.engineering_skill && (
-                            <CrewStat
-                                proficiencies={proficiencies}
-                                skill_name="engineering_skill"
-                                data={skillData.base_skills.engineering_skill}
-                                scale={hover ? 0.75 : 1}
-                            />
-                        )}
                         <div style={{ width: "4px" }} />
                     </div>
                     <div
@@ -1060,12 +1093,32 @@ export class CrewPresenter extends React.Component<
                                     title="Gauntlet Rank"
                                     value={"" + crew.ranks.gauntletRank}
                                 />
-                                <span title={printPortalStatus(crew, true, true, true)}>
+
+                                {!isNever && 
+                                <>
+                                {(crew.in_portal && !!crew.unique_polestar_combos?.length) && 
+                                    <span title={printPortalStatus(crew, true, true, true, true)}>                                    
                                     <StatLabel
+                                        title=""
+                                        value={<span style={{color:"lightgreen", fontWeight:"bold"}}>Uniquely Retrievable</span>}
+                                    />
+                                    </span> 
+                                    ||
+                                    <span title={printPortalStatus(crew, true, true, true, true)}>
+                                    <StatLabel                                        
                                         title="In Portal"
                                         value={crew.in_portal ? <span style={{color:"lightgreen", fontWeight:"bold"}}>Yes</span> : printPortalStatus(crew, true) }
                                     />
-                                </span>
+                                   </span>
+                                }
+                                </>}
+                                {isNever && 
+                                    <span title={printPortalStatus(crew, true, true, true, true)}>                                  
+                                    <StatLabel
+                                        title="Obtained"
+                                        value={<span style={{ padding:0, color: CONFIG.RARITIES[5].color, fontWeight:"bold"}}>{prettyObtained(crew)}</span>}                                        
+                                    />
+                                </span>}
                             </div>
                         </div>
                     )}

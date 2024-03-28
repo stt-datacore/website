@@ -1,14 +1,27 @@
 import CONFIG from '../components/CONFIG';
-import { Skill } from '../model/crew';
+import { CrewMember, Skill } from '../model/crew';
 import { EquipmentCommon, EquipmentItem, EquipmentItemSource } from '../model/equipment';
+import { ISymbol } from '../model/game-elements';
 import { Mission } from '../model/missions';
-import { PlayerEquipmentItem } from '../model/player';
+import { AtlasIcon, BuffBase, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward } from '../model/player';
+import { getIconPath } from './assets';
 import { simplejson2csv, ExportField } from './misc';
+
+
+export interface ItemBonusInfo {
+    bonusText: string[];
+    bonuses: { [key: string]: Skill };
+}
+
+export interface ItemWithBonus {
+	item: EquipmentItem;
+	bonusInfo: ItemBonusInfo;
+}
 
 export function mergeItems(player_items: PlayerEquipmentItem[], items: EquipmentItem[]) {
 	let data = [] as EquipmentCommon[];
 	player_items.forEach(item => {
-		let itemEntry = items.find(i => i.symbol === item.symbol);
+		let itemEntry = items.find(i => i.symbol === item.symbol && !i.isReward);
 		if (itemEntry) {
 			data.push({
 				... itemEntry,
@@ -153,11 +166,36 @@ export function populateItemCadetSources(items: EquipmentItem[], episodes: Missi
 }
 
 
+export function combineItemBonuses(a: { [key: string]: Skill }, b: { [key: string]: Skill }) {
+	let result = { ...a, ...b };
+	let keys = Object.keys(result);
+	for (let key of keys) {
+		result[key] = { core: 0, range_min: 0, range_max: 0, skill: key };
 
+		if (key in a) {
+			result[key].core += a[key].core;
+			result[key].range_max += a[key].range_min;
+			result[key].range_max += a[key].range_min;
+		}
+		if (key in b) {
+			result[key].core += b[key].core;
+			result[key].range_max += b[key].range_min;
+			result[key].range_max += b[key].range_min;
+		}
+	}
+	return result;
+}
 
-export interface ItemBonusInfo {
-    bonusText: string[];
-    bonuses: { [key: string]: Skill };
+export function combineBonuses(bonuses: { [key: string]: Skill }[]) {
+	if (bonuses.length === 1) return bonuses[0];
+	let c = bonuses.length;
+	let result = {} as { [key: string]: Skill };
+
+	for (let i = 0; i < c; i++) {
+		result = combineItemBonuses(result, bonuses[i]);
+	}
+
+	return result;
 }
 
 export function getItemBonuses(item: EquipmentItem): ItemBonusInfo {
@@ -169,7 +207,7 @@ export function getItemBonuses(item: EquipmentItem): ItemBonusInfo {
             let bonus = CONFIG.STATS_CONFIG[Number.parseInt(key)];
             if (bonus) {
                 bonusText.push(`+${value} ${bonus.symbol}`);	
-                bonuses[bonus.skill] ??= {} as Skill;
+                bonuses[bonus.skill] ??= { core: 0, range_min: 0, range_max: 0 } as Skill;
                 bonuses[bonus.skill][bonus.stat] = value;				
                 bonuses[bonus.skill].skill = bonus.skill;
             } else {
@@ -182,4 +220,192 @@ export function getItemBonuses(item: EquipmentItem): ItemBonusInfo {
         bonusText,
         bonuses
     };
+}
+
+export function getPossibleQuipment<T extends CrewMember>(crew: T, quipment: EquipmentItem[]): EquipmentItem[] {
+	return quipment.filter((item) => isQuipmentMatch(crew, item));
+}
+
+export function isQuipmentMatch<T extends CrewMember>(crew: T, item: EquipmentItem): boolean {
+	if (item.kwipment) {
+		if (!item.max_rarity_requirement) return false;
+		const bonus = getItemBonuses(item);
+
+		let mrq = item.max_rarity_requirement;
+		let rr = mrq >= crew.max_rarity;
+
+		if (!!item.traits_requirement?.length) {
+			if (item.traits_requirement_operator === "and") {
+				rr &&= item.traits_requirement?.every(t => crew.traits.includes(t) || crew.traits_hidden.includes(t));
+			}
+			else {
+				rr &&= item.traits_requirement?.some(t => crew.traits.includes(t) || crew.traits_hidden.includes(t));
+			}
+		}
+
+		rr &&= Object.keys(bonus.bonuses).some(skill => skill in crew.base_skills);
+		return rr;
+	}
+
+	return false;
+}
+
+export function addItemBonus<T extends PlayerCrew>(crew: T, source: EquipmentItem | ItemBonusInfo, skill?: string) {
+	let bonuses = "bonusText" in source ? source : getItemBonuses(source);
+	Object.keys(bonuses.bonuses).forEach((sk) => {
+		if (!!skill && sk != skill) return;
+		crew[sk].core += bonuses.bonuses[sk].core;
+		crew[sk].max += bonuses.bonuses[sk].range_max;
+		crew[sk].min += bonuses.bonuses[sk].range_min;
+	});
+}
+
+export function subtractItemBonus<T extends PlayerCrew>(crew: T, source: EquipmentItem | ItemBonusInfo, skill?: string) {
+	let bonuses = "bonusText" in source ? source : getItemBonuses(source);
+	Object.keys(bonuses.bonuses).forEach((sk) => {
+		if (!!skill && sk != skill) return;
+		crew[sk].core -= bonuses.bonuses[sk].core;
+		crew[sk].max -= bonuses.bonuses[sk].range_max;
+		crew[sk].min -= bonuses.bonuses[sk].range_min;
+	});
+}
+
+export function getQuipmentCrew<T extends CrewMember>(item: EquipmentItem, crew: T[]): T[] {
+	if (item.kwipment) {
+		const bonus = getItemBonuses(item);
+		return crew.filter(f => {			
+			let mrq = item.max_rarity_requirement ?? f.max_rarity;
+			let rr = mrq >= f.max_rarity;
+
+			if (!!item.traits_requirement?.length) {
+				if (item.traits_requirement_operator === "and") {
+					rr &&= item.traits_requirement?.every(t => f.traits.includes(t) || f.traits_hidden.includes(t));
+				}
+				else {
+					rr &&= item.traits_requirement?.some(t => f.traits.includes(t) || f.traits_hidden.includes(t));
+				}
+			}
+
+			rr &&= Object.keys(bonus.bonuses).some(skill => skill in f.base_skills);
+
+			return rr;
+		});
+	}
+
+	return [];
+}
+
+
+export function binaryLocate<T extends ISymbol>(symbol: string, items: T[]) : T | undefined {
+	let lo = 0, hi = items.length - 1;
+
+	while (true)
+	{
+		if (lo > hi) break;
+
+		let p = Math.floor((hi + lo) / 2);
+		let elem = items[p];
+
+		let c = symbol.localeCompare(items[p].symbol);
+
+		if (c == 0)
+		{
+			return elem;
+		}
+		else if (c < 0)
+		{
+			hi = p - 1;
+		}
+		else
+		{
+			lo = p + 1;
+		}
+	}
+
+	return undefined;
+}
+
+export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: Reward, needed?: boolean) {
+	if (!items.find(f => (f as EquipmentItem).isReward && f.symbol === reward.symbol && f.quantity === reward.quantity)) {
+		let seeditem = items.find(f => f.symbol === reward.symbol) ?? {} as EquipmentItem;
+
+		items.push({
+			... seeditem,
+			...reward,
+			name: reward.name ?? "",
+			symbol: reward.symbol ?? "",
+			flavor: reward.flavor ?? "",
+			bonuses: {},
+			quantity: !!needed ? 0 : reward.quantity,
+			needed: !needed ? 0 : reward.quantity,
+			imageUrl: getIconPath(reward.icon ?? {} as AtlasIcon, true),
+			item_sources: [],
+			archetype_id: reward.id,
+			isReward: !needed
+		});
+	}
+}
+
+
+export function getCollectionRewards(playerCollections: PlayerCollection[]) {
+	return playerCollections.map((col) => {
+		return (col?.milestone.buffs?.map(b => b as BuffBase) ?? [] as Reward[]).concat(col?.milestone.rewards ?? [] as Reward[]) as Reward[];
+	}).flat();
+}
+
+export function formatDuration(time: number) {
+	if (time <= 48) {
+		return `${time} Hours`;
+	}
+	else{
+		return `${Math.floor(time / 24)} Days`;
+	}
+};
+
+export function getItemWithBonus(item: EquipmentItem) {
+	return {
+		item,
+		bonusInfo: getItemBonuses(item)
+	} as ItemWithBonus;
+}
+
+
+export function sortItemsWithBonus(quipment: ItemWithBonus[], byItemCost?: boolean, skill?: string, sortFactor?: number) {
+	const sf = sortFactor === -1 ? -1 : 1;
+
+	return quipment.sort((a, b) => {
+		let r = 0;
+
+		if (byItemCost) {
+			let ac = a.item.demands?.map(d => d.count * (d.equipment?.rarity ?? 1)).reduce((p, n) => p + n, 0) ?? 0;
+			let bc = b.item.demands?.map(d => d.count * (d.equipment?.rarity ?? 1)).reduce((p, n) => p + n, 0) ?? 0;
+			r = ac - bc;                                
+			if (r) return r;
+		}
+
+		let an = 0;
+		let bn = 0;
+		
+		if (skill && skill in a.bonusInfo.bonuses && skill in b.bonusInfo.bonuses) {
+			let ask = a.bonusInfo.bonuses[skill];
+			let bsk = a.bonusInfo.bonuses[skill];
+
+			an = ask.core + ask.range_max + ask.range_min;
+			bn = bsk.core + bsk.range_max + bsk.range_min;
+		}
+		else {
+			an = Object.values(a.bonusInfo.bonuses).map((sk: Skill) => sk.core + sk.range_max + sk.range_min).reduce((p, n) => p + n, 0);
+			bn = Object.values(b.bonusInfo.bonuses).map((sk: Skill) => sk.core + sk.range_max + sk.range_min).reduce((p, n) => p + n, 0);
+		}
+
+		r = an - bn;
+
+		if (!r) {
+			let ac = Object.keys(a.bonusInfo.bonuses) ?? [];
+			let bc = Object.keys(b.bonusInfo.bonuses) ?? [];
+			r = bc.length - ac.length;
+		}
+		return r * sf;
+
+	});
 }

@@ -145,7 +145,7 @@ function getCrewMarkDown(crewSymbol) {
 		converter.makeHtml(markdownContent);
 		let meta = converter.getMetadata();
 
-		markdownContent = markdownContent.substr(markdownContent.indexOf('---', 4) + 4).trim();
+		markdownContent = markdownContent.slice(markdownContent.indexOf('---', 4) + 4).trim();
 
 		return { meta, markdownContent };
 	}

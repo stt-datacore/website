@@ -1,35 +1,23 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
-import { Header, Image, Divider, Grid, Segment, Rating, Dropdown, Popup, Label, Button, Comment } from 'semantic-ui-react';
+import { Image, Divider, Rating, Button, Icon } from 'semantic-ui-react';
 import { graphql, navigate } from 'gatsby';
 
-import SimpleMDE from 'react-simplemde-editor';
-import marked from 'marked';
+import { ClassicPresenter } from '../components/item_presenters/classic_presenter';
 
-import Layout from '../components/layout';
-import ItemDisplay from '../components/itemdisplay';
-import ItemSources from '../components/itemsources';
-import CrewFullEquipTree from '../components/crewfullequiptree';
-import CommonCrewData from '../components/commoncrewdata';
-import ExtraCrewDetails from '../components/extracrewdetails';
-
-import CONFIG from '../components/CONFIG';
-import { getShipBonus, getShipChargePhases, prepareProfileData } from '../utils/crewutils';
-import { useStateWithStorage } from '../utils/storage';
-import { CompletionState, PlayerCrew, PlayerData } from '../model/player';
+import { CompletionState, PlayerCrew } from '../model/player';
 import { TinyStore } from '../utils/tiny';
 import { BuffStatTable } from '../utils/voyageutils';
-import { CrewMember } from '../model/crew';
-import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
-import { ShipSkill } from '../components/item_presenters/shipskill';
-import { DataContext } from '../context/datacontext';
-import { PlayerContext } from '../context/playercontext';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
+import DataPageLayout from '../components/page/datapagelayout';
+
+import { EquipmentBuilds } from '../components/crewpage/equipmentbuilds';
+import { Polestars } from '../components/crewpage/polestars';
+import { CrewVariants } from '../components/crewpage/crewvariants';
+import { CrewQuipment } from '../components/crewpage/crewquipment';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
-import { populateItemCadetSources } from '../utils/itemutils';
+
 const DEFAULT_MOBILE_WIDTH = 768;
-
-
 
 export interface CrewPageOptions {
 	key: string;
@@ -68,46 +56,15 @@ type StaticCrewPageProps = {
 };
 
 const StaticCrewPage = (props: StaticCrewPageProps) => {
-	const coreData = React.useContext(DataContext);
-	const { strippedPlayerData, buffConfig, maxBuffs } = React.useContext(PlayerContext);
-
-	const isReady = coreData.ready ? coreData.ready(['items', 'crew', 'keystones', 'cadet']) : false;
-	const cadetforitem = isReady ? coreData?.cadet?.filter(f => f.cadet) : undefined;
-
-	if (isReady && cadetforitem?.length) {
-		populateItemCadetSources(coreData.items, cadetforitem);
-	}
-	let pd = {} as PlayerData;
-
-	if (strippedPlayerData) {
-		pd = JSON.parse(JSON.stringify(strippedPlayerData)) as PlayerData;
-		prepareProfileData('ITEM_PAGE', coreData.crew, pd, new Date());
-	}
 
 	return (
-		<Layout narrowLayout={true}>
-			{!isReady &&
-				<div className='ui medium centered text active inline loader'>Loading data...</div>
-			}
-			{isReady &&
-				<MergedContext.Provider value={{ 
-					playerData: pd, 
-					allCrew: coreData.crew,
-					items: coreData.items,
-					buffConfig: buffConfig,
-					maxBuffs: maxBuffs,
-					keystones: coreData.keystones
-					}}>
-					<StaticCrewComponent props={props} />
-				</MergedContext.Provider>
-			}
-		</Layout>
+		<DataPageLayout pageTitle={''} demands={['items', 'crew', 'keystones', 'cadet']} narrowLayout={true}>
+			<StaticCrewComponent props={props} />
+		</DataPageLayout>
 	);
 };
 
 type StaticCrewComponentState = {
-	selectedEquipment?: string;
-	modalVisible: boolean;
 	commentMarkdown: string;
 	comments: any[];
 	itemBig: boolean;
@@ -117,21 +74,19 @@ interface StaticCrewComponentProps {
 	props: StaticCrewPageProps;
 }
 
-class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrewComponentState> {		
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
-	
+class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrewComponentState> {
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
+
 	constructor(props: StaticCrewComponentProps | Readonly<StaticCrewComponentProps>) {
 		super(props);
 		this.state = {
-			selectedEquipment: undefined,
-			modalVisible: false,
 			commentMarkdown: '', // TODO: load
 			comments: [],
 			itemBig: this.stash.getValue('crew_static_big', false) ?? false
 		};
 	}
-	
+
 	owned: PlayerCrew[] | undefined = undefined;
 	ownedCrew: PlayerCrew[] | undefined = undefined;
 	buffs: BuffStatTable | undefined = undefined;
@@ -145,42 +100,18 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 	componentDidMount() {
 		window.addEventListener('keydown', (e) => this._windowKey(e))
 		window.addEventListener('resize', (e) => this._windowSize(e))
-		// if (this.stash.containsKey('owned')) {
-		// 	this.ownedCrew = this.stash.getValue('owned');
-		// 	//stash.removeValue('owned');				
-		// }			
-
-		// if (this.stash.containsKey('buffs')) {
-		// 	this.buffs = this.stash.getValue('buffs');				
-		// }			
-
-		// Disabled until we get big book folks on-board
-		/*fetch(`${process.env.GATSBY_DATACORE_URL}api/comments?symbol=` + this.props.data.crewJson.edges[0].node.symbol)
-			.then(response => response.json())
-			.then(comments => {
-				this.setState({ comments });
-
-				const userName = this._getCurrentUsername();
-				if (userName) {
-					comments.forEach(comment => {
-						if (comment.user.loginUserName === userName) {
-							this.setState({ commentMarkdown: comment.markdown });
-						}
-					});
-				}
-			});*/
 	}
 	_getCurrentUsername() {
 		const windowGlobal = typeof window !== 'undefined' && window;
 		let isLoggedIn = windowGlobal && window.localStorage && window.localStorage.getItem('token') && window.localStorage.getItem('username');
 		return isLoggedIn ? window.localStorage.getItem('username') : '';
 	}
-	
+
 	_windowKey = (e: KeyboardEvent) => {
-			
+
 		if (e.key === "Escape") {
 			if (this.state.itemBig) {
-				this.setState({ ...this.state, itemBig: !this.state.itemBig });	
+				this.setState({ ...this.state, itemBig: !this.state.itemBig });
 			}
 		}
 	}
@@ -194,11 +125,11 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 		const { markdownRemark, crewJson, site: { siteMetadata } } = this.props.props.data;
 
 
-		if (this.context.playerData?.player?.character?.crew?.length) {
-			this.ownedCrew = this.context.playerData.player.character.crew;
+		if (this.context.player.playerData?.player?.character?.crew?.length) {
+			this.ownedCrew = this.context.player.playerData.player.character.crew;
 		}
-		if (this.context.buffConfig) {
-			this.buffs = this.context.buffConfig;
+		if (this.context.player.buffConfig) {
+			this.buffs = this.context.player.buffConfig;
 		}
 
 		if (crewJson.edges.length === 0) {
@@ -206,13 +137,21 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 		}
 
 		const { comments } = this.state;
-
+		const { translation } = this.context.core;
 		let hasBigBookEntry = markdownRemark && markdownRemark.frontmatter && markdownRemark.frontmatter.published;
 
 		const userName = this._getCurrentUsername();
 
-		const crew = crewJson.edges[0].node as PlayerCrew;
+		const crew = { ...crewJson.edges[0].node as PlayerCrew, ... this.context.core.crew.find(c => c.symbol === crewJson.edges[0].node.symbol) };
+		const crewFind = this.context.core.crew.find(f => f.symbol === crew.symbol);
+		crew.obtained = crewFind?.obtained ?? "Unknown";
+
 		crew.immortal = CompletionState.DisplayAsImmortalStatic;
+
+		let arch = translation.crew_archetypes.find(f => f.symbol === crew.symbol);
+		crew.traits_named = crew.traits.map(t => translation.trait_names[t]);
+		crew.name = arch?.name ?? crew.name;
+		crew.short_name = arch?.short_name ?? crew.short_name;
 
 		if (this.ownedCrew) {
 			let discovered = this.ownedCrew.find(item => item.symbol === crew.symbol);
@@ -226,11 +165,11 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 			crew.bigbook_tier = markdownRemark.frontmatter.bigbook_tier ?? 0;
 		}
 
-		
-		const imageDoubleClick = () =>{
+
+		const imageDoubleClick = () => {
 			if (window.innerWidth < DEFAULT_MOBILE_WIDTH) return;
 			this.stash.setValue('crew_static_big', !this.state.itemBig, true);
-			this.setState({ ...this.state, itemBig: !this.state.itemBig });			
+			this.setState({ ...this.state, itemBig: !this.state.itemBig });
 		}
 
 		return (
@@ -244,252 +183,96 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 					<meta property='og:description' content={markdownRemark.rawMarkdownBody.trim() || siteMetadata.defaultDescription} />
 					<meta property='og:url' content={`${siteMetadata.baseUrl}${location.pathname}`} />
 				</Helmet>
-				<ItemHoverStat targetGroup='crew_page_items' useBoundingClient={true} />
-				<CrewFullEquipTree
-					visible={this.state.modalVisible}
-					items={this.context.items ?? []}
-					crew={crew}
-					onClosed={() => this.setState({ modalVisible: false })}
-				/>
-					<div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-						<h2 style={{display: "flex", flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row", alignItems:"center"}}>
-							<div>{crew.name}</div>
-							<div style={{display:"block", marginRight: "0.5em", marginLeft: "0.5em"}}>
-								<Rating defaultRating={crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='large' disabled />
-							</div>
-						</h2>
+				<div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+					<h2 style={{ display: "flex", flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row", alignItems: "center" }}>
+						<div>{crew.name}</div>
+						<div style={{ display: "block", marginRight: "0.5em", marginLeft: "0.5em" }}>
+							<Rating defaultRating={crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='large' disabled />
+						</div>
+					</h2>
 
-						<div 
-							id='static_avatar'
-							style={{
-								display: "flex",		
-								maxWidth: "700px",						
-								flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "column" : "row",
-								alignItems: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "center" : "flex-start"														
-							}}>
+					<div
+						id='static_avatar'
+						style={{
+							display: "flex",
+							maxWidth: "700px",
+							flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "column" : "row",
+							alignItems: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "center" : "flex-start"
+						}}>
+						<div style={{
+							display: "flex",
+							flexDirection: "column",
+							alignItems: "center",
+							width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "100%" : "24em"
+						}}>
+							<div>
+								{crew.series && <Image src={`/media/series/${crew.series}.png`} size={window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? 'small' : 'small'} />}
+							</div>
 							<div style={{
-								display: "flex",								
-								flexDirection: "column",
-								alignItems: "center",
-								width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "100%" : "24em"
-							}}>
-								<div>
-									{crew.series && <Image src={`/media/series/${crew.series}.png`} size={window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? 'small' : 'small'} />}
-								</div>
-								<div style={{ 
-										flexGrow: 1, 
-										display: "flex", 
-										flexDirection: window.innerWidth >= DEFAULT_MOBILE_WIDTH && !this.state.itemBig ? "column" : "row", 
-										justifyContent: "center" 
-									}}
-									onDoubleClick={(e) => imageDoubleClick()}
-									title={crew.name}
-									>
-									<img style={{ 
-											cursor:
-												window.innerWidth < DEFAULT_MOBILE_WIDTH ? 
-												"default" :
-												this.state.itemBig ?
+								flexGrow: 1,
+								display: "flex",
+								flexDirection: window.innerWidth >= DEFAULT_MOBILE_WIDTH && !this.state.itemBig ? "column" : "row",
+								justifyContent: "center"
+							}}
+								onDoubleClick={(e) => imageDoubleClick()}
+								title={crew.name}
+							>
+								<img style={{
+									cursor:
+										window.innerWidth < DEFAULT_MOBILE_WIDTH ?
+											"default" :
+											this.state.itemBig ?
 												"zoom-out" :
 												"zoom-in",
-											width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "75%" : "100%", 
-											marginRight: window.innerWidth >= DEFAULT_MOBILE_WIDTH ? "0.5em" : undefined
-										}} 
-										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} 
-										alt={crew.name} 
-									/>
-									{(window.innerWidth >= DEFAULT_MOBILE_WIDTH && !this.state.itemBig) && (<i style={{textAlign:"center",fontSize:"0.8em", color: "gray"}}>{"(double-click to enlarge)"}</i>)}
-								</div>
-							</div>
-							<div style={{
-								display: "flex",
-								flexGrow: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : 1,
-								flexDirection: "column",
-							}}>
-								<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
-								<div style={{ margin: '1em 0', textAlign: 'right' }}>
-									{(crew.immortal !== undefined && crew.immortal !== CompletionState.DisplayAsImmortalStatic) &&
-									(<h3><a style={{color: 'lightgreen', cursor: "pointer"}} onClick={(e) => navigate("/playertools?tool=crew&search=" + crew.name)} title="Click to see crew in roster">OWNED</a></h3>)
-									||
-									<Button icon='add user' color='green' content='Preview in your roster' onClick={() => { this._addProspect(crew); }} />
-									}
-								</div>
-
-								{(this.context.items?.length ?? 0) > 0 ? (
-									<React.Fragment>
-										{this.renderEquipment(crew)}
-										{this.renderEquipmentDetails(crew)}
-										<Button
-											onClick={() => this.setState({ modalVisible: true })}
-											style={{ marginTop: '1em' }}
-											content='Full equipment tree'
-											icon='right arrow'
-											labelPosition='right'
-										/>
-									</React.Fragment>
-								) : (
-										<div className='ui medium centered text active inline loader'>Loading items...</div>
-								)}
-
+									width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "75%" : "100%",
+									marginRight: window.innerWidth >= DEFAULT_MOBILE_WIDTH ? "0.5em" : undefined
+								}}
+									src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
+									alt={crew.name}
+								/>
+								{(window.innerWidth >= DEFAULT_MOBILE_WIDTH && !this.state.itemBig) && (<i style={{ textAlign: "center", fontSize: "0.8em", color: "gray" }}>{"(double-click to enlarge)"}</i>)}
 							</div>
 						</div>
-					</div>				
-				{/* <Grid columns={2}>
-					<Grid.Row stretched>
-						<Grid.Column width={16}>
-							<Header>
-								{crew.name} <Rating defaultRating={crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='large' disabled />
-							</Header>
-						</Grid.Column>
-					</Grid.Row>
-					<Grid.Row>
-						<Grid.Column width={4}>
-							{crew.series && <Image src={`/media/series/${crew.series}.png`} size='small' />}
-							<Image src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} size='small' />
-						</Grid.Column>
-						<Grid.Column width={12}>
-							<CommonCrewData crew={crew} markdownRemark={markdownRemark} />
-
-							<div style={{ margin: '1em 0', textAlign: 'right' }}>
-								{(crew.immortal !== undefined && crew.immortal !== CompletionState.DisplayAsImmortalStatic) &&
-								(<h3><a style={{color: 'lightgreen'}} href={"/playertools?tool=crew&search=name:" + crew.name} title="Click to see crew in roster">OWNED</a></h3>)
-								||
-								<Button icon='add user' color='green' content='Preview in your roster' onClick={() => { this._addProspect(crew); }} />
-								}
-							</div>
-							
-							{this.context.items.length > 0 ? (
-								<React.Fragment>
-									{this.renderEquipment(crew)}
-									{this.renderEquipmentDetails(crew)}
-									<Button
-										onClick={() => this.setState({ modalVisible: true })}
-										style={{ marginTop: '1em' }}
-										content='Full equipment tree'
-										icon='right arrow'
-										labelPosition='right'
-									/>
-								</React.Fragment>
-							) : (
-									<div className='ui medium centered text active inline loader'>Loading items...</div>
-								)}
-								
-							<Segment>
-								<h4 style={{ marginBottom: '.25em' }}>Ship Ability ({crew.action.name})</h4>
-								<ul style={{ marginTop: '0', listStyle: 'none', paddingLeft: '0' }}>
-									<li>Boosts {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]} by {crew.action.bonus_amount}</li>
-									{crew.action.penalty && (
-										<li>Decrease {CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.penalty.type]} by {crew.action.penalty.amount}</li>
-									)}
-									<li>
-										<b>Initialize</b>: {crew.action.initial_cooldown}s, <b>Cooldown</b>: {crew.action.cooldown}s, <b>Duration</b>: {crew.action.duration}s
-									</li>
-									{crew.action.limit && <li><b>Uses Per Battle</b>: {crew.action.limit}</li>}
-								</ul>
-
-								{crew.action.ability && (
-									<div>
-										<h4 style={{ marginBottom: '.25em' }}>Bonus Ability</h4>
-										<ul style={{ marginTop: '0', listStyle: 'none', paddingLeft: '0' }}>
-											{crew.action.ability.condition > 0 && (
-												<li><b>Trigger</b>: {CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition]}</li>
-											)}
-											<li>{getShipBonus(crew)}</li>
-										</ul>
-									</div>
-								)}
-
-								{crew.action.charge_phases && (
-									<div>
-										<h4 style={{ marginBottom: '.25em' }}>Charge Phases</h4>
-										<ol style={{ marginTop: '0', listStylePosition: 'inside', paddingLeft: '0' }}>
-											{getShipChargePhases(crew).map((phase, idx) =>
-												<li key={idx}>{phase}</li>
-											)}
-										</ol>
-									</div>
-								)}
-
-								<div>
-									<h4 style={{ marginBottom: '.25em' }}>Equipment Bonus</h4>
-									<p>
-										{crew.ship_battle.accuracy && (
-											<span>
-												<b>Accuracy:</b> +{crew.ship_battle.accuracy}{` `}
-											</span>
-										)}
-										{crew.ship_battle.crit_bonus && (
-											<span>
-												<b>Crit Bonus:</b> +{crew.ship_battle.crit_bonus}{` `}
-											</span>
-										)}
-										{crew.ship_battle.crit_chance && (
-											<span>
-												<b>Crit Rating:</b> +{crew.ship_battle.crit_chance}{` `}
-											</span>
-										)}
-										{crew.ship_battle.evasion && (
-											<span>
-												<b>Evasion:</b> +{crew.ship_battle.evasion}{` `}
-											</span>
-										)}
-									</p>
+						<div style={{
+							display: "flex",
+							flexGrow: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : 1,
+							flexDirection: "column",
+						}}>
+							<ClassicPresenter crew={crew} markdownRemark={markdownRemark} />
+							{false &&
+								<div style={{ margin: '1em 0', textAlign: 'right' }}>
+									{(crew.immortal !== undefined && crew.immortal !== CompletionState.DisplayAsImmortalStatic) &&
+										(<h3><a style={{ color: 'lightgreen', cursor: "pointer" }} onClick={(e) => navigate("/playertools?tool=crew&search=" + crew.name)} title="Click to see crew in roster">OWNED</a></h3>)
+										||
+										<Button fluid onClick={() => { this._addProspect(crew); }}>
+											<Icon name='add user' color='green' />
+											Preview {crew.short_name} in your roster
+										</Button>
+									}
 								</div>
-							</Segment>
-						</Grid.Column>
-					</Grid.Row>
-				</Grid> */}
+							}
+						</div>
+					</div>
+				</div>
 				<Divider horizontal hidden />
 				{hasBigBookEntry && (
 					<React.Fragment>
 						<div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />
+						{!!crew.markdownInfo &&
+							<div style={{ textAlign: "right" }}>
+								<i style={{ fontSize: "0.85em" }}>- {crew.markdownInfo.author} ({(new Date(crew.markdownInfo.modified)).toLocaleDateString()})</i>
+							</div>}
 						<div style={{ marginTop: '1em', textAlign: 'right' }}>
-							-- <a href={`https://www.bigbook.app/crew/${crew.symbol}`}>The Big Book of Behold Advice</a>
+							— <a href={`https://www.bigbook.app/crew/${crew.symbol}`}>The Big Book of Behold Advice</a>
 						</div>
 					</React.Fragment>
 				)}
-				{/*userName && (
-						<div>
-							<br />
-							<p>Hello, {userName}. You can edit your comment below:</p>
-							<SimpleMDE
-								value={this.state.commentMarkdown}
-								onChange={value => this._handleMarkDownChange(value)}
-								options={{ hideIcons: ['fullscreen', 'guide', 'image', 'side-by-side'] }}
-							/>
-							<Button onClick={() => this._saveComment(crew.symbol, window.localStorage.getItem('token'))} content='Save comment' />
-						</div>
-					)}
-					{comments && (
-						<Comment.Group>
-							<Header as='h3' dividing>
-								Comments
-							</Header>
-
-							{comments.map(comment => (
-								<Comment key={comment.id}>
-									<Comment.Avatar src={comment.user.avatar || `${process.env.GATSBY_ASSETS_URL}crew_portraits_cm_empty_sm.png`} />
-									<Comment.Content>
-										<Comment.Author>{comment.user.loginUserName}</Comment.Author>
-										<Comment.Metadata>
-											<div>{comment.lastUpdate}</div>
-										</Comment.Metadata>
-										<Comment.Text>
-											<div dangerouslySetInnerHTML={{ __html: marked(comment.markdown) }} />
-										</Comment.Text>
-									</Comment.Content>
-								</Comment>
-							))}
-						</Comment.Group>
-							)*/}
+				<ItemHoverStat targetGroup={'crew_quipment'} />
 				<Divider horizontal hidden style={{ marginTop: '4em' }} />
-				<ExtraCrewDetails
-					crew_archetype_id={crew.archetype_id}
-					max_rarity={crew.max_rarity}
-					base_skills={crew.base_skills}
-					traits={crew.traits} traits_hidden={crew.traits_hidden}
-					unique_polestar_combos={crew.unique_polestar_combos}
-				/>
+				<EquipmentBuilds crew={crew} />
+				<Polestars crew={crew} />
+				<CrewQuipment crew={crew} />
+				<CrewVariants traits_hidden={crew.traits_hidden} />
 			</>
 		);
 	}
@@ -523,95 +306,6 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 			prospect: [crew.symbol]
 		};
 		navigate(linkUrl, { state: linkState });
-	}
-
-	renderEquipment(crew: PlayerCrew) {
-		let options = [] as CrewPageOptions[];
-		crew.equipment_slots.forEach(es => {
-			let equipment = this.context.items?.find(item => item.symbol === es.symbol);
-			if (!equipment) {
-				console.warn(`Could not find item ${es.symbol}`);
-				return;
-			}
-
-			options.push({
-				key: es.symbol + '_' + es.level,
-				text: `${equipment.name} (level ${es.level})`,
-				value: es.symbol,
-				content: (
-					<Header
-						icon={
-							<ItemDisplay
-								src={`${process.env.GATSBY_ASSETS_URL}${equipment.imageUrl}`}
-								size={48}
-								maxRarity={equipment.rarity}
-								rarity={equipment.rarity}
-							/>
-						}
-						content={equipment.name}
-						subheader={`Level ${es.level}`}
-					/>
-				)
-			});
-		});
-
-		return (
-			<Dropdown
-				selection
-				fluid
-				options={options}
-				placeholder='Choose an equipment to see its details'
-				onChange={(ev, { value }) => this.setState({ selectedEquipment: value as string })}
-			/>
-		);
-	}
-
-	renderEquipmentDetails(crew: PlayerCrew) {
-		if (!this.state.selectedEquipment) {
-			return <span />;
-		}
-
-		let es = crew.equipment_slots.find(es => es.symbol === this.state.selectedEquipment);
-		let equipment = this.context.items?.find(item => item.symbol === es?.symbol);
-		if (!equipment) {
-			console.error('Could not find equipment for slot', es);
-			return <span />;
-		}
-
-		if (!equipment.recipe) {
-			return (
-				<div>
-					<br />
-					<p>This item is not craftable, you can find it in these sources:</p>
-					<ItemSources item_sources={equipment.item_sources} />
-				</div>
-			);
-		}
-
-		return (
-			<div>
-				<Grid columns={4} centered padded>
-					{equipment.recipe.list.map(entry => {
-						let recipeEntry = this.context.items?.find(item => item.symbol === entry.symbol);
-						if (!recipeEntry) return <></>
-						return (
-							<Grid.Column key={recipeEntry.name + recipeEntry.rarity} textAlign='center'>
-								<Popup
-									trigger={
-										<Label as='a' style={{ background: CONFIG.RARITIES[recipeEntry.rarity].color }} image size='big'>
-											<img src={`${process.env.GATSBY_ASSETS_URL}${recipeEntry.imageUrl}`} />x{entry.count}
-										</Label>
-									}
-									header={CONFIG.RARITIES[recipeEntry.rarity].name + ' ' + recipeEntry.name}
-									content={<ItemSources item_sources={recipeEntry.item_sources} />}
-									wide
-								/>
-							</Grid.Column>
-						);
-					})}
-				</Grid>
-			</div>
-		);
 	}
 }
 
@@ -766,12 +460,65 @@ export const query = graphql`
 						evasion
 					}
 					unique_polestar_combos
+					markdownInfo {
+						author
+						modified
+					}
 					nicknames {
 						cleverThing
 						creator
 					}
 				}
 			}
+		}
+	}
+	fragment RanksFragment on CrewJson {
+		cab_ov
+		cab_ov_rank
+		cab_ov_grade
+		ranks {
+			voyRank
+			gauntletRank
+			voyTriplet {
+				name
+				rank
+			}
+			V_CMD_SCI
+			V_CMD_SEC
+			V_CMD_ENG
+			V_CMD_DIP
+			V_CMD_MED
+			V_SCI_SEC
+			V_SCI_ENG
+			V_SCI_DIP
+			V_SCI_MED
+			V_SEC_ENG
+			V_SEC_DIP
+			V_SEC_MED
+			V_ENG_DIP
+			V_ENG_MED
+			V_DIP_MED
+			G_CMD_SCI
+			G_CMD_SEC
+			G_CMD_ENG
+			G_CMD_DIP
+			G_CMD_MED
+			G_SCI_SEC
+			G_SCI_ENG
+			G_SCI_DIP
+			G_SCI_MED
+			G_SEC_ENG
+			G_SEC_DIP
+			G_SEC_MED
+			G_ENG_DIP
+			G_ENG_MED
+			G_DIP_MED
+			B_SCI
+			B_SEC
+			B_ENG
+			B_DIP
+			B_CMD
+			B_MED
 		}
 	}
 `;

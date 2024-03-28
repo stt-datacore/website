@@ -6,7 +6,7 @@ import ItemDisplay from '../components/itemdisplay';
 import { SearchableTable, ITableConfigRow } from '../components/searchabletable';
 
 import { crewMatchesSearchFilter } from '../utils/crewsearch';
-import { formatTierLabel, navToCrewPage } from '../utils/crewutils';
+import { formatTierLabel } from '../utils/crewutils';
 import { getCoolStats } from '../utils/misc';
 import { useStateWithStorage } from '../utils/storage';
 import { categorizeKeystones, Constellation, Filter, FuseGroup as FuseGroups, KeystoneBase, NumericOptions, Polestar, rarityLabels, RarityOptions, RetrievalOptions } from '../model/game-elements';
@@ -16,7 +16,8 @@ import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import { Energy } from '../model/boss';
 import { DataContext } from '../context/datacontext';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
+import { navToCrewPage } from '../utils/nav';
 
 const RECURSION_WARN = 1000000;
 const RECURSION_FORBID = 10000000;
@@ -66,88 +67,87 @@ type CrewRetrievalProps = {
 
 const CrewRetrieval = (props: CrewRetrievalProps) => {
 	const pureData = React.useContext(DataContext);
-	const merged = React.useContext(MergedContext);
+	const context = React.useContext(GlobalContext);
 
 	const keystonesReady = pureData.ready(['keystones', 'crew']);
 
-	const { playerData } = merged;
+	const { playerData } = context.player;
 
 	const [allKeystones, setAllKeystones] = React.useState<KeystoneBase[] | undefined>(undefined);
 
-	if (!keystonesReady) {
-		return (<><Icon loading name='spinner' /> Loading...</>);
-	}
-	else if (!allKeystones) {
-		let ak = JSON.parse(JSON.stringify(pureData.keystones));
-		ak.forEach(keystone => {
-			const owned = playerData.forte_root.items.find(k => k.id === keystone.id);
-			keystone.quantity = owned ? owned.quantity : 0;
-		});
-		setAllKeystones(ak);
+	React.useEffect(() => {
+		if (keystonesReady && allKeystones === undefined) {
+			const ak = JSON.parse(JSON.stringify(pureData.keystones)) as (Polestar | KeystoneBase | Constellation)[];
+			ak.forEach((keystone: Polestar | KeystoneBase | Constellation) => {
+				const owned = playerData?.forte_root.items.find(k => k.id === keystone.id);
+				keystone.quantity = owned ? owned.quantity : 0;
+			});
+	
+			setAllKeystones(ak);
+		}
+	}, [keystonesReady, playerData]);
 
-		return (<><Icon loading name='spinner' /> Loading...</>);
-	}
-
-	if (!playerData?.forte_root) {
+	if (!playerData) {
 		return (
-			<div>
-				<h2>Crew Retrieval Unavailable</h2>
-				<p>Crew retrieval requires a <a href='https://app.startrektimelines.com/player?client_api=20&only_read_state=true' target='_blank'>newer version</a> of your player file.
-				   Please follow the link and copy the correct version to paste.</p>
-			</div>
+			<></>
 		);
 	}
 
-	const ownedPolestars = allKeystones.filter(k => k.type == 'keystone' && (k.quantity ?? 0) > 0).map(obj => obj as Polestar);
-	const allCrew = JSON.parse(JSON.stringify(merged.allCrew)) as PlayerCrew[];
-
-	// Calculate highest owned rarities
-	allCrew.forEach(ac => {
-		const owned = playerData.player.character.crew.filter(oc => oc.symbol === ac.symbol);
-		if (owned && owned.length) {
-			ac.highest_owned_rarity = owned.length > 0 ? owned.sort((a, b) => b.rarity - a.rarity)[0].rarity : 0;
-		}
-		else {
-			ac.highest_owned_level = 0;
-		}
-
-	});
-
-	let cArr = [...new Set(allCrew.map(a => a.collections).flat())].sort();
-	cArr.forEach(c => {
-		if (!collectionsOptions.find(co => co.value == c)) {
-			let pc: CryoCollection = { progress: 'n/a', milestone: { goal: 'n/a' }, id: 0, name: ""};
-			if (playerData.player.character.cryo_collections) {
-				let matchedCollection = playerData.player.character.cryo_collections.find((pc) => pc.name === c);
-				if (matchedCollection) {
-					pc = matchedCollection;
-				}
+	if (keystonesReady === false || allKeystones === undefined) {
+		return (<><Icon loading name='spinner' /> Loading...</>);
+	}
+	else {
+		const ownedPolestars = allKeystones.filter(k => k.type == 'keystone' && (k.quantity ?? 0) > 0).map(obj => obj as Polestar);
+		const allCrew = JSON.parse(JSON.stringify(context.core.crew)) as PlayerCrew[];
+	
+		// Calculate highest owned rarities
+		allCrew.forEach(ac => {
+			const owned = playerData.player.character.crew.filter(oc => oc.symbol === ac.symbol);
+			if (owned && owned.length) {
+				ac.highest_owned_rarity = owned.length > 0 ? owned.sort((a, b) => b.rarity - a.rarity)[0].rarity : 0;
 			}
-			let kv = cArr.indexOf(c) + 1;
-			collectionsOptions.push({
-				key: 'co'+kv,
-				value: c,
-				text: c,
-				content: (
-					<span>{c} <span style={{ whiteSpace: 'nowrap' }}>({pc.progress} / {pc.milestone.goal || 'max'})</span></span>
-				),
-			});
-		}
-	});
+			else {
+				ac.highest_owned_level = 0;
+			}
+	
+		});
+	
+		let cArr = [...new Set(allCrew.map(a => a.collections).flat())].sort();
+		cArr.forEach(c => {
+			if (!collectionsOptions.find(co => co.value == c)) {
+				let pc: CryoCollection = { progress: 'n/a', milestone: { goal: 'n/a' }, id: 0, name: ""};
+				if (playerData.player.character.cryo_collections) {
+					let matchedCollection = playerData.player.character.cryo_collections.find((pc) => pc.name === c);
+					if (matchedCollection) {
+						pc = matchedCollection;
+					}
+				}
+				let kv = cArr.indexOf(c) + 1;
+				collectionsOptions.push({
+					key: 'co'+kv,
+					value: c,
+					text: c,
+					content: (
+						<span>{c} <span style={{ whiteSpace: 'nowrap' }}>({pc.progress} / {pc.milestone.goal || 'max'})</span></span>
+					),
+				});
+			}
+		});
+	
+		return (
+			<React.Fragment>
+				<RetrievalEnergy energy={playerData.crew_crafting_root.energy} />
+				<RetrievalForm
+					playerData={playerData}
+					ownedPolestars={ownedPolestars}
+					allCrew={allCrew}
+					allKeystones={allKeystones}
+					myCrew={playerData.player.character.crew}
+				/>
+			</React.Fragment>
+		);
+	}
 
-
-	return (
-		<React.Fragment>
-			<RetrievalEnergy energy={playerData.crew_crafting_root.energy} />
-			<RetrievalForm
-				playerData={playerData}
-				ownedPolestars={ownedPolestars}
-				allCrew={allCrew}
-				allKeystones={allKeystones}
-				myCrew={playerData.player.character.crew}
-			/>
-		</React.Fragment>
-	);
 };
 
 type RetrievalEnergyProps = {
@@ -209,10 +209,19 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 	const [minRarity, setMinRarity] = useStateWithStorage<number | null>('crewretrieval/minRarity', null);
 	const [collection, setCollection] = useStateWithStorage<string | null>('crewretrieval/collection', null);
 
+	const resetPrefs = () => {
+		setDisabledPolestars([]);
+		setAddedPolestars([]);
+		setOwnedFilter(ownedFilterOptions[0].value);
+		setMinRarity(null);
+		setCollection(null);
+	}
+
 	const [polestars, setPolestars] = React.useState<Polestar[] | null>(null);
 	const [data, setData] = React.useState<PlayerCrew[] | null>(null);
 	const { playerData } = props;
 	const [algo, setAlgo] = React.useState<string>('quick');
+
 	const algos =
 	[{
 		key: "quick",
@@ -334,6 +343,9 @@ const RetrievalForm = (props: RetrievalFormProps) => {
 				</Form.Group>
 			</Form>
 		 	{data && polestars && <CrewTable algo={algo} setAlgo={setAlgo} allCrew={allCrew} playerData={playerData} data={data} polestars={polestars} /> }
+			<div style={{marginTop: "1em"}} title={'Reset all persistent user preferences to defaults.'}>
+				<Button content={'Reset Preferences'} onClick={() => resetPrefs()} />
+			</div>
 		</React.Fragment>
 	);
 };
@@ -705,7 +717,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<img width={24} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.substr(1).replace(/\//g, '_')}`} />
+							<img width={24} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.slice(1).replace(/\//g, '_')}`} />
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.1em' }}>{polestar.short_name}</span>
@@ -870,7 +882,7 @@ const PolestarProspectModal = (props: PolestarProspectModalProps) => {
 				{
 					polestars.map((p, pdx) => (
 						<Grid.Column key={pdx} width={2} textAlign='center' onClick={() => setActivePolestar(p.symbol)}>
-							<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${p.icon.file.substr(1).replace(/\//g, '_')}`} />
+							<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${p.icon.file.slice(1).replace(/\//g, '_')}`} />
 							<br /><b>{p.short_name}</b><br /><small>({(1/constellation.keystones.length*100).toFixed(1)}%)</small>
 						</Grid.Column>
 					))
@@ -1102,7 +1114,7 @@ const CrewTable = (props: CrewTableProps) => {
 	const [activeCollections, setActiveCollections] = React.useState<string | null>(null);
 	const { playerData } = props;
 
-	const dataContext = React.useContext(MergedContext);
+	const dataContext = React.useContext(GlobalContext);
 
 	if (!data) return (<></>);
 
@@ -1134,7 +1146,7 @@ const CrewTable = (props: CrewTableProps) => {
 
 
 	function renderTableRow(crew: PlayerCrew, idx: number, playerData: PlayerData): JSX.Element {
-		const buffConfig = dataContext.buffConfig;
+		const buffConfig = dataContext.player.buffConfig;
 		const [comboCount, ] = getCombos(crew);
 
 		return (
@@ -1509,7 +1521,7 @@ const ComboGrid = (props: ComboGridProps) => {
 						<Grid.Row key={'combo'+cdx}>
 							{combo.map((polestar, pdx) => (
 								<Grid.Column key={'combo'+cdx+',polestar'+pdx}>
-									<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar?.icon.file.substr(1).replace(/\//g, '_')}`} />
+									<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar?.icon.file.slice(1).replace(/\//g, '_')}`} />
 									<br />{polestar?.short_name}
 									<br /><small>({polestar?.loaned ? `${polestar.quantity-polestar.loaned} +${polestar.loaned} added` : polestar?.quantity})</small>
 								</Grid.Column>

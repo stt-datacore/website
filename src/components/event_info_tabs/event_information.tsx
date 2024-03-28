@@ -3,10 +3,10 @@ import { graphql, useStaticQuery } from 'gatsby';
 import { Header, Card, Label, Image } from 'semantic-ui-react';
 import { GameEvent } from '../../model/player';
 import { getIconPath, getRarityColor } from '../../utils/assets';
-import { EventData, getEventData } from '../../utils/events';
+import { getEventData } from '../../utils/events';
 import CrewCard, { CrewCardBrief } from './crew_card';
 import { CompactCrew, PlayerCrew } from '../../model/player';
-import { MergedContext } from '../../context/mergedcontext';
+import { GlobalContext } from '../../context/globalcontext';
 import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
 
 const contentTypeMap = {
@@ -43,11 +43,12 @@ function sortCrew(crewArray: PlayerCrew[]) {
 	return groups.flat();
 }
 
-function EventInformationTab(props: { eventData: EventData | GameEvent }) {
+function EventInformationTab(props: { eventData: GameEvent }) {
 	const { eventData } = props;
-	const context = React.useContext(MergedContext);
+	const context = React.useContext(GlobalContext);
 
-	const { allCrew, items, playerData } = context;
+	const { crew: allCrew, items } = context.core;
+	const { playerData } = context.player;
 
 	const { crewJson } = useStaticQuery(graphql`
 		query {
@@ -89,7 +90,7 @@ function EventInformationTab(props: { eventData: EventData | GameEvent }) {
 	const crewData = allCrew; // crewJson.edges.map(edge => edge.node) as PlayerCrew[];
 	const crewMap: { [key: string]: PlayerCrew } = {};
 	crewData.forEach(crew => {
-		crewMap[crew.symbol] = crew;
+		crewMap[crew.symbol] = crew as PlayerCrew;
 	})
 
 	const {
@@ -146,7 +147,7 @@ function EventInformationTab(props: { eventData: EventData | GameEvent }) {
 			{bonusCrew.length === 0 && (
 				<p>Bonus crew not yet determined for this event.</p>
 			)}
-			{sortCrew(bonusCrew).map(crew => (
+			{sortCrew(bonusCrew as PlayerCrew[]).map(crew => (
 				<Label key={`crew_${crew.symbol}`} color="black" style={{ marginBottom: '5px' }}>
 					<CrewTarget targetGroup='event_info' inputItem={crewMap[crew.symbol]}>
 					<Image

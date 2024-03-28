@@ -1,8 +1,27 @@
-/* All relevant voyage utils have been moved to voyagehelpers.ts. The few things that remain here should find a new place to live! */
-
 import CONFIG from '../components/CONFIG';
-import { CrewMember } from '../model/crew';
-import { AllBuffsCapHash, CompactCrew, Player, PlayerCrew, PlayerData } from '../model/player';
+import { CrewMember, BaseSkills, Skill } from '../model/crew';
+import { AllBuffsCapHash, Player, PlayerCrew } from '../model/player';
+import { Estimate } from '../model/worker';
+
+export const formatTime = (time: number): string => {
+	let hours = Math.floor(time);
+	let minutes = Math.floor((time-hours)*60);
+	return hours+"h " +minutes+"m";
+};
+
+export const flattenEstimate = (estimate: Estimate): any => {
+	const extent = estimate.refills[0];
+	const flatEstimate = {
+		median: extent.result,
+		minimum: extent.saferResult,
+		moonshot: extent.moonshotResult,
+		dilemma: {
+			hour: extent.lastDil,
+			chance: extent.dilChance
+		}
+	};
+	return flatEstimate;
+};
 
 /* TODO: move IBuffStat, calculateBuffConfig to crewutils.ts (currently not used by voyage calculator) */
 export interface IBuffStat {
@@ -34,7 +53,7 @@ export function calculateMaxBuffs(allBuffs: AllBuffsCapHash): BuffStatTable {
 	Object.keys(allBuffs)
 		.filter(z => z.includes("skill"))
 		.forEach(buff => {
-			let p = parseBuff(buff);			
+			let p = parseBuff(buff);
 			if (p) result[p.skill] = {} as IBuffStat;
 			if (p && p.type === 'percent_increase') {
 				result[p.skill].multiplier = 1;
@@ -96,4 +115,43 @@ export function formatCrewStats(crew: PlayerCrew, use_base:boolean = false): str
 		}
 	}
 	return result;
+}
+
+
+export interface RawVoyageRecord {
+    estimatedDuration?: number;
+    voyageDate: Date;
+    crew: string[];
+    createdAt: Date;
+    am_traits?: string[];
+    primary_skill?: string;
+    secondary_skill?: string;
+    ship_trait?: string;
+    extra_stats?: any
+}
+
+export function guessSkillsFromCrew<T extends CrewMember>(voyage: RawVoyageRecord, crew: T[]) {
+
+    let sk = {} as BaseSkills;
+    let voycrew = crew.filter(f => voyage.crew.includes(f.symbol));
+    voycrew.forEach((c) => {
+        Object.keys(c.base_skills).forEach((skill) => {
+            sk[skill] ??= {
+                core: 0,
+                range_min: 0,
+                range_max: 0,
+                skill
+            }
+            sk[skill].core += c.base_skills[skill].core;
+            sk[skill].range_max += c.base_skills[skill].range_max;
+            sk[skill].range_min += c.base_skills[skill].range_min;
+        })
+    });
+
+    let skills = Object.values(sk) as Skill[];
+    skills.sort((a, b) => {
+        return (b.core + (b.range_max * 0.10) + (b.range_min * 0.10)) - (a.core + (a.range_max * 0.10) + (a.range_min * 0.10))
+    })
+
+    return skills.slice(0, 2).map(sk => sk.skill as string);
 }

@@ -38,6 +38,18 @@ export interface ShuttleAdventure {
     [key: string]: any;
   }
   
+  export interface StaticFaction {
+    id: number
+    name: string
+    icon: string
+    representative_icon: string
+    reputation_item_icon: string
+    home_system: string
+    shop_layout: string
+    shuttle_token_id: number
+    shuttle_token_item_icon: string
+  }
+  
   export interface Faction {
     id: number
     name: string

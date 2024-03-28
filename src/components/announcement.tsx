@@ -9,7 +9,7 @@ const DAYS_TO_EXPIRE = 7;
 const Announcement = () => {
 	const [readyToAnnounce, setReadyToAnnounce] = React.useState(false);
 	const [dateNow, setDateNow] = React.useState(new Date());
-	const [dismissAnnouncement, setDismissAnnouncement] = useStateWithStorage(
+	const [dismissAnnouncement, setDismissAnnouncement] = useStateWithStorage<Date | undefined>(
 		'dismissAnnouncement',	/* cookie name */
 		undefined, /* initial value */
 		{

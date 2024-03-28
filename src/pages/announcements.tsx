@@ -1,15 +1,14 @@
 import React from 'react';
 import { graphql } from 'gatsby';
 import { Header, Divider } from 'semantic-ui-react';
-
-import Layout from '../components/layout';
+import DataPageLayout from '../components/page/datapagelayout';
 
 const Announcements = ({ data: { allMarkdownRemark } }) => {
 	const announcements = allMarkdownRemark.edges;
 
 	return (
-		<Layout title='DataCore Announcements'>
-			<Header as='h2'>DataCore Announcements</Header>
+		<DataPageLayout pageTitle='DataCore Announcements'>
+			<React.Fragment>
 			{announcements.map(({ node }) => {
 				const datePosted = new Date(node.frontmatter.date);
 				return (
@@ -21,7 +20,8 @@ const Announcements = ({ data: { allMarkdownRemark } }) => {
 					</div>
 				);
 			})}
-		</Layout>
+			</React.Fragment>
+		</DataPageLayout>
 	);
 };
 

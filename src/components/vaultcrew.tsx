@@ -5,7 +5,7 @@ import * as TinyColor from 'tinycolor2';
 import { Link } from 'gatsby';
 
 import CONFIG from './CONFIG';
-import { formatTierLabel, navToCrewPage } from '../utils/crewutils';
+import { formatTierLabel } from '../utils/crewutils';
 import { PlayerCrew, PlayerData } from '../model/player';
 import { CrewMember, EquipmentSlot, Skill } from '../model/crew';
 import { BuffStatTable } from '../utils/voyageutils';
