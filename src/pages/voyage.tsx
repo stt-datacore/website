@@ -18,19 +18,9 @@ import { ConfigInput } from '../components/voyagecalculator/configinput';
 import { defaultHistory } from '../components/voyagehistory/utils';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 
+const VOYAGE_DEBUGGING: boolean = false;
+
 const VoyagePage = () => {
-	const globalContext = React.useContext(GlobalContext);
-	const { playerData, ephemeral } = globalContext.player;
-
-	const [activeVoyageId, setActiveVoyageId] = React.useState(0);
-	const [showCalculator, setShowCalculator] = React.useState(false);
-
-	React.useEffect(() => {
-		const activeVoyageId = ephemeral?.voyage?.length ? ephemeral.voyage[0].id : 0;
-		setActiveVoyageId(activeVoyageId);
-		setShowCalculator(activeVoyageId === 0);
-	}, [playerData]);
-
 	return (
 		<DataPageLayout
 			pageTitle='Voyage Calculator'
@@ -39,44 +29,139 @@ const VoyagePage = () => {
 			demands={['collections', 'event_instances']}
 		>
 			<React.Fragment>
-				<CrewHoverStat targetGroup='voyageLineup' />
-
-				{playerData &&
-					<PlayerActiveVoyage
-						key={`${playerData.player.dbid}`}
-						dbid={`${playerData.player.dbid}`}
-						activeVoyageId={activeVoyageId}
-						showCalculator={showCalculator}
-						setShowCalculator={setShowCalculator}
-					/>
-				}
-				{showCalculator &&
-					<VoyageCalculator activeVoyageId={activeVoyageId} />
-				}
+				<VoyageSetup />
 			</React.Fragment>
 		</DataPageLayout>
 	);
 };
 
-type PlayerActiveVoyageProps = {
+const VoyageSetup = () => {
+	const globalContext = React.useContext(GlobalContext);
+	const { playerData, ephemeral } = globalContext.player;
+
+	const [initialConfig, setInitialConfig] = React.useState<IVoyageInputConfig | undefined>(undefined);
+	const [activeVoyageId, setActiveVoyageId] = React.useState<number>(0);
+	const [activeEvents, setActiveEvents] = React.useState<IEventData[]>([]);
+
+	const [showCalculator, setShowCalculator] = React.useState<boolean>(false);
+
+	React.useEffect(() => {
+		getInitialConfig();
+		getEvents();
+	}, [playerData]);
+
+	React.useEffect(() => {
+		setShowCalculator(activeVoyageId === 0);
+	}, [activeVoyageId]);
+
+	// Still loading player data, don't render anything yet
+	if (playerData && !initialConfig) return <></>;
+
+	return (
+		<React.Fragment>
+			{playerData && (
+				<ActiveVoyageSetup
+					key={`${playerData.player.dbid}`}
+					dbid={`${playerData.player.dbid}`}
+					activeVoyageId={activeVoyageId}
+					showCalculator={showCalculator}
+					setShowCalculator={setShowCalculator}
+				/>
+			)}
+			{showCalculator && (
+				<CalculatorSetup
+					initialConfig={initialConfig}
+					activeVoyageId={activeVoyageId}
+					activeEvents={activeEvents}
+				/>
+			)}
+		</React.Fragment>
+	);
+
+	function getInitialConfig(): void {
+		const printDebug = (): void => {
+			if (!VOYAGE_DEBUGGING) return;
+			console.log(debug.reduce((prev, curr) => prev + '\n\n' + curr, '***** VOYAGE CONFIG INIT *****'));
+		};
+
+		const debug: string[] = [];
+		if (initialConfig)
+			debug.push(`Existing config: ${initialConfig.skills.primary_skill}, ${initialConfig.skills.secondary_skill}, ${initialConfig.ship_trait}`);
+		else
+			debug.push('Existing config: None');
+
+		// If voyageData not found, initial config will be blank voyage
+		if (!playerData || !ephemeral) {
+			debug.push('No player data found. Initial config will be blank voyage.');
+			printDebug();
+			setInitialConfig(undefined);
+			setActiveVoyageId(0);
+			return;
+		}
+
+		const { voyage, voyageDescriptions } = ephemeral;
+
+		const newActiveVoyageId: number = ephemeral.voyage.length > 0 ? ephemeral.voyage[0].id : 0;
+
+		let newVoyageConfig: IVoyageInputConfig | undefined;
+		// Voyage started, config will be full voyage data
+		if (voyage.length > 0) {
+			debug.push('Voyage started. Initial config will be full voyage data.');
+			debug.push(`Active voyage id: ${newActiveVoyageId}`);
+			newVoyageConfig = voyage[0];
+		}
+		// Voyage awaiting input, config will be input parameters only
+		else if (voyageDescriptions.length > 0) {
+			debug.push('Voyage awaiting input. Initial config will be input parameters only.');
+			newVoyageConfig = voyageDescriptions[0];
+		}
+
+		if (newVoyageConfig)
+			debug.push(`New config: ${newVoyageConfig.skills.primary_skill}, ${newVoyageConfig.skills.secondary_skill}, ${newVoyageConfig.ship_trait}`);
+
+		printDebug();
+
+		if (newVoyageConfig) setInitialConfig({...newVoyageConfig});
+		setActiveVoyageId(newActiveVoyageId);
+	}
+
+	function getEvents(): void {
+		// Get event data from recently uploaded playerData
+		if (ephemeral?.events) {
+			const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew))
+				.filter(ev => ev !== undefined).map(ev => ev as IEventData)
+				.filter(ev => ev.seconds_to_end > 0)
+				.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);
+			setActiveEvents([...currentEvents]);
+		}
+		// Otherwise guess event from autosynced events
+		else {
+			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances).then(recentEvents => {
+				setActiveEvents([...recentEvents]);
+			});
+		}
+	}
+};
+
+type ActiveVoyageSetupProps = {
 	dbid: string;
 	activeVoyageId: number;
 	showCalculator: boolean;
 	setShowCalculator: (showCalculator: boolean) => void;
 };
 
-const PlayerActiveVoyage = (props: PlayerActiveVoyageProps) => {
+const ActiveVoyageSetup = (props: ActiveVoyageSetupProps) => {
 	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(props.dbid+'/voyage/history', defaultHistory, { rememberForever: true, compress: true, onInitialize: () => setHistoryReady(true) } );
-	const [historyReady, setHistoryReady] = React.useState(false);
+	const [historyReady, setHistoryReady] = React.useState<boolean>(false);
 
-	const actionButtons = [
+	const actionButtons: JSX.Element[] = [
 		<Button key='toggler'
 			content={!props.showCalculator ? 'View crew calculator' : 'View active voyage'}
 			icon='exchange'
 			size='large'
 			onClick={()=> props.setShowCalculator(props.showCalculator ? false : true)}
 		/>
-	] as JSX.Element[];
+	];
 	if (history.voyages.length > 0) {
 		actionButtons.unshift(
 			<Button key='history'
@@ -102,85 +187,42 @@ const PlayerActiveVoyage = (props: PlayerActiveVoyageProps) => {
 	);
 };
 
-type VoyageCalculatorProps = {
+type CalculatorSetupProps = {
+	initialConfig: IVoyageInputConfig | undefined;
 	activeVoyageId: number;
-}
+	activeEvents: IEventData[];
+};
 
-const VoyageCalculator = (props: VoyageCalculatorProps) => {
+const CalculatorSetup = (props: CalculatorSetupProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { playerData, ephemeral } = globalContext.player;
+	const { playerData } = globalContext.player;
+	const { initialConfig, activeVoyageId, activeEvents } = props;
 
-	const [voyageConfig, setVoyageConfig] = React.useState<IVoyageInputConfig | undefined>(undefined);
-	const [rosterType, setRosterType] = React.useState(playerData ? 'myCrew' : 'allCrew');
-	const [rosterCrew, setRosterCrew] = React.useState<IVoyageCrew[] | undefined>(undefined);
-	const [rosterShips, setRosterShips] = React.useState<Ship[] | undefined>(undefined);
-	const [activeEvents, setActiveEvents] = React.useState<IEventData[] | undefined>(undefined);
+	const [rosterType, setRosterType] = React.useState<'myCrew' | 'allCrew'>(playerData ? 'myCrew' : 'allCrew');
+	const [rosterCrew, setRosterCrew] = React.useState<IVoyageCrew[]>([]);
+	const [rosterShips, setRosterShips] = React.useState<Ship[]>([]);
 
-	React.useEffect(() => {
-		getDefaultConfig();
-		getEvents();
-	}, [playerData]);
-
-	const calculatorContext = {
+	const calculatorContext: ICalculatorContext = {
 		rosterType,
 		crew: rosterCrew,
 		ships: rosterShips,
 		events: activeEvents,
-		activeVoyageId: props.activeVoyageId
-	} as ICalculatorContext;
-
-	// Still loading player data, don't render anything yet
-	if (playerData && !voyageConfig) return <></>;
+		activeVoyageId
+	};
 
 	return (
 		<React.Fragment>
+			<CrewHoverStat targetGroup='voyageLineup' />
 			<RosterPicker
 				rosterType={rosterType} setRosterType={setRosterType}
 				setRosterCrew={setRosterCrew}
 				setRosterShips={setRosterShips}
 			/>
 			<CalculatorContext.Provider value={calculatorContext}>
-				{rosterCrew && <ConfigInput key={rosterType} voyageConfig={voyageConfig} />}
+				<ConfigInput key={rosterType} voyageConfig={initialConfig} />
 			</CalculatorContext.Provider>
 		</React.Fragment>
 	);
-
-	function getDefaultConfig(): void {
-		// If voyageData not found, initial config will be blank voyage
-		if (!playerData || !ephemeral) {
-			setVoyageConfig(undefined);
-			return;
-		}
-
-		const { voyage, voyageDescriptions } = ephemeral;
-		let voyageConfig: IVoyageInputConfig | undefined;
-
-		// Voyage started, config will be full voyage data
-		if (voyage.length > 0)
-			voyageConfig = voyage[0];
-		// Voyage awaiting input, config will be input parameters only
-		else if (voyageDescriptions.length > 0)
-			voyageConfig = voyageDescriptions[0];
-
-		if (voyageConfig) setVoyageConfig({...voyageConfig});
-	}
-
-	function getEvents(): void {
-		// Get event data from recently uploaded playerData
-		if (ephemeral?.events) {
-			const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew))
-				.filter(ev => ev !== undefined).map(ev => ev as IEventData)
-				.filter(ev => ev.seconds_to_end > 0)
-				.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);
-			setActiveEvents([...currentEvents]);
-		}
-		// Otherwise guess event from autosynced events
-		else {
-			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances).then(recentEvents => {
-				setActiveEvents([...recentEvents]);
-			});
-		}
-	}
 };
 
 export default VoyagePage;
