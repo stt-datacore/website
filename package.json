@@ -2,11 +2,12 @@
   "name": "stt-data-core",
   "description": "STT DataCore",
   "author": "TemporalAgent7",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "license": "MIT",
   "scripts": {
     "build": "gatsby build",
     "buildci": "gatsby build && rimraf ./public/media/assets",
+    "clean": "gatsby clean",
     "develop": "gatsby develop -p 8881",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
     "start": "yarn run develop",
