@@ -9,8 +9,8 @@ import CONFIG from '../../components/CONFIG';
 import { applyCrewBuffs } from '../../utils/crewutils';
 
 type RosterPickerProps = {
-	rosterType: string;
-	setRosterType: (rosterType: string) => void;
+	rosterType: 'allCrew' | 'myCrew';
+	setRosterType: (rosterType: 'allCrew' | 'myCrew') => void;
 	setRosterCrew: (rosterCrew: PlayerCrew[]) => void;
 	setRosterShips: (rosterShips: Ship[]) => void;
 };

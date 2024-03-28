@@ -16,6 +16,8 @@ import { EventInstance } from '../model/events';
 import { StaticFaction } from '../model/shuttle';
 import { getSkillOrder, getVoyageQuotient } from '../utils/crewutils';
 
+const DC_DEBUGGING: boolean = false;
+
 export type ValidDemands =
 	'all_buffs' |
 	'battle_stations' |
@@ -175,18 +177,18 @@ export const DataProvider = (props: DataProviderProperties) => {
 			// and our skill_bufs does not yet match BB data. So for now, we're ignoring them.
 			if (demand === 'skill_bufs') demand = 'all_buffs';
 			if (valid.includes(demand)) {
-				console.log(demand);
+				if (DC_DEBUGGING) console.log(demand);
 				if (demand.startsWith('translation_')) {
 					if (!Object.keys(data.translation).length) {
 						unsatisfied.push(demand);
-					}					
+					}
 				}
 				else if (data[demand].length === 0 || (demand === 'all_buffs' && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);
 				}
 			}
 			else {
-				console.log(`Invalid data demand: ${demand}`);
+				if (DC_DEBUGGING) console.log(`Invalid data demand: ${demand}`);
 			}
 		});
 
@@ -208,7 +210,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 			// Process individual demands
 			results.forEach(result => {
-				console.log(`Demand '${result.demand}' loaded, processing ...`);
+				if (DC_DEBUGGING) console.log(`Demand '${result.demand}' loaded, processing ...`);
 				switch (result.demand) {
 					case 'all_buffs':
 						newData.all_buffs = calculateMaxBuffs(result.json);
@@ -228,7 +230,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 					default:
 
 						if (result.demand.startsWith("translation_")) {
-							newData.translation = result.json;	
+							newData.translation = result.json;
 						}
 						else {
 							newData[result.demand] = result.json;
@@ -289,7 +291,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 					engineering_skill: 0,
 					security_skill: 0,
 					trait_limited: 0
-				} as SkillQuipmentScores,				
+				} as SkillQuipmentScores,
 				voyage_quotient: 0,
 				voyage_quotients: {
 					command_skill: 0,
@@ -306,14 +308,14 @@ export const DataProvider = (props: DataProviderProperties) => {
 		const qkeys = Object.keys(scores[0].quipment_scores as SkillQuipmentScores);
 
 		for (let c of crew) {
-			const r = c.max_rarity - 1;			
+			const r = c.max_rarity - 1;
 			const skscore = scores[r].quipment_scores as SkillQuipmentScores;
 
 			if (!c.quipment_score || !c.quipment_scores) continue;
 			if (c.quipment_score > (scores[r].quipment_score ?? 0)) {
 				scores[r].quipment_score = c.quipment_score;
 			}
-			for (let key of qkeys) {				
+			for (let key of qkeys) {
 				if (c.quipment_scores[key] > skscore[key]) {
 					skscore[key] = c.quipment_scores[key];
 				}
@@ -325,7 +327,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 				scores[r].voyage_quotient = c.voyage_quotient;
 			}
 			if (!c.voyage_quotients) continue;
-			for (let key of qkeys) {				
+			for (let key of qkeys) {
 				if (c.voyage_quotients[key] > vqscore[key]) {
 					vqscore[key] = c.voyage_quotients[key];
 				}
@@ -333,7 +335,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		}
 
 		for (let c of crew) {
-			const r = c.max_rarity - 1;			
+			const r = c.max_rarity - 1;
 			const skscore = scores[r].quipment_scores as SkillQuipmentScores;
 			const escore = scores[r].quipment_score as number;
 			if (c.quipment_score && escore) {
@@ -356,11 +358,11 @@ export const DataProvider = (props: DataProviderProperties) => {
 				})
 			}
 		}
-		
+
 		return scores;
 	}
 
-	
+
 	function reset(): boolean {
 		setData({ ...defaultData });
 		return true;
@@ -395,7 +397,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if ("item_type" in item) {
 				item.type = (item["item_type"] as number);
 				delete item["item_type"];
-			}			
+			}
 		})
 		return result ?? [];
 	}
@@ -417,16 +419,16 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 	function postProcessCrewTranslations(data: ICoreData): void {
 		if (data.crew.length && data.translation.crew_archetypes) {
-			data.crew.forEach((crew) => {				
+			data.crew.forEach((crew) => {
 				let arch = data.translation.crew_archetypes.find(f => f.symbol === crew.symbol);
 				crew.traits_named = crew.traits.map(t => data.translation.trait_names[t]);
 				crew.name = arch?.name ?? crew.name;
-				crew.short_name = arch?.short_name ?? crew.short_name;				
+				crew.short_name = arch?.short_name ?? crew.short_name;
 
 				crew.events ??= 0;
 				if (!crew.obtained?.length || crew.obtained === "N/A") {
 					crew.obtained = getObtained(crew);
-				}				
+				}
 			});
 		}
 	}
@@ -466,20 +468,20 @@ export const DataProvider = (props: DataProviderProperties) => {
 			return "Event/Pack/Giveaway";
 		}
 	}
-	
+
 	function postProcessShipTranslations(data: ICoreData): void {
 		if (data.ship_schematics.length && data.translation.ship_archetypes) {
 			data.ship_schematics.forEach((ship) => {
 				let arch = data.translation.ship_archetypes.find(f => f.symbol === ship.ship.symbol);
-				ship.ship.flavor = arch?.flavor ?? ship.ship.flavor;				
+				ship.ship.flavor = arch?.flavor ?? ship.ship.flavor;
 				ship.ship.traits_named = ship.ship.traits?.map(t => data.translation.ship_trait_names[t]);
-				ship.ship.name = arch?.name ?? ship.ship.name;				
+				ship.ship.name = arch?.name ?? ship.ship.name;
 				arch?.actions?.forEach((action) => {
 					let act = ship.ship.actions?.find(f => f.symbol === action.symbol);
 					if (act) {
 						act.name = action.name;
 					}
-				});				
+				});
 			});
 		}
 	}
@@ -500,7 +502,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 	function postProcessCadetItems(data: ICoreData): void {
 		const cadetforitem = data.cadet?.filter(f => f.cadet);
-		console.log("Finding cadet mission farm sources for items ...");
+		if (DC_DEBUGGING) console.log("Finding cadet mission farm sources for items ...");
 
 		if (cadetforitem?.length) {
 			for(const item of data.items) {
@@ -539,7 +541,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			}
 		}
 
-		console.log("Done with cadet missions.");
+		if (DC_DEBUGGING) console.log("Done with cadet missions.");
 	}
 };
 
