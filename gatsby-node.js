@@ -96,8 +96,8 @@ exports.createPages = ({ graphql, actions }) => {
 
 exports.onCreateWebpackConfig = ({ stage, loaders, actions, getConfig }) => {
 	if (stage === 'build-html') {
-		actions.setWebpackConfig({
-			module: {
+		actions.setWebpackConfig({			
+			module: {				
 				rules: [
 					{
 						test: /unifiedWorker\.js$/,
@@ -112,7 +112,7 @@ exports.onCreateWebpackConfig = ({ stage, loaders, actions, getConfig }) => {
 		});
 	}
 
-	const config = getConfig();
+	const config = getConfig();	
 	//TODO: more testing
 	//config.output.globalObject = 'this';
 	actions.replaceWebpackConfig(config);

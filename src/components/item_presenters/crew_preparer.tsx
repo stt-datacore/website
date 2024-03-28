@@ -1,23 +1,21 @@
 import React from "react";
 import { CrewMember } from "../../model/crew";
-import { PlayerData, PlayerCrew, CompletionState } from "../../model/player";
-import { prepareOne, applyCrewBuffs, getSkills } from "../../utils/crewutils";
+import { PlayerData, PlayerCrew, CompletionState, PlayerBuffMode, PlayerImmortalMode } from "../../model/player";
+import { prepareOne, applyCrewBuffs, getSkills, PREPARE_MAX_RARITY } from "../../utils/crewutils";
 import { BuffStatTable } from "../../utils/voyageutils";
-import { MergedContext, MergedData } from "../../context/mergedcontext";
-
-
-export type PlayerBuffMode = 'none' | 'player' | 'max';
-
-export type PlayerImmortalMode = 'owned' | 'min' | 2 | 3 | 4 | 'full' | 'frozen'
+import { IDefaultGlobal } from "../../context/globalcontext";
+import { EquipmentItem } from "../../model/equipment";
+import { ItemBonusInfo, getItemBonuses } from "../../utils/itemutils";
 
 export const BuffNames = {
     'none': "Unboosted",
     'player': "Player Boosts",
-    'max': "Max Boosts"
+    'max': "Max Boosts",
+    'quipment': "Quipment Boosts"
 }
 
 export const ImmortalNames = {
-    "owned": "Owned",
+    "owned": "Owned Rarity",
     "min": "Unfused",
     "full": "Immortalized",
     2: "2 Stars", 
@@ -26,12 +24,24 @@ export const ImmortalNames = {
     "frozen": "Frozen",    
 }
 
-export function getAvailableBuffStates(playerData?: PlayerData, buffConfig?: BuffStatTable): PlayerBuffMode[] {
+export const ProspectImmortalNames = {
+    "owned": "Prospect Rarity",
+    "min": "Unfused",
+    "full": "Immortalized",
+    2: "2 Stars", 
+    3: "3 Stars", 
+    4: "4 Stars", 
+    "frozen": "Frozen",    
+}
+
+
+export function getAvailableBuffStates(playerData?: PlayerData, buffConfig?: BuffStatTable, crew?: PlayerCrew): PlayerBuffMode[] {
     const hasPlayer = !!playerData?.player?.character?.crew?.length;
     const hasBuff = (buffConfig && Object.keys(buffConfig)?.length) ? true : false;
     
     if (!hasPlayer && !hasBuff) return ['none'];
     else if (!hasPlayer) return ['none', 'max'];
+    else if (crew && !!crew.immortal) return ['none', 'player', 'max', 'quipment'];
     else return ['none', 'player', 'max'];
 }
 
@@ -70,13 +80,13 @@ export function getAvailableImmortalStates(crew: PlayerCrew | CrewMember): Playe
     return v;
 }
 
-export function nextBuffState(current: PlayerBuffMode, playerData?: PlayerData, buffConfig?: BuffStatTable, backward?: boolean): PlayerBuffMode {
+export function nextBuffState(current: PlayerBuffMode, playerData?: PlayerData, buffConfig?: BuffStatTable, backward?: boolean, crew?: PlayerCrew): PlayerBuffMode {
     const hasPlayer = !!playerData?.player?.character?.crew?.length;
     const hasBuff = (buffConfig && Object.keys(buffConfig)?.length) ? true : false;
 
     if (!hasPlayer && !hasBuff) return 'none';
 
-    const allowed = getAvailableBuffStates(playerData, buffConfig);
+    const allowed = getAvailableBuffStates(playerData, buffConfig, crew);
     let x = allowed.indexOf(current);
 
     if (x === -1) x = 0;
@@ -123,7 +133,7 @@ export function applyImmortalState(state: PlayerImmortalMode, reference: CrewMem
         pres = prepareOne(reference, playerData, buffConfig);
     }
     else if (state === 'full' || state === 'frozen') {
-        pres = prepareOne(reference, playerData, buffConfig, 6);
+        pres = prepareOne(reference, playerData, buffConfig, PREPARE_MAX_RARITY);
     }
     else if (state === 'min') {
         pres = prepareOne(reference, playerData, buffConfig, 1);
@@ -141,41 +151,85 @@ export class CrewPreparer {
         dataIn: PlayerCrew | CrewMember | undefined,
         buffMode: PlayerBuffMode,
         immortalMode: PlayerImmortalMode,
-        context: MergedData
+        context: IDefaultGlobal,
+        useInputQuip?: boolean
     ): [PlayerCrew | CrewMember | undefined, PlayerImmortalMode[] | undefined] {
 
-        const { buffConfig, maxBuffs, playerData } = context;
+        const { buffConfig, maxBuffs, playerData } = context.player;
+        const { items } = context.core;
         const hasPlayer = !!playerData?.player?.character?.crew?.length;
-
+        let quips = [] as EquipmentItem[];
+        let buffs = undefined as ItemBonusInfo[] | undefined;
         let immoMode: PlayerImmortalMode[] | undefined = undefined;
 
         if (dataIn) {            
             let item: PlayerCrew;
 
             if (hasPlayer) {
-                item = playerData.player.character.crew.find((xcrew) => xcrew.symbol === dataIn.symbol) ?? dataIn as PlayerCrew;
-                item = { ...dataIn, ...item };
+                if (useInputQuip) {
+                    item = playerData.player.character.crew.find((xcrew) => {
+                        if ("id" in dataIn) {
+                            return xcrew.id === dataIn.id;
+                        }
+                        else {
+                            return xcrew.symbol === dataIn.symbol;
+                        }
+                    }) ?? dataIn as PlayerCrew;
+                    item = { ...dataIn, ...item, kwipment: dataIn.kwipment, q_bits: dataIn.q_bits };                    
+                }
+                else {
+                    item = playerData.player.character.crew.find((xcrew) => {
+                        if ("id" in dataIn) {
+                            return xcrew.id === dataIn.id;
+                        }
+                        else {
+                            return xcrew.symbol === dataIn.symbol;
+                        }
+                    }) ?? dataIn as PlayerCrew;
+                    item = { ...dataIn, ...item };                    
+                }
             }
             else {
                 item = dataIn as PlayerCrew;
             }
 
             item = JSON.parse(JSON.stringify(item)) as PlayerCrew;
+
+            if ((item.kwipment as number[])?.some((q: number) => !!q)) {
+                quips = (item.kwipment as number[]).map(q => items.find(i => i.kwipment_id?.toString() === q.toString()) as EquipmentItem)?.filter(q => !!q) ?? [];
+                buffs = quips.map(q => getItemBonuses(q));
+                item.kwipment_slots = quips.map(q => {
+                    return {
+                        level: 100,
+                        symbol: q.symbol,
+                        imageUrl: q.imageUrl
+                    }
+                });
+            }
+
             immoMode = getAvailableImmortalStates(item);
             
             if (immortalMode !== 'owned' || (buffMode !== 'none')) {
                 let cm: CrewMember | undefined = undefined;
-                cm = context.allCrew.find(c => c.symbol === dataIn.symbol);
+                cm = context.core.crew.find(c => c.symbol === dataIn.symbol);
                 if (cm) {
+                    cm = { ... cm};
+                    
+                    cm.kwipment = dataIn.kwipment;
+                    cm.kwipment_expiration = dataIn.kwipment_expiration;
+                    cm.q_bits = dataIn.q_bits;
+
                     if (item.immortal === CompletionState.DisplayAsImmortalStatic) {
-                        item = applyImmortalState(immortalMode, cm, undefined, buffConfig ?? maxBuffs);
+                        item = applyImmortalState(immortalMode, { ...item, ...cm, q_bits: item.q_bits }, undefined, buffConfig ?? maxBuffs);
                     }
                     else {
-                        item = applyImmortalState(immortalMode, cm, context.playerData, buffConfig ?? maxBuffs);
+                        item = applyImmortalState(immortalMode, { ...item, ...cm, q_bits: item.q_bits }, context.player.playerData, buffConfig ?? maxBuffs);
                     }
                     
                     if ((maxBuffs && Object.keys(maxBuffs)?.length) && ((!hasPlayer && buffMode != 'none') || (buffMode === 'max'))) {
-                        applyCrewBuffs(item, maxBuffs);
+                        if (buffMode === 'quipment' && buffs?.length) applyCrewBuffs(item, maxBuffs, undefined, buffs);
+                        else applyCrewBuffs(item, maxBuffs);
+
                         getSkills(item).forEach(skill => {
                             let sb = item[skill] ?? { core: 0, min: 0, max: 0 };
                             item[skill] = sb;
@@ -191,8 +245,10 @@ export class CrewPreparer {
                             };
                             });
                     }
-                    else if (hasPlayer && buffConfig && buffMode === 'player') {
-                        applyCrewBuffs(item, buffConfig);
+                    else if (hasPlayer && buffConfig && ['player', 'quipment'].includes(buffMode)) {
+                        if (buffMode === 'quipment' && buffs?.length) applyCrewBuffs(item, buffConfig, undefined, buffs);
+                        else applyCrewBuffs(item, buffConfig);
+
                         getSkills(item).forEach(skill => {
                             let sb = item[skill] ?? { core: 0, min: 0, max: 0 };
                             item[skill] = sb;

@@ -1,16 +1,23 @@
 import React from 'react';
 import { Message, Button, Popup } from 'semantic-ui-react';
 
+import { Voyage } from '../../model/player';
+import { Estimate } from '../../model/worker';
+import { IVoyageCalcConfig } from '../../model/voyage';
 import CONFIG from '../CONFIG';
-
 import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
 
 type CIVASMessageProps = {
-	voyageConfig: any;
-	estimate?: any;
+	voyageConfig: IVoyageCalcConfig | Voyage;
+	estimate?: Estimate;
+	activeDetails?: {
+		created_at: string;
+		log_index: number;
+		hp: number;
+	}
 };
 
-const CIVASMessage = (props: CIVASMessageProps) => {
+export const CIVASMessage = (props: CIVASMessageProps) => {
 	const CIVASLink = 'https://docs.google.com/spreadsheets/d/1utIuwIgIRO7mwYMSP3P9eWEygf1YT9k24A8BZ_l4pOw/edit?usp=sharing';
 	const CIVASVer = '2.1';
 
@@ -21,8 +28,8 @@ const CIVASMessage = (props: CIVASMessageProps) => {
 		Done
 	};
 
-	const { voyageConfig } = props;
-	const [estimate, setEstimate] = React.useState(undefined);
+	const { voyageConfig, activeDetails } = props;
+	const [estimate, setEstimate] = React.useState<Estimate | undefined>(undefined);
 	const [exportState, setExportState] = React.useState(ExportState.None);
 
 	React.useEffect(() => {
@@ -84,22 +91,22 @@ const CIVASMessage = (props: CIVASMessageProps) => {
 	}
 
 	function copyToClipboard(): void {
-		const hoursToTime = hours => {
+		const hoursToTime = (hours: number) => {
 			let wholeHours = Math.floor(hours);
 			return `${wholeHours}:${Math.floor((hours-wholeHours)*60).toString().padStart(2, '0')}`
 		};
 
-		const skillToShort = skillName => CONFIG.SKILLS_SHORT.find(skill => skill.name === skillName).short;
+		const skillToShort = (skillName: string) => CONFIG.SKILLS_SHORT.find(skill => skill.name === skillName)?.short ?? '';
 		// Pending voyages don't have a created_date yet
-		const createdAt = voyageConfig.created_at ? new Date(voyageConfig.created_at) : new Date();
+		const createdAt = activeDetails ? new Date(activeDetails.created_at) : new Date();
 
 		let values = [
 			skillToShort(voyageConfig.skills['primary_skill'])+'/'+skillToShort(voyageConfig.skills['secondary_skill']),
 			createdAt.toISOString().split('T')[0],
-			hoursToTime(estimate.refills[0].result)
-		];
-		values.push(voyageConfig.state === 'recalled' ? hoursToTime(voyageConfig.log_index/180) : '');
-		values.push(voyageConfig.state === 'recalled' ? voyageConfig.hp : '');
+			estimate ? hoursToTime(estimate.refills[0].result) : ''
+		] as string[];
+		values.push(voyageConfig.state === 'recalled' && activeDetails ? hoursToTime(activeDetails.log_index/180) : '');
+		values.push(voyageConfig.state === 'recalled' && activeDetails ? `${activeDetails.hp}` : '');
 		values = values.concat(voyageConfig
 			.crew_slots
 			.sort((s1, s2) => CONFIG.VOYAGE_CREW_SLOTS.indexOf(s1.symbol) - CONFIG.VOYAGE_CREW_SLOTS.indexOf(s2.symbol))
@@ -110,5 +117,3 @@ const CIVASMessage = (props: CIVASMessageProps) => {
 		setExportState(ExportState.Done);
 	}
 };
-
-export default CIVASMessage;

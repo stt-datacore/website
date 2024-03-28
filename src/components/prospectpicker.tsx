@@ -1,9 +1,9 @@
 import React from 'react';
-import { Table, Rating, Dropdown, Button, StrictCheckboxProps } from 'semantic-ui-react';
+import { Table, Rating, Dropdown, Button } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import { CrewMember } from '../model/crew';
-import { CompactCrew, PlayerCrew } from '../model/player';
-import { AvatarIcon, LockedProspect } from '../model/game-elements';
+import { PlayerCrew } from '../model/player';
+import { LockedProspect } from '../model/game-elements';
 import { DropDownItem } from '../utils/misc';
 
 type ProspectPickerProps = {
@@ -26,6 +26,12 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 		state: OptionsState.Uninitialized,
 		list: [] as DropDownItem[]
 	});
+
+	React.useEffect(() => {
+		if (options.state !== OptionsState.Uninitialized) {
+			setOptions({ ... options, state: OptionsState.Uninitialized });
+		}		
+	}, [pool]);
 
 	if (pool.length == 0) return (<></>);
 

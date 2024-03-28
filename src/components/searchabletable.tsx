@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Input, Pagination, Dropdown, Popup, Icon, Button, Message, Checkbox } from 'semantic-ui-react';
+import { Table, Input, Pagination, Dropdown, Popup, Icon, Button, Message, Checkbox, DropdownItemProps } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 import { Link } from 'gatsby';
 
@@ -11,6 +11,7 @@ import * as localForage from 'localforage';
 import { InitialOptions } from '../model/game-elements';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew } from '../model/player';
+import { appelate } from '../utils/misc';
 
 const filterTypeOptions = [
     { key : '0', value : 'Exact', text : 'Exact match only' },
@@ -18,12 +19,12 @@ const filterTypeOptions = [
     { key : '2', value : 'Any match', text : 'Match any text' }
 ];
 
-const pagingOptions = [
-	{ key: '0', value: '10', text: '10' },
-	{ key: '1', value: '25', text: '25' },
-	{ key: '2', value: '50', text: '50' },
-	{ key: '3', value: '100', text: '100' }
-];
+const defaultPagingOptions = [
+	{ key: '0', value: 10, text: '10' },
+	{ key: '1', value: 25, text: '25' },
+	{ key: '2', value: 50, text: '50' },
+	{ key: '3', value: 100, text: '100' }
+] as DropdownItemProps[];
 
 export enum SortDirection {
 	Ascending = 'ascending',
@@ -42,6 +43,7 @@ export interface ITableConfigRow {
 	pseudocolumns?: string[];
 	reverse?: boolean;
 	tiebreakers?: string[];
+	customCompare?: (a: any, b: any) => number;
 }
 
 export interface SearchableTableProps {
@@ -60,26 +62,32 @@ export interface SearchableTableProps {
 	lockable?: any[];
 	zeroMessage?: (searchFilter: string) => JSX.Element;
 
-	toolCaption?: string;
 
+	checkCaption?: string;
 	checkableValue?: boolean;
 	checkableEnabled?: boolean;
 	setCheckableValue?: (value?: boolean) => void;
 
+	toolCaption?: string;
 	dropDownChoices?: string[];
 	dropDownValue?: string;
 	setDropDownValue?: (value?: string) => void;
+
+	pagingOptions?: DropdownItemProps[];
+	defaultPaginationRows?: number;
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
 	let data = [...props.data];
 	const tableId = props.id ?? '';
 
+	const pagingOptions = props.pagingOptions?.length ? props.pagingOptions : defaultPagingOptions;
+
 	const [searchFilter, setSearchFilter] = useStateWithStorage(tableId+'searchFilter', '');
 	const [filterType, setFilterType] = useStateWithStorage(tableId+'filterType', 'Any match');
 	const [column, setColumn] = useStateWithStorage<string | undefined>(tableId+'column', undefined);
 	const [direction, setDirection] = useStateWithStorage<SortDirection | 'ascending' | 'descending' | undefined>(tableId+'direction', undefined);
-	const [pagination_rows, setPaginationRows] = useStateWithStorage(tableId+'paginationRows', 10);
+	const [pagination_rows, setPaginationRows] = useStateWithStorage(tableId+'paginationRows', props.defaultPaginationRows ?? pagingOptions[0].value as number ?? 10, { rememberForever: true });
 	const [pagination_page, setPaginationPage] = useStateWithStorage(tableId+'paginationPage', 1);
 
 	const [activeLock, setActiveLock] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);
@@ -149,7 +157,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 						onClick={() => onHeaderClick(cell)}
 						textAlign={cell.width === 1 ? 'center' : 'left'}
 					>
-						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{column.replace('_',' ').replace('.length', '')}</small></>}
+						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{appelate(column.replace('.length', ''))}</small></>}
 					</Table.HeaderCell>
 				))}
 			</Table.Row>
@@ -213,19 +221,23 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		const columnConfig = props.config.find(col => col.column === sortColumn);
 		sortDirection = columnConfig?.reverse ? 'descending' : 'ascending';
 	}
+	
+	const columnConfig = props.config.find(col => col.column === sortColumn);
+	
 	const sortConfig: IConfigSortData = {
 		field: sortColumn,
 		direction: sortDirection,
-		keepSortOptions: true
+		keepSortOptions: true,
+		customCompare: columnConfig?.customCompare
 	};
 
 	// Define tiebreaker rules with names in alphabetical order as default
 	//	Hack here to sort rarity in the same direction as max_rarity
 	let subsort = [] as SortConfig[];
-	const columnConfig = props.config.find(col => col.column === sortColumn);
+	
 	if (columnConfig && columnConfig.tiebreakers) {
 		subsort = columnConfig.tiebreakers.map(subfield => {
-			const subdirection = subfield.substr(subfield.length-6) === 'rarity' ? sortDirection : 'ascending';
+			const subdirection = subfield.slice(subfield.length-6) === 'rarity' ? sortDirection : 'ascending';
 			return { field: subfield, direction: subdirection };
 		});
 	}
@@ -269,7 +281,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	if (activePage > totalPages) activePage = totalPages;
 	data = data.slice(pagination_rows * (activePage - 1), pagination_rows * activePage);
 
-	const { toolCaption: caption, checkableEnabled, checkableValue, setCheckableValue } = props;
+	const { toolCaption: caption, checkCaption, checkableEnabled, checkableValue, setCheckableValue } = props;
 
 	return (
 		<div>
@@ -307,53 +319,63 @@ export const SearchableTable = (props: SearchableTableProps) => {
 				header={'Advanced search'}
 				content={props.explanation ? props.explanation : renderDefaultExplanation()}
 			/>
+			<div style={{
+				display: "flex",
+				flexDirection: "row",
+				justifyContent: "flex-end",
+				alignItems: "center"
+			}}>
+			
 
-			{caption && setCheckableValue !== undefined && (
-				<div style={{
-					margin: "0.5em",
-					display:"flex",
-					flexDirection: "row",
-					alignItems: "center",
-					justifyContent: "flex-start",
-					alignSelf: "flex-end"
-				}}>
-					<Checkbox
-						onChange={(e, d) => setCheckableValue(d.checked)}
-						checked={checkableValue}
-						disabled={!checkableEnabled} />
-					<div style={{margin: "0.5em"}} className="ui text">{caption}</div>
-				</div>
-			)}
+				{caption && props.dropDownChoices?.length && (
+					<div style={{
+						margin: "0.5em",
+						display:"flex",
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "center",
+						alignSelf: "flex-end",
+						height: "2em"
+					}}>
 
-			{caption && props.dropDownChoices?.length && (
-				<div style={{
-					margin: "0.5em",
-					display:"flex",
-					flexDirection: "row",
-					alignItems: "center",
-					justifyContent: "flex-start",
-					alignSelf: "flex-end"
-				}}>
-
-					<span style={{ paddingLeft: '2em' }}>
-						<Dropdown inline
-							options={props.dropDownChoices.map((c) => {return {
-								content: c,
-								value: c
-							}})}
-							value={props.dropDownValue}
-							onChange={(event, {value}) => {
-								if (props.setDropDownValue) {
-									props.setDropDownValue(value as string);
-								}
-							}}
-						/>
-					</span>
-					<div style={{margin: "0.5em"}} className="ui text">{caption}</div>
-				</div>
-			)}
-
+						<span style={{ paddingLeft: '2em' }}>
+							<Dropdown inline
+								placeholder={caption}
+								options={props.dropDownChoices.map((c) => {return {
+									content: c,
+									value: c,
+									text: c
+								}})}
+								value={props.dropDownValue}
+								onChange={(event, {value}) => {
+									if (props.setDropDownValue) {
+										props.setDropDownValue(value as string);
+									}
+								}}
+							/>
+						</span>
+						{/* <div style={{margin: "0.5em"}} className="ui text">{caption}</div> */}
+					</div>
+				)}
+				{!!checkCaption && !!setCheckableValue && (
+					<div style={{
+						margin: "0.5em",
+						display:"flex",
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "center",
+						alignSelf: "flex-end",
+						height: "2em"
+					}}>
+						<Checkbox
+							onChange={(e, d) => setCheckableValue(d.checked)}
+							checked={checkableValue}
+							disabled={!checkableEnabled} />
+						<div style={{margin: "0.5em"}} className="ui text">{checkCaption}</div>
+					</div>
+				)}
 			</div>
+		</div>
 
 			<div>
 				{props.lockable && <LockButtons lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
@@ -436,11 +458,11 @@ const LockButtons = (props: LockButtonsProps) => {
 };
 
 // Check for custom initial table options from URL or <Link state>
-export const initSearchableOptions = (location: any) => {
+export const initSearchableOptions = (location: any, search?: string) => {
 	let initOptions: InitialOptions | undefined = undefined;
 	const OPTIONS = ['search', 'filter', 'column', 'direction', 'rows', 'page'];
 
-	const urlParams = location.search ? new URLSearchParams(location.search) : undefined;
+	const urlParams = search ? new URLSearchParams("?search=" + search) : (location.search ? new URLSearchParams(location.search) : undefined);
 	const linkState = location.state;
 
 	for(let option of OPTIONS) {
@@ -475,11 +497,11 @@ export function initCustomOption<T>(location: any, option: string, defaultValue:
 };
 
 export const prettyCrewColumnTitle = (column: string) => {
-	if (column.substr(0, 6) == 'ranks.') {
+	if (column.slice(0, 6) == 'ranks.') {
 		let title = column.replace('ranks.', '');
-		if (title.substr(-4) == 'Rank') {
+		if (title.slice(-4) == 'Rank') {
 			title = title.replace('Rank', '');
-			title = title.substr(0, 1).toUpperCase() + title.substr(1);
+			title = title.slice(0, 1).toUpperCase() + title.slice(1);
 			return title;
 		}
 		else {
@@ -539,6 +561,12 @@ function renderDefaultExplanation(): JSX.Element {
 				<code>trait:female rarity:4,5 skill:sci trait:"q continuum"</code>
 			</p>
 
+			<p>
+				Search for all crew that match a whole or partial skill order:
+			</p>
+			<p>
+				<code>skill_order:CMD or skill_order:CMD/SCI or skill_order:CMD/SCI/SEC</code>
+			</p>
 			<p>
 				Search for all crew that are in the game portal (<b>true</b>) or not (any other value):
 			</p>

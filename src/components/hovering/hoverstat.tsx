@@ -4,7 +4,7 @@ import { TinyStore } from "../../utils/tiny";
 
 const isWindow = typeof window !== 'undefined';
 
-export const DEFAULT_MOBILE_WIDTH = 512;
+export const DEFAULT_MOBILE_WIDTH = 1024;
 
 export interface Coord {
     x: number;
@@ -25,7 +25,13 @@ export interface HoverStatProps {
     windowEdgeMinPadding?: Coord;
     boxStyle?: React.CSSProperties;
     mobileWidth?: number;
+
+    /** @deprecated Don't use this anymore */
     useBoundingClient?: boolean;
+
+    /** True if the hover is going to be used in a modal. */
+    modalPositioning?: boolean;
+    customOffset?: Coord;
 
     /**
      * Time in milliseconds to wait before activating the window
@@ -136,7 +142,13 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
         const { targetGroup, children } = this.props;
 
         return (    
-            <div className={targetGroup} onTouchEnd={(e) => this.containerEnter(e)} onMouseOver={(e) => this.containerEnter(e)} onMouseOut={(e) => this.containerLeave(e)} style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>
+            <div className={targetGroup} 
+                 onDoubleClick={(e) => this.containerEnter(e)} 
+                 // onTouchEnd={(e) => this.containerEnter(e)} 
+                 onMouseOver={(e) => this.containerEnter(e)} 
+                 onMouseOut={(e) => this.containerLeave(e)} 
+                 style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>
+
                 {children}
             </div>)         
     }
@@ -316,21 +328,39 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
     
     protected realignTarget = (target?: HTMLElement) => {
 
-        const { useBoundingClient } = this.props;
+        const { useBoundingClient, modalPositioning, customOffset } = this.props;
         const { divId } = this.state;  
         const hoverstat = document.getElementById(divId);    
+        
         target ??= this.currentTarget;  
+        
+        let modal: HTMLElement | undefined = undefined;
+
+        if (modalPositioning) {
+            let modals = document.getElementsByClassName("ui modal transition visible active");
+            if (modals && modals.length) {
+                modal = modals[0] as HTMLElement;
+            }
+        }
+
         if (!target || !hoverstat) return;
 
         let rect = target.getBoundingClientRect();
-        let ancestor = useBoundingClient ? undefined : this.findCommonAncestor(target, hoverstat);
+        let ancestor = useBoundingClient ? undefined : (modal ?? this.findCommonAncestor(target, hoverstat));
         this.currentTarget = target;
 
-        let { top , left } = useBoundingClient ? rect : this.getOffset(target, ancestor);
+        let { top , left } = useBoundingClient || !!modal ? rect : this.getOffset(target, ancestor);
         let { left: tx, top: ty } = this.getOffset(target, ancestor);
 
         let x = left + rect.width;
-        let y = top;
+        let y = top - rect.height / 4;
+        let modalBounds: DOMRect | undefined = undefined;
+        if (modal) {
+            modalBounds = modal.getBoundingClientRect();
+            x -= modalBounds.x;
+            y -= modalBounds.y;
+        }
+
         let off = { ... this.targetOffset };             
         let pad = { ... this.windowEdgeMinPadding };
         if (target.clientWidth >= 64) {
@@ -341,16 +371,19 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
             y -= window.scrollY;   
         }
 
-        if (!ancestor) {
+        if (!ancestor || modal) {
             hoverstat.style.position = "fixed";
         }
         else {
             hoverstat.style.position = "absolute";
         }            
-
+        if (customOffset) {
+            x += customOffset.x;
+            y += customOffset.y;
+        }
         hoverstat.style.display = "flex";
         hoverstat.style.opacity = "0";
-
+        hoverstat.style.zIndex = "1000000";
         if (isWindow) window.setTimeout(() => {
             let hoverstat = document.getElementById(divId);     
             // console.log("Activate " + divId);
@@ -360,40 +393,37 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
             y -= (hoverstat.clientHeight - off.y);
             x -= off.x;
 
-            // if (off.centerX) {
-            //     x = (tx + (target.clientWidth / 2)) - (hoverstat.clientWidth / 2);
-            // }
-            // else {
-            //     if (tx >= window.innerWidth / 2) {
-            //         x -= (hoverstat.clientWidth + rect.width);
-            //         x += off.x;
-            //     }
-            //     else {
-            //         x -= off.x;
-            //     }
-            // }
-            
-            let scrolly = useBoundingClient ? 0 : window.scrollY;
+            let scrolly = useBoundingClient || !!modal ? 0 : window.scrollY;
 
             if (y < scrolly + pad.y) {
                 y = scrolly + pad.y;
             }
+
+            const widthCheck = modalBounds?.width ?? window.innerWidth;
+            const heightCheck = modalBounds?.height ?? window.innerHeight;
             
-            if (x + hoverstat.clientWidth > window.scrollX + window.innerWidth - pad.x) {
-                x = window.scrollX + window.innerWidth - pad.x - hoverstat.clientWidth - 16;
+            if (x + hoverstat.clientWidth > window.scrollX + widthCheck - pad.x) {
+                x = window.scrollX + widthCheck - pad.x - hoverstat.clientWidth - 16;
             }
 
-            if (y + hoverstat.clientHeight + (pad.y * 2) > scrolly + window.innerHeight) {
-                y = (scrolly + window.innerHeight) - (hoverstat.clientHeight + (pad.y * 2));
+            if (y + hoverstat.clientHeight + (pad.y * 2) > scrolly + heightCheck) {
+                y = (scrolly + heightCheck) - (hoverstat.clientHeight + (pad.y * 2));
             }                
 
-            if (x < pad.x || x + hoverstat.clientWidth > window.innerWidth - pad.x) {
+            if (x < pad.x || x + hoverstat.clientWidth > widthCheck - pad.x) {
                 x = pad.x;
-                hoverstat.style.width = window.innerWidth - (pad.x * 2) + 'px';
+                hoverstat.style.width = widthCheck - (pad.x * 2) + 'px';
             }                
             
-            hoverstat.style.left = x + "px";
-            hoverstat.style.top = y + "px";
+            if (useBoundingClient) {
+                hoverstat.style.left = x + "px";
+                hoverstat.style.top = y + "px";    
+            }
+            else {
+                hoverstat.style.left = x + "px";
+                hoverstat.style.top = y + "px";    
+            }
+
             hoverstat.style.zIndex = "1009";
 
             hoverstat.style.opacity = "1";
@@ -465,7 +495,9 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
             if (target.children.length !== 0 || !(target instanceof HTMLImageElement)) {                
                 return;
             }
-            if (target.src.includes("star_reward")) return;
+            if (target.src.includes("atlas/")) return;
+            if (target.src.includes("star_reward")) return;            
+            if (target.src.includes("Continuum")) return;
             this.activate(target);
         }
     }

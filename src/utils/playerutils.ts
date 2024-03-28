@@ -1,7 +1,11 @@
-import { CompactCrew, PlayerEquipmentItem, PlayerCrew, PlayerData, AcceptedMission } from "../model/player";
+import { PlayerEquipmentItem, PlayerCrew, PlayerData, AcceptedMission } from "../model/player";
 
 // Remove any unnecessary fields from the player data
 export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): any {
+    // prevent this method from being called on previous-stripped player data.
+    if (p.stripped) return;
+    p.stripped = true;
+
     delete p.item_archetype_cache;
     delete p.archetype_cache;
     delete p.version;
@@ -23,7 +27,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
 
     delete p.player.character.active_conflict;
     delete p.player.character.next_shuttle_bay_cost;
-    
+
     delete p.fleet_boss_battles_root;
 	delete p.captains_bridge_root;
 	delete p.scanning_root;
@@ -31,7 +35,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
 	delete p.objective_event_root;
     delete p.archetype_cache;
     delete p.item_archetype_cache;
-    
+
     delete p.player.character.navmap;
     delete p.player.character.tutorials;
     delete p.player.character.shuttle_adventures;
@@ -52,13 +56,13 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     delete p.player.character.fleet_activities;
     delete p.player.character.honor_reward_by_rarity;
     delete p.player.character.using_default_name;
-    delete p.player.character.max_level;
+    //delete p.player.character.max_level;
     delete p.player.character.can_purchase_shuttle_bay;
     delete p.player.character.replay_energy_rate;
     delete p.player.character.seconds_from_replay_energy_basis;
     delete p.player.character.seconds_from_last_boost_claim;
-    delete p.player.character.crew_borrows;
-    delete p.player.character.crew_shares;
+    // delete p.player.character.crew_borrows;
+    // delete p.player.character.crew_shares;
     delete p.player.character.crew_limit_increase_per_purchase;
     delete p.player.character.next_crew_limit_increase_cost;
     delete p.player.character.can_purchase_crew_limit_increase;
@@ -78,14 +82,16 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
         p.player.character.crew_avatar &&
         p.player.character.crew_avatar.symbol
     ) {
-        p.player.character.crew_avatar = {
-            ... p.player.character.crew_avatar,
-            portrait: {
-                file: p.player.character.crew_avatar.portrait.file
-                .slice(1)
-                .replace("/", "_") + ".png",
-            }
-        };
+        if (p.player.character.crew_avatar.portrait.file.startsWith("/")) {
+            p.player.character.crew_avatar = {
+                ... p.player.character.crew_avatar,
+                portrait: {
+                    file: p.player.character.crew_avatar.portrait.file
+                    .slice(1)
+                    .replace("/", "_") + ".png",
+                }
+            };
+        }
     }
 
     p.player.character.accepted_missions =
@@ -185,10 +191,12 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     //     rarity: ship.rarity,
     //     battle_stations: ship.battle_stations
     // }));
-
+    
+    p.buyback_well = p.player.character.crew.filter((crew) => !!crew.in_buy_back_state).map(c => c.symbol) ?? [];
     p.player.character.crew = p.player.character.crew
         .filter((crew) => !crew.in_buy_back_state)
         .map((crew) => ({
+            id: crew.id,
             symbol: crew.symbol,
             archetype_id: crew.archetype_id,
             level: crew.level,
@@ -201,6 +209,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
             base_skills: crew.base_skills,
             skills: crew.skills,
             favorite: crew.favorite,
+            expires_in: crew.expires_in,
             action: {
                 bonus_amount: crew.action?.bonus_amount,
             },

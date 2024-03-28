@@ -6,7 +6,7 @@ import { mergeItems } from '../utils/itemutils';
 import { mergeShips } from '../utils/shiputils';
 import { PlayerData } from '../model/player';
 import { EquipmentCommon } from '../model/equipment';
-import { MergedData, MergedContext } from '../context/mergedcontext';
+import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
 import { ItemHoverStat } from './hovering/itemhoverstat';
 
 
@@ -20,8 +20,10 @@ type UnneededItemsState = {
 };
 
 class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
+
+	oldPlayer: PlayerData | undefined = undefined;
 
 	constructor(props: UnneededItemsProps | Readonly<UnneededItemsProps>) {
 		super(props);
@@ -33,8 +35,19 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		};
 	}
 
+	componentDidUpdate(prevProps: Readonly<UnneededItemsProps>, prevState: Readonly<UnneededItemsState>, snapshot?: any): void {
+		if (this.oldPlayer !== this.context.player.playerData) {
+			this.initData();
+		}
+	}
+
 	async componentDidMount() {
-		const { playerData } = this.context;
+		this.initData();
+	}
+
+	private async initData() {
+		const { playerData } = this.context.player;
+		this.oldPlayer = playerData;
 
 		const [itemsResponse, shipsResponse] = await Promise.all([
 			fetch('/structured/items.json'),
@@ -44,8 +57,8 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		const allitems = await itemsResponse.json();
 		const allships = await shipsResponse.json();
 
-		let items = mergeItems(playerData.player.character.items as EquipmentCommon[], allitems);
-		let ships = mergeShips(allships, playerData.player.character.ships);
+		let items = mergeItems((playerData?.player.character.items ?? []) as EquipmentCommon[], allitems);
+		let ships = mergeShips(allships, playerData?.player.character.ships ?? []);
 
 		// Calculate unneeded schematics
 		let maxedShips = ships.filter(
@@ -70,11 +83,11 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		let equipmentNeeded = new Set();
 		// Handle dupes as either all fully-equipped or as all needing items
 		let crewBySymbol = [] as string[];
-		playerData.player.character.crew.forEach(crew => {
+		playerData?.player.character.crew.forEach(crew => {
 			if (crewBySymbol.indexOf(crew.symbol) == -1) crewBySymbol.push(crew.symbol);
 		});
 		crewBySymbol.forEach(crewSymbol => {
-			const crewList = playerData.player.character.crew.filter(crew => crew.symbol === crewSymbol);
+			const crewList = playerData?.player.character.crew.filter(crew => crew.symbol === crewSymbol) ?? [];
 			let allFullyEquipped = true;
 			crewList.forEach(crew => {
 				if (crew.level < 99 || (crew.equipment && crew.equipment?.length < 4))
@@ -92,6 +105,7 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		// Calculate all replicator fodder
 		let fuellist = items.filter(
 			item => equipmentEquipped.has(item.symbol) &&
+					item.type !== 14 && item.type !== 15 &&
 					!equipmentNeeded.has(item.symbol)
 		).sort((a, b) => {
 			if (a.rarity == b.rarity)
@@ -122,12 +136,14 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 		// Filter crew-specific items
 		let fuelspecific = fuellist.filter(
 			item => isSpecificItem(item.name) && !needsHigherQuality(item.symbol, item.rarity)
+					&& item.type !== 14 && item.type !== 15 
 		);
 
 		// Filter generic items
 		let fuelgeneric = fuellist.filter(
 			item =>
 				item.quantity === 1 && item.rarity > 1 &&
+				item.type !== 14 && item.type !== 15 &&
 				!isSpecificItem(item.name) &&
 				!needsHigherQuality(item.symbol, item.rarity)
 		);
@@ -136,9 +152,10 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 	}
 
 	render() {
-		const { playerData, items } = this.context;
-		const pitems = (!!items && !!playerData?.player?.character?.items?.length) ? mergeItems(playerData.player.character.items, items) : undefined;
-		let itemCount = playerData.player.character.items.length;
+		const { playerData } = this.context.player;
+		const { items } = this.context.core;
+		const pitems = (!!items && !!playerData?.player?.character?.items?.length) ? mergeItems(playerData.player.character.items, items)?.filter(i => i.type !== 14 && i.type !== 15) : undefined;
+		let itemCount = pitems?.length ?? 0;
 		let itemLimit = 1000, itemWarning = .9*itemLimit;
 		// Hardcoded limit works now, but if the game increases limit, we'll have to update
 		//	We should get this from playerData.player.character.item_limit, but it's not in preparedProfileData
@@ -154,7 +171,9 @@ class UnneededItems extends Component<UnneededItemsProps, UnneededItemsState> {
 						<Message.Header>Items approaching limit</Message.Header>
 						<p>
 							You have {itemCount} items in your inventory. At {itemLimit} the game starts randomly losing
-							items; go and replicate away some of the items suggested below.
+							items; go and replicate away some of the items suggested below.<br />
+							<br />
+							<i>(Note: Quipment, and quipment components do not count toward your limit)</i>
 						</p>
 					</Message>
 				)}

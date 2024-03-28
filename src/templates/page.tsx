@@ -3,6 +3,7 @@ import { Header } from 'semantic-ui-react';
 import { graphql } from 'gatsby';
 
 import Layout from '../components/layout';
+import DataPageLayout from '../components/page/datapagelayout';
 
 type StaticPageProps = {
 	data: {
@@ -19,10 +20,12 @@ class StaticPage extends PureComponent<StaticPageProps> {
 	render() {
 		const { markdownRemark } = this.props.data;
 		return (
-			<Layout narrowLayout={true}>
+			<DataPageLayout narrowLayout={true}>
+				<>
 				<Header>{markdownRemark.frontmatter.title}</Header>
 				<div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />
-			</Layout>
+				</>
+			</DataPageLayout>
 		);
 	}
 }

@@ -5,7 +5,7 @@ import { PlayerCrew } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { DataContext } from '../context/datacontext';
 import { PlayerContext } from '../context/playercontext';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { OptionsModal, OptionsModalProps, OptionsModalState, OptionGroup, OptionsBase } from './base/optionsmodal_base';
 
@@ -30,7 +30,7 @@ export interface CrewPickerProps<T extends OptionsBase> {
 const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 	const { handleSelect } = props;
 
-	const context = React.useContext(MergedContext);
+	const context = React.useContext(GlobalContext);
 	const { options, setOptions } = props;
 
 	const [crewList, setCrewList] = React.useState<(PlayerCrew | CrewMember)[]>([]);
