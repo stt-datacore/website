@@ -252,6 +252,27 @@ export const Navigation = (props: NavigationProps) => {
 		{ title: 'Announcements', link: '/announcements', sidebarRole: 'item' }
 	] as NavItem[];
 
+	let now = new Date();
+	if (now.getMonth() === 3 && now.getDate() === 1) {
+		about.unshift({
+			title: 'Toggle Acute Peripheral Reflective Inversion Loop',
+			sidebarRole: 'item',
+			customAction: (e, d) => {
+				if (typeof localStorage !== undefined) {
+					let b = localStorage.getItem("hahaDone");
+					if (b && b === '1') {
+						localStorage.removeItem("hahaDone");
+					}
+					else {
+						localStorage.setItem("hahaDone", "1");
+					}
+
+					document.location = document.location;
+				}
+			}
+		})
+	}
+
 	otherPages.map((page) => {
 		about.push(
 			{ title: page.title, link: page.slug, sidebarRole: 'item' }

@@ -49,9 +49,18 @@ function swapThemeCss(reverse) {
 function aprilFools() {
 	let now = new Date();
 	if (now.getMonth() == 3 && now.getDate() == 1) {
+		if (typeof localStorage !== undefined) {
+			let b = localStorage.getItem("hahaDone");
+			if (b && b === '1') return;
+		}
 		let style = document.createElement('style');
 		style.innerHTML = 'img { transform: rotate(180deg); }';
 		document.head.appendChild(style);
+	}
+	else {
+		if (typeof localStorage !== undefined) {
+			localStorage.removeItem("hahaDone");
+		}	
 	}
 }
 
