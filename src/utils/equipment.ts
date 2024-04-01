@@ -325,7 +325,7 @@ export function reverseDeduction<T extends BuffBase>(item: EquipmentItem, items:
 
 export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemWithBonus[], overallOnly?: boolean) {
 	let qps = quipment.filter(f => isQuipmentMatch(crew, f.item));
-	crew.quipment_score = qps.map(m => Object.values(m.bonusInfo.bonuses).map((n: Skill) => n.core + n.range_min + n.range_max)).flat().reduce((p, n) => p + n, 0) * crew.max_rarity;
+	crew.quipment_score = qps.map(m => Object.values(m.bonusInfo.bonuses).map((n: Skill) => n.skill && n.skill in crew.base_skills && crew.base_skills[n.skill].core ? n.core + n.range_min + n.range_max : 0)).flat().reduce((p, n) => p + n, 0) * crew.max_rarity;
 	if (overallOnly) return;
 
 	crew.quipment_scores ??= {		
