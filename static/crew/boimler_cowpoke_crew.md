@@ -1,7 +1,7 @@
 ---
 name: Cowpoke Boimler
 rarity: 4
-series: low
+series: original
 memory_alpha:
 bigbook_tier: 4
 in_portal: true
