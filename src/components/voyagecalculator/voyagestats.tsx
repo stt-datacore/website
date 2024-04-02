@@ -1,32 +1,30 @@
 import React, { Component } from 'react';
-import { Table, Grid, Header, Accordion, Popup, Segment, Icon, Image, Message, Dimmer, Loader } from 'semantic-ui-react';
+import { Table, Grid, Header, Accordion, Segment, Message, Dimmer, Loader } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 
-import CONFIG from '../CONFIG';
-
-import LineupViewer from './lineupviewer';
+import { LineupViewer } from './lineupviewer';
 import ItemDisplay from '../itemdisplay';
 
 import Worker from 'worker-loader!../../workers/unifiedWorker';
 import { ResponsiveLineCanvas } from '@nivo/line';
 import themes from '../nivo_themes';
-import { PlayerCrew, PlayerData, PlayerEquipmentItem, Voyage } from '../../model/player';
+import { PlayerCrew, PlayerData, PlayerEquipmentItem, Reward, Voyage } from '../../model/player';
 import { Ship } from '../../model/ship';
-import { Estimate, VoyageConsideration, VoyageStatsConfig } from '../../model/worker';
+import { Estimate, ExtendedVoyageStatsConfig, VoyageStatsConfig } from '../../model/worker';
 import { CrewMember } from '../../model/crew';
-import { CrewHoverStat } from '../hovering/crewhoverstat';
-import { MergedContext } from '../../context/mergedcontext';
 import { EquipmentCommon } from '../../model/equipment';
+import { checkReward, mergeItems } from '../../utils/itemutils';
+import { GlobalContext } from '../../context/globalcontext';
 
 type VoyageStatsProps = {
-	voyageData: Voyage;
+	voyageData: Voyage;	// Note: non-active voyage being passed here as IVoyageCalcConfig
 	numSims?: number;
-	ships: Ship[] | VoyageConsideration[];
+	ships: Ship[];
 	showPanels: string[];
 	estimate?: Estimate;
 	roster?: PlayerCrew[];
+	rosterType?: 'allCrew' | 'myCrew';
 	playerItems?: PlayerEquipmentItem[];
-	dbid: string | number;
 	allCrew?: CrewMember[];
 	allItems?: EquipmentCommon[];
 	playerData?: PlayerData;
@@ -50,9 +48,12 @@ interface Bins {
 }
 
 export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
+
 	worker: Worker;
 	ship?: Ship;
-	config: VoyageStatsConfig;
+	config: ExtendedVoyageStatsConfig;
 
 	static defaultProps = {
 		roster: [],
@@ -71,10 +72,8 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 		if (!voyageData)
 			return;
-		console.log("VoyageStat Ships");
-		console.log(ships);
 
-		this.ship = ships.length == 1 ? (ships[0] as VoyageConsideration).ship : (ships as Ship[]).find(s => s.id == voyageData.ship_id);
+		this.ship = ships.length == 1 ? ships[0] : ships.find(s => s.id == voyageData.ship_id);
 
 		if (!estimate) {
 			const duration = voyageData.voyage_duration ?? 0;
@@ -107,13 +106,42 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 			this.worker = new Worker();
 			this.worker.addEventListener('message', message => this.setState({ estimate: message.data.result }));
-			this.worker.postMessage({ worker: 'voyageEstimate', config: this.config });
-		}
+			this.beginCalc();
+		}	
+	}
+
+	private beginCalc() {
+		if (this.config.elapsedSeconds) {
+			let nextHour = Math.ceil(this.config.elapsedSeconds / 3600);
+			if (nextHour % 2) nextHour++;
+
+			if (nextHour >= 18 && (this.config?.selectedTime === undefined || this.config.selectedTime <= nextHour)) {				
+				this.config.selectedTime = nextHour + 4;
+			}
+
+			if (this.config?.selectedTime !== undefined) {
+				if (this.config.selectedTime <= nextHour) {
+					this.config.selectedTime = nextHour + 2;
+				}
+				this.worker.postMessage({ worker: 'voyageEstimateExtended', config: this.config });
+				return;
+			}
+		}		
+		
+		this.worker.postMessage({ worker: 'voyageEstimate', config: this.config });		
 	}
 
 	componentWillUnmount() {
 		if (this.worker)
 			this.worker.terminate();
+	}
+
+	componentDidUpdate(prevProps: Readonly<VoyageStatsProps>, prevState: Readonly<VoyageStatsState>, snapshot?: any): void {
+		if (prevProps.playerData !== this.props.playerData) {
+			if (this.worker) {
+				this.beginCalc();
+			}
+		}
 	}
 
 	_formatTime(time: number) {
@@ -214,9 +242,9 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	}
 
 	_renderCrew() {
-		const { voyageData, roster, dbid } = this.props;
+		const { voyageData, roster, rosterType } = this.props;
 		if (!this.ship || !roster) return <></>;
-		return <LineupViewer voyageData={voyageData} ship={this.ship} roster={roster} dbid={`${dbid}`} />;
+		return <LineupViewer voyageConfig={voyageData} ship={this.ship} roster={roster} rosterType={rosterType} />;
 	}
 
 	_renderEstimateTitle(needsRevive: boolean = false) {
@@ -227,13 +255,54 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			: 'Estimate: ' + this._formatTime(estimate['refills'][0].result);
 	}
 
+	_renderPrettyCost(cost: number, idx: number) {
+		if (this.context.player.playerData && cost) {
+
+			let revivals = this.context.player.playerData.player.character.items.find(f => f.symbol === 'voyage_revival');
+
+			if (revivals && revivals.quantity && revivals.quantity >= idx) {
+				let globalItem = this.context.core.items.find(f => f.symbol === 'voyage_revival');
+				if (globalItem) {
+					revivals = mergeItems([revivals], [globalItem])[0];
+					return <div style={{
+						display: "flex",
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "left"
+					}}>
+						<div style={{width: "32px"}}>
+						<img style={{height:"24px", margin:"0.5em"}} src={`${process.env.GATSBY_ASSETS_URL}${revivals.imageUrl}`} />
+						</div>
+						<span>{idx} / {revivals.quantity} Voyage Revivals</span>
+					</div>				
+				}
+			}
+			else {
+				return <div style={{
+					display: "flex",
+					flexDirection: "row",
+					alignItems: "center",
+					justifyContent: "left"
+				}}>
+					<div style={{width: "32px"}}>
+					<img style={{height:"24px", margin:"0.5em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} />
+					</div>
+					<span>{cost} Dilithium</span>
+				</div>				
+			}
+		}	
+
+
+		return <>{cost == 0 || 'Costing ' + cost + ' dilithium'}</>
+	}
+
 	_renderEstimate(needsRevive: boolean = false) {
 		const estimate  = this.props.estimate ?? this.state.estimate;
 
 		if (!estimate)
 			return (<div>Calculating estimate. Please wait...</div>);
 
-		const renderEst = (label, refills) => {
+		const renderEst = (label, refills, idx) => {
 			if (refills >= estimate['refills'].length) return (<></>);
 			const est = estimate['refills'][refills];
 			return (
@@ -242,19 +311,28 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					{!isMobile && <td>90%: {this._formatTime(est.safeResult)}</td>}
 					<td>99%: {this._formatTime(est.saferResult)}</td>
 					<td>Chance of {est.lastDil} hour dilemma: {Math.floor(est.dilChance)}%</td>
-					<td>{est.refillCostResult == 0 || 'Costing ' + est.refillCostResult + ' dilithium'}</td>
+					<td>{this._renderPrettyCost(est.refillCostResult, idx)}</td>
 				</tr>
 			);
 		};
 
 		if (estimate.deterministic) {
 			let extendTime = estimate['refills'][1].result - estimate['refills'][0].result;
+			let refill = 0;
 
 			return (
 				<div>
 					The voyage will end at {this._formatTime(estimate['refills'][0].result)}.
 					Subsequent refills will extend it by {this._formatTime(extendTime)}.
-					For a 20 hour voyage you need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium.
+					{/* 
+					For a {this.config?.selectedTime ?? 20} hour voyage you need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.) */}
+										<Table style={{marginTop:"0.5em"}}><tbody>
+						{!needsRevive && renderEst("Estimate", refill++, 0)}
+						{renderEst("1 Refill", refill++, 1)}
+						{renderEst("2 Refills", refill++, 2)}
+					</tbody></Table>
+					<p>For a {this.config?.selectedTime ?? 20} hour voyage you will need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.)</p>
+
 				</div>
 			);
 		} else {
@@ -263,11 +341,11 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			return (
 				<div>
 					<Table><tbody>
-						{!needsRevive && renderEst("Estimate", refill++)}
-						{renderEst("1 Refill", refill++)}
-						{renderEst("2 Refills", refill++)}
+						{!needsRevive && renderEst("Estimate", refill++, 0)}
+						{renderEst("1 Refill", refill++, 1)}
+						{renderEst("2 Refills", refill++, 2)}
 					</tbody></Table>
-					<p>The 20 hour voyage needs {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium.</p>
+					<p>For a {this.config?.selectedTime ?? 20} hour voyage you will need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.)</p>
 					{estimate.final && this._renderChart()}
 				</div>
 			);
@@ -307,7 +385,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 						h += 25;
 					}
 				}
-			}	
+			}
 		}
 
 		const dupeHonor = h + honor;
@@ -333,7 +411,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
 					style={{width : '16px', verticalAlign: 'text-bottom'}}
 				/>
-					
+
 					{" if all duplicate crew are dismissed)"}</span>
 				)}
 			</span>
@@ -400,29 +478,33 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			<>
 			<div>
 				<Grid columns={isMobile ? 2 : 5} centered padded>
-					{rewards.map((entry, idx) => (
+					{rewards.map((reward: Reward, idx) => {
+						checkReward(this.props.allItems ?? [], reward);
+						return (
 						<Grid.Column key={idx}>
 							<Header
 								style={{ display: 'flex' }}
 								icon={
 									<ItemDisplay
-										src={assetURL(entry.icon.file)}
+										quantity={reward.quantity}
+										src={assetURL(reward.icon?.file)}
 										size={48}
-										rarity={rarity(entry)}
-										maxRarity={entry.rarity}
-										hideRarity={hideRarity(entry)}
-										targetGroup={entry.type === 1 ? 'voyageRewards_crew' : 'voyageRewards_item'}
-										itemSymbol={getCrewSymbol(entry)}
+										rarity={rarity(reward)}
+										maxRarity={reward.rarity}
+										hideRarity={hideRarity(reward)}
+										targetGroup={reward.type === 1 ? 'voyageRewards_crew' : 'voyageRewards_item'}
+										itemSymbol={getCrewSymbol(reward)}
 										allCrew={this.props.allCrew}
 										allItems={this.props.allItems}
 										playerData={this.props.playerData}
 									/>
 								}
-								content={entry.name}
-								subheader={`Got ${entry.quantity?.toLocaleString()} ${ownedFuncs[entry.type](entry)}`}
+								content={reward.name}
+								subheader={`Got ${reward.quantity?.toLocaleString()} ${ownedFuncs[reward.type](reward)}`}
 							/>
 						</Grid.Column>
-					))}
+					)}
+				)}
 				</Grid>
 			</div>
 			</>

@@ -6,13 +6,14 @@ import LazyImage from '../components/lazyimage';
 import EventInfoModal from '../components/event_info_modal';
 import { EventLeaderboard } from '../model/events';
 import { DataContext } from '../context/datacontext';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { PlayerContext } from '../context/playercontext';
 import { PlayerData } from '../model/player';
 import { prepareProfileData } from '../utils/crewutils';
 import { BuffStatTable } from '../utils/voyageutils';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
+import DataPageLayout from '../components/page/datapagelayout';
 
 type EventInstance = {
 	event_details?: boolean,
@@ -25,45 +26,11 @@ type EventInstance = {
 
  
 const EventsPage = () => {
-	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items']) : false;
-	const playerContext = React.useContext(PlayerContext);
-	const { strippedPlayerData, buffConfig } = playerContext;
-	let playerData: PlayerData | undefined = undefined;
-
-	if (isReady && strippedPlayerData && strippedPlayerData.stripped && strippedPlayerData?.player?.character?.crew?.length) {
-		playerData = JSON.parse(JSON.stringify(strippedPlayerData));
-		if (playerData) prepareProfileData("EVENTS", coreData.crew, playerData, new Date());
-	}
-
-	let maxBuffs: BuffStatTable | undefined;
-
-	maxBuffs = playerContext.maxBuffs;
-	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
-		maxBuffs = coreData.all_buffs;
-	}
 
 	return (
-		<Layout>
-			{!isReady &&
-				<div className='ui medium centered text active inline loader'>Loading data...</div>
-			}
-			{isReady &&
-				<React.Fragment>
-					<MergedContext.Provider value={{
-						allCrew: coreData.crew,
-						playerData: playerData ?? {} as PlayerData,
-						buffConfig: buffConfig,
-						items: coreData.items,
-						maxBuffs: maxBuffs,
-						gauntlets: coreData.gauntlets
-					}}>
-						<EventsPageComponent />
-					</MergedContext.Provider>
-				</React.Fragment>
-			}
-
-		</Layout>
+		<DataPageLayout demands={['crew', 'cadet', 'all_buffs', 'items', 'ship_schematics']}>
+			<EventsPageComponent />
+		</DataPageLayout>
 	);
 
 }
@@ -97,13 +64,9 @@ function EventsPageComponent() {
 	}, []);
 
 	return (
-		<Layout>
-			<></>
 			<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 				<Header as='h2'>Events</Header>
-				<CrewHoverStat targetGroup='event_info' useBoundingClient={true}  />
-				<ItemHoverStat targetGroup='event_info_items' useBoundingClient={true} />
-
+				
 				{loadingError && (
 					<Message negative>
 						<Message.Header>Unable to load event information</Message.Header>
@@ -150,7 +113,7 @@ function EventsPageComponent() {
 					</Modal>
 				)}
 			</Container>			
-		</Layout>
+		
 	);
 }
 

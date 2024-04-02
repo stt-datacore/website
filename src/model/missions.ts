@@ -1,8 +1,51 @@
-import { Icon } from "semantic-ui-react"
 import { Ship } from "./ship"
-import { PotentialReward } from "./player"
+import { BuffBase, PotentialReward, Reward } from "./player"
+import { Icon } from "./game-elements"
 
-export interface Mission {
+export interface QuestFilterConfig {
+  traits?: MissionTraitBonus[];
+  quest?: Quest;
+  challenges?: MissionChallenge[];    
+  ignoreChallenges?: number[];
+  paths?: number[][];    
+  mastery: number;
+  idleOnly?: boolean;
+  considerFrozen?: boolean;
+  considerUnowned?: boolean;
+  qpOnly?: boolean;
+  ignoreQpConstraint?: boolean;
+  includeCurrentQp?: boolean;
+  showAllSkills?: boolean;
+  cheapestFirst?: boolean;
+  buildableOnly?: boolean;
+  alwaysCrit?: boolean;
+  noTraitBonus?: boolean;
+  includePartials?: boolean;
+  requiredCrew?: number[];
+}
+
+export interface ProtoMission {
+  id: number
+  symbol: string
+  description?: string
+  episode: number
+  episode_title?: string
+  episode_portrait?: Icon
+  marker: number[]
+  marker_icon?: Icon
+  exclude_from_timeline?: boolean
+  total_stars: number
+  character_xp_reward?: number
+  loot_rewards?: any[]
+  quests?: Quest[]
+  type?: number
+  cadet?: boolean
+  name?: string
+  faction_id?: number
+}
+
+
+export interface Mission extends ProtoMission {
   id: number
   symbol: string
   description?: string
@@ -72,7 +115,7 @@ export interface MasteryLevel {
   jackpots?: Jackpot[]
 }
 
-export interface MissionReward {
+export interface MissionReward extends BuffBase {
   type: number
   icon: Icon
   rarity?: number
@@ -101,6 +144,7 @@ export interface Jackpot {
   id: number
   reward: MissionReward[]
   claimed: boolean
+  can_reclaim?: boolean
 }
 
 

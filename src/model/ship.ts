@@ -41,7 +41,7 @@ export interface Ship extends ShipBonus {
   attacks_per_second: number;
   shield_regen: number;
   traits?: string[];
-  traits_hidden?: any[];
+  traits_hidden?: string[];
   antimatter: number;
   id: number;
   level: number;
@@ -73,7 +73,7 @@ export interface ShipAction {
   duration: number;
   
   /** Used internally. Not part of source data. */
-  cycle_time?: number;
+  cycle_time: number;
 
   bonus_type: number;
   crew: number;

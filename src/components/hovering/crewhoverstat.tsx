@@ -1,14 +1,13 @@
 import * as React from "react";
-import { CrewMember, Skill } from "../../model/crew";
-import { CompletionState, PlayerCrew, PlayerData } from "../../model/player";
+import { CrewMember } from "../../model/crew";
+import { PlayerBuffMode, PlayerCrew, PlayerImmortalMode } from "../../model/player";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
-import { applyCrewBuffs, applySkillBuff, getSkills, navToCrewPage, prepareOne, prepareProfileData } from "../../utils/crewutils";
-import { BuffStatTable } from "../../utils/voyageutils";
+import { navToCrewPage } from "../../utils/nav";
 import { CrewPlugins, CrewPresenter } from "../item_presenters/crew_presenter";
 import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
-import { MergedContext } from "../../context/mergedcontext";
-import { PlayerBuffMode, PlayerImmortalMode, getAvailableImmortalStates, applyImmortalState, CrewPreparer } from "../item_presenters/crew_preparer";
+import { GlobalContext } from "../../context/globalcontext";
+import { CrewPreparer } from "../item_presenters/crew_preparer";
 import { toDataURL } from "../item_presenters/shipskill";
 
 const isWindow = typeof window !== 'undefined';
@@ -31,8 +30,8 @@ export interface CrewTargetState extends HoverStatTargetState {
 }
 
 export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefined, CrewTargetProps, CrewTargetState> {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     constructor(props: CrewTargetProps){
         super(props);        
@@ -40,34 +39,64 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     }
     
     protected get playerBuffMode(): PlayerBuffMode {
-        return this.tiny.getValue<PlayerBuffMode>('buffmode', 'player') ?? 'player';
+        let key = "buffmode";
+        let def = "max" as PlayerBuffMode;
+        if (this.context.player.playerData) {
+            key += "_player";
+            def = 'player';
+        }
+        let result = this.tiny.getValue<PlayerBuffMode>(key, def) ?? def;
+        if (result === 'quipment' && !(this.props.inputItem as PlayerCrew)?.immortal) result = 'player';
+
+        return result;
     }
 
     protected set playerBuffMode(value: PlayerBuffMode) {
-        this.tiny.setValue<PlayerBuffMode>('buffmode', value, true);
+        let key = "buffmode";
+        if (this.context.player.playerData) key += "_player";
+        this.tiny.setValue<PlayerBuffMode>(key, value, true);
     }
 
     protected get immortalMode(): PlayerImmortalMode {
+        let key = "immomode";
+        let mode = "full" as PlayerImmortalMode;
+
+        if (this.context.player.playerData) {
+            key += "_player";
+            mode = 'owned';
+        }
+
         let value: PlayerImmortalMode;
         if (this.props.inputItem) {
-            value = this.tiny.getValue<PlayerImmortalMode>('immomode/' + this.props.inputItem.symbol, 'owned') ?? 'owned';
+            value =
+                this.tiny.getValue<PlayerImmortalMode>(
+                    key + "/" + this.props.inputItem.symbol,
+                    mode
+                ) ?? mode;
+        } else {
+            value =
+                this.tiny.getValue<PlayerImmortalMode>(key, mode) ?? mode;
         }
-        else {
-            value = this.tiny.getValue<PlayerImmortalMode>('immomode', 'owned') ?? 'owned';
-        }
-             
+
         return value;
     }
 
     protected set immortalMode(value: PlayerImmortalMode) {
+        let key = "immomode";
+        if (this.context.player.playerData) key += "_player";
+
         if (value == this.immortalMode) return;
         if (this.props.inputItem) {
-            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.props.inputItem.symbol, value, true);
-        }
-        else {
-            this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
-        }       
+            this.tiny.setValue<PlayerImmortalMode>(
+                key + "/" + this.props.inputItem.symbol,
+                value,
+                true
+            );
+        } else {
+            this.tiny.setValue<PlayerImmortalMode>(key, value, true);
+        }        
     }
+
 
     protected get validImmortalModes(): PlayerImmortalMode[] {
         let value: PlayerImmortalMode[];
@@ -93,7 +122,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
 
     protected propertyChanged = (key: string) => {
         if (key === 'cancelled') return;
-        if (key === 'buffmode' || key.startsWith('immomode/') || key === 'immomode') {
+        if (key === 'buffmode' || key === 'buffmode_player' || key.startsWith('immomode/') || key.startsWith('immomode_player/') || key === 'immomode') {
             const { targetId } = this.state;
             if (this.current === targetId) {
                 this.tiny.setRapid('displayItem', this.prepareDisplayItem(this.props.inputItem ?? undefined));
@@ -139,8 +168,8 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
 }
 
 export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverStatProps, CrewHoverStatState> {
-    static contextType = MergedContext;
-    context!: React.ContextType<typeof MergedContext>;
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     constructor(props: CrewHoverStatProps) {
         super(props);                
@@ -167,33 +196,62 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
     }
    
     protected get playerBuffMode(): PlayerBuffMode {
-        return this.tiny.getValue<PlayerBuffMode>('buffmode', 'player') ?? 'player';
+        let key = "buffmode";
+        let def = "max" as PlayerBuffMode;
+        if (this.context.player.playerData) {
+            key += "_player";
+            def = 'player';
+        }
+        let result = this.tiny.getValue<PlayerBuffMode>(key, def) ?? def;
+        if (result === 'quipment' && !(this.state.displayItem as PlayerCrew)?.immortal) result = 'player';
+
+        return result;
     }
 
     protected set playerBuffMode(value: PlayerBuffMode) {
-        this.tiny.setValue<PlayerBuffMode>('buffmode', value, true);
+        let key = "buffmode";
+        if (this.context.player.playerData) key += "_player";
+        this.tiny.setValue<PlayerBuffMode>(key, value, true);
     }
 
     protected get immortalMode(): PlayerImmortalMode {
+        let key = "immomode";
+        let mode = "full" as PlayerImmortalMode;
+
+        if (this.context.player.playerData) {
+            key += "_player";
+            mode = 'owned';
+        }
+
         let value: PlayerImmortalMode;
         if (this.state.displayItem) {
-            value = this.tiny.getValue<PlayerImmortalMode>('immomode/' + this.state.displayItem.symbol, 'owned') ?? 'owned';
+            value =
+                this.tiny.getValue<PlayerImmortalMode>(
+                    key + "/" + this.state.displayItem.symbol,
+                    mode
+                ) ?? mode;
+        } else {
+            value =
+                this.tiny.getValue<PlayerImmortalMode>(key, mode) ?? mode;
         }
-        else {
-            value = this.tiny.getValue<PlayerImmortalMode>('immomode', 'owned') ?? 'owned';
-        }
-             
+
         return value;
     }
 
     protected set immortalMode(value: PlayerImmortalMode) {
+        let key = "immomode";
+        if (this.context.player.playerData) key += "_player";
+
         if (value == this.immortalMode) return;
         if (this.state.displayItem) {
-            this.tiny.setValue<PlayerImmortalMode>('immomode/' + this.state.displayItem.symbol, value, true);
-        }
-        else {
-            this.tiny.setValue<PlayerImmortalMode>('immomode', value, true);
-        }
+            this.tiny.setValue<PlayerImmortalMode>(
+                key + "/" + this.state.displayItem.symbol,
+                value,
+                true
+            );
+        } else {
+            this.tiny.setValue<PlayerImmortalMode>(key, value, true);
+        }        
     }
 
     protected get validImmortalModes(): PlayerImmortalMode[] {
@@ -239,7 +297,8 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
                 openCrew(displayItem)
             }
             else {
-                const { buffConfig, allCrew, playerData } = this.context;
+                const { buffConfig, playerData } = this.context.player;
+                const { crew: allCrew } = this.context.core;
                 if (playerData && "player" in playerData) {
                     navToCrewPage(displayItem, playerData.player.character.crew, buffConfig, allCrew);
                 }

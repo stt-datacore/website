@@ -134,6 +134,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
         return ship ? (<div style={{ 
                         fontSize: "12pt", 
                         display: "flex", 
+                        textAlign: 'left',
                         flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
                         //width: window.innerWidth < mobileWidth ? "calc(100vw - 16px)" : undefined
                         

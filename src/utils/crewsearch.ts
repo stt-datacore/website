@@ -2,6 +2,7 @@ import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
 import { Filter } from '../model/game-elements';
 import { PlayerCrew } from '../model/player';
+import { skillToShort } from './crewutils';
 
 export function crewMatchesSearchFilter(crew: PlayerCrew | CrewMember, filters: Filter[], filterType: string | null | undefined): boolean {
 	if (filters.length == 0 || !filterType) return true;
@@ -65,7 +66,13 @@ export function crewMatchesSearchFilter(crew: PlayerCrew | CrewMember, filters: 
 						(crew.action.ability && crew.action.ability.type !== undefined &&
 							(matchesFilter(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type], condition.value) ||
 								matchesFilter(CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition], condition.value)));
-				}
+				} else if (condition.keyword === 'skill_order' || condition.keyword === 'order') {
+					let sko = crew.skill_order.map(v => skillToShort(v)).join("/").toLowerCase();
+					conditionResult = sko.startsWith(condition.value.toLowerCase());
+				} 
+				// else if (condition.keyword === 'obtained') {					
+				// 	conditionResult = crew.obtained.toLowerCase().includes(condition.value.toLowerCase());
+				// }
 				meetsAllConditions = meetsAllConditions && (condition.negated ? !conditionResult : conditionResult);
 			}
 

@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import { Header, Item, Comment } from 'semantic-ui-react';
 import { graphql } from 'gatsby';
 
-import Layout from '../components/layout';
-
 import { getEpisodeName } from '../utils/episodes';
 
 import CONFIG from '../components/CONFIG';
+import DataPageLayout from '../components/page/datapagelayout';
 
 type StaticEpisodePageProps = {
 	data: {
@@ -15,7 +14,7 @@ type StaticEpisodePageProps = {
 };
 
 function imageFileUrl(img: any) {
-	return img.file.substr(1).replace('/', '_') + '.png';
+	return img.file.slice(1).replace('/', '_') + '.png';
 }
 
 class StaticEpisodePage extends Component<StaticEpisodePageProps> {
@@ -165,8 +164,8 @@ class StaticEpisodePage extends Component<StaticEpisodePageProps> {
 
 		const episode = allEpisodesJson.edges[0].node;
 		return (
-			<Layout title={getEpisodeName(episode)}>
-				<Header as='h2'>{getEpisodeName(episode)}</Header>
+			<DataPageLayout pageTitle={getEpisodeName(episode)}>
+				<React.Fragment>
 				<p dangerouslySetInnerHTML={{ __html: episode.description }} />
 
 				<Item.Group divided>
@@ -182,7 +181,8 @@ class StaticEpisodePage extends Component<StaticEpisodePageProps> {
 						</Item>
 					))}
 				</Item.Group>
-			</Layout>
+				</React.Fragment>
+			</DataPageLayout>
 		);
 	}
 }

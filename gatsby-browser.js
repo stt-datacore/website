@@ -2,6 +2,7 @@ import React from 'react';
 
 import { DataProvider } from './src/context/datacontext';
 import { PlayerProvider } from './src/context/playercontext';
+import { GlobalProvider } from './src/context/globalcontext';
 
 export const wrapPageElement = ({ element }) => {
 	return (
@@ -15,7 +16,9 @@ export const wrapRootElement = ({ element }) => {
 	return (
 		<DataProvider>
 			<PlayerProvider>
-				{element}
+				<GlobalProvider>
+					{element}
+				</GlobalProvider>
 			</PlayerProvider>
 		</DataProvider>
 	);

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Icon, Form, Checkbox, Step } from 'semantic-ui-react';
+import { Icon, Form, Checkbox, Step, Popup } from 'semantic-ui-react';
+
+import { GlobalContext } from '../../context/globalcontext';
 
 import CONFIG from '../CONFIG';
 
@@ -8,41 +10,44 @@ import AssignmentsList from './assignmentslist';
 import RunningList from './runninglist';
 import { Shuttlers, Shuttle, ShuttleSeat, CrewScores, getSkillSetId, ISeatAssignment, ICrewSkillSets, ICrewScore } from './shuttleutils';
 import { useStateWithStorage } from '../../utils/storage';
-import { PlayerCrew } from '../../model/player';
-import { ShuttleAdventure } from '../../model/shuttle';
-import { EventData } from '../../utils/events';
+import { IEventData, IRosterCrew } from '../../components/eventplanner/model';
 
 type ShuttleHelperProps = {
 	helperId: string;
 	groupId: string;
 	dbid: string;
-	crew: PlayerCrew[];
-	eventData?: EventData;
+	crew: IRosterCrew[];
+	eventData?: IEventData;
 };
 
 const ShuttleHelper = (props: ShuttleHelperProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { playerData, ephemeral } = globalContext.player;
+
 	const [shuttlers, setShuttlers] = useStateWithStorage<Shuttlers>(props.dbid+'/shuttlers/setups', new Shuttlers(), { rememberForever: true, onInitialize: variableReady });
 	const [assigned, setAssigned] = useStateWithStorage<ISeatAssignment[]>(props.dbid+'/shuttlers/assigned', [], { rememberForever: true, onInitialize: variableReady });
-
-	const [activeShuttles, setActiveShuttles] = useStateWithStorage<ShuttleAdventure[] | undefined>('tools/activeShuttles', undefined);
 
 	const [considerActive, setConsiderActive] = useStateWithStorage(props.helperId+'/considerActive', true);
 	const [considerVoyage, setConsiderVoyage] = useStateWithStorage(props.helperId+'/considerVoyage', false);
 	const [considerFrozen, setConsiderFrozen] = useStateWithStorage(props.helperId+'/considerFrozen', false);
+	const [excludeQuipped, setExcludeQuipped] = useStateWithStorage(props.helperId+'/excludeQuipped', false);
+	const [considerShared, setConsiderShared] = useStateWithStorage(props.helperId+'/considerShared', true);
 
 	const [loadState, setLoadState] = React.useState(0);
 	const [calcState, setCalcState] = React.useState(0);
 	const [crewScores, setCrewScores] = React.useState<CrewScores>(new CrewScores());
 	const [activeStep, setActiveStep] = React.useState('missions');
 
+	const activeShuttles = ephemeral?.shuttleAdventures ?? [];
+
 	React.useEffect(() => {
 		setCrewScores(new CrewScores());
-	}, [props.crew, considerActive, considerVoyage, considerFrozen]);
+	}, [props.crew, considerActive, considerVoyage, considerFrozen, considerShared, excludeQuipped]);
 
 	// Prune old shuttles from stored values, import open shuttles from player data
 	React.useEffect(() => {
 		if (loadState === 2) initializeShuttlers();
-	}, [loadState]);
+	}, [loadState, activeShuttles]);
 
 	// Prune assignments from other events, dismissed shuttles
 	//	recommendShuttlers will prune assignments from other events anyway
@@ -57,6 +62,10 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 	if (loadState < 2) return (<><Icon loading name='spinner' /> Loading...</>);
 
 	if (calcState === 1) updateAssignments();
+
+	const canBorrow = props.eventData?.seconds_to_start === 0
+		&& !!playerData?.player.character.crew_borrows?.length
+		&& playerData?.player.squad.rank !== 'LEADER';
 
 	return (
 		<React.Fragment>
@@ -76,10 +85,29 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 					/>
 					<Form.Field
 						control={Checkbox}
-						label='Consider frozen (vaulted) crew'
+						label='Consider frozen crew'
 						checked={considerFrozen}
 						onChange={(e, { checked }) => setConsiderFrozen(checked)}
 					/>
+					<Form.Field
+						control={Checkbox}
+						label='Exclude quipped crew'
+						checked={excludeQuipped}
+						onChange={(e, { checked }) => setExcludeQuipped(checked)}
+					/>
+					{canBorrow && (
+						<Form.Field
+							control={Checkbox}
+							label={
+								<label>
+									Consider shared crew
+									<Popup content='Skill numbers of shared crew are based on your player buffs and may not match actual score' trigger={<Icon name='info' />} />
+								</label>
+							}
+							checked={considerShared}
+							onChange={(e, { checked }) => setConsiderShared(checked)}
+						/>
+					)}
 				</Form.Group>
 			</Form>
 			<Step.Group>
@@ -214,6 +242,12 @@ const ShuttleHelper = (props: ShuttleHelperProps) => {
 				continue;
 
 			if (!considerFrozen && props.crew[i].immortal > 0)
+				continue;
+
+			if ((!canBorrow || !considerShared) && props.crew[i].shared)
+				continue;
+
+			if (excludeQuipped && props.crew[i].kwipment?.some((kw: number | number[]) => typeof kw === 'number' ? !!kw : kw.some(id => !!id)))
 				continue;
 
 			todo.forEach(seat => {

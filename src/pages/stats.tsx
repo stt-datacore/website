@@ -4,9 +4,9 @@ import { ResponsiveBar } from '@nivo/bar';
 
 import themes from '../components/nivo_themes';
 
-import Layout from '../components/layout';
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
+import DataPageLayout from '../components/page/datapagelayout';
 type StatsPageProps = {};
 
 type StatsPageState = {
@@ -158,7 +158,8 @@ class StatsPage extends Component<StatsPageProps, StatsPageState> {
 		}
 
 		return (
-			<Layout title='Miscellaneous stats'>
+			<DataPageLayout>
+				<>
 				<Header as="h2">Miscellaneous stats</Header>
 				<p>
 					Contains miscellaneous information, statistics, breakdowns and charts. Stats are fresh and always
@@ -278,7 +279,7 @@ class StatsPage extends Component<StatsPageProps, StatsPageState> {
 						<p>This lists the total number of crew that have each skill.</p>
 						<div style={{ height: '500px' }}>
 							<ResponsiveBar
-								data={this.state.skillDistrib}
+								data={this.state.skillDistrib ?? []}
 								theme={themes.dark}
 								keys={['Count']}
 								indexBy="name"
@@ -323,7 +324,7 @@ class StatsPage extends Component<StatsPageProps, StatsPageState> {
 						<p>This lists the total skill value across all crew.</p>
 						<div style={{ height: '500px' }}>
 							<ResponsiveBar
-								data={this.state.skillValueDistrib}
+								data={this.state.skillValueDistrib ?? []}
 								theme={themes.dark}
 								keys={['Count']}
 								indexBy="name"
@@ -415,7 +416,8 @@ class StatsPage extends Component<StatsPageProps, StatsPageState> {
 						</div>
 					</div>
 				)}
-			</Layout>
+				</>
+			</DataPageLayout>
 		);
 	}
 }

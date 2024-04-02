@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
-import { Header, Message, Icon, Rating, Image, Popup, Grid } from 'semantic-ui-react';
+import { Header, Message, Icon, Rating, Image, Popup, Grid, Table, Checkbox, Label } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
-import Layout from '../components/layout';
 import ItemSources from '../components/itemsources';
 import ItemDisplay from '../components/itemdisplay';
 import CONFIG from '../components/CONFIG';
-import { Demand, PlayerCrew, PlayerData } from '../model/player';
-import { IDemand } from '../utils/equipment';
+import { CompletionState, Demand, PlayerCrew, PlayerData } from '../model/player';
+import { IDemand } from '../model/equipment';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { DataContext } from '../context/datacontext';
-import { MergedContext } from '../context/mergedcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { PlayerContext } from '../context/playercontext';
 import { BuffStatTable } from '../utils/voyageutils';
 import { ComputedBuff, CrewMember, Skill } from '../model/crew';
@@ -18,87 +17,60 @@ import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import { appelate } from '../utils/misc';
 import { prepareProfileData } from '../utils/crewutils';
-import ProfileItems from '../components/profile_items';
+import ProfileItems, { printRequiredTraits } from '../components/profile_items';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
-import { getItemBonuses, populateItemCadetSources } from '../utils/itemutils';
+import DataPageLayout from '../components/page/datapagelayout';
+import { formatDuration, getItemBonuses, getQuipmentCrew, populateItemCadetSources } from '../utils/itemutils';
 import { renderBonuses } from '../components/item_presenters/item_presenter';
+import { RosterTable } from '../components/crewtables/rostertable';
+import { IRosterCrew } from '../components/crewtables/model';
+import { CrewConfigTable } from '../components/crewtables/crewconfigtable';
+import { TinyStore } from '../utils/tiny';
 
 
+export interface CrewLevel { crew: PlayerCrew, level: number, owned: boolean };
 export interface EquipmentItemData {
 	item: EquipmentItem;
-	crew_levels: { crew: PlayerCrew, level: number }[];
+	crew_levels: CrewLevel[];
 	builds: EquipmentItem[];
 }
 
-interface ItemInfoPageProps {};
+interface ItemInfoPageProps { };
 
 interface ItemInfoComponentProps {
-	isReady: boolean;
+	setHeader: (value: string) => void;
+	isReady?: boolean;
 };
 
 interface ItemInfoComponentState {
 	item_data?: EquipmentItemData;
 	errorMessage?: string;
 	items?: EquipmentItem[];
+	owned?: boolean;
 };
 
 const ItemInfoPage = () => {
-	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready ? coreData.ready(['all_buffs', 'crew', 'items', 'ship_schematics', 'cadet']) : false;
-	const playerContext = React.useContext(PlayerContext);
-	const { strippedPlayerData, buffConfig } = playerContext;
-	let playerData: PlayerData | undefined = undefined;
-	
-	const cadetforitem = isReady ? coreData?.cadet?.filter(f => f.cadet) : undefined;
 
-	if (isReady && cadetforitem?.length) {
-		populateItemCadetSources(coreData.items, cadetforitem);
-	}
-
-	if (isReady && strippedPlayerData && strippedPlayerData.stripped && strippedPlayerData?.player?.character?.crew?.length) {
-		playerData = JSON.parse(JSON.stringify(strippedPlayerData));
-		if (playerData) prepareProfileData("ITEM_INFO", coreData.crew, playerData, new Date());
-	}
-
-	let maxBuffs: BuffStatTable | undefined;
-
-	maxBuffs = playerContext.maxBuffs;
-	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && isReady) {
-		maxBuffs = coreData.all_buffs;
-	}
+	const isReady = true;
+	const [header, setHeader] = React.useState<string | undefined>('');
 
 	return (
-		<Layout>
-			{!isReady &&
-				<div className='ui medium centered text active inline loader'>Loading data...</div>
-			}
-			{isReady &&
-				<React.Fragment>
-					<MergedContext.Provider value={{
-						allCrew: coreData.crew,
-						playerData: playerData ?? {} as PlayerData,
-						buffConfig: buffConfig,
-						maxBuffs: maxBuffs,
-						items: coreData.items,
-						allShips: coreData.ships
-					}}>
-						<ItemInfoComponent isReady={isReady} />
-					</MergedContext.Provider>
-				</React.Fragment>
-			}
+		<DataPageLayout demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet']}>
+			<ItemInfoComponent isReady={isReady} setHeader={setHeader} />
+		</DataPageLayout>
 
-		</Layout>
 	);
 
 }
 
 
 class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoComponentState> {
-	static contextType = MergedContext;
-	context!: React.ContextType<typeof MergedContext>;
-	
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
+
 	private inited: boolean = false;
+	private readonly tiny = TinyStore.getStore('item_info');
 
 	constructor(props: ItemInfoComponentProps) {
 		super(props);
@@ -108,51 +80,70 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		});
 		this.state = {
 			errorMessage: undefined,
-			item_data: undefined
+			item_data: undefined,
+			owned: this.tiny.getValue<boolean>('owned') ?? false
 		};
 	}
+
+	private setOwned = (owned: boolean) => {
+		this.tiny.setValue('owned', owned, true);
+		this.inited = false;
+		this.setState({ ...this.state, owned });
+	}
+
 	componentDidUpdate() {
-		if (this.props.isReady && !this.inited) {
+		if (!this.inited) {
 			this.initData();
 		}
 	}
 
 	componentDidMount() {
-		if (this.props.isReady) {
-			this.initData();
-		}
+		this.initData();
 	}
-	
+
 	private changeComponent(symbol: string) {
-		navigate("/item_info?symbol="+symbol, { replace: false });
+		navigate("/item_info?symbol=" + symbol, { replace: false });
 		this.inited = false;
 		this.initData(symbol);
 	}
 
 	private initData(symbol?: string) {
 		let urlParams = new URLSearchParams(window.location.search);
-		const { allCrew: allcrew, items } = this.context;
+		const { crew: allcrew, items } = this.context.core;
 		let item_symbol = symbol;
 		if (!symbol && urlParams.has('symbol')) {
 			item_symbol = urlParams.get('symbol') ?? undefined;
 		}
-		if (item_symbol){
-			let item = items?.find(entry => entry.symbol === item_symbol);
+		if (item_symbol) {
+			const item = items?.find(entry => entry.symbol === item_symbol);
 
-			let crew_levels = [] as { crew: PlayerCrew, level: number }[];
+			const crew_levels = [] as { crew: PlayerCrew, level: number, owned: boolean }[];
 			allcrew.forEach(crew => {
 				crew.equipment_slots.forEach(es => {
 					if (es.symbol === item_symbol) {
+						if (this.context.player.playerData) {
+							let owned = this.context.player.playerData?.player.character.crew.find(fcrew => fcrew.symbol === crew.symbol);
+							if (owned) {
+								crew_levels.push({
+									crew: { ...JSON.parse(JSON.stringify(crew)), ...owned, rarity: owned?.rarity ?? 0 },
+									level: es.level,
+									owned: !!owned
+								});
+								return;
+							}
+						}
+
 						crew_levels.push({
-							crew: crew as PlayerCrew,
-							level: es.level
+							crew: { ...JSON.parse(JSON.stringify(crew)), immortal: CompletionState.DisplayAsImmortalStatic, rarity: 0 },
+							level: es.level,
+							owned: false
 						});
 					}
 				});
 			});
 
 			// Find other items' whose recipes use this one
-			let builds = [] as EquipmentItem[];
+			const builds = [] as EquipmentItem[];
 
 			items?.forEach(it => {
 				if (it.recipe && it.recipe.list && it.recipe.list.find(entry => entry.symbol === item_symbol)) {
@@ -164,25 +155,90 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				this.setState({ errorMessage: 'Invalid item symbol, or data not yet available for this item.' });
 				this.inited = true;
 			} else {
-				this.setState({ item_data: { item, crew_levels, builds } });
+				if (item.kwipment) {
+					const kwipment_levels = getQuipmentCrew(item, this.context.core.crew)
+						.map(crew => {
+							if (this.context.player.playerData) {
+								let owned = this.context.player.playerData?.player.character.crew.find(fcrew => fcrew.symbol === crew.symbol);
+								if (owned) {								
+									return {
+										crew: { ...crew as PlayerCrew, ...owned, rarity: owned?.rarity ?? 0 },
+										level: 100,
+										owned: !!owned
+									}
+								}
+							}
+
+							return {
+								crew: { ...crew, immortal: CompletionState.DisplayAsImmortalStatic, rarity: 0 } as PlayerCrew,
+								level: 100,
+								owned: false
+							}
+						});
+					this.setState({ item_data: { item, crew_levels: kwipment_levels, builds } });
+				}
+				else {
+					this.setState({ item_data: { item, crew_levels, builds } });
+				}
+				this.props.setHeader(item.name);
 				this.inited = true;
-			}				
+			}
+		}
+	}
+
+	private makeCrewFlavors = (crew_levels: CrewLevel[]) => {
+
+		let crews = {} as { [key: string]: number[] };
+		let owned = !!this.state.owned;
+
+		for (let cl of crew_levels) {
+			if (owned && !cl.owned) continue;
+			
+			crews[cl.crew.symbol] ??= [];
+			crews[cl.crew.symbol].push(cl.level);
 		}
 
+		let outCrew = Object.keys(crews).map((symbol) => {
+			let crew: IRosterCrew | undefined = undefined;
+			crew = crew_levels.find(f => f.crew.symbol === symbol)?.crew;
+			if (crew) {
+				//if (crew) crew = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
+				if (this.state.item_data?.item?.kwipment) {
+					crew.data = "Post-immortalization advancement";
+				}
+				else {
+					crew.data = crews[symbol].join(", ");
+				}
+			}
+			return crew;
+		});
+
+		return (outCrew?.filter(c => !!c) ?? []) as IRosterCrew[];
 	}
-	
+
 	private haveCount(symbol: string) {
-		const { playerData } = this.context;
+		const { playerData } = this.context.player;
 		return playerData?.player?.character?.items?.find(f => f.symbol === symbol)?.quantity ?? 0;
+	}
+
+	renderTableCells = (row: IRosterCrew): JSX.Element => {
+		return <Table.Cell>
+			{row.data}
+		</Table.Cell>
 	}
 
 	render() {
 		const { errorMessage, item_data } = this.state;
-		const { items, playerData } = this.context;
+		const { playerData } = this.context.player;
+		const { items } = this.context.core;
+
+		const crewTableCells = [
+			{ width: 2, column: 'data', title: 'Item Demand Levels' }
+		]
 
 		if (item_data === undefined || errorMessage !== undefined) {
 			return (
-				<Layout title='Item information'>
+				<>
 					<Header as="h3">Item information</Header>
 					{errorMessage && (
 						<Message negative>
@@ -195,11 +251,11 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 							<Icon loading name="spinner" /> Loading...
 						</div>
 					)}
-				</Layout>
+				</>
 			);
 		}
 
-		// console.log(item_data);
+		console.log(item_data);
 
 		const { bonuses, bonusText } = getItemBonuses(item_data.item);
 
@@ -220,84 +276,135 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				}
 			}
 		}
-		if (item_data.item.type === 14) {
-			console.log(item_data);
-		}
-		
-		
+
 		const haveCount = this.haveCount(item_data.item.symbol);
-		const ship = item_data.item.type === 8 ? this.context.allShips?.find(f => f.symbol === item_data.item.symbol.replace("_schematic", "")) : undefined;
+		const ship = item_data.item.type === 8 ? this.context.core.ships?.find(f => f.symbol === item_data.item.symbol.replace("_schematic", "")) : undefined;
+		const builds = item_data.builds;
+
+		const ltMarginSmall = window?.innerWidth && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "0px" : "0.375em";
+		const ltMargin = window?.innerWidth && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "0px" : "0.75em";
+		const ltMarginBig = window?.innerWidth && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "0px" : "1em";
 
 		return (
-				<div>
+			<div>
 
-					<CrewHoverStat targetGroup='item_info' />
-					<ShipHoverStat targetGroup='item_info_ships' />
-					<ItemHoverStat navigate={(symbol) => this.changeComponent(symbol)} targetGroup='item_info_items' />
+				<CrewHoverStat targetGroup='item_info' />
+				<ShipHoverStat targetGroup='item_info_ships' />
+				<ItemHoverStat navigate={(symbol) => this.changeComponent(symbol)} targetGroup='item_info_items' />
 
+				<div style={{
+					paddingTop: "2em",
+					marginBottom: "1em",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
+				}}>
+					<ItemDisplay
+						targetGroup='item_info_items'
+						playerData={playerData}
+						allItems={items}
+						itemSymbol={item_data.item.symbol}
+						style={{
+							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0 0 0.25em 0' : '0.25em 0 0 0'
+						}}
+						src={`${process.env.GATSBY_ASSETS_URL}${item_data.item.imageUrl}`}
+						size={128}
+						rarity={item_data?.item.rarity ?? 0}
+						maxRarity={item_data?.item.rarity ?? 0}
+					/>
 					<div style={{
-						paddingTop:"2em",
-						marginBottom: "1em",
-						display:"flex",
-						alignItems:"center",
-						justifyContent:"center",
-						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
+						display: "flex",
+						flexDirection: "column",
+						justifyContent: "space-evenly",
+						alignItems: "left"
 					}}>
-						<ItemDisplay
-							targetGroup='item_info_items'
-							playerData={playerData}
-							allItems={items}
-							itemSymbol={item_data.item.symbol}
-							style={{
-								margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? '0 0 0.25em 0' : '0.25em 0 0 0'
-							}}
-							src={`${process.env.GATSBY_ASSETS_URL}${item_data.item.imageUrl}`}
-							size={128}
-							rarity={item_data?.item.rarity ?? 0}
-							maxRarity={item_data?.item.rarity ?? 0}
-							/>
-						<div style={{display:"flex",
-							flexDirection: "column",
-							justifyContent: "space-evenly",
-							alignItems: "left"
+						<Header style={{
+							margin: 0,
+							marginLeft: ltMarginSmall,
+							textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'center' : 'left'
+						}} as="h2">{item_data.item.name}</Header>
+						{item_data?.item.flavor && <div style={{ textAlign: 'left', marginLeft: ltMargin, fontStyle: "italic", width: "100%" }}>{item_data.item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '')}</div>}
+						<div style={{ marginLeft: ltMargin }}>{!!bonusText?.length && renderBonuses(bonuses)}</div>
+						{!!haveCount && <div style={{ margin: 0, marginLeft: ltMarginBig, color: "lightgreen" }}>OWNED ({haveCount})</div>}
+						{!!item_data.item.duration &&
+							<div
+								style={{
+									textAlign: "left",
+									//fontStyle: "italic",
+									fontSize: "1em",
+									marginTop: "2px",
+									marginBottom: "4px",
+									marginLeft: ltMargin
+								}}
+							>
+								<div><b>Duration:</b>&nbsp;
+									<i>{formatDuration(item_data.item.duration)}</i></div>
+							</div>}
+						{!!item_data.item.max_rarity_requirement &&
+							<div style={{
+								textAlign: "left",
+								//fontStyle: "italic",
+								fontSize: "1em",
+								marginTop: "2px",
+								marginBottom: "4px",
+								marginLeft: ltMargin
 							}}>
-							<Header style={{
-								margin: 0, 
-								marginLeft: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 0 : "0.5em",
-								textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'center' : 'left'
-								}} as="h2">{item_data.item.name}</Header>
-							<div style={{marginLeft:"0.75em"}}>{!!bonusText?.length && renderBonuses(bonuses)}</div>
-							{!!haveCount && <div style={{margin: 0, marginLeft: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 0 : "1em", color:"lightgreen"}}>OWNED ({haveCount})</div>}
-						</div>
-					
+								Equippable by up to&nbsp;<span style={{
+									color: CONFIG.RARITIES[item_data.item.max_rarity_requirement].color,
+									fontWeight: 'bold'
+								}}>
+									{CONFIG.RARITIES[item_data.item.max_rarity_requirement].name}
+								</span>
+								&nbsp;crew.
+							</div>}
+						{!!item_data.item.kwipment && !!item_data.item.traits_requirement?.length &&
+							<div
+								style={{
+									textAlign: "left",
+									//fontStyle: "italic",
+									fontSize: "1em",
+									marginTop: "2px",
+									marginBottom: "4px",
+									marginLeft: ltMargin
+								}}
+							>
+								<div><b>Required Traits:</b>&nbsp;
+									<i>
+										{printRequiredTraits(item_data.item)}
+									</i></div>
+							</div>}
 					</div>
-					{item_data?.item.flavor && <div style={{textAlign: 'center', fontStyle: "italic", width:"100%"}}>{item_data.item.flavor}</div>}
-				<br />
+
+				</div>
 
 				{item_data.item.type === 8 && !!ship &&
-					<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center"}}>
+					<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
 						<ShipTarget inputItem={ship} targetGroup='item_info_ships'>
-							<Link to={`/playertools?tool=ship&ship=${ship.symbol}`}>
-								<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center"}}>
-								<ItemDisplay 
-									src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
-									size={128}
-									rarity={ship.rarity}
-									maxRarity={ship.rarity}
+							<Link to={`/ship_info?ship=${ship.symbol}`}>
+								<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
+									<ItemDisplay
+										src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
+										size={128}
+										rarity={ship.rarity}
+										maxRarity={ship.rarity}
 									/>
 									{ship.name}
 								</div>
 							</Link>
 						</ShipTarget>
-						
+
 					</div>}
 
 				{!!item_data.item.recipe && !!item_data.item.recipe.list?.length && (
 					<div>
-						<Header as="h3">Craft it for <img title={"Chronotons"} style={{width: "1.5em", margin: 0, padding: 0, marginBottom: "2px"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} /> {item_data.item.recipe.craftCost.toLocaleString()} using this recipe:</Header>
+						<Header as="h3">Craft it for <img title={"Chronotons"} style={{ width: "1.5em", margin: 0, padding: 0, marginBottom: "2px" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} /> {item_data.item.recipe.craftCost.toLocaleString()} using this recipe:</Header>
 						<Grid columns={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 1 : 3} padded>
 							{demands.map((entry, idx) => {
 								if (!entry.equipment) return <></>
+								const hc = this.haveCount(entry.equipment.symbol);
+								const scolor = hc < entry.count ? 'tomato' : undefined;
+
 								return <Grid.Column key={idx}>
 									<Popup
 										trigger={
@@ -307,9 +414,9 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 													<ItemDisplay
 														playerData={playerData}
 														itemSymbol={entry.equipment.symbol}
-														allItems={this.context.items}
+														allItems={this.context.core.items}
 														targetGroup='item_info_items'
-														style={{ marginRight: "0.5em"}}
+														style={{ marginRight: "0.5em" }}
 														src={`${process.env.GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
 														size={48}
 														maxRarity={entry.equipment.rarity}
@@ -317,11 +424,11 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 													/>
 												}
 												content={entry.equipment.name}
-												subheader={`Need ${entry.count} ${playerData?.player ? "(Have " + this.haveCount(entry.equipment.symbol) + ")" : ""} ${entry.factionOnly ? ' (Faction Only)' : ''}`}
+												subheader={<div style={{fontSize:"0.8em"}}>Need {entry.count} {playerData?.player ? <>(Have <span style={{color:scolor}}>{hc}</span>)</> : ""} {entry.factionOnly ? ' (Faction Only)' : ''}</div>}
 											/>
 										}
 										header={
-											<a style={{cursor: "pointer"}} onClick={(e) => this.changeComponent(entry.symbol)}>
+											<a style={{ cursor: "pointer" }} onClick={(e) => this.changeComponent(entry.symbol)}>
 												{CONFIG.RARITIES[entry.equipment.rarity].name + ' ' + entry.equipment.name}
 											</a>
 										}
@@ -330,7 +437,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 										wide
 									/>
 								</Grid.Column>
-								})}
+							})}
 						</Grid>
 						<br />
 
@@ -348,66 +455,30 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				{item_data.crew_levels.length > 0 && (
 					<div>
 						<Header as="h3">Equippable by this crew:</Header>
-						<Grid columns={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 1 : 3}  padded>
-							{item_data.crew_levels.map((entry, idx) => (
-								<Grid.Column key={idx}>
-									<Header
-										style={{ display: 'flex' }}
-										icon={
-											<div style={{marginRight:"0.5em"}}>
-											<ItemDisplay
-												targetGroup='item_info'
-												allCrew={this.context.allCrew}
-												playerData={this.context.playerData}						
-												itemSymbol={entry.crew.symbol}											
-												src={`${process.env.GATSBY_ASSETS_URL}${entry.crew.imageUrlPortrait}`}
-												size={60}
-												maxRarity={entry.crew.max_rarity}
-												rarity={entry.crew.rarity ?? entry.crew.max_rarity ?? 0}
-											/>
-											</div>
-										}
-										content={<Link to={`/crew/${entry.crew.symbol}/`}>{entry.crew.name}</Link>}
-										subheader={`Level ${entry.level}`}
-									/>
-								</Grid.Column>
-							))}
-						</Grid>
+						{!!this.context.player.playerData &&
+							<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: "0.5em" }}>
+								<Checkbox id="item_info_owned_check_boolean" checked={this.state.owned} onChange={(e, { checked }) => this.setOwned(checked || false)} />
+								<label htmlFor="item_info_owned_check_boolean" style={{ margin: "0.5em", cursor: "pointer" }}>Show only owned crew</label>
+							</div>}
+						<CrewConfigTable
+							tableConfig={crewTableCells}
+							renderTableCells={this.renderTableCells}
+							crewFilters={[]}
+							pageId='item_info'							
+							rosterCrew={this.makeCrewFlavors(item_data.crew_levels)}
+							rosterType='allCrew'
+						/>
 						<br />
 					</div>
 				)}
 
-				{item_data.builds.length > 0 && (
+				{!!builds && builds.length > 0 && (
 					<div>
 						<Header as="h3">Is used to build these:</Header>
-						<ProfileItems pageName='item_info' hideOwnedInfo={true} data={item_data.builds} navigate={(symbol) => this.changeComponent(symbol)} />
-						{/* <Grid columns={3} padded>
-							{item_data.builds.map((entry, idx) => (
-								<Grid.Column key={idx}>
-									<Header
-										style={{ display: 'flex', cursor: 'zoom-in' }}
-										icon={
-											<div style={{marginRight:"0.5em"}}>
-											<ItemDisplay
-												src={`${process.env.GATSBY_ASSETS_URL}${entry.imageUrl}`}
-												size={48}
-												maxRarity={entry.rarity}
-												rarity={entry.rarity}
-											/>
-											</div>
-										}
-										content={
-											<a onClick={(e) => this.changeComponent(entry.symbol)}>
-												{CONFIG.RARITIES[entry.rarity].name + ' ' + entry.name}
-											</a>
-										}
-									/>
-								</Grid.Column>
-							))}
-						</Grid> */}
+						<ProfileItems pageName='item_info' noWorker={true} hideOwnedInfo={true} data={builds} navigate={(symbol) => this.changeComponent(symbol)} />
 					</div>
 				)}
-				</div>
+			</div>
 		);
 	}
 }

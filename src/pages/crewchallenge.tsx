@@ -2,12 +2,12 @@ import React from 'react';
 import { InView } from 'react-intersection-observer';
 import { Header, Icon, Menu, Grid, Input, Button, Table, Image, Rating, Divider, Statistic, Modal, Message, Popup, Dropdown, SemanticCOLORS } from 'semantic-ui-react';
 
-import Layout from '../components/layout';
-
 import { useStateWithStorage } from '../utils/storage';
 import { PlayerCrew } from '../model/player';
-import { BaseSkills, Skill } from '../model/crew';
-import { crewVariantIgnore } from '../utils/crewutils';
+import { BaseSkills, CrewMember, Skill } from '../model/crew';
+import DataPageLayout from '../components/page/datapagelayout';
+import { crewVariantIgnore, getVariantTraits } from '../utils/crewutils';
+import { GlobalContext } from '../context/globalcontext';
 
 const PAGE_TITLE = 'Worfle Crew Challenge';
 const GAME_NAME = 'Worfle';
@@ -67,11 +67,11 @@ class PlayerStats {
 const PortalCrewContext = React.createContext<PlayerCrew[]>([]);
 
 const CrewChallenge = () => {
-	const [portalCrew, setPortalCrew] = React.useState<PlayerCrew[] | undefined>(undefined);
+	const [portalCrew, setPortalCrew] = React.useState<CrewMember[]>([]);
+	const context = React.useContext(GlobalContext);
 
-	async function fetchAllCrew() {
-		const crewResponse = await fetch('/structured/crew.json');
-		const allcrew = await crewResponse.json();
+	function fetchAllCrew() {
+		const allcrew = context.core.crew;
 		// Sort here to ensure consistency for seedrandom
 		const portalcrew = allcrew.filter(crew => crew.in_portal).sort((a, b) => a.name.localeCompare(b.name));
 		// Fix incorrect series; changes here are consistent with unofficial Trait Audit thread:
@@ -104,18 +104,14 @@ const CrewChallenge = () => {
 
 	React.useEffect(() => {
 		fetchAllCrew();
-	}, []);
+	}, [context]);
 
 	if (!portalCrew) {
-		return (
-			<Layout title={PAGE_TITLE}>
-				<Icon loading name='spinner' /> Loading...
-			</Layout>
-		);
+		context.core.spin();
 	}
 
 	return (
-		<PortalCrewContext.Provider value={portalCrew}>
+		<PortalCrewContext.Provider value={portalCrew as PlayerCrew[]}>
 			<CrewChallengeLayout />
 		</PortalCrewContext.Provider>
 	);
@@ -131,19 +127,20 @@ const CrewChallengeLayout = () => {
 	];
 
 	return (
-		<Layout title={PAGE_TITLE}>
-			<Header as='h2'>{PAGE_TITLE}</Header>
-			<Menu>
-				{menuItems.map(item => (
-					<Menu.Item key={item.name} name={item.name} active={activeItem === item.name} onClick={() => setActiveItem(item.name)}>
-						{item.title}
-					</Menu.Item>
-				))}
-			</Menu>
-			{activeItem === 'daily' && <DailyGame />}
-			{activeItem === 'practice' && <PracticeGame />}
-			{activeItem === 'instructions' && renderInstructions()}
-		</Layout>
+		<DataPageLayout pageTitle={PAGE_TITLE}>
+			<React.Fragment>
+				<Menu>
+					{menuItems.map(item => (
+						<Menu.Item key={item.name} name={item.name} active={activeItem === item.name} onClick={() => setActiveItem(item.name)}>
+							{item.title}
+						</Menu.Item>
+					))}
+				</Menu>
+				{activeItem === 'daily' && <DailyGame />}
+				{activeItem === 'practice' && <PracticeGame />}
+				{activeItem === 'instructions' && renderInstructions()}
+			</React.Fragment>
+		</DataPageLayout>
 	);
 
 	function renderInstructions(): JSX.Element {
@@ -669,30 +666,7 @@ const CrewChallengeGame = (props: CrewChallengeGame) => {
 			}
 			return skills;
 		};
-
-		const getVariantTraits = (traitsHidden: string[]) => {
-			// Get variant names from traits_hidden
-			const series = ['tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic', 'low', 'snw'];
-			const ignore = [
-				'female', 'male',
-				'artificial_life', 'nonhuman', 'organic', 'species_8472',
-				'admiral', 'captain', 'commander', 'lieutenant_commander', 'lieutenant', 'ensign', 'general', 'nagus', 'first_officer',
-				'ageofsail', 'bridge_crew', 'evsuit', 'gauntlet_jackpot', 'mirror', 'niners', 'original', 'crewman',
-				'crew_max_rarity_5', 'crew_max_rarity_4', 'crew_max_rarity_3', 'crew_max_rarity_2', 'crew_max_rarity_1'
-			];
-			const ignoreRe = [
-				/^exclusive_/,		/* exclusive_ crew, e.g. bridge, collection, fusion, gauntlet, honorhall, voyage */
-				/^[a-z]{3}\d{4}$/	/* mega crew, e.g. feb2023 and apr2023 */
-			];
-			const variantTraits = [] as string[];
-			traitsHidden.forEach(trait => {
-				if (!series.includes(trait) && !ignore.includes(trait) && !ignoreRe.reduce((prev, curr) => prev || curr.test(trait), false)) {
-					variantTraits.push(trait);
-				}
-			});
-			return variantTraits;
-		};
-
+		
 		const getVariants = (variantTraits: string[], shortName: string) => {
 			const variants = variantTraits.slice();
 			// Dax hacks
@@ -850,10 +824,19 @@ const CrewPicker = (props: CrewPickerProps) => {
 					iconPosition='left'
 					placeholder='Search for crew by name'
 					value={searchFilter}
-					onChange={(e, { value }) => { setSearchFilter(value); setPaginationPage(1); setSelectedCrew(undefined); }}>
+					onChange={(e, { value }) => { 
+							setSearchFilter(value); 
+							setPaginationPage(1); 
+							setSelectedCrew(undefined); 
+							}}>
 						<input />
 						<Icon name='search' />
-						<Button icon onClick={() => { setSearchFilter(''); setPaginationPage(1); setSelectedCrew(undefined); inputRef.current?.focus(); }} >
+						<Button icon onClick={() => { 
+							setSearchFilter(''); 
+							setPaginationPage(1); 
+							setSelectedCrew(undefined); 
+							inputRef.current?.focus(); 
+							}} >
 							<Icon name='delete' />
 						</Button>
 				</Input>
@@ -1058,7 +1041,7 @@ const GuessRow = (props: GuessRowProps) => {
 			return trait.replace(/[^A-Z]/gi, '').toLowerCase();
 		};
 		const properName = (trait: string) => {
-			return trait.replace(/_/g, ' ').split(' ').map(word => word.substr(0, 1).toUpperCase()+word.substr(1)).join(' ');
+			return trait.replace(/_/g, ' ').split(' ').map(word => word.slice(0, 1).toUpperCase()+word.slice(1)).join(' ');
 		};
 		// Display short_name instead of variant trait when appropriate
 		if (guess.variants.includes(trait)) {

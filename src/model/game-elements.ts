@@ -172,7 +172,11 @@ export interface InitialOptions {
   page?: number;  
 }
 
-export interface SymbolName {
+export interface ISymbol {
+  symbol: string;
+}
+
+export interface SymbolName extends ISymbol {
   symbol: string;
   name: string;
 }

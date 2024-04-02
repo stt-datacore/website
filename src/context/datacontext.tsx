@@ -1,83 +1,132 @@
 import React from 'react';
 import { Gauntlet } from '../model/gauntlets';
-import { CrewMember, SkillData } from '../model/crew';
+import { CrewMember, QuipmentScores, SkillQuipmentScores } from '../model/crew';
 import { Ship, Schematics, BattleStations } from '../model/ship';
-import { EquipmentItem } from '../model/equipment';
-import { PlayerCrew } from '../model/player';
-import { Constellation, KeystoneBase, Polestar } from '../model/game-elements';
-import { BuffStatTable, IBuffStat, calculateMaxBuffs } from '../utils/voyageutils';
+import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
+import { Collection, Constellation, KeystoneBase, Polestar } from '../model/game-elements';
+import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
 import { Mission } from '../model/missions';
+import { Icon } from 'semantic-ui-react';
+import { navigate } from 'gatsby';
+import { TranslationSet } from '../model/traits';
+import { ContinuumMission } from '../model/continuum';
+import { calcQLots, calcQuipmentScore } from '../utils/equipment';
+import { getItemWithBonus } from '../utils/itemutils';
+import { EventInstance } from '../model/events';
+import { StaticFaction } from '../model/shuttle';
+import { getSkillOrder, getVoyageQuotient } from '../utils/crewutils';
+
+const DC_DEBUGGING: boolean = false;
 
 export type ValidDemands =
+	'all_buffs' |
 	'battle_stations' |
-	'crew' |
-	'ship_schematics' |
-	'items' |
-	'keystones' |
+	'cadet' |
 	'collections' |
+	'continuum_missions' |
+	'crew' |
 	'dilemmas' |
 	'disputes' |
 	'episodes' |
+	'event_instances' |
 	'factions' |
 	'gauntlets' |
-	'missions' |
-	'quests' |
+	'items' |
+	'keystones' |
 	'misc_stats' |
+	'missions' |
+	'missionsfull' |
+	'quests' |
+	'ship_schematics' |
 	'skill_bufs' |
-	'cadet' |
-	'all_buffs';
+	'translation_en' |
+	'translation_de' |
+	'translation_fr' |
+	'translation_sp';
 
 export interface DataProviderProperties {
 	children: JSX.Element;
-}
+};
 
-export interface ContextCommon {
-	ready: (demands?: any) => boolean;
-	reset: () => boolean,
-}
-
-export interface DefaultCore extends ContextCommon {
-	crew: PlayerCrew[],
-	ship_schematics: Schematics[],
-	battle_stations: BattleStations[],
-	ships: Ship[],
-	items: EquipmentItem[],
-	missions: Mission[],
-	episodes: Mission[],
-	cadet: Mission[],
-	keystones: (KeystoneBase | Polestar | Constellation)[],
-	all_buffs: BuffStatTable,
+export interface ICoreData {
+	all_buffs: BuffStatTable;
+	battle_stations: BattleStations[];
+	cadet: Mission[];
+	collections: Collection[];
+	crew: CrewMember[];
+	episodes: Mission[];
+	event_instances: EventInstance[];
+	factions: StaticFaction[];
 	gauntlets: Gauntlet[];
+	items: EquipmentItem[];
+	keystones: (KeystoneBase | Polestar | Constellation)[];
+	missions: Mission[];
+	missionsfull: Mission[];
+	continuum_missions: ContinuumMission[];
+	ship_schematics: Schematics[];
+	ships: Ship[];
+	translation: TranslationSet;
+	topQuipmentScores: QuipmentScores[];
+};
+
+export interface ICoreContext extends ICoreData {
 	ready: (demands: ValidDemands[]) => boolean;
+	reset: () => boolean;
+	spin: (message?: string) => JSX.Element;
+};
+
+interface IDemandResult {
+	demand: ValidDemands;
+	json: any;
 };
 
 const defaultData = {
-	crew: [] as CrewMember[],
-	ship_schematics: [] as Schematics[],
+	all_buffs: {} as BuffStatTable,
 	battle_stations: [] as BattleStations[],
-	ships: [] as Ship[],
+	cadet: [] as Mission[],
+	collections: [] as Collection[],
+	crew: [] as CrewMember[],
+	episodes: [] as Mission[],
+	event_instances: [] as EventInstance[],
+	factions: [] as StaticFaction[],
+	gauntlets: [] as Gauntlet[],
 	items: [] as EquipmentItem[],
 	keystones: [] as KeystoneBase[],
-	all_buffs: {} as BuffStatTable,
-	gauntlets: [] as Gauntlet[],
 	missions: [] as Mission[],
-	episodes: [] as Mission[],
-	cadet: [] as Mission[]
-};
+	missionsfull: [] as Mission[],
+	continuum_missions: [] as ContinuumMission[],
+	ship_schematics: [] as Schematics[],
+	ships: [] as Ship[],
+	translation: {} as TranslationSet,
+	topQuipmentScores: [] as QuipmentScores[]
+} as ICoreData;
 
-export const DataContext = React.createContext<DefaultCore>({} as DefaultCore);
+export const defaultCore = {
+	...defaultData,
+	ready: () => { return false; },
+	reset: () => { return false; },
+	spin: () => { return <></>; }
+} as ICoreContext;
+
+export const DataContext = React.createContext<ICoreContext>(defaultCore as ICoreContext);
 
 export const DataProvider = (props: DataProviderProperties) => {
 	const { children } = props;
 
-	const [readying, setReadying] = React.useState<string[]>([]);
-	const [data, setData] = React.useState(defaultData);
+	const [isReadying, setIsReadying] = React.useState(false);
+	const [data, setData] = React.useState<ICoreData>(defaultData);
+
+	const spin = (message?: string) => {
+		message ??= "Loading..."
+		return (<span><Icon loading name='spinner' /> {message}</span>);
+	};
 
 	const providerValue = {
 		...data,
 		ready,
 		reset,
-	} as DefaultCore;
+		spin
+	} as ICoreContext;
 
 	return (
 		<DataContext.Provider value={providerValue}>
@@ -85,110 +134,440 @@ export const DataProvider = (props: DataProviderProperties) => {
 		</DataContext.Provider>
 	);
 
-	function ready(demands: ValidDemands[]): boolean {
-		// Not ready if any valid demands are already queued
-		if (readying.length > 0) return false;
+	function ready(demands: ValidDemands[] = []): boolean {
+		// Not ready if any valid demands are being processed
+		if (isReadying) return false;
 
 		// Fetch only if valid demand is not already satisfied
-		const valid = ['battle_stations', 'crew', 'cadet', 'ship_schematics', 'items', 'keystones', 'collections', 'missions', 'dilemmas', 'disputes', 'episodes', 'factions', 'gauntlets', 'quests', 'misc_stats', 'skill_bufs', 'all_buffs'];
-		const unsatisfied = [] as string[];
-		demands ??= [];
+		const valid = [
+			'all_buffs',
+			'battle_stations',
+			'cadet',
+			'crew',
+			'collections',
+			'continuum_missions',
+			'dilemmas',
+			'disputes',
+			'episodes',
+			'event_instances',
+			'factions',
+			'gauntlets',
+			'items',
+			'keystones',
+			'misc_stats',
+			'missions',
+			'missionsfull',
+			'quests',
+			'ship_schematics',
+			'skill_bufs',
+			'translation_en',
+			'translation_de',
+			'translation_sp',
+			'translation_fr'
+		] as ValidDemands[];
 
 		if (demands.includes('ship_schematics') && !demands.includes('battle_stations')) {
 			demands.push('battle_stations');
 		}
 
-		demands?.forEach(demand => {
+		// Identify unsatisfied demands
+		const unsatisfied = [] as string[];
+		demands.forEach(demand => {
 			// this is a hack because BB uses all buffs but we don't always have player data
 			// and our skill_bufs does not yet match BB data. So for now, we're ignoring them.
 			if (demand === 'skill_bufs') demand = 'all_buffs';
-			
 			if (valid.includes(demand)) {
-				if (data[demand].length === 0 || (demand === 'all_buffs' && !Object.keys(data[demand])?.length)) {
+				if (DC_DEBUGGING) console.log(demand);
+				if (demand.startsWith('translation_')) {
+					if (!Object.keys(data.translation).length) {
+						unsatisfied.push(demand);
+					}
+				}
+				else if (data[demand].length === 0 || (demand === 'all_buffs' && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);
-					setReadying(prev => {
-						if (!prev.includes(demand)) prev.push(demand);
-						return prev;
-					});
-
-					fetch(`/structured/${demand}${demand === 'cadet' ? '.txt' : '.json'}`)
-						.then(response => response.json())
-						.then(result => {
-							setData(prev => {
-								const newData = { ...prev };
-								if (demand === 'skill_bufs') {
-									let sks = {} as BuffStatTable;
-									let skills = ['science', 'engineering', 'medicine', 'diplomacy', 'security', 'command'];
-									let types = ['core', 'range_min', 'range_max'];
-									for (let skill of skills) {
-										for (let type of types) {
-											let bkey = `${skill}_skill_${type}`;
-											sks[bkey] = {} as IBuffStat;
-											sks[bkey].percent_increase = result[skill][type];
-											sks[bkey].multiplier = 1;
-										}
-									}
-									newData[demand] = sks;
-								}
-								else if (demand === 'all_buffs') {
-									newData[demand] = calculateMaxBuffs(result);
-								}
-								else if (demand === 'crew') {
-									(result as CrewMember[]).forEach((item) => {
-										item.action.cycle_time = item.action.cooldown + item.action.duration;
-										if (typeof item.date_added === 'string') {
-											item.date_added = new Date(item.date_added);
-										}
-									});
-									newData[demand] = result;
-								}
-								else {
-									if (demand === 'gauntlets') {
-										(result as Gauntlet[])?.sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
-									}
-									newData[demand] = result;
-								}
-								if ((demand ==='ship_schematics' || demand === 'battle_stations') &&
-									newData.battle_stations?.length && newData.ship_schematics?.length) {
-									for (let sch of newData.ship_schematics) {
-										let battle = newData.battle_stations.find(b => b.symbol === sch.ship.symbol);
-										if (battle) {
-											sch.ship.battle_stations = battle.battle_stations;
-										}
-									}
-									
-									let ship_schematics = demand === 'ship_schematics' ? result : newData.ship_schematics as Schematics[];
-									let scsave = ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship))
-
-									newData.ships = scsave;
-									newData.ship_schematics = ship_schematics;
-								}
-								return newData;
-							});
-						})
-						.catch(error => {
-							console.log(error);
-						})
-						.finally(() => {
-							setReadying(prev => {
-								const readying = prev.slice();
-								const index = readying.indexOf(demand);
-								if (index >= 0) readying.splice(index, 1);
-								return readying;
-							});
-						});
 				}
 			}
 			else {
-				console.log(`Invalid data demand: ${demand}`);
+				if (DC_DEBUGGING) console.log(`Invalid data demand: ${demand}`);
 			}
 		});
+
 		// Ready only if all valid demands are satisfied
-		return unsatisfied.length === 0;
+		if (unsatisfied.length === 0) return true;
+
+		// Alert page that processing has started
+		setIsReadying(true);
+
+		// Fetch all unsatisfied demands concurrently
+		Promise.all(unsatisfied.map(async (demand) => {
+			let url = `/structured/${demand}.json`;
+			if (demand === 'cadet') url = '/structured/cadet.txt';
+			const response = await fetch(url);
+			const json = await response.json();
+			return { demand, json } as IDemandResult;
+		})).then((results) => {
+			const newData = {...data};
+
+			// Process individual demands
+			results.forEach(result => {
+				if (DC_DEBUGGING) console.log(`Demand '${result.demand}' loaded, processing ...`);
+				switch (result.demand) {
+					case 'all_buffs':
+						newData.all_buffs = calculateMaxBuffs(result.json);
+						break;
+					case 'crew':
+						newData.crew = processCrew(result.json);
+						break;
+					case 'gauntlets':
+						newData.gauntlets = processGauntlets(result.json);
+						break;
+					case 'items':
+						newData.items = processItems(result.json);
+						break;
+					// case 'skill_bufs':
+					// 	newData.skill_bufs = processSkillBufs(result.json);
+					// 	break;
+					default:
+
+						if (result.demand.startsWith("translation_")) {
+							newData.translation = result.json;
+						}
+						else {
+							newData[result.demand] = result.json;
+						}
+						break;
+				}
+			});
+
+			// Post-process interdependent demands
+			if (unsatisfied.includes('items') && unsatisfied.includes('cadet')) {
+				postProcessCadetItems(newData);
+			}
+			if (unsatisfied.includes('items') && unsatisfied.includes('crew') && unsatisfied.includes('all_buffs')) {
+				postProcessQuipmentScores(newData.crew, newData.items);
+				calculateQPower(newData.crew, newData.items, newData.all_buffs);
+				newData.topQuipmentScores = calculateTopQuipment(newData.crew);
+			}
+			if (unsatisfied.includes('crew') && unsatisfied.some(u => u.startsWith("translation_"))) {
+				postProcessCrewTranslations(newData);
+			}
+			if (unsatisfied.includes('ship_schematics') && unsatisfied.some(u => u.startsWith("translation_"))) {
+				postProcessShipTranslations(newData);
+			}
+			if (unsatisfied.includes('ship_schematics') && unsatisfied.includes('battle_stations')) {
+				postProcessShipBattleStations(newData);
+			}
+
+			setData({...newData});
+		}).catch((error) => {
+			console.log(error);
+		}).finally(() => {
+			// Alert page that processing is done (successfully or otherwise)
+			setIsReadying(false);
+		});
+
+		return false;
 	}
+
+	function calculateQPower(crew: CrewMember[], items: EquipmentItem[], buffs: BuffStatTable) {
+		const quipment = items.filter(i => i.type === 14).map(i => getItemWithBonus(i));
+		crew.forEach((c) => {
+			calcQLots(c, quipment, buffs, true);
+			c.voyage_quotient = getVoyageQuotient(c);
+		});
+	}
+
+	function calculateTopQuipment(crew: CrewMember[]) {
+
+		const scores = [] as QuipmentScores[];
+		for (let i = 0; i < 5; i++) {
+			scores.push({
+				quipment_score: 0,
+				quipment_scores: {
+					command_skill: 0,
+					diplomacy_skill: 0,
+					medicine_skill: 0,
+					science_skill: 0,
+					engineering_skill: 0,
+					security_skill: 0,
+					trait_limited: 0
+				} as SkillQuipmentScores,
+				voyage_quotient: 0,
+				voyage_quotients: {
+					command_skill: 0,
+					diplomacy_skill: 0,
+					medicine_skill: 0,
+					science_skill: 0,
+					engineering_skill: 0,
+					security_skill: 0,
+					trait_limited: 0
+				} as SkillQuipmentScores
+			} as QuipmentScores);
+		}
+
+		const qkeys = Object.keys(scores[0].quipment_scores as SkillQuipmentScores);
+
+		for (let c of crew) {
+			const r = c.max_rarity - 1;
+			const skscore = scores[r].quipment_scores as SkillQuipmentScores;
+
+			if (!c.quipment_score || !c.quipment_scores) continue;
+			if (c.quipment_score > (scores[r].quipment_score ?? 0)) {
+				scores[r].quipment_score = c.quipment_score;
+			}
+			for (let key of qkeys) {
+				if (c.quipment_scores[key] > skscore[key]) {
+					skscore[key] = c.quipment_scores[key];
+				}
+			}
+			const vqscore = scores[r].voyage_quotients as SkillQuipmentScores;
+
+			if (!c.voyage_quotient) continue;
+			if (scores[r].voyage_quotient === 0 || c.voyage_quotient < (scores[r].voyage_quotient ?? 0)) {
+				scores[r].voyage_quotient = c.voyage_quotient;
+			}
+			if (!c.voyage_quotients) continue;
+			for (let key of qkeys) {
+				if (c.voyage_quotients[key] > vqscore[key]) {
+					vqscore[key] = c.voyage_quotients[key];
+				}
+			}
+		}
+
+		for (let c of crew) {
+			const r = c.max_rarity - 1;
+			const skscore = scores[r].quipment_scores as SkillQuipmentScores;
+			const escore = scores[r].quipment_score as number;
+			if (c.quipment_score && escore) {
+				c.quipment_grade = c.quipment_score / escore;
+			}
+			if (c.quipment_scores) {
+				Object.keys(c.quipment_scores).forEach((key) => {
+					if (key in skscore) {
+						c.quipment_grades ??= {
+							command_skill: 0,
+							diplomacy_skill: 0,
+							medicine_skill: 0,
+							science_skill: 0,
+							engineering_skill: 0,
+							security_skill: 0,
+							trait_limited: 0
+						}
+						c.quipment_grades[key] = (c.quipment_scores as SkillQuipmentScores)[key] / skscore[key];
+					}
+				})
+			}
+		}
+
+		return scores;
+	}
+
 
 	function reset(): boolean {
 		setData({ ...defaultData });
 		return true;
 	}
+
+	function processCrew(result: CrewMember[]): CrewMember[] {
+		result.forEach((item) => {
+			item.skill_order = getSkillOrder(item);
+			item.action.cycle_time = item.action.cooldown + item.action.duration;
+			if (typeof item.date_added === 'string') {
+				item.date_added = new Date(item.date_added);
+			}
+		});
+
+		return result;
+	}
+
+	function postProcessQuipmentScores(crew: CrewMember[], items: EquipmentItem[]) {
+		const quipment = items.filter(f => f.type === 14).map(item => getItemWithBonus(item));
+		crew.forEach(crew => {
+			calcQuipmentScore(crew, quipment);
+		});
+	}
+
+	function processGauntlets(result: Gauntlet[] | undefined): Gauntlet[] {
+		result?.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+		return result ?? [];
+	}
+
+	function processItems(result: EquipmentItem[] | undefined): EquipmentItem[] {
+		result?.forEach((item) => {
+			if ("item_type" in item) {
+				item.type = (item["item_type"] as number);
+				delete item["item_type"];
+			}
+		})
+		return result ?? [];
+	}
+
+	// function processSkillBufs(result: any): BuffStatTable {
+	// 	let sks = {} as BuffStatTable;
+	// 	let skills = ['science', 'engineering', 'medicine', 'diplomacy', 'security', 'command'];
+	// 	let types = ['core', 'range_min', 'range_max'];
+	// 	for (let skill of skills) {
+	// 		for (let type of types) {
+	// 			let bkey = `${skill}_skill_${type}`;
+	// 			sks[bkey] = {} as IBuffStat;
+	// 			sks[bkey].percent_increase = result[skill][type];
+	// 			sks[bkey].multiplier = 1;
+	// 		}
+	// 	}
+	// 	return sks;
+	// }
+
+	function postProcessCrewTranslations(data: ICoreData): void {
+		if (data.crew.length && data.translation.crew_archetypes) {
+			data.crew.forEach((crew) => {
+				let arch = data.translation.crew_archetypes.find(f => f.symbol === crew.symbol);
+				crew.traits_named = crew.traits.map(t => data.translation.trait_names[t]);
+				crew.name = arch?.name ?? crew.name;
+				crew.short_name = arch?.short_name ?? crew.short_name;
+
+				crew.events ??= 0;
+				if (!crew.obtained?.length || crew.obtained === "N/A") {
+					crew.obtained = getObtained(crew);
+				}
+			});
+		}
+	}
+
+	function getObtained(data: CrewMember) {
+		if (data.traits_hidden.includes("exclusive_honorhall") || data.symbol === "crusher_j_vox_crew") {
+			return "HonorHall";
+		}
+		else if (data.traits_hidden.includes("exclusive_gauntlet")) {
+			return "Gauntlet";
+		}
+		else if (data.traits_hidden.includes("exclusive_voyage")) {
+			return "Voyage";
+		}
+		else if (data.traits_hidden.includes("exclusive_collection")) {
+			return "Collection";
+		}
+		else if (data.traits_hidden.includes("exclusive_bridge")) {
+			return "BossBattle";
+		}
+		else if (data.traits_hidden.includes("exclusive_fusion")) {
+			return "Fuse";
+		}
+		else if (data.traits_hidden.includes("exclusive_achievement")) {
+			return "Achievement";
+		}
+		else if (data.symbol === "tuvok_mirror_crew") {
+			return "Faction";
+		}
+		else if (data.symbol === "boimler_evsuit_crew") {
+			return "WebStore";
+		}
+		else if (data.symbol === "quinn_crew") {
+			return "Missions";
+		}
+		else {
+			return "Event/Pack/Giveaway";
+		}
+	}
+
+	function postProcessShipTranslations(data: ICoreData): void {
+		if (data.ship_schematics.length && data.translation.ship_archetypes) {
+			data.ship_schematics.forEach((ship) => {
+				let arch = data.translation.ship_archetypes.find(f => f.symbol === ship.ship.symbol);
+				ship.ship.flavor = arch?.flavor ?? ship.ship.flavor;
+				ship.ship.traits_named = ship.ship.traits?.map(t => data.translation.ship_trait_names[t]);
+				ship.ship.name = arch?.name ?? ship.ship.name;
+				arch?.actions?.forEach((action) => {
+					let act = ship.ship.actions?.find(f => f.symbol === action.symbol);
+					if (act) {
+						act.name = action.name;
+					}
+				});
+			});
+		}
+	}
+
+	function postProcessShipBattleStations(data: ICoreData): void {
+		if (data.battle_stations.length && data.ship_schematics.length) {
+			for (let sch of data.ship_schematics) {
+				let battle = data.battle_stations.find(b => b.symbol === sch.ship.symbol);
+				if (battle) {
+					sch.ship.battle_stations = battle.battle_stations;
+				}
+			}
+
+			let scsave = data.ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship));
+			data.ships = scsave;
+		}
+	}
+
+	function postProcessCadetItems(data: ICoreData): void {
+		const cadetforitem = data.cadet?.filter(f => f.cadet);
+		if (DC_DEBUGGING) console.log("Finding cadet mission farm sources for items ...");
+
+		if (cadetforitem?.length) {
+			for(const item of data.items) {
+				for (let ep of cadetforitem) {
+					let quests = ep.quests.filter(q => q.quest_type === 'ConflictQuest' && q.mastery_levels?.some(ml => ml.rewards?.some(r => r.potential_rewards?.some(px => px.symbol === item.symbol))));
+					if (quests?.length) {
+						for (let quest of quests) {
+							if (quest.mastery_levels?.length) {
+								let x = 0;
+								for (let ml of quest.mastery_levels) {
+									if (ml.rewards?.some(r => r.potential_rewards?.some(pr => pr.symbol === item.symbol))) {
+										let mx = ml.rewards.map(r => r.potential_rewards?.length).reduce((prev, curr) => Math.max(prev ?? 0, curr ?? 0)) ?? 0;
+										mx = (1/mx) * 1.80;
+										let qitem = {
+											type: 4,
+											mastery: x,
+											name: quest.name,
+											energy_quotient: 1,
+											chance_grade: 5 * mx,
+											mission_symbol: quest.symbol,
+											cost: 1,
+											avg_cost: 1/mx,
+											cadet_mission: ep.episode_title,
+											cadet_symbol: ep.symbol
+										} as EquipmentItemSource;
+										if (!item.item_sources.find(f => f.mission_symbol === quest.symbol)) {
+											item.item_sources.push(qitem);
+										}
+									}
+									x++;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if (DC_DEBUGGING) console.log("Done with cadet missions.");
+	}
 };
+
+export function randomCrew(symbol: string) {
+	const { crew: allCrew } = this.context.core;
+	if (!allCrew?.length) {
+		return `${process.env.GATSBY_ASSETS_URL}crew_full_body_cm_qjudge_full.png`;
+	}
+
+	const rndcrew_pass1 = (allCrew.filter((a: CrewMember) => a.traits_hidden.includes(symbol) && a.max_rarity >= 4) ?? []) as CrewMember[];
+	const rndcrew = [] as CrewMember[];
+
+	for (let qc of rndcrew_pass1) {
+		let max = 0;
+		for (let sk of Object.values(qc.base_skills)) {
+			max += sk.range_max;
+		}
+		if (max >= 800) {
+			rndcrew.push(qc);
+		}
+	}
+
+	const idx = Math.floor(Math.random() * (rndcrew.length - 1));
+	const q = rndcrew[idx];
+	const img = q.imageUrlFullBody;
+	const fullurl = `${process.env.GATSBY_ASSETS_URL}${img}`;
+
+	return <img style={{ height: "15em", cursor: "pointer" }} src={fullurl} onClick={(e) => navigate("/crew/" + q.symbol)} />
+}

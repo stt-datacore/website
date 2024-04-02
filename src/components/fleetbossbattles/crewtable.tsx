@@ -136,6 +136,7 @@ const CrewTable = (props: CrewTableProps) => {
 				{optimizer.prefs.spotter.alpha === 'flag' && crew.alpha_rule.compliant === 0 && <Label color='orange'>Alpha exception</Label>}
 				{optimizer.prefs.spotter.nonoptimal === 'flag' && !isCrewOptimal(crew, optimizer.optimalCombos) && <Label color='grey'>Non-optimal</Label>}
 				{crew.only_frozen && <Icon name='snowflake' />}
+				{crew.only_expiring && <Icon name='warning sign' />}
 			</div>
 		);
 	}

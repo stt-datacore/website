@@ -1,11 +1,40 @@
-import { Icon } from "./game-elements"
-import { PlayerCrew, PlayerEquipmentItem } from "./player"
+import { PlayerEquipmentItem } from "./player"
+
+
+export interface IDemand {
+	count: number;
+	symbol: string;
+	equipment?: EquipmentItem;
+	factionOnly: boolean;
+	have: number;
+	crewSymbols: string[];	
+}
+
+export interface ICrewDemandsMeta {
+	factionOnlyTotal: number;
+	totalChronCost: number;
+	craftCost: number;
+}
+
+export interface ICrewDemands extends ICrewDemandsMeta {
+	demands: IDemand[];
+	factionOnlyTotal: number;
+	totalChronCost: number;
+	craftCost: number;
+}
+
+export interface DemandCounts {
+	name: string;
+	count: number;
+}
+
 
 export interface EquipmentCommon extends PlayerEquipmentItem {
   symbol: string
   type: number
   name: string
   flavor: string
+  flavorContext?: JSX.Element;
   rarity: number
   short_name?: string
   imageUrl: string
@@ -14,6 +43,13 @@ export interface EquipmentCommon extends PlayerEquipmentItem {
   needed?: number;
   factionOnly?: boolean;
   demandCrew?: string[];
+
+  duration?: number;
+  max_rarity_requirement?: number;
+  traits_requirement_operator?: string; // "and" | "or" | "not" | "xor";
+  traits_requirement?: string[];  
+  kwipment?: boolean;
+  kwipment_id?: number | string;
 }
 
 export interface EquipmentItem extends EquipmentCommon {
@@ -21,6 +57,7 @@ export interface EquipmentItem extends EquipmentCommon {
   type: number
   name: string
   flavor: string
+  flavorContext?: JSX.Element;
   rarity: number
   short_name?: string
   imageUrl: string
@@ -31,9 +68,10 @@ export interface EquipmentItem extends EquipmentCommon {
 
   item_sources: EquipmentItemSource[]
   recipe?: EquipmentRecipe
+  demands?: IDemand[];
 
   empty?: boolean;
-
+  isReward?: boolean;
 }
 
 export interface EquipmentItemSource {
@@ -65,3 +103,5 @@ export interface EquipmentIngredient {
 export interface EquipmentBonuses {
     [key: string]: number;
 }
+
+

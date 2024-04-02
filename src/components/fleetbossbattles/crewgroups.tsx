@@ -2,18 +2,17 @@ import React from 'react';
 import { InView } from 'react-intersection-observer';
 import { Message, Table, Label, Icon, Grid, SemanticWIDTHS } from 'semantic-ui-react';
 
+import allTraits from '../../../static/structured/translation_en.json';
+import { BossCrew, FilteredGroup, Optimizer, Solver, SolverNode } from '../../model/boss';
+
 import { CrewNodeExporter } from './crewexporter';
 import { MarkGroup, MarkCrew } from './markbuttons';
-
-import allTraits from '../../../static/structured/translation_en.json';
-import { BossCrew, ExportPreferences, FilteredGroup, Optimizer, Solver, SolverNode } from '../../model/boss';
 
 interface CrewGroupsProps {
 	solver: Solver;
 	optimizer: Optimizer;
 	solveNode: (nodeIndex: number, traits: string[]) => void;
 	markAsTried: (crewSymbol: string) => void;
-	exportPrefs: ExportPreferences;
 };
 
 const CrewGroupsContext = React.createContext<CrewGroupsProps>({} as CrewGroupsProps);
@@ -58,7 +57,7 @@ const NodeGroups = (props: NodeGroupsProps) => {
 						<p>Node {node.index+1}</p>
 					</div>
 					<div>
-						<CrewNodeExporter node={node} nodeGroups={nodeGroups} traits={groupsContext.solver.traits} exportPrefs={groupsContext.exportPrefs} />
+						<CrewNodeExporter node={node} nodeGroups={nodeGroups} traits={groupsContext.solver.traits} />
 					</div>
 				</div>
 			</Message>

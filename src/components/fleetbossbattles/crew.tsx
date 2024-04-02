@@ -1,45 +1,27 @@
 import React from 'react';
 import { Header, Form, Dropdown, Checkbox, Icon, Message } from 'semantic-ui-react';
 
+import { BossCrew, FilteredGroup, FilteredGroups, NodeRarities, NodeRarity, Optimizer, PossibleCombo, Solver, SolverNode, Spotter, SpotterPreferences, TraitRarities, ViableCombo } from '../../model/boss';
+import { crewCopy } from '../../utils/crewutils';
+
+import { UserContext, SolverContext } from './context';
 import CrewGroups from './crewgroups';
 import CrewTable from './crewtable';
 import CrewChecklist from './crewchecklist';
-import { CrewFullExporter, exportDefaults } from './crewexporter';
+import { CrewFullExporter } from './crewexporter';
 import { getAllCombos, getComboIndexOf, removeCrewNodeCombo } from './fbbutils';
-
-import { useStateWithStorage } from '../../utils/storage';
-import { BossCrew, ExportPreferences, FilteredGroup, FilteredGroups, NodeRarities, NodeRarity, Optimizer, PossibleCombo, SoloPreferences, Solver, SolverNode, Spotter, SpotterPreferences, TraitRarities, ViableCombo } from '../../model/boss';
-import { CrewMember } from '../../model/crew';
-import { PlayerCrew } from '../../model/player';
-import { crewCopy } from '../../utils/crewutils';
-
-const spotterDefaults = {
-	alpha: 'flag',
-	onehand: 'flag',
-	nonoptimal: 'hide',
-	noncoverage: 'show'
-} as SpotterPreferences;
-
-const soloDefaults = {
-	usable: '',
-	shipAbility: 'hide'
-} as SoloPreferences;
 
 type ChainCrewProps = {
 	view: string;
 	solver: Solver;
 	spotter: Spotter;
 	updateSpotter: (spotter: Spotter) => void;
-	allCrew: (CrewMember | PlayerCrew)[];
-	dbid: string;
 };
 
 const ChainCrew = (props: ChainCrewProps) => {
+	const { userType, spotterPrefs, setSpotterPrefs, soloPrefs, setSoloPrefs } = React.useContext(UserContext);
+	const { collaboration } = React.useContext(SolverContext);
 	const { view, solver, spotter, updateSpotter } = props;
-
-	const [spotterPrefs, setSpotterPrefs] = useStateWithStorage<SpotterPreferences>(props.dbid+'/fbb/filtering', spotterDefaults, { rememberForever: true });
-	const [soloPrefs, setSoloPrefs] = useStateWithStorage<SoloPreferences>(props.dbid+'/fbb/soloing', soloDefaults, { rememberForever: true });
-	const [exportPrefs, setExportPrefs] = useStateWithStorage<ExportPreferences>(props.dbid+'/fbb/exporting', exportDefaults, { rememberForever: true });
 
 	const [optimizer, setOptimizer] = React.useState<Optimizer | undefined>(undefined);
 
@@ -137,15 +119,17 @@ const ChainCrew = (props: ChainCrewProps) => {
 						</Form.Group>
 						<Form.Group grouped>
 							<Header as='h4'>User Preferences</Header>
-							<Form.Field
-								placeholder='Filter by availability'
-								control={Dropdown}
-								clearable
-								selection
-								options={usableFilterOptions}
-								value={soloPrefs.usable}
-								onChange={(e, { value }) => setSoloPrefs({...soloPrefs, usable: value})}
-							/>
+							{userType === 'player' &&
+								<Form.Field
+									placeholder='Filter by availability'
+									control={Dropdown}
+									clearable
+									selection
+									options={usableFilterOptions}
+									value={soloPrefs.usable}
+									onChange={(e, { value }) => setSoloPrefs({...soloPrefs, usable: value})}
+								/>
+							}
 							<Form.Field
 								control={Checkbox}
 								label='Show ship ability'
@@ -165,7 +149,6 @@ const ChainCrew = (props: ChainCrewProps) => {
 			{view === 'crewgroups' &&
 				<CrewGroups solver={solver} optimizer={optimizer}
 					solveNode={onNodeSolved} markAsTried={onCrewMarked}
-					exportPrefs={exportPrefs}
 				/>
 			}
 			{view === 'crewtable' &&
@@ -174,8 +157,9 @@ const ChainCrew = (props: ChainCrewProps) => {
 				/>
 			}
 
-			<CrewChecklist key={solver.id} crewList={props.allCrew as PlayerCrew[]}
-				attemptedCrew={spotter.attemptedCrew} updateAttempts={updateCrewAttempts}
+			<CrewChecklist key={solver.id}
+				attemptedCrew={spotter.attemptedCrew}
+				updateAttempts={updateCrewAttempts}
 			/>
 
 			<Message style={{ margin: '1em 0' }}>
@@ -190,9 +174,7 @@ const ChainCrew = (props: ChainCrewProps) => {
 				</Message.Content>
 			</Message>
 
-			<CrewFullExporter solver={solver} optimizer={optimizer}
-				exportPrefs={exportPrefs} setExportPrefs={setExportPrefs}
-			/>
+			<CrewFullExporter solver={solver} optimizer={optimizer} />
 		</div>
 	);
 
@@ -330,7 +312,7 @@ const ChainCrew = (props: ChainCrewProps) => {
 	}
 
 	function onNodeSolved(nodeIndex: number, traits: string[]): void {
-		const solves = spotter.solves;
+		const solves = [...spotter.solves];
 		const solve = solves.find(solve => solve.node === nodeIndex);
 		if (solve) {
 			solve.traits = traits;
@@ -350,6 +332,7 @@ const ChainCrew = (props: ChainCrewProps) => {
 	}
 
 	function updateCrewAttempts(attemptedCrew: string[]): void {
+		if (!!collaboration) return;
 		updateSpotter({...spotter, attemptedCrew});
 	}
 };

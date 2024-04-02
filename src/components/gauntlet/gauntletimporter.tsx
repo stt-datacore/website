@@ -1,0 +1,113 @@
+import React from "react";
+
+import { GlobalContext } from "../../context/globalcontext";
+import { Gauntlet, GauntletRoot } from "../../model/gauntlets";
+import { JsonInputForm } from "../base/jsoninputform";
+import { Notification } from "../page/notification";
+
+export interface GauntletImporterProps {
+    gauntlet?: GauntletRoot;
+    setGauntlet: (value?: GauntletRoot) => void;
+    setError?: (value: string) => void;
+	clearGauntlet: () => void;
+	currentHasRemote?: boolean;
+}
+
+export const GauntletImportComponent = (props: GauntletImporterProps) => {
+
+    const { currentHasRemote, gauntlet, setGauntlet, setError, clearGauntlet } = props;
+    const context = React.useContext(GlobalContext);
+    const { playerData} = context.player;
+	
+	const [collapsed, setCollapsed] = React.useState<boolean | undefined>(undefined);
+
+    const hasPlayer = !!playerData;
+    
+    React.useEffect(() => {
+        if (collapsed === undefined) setCollapsed(true);
+    }, [currentHasRemote]);
+
+	const validateGauntlet = (json: GauntletRoot) => {
+        if (!json) {
+            return ("No data");                        
+        }		
+		return true;
+	}
+
+	function renderCopyPaste(): JSX.Element {
+
+        const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=20&only_read_state=true';
+
+        return (
+			<React.Fragment>
+                {!currentHasRemote && <Notification
+                    color={'blue'}
+                    header={`Live Gauntlet Data`}
+                    content={
+                        <div style={{cursor: 'pointer'}} onClick={(e) => setCollapsed(false)}>
+						<p>You can access your live gauntlet matches in a similar way to how you access your player data, currently.</p>
+						<p>
+							Click here to upload your data.
+						</p>
+                        <p>
+                            <b><a onClick={() => setCollapsed(false)} target='_blank' href={PLAYERLINK}>Live Gauntlet Data</a></b>
+                        </p>
+                        </div>
+                    }
+                    icon="database"                    
+                />}
+
+                {currentHasRemote && <Notification
+                    color={'blue'}
+                    header="Live Gauntlet Data"
+                    content={
+                        <div style={{cursor: 'pointer'}} onClick={(e) => setCollapsed(false)}>
+                        <p>
+                            Live gauntlet data is already present.
+                        </p>
+						<p>
+							Click here to update your data if you wish to refresh your round.
+						</p>
+                        <p>
+                            <b><a onClick={() => setCollapsed(false)} target='_blank' href={PLAYERLINK}>Live Gauntlet Data</a></b>
+                        </p>
+                        <p style={{textAlign: "right"}}>
+							<b style={{fontSize:"0.8em"}}>(To clear all live gauntlet data, <a title={'Clear All Gauntlet Data'} onClick={() => clearGauntlet()}>Click Here</a>)</b>
+                        </p>
+                        </div>
+                    }
+                    icon="database"                    
+                />}
+
+				{hasPlayer && (!collapsed) &&
+				
+				<JsonInputForm
+					requestDismiss={() => setCollapsed(!collapsed)}
+					config={{
+                        pasteInMobile: true,
+						dataUrl: PLAYERLINK,
+						dataName: 'Gauntlet',
+						jsonHint: '{"action":"update","character":',
+						androidFileHint: 'status.json',
+						iOSFileHint: 'status?id'
+					}}
+					title={`Gauntlet Input Form`}
+					validateInput={validateGauntlet}
+					setValidInput={(gauntlet) => {
+						if (gauntlet) setCollapsed(true);
+						setGauntlet(gauntlet);
+					}}
+					
+				/>}
+			</React.Fragment>
+		);
+	}
+
+    return <>
+    
+    <div className='ui segment'>        
+        {renderCopyPaste()}       
+    </div>
+
+    </>
+}
