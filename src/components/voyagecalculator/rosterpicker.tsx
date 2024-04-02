@@ -149,6 +149,7 @@ export function rosterizeMyCrew(myCrew: PlayerCrew[], activeCrew: CompactCrew[])
 	let crewmanId = 1;
 	myCrew.forEach(crew => {
 		const crewman = JSON.parse(JSON.stringify(crew)) as IVoyageCrew;
+		if (crewman.immortal > 0) crewman.id = crew.archetype_id;
 		//crewman.id = crewmanId++;
 
 		// Voyage calculator looks for skills, range_min, range_max properties
