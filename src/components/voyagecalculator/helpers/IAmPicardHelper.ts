@@ -179,7 +179,7 @@ export class IAmPicardHelper extends Helper {
 		} as VoyageStatsConfig;
 
 		for (let i = 0; i < 12; i++) {
-			let crew = this.consideredCrew.find(c => c.id === result.getUint32(4 + i * 4, true));
+			let crew = this.consideredCrew.find(c => c.id === result.getInt32(4 + i * 4, true));
 			if (!crew)
 				continue;
 
