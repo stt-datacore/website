@@ -220,4 +220,11 @@ export default class CONFIG {
 	]
 
 	static readonly CITATION_COST = [0, 500, 4500, 18000, 50000];
+
+	static readonly SERIES = [
+		'tos', 'tas',
+		'tng', 'ds9', 'voy', 'ent',
+		'dsc', 'pic', 'low', 'snw', 'vst',
+		'original'
+	];
 }

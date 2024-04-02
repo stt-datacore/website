@@ -335,7 +335,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	else {
 		templateCrew.rarity = templateCrew.max_rarity;
 	}
-	
+
 	templateCrew.level = 100;
 	templateCrew.have = false;
 	templateCrew.equipment = [0, 1, 2, 3];
@@ -382,11 +382,11 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 
 	inroster = inroster.concat(playerData?.player?.character?.crew?.filter(c => (c.immortal <= 0 || c.immortal === undefined) && c.archetype_id === crew.archetype_id) ?? []);
 
-	const maxxed = { 
+	const maxxed = {
 		maxowned: crew.highest_owned_rarity as number | undefined,
 		maxlevel: crew.highest_owned_level as number | undefined
 	};
-	
+
 	for (let owned of inroster ?? []) {
 		if (!maxxed.maxowned || owned.rarity > maxxed.maxowned) maxxed.maxowned = owned.rarity;
 		if (!maxxed.maxlevel || owned.level > maxxed.maxlevel) maxxed.maxlevel = owned.level;
@@ -394,10 +394,10 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 			crew = JSON.parse(JSON.stringify(templateCrew));
 		}
 		let workitem: PlayerCrew = owned;
-		
+
 		crew.id = owned.id;
 		crew.expires_in = owned.expires_in;
-		
+
 		if (workitem.immortal > 0) crew.immortal = workitem.immortal;
 		if (rarity !== 6) {
 			crew.rarity = workitem.rarity;
@@ -547,7 +547,7 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	let cidx = -1;
 
 	for (let c of allcrew) {
-		for (let crew of prepareOne(c, playerData, buffConfig, undefined, quipment)) {			
+		for (let crew of prepareOne(c, playerData, buffConfig, undefined, quipment)) {
 			if (crew.have) {
 				if (!crew.id) {
 					crew.id = cidx--;
@@ -960,11 +960,11 @@ export function numberToGrade(value: number, noneText?: string) {
 
 
 export function gradeToColor(grade: string | number, dryzero?: boolean): string | null {
-	
+
 	if (!grade && dryzero) return null;
 
 	if (typeof grade === 'number' && grade < 1 && grade >= 0) {
-		
+
 		if (grade >= 0.9) return 'lightgreen';
 		else if (grade >= 0.8) return 'aquamarine';
 		else if (grade >= 0.7) return 'yellow';
@@ -1045,12 +1045,11 @@ export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[]) {
 export const crewVariantIgnore = ['sam_lavelle_crew', 'jack_crusher_crew'];
 
 export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): string[] {
-	const series = ['tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic', 'low', 'snw'];
 	const ignore = [
 		'female', 'male',
 		'artificial_life', 'nonhuman', 'organic', 'species_8472',
 		'admiral', 'captain', 'commander', 'lieutenant_commander', 'lieutenant', 'ensign', 'general', 'nagus', 'first_officer',
-		'ageofsail', 'bridge_crew', 'evsuit', 'gauntlet_jackpot', 'mirror', 'niners', 'original', 'crewman',
+		'ageofsail', 'bridge_crew', 'evsuit', 'gauntlet_jackpot', 'mirror', 'niners', 'crewman',
 		'crew_max_rarity_5', 'crew_max_rarity_4', 'crew_max_rarity_3', 'crew_max_rarity_2', 'crew_max_rarity_1'
 	];
 	const ignoreRe = [
@@ -1061,14 +1060,14 @@ export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): s
 
 	if ("length" in subject) {
 		subject.forEach(trait => {
-			if (!series.includes(trait) && !ignore.includes(trait) && !ignoreRe.reduce((prev, curr) => prev || curr.test(trait), false)) {
+			if (!CONFIG.SERIES.includes(trait) && !ignore.includes(trait) && !ignoreRe.reduce((prev, curr) => prev || curr.test(trait), false)) {
 				variantTraits.push(trait);
 			}
 		});
 	}
 	else {
 		subject.traits_hidden.forEach(trait => {
-			if (!series.includes(trait) && !ignore.includes(trait) && !ignoreRe.reduce((prev, curr) => prev || curr.test(trait), false)) {
+			if (!CONFIG.SERIES.includes(trait) && !ignore.includes(trait) && !ignoreRe.reduce((prev, curr) => prev || curr.test(trait), false)) {
 				variantTraits.push(trait);
 			}
 		});
@@ -1416,7 +1415,7 @@ export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
 	long ??= false;
 	let obstr = `${crew.obtained}`;
 	if (obstr === 'HonorHall') obstr = 'Honor Hall';
-	else if (obstr === 'FactionStore') obstr = 'Faction';	
+	else if (obstr === 'FactionStore') obstr = 'Faction';
 
 	if (long) {
 		if (obstr === 'Voyage' || obstr === 'Gauntlet') obstr += " Exclusive";
@@ -1479,6 +1478,6 @@ export function getVoyageQuotient<T extends CrewMember>(crew: T) {
 	for (let skill in crew.base_skills) {
 		power += q_power[skill].core + (0.5 * (q_power[skill].range_max + q_power[skill].range_min));
 	}
-	
+
     return (crew.ranks.voyRank / power);
 }
