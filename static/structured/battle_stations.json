@@ -1579,5 +1579,22 @@
                 "skill": "medicine_skill"
             }
         ]
+    },
+    {
+        "symbol": "fed_uhura_ship",
+        "battle_stations": [
+            {
+                "skill": "command_skill"
+            },
+            {
+                "skill": "security_skill"
+            },
+            {
+                "skill": "engineering_skill"
+            },
+            {
+                "skill": "diplomacy_skill"
+            }
+        ]
     }
 ]
