@@ -63,6 +63,7 @@ export class BeholdOptionsModal extends OptionsModal<BeholdModalOptions> {
 		{ key: 'pic', value: 'pic', text: 'Picard' },
 		{ key: 'low', value: 'low', text: 'Lower Decks' },
 		{ key: 'snw', value: 'snw', text: 'Strange New Worlds' },
+		{ key: 'vst', value: 'vst', text: 'Very Short Treks' },
 		{ key: 'original', value: 'original', text: 'Timelines Originals' }
 	];
 
