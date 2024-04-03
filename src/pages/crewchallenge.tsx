@@ -3,6 +3,7 @@ import { InView } from 'react-intersection-observer';
 import { Header, Icon, Menu, Grid, Input, Button, Table, Image, Rating, Divider, Statistic, Modal, Message, Popup, Dropdown, SemanticCOLORS } from 'semantic-ui-react';
 
 import { useStateWithStorage } from '../utils/storage';
+import CONFIG from '../components/CONFIG';
 import { PlayerCrew } from '../model/player';
 import { BaseSkills, CrewMember, Skill } from '../model/crew';
 import DataPageLayout from '../components/page/datapagelayout';
@@ -14,7 +15,7 @@ const GAME_NAME = 'Worfle';
 const GAME_URL = 'https://datacore.app/crewchallenge';
 
 const DEFAULT_GUESSES = 8;
-const DEFAULT_SERIES = ['tos', 'tas', 'tng', 'ds9', 'voy', 'ent', 'dsc', 'pic', 'low', 'snw', 'original'];
+const DEFAULT_SERIES = CONFIG.SERIES;
 const DEFAULT_RARITIES = [1, 2, 3, 4, 5];
 
 const STYLE_SOLVED = { backgroundColor: 'green', color: 'white' };
@@ -666,7 +667,7 @@ const CrewChallengeGame = (props: CrewChallengeGame) => {
 			}
 			return skills;
 		};
-		
+
 		const getVariants = (variantTraits: string[], shortName: string) => {
 			const variants = variantTraits.slice();
 			// Dax hacks
@@ -824,18 +825,18 @@ const CrewPicker = (props: CrewPickerProps) => {
 					iconPosition='left'
 					placeholder='Search for crew by name'
 					value={searchFilter}
-					onChange={(e, { value }) => { 
-							setSearchFilter(value); 
-							setPaginationPage(1); 
-							setSelectedCrew(undefined); 
+					onChange={(e, { value }) => {
+							setSearchFilter(value);
+							setPaginationPage(1);
+							setSelectedCrew(undefined);
 							}}>
 						<input />
 						<Icon name='search' />
-						<Button icon onClick={() => { 
-							setSearchFilter(''); 
-							setPaginationPage(1); 
-							setSelectedCrew(undefined); 
-							inputRef.current?.focus(); 
+						<Button icon onClick={() => {
+							setSearchFilter('');
+							setPaginationPage(1);
+							setSelectedCrew(undefined);
+							inputRef.current?.focus();
 							}} >
 							<Icon name='delete' />
 						</Button>
