@@ -425,6 +425,8 @@ export interface Player {
     favorite?: boolean;
     ship_battle?: ShipBonus;
     active_status?: number;
+    active_id?: number;
+    active_index?: number;
   }
 
   /**
@@ -562,7 +564,7 @@ export interface Player {
 
 
     /** Citation Optimizer */
-    
+
     /** Used internally. Not part of source data.  */
     addedEV?: number;
     /** Used internally. Not part of source data.  */
