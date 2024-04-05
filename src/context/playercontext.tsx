@@ -103,10 +103,19 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				}
 			}
 		}
-		
+
 		input.player.character.crew.forEach(crew => {
 			if (crew.active_status > 0) {
-				activeCrew.push({ id: crew.id, symbol: crew.symbol, rarity: crew.rarity, level: crew.level, equipment: crew.equipment.map((eq) => eq[0]), active_status: crew.active_status });
+				activeCrew.push({
+					id: crew.id,
+					symbol: crew.symbol,
+					rarity: crew.rarity,
+					level: crew.level,
+					equipment: crew.equipment.map((eq) => eq[0]),
+					active_status: crew.active_status,
+					active_id: crew.active_id,
+					active_index: crew.active_index
+				});
 			}
 		});
 
