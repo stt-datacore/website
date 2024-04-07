@@ -2,7 +2,7 @@ import { simplejson2csv, ExportField } from './misc';
 import { BuffStatTable, calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
-import { CompactCrew, CompletionState, GauntletPairScore, PlayerCrew, PlayerData } from '../model/player';
+import { CompactCrew, CompletionState, GauntletPairScore, Player, PlayerCrew, PlayerData } from '../model/player';
 import { BaseSkills, ComputedBuff, CrewMember, PlayerSkill, Skill } from '../model/crew';
 import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
 import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
@@ -317,6 +317,20 @@ export function isImmortal(crew: PlayerCrew): boolean {
 }
 
 export const PREPARE_MAX_RARITY = 6;
+
+export function isQuipped<T extends PlayerCrew>(crew: T) {
+	if (!!crew.kwipment?.length && !!crew.kwipment[0]) {
+		if (typeof crew.kwipment[0] === 'number') {
+			return crew.kwipment.some(k => !!k);
+		}
+		else {
+			return crew.kwipment.some(k => !!k[1]);
+		}
+	}
+	else {
+		return false;
+	}
+}
 
 export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number, quipment?: ItemWithBonus[]): PlayerCrew[] {
 	// Create a copy of crew instead of directly modifying the source (allcrew)

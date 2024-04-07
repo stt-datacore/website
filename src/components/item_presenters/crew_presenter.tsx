@@ -770,7 +770,9 @@ export class CrewPresenter extends React.Component<
                     </div>
                     {!compact && (
                         <div style={{ marginBottom: "0.13em", marginRight: "0.5em", fontSize: "9pt", fontWeight: 'normal' }}>
-                            {crew.immortal === -1 && this.validImmortalModes[0] !== 'frozen' && !!crew.kwipment?.length && <CrewItemsView crew={crew} quipment={true} />}
+                            {crew.immortal === -1 && this.validImmortalModes[0] !== 'frozen' && !!crew.kwipment?.length && 
+                                <CrewItemsView crew={crew} quipment={true} />}
+                            
                             <CrewItemsView crew={crew} />
                         </div>
                     )}
