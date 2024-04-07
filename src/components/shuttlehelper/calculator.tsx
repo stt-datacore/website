@@ -12,6 +12,7 @@ import { ShuttlersContext } from './context';
 import { Missions } from './missions';
 import { Assignments } from './assignments';
 import { getSkillSetId } from './utils';
+import { isQuipped } from '../../utils/crewutils';
 
 export const Calculator = () => {
 	const shuttlersContext = React.useContext(ShuttlersContext);
@@ -182,7 +183,7 @@ export const Calculator = () => {
 				if ((!canBorrow || !considerShared) && rosterCrew[i].shared)
 					continue;
 
-				if (excludeQuipped && rosterCrew[i].kwipment?.some((kw: number | number[]) => typeof kw === 'number' ? !!kw : kw.some(id => !!id)))
+				if (excludeQuipped && isQuipped(rosterCrew[i]))
 					continue;
 			}
 

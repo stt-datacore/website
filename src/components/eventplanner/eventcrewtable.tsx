@@ -13,7 +13,7 @@ import CONFIG from '../../components/CONFIG';
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import { useStateWithStorage } from '../../utils/storage';
-import { applySkillBuff } from '../../utils/crewutils';
+import { applySkillBuff, isQuipped } from '../../utils/crewutils';
 
 import { IEventData, IRosterCrew, IEventScoredCrew, IEventCombos, IEventSkill, IEventPair, IBestCombos, IBestCombo } from './model';
 import { navToCrewPage } from '../../utils/nav';
@@ -108,7 +108,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	// Filter crew by bonus, frozen here instead of searchabletable callback so matrix can use filtered crew list
 	if (showBonus) rosterCrew = rosterCrew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0);
 	if (!showFrozen) rosterCrew = rosterCrew.filter((c) => c.immortal <= 0);
-	if (excludeQuipped) rosterCrew = rosterCrew.filter((c) => !c.kwipment?.some((kw: number | number[]) => typeof kw === 'number' ? !!kw : kw.some(id => !!id)));
+	if (excludeQuipped) rosterCrew = rosterCrew.filter((c) => !isQuipped(c));
 	if (!canBorrow || !showShared) rosterCrew = rosterCrew.filter((c) => !c.shared);
 
 	const getPairScore = (crew: IRosterCrew, primary: string, secondary: string) => {
