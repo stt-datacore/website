@@ -4,7 +4,7 @@ import { Link } from 'gatsby';
 
 import { MarkCrew } from './markbuttons';
 import { ListedTraits } from './listedtraits';
-import { getStyleByRarity } from './fbbutils';
+import { isNodeOpen, getStyleByRarity } from './fbbutils';
 
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 
@@ -18,7 +18,7 @@ import { TinyShipSkill } from '../item_presenters/shipskill';
 type CrewTableProps = {
 	solver: Solver;
 	optimizer: Optimizer;
-	solveNode: (nodeIndex: number, traits: string[]) => void;
+	solveNode: (nodeIndex: number, traits: string[], bypassConfirmation: boolean) => void;
 	markAsTried: (crewSymbol: string) => void;
 };
 
@@ -35,7 +35,7 @@ const CrewTable = (props: CrewTableProps) => {
 	}
 	tableConfig.push({ width: 1, column: 'nodes_rarity', title: 'Coverage', reverse: true });
 
-	const openNodes = solver.nodes.filter(node => node.open);
+	const openNodes = solver.nodes.filter(node => isNodeOpen(node));
 	openNodes.forEach(node => {
 		const renderTitle = (node) => {
 			const formattedOpen = node.traitsKnown.map((trait, idx) => (
@@ -122,11 +122,15 @@ const CrewTable = (props: CrewTableProps) => {
 				<Table.Cell textAlign='center'>
 					<MarkCrew crew={crew} trigger='trial'
 						solver={solver} optimizer={optimizer}
-						solveNode={props.solveNode} markAsTried={props.markAsTried}
+						solveNode={crewSolve} markAsTried={props.markAsTried}
 					/>
 				</Table.Cell>
 			</Table.Row>
 		);
+
+		function crewSolve(nodeIndex: number, traits: string[]): void {
+			props.solveNode(nodeIndex, traits, true);
+		}
 	}
 
 	function descriptionLabel(crew: BossCrew): JSX.Element {

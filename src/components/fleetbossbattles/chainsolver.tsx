@@ -2,12 +2,12 @@ import React from 'react';
 import { Header, Step, Icon, Message } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
-import { BossCrew, ComboCount, IgnoredCombo, NodeMatches, Rule, RuleException, Solver, SolverNode, SolverTrait } from '../../model/boss';
+import { BossCrew, ComboCount, IgnoredCombo, NodeMatches, Rule, RuleException, Solve, SolveStatus, Solver, SolverNode, SolverTrait } from '../../model/boss';
 
 import { UserContext, SolverContext } from './context';
 import ChainCrew from './crew';
 import ChainTraits from './traits';
-import { getAllCombos, removeCrewNodeCombo } from './fbbutils';
+import { isNodeOpen, getAllCombos, removeCrewNodeCombo } from './fbbutils';
 
 const MAX_RARITY_BY_DIFFICULTY = {
 	1: 2,
@@ -27,15 +27,15 @@ export const ChainSolver = () => {
 	React.useEffect(() => {
 		if (!chain) return;
 
-		const solverNodes = [] as SolverNode[];
-		const solverTraits = [] as SolverTrait[];
-		const traitsConsumed = [] as string[];
+		const solverNodes: SolverNode[] = [];
+		const solverTraits: SolverTrait[] = [];
+		const traitsConsumed: string[] = [];
 
 		chain.nodes.forEach((node, nodeIndex) => {
-			const givenTraitIds = [] as number[];
-			node.open_traits.forEach((trait, traitIndex) => {
-				const instance = solverTraits.filter(t => t.trait === trait).length + 1;
-				const id = solverTraits.length;
+			const givenTraitIds: number[] = [];
+			node.open_traits.forEach(trait => {
+				const instance: number = solverTraits.filter(t => t.trait === trait).length + 1;
+				const id: number = solverTraits.length;
 				solverTraits.push({
 					id,
 					trait,
@@ -49,23 +49,35 @@ export const ChainSolver = () => {
 				traitsConsumed.push(trait);
 			});
 
-			let solve = node.hidden_traits;
-			const spotSolve = spotter.solves.find(solve => solve.node === nodeIndex);
-			if (solve.includes('?') && spotSolve) solve = spotSolve.traits;
-			const traitsKnown = node.open_traits.slice();
+			let solveStatus: SolveStatus = SolveStatus.Unsolved;
+			let solve: string[] = node.hidden_traits;
+			if (!solve.includes('?')) {
+				solveStatus = SolveStatus.Infallible;
+			}
+			else {
+				const spotSolve: Solve | undefined = spotter.solves.find(solve => solve.node === nodeIndex);
+				if (spotSolve) {
+					if (!spotSolve.traits.includes('?'))
+						solveStatus = spotSolve.crew.length === 0 ? SolveStatus.Confirmed : SolveStatus.Unconfirmed;
+					else if (spotSolve.traits.some(trait => trait !== '?'))
+						solveStatus = SolveStatus.Partial;
+					solve = spotSolve.traits;
+				}
+			}
+
+			const traitsKnown: string[] = node.open_traits.slice();
 			solve.forEach(trait => {
 				if (trait !== '?') traitsKnown.push(trait);
 			});
-			const hiddenLeft = solve.filter(trait => trait === '?').length;
+			const hiddenLeft: number = solve.filter(trait => trait === '?').length;
 
 			solverNodes.push({
 				index: nodeIndex,
 				givenTraitIds,
 				solve,
+				solveStatus,
 				traitsKnown,
 				hiddenLeft,
-				open: hiddenLeft > 0,
-				spotSolve: !!spotSolve,
 				alphaTest: node.open_traits.slice().sort((a, b) => b.localeCompare(a, 'en'))[0],
 				oneHandTest: difficultyId === 6 || (difficultyId === 5 && nodeIndex > 0)
 			});
@@ -111,7 +123,7 @@ export const ChainSolver = () => {
 			if (crew.max_rarity <= MAX_RARITY_BY_DIFFICULTY[difficultyId]) {
 				const nodes = [] as number[];
 				const matchesByNode = {} as NodeMatches;
-				solverNodes.filter(node => node.open).forEach(node => {
+				solverNodes.filter(node => isNodeOpen(node)).forEach(node => {
 					// Crew must have every known trait
 					if (node.traitsKnown.every(trait => crew.traits.includes(trait))) {
 						const nodePool = traitPool.filter(trait => !node.traitsKnown.includes(trait));
@@ -157,13 +169,13 @@ export const ChainSolver = () => {
 		// Ignore combos of:
 		//	1) Crew used to solve other nodes
 		//	2) Attempted crew
-		const confirmedSolves = chain.nodes.filter(node => node.unlocked_crew_archetype_id)
+		const infallibleSolves = chain.nodes.filter(node => node.unlocked_crew_archetype_id)
 			.map(node => bossCrew.find(c => c.archetype_id === node.unlocked_crew_archetype_id)?.symbol);
-		[confirmedSolves, spotter.attemptedCrew].forEach(group => {
+		[infallibleSolves, spotter.attemptedCrew].forEach(group => {
 			group?.forEach(attempt => {
 				const crew = bossCrew.find(ac => ac.symbol === attempt);
 				if (crew) {
-					solverNodes.filter(node => node.open).forEach(node => {
+					solverNodes.filter(node => isNodeOpen(node)).forEach(node => {
 						if (node.traitsKnown.every(trait => crew.traits.includes(trait))) {
 							const nodePool = traitPool.filter(trait => !node.traitsKnown.includes(trait));
 							const traitsMatched = nodePool.filter(trait => crew.traits.includes(trait));
@@ -196,7 +208,7 @@ export const ChainSolver = () => {
 			crew.onehand_rule = { compliant: crew.nodes_rarity, exceptions: [] as RuleException[] } as Rule;
 			Object.values(crew.node_matches).forEach(node => {
 				let alphaCompliant = node.combos.length, oneHandCompliant = node.combos.length;
-				const alphaTest = solverNodes.filter(node => node.open).find(n => n.index === node.index)?.alphaTest;
+				const alphaTest = solverNodes.filter(node => isNodeOpen(node)).find(n => n.index === node.index)?.alphaTest;
 				node.combos.forEach(combo => {
 					if (alphaTest) {
 						if (!combo.every(trait => trait.localeCompare(alphaTest, 'en') === 1)) {
@@ -231,7 +243,7 @@ export const ChainSolver = () => {
 
 	if (!solver) return (<></>);
 
-	const openNodes = solver.nodes.filter(node => node.open).length;
+	const openNodes = solver.nodes.filter(node => isNodeOpen(node)).length;
 	const unlockedNodes = chain.nodes.length-openNodes;
 
 	return (
