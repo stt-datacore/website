@@ -175,6 +175,7 @@ export interface SpotterPreferences {
 	alpha: string;
 	nonoptimal: string;
 	noncoverage: string;
+	confirmSolves: boolean;
 }
 
 export interface SoloPreferences {
@@ -234,19 +235,27 @@ export interface SolverNode {
 	index: number;
 	givenTraitIds: number[];
 	solve: string[];
+	solveStatus: SolveStatus;
 	traitsKnown: string[];
 	hiddenLeft: number;
-	open: boolean;
-	spotSolve: boolean;
 	alphaTest: string;
 	oneHandTest: boolean;
 	possible?: any; /* { id: number, trait: string } */
 	solveOptions?: SolveOption[];
 }
 
+export enum SolveStatus {
+	Unsolved,
+	Infallible,
+	Confirmed,
+	Unconfirmed,
+	Partial
+}
+
 export interface Solve {
 	node: number;
 	traits: string[];
+	crew: BossCrew[];	// Crew who can confirm this solve; empty array if already confirmed
 }
 
 export interface Solver {

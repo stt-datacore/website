@@ -2,7 +2,7 @@ import React from 'react';
 import { Header, Dropdown, Form, Table, Icon, Grid, Label, Message, Button, Popup } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
-import { Solver, SolverNode, SolverTrait, Spotter, TraitOption } from '../../model/boss';
+import { SolveStatus, Solver, SolverNode, SolverTrait, Spotter, TraitOption } from '../../model/boss';
 
 import { SolverContext } from './context';
 
@@ -30,9 +30,10 @@ const ChainTraits = (props: ChainTraitsProps) => {
 		const solve = solves.find(solve => solve.node === nodeIndex);
 		if (solve) {
 			solve.traits = traits;
+			solve.crew = [];
 		}
 		else {
-			solves.push({ node: nodeIndex, traits });
+			solves.push({ node: nodeIndex, traits, crew: [] });
 		}
 		updateSpotter({...spotter, solves});
 	}
@@ -74,11 +75,12 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 
 	function renderRow(node: SolverNode, nodeIndex: number): JSX.Element {
 		const { givenTraitIds, solve } = node;
-		const readonly = !!collaboration || (!node.open && !node.spotSolve);
+		const readonly = !!collaboration || (node.solveStatus === SolveStatus.Infallible);
 		return (
 			<Table.Row key={nodeIndex}>
 				<Table.Cell>
-					{!node.open && <Icon name='check' color='green' />}
+					{node.solveStatus === SolveStatus.Infallible && <Icon name='check' />}
+					{(node.solveStatus === SolveStatus.Confirmed || node.solveStatus === SolveStatus.Unconfirmed) && <Icon name='check circle' color='green' />}
 					{givenTraitIds.map(traitId => traitNameInstance(solver.traits[traitId])).join(' + ')}
 				</Table.Cell>
 				<Table.Cell>

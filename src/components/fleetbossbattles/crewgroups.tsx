@@ -1,17 +1,18 @@
 import React from 'react';
 import { InView } from 'react-intersection-observer';
-import { Message, Table, Label, Icon, Grid, SemanticWIDTHS } from 'semantic-ui-react';
+import { Button, Message, Table, Label, Icon, Grid, SemanticWIDTHS } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
-import { BossCrew, FilteredGroup, Optimizer, Solver, SolverNode } from '../../model/boss';
+import { BossCrew, FilteredGroup, Optimizer, SolveStatus, Solver, SolverNode } from '../../model/boss';
 
+import { UserContext } from './context';
 import { CrewNodeExporter } from './crewexporter';
 import { MarkGroup, MarkCrew } from './markbuttons';
 
 interface CrewGroupsProps {
 	solver: Solver;
 	optimizer: Optimizer;
-	solveNode: (nodeIndex: number, traits: string[]) => void;
+	solveNode: (nodeIndex: number, traits: string[], bypassConfirmation?: boolean) => void;
 	markAsTried: (crewSymbol: string) => void;
 };
 
@@ -19,14 +20,11 @@ const CrewGroupsContext = React.createContext<CrewGroupsProps>({} as CrewGroupsP
 
 const CrewGroups = (props: CrewGroupsProps) => {
 	const { solver } = props;
-
-	const openNodes = solver.nodes.filter(node => node.open);
-
 	return (
 		<CrewGroupsContext.Provider value={{ ...props }}>
-			{openNodes.map(node =>
+			{solver.nodes.map(node => (
 				<NodeGroups key={node.index} node={node} />
-			)}
+			))}
 		</CrewGroupsContext.Provider>
 	);
 };
@@ -36,39 +34,66 @@ type NodeGroupsProps = {
 };
 
 const NodeGroups = (props: NodeGroupsProps) => {
+	const { spotterPrefs } = React.useContext(UserContext);
 	const groupsContext = React.useContext(CrewGroupsContext);
 	const { node } = props;
 
-	const formattedOpen = node.traitsKnown.map((trait, idx) => (
-		<span key={idx}>
-			{idx > 0 ? <> + </> : <></>}{allTraits.trait_names[trait]}
-		</span>
-	)).reduce((prev, curr) => <>{prev} {curr}</>, <></>);
-	const hidden = Array(node.hiddenLeft).fill('?').join(' + ');
+	// Hide this node if solved authenticated from player data, solve confirmed, or not set to confirm solved traits
+	if (node.solveStatus === SolveStatus.Infallible
+		|| node.solveStatus === SolveStatus.Confirmed
+		|| (node.solveStatus === SolveStatus.Unconfirmed && !spotterPrefs.confirmSolves)
+	) return <></>;
 
-	const nodeGroups = groupsContext.optimizer.groups[`node-${node.index}`];
+	const nodeGroups: FilteredGroup[] = groupsContext.optimizer.groups[`node-${node.index}`];
+	const unconfirmedSolve: boolean = node.solveStatus === SolveStatus.Unconfirmed;
+	const partialSolve: boolean = node.solveStatus === SolveStatus.Partial;
 
 	return (
 		<div style={{ marginBottom: '2em' }}>
-			<Message style={{ position: 'sticky', top: 45, zIndex: 2 }}>
-				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+			<Message style={{ position: 'sticky', top: 45, zIndex: 2 }} icon={unconfirmedSolve}>
+				{unconfirmedSolve && <Icon name='check circle' color='green' />}
+				<div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 					<div>
-						<Message.Header>{formattedOpen} + {hidden}</Message.Header>
-						<p>Node {node.index+1}</p>
+						<Message.Header>{renderTraits()}</Message.Header>
+						<p>
+							Node {node.index+1}
+							{(unconfirmedSolve || partialSolve) && (
+								<span>
+									{` `}{partialSolve && <>partially{` `}</>}solved{unconfirmedSolve && <>, pending confirmation</>}
+									<span style={{ paddingLeft: '1em' }}>
+										<Button compact icon='undo' content='Undo solve' onClick={() => groupsContext.solveNode(node.index, [])} />
+									</span>
+								</span>
+							)}
+						</p>
 					</div>
 					<div>
 						<CrewNodeExporter node={node} nodeGroups={nodeGroups} traits={groupsContext.solver.traits} />
 					</div>
 				</div>
 			</Message>
-			{nodeGroups.length === 0 &&
+			{nodeGroups.length === 0 && (
 				<Message>
 					No possible solutions found for this node. You may need to change your filters, double-check your solved traits, or reset the list of attempted crew.
 				</Message>
-			}
+			)}
 			{nodeGroups.length > 0 && <GroupTable node={node} data={nodeGroups} />}
 		</div>
 	);
+
+	function renderTraits(): JSX.Element {
+		const traits: string[ ] = node.traitsKnown.concat(Array(node.hiddenLeft).fill('?'));
+		const formattedTraits = traits.map((trait, idx) => (
+			<span key={idx}>
+				{idx > 0 ? <> + </> : <></>}{trait !== '?' ? allTraits.trait_names[trait] : '?'}
+			</span>
+		)).reduce((prev, curr) => <>{prev} {curr}</>, <></>);
+		return (
+			<React.Fragment>
+				{formattedTraits}
+			</React.Fragment>
+		);
+	}
 };
 
 type GroupTableProps = {
@@ -213,10 +238,10 @@ type GroupCrewProps = {
 const GroupCrew = (props: GroupCrewProps) => {
 	const groupsContext = React.useContext(CrewGroupsContext);
 
-	const [showCrew, setShowCrew] = React.useState(false);
+	const [showCrew, setShowCrew] = React.useState<boolean>(false);
 
-	const usable = groupsContext.optimizer.prefs.solo.usable;
-	const crewList = props.crewList.filter(crew =>
+	const usable: string = groupsContext.optimizer.prefs.solo.usable;
+	const crewList: BossCrew[] = props.crewList.filter(crew =>
 		(usable !== 'owned' || (crew.highest_owned_rarity ?? 0) > 0)
 			&& (usable !== 'thawed' || ((crew.highest_owned_rarity ?? 0) > 0 && !crew.only_frozen))
 	);
@@ -234,23 +259,27 @@ const GroupCrew = (props: GroupCrewProps) => {
 
 	return (
 		<React.Fragment>
-			{crewList.length === 0 &&
+			{crewList.length === 0 && (
 				<Message>
 					You have no {usable === 'thawed' ? 'unfrozen' : ''} crew with this group of traits. Change your availability user preference to see more options.
 				</Message>
-			}
-			{crewList.length > 0 &&
+			)}
+			{crewList.length > 0 && (
 				<Grid doubling columns={3} textAlign='center'>
 					{crewList.sort((a, b) => a.name.localeCompare(b.name)).map(crew =>
 						<MarkCrew key={crew.symbol} crew={crew} trigger='card'
 							solver={groupsContext.solver} optimizer={groupsContext.optimizer}
-							solveNode={groupsContext.solveNode} markAsTried={groupsContext.markAsTried}
+							solveNode={crewSolve} markAsTried={groupsContext.markAsTried}
 						/>
 					)}
 				</Grid>
-			}
+			)}
 		</React.Fragment>
 	);
+
+	function crewSolve(nodeIndex: number, traits: string[]): void {
+		groupsContext.solveNode(nodeIndex, traits, true);
+	}
 };
 
 export default CrewGroups;
