@@ -86,6 +86,7 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGl
     const minVoy = rankedCrew.map(rc => rc?.crewCount ?? 0).reduce((p, n) => p < n ? p : n, maxVoy);
 
     rankedCrew.forEach((rc) => {
+        rc.seats = rc.seats.filter(f => f.seat_skill in rc.base_skills)
         rc.seats.sort((a, b) => b.crewCount - a.crewCount);
     })
 
@@ -98,7 +99,7 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGl
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell>Rank</Table.HeaderCell>
-                        <Table.HeaderCell textAlign="right">Crew</Table.HeaderCell>
+                        <Table.HeaderCell textAlign="left">Crew</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
@@ -160,9 +161,8 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGl
                                         )}
                                         {crew?.have && <OwnedLabel statsPopup crew={crew as IRosterCrew} />}
                                     </div>
-                                    <div style={{marginTop: "0.5em", gridArea: "footer", display:'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center'}}>
+                                    <div style={{marginTop: "0.5em", marginRight: "0.5em", gridArea: "footer", display:'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                                     {crew.seats.map((seat, idx) => {
-
                                         return (<div 
                                             title={`${seat.crewCount.toLocaleString()} voyages.`}
                                             key={`${idx}_${crew.symbol}_seat_${seat.seat_skill}`} style={{display:'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center'}}>
@@ -336,13 +336,13 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         let rows = [] as { stats: VoyageStatEntry[], key: VoyageHOFPeriod }[][];
         let stats = Object.keys(niceNamesForPeriod)?.filter(p => !!p?.length);
        
-        while (stats.length) {
-            rows.push(stats.splice(0, 3).map(p => { return { stats: (voyageStats as Object)[p] as VoyageStatEntry[], key: p as VoyageHOFPeriod } } ))
-        }
-
         const filteredCrew = this.getFilteredCrew();
         const selection = filteredCrew?.filter(s => crewSymbol?.includes(s.symbol)).map(m => m?.id ?? 0);
         const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
+        while (stats.length) {            
+            rows.push(stats.splice(0, isMobile ? 1 : 3).map(p => { return { stats: (voyageStats as Object)[p] as VoyageStatEntry[], key: p as VoyageHOFPeriod } } ))
+        }
         
         const glanceDaysChoices = [
             {
