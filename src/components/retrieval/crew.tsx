@@ -27,7 +27,7 @@ export const RetrievalCrew = () => {
 	const minTraitMatches = getCrewFilter('minTraitMatches') as number;
 	const collectionFilter = getCrewFilter('collection') as string;
 
-	const [isPreparing, setIsPreparing] = React.useState<boolean>(false);
+	const [isPreparing, setIsPreparing] = React.useState<boolean>(true);
 	const [filteredCrew, setFilteredCrew] = React.useState<IRosterCrew[]>([]);
 
 	// Calculate roster on updated keystone owned counts (i.e. playerData change) or on polestar tailoring
@@ -122,6 +122,9 @@ export const RetrievalCrew = () => {
 			}
 		)
 	});
+
+	if (rosterCrew.length === 0)
+		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> Loading...</div>);
 
 	return (
 		<React.Fragment>

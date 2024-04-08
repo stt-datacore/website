@@ -170,10 +170,15 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 	const { solver, optimizer } = props;
 
 	const copyFull = () => {
-		const openNodes: SolverNode[] = solver.nodes.filter(node => isNodeOpen(node));
+		const unsolvedNodes: number = solver.nodes.filter(node => isNodeOpen(node)).length;
+		const unconfirmedNodes: number = solver.nodes.filter(node => node.solveStatus === SolveStatus.Unconfirmed).length;
+
+		let solvedNodes: number = solver.nodes.length - unsolvedNodes;
+		if (prefValue(exportPrefs, 'solve') === 'spot') solvedNodes -= unconfirmedNodes;
+
 		let header: string = '';
-		if (prefValue(exportPrefs, 'header') === 'always' || (prefValue(exportPrefs, 'header') === 'initial' && solver.nodes.length-openNodes.length === 0)) {
-			header += `${description}, Chain #${chainIndex+1} (${solver.nodes.length-openNodes.length}/${solver.nodes.length})`;
+		if (prefValue(exportPrefs, 'header') === 'always' || (prefValue(exportPrefs, 'header') === 'initial' && solvedNodes === 0)) {
+			header += `${description}, Chain #${chainIndex+1} (${solvedNodes}/${solver.nodes.length} ${prefValue(exportPrefs, 'solve') === 'spot' ? 'confirmed ' : ''}solved)`;
 			header += '\n\n';
 		}
 		let output: string = '';

@@ -4,7 +4,7 @@ import { Header, Dropdown, Form, Table, Icon, Grid, Label, Message, Button, Popu
 import allTraits from '../../../static/structured/translation_en.json';
 import { SolveStatus, Solver, SolverNode, SolverTrait, Spotter, TraitOption } from '../../model/boss';
 
-import { SolverContext } from './context';
+import { UserContext, SolverContext } from './context';
 
 type ChainTraitsProps = {
 	solver: Solver;
@@ -50,6 +50,7 @@ type TraitsProgressProps = {
 };
 
 const TraitsProgress = (props: TraitsProgressProps) => {
+	const { spotterPrefs } = React.useContext(UserContext);
 	const { collaboration } = React.useContext(SolverContext);
 	const { solver } = props;
 
@@ -76,11 +77,17 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 	function renderRow(node: SolverNode, nodeIndex: number): JSX.Element {
 		const { givenTraitIds, solve } = node;
 		const readonly = !!collaboration || (node.solveStatus === SolveStatus.Infallible);
+		let checkIcon: JSX.Element | undefined = undefined;
+		if (node.solveStatus === SolveStatus.Infallible)
+			checkIcon = <Icon name='check' />;
+		else if (node.solveStatus === SolveStatus.Confirmed || (!spotterPrefs.confirmSolves && node.solveStatus === SolveStatus.Unconfirmed))
+			checkIcon = <Icon name='check' color='green' />;
+		else if (node.solveStatus === SolveStatus.Unconfirmed)
+			checkIcon = <Icon name='check circle' color='green' />;
 		return (
 			<Table.Row key={nodeIndex}>
 				<Table.Cell>
-					{node.solveStatus === SolveStatus.Infallible && <Icon name='check' />}
-					{(node.solveStatus === SolveStatus.Confirmed || node.solveStatus === SolveStatus.Unconfirmed) && <Icon name='check circle' color='green' />}
+					{checkIcon}
 					{givenTraitIds.map(traitId => traitNameInstance(solver.traits[traitId])).join(' + ')}
 				</Table.Cell>
 				<Table.Cell>
