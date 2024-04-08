@@ -19,7 +19,7 @@ const MAX_RARITY_BY_DIFFICULTY = {
 };
 
 export const ChainSolver = () => {
-	const { bossCrew, userPrefs, setUserPrefs } = React.useContext(UserContext);
+	const { bossCrew, spotterPrefs, userPrefs, setUserPrefs } = React.useContext(UserContext);
 	const { bossBattle: { difficultyId, chainIndex, chain }, spotter, setSpotter } = React.useContext(SolverContext);
 
 	const [solver, setSolver] = React.useState<Solver | undefined>(undefined);
@@ -243,30 +243,34 @@ export const ChainSolver = () => {
 
 	if (!solver) return (<></>);
 
-	const openNodes = solver.nodes.filter(node => isNodeOpen(node)).length;
-	const unlockedNodes = chain.nodes.length-openNodes;
+	const unsolvedNodes: number = solver.nodes.filter(node => isNodeOpen(node)).length;
+	const unconfirmedNodes: number = solver.nodes.filter(node => node.solveStatus === SolveStatus.Unconfirmed).length;
+	const chainSolved: boolean = unsolvedNodes === 0 && (!spotterPrefs.confirmSolves || unconfirmedNodes === 0);
+
+	let solvedNodes: number = solver.nodes.length - unsolvedNodes;
+	if (spotterPrefs.confirmSolves) solvedNodes -= unconfirmedNodes;
 
 	return (
 		<React.Fragment>
 			<Header as='h3'>
-				Chain #{chainIndex+1} <span style={{ marginLeft: '1em' }}>({unlockedNodes}/{chain.nodes.length} solved)</span>
+				Chain #{chainIndex+1} <span style={{ marginLeft: '1em' }}>({solvedNodes}/{solver.nodes.length} {spotterPrefs.confirmSolves ? ' confirmed ' : ''} solved)</span>
 			</Header>
 			<Step.Group fluid>
-				<Step active={userPrefs.view === 'crewgroups' && openNodes > 0} onClick={() => setUserPrefs({...userPrefs, view: 'crewgroups'})}>
+				<Step active={userPrefs.view === 'crewgroups' && !chainSolved} onClick={() => setUserPrefs({...userPrefs, view: 'crewgroups'})}>
 					<Icon name='object group' />
 					<Step.Content>
 						<Step.Title>Groups</Step.Title>
 						<Step.Description>View solutions grouped by traits</Step.Description>
 					</Step.Content>
 				</Step>
-				<Step active={userPrefs.view === 'crewtable' && openNodes > 0} onClick={() => setUserPrefs({...userPrefs, view: 'crewtable'})}>
+				<Step active={userPrefs.view === 'crewtable' && !chainSolved} onClick={() => setUserPrefs({...userPrefs, view: 'crewtable'})}>
 					<Icon name='users' />
 					<Step.Content>
 						<Step.Title>Crew</Step.Title>
 						<Step.Description>Search for individual crew</Step.Description>
 					</Step.Content>
 				</Step>
-				<Step active={userPrefs.view === 'traits' || openNodes === 0} onClick={() => setUserPrefs({...userPrefs, view: 'traits'})}>
+				<Step active={userPrefs.view === 'traits' || chainSolved} onClick={() => setUserPrefs({...userPrefs, view: 'traits'})}>
 					<Icon name='tasks' />
 					<Step.Content>
 						<Step.Title>Traits</Step.Title>
@@ -274,14 +278,14 @@ export const ChainSolver = () => {
 					</Step.Content>
 				</Step>
 			</Step.Group>
-			{(userPrefs.view === 'crewgroups' || userPrefs.view === 'crewtable') && openNodes > 0 &&
+			{(userPrefs.view === 'crewgroups' || userPrefs.view === 'crewtable') && !chainSolved &&
 				<ChainCrew view={userPrefs.view}
 					solver={solver} spotter={spotter} updateSpotter={setSpotter}
 				/>
 			}
-			{(userPrefs.view === 'traits' || openNodes === 0) &&
+			{(userPrefs.view === 'traits' || chainSolved) &&
 				<React.Fragment>
-					{openNodes === 0 &&
+					{chainSolved &&
 						<Message positive>
 							Your fleet has solved all nodes for this combo chain. Select another boss or update your player data to refresh active battles.
 						</Message>

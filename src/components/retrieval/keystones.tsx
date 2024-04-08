@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, Icon } from 'semantic-ui-react';
+import { Form, Icon } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
@@ -92,13 +92,7 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 
 	const [polestarTailors, setPolestarTailors] = useStateWithStorage<IPolestarTailors>(props.dbid+'retrieval/tailors', polestarTailorDefaults, { rememberForever: true });
 	const [crewFilters, setCrewFilters] = useStateWithStorage<ICrewFilters>(props.dbid+'retrieval/filters', crewFilterDefaults, { rememberForever: true });
-	const [wishlist, setWishlist] = useStateWithStorage<string[]>(props.dbid+'retrieval/wishlist', [], { rememberForever: true });	
-
-	const resetPrefs = () => {
-		setPolestarTailors(polestarTailorDefaults);
-		setCrewFilters(crewFilterDefaults);
-		setWishlist([]);
-	}
+	const [wishlist, setWishlist] = useStateWithStorage<string[]>(props.dbid+'retrieval/wishlist', [], { rememberForever: true });
 
 	React.useEffect(() => {
 		const allKeystones = JSON.parse(JSON.stringify(props.allKeystones)) as IKeystone[];
@@ -153,9 +147,6 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 				</Form.Group>
 			</Form>
 			<RetrievalCrew />
-			<div style={{ marginTop: '1em' }} title={'Reset all persistent user preferences to defaults, and clear the wish list.'}>
-				<Button content={'Reset Preferences'} onClick={() => resetPrefs()} />
-			</div>
 		</RetrievalContext.Provider>
 	);
 
