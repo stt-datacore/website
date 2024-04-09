@@ -24,25 +24,25 @@ const Announcement = () => {
 
 	const query = graphql`
 		query AnnouncementQuery {
-		  allMarkdownRemark(
+			allMarkdownRemark(
 			limit: 1
-			sort: {fields: [frontmatter___date], order: [DESC]}
+			sort: {frontmatter: {date: DESC}}
 			filter: {fields: {source: {eq: "announcements"}}}
-		  ) {
+		) {
 			edges {
-			  node {
+			node {
 				html
 				frontmatter {
-				  title
-				  class
-				  icon
-				  date
+				title
+				class
+				icon
+				date
 				}
-				excerpt(format:HTML)
-			  }
+				excerpt(format: HTML)
 			}
 		  }
 		}
+	  }
 	`;
 
 	const render = ({ allMarkdownRemark }) => {

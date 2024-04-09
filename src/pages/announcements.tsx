@@ -32,7 +32,7 @@ export const pageQuery = graphql`
 	  allMarkdownRemark(
 		filter: {fields: {source: {eq: "announcements"}}}
 		limit: 20
-		sort: {fields: frontmatter___date, order: DESC}
+    	sort: {frontmatter: {date: DESC}}
 	  ) {
 		edges {
 		  node {
