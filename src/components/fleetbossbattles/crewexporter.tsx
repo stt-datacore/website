@@ -84,7 +84,7 @@ const exportNodeGroups = (node: SolverNode, nodeGroups: FilteredGroup[], traitDa
 				.map(crew => formatCrewName(crew))
 				.join(`${prefValue(exportPrefs, 'delimiter')} `);
 			groupList += matchingCrew;
-			if (prefValue(exportPrefs, 'crew_traits') === 'show')
+			if (prefValue(exportPrefs, 'crew_traits') === 'show' && node.solveStatus !== SolveStatus.Unconfirmed)
 				groupList += ` (${sortedTraits(row.traits, node.alphaTest)})`;
 			nodeList += groupList;
 		});
