@@ -20,7 +20,7 @@ export const CrewPortalFilter = (props: CrewPortalFilterProps) => {
 		{ key: 'none', value: '', text: 'Show all crew' },
 		{ key: 'inportal', value: 'inportal', text: 'In portal' },
 		{ key: 'unique', value: 'unique', text: 'Uniquely Retrievable' },
-		{ key: 'notunique', value: 'unique', text: 'Not Uniquely Retrievable' },
+		{ key: 'notunique', value: 'notunique', text: 'Not Uniquely Retrievable' },
 		{ key: 'noninportal', value: 'notinportal', text: 'Not in portal' },
 		{ key: 'neverportal', value: 'neverportal', text: 'Never in portal' },
 	];
