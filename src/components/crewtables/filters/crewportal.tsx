@@ -20,6 +20,7 @@ export const CrewPortalFilter = (props: CrewPortalFilterProps) => {
 		{ key: 'none', value: '', text: 'Show all crew' },
 		{ key: 'inportal', value: 'inportal', text: 'In portal' },
 		{ key: 'unique', value: 'unique', text: 'Uniquely Retrievable' },
+		{ key: 'notunique', value: 'unique', text: 'Not Uniquely Retrievable' },
 		{ key: 'noninportal', value: 'notinportal', text: 'Not in portal' },
 		{ key: 'neverportal', value: 'neverportal', text: 'Never in portal' },
 	];
@@ -27,6 +28,7 @@ export const CrewPortalFilter = (props: CrewPortalFilterProps) => {
 	const filterByPortal = (crew: IRosterCrew) => {
 		if (['inportal', 'unique'].includes(portalFilter) && !crew.in_portal) return false;
 		if (portalFilter === 'unique' && !crew.unique_polestar_combos?.length) return false;
+		if (portalFilter === 'notunique' && !!crew.unique_polestar_combos?.length) return false;
 		if (portalFilter === 'notinportal' && crew.in_portal) return false;
 		if (portalFilter === 'neverportal') {
 			if (!printPortalStatus(crew, true, false, false, false).includes("Never")) return false;
