@@ -26,7 +26,7 @@ export const CrewPortalFilter = (props: CrewPortalFilterProps) => {
 	];
 
 	const filterByPortal = (crew: IRosterCrew) => {
-		if (['inportal', 'unique'].includes(portalFilter) && !crew.in_portal) return false;
+		if (['inportal', 'unique', 'notunique'].includes(portalFilter) && !crew.in_portal) return false;
 		if (portalFilter === 'unique' && !crew.unique_polestar_combos?.length) return false;
 		if (portalFilter === 'notunique' && !!crew.unique_polestar_combos?.length) return false;
 		if (portalFilter === 'notinportal' && crew.in_portal) return false;
