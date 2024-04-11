@@ -60,7 +60,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	};
 
 	updateAndRun() {
-		const { estimate, numSims, showPanels, ships, voyageData } = this.props;
+		const { estimate, numSims, ships, voyageData } = this.props;
 		
 		if (!voyageData)
 			return;
@@ -108,7 +108,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	constructor(props: VoyageStatsProps | Readonly<VoyageStatsProps>) {
 		super(props);
-		const { estimate, numSims, showPanels, ships, voyageData } = this.props;
+		const { estimate, showPanels, voyageData } = this.props;
 
 		this.state = {
 			estimate: estimate,
