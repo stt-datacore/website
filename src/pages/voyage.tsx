@@ -18,7 +18,7 @@ import { ConfigInput } from '../components/voyagecalculator/configinput';
 import { defaultHistory } from '../components/voyagehistory/utils';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 
-const VOYAGE_DEBUGGING: boolean = false;
+const VOYAGE_DEBUGGING: boolean = true;
 
 const VoyagePage = () => {
 	return (
@@ -81,7 +81,7 @@ const VoyageSetup = () => {
 	function getInitialConfig(): void {
 		const printDebug = (): void => {
 			if (!VOYAGE_DEBUGGING) return;
-			console.log(debug.reduce((prev, curr) => prev + '\n\n' + curr, '***** VOYAGE CONFIG INIT *****'));
+			console.log(debug.reduce((prev, curr) => prev + '\n\n' + curr, '***** VOYAGE PAGE *****'));
 		};
 
 		const debug: string[] = [];
@@ -219,7 +219,7 @@ const CalculatorSetup = (props: CalculatorSetupProps) => {
 				setRosterShips={setRosterShips}
 			/>
 			<CalculatorContext.Provider value={calculatorContext}>
-				<ConfigInput key={rosterType} voyageConfig={initialConfig} />
+				<ConfigInput key={`${rosterType}_${activeVoyageId}`} voyageConfig={initialConfig} />
 			</CalculatorContext.Provider>
 		</React.Fragment>
 	);

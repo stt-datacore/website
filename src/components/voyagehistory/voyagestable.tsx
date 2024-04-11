@@ -164,7 +164,7 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 			<Table.Row key={row.tracker_id} onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 				<Table.Cell>
 					{dtCreated.toLocaleDateString()}
-					{row.voyage_id === activeVoyageId && <><br/>Active Voyage</>}
+					{activeVoyageId > 0 && row.voyage_id === activeVoyageId && <><br/>Active Voyage</>}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					{CONFIG.SKILLS[row.skills.primary_skill]}
