@@ -3,7 +3,7 @@ name: Tribbled Koloth and Korax
 rarity: 5
 series: tas
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 in_portal:
 date: 17/05/2022
 published: true
