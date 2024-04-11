@@ -3,7 +3,7 @@ name: Yeoman Barrows
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 16/08/2023
 published: true
