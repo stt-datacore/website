@@ -1,6 +1,6 @@
-import React, { ElementRef } from 'react';
+import React from 'react';
 import { navigate } from "gatsby";
-import { SemanticICONS, Menu, Dropdown, Icon, Segment, Sidebar, Grid, Table, CardGroup, Container, Input, Modal } from "semantic-ui-react";
+import { Menu, Dropdown, Icon, Sidebar, Grid, Container } from "semantic-ui-react";
 import { v4 } from "uuid";
 import { GlobalContext } from "../../context/globalcontext";
 import { useOtherPages } from "../otherpages";
@@ -55,7 +55,63 @@ export const Navigation = (props: NavigationProps) => {
 	}
 
 	const avatar = portrait;
-	
+
+	const toolsSubMenu: NavItem[] = [
+		{ optionKey: 'behold', src: '/media/portal.png', title: "Behold Helper", link: "/behold", sidebarRole: 'item' },	// Behold available at launch
+		{ optionKey: 'shuttles', src: '/media/shuttle_icon.png', title: "Shuttle Helper", link: "/shuttlehelper", sidebarRole: 'item' },	// Shuttles available at launch
+		{ optionKey: 'faction', title: "Factions", src: '/media/faction.png', link: "/factions", sidebarRole: 'item' },	// Factions available at launch
+		// { optionKey: 'fleet', title: "Fleet", src: '/media/fleet_icon.png', link: "/fleet", sidebarRole: 'item' },	// Factions available at launch
+		{ optionKey: 'event', src: '/media/event.png', title: "Event Planner", link: "/eventplanner", sidebarRole: 'item' },	// Events added post-launch
+		{ optionKey: 'gauntlet', src: '/media/gauntlet.png', title: "Gauntlet", link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
+		{ optionKey: 'cite', src: `${process.env.GATSBY_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
+		{ optionKey: 'voyage', src: "/media/voyage.png", title: "Voyage Calculator", link: "/voyage", sidebarRole: 'item' },	// Voyages added v3
+		{ optionKey: 'voyhist', src: "/media/antimatter_icon.png", title: "Voyage History", link: "/voyagehistory", sidebarRole: 'item' },	// Voyages added v3
+		{ optionKey: 'collection', src: '/media/vault.png', title: "Collection Planner", link: "/collections", sidebarRole: 'item' },	// Collections added v4
+		{ optionKey: 'retrieval', src: '/media/retrieval.png', title: "Crew Retrieval", link: "/retrieval", sidebarRole: 'item' },	// Crew retrieval added v8
+		{ optionKey: 'fbb', src: '/media/fbb.png', title: "Fleet Boss Battles", link: "/fbb", sidebarRole: 'item' },	// Fleet boss battles added v9
+		{ optionKey: 'continuum', src: '/media/continuum.png', title: "Continuum Helper", link: "/continuum", sidebarRole: 'item' },	// Continuum missions added v10
+	];
+
+	const renderColumnsMenu = (menu: NavItem, columns: number = 2) => {
+		return (
+			<Dropdown text={menu.title as string} item simple direction='left'>
+				{menu.subMenu && (
+					<Menu>
+						<Container fluid>
+							<div style={{ columns, columnGap: '1px' }}>
+								{menu.subMenu.map(item => renderColumnsSubmenuItem(item))}
+							</div>
+						</Container>
+					</Menu>
+				)}
+			</Dropdown>
+		);
+	};
+
+	// Similar to renderSubmenuItem, with tweaks to look better in columns
+	//	Only used by renderColumnsMenu
+	const renderColumnsSubmenuItem = ((item: NavItem) => {
+		// Set border to 0 to avoid weird shifting when hovering over some items
+		return (
+			<Menu.Item key={v4()} onClick={(e) => item.link && navigate(item.link)}
+				style={{border:"0"}}
+			>
+				<div style={{
+					display:"flex",
+					flexDirection: "row",
+					textAlign: "left",
+					padding: "0.25em",
+					lineHeight:"1.45em",
+					alignItems: "center",
+					columnGap: ".5em",
+				}}>
+					{!!item.src && <img src={item.src} style={{height:'36px'}} alt={item.tooltip ?? item.textTitle ?? (typeof item.title === 'string' ? item.title : '')} />}
+					{item.title}
+				</div>
+			</Menu.Item>
+		);
+	});
+
 	const pages = [
 		{
 			src: '/media/logo.png',
@@ -158,48 +214,61 @@ export const Navigation = (props: NavigationProps) => {
 		},
 		{
 			title: 'Tools',
-            sidebarRole: 'heading',
-            subMenu: [
-				{
-					optionKey: 'crew_planning',
-					title: 'Crew Planning',
-					sidebarRole: 'heading',
-					src: '/media/crew_icon.png',
-					subMenu: [
-						{ optionKey: 'behold', src: '/media/portal.png',title: "Behold Helper", link: "/behold", sidebarRole: 'item' },	// Behold available at launch
-						{ optionKey: 'cite', src: `${process.env.GATSBY_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
-						{ optionKey: 'collection', src: '/media/vault.png', title: "Collection Planner", link: "/collections", sidebarRole: 'item' },	// Collections added v4
-						{ optionKey: 'retrieval', src: '/media/retrieval.png', title: "Crew Retrieval", link: "/retrieval", sidebarRole: 'item' },	// Crew retrieval added v8		
-					]
-				},
-
-				{
-					optionKey: 'game_play',
-					title: 'Game Play',
-					sidebarRole: 'heading',
-					src: '/media/event2.png',
-					subMenu: [
-						{ optionKey: 'faction', title: "Factions", src: '/media/faction.png', link: "/factions", sidebarRole: 'item' },	// Factions available at launch
-						{ optionKey: 'event', src: '/media/event.png', title: "Event Planner", link: "/eventplanner", sidebarRole: 'item' },	// Events added post-launch
-						{ optionKey: 'gauntlet', src: '/media/gauntlet.png', title: "Gauntlet", link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
-						{ optionKey: 'fbb', src: '/media/fbb.png', title: "Fleet Boss Battles", link: "/fbb", sidebarRole: 'item' },	// Fleet boss battles added v9
-						{ optionKey: 'continuum', src: '/media/continuum.png', title: "Continuum Helper", link: "/continuum", sidebarRole: 'item' },	// Continuum missions added v10
-					]
-				},
-				{
-					optionKey: 'voyage_submenu',
-					title: 'Voyages',
-					sidebarRole: 'heading',
-					src: '/media/voyage.png',
-					subMenu: [
-						{ optionKey: 'voyage', src: "/media/voyage.png", title: "Voyage Calculator", link: "/voyage", sidebarRole: 'item' },	// Voyages added v3
-						{ optionKey: 'voyhist', src: "/media/voyagehist.png", title: "Voyage History", link: "/voyagehistory", sidebarRole: 'item' },	// Voyages added v3
-					]
-				},
-				// { optionKey: 'fleet', title: "Fleet", src: '/media/fleet_icon.png', link: "/fleet", sidebarRole: 'item' },	// Factions available at launch
-
-			]
+			sidebarRole: 'heading',
+			subMenu: toolsSubMenu,
+			checkVisible: () => !isMobile,
+			customRender: (data) => renderColumnsMenu(data, 2)
 		},
+		{
+			title: 'Tools',
+			sidebarRole: 'heading',
+			subMenu: toolsSubMenu,
+			checkVisible: () => isMobile
+		},
+		// {
+		// 	title: 'Tools',
+        //     sidebarRole: 'heading',
+        //     subMenu: [
+		// 		{
+		// 			optionKey: 'crew_planning',
+		// 			title: 'Crew Planning',
+		// 			sidebarRole: 'heading',
+		// 			src: '/media/crew_icon.png',
+		// 			subMenu: [
+		// 				{ optionKey: 'behold', src: '/media/portal.png',title: "Behold Helper", link: "/behold", sidebarRole: 'item' },	// Behold available at launch
+		// 				{ optionKey: 'cite', src: `${process.env.GATSBY_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
+		// 				{ optionKey: 'collection', src: '/media/vault.png', title: "Collection Planner", link: "/collections", sidebarRole: 'item' },	// Collections added v4
+		// 				{ optionKey: 'retrieval', src: '/media/retrieval.png', title: "Crew Retrieval", link: "/retrieval", sidebarRole: 'item' },	// Crew retrieval added v8
+		// 			]
+		// 		},
+
+		// 		{
+		// 			optionKey: 'game_play',
+		// 			title: 'Game Play',
+		// 			sidebarRole: 'heading',
+		// 			src: '/media/event2.png',
+		// 			subMenu: [
+		// 				{ optionKey: 'faction', title: "Factions", src: '/media/faction.png', link: "/factions", sidebarRole: 'item' },	// Factions available at launch
+		// 				{ optionKey: 'event', src: '/media/event.png', title: "Event Planner", link: "/eventplanner", sidebarRole: 'item' },	// Events added post-launch
+		// 				{ optionKey: 'gauntlet', src: '/media/gauntlet.png', title: "Gauntlet", link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
+		// 				{ optionKey: 'fbb', src: '/media/fbb.png', title: "Fleet Boss Battles", link: "/fbb", sidebarRole: 'item' },	// Fleet boss battles added v9
+		// 				{ optionKey: 'continuum', src: '/media/continuum.png', title: "Continuum Helper", link: "/continuum", sidebarRole: 'item' },	// Continuum missions added v10
+		// 			]
+		// 		},
+		// 		{
+		// 			optionKey: 'voyage_submenu',
+		// 			title: 'Voyages',
+		// 			sidebarRole: 'heading',
+		// 			src: '/media/voyage.png',
+		// 			subMenu: [
+		// 				{ optionKey: 'voyage', src: "/media/voyage.png", title: "Voyage Calculator", link: "/voyage", sidebarRole: 'item' },	// Voyages added v3
+		// 				{ optionKey: 'voyhist', src: "/media/voyagehist.png", title: "Voyage History", link: "/voyagehistory", sidebarRole: 'item' },	// Voyages added v3
+		// 			]
+		// 		},
+		// 		// { optionKey: 'fleet', title: "Fleet", src: '/media/fleet_icon.png', link: "/fleet", sidebarRole: 'item' },	// Factions available at launch
+
+		// 	]
+		// },
 		{
 			title: 'Game Info',
             sidebarRole: 'heading',
@@ -226,7 +295,7 @@ export const Navigation = (props: NavigationProps) => {
 			right: true,
 			link: '/crewchallenge',
 			checkVisible: (data) => !isMobile
-		},		
+		},
 		{
 			title: <Icon name='bug' />,
 			textTitle: 'Switch between Production and Beta',
@@ -377,7 +446,7 @@ export const Navigation = (props: NavigationProps) => {
 
 	if (!isMobile) {
 		rightItems.unshift(createSubMenu('About', about));
-		
+
 	}
 	else {
 		sidebarItems.push(createSubMenu('About', about, true));
