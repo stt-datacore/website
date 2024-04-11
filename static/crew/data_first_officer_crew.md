@@ -3,7 +3,7 @@ name: First Officer Data
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 2
 in_portal: true
 date: 07/09/2022
 published: true
