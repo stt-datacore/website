@@ -1,13 +1,12 @@
 import React from 'react';
-import { graphql, useStaticQuery } from 'gatsby';
 import { Header, Card, Label, Image } from 'semantic-ui-react';
 import { GameEvent } from '../../model/player';
 import { getIconPath, getRarityColor } from '../../utils/assets';
 import { getEventData } from '../../utils/events';
 import CrewCard, { CrewCardBrief } from './crew_card';
-import { CompactCrew, PlayerCrew } from '../../model/player';
+import { PlayerCrew } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
-import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
+import { CrewTarget } from '../hovering/crewhoverstat';
 
 const contentTypeMap = {
 	gather: 'Galaxy',
@@ -47,46 +46,8 @@ function EventInformationTab(props: { eventData: GameEvent }) {
 	const { eventData } = props;
 	const context = React.useContext(GlobalContext);
 
-	const { crew: allCrew, items } = context.core;
-	const { playerData } = context.player;
+	const { crew: allCrew } = context.core;
 
-	const { crewJson } = useStaticQuery(graphql`
-		query {
-			crewJson: allCrewJson {
-				edges {
-					node {
-						name
-						max_rarity
-						imageUrlPortrait
-						symbol
-						traits
-						traits_hidden
-						traits_named
-						base_skills {
-							security_skill {
-								core
-							}
-							command_skill {
-								core
-							}
-							diplomacy_skill {
-								core
-							}
-							engineering_skill {
-								core
-							}
-							medicine_skill {
-								core
-							}
-							science_skill {
-								core
-							}
-						}
-					}
-				}
-			}
-		}
-	`);
 	const crewData = allCrew; // crewJson.edges.map(edge => edge.node) as PlayerCrew[];
 	const crewMap: { [key: string]: PlayerCrew } = {};
 	crewData.forEach(crew => {
@@ -151,7 +112,7 @@ function EventInformationTab(props: { eventData: GameEvent }) {
 				<Label key={`crew_${crew.symbol}`} color="black" style={{ marginBottom: '5px' }}>
 					<CrewTarget targetGroup='event_info' inputItem={crewMap[crew.symbol]}>
 					<Image
-						src={getIconPath({ file: crew.imageUrlPortrait })}						
+						src={getIconPath({ file: crew.imageUrlPortrait })}
 						inline
 						spaced="right"
 						bordered
