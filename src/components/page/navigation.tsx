@@ -5,7 +5,7 @@ import { v4 } from "uuid";
 import { GlobalContext } from "../../context/globalcontext";
 import { useOtherPages } from "../otherpages";
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
-import { NavItem, createSubMenu, DefaultOpts, DefaultOptsMobile, drawMenuItem, MaxMenuItems, MaxMobileItems, getAllOptions as getAllMenuOptions, parsePermalink } from './util';
+import { NavItem, createSubMenu, DefaultOpts, DefaultOptsMobile, drawMenuItem, MaxMenuItems, MaxMobileItems, getAllOptions as getAllMenuOptions, parsePermalink, renderColumnsMenu } from './util';
 import { useStateWithStorage } from '../../utils/storage';
 import { PlayerMenu } from "./playermenu";
 
@@ -72,46 +72,7 @@ export const Navigation = (props: NavigationProps) => {
 		{ optionKey: 'continuum', src: '/media/continuum.png', title: "Continuum Helper", link: "/continuum", sidebarRole: 'item' },	// Continuum missions added v10
 	];
 
-	const renderColumnsMenu = (menu: NavItem, columns: number = 2) => {
-		return (
-			<Dropdown text={menu.title as string} item simple direction='left'>
-				{menu.subMenu && (
-					<Menu>
-						<Container fluid>
-							<div style={{ columns, columnGap: '1px' }}>
-								{menu.subMenu.map(item => renderColumnsSubmenuItem(item))}
-							</div>
-						</Container>
-					</Menu>
-				)}
-			</Dropdown>
-		);
-	};
-
-	// Similar to renderSubmenuItem, with tweaks to look better in columns
-	//	Only used by renderColumnsMenu
-	const renderColumnsSubmenuItem = ((item: NavItem) => {
-		// Set border to 0 to avoid weird shifting when hovering over some items
-		return (
-			<Menu.Item key={v4()} onClick={(e) => item.link && navigate(item.link)}
-				style={{border:"0"}}
-			>
-				<div style={{
-					display:"flex",
-					flexDirection: "row",
-					textAlign: "left",
-					padding: "0.25em",
-					lineHeight:"1.45em",
-					alignItems: "center",
-					columnGap: ".5em",
-				}}>
-					{!!item.src && <img src={item.src} style={{height:'36px'}} alt={item.tooltip ?? item.textTitle ?? (typeof item.title === 'string' ? item.title : '')} />}
-					{item.title}
-				</div>
-			</Menu.Item>
-		);
-	});
-
+	
 	const pages = [
 		{
 			src: '/media/logo.png',

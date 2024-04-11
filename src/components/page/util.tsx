@@ -1,7 +1,7 @@
 
 import { navigate } from 'gatsby';
 import React from 'react';
-import { Menu, Dropdown, Icon, SemanticICONS, DropdownItem, DropdownMenu } from 'semantic-ui-react';
+import { Menu, Dropdown, Icon, SemanticICONS, DropdownItem, DropdownMenu, Container } from 'semantic-ui-react';
 import { v4 } from 'uuid';
 import * as lz from 'lz-string';
 
@@ -26,6 +26,46 @@ export interface NavItem {
     sidebarRole?: 'item' | 'heading';
     optionKey?: string;
 }
+
+export const renderColumnsMenu = (menu: NavItem, columns: number = 2) => {
+    return (
+        <Dropdown text={menu.title as string} item simple direction='left'>
+            {menu.subMenu && (
+                <Menu>
+                    <Container fluid>
+                        <div style={{ columns, columnGap: '1px' }}>
+                            {menu.subMenu.map(item => renderColumnsSubmenuItem(item))}
+                        </div>
+                    </Container>
+                </Menu>
+            )}
+        </Dropdown>
+    );
+};
+
+// Similar to renderSubmenuItem, with tweaks to look better in columns
+//	Only used by renderColumnsMenu
+const renderColumnsSubmenuItem = ((item: NavItem) => {
+    // Set border to 0 to avoid weird shifting when hovering over some items
+    return (
+        <Menu.Item key={v4()} onClick={(e) => item.link && navigate(item.link)}
+            style={{border:"0"}}
+        >
+            <div style={{
+                display:"flex",
+                flexDirection: "row",
+                textAlign: "left",
+                padding: "0.25em",
+                lineHeight:"1.45em",
+                alignItems: "center",
+                columnGap: ".5em",
+            }}>
+                {!!item.src && <img src={item.src} style={{height:'36px'}} alt={item.tooltip ?? item.textTitle ?? (typeof item.title === 'string' ? item.title : '')} />}
+                {item.title}
+            </div>
+        </Menu.Item>
+    );
+});
 
 export const renderSubmenuItem = (item: NavItem, title?: string, asDropdown?: boolean) => {
     //const menuKey = title?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
