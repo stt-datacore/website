@@ -705,7 +705,7 @@ export class CrewPresenter extends React.Component<
                     }}
                 >
                     {hover && crew.series && (
-                        <Image src={`/media/series/${crew.series}.png`} />
+                        <Image src={`/media/series/${crew.series}.png`} style={{maxHeight: "26em"}} />
                     )}
                 </div>
                 <div
