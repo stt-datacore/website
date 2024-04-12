@@ -1,5 +1,5 @@
 import React from 'react';
-import { withPrefix, StaticQuery, graphql } from 'gatsby';
+import { withPrefix, graphql, useStaticQuery } from 'gatsby';
 import { Helmet } from 'react-helmet';
 
 import { GlobalContext } from '../../context/globalcontext';
@@ -9,7 +9,6 @@ import { Container, Header } from 'semantic-ui-react';
 import { Navigation } from './navigation';
 import Dashboard from './dashboard';
 import PlayerHeader from '../../components/playerdata/playerheader';
-import { useStateWithStorage } from '../../utils/storage';
 
 export interface DataPageLayoutProps {
 	children: JSX.Element;
@@ -49,7 +48,7 @@ const MainContent = ({ children, narrowLayout }) =>
 	);
 
 const getNavigatorLanguage = () => {
-	let lang = 'en';	
+	let lang = 'en';
 	if (typeof navigator !== 'undefined') {
 		lang = navigator.language.slice(0, 2).toLowerCase();
 		if (lang === 'es') lang = 'sp';
@@ -64,7 +63,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	//const [currentLanguage, setCurrentLanguage] = useStateWithStorage('currentLanguage', getNavigatorLanguage(), { rememberForever: true });
 	const currentLanguage = 'en';
 	const { children, pageId, pageTitle, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
-	
+
 	const [isReady, setIsReady] = React.useState(false);
 
 	const demands = props.demands ?? [] as ValidDemands[];
@@ -161,38 +160,34 @@ type DataPageHelmetProps = {
 
 const DataPageHelmet = (props: DataPageHelmetProps) => {
 	const { title, description } = props;
+
+	const data = useStaticQuery(graphql`
+		query {
+			site {
+				siteMetadata {
+					defaultTitle: title
+					titleTemplate
+					defaultDescription: description
+					baseUrl
+				}
+			}
+		}
+	`);
+
 	return (
-		<StaticQuery
-			query={query}
-			render={(data) => (
-				<Helmet titleTemplate={data.site.siteMetadata.titleTemplate} defaultTitle={data.site.siteMetadata.defaultTitle}>
-					{title && <title>{title}</title>}
-					<meta property='og:type' content='website' />
-					<meta property='og:title' content={`${title ? `${title} - ` : ''}${data.site.siteMetadata.defaultTitle}`} />
-					<meta property='og:site_name' content='DataCore' />
-					<meta property='og:image' content={`${data.site.siteMetadata.baseUrl}/media/logo.png`} />
-					<meta property='og:description' content={description ?? data.site.siteMetadata.defaultDescription} />
-					<link id='defaultThemeCSS' rel='stylesheet' type='text/css' href={withPrefix('styles/semantic.slate.css')} />
-					<link rel='stylesheet' type='text/css' href={withPrefix('styles/easymde.min.css')} />
-					<script src={withPrefix('styles/theming.js')} type='text/javascript' />
-					<script src={withPrefix('polyfills.js')} type='text/javascript' />
-				</Helmet>
-			)}
-		/>
+		<Helmet titleTemplate={data.site.siteMetadata.titleTemplate} defaultTitle={data.site.siteMetadata.defaultTitle}>
+			{title && <title>{title}</title>}
+			<meta property='og:type' content='website' />
+			<meta property='og:title' content={`${title ? `${title} - ` : ''}${data.site.siteMetadata.defaultTitle}`} />
+			<meta property='og:site_name' content='DataCore' />
+			<meta property='og:image' content={`${data.site.siteMetadata.baseUrl}/media/logo.png`} />
+			<meta property='og:description' content={description ?? data.site.siteMetadata.defaultDescription} />
+			<link id='defaultThemeCSS' rel='stylesheet' type='text/css' href={withPrefix('styles/semantic.slate.css')} />
+			<link rel='stylesheet' type='text/css' href={withPrefix('styles/easymde.min.css')} />
+			<script src={withPrefix('styles/theming.js')} type='text/javascript' />
+			<script src={withPrefix('polyfills.js')} type='text/javascript' />
+		</Helmet>
 	);
 };
 
 export default DataPageLayout;
-
-export const query = graphql`
-	query {
-		site {
-			siteMetadata {
-				defaultTitle: title
-				titleTemplate
-				defaultDescription: description
-				baseUrl
-			}
-		}
-	}
-`;
