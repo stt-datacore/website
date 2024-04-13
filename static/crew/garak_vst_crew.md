@@ -3,9 +3,9 @@ name: Hologram Garak
 rarity: 4
 series: vst
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 3
 in_portal:
-date:
+date: 17/04/2024
 published: true
 ---
 
