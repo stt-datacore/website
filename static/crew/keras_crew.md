@@ -3,7 +3,7 @@ name: Commander Keras
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 in_portal: true
 date: 18/04/2018
 published: true
