@@ -66,6 +66,7 @@ export interface ICoreData {
 	ship_schematics: Schematics[];
 	ships: Ship[];
 	translation: TranslationSet;
+	translationLanguage: string;
 	topQuipmentScores: QuipmentScores[];
 };
 
@@ -98,6 +99,7 @@ const defaultData = {
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
 	translation: {} as TranslationSet,
+	translationLanguage: 'translation_en',
 	topQuipmentScores: [] as QuipmentScores[]
 } as ICoreData;
 
@@ -179,7 +181,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (valid.includes(demand)) {
 				if (DC_DEBUGGING) console.log(demand);
 				if (demand.startsWith('translation_')) {
-					if (!Object.keys(data.translation).length) {
+					if (!Object.keys(data.translation).length || data.translationLanguage !== demand) {
 						unsatisfied.push(demand);
 					}
 				}
@@ -231,6 +233,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 						if (result.demand.startsWith("translation_")) {
 							newData.translation = result.json;
+							newData.translationLanguage = result.demand;
 						}
 						else {
 							newData[result.demand] = result.json;
@@ -248,10 +251,10 @@ export const DataProvider = (props: DataProviderProperties) => {
 				calculateQPower(newData.crew, newData.items, newData.all_buffs);
 				newData.topQuipmentScores = calculateTopQuipment(newData.crew);
 			}
-			if (unsatisfied.includes('crew') && unsatisfied.some(u => u.startsWith("translation_"))) {
+			if (newData?.crew?.length && unsatisfied.some(u => u.startsWith("translation_"))) {
 				postProcessCrewTranslations(newData);
 			}
-			if (unsatisfied.includes('ship_schematics') && unsatisfied.some(u => u.startsWith("translation_"))) {
+			if (newData?.ship_schematics?.length && unsatisfied.some(u => u.startsWith("translation_"))) {
 				postProcessShipTranslations(newData);
 			}
 			if (unsatisfied.includes('ship_schematics') && unsatisfied.includes('battle_stations')) {

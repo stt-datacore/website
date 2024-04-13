@@ -60,31 +60,37 @@ const getNavigatorLanguage = () => {
 
 const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const globalContext = React.useContext(GlobalContext);
-	//const [currentLanguage, setCurrentLanguage] = useStateWithStorage('currentLanguage', getNavigatorLanguage(), { rememberForever: true });
-	const currentLanguage = 'en';
+	const [currentLanguage, setCurrentLanguage] = React.useState('en');
+	
 	const { children, pageId, pageTitle, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
 
 	const [isReady, setIsReady] = React.useState(false);
+	const [dashboardPanel, setDashboardPanel] = React.useState<string | undefined>(undefined);
+	const [playerPanel, setPlayerPanel] = React.useState<string | undefined>(undefined);
 
 	const demands = props.demands ?? [] as ValidDemands[];
 	const i18nDemand = 'translation_' + currentLanguage;
 
-	([i18nDemand, 'crew', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
-		if (!demands.includes(required))
-			demands.push(required);
-	});
+	// React.useEffect(() => {
+	// 	if (!!globalContext.player?.playerData?.player?.lang && currentLanguage !== globalContext.player?.playerData?.player?.lang) {
+	// 		setCurrentLanguage(globalContext.player?.playerData?.player?.lang);
+	// 	}
+	// }, [globalContext.player]);
 
-
-	const [dashboardPanel, setDashboardPanel] = React.useState<string | undefined>(undefined);
-	const [playerPanel, setPlayerPanel] = React.useState<string | undefined>(undefined);
+	React.useEffect(() => {
+		([i18nDemand, 'crew', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
+			if (!demands.includes(required))
+				demands.push(required);
+		});
+	
+		setTimeout(() => {
+			setIsReady(!!globalContext.core.ready && !!globalContext.core.ready(demands));
+		})
+	}, [currentLanguage, globalContext.core]);
 
 	// topAnchor div styled to scroll properly with a fixed header
 	const topAnchor = React.useRef<HTMLDivElement>(null);
 	const contentAnchor = React.useRef<HTMLDivElement>(null);
-
-	setTimeout(() => {
-		setIsReady(!!globalContext.core.ready && !!globalContext.core.ready(demands));
-	})
 
 	return (
 		<div ref={topAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
