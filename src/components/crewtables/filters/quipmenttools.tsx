@@ -12,7 +12,6 @@ type QuipmentToolsFilterProps = {
 	crewFilters: ICrewFilter[];
 	quipment: ItemWithBonus[];
 	maxxed?: boolean;
-	buffConfig: BuffStatTable;
 	setCrewFilters: (crewFilters: ICrewFilter[]) => void;
     slots?: number;
     setSlots: (value?: number) => void;
@@ -24,7 +23,7 @@ type QuipmentToolsFilterProps = {
 };
 
 export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
-	const { immortalOnly, maxxed, quipment, buffConfig, hideForm, crewFilters, setCrewFilters, slots, setSlots, pstMode, setPstMode } = props;
+	const { immortalOnly, maxxed, quipment, hideForm, crewFilters, setCrewFilters, slots, setSlots, pstMode, setPstMode } = props;
 
 	const [slotFilter, setSlotFilter] = React.useState<string>(slots ? `slot${slots}` : 'slot0');
 

@@ -19,7 +19,6 @@ export interface TopQuipmentScoreProps {
     slots?: number;
     top: QuipmentScores;
     targetGroup: string;
-    buffConfig: BuffStatTable;
     quipment: ItemWithBonus[];
     excludeQBits?: boolean;
     pstMode: boolean;
@@ -134,7 +133,7 @@ export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolea
 }
 
 export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
-    const { pstMode, quipment, excludeQBits, targetGroup, top, allslots, crew, buffConfig, slots } = props;
+    const { pstMode, quipment, excludeQBits, targetGroup, top, allslots, crew, slots } = props;
 
     const q_bits = allslots ? 1300 : crew.q_bits;
     const q_lots = crew.q_lots ?? {}
