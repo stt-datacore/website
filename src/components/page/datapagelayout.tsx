@@ -71,11 +71,11 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const demands = props.demands ?? [] as ValidDemands[];
 	const i18nDemand = 'translation_' + currentLanguage;
 
-	// React.useEffect(() => {
-	// 	if (!!globalContext.player?.playerData?.player?.lang && currentLanguage !== globalContext.player?.playerData?.player?.lang) {
-	// 		setCurrentLanguage(globalContext.player?.playerData?.player?.lang);
-	// 	}
-	// }, [globalContext.player]);
+	React.useEffect(() => {
+		if (!!globalContext.player?.playerData?.player?.lang && currentLanguage !== globalContext.player?.playerData?.player?.lang) {
+			setCurrentLanguage(globalContext.player?.playerData?.player?.lang);
+		}
+	}, [globalContext.player]);
 
 	React.useEffect(() => {
 		([i18nDemand, 'crew', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
