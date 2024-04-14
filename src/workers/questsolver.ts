@@ -1,5 +1,5 @@
 import CONFIG from "../components/CONFIG";
-import { BaseSkills, ComputedBuff, CrewMember, Skill } from "../model/crew";
+import { BaseSkills, ComputedSkill, CrewMember, Skill } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { Jackpot, Mission, MissionChallenge, MissionTraitBonus } from "../model/missions";
 import { PlayerCrew, PlayerEquipmentItem } from "../model/player";
@@ -25,7 +25,7 @@ function newQuip(crew: IQuestCrew) {
 }
 
 export function getSkillOrder<T extends CrewMember>(crew: T) {
-    const sk = [] as ComputedBuff[];
+    const sk = [] as ComputedSkill[];
 
     for (let skill of Object.keys(CONFIG.SKILLS)) {
         if (skill in crew.base_skills && !!crew.base_skills[skill].core) {
