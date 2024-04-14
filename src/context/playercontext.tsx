@@ -10,8 +10,7 @@ import { stripPlayerData } from '../utils/playerutils';
 import { BossBattlesRoot } from '../model/boss';
 import { ShuttleAdventure } from '../model/shuttle';
 import { Archetype20, ArchetypeBase, Archetype17 } from '../model/archetype';
-import { calcQLots } from '../utils/equipment';
-import { getItemBonuses, getItemWithBonus } from '../utils/itemutils';
+import { getItemWithBonus } from '../utils/itemutils';
 
 export interface PlayerContextData {
 	loaded: boolean;
