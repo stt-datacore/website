@@ -257,6 +257,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (newData?.ship_schematics?.length && unsatisfied.some(u => u.startsWith("translation_"))) {
 				postProcessShipTranslations(newData);
 			}
+			if (newData?.crew?.length && newData?.collections?.length && unsatisfied.some(u => u.startsWith("translation_"))) {
+				postProcessCollectionTranslations(newData);
+			}
 			if (unsatisfied.includes('ship_schematics') && unsatisfied.includes('battle_stations')) {
 				postProcessShipBattleStations(newData);
 			}
@@ -419,6 +422,24 @@ export const DataProvider = (props: DataProviderProperties) => {
 	// 	}
 	// 	return sks;
 	// }
+
+	function postProcessCollectionTranslations(data: ICoreData): void {
+		const colmap = {} as {[key:string]:string};
+		if (data.crew.length && data.collections.length && data.translation.collections) {
+			data.collections.forEach((col) => {
+				let arch = data.translation.collections.find(f => f.id === col.id);
+				if (arch) {
+					colmap[col.name] = arch.name;
+					col.name = arch.name;
+					col.description = arch.description;
+					
+				}
+			});
+			data.crew.forEach((crew) => {
+				crew.collections = crew.collections.map(col => colmap[col]);
+			})
+		}		
+	}
 
 	function postProcessCrewTranslations(data: ICoreData): void {
 		if (data.crew.length && data.translation.crew_archetypes) {
