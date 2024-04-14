@@ -12,6 +12,7 @@ import { BuffStatTable } from "../../../utils/voyageutils";
 import { ItemWithBonus } from "../../../utils/itemutils";
 import { calcQLots } from "../../../utils/equipment";
 import { appelate } from "../../../utils/misc";
+import { PlayerBuffMode } from "../../../model/player";
 
 export interface TopQuipmentScoreProps {
     crew: IRosterCrew;
@@ -19,7 +20,6 @@ export interface TopQuipmentScoreProps {
     slots?: number;
     top: QuipmentScores;
     targetGroup: string;
-    buffConfig: BuffStatTable;
     quipment: ItemWithBonus[];
     excludeQBits?: boolean;
     pstMode: boolean;
@@ -134,7 +134,7 @@ export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolea
 }
 
 export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
-    const { pstMode, quipment, excludeQBits, targetGroup, top, allslots, crew, buffConfig, slots } = props;
+    const { pstMode, quipment, excludeQBits, targetGroup, top, allslots, crew, slots } = props;
 
     const q_bits = allslots ? 1300 : crew.q_bits;
     const q_lots = crew.q_lots ?? {}
