@@ -348,7 +348,13 @@ export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemW
 }
 
 
-export function calcQLots(crew: CrewMember, quipment: ItemWithBonus[], buffConfig?: BuffStatTable, max_qbits?: boolean, max_slots?: number) {
+export function calcQLots(
+	crew: CrewMember, 
+	quipment: ItemWithBonus[], 
+	buffConfig?: BuffStatTable, 
+	max_qbits?: boolean, 
+	max_slots?: number) {
+
 	//const allslots = rosterType === 'allCrew';
 	const q_bits = max_qbits ? 1300 : crew.q_bits;
 	const qbslots = qbitsToSlots(q_bits);
@@ -359,9 +365,12 @@ export function calcQLots(crew: CrewMember, quipment: ItemWithBonus[], buffConfi
 	const q_lots = {} as { [key: string]: EquipmentItem[] };
 	const q_power = {} as { [key: string]: Skill };
 
-	skills.forEach((skill) => {
-		q_lots[skill] ??= [];				
+	const addQPower = (
+		skill: string,
+		slots: number) => {
 		
+		q_lots[skill] ??= [];				
+			
 		if (buffConfig) {
 			let buffed = applySkillBuff(buffConfig, skill, crew.base_skills[skill]);
 			q_power[skill] = {
@@ -375,12 +384,12 @@ export function calcQLots(crew: CrewMember, quipment: ItemWithBonus[], buffConfi
 				... crew.base_skills[skill]
 			}
 		}
-
+	
 		let skq = crewQuipment.filter(f => skill in f.bonusInfo.bonuses).map(m => ({ item: m.item, skill: m.bonusInfo.bonuses[skill] }));
 		if (skq?.length) {
 			skq.sort((a, b) => {
-				let ar = a.skill.core + a.skill.range_max + a.skill.range_min;
-				let br = b.skill.core + b.skill.range_max + b.skill.range_min;
+				let ar = a.skill.core + ((a.skill.range_max + a.skill.range_min) * 0.5);
+				let br = b.skill.core + ((b.skill.range_max + b.skill.range_min) * 0.5);
 				return br - ar;
 			});
 			
@@ -395,9 +404,68 @@ export function calcQLots(crew: CrewMember, quipment: ItemWithBonus[], buffConfi
 				}
 			}
 		}
+	}
+
+	skills.forEach((skill) => {
+		addQPower(skill, slots);
 	});
 
 	crew.q_lots = q_lots;
 	crew.q_power = q_power;
+
+	if (crew.q_best_two_lots) {
+		delete crew.q_best_two_lots;
+	}
+
+	if (crew.q_best_three_lots) {
+		delete crew.q_best_three_lots;
+	}	
+	
+	if (crew.skill_order.length >= 2) {
+		crew.q_best_two_lots = calcBest(2, crew, max_qbits, max_slots);
+	}
+
+	if (crew.skill_order.length === 3) {
+		crew.q_best_three_lots = calcBest(3, crew, max_qbits, max_slots);
+	}
+
 	return crew;
+}
+
+export function calcBest(
+	best: 2 | 3,
+	crew: CrewMember, 
+	max_qbits?: boolean, 
+	max_slots?: number) {
+
+	const q_bits = max_qbits ? 1300 : crew.q_bits;
+	const qbslots = qbitsToSlots(q_bits);
+	const slots = max_slots ? (max_slots === 4 ? 4 : Math.min(qbslots, max_slots)) : qbslots;
+	const skills = [] as string[];
+
+	for (let i = 0; i < best; i++) {
+		if (i >= crew.skill_order.length) break;
+		skills.push(crew.skill_order[i]);
+	}
+
+	let c = skills.length;
+	crew.q_lots ??= {};
+
+	let lots = crew.q_lots;
+	const flots = {} as { [key: string]: EquipmentItem[] };
+
+	for (let i = 0; i < slots;) {
+		for (let j = 0; j < c; j++) {
+			let skill = skills[j];
+			if (!lots[skill].length) continue;
+
+			flots[skill] ??= [];
+			flots[skill].push(lots[skill][0]);
+			lots[skill].slice(0, 1);
+			i++;
+			if (i >= slots) break;
+		}		
+	}
+
+	return flots;
 }

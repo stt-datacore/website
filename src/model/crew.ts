@@ -30,6 +30,8 @@ export interface QuipmentScores {
     voyage_quotient?: number;
     voyage_quotients?: SkillQuipmentScores;
     q_lots?: { [key: string]: EquipmentItem[] };
+    q_best_two_lots?: { [key: string]: EquipmentItem[] };
+    q_best_three_lots?: { [key: string]: EquipmentItem[] };
     q_power?: { [key: string]: Skill };
 }
 
