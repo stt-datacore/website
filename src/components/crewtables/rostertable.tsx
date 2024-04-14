@@ -249,7 +249,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					});
 				}
 				if (tableView.startsWith("qp_")) {
-					calcQLots(crew, quipment, globalContext.player.buffConfig, rosterType === 'allCrew', slots);
+					calcQLots(crew, quipment, !buffMode || buffMode === 'none' ? undefined : (buffMode === 'max' || !globalContext.player?.buffConfig ? globalContext.core.all_buffs : globalContext.player.buffConfig), rosterType === 'allCrew', slots);
 				}					
 			});			
 			setPreparedCrew([...preparedCrew]);
@@ -320,7 +320,6 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			form: <QuipmentToolsFilter 
 					maxxed={rosterType === 'allCrew'}
 					quipment={quipment}
-					buffConfig={globalContext.player.buffConfig ?? globalContext.core.all_buffs}
 					pstMode={pstMode}
 					setPstMode={setPstMode}
 					hideForm={true}
@@ -349,7 +348,6 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					immortalOnly={true}
 					maxxed={rosterType === 'allCrew'}
 					quipment={quipment}
-					buffConfig={globalContext.player.buffConfig ?? globalContext.core.all_buffs}
 					pstMode={pstMode}
 					setPstMode={setPstMode}
 					slots={slots}
@@ -366,7 +364,6 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					<TopQuipmentScoreCells 
 						pstMode={pstMode}
 						slots={slots}
-						buffConfig={globalContext.player.buffConfig ?? globalContext.core.all_buffs}
 						quipment={quipment}
 						excludeQBits={rosterType === 'allCrew'}
 						targetGroup={`${pageId}/targetClassItem`} 
