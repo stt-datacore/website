@@ -249,7 +249,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					});
 				}
 				if (tableView.startsWith("qp_")) {
-					calcQLots(crew, quipment, !buffMode || buffMode === 'none' ? undefined : (buffMode === 'player' || !globalContext.player?.buffConfig ? globalContext.core.all_buffs : globalContext.player.buffConfig), rosterType === 'allCrew', slots);
+					calcQLots(crew, quipment, !buffMode || buffMode === 'none' ? undefined : (buffMode === 'max' || !globalContext.player?.buffConfig ? globalContext.core.all_buffs : globalContext.player.buffConfig), rosterType === 'allCrew', slots);
 				}					
 			});			
 			setPreparedCrew([...preparedCrew]);
