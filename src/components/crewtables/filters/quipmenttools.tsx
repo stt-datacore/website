@@ -6,13 +6,13 @@ import { printPortalStatus } from '../../../utils/crewutils';
 import { BuffStatTable } from '../../../utils/voyageutils';
 import { calcQLots } from '../../../utils/equipment';
 import { ItemWithBonus } from '../../../utils/itemutils';
+import { PlayerBuffMode } from '../../../model/player';
 
 type QuipmentToolsFilterProps = {
 	pageId: string;
 	crewFilters: ICrewFilter[];
 	quipment: ItemWithBonus[];
 	maxxed?: boolean;
-	buffConfig: BuffStatTable;
 	setCrewFilters: (crewFilters: ICrewFilter[]) => void;
     slots?: number;
     setSlots: (value?: number) => void;
@@ -24,7 +24,7 @@ type QuipmentToolsFilterProps = {
 };
 
 export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
-	const { immortalOnly, maxxed, quipment, buffConfig, hideForm, crewFilters, setCrewFilters, slots, setSlots, pstMode, setPstMode } = props;
+	const { immortalOnly, maxxed, quipment, hideForm, crewFilters, setCrewFilters, slots, setSlots, pstMode, setPstMode } = props;
 
 	const [slotFilter, setSlotFilter] = React.useState<string>(slots ? `slot${slots}` : 'slot0');
 
