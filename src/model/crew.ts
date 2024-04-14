@@ -171,7 +171,7 @@ export interface SkillsSummary {
     maxPct: number;
 }
 
-export interface ComputedBuff {
+export interface ComputedSkill {
     core: number;
     min: number;
     max: number;
