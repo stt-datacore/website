@@ -3,6 +3,7 @@ export interface TranslationSet {
     ship_trait_names: ShipTraitNames
     crew_archetypes: CrewArchetype[]
     ship_archetypes: ShipArchetype[]
+    collections: CollectionArchetypes[];
   }
   
   export interface TraitNames {
@@ -327,3 +328,8 @@ export interface TranslationSet {
     name: string
   }
   
+  export interface CollectionArchetypes {
+    id: number;
+    name: string;
+    description: string;
+  }
