@@ -4,15 +4,12 @@ import { ITableConfigRow } from "../../searchabletable";
 import CONFIG from "../../CONFIG";
 import { Table } from "semantic-ui-react";
 import { QuipmentScores } from "../../../model/crew";
-import { qbitsToSlots, skillToShort } from "../../../utils/crewutils";
+import { skillToShort } from "../../../utils/crewutils";
 import { CrewItemsView } from "../../item_presenters/crew_items";
 import CrewStat from "../../crewstat";
 import { QuipmentScoreCells } from "./quipmentscores";
-import { BuffStatTable } from "../../../utils/voyageutils";
 import { ItemWithBonus } from "../../../utils/itemutils";
-import { calcQLots } from "../../../utils/equipment";
 import { appelate } from "../../../utils/misc";
-import { PlayerBuffMode } from "../../../model/player";
 
 export interface TopQuipmentScoreProps {
     crew: IRosterCrew;
@@ -141,8 +138,6 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
     const q_power = crew.q_power ?? {}
     const skills = Object.keys(CONFIG.SKILLS);
     
-    // calcQLots(crew, quipment, buffConfig, allslots, slots);
-
     const printCell = (skill: string | number) => {
 
         if (typeof skill === 'number') {

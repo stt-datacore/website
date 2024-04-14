@@ -2,11 +2,7 @@ import React from 'react';
 import { Form, Dropdown, Checkbox } from 'semantic-ui-react';
 
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
-import { printPortalStatus } from '../../../utils/crewutils';
-import { BuffStatTable } from '../../../utils/voyageutils';
-import { calcQLots } from '../../../utils/equipment';
 import { ItemWithBonus } from '../../../utils/itemutils';
-import { PlayerBuffMode } from '../../../model/player';
 
 type QuipmentToolsFilterProps = {
 	pageId: string;
@@ -38,7 +34,6 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 
 	const filterCrew = (crew: IRosterCrew) => {
         if (!immortalOnly || crew.immortal === undefined || crew.immortal < 0) {
-			//calcQLots(crew, quipment, buffConfig, maxxed, slots);
 			return true;
 		}
 		else {
