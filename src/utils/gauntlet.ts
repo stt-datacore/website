@@ -1,6 +1,6 @@
 
 import { IDefaultGlobal } from "../context/globalcontext";
-import { ComputedBuff, CrewMember, Skill } from "../model/crew";
+import { ComputedSkill, CrewMember, Skill } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { Gauntlet, PairGroup } from "../model/gauntlets";
 import { CompletionState, PlayerBuffMode, PlayerCrew } from "../model/player";
@@ -572,7 +572,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 									let sk = selskill.skill;
 									crew.isDebuffed = (oskill[sk].range_max > selskill.max);
 									crew.skills[sk] = { core: 0, range_max: selskill.max, range_min: selskill.min } as Skill;
-									crew[sk] = { core: 0, max: selskill.max, min: selskill.min } as ComputedBuff;
+									crew[sk] = { core: 0, max: selskill.max, min: selskill.min } as ComputedSkill;
 								}
 							}
 						}

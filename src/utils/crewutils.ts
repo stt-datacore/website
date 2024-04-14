@@ -3,7 +3,7 @@ import { BuffStatTable, calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
 import { CompactCrew, CompletionState, GauntletPairScore, Player, PlayerCrew, PlayerData } from '../model/player';
-import { BaseSkills, ComputedBuff, CrewMember, PlayerSkill, Skill } from '../model/crew';
+import { BaseSkills, ComputedSkill, CrewMember, PlayerSkill, Skill } from '../model/crew';
 import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
 import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
 //import { navigate } from 'gatsby';
@@ -456,7 +456,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 			crew.rarity = rarity;
 			rarity--;
 			for (let skill in CONFIG.SKILLS) {
-				crew[skill] = { core: 0, min: 0, max: 0 } as ComputedBuff;
+				crew[skill] = { core: 0, min: 0, max: 0 } as ComputedSkill;
 			}
 			for (let skill of Object.keys(workitem.skill_data[rarity].base_skills)) {
 
@@ -464,13 +464,13 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 					core: workitem.skill_data[rarity].base_skills[skill].core,
 					min: workitem.skill_data[rarity].base_skills[skill].range_min,
 					max: workitem.skill_data[rarity].base_skills[skill].range_max
-				} as ComputedBuff;
+				} as ComputedSkill;
 			}
 			crew.base_skills = workitem.skill_data[rarity].base_skills;
 		}
 		else if (workitem.skills && rarity !== PREPARE_MAX_RARITY) {
 			for (let skill in CONFIG.SKILLS) {
-				crew[skill] = { core: 0, min: 0, max: 0 } as ComputedBuff;
+				crew[skill] = { core: 0, min: 0, max: 0 } as ComputedSkill;
 			}
 
 			// Override computed buffs because of mismatch with game data
@@ -479,7 +479,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 					core: workitem.skills[skill].core,
 					min: workitem.skills[skill].range_min,
 					max: workitem.skills[skill].range_max
-				} as ComputedBuff;
+				} as ComputedSkill;
 			}
 			crew.skills = workitem.skills;
 		}
@@ -1035,7 +1035,7 @@ export function gradeToColor(grade: string | number, dryzero?: boolean): string 
 	return null;
 }
 
-export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_skill: Skill): ComputedBuff {
+export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_skill: Skill): ComputedSkill {
 	const getMultiplier = (skill: string, stat: string) => {
 		let buffkey = `${skill}_${stat}`;
 		if (buffkey in buffConfig) {
@@ -1396,7 +1396,7 @@ export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?:
 }
 
 export function getSkillOrder<T extends CrewMember>(crew: T) {
-	const sk = [] as ComputedBuff[];
+	const sk = [] as ComputedSkill[];
 
 	for (let skill of Object.keys(CONFIG.SKILLS)) {
 		if (skill in crew.base_skills && !!crew.base_skills[skill].core) {

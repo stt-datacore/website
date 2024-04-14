@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Dropdown, Image, Header } from 'semantic-ui-react';
 
 import { LockedProspect } from '../../model/game-elements';
-import { ComputedBuff } from '../../model/crew';
+import { ComputedSkill } from '../../model/crew';
 import { CompletionState } from '../../model/player';
 
 import { GlobalContext } from '../../context/globalcontext';
@@ -66,7 +66,7 @@ export const EventPicker = (props: EventPickerProps) => {
 					prospect.level = 100;
 					prospect.immortal = CompletionState.DisplayAsImmortalUnowned;
 					CONFIG.SKILLS_SHORT.forEach(skill => {
-						let score: ComputedBuff = { core: 0, min: 0, max: 0 };
+						let score: ComputedSkill = { core: 0, min: 0, max: 0 };
 						if (prospect.base_skills[skill.name]) {
 							if (prospect.rarity === prospect.max_rarity)
 								score = applySkillBuff(buffConfig, skill.name, prospect.base_skills[skill.name]);
