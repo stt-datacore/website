@@ -1,5 +1,5 @@
 import CONFIG from "../components/CONFIG";
-import { BaseSkills, ComputedBuff, CrewMember, Skill } from "../model/crew";
+import { BaseSkills, ComputedSkill, CrewMember, Skill } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { Collection, PolestarCombo } from "../model/game-elements";
 import { PlayerCrew, PlayerData } from "../model/player";
@@ -46,7 +46,7 @@ export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffSt
 
 export interface CrewSkill {
     crew: PlayerCrew | CrewMember;
-    skills: ComputedBuff[];
+    skills: ComputedSkill[];
 }
 
 const amSkillOrder = ["command_skill", "science_skill", "security_skill", "engineering_skill", "diplomacy_skill", "medicine_skill"];
@@ -156,7 +156,7 @@ const BetaTachyon = {
                 }
             }            
             
-            const skillScore = (skill: ComputedBuff) => {
+            const skillScore = (skill: ComputedSkill) => {
                 if (!skill?.core) return 0;
                 return skill.core;
             }
@@ -177,7 +177,7 @@ const BetaTachyon = {
             }
             
             function getSkillOrder(crew: PlayerCrew | CrewMember, forceTwo?: boolean) {
-                const sk = [] as ComputedBuff[];
+                const sk = [] as ComputedSkill[];
                 let x = 0;
                 for (let skill of skills) {
                     if (skill in crew.base_skills) {
@@ -207,7 +207,7 @@ const BetaTachyon = {
             }
 
             function getSortedSkills(crew: PlayerCrew | CrewMember, forceTwo?: boolean) {
-                const sk = [] as ComputedBuff[];
+                const sk = [] as ComputedSkill[];
                 let x = 0;
                 for (let skill of skills) {
                     if (skill in crew) {
