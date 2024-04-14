@@ -78,7 +78,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	}, [globalContext.player]);
 
 	React.useEffect(() => {
-		([i18nDemand, 'crew', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
+		([i18nDemand, 'crew', 'collections', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
 			if (!demands.includes(required))
 				demands.push(required);
 		});
