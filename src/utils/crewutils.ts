@@ -1486,11 +1486,13 @@ export function printPortalStatus<T extends CrewMember>(crew: T, showNever?: boo
 }
 
 export function getVoyageQuotient<T extends CrewMember>(crew: T) {
-    if (!crew.q_power) return 0;
-	const q_power = crew.q_power;
+    if (!crew.q_lots?.power) return 0;
+	const q_power = crew.q_lots.power;
     let power = 0;
 	for (let skill in crew.base_skills) {
-		power += q_power[skill].core + (0.5 * (q_power[skill].range_max + q_power[skill].range_min));
+		let qp = q_power.find(f => f.skill === skill);
+		if (!qp) continue;
+		power += qp.core + (0.5 * (qp.range_max + qp.range_min));
 	}
 
     return (crew.ranks.voyRank / power);
