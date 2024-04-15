@@ -13,6 +13,21 @@ import { getRecentEvents, getEventData } from '../utils/events';
 import { IEventData } from '../components/eventplanner/model';
 
 const EventPlannerPage = () => {
+	return (
+		<DataPageLayout
+			demands={['event_instances']}
+			pageTitle='Event Planner'
+			pageDescription='Find the best crew to use during an event.'
+			playerPromptType='recommend'
+		>
+			<React.Fragment>
+				<EventPlannerSetup />
+			</React.Fragment>
+		</DataPageLayout>
+	);
+};
+
+const EventPlannerSetup = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, ephemeral } = globalContext.player;
 	const [activeEvents, setActiveEvents] = React.useState<IEventData[] | undefined>(undefined);
@@ -24,36 +39,31 @@ const EventPlannerPage = () => {
 		getEvents();
 	}, [playerData]);
 
+	if (!activeEvents) return <></>;
+
 	return (
-		<DataPageLayout
-			demands={['event_instances']}
-			pageTitle='Event Planner'
-			pageDescription='Find the best crew to use during an event.'
-			playerPromptType='recommend'
-		>
-			<React.Fragment>
-				{activeEvents && activeEvents.length > 0 && (
-					<React.Fragment>
-						<RosterPicker
-							rosterType={rosterType} setRosterType={setRosterType}
-							setRosterCrew={setRosterCrew}
+		<React.Fragment>
+			{activeEvents.length > 0 && (
+				<React.Fragment>
+					<RosterPicker
+						rosterType={rosterType} setRosterType={setRosterType}
+						setRosterCrew={setRosterCrew}
+					/>
+					{rosterCrew &&
+						<EventPicker key={rosterType}
+							events={activeEvents}
+							rosterType={rosterType}
+							rosterCrew={rosterCrew}
 						/>
-						{rosterCrew &&
-							<EventPicker key={rosterType}
-								events={activeEvents}
-								rosterType={rosterType}
-								rosterCrew={rosterCrew}
-							/>
-						}
-					</React.Fragment>
-				)}
-				{activeEvents && activeEvents.length === 0 && (
-					<Message warning>
-						Information about the next event is not yet available from player data. Please try again at a later time.
-					</Message>
-				)}
-			</React.Fragment>
-		</DataPageLayout>
+					}
+				</React.Fragment>
+			)}
+			{activeEvents.length === 0 && (
+				<Message warning>
+					Information about the next event is not yet available from player data. Please try again at a later time.
+				</Message>
+			)}
+		</React.Fragment>
 	);
 
 	function getEvents(): void {
