@@ -1,4 +1,5 @@
 import React from 'react';
+import { Message } from 'semantic-ui-react';
 
 import { PlayerCrew } from '../model/player';
 
@@ -10,20 +11,18 @@ import { EventPicker } from '../components/eventplanner/eventpicker';
 import { getRecentEvents, getEventData } from '../utils/events';
 
 import { IEventData } from '../components/eventplanner/model';
-import { Icon } from 'semantic-ui-react';
 
 const EventPlannerPage = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, ephemeral } = globalContext.player;
-	const { event_instances } = globalContext.core;
 	const [activeEvents, setActiveEvents] = React.useState<IEventData[] | undefined>(undefined);
 	const [rosterType, setRosterType] = React.useState(playerData ? 'myCrew' : 'allCrew');
 	const [rosterCrew, setRosterCrew] = React.useState<PlayerCrew[] | undefined>(undefined);
 
 	React.useEffect(() => {
 		setRosterType(playerData ? 'myCrew' : 'allCrew');
-		if (event_instances?.length) getEvents();
-	}, [playerData, event_instances]);
+		getEvents();
+	}, [playerData]);
 
 	return (
 		<DataPageLayout
@@ -33,17 +32,26 @@ const EventPlannerPage = () => {
 			playerPromptType='recommend'
 		>
 			<React.Fragment>
-				<RosterPicker
-					rosterType={rosterType} setRosterType={setRosterType}
-					setRosterCrew={setRosterCrew}
-				/>
-				{activeEvents && rosterCrew &&
-					<EventPicker key={rosterType}
-						events={activeEvents}
-						rosterType={rosterType}
-						rosterCrew={rosterCrew}
-					/>
-				}
+				{activeEvents && activeEvents.length > 0 && (
+					<React.Fragment>
+						<RosterPicker
+							rosterType={rosterType} setRosterType={setRosterType}
+							setRosterCrew={setRosterCrew}
+						/>
+						{rosterCrew &&
+							<EventPicker key={rosterType}
+								events={activeEvents}
+								rosterType={rosterType}
+								rosterCrew={rosterCrew}
+							/>
+						}
+					</React.Fragment>
+				)}
+				{activeEvents && activeEvents.length === 0 && (
+					<Message warning>
+						Information about the next event is not yet available from player data. Please try again at a later time.
+					</Message>
+				)}
 			</React.Fragment>
 		</DataPageLayout>
 	);
