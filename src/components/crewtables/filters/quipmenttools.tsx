@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Dropdown, Checkbox } from 'semantic-ui-react';
+import { Form, Dropdown, Checkbox, DropdownItemProps } from 'semantic-ui-react';
 
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
 import { ItemWithBonus } from '../../../utils/itemutils';
@@ -12,8 +12,8 @@ type QuipmentToolsFilterProps = {
 	setCrewFilters: (crewFilters: ICrewFilter[]) => void;
     slots?: number;
     setSlots: (value?: number) => void;
-	pstMode: boolean;
-    setPstMode: (value: boolean) => void;
+	pstMode: boolean | 2 | 3;
+    setPstMode: (value: boolean | 2 | 3) => void;
 	altTitle?: string;
     hideForm?: boolean;
 	immortalOnly?: boolean;
@@ -59,6 +59,61 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
         return <></>;
     }
 
+	const options = [
+		{
+			key: 'normal',
+			value: 'normal',
+			text: 'Individual Skills'
+		},
+		{
+			key: 'pst',
+			value: 'pst',
+			text: 'Skill Order'
+		},
+		{
+			key: 'besttwo',
+			value: 'besttwo',
+			text: 'Two Skill Combos'
+		},
+		{
+			key: 'bestthree',
+			value: 'bestthree',
+			text: 'Well Rounded'
+		},
+	] as DropdownItemProps[];
+
+	const getType = () => {
+		switch(pstMode) {
+			case false:
+				return 'normal';
+			case true:
+				return 'pst';
+			case 2:
+				return 'besttwo';
+			case 3:
+				return 'bestthree';
+			default:
+				return 'normal';
+		}
+	}
+
+	const changeType = (value: string) => {
+		switch(value) {
+			case 'normal':
+				setPstMode(false);
+				break;
+			case 'pst':
+				setPstMode(true);
+				break;
+			case 'besttwo':
+				setPstMode(2);
+				break;
+			case 'bestthree':
+				setPstMode(3);
+				break;
+		}
+	}
+
 	return (
 		<Form.Field style={{marginBottom: "1em", display: 'flex', flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center', gap: "1em"}}>
 			<Dropdown
@@ -70,8 +125,15 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 				onChange={(e, { value }) => setSlotFilter(value as string)}
 				closeOnChange
 			/>
-			<Checkbox checked={pstMode} onChange={(e, { checked }) => setPstMode(!!checked)}
-				label={'Skill Order Mode'} />
+			<Dropdown
+				placeholder={'Skill mode'}				
+				selection
+				multiple={false}
+				options={options}
+				value={getType()}
+				onChange={(e, { value }) => changeType(value as string)}
+				closeOnChange
+			/>
 				
 		</Form.Field>
 	);

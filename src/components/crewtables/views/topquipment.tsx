@@ -3,7 +3,7 @@ import { IRosterCrew } from "../model";
 import { ITableConfigRow } from "../../searchabletable";
 import CONFIG from "../../CONFIG";
 import { Table } from "semantic-ui-react";
-import { QuipmentScores } from "../../../model/crew";
+import { PowerLot, QuipmentScores, Skill } from "../../../model/crew";
 import { skillToShort } from "../../../utils/crewutils";
 import { CrewItemsView } from "../../item_presenters/crew_items";
 import CrewStat from "../../crewstat";
@@ -19,10 +19,10 @@ export interface TopQuipmentScoreProps {
     targetGroup: string;
     quipment: ItemWithBonus[];
     excludeQBits?: boolean;
-    pstMode: boolean;
+    pstMode: boolean | 2 | 3;
 }
 
-export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolean, excludeQBits: boolean) => {
+export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolean | 2 | 3, excludeQBits: boolean) => {
     const config = [] as ITableConfigRow[];
     config.push({ width: 1, column: 'quipment_score', title: "Overall", reverse: true });
     if (pstMode) config.push({ width: 1, column: 'quipment_scores.trait_limited', title: "Specialty", reverse: true });
@@ -66,19 +66,20 @@ export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolea
             askname = bskname = skill;
         }
 
-        if ((askname && a.q_power && askname in a.q_power) && (bskname && b.q_power && bskname in b.q_power)) {
-            let askill = a.q_power[askname];
-            let bskill = b.q_power[bskname];
+        if ((askname && a.q_lots?.power && a.q_lots.power.some(s => s.skill === askname)) 
+            && (bskname && b.q_lots?.power && b.q_lots.power.some(s => s.skill === bskname))) {
+            let askill = a.q_lots.power.find(f => f.skill === askname) as Skill;
+            let bskill = b.q_lots.power.find(f => f.skill === bskname) as Skill;
 
             let at = (askill.core + (0.5 * (askill.range_max + askill.range_min)));
             let bt = (bskill.core + (0.5 * (bskill.range_max + bskill.range_min)));
 
             return at - bt;
         }
-        else if (askname && a.q_power && askname in a.q_power) {
+        else if (askname && a.q_lots?.power && a.q_lots.power.some(s => s.skill === askname)) {
             return 1;
         }
-        else if (bskname && b.q_power && bskname in b.q_power) {
+        else if (bskname && b.q_lots?.power && b.q_lots.power.some(s => s.skill === bskname)) {
             return -1;
         }
         else {
@@ -86,7 +87,7 @@ export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolea
         }
     };
 
-    if (pstMode) {
+    if (pstMode === true) {
         ['primary', 'secondary', 'tertiary'].forEach((skill, idx) => {
             config.push({ 
                 width: 1, 
@@ -103,6 +104,9 @@ export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolea
             });
         
         });
+    }
+    else if (pstMode) {
+
     }
     else {
         Object.keys(CONFIG.SKILLS).forEach((skill) => {
@@ -134,10 +138,16 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
     const { pstMode, quipment, excludeQBits, targetGroup, top, allslots, crew, slots } = props;
 
     const q_bits = allslots ? 1300 : crew.q_bits;
-    const q_lots = crew.q_lots ?? {}
-    const q_power = crew.q_power ?? {}
-    const skills = Object.keys(CONFIG.SKILLS);
     
+    let q_lots = crew.q_lots ?? {} as PowerLot;
+
+    if (pstMode === 2) {
+
+    }
+
+    const q_power = crew.q_lots?.power ?? [];
+    const skills = Object.keys(CONFIG.SKILLS);
+
     const printCell = (skill: string | number) => {
 
         if (typeof skill === 'number') {
@@ -154,7 +164,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
         }}>
             <CrewItemsView 
                 vertical={!pstMode}
-                crew={{ ...crew, q_bits, kwipment_expiration: [], kwipment: q_lots[skill].map(q => Number(q.kwipment_id) as number) }} 
+                crew={{ ...crew, q_bits, kwipment_expiration: [], kwipment: q_lots.lot[skill].map(q => Number(q.kwipment_id) as number) }} 
                 targetGroup={targetGroup}
                 itemSize={32}
                 locked
@@ -162,7 +172,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
             <CrewStat
                 quipmentMode={true}
                 style={{fontSize: "0.55em"}}
-            skill_name={skill} data={q_power[skill]} />
+            skill_name={skill} data={q_power.find(f => f.skill === skill)} />
         </div>
     }
 
