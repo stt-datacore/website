@@ -3,7 +3,7 @@ name: Fanboy Boimler
 rarity: 4
 series: low
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 in_portal: true
 date: 14/09/2022
 published: true
