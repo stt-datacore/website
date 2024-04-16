@@ -2,7 +2,7 @@ import CONFIG from '../components/CONFIG';
 import { CrewMember, EquipmentSlot, PowerLot, Skill } from '../model/crew';
 import { EquipmentItem, ICrewDemands, IDemand } from '../model/equipment';
 import { BuffBase, PlayerCrew, PlayerEquipmentItem } from '../model/player';
-import { applySkillBuff, numberToGrade, qbitsToSlots } from './crewutils';
+import { applySkillBuff, numberToGrade, powerSum, qbitsToSlots, skillSum } from './crewutils';
 import { ItemWithBonus, getItemBonuses, isQuipmentMatch } from './itemutils';
 import { BuffStatTable } from './voyageutils';
 
@@ -347,6 +347,11 @@ export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemW
 	});
 }
 
+type QpCount = { 
+	count: number;
+	item: EquipmentItem;
+	bonuses: Skill[];
+};
 
 export function calcQLots(
 	crew: CrewMember, 
@@ -403,17 +408,15 @@ export function calcQLots(
 		let lots = { power: [], lot: {} } as PowerLot;
 		crewQuipment.forEach((cq) => {
 			Object.keys(cq.bonusInfo.bonuses).forEach((skill) => {
-				lots.lot[skill] ??= [];
-				lots.lot[skill].push(cq.item);
+				if (skill in crew.base_skills) {
+					lots.lot[skill] ??= [];
+					lots.lot[skill].push(cq.item);	
+				}
 			});			
 		});
 
 		const flots = { power: [], lot: {} } as PowerLot;
-		const qpcounts = [] as { 
-			count: number;
-			item: EquipmentItem;
-			bonuses: Skill[];
-		}[];
+		const qpcounts = [] as QpCount[];
 
 		skills.forEach((skill) => {
 			lots.lot[skill]?.forEach((item) => {
@@ -446,8 +449,8 @@ export function calcQLots(
 						else if (bres && !ares) return 1;
 					}
 
-					let ar = ai.bonuses.reduce((p, n) => (p ?? 0) + (n.core + ((n.range_max + n.range_min) * 0.5)), 0);
-					let br = bi.bonuses.reduce((p, n) => (p ?? 0) + (n.core + ((n.range_max + n.range_min) * 0.5)), 0);
+					let ar = skillSum(ai.bonuses.filter(f => f.skill && f.skill in crew.base_skills));
+					let br = skillSum(bi.bonuses.filter(f => f.skill && f.skill in crew.base_skills));
 					return br - ar;
 				}
 				else if (ai) {
@@ -457,7 +460,7 @@ export function calcQLots(
 					return 1;
 				}
 				return 0;
-			});
+			});			
 		});
 
 		for (let i = 0; i < slots;) {
@@ -466,7 +469,7 @@ export function calcQLots(
 				flots.lot[skill] ??= [];
 
 				if (!lots.lot[skill].length) continue;				
-				if (Object.keys(flots).some(fk => fk in flots.lot && flots.lot[fk].includes(lots.lot[skill][0]))) {
+				if (Object.keys(flots.lot).some(fk => fk in flots.lot && flots.lot[fk].includes(lots.lot[skill][0]))) {
 					lots.lot[skill].splice(0, 1);
 					if (lots.lot[skill].length) {
 						j--;
@@ -482,7 +485,8 @@ export function calcQLots(
 				if (i >= slots) break;
 			}		
 		}
-	
+
+		flots.power = Object.values(flots.lot).map(lot => lot.map(item => (qpcounts.find(f => f.item === item) as QpCount).bonuses).flat()).flat()
 		return flots;
 	};
 
@@ -510,8 +514,8 @@ export function calcQLots(
 
 		if (skq?.length) {
 			skq.sort((a, b) => {
-				let ar = a.skill.core + ((a.skill.range_max + a.skill.range_min) * 0.5);
-				let br = b.skill.core + ((b.skill.range_max + b.skill.range_min) * 0.5);
+				let ar = skillSum(a.skill)
+				let br = skillSum(b.skill);
 				return br - ar;
 			});
 			
