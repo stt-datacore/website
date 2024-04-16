@@ -1497,3 +1497,67 @@ export function getVoyageQuotient<T extends CrewMember>(crew: T) {
 
     return (crew.ranks.voyRank / power);
 }
+
+export function skillAdd(a: Skill | ComputedSkill, b: Skill | ComputedSkill): Skill | ComputedSkill {
+	if ("range_max" in a && "range_max" in b) {
+		return {
+			core: a.core + b.core,
+			range_max: a.range_max + b.range_max,
+			range_min: a.range_min + b.range_min,
+			skill: a.skill ?? b.skill
+		};
+	}
+	else if ("max" in a && "max" in b) {
+		return {
+			core: a.core + b.core,
+			max: a.max + b.max,
+			min: a.min + b.min,
+			skill: a.skill ?? b.skill
+		};
+	}
+	else {
+		throw new TypeError('a and b must be of same type')
+	}
+}
+
+/**
+ * Adds one or more skill-type objects together
+ * @param skills The skill or skills to add
+ * @param mode Specify what to add (optional)
+ * @returns The sum of core + ((max+min) * 0.5) (depending on mode) from every element.
+ */
+export function skillSum(skills: Skill | ComputedSkill | (Skill | ComputedSkill)[], mode?: 'all' | 'core' | 'proficiency'): number {
+	if (Array.isArray(skills)) {
+		return skills.reduce((p, n) => p + skillSum(n, mode), 0);
+	}
+	else if ("range_max" in skills) {
+		return (mode !== 'proficiency' ? skills.core : 0) + (mode !== 'core' ? ((skills.range_max + skills.range_min) * 0.5) : 0);
+	}
+	else {
+		return (mode !== 'proficiency' ? skills.core : 0) + (mode !== 'core' ? ((skills.max + skills.min) * 0.5) : 0);
+	}		
+}
+
+export function powerSum(skills: Skill[]): { [key: string]: Skill } {
+	const output = {} as { [key: string]: Skill };
+	skills.forEach((skill) => {
+		if (!skill.skill) return;
+		if (!output[skill.skill]) {
+			output[skill.skill] = { ... skill };
+		}
+		else {
+			output[skill.skill] = skillAdd(output[skill.skill], skill) as Skill;
+		}
+	})
+	return output;
+}
+
+export function likeSum(skills: Skill[]): { [key: string]: number } {
+	const output = {} as { [key: string]: number };
+	skills.forEach((skill) => {
+		if (!skill.skill) return;
+		output[skill.skill] ??= 0;
+		output[skill.skill] += skillSum(skill);		
+	})
+	return output;
+}

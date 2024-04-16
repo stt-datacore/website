@@ -62,57 +62,25 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 	const options = [
 		{
 			key: 'normal',
-			value: 'normal',
+			value: false,
 			text: 'Individual Skills'
 		},
 		{
 			key: 'pst',
-			value: 'pst',
+			value: true,
 			text: 'Skill Order'
 		},
 		{
 			key: 'besttwo',
-			value: 'besttwo',
-			text: 'Two Skill Combos'
+			value: 2,
+			text: 'Skill Combos'
 		},
-		{
-			key: 'bestthree',
-			value: 'bestthree',
-			text: 'Well Rounded'
-		},
+		// {
+		// 	key: 'bestthree',
+		// 	value: 'bestthree',
+		// 	text: 'Well Rounded'
+		// },
 	] as DropdownItemProps[];
-
-	const getType = () => {
-		switch(pstMode) {
-			case false:
-				return 'normal';
-			case true:
-				return 'pst';
-			case 2:
-				return 'besttwo';
-			case 3:
-				return 'bestthree';
-			default:
-				return 'normal';
-		}
-	}
-
-	const changeType = (value: string) => {
-		switch(value) {
-			case 'normal':
-				setPstMode(false);
-				break;
-			case 'pst':
-				setPstMode(true);
-				break;
-			case 'besttwo':
-				setPstMode(2);
-				break;
-			case 'bestthree':
-				setPstMode(3);
-				break;
-		}
-	}
 
 	return (
 		<Form.Field style={{marginBottom: "1em", display: 'flex', flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center', gap: "1em"}}>
@@ -130,8 +98,8 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 				selection
 				multiple={false}
 				options={options}
-				value={getType()}
-				onChange={(e, { value }) => changeType(value as string)}
+				value={pstMode}
+				onChange={(e, { value }) => setPstMode(value as boolean | 2 | 3)}
 				closeOnChange
 			/>
 				
