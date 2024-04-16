@@ -3,7 +3,7 @@ name: Kelis
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal: true
 date: 05/11/2020
 published: true
