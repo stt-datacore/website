@@ -3,7 +3,7 @@ name: Wedding Day Quark
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 18/10/2018
 published: true
