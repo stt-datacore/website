@@ -397,9 +397,6 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 	const [colOptimized, setColOptimized] = React.useState<CollectionGroup[]>([]);
 	const [costMap, setCostMap] = React.useState<ComboCostMap[]>([]);
 
-	const [topscore, setTopScore] = React.useState(0);
-	const [topscoren, setTopScoren] = React.useState(0);
-
 	const { playerCollections: tempCol, collectionCrew } = props;
 	const { favorited, hardFilter, setHardFilter, tierFilter, setTierFilter, byCost, matchMode, checkCommonFilter, costMode, setShort, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
 	
@@ -414,65 +411,61 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 	
 	const costs = [0, 0, 500, 4500, 18000, costMode === 'sale' ? 40000 : 50000];
 
-	React.useEffect(() => {
-		
-		let tscore = 0;
-		let tscoren = 0;
-		let tstars = [1,1,1,1,1,1];
+	let tscore = 0;
+	let tscoren = 0;
+	let tstars = [1,1,1,1,1,1];
 
-		collectionCrew.forEach((crew) => {
-			crew.collectionScore = 0;
-			crew.collectionScoreN = 0;
-			if (!showThisCrew(crew, [], 'Exact')) return;
-			crew.collectionIds = crew.collectionIds?.filter(c => playerCollections.some(col => col.id === c));
-			crew.collections = crew.collections?.filter(c => playerCollections.some(col => col.name === c));
+	collectionCrew.forEach((crew) => {
+		crew.collectionScore = 0;
+		crew.collectionScoreN = 0;
+		if (!showThisCrew(crew, [], 'Exact')) return;
+		crew.collectionIds = crew.collectionIds?.filter(c => playerCollections.some(col => col.id === c));
+		crew.collections = crew.collections?.filter(c => playerCollections.some(col => col.name === c));
+		
+		let crare = crew.rarity;
+		let max_rare = crew.max_rarity;
+		if (crare === undefined) {
+			crare = 1;
+		}
+		
+		let pfilter = playerCollections.filter((col) => crew.collectionIds?.some(nid => nid === col.id) && !!col.needed);
+		if (!pfilter.length) {
+			return;
+		}
+		let ascores = [] as number[];
+		pfilter.forEach((col) => {
+			if (col.milestone.goal === 'n/a') return;
+			if (!col.needed) return;
+
+			ascores.push(1 / col.needed);
+		})
+		
+		let cscore = ascores.reduce((p, n) => p + n, 0);
+		crew.collectionScore = Math.round(cscore * 10000);
+
+		if (crew.collectionScore > tscore) {
+			tscore = crew.collectionScore;
+		}
+
+		if (max_rare !== crare) {
 			
-			let crare = crew.rarity;
-			let max_rare = crew.max_rarity;
-			if (crare === undefined) {
-				crare = 1;
+			if (tstars[max_rare] < crare) {
+				tstars[max_rare] = crare;
 			}
-			
-			let pfilter = playerCollections.filter((col) => crew.collectionIds?.some(nid => nid === col.id) && !!col.needed);
-			if (!pfilter.length) {
-				return;
+
+			crew.collectionScoreN = Math.round(cscore / ((costs[max_rare] * (max_rare - crare))) * 1000000000);
+			if (crew.collectionScoreN > tscoren) {
+				tscoren = crew.collectionScoreN;
 			}
-			let ascores = [] as number[];
-			pfilter.forEach((col) => {
-				if (col.milestone.goal === 'n/a') return;
-				if (!col.needed) return;
-	
-				ascores.push(1 / col.needed);
-			})
-			
-			let cscore = ascores.reduce((p, n) => p + n, 0);
-			crew.collectionScore = Math.round(cscore * 10000);
-	
-			if (crew.collectionScore > tscore) {
-				tscore = crew.collectionScore;
-			}
-	
-			if (max_rare !== crare) {
-				
-				if (tstars[max_rare] < crare) {
-					tstars[max_rare] = crare;
-				}
-	
-				crew.collectionScoreN = Math.round(cscore / ((costs[max_rare] * (max_rare - crare))) * 1000000000);
-				if (crew.collectionScoreN > tscoren) {
-					tscoren = crew.collectionScoreN;
-				}
-			}
-			else {
-				crew.collectionScoreN = -1;
-			}
-			
-		});
-	
-		setTopScore(tscore);
-		setTopScoren(tscoren);
-	
-	}, [collectionCrew]);
+		}
+		else {
+			crew.collectionScoreN = -1;
+		}
+		
+	});
+
+	const topscore = (tscore);
+	const topscoren = (tscoren);
 		
 	const tierOpts = [] as DropdownItemProps[];
 
