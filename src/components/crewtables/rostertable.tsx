@@ -215,6 +215,19 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
 	const quipment = globalContext.core.items.filter(f => f.type === 14 && !!f.max_rarity_requirement).map(m => getItemWithBonus(m));
 	
+	const getActiveBuffs = () => {
+		if (buffMode === 'none' || !buffMode) return undefined;
+
+		if (rosterType === 'myCrew') {
+			return globalContext.player.buffConfig;
+		}
+		else if (buffMode === 'max') {
+			return globalContext.maxBuffs;
+		}
+		
+		return undefined;
+	}
+
 	React.useEffect(() => {
 		// Reset table views when not available on updated roster type
 		const activeView = tableViews.find(view => view.id === tableView);
@@ -249,7 +262,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					});
 				}
 				if (tableView.startsWith("qp_")) {
-					calcQLots(crew, quipment, !buffMode || buffMode === 'none' ? undefined : (buffMode === 'max' || !globalContext.player?.buffConfig ? globalContext.core.all_buffs : globalContext.player.buffConfig), rosterType === 'allCrew' || rosterType === 'buyBack', slots);
+					calcQLots(crew, quipment, getActiveBuffs(), rosterType === 'allCrew' || rosterType === 'buyBack', slots);
 				}					
 			});			
 			setPreparedCrew([...preparedCrew]);
@@ -364,6 +377,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					<TopQuipmentScoreCells 
 						pstMode={pstMode}
 						slots={slots}
+						buffConfig={getActiveBuffs()}
 						quipment={quipment}
 						excludeQBits={rosterType === 'allCrew' || rosterType === 'buyBack'}
 						targetGroup={`${pageId}/targetClassItem`} 
