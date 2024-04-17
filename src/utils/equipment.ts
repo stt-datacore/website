@@ -4,6 +4,7 @@ import { EquipmentItem, ICrewDemands, IDemand } from '../model/equipment';
 import { BuffBase, PlayerCrew, PlayerEquipmentItem } from '../model/player';
 import { applySkillBuff, numberToGrade, powerSum, qbitsToSlots, skillSum } from './crewutils';
 import { ItemWithBonus, getItemBonuses, isQuipmentMatch } from './itemutils';
+import { makeAllCombos } from './misc';
 import { BuffStatTable } from './voyageutils';
 
 export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[], crewSymbol: string): number {
@@ -347,10 +348,10 @@ export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemW
 	});
 }
 
-type QpCount = { 
+interface QpCount { 
 	count: number;
 	item: EquipmentItem;
-	bonuses: Skill[];
+	bonuses: Skill[];	
 };
 
 export function calcQLots(
@@ -371,8 +372,8 @@ export function calcQLots(
 			let bbon = Object.keys(b.bonusInfo.bonuses).filter(f => f in crew.base_skills && Object.keys(crew.base_skills[f]).some(val => crew.base_skills[f][val]));
 			let r = bbon.length - abon.length;
 			if (r) return r;
-			let ar = Object.values(a.bonusInfo.bonuses).reduce((p, n) => (p ?? 0) + (n.core + ((n.range_max + n.range_min) * 0.5)), 0);
-			let br = Object.values(b.bonusInfo.bonuses).reduce((p, n) => (p ?? 0) + (n.core + ((n.range_max + n.range_min) * 0.5)), 0);
+			let ar = skillSum(Object.values(a.bonusInfo.bonuses));
+			let br = skillSum(Object.values(b.bonusInfo.bonuses));
 			return br - ar;
 		});
 
@@ -400,8 +401,11 @@ export function calcQLots(
 			skills.push(crew.skill_order[i]);
 			x++;
 		}
-	
+		
 		let maxskills = skills.length;
+		if (maxskills===3) {
+			console.log("here")
+		}
 		crew.q_lots ??= { power: [], lot: {} };
 	
 		//let lots = crew.q_lots;
@@ -412,7 +416,7 @@ export function calcQLots(
 					lots.lot[skill] ??= [];
 					lots.lot[skill].push(cq.item);	
 				}
-			});			
+			});
 		});
 
 		const flots = { power: [], lot: {} } as PowerLot;
@@ -422,7 +426,7 @@ export function calcQLots(
 			lots.lot[skill]?.forEach((item) => {
 				let f = qpcounts.find(f => f.item === item);
 				if (!f) {
-					let bonuses = Object.values(getItemBonuses(item).bonuses);
+					let bonuses = Object.values(crewQuipment.find(f => f.item === item)?.bonusInfo.bonuses ?? {});
 					qpcounts.push({
 						item,
 						count: 1,
@@ -434,57 +438,112 @@ export function calcQLots(
 				}
 			});
 		});
+		
+		const numbers = qpcounts.map(qp => qp.item).flat().map(m => Number(m.kwipment_id as string));
+		const combos = makeAllCombos(numbers, undefined, undefined, undefined, 4).filter(c => c.length === 4);
 
-		Object.keys(lots).forEach((skill) => {
-			if (!(skill in lots.lot) || !lots.lot[skill].length) return;
-			
-			lots.lot[skill].sort((a, b) => {
-				let ai = qpcounts.find(f => f.item === a);
-				let bi = qpcounts.find(f => f.item === b);
-				if (ai && bi) {
-					if (skills.length === 2) {
-						let ares = ai.bonuses.every(sk => skills.includes(sk.skill as string));
-						let bres = bi.bonuses.every(sk => skills.includes(sk.skill as string));
-						if (ares && !bres) return -1;
-						else if (bres && !ares) return 1;
-					}
+		const newmap = combos.map(cb => cb.map(co => ({ ... qpcounts.find(f => f.item.kwipment_id === co.toString()) as QpCount } as QpCount)));
 
-					let ar = skillSum(ai.bonuses.filter(f => f.skill && f.skill in crew.base_skills));
-					let br = skillSum(bi.bonuses.filter(f => f.skill && f.skill in crew.base_skills));
-					return br - ar;
+		const baldiff = [] as { value: number, power: QpCount[], skills: string[] }[];
+
+		newmap.forEach((power) => {
+			const skillbalance = {} as { [key: string]: { value: number, skills: Skill[] } };			
+			skills.forEach((skill) => {
+				const skills = power.filter(f => f.bonuses?.some(b => b?.skill === skill)).map(m => m.bonuses).flat().filter(f => f.skill === skill);
+				if (!skills?.length) return;
+
+				skillbalance[skill] = {
+					value: skillSum(skills),
+					skills
 				}
-				else if (ai) {
-					return -1;
-				}
-				else if (bi) {
-					return 1;
-				}
-				return 0;
-			});			
+			});
+			const outskills = Object.keys(skillbalance);
+			let value = 0;
+			if (outskills.length === 2) {
+				value = Math.abs(skillbalance[outskills[0]].value - skillbalance[outskills[1]].value);
+			}
+			else {
+				value = Object.values(skillbalance).map(m => m.value).sort()[1];
+			}
+			baldiff.push({
+				value,
+				power,
+				skills: outskills
+			});
 		});
 
-		for (let i = 0; i < slots;) {
-			for (let j = 0; j < maxskills; j++) {
-				let skill = skills[j];
-				flots.lot[skill] ??= [];
+		baldiff.sort((a, b) => {			
+			let r = b.skills.length - a.skills.length;
+			if (r) return r;
+			if (a.skills.length === 2) {
+				r = a.value - b.value;
+			}
+			else {
+				r = b.value - a.value;
+			}
+			return r;
+		});
 
-				if (!lots.lot[skill].length) continue;				
-				if (Object.keys(flots.lot).some(fk => fk in flots.lot && flots.lot[fk].includes(lots.lot[skill][0]))) {
-					lots.lot[skill].splice(0, 1);
-					if (lots.lot[skill].length) {
-						j--;
-					}
-					continue;
-				}
+		baldiff[0].power.forEach((qp) => {
+			if (!qp?.bonuses?.length || !qp?.bonuses[0]?.skill) {
+				console.log("Problem with " + crew.symbol);
+				console.log(qp);
+				return;
+			}
 
-				flots.lot[skill] ??= [];
-				flots.lot[skill].push(lots.lot[skill][0]);
-				lots.lot[skill].splice(0, 1);
+			let skill = qp.bonuses[0].skill;
+			flots.lot[skill] ??= [];
+			flots.lot[skill].push(qp.item);
+		});
 
-				i++;
-				if (i >= slots) break;
-			}		
-		}
+		// Object.keys(lots.lot).forEach((skill) => {
+		// 	if (!(skill in lots.lot) || !lots.lot[skill].length) return;
+			
+		// 	lots.lot[skill].sort((a, b) => {
+		// 		let ai = qpcounts.find(f => f.item === a);
+		// 		let bi = qpcounts.find(f => f.item === b);
+		// 		if (ai && bi) {
+		// 			let ares = ai.bonuses.filter(sk => skills.includes(sk.skill as string)).length;
+		// 			let bres = bi.bonuses.filter(sk => skills.includes(sk.skill as string)).length;
+		// 			let r = bres - ares;
+		// 			if (r) return r;
+
+		// 			let ar = skillSum(ai.bonuses.filter(f => f.skill && f.skill in crew.base_skills));
+		// 			let br = skillSum(bi.bonuses.filter(f => f.skill && f.skill in crew.base_skills));
+		// 			return br - ar;
+		// 		}
+		// 		else if (ai) {
+		// 			return -1;
+		// 		}
+		// 		else if (bi) {
+		// 			return 1;
+		// 		}
+		// 		return 0;
+		// 	});			
+		// });
+		
+		// for (let i = 0; i < slots;) {
+		// 	for (let j = 0; j < maxskills; j++) {
+		// 		let skill = skills[j];
+		// 		flots.lot[skill] ??= [];
+
+		// 		if (!lots.lot[skill].length) continue;				
+		// 		if (Object.keys(flots.lot).some(fk => fk in flots.lot && flots.lot[fk].includes(lots.lot[skill][0]))) {
+		// 			lots.lot[skill].splice(0, 1);
+		// 			if (lots.lot[skill].length) {
+		// 				j--;
+		// 			}
+		// 			continue;
+		// 		}
+
+		// 		flots.lot[skill] ??= [];
+		// 		flots.lot[skill].push(lots.lot[skill][0]);
+		// 		lots.lot[skill].splice(0, 1);
+
+		// 		i++;
+		// 		if (i >= slots) break;
+		// 	}		
+		// }
 
 		flots.power = Object.values(flots.lot).map(lot => lot.map(item => (qpcounts.find(f => f.item === item) as QpCount).bonuses).flat()).flat()
 		return flots;
@@ -556,8 +615,5 @@ export function calcQLots(
 		crew.q_best_three_lots = calcBest(3, crew, max_qbits, max_slots);
 	}
 
-	if (crew.symbol === 'data_cowboy_crew') {
-		console.log("Break here");
-	}
 	return crew;
 }
