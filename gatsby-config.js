@@ -51,31 +51,31 @@ module.exports = {
 				path: `${__dirname}/static/crew/`
 			}
 		},
-		{
-			resolve: 'gatsby-source-filesystem',
-			options: {
-				name: 'structured',
-				path: `${__dirname}/static/structured/`,
-				ignore: [
-					'**/events/*',
-					'**/eventlogs/*',
-					'**/collections.json',
-					'**/dilemmas.json',
-					'**/disputes.json',
-					'**/event_instances.json',
-					'**/event_leaderboards.json',
-					'**/factions.json',
-					'**/items.json',
-					'**/keystones.json',
-					'**/misc_stats.json',
-					'**/missions.json',
-					'**/missionsfull.json',
-					'**/quests.json',
-					'**/ship_schematics.json',
-					'**/upcomingevents.json'
-				]
-			}
-		},
+		// {
+		// 	resolve: 'gatsby-source-filesystem',
+		// 	options: {
+		// 		name: 'structured',
+		// 		path: `${__dirname}/static/structured/`,
+		// 		ignore: [
+		// 			'**/events/*',
+		// 			'**/eventlogs/*',
+		// 			'**/collections.json',
+		// 			'**/dilemmas.json',
+		// 			'**/disputes.json',
+		// 			'**/event_instances.json',
+		// 			'**/event_leaderboards.json',
+		// 			'**/factions.json',
+		// 			'**/items.json',
+		// 			'**/keystones.json',
+		// 			'**/misc_stats.json',
+		// 			'**/missions.json',
+		// 			'**/missionsfull.json',
+		// 			'**/quests.json',
+		// 			'**/ship_schematics.json',
+		// 			'**/upcomingevents.json'
+		// 		]
+		// 	}
+		// },
 		{
 			resolve: 'gatsby-source-filesystem',
 			options: {
