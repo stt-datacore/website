@@ -98,7 +98,7 @@ export async function guessCurrentEvent(allCrew: CrewMember[], allEvents: EventI
 function guessCurrentEventId(allEvents: EventInstance[]): number {
 	const easternTime = new Date((new Date()).toLocaleString('en-US', { timeZone: 'America/New_York' }));
 	const estDay = easternTime.getDay(), estHour = easternTime.getHours();
-	
+
 	// Use penultimate event instance if current time is:
 	//	>= Wednesday Noon ET (approx time when game data is updated with next week's event)
 	//		and < Monday Noon ET (when event ends)
@@ -229,4 +229,29 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus:
 	}
 
 	return { bonus, featured };
+}
+
+// Formula based on PADD's EventHelperGalaxy, assuming craft_config is constant
+export function calculateGalaxyChance(skillValue: number) : number {
+	const craft_config = {
+		specialist_chance_formula: {
+			steepness: 0.3,
+			midpoint: 5.5
+		},
+		specialist_challenge_rating: 1050,
+		specialist_failure_bonus: 0.05,
+		specialist_maximum_success_chance: 0.99
+	};
+
+	const midpointOffset: number = skillValue / craft_config.specialist_challenge_rating;
+	const val: number = Math.floor(
+		100 /
+			(1 +
+				Math.exp(
+					-craft_config.specialist_chance_formula.steepness *
+						(midpointOffset - craft_config.specialist_chance_formula.midpoint)
+				)
+			)
+	);
+	return Math.round(Math.min(val / 100, craft_config.specialist_maximum_success_chance)*100);
 }

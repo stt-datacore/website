@@ -26,6 +26,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 	const { excludedCrewIds, updateExclusions } = props;
 
 	const [selectedEvent, setSelectedEvent] = React.useState<string>('');
+	const [selectedBonus, setSelectedBonus] = React.useState<string>('all');
 
 	const excludeQuipped = () => {
 		const quipped = props.rosterCrew.filter(f => !excludedCrewIds?.includes(f.id) && f.kwipment?.some(k => typeof k === 'number' ? !!k : !!k[1]))?.map(c => c.id);
@@ -33,29 +34,35 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 	}
 
 	React.useEffect(() => {
-		let activeEvent = '';
+		let activeEvent: string = '';
+		let activeBonus: string = 'all';
 		events.forEach(gameEvent => {
 			if (gameEvent && gameEvent.seconds_to_end > 0 && gameEvent.seconds_to_start < 86400) {
 				if (gameEvent.content_types.includes('shuttles') || gameEvent.content_types.includes('gather')) {
 					activeEvent = gameEvent.symbol;
+					// if (!gameEvent.content_types.includes('shuttles')) activeBonus = 'featured';
 				}
 			}
 		});
 		setSelectedEvent(activeEvent);
+		setSelectedBonus(activeBonus);
 	}, [events]);
 
 	React.useEffect(() => {
 		if (selectedEvent) {
 			const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 			if (activeEvent) {
-				const crewIds = props.rosterCrew.filter(c => activeEvent.bonus.includes(c.symbol)).sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
+				const crewIds = props.rosterCrew.filter(c =>
+					(selectedBonus === 'all' && activeEvent.bonus.includes(c.symbol))
+					|| (selectedBonus === 'featured' && activeEvent.featured.includes(c.symbol))
+				).sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
 				updateExclusions([...new Set(crewIds)]);
 			}
 		}
 		else {
 			updateExclusions([]);
 		}
-	}, [selectedEvent]);
+	}, [selectedEvent, selectedBonus]);
 
 	const eventOptions = [] as ISelectOption[];
 	events.forEach(gameEvent => {
@@ -71,6 +78,12 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 	});
 	if (eventOptions.length > 0) eventOptions.push({ key: 'none', value: '', text: 'Do not exclude event crew' });
 
+	const bonusOptions: ISelectOption[] = [
+		{ key: 'all', value: 'all', text: 'All event crew' },
+		{ key: 'featured', value: 'featured', text: 'Featured event crew' },
+		// { key: 'best', value: 'best', text: 'My best crew for event' }
+	];
+
 	return (
 		<React.Fragment>
 			<Message attached onDismiss={excludedCrewIds.length > 0 ? () => { updateExclusions([]); setSelectedEvent(''); } : undefined}>
@@ -78,25 +91,37 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 					<Message.Header>
 						Crew to Exclude
 					</Message.Header>
-					{eventOptions.length > 0 && (
-						<Form.Group inline style={{ marginBottom: '0' }}>
-							<Form.Field
-								label='Exclude crew from the event'
-								placeholder='Select event'
-								control={Dropdown}
-								clearable
-								selection
-								options={eventOptions}
-								value={selectedEvent}
-								onChange={(e, { value }) => setSelectedEvent(value as string)}
-							/>
-							
-						</Form.Group>
-						
-					)}
-					<div style={{marginTop:"0.5em"}}>
-					<Button color='blue' onClick={(e) => excludeQuipped()}>Exclude Quipped Crew</Button>	
-					</div>
+					<Form.Group grouped>
+						{eventOptions.length > 0 && (
+							<Form.Group inline>
+								<Form.Field
+									label='Exclude crew from the event'
+									placeholder='Select event'
+									control={Dropdown}
+									fluid
+									clearable
+									selection
+									options={eventOptions}
+									value={selectedEvent}
+									onChange={(e, { value }) => setSelectedEvent(value as string)}
+								/>
+								{selectedEvent !== '' && (
+									<Form.Field
+										label='Filter by bonus'
+										control={Dropdown}
+										fluid
+										selection
+										options={bonusOptions}
+										value={selectedBonus}
+										onChange={(e, { value }) => setSelectedBonus(value as string)}
+									/>
+								)}
+							</Form.Group>
+						)}
+						<Form.Field>
+							<Button color='blue' onClick={(e) => excludeQuipped()}>Exclude Quipped Crew</Button>
+						</Form.Field>
+					</Form.Group>
 				</Message.Content>
 			</Message>
 			<Segment attached='bottom'>

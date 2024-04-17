@@ -16,6 +16,7 @@ import { useStateWithStorage } from '../../utils/storage';
 import { applySkillBuff, isQuipped } from '../../utils/crewutils';
 
 import { IEventData, IRosterCrew, IEventScoredCrew, IEventCombos, IEventSkill, IEventPair, IBestCombos, IBestCombo } from './model';
+import { calculateGalaxyChance } from '../../utils/events';
 import { navToCrewPage } from '../../utils/nav';
 
 type EventCrewTableProps = {
@@ -386,7 +387,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 	const { crew, bestCombos, phaseType, handleClick } = props;
 
 	const [halfMatrix, setHalfMatrix] = useStateWithStorage<boolean>('eventHalfMatrix', false, { rememberForever: true });
-	
+
 	const matrixSkills = halfMatrix ? [ ... CONFIG.SKILLS_SHORT ].reverse() : CONFIG.SKILLS_SHORT;
 	const comboSeen = {} as { [key: string]: boolean };
 
@@ -409,7 +410,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 					{CONFIG.SKILLS_SHORT.map((skillA, rowId) => (
 						<Table.Row key={rowId}>
 							<Table.Cell width={1} textAlign='center'><img alt={`${skillA.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillA.name}.png`} style={{ height: '1.1em' }} /></Table.Cell>
-							{matrixSkills.map((skillB, cellId) => {							
+							{matrixSkills.map((skillB, cellId) => {
 								let cbkey = [skillA.name, skillB.name].sort().join("");
 								let cbs = comboSeen[cbkey];
 								comboSeen[cbkey] = true;
@@ -454,28 +455,3 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 		);
 	}
 };
-
-// Formula based on PADD's EventHelperGalaxy, assuming craft_config is constant
-function calculateGalaxyChance(skillValue: number) : number {
-	const craft_config = {
-		specialist_chance_formula: {
-			steepness: 0.3,
-			midpoint: 5.5
-		},
-		specialist_challenge_rating: 1050,
-		specialist_failure_bonus: 0.05,
-		specialist_maximum_success_chance: 0.99
-	};
-
-	const midpointOffset = skillValue / craft_config.specialist_challenge_rating;
-	const val = Math.floor(
-		100 /
-			(1 +
-				Math.exp(
-					-craft_config.specialist_chance_formula.steepness *
-						(midpointOffset - craft_config.specialist_chance_formula.midpoint)
-				)
-			)
-	);
-	return Math.round(Math.min(val / 100, craft_config.specialist_maximum_success_chance)*100);
-}
