@@ -6,6 +6,8 @@ import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps } from '../..
 
 import { CalculatorContext } from './context';
 import CrewPicker from '../../components/crewpicker';
+import { IEventScoredCrew } from '../eventplanner/model';
+import { computeEventBest } from '../../utils/events';
 
 interface ISelectOption {
 	key: string;
@@ -52,11 +54,20 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		if (selectedEvent) {
 			const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 			if (activeEvent) {
-				const crewIds = props.rosterCrew.filter(c =>
-					(selectedBonus === 'all' && activeEvent.bonus.includes(c.symbol))
-					|| (selectedBonus === 'featured' && activeEvent.featured.includes(c.symbol))
-				).sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
-				updateExclusions([...new Set(crewIds)]);
+
+				if (selectedBonus === 'galaxy' && activeEvent.content_types?.includes('gather')) {
+					let eventCrew = props.rosterCrew.map(m => m as IEventScoredCrew);
+					let combos = computeEventBest(eventCrew, activeEvent, 'gather', undefined, true, false);
+					const crewIds = Object.values(combos).map(cb => cb.id);
+					updateExclusions([...new Set(crewIds)]);
+				}
+				else {
+					const crewIds = props.rosterCrew.filter(c =>
+						(selectedBonus === 'all' && activeEvent.bonus.includes(c.symbol))
+						|| (selectedBonus === 'featured' && activeEvent.featured.includes(c.symbol))
+					).sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
+					updateExclusions([...new Set(crewIds)]);
+				}
 			}
 		}
 		else {
@@ -81,8 +92,16 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 	const bonusOptions: ISelectOption[] = [
 		{ key: 'all', value: 'all', text: 'All event crew' },
 		{ key: 'featured', value: 'featured', text: 'Featured event crew' },
+		
 		// { key: 'best', value: 'best', text: 'My best crew for event' }
 	];
+
+	if (selectedEvent) {
+		const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
+		if (activeEvent?.content_types?.includes('gather')) {
+			bonusOptions.push({ key: 'galaxy', value: 'galaxy', text: 'Galaxy event matrix crew' });
+		}
+	}
 
 	return (
 		<React.Fragment>
