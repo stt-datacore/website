@@ -16,6 +16,7 @@ import { useStateWithStorage } from '../../utils/storage';
 import { applySkillBuff, isQuipped } from '../../utils/crewutils';
 
 import { IEventData, IRosterCrew, IEventScoredCrew, IEventCombos, IEventSkill, IEventPair, IBestCombos, IBestCombo } from './model';
+import { calculateGalaxyChance, computeEventBest } from '../../utils/events';
 import { navToCrewPage } from '../../utils/nav';
 
 type EventCrewTableProps = {
@@ -85,8 +86,6 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 
 	const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
 
-	let bestCombos: IBestCombos = {};
-
 	const zeroCombos: IEventCombos = {};
 	for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
 		let firstSkill = CONFIG.SKILLS_SHORT[first];
@@ -111,79 +110,88 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	if (excludeQuipped) rosterCrew = rosterCrew.filter((c) => !isQuipped(c));
 	if (!canBorrow || !showShared) rosterCrew = rosterCrew.filter((c) => !c.shared);
 
-	const getPairScore = (crew: IRosterCrew, primary: string, secondary: string) => {
-		if (phaseType === 'shuttles') {
-			if (secondary) return crew[primary].core+(crew[secondary].core/4);
-			return crew[primary].core;
-		}
-		if (secondary) return (crew[primary].core+crew[secondary].core)/2;
-		return crew[primary].core/2;
-	};
+	let bestCombos: IBestCombos = computeEventBest(
+		rosterCrew,
+		eventData,
+		phaseType,
+		buffConfig,
+		applyBonus,
+		showPotential
+	);
 
-	rosterCrew.forEach(crew => {
-		// First adjust skill scores as necessary
-		if (applyBonus || showPotential) {
-			crew.bonus = 1;
-			if (applyBonus && eventData.featured.indexOf(crew.symbol) >= 0) {
-				if (phaseType === 'gather') crew.bonus = 10;
-				else if (phaseType === 'shuttles') crew.bonus = 3;
-			}
-			else if (applyBonus && eventData.bonus.indexOf(crew.symbol) >= 0) {
-				if (phaseType === 'gather') crew.bonus = 5;
-				else if (phaseType === 'shuttles') crew.bonus = 2;
-			}
-			if (crew.bonus > 1 || showPotential) {
-				CONFIG.SKILLS_SHORT.forEach(skill => {
-					if (crew[skill.name].core > 0) {
-						if (showPotential && crew.immortal === CompletionState.NotComplete && !crew.prospect) {
-							crew[skill.name].current = crew[skill.name].core*crew.bonus;
-							if (buffConfig) crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.skill_data[crew.rarity-1].base_skills[skill.name]);
-						}
-						crew[skill.name].core = crew[skill.name].core*crew.bonus;
-					}
-				});
-			}
-		}
+	// const getPairScore = (crew: IRosterCrew, primary: string, secondary: string) => {
+	// 	if (phaseType === 'shuttles') {
+	// 		if (secondary) return crew[primary].core+(crew[secondary].core/4);
+	// 		return crew[primary].core;
+	// 	}
+	// 	if (secondary) return (crew[primary].core+crew[secondary].core)/2;
+	// 	return crew[primary].core/2;
+	// };
 
-		// Then calculate skill combination scores
-		let combos: IEventCombos = {...zeroCombos};
-		let bestPair: IEventPair = { score: 0, skillA: '', skillB: '' };
-		let bestSkill: IEventSkill = { score: 0, skill: '' };
-		for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
-			const firstSkill = CONFIG.SKILLS_SHORT[first];
-			const single = {
-				score: crew[firstSkill.name].core,
-				skillA: firstSkill.name
-			};
-			combos[firstSkill.name] = single.score;
-			if (!bestCombos[firstSkill.name] || single.score > bestCombos[firstSkill.name].score)
-				bestCombos[firstSkill.name] = { id: crew.id, score: single.score };
-			if (single.score > bestSkill.score) bestSkill = { score: single.score, skill: single.skillA };
-			for (let second = first+1; second < CONFIG.SKILLS_SHORT.length; second++) {
-				const secondSkill = CONFIG.SKILLS_SHORT[second];
-				let pair = {
-					score: getPairScore(crew, firstSkill.name, secondSkill.name),
-					skillA: firstSkill.name,
-					skillB: secondSkill.name
-				}
-				if (crew[secondSkill.name].core > crew[firstSkill.name].core) {
-					pair = {
-						score: getPairScore(crew, secondSkill.name, firstSkill.name),
-						skillA: secondSkill.name,
-						skillB: firstSkill.name
-					}
-				}
-				combos[firstSkill.name+','+secondSkill.name] = pair.score;
-				if (pair.score > bestPair.score) bestPair = pair;
-				const pairId = firstSkill.name+secondSkill.name;
-				if (!bestCombos[pairId] || pair.score > bestCombos[pairId].score)
-					bestCombos[pairId] = { id: crew.id, score: pair.score };
-			}
-		}
-		crew.combos = combos;
-		crew.bestPair = bestPair;
-		crew.bestSkill = bestSkill;
-	});
+	// rosterCrew.forEach(crew => {
+	// 	// First adjust skill scores as necessary
+	// 	if (applyBonus || showPotential) {
+	// 		crew.bonus = 1;
+	// 		if (applyBonus && eventData.featured.indexOf(crew.symbol) >= 0) {
+	// 			if (phaseType === 'gather') crew.bonus = 10;
+	// 			else if (phaseType === 'shuttles') crew.bonus = 3;
+	// 		}
+	// 		else if (applyBonus && eventData.bonus.indexOf(crew.symbol) >= 0) {
+	// 			if (phaseType === 'gather') crew.bonus = 5;
+	// 			else if (phaseType === 'shuttles') crew.bonus = 2;
+	// 		}
+	// 		if (crew.bonus > 1 || showPotential) {
+	// 			CONFIG.SKILLS_SHORT.forEach(skill => {
+	// 				if (crew[skill.name].core > 0) {
+	// 					if (showPotential && crew.immortal === CompletionState.NotComplete && !crew.prospect) {
+	// 						crew[skill.name].current = crew[skill.name].core*crew.bonus;
+	// 						if (buffConfig) crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.skill_data[crew.rarity-1].base_skills[skill.name]);
+	// 					}
+	// 					crew[skill.name].core = crew[skill.name].core*crew.bonus;
+	// 				}
+	// 			});
+	// 		}
+	// 	}
+
+	// 	// Then calculate skill combination scores
+	// 	let combos: IEventCombos = {...zeroCombos};
+	// 	let bestPair: IEventPair = { score: 0, skillA: '', skillB: '' };
+	// 	let bestSkill: IEventSkill = { score: 0, skill: '' };
+	// 	for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
+	// 		const firstSkill = CONFIG.SKILLS_SHORT[first];
+	// 		const single = {
+	// 			score: crew[firstSkill.name].core,
+	// 			skillA: firstSkill.name
+	// 		};
+	// 		combos[firstSkill.name] = single.score;
+	// 		if (!bestCombos[firstSkill.name] || single.score > bestCombos[firstSkill.name].score)
+	// 			bestCombos[firstSkill.name] = { id: crew.id, score: single.score };
+	// 		if (single.score > bestSkill.score) bestSkill = { score: single.score, skill: single.skillA };
+	// 		for (let second = first+1; second < CONFIG.SKILLS_SHORT.length; second++) {
+	// 			const secondSkill = CONFIG.SKILLS_SHORT[second];
+	// 			let pair = {
+	// 				score: getPairScore(crew, firstSkill.name, secondSkill.name),
+	// 				skillA: firstSkill.name,
+	// 				skillB: secondSkill.name
+	// 			}
+	// 			if (crew[secondSkill.name].core > crew[firstSkill.name].core) {
+	// 				pair = {
+	// 					score: getPairScore(crew, secondSkill.name, firstSkill.name),
+	// 					skillA: secondSkill.name,
+	// 					skillB: firstSkill.name
+	// 				}
+	// 			}
+	// 			combos[firstSkill.name+','+secondSkill.name] = pair.score;
+	// 			if (pair.score > bestPair.score) bestPair = pair;
+	// 			const pairId = firstSkill.name+secondSkill.name;
+	// 			if (!bestCombos[pairId] || pair.score > bestCombos[pairId].score)
+	// 				bestCombos[pairId] = { id: crew.id, score: pair.score };
+	// 		}
+	// 	}
+	// 	crew.combos = combos;
+	// 	crew.bestPair = bestPair;
+	// 	crew.bestSkill = bestSkill;
+	// });
 
 	return (
 		<React.Fragment>
@@ -386,7 +394,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 	const { crew, bestCombos, phaseType, handleClick } = props;
 
 	const [halfMatrix, setHalfMatrix] = useStateWithStorage<boolean>('eventHalfMatrix', false, { rememberForever: true });
-	
+
 	const matrixSkills = halfMatrix ? [ ... CONFIG.SKILLS_SHORT ].reverse() : CONFIG.SKILLS_SHORT;
 	const comboSeen = {} as { [key: string]: boolean };
 
@@ -409,7 +417,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 					{CONFIG.SKILLS_SHORT.map((skillA, rowId) => (
 						<Table.Row key={rowId}>
 							<Table.Cell width={1} textAlign='center'><img alt={`${skillA.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillA.name}.png`} style={{ height: '1.1em' }} /></Table.Cell>
-							{matrixSkills.map((skillB, cellId) => {							
+							{matrixSkills.map((skillB, cellId) => {
 								let cbkey = [skillA.name, skillB.name].sort().join("");
 								let cbs = comboSeen[cbkey];
 								comboSeen[cbkey] = true;
@@ -436,7 +444,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 			key = skillA+skillB;
 			best = bestCombos[skillA+skillB] ?? bestCombos[skillB+skillA];
 		}
-		if (!best) best = { id: -1, score: 0 };
+		if (!best) best = { id: Number.NEGATIVE_INFINITY, score: 0 };
 		if (best.score > 0) {
 			const bestCrew = crew.find(c => c.id === best.id);
 			let icon = (<></>);
@@ -454,28 +462,3 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 		);
 	}
 };
-
-// Formula based on PADD's EventHelperGalaxy, assuming craft_config is constant
-function calculateGalaxyChance(skillValue: number) : number {
-	const craft_config = {
-		specialist_chance_formula: {
-			steepness: 0.3,
-			midpoint: 5.5
-		},
-		specialist_challenge_rating: 1050,
-		specialist_failure_bonus: 0.05,
-		specialist_maximum_success_chance: 0.99
-	};
-
-	const midpointOffset = skillValue / craft_config.specialist_challenge_rating;
-	const val = Math.floor(
-		100 /
-			(1 +
-				Math.exp(
-					-craft_config.specialist_chance_formula.steepness *
-						(midpointOffset - craft_config.specialist_chance_formula.midpoint)
-				)
-			)
-	);
-	return Math.round(Math.min(val / 100, craft_config.specialist_maximum_success_chance)*100);
-}
