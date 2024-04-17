@@ -174,7 +174,7 @@ export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolea
                 </div>
                 </div>, 
                 reverse: true,
-                customCompare: (a: IRosterCrew, b: IRosterCrew) => qpComp(a, b, idx, true)
+                customCompare: (a: IRosterCrew, b: IRosterCrew) => -qpComp(a, b, idx, true)
             });        
         });
     }
@@ -229,6 +229,10 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
                     power_sum = powerSum(crew.q_best_one_two_lots.power);
                     lot = crew.q_best_one_two_lots;
                 }
+                // else if (skill === 0 && crew.q_lots) {
+                //     skill = crew.skill_order[0];
+                //     lot = crew.q_lots;
+                // }
                 else if (skill === 1 && crew.q_best_one_three_lots) {
                     power_sum = powerSum(crew.q_best_one_three_lots.power);
                     lot = crew.q_best_one_three_lots;
@@ -242,7 +246,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
                     lot = crew.q_best_three_lots;
                 }
 
-                if (!lot) {
+                if (!lot && typeof skill !== 'string') {
                     return <></>;                    
                 }
                 else if (power_sum) {
