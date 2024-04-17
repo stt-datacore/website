@@ -276,8 +276,14 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
             }
             else {
                 if (skill >= crew.skill_order.length) return <></>;
-                skill = crew.skill_order[skill];
+                skill = crew.skill_order[skill];                
             }
+        }
+
+        if (typeof skill === 'string' && crew.q_lots?.power_by_skill) {
+            lot = { ...crew.q_lots };
+            lot.lot = {};
+            lot.lot[skill] = crew.q_lots.lot[skill];
         }
 
         return lot && <div style={{
@@ -299,7 +305,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
                 quipmentMode={true}
                 style={{fontSize: "0.55em"}}
                 skill_name={skill} 
-                data={lot.power.find(f => f.skill === skill)} />
+                data={lot.power_by_skill ? lot.power_by_skill[skill] : lot.power.find(f => f.skill === skill)} />
             ||
             !!power_sum && Object.values(power_sum).sort((a, b) => skillSum(b) - skillSum(a)).map((ps) => 
                 <CrewStat

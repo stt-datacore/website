@@ -595,9 +595,13 @@ export function calcQLots(
 		addQPower(skill, slots);
 	});
 
+	if (crew.symbol ==='winn_kai_crew') {
+		console.log("Break");
+	}
 	crew.q_lots = {
 		lot: q_lots,
-		power: Object.values(q_power)
+		power: Object.values(q_power),
+		power_by_skill: q_power
 	}
 
 	delete crew.q_best_one_two_lots;
