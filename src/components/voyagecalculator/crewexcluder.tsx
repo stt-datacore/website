@@ -100,7 +100,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		if (selectedEvent && phase) {
 			const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 			if (activeEvent) {
-				const rosterCrew = (globalContext.player.playerData?.player.character.crew ?? globalContext.core.crew).map(m => ({ ...m } as IEventScoredCrew));
+				const rosterCrew = (globalContext.player.playerData?.player.character.crew ?? globalContext.core.crew).map(m => (oneCrewCopy(m) as IEventScoredCrew));
 				const combos = computeEventBest(rosterCrew, activeEvent, phase, undefined, true, false);
 				const crewIds = Object.values(combos).map(cb => cb.id);
 				setBestCombos(crewIds);
