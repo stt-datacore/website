@@ -99,7 +99,7 @@ export async function guessCurrentEvent(allCrew: CrewMember[], allEvents: EventI
 }
 
 // Current event here refers to an ongoing event, or the next event if none is ongoing
-function guessCurrentEventId(allEvents: EventInstance[]): number {
+export function guessCurrentEventId(allEvents: EventInstance[]): number {
 	const easternTime = new Date((new Date()).toLocaleString('en-US', { timeZone: 'America/New_York' }));
 	const estDay = easternTime.getDay(), estHour = easternTime.getHours();
 
