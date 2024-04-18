@@ -350,9 +350,10 @@ export function computeEventBest(
 					bestCombos[pairId] = { id: crew.id, score: pair.score };
 			}
 		}
+
 		crew.combos = combos;
 		crew.bestPair = bestPair;
-		crew.bestSkill = bestSkill;
+		crew.bestSkill = bestSkill;	
 	});
 
 	return bestCombos;
