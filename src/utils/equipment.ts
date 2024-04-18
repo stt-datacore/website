@@ -463,7 +463,8 @@ export function calcQLots(
 				value = Math.abs(skillbalance[outskills[0]].value - skillbalance[outskills[1]].value);
 			}
 			else {
-				value = Object.values(skillbalance).map(m => m.value).sort()[1];
+				let values = Object.values(skillbalance).map(m => m.value).sort();
+				value = Math.abs(values[2] - values[0]);
 			}
 			baldiff.push({
 				value,
@@ -477,12 +478,12 @@ export function calcQLots(
 			baldiff.sort((a, b) => {			
 				let r = b.skills.length - a.skills.length;
 				if (r) return r;
-				if (a.skills.length === 2) {
+				// if (a.skills.length === 2) {
 					r = a.value - b.value;
-				}
-				else {
-					r = b.value - a.value;
-				}
+				//}
+				// else {
+				// 	r = b.value - a.value;
+				// }
 				return r;
 			});
 
