@@ -7,7 +7,7 @@ import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps } from '../..
 import { CalculatorContext } from './context';
 import CrewPicker from '../../components/crewpicker';
 import { IEventScoredCrew } from '../eventplanner/model';
-import { computeEventBest } from '../../utils/events';
+import { computeEventBest, guessCurrentEventId } from '../../utils/events';
 
 interface ISelectOption {
 	key: string;
@@ -22,13 +22,16 @@ type CrewExcluderProps = {
 	updateExclusions: (crewIds: number[]) => void;
 };
 
+type SelectedBonusType = '' | 'all' | 'featured' | 'matrix';
+
 export const CrewExcluder = (props: CrewExcluderProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
 	const { events } = calculatorContext;
 	const { excludedCrewIds, updateExclusions } = props;
 
 	const [selectedEvent, setSelectedEvent] = React.useState<string>('');
-	const [selectedBonus, setSelectedBonus] = React.useState<string>('all');
+	const [phase, setPhase] = React.useState<string>('');
+	const [selectedBonus, setSelectedBonus] = React.useState<SelectedBonusType>('all');
 
 	const excludeQuipped = () => {
 		const quipped = props.rosterCrew.filter(f => !excludedCrewIds?.includes(f.id) && f.kwipment?.some(k => typeof k === 'number' ? !!k : !!k[1]))?.map(c => c.id);
@@ -37,27 +40,47 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 
 	React.useEffect(() => {
 		let activeEvent: string = '';
-		let activeBonus: string = 'all';
+		let activeBonus: SelectedBonusType = 'all';
+		let phase = '';
 		events.forEach(gameEvent => {
 			if (gameEvent && gameEvent.seconds_to_end > 0 && gameEvent.seconds_to_start < 86400) {
 				if (gameEvent.content_types.includes('shuttles') || gameEvent.content_types.includes('gather')) {
 					activeEvent = gameEvent.symbol;
+
+					let date = (new Date((new Date()).toLocaleString('en-US', { timeZone: 'America/New_York' })));
+					if (Array.isArray(gameEvent.content_types) && gameEvent.content_types.length === 2) {
+						if ((date.getDay() === 6 && date.getHours() >= 12) || date.getDay() <= 1) {
+							phase = gameEvent.content_types[1];
+						}
+						else {
+							phase = gameEvent.content_types[0];
+						}						
+					}
+					else {
+						phase = (gameEvent.content_types as any) as string;
+					}
+					if (phase === 'gather') {
+						activeBonus = 'matrix';
+					}
+					else if (phase === 'shuttles') {
+						activeBonus = 'all';
+					}
 					// if (!gameEvent.content_types.includes('shuttles')) activeBonus = 'featured';
 				}
 			}
 		});
+		setPhase(phase);
 		setSelectedEvent(activeEvent);
 		setSelectedBonus(activeBonus);
 	}, [events]);
 
 	React.useEffect(() => {
-		if (selectedEvent) {
+		if (selectedEvent && phase) {
 			const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 			if (activeEvent) {
-
-				if (selectedBonus === 'galaxy' && activeEvent.content_types?.includes('gather')) {
+				if (selectedBonus === 'matrix') {
 					let eventCrew = props.rosterCrew.map(m => m as IEventScoredCrew);
-					let combos = computeEventBest(eventCrew, activeEvent, 'gather', undefined, true, false);
+					let combos = computeEventBest(eventCrew, activeEvent, phase, undefined, true, false);
 					const crewIds = Object.values(combos).map(cb => cb.id);
 					updateExclusions([...new Set(crewIds)]);
 				}
@@ -73,7 +96,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		else {
 			updateExclusions([]);
 		}
-	}, [selectedEvent, selectedBonus]);
+	}, [selectedEvent, selectedBonus, phase]);
 
 	const eventOptions = [] as ISelectOption[];
 	events.forEach(gameEvent => {
@@ -99,7 +122,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 	if (selectedEvent) {
 		const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 		if (activeEvent?.content_types?.includes('gather')) {
-			bonusOptions.push({ key: 'galaxy', value: 'galaxy', text: 'Galaxy event matrix crew' });
+			bonusOptions.push({ key: 'matrix', value: 'matrix', text: 'Event skill matrix crew' });
 		}
 	}
 
@@ -132,7 +155,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 										selection
 										options={bonusOptions}
 										value={selectedBonus}
-										onChange={(e, { value }) => setSelectedBonus(value as string)}
+										onChange={(e, { value }) => setSelectedBonus(value as SelectedBonusType)}
 									/>
 								)}
 							</Form.Group>
