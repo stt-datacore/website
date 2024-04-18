@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Dropdown, Segment, Message, Button, Label, Image, Icon } from 'semantic-ui-react';
+import { Form, Dropdown, Segment, Message, Button, Label, Image, Icon, DropdownItemProps } from 'semantic-ui-react';
 
 import { IVoyageCrew } from '../../model/voyage';
 import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps } from '../../components/base/optionsmodal_base';
@@ -8,6 +8,8 @@ import { CalculatorContext } from './context';
 import CrewPicker from '../../components/crewpicker';
 import { IEventScoredCrew } from '../eventplanner/model';
 import { computeEventBest, guessCurrentEventId } from '../../utils/events';
+import { GlobalContext } from '../../context/globalcontext';
+import { crewCopy, oneCrewCopy } from '../../utils/crewutils';
 
 interface ISelectOption {
 	key: string;
@@ -26,12 +28,15 @@ type SelectedBonusType = '' | 'all' | 'featured' | 'matrix';
 
 export const CrewExcluder = (props: CrewExcluderProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
+	const globalContext = React.useContext(GlobalContext);
+
 	const { events } = calculatorContext;
 	const { excludedCrewIds, updateExclusions } = props;
 
 	const [selectedEvent, setSelectedEvent] = React.useState<string>('');
 	const [phase, setPhase] = React.useState<string>('');
 	const [selectedBonus, setSelectedBonus] = React.useState<SelectedBonusType>('all');
+	const [bestCombos, setBestCombos] = React.useState([] as number[]);
 
 	const excludeQuipped = () => {
 		const quipped = props.rosterCrew.filter(f => !excludedCrewIds?.includes(f.id) && f.kwipment?.some(k => typeof k === 'number' ? !!k : !!k[1]))?.map(c => c.id);
@@ -75,28 +80,33 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 	}, [events]);
 
 	React.useEffect(() => {
-		if (selectedEvent && phase) {
+		if (selectedEvent) {
 			const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 			if (activeEvent) {
-				if (selectedBonus === 'matrix') {
-					let eventCrew = props.rosterCrew.map(m => m as IEventScoredCrew);
-					let combos = computeEventBest(eventCrew, activeEvent, phase, undefined, true, false);
-					const crewIds = Object.values(combos).map(cb => cb.id);
-					updateExclusions([...new Set(crewIds)]);
-				}
-				else {
-					const crewIds = props.rosterCrew.filter(c =>
-						(selectedBonus === 'all' && activeEvent.bonus.includes(c.symbol))
-						|| (selectedBonus === 'featured' && activeEvent.featured.includes(c.symbol))
-					).sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
-					updateExclusions([...new Set(crewIds)]);
-				}
+				const crewIds = props.rosterCrew.filter(c => 
+					(selectedBonus === 'all' && activeEvent.bonus.includes(c.symbol))
+					|| (selectedBonus === 'featured' && activeEvent.featured.includes(c.symbol))
+					|| (selectedBonus === 'matrix' && bestCombos.includes(c.id))
+				).sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
+				updateExclusions([...new Set([...crewIds])]);
 			}
 		}
 		else {
 			updateExclusions([]);
 		}
-	}, [selectedEvent, selectedBonus, phase]);
+	}, [selectedEvent, selectedBonus, bestCombos]);
+
+	React.useEffect(() => {
+		if (selectedEvent && phase) {
+			const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
+			if (activeEvent) {
+				const rosterCrew = props.rosterCrew.map(m => ({ ...m } as IEventScoredCrew));
+				const combos = computeEventBest(rosterCrew, activeEvent, phase, undefined, true, false);
+				const crewIds = Object.values(combos).map(cb => cb.id);
+				setBestCombos(crewIds);
+			}
+		}
+	}, [selectedEvent, phase])
 
 	const eventOptions = [] as ISelectOption[];
 	events.forEach(gameEvent => {
@@ -119,6 +129,11 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		// { key: 'best', value: 'best', text: 'My best crew for event' }
 	];
 
+	const phaseOptions = [
+		{ key: 'gather', value: 'gather', text: 'Galaxy' },
+		{ key: 'shuttles', value: 'shuttles', text: 'Faction' },
+	] as DropdownItemProps[];
+	
 	if (selectedEvent) {
 		const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 		if (activeEvent?.content_types?.includes('gather')) {
@@ -156,6 +171,17 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 										options={bonusOptions}
 										value={selectedBonus}
 										onChange={(e, { value }) => setSelectedBonus(value as SelectedBonusType)}
+									/>
+								)}
+								{selectedEvent !== '' && selectedBonus === 'matrix' && (
+									<Form.Field
+										label='Phase type'
+										control={Dropdown}
+										fluid
+										selection
+										options={phaseOptions}
+										value={phase}
+										onChange={(e, { value }) => setPhase(value as string)}
 									/>
 								)}
 							</Form.Group>
