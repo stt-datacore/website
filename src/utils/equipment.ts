@@ -440,7 +440,7 @@ export function calcQLots(
 		});
 		
 		const numbers = qpcounts.map(qp => qp.item).flat().map(m => Number(m.kwipment_id as string));
-		const combos = makeAllCombos(numbers, undefined, undefined, undefined, 4).filter(c => c.length === 4);
+		const combos = makeAllCombos(numbers, undefined, undefined, undefined, slots).filter(c => c.length === slots);
 
 		const newmap = combos.map(cb => cb.map(co => ({ ... qpcounts.find(f => f.item.kwipment_id === co.toString()) as QpCount } as QpCount)));
 
@@ -472,29 +472,33 @@ export function calcQLots(
 			});
 		});
 
-		baldiff.sort((a, b) => {			
-			let r = b.skills.length - a.skills.length;
-			if (r) return r;
-			if (a.skills.length === 2) {
-				r = a.value - b.value;
-			}
-			else {
-				r = b.value - a.value;
-			}
-			return r;
-		});
+		if (baldiff?.length) {
 
-		baldiff[0].power.forEach((qp) => {
-			if (!qp?.bonuses?.length || !qp?.bonuses[0]?.skill) {
-				console.log("Problem with " + crew.symbol);
-				console.log(qp);
-				return;
-			}
+			baldiff.sort((a, b) => {			
+				let r = b.skills.length - a.skills.length;
+				if (r) return r;
+				if (a.skills.length === 2) {
+					r = a.value - b.value;
+				}
+				else {
+					r = b.value - a.value;
+				}
+				return r;
+			});
 
-			let skill = qp.bonuses[0].skill;
-			flots.lot[skill] ??= [];
-			flots.lot[skill].push(qp.item);
-		});
+			baldiff[0].power.forEach((qp) => {
+				if (!qp?.bonuses?.length || !qp?.bonuses[0]?.skill) {
+					console.log("Problem with " + crew.symbol);
+					console.log(qp);
+					return;
+				}
+	
+				let skill = qp.bonuses[0].skill;
+				flots.lot[skill] ??= [];
+				flots.lot[skill].push(qp.item);
+			});
+	
+		}
 
 		// Object.keys(lots.lot).forEach((skill) => {
 		// 	if (!(skill in lots.lot) || !lots.lot[skill].length) return;
