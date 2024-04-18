@@ -212,9 +212,9 @@ export const getOptCrew = (col: CollectionGroup, costMode: 'normal' | 'sale', se
     else {
         crewmap = col.uniqueCrew; // cols.map(c => c.crew).flat().concat(col.uniqueCrew);
         //crewmap = crewmap.filter((cz, idx) => crewmap.findIndex(cfi => cfi.symbol === cz.symbol) === idx);
-        if (combo === 'Healthy Discourse / A New Challenger Approaches / Convergence Day') {
-            console.log("here");
-        }
+        // if (combo === 'Healthy Discourse / A New Challenger Approaches / Convergence Day') {
+        //     console.log("here");
+        // }
         crewmap = findOptCombo(col, combo)?.crew.map(ncrew => crewmap.find(cr => cr.symbol === ncrew) as PlayerCrew) as PlayerCrew[];
 
         let max = cols.map(c => c.collection.needed ?? 0).reduce((p, n) => p + n, 0);			

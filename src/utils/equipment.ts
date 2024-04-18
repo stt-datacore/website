@@ -403,9 +403,9 @@ export function calcQLots(
 		}
 		
 		let maxskills = skills.length;
-		if (maxskills===3) {
-			console.log("here")
-		}
+		// if (maxskills===3) {
+		// 	console.log("here")
+		// }
 		crew.q_lots ??= { power: [], lot: {} };
 	
 		//let lots = crew.q_lots;
