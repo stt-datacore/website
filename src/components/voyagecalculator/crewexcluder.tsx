@@ -21,6 +21,7 @@ type CrewExcluderProps = {
 	rosterCrew: IVoyageCrew[];
 	preExcludedCrew: IVoyageCrew[];
 	excludedCrewIds: number[];
+	considerFrozen?: boolean;
 	updateExclusions: (crewIds: number[]) => void;
 };
 
@@ -31,7 +32,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 	const globalContext = React.useContext(GlobalContext);
 
 	const { events } = calculatorContext;
-	const { excludedCrewIds, updateExclusions } = props;
+	const { excludedCrewIds, updateExclusions, considerFrozen } = props;
 
 	const [selectedEvent, setSelectedEvent] = React.useState<string>('');
 	const [phase, setPhase] = React.useState<string>('');
@@ -100,13 +101,17 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		if (selectedEvent && phase) {
 			const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 			if (activeEvent) {
-				const rosterCrew = (globalContext.player.playerData?.player.character.crew ?? globalContext.core.crew).map(m => (oneCrewCopy(m) as IEventScoredCrew));
-				const combos = computeEventBest(rosterCrew, activeEvent, phase, undefined, true, false);
+				const rosterCrew = (globalContext.player.playerData?.player.character.crew ?? globalContext.core.crew)
+					.filter(f => !!considerFrozen || (f.id && f.id > 0))
+					.filter((c) => activeEvent.bonus.indexOf(c.symbol) >= 0)
+					.map(m => (oneCrewCopy(m) as IEventScoredCrew));
+				const combos = computeEventBest(rosterCrew, activeEvent, phase, globalContext.player.buffConfig, true, false);
 				const crewIds = Object.values(combos).map(cb => cb.id);
-				setBestCombos(crewIds);
+				let ftest = globalContext.player.playerData?.player.character.crew.filter(f => crewIds.includes(f.id));
+				setBestCombos([...new Set(crewIds)]);
 			}
 		}
-	}, [selectedEvent, phase])
+	}, [selectedEvent, selectedBonus, phase, considerFrozen])
 
 	const eventOptions = [] as ISelectOption[];
 	events.forEach(gameEvent => {
