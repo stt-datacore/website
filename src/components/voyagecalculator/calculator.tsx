@@ -490,6 +490,7 @@ const CrewOptions = (props: CrewOptionsProps) => {
 				</Grid.Column>
 				<Grid.Column>
 					<CrewExcluder
+						considerFrozen={considerFrozen}
 						rosterCrew={calculatorContext.crew}
 						preExcludedCrew={preExcludedCrew}
 						excludedCrewIds={excludedCrewIds}
