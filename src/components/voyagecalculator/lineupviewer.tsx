@@ -162,7 +162,19 @@ export const LineupViewer = (props: LineupViewerProps) => {
 };
 
 const PlayerViewPicker = (props: { dbid: string }) => {
-	const [layout, setLayout] = useStateWithStorage(props.dbid+'/voyage/layout', 'table-compact', { rememberForever: true });
+	let default_layout = 'table-compact';
+	if (window.location.search?.length) {
+		let search = new URLSearchParams(window.location.search);
+		if (search.has('layout')) {
+			let param_layer = search.get('layout');
+			if (param_layer && ['table-compact', 'table-standard', 'grid-cards', 'grid-icons'].includes(param_layer)) {
+				default_layout = param_layer;
+			}
+		}
+	}
+	
+	const [layout, setLayout] = useStateWithStorage(props.dbid+'/voyage/layout', default_layout, { rememberForever: true });
+
 	return (
 		<React.Fragment>
 			{(layout === 'table-compact' || layout === 'table-standard') && <TableView layout={layout} />}
