@@ -51,8 +51,11 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGl
                 if (!a) {
                     return 1;
                 }
-                else {
+                else if (!b) {
                     return -1;
+                }
+                else {
+                    return 0;
                 }
             }
             
@@ -123,7 +126,7 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGl
                                         cursor: "pointer",
                                         display: "grid",
                                         gridTemplateColumns: "80px auto",
-                                        gridTemplateAreas: `'icon name' 'footer footer'`,
+                                        gridTemplateAreas: `'icon name' 'footer footer' 'quip quip'`,
                                         gridGap: "1px",
                                     }}
                                 >
@@ -172,10 +175,19 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGl
                                             <div>{Math.round(100 * (seat.crewCount / crew.crewCount))}%</div>
                                         </div>)
                                     })}
-                                    
+                                    </div>
+                                    {/* <div style={{gridArea: 'quip', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'left'}}>
+                                        {!!crew.quipmentCounts && Object.entries(crew.quipmentCounts).map(([key, value]) => {
+                                            const quip = context.core.items.find(f => f.kwipment_id === key);
 
-                                </div>
-
+                                            return <div key={`${key}_${value}_${crew.symbol}`} style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'left'}}>
+                                                {!!quip && <><img style={{height: "1.5em"}} src={`${process.env.GATSBY_ASSETS_URL}${quip.imageUrl}`} />
+                                                <span>{quip.name} - {value.toLocaleString()}</span>
+                                                </>
+                                                }
+                                            </div>
+                                        })}
+                                    </div> */}
                                 </div>
                             </Table.Cell>
                         </Table.Row>
