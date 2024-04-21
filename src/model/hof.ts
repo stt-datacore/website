@@ -20,6 +20,7 @@ export interface VoyageStatEntry {
     startDate?: Date;
     endDate?: Date;
     seats: VoyageStatSeat[];
+    quipmentCounts?: { [key: string]: number };
 }
 
 export interface VoyageHOFState {
