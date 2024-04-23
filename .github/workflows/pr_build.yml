@@ -7,9 +7,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v2
         with:
           node-version: '18'
 
@@ -17,7 +17,7 @@ jobs:
         env:
           GATSBY_DATACORE_URL: https://datacore.app/
           GATSBY_ASSETS_URL: https://assets.datacore.app/
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v2
         with:
           install-command: yarn install
           start: yarn run develop
