@@ -20,9 +20,9 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           install-command: yarn install
+          wait-on: 'http://localhost:8881/'
+          wait-on-timeout: 240
           start: yarn run develop
-          # wait-on: 'http://localhost:8881/'
-          # wait-on-timeout: 240
 
       # after the test run completes
       # store videos and any screenshots
