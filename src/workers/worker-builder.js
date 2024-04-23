@@ -1,7 +1,7 @@
 //worker-builder.js
 // Create two versions; one for server-side rendering, the other for browser-based execution.
 let worker_class = undefined;
-if (typeof Worker !== 'undefined') {
+if (typeof window !== 'undefined') {
     class WorkerBuilder extends Worker {
         constructor(worker) {
             const code = worker.toString();
