@@ -1,8 +1,7 @@
 import React from "react";
 
 import '../../typings/worker';
-import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
-
+import { UnifiedWorker } from '../../typings/worker';
 import { GlobalContext } from "../../context/globalcontext";
 import { QuestSolverConfig, QuestSolverResult } from "../../model/worker";
 import { MissionChallenge, MissionTraitBonus, Quest, QuestFilterConfig } from "../../model/missions";

@@ -3,9 +3,7 @@ import React, { Component } from 'react';
 import { Checkbox, Dropdown, DropdownItemProps, Icon, Input, Pagination, Rating, SemanticWIDTHS, Table } from 'semantic-ui-react';
 
 
-import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
-import '../typings/worker';
-
+import { UnifiedWorker } from '../typings/worker';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 import { exportItemsAlt, getItemBonuses, isQuipmentMatch } from '../utils/itemutils';
 
