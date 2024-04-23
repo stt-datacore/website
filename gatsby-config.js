@@ -7,9 +7,9 @@ module.exports = {
 		baseUrl: 'https://datacore.app',
 		siteUrl: 'https://datacore.app'
 	},
-	// flags: {
-	// 	DEV_SSR: false
-	// },
+	flags: {
+		DEV_SSR: false
+	},
 	plugins: [
 		{
 			resolve: "@sentry/gatsby",
