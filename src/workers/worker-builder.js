@@ -1,4 +1,4 @@
-//woker-builder.js
+//worker-builder.js
 export default class WorkerBuilder extends Worker {
     constructor(worker) {
         const code = worker.toString();
