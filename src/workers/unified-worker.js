@@ -10,44 +10,6 @@ import CollectionOptimizer from './collectionworker.ts';
 import ItemsWorker from './itemsworker.ts';
 import QuestSolver from './questsolver.ts';
 
-// eslint-disable-next-line import/no-anonymous-default-export
-export default () => {
-    
-    // eslint-disable-next-line no-restricted-globals
-    self.onmessage = (message) => {
-        const postResult = (result, inProgress) => {
-            postMessage({ result, inProgress });
-            if (!inProgress) self.close();
-        };
-        const messageHandlers = {
-            'voyageEstimate': () => voyageEstimate(message.data.config, est => postResult(est, true)).then(estimate =>
-                postResult(estimate, false)
-            ),
-            'voyageEstimateExtended': () => voyageEstimateExtended(message.data.config, est => postResult(est, true)).then(estimate =>
-                postResult(estimate, false)
-            ),
-            'citeOptimizer': () => citeOptimizer(message.data.playerData, message.data.allCrew).then(data => postResult(data, false)),
-            'questSolver': () => QuestSolver.solveQuest(message.data.config).then(data => postResult(data, false)),
-            'ironywrit': () => BetaTachyon.scanCrew(message.data.config).then(data => postResult(data, false)),
-            'colOptimizer': () => CollectionOptimizer.scanAll(message.data.config).then(data => postResult(data, false)),
-            'equipmentWorker': () => ItemsWorker.processItems(message.data.config).then(data => postResult(data, false)),
-            'iampicard': () => voymod().then(mod => {
-                let result = mod.calculate(JSON.stringify(message.data), res => {
-                    postResult(res, true);
-                });
-                postResult(result, false);
-            }),
-            'ussjohnjay': () => voyagers.forDataCore(message.data, postResult, transwarp.getEstimate)
-        };
-
-        //console.log(message.data.worker);
-
-        messageHandlers[message.data.worker]();
-        // postMessage(result);
-    };
-};
-
-
 // This worker can estimate a single lineup from input config
 const voyageEstimate = (config, progress) => {
     return new Promise((resolve, reject) => {
@@ -99,4 +61,39 @@ const citeOptimizer = (playerData, allCrew) => {
             crewToTrain: Optimizer.rankedCrewToTrain
         });
     });
+};
+
+
+
+// eslint-disable-next-line no-restricted-globals
+self.onmessage = (message) => {
+    const postResult = (result, inProgress) => {
+        postMessage({ result, inProgress });
+        if (!inProgress) self.close();
+    };
+    const messageHandlers = {
+        'voyageEstimate': () => voyageEstimate(message.data.config, est => postResult(est, true)).then(estimate =>
+            postResult(estimate, false)
+        ),
+        'voyageEstimateExtended': () => voyageEstimateExtended(message.data.config, est => postResult(est, true)).then(estimate =>
+            postResult(estimate, false)
+        ),
+        'citeOptimizer': () => citeOptimizer(message.data.playerData, message.data.allCrew).then(data => postResult(data, false)),
+        'questSolver': () => QuestSolver.solveQuest(message.data.config).then(data => postResult(data, false)),
+        'ironywrit': () => BetaTachyon.scanCrew(message.data.config).then(data => postResult(data, false)),
+        'colOptimizer': () => CollectionOptimizer.scanAll(message.data.config).then(data => postResult(data, false)),
+        'equipmentWorker': () => ItemsWorker.processItems(message.data.config).then(data => postResult(data, false)),
+        'iampicard': () => voymod().then(mod => {
+            let result = mod.calculate(JSON.stringify(message.data), res => {
+                postResult(res, true);
+            });
+            postResult(result, false);
+        }),
+        'ussjohnjay': () => voyagers.forDataCore(message.data, postResult, transwarp.getEstimate)
+    };
+
+    //console.log(message.data.worker);
+
+    messageHandlers[message.data.worker]();
+    // postMessage(result);
 };

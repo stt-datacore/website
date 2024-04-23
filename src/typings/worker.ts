@@ -1,21 +1,26 @@
 
-import { WorkerBuilder } from '../workers/worker-builder';
-import Worker from '../workers/unified-worker';
-
-const instance = new WorkerBuilder(Worker);
-
 export class UnifiedWorker {
     
+    private instance: Worker | undefined = undefined;
+
+    private ensureWorker() {
+        if (!this.instance && typeof window !== 'undefined') {
+            this.instance = new Worker(new URL('../workers/unified-worker.js', import.meta.url))
+        }
+    }
+    
     addEventListener(event: keyof WorkerEventMap, method: (data: any) => void) {
-        instance?.addEventListener(event, method);
+        this.ensureWorker();
+        this.instance?.addEventListener(event, method);
     }
 
     postMessage(data: any) {
-        instance?.postMessage(data);
+        this.ensureWorker();
+        this.instance?.postMessage(data);
     }
 
-    terminate() {
-        instance?.terminate();
+    terminate() {        
+        this.instance?.terminate();
     }
   
 }
