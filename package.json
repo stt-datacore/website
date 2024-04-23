@@ -29,9 +29,9 @@
     "@nivo/radar": "^0.85.1",
     "@nivo/sunburst": "^0.85.1",
     "@sentry/gatsby": "^7.109.0",
+    "easymde": "^2.18.0",
     "exceljs": "^4.4.0",
-    "gatsby": "^5.13.3",
-    "gatsby-core-utils": "^4.14.0-next.2",
+    "gatsby": "^5.13.4",
     "gatsby-plugin-manifest": "^5.13.1",
     "gatsby-plugin-purge-cloudflare-cache": "^0.0.3",
     "gatsby-plugin-react-helmet": "^6.13.1",
@@ -58,7 +58,6 @@
     "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^2.1.5",
     "tinycolor2": "^1.6.0",
-    "worker-loader": "^3.0.8",
     "write": "^2.0.0"
   },
   "repository": {
@@ -69,7 +68,6 @@
     "url": "https://github.com/stt-datacore/website/issues"
   },
   "devDependencies": {
-    "@types/marked": "^6.0.0",
     "@types/react-helmet": "^6.1.11",
     "@types/tinycolor2": "^1.4.6",
     "@types/uuid": "^9.0.8",
