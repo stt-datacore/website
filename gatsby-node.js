@@ -111,6 +111,7 @@ exports.onCreateWebpackConfig = ({ stage, loaders, actions, getConfig }) => {
 	}
 
 	const config = getConfig();
+	config.node = { global: false };
 	//TODO: more testing
 	//config.output.globalObject = 'this';
 	actions.replaceWebpackConfig(config);

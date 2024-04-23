@@ -1,5 +1,5 @@
-//unified-worker.js
 /* eslint-disable */
+//unified-worker.js
 import voymod from './voymod.js';
 import transwarp from './transwarp.js';
 import sporedrive from './sporedrive.js';
@@ -9,8 +9,10 @@ import BetaTachyon from './betatachyon.ts';
 import CollectionOptimizer from './collectionworker.ts';
 import ItemsWorker from './itemsworker.ts';
 import QuestSolver from './questsolver.ts';
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
+    
     // eslint-disable-next-line no-restricted-globals
     self.onmessage = (message) => {
         const postResult = (result, inProgress) => {
@@ -98,4 +100,3 @@ const citeOptimizer = (playerData, allCrew) => {
         });
     });
 };
-
