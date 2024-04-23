@@ -21,8 +21,8 @@ jobs:
         with:
           install-command: yarn install
           start: yarn run develop
-          wait-on: 'http://localhost:8881/'
-          wait-on-timeout: 240
+          # wait-on: 'http://localhost:8881/'
+          # wait-on-timeout: 240
 
       # after the test run completes
       # store videos and any screenshots
