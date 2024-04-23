@@ -58,6 +58,7 @@
     "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^2.1.5",
     "tinycolor2": "^1.6.0",
+    "uuid": "^9.0.1",
     "write": "^2.0.0"
   },
   "repository": {
