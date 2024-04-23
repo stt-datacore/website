@@ -71,7 +71,7 @@
     "@types/react-helmet": "^6.1.11",
     "@types/tinycolor2": "^1.4.6",
     "@types/uuid": "^9.0.8",
-    "cypress": "^13.7.2",
+    "cypress": "^13.8.0",
     "dotenv": "^16.4.5",
     "showdown": "^2.1.0",
     "start-server-and-test": "^2.0.3"
