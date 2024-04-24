@@ -3,9 +3,7 @@ import { IVoyageCalcConfig, IVoyageHistory, ITrackedVoyage, ITrackedAssignment, 
 import { Estimate } from '../../model/worker';
 import CONFIG from '../CONFIG';
 import { flattenEstimate } from '../../utils/voyageutils';
-import '../../typings/worker';
-import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
-
+import { UnifiedWorker } from '../../typings/worker';
 export const defaultHistory = {
 	voyages: [],
 	crew: {}

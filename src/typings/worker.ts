@@ -1,14 +1,26 @@
-declare module "worker-loader!*" {
-  // You need to change `Worker`, if you specified a different value for the `workerType` option
-  
-  /**
-   * Unified Worker for various voyage calculations
-   */
-  class UnifiedWorker extends Worker {
-    constructor();
-  }
 
-  // Uncomment this if you set the `esModule` option to `false`
-  // export = WebpackWorker;
-  export default UnifiedWorker;
+export class UnifiedWorker {
+    
+    private instance: Worker | undefined = undefined;
+
+    private ensureWorker() {
+        if (!this.instance && typeof window !== 'undefined') {
+            this.instance = new Worker(new URL('../workers/unified-worker.js', import.meta.url))
+        }
+    }
+    
+    addEventListener(event: keyof WorkerEventMap, method: (data: any) => void) {
+        this.ensureWorker();
+        this.instance?.addEventListener(event, method);
+    }
+
+    postMessage(data: any) {
+        this.ensureWorker();
+        this.instance?.postMessage(data);
+    }
+
+    terminate() {        
+        this.instance?.terminate();
+    }
+  
 }

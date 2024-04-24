@@ -97,10 +97,10 @@ exports.onCreateWebpackConfig = ({ stage, loaders, actions, getConfig }) => {
 		actions.setWebpackConfig({
 			module: {
 				rules: [
-					{
-						test: /unifiedWorker\.js$/,
-						use: { loader: 'worker-loader' }
-					},
+					// {
+					// 	test: /unifiedWorker\.js$/,
+					// 	use: { loader: 'worker-loader' }
+					// },
 					{
 						test: /exceljs/,
 						use: loaders.null()

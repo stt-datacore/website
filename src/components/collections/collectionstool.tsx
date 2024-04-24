@@ -2,9 +2,7 @@ import { Link } from 'gatsby';
 import React from 'react';
 import { Checkbox, Dropdown, DropdownItemProps, Form, Header, Icon, Popup, Rating, Step, Table } from 'semantic-ui-react';
 
-import '../../typings/worker';
-import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
-
+import { UnifiedWorker } from '../../typings/worker';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 
 import { GlobalContext } from '../../context/globalcontext';

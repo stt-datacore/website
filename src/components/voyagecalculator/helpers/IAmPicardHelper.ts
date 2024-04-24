@@ -1,5 +1,5 @@
 import '../../../typings/worker';
-import UnifiedWorker from 'worker-loader!../../../workers/unifiedWorker';
+import { UnifiedWorker } from '../../../typings/worker';
 import CONFIG from '../../CONFIG';
 import { CalcResult, Aggregates, CalcResultEntry as VoyageSlotEntry, VoyageStatsConfig, AggregateSkill, ExportCrew, GameWorkerOptions } from '../../../model/worker';
 import { CalculatorState } from './calchelpers';
