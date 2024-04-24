@@ -18,6 +18,7 @@ module.exports = {
 		`gatsby-transformer-json`,
 		`gatsby-plugin-react-helmet`,
 		`gatsby-plugin-remove-fingerprints`,
+		`gatsby-plugin-typescript`,
 		`gatsby-plugin-sitemap`,
 		{
 			resolve: 'gatsby-transformer-remark',
