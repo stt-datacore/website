@@ -1,12 +1,12 @@
 import React from 'react';
 import { Button, Icon, Divider } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
-import marked from 'marked';
 
 import { CrewMember } from '../../model/crew';
 import { CrewPresenter } from '../../components/item_presenters/crew_presenter';
 import { ClassicPresenter } from '../../components/item_presenters/classic_presenter';
 import { DEFAULT_MOBILE_WIDTH } from '../../components/hovering/hoverstat';
+import { marked } from 'marked';
 
 type StandardViewProps = {
 	selectedCrew: string[];
