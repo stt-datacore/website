@@ -37,9 +37,9 @@ const forDataCore = (input, output, chewable) => {
 		let ps, ss, others = [];
 		for (let iSkill = 0; iSkill < SKILLS.length; iSkill++) {
 			let aggregate = lineup.skills[SKILLS[iSkill]];
-			if (SKILLS[iSkill] == voyage.skills.primary_skill)
+			if (SKILLS[iSkill] === voyage.skills.primary_skill)
 				ps = aggregate;
-			else if (SKILLS[iSkill] == voyage.skills.secondary_skill)
+			else if (SKILLS[iSkill] === voyage.skills.secondary_skill)
 				ss = aggregate;
 			else
 				others.push(aggregate);
@@ -267,9 +267,9 @@ class Voyagers {
 				let dProficiency = crewSkills[skillId].range_min +
 									(crewSkills[skillId].range_max-crewSkills[skillId].range_min)/2;
 				let dSkillScore = crewSkills[skillId].core+iLuckFactor*dProficiency;
-				if (skillId == skills.primary_skill)
+				if (skillId === skills.primary_skill)
 					dPrimaryScore = dSkillScore;
-				else if (skillId == skills.secondary_skill)
+				else if (skillId === skills.secondary_skill)
 					dSecondaryScore = dSkillScore;
 				else
 					dOtherScore += dSkillScore;
@@ -277,7 +277,7 @@ class Voyagers {
 					rTraitSlots[iSkill*2] = 1;
 				if (this.crew[i].traits.indexOf(traits[(iSkill*2)+1]) >= 0)
 					rTraitSlots[(iSkill*2)+1] = 1;
-				if (skillId == "engineering_skill" || skillId == "science_skill" || skillId == "medicine_skill")
+				if (skillId === "engineering_skill" || skillId === "science_skill" || skillId === "medicine_skill")
 					bGeneralist = false;
 				if (options.strategy === 'peak-antimatter') {
 					if (rTraitSlots[iSkill*2] === 0) rViableSlots[iSkill*2] = 0;
@@ -348,7 +348,7 @@ class Voyagers {
 								rejectLineup("Warning: MVAM vector failed to construct a valid voyage with the requested boosts.");
 
 							// Stop looking for lineups if vector has generated enough uniques or reached max attempts
-							if ((iAttempts >= minAttempts && iUniques >= minUniques) || iAttempts == maxAttempts) {
+							if ((iAttempts >= minAttempts && iUniques >= minUniques) || iAttempts === maxAttempts) {
 								resolveVector(vectorId);
 								doneWithVector = true;
 							}
@@ -377,7 +377,7 @@ class Voyagers {
 					};
 
 					// Only track unique lineups, but also track all vectors that generate them
-					let existing = self.uniques.find((unique) => unique.uniqueId == lineup.key);
+					let existing = self.uniques.find((unique) => unique.uniqueId === lineup.key);
 					if (existing) {
 						existing.vectors.push(vector);
 						// Use lineup order with higher AM if available
@@ -391,7 +391,7 @@ class Voyagers {
 						if (debug) {
 							let sLineup = "";
 							for (let i = 0; i < lineup.crew.length; i++) {
-								if (sLineup != "") sLineup += ", ";
+								if (sLineup !== "") sLineup += ", ";
 								sLineup += lineup.crew[i].name + " (" + lineup.crew[i].score.toFixed(1) + ")";
 							}
 							debug(
@@ -460,7 +460,7 @@ class Voyagers {
 			let open_ideal = [], open_viable = [], occupied_ideal = [], occupied_viable = [];
 			for (let i = 0; i < 12; i++) {
 				if (!seeker.viable_slots[i]) continue;
-				if (assignments[i].id != "") {
+				if (assignments[i].id !== "") {
 					occupied_viable.push(i);
 					if (seeker.trait_slots[i]) occupied_ideal.push(i);
 				}
@@ -541,7 +541,7 @@ class Voyagers {
 
 		function doAssign(assignments, seeker, iAssignment, sPrefix = "") {
 			let sIdeal = seeker.trait_slots[iAssignment] ? "ideal " : "";
-			let sOpen = assignments[iAssignment].id == "" ? "open ": "";
+			let sOpen = assignments[iAssignment].id === "" ? "open ": "";
 			assemblyLog += "\n" + sPrefix + seeker.name + " (" + seeker.score + ") accepts " + sIdeal + "assignment in " + sOpen + "slot " + iAssignment;
 			assignments[iAssignment] = seeker;
 			assignments[iAssignment].assignment = iAssignment;
@@ -580,13 +580,13 @@ class Voyagers {
 			let testScore = boostedScores.shift();
 
 			// Volunteer is already assigned, list other matching slots as alts
-			let repeat = assignments.find(assignee => assignee.id == testScore.id);
+			let repeat = assignments.find(assignee => assignee.id === testScore.id);
 			if (repeat) {
 				assemblyLog += "\n~ " + repeat.name + " (" + testScore.score + ") is already assigned to slot " + repeat.assignment + " (" + repeat.score + ") ~";
 				continue;
 			}
 
-			let volunteer = primedRoster.find(primed => primed.id == testScore.id);
+			let volunteer = primedRoster.find(primed => primed.id === testScore.id);
 			volunteer.score = testScore.score;
 
 			if (tryToAssign(assignments, volunteer, testScore.isIdeal, testScore.isIdeal)) {
@@ -602,8 +602,8 @@ class Voyagers {
 			}
 		}
 
-		if (iAssigned == 12)
-			return new VoyagersLineup(assignments);
+		if (iAssigned === 12)
+			return new VoyagersLineup(assignments, this.config.debugCallback ? assemblyLog : "");
 
 		return false;
 	}
@@ -877,7 +877,7 @@ class VoyagersEstimates {
 		let log = '===== Estimates =====';
 		let csv = fields.join('\t');
 		estimates.forEach((estimate) => {
-			const lineup = this.lineups.find((l) => l.key == estimate.key);
+			const lineup = this.lineups.find((l) => l.key === estimate.key);
 			const vector = this.getBestVector(lineup);
 			log += '\n* '+vector.id+'-'+vector.attempt+': ' +
 				estimate.estimate.refills[0].result.toFixed(3) +
@@ -920,7 +920,7 @@ class VoyagersSorted {
 				const sorted = self.estimates.sort((a, b) => sorter(a, b, method));
 				for (let i = 0; i < Math.min(limit, self.estimates.length); i++) {
 					const bestEstimate = sorted[i];
-					const bestLineup = self.lineups.find((lineup) => lineup.key === bestEstimate.key);
+					// const bestLineup = self.lineups.find((lineup) => lineup.key === bestEstimate.key);
 					if (!bestKeys.includes(bestEstimate.key)) bestKeys.push(bestEstimate.key);
 				}
 			});
