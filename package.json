@@ -2,7 +2,7 @@
   "name": "stt-data-core",
   "description": "STT DataCore",
   "author": "ussjohnjay/ironyWrit",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "license": "MIT",
   "scripts": {
     "build": "gatsby build",
