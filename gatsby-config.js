@@ -7,9 +7,6 @@ module.exports = {
 		baseUrl: 'https://datacore.app',
 		siteUrl: 'https://datacore.app'
 	},
-	flags: {
-		DEV_SSR: false
-	},
 	plugins: [
 		{
 			resolve: "@sentry/gatsby",
@@ -21,8 +18,8 @@ module.exports = {
 		`gatsby-transformer-json`,
 		`gatsby-plugin-react-helmet`,
 		`gatsby-plugin-remove-fingerprints`,
-		`gatsby-plugin-sitemap`,
 		`gatsby-plugin-typescript`,
+		`gatsby-plugin-sitemap`,
 		{
 			resolve: 'gatsby-transformer-remark',
 			options: {

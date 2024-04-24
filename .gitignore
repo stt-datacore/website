@@ -5,6 +5,7 @@
 .vscode/
 yarn-debug.log
 yarn-error.log
+.yarn*
 
 node_modules/
 # typings/
@@ -17,7 +18,6 @@ public_web
 public_old
 schema.json
 schema.graphql
-
 
 # VS Code Dev Environment
 .vscode/

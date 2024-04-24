@@ -1,5 +1,4 @@
-import '../../../typings/worker';
-import UnifiedWorker from 'worker-loader!../../../workers/unifiedWorker';
+import { UnifiedWorker } from '../../../typings/worker';
 import { IVoyageInputConfig, IVoyageCrew } from '../../../model/voyage';
 import { CalcResult, GameWorkerOptions, VoyageConsideration } from '../../../model/worker';
 import { CalculatorState } from './calchelpers';

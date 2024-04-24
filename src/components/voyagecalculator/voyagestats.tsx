@@ -5,7 +5,7 @@ import { isMobile } from 'react-device-detect';
 import { LineupViewer } from './lineupviewer';
 import ItemDisplay from '../itemdisplay';
 
-import Worker from 'worker-loader!../../workers/unifiedWorker';
+import { UnifiedWorker as Worker } from '../../typings/worker';
 import { ResponsiveLineCanvas } from '@nivo/line';
 import themes from '../nivo_themes';
 import { PlayerCrew, PlayerData, PlayerEquipmentItem, Reward, Voyage } from '../../model/player';

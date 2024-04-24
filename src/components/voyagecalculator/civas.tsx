@@ -5,8 +5,7 @@ import { Voyage } from '../../model/player';
 import { Estimate } from '../../model/worker';
 import { IVoyageCalcConfig } from '../../model/voyage';
 import CONFIG from '../CONFIG';
-import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
-
+import { UnifiedWorker } from '../../typings/worker';
 type CIVASMessageProps = {
 	voyageConfig: IVoyageCalcConfig | Voyage;
 	estimate?: Estimate;
