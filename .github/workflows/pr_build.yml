@@ -7,21 +7,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
         with:
-          node-version: '16'
+          node-version: '18'
 
       - name: Run cypress tests
         env:
           GATSBY_DATACORE_URL: https://datacore.app/
           GATSBY_ASSETS_URL: https://assets.datacore.app/
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v6
         with:
-          start: yarn run develop
+          install-command: yarn install
           wait-on: 'http://localhost:8881/'
           wait-on-timeout: 240
+          start: yarn run develop
 
       # after the test run completes
       # store videos and any screenshots

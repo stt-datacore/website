@@ -9,8 +9,7 @@ import { CalcResult, Calculation, Estimate, GameWorkerOptions, VoyageConsiderati
 import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
 import { formatTime, flattenEstimate, BuffStatTable } from '../../utils/voyageutils';
-import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
-
+import { UnifiedWorker } from '../../typings/worker';
 import { CalculatorContext } from './context';
 import { CrewThemes } from './crewthemes';
 import { CrewExcluder } from './crewexcluder';

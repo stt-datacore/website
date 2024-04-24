@@ -894,7 +894,7 @@ class VoyagersEstimates {
 				lineup.skills[this.voyage.skills.secondary_skill].voyage,
 				lineup.projection.ticks,
 				lineup.projection.amBalance.toFixed(3),
-				vectors.length,
+				vector.length,
 				vector.primeFactor,
 				vector.proximity.toFixed(3)
 			];
