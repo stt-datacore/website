@@ -529,7 +529,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	outputcrew.forEach(f => {
 		f.highest_owned_rarity = maxxed.maxowned;
 		f.highest_owned_level = maxxed.maxlevel;
-		if (quipment) calcQLots(f, quipment, buffConfig, !f.have);
+		//if (quipment) calcQLots(f, quipment, buffConfig, !f.have);
 	});
 
 	return outputcrew;
