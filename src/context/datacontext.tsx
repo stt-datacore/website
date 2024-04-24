@@ -248,7 +248,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			}
 			if (unsatisfied.includes('items') && unsatisfied.includes('crew') && unsatisfied.includes('all_buffs')) {
 				postProcessQuipmentScores(newData.crew, newData.items);
-				calculateQPower(newData.crew, newData.items, newData.all_buffs);
+				//calculateQPower(newData.crew, newData.items, newData.all_buffs);
 				newData.topQuipmentScores = calculateTopQuipment(newData.crew);
 			}
 			if (newData?.crew?.length && unsatisfied.some(u => u.startsWith("translation_"))) {
