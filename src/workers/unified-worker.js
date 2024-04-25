@@ -96,7 +96,7 @@ self.onmessage = (message) => {
             crew.forEach((crew) => {
                 calcQLots(crew, quipment, buffs, max_qbits, slots);
             });            
-            postResult([ ... crew ], false);
+            postResult(crew, false);
         }
     };
 
