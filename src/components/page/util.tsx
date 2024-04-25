@@ -208,7 +208,7 @@ export function getAllOptions(menu: NavItem[], current?: NavItem[]) {
             output.push(item);
         }
     }
-    return output;
+    return [ ...new Set(output)];
 }
 
 export function settingsToPermalink(options: string[], mobileoptions: string[]) {
