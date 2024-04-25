@@ -215,26 +215,11 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 
 	const [showBase, setShowBase] = React.useState<boolean>(false);
 
-	const [viewOptions, internalSetViewOptions] = useStateWithStorage<Object>(pageId+'/tools', {}, { rememberForever: true });
-
 	const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>('/quipmentTools/pstMode', false, { rememberForever: true });
 	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
 
 	const quipment = globalContext.core.items.filter(f => f.type === 14 && !!f.max_rarity_requirement).map(m => getItemWithBonus(m));
-
-	const getViewOptions = <T extends Object>(id: TableView) => {		
-		if (id in viewOptions) {
-			return viewOptions[id] as T;
-		}
-		return undefined;
-	}
-
-	const setViewOptions = <T extends Object>(id: TableView, value: T) => {
-		const newoptions = { ...viewOptions };
-		newoptions[id] = value;
-		internalSetViewOptions(newoptions);
-	}
 
 	const getActiveBuffs = () => {
 		if (buffMode === 'none' || !buffMode) return undefined;
