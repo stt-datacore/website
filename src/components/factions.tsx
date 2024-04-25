@@ -4,23 +4,23 @@ import { Faction } from '../model/player';
 import { GlobalContext } from '../context/globalcontext';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 
-const factionImageLocations = [
-  'federation',
-  'klingon',
-  'bajoran',
-  'cardassian',
-  'maquis',
-  'ferengialliance',
-  'ferengitraditionalist',
-  'augments',
-  'romulan',
-  'terran',
-  'klingoncardassian',
-  'section31',
-  'hirogen',
-  'dominion',
-  'borg'
-];
+const factionImageLocations = {
+  12: 'federation',
+  1: 'klingon',
+  8: 'bajoran',
+  4: 'cardassian',
+  5: 'maquis',
+  3: 'ferengialliance',
+  7: 'ferengitraditionalist',
+  2: 'augments',
+  13: 'romulan',
+  11: 'terran',
+  14: 'klingoncardassian',
+  9: 'section31',
+  10: 'hirogen',
+  6: 'dominion',
+  20: 'borg'
+};
 
 const oddsValues = [14].concat(Array.from({length: 9}, (_, i) => (i+3)*5));
 
@@ -203,7 +203,7 @@ class FactionInfo extends PureComponent<ShuttleInfoProps, ShuttleInfoState> {
 
             return (
               <Table.Row key={index}>
-                <Table.Cell><span><Image floated='left' size='mini' src={`${process.env.GATSBY_ASSETS_URL}icons_icon_faction_${factionImageLocations[index]}.png`} />{faction.name}</span></Table.Cell>
+                <Table.Cell><span><Image floated='left' size='mini' src={`${process.env.GATSBY_ASSETS_URL}icons_icon_faction_${factionImageLocations[faction.id]}.png`} />{faction.name}</span></Table.Cell>
                 <Table.Cell>{this._reputations(faction.reputation)}</Table.Cell>
                 <Table.Cell>
                   {faction.reputation < 980 && <p>{shuttlesNeededToMaxRep} successful missions</p>}
