@@ -218,6 +218,8 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 	const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>('/quipmentTools/pstMode', false, { rememberForever: true });
 	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
+	
+	const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>(undefined);
 
 	const quipment = globalContext.core.items.filter(f => f.type === 14 && !!f.max_rarity_requirement).map(m => getItemWithBonus(m));
 
@@ -302,7 +304,12 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			spinText: 'Calculating quipment...',
 			worker: (crew: IRosterCrew[]) => {				
 				return new Promise((resolve, reject) => {
-					const worker = new UnifiedWorker();
+
+					if (currentWorker) {
+						currentWorker.terminate();
+					}
+					
+					let worker = new UnifiedWorker();
 					worker.addEventListener('message', (result) => {
 						resolve(result.data.result);
 					});
@@ -317,6 +324,8 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 							slots	
 						}
 					});
+
+					setCurrentWorker(worker);
 				});
 			},
 			form: <QuipmentToolsFilter 
