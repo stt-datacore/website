@@ -9,6 +9,7 @@ import BetaTachyon from './betatachyon.ts';
 import CollectionOptimizer from './collectionworker.ts';
 import ItemsWorker from './itemsworker.ts';
 import QuestSolver from './questsolver.ts';
+import { calcQLots } from '../utils/equipment.ts';
 
 // This worker can estimate a single lineup from input config
 const voyageEstimate = (config, progress) => {
@@ -89,7 +90,14 @@ self.onmessage = (message) => {
             });
             postResult(result, false);
         }),
-        'ussjohnjay': () => voyagers.forDataCore(message.data, postResult, transwarp.getEstimate)
+        'ussjohnjay': () => voyagers.forDataCore(message.data, postResult, transwarp.getEstimate),
+        'qpower': () => {
+            const { crew, quipment, buffs, max_qbits, slots } = message.data.config;
+            crew.forEach((crew) => {
+                calcQLots(crew, quipment, buffs, max_qbits, slots);
+            });            
+            postResult([ ... crew ], false);
+        }
     };
 
     //console.log(message.data.worker);
