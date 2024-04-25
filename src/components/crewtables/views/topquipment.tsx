@@ -220,7 +220,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
 
     const printCell = (skill: string | number, multi_mode?: boolean) => {
         let power_sum = undefined as { [key: string]: Skill } | undefined;
-        let lot = q_lots as PowerLot | undefined;
+        let lot: PowerLot | undefined = q_lots ?? { lot: {} };
         
         if (typeof skill === 'number') {
             if (multi_mode) {
@@ -286,7 +286,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
             lot.lot[skill] = crew.q_lots.lot[skill];
         }
 
-        return lot && <div style={{
+        return !!lot?.lot && <div style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
