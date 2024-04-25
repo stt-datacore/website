@@ -1,3 +1,6 @@
+// Deprecated in favor of TypeScript equivalent
+//	Keep for archival purposes
+
 // Voyage calculation inspired by TemporalAgent7 and IAmPicard before that
 //  https://github.com/stt-datacore/website
 //  https://github.com/iamtosk/StarTrekTimelinesSpreadsheet

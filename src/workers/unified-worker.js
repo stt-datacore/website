@@ -3,7 +3,7 @@
 import voymod from './voymod.js';
 import transwarp from './transwarp.js';
 import sporedrive from './sporedrive.js';
-import voyagers from './voyagers.js';
+import VoyagersWorker from './voyagers.ts';
 import Optimizer from './optimizer.js';
 import BetaTachyon from './betatachyon.ts';
 import CollectionOptimizer from './collectionworker.ts';
@@ -28,14 +28,14 @@ const voyageEstimateExtended = (config, progress) => {
 };
 
 /**
- * 
- * @param {import('../model/player.js').PlayerData} playerData 
- * @param {import('../model/crew.js').CrewMember[]} allCrew 
- * @returns 
+ *
+ * @param {import('../model/player.js').PlayerData} playerData
+ * @param {import('../model/crew.js').CrewMember[]} allCrew
+ * @returns
  */
 const citeOptimizer = (playerData, allCrew) => {
     /**
-     * @param {import('../model/player.js').PlayerCrew} c 
+     * @param {import('../model/player.js').PlayerCrew} c
      */
     const isImmortal = (c) => {
         return c.level === 100 && c.equipment?.length === 4 && c.rarity === c.max_rarity;
@@ -90,12 +90,12 @@ self.onmessage = (message) => {
             });
             postResult(result, false);
         }),
-        'ussjohnjay': () => voyagers.forDataCore(message.data, postResult, transwarp.getEstimate),
+        'ussjohnjay': () => VoyagersWorker(message.data, postResult, transwarp.getEstimate),
         'qpower': () => {
             const { crew, quipment, buffs, max_qbits, slots } = message.data.config;
             crew.forEach((crew) => {
                 calcQLots(crew, quipment, buffs, max_qbits, slots);
-            });            
+            });
             postResult(crew, false);
         }
     };
