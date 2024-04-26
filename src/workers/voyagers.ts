@@ -15,7 +15,7 @@ import { EstimateLineups } from './voyagers/estimator';
 import { VoyagersLineup } from './voyagers/lineup';
 import { SortLineups } from './voyagers/sorter';
 
-const DEBUGGING: boolean = true;
+const DEBUGGING: boolean = false;
 
 type InputType = {
 	voyage_description: IVoyageInputConfig;
