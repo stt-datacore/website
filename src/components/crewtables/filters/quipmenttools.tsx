@@ -85,12 +85,12 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 		{
 			key: 'normal',
 			value: 'all',
-			text: 'Base and Proficiencies'
+			text: 'Core and Proficiencies'
 		},
 		{
 			key: 'base',
 			value: 'core',
-			text: 'Base'
+			text: 'Core'
 		},
 		{
 			key: 'prof',
