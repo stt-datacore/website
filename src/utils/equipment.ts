@@ -432,11 +432,19 @@ export function calcQLots(
 				let f = qpcounts.find(f => f.item === item);
 				if (!f) {
 					let bonuses = Object.values(crewQuipment.find(f => f.item === item)?.bonusInfo.bonuses ?? {});
-					qpcounts.push({
-						item,
-						count: 1,
-						bonuses: bonuses.filter(fb => fb.skill === skill)
-					})
+					let filterb = bonuses.filter(fb => {
+						if (fb.skill !== skill) return false;
+						if (cmode === 'core' && fb.core === 0) return false;
+						if (cmode === 'proficiency' && fb.range_max === 0 && fb.range_min === 0) return false;
+						return true;
+					});
+					if (filterb?.length) {
+						qpcounts.push({
+							item,
+							count: 1,
+							bonuses: filterb
+						});
+					}
 				}
 				else {
 					f.count++;
@@ -590,6 +598,10 @@ export function calcQLots(
 			
 			for (let i = 0; i < slots; i++) {                
 				if (i < skq.length) {
+					if (cmode === 'proficiency' && skq[i].skill.range_max === 0 && skq[i].skill.range_min === 0) continue;
+					else if (cmode === 'core' && skq[i].skill.core === 0) continue;
+					else if (cmode === 'all' && skq[i].skill.core === 0 && skq[i].skill.range_max === 0 && skq[i].skill.range_min === 0) continue;
+					
 					q_lots[skill].push(skq[i].item);
 					
 					q_power[skill].core += skq[i].skill.core;
