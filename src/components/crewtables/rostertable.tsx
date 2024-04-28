@@ -227,13 +227,18 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 	const getActiveBuffs = () => {
 		if (buffMode === 'none' || !buffMode) return undefined;
 
-		if (rosterType === 'myCrew') {
-			return globalContext.player.buffConfig;
+		if (buffMode === 'player') {
+			if (globalContext.player.buffConfig) {
+				return globalContext.player.buffConfig;
+			}
+			else {
+				return globalContext.maxBuffs;	
+			}
 		}
 		else if (buffMode === 'max') {
 			return globalContext.maxBuffs;
 		}
-		
+			
 		return undefined;
 	}
 
