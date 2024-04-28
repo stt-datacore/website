@@ -92,9 +92,9 @@ self.onmessage = (message) => {
         }),
         'ussjohnjay': () => voyagers.forDataCore(message.data, postResult, transwarp.getEstimate),
         'qpower': () => {
-            const { crew, quipment, buffs, max_qbits, slots } = message.data.config;
+            const { crew, quipment, buffs, max_qbits, slots, mode } = message.data.config;
             crew.forEach((crew) => {
-                calcQLots(crew, quipment, buffs, max_qbits, slots);
+                calcQLots(crew, quipment, buffs, max_qbits, slots, mode);
             });            
             postResult(crew, false);
         }
