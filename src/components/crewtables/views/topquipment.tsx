@@ -25,7 +25,7 @@ export interface TopQuipmentScoreProps {
     buffConfig?: BuffStatTable;
 }
 
-export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolean | 2 | 3, excludeQBits: boolean) => {
+export const getTopQuipmentTableConfig = (pstMode: boolean | 2 | 3, excludeQBits: boolean, powerMode: 'all' | 'core' | 'proficiency', buffConfig?: BuffStatTable) => {
     const config = [] as ITableConfigRow[];
     config.push({ width: 1, column: 'quipment_score', title: "Overall", reverse: true });
     if (pstMode) config.push({ width: 1, column: 'quipment_scores.trait_limited', title: "Specialty", reverse: true });
@@ -59,46 +59,50 @@ export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolea
             switch(m) {
                 case 0:
                     if (a.q_best_one_two_lots && b.q_best_one_two_lots) {
-                        return skillSum(b.q_best_one_two_lots.power) - skillSum(a.q_best_one_two_lots.power);
+                        return a.q_best_one_two_lots.crew_power - b.q_best_one_two_lots.crew_power;
+                        //return skillSum(a.q_best_one_two_lots.power, powerMode) - skillSum(b.q_best_one_two_lots.power, powerMode);
                     }
                     else if (a.q_best_one_two_lots) {
-                        return -1;
+                        return 1;
                     }
                     else if (b.q_best_one_two_lots) {
-                        return 1;
+                        return -1;
                     }
                     return 0;
                 case 1:
                     if (a.q_best_one_three_lots && b.q_best_one_three_lots) {
-                        return skillSum(b.q_best_one_three_lots.power) - skillSum(a.q_best_one_three_lots.power);
+                        return a.q_best_one_three_lots.crew_power - b.q_best_one_three_lots.crew_power;
+                        //return skillSum(a.q_best_one_three_lots.power, powerMode) - skillSum(b.q_best_one_three_lots.power, powerMode);
                     }
                     else if (a.q_best_one_three_lots) {
-                        return -1;
+                        return 1;
                     }
                     else if (b.q_best_one_three_lots) {
-                        return 1;
+                        return -1;
                     }
                     return 0;
                 case 2:
                     if (a.q_best_two_three_lots && b.q_best_two_three_lots) {
-                        return skillSum(b.q_best_two_three_lots.power) - skillSum(a.q_best_two_three_lots.power);
+                        return a.q_best_two_three_lots.crew_power - b.q_best_two_three_lots.crew_power;
+                        //return skillSum(a.q_best_two_three_lots.power, powerMode) - skillSum(b.q_best_two_three_lots.power, powerMode);
                     }
                     else if (a.q_best_two_three_lots) {
-                        return -1;
+                        return 1;
                     }
                     else if (b.q_best_two_three_lots) {
-                        return 1;
+                        return -1;
                     }
                     return 0;
                 case 3:
                     if (a.q_best_three_lots && b.q_best_three_lots) {
-                        return skillSum(b.q_best_three_lots.power) - skillSum(a.q_best_three_lots.power);
+                        return a.q_best_three_lots.crew_power - b.q_best_three_lots.crew_power;
+                        //return skillSum(a.q_best_three_lots.power, powerMode) - skillSum(b.q_best_three_lots.power, powerMode);
                     }
                     else if (a.q_best_three_lots) {
-                        return -1;
+                        return 1;
                     }
                     else if (b.q_best_three_lots) {
-                        return 1;
+                        return -1;
                     }
                     return 0;
                 default:
@@ -123,11 +127,13 @@ export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolea
     
             if ((askname && a.q_lots?.power && a.q_lots.power.some(s => s.skill === askname)) 
                 && (bskname && b.q_lots?.power && b.q_lots.power.some(s => s.skill === bskname))) {
-                let askill = a.q_lots.power.find(f => f.skill === askname) as Skill;
-                let bskill = b.q_lots.power.find(f => f.skill === bskname) as Skill;
+                // let askill = a.q_lots.power.find(f => f.skill === askname) as Skill;
+                // let bskill = b.q_lots.power.find(f => f.skill === bskname) as Skill;
+                let askill = a.q_lots.crew_by_skill[askname];
+                let bskill = b.q_lots.crew_by_skill[bskname];
     
-                let at = skillSum(askill);
-                let bt = skillSum(bskill);
+                let at = skillSum(askill, powerMode);
+                let bt = skillSum(bskill, powerMode);
     
                 return at - bt;
             }
@@ -174,7 +180,7 @@ export const getTopQuipmentTableConfig = (top: QuipmentScores[], pstMode: boolea
                 </div>
                 </div>, 
                 reverse: true,
-                customCompare: (a: IRosterCrew, b: IRosterCrew) => -qpComp(a, b, idx, true)
+                customCompare: (a: IRosterCrew, b: IRosterCrew) => qpComp(a, b, idx, true)
             });        
         });
     }

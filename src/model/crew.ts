@@ -25,6 +25,8 @@ export interface PowerLot {
     power: Skill[];
     lot: { [key: string]: EquipmentItem[] };
     power_by_skill?: { [key: string]: Skill };
+    crew_power: number;
+    crew_by_skill: { [key: string]: Skill };
 }
 
 export interface QuipmentScores {
