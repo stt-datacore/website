@@ -7,8 +7,8 @@ import { VoyageSkills } from '../../model/player';
 import { IVoyageCrew, IVoyageInputConfig } from '../../model/voyage';
 
 import { IBoosts, IPrimedCrew, IVoyagerScore, IVoyagersOptions } from './model';
-import { CrewSeater } from './crewseater';
 import { VoyagersLineup } from './lineup';
+import { seatCrew } from './crewseater';
 
 interface IVector {
 	id: number;
@@ -298,7 +298,7 @@ export const MultiVectorAssault = (
 		}
 		boostedScores.sort((a, b) => b.score - a.score);
 
-		return CrewSeater(primedRoster, boostedScores, !!options.debugCallback);
+		return seatCrew(primedRoster, boostedScores, !!options.debugCallback);
 	}
 
 	function sendProgress(message: string): void {

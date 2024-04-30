@@ -52,3 +52,8 @@ export interface ILineupEstimate {
 	key: string;
 	estimate: Estimate;
 };
+
+export interface IProjection {
+	ticks: number;
+	amBalance: number;
+};

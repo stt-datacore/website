@@ -4,7 +4,7 @@ import { ILineupEstimate } from './model';
 import { VoyagersLineup } from './lineup';
 
 // Return only the best lineups by requested sort method(s)
-export const SortLineups = (
+export const sortLineups = (
 	sorter: (a: ILineupEstimate, b: ILineupEstimate, method: string) => number,
 	lineups: VoyagersLineup[],
 	estimates: ILineupEstimate[],

@@ -10,10 +10,10 @@ import { IVoyageCrew, IVoyageInputConfig } from '../model/voyage';
 import { Estimate, JohnJayBest, Refill } from '../model/worker';
 
 import { ILineupEstimate, ISkillAggregate, IVoyagersOptions } from './voyagers/model';
-import { VoyagersAssemble } from './voyagers/assembler';
-import { EstimateLineups } from './voyagers/estimator';
 import { VoyagersLineup } from './voyagers/lineup';
-import { SortLineups } from './voyagers/sorter';
+import { voyagersAssemble } from './voyagers/assembler';
+import { estimateLineups } from './voyagers/estimator';
+import { sortLineups } from './voyagers/sorter';
 
 const DEBUGGING: boolean = false;
 
@@ -38,10 +38,10 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 	};
 
 	// Generate lots of unique lineups of potential voyagers
-	VoyagersAssemble(assembler ?? 'mvam', voyage_description, roster, options)
+	voyagersAssemble(assembler ?? 'mvam', voyage_description, roster, options)
 		.then(lineups => {
 			// Estimate only as many lineups as necessary
-			EstimateLineups(datacoreEstimator, lineups, voyage_description, bestShip.score, options)
+			estimateLineups(datacoreEstimator, lineups, voyage_description, bestShip.score, options)
 				.then(estimates => {
 					// Return only the best lineups by requested strategy
 					let methods: string[] = ['estimate', 'minimum', 'moonshot'];
@@ -53,7 +53,7 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 						methods = ['moonshot'];
 					// Either get 1 best lineup for each method, or the 3 best lineups for a single method
 					const limit: number = options.strategy && ['versatile', 'thorough'].includes(options.strategy) ? 1 : 3;
-					SortLineups(datacoreSorter, lineups, estimates, methods, limit)
+					sortLineups(datacoreSorter, lineups, estimates, methods, limit)
 						.then(sorted => {
 							output(JSON.parse(JSON.stringify(sorted)), false);
 						});

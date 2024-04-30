@@ -1,7 +1,7 @@
 import { IPrimedCrew, ISlottableCrew, IVoyagerScore } from './model';
 import { VoyagersLineup } from './lineup';
 
-export const CrewSeater = (primedRoster: IPrimedCrew[], voyagerScores: IVoyagerScore[], debug: boolean = false): VoyagersLineup | false => {
+export const seatCrew = (primedCrew: IPrimedCrew[], voyagerScoresMaster: IVoyagerScore[], debug: boolean = false): VoyagersLineup | false => {
 	let assemblyLog: string = '';	// Only use for debugging in development
 
 	const assignments: (ISlottableCrew | undefined)[] = Array.from({ length: 12 }, () => undefined);
@@ -9,6 +9,7 @@ export const CrewSeater = (primedRoster: IPrimedCrew[], voyagerScores: IVoyagerS
 
 	const skipped: number[] = [];
 
+	const voyagerScores: IVoyagerScore[] = voyagerScoresMaster.slice();
 	while (voyagerScores.length > 0 && iAssigned < 12) {
 		const testScore: IVoyagerScore | undefined = voyagerScores.shift();
 		if (!testScore) continue;
@@ -20,7 +21,7 @@ export const CrewSeater = (primedRoster: IPrimedCrew[], voyagerScores: IVoyagerS
 			continue;
 		}
 
-		const testScoreCrew: IPrimedCrew | undefined = primedRoster.find(primed => primed.id === testScore.id);
+		const testScoreCrew: IPrimedCrew | undefined = primedCrew.find(primed => primed.id === testScore.id);
 		if (!testScoreCrew) continue;
 
 		const volunteer: ISlottableCrew = {
