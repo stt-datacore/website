@@ -29,6 +29,7 @@ type ProfileChartsState = {
 	skill_distribution: StatTreeNode;
 	flat_skill_distribution: StatTreeNode[];
 	includeTertiary: boolean;
+	includeAllCrew: boolean;
 	r4_stars: any[];
 	r5_stars: any[];
 	radar_skill_rarity: any[];
@@ -63,6 +64,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			radar_skill_rarity_owned: [],
 			honordebt: undefined,
 			excludeFulfilled: false,
+			includeAllCrew: false
 		};
 	}
 
@@ -86,10 +88,15 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		let unowned_portal = [0,0,0,0,0];
 
 		const { playerData } = this.context.player;
-		const { allcrew, includeTertiary, items } = this.state;
+		const { allcrew, includeTertiary, items, includeAllCrew } = this.state;
 
 		let r4owned = [0, 0, 0, 0];
 		let r5owned = [0, 0, 0, 0, 0];
+
+		if (includeAllCrew) {
+			r4owned.push(0);
+			r5owned.push(0);			
+		}
 
 		let ownedStars = [0, 0, 0, 0, 0];
 		let totalStars = [0, 0, 0, 0, 0];
@@ -173,6 +180,15 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 						craftCost += demandsPerSlot(es, items ?? [], dupeChecker, demands, crew.symbol);
 					});
 			} else {
+				if (includeAllCrew) {
+					if (crew.max_rarity === 4) {
+						r4owned[4]++;
+					}
+					else if (crew.max_rarity === 5) {
+						r5owned[5]++;
+					}
+				}
+		
 				if (crew.in_portal) {
 					unowned_portal[crew.max_rarity - 1]++;
 				}
@@ -230,6 +246,15 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			});
 		}
 
+		const makeLabel = (i: number, rarity: number) => {
+			if (rarity === i) {
+				return `Unowned`;
+			}
+			else {
+				return `${i + 1} / ${rarity}`;
+			}
+		}
+
 		this.setState({
 			data_ownership,
 			flat_skill_distribution,
@@ -238,14 +263,23 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			demands,
 			honordebt: { ownedStars, totalStars, craftCost },
 			skill_distribution: { name: 'Skills', children: skill_distribution, value: 0, valueGauntlet: 0, loc: 0 } as StatTreeNode,
-			r4_stars: r4owned.map((v, i) => ({ label: `${i + 1} / 4`, id: `${i + 1} / 4`, value: v })).filter((e) => e.value > 0),
-			r5_stars: r5owned.map((v, i) => ({ label: `${i + 1} / 5`, id: `${i + 1} / 5`, value: v })).filter((e) => e.value > 0),
+			r4_stars: r4owned.map((v, i) => ({ label: makeLabel(i, 4), id: makeLabel(i, 4), value: v })).filter((e) => e.value > 0),
+			r5_stars: r5owned.map((v, i) => ({ label: makeLabel(i, 5), id: makeLabel(i, 5), value: v })).filter((e) => e.value > 0),
 		});
 	}
 
 	_onIncludeTertiary() {
 		this.setState(
 			(prevState) => ({ includeTertiary: !prevState.includeTertiary }),
+			() => {
+				this._calculateStats();
+			}
+		);
+	}
+	
+	_onIncludeAllCrew() {
+		this.setState(
+			(prevState) => ({ includeAllCrew: !prevState.includeAllCrew }),
 			() => {
 				this._calculateStats();
 			}
@@ -584,6 +618,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 				</div>
 
 				<h3>Number of stars (fused rarity) for your Super Rare and Legendary crew</h3>
+				<Checkbox label='Include unowned crew' onChange={() => this._onIncludeAllCrew()} checked={this.state.includeAllCrew} />
 				<div>
 					<div style={{ height: '320px', width: '50%', display: 'inline-block' }}>
 						<ResponsivePie

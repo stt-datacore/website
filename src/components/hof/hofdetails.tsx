@@ -9,6 +9,7 @@ import ItemDisplay from "../itemdisplay";
 import { VoyageHOFState } from "../../model/hof";
 import { navigate } from "gatsby";
 
+import { ResponsiveChord, Chord } from '@nivo/chord'
 
 export const formatNumber = (value: number, max: number, mult?: number, suffix?: string) => {
     let s = "";
@@ -61,6 +62,9 @@ export const HofDetails = (props: HofDetailsProps) => {
     let ridesWith = [] as CrewMember[];
     let seatKeys = [] as string[];
     let countKeys = [] as string[];
+    
+    let chorddata = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]] as number[][];
+    let chordkeys = CONFIG.SKILLS_SHORT.map(m => m.short).sort();
 
     const addSeat = (x: number, crew: string) => {
         let key = CONFIG.VOYAGE_CREW_SLOTS[x] + "," + crew;
@@ -79,7 +83,7 @@ export const HofDetails = (props: HofDetailsProps) => {
         return result;
     }
 
-    if (featuredList && rawVoyages) {
+    if (featuredList && rawVoyages) {        
 
         rawVoyages.forEach((voyage) => {
             if (!voyage.primary_skill || !voyage.secondary_skill) {
@@ -89,6 +93,16 @@ export const HofDetails = (props: HofDetailsProps) => {
                     voyage.secondary_skill = guess[1];
                 }
             }
+
+            const shortskills = [voyage.primary_skill, voyage.secondary_skill].map(v => CONFIG.SKILLS_SHORT.find(f => f.name === v)?.short ?? '');
+
+            let i1 = chordkeys.indexOf(shortskills[0]);
+            let i2 = chordkeys.indexOf(shortskills[1]);
+
+            //chorddata[i1][i1]++;
+            chorddata[i1][i2]++;
+            //chorddata[i2][i1]++;
+            //chorddata[i2][i2]++;
 
             voyage.crew.forEach((c, x) => {
                 if (crewSymbol?.includes(c)) {
@@ -154,11 +168,11 @@ export const HofDetails = (props: HofDetailsProps) => {
                                 key={`${featured.symbol}_featured_${idx}`}
                                 style={{
                                     display: 'flex',
-                                    flexDirection: 'column',
+                                    flexDirection: 'row',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     fontSize: "12pt",
-                                    maxWidth: "20em",
+                                    maxWidth: "40em",
                                     margin: "1em"
                                 }}>
                                 <div style={{
@@ -217,8 +231,65 @@ export const HofDetails = (props: HofDetailsProps) => {
                     })}
                 </div>
                 <h3 style={{ textAlign: 'center', margin: "1.5em 0em" }}><b>Most Frequent Voyages{featuredList.length > 1 && <>&nbsp;Together</>}</b></h3>
-
                 <div style={{
+                    height: "500px",
+                    width: "500px"
+                }}>
+                    <ResponsiveChord
+                        data={chorddata}
+                        keys={chordkeys}                        
+                        margin={{ top: 60, right: 60, bottom: 120, left: 60 }}                        
+                        valueFormat=".2f"
+                        padAngle={0.02}        
+                        ribbonTooltip={(props) => {
+                            return (
+                                <div style={{border: "2px solid black", color: "black", borderRadius: "6px", background: "white", padding:"0.5em"}}>
+                                    <b>{props.ribbon.source.label} / {props.ribbon.target.label}</b>&nbsp;&nbsp;{props.ribbon.source.value.toLocaleString()}<br/>
+                                    <b>{props.ribbon.target.label} / {props.ribbon.source.label}</b>&nbsp;&nbsp;{props.ribbon.target.value.toLocaleString()}
+                                </div>)
+                        }}                
+                        arcTooltip={(props) => {
+                            return (
+                                <div style={{border: "2px solid black", color: "black", borderRadius: "6px", background: "white", padding:"0.5em"}}>
+                                    <b>{props.arc.label}</b>&nbsp;&nbsp;{props.arc.value.toLocaleString()}<br/>                        
+                                </div>)
+
+                        }}
+                        innerRadiusRatio={0.96}
+                        innerRadiusOffset={0.02}
+                        inactiveArcOpacity={0.25}
+                        activeRibbonOpacity={0.75}
+                        inactiveRibbonOpacity={0.25}
+                        labelRotation={-90}
+                        colors={{ scheme: 'nivo' }}
+                        motionConfig="stiff"
+                        legends={[
+                            {
+                                anchor: 'bottom',
+                                direction: 'row',
+                                justify: false,
+                                translateX: 0,
+                                translateY: 70,
+                                itemWidth: 80,
+                                itemHeight: 14,
+                                itemsSpacing: 0,
+                                itemTextColor: '#999',
+                                itemDirection: 'left-to-right',
+                                symbolSize: 12,
+                                symbolShape: 'circle',
+                                effects: [
+                                    {
+                                        on: 'hover',
+                                        style: {
+                                            itemTextColor: '#000'
+                                        }
+                                    }
+                                ]
+                            }
+                        ]}
+                    />
+                </div>
+                {/* <div style={{
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -259,7 +330,7 @@ export const HofDetails = (props: HofDetailsProps) => {
                             <div style={{ gridArea: 'value', textAlign: 'right' }}>{Math.round(100 * (voyCounts[skills] / rawVoyages.length)) || " < 1"}%</div>
                         </div>
                     })}
-                </div>
+                </div> */}
             </div>
             <div>
 
