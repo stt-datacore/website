@@ -4,17 +4,13 @@ import { CrewMember } from "../../model/crew";
 import { gradeToColor, skillToShort } from "../../utils/crewutils";
 import CONFIG from "../CONFIG";
 import { GlobalContext } from "../../context/globalcontext";
-import { appelate, mobileCheck } from "../../utils/misc";
 import ItemDisplay from "../itemdisplay";
 import { VoyageHOFState } from "../../model/hof";
 import { navigate } from "gatsby";
 import themes from "../nivo_themes";
-import { ResponsiveRadar } from "@nivo/radar";
 
 import { ResponsiveSunburst } from "@nivo/sunburst";
-import { ResponsiveChord, Chord } from "@nivo/chord";
 import { StatTreeNode } from "../../utils/statutils";
-import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { ResponsivePie } from "@nivo/pie";
 
 export const formatNumber = (
@@ -41,20 +37,6 @@ export interface HofDetailsProps {
     crewClick: (symbol?: string) => void;
     hofState: VoyageHOFState;
 }
-const VoyageSeats = [
-    "command_skill",
-    "command_skill",
-    "diplomacy_skill",
-    "diplomacy_skill",
-    "security_skill",
-    "security_skill",
-    "engineering_skill",
-    "engineering_skill",
-    "science_skill",
-    "science_skill",
-    "medicine_skill",
-    "medicine_skill",
-];
 
 interface Seats {
     CMD?: number;
@@ -165,7 +147,10 @@ export const HofDetails = (props: HofDetailsProps) => {
 
             voyage.crew.forEach((c, x) => {
                 if (crewSymbol?.includes(c)) {
-                    crew_seats[c][CONFIG.VOYAGE_SLOT_SKILLS[x]]++;
+                    if (c in crew_seats) {
+                        crew_seats[c][CONFIG.VOYAGE_SLOT_SKILLS[x]] ??= 0;
+                        crew_seats[c][CONFIG.VOYAGE_SLOT_SKILLS[x]]++;
+                    }                    
                     addSeat(x, c);
                     return;
                 }
@@ -197,9 +182,6 @@ export const HofDetails = (props: HofDetailsProps) => {
             return r;
         });
     }
-
-    const isMobile =
-        typeof window !== "undefined" && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
     return (
         <React.Fragment>
