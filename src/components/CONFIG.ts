@@ -219,6 +219,23 @@ export default class CONFIG {
 		"medical_officer"
 	]
 
+	static readonly VOYAGE_SLOT_SKILLS = [
+		"CMD",
+		"CMD",
+		"DIP",
+		"DIP",
+		"SEC",
+		"SEC",
+		"ENG",
+		"ENG",
+		"SCI",
+		"SCI",
+		"MED",
+		"MED"
+	]
+
+	
+
 	static readonly CITATION_COST = [0, 500, 4500, 18000, 50000];
 
 	static readonly SERIES = [
