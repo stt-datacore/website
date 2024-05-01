@@ -2,18 +2,16 @@ import React, { Component } from "react";
 import {
     Table, Dropdown, Header, Grid, Button, DropdownItemProps
 } from "semantic-ui-react";
-import { RankMode, appelate } from "../../utils/misc";
+import { RankMode } from "../../utils/misc";
 import { CrewMember } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
 import { TinyStore } from "../../utils/tiny";
 import { GlobalContext } from "../../context/globalcontext";
 import { OwnedLabel } from "../crewtables/commonoptions";
 import { IRosterCrew } from "../crewtables/model";
-import { gradeToColor, skillToShort } from "../../utils/crewutils";
 import ItemDisplay from "../itemdisplay";
-import { RawVoyageRecord, guessSkillsFromCrew } from "../../utils/voyageutils";
+import { RawVoyageRecord } from "../../utils/voyageutils";
 import { navigate } from "gatsby";
-import CONFIG from "../CONFIG";
 import { VoyageHOFPeriod, VoyageStatEntry, niceNamesForPeriod, VoyageHOFProps, VoyageHOFState } from "../../model/hof";
 import { HofDetails, formatNumber } from "./hofdetails";
 import { CrewDropDown } from "../base/crewdropdown";
@@ -107,7 +105,7 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGl
                 </Table.Header>
                 <Table.Body>
                     {rankedCrew.map((crew, index) => (
-                        <React.Fragment>
+                        <React.Fragment key={`${crew.symbol}_${index}_stats`}>
                         <Table.Row key={crew?.symbol + "_" + period}>
                             <Table.Cell>
                                 <Header
@@ -480,16 +478,16 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                     />
                 </div>
                 <Grid columns={3} divided>
-                    {rows.map((row) => {
+                    {rows.map((row, rowidx) => {
 
                         return (
-                            <Grid.Row>
+                            <Grid.Row key={`stats_row_${rowidx}`}>
 
-                                {row.map((stats) => {
+                                {row.map((stats, colidx) => {
 
-                                    if (!niceNamesForPeriod[stats.key]) return <></>
+                                    if (!niceNamesForPeriod[stats.key]) return <React.Fragment key={`stats_col_${rowidx}_${colidx}`}></React.Fragment>
                                     return (
-                                        <Grid.Column>
+                                        <Grid.Column key={`stats_col_${rowidx}_${colidx}`}>
                                         <VoyageStatsForPeriod
                                             clickCrew={this.clickCrew}
                                             rankBy={rankBy}
