@@ -4,12 +4,16 @@ import { CrewMember } from "../../model/crew";
 import { gradeToColor, skillToShort } from "../../utils/crewutils";
 import CONFIG from "../CONFIG";
 import { GlobalContext } from "../../context/globalcontext";
-import { appelate } from "../../utils/misc";
+import { appelate, mobileCheck } from "../../utils/misc";
 import ItemDisplay from "../itemdisplay";
 import { VoyageHOFState } from "../../model/hof";
 import { navigate } from "gatsby";
+import themes from '../nivo_themes';
 
+import { ResponsiveSunburst } from "@nivo/sunburst";
 import { ResponsiveChord, Chord } from '@nivo/chord'
+import { StatTreeNode } from "../../utils/statutils";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
 export const formatNumber = (value: number, max: number, mult?: number, suffix?: string) => {
     let s = "";
@@ -63,6 +67,8 @@ export const HofDetails = (props: HofDetailsProps) => {
     let seatKeys = [] as string[];
     let countKeys = [] as string[];
     
+    let skill_data = { name: 'skills', children: [] as StatTreeNode[], value: 0, loc: 0, valueGauntlet: 0 } as StatTreeNode;
+
     let chorddata = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]] as number[][];
     let chordkeys = CONFIG.SKILLS_SHORT.map(m => m.short).sort();
 
@@ -95,6 +101,37 @@ export const HofDetails = (props: HofDetailsProps) => {
             }
 
             const shortskills = [voyage.primary_skill, voyage.secondary_skill].map(v => CONFIG.SKILLS_SHORT.find(f => f.name === v)?.short ?? '');
+
+            let sb = skill_data.children.find(f => f.name === shortskills[0]);
+            if (!sb) {
+                skill_data.children.push({
+                    name: shortskills[0],
+                    value: 1,
+                    valueGauntlet: 0,
+                    loc: 1,
+                    children: [] as StatTreeNode[]
+                } as StatTreeNode)
+            }
+            else {
+                //sb.value++;
+                //sb.loc++;
+            }
+
+            let sb2 = sb?.children.find(f => f.name === `${shortskills[0]} / ${shortskills[1]}`);
+
+            if (!sb2) {
+                sb?.children.push({
+                    name: `${shortskills[0]} / ${shortskills[1]}`,
+                    value: 1,
+                    valueGauntlet: 1,
+                    loc: 1,
+                    children: [] as StatTreeNode[]
+                } as StatTreeNode)
+            }
+            else {
+                sb2.value++;
+                sb2.loc++;
+            }
 
             let i1 = chordkeys.indexOf(shortskills[0]);
             let i2 = chordkeys.indexOf(shortskills[1]);
@@ -134,6 +171,8 @@ export const HofDetails = (props: HofDetailsProps) => {
             return r;
         });
     }
+
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
     return (<React.Fragment>
 
@@ -230,107 +269,80 @@ export const HofDetails = (props: HofDetailsProps) => {
                         )
                     })}
                 </div>
-                <h3 style={{ textAlign: 'center', margin: "1.5em 0em" }}><b>Most Frequent Voyages{featuredList.length > 1 && <>&nbsp;Together</>}</b></h3>
-                <div style={{
-                    height: "500px",
-                    width: "500px"
-                }}>
-                    <ResponsiveChord
-                        data={chorddata}
-                        keys={chordkeys}                        
-                        margin={{ top: 60, right: 60, bottom: 120, left: 60 }}                        
-                        valueFormat=".2f"
-                        padAngle={0.02}        
-                        ribbonTooltip={(props) => {
-                            return (
-                                <div style={{border: "2px solid black", color: "black", borderRadius: "6px", background: "white", padding:"0.5em"}}>
-                                    <b>{props.ribbon.source.label} / {props.ribbon.target.label}</b>&nbsp;&nbsp;{props.ribbon.source.value.toLocaleString()}<br/>
-                                    <b>{props.ribbon.target.label} / {props.ribbon.source.label}</b>&nbsp;&nbsp;{props.ribbon.target.value.toLocaleString()}
-                                </div>)
-                        }}                
-                        arcTooltip={(props) => {
-                            return (
-                                <div style={{border: "2px solid black", color: "black", borderRadius: "6px", background: "white", padding:"0.5em"}}>
-                                    <b>{props.arc.label}</b>&nbsp;&nbsp;{props.arc.value.toLocaleString()}<br/>                        
-                                </div>)
-
-                        }}
-                        innerRadiusRatio={0.96}
-                        innerRadiusOffset={0.02}
-                        inactiveArcOpacity={0.25}
-                        activeRibbonOpacity={0.75}
-                        inactiveRibbonOpacity={0.25}
-                        labelRotation={-90}
-                        colors={{ scheme: 'nivo' }}
-                        motionConfig="stiff"
-                        legends={[
-                            {
-                                anchor: 'bottom',
-                                direction: 'row',
-                                justify: false,
-                                translateX: 0,
-                                translateY: 70,
-                                itemWidth: 80,
-                                itemHeight: 14,
-                                itemsSpacing: 0,
-                                itemTextColor: '#999',
-                                itemDirection: 'left-to-right',
-                                symbolSize: 12,
-                                symbolShape: 'circle',
-                                effects: [
-                                    {
-                                        on: 'hover',
-                                        style: {
-                                            itemTextColor: '#000'
-                                        }
-                                    }
-                                ]
-                            }
-                        ]}
-                    />
-                </div>
-                {/* <div style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-evenly',
-                    flexWrap: 'wrap',
-                    gap: "0.5em",
-                    maxWidth: "50em",
-                    margin: "0.5em"
-                }}>
-                    {countKeys.filter(f => voyCounts[f]).slice(0, 3).map((skills) => {
-                        return <div
-                            className={'ui label'}
-                            style={{ width: "10em", fontSize: "1.25em", height: "2em", display: 'grid', gridTemplateAreas: "'skills value'" }}
-                            key={`voycountskill_${skills}`}>
-                            <div style={{ gridArea: 'skills' }}>{skills}</div>
-                            <div style={{ gridArea: 'value', textAlign: 'right' }}>{Math.round(100 * (voyCounts[skills] / rawVoyages.length))}%</div>
-                        </div>
-                    })}
-                </div>
-                <h3 style={{ textAlign: 'center', margin: "1.5em 0em" }}><b>Other Voyages</b></h3>
-
+                <h3 style={{ textAlign: 'center', margin: "1.5em 0em" }}><b>Most Frequent Voyages{featuredList.length > 1 && <>&nbsp;Together</>}</b></h3>                
                 <div style={{
                     display: 'flex',
-                    flexDirection: 'row',
+                    flexDirection: isMobile ? 'column' : 'row',
                     alignItems: 'center',
-                    justifyContent: 'space-evenly',
-                    flexWrap: 'wrap',
-                    gap: "0.5em",
-                    maxWidth: "50em",
-                    margin: "0.5em"
+                    justifyContent: 'space-between'
                 }}>
-                    {countKeys.filter(f => voyCounts[f]).slice(3).map((skills) => {
-                        return <div
-                            className={'ui label'}
-                            style={{ margin: 0, width: "9em", fontSize: "1em", height: "2em", display: 'grid', gridTemplateAreas: "'skills value'" }}
-                            key={`voycountskill_${skills}`}>
-                            <div style={{ gridArea: 'skills' }}>{skills}</div>
-                            <div style={{ gridArea: 'value', textAlign: 'right' }}>{Math.round(100 * (voyCounts[skills] / rawVoyages.length)) || " < 1"}%</div>
+                    <div style={{ height: '320px', width: '320px', display: 'inline-block' }}>
+						<ResponsiveSunburst
+							data={skill_data}
+							theme={themes.dark}                            
+							margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
+							id='name'
+							value='loc'
+							cornerRadius={2}
+							borderWidth={1}                            
+							colors={{ scheme: 'nivo' }}
+							childColor={{ from: 'color' }}
+							animate={true}                                                        
+							isInteractive={true}                            
+						/>
+					</div>                
+  
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-evenly',
+                            flexWrap: 'wrap',
+                            gap: "0.5em",
+                            maxWidth: "50em",
+                            margin: "0.5em"
+                        }}>
+                            {countKeys.filter(f => voyCounts[f]).slice(0, 3).map((skills) => {
+                                return <div
+                                    className={'ui label'}
+                                    style={{ width: "10em", fontSize: "1.25em", height: "2em", display: 'grid', gridTemplateAreas: "'skills value'" }}
+                                    key={`voycountskill_${skills}`}>
+                                    <div style={{ gridArea: 'skills' }}>{skills}</div>
+                                    <div style={{ gridArea: 'value', textAlign: 'right' }}>{Math.round(100 * (voyCounts[skills] / rawVoyages.length))}%</div>
+                                </div>
+                            })}
                         </div>
-                    })}
-                </div> */}
+
+                        <h3 style={{ textAlign: 'center', margin: "1.5em 0em" }}><b>Other Voyages</b></h3>
+
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-evenly',
+                            flexWrap: 'wrap',
+                            gap: "0.5em",
+                            maxWidth: "50em",
+                            margin: "0.5em"
+                        }}>
+                            {countKeys.filter(f => voyCounts[f]).slice(3).map((skills) => {
+                                return <div
+                                    className={'ui label'}
+                                    style={{ margin: 0, width: "9em", fontSize: "1em", height: "2em", display: 'grid', gridTemplateAreas: "'skills value'" }}
+                                    key={`voycountskill_${skills}`}>
+                                    <div style={{ gridArea: 'skills' }}>{skills}</div>
+                                    <div style={{ gridArea: 'value', textAlign: 'right' }}>{Math.round(100 * (voyCounts[skills] / rawVoyages.length)) || " < 1"}%</div>
+                                </div>
+                            })}
+                        </div>
+                    </div>
+                </div>
             </div>
             <div>
 
