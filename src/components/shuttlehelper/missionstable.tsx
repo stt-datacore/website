@@ -4,6 +4,7 @@ import { StrictTableProps, Table } from 'semantic-ui-react';
 import allFactions from '../../../static/structured/factions.json';
 
 import ItemDisplay from '../../components/itemdisplay';
+import { useStateWithStorage } from '../../utils/storage';
 
 import { ShuttleSeat, ITableColumn, ITableData, ITableSortField } from './model';
 import { IRosterCrew } from '../eventplanner/model';
@@ -22,8 +23,9 @@ export const MissionsTable = (props: MissionsTableProps) => {
 	const { tableId, columns, defaultSort, renderTableRow, renderTableFooter } = props;
 
 	const [data, setData] = React.useState<ITableData[]>([]);
-	const [sortColumn, setSortColumn] = React.useState<string>(defaultSort?.id ?? 'name');
-	const [sortDirection, setSortDirection] = React.useState<'ascending' | 'descending'>(defaultSort?.firstSort ?? 'ascending');
+	// !! Do not rememberForever the following preferences !!
+	const [sortColumn, setSortColumn] = useStateWithStorage<string>(`${tableId}/column`, defaultSort?.id ?? 'name');
+	const [sortDirection, setSortDirection] = useStateWithStorage<'ascending' | 'descending'>(`${tableId}/direction`, defaultSort?.firstSort ?? 'ascending');
 
 	React.useEffect(() => {
 		const data: ITableData[] = props.data.slice();
@@ -105,7 +107,7 @@ export const MissionsTable = (props: MissionsTableProps) => {
 			let bValue: any = getDataValue(b);
 
 			// Always show selected missions at the top when sorting by priority
-			if (sortColumn === '_priority') {
+			if (sortColumn === 'priority') {
 				if (aValue === 0) aValue = 100;
 				if (bValue === 0) bValue = 100;
 			}
