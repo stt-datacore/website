@@ -1,17 +1,13 @@
 import { BaseSkills, PlayerSkill, Skill } from '../../model/crew';
 import { Estimate } from '../../model/worker';
 
-export interface IVoyagersOptions {
+export interface IAssemblerOptions {
 	strategy?: string;
-	assemblerOptions?: IMVAMOptions;
-	progressCallback?: (message: string) => void;
-	debugCallback?: (message: string) => void;
-};
-
-export interface IMVAMOptions {
 	customBoosts?: IBoosts;
 	luckFactor?: number;
 	favorSpecialists?: boolean;
+	progressCallback?: (message: string) => void;
+	debugCallback?: (message: string) => void;
 };
 
 export interface IBoosts {

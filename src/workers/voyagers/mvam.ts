@@ -6,7 +6,7 @@ import { BaseSkills } from '../../model/crew';
 import { VoyageSkills } from '../../model/player';
 import { IVoyageCrew, IVoyageInputConfig } from '../../model/voyage';
 
-import { IBoosts, IPrimedCrew, IVoyagerScore, IVoyagersOptions } from './model';
+import { IBoosts, IPrimedCrew, IVoyagerScore, IAssemblerOptions } from './model';
 import { VoyagersLineup } from './lineup';
 import { seatCrew } from './crewseater';
 
@@ -38,7 +38,7 @@ const SKILL_IDS: string[] = [
 export const MultiVectorAssault = (
 	voyage: IVoyageInputConfig,
 	crew: IVoyageCrew[],
-	options: IVoyagersOptions = {}
+	options: IAssemblerOptions = {}
 ): Promise<VoyagersLineup[]> => {
 	sendProgress(`Studying crew...`);
 	const primedRoster: IPrimedCrew[] = getPrimedRoster();
@@ -57,8 +57,8 @@ export const MultiVectorAssault = (
 		const deltas: number[] = [0, 0.05, -0.05, 0.1, -0.1, 0.15, -0.15, 0.25, -0.25];
 		const promises: Promise<number>[] = deltas.map((delta: number, index: number) => {
 			const primeFactor: number = controlFactor+delta;
-			if (options.assemblerOptions?.customBoosts) {
-				boosts = options.assemblerOptions?.customBoosts;
+			if (options.customBoosts) {
+				boosts = options.customBoosts;
 			}
 			else {
 				boosts = {
@@ -91,7 +91,7 @@ export const MultiVectorAssault = (
 			traits.push(voyage.crew_slots[i].trait);
 		}
 
-		const iLuckFactor: number = options.assemblerOptions?.luckFactor ? 0 : 1;
+		const iLuckFactor: number = options.luckFactor ? 0 : 1;
 
 		const primedRoster: IPrimedCrew[] = [];
 		for (let i = 0; i < crew.length; i++) {
@@ -131,7 +131,7 @@ export const MultiVectorAssault = (
 						rViableSkills[iSkill] = 0;
 				}
 			}
-			if (options.assemblerOptions?.favorSpecialists && bGeneralist)
+			if (options.favorSpecialists && bGeneralist)
 				dOtherScore -= dOtherScore/10;
 
 			const crewman: IPrimedCrew = {

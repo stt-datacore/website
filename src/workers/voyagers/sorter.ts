@@ -8,16 +8,28 @@ export const sortLineups = (
 	sorter: (a: ILineupEstimate, b: ILineupEstimate, method: string) => number,
 	lineups: VoyagersLineup[],
 	estimates: ILineupEstimate[],
-	methods: string[],
-	limit: number
+	methods: string[]
 ): Promise<JohnJayBest[]> => {
 	return new Promise((resolve, reject) => {
 		const bestKeys: string[] = [];
+		const maxYieldPerMethod: number = methods.length > 1 ? 1 : 3;
 		methods.forEach(method => {
 			const sorted: ILineupEstimate[] = estimates.sort((a, b) => sorter(a, b, method));
-			for (let i = 0; i < Math.min(limit, estimates.length); i++) {
-				const bestEstimate: ILineupEstimate = sorted[i];
-				if (!bestKeys.includes(bestEstimate.key)) bestKeys.push(bestEstimate.key);
+			const bestEstimate: ILineupEstimate = sorted[0];
+			if (!bestKeys.includes(bestEstimate.key)) bestKeys.push(bestEstimate.key);
+			let isEqual: boolean = true;
+			let index: number = 1;
+			let bestsFound: number = 1;
+			while (isEqual && index < estimates.length && bestsFound < maxYieldPerMethod) {
+				const nextBest: ILineupEstimate = sorted[index];
+				if (sorter(bestEstimate, nextBest, method) === 0) {
+					if (!bestKeys.includes(nextBest.key)) bestKeys.push(nextBest.key);
+					bestsFound++;
+				}
+				else {
+					isEqual = false;
+				}
+				index++;
 			}
 		});
 		const bests: JohnJayBest[] = [];

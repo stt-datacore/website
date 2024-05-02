@@ -9,7 +9,7 @@ DataCore(<VoyageTool>): input from UI =>
 import { IVoyageCrew, IVoyageInputConfig } from '../model/voyage';
 import { Estimate, JohnJayBest, Refill } from '../model/worker';
 
-import { ILineupEstimate, ISkillAggregate, IVoyagersOptions } from './voyagers/model';
+import { ILineupEstimate, ISkillAggregate } from './voyagers/model';
 import { VoyagersLineup } from './voyagers/lineup';
 import { voyagersAssemble } from './voyagers/assembler';
 import { estimateLineups } from './voyagers/estimator';
@@ -23,37 +23,39 @@ type InputType = {
 	bestShip: {
 		score: number;
 	};
-	assembler?: string;
-	strategy: string;
+	options: {
+		assembler: string;
+		strategy: string;
+		scanDepth: number;
+		maxYield: number;
+	};
 };
 type OutputType = (result: (JohnJayBest[] | { error: string }), inProgress?: boolean) => void;
 type ChewableType = (config: any, reportProgress?: () => boolean) => Estimate;
 
 const VoyagersWorker = (input: InputType, output: OutputType, chewable: ChewableType) => {
-	const { voyage_description, roster, bestShip, assembler, strategy } = input;
+	const { voyage_description, roster, bestShip, options: { assembler, strategy } } = input;
 
-	const options: IVoyagersOptions = {
-		strategy: strategy ?? 'estimate',
-		debugCallback: DEBUGGING ? (message: string) => console.log(message) : undefined
-	};
+	const debugCallback: ((message: string) => void) | undefined = DEBUGGING ? (message: string) => console.log(message) : undefined;
 
 	// Generate lots of unique lineups of potential voyagers
-	voyagersAssemble(assembler ?? 'mvam', voyage_description, roster, options)
+	voyagersAssemble(assembler, voyage_description, roster, { strategy, debugCallback })
 		.then(lineups => {
 			// Estimate only as many lineups as necessary
-			estimateLineups(datacoreEstimator, lineups, voyage_description, bestShip.score, options)
+			const scanDepth: number = assembler === 'idic' ? 30 : 5;
+			estimateLineups(datacoreEstimator, lineups, voyage_description, bestShip.score, { strategy, scanDepth, debugCallback })
 				.then(estimates => {
 					// Return only the best lineups by requested strategy
 					let methods: string[] = ['estimate', 'minimum', 'moonshot'];
-					if (options.strategy === 'estimate')
+					if (strategy === 'estimate')
 						methods = ['estimate'];
-					else if (options.strategy === 'minimum')
+					else if (strategy === 'minimum')
 						methods = ['minimum'];
-					else if (options.strategy === 'moonshot')
+					else if (strategy === 'moonshot')
 						methods = ['moonshot'];
 					// Either get 1 best lineup for each method, or the 3 best lineups for a single method
-					const limit: number = options.strategy && ['versatile', 'thorough'].includes(options.strategy) ? 1 : 3;
-					sortLineups(datacoreSorter, lineups, estimates, methods, limit)
+					const limit: number = strategy === 'any' ? 1 : 3;
+					sortLineups(datacoreSorter, lineups, estimates, methods)
 						.then(sorted => {
 							output(JSON.parse(JSON.stringify(sorted)), false);
 						});
@@ -92,7 +94,7 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 			numSims: 5000
 		};
 		// Increase confidence of estimates for thorough, marginal strategies
-		if (['thorough', 'minimum', 'moonshot'].includes(input.strategy))
+		if (['thorough', 'minimum', 'moonshot'].includes(strategy))
 			chewableConfig.numSims = 10000;
 		return new Promise((resolve, reject) => {
 			const estimate: Estimate = chewable(chewableConfig, () => false);

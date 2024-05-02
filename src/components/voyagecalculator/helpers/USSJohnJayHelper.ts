@@ -29,8 +29,10 @@ export class USSJohnJayHelper extends Helper {
 			voyage_description: this.voyageConfig,
 			bestShip: this.bestShip,
 			roster: this.consideredCrew,
-			strategy: this.calcOptions.strategy,
-			assembler: this.calculator,
+			options: {
+				...this.calcOptions,
+				assembler: this.calculator
+			},
 			worker: 'ussjohnjay'
 		};
 

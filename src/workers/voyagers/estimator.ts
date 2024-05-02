@@ -1,8 +1,15 @@
 import { IVoyageInputConfig } from '../../model/voyage';
 
-import { ILineupEstimate, IProjection, IVoyagersOptions } from './model';
+import { ILineupEstimate, IProjection } from './model';
 import { VoyagersLineup } from './lineup';
 import { projectLineup } from './projector';
+
+interface IEstimatorOptions {
+	strategy: string;
+	scanDepth: number;
+	progressCallback?: (message: string) => void;
+	debugCallback?: (message: string) => void;
+};
 
 interface IWeights {
 	primes: number;
@@ -21,7 +28,7 @@ export const estimateLineups = (
 	lineups: VoyagersLineup[],
 	voyage: IVoyageInputConfig,
 	shipAntimatter: number,
-	options: IVoyagersOptions
+	options: IEstimatorOptions
 ): Promise<ILineupEstimate[]> => {
 	return new Promise((resolve, reject) => {
 		let considered: IProjectableLineup[] = lineups.map(lineup => {
@@ -32,51 +39,59 @@ export const estimateLineups = (
 			}
 		});
 
-		// Narrow by average tick count, if necessary
-		if (considered.length > 30) {
+		if (considered.length > options.scanDepth) {
+			// Always narrow by average tick count
 			const avgTicks: number = considered.reduce((prev, curr) => prev + curr.projection.ticks, 0)/considered.length;
 			considered = considered.filter(lineup => lineup.projection.ticks > avgTicks);
 			sendProgress(`Narrowing by average tick count (${avgTicks.toFixed(2)})...`);
-		}
 
-		// Narrow further by sort strategy
-		if (options.strategy !== 'thorough') {
-			const scanKeys: string[] = [];
-
-			// Lower depth value means less waiting, but also less thoroughness
-			const estimateDepth: number = 3;
-			const defaultDepth: number = 7;
+			const scanKeys: Set<string> = new Set<string>();
+			const altScanDepth: number = 7;
 
 			// Lineups with the best tick counts should yield best median estimates
 			//	Always consider lineups with 3 best estimates
 			//	Good chance best guaranteed minimum is also in this group; decent chance for good moonshot
-			considered.sort((a, b) => b.projection.ticks - a.projection.ticks);
-			for (let i = 0; i < Math.min(estimateDepth, considered.length); i++) {
-				scanKeys.push(considered[i].key);
+			considered.sort((a, b) => {
+				if (a.projection.ticks === b.projection.ticks)
+					return b.score - a.score;
+				return b.projection.ticks - a.projection.ticks;
+			});
+			for (let i = 0; i < Math.min(options.scanDepth, considered.length); i++) {
+				scanKeys.add(considered[i].key);
 			}
 
 			// Lineups with low deviations tend to have better guaranteed minimums
-			let scanDepth: number = options.strategy && ['minimum', 'versatile'].includes(options.strategy) ? defaultDepth : 0;
-			if (scanDepth > 0) {
+			if (['minimum', 'any'].includes(options.strategy)) {
 				considered.sort((a, b) => b.weights.total - a.weights.total);
-				for (let i = 0; i < Math.min(scanDepth, considered.length); i++) {
-					if (!scanKeys.includes(considered[i].key))
-						scanKeys.push(considered[i].key);
+				for (let i = 0; i < Math.min(altScanDepth, considered.length); i++) {
+					scanKeys.add(considered[i].key);
 				}
 			}
 
 			// Lineups with high prime scores tend to have better moonshots
-			scanDepth = options.strategy && ['moonshot', 'versatile'].includes(options.strategy) ? defaultDepth : 0;
-			if (scanDepth > 0) {
+			if (['moonshot', 'any'].includes(options.strategy)) {
 				considered.sort((a, b) => b.weights.primes - a.weights.primes);
-				for (let i = 0; i < Math.min(scanDepth, considered.length); i++) {
-					if (!scanKeys.includes(considered[i].key))
-						scanKeys.push(considered[i].key);
+				for (let i = 0; i < Math.min(altScanDepth, considered.length); i++) {
+					scanKeys.add(considered[i].key);
 				}
 			}
 
-			if (scanKeys.length > 0) {
-				considered = considered.filter(lineup => scanKeys.includes(lineup.key));
+			if (options.strategy === 'peak-antimatter') {
+				considered.sort((a, b) => {
+					if (a.antimatter === b.antimatter) {
+						if (a.projection.ticks === b.projection.ticks)
+							return b.score - a.score;
+						return b.projection.ticks - a.projection.ticks;
+					}
+					return b.antimatter - a.antimatter;
+				});
+				for (let i = 0; i < Math.min(altScanDepth, considered.length); i++) {
+					scanKeys.add(considered[i].key);
+				}
+			}
+
+			if (scanKeys.size > 0) {
+				considered = considered.filter(lineup => scanKeys.has(lineup.key));
 				sendProgress(`Narrowing by strategy (${options.strategy})...`);
 			}
 		}

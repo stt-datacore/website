@@ -1,6 +1,6 @@
 import { IVoyageCrew, IVoyageInputConfig } from '../../model/voyage';
 
-import { IVoyagersOptions } from './model';
+import { IAssemblerOptions } from './model';
 import { VoyagersLineup } from './lineup';
 import { MultiVectorAssault } from './mvam';
 import { InfiniteDiversity } from './idic';
@@ -10,7 +10,7 @@ export const voyagersAssemble = (
 	assembler: string,
 	voyage: IVoyageInputConfig,
 	crew: IVoyageCrew[],
-	options: IVoyagersOptions = {}
+	options: IAssemblerOptions = {}
 ): Promise<VoyagersLineup[]>  => {
 	// Switch assembler here by assembler
 	if (assembler === 'idic')

@@ -2,7 +2,7 @@ import { BaseSkills, Skill } from '../../model/crew';
 import { VoyageSkills } from '../../model/player';
 import { IVoyageCrew, IVoyageInputConfig } from '../../model/voyage';
 
-import { IPrimedCrew, IProjection, ISlottableCrew, IVoyagerScore, IVoyagersOptions } from './model';
+import { IPrimedCrew, IProjection, ISlottableCrew, IVoyagerScore, IAssemblerOptions } from './model';
 import { VoyagersLineup } from './lineup';
 import { seatCrew } from './crewseater';
 import { projectLineup } from './projector';
@@ -19,23 +19,32 @@ const SKILL_IDS: string[] = [
 export const InfiniteDiversity = (
 	voyage: IVoyageInputConfig,
 	crew: IVoyageCrew[],
-	options: IVoyagersOptions = {}
+	options: IAssemblerOptions = {}
 ): Promise<VoyagersLineup[]> => {
 	// How many crew should actually be considered?
 	//	Increasing this exponentially increases execution time of ComboCuller and CrewSeater
-	//	Ideally 24, but 20 works well enough
+	//	24 is theoretically ideal, but 20 seems to be a perfect sweet spot
 	const CREW_TARGET_MINIMUM: number = 20;
 
-	// How many crew combos should be sent to crew seater?
+	// How many crew combos should be sent to the crew seater, at most?
 	//	Increasing this increases execution time of CrewSeater
 	//	Can decrease this if we have higher confidence in ComboCuller
-	const MAX_COMBOS: number = 20000;
+	//	This basically ensures that the calc doesn't run forever
+	//  If CREW_TARGET_MINIMUM stays <= 20, this has little effect anyway,
+	//	 i.e. C(20, 12) = 125970
+	const MAX_COMBOS: number = 100000;
 
 	// Increase this to prioritize total voyage score over matching skills
 	const VOYAGER_RANK_WEIGHT: number = 15;
 
-	const SKILL_TARGET_MINIMUM: number = 4;
+	// Stop considering crew with a specific skill,
+	//	if the crew pool already has this many crew with that skill
+	//	Can't have more than 12 of any single skill on a voyage anyway
 	const SKILL_TARGET_MAXIMUM: number = 12;
+
+	// Keep considering crew until each skill is represented by this many crew
+	//	Can technically be as low as 2, but 4 seems a safe target
+	const SKILL_TARGET_MINIMUM: number = 4;
 
 	return new Promise((resolve, reject) => {
 		const primedRoster: IPrimedCrew[] = getPrimedRoster();
@@ -59,7 +68,7 @@ export const InfiniteDiversity = (
 		});
 
 		if (lineups.length === 0) {
-			reject(`Critical error: Omega Directive unable to construct a valid lineup!`);
+			reject(`Critical error: Infinite Diversity unable to construct a valid lineup!`);
 			return;
 		}
 
@@ -304,6 +313,7 @@ export const InfiniteDiversity = (
 					};
 				});
 				// This pseudo lineup ignores usual seating rules and antimatter bonuses
+				//	Assume starting antimatter of 2500 for purposes of projection
 				const lineup: VoyagersLineup = new VoyagersLineup(assignments);
 				const projection: IProjection = projectLineup(voyage, 2500, lineup);
 				comboScores.push({
