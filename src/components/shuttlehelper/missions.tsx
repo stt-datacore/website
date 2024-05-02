@@ -54,7 +54,7 @@ export const Missions = () => {
 	}, [shuttlers, activeShuttles]);
 
 	const columns: ITableColumn[] = [
-		{ id: 'checklist', title: <CheckDropdown selectMissions={selectMissions} />, align: 'center' },
+		{ id: 'checklist', title: <Icon name='check' />, align: 'center', sortField: { id: 'priority' } },
 		{ id: 'name', title: 'Mission', sortField: { id: 'name' } },
 		{ id: 'status', title: 'Status', align: 'center', sortField: { id: 'status' } },
 		{ id: 'faction', title: 'Faction', align: 'center', sortField: { id: 'faction' } },
@@ -72,6 +72,7 @@ export const Missions = () => {
 	return (
 		<React.Fragment>
 			<p>Select all the missions that you want to run, then tap 'Recommend Crew' to see the best seats for your crew.</p>
+			<CheckDropdown selectMissions={selectMissions} />
 			<MissionsTable
 				tableId='missions'
 				columns={columns}
@@ -219,8 +220,7 @@ const CheckDropdown = (props: CheckDropdownProps) => {
 
 	return (
 		<Dropdown
-			icon='check'
-			floating
+			placeholder='Select missions by group'
 		>
 			<Dropdown.Menu>
 				<Dropdown.Item icon='check' text={`Select all (${allIds.length})`} onClick={() => props.selectMissions(allIds)} />
