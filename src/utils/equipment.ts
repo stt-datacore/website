@@ -578,12 +578,14 @@ export function calcQLots(
 			q_power[skill] = {
 				core: buffed.core,
 				range_max: buffed.max,
-				range_min: buffed.min
+				range_min: buffed.min,
+				skill
 			}
 		}				
 		else {
 			q_power[skill] = {
-				... crew.base_skills[skill]
+				... crew.base_skills[skill],
+				skill
 			}
 		}
 	
@@ -616,10 +618,6 @@ export function calcQLots(
 	skills.forEach((skill) => {
 		addQPower(skill, slots);
 	});
-
-	if (crew.symbol ==='winn_kai_crew') {
-		console.log("Break");
-	}
 
 	const crewSkills = {} as { [key: string]: Skill };
 	crew.skill_order.forEach((skill) => {
@@ -678,7 +676,9 @@ export function calcQLots(
 		crew_power: 0,
 		crew_by_skill: {}
 	}
-	
+	if (crew.name === 'Audrid Quark' || crew.name === 'Admiral Robert April') {
+		console.log("break here");
+	}
 	addCrewPower(crew.q_lots);
 
 	delete crew.q_best_one_two_lots;
@@ -686,10 +686,7 @@ export function calcQLots(
 	delete crew.q_best_two_three_lots;
 	delete crew.q_best_three_lots;
 	
-	if (crew.skill_order.length >= 2) {
-		if (crew.symbol === 'nancy_hedford_crew') {
-			console.log("Break here");
-		}
+	if (crew.skill_order.length >= 2) {		
 		crew.q_best_one_two_lots = calcBest(2, crew, max_qbits, max_slots, [0, 1]);		
 		addCrewPower(crew.q_best_one_two_lots);
 	}
