@@ -53,7 +53,7 @@ export const getTopQuipmentTableConfig = (pstMode: boolean | 2 | 3, excludeQBits
     //     }
     // });
 
-    const qpComp = (a: IRosterCrew, b: IRosterCrew, skill: string | number, multi_mode?: boolean) => {
+    const qpComp = (a: IRosterCrew, b: IRosterCrew, skill: string | number, multi_mode?: boolean) => {     
         if (!!multi_mode && typeof skill === 'number') {
             let m = skill;
             switch(m) {
@@ -124,13 +124,13 @@ export const getTopQuipmentTableConfig = (pstMode: boolean | 2 | 3, excludeQBits
             else {
                 askname = bskname = skill;
             }
-    
+
             if ((askname && a.q_lots?.power && a.q_lots.power.some(s => s.skill === askname)) 
                 && (bskname && b.q_lots?.power && b.q_lots.power.some(s => s.skill === bskname))) {
                 // let askill = a.q_lots.power.find(f => f.skill === askname) as Skill;
                 // let bskill = b.q_lots.power.find(f => f.skill === bskname) as Skill;
-                let askill = a.q_lots.crew_by_skill[askname];
-                let bskill = b.q_lots.crew_by_skill[bskname];
+                let askill = (a.q_lots.power_by_skill as object)[askname];
+                let bskill = (b.q_lots.power_by_skill as object)[bskname];
     
                 let at = skillSum(askill, powerMode);
                 let bt = skillSum(bskill, powerMode);
