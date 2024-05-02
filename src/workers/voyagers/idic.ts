@@ -16,23 +16,26 @@ const SKILL_IDS: string[] = [
 	'engineering_skill', 'science_skill', 'medicine_skill'
 ];
 
-export const OmegaDirective = (
+export const InfiniteDiversity = (
 	voyage: IVoyageInputConfig,
 	crew: IVoyageCrew[],
 	options: IVoyagersOptions = {}
 ): Promise<VoyagersLineup[]> => {
 	// How many crew should actually be considered?
 	//	Increasing this exponentially increases execution time of ComboCuller and CrewSeater
-	//	Sweet spot seems to be 24
-	const MAX_CREW: number = 24;
+	//	Ideally 24, but 20 works well enough
+	const CREW_TARGET_MINIMUM: number = 20;
 
 	// How many crew combos should be sent to crew seater?
 	//	Increasing this increases execution time of CrewSeater
 	//	Can decrease this if we have higher confidence in ComboCuller
-	const MAX_COMBOS: number = 100000;
+	const MAX_COMBOS: number = 20000;
 
 	// Increase this to prioritize total voyage score over matching skills
-	const VOYAGER_RANK_WEIGHT: number = 12;
+	const VOYAGER_RANK_WEIGHT: number = 15;
+
+	const SKILL_TARGET_MINIMUM: number = 4;
+	const SKILL_TARGET_MAXIMUM: number = 12;
 
 	return new Promise((resolve, reject) => {
 		const primedRoster: IPrimedCrew[] = getPrimedRoster();
@@ -137,12 +140,13 @@ export const OmegaDirective = (
 				baseSlots.push(j);
 				if (primedCrew[i].trait_slots[j]) bestSlots.push(j);
 			}
-			if (bestSlots.length > 0)
-				voyagerScores.push({ score: bestScore, id: primedCrew[i].id, isIdeal: true });
 			if (baseSlots.length > bestSlots.length)
 				voyagerScores.push({ score: baseScore, id: primedCrew[i].id, isIdeal: false });
+			if (bestSlots.length > 0)
+				voyagerScores.push({ score: bestScore, id: primedCrew[i].id, isIdeal: true });
 		}
-		return voyagerScores;
+		// Seat crew, starting with worst crew (in ideal slots) first
+		return voyagerScores.reverse();
 	}
 
 	function getCrewSkillDepth(crew: IPrimedCrew): ICrewSkillDepth {
@@ -178,76 +182,97 @@ export const OmegaDirective = (
 			totalScore: number;
 		};
 
+		interface ISkilledCrew {
+			command_skill: number[];
+			diplomacy_skill: number[];
+			engineering_skill: number[];
+			medicine_skill: number[];
+			science_skill: number[];
+			security_skill: number[];
+		};
+
 		const rankedCrew: IRankedCrew[] = [];
 		primedCrew.forEach(crew => {
-			// Only consider crew with at least 1 prime skill
-			if (crew.primary_score + crew.secondary_score > 0) {
-				const skillDepth: ICrewSkillDepth = getCrewSkillDepth(crew);
-				const primeScores: number[] = Object.values(skillDepth).map(score => score);
-				primeScores.push((crew.primary_score + crew.secondary_score + crew.other_score) * VOYAGER_RANK_WEIGHT);
-				const totalScore: number = primeScores.reduce((prev, curr) => prev + curr, 0);
-				rankedCrew.push({ ...crew, primeScores, totalScore });
-			}
+			const skillDepth: ICrewSkillDepth = getCrewSkillDepth(crew);
+			const primeScores: number[] = Object.values(skillDepth).map(score => score);
+			primeScores.push((crew.primary_score + crew.secondary_score + crew.other_score) * VOYAGER_RANK_WEIGHT);
+			const totalScore: number = primeScores.reduce((prev, curr) => prev + curr, 0);
+			rankedCrew.push({ ...crew, primeScores, totalScore });
 		});
-
 		rankedCrew.sort((a, b) => b.totalScore - a.totalScore);
-		// console.log(rankedCrew.slice(0, 50).map(crew => crew.name));
-		return rankedCrew.slice(0, MAX_CREW);
+
+		const skilledCrew: ISkilledCrew = {
+			command_skill: [],
+			diplomacy_skill: [],
+			engineering_skill: [],
+			medicine_skill: [],
+			science_skill: [],
+			security_skill: []
+		};
+
+		const topCrew: IRankedCrew[] = [];
+		const skillsUnfulfilled: Set<string> = new Set<string>([
+			'command_skill',
+			'diplomacy_skill',
+			'engineering_skill',
+			'medicine_skill',
+			'science_skill',
+			'security_skill'
+		]);
+		for (let i = 0; i < rankedCrew.length; i++) {
+			const crew: IRankedCrew = rankedCrew[i];
+			const crewSkills: string[] = Object.keys(crew.skills);
+			const skillFulfilled: boolean = [...skillsUnfulfilled].some(neededSkillId =>
+				crewSkills.includes(neededSkillId)
+			);
+			const skillOverkill: boolean = crewSkills.map(skillId => skilledCrew[skillId].length)
+				.reduce((prev, curr) => Math.max(prev, curr), 0) > SKILL_TARGET_MAXIMUM;
+
+			// When target pool size is reached...
+			if (topCrew.length >= CREW_TARGET_MINIMUM) {
+				// Stop searching if all skills fulfilled
+				if (skillsUnfulfilled.size === 0) {
+					break;
+				}
+				// Otherwise only consider crew with unfulfilled skills
+				else if (!skillFulfilled) {
+					// console.log(`Skipping ${crew.name}`, `SKILL_TARGET_MINIMUM`, skillsUnfulfilled);
+					continue;
+				}
+			}
+
+			// Don't consider crew with skills readily available in pool
+			if (skillOverkill && !skillFulfilled) {
+				// console.log(`Skipping ${crew.name}`, `SKILL_TARGET_MAXIMUM`, crewSkills);
+				continue;
+			}
+
+			const ranks: number[] = [];
+			Object.keys(crew.skills).forEach(skillId => {
+				skilledCrew[skillId].push(crew.id);
+				if (skilledCrew[skillId].length === SKILL_TARGET_MINIMUM)
+					skillsUnfulfilled.delete(skillId);
+				ranks.push(skilledCrew[skillId].length);
+			});
+			topCrew.push(crew);
+		}
+
+		if (options.debugCallback) {
+			let crewList: string = `===== Top Ranked Crew =====`;
+			crewList += `\n(${rankedCrew.length} considered, voyager rank weight: ${VOYAGER_RANK_WEIGHT})`;
+			const lastIndex: number = rankedCrew.findIndex(crew => crew.id === topCrew[topCrew.length-1].id)
+			rankedCrew.slice(0, lastIndex + 5).forEach(crew => {
+				let rank: number = topCrew.findIndex(cp => cp.id === crew.id);
+				const sRank: string = rank >= 0 ? `${rank+1}` : 'xx';
+				crewList += `\n${sRank.padStart(2, ' ')} ${crew.name} (${crew.totalScore})`;
+			});
+			options.debugCallback(crewList);
+		}
+
+		return topCrew;
 	}
 
 	function getAllCrewCombos(primedCrew: IPrimedCrew[]): IPrimedCrew[][] {
-		// Based on lodash.combinations
-		// function lodashCombinations(collection: IPrimedCrew[], n: number): IPrimedCrew[][] {
-		// 	const array: IPrimedCrew[] = _.values(collection);
-		// 	if (array.length < n) {
-		// 		return [];
-		// 	}
-		// 	const recur = ((array: IPrimedCrew[], n: number): IPrimedCrew[][] => {
-		// 		if (--n < 0) {
-		// 			return [[]];
-		// 		}
-		// 		const combinations: IPrimedCrew[][] = [];
-		// 		array = array.slice();
-		// 		while (array.length - n) {
-		// 			const value: IPrimedCrew | undefined = array.shift();
-		// 			if (!value) continue;
-		// 			recur(array, n).forEach((combination: IPrimedCrew[]) => {
-		// 				combination.unshift(value);
-		// 				combinations.push(combination);
-		// 			});
-		// 		}
-		// 		return combinations;
-		// 	});
-		// 	return recur(array, n);
-		// }
-
-		// https://blog.lublot.dev/combinations-in-typescript
-		function souzaCombinations<T>(items: T[], size: number = items.length): T[][] {
-			const combinations: T[][] = [];
-			const stack: number[] = [];
-			let i = 0;
-
-			size = Math.min(items.length, size);
-
-			while (true) {
-				if (stack.length === size) {
-					combinations.push(stack.map((index) => items[index]));
-					i = stack.pop()! + 1;
-				}
-
-				if (i >= items.length) {
-					if (stack.length === 0) {
-						break;
-					}
-					i = stack.pop()! + 1;
-				} else {
-					stack.push(i++);
-				}
-			}
-
-			return combinations;
-		}
-
 		const crewCombos: IPrimedCrew[][] = souzaCombinations(primedCrew, 12);
 		return crewCombos;
 	}
@@ -260,6 +285,7 @@ export const OmegaDirective = (
 		};
 
 		const comboScores: IScoredCombo[] = [];
+		let totalTicks: number = 0;
 		crewCombos.forEach(crewCombo => {
 			// Rule out combo if it can't seat 2 crew per skill
 			const viableSlots: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -283,10 +309,14 @@ export const OmegaDirective = (
 				comboScores.push({
 					crewCombo, score: lineup.score, projection
 				});
+				totalTicks += projection.ticks;
 			}
 		});
 
-		return comboScores.sort((a, b) => b.projection.ticks - a.projection.ticks)
+		const avgTicks: number = totalTicks / comboScores.length;
+
+		return comboScores.filter(cs => cs.projection.ticks > avgTicks)
+			.sort((a, b) => b.projection.ticks - a.projection.ticks)
 			.slice(0, MAX_COMBOS)
 			.map(cs => cs.crewCombo);
 	}
@@ -298,3 +328,30 @@ export const OmegaDirective = (
 			options.progressCallback(message);
 	}
 };
+
+// https://blog.lublot.dev/combinations-in-typescript
+function souzaCombinations<T>(items: T[], size: number = items.length): T[][] {
+	const combinations: T[][] = [];
+	const stack: number[] = [];
+	let i = 0;
+
+	size = Math.min(items.length, size);
+
+	while (true) {
+		if (stack.length === size) {
+			combinations.push(stack.map((index) => items[index]));
+			i = stack.pop()! + 1;
+		}
+
+		if (i >= items.length) {
+			if (stack.length === 0) {
+				break;
+			}
+			i = stack.pop()! + 1;
+		} else {
+			stack.push(i++);
+		}
+	}
+
+	return combinations;
+}

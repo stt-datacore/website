@@ -11,11 +11,11 @@ export class USSJohnJayHelper extends Helper {
 	readonly calcName: string;
 	readonly calcOptions: any;
 
-	constructor(props: HelperProps) {
+	constructor(props: HelperProps, calculator: string = 'mvam') {
 		super(props);
 		this.id = 'request-' + Date.now();
-		this.calculator = 'ussjohnjay';
-		this.calcName = 'Multi-vector Assault';
+		this.calculator = calculator;
+		this.calcName = calculator === 'idic' ? 'Infinite Diversity' : 'Multi-vector Assault';
 		this.calcOptions = {
 			strategy: props.calcOptions?.strategy ?? 'estimate'
 		};
@@ -30,6 +30,7 @@ export class USSJohnJayHelper extends Helper {
 			bestShip: this.bestShip,
 			roster: this.consideredCrew,
 			strategy: this.calcOptions.strategy,
+			assembler: this.calculator,
 			worker: 'ussjohnjay'
 		};
 

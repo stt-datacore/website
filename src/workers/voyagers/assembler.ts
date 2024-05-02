@@ -3,7 +3,7 @@ import { IVoyageCrew, IVoyageInputConfig } from '../../model/voyage';
 import { IVoyagersOptions } from './model';
 import { VoyagersLineup } from './lineup';
 import { MultiVectorAssault } from './mvam';
-import { OmegaDirective } from './omega';
+import { InfiniteDiversity } from './idic';
 
 // Generate lots of unique lineups of potential voyagers
 export const voyagersAssemble = (
@@ -13,7 +13,7 @@ export const voyagersAssemble = (
 	options: IVoyagersOptions = {}
 ): Promise<VoyagersLineup[]>  => {
 	// Switch assembler here by assembler
-	if (assembler === 'omega')
-		return OmegaDirective(voyage, crew, options);
+	if (assembler === 'idic')
+		return InfiniteDiversity(voyage, crew, options);
 	return MultiVectorAssault(voyage, crew, options);
 };
