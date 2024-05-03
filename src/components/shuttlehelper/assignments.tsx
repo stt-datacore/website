@@ -20,7 +20,7 @@ type AssignmentsProps = {
 
 export const Assignments = (props: AssignmentsProps) => {
 	const shuttlersContext = React.useContext(ShuttlersContext);
-	const { groupId, rosterCrew, eventData, shuttlers, setShuttlers, assigned, setAssigned } = shuttlersContext;
+	const { helperId, groupId, rosterCrew, eventData, shuttlers, setShuttlers, assigned, setAssigned } = shuttlersContext;
 	const { crewScores, updateCrewScores } = props;
 
 	const [data, setData] = React.useState<ITableData[]>([]);
@@ -63,6 +63,7 @@ export const Assignments = (props: AssignmentsProps) => {
 	}, [shuttlers, assigned]);
 
 	const columns: ITableColumn[] = [
+		{ id: 'priority', title: <Icon name='check' />, align: 'center', sortField: { id: '_priority' }},
 		{ id: 'name', title: 'Mission', sortField: { id: 'name' } },
 		{ id: 'faction', title: 'Faction', align: 'center', sortField: { id: 'faction' } },
 		{ id: 'assignments', title: 'Seat Assignments', align: 'center', sortField: { id: 'seats.length' } },
@@ -78,10 +79,11 @@ export const Assignments = (props: AssignmentsProps) => {
 			{eventData && <EventProjection eventData={eventData} shuttleScores={shuttleScores} />}
 			<p>You can rearrange crew to balance shuttle chances as you see fit. Tap a seat assignment to change the crew assigned to the seat. Lock an assignment to keep that crew in that seat when requesting new recommendations.</p>
 			<MissionsTable
-				tableId='assignments'
+				tableId={`${helperId}/assignments`}
 				tableProps={{ celled: true, striped: true, sortable: true, unstackable: true }}
 				columns={columns}
 				data={data}
+				defaultSort={{ id: '_priority' }}
 				renderTableRow={renderTableRow}
 				renderTableFooter={data.length > 0 ? renderTableFooter : undefined}
 			/>
@@ -111,6 +113,9 @@ export const Assignments = (props: AssignmentsProps) => {
 	function renderTableRow(datum: ITableData): JSX.Element {
 		return (
 			<Table.Row key={datum.id}>
+				<Table.Cell textAlign='center'>
+					{datum.priority}
+				</Table.Cell>
 				<Table.Cell>
 					<span style={{ fontSize: '1.1em' }}><b>{datum.name}</b></span>
 				</Table.Cell>
