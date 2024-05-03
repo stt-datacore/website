@@ -107,9 +107,9 @@ export const MissionsTable = (props: MissionsTableProps) => {
 			let bValue: any = getDataValue(b);
 
 			// Always show selected missions at the top when sorting by priority
-			if (sortColumn === 'priority') {
-				if (aValue === 0) aValue = 100;
-				if (bValue === 0) bValue = 100;
+			if (sortColumn === '_priority') {
+				aValue = a.priority > 0 ? a.priority : 100;
+				bValue = b.priority > 0 ? b.priority : 100;
 			}
 
 			if (sortColumn === '_skills') {
