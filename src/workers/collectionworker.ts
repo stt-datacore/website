@@ -82,14 +82,7 @@ function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: P
 
     let c = stitched.length;
     for (let i = 0; i < c; i++) {
-        let b = false;
-        // for (let j = 0; j < c; j++) {
-        //     if (j === i) continue;
-        //     b ||= isSubset(stitched[i], stitched[j]);            
-        // }
-        if (!b) {
-            finals.push(stitched[i]);
-        }
+        finals.push(stitched[i]);
     }
 
     if (Number.isFinite(limit)) {
@@ -152,9 +145,15 @@ function normalCollectionSort<T extends PlayerCrew>(crew: T[], searchFilter?: st
     });
 }
 
+interface CollectionInfo {
+    name: string;
+    crew: string[];
+    relatives: string[];
+    needed: number;
+}
+
 const CollectionOptimizer = {
-    scanAll: (config: CollectionWorkerConfig) => {
-        console.log("Collections Worker Invoked!");
+    scanAll2: (config: CollectionWorkerConfig) => {
         return new Promise<CollectionWorkerResult>((resolve, reject) => {
             const { playerData, filterProps } = config;
             const { playerCollections, collectionCrew, matchMode, byCost } = config;
@@ -174,138 +173,85 @@ const CollectionOptimizer = {
                     ?.filter((f) => f?.length) ?? []
                 : [];
 
-            const createCollectionGroups = (): CollectionMap[] => {
-                let fstep1 =
-                    playerData?.player?.character.crew
-                        .concat(
-                            (!!mapFilter?.collectionsFilter?.length || !!searches?.length)
-                                ? playerData?.player?.character.unOwnedCrew ?? []
-                                : []
-                        )
-                        .filter((fc) =>
-                            collectionCrew.some((pc) => pc.symbol === fc.symbol)
-                        ) ?? [];
-                let fss = {} as { [key: string]: boolean };
+            const workingCrew = collectionCrew.filter(f => !f.immortal);
+            const workingCollections = playerCollections.filter((col) => col.progress !== 'n/a' && (col.claimable_milestone_index ?? 0) < (col.milestones?.length ?? 0) && workingCrew.some(crew => crew.collections.some(col2 => col2 === col.name)));
 
-                if (fstep1.length) {
-                    let currsym = "";
-                    for (let item of fstep1) {
-                        currsym = item.symbol;
-                        if (!(currsym in fss)) {
-                            fss[currsym] = true;
+            const colInfo = workingCollections.map((col) => ({
+                name: col.name,
+                crew: [],
+                relatives: [],
+                needed: col.needed ?? 0
+            } as CollectionInfo));
+
+            colInfo.forEach((col) => {
+                col.crew = workingCrew.filter(f => f.collections.some(col2 => col2 === col.name)).map(c => c.symbol);
+            });
+
+            workingCrew.forEach((crew) => {
+                let crewcols = colInfo.filter(c => crew.collections.includes(c.name));
+                let c = crewcols.length;
+                for (let i = 0; i < c; i++) {
+                    for (let j = 0; j < c; j++) {
+                        if (i === j) continue;
+                        if (!crewcols[i].relatives.includes(crewcols[j].name)) {
+                            crewcols[i].relatives.push(crewcols[j].name);
                         }
-                        fss[currsym] =
-                            fss[currsym] &&
-                            !(
-                                item.immortal > 0 ||
-                                item.immortal === CompletionState.Immortalized
-                            );
                     }
+                }                
+            });
+
+            const colMap = colInfo.map(c => {
+                c.relatives.sort();                
+                let col = workingCollections.find(f => f.name === c.name) as PlayerCollection;                
+                return {
+                    collection: col,
+                    crew: c.crew.map(csym => workingCrew.find(f => f.symbol === csym) as PlayerCrew)                    
+                } as CollectionMap;
+            });
+
+            colMap.forEach(map => {
+                map.crew = normalCollectionSort(map.crew, searchFilter, searches, favorites);
+                map.neededStars = neededStars(map.crew, map.collection.needed ?? 0);
+            })
+
+            colMap.forEach(
+                (c) =>
+                (c.collection.neededCost = starCost(
+                    c.crew,
+                    c.collection.needed,
+                    costMode === "sale"
+                ))
+            );
+
+            colMap.sort((a, b) => {
+                let acol = a.collection;
+                let bcol = b.collection;
+                let r = 0;
+
+                if (mapFilter?.rewardFilter) {
+                    r = compareRewards(mapFilter, [acol], [bcol], short);
+                    if (r) return r;
                 }
-                const fstep2 = fstep1.filter(
-                    (crew, idx) =>
-                        fss[crew.symbol] &&
-                        idx === fstep1.findIndex((c2) => c2.symbol === crew.symbol)
-                );
 
-                let cstep1 = fstep2.map((g) => g.collections).flat();
-                cstep1 = cstep1.filter((cn, idx) => cstep1.indexOf(cn) === idx).sort();
+                let amissing = acol.milestone.goal as number - acol.owned as number;
+                let bmissing = bcol.milestone.goal as number - bcol.owned as number;
+                
+                if (amissing < 0) amissing = 0;
+                if (bmissing < 0) bmissing = 0;
+                
+                if (!r) r = amissing - bmissing;
+                if (!r) r = (acol?.neededCost ?? 0) - (bcol?.neededCost ?? 0);
+                if (!r) r = (acol?.needed ?? 0) - (bcol?.needed ?? 0);
+                
+                if (!r) {
+                    r = (bcol.milestone.goal as number) - (acol.milestone.goal as number);
+                }
+                    
+                if (!r) r = acol?.name.localeCompare(bcol?.name ?? "") ?? 0;
+                return r;
+            });
 
-                const colMap = cstep1
-                    .map((col, idx) => {
-                        const cobj = playerCollections.find((f) => f.name === col);
-
-                        return {
-                            collection: cobj,
-                            crew: fstep2.filter((crew) => {
-                                if (
-                                    crew.immortal === CompletionState.Immortalized ||
-                                    crew.immortal > 0
-                                )
-                                    return false;
-
-                                let fr = crew.collections.some((fc) => fc == col);
-
-                                if (fr) {
-                                    if (!!mapFilter?.collectionsFilter?.length || !!searches?.length) {
-                                        if (ownedFilter === "unowned" && !!crew.have) return false;
-                                        if (ownedFilter.slice(0, 5) === "owned" && !crew.have)
-                                            return false;
-                                    } else if (!crew.have) {
-                                        return false;
-                                    }
-
-                                    if (!checkCommonFilter(filterProps, crew, ["unowned", "owned"]))
-                                        return false;
-                                }
-                                return fr;
-                            }),
-                        } as CollectionMap;
-                    })
-                    .filter((fc) => {
-                        if (!fc?.collection) return false;
-                        if (fc.crew.length < (fc.collection.needed ?? 0) && !searchFilter?.length) return false;
-                        if (!fc.collection.milestone.goal) return false;
-                        return true;
-                    });
-
-                colMap.forEach((col, idx) => {
-                    col.crew.forEach((a) => {
-                        let acount =
-                            a.collections.filter((afc) =>
-                                playerCollections.find((cmf) => !!cmf.needed && cmf.name === afc && cmf.claimable_milestone_index !== undefined)
-                            )?.length ?? 1;
-                        a.pickerId = acount;
-                    });
-
-                    col.crew = normalCollectionSort(col.crew, searchFilter, searches, favorites);
-                    col.neededStars = neededStars(col.crew, col.collection.needed ?? 0);
-                });
-
-                colMap.forEach(
-                    (c) =>
-                    (c.collection.neededCost = starCost(
-                        c.crew,
-                        c.collection.needed,
-                        costMode === "sale"
-                    ))
-                );
-
-                colMap.sort((a, b) => {
-                    let acol = a.collection;
-                    let bcol = b.collection;
-                    let r = 0;
-
-                    if (mapFilter?.rewardFilter) {
-                        r = compareRewards(mapFilter, [acol], [bcol], short);
-                        if (r) return r;
-                    }
-
-                    let amissing =
-                        (acol?.milestone?.goal === "n/a" ? 0 : acol?.milestone?.goal ?? 0) -
-                        (acol?.owned ?? 0);
-                    let bmissing =
-                        (bcol?.milestone?.goal === "n/a" ? 0 : bcol?.milestone?.goal ?? 0) -
-                        (bcol?.owned ?? 0);
-                    if (amissing < 0) amissing = 0;
-                    if (bmissing < 0) bmissing = 0;
-                    if (!r) r = amissing - bmissing;
-                    if (!r) r = (acol?.neededCost ?? 0) - (bcol?.neededCost ?? 0);
-                    if (!r) r = (acol?.needed ?? 0) - (bcol?.needed ?? 0);
-                    if (!r)
-                        r =
-                            ((bcol?.milestone?.goal as number) ?? 0) -
-                            ((acol?.milestone?.goal as number) ?? 0);
-                    if (!r) r = acol?.name.localeCompare(bcol?.name ?? "") ?? 0;
-                    return r;
-                });
-
-                return colMap.filter((cm) => cm.crew?.length);
-            };
-
-            const unfilteredGroups = createCollectionGroups();
-
-            const colGroups = unfilteredGroups.filter((x) => {
+            const colGroups = colMap.filter((x) => {
                 let bPass =
                     x.collection !== undefined &&
                     x.crew?.length &&
@@ -322,63 +268,39 @@ const CollectionOptimizer = {
 
                 return !!bPass;
             });
+            
+            const linkScores = {} as { [key: string]: CollectionMap[] };
 
-            const createOptimizerGroups = (colGroups: CollectionMap[]) => {
-                const linkScores = {} as { [key: string]: CollectionMap[] };
-
-                for (let col of colGroups) {
-                    linkScores[col.collection.name] ??= [];
-                    if (col.collection.progress === "n/a") continue;
-                    if (
-                        (col.collection.progress ?? 0) + (col.collection.needed ?? 0) >
-                        (col.collection.owned ?? 0)
-                    )
-                        continue;
-                    for (let col2 of colGroups) {
-                        if (col2.collection.progress === "n/a") continue;
-                        if (
-                            (col2.collection.progress ?? 0) + (col2.collection.needed ?? 0) >
-                            (col2.collection.owned ?? 0)
-                        )
-                            continue;
-                        if (col.collection.name === col2.collection.name) continue;
-                        if ((col.collection.needed ?? 0) < (col2.collection.needed ?? 0))
-                            continue;
-
-                        let crew = col.crew.filter((cr) =>
-                            col2.crew.some((cr2) => cr2.symbol === cr.symbol)
-                        );
-                        crew = crew.concat(
-                            col2.crew.filter((cr) =>
-                                col.crew.some((cr2) => cr2.symbol === cr.symbol)
-                            )
-                        );
-                        crew = crew.filter(
-                            (cr, idx) =>
-                                crew.findIndex((cr2) => cr2.symbol === cr.symbol) === idx
-                        );
-                        
+            colInfo.forEach((ci) => {
+                ci.relatives.forEach((cirkey) => {
+                    let cirel = colInfo.find(c => c.name === cirkey);
+                    if (cirel) {
+                        let crew = ci.crew.filter(cf => cirel.crew.includes(cf)).map(ccsym => workingCrew.find(c => c.symbol === ccsym) as PlayerCrew);
                         crew = normalCollectionSort(crew, searchFilter, searches, favorites);
                         //crew.sort((a, b) => a.name.localeCompare(b.name));
-
+                        let col2 = workingCollections.find(wc => wc.name === cirel.name) as PlayerCollection
                         if (!!crew?.length) {
-                            linkScores[col.collection.name].push({
-                                collection: col2.collection,
+                            linkScores[ci.name] ??= [];
+                            linkScores[ci.name].push({
+                                collection: col2,
                                 crew: crew,
-                                completes: crew.length >= (col2.collection.needed ?? 0),
+                                completes: crew.length >= (col2.needed ?? 0),
                             });
+
+                            linkScores[ci.name] = linkScores[ci.name]
+                            .filter((ls) => ls.completes)
+                            .sort((a, b) => {
+                                let r = b.crew.length - a.crew.length;
+                                if (!r) r = a.collection.name.localeCompare(b.collection.name);
+                                return r;
+                            });
+    
                         }
-                    }
+                    }                    
+                });
+            });
 
-                    linkScores[col.collection.name] = linkScores[col.collection.name]
-                        .filter((ls) => ls.completes)
-                        .sort((a, b) => {
-                            let r = b.crew.length - a.crew.length;
-                            if (!r) r = a.collection.name.localeCompare(b.collection.name);
-                            return r;
-                        });
-                }
-
+            const createOptimizerGroups = (colGroups: CollectionMap[]) => {
                 const colOptimized = Object.keys(linkScores)
                     .map((key, idx) => {
                         let unique = linkScores[key].map((c) => c.crew).flat();
@@ -480,8 +402,7 @@ const CollectionOptimizer = {
                         return r;
                     });
 
-                const createCombos = (col: CollectionGroup): ColComboMap[] => {
-                    const names = col.maps.map((c) => c.collection.name);
+                const createCombos = (col: CollectionGroup): ColComboMap[] => {                    
                     let result = makeOptimizedCombos(col, playerCollections);
                     //let result = makeAllCombos(names);
 
@@ -678,7 +599,7 @@ const CollectionOptimizer = {
                     });
             };
 
-            const colOptimized = createOptimizerGroups(unfilteredGroups.map(g => {
+            const colOptimized = createOptimizerGroups(colGroups.map(g => {
                 return {
                     ... g,
                     crew: g.crew.filter(f => f.have || (f.immortal !== undefined && f.immortal >= -1))
@@ -789,13 +710,12 @@ const CollectionOptimizer = {
                             let maxa = a.combos.map(c => c.count).reduce((p, n) => p > n ? p : n, 0);
                             let maxb = b.combos.map(c => c.count).reduce((p, n) => p > n ? p : n, 0);
 
-                            r = (aneeded / maxa) - (bneeded / maxb);                       
+                            r = (aneeded / maxa) - (bneeded / maxb);
                             if (!r) r = aneeded - bneeded;
-
                         }
 
                         return r;
-                    })
+                    });
                 }
             }
     
@@ -824,6 +744,7 @@ const CollectionOptimizer = {
                 maps: colGroups,
                 costMap: newCostMap
             });
+            
         });
     },
 };
