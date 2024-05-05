@@ -623,7 +623,7 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 
 		const worker = new UnifiedWorker();
 		worker.addEventListener('message', (message: { data: { result: CollectionWorkerResult; }; }) => processWorkerResult(message.data.result));
-		const workerName = 'colOptimizer';
+		const workerName = 'colOptimizer2';
 
 		worker.postMessage({
 			worker: workerName,
