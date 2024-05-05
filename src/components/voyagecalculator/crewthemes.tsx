@@ -4,7 +4,7 @@ import { Modal, Button, Form, Input, Dropdown, Table, Message, Icon } from 'sema
 import { IVoyageCrew } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
 import { appelate } from '../../utils/misc';
-import { getVariantTraits } from '../../utils/crewutils';
+import { crewCopy, getVariantTraits } from '../../utils/crewutils';
 
 interface IThemeOption {
 	key: string;
@@ -210,6 +210,10 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			}
 		}
 
+		let traits = [ ... new Set(globalContext.core.crew.map(c => c.traits_named).flat()) ].sort();
+		console.log(traits);
+
+
 		const customThemes = [
 			{
 				key: 'super rare',
@@ -359,6 +363,42 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				keywords: ['quipment'],
 				category: 'Quipment',
 				filter: (crew: IVoyageCrew) => !crew.immortal || !(crew.q_bits > 0 && crew.q_bits < 1300)
+			},
+			{
+				key: 'lightside',
+				name: 'Luminous and Noble',
+				description: 'Crew with the following traits: Caregiver, Counselor, Cultural Figure, Hero, Innovator, Inspiring, Nurse, Physician, Prodigy',
+				keywords: ['traits'],
+				category: 'Traits',
+				filter: (crew: IVoyageCrew) => {
+					return crew.traits_named.some(t => ["Caregiver",
+						"Counselor",
+						"Cultural Figure",
+						"Hero",
+						"Innovator",
+						"Inspiring",
+						"Nurse",
+						"Physician",
+						"Prodigy"].includes(t))
+				}
+			},
+			{
+				key: 'darkside',
+				name: 'Dark and Edgy',
+				description: 'Crew with the following traits: Brutal, Crafty, Criminal, Maverick, Saboteur, Scoundrel, Smuggler, Thief, Villain',
+				keywords: ['traits'],
+				category: 'Traits',
+				filter: (crew: IVoyageCrew) => {
+					return crew.traits_named.some(t => ["Brutal",
+						"Crafty",
+						"Criminal",
+						"Maverick",
+						"Saboteur",
+						"Scoundrel",
+						"Smuggler",
+						"Thief",
+						"Villain"].includes(t))
+				}
 			}
 		] as ICustomTheme[];
 
