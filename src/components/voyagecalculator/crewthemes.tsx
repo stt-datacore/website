@@ -384,19 +384,19 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			customThemes.push({
 				key: 'meremortals',
 				name: 'Mere Mortals',
-				description: 'Crew who are fully fused, and greater than or equal to level 90, but not immortalized',
+				description: 'Crew who are not immortalized',
 				keywords: ['rarity'],
 				category: 'Roster',
-				filter: (crew: IVoyageCrew) => crew.rarity === crew.max_rarity && crew.level >= 90 && crew.level !== 100
+				filter: (crew: IVoyageCrew) => !crew.immortal
 			} as ICustomTheme);
 
 			customThemes.push({
 				key: 'meremortalsleg',
 				name: 'Mere Mortals (Legendaries)',
-				description: 'Legendary crew who are fully fused, and greater than or equal to level 90, but not immortalized',
+				description: 'Legendary crew who are not immortalized',
 				keywords: ['rarity'],
 				category: 'Roster',
-				filter: (crew: IVoyageCrew) => crew.max_rarity === 5 && crew.rarity === crew.max_rarity && crew.level >= 90 && crew.level !== 100
+				filter: (crew: IVoyageCrew) => crew.max_rarity === 5 && !crew.immortal
 			} as ICustomTheme);
 
 		}
