@@ -387,7 +387,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				description: 'Crew who are fully fused, and greater than or equal to level 90, but not immortalized',
 				keywords: ['rarity'],
 				category: 'Roster',
-				filter: (crew: IVoyageCrew) => crew.rarity === crew.max_rarity && crew.level >= 90 && (crew.level !== 100 || crew.equipment.length < 4)
+				filter: (crew: IVoyageCrew) => crew.rarity === crew.max_rarity && crew.level >= 90 && crew.level !== 100
 			} as ICustomTheme);
 
 			customThemes.push({
@@ -396,7 +396,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				description: 'Legendary crew who are fully fused, and greater than or equal to level 90, but not immortalized',
 				keywords: ['rarity'],
 				category: 'Roster',
-				filter: (crew: IVoyageCrew) => crew.max_rarity === 5 && crew.rarity === crew.max_rarity && crew.level >= 90 && (crew.level !== 100 || crew.equipment.length < 4)
+				filter: (crew: IVoyageCrew) => crew.max_rarity === 5 && crew.rarity === crew.max_rarity && crew.level >= 90 && crew.level !== 100
 			} as ICustomTheme);
 
 		}
