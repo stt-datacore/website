@@ -208,94 +208,94 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			</div>
 		</div>}
 		<Table striped>
-			{colOptimized.slice(pageSize * (optPage - 1), (pageSize * (optPage - 1)) + pageSize).map((col, idx) => {
-				
-				const optCombo = getCombo(col);					
-				const comboCrew = findColGroupsCrew(costMap, col, optCombo);
-				if (!comboCrew?.length && optCombo !== undefined && optCombo !== '') {
-					window.setTimeout(() => {
-						setCombo(col, col.combos ? col.combos[0].names.join(" / ") : undefined);
-					});						
-					return <> </>
-				}
-				const collection = JSON.parse(JSON.stringify(col.collection)) as PlayerCollection;
-				collection.neededCost = starCost(comboCrew, undefined, costMode === 'sale');
-				collection.needed = comboCrew.length;
-				col.neededStars = neededStars(comboCrew);
-				if (!collection?.totalRewards || !collection.milestone) return <></>;
+			<Table.Body>
+				{colOptimized.slice(pageSize * (optPage - 1), (pageSize * (optPage - 1)) + pageSize).map((col, idx) => {
+					
+					const optCombo = getCombo(col);					
+					const comboCrew = findColGroupsCrew(costMap, col, optCombo);
+					if (!comboCrew?.length && optCombo !== undefined && optCombo !== '') {
+						window.setTimeout(() => {
+							setCombo(col, col.combos ? col.combos[0].names.join(" / ") : undefined);
+						});						
+						return <> </>
+					}
+					const collection = JSON.parse(JSON.stringify(col.collection)) as PlayerCollection;
+					collection.neededCost = starCost(comboCrew, undefined, costMode === 'sale');
+					collection.needed = comboCrew.length;
+					col.neededStars = neededStars(comboCrew);
+					if (!collection?.totalRewards || !collection.milestone) return <></>;
 
-				return (<Table.Row key={"colgroup" + idx} >
-					<Table.Cell width={4} style={{verticalAlign:"top"}}>
-					<CollectionCard
-						ownedCites={ownedCites} 
-						mapFilter={mapFilter}
-						setMapFilter={setMapFilter}
-						searchFilter={searchFilter}
-						setSearchFilter={setSearchFilter}
-						collection={{ ...col, collection }} />
+					return (<Table.Row key={"colgroup" + idx} >
+						<Table.Cell width={4} style={{verticalAlign:"top"}}>
+						<CollectionCard
+							ownedCites={ownedCites} 
+							mapFilter={mapFilter}
+							setMapFilter={setMapFilter}
+							searchFilter={searchFilter}
+							setSearchFilter={setSearchFilter}
+							collection={{ ...col, collection }} />
 
-					</Table.Cell>
-					<Table.Cell style={{verticalAlign:"top"}}>
-						<h3 style={{margin:"0.5em", textAlign: 'center'}}>Additional Collection Milestones:<br /></h3>						
-						{!!col.combos?.length && (col.combos?.length ?? 0) === 1 && 
-						<div style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
-						{col.combos[0].names.join(" / ")}
-						</div>}
-						{!!col.combos?.length && (col.combos?.length ?? 0) > 1 && 
-						<div style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
-						<div style={{margin: "0.25em"}}>Variations: </div>
-						<Dropdown 
-							fluid={typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH}
-							direction={typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'left' : undefined}
-							scrolling
-							placeholder={"Select Options"}
-							value={optCombo}
-							onChange={(e, { value }) => setCombo(col, value as string)}
-							options={col.combos.map(opt => {
-							return {
-								key: opt.names.join(" / "),
-								value: opt.names.join(" / "),
-								text: opt.names.join(" / ")
-							}								
-						})}/>
-						<br />
-						</div>}
+						</Table.Cell>
+						<Table.Cell style={{verticalAlign:"top"}}>
+							<h3 style={{margin:"0.5em", textAlign: 'center'}}>Additional Collection Milestones:<br /></h3>						
+							{!!col.combos?.length && (col.combos?.length ?? 0) === 1 && 
+							<div style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
+							{col.combos[0].names.join(" / ")}
+							</div>}
+							{!!col.combos?.length && (col.combos?.length ?? 0) > 1 && 
+							<div style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
+							<div style={{margin: "0.25em"}}>Variations: </div>
+							<Dropdown 
+								fluid={typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH}
+								direction={typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'left' : undefined}
+								scrolling
+								placeholder={"Select Options"}
+								value={optCombo}
+								onChange={(e, { value }) => setCombo(col, value as string)}
+								options={col.combos.map(opt => {
+								return {
+									key: opt.names.join(" / "),
+									value: opt.names.join(" / "),
+									text: opt.names.join(" / ")
+								}								
+							})}/>
+							<br />
+							</div>}
 
-						<div style={{display: 'flex', flexDirection: crewPos === 'top' ? 'column-reverse' : 'column'}}>
-						<div style={{display:'flex', flexDirection:'column'}}>
-							<Grid doubling columns={3} textAlign='center'>								
-								{getOptCols(col, optCombo).map((c) => {
-									const collection = c.collection;
-									if (!collection?.totalRewards || !collection.milestone) return <></>;
+							<div style={{display: 'flex', flexDirection: crewPos === 'top' ? 'column-reverse' : 'column'}}>
+							<div style={{display:'flex', flexDirection:'column'}}>
+								<Grid doubling columns={3} textAlign='center'>								
+									{getOptCols(col, optCombo).map((c) => {
+										const collection = c.collection;
+										if (!collection?.totalRewards || !collection.milestone) return <></>;
 
-									return (
-										<CollectionCard
-											ownedCites={ownedCites} 
-											style={{width: "350px"}}
-											brief={true}
-											mapFilter={mapFilter}
-											setMapFilter={setMapFilter}
-											searchFilter={searchFilter}
-											setSearchFilter={setSearchFilter}
-											collection={c} />)
-								})}
-						</Grid>
-					</div>
-					<Grid doubling columns={3} textAlign='center'>
-							{comboCrew.map((crew, ccidx) => (
-								<CollectionsCrewCard 
-									crew={crew} 
-									collection={collection}
-									index={ccidx} 
-									onClick={(e, data) => addToSearchFilter(data.name)} />
-							))}
-						</Grid>
+										return (
+											<CollectionCard
+												ownedCites={ownedCites} 
+												style={{width: "350px"}}
+												brief={true}
+												mapFilter={mapFilter}
+												setMapFilter={setMapFilter}
+												searchFilter={searchFilter}
+												setSearchFilter={setSearchFilter}
+												collection={c} />)
+									})}
+							</Grid>
 						</div>
-					</Table.Cell>
-				</Table.Row>)
-				}
-			)}
-
+						<Grid doubling columns={3} textAlign='center'>
+								{comboCrew.map((crew, ccidx) => (
+									<CollectionsCrewCard 
+										crew={crew} 
+										collection={collection}
+										index={ccidx} 
+										onClick={(e, data) => addToSearchFilter(data.name)} />
+								))}
+							</Grid>
+							</div>
+						</Table.Cell>
+					</Table.Row>)}
+				)}
+			</Table.Body>
 		</Table>
 		{true &&		
 			<div style={{display:"flex",

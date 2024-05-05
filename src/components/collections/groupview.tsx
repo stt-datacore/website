@@ -132,40 +132,41 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 			</div>}
 
 			<Table striped>
-				{colMap.slice(pageSize * (groupPage - 1), (pageSize * (groupPage - 1)) + pageSize).map((col, idx) => {
+				<Table.Body>
+					{colMap.slice(pageSize * (groupPage - 1), (pageSize * (groupPage - 1)) + pageSize).map((col, idx) => {
 
-					const collection = col.collection;
-					if (!collection?.totalRewards || !collection.milestone) return <></>;
-			
-					return (<Table.Row key={"colgroup" + idx}>
-						<Table.Cell width={4} style={{verticalAlign:"top"}}>						
+						const collection = col.collection;
+						if (!collection?.totalRewards || !collection.milestone) return <></>;
+				
+						return (<Table.Row key={"colgroup" + idx}>
+							<Table.Cell width={4} style={{verticalAlign:"top"}}>						
 
-							<CollectionCard 
-								ownedCites={ownedCites} 
-								mapFilter={mapFilter}
-								setMapFilter={setMapFilter}
-								searchFilter={searchFilter}
-								setSearchFilter={setSearchFilter}
-								collection={col} />
+								<CollectionCard 
+									ownedCites={ownedCites} 
+									mapFilter={mapFilter}
+									setMapFilter={setMapFilter}
+									searchFilter={searchFilter}
+									setSearchFilter={setSearchFilter}
+									collection={col} />
 
-						</Table.Cell>
-						<Table.Cell style={{verticalAlign:"top"}}>
-							
-						<Grid doubling columns={3} textAlign='center' >
-								{col.crew.map((crew, ccidx) => (
-									<CollectionsCrewCard 
-										highlightIfNeeded 
-										crew={crew} 
-										collection={collection} 
-										index={ccidx} 
-										onClick={(e, item) => addToSearchFilter(item.name)} />
-								))}
-							</Grid>
-						</Table.Cell>
-					</Table.Row>)
-					}
-				)}
-
+							</Table.Cell>
+							<Table.Cell style={{verticalAlign:"top"}}>
+								
+							<Grid doubling columns={3} textAlign='center' >
+									{col.crew.map((crew, ccidx) => (
+										<CollectionsCrewCard 
+											highlightIfNeeded 
+											crew={crew} 
+											collection={collection} 
+											index={ccidx} 
+											onClick={(e, item) => addToSearchFilter(item.name)} />
+									))}
+								</Grid>
+							</Table.Cell>
+						</Table.Row>)
+						}
+					)}
+				</Table.Body>
 			</Table>
 			{!!colMap?.length && 			
 			<div style={{display:"flex",
