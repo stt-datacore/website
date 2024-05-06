@@ -69,8 +69,24 @@ function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: P
     //console.log(`${colOptimized.name}: Size of 'less': ${less.length}`);        
     let limit = Number.POSITIVE_INFINITY;
 
-    if (less.length >= 8) {
-        limit = 1000;
+    if (less.length >= 10) {
+        limit = 3000;
+        let needmap = [] as { str: string, n: number }[];
+        less.forEach(f => {
+            let cols = f.split(" / ").map(fc => playerCollections.find(pc => pc.name === fc) as PlayerCollection);
+            needmap.push({
+                n: cols.reduce((p, n) => p ? p + n.needed! : n.needed!, 0),
+                str: f
+            });
+        });
+        needmap.sort((a, b) => {
+            let r = (b.n / colOptimized.collection.needed!) - (a.n / colOptimized.collection.needed!);
+            if (!r) {
+                r = a.str.localeCompare(b.str);
+            }
+            return r;
+        });
+        less = needmap.map(m => m.str);
     }
 
     let rawcombos = eOut.concat(makeAllCombos(less, limit));
@@ -201,7 +217,7 @@ const CollectionOptimizer = {
                 }
             });
 
-            const colGroups = colInfo.map(c => {
+            const preFiltered = colInfo.map(c => {
                 c.relatives.sort();                
                 let col = workingCollections.find(f => f.name === c.name) as PlayerCollection;                
                 let map = {
@@ -244,8 +260,9 @@ const CollectionOptimizer = {
                     
                 if (!r) r = acol?.name.localeCompare(bcol?.name ?? "") ?? 0;
                 return r;
-            })
-            .filter((x) => {
+            });
+
+            const colGroups = preFiltered.filter((x) => {
                 let bPass =
                     x.collection !== undefined &&
                     x.crew?.length &&
@@ -585,7 +602,7 @@ const CollectionOptimizer = {
                     });
             };
 
-            const colOptimized = createOptimizerGroups(colGroups.map(g => {
+            const colOptimized = createOptimizerGroups(preFiltered.map(g => {
                 return {
                     ... g,
                     crew: g.crew.filter(f => f.have || (f.immortal !== undefined && f.immortal >= -1))
