@@ -32,7 +32,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
     const colContext = React.useContext(CollectionFilterContext);
     const context = React.useContext(GlobalContext);
     const { workerRunning, playerCollections } = props;
-    const { favorited, setFavorited, hardFilter, setHardFilter, byCost, setByCost, matchMode, setMatchMode, costMode, setCostMode, setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
+    const { favorited, setFavorited, showIncomplete, setShowIncomplete, hardFilter, setHardFilter, byCost, setByCost, matchMode, setMatchMode, costMode, setCostMode, setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     
@@ -146,6 +146,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 				<Checkbox style={{margin: "0.5em 1em", gridArea: 'a'}} label={"Sort by cost"} checked={byCost} onChange={(e, { checked }) => setByCost(checked ?? false)} />
 				<Checkbox style={{margin: "0.5em 1em", gridArea: 'b'}} label={"Honor Sale Pricing"} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
 				<Checkbox style={{margin: "0.5em 1em", gridArea: 'c'}} label={"Prioritize Favorite Crew"} checked={favorited} onChange={(e, { checked }) => setFavorited(!!checked)} />
+				<Checkbox style={{margin: "0.5em 1em", gridArea: 'd'}} label={"Show Incomplete Combos"} checked={showIncomplete} onChange={(e, { checked }) => setShowIncomplete(!!checked)} />
 			</div>
 		</div>
 
@@ -221,7 +222,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 					}
 					const collection = JSON.parse(JSON.stringify(col.collection)) as PlayerCollection;
 					collection.neededCost = starCost(comboCrew, undefined, costMode === 'sale');
-					collection.needed = comboCrew.length;
+					//collection.needed = comboCrew.length;
 					col.neededStars = neededStars(comboCrew);
 					if (!collection?.totalRewards || !collection.milestone) return <></>;
 
