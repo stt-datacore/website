@@ -163,7 +163,8 @@ const CollectionOptimizer = {
                 mapFilter,
                 ownedFilter,
                 searchFilter,                
-                favorited: favorites
+                favorited: favorites,
+                showIncomplete
             } = filterProps;
 
             const searches = searchFilter?.length
@@ -197,33 +198,27 @@ const CollectionOptimizer = {
                             crewcols[i].relatives.push(crewcols[j].name);
                         }
                     }
-                }                
+                }
             });
 
-            const colMap = colInfo.map(c => {
+            const colGroups = colInfo.map(c => {
                 c.relatives.sort();                
                 let col = workingCollections.find(f => f.name === c.name) as PlayerCollection;                
-                return {
+                let map = {
                     collection: col,
                     crew: c.crew.map(csym => workingCrew.find(f => f.symbol === csym) as PlayerCrew)                    
                 } as CollectionMap;
-            });
 
-            colMap.forEach(map => {
                 map.crew = normalCollectionSort(map.crew, searchFilter, searches, favorites);
                 map.neededStars = neededStars(map.crew, map.collection.needed ?? 0);
+                map.collection.neededCost = starCost(
+                    map.crew,
+                    map.collection.needed,
+                    costMode === "sale");                
+
+                return map;
             })
-
-            colMap.forEach(
-                (c) =>
-                (c.collection.neededCost = starCost(
-                    c.crew,
-                    c.collection.needed,
-                    costMode === "sale"
-                ))
-            );
-
-            colMap.sort((a, b) => {
+            .sort((a, b) => {
                 let acol = a.collection;
                 let bcol = b.collection;
                 let r = 0;
@@ -249,9 +244,8 @@ const CollectionOptimizer = {
                     
                 if (!r) r = acol?.name.localeCompare(bcol?.name ?? "") ?? 0;
                 return r;
-            });
-
-            const colGroups = colMap.filter((x) => {
+            })
+            .filter((x) => {
                 let bPass =
                     x.collection !== undefined &&
                     x.crew?.length &&
@@ -270,7 +264,7 @@ const CollectionOptimizer = {
             });
             
             const linkScores = {} as { [key: string]: CollectionMap[] };
-
+            
             colInfo.forEach((ci) => {
                 ci.relatives.forEach((cirkey) => {
                     let cirel = colInfo.find(c => c.name === cirkey);
@@ -278,7 +272,7 @@ const CollectionOptimizer = {
                         let crew = ci.crew.filter(cf => cirel.crew.includes(cf)).map(ccsym => workingCrew.find(c => c.symbol === ccsym) as PlayerCrew);
                         crew = normalCollectionSort(crew, searchFilter, searches, favorites);
                         //crew.sort((a, b) => a.name.localeCompare(b.name));
-                        let col2 = workingCollections.find(wc => wc.name === cirel.name) as PlayerCollection
+                        let col2 = workingCollections.find(wc => wc.name === cirel.name) as PlayerCollection;
                         if (!!crew?.length) {
                             linkScores[ci.name] ??= [];
                             linkScores[ci.name].push({
@@ -288,13 +282,12 @@ const CollectionOptimizer = {
                             });
 
                             linkScores[ci.name] = linkScores[ci.name]
-                            .filter((ls) => ls.completes)
-                            .sort((a, b) => {
-                                let r = b.crew.length - a.crew.length;
-                                if (!r) r = a.collection.name.localeCompare(b.collection.name);
-                                return r;
-                            });
-    
+                                .filter((ls) => ls.completes)
+                                .sort((a, b) => {
+                                    let r = b.crew.length - a.crew.length;
+                                    if (!r) r = a.collection.name.localeCompare(b.collection.name);
+                                    return r;
+                                });
                         }
                     }                    
                 });
@@ -446,11 +439,11 @@ const CollectionOptimizer = {
 
                             if (total) {
                                 if (total === colNeeded) {
-                                    exact.push({ names: test, count: total, crew: crewnames });
+                                    exact.push({ names: test, count: total, crew: crewnames, exact: true });
                                 } else if (total > colNeeded) {
-                                    over.push({ names: test, count: total, crew: crewnames });
+                                    over.push({ names: test, count: total, crew: crewnames, exact: false });
                                 } else {
-                                    under.push({ names: test, count: total, crew: crewnames });
+                                    under.push({ names: test, count: total, crew: crewnames, exact: false });
                                 }
                             }
                         }
@@ -459,10 +452,6 @@ const CollectionOptimizer = {
                     exact.sort((a, b) => b.crew.length - a.crew.length);
                     under.sort((a, b) => b.crew.length - a.crew.length);
                     over.sort((a, b) => b.crew.length - a.crew.length);
-                    
-                    for (let ex of exact) {
-                        ex.names = ex.names.map((eu, idx) => (!idx ? "* " : "") + eu);
-                    }
 
                     if (matchMode === 'normal') {
                         if (exact.length > 1) {
@@ -508,9 +497,7 @@ const CollectionOptimizer = {
                         if (!mapFilter?.collectionsFilter?.includes(col.collection.id)) {
                             col.combos = col.combos?.filter((fc) => {
                                 let col = fc.names.map((sc) =>
-                                    playerCollections.find(
-                                        (col) => col.name === sc.replace("* ", "")
-                                    )
+                                    playerCollections.find((col) => col.name === sc)
                                 );
                                 return col.some((c) =>
                                     mapFilter?.collectionsFilter?.includes(c?.id ?? -1)
@@ -579,10 +566,9 @@ const CollectionOptimizer = {
                         if (a.combos && b.combos) {
                             let acb = a.combos.length;
                             let bcb = b.combos.length;
-                            let ayes =
-                                a.combos.filter((c) => c.names[0].startsWith("* "))?.length ?? 0;
-                            let byes =
-                                b.combos.filter((c) => c.names[0].startsWith("* "))?.length ?? 0;
+                            let ayes = a.combos.filter((c) => c.exact)?.length ?? 0;
+                            let byes = b.combos.filter((c) => c.exact)?.length ?? 0;
+
                             let r = 0;
 
                             if (!r) r = byes - ayes;
@@ -609,18 +595,19 @@ const CollectionOptimizer = {
             const newCostMap = [] as ComboCostMap[];
             
             colOptimized.forEach((col) => {			
-                let seengroups = {} as { [key: string]: ComboCostMap };            
+                let seengroups = {} as { [key: string]: ComboCostMap };
                 col.comboCost = [];		
 
                 for(let combo of col.combos ?? []) {
                     let comboname = combo.names.join(" / ");
                     let crew = getOptCrew(col, costMode, searches, comboname);
-                    let grouped = crew.map(c => c.symbol).sort().join(",");                    
+                    let grouped = crew.map(c => c.symbol).sort().join(",");
                     let cm = {
                         collection: col.collection.name,
                         combo: combo,
                         cost: starCost(crew, undefined, costMode === 'sale'),
-                        crew: crew
+                        crew: crew,
+                        exact: combo.exact
                     };
                     
                     seengroups[grouped] ??= cm;
@@ -719,23 +706,49 @@ const CollectionOptimizer = {
                 }
             }
     
-            let fc = colOptimized.filter((col) => {		
-                if (searches?.length) {
+            let fc = colOptimized.filter((col) => {
+                if (!showIncomplete && col.collection.owned < (col.collection.milestone.goal as number)) return false;
+
+                if (col.combos) {
                     let newcombos = [] as ColComboMap[];
                     let newcombocost = [] as number[];
                     let x = 0;
-                    for (let combo of col.combos ?? []) {
-                        let fc = findColGroupsCrew(newCostMap, col, combo.names.join(" / "));
-                        if (fc.some(fcc => searches.includes(fcc.name))) {
+                    for (let combo of col.combos) {
+                        if (col.combos?.every((cb2) => !(combo !== cb2 && combo.names.every(name => cb2.names.includes(name))))) {
                             newcombos.push(combo);
                             if (col.comboCost?.length) newcombocost.push(col.comboCost[x]);
                         }
-                        x++;
+                        col.combos = newcombos;
+                        col.comboCost = newcombocost;
+                    }    
+
+                    if (searches?.length) {             
+                        newcombos = [];
+                        newcombocost = [];
+                        x = 0;
+                        for (let combo of col.combos ?? []) {
+                            let fc = findColGroupsCrew(newCostMap, col, combo.names.join(" / "));
+                            if (fc.some(fcc => searches.includes(fcc.name))) {
+                                newcombos.push(combo);
+                                if (col.comboCost?.length) newcombocost.push(col.comboCost[x]);
+                            }
+                            x++;
+                        }
+
+                        col.combos = newcombos;
+                        col.comboCost = newcombocost;
+
+                        if (!col.uniqueCrew?.some(f => searches.includes(f.name))) return false;
                     }
-                    col.combos = newcombos;
-                    col.comboCost = newcombocost;
-                    if (!col.uniqueCrew?.some(f => searches.includes(f.name))) return false;
+
+                    col.combos.forEach((combo) => {
+                        if (combo.exact) {
+                            combo.names[0] = "* " + combo.names[0];
+                        }
+                    });
                 }
+
+
                 return !!col.combos?.length;
             });
 
