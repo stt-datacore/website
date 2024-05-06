@@ -364,7 +364,7 @@ function mergeTiers(col: PlayerCollection, startTier: number, endTier: number): 
 	
 	if (result.milestone.goal != 'n/a' && result.progress != 'n/a') {
 		result.progressPct = result.milestone.goal > 0 ? result.progress / result.milestone.goal : 1;
-		result.neededPct = 1 - result.progressPct;
+		result.neededPct = 1 - result.progressPct;		
 		result.needed = result.milestone.goal > 0 ? Math.max(result.milestone.goal - result.progress, 0) : 0;
 	}
 
@@ -396,7 +396,7 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 	const [costMap, setCostMap] = React.useState<ComboCostMap[]>([]);
 
 	const { playerCollections: tempCol, collectionCrew } = props;
-	const { favorited, hardFilter, setHardFilter, tierFilter, setTierFilter, byCost, matchMode, checkCommonFilter, costMode, setShort, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
+	const { favorited, hardFilter, setHardFilter, tierFilter, setTierFilter, byCost, showIncomplete, matchMode, checkCommonFilter, costMode, setShort, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
 	
 	const playerCollections = tempCol.filter((col) => {
 		if (hardFilter && mapFilter?.rewardFilter) {
@@ -638,7 +638,8 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 					ownedFilter,
 					short,
 					costMode,
-					favorited
+					favorited,
+					showIncomplete
 				},
 				collectionCrew,
 				matchMode: matchMode,
@@ -753,7 +754,7 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	React.useEffect(() => {
 		setWorkerRunning(true);
-	}, [context, mapFilter, rarityFilter, fuseFilter, ownedFilter, searchFilter, matchMode, tierFilter]);	
+	}, [context, mapFilter, showIncomplete, rarityFilter, fuseFilter, ownedFilter, searchFilter, matchMode, tierFilter]);	
 
 	React.useEffect(() => {
 		window.setTimeout(() => {

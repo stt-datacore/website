@@ -14,15 +14,18 @@ export interface CollectionMap {
 }
 
 export interface ColComboMap {
-    names: string[]; 
+    names: string[];
     count: number;
     crew: string[]; 
+    exact: boolean;
 }
 
 export interface ComboCostMap { 
     collection: string; 
     combo: ColComboMap; 
-    cost: number; crew: PlayerCrew[] 
+    cost: number;
+    crew: PlayerCrew[];
+    exact: boolean;
 }
 
 export interface CollectionGroup {
@@ -52,6 +55,7 @@ export interface CollectionFilterProps {
     matchMode: CollectionMatchMode;
     hardFilter: boolean;
     favorited: boolean;
+    showIncomplete: boolean;
 };
 
 
@@ -88,6 +92,9 @@ export interface CollectionFilterContextProps extends CollectionFilterProps {
 
     favorited: boolean;
     setFavorited: (value: boolean) => void;
+
+    showIncomplete: boolean;
+    setShowIncomplete: (value: boolean) => void;
 
     matchMode: CollectionMatchMode;
     setMatchMode: (value: CollectionMatchMode) => void;
