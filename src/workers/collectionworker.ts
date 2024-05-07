@@ -206,6 +206,7 @@ const CollectionOptimizer = {
 
             workingCrew.forEach((crew) => {
                 let crewcols = colInfo.filter(c => crew.collections.includes(c.name));
+                crew.pickerId = crewcols.length;
                 let c = crewcols.length;
                 for (let i = 0; i < c; i++) {
                     for (let j = 0; j < c; j++) {
