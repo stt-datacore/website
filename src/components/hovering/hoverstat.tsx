@@ -442,8 +442,8 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
         let hoverstat = document.getElementById(divId);        
         this._nodismiss = false;
         
-        if (hoverstat) {            
-            this.realignTarget(target);
+        if (hoverstat) {
+            setTimeout(() => this.realignTarget(target));
         }
     }
 
