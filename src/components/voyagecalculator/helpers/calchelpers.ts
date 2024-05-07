@@ -30,7 +30,8 @@ export interface CalculatorHelper {
 export const CALCULATORS = {
 	helpers: [
 		{ id: 'iampicard', name: 'Original', helper: (props: HelperProps) => new IAmPicardHelper(props) },
-		{ id: 'ussjohnjay', name: 'Multi-vector Assault', helper: (props: HelperProps) => new USSJohnJayHelper(props) }
+		{ id: 'ussjohnjay-mvam', name: 'Multi-vector Assault', helper: (props: HelperProps) => new USSJohnJayHelper(props, 'mvam') },
+		{ id: 'ussjohnjay-idic', name: 'Infinite Diversity', helper: (props: HelperProps) => new USSJohnJayHelper(props, 'idic') }
 	] as CalculatorHelper[],
 	fields: [
 		{
@@ -63,7 +64,7 @@ export const CALCULATORS = {
 			default: 0
 		},
 		{
-			calculators: ['ussjohnjay'],
+			calculators: ['ussjohnjay-mvam', 'ussjohnjay-idic'],
 			id: 'strategy',
 			name: 'Strategy',
 			description: 'Prioritize estimates by strategy',
@@ -72,9 +73,9 @@ export const CALCULATORS = {
 				{ key: 'estimate', text: 'Best estimate (default)', value: 'estimate' },
 				{ key: 'minimum', text: 'Guaranteed minimum', value: 'minimum' },
 				{ key: 'moonshot', text: 'Moonshot', value: 'moonshot' },
-				// { key: 'versatile', text: 'Versatile', value: 'versatile' },
+				{ key: 'any', text: 'Any best', value: 'any' },
 				{ key: 'peak-antimatter', text: 'Peak antimatter (experimental)', value: 'peak-antimatter' },
-				{ key: 'thorough', text: 'Thorough (slow)', value: 'thorough' }
+				// { key: 'thorough', text: 'Thorough (slow)', value: 'thorough' }
 			],
 			default: 'estimate'
 		}
