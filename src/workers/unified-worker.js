@@ -82,7 +82,6 @@ self.onmessage = (message) => {
         'citeOptimizer': () => citeOptimizer(message.data.playerData, message.data.allCrew).then(data => postResult(data, false)),
         'questSolver': () => QuestSolver.solveQuest(message.data.config).then(data => postResult(data, false)),
         'ironywrit': () => BetaTachyon.scanCrew(message.data.config).then(data => postResult(data, false)),
-        'colOptimizer': () => CollectionOptimizer.scanAll(message.data.config).then(data => postResult(data, false)),
         'colOptimizer2': () => CollectionOptimizer.scanAll2(message.data.config).then(data => postResult(data, false)),
         'equipmentWorker': () => ItemsWorker.processItems(message.data.config).then(data => postResult(data, false)),
         'iampicard': () => voymod().then(mod => {
