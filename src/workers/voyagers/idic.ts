@@ -35,7 +35,7 @@ export const InfiniteDiversity = (
 	const MAX_COMBOS: number = 100000;
 
 	// Increase this to prioritize total voyage score over matching skills
-	const VOYAGER_RANK_WEIGHT: number = 15;
+	const VOYAGER_RANK_WEIGHT: number = 20;
 
 	// Stop considering crew with a specific skill,
 	//	if the crew pool already has this many crew with that skill
