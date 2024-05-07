@@ -249,6 +249,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
                 </div>
                 <div style={{ margin: 0, marginRight: "0.25em", width: "68px" }}>
                     <ItemDisplay
+                        crewBackground='rich'
                         playerData={context.player.playerData}
                         itemSymbol={crew.symbol}
                         targetGroup='gauntletsHover'
