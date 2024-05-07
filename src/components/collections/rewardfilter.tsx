@@ -35,6 +35,8 @@ export const RewardFilter = (props: RewardFilterProps) => {
                 }}>
                     <Dropdown
                         multiple
+                        placeholder={'Select crew ...'}
+                       
                         style={{ width: narrow ? '100%' : '30%', margin: "0.5em 0" }}
                         iconPosition="left"
                         scrolling		

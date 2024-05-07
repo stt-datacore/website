@@ -122,7 +122,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 
 	render() {
 		const { location } = this.props.props;
-		const { markdownRemark, crewJson, site: { siteMetadata } } = this.props.props.data;
+		const { markdownRemark, site: { siteMetadata } } = this.props.props.data;
 
 
 		if (this.context.player.playerData?.player?.character?.crew?.length) {
@@ -132,9 +132,9 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 			this.buffs = this.context.player.buffConfig;
 		}
 
-		if (crewJson.edges.length === 0) {
-			return <span>Crew not found!</span>;
-		}
+		// if (crewJson.edges.length === 0) {
+		// 	return <span>Crew not found!</span>;
+		// }
 
 		const { comments } = this.state;
 		const { translation } = this.context.core;
@@ -142,10 +142,12 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 
 		const userName = this._getCurrentUsername();
 
-		const crew = { ...crewJson.edges[0].node as PlayerCrew, ... this.context.core.crew.find(c => c.symbol === crewJson.edges[0].node.symbol) };
-		const crewFind = this.context.core.crew.find(f => f.symbol === crew.symbol);
-		crew.obtained = crewFind?.obtained ?? "Unknown";
+		const symbol = this.props.props.location.pathname.replace("/crew/", "").replace("/", "");
 
+		const crew = (this.context.core.crew.find(c => c.symbol === symbol)) as PlayerCrew;
+		//const crewFind = this.context.core.crew.find(f => f.symbol === crew.symbol);
+
+		//crew.obtained = crewFind?.obtained ?? "Unknown";
 		crew.immortal = CompletionState.DisplayAsImmortalStatic;
 
 		let arch = translation.crew_archetypes.find(f => f.symbol === crew.symbol);
@@ -312,7 +314,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 export default StaticCrewPage;
 
 export const query = graphql`
-	query($slug: String!, $symbol: String!) {
+	query($slug: String!) {
 		site {
 			siteMetadata {
 				defaultTitle: title
@@ -332,193 +334,6 @@ export const query = graphql`
 				in_portal
 				published
 			}
-		}
-		crewJson: allCrewJson(filter: { symbol: { eq: $symbol } }) {
-			edges {
-				node {
-					name
-					short_name
-					flavor
-					series
-					symbol
-					archetype_id
-					traits
-					traits_named
-					traits_hidden
-					collections
-					max_rarity
-					imageUrlFullBody
-					imageUrlPortrait
-					date_added
-					in_portal
-					obtained
-					...RanksFragment
-					base_skills {
-						security_skill {
-							core
-							range_min
-							range_max
-						}
-						command_skill {
-							core
-							range_min
-							range_max
-						}
-						diplomacy_skill {
-							core
-							range_min
-							range_max
-						}
-						science_skill {
-							core
-							range_min
-							range_max
-						}
-						medicine_skill {
-							core
-							range_min
-							range_max
-						}
-						engineering_skill {
-							core
-							range_min
-							range_max
-						}
-					}
-					skill_data {
-						rarity
-						base_skills {
-							security_skill {
-								core
-								range_min
-								range_max
-							}
-							command_skill {
-								core
-								range_min
-								range_max
-							}
-							diplomacy_skill {
-								core
-								range_min
-								range_max
-							}
-							science_skill {
-								core
-								range_min
-								range_max
-							}
-							medicine_skill {
-								core
-								range_min
-								range_max
-							}
-							engineering_skill {
-								core
-								range_min
-								range_max
-							}
-						}
-					}
-					cross_fuse_targets {
-						symbol
-						name
-					}
-					action {
-						name
-						bonus_type
-						bonus_amount
-						initial_cooldown
-						cooldown
-						duration
-						limit
-						penalty {
-							type
-							amount
-						}
-						ability {
-							type
-							amount
-							condition
-						}
-						charge_phases {
-							charge_time
-							bonus_amount
-							ability_amount
-							cooldown
-							duration
-						}
-					}
-					equipment_slots {
-						level
-						symbol
-					}
-					ship_battle {
-						accuracy
-						crit_bonus
-						crit_chance
-						evasion
-					}
-					unique_polestar_combos
-					markdownInfo {
-						author
-						modified
-					}
-					nicknames {
-						cleverThing
-						creator
-					}
-				}
-			}
-		}
-	}
-	fragment RanksFragment on CrewJson {
-		cab_ov
-		cab_ov_rank
-		cab_ov_grade
-		ranks {
-			voyRank
-			gauntletRank
-			voyTriplet {
-				name
-				rank
-			}
-			V_CMD_SCI
-			V_CMD_SEC
-			V_CMD_ENG
-			V_CMD_DIP
-			V_CMD_MED
-			V_SCI_SEC
-			V_SCI_ENG
-			V_SCI_DIP
-			V_SCI_MED
-			V_SEC_ENG
-			V_SEC_DIP
-			V_SEC_MED
-			V_ENG_DIP
-			V_ENG_MED
-			V_DIP_MED
-			G_CMD_SCI
-			G_CMD_SEC
-			G_CMD_ENG
-			G_CMD_DIP
-			G_CMD_MED
-			G_SCI_SEC
-			G_SCI_ENG
-			G_SCI_DIP
-			G_SCI_MED
-			G_SEC_ENG
-			G_SEC_DIP
-			G_SEC_MED
-			G_ENG_DIP
-			G_ENG_MED
-			G_DIP_MED
-			B_SCI
-			B_SEC
-			B_ENG
-			B_DIP
-			B_CMD
-			B_MED
 		}
 	}
 `;

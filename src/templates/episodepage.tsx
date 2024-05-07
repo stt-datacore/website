@@ -1,21 +1,46 @@
 import React, { Component } from 'react';
-import { Header, Item, Comment } from 'semantic-ui-react';
-import { graphql } from 'gatsby';
+import { Comment, Header, Item } from 'semantic-ui-react';
+
+import { Mission } from '../model/missions';
+import { GlobalContext } from '../context/globalcontext';
+import DataPageLayout from '../components/page/datapagelayout';
+import CONFIG from '../components/CONFIG';
 
 import { getEpisodeName } from '../utils/episodes';
 
-import CONFIG from '../components/CONFIG';
-import DataPageLayout from '../components/page/datapagelayout';
+type EpisodePageProps = {
+	pageContext: {
+		symbol: string;
+	}
+};
 
-type StaticEpisodePageProps = {
-	data: {
-		allEpisodesJson: any;
-	};
+const EpisodePage = (props: EpisodePageProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { episodes } = globalContext.core;
+	const { pageContext } = props;
+
+	const episode: Mission | undefined = episodes.find(episode => episode.symbol === pageContext.symbol);
+	const episodeName: string = episode ? getEpisodeName(episode) : 'Episode not found!';
+
+	return (
+		<DataPageLayout
+			demands={['episodes']}
+			pageTitle={episodeName}
+		>
+			<React.Fragment>
+				{episode && <StaticEpisodePage episode={episode} />}
+			</React.Fragment>
+		</DataPageLayout>
+	);
 };
 
 function imageFileUrl(img: any) {
 	return img.file.slice(1).replace('/', '_') + '.png';
 }
+
+type StaticEpisodePageProps = {
+	episode: Mission;
+};
 
 class StaticEpisodePage extends Component<StaticEpisodePageProps> {
 	constructor(props) {
@@ -157,140 +182,27 @@ class StaticEpisodePage extends Component<StaticEpisodePageProps> {
 	}
 
 	render() {
-		const { allEpisodesJson } = this.props.data;
-		if (allEpisodesJson.edges.length === 0) {
-			return <span>Episode not found!</span>;
-		}
-
-		const episode = allEpisodesJson.edges[0].node;
+		const episode = this.props.episode;
 		return (
-			<DataPageLayout pageTitle={getEpisodeName(episode)}>
-				<React.Fragment>
-				<p dangerouslySetInnerHTML={{ __html: episode.description }} />
+			<React.Fragment>
+			<p dangerouslySetInnerHTML={{ __html: episode.description ?? '' }} />
 
-				<Item.Group divided>
-					{episode.quests.map((c, idx) => (
-						<Item key={idx}>
-							<Item.Image size='small' src={`${process.env.GATSBY_ASSETS_URL}${this._getImageUrl(c)}`} />
+			<Item.Group divided>
+				{episode.quests.map((c, idx) => (
+					<Item key={idx}>
+						<Item.Image size='small' src={`${process.env.GATSBY_ASSETS_URL}${this._getImageUrl(c)}`} />
 
-							<Item.Content>
-								<Item.Header as='a'>{c.name}</Item.Header>
-								<Item.Description>{this.renderQuestDescription(c)}</Item.Description>
-								<Item.Extra>{this._questType(c.quest_type)}</Item.Extra>
-							</Item.Content>
-						</Item>
-					))}
-				</Item.Group>
-				</React.Fragment>
-			</DataPageLayout>
+						<Item.Content>
+							<Item.Header as='a'>{c.name}</Item.Header>
+							<Item.Description>{this.renderQuestDescription(c)}</Item.Description>
+							<Item.Extra>{this._questType(c.quest_type)}</Item.Extra>
+						</Item.Content>
+					</Item>
+				))}
+			</Item.Group>
+			</React.Fragment>
 		);
 	}
 }
 
-export default StaticEpisodePage;
-
-export const query = graphql`
-	query($symbol: String!) {
-		allEpisodesJson(filter: { symbol: { eq: $symbol } }) {
-			edges {
-				node {
-					name
-					description
-					cadet
-					episode_title
-					episode
-					total_stars
-					episode_portrait {
-						file
-					}
-					quests {
-						quest_type
-						symbol
-						name
-						action
-						description
-						cadet_crew_select_info
-						unlock_text
-						notifier_icon {
-							file
-						}
-						timeline_icon {
-							file
-						}
-						mastery_levels {
-							id
-							energy_cost
-							opponent {
-								ship_icon {
-									file
-								}
-								ship_name
-								ship_level
-								rarity
-								shields
-								hull
-								evasion
-								attack
-								accuracy
-								crit_chance
-								crit_bonus
-								attacks_per_second
-								shield_regen
-								name
-								icon {
-									file
-								}
-							}
-						}
-						intro {
-							text
-							portrait {
-								file
-							}
-							speaker_name
-							response
-						}
-						screens {
-							speaker_name
-							speaker_image {
-								file
-							}
-							text
-							prerequisites {
-								mission_tags
-							}
-							responses {
-								text
-								button
-								rewards {
-									mission_tags
-								}
-								index
-								loot_rewards {
-									type
-									symbol
-									name
-									icon {
-										file
-									}
-									quantity
-									quantity_as_percentage_increase
-									id
-								}
-								paraphrase
-							}
-							index
-						}
-						crew_requirement {
-							description
-						}
-						stages {
-							grid_x
-							text
-						}
-					}
-				}
-			}
-		}
-	}
-`;
+export default EpisodePage;

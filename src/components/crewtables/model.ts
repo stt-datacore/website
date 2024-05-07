@@ -11,7 +11,7 @@ export interface IRosterCrew extends PlayerCrew {
 
 };
 
-export type RosterType = 'allCrew' | 'myCrew' | 'profileCrew';
+export type RosterType = 'allCrew' | 'myCrew' | 'profileCrew' | 'buyBack';
 
 export interface ICrewFilter {
 	id: string;

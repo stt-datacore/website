@@ -34,7 +34,9 @@ A simple DB (currently LiteSQL but configurable) that links discord user ids wit
 #### misc scripts
 Scripts that take care of parsing the big / little book data, new items, ships and crew info and event details. These are currently manually executed by the maintainer 2-3 times a week and require regular maintenance to keep up with changes to the various upstream sources.
 
-- [ ] TODO upload source code
+# System Requirements
+
+As of v2.1, DataCore requires Node 18+, and yarn to build.
 
 # Usage
 On first run, run `publish.sh -f` to generate static frontend website. 

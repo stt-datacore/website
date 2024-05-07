@@ -1,8 +1,12 @@
 //import allEvents from '../../static/structured/event_instances.json';
 import { CrewMember } from '../model/crew';
-import { Content, GameEvent, Shuttle } from '../model/player';
-import { IEventData } from '../components/eventplanner/model';
+import { CompletionState, Content, GameEvent, Shuttle } from '../model/player';
+import { IBestCombos, IEventCombos, IEventData, IEventPair, IEventScoredCrew, IEventSkill, IRosterCrew } from '../components/eventplanner/model';
 import { EventInstance } from '../model/events';
+import CONFIG from '../components/CONFIG';
+import { applySkillBuff } from './crewutils';
+import { BuffStatTable } from './voyageutils';
+import { IDefaultGlobal } from '../context/globalcontext';
 
 export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[]): IEventData | undefined {
 	const result = {} as IEventData;
@@ -95,10 +99,10 @@ export async function guessCurrentEvent(allCrew: CrewMember[], allEvents: EventI
 }
 
 // Current event here refers to an ongoing event, or the next event if none is ongoing
-function guessCurrentEventId(allEvents: EventInstance[]): number {
+export function guessCurrentEventId(allEvents: EventInstance[]): number {
 	const easternTime = new Date((new Date()).toLocaleString('en-US', { timeZone: 'America/New_York' }));
 	const estDay = easternTime.getDay(), estHour = easternTime.getHours();
-	
+
 	// Use penultimate event instance if current time is:
 	//	>= Wednesday Noon ET (approx time when game data is updated with next week's event)
 	//		and < Monday Noon ET (when event ends)
@@ -229,4 +233,145 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus:
 	}
 
 	return { bonus, featured };
+}
+
+// Formula based on PADD's EventHelperGalaxy, assuming craft_config is constant
+export function calculateGalaxyChance(skillValue: number) : number {
+	const craft_config = {
+		specialist_chance_formula: {
+			steepness: 0.3,
+			midpoint: 5.5
+		},
+		specialist_challenge_rating: 1050,
+		specialist_failure_bonus: 0.05,
+		specialist_maximum_success_chance: 0.99
+	};
+
+	const midpointOffset: number = skillValue / craft_config.specialist_challenge_rating;
+	const val: number = Math.floor(
+		100 /
+			(1 +
+				Math.exp(
+					-craft_config.specialist_chance_formula.steepness *
+						(midpointOffset - craft_config.specialist_chance_formula.midpoint)
+				)
+			)
+	);
+	return Math.round(Math.min(val / 100, craft_config.specialist_maximum_success_chance)*100);
+}
+
+
+export function computeEventBest(
+	rosterCrew: IEventScoredCrew[],
+	eventData: IEventData,
+	phaseType: string,
+	buffConfig?: BuffStatTable,
+	applyBonus?: boolean, 
+	showPotential?: boolean) {
+
+	let bestCombos: IBestCombos = {};
+	const zeroCombos: IEventCombos = {};
+
+	for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
+		let firstSkill = CONFIG.SKILLS_SHORT[first];
+		zeroCombos[firstSkill.name] = 0;
+		for (let second = first+1; second < CONFIG.SKILLS_SHORT.length; second++) {
+			let secondSkill = CONFIG.SKILLS_SHORT[second];
+			zeroCombos[firstSkill.name+','+secondSkill.name] = 0;
+		}
+	}
+	
+	const getPairScore = (crew: IRosterCrew, primary: string, secondary: string) => {
+		if (phaseType === 'shuttles') {
+			if (secondary) return crew[primary].core+(crew[secondary].core/4);
+			return crew[primary].core;
+		}
+		if (secondary) return (crew[primary].core+crew[secondary].core)/2;
+		return crew[primary].core/2;
+	};
+
+	rosterCrew.forEach(crew => {
+		// First adjust skill scores as necessary
+		if (applyBonus || showPotential) {
+			crew.bonus = 1;
+			if (applyBonus && eventData.featured.indexOf(crew.symbol) >= 0) {
+				if (phaseType === 'gather') crew.bonus = 10;
+				else if (phaseType === 'shuttles') crew.bonus = 3;
+			}
+			else if (applyBonus && eventData.bonus.indexOf(crew.symbol) >= 0) {
+				if (phaseType === 'gather') crew.bonus = 5;
+				else if (phaseType === 'shuttles') crew.bonus = 2;
+			}
+			if (crew.bonus > 1 || showPotential) {
+				CONFIG.SKILLS_SHORT.forEach(skill => {
+					if (crew[skill.name].core > 0) {
+						if (showPotential && crew.immortal === CompletionState.NotComplete && !crew.prospect) {
+							crew[skill.name].current = crew[skill.name].core*crew.bonus;
+							if (buffConfig) crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.skill_data[crew.rarity-1].base_skills[skill.name]);
+						}
+						crew[skill.name].core = crew[skill.name].core*crew.bonus;
+					}
+				});
+			}
+		}
+
+		// Then calculate skill combination scores
+		let combos: IEventCombos = {...zeroCombos};
+		let bestPair: IEventPair = { score: 0, skillA: '', skillB: '' };
+		let bestSkill: IEventSkill = { score: 0, skill: '' };
+		for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
+			const firstSkill = CONFIG.SKILLS_SHORT[first];
+			const single = {
+				score: crew[firstSkill.name].core,
+				skillA: firstSkill.name
+			};
+			combos[firstSkill.name] = single.score;
+			if (!bestCombos[firstSkill.name] || single.score > bestCombos[firstSkill.name].score)
+				bestCombos[firstSkill.name] = { id: crew.id, score: single.score };
+			if (single.score > bestSkill.score) bestSkill = { score: single.score, skill: single.skillA };
+			for (let second = first+1; second < CONFIG.SKILLS_SHORT.length; second++) {
+				const secondSkill = CONFIG.SKILLS_SHORT[second];
+				let pair = {
+					score: getPairScore(crew, firstSkill.name, secondSkill.name),
+					skillA: firstSkill.name,
+					skillB: secondSkill.name
+				}
+				if (crew[secondSkill.name].core > crew[firstSkill.name].core) {
+					pair = {
+						score: getPairScore(crew, secondSkill.name, firstSkill.name),
+						skillA: secondSkill.name,
+						skillB: firstSkill.name
+					}
+				}
+				combos[firstSkill.name+','+secondSkill.name] = pair.score;
+				if (pair.score > bestPair.score) bestPair = pair;
+				const pairId = firstSkill.name+secondSkill.name;
+				if (!bestCombos[pairId] || pair.score > bestCombos[pairId].score)
+					bestCombos[pairId] = { id: crew.id, score: pair.score };
+			}
+		}
+
+		crew.combos = combos;
+		crew.bestPair = bestPair;
+		crew.bestSkill = bestSkill;	
+	});
+
+	return bestCombos;
+}
+
+export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventData[]> {	
+	const { ephemeral } = globalContext.player;
+
+	// Get event data from recently uploaded playerData
+	if (ephemeral?.events) {
+		const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew))
+			.filter(ev => ev !== undefined).map(ev => ev as IEventData)
+			.filter(ev => ev.seconds_to_end > 0)
+			.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);
+		return currentEvents;
+	}
+	// Otherwise guess event from autosynced events
+	else {
+		return await getRecentEvents(globalContext.core.crew, globalContext.core.event_instances);
+	}
 }

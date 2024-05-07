@@ -2,8 +2,8 @@ import { simplejson2csv, ExportField } from './misc';
 import { BuffStatTable, calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
-import { CompactCrew, CompletionState, GauntletPairScore, PlayerCrew, PlayerData } from '../model/player';
-import { BaseSkills, ComputedBuff, CrewMember, PlayerSkill, Skill } from '../model/crew';
+import { CompactCrew, CompletionState, GauntletPairScore, Player, PlayerCrew, PlayerData } from '../model/player';
+import { BaseSkills, ComputedSkill, CrewMember, PlayerSkill, Skill } from '../model/crew';
 import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
 import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
 //import { navigate } from 'gatsby';
@@ -318,6 +318,20 @@ export function isImmortal(crew: PlayerCrew): boolean {
 
 export const PREPARE_MAX_RARITY = 6;
 
+export function isQuipped<T extends PlayerCrew>(crew: T) {
+	if (!!crew.kwipment?.length && !!crew.kwipment[0]) {
+		if (typeof crew.kwipment[0] === 'number') {
+			return crew.kwipment.some(k => !!k);
+		}
+		else {
+			return crew.kwipment.some(k => !!k[1]);
+		}
+	}
+	else {
+		return false;
+	}
+}
+
 export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number, quipment?: ItemWithBonus[]): PlayerCrew[] {
 	// Create a copy of crew instead of directly modifying the source (allcrew)
 	let templateCrew = JSON.parse(JSON.stringify(origCrew)) as PlayerCrew;
@@ -442,7 +456,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 			crew.rarity = rarity;
 			rarity--;
 			for (let skill in CONFIG.SKILLS) {
-				crew[skill] = { core: 0, min: 0, max: 0 } as ComputedBuff;
+				crew[skill] = { core: 0, min: 0, max: 0 } as ComputedSkill;
 			}
 			for (let skill of Object.keys(workitem.skill_data[rarity].base_skills)) {
 
@@ -450,13 +464,13 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 					core: workitem.skill_data[rarity].base_skills[skill].core,
 					min: workitem.skill_data[rarity].base_skills[skill].range_min,
 					max: workitem.skill_data[rarity].base_skills[skill].range_max
-				} as ComputedBuff;
+				} as ComputedSkill;
 			}
 			crew.base_skills = workitem.skill_data[rarity].base_skills;
 		}
 		else if (workitem.skills && rarity !== PREPARE_MAX_RARITY) {
 			for (let skill in CONFIG.SKILLS) {
-				crew[skill] = { core: 0, min: 0, max: 0 } as ComputedBuff;
+				crew[skill] = { core: 0, min: 0, max: 0 } as ComputedSkill;
 			}
 
 			// Override computed buffs because of mismatch with game data
@@ -465,7 +479,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 					core: workitem.skills[skill].core,
 					min: workitem.skills[skill].range_min,
 					max: workitem.skills[skill].range_max
-				} as ComputedBuff;
+				} as ComputedSkill;
 			}
 			crew.skills = workitem.skills;
 		}
@@ -515,7 +529,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	outputcrew.forEach(f => {
 		f.highest_owned_rarity = maxxed.maxowned;
 		f.highest_owned_level = maxxed.maxlevel;
-		if (quipment) calcQLots(f, quipment, buffConfig, !f.have);
+		//if (quipment) calcQLots(f, quipment, buffConfig, !f.have);
 	});
 
 	return outputcrew;
@@ -1021,7 +1035,7 @@ export function gradeToColor(grade: string | number, dryzero?: boolean): string 
 	return null;
 }
 
-export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_skill: Skill): ComputedBuff {
+export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_skill: Skill): ComputedSkill {
 	const getMultiplier = (skill: string, stat: string) => {
 		let buffkey = `${skill}_${stat}`;
 		if (buffkey in buffConfig) {
@@ -1382,7 +1396,7 @@ export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?:
 }
 
 export function getSkillOrder<T extends CrewMember>(crew: T) {
-	const sk = [] as ComputedBuff[];
+	const sk = [] as ComputedSkill[];
 
 	for (let skill of Object.keys(CONFIG.SKILLS)) {
 		if (skill in crew.base_skills && !!crew.base_skills[skill].core) {
@@ -1472,12 +1486,78 @@ export function printPortalStatus<T extends CrewMember>(crew: T, showNever?: boo
 }
 
 export function getVoyageQuotient<T extends CrewMember>(crew: T) {
-    if (!crew.q_power) return 0;
-	const q_power = crew.q_power;
+    if (!crew.q_lots?.power) return 0;
+	const q_power = crew.q_lots.power;
     let power = 0;
 	for (let skill in crew.base_skills) {
-		power += q_power[skill].core + (0.5 * (q_power[skill].range_max + q_power[skill].range_min));
+		let qp = q_power.find(f => f.skill === skill);
+		if (!qp) continue;
+		power += qp.core + (0.5 * (qp.range_max + qp.range_min));
 	}
 
     return (crew.ranks.voyRank / power);
+}
+
+export function skillAdd(a: Skill | ComputedSkill, b: Skill | ComputedSkill): Skill | ComputedSkill {
+	if ("range_max" in a && "range_max" in b) {
+		return {
+			core: a.core + b.core,
+			range_max: a.range_max + b.range_max,
+			range_min: a.range_min + b.range_min,
+			skill: a.skill ?? b.skill
+		};
+	}
+	else if ("max" in a && "max" in b) {
+		return {
+			core: a.core + b.core,
+			max: a.max + b.max,
+			min: a.min + b.min,
+			skill: a.skill ?? b.skill
+		};
+	}
+	else {
+		throw new TypeError('a and b must be of same type')
+	}
+}
+
+/**
+ * Adds one or more skill-type objects together
+ * @param skills The skill or skills to add
+ * @param mode Specify what to add (optional)
+ * @returns The sum of core + ((max+min) * 0.5) (depending on mode) from every element.
+ */
+export function skillSum(skills: Skill | ComputedSkill | (Skill | ComputedSkill)[], mode?: 'all' | 'core' | 'proficiency'): number {
+	if (Array.isArray(skills)) {
+		return skills.reduce((p, n) => p + skillSum(n, mode), 0);
+	}
+	else if ("range_max" in skills) {
+		return (mode !== 'proficiency' ? skills.core : 0) + (mode !== 'core' ? ((skills.range_max + skills.range_min) * 0.5) : 0);
+	}
+	else {
+		return (mode !== 'proficiency' ? skills.core : 0) + (mode !== 'core' ? ((skills.max + skills.min) * 0.5) : 0);
+	}		
+}
+
+export function powerSum(skills: Skill[]): { [key: string]: Skill } {
+	const output = {} as { [key: string]: Skill };
+	skills.forEach((skill) => {
+		if (!skill.skill) return;
+		if (!output[skill.skill]) {
+			output[skill.skill] = { ... skill };
+		}
+		else {
+			output[skill.skill] = skillAdd(output[skill.skill], skill) as Skill;
+		}
+	})
+	return output;
+}
+
+export function likeSum(skills: Skill[]): { [key: string]: number } {
+	const output = {} as { [key: string]: number };
+	skills.forEach((skill) => {
+		if (!skill.skill) return;
+		output[skill.skill] ??= 0;
+		output[skill.skill] += skillSum(skill);		
+	})
+	return output;
 }

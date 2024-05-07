@@ -1,5 +1,5 @@
 import '../../../typings/worker';
-import UnifiedWorker from 'worker-loader!../../../workers/unifiedWorker';
+import { UnifiedWorker } from '../../../typings/worker';
 import { IVoyageCrew } from '../../../model/voyage';
 import { CalcResult, JohnJayBest } from '../../../model/worker';
 import { CalculatorState } from './calchelpers';

@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import { Header } from 'semantic-ui-react';
 import { graphql } from 'gatsby';
 
-import Layout from '../components/layout';
 import DataPageLayout from '../components/page/datapagelayout';
 
 type StaticPageProps = {

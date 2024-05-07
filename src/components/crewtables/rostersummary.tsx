@@ -3,7 +3,7 @@ import { Modal, Button, Icon, Form, Select, Checkbox, Table, Popup, Rating } fro
 
 import CONFIG from '../../components/CONFIG';
 import { CompactCrew, CrewRoster, PlayerCrew } from '../../model/player';
-import { ComputedBuff, CrewMember, Skill, SkillsSummary } from '../../model/crew';
+import { ComputedSkill, CrewMember, Skill, SkillsSummary } from '../../model/crew';
 import { BuffStatTable } from '../../utils/voyageutils';
 import { applySkillBuff } from '../../utils/crewutils';
 
@@ -310,7 +310,7 @@ const SkillDepth = (props: SkillDepthProps) => {
 		function getSkillData(skills: string[]): SkillsSummary {
 			const skillScore = (crew: PlayerCrew | CompactCrew) => {
 				if (preferVersatile && crew.base_skills && Object.entries(crew.base_skills).length !== 3) return 0;
-				const scores = [] as ComputedBuff[];
+				const scores = [] as ComputedSkill[];
 				skills.forEach(skill => {
 					if (crew[skill] && crew[skill].core > 0) scores.push(crew[skill]);
 				});
@@ -353,7 +353,7 @@ const SkillDepth = (props: SkillDepthProps) => {
 		function getMaxPct(skills: string[], myBestCount: number, myBestSum: number): number {
 			const skillScore = (crew: PlayerCrew | CrewMember) => {
 				if (preferVersatile && Object.entries(crew.base_skills).length !== 3) return 0;
-				const scores = [] as ComputedBuff[];
+				const scores = [] as ComputedSkill[];
 				skills.forEach(skill => {
 					if (crew.base_skills[skill]) scores.push(applySkillBuff(buffConfig, skill, crew.base_skills[skill]));
 				});
@@ -367,7 +367,7 @@ const SkillDepth = (props: SkillDepthProps) => {
 			return myBestSum/allBestTenSum;
 		}
 
-		function getSkillScore(scores: ComputedBuff[]): number {
+		function getSkillScore(scores: ComputedSkill[]): number {
 			if (scoreOption === 'voyage')
 				return scores.reduce((prev, curr) => prev + curr.core+(curr.min+curr.max)/2, 0);
 			if (scoreOption === 'gauntlet')
@@ -380,7 +380,7 @@ const SkillDepth = (props: SkillDepthProps) => {
 			return scores[0].core;
 		}
 
-		// function applySkillBuff(buffConfig: any, skill: string, base_skill: Skill): ComputedBuff {
+		// function applySkillBuff(buffConfig: any, skill: string, base_skill: Skill): ComputedSkill {
 		// 	const getMultiplier = (skill: string, stat: string) => {
 		// 		return buffConfig[`${skill}_${stat}`].multiplier + buffConfig[`${skill}_${stat}`].percent_increase;
 		// 	};

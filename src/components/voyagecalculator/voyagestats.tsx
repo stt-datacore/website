@@ -5,7 +5,7 @@ import { isMobile } from 'react-device-detect';
 import { LineupViewer } from './lineupviewer';
 import ItemDisplay from '../itemdisplay';
 
-import Worker from 'worker-loader!../../workers/unifiedWorker';
+import { UnifiedWorker as Worker } from '../../typings/worker';
 import { ResponsiveLineCanvas } from '@nivo/line';
 import themes from '../nivo_themes';
 import { PlayerCrew, PlayerData, PlayerEquipmentItem, Reward, Voyage } from '../../model/player';
@@ -59,17 +59,9 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		roster: [],
 	};
 
-	constructor(props: VoyageStatsProps | Readonly<VoyageStatsProps>) {
-		super(props);
-		const { estimate, numSims, showPanels, ships, voyageData } = this.props;
-
-		this.state = {
-			estimate: estimate,
-			activePanels: showPanels ? showPanels : [],
-			voyageBugDetected: 	Math.floor(voyageData.voyage_duration/7200) > Math.floor(voyageData.log_index/360),
-			currentAm: props.voyageData.hp ?? voyageData.max_hp
-		};
-
+	updateAndRun() {
+		const { estimate, numSims, ships, voyageData } = this.props;
+		
 		if (!voyageData)
 			return;
 
@@ -104,10 +96,28 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				this.config.variance += ((agg.range_max-agg.range_min)/(agg.core + agg.range_max))*skillOdds;
 			}
 
-			this.worker = new Worker();
-			this.worker.addEventListener('message', message => this.setState({ estimate: message.data.result }));
+			if (!this.worker) {
+				this.worker = new Worker();
+				this.worker.addEventListener('message', message => this.setState({ estimate: message.data.result }));
+			}
+			
 			this.beginCalc();
 		}	
+
+	}
+
+	constructor(props: VoyageStatsProps | Readonly<VoyageStatsProps>) {
+		super(props);
+		const { estimate, showPanels, voyageData } = this.props;
+
+		this.state = {
+			estimate: estimate,
+			activePanels: showPanels ? showPanels : [],
+			voyageBugDetected: 	Math.floor(voyageData.voyage_duration/7200) > Math.floor(voyageData.log_index/360),
+			currentAm: props.voyageData.hp ?? voyageData.max_hp
+		};
+
+		this.updateAndRun();
 	}
 
 	private beginCalc() {
@@ -137,10 +147,8 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	}
 
 	componentDidUpdate(prevProps: Readonly<VoyageStatsProps>, prevState: Readonly<VoyageStatsState>, snapshot?: any): void {
-		if (prevProps.playerData !== this.props.playerData) {
-			if (this.worker) {
-				this.beginCalc();
-			}
+		if (prevProps.playerData !== this.props.playerData || prevProps.voyageData !== this.props.voyageData) {
+			this.updateAndRun();
 		}
 	}
 

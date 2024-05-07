@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link, navigate } from 'gatsby';
 import { Grid, Card, Label, Image, Button, Icon, Rating, SemanticWIDTHS } from 'semantic-ui-react';
-import marked from 'marked';
 
 import { CrewMember } from '../../model/crew';
 import { GlobalContext } from '../../context/globalcontext';
 import { ClassicPresenter, Skills, IFieldOverride } from '../../components/item_presenters/classic_presenter';
+import { marked } from 'marked';
 
 interface IOwnedCounts {
 	total: number;

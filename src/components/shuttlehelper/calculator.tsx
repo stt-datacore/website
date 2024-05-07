@@ -1,0 +1,353 @@
+import React from 'react';
+import { Button, Checkbox, Form, Icon, Popup, Message } from 'semantic-ui-react';
+
+import { ShuttleAdventure } from '../../model/shuttle';
+import { IRosterCrew } from '../../components/eventplanner/model';
+import { GlobalContext } from '../../context/globalcontext';
+import CONFIG from '../CONFIG';
+import { useStateWithStorage } from '../../utils/storage';
+
+import { Shuttle, ShuttleSeat, CrewScores, ISeatAssignment, ICrewSkillSets, ICrewScore } from './model';
+import { ShuttlersContext } from './context';
+import { Missions } from './missions';
+import { Assignments } from './assignments';
+import { getSkillSetId } from './utils';
+import { isQuipped } from '../../utils/crewutils';
+
+export const Calculator = () => {
+	const shuttlersContext = React.useContext(ShuttlersContext);
+	const { helperId, groupId, activeShuttles, rosterType, rosterCrew, eventData, shuttlers, setShuttlers, assigned, setAssigned } = shuttlersContext;
+	const globalContext = React.useContext(GlobalContext);
+	const { playerData } = globalContext.player;
+
+	const [considerActive, setConsiderActive] = useStateWithStorage<boolean>(helperId+'/considerActive', true);
+	const [considerVoyage, setConsiderVoyage] = useStateWithStorage<boolean>(helperId+'/considerVoyage', false);
+	const [considerFrozen, setConsiderFrozen] = useStateWithStorage<boolean>(helperId+'/considerFrozen', false);
+	const [excludeQuipped, setExcludeQuipped] = useStateWithStorage<boolean>(helperId+'/excludeQuipped', false);
+	const [considerShared, setConsiderShared] = useStateWithStorage<boolean>(helperId+'/considerShared', true);
+
+	const [calcState, setCalcState] = React.useState<number>(0);
+	const [crewScores, setCrewScores] = React.useState<CrewScores>(new CrewScores());
+
+	const [activeStep, setActiveStep] = React.useState<'missions' | 'assignments'>(getInitialView());
+
+	// Reset scores on roster, event, filter changes
+	React.useEffect(() => {
+		setCrewScores(new CrewScores());
+	}, [rosterCrew, eventData, considerActive, considerVoyage, considerFrozen, considerShared, excludeQuipped]);
+
+	React.useEffect(() => {
+		if (calcState === 1) updateAssignments();
+	}, [calcState]);
+
+	const canBorrow: boolean = eventData?.seconds_to_start === 0
+		&& !!playerData?.player.character.crew_borrows?.length
+		&& playerData?.player.squad.rank !== 'LEADER';
+
+	const missionsSelected: number = shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId && shuttle.priority > 0).length;
+	const groupMissionIds: string[] = shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId).map(shuttle => shuttle.id);
+	const missionsRunning: number = activeShuttles.filter(adventure => groupMissionIds.includes(adventure.symbol) && adventure.shuttles[0].state > 0).length;
+
+	// Scroll here when calculator finished
+	const resultsAnchor = React.useRef<HTMLDivElement>(null);
+
+	return (
+		<React.Fragment>
+			<div ref={resultsAnchor} />
+			<div>
+				{activeStep === 'missions' && (
+					<React.Fragment>
+						{missionsRunning > 0 && rosterType === 'myCrew' && (
+							<Message>
+								<p>You have {missionsRunning} shuttle mission{missionsRunning !== 1 ? 's' : ''} running in-game.</p>
+								<p>You can <Button compact content='View Running Assignments' onClick={() => importAssignments()} />. {assigned.length > 0 && <>Warning: this will replace any existing recommendations.</>}</p>
+							</Message>
+						)}
+						<Missions />
+					</React.Fragment>
+				)}
+				{activeStep === 'assignments' && (
+					<React.Fragment>
+						<Assignments
+							crewScores={crewScores}
+							updateCrewScores={updateCrewScores}
+						/>
+						<Button icon='backward' content='Change Missions' onClick={() => setActiveStep('missions')} />
+					</React.Fragment>
+				)}
+			</div>
+			<Form style={{ margin: '1em 0' }}>
+				{rosterType === 'myCrew' && (
+					<Form.Group grouped>
+						<Form.Field
+							control={Checkbox}
+							label='Consider crew on active shuttles'
+							checked={considerActive}
+							onChange={(e, { checked }) => setConsiderActive(checked)}
+						/>
+						<Form.Field
+							control={Checkbox}
+							label='Consider crew on active voyage'
+							checked={considerVoyage}
+							onChange={(e, { checked }) => setConsiderVoyage(checked)}
+						/>
+						<Form.Field
+							control={Checkbox}
+							label='Consider frozen crew'
+							checked={considerFrozen}
+							onChange={(e, { checked }) => setConsiderFrozen(checked)}
+						/>
+						<Form.Field
+							control={Checkbox}
+							label='Exclude quipped crew'
+							checked={excludeQuipped}
+							onChange={(e, { checked }) => setExcludeQuipped(checked)}
+						/>
+						{canBorrow && (
+							<Form.Field
+								control={Checkbox}
+								label={
+									<label>
+										Consider shared crew
+										<Popup content='Skill numbers of shared crew are based on your player buffs and may not match actual score' trigger={<Icon name='info' />} />
+									</label>
+								}
+								checked={considerShared}
+								onChange={(e, { checked }) => setConsiderShared(checked)}
+							/>
+						)}
+					</Form.Group>
+				)}
+				<Form.Group>
+					<Button fluid size='big' color='green' onClick={() => recommendShuttlers()} disabled={missionsSelected === 0}>
+						Recommend Crew
+					</Button>
+				</Form.Group>
+			</Form>
+		</React.Fragment>
+	);
+
+	function getInitialView(): 'missions' | 'assignments' {
+		if (assigned.length > 0 && shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId && shuttle.priority > 0).length > 0)
+			return 'assignments';
+		return 'missions';
+	}
+
+	function scrollToResults(): void {
+		if (!resultsAnchor.current) return;
+		resultsAnchor.current.scrollIntoView({
+			behavior: 'smooth'
+		});
+	}
+
+	function recommendShuttlers(): void {
+		if (calcState > 0) return;
+
+		const todo: ShuttleSeat[] = [], todoIds: string[] = [];
+		shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId && shuttle.priority > 0).forEach(shuttle => {
+			for (let seatNum = 0; seatNum < shuttle.seats.length; seatNum++) {
+				const seat = shuttle.seats[seatNum];
+				if (seat.skillA === '' && seat.skillB === '') continue;
+				const ssId = getSkillSetId(seat);
+				if (!crewScores.skillsets[ssId] && !todoIds.includes(ssId)) {
+					todo.push(seat);
+					todoIds.push(ssId);
+				}
+			}
+		});
+		if (todo.length > 0) {
+			setCalcState(1);
+			updateCrewScores(todo);
+			return;
+		}
+
+		updateAssignments();
+		scrollToResults();
+	}
+
+	function updateCrewScores(todo: ShuttleSeat[] = []): void {
+		const newSkills: ICrewSkillSets = {};
+		const newScores: ICrewScore[] = [];
+
+		for (let i = 0; i < rosterCrew.length; i++) {
+			if (rosterType === 'myCrew') {
+				if (!considerActive && rosterCrew[i].active_status === 2)
+					continue;
+
+				if (!considerVoyage && rosterCrew[i].active_status === 3)
+					continue;
+
+				if (!considerFrozen && rosterCrew[i].immortal > 0)
+					continue;
+
+				if ((!canBorrow || !considerShared) && rosterCrew[i].shared)
+					continue;
+
+				if (excludeQuipped && isQuipped(rosterCrew[i]))
+					continue;
+			}
+
+			todo.forEach(seat => {
+				const ssId: string = getSkillSetId(seat);
+				const currentIndex: number = crewScores.ranked.findIndex(score => score.id === rosterCrew[i].id && score.ssId === ssId);
+				if (currentIndex >= 0) crewScores.ranked.splice(currentIndex, 1);
+
+				const seatScore: number = getCrewSeatScore(rosterCrew[i], seat);
+				if (seatScore > 0) {
+					const crewScore: ICrewScore = {
+						id: rosterCrew[i].id,
+						symbol: rosterCrew[i].symbol,
+						name: rosterCrew[i].name,
+						score: seatScore,
+						ssId
+					};
+					if (!newSkills[ssId]) newSkills[ssId] = [];
+					newSkills[ssId].push(crewScore);
+					newScores.push(crewScore);
+				}
+			});
+		}
+
+		todo.forEach(seat => {
+			const ssId: string = getSkillSetId(seat);
+			crewScores.skillsets[ssId] = newSkills[ssId].sort((a, b) => b.score - a.score);
+		});
+		crewScores.ranked = crewScores.ranked.concat(newScores);
+		crewScores.ranked.sort((a, b) => b.score - a.score);
+		setCrewScores({...crewScores});
+	}
+
+	function getCrewSeatScore(crew: IRosterCrew, seat: ShuttleSeat): number {
+		const skillOperand: string = seat.operand;
+		const primarySkill: string = seat.skillA;
+		const secondarySkill: string = seat.skillB;
+
+		let iHigherSkill = 0, iLowerSkill = 0;
+		for (let skill in CONFIG.SKILLS) {
+			if (skill !== primarySkill && skill !== secondarySkill) continue;
+			if (crew[skill].core === 0) continue;
+
+			let iMultiplier = 1;
+			if (eventData) {
+				if (eventData.featured.indexOf(crew.symbol) >= 0)
+					iMultiplier = 3;
+				else if (eventData.bonus.indexOf(crew.symbol) >= 0)
+					iMultiplier = 2;
+			}
+			const iSkillScore = crew[skill].core*iMultiplier;
+
+			if (iSkillScore > iHigherSkill) {
+				iLowerSkill = iHigherSkill;
+				iHigherSkill = iSkillScore;
+			}
+			else if (iSkillScore > iLowerSkill) {
+				iLowerSkill = iSkillScore;
+			}
+		}
+
+		let iSeatScore = 0;
+		if (skillOperand === 'OR')
+			iSeatScore = iHigherSkill;
+		else
+			iSeatScore = iHigherSkill+(iLowerSkill/4);
+
+		return iSeatScore;
+	}
+
+	function updateAssignments(): void {
+		const shuttles: Shuttle[] = shuttlers.shuttles.slice()
+			.filter(shuttle => shuttle.groupId === groupId && shuttle.priority > 0)
+			.sort((a, b) => a.priority - b.priority);
+
+		const seats: ISeatAssignment[] = [];
+		shuttles.forEach(shuttle => {
+			for (let seatNum = 0; seatNum < shuttle.seats.length; seatNum++) {
+				const ssId: string = getSkillSetId(shuttle.seats[seatNum]);
+				const newSeat: ISeatAssignment = {
+					shuttleId: shuttle.id,
+					seatNum,
+					ssId,
+					assignedId: -1,
+					assignedSymbol: '',
+					seatScore: 0,
+					locked: false
+				};
+				const seated: ISeatAssignment | undefined = assigned.find(seat =>
+					seat.shuttleId === shuttle.id && seat.seatNum === seatNum
+				);
+				if (seated?.locked) {
+					newSeat.assignedId = seated.assignedId;
+					newSeat.assignedSymbol = seated.assignedSymbol;
+					newSeat.seatScore = seated.seatScore;
+					newSeat.locked = true;
+				}
+				seats.push(newSeat);
+			}
+		});
+		if (seats.length === 0) return;
+
+		const scores: ICrewScore[] = JSON.parse(JSON.stringify(crewScores.ranked)) as ICrewScore[];
+		let iAssigned = 0;
+		while (scores.length > 0 && iAssigned < seats.length) {
+			const testScore: ICrewScore | undefined = scores.shift();
+			if (!testScore) continue;
+
+			const alreadyAssigned: ISeatAssignment | undefined = seats.find(seat => seat.assignedId === testScore.id);
+			if (alreadyAssigned) continue;
+
+			const openSeat: ISeatAssignment | undefined = seats.find(seat =>
+				seat.ssId === testScore.ssId && seat.assignedId === -1
+			);
+			if (openSeat) {
+				openSeat.assignedId = testScore.id;
+				openSeat.assignedSymbol = testScore.symbol;
+				openSeat.seatScore = testScore.score;
+				iAssigned++;
+			}
+		}
+		setAssigned([...seats]);
+		setCalcState(0);
+		setActiveStep('assignments');
+		scrollToResults();
+	}
+
+	function importAssignments(): void {
+		let running: number = 0;
+		const assigned: ISeatAssignment[] = [];
+		shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId).forEach(shuttle => {
+			const runningAdventure: ShuttleAdventure | undefined = activeShuttles.find(adventure =>
+				adventure.symbol === shuttle.id && adventure.shuttles[0].state > 0
+			);
+			if (runningAdventure) {
+				const adventureShuttleId: number = runningAdventure.shuttles[0].id;
+				runningAdventure.shuttles[0].slots.forEach((_slot, idx) => {
+					const seat: ShuttleSeat = shuttle.seats[idx];
+					const ssId: string = getSkillSetId(seat);
+					// Add crew to assignment
+					const assignedCrew: IRosterCrew | undefined = rosterCrew.find(crew =>
+						crew.active_id === adventureShuttleId && crew.active_index === idx
+					);
+					if (assignedCrew) {
+						assigned.push({
+							shuttleId: runningAdventure.symbol,
+							seatNum: idx,
+							ssId,
+							assignedId: assignedCrew.id,
+							assignedSymbol: assignedCrew.symbol,
+							seatScore: getCrewSeatScore(assignedCrew, seat),
+							locked: false
+						});
+					}
+				});
+				shuttle.priority = ++running;
+			}
+			else {
+				shuttle.priority = 0;
+			}
+		});
+		setShuttlers({...shuttlers});
+		setAssigned(assigned);
+		setActiveStep('assignments');
+		scrollToResults();
+	}
+};

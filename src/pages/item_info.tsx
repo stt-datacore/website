@@ -12,7 +12,7 @@ import { DataContext } from '../context/datacontext';
 import { GlobalContext } from '../context/globalcontext';
 import { PlayerContext } from '../context/playercontext';
 import { BuffStatTable } from '../utils/voyageutils';
-import { ComputedBuff, CrewMember, Skill } from '../model/crew';
+import { ComputedSkill, CrewMember, Skill } from '../model/crew';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import { appelate } from '../utils/misc';

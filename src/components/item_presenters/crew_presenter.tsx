@@ -422,7 +422,7 @@ export class CrewPresenter extends React.Component<
         let key = "buffmode";
         if (this.context.player.playerData) key += "_player";
         this.tiny.setValue<PlayerBuffMode>(key, value, true);
-        if (this.props.selfRender) this.forceUpdate();
+        if (this.props.selfRender) setTimeout(() => this.forceUpdate());
     }
 
     protected get immortalMode(): PlayerImmortalMode {
@@ -463,7 +463,7 @@ export class CrewPresenter extends React.Component<
         } else {
             this.tiny.setValue<PlayerImmortalMode>(key, value, true);
         }
-        if (this.props.selfRender) this.forceUpdate();
+        if (this.props.selfRender) setTimeout(() => this.forceUpdate());
     }
 
     protected get validImmortalModes(): PlayerImmortalMode[] {
@@ -705,7 +705,7 @@ export class CrewPresenter extends React.Component<
                     }}
                 >
                     {hover && crew.series && (
-                        <Image src={`/media/series/${crew.series}.png`} />
+                        <Image src={`/media/series/${crew.series}.png`} style={{maxHeight: "26em"}} />
                     )}
                 </div>
                 <div
@@ -770,7 +770,9 @@ export class CrewPresenter extends React.Component<
                     </div>
                     {!compact && (
                         <div style={{ marginBottom: "0.13em", marginRight: "0.5em", fontSize: "9pt", fontWeight: 'normal' }}>
-                            {crew.immortal === -1 && this.validImmortalModes[0] !== 'frozen' && !!crew.kwipment?.length && <CrewItemsView crew={crew} quipment={true} />}
+                            {crew.immortal === -1 && this.validImmortalModes[0] !== 'frozen' && !!crew.kwipment?.length && 
+                                <CrewItemsView crew={crew} quipment={true} />}
+                            
                             <CrewItemsView crew={crew} />
                         </div>
                     )}

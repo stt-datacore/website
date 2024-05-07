@@ -4,6 +4,7 @@ import { Form, Dropdown } from 'semantic-ui-react';
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
 import { CompletionState } from '../../../model/player';
 import { GlobalContext } from '../../../context/globalcontext';
+import { isQuipped } from '../../../utils/crewutils';
 
 type CrewMaintenanceFilterProps = {
 	pageId: string;
@@ -34,7 +35,7 @@ export const CrewMaintenanceFilter = (props: CrewMaintenanceFilterProps) => {
 	];
 
 	const filterByMaintenance = (crew: IRosterCrew) => {
-		if (maintenanceFilter === 'quipped' && !crew.kwipment?.some(q => !!q)) return false;
+		if (maintenanceFilter === 'quipped' && !isQuipped(crew)) return false;
 		if (maintenanceFilter === 'quippable' && (!crew.q_bits || crew.q_bits < 100)) return false;
 		if (maintenanceFilter === 'advanceable' && (crew.q_bits >= 1300 || crew.immortal !== -1)) return false;
 		if (maintenanceFilter === 'freezable' && crew.immortal !== CompletionState.Immortalized) return false;

@@ -28,9 +28,10 @@ import RosterSummary from './rostersummary';
 import { QuipmentScoreCells, getQuipmentTableConfig as getQuipmentTableConfig } from './views/quipmentscores';
 import { getItemWithBonus } from '../../utils/itemutils';
 import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from './views/topquipment';
-import { QuipmentToolsFilter } from './filters/quipmenttools';
+import { PowerMode, QuipmentToolsFilter } from './filters/quipmenttools';
 import { calcQLots } from '../../utils/equipment';
 import { CrewBuffModes } from './commonoptions';
+import { UnifiedWorker } from '../../typings/worker';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -181,6 +182,8 @@ interface ITableView {
 	form?: JSX.Element;
 	tableConfig: ITableConfigRow[];
 	renderTableCells: (crew: IRosterCrew) => JSX.Element;
+	spinText?: string;
+	worker?: (crew: IRosterCrew[]) => Promise<IRosterCrew[]>;
 };
 
 interface ITableViewOption {
@@ -196,7 +199,7 @@ interface IDataPrepared {
 	appliedFilters: string[];
 };
 
-const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profileCrew' }) => {
+const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profileCrew' | 'buyBack' }) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, playerShips } = globalContext.player;
 	const { topQuipmentScores: top } = globalContext.core;
@@ -205,79 +208,39 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 
 	const [preparedCrew, setPreparedCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [dataPrepared, setDataPrepared] = React.useState<IDataPrepared>({} as IDataPrepared);
-
 	const [crewMarkups, setCrewMarkups] = React.useState<ICrewMarkup[]>([] as ICrewMarkup[]);
 	const [crewFilters, setCrewFilters] = React.useState<ICrewFilter[]>([] as ICrewFilter[]);
 	
+	const [viewIsReady, setViewIsReady] = React.useState<boolean | undefined>(undefined);
+
 	const [showBase, setShowBase] = React.useState<boolean>(false);
-	const [pstMode, setPstMode] = useStateWithStorage<boolean>('/quipmentTools/pstMode', false, { rememberForever: true });
+
+	const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>('/quipmentTools/pstMode', false, { rememberForever: true });
+	const [powerMode, setPowerMode] = useStateWithStorage<PowerMode>('/quipmentTools/powerMode', 'all', { rememberForever: true });
 	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
-	const quipment = globalContext.core.items.filter(f => f.type === 14 && !!f.max_rarity_requirement).map(m => getItemWithBonus(m));
 	
-	React.useEffect(() => {
-		// Reset table views when not available on updated roster type
-		const activeView = tableViews.find(view => view.id === tableView);
-		if (activeView && !activeView.available) setTableView('');
+	const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>(undefined);
 
-		// Reset toggleable filters on roster type change
-		//	Otherwise hidden filters stay in effect when changing roster type
-		const resetList = [] as string[];
-		crewFilters.forEach(crewFilter => {
-			const toggleable = toggleableFilters.find(toggleableFilter => toggleableFilter.id === crewFilter.id);
-			if ((toggleable && !toggleable.available)) resetList.push(crewFilter.id);
-		});
-		resetList.forEach(filterId => {
-			const filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === filterId);
-			if (filterIndex >= 0) crewFilters.splice(filterIndex, 1);
-			const markupIndex = crewMarkups.findIndex(crewMarkup => crewMarkup.id === filterId);
-			if (markupIndex >= 0) crewMarkups.splice(markupIndex, 1);
-		});
-		setCrewFilters([...crewFilters]);
-		setCrewMarkups([...crewMarkups]);
-		// TODO: Also reset ship options on view change?
-	}, [rosterType]);
+	const quipment = globalContext.core.items.filter(f => f.type === 14 && !!f.max_rarity_requirement).map(m => getItemWithBonus(m));
 
-	React.useEffect(() => {		
-		// Apply roster markups, i.e. add sortable fields to crew
-		const applyMarkups = async () => {
-			const preparedCrew = rosterCrew.slice();
-			preparedCrew.forEach(crew => {
-				if (crewMarkups.length > 0) {
-						crewMarkups.forEach(crewMarkup => {
-						crewMarkup.applyMarkup(crew);
-					});
-				}
-				if (tableView.startsWith("qp_")) {
-					calcQLots(crew, quipment, !buffMode || buffMode === 'none' ? undefined : (buffMode === 'max' || !globalContext.player?.buffConfig ? globalContext.core.all_buffs : globalContext.player.buffConfig), rosterType === 'allCrew', slots);
-				}					
-			});			
-			setPreparedCrew([...preparedCrew]);
-		};
-		applyMarkups();
-	}, [rosterCrew, crewMarkups, slots, rosterType, tableView]);
+	const getActiveBuffs = () => {
+		if (buffMode === 'none' || !buffMode) return undefined;
 
-	React.useEffect(() => {
-		if (!tableView.startsWith("qp_")) {
-			const filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === 'quipmenttools');
-		
-			if (filterIndex >= 0) {
-				crewFilters.splice(filterIndex, 1);
-				setCrewFilters([ ... crewFilters ]);
-			}			
+		if (buffMode === 'player') {
+			if (globalContext.player.buffConfig) {
+				return globalContext.player.buffConfig;
+			}
+			else {
+				return globalContext.maxBuffs;	
+			}
 		}
-	}, [tableView]);
-
-	React.useEffect(() => {
-
-		setDataPrepared({
-			rosterType,
-			rosterCount: preparedCrew ? preparedCrew.length : 0,
-			tableView,
-			appliedFilters: crewFilters.map(crewFilter => crewFilter.id)
-		});
-		
-	}, [rosterType, preparedCrew, tableView, crewFilters]);
+		else if (buffMode === 'max') {
+			return globalContext.maxBuffs;
+		}
+			
+		return undefined;
+	}
 
 	const tableViews = [
 		{
@@ -317,25 +280,27 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			id: 'qp_score',
 			available: true,
 			optionText: 'Show quipment scores',
-			form: <QuipmentToolsFilter 
-					maxxed={rosterType === 'allCrew'}
-					quipment={quipment}
-					pstMode={pstMode}
-					setPstMode={setPstMode}
-					hideForm={true}
-					slots={slots}
-					setSlots={setSlots}
-					key='qpscore_tool'
-					pageId={pageId}												
-					crewFilters={crewFilters}
-					setCrewFilters={setCrewFilters}	
-				/>,
-			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getQuipmentTableConfig(rosterType === 'allCrew'),			
+			// form: <QuipmentToolsFilter 
+			// 		maxxed={rosterType === 'allCrew' || rosterType === 'buyBack'}
+			// 		quipment={quipment}
+			// 		pstMode={pstMode}
+			// 		setPstMode={setPstMode}
+			// 		powerMode={powerMode}
+			// 		setPowerMode={setPowerMode}
+			// 		hideForm={true}
+			// 		slots={slots}
+			// 		setSlots={setSlots}
+			// 		key='qpscore_tool'
+			// 		pageId={pageId}												
+			// 		crewFilters={crewFilters}
+			// 		setCrewFilters={setCrewFilters}	
+			// 	/>,
+			// //form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
+			tableConfig: getQuipmentTableConfig(rosterType === 'allCrew' || rosterType === 'buyBack'),			
 			renderTableCells: 
 				(crew: IRosterCrew) => 
 					<QuipmentScoreCells 
-						excludeQBits={rosterType === 'allCrew'}
+						excludeQBits={rosterType === 'allCrew' || rosterType === 'buyBack'}
 						excludeSkills={false} 
 						top={top[crew.max_rarity - 1]} 
 						crew={crew} />
@@ -344,12 +309,42 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			id: 'qp_best',
 			available: true,
 			optionText: 'Show max quipment',
+			spinText: 'Calculating quipment...',
+			worker: (crew: IRosterCrew[]) => {				
+				return new Promise((resolve, reject) => {
+
+					if (currentWorker) {
+						currentWorker.terminate();
+					}
+					
+					let worker = new UnifiedWorker();
+					worker.addEventListener('message', (result) => {
+						resolve(result.data.result);
+					});
+
+					worker.postMessage({
+						worker: 'qpower',
+						config: {
+							crew,
+							quipment,
+							buffs: getActiveBuffs(),
+							max_qbits: rosterType === 'allCrew' || rosterType === 'buyBack',
+							slots,
+							mode: powerMode
+						}
+					});
+
+					setCurrentWorker(worker);
+				});
+			},
 			form: <QuipmentToolsFilter 
 					immortalOnly={true}
-					maxxed={rosterType === 'allCrew'}
+					maxxed={rosterType === 'allCrew' || rosterType === 'buyBack'}
 					quipment={quipment}
 					pstMode={pstMode}
 					setPstMode={setPstMode}
+					powerMode={powerMode}
+					setPowerMode={setPowerMode}
 					slots={slots}
 					setSlots={setSlots}
 					key='qpbest_tool'
@@ -358,16 +353,17 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					setCrewFilters={setCrewFilters}	
 				/>,
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getTopQuipmentTableConfig(top, pstMode, rosterType === 'allCrew'),
+			tableConfig: getTopQuipmentTableConfig(pstMode, rosterType === 'allCrew' || rosterType === 'buyBack', powerMode, getActiveBuffs()),
 			renderTableCells: 
 				(crew: IRosterCrew) => 
 					<TopQuipmentScoreCells 
 						pstMode={pstMode}
 						slots={slots}
+						buffConfig={getActiveBuffs()}
 						quipment={quipment}
-						excludeQBits={rosterType === 'allCrew'}
+						excludeQBits={rosterType === 'allCrew' || rosterType === 'buyBack'}
 						targetGroup={`${pageId}/targetClassItem`} 
-						allslots={rosterType === 'allCrew'}
+						allslots={rosterType === 'allCrew' || rosterType === 'buyBack'}
 						top={top[crew.max_rarity - 1]} 
 						crew={crew} />
 		},
@@ -417,7 +413,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 		},
 		{
 			id: 'ownership',
-			available: playerData && rosterType === 'allCrew',
+			available: playerData && (rosterType === 'allCrew' || rosterType === 'buyBack'),
 			form:
 				<CrewOwnershipFilter
 					key='filter_allcrew_ownership'
@@ -431,6 +427,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 	const tableViewOptions = [
 		{ key: 'base', value: '' as TableView, text: 'Show base skills' },
 	] as ITableViewOption[];
+
 	tableViews.forEach(view => {
 		if (view.available) {
 			tableViewOptions.push({
@@ -448,6 +445,78 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 		dataPrepared.tableView !== tableView ||
 		dataPrepared.appliedFilters.length !== crewFilters.length ||
 		!crewFilters.every(crewFilter => dataPrepared.appliedFilters.includes(crewFilter.id));
+
+	React.useEffect(() => {
+		// Reset table views when not available on updated roster type
+		const activeView = tableViews.find(view => view.id === tableView);
+		if (activeView && !activeView.available) setTableView('');
+
+		// Reset toggleable filters on roster type change
+		//	Otherwise hidden filters stay in effect when changing roster type
+		const resetList = [] as string[];
+		crewFilters.forEach(crewFilter => {
+			const toggleable = toggleableFilters.find(toggleableFilter => toggleableFilter.id === crewFilter.id);
+			if ((toggleable && !toggleable.available)) resetList.push(crewFilter.id);
+		});
+		resetList.forEach(filterId => {
+			const filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === filterId);
+			if (filterIndex >= 0) crewFilters.splice(filterIndex, 1);
+			const markupIndex = crewMarkups.findIndex(crewMarkup => crewMarkup.id === filterId);
+			if (markupIndex >= 0) crewMarkups.splice(markupIndex, 1);
+		});
+		setCrewFilters([...crewFilters]);
+		setCrewMarkups([...crewMarkups]);
+		// TODO: Also reset ship options on view change?
+	}, [rosterType]);
+
+	React.useEffect(() => {		
+		// Apply roster markups, i.e. add sortable fields to crew
+		const prepareCrew = async () => {
+			const preparedCrew = rosterCrew.slice();
+			preparedCrew.forEach(crew => {
+				if (crewMarkups.length > 0) {
+						crewMarkups.forEach(crewMarkup => {
+						crewMarkup.applyMarkup(crew);
+					});
+				}							
+			});
+
+			if (view?.worker) {
+				setViewIsReady(false);
+				view.worker(preparedCrew).then((result) => {
+					setPreparedCrew(result);
+					setViewIsReady(true);
+				});
+			}
+			else {
+				setPreparedCrew([...preparedCrew]);
+				setViewIsReady(undefined);
+			}
+		};
+		prepareCrew();
+	}, [rosterCrew, crewMarkups, slots, powerMode, rosterType, tableView]);
+
+	React.useEffect(() => {
+		if (!tableView.startsWith("qp_")) {
+			const filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === 'quipmenttools');
+		
+			if (filterIndex >= 0) {
+				crewFilters.splice(filterIndex, 1);
+				setCrewFilters([ ... crewFilters ]);
+			}			
+		}
+	}, [tableView]);
+
+	React.useEffect(() => {
+
+		setDataPrepared({
+			rosterType,
+			rosterCount: preparedCrew ? preparedCrew.length : 0,
+			tableView,
+			appliedFilters: crewFilters.map(crewFilter => crewFilter.id)
+		});
+		
+	}, [rosterType, preparedCrew, tableView, crewFilters]);
 
 	return (
 		<React.Fragment>
@@ -479,7 +548,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 						crewFilters={crewFilters}
 						setCrewFilters={setCrewFilters}
 					/>
-					{rosterType === 'allCrew' && 
+					{(rosterType === 'allCrew' || rosterType === 'buyBack') && 
 					<CrewBuffModes
 						buffMode={buffMode}
 						setBuffMode={setBuffMode}
@@ -492,7 +561,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 				</div>
 			</Form>
 			{view && view.form}
-			{preparedCrew &&
+			{viewIsReady !== false && preparedCrew &&
 				<CrewConfigTable
 					pageId={pageId}
 					rosterType={rosterType}
@@ -505,6 +574,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					loading={isPreparing}
 				/>
 			}
+			{viewIsReady === false && globalContext.core.spin(view?.spinText ?? 'Calculating...')}
 		</React.Fragment>
 	);
 

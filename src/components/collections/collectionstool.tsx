@@ -2,9 +2,7 @@ import { Link } from 'gatsby';
 import React from 'react';
 import { Checkbox, Dropdown, DropdownItemProps, Form, Header, Icon, Popup, Rating, Step, Table } from 'semantic-ui-react';
 
-import '../../typings/worker';
-import UnifiedWorker from 'worker-loader!../../workers/unifiedWorker';
-
+import { UnifiedWorker } from '../../typings/worker';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 
 import { GlobalContext } from '../../context/globalcontext';
@@ -13,7 +11,7 @@ import { CrewMember } from '../../model/crew';
 import { Filter } from '../../model/game-elements';
 import { BuffBase, CompletionState, ImmortalReward, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../../model/player';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
-import { crewCopy, gradeToColor, oneCrewCopy } from '../../utils/crewutils';
+import { crewCopy, gradeToColor, numberToGrade, oneCrewCopy } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
 import { TinyStore } from '../../utils/tiny';
 import { calculateBuffConfig } from '../../utils/voyageutils';
@@ -27,6 +25,8 @@ import { CollectionFilterContext, CollectionFilterProvider } from './filterconte
 import { RewardFilter } from './rewardfilter';
 import { compareRewards, rewardsFilterPassFail, starCost } from '../../utils/collectionutils';
 import { navToCrewPage } from '../../utils/nav';
+import { ICrewFilter, IRosterCrew } from '../crewtables/model';
+import { CrewMaintenanceFilter } from '../crewtables/filters/crewmaintenance';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);	
@@ -364,7 +364,7 @@ function mergeTiers(col: PlayerCollection, startTier: number, endTier: number): 
 	
 	if (result.milestone.goal != 'n/a' && result.progress != 'n/a') {
 		result.progressPct = result.milestone.goal > 0 ? result.progress / result.milestone.goal : 1;
-		result.neededPct = 1 - result.progressPct;
+		result.neededPct = 1 - result.progressPct;		
 		result.needed = result.milestone.goal > 0 ? Math.max(result.milestone.goal - result.progress, 0) : 0;
 	}
 
@@ -396,7 +396,7 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 	const [costMap, setCostMap] = React.useState<ComboCostMap[]>([]);
 
 	const { playerCollections: tempCol, collectionCrew } = props;
-	const { favorited, hardFilter, setHardFilter, tierFilter, setTierFilter, byCost, matchMode, checkCommonFilter, costMode, setShort, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
+	const { favorited, hardFilter, setHardFilter, tierFilter, setTierFilter, byCost, showIncomplete, matchMode, checkCommonFilter, costMode, setShort, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
 	
 	const playerCollections = tempCol.filter((col) => {
 		if (hardFilter && mapFilter?.rewardFilter) {
@@ -406,12 +406,12 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 			return true;
 		}
 	});
+	
+	const costs = [0, 0, 500, 4500, 18000, costMode === 'sale' ? 40000 : 50000];
 
 	let tscore = 0;
 	let tscoren = 0;
 	let tstars = [1,1,1,1,1,1];
-	
-	const costs = [0, 0, 500, 4500, 18000, costMode === 'sale' ? 40000 : 50000];
 
 	collectionCrew.forEach((crew) => {
 		crew.collectionScore = 0;
@@ -462,16 +462,9 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 		
 	});
 
-	const topscore = tscore;
-	const topscoren = tscoren;
-	// const topstars = tstars;
-
-	// collectionCrew.forEach((crew) => {
-	// 	if (crew.collectionScoreN === -1 && crew.collectionScore) {
-	// 		crew.collectionScoreN = Math.round(topscoren * (10 + crew.collectionScore/topscore));
-	// 	}
-	// })
-
+	const topscore = (tscore);
+	const topscoren = (tscoren);
+		
 	const tierOpts = [] as DropdownItemProps[];
 
 	if (mapFilter.collectionsFilter?.length === 1) {
@@ -521,13 +514,13 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 		{ 
 			width: 1, 
 			column: 'collectionScore', 
-			title: 'Grade', 
+			title: <span>Grade <Popup trigger={<Icon name='help' />} content={"A metric of a crew's usefulness in completing the most number of collections approaching a milestone"} /></span>, 
 			reverse: true
 		},
 		{ 
 			width: 1, 
 			column: 'collectionScoreN', 
-			title: 'Star Grade', 
+			title: <span>Star Grade <Popup trigger={<Icon name='help' />} content='A metric based off of Grade that takes into account highest owned rarity' /></span>, 
 			reverse: true,
 			customCompare: (a: PlayerCrew, b: PlayerCrew) => {
 				if (a.collectionScoreN !== undefined && b.collectionScoreN !== undefined) {
@@ -630,7 +623,7 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 
 		const worker = new UnifiedWorker();
 		worker.addEventListener('message', (message: { data: { result: CollectionWorkerResult; }; }) => processWorkerResult(message.data.result));
-		const workerName = 'colOptimizer';
+		const workerName = 'colOptimizer2';
 
 		worker.postMessage({
 			worker: workerName,
@@ -645,7 +638,8 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 					ownedFilter,
 					short,
 					costMode,
-					favorited
+					favorited,
+					showIncomplete
 				},
 				collectionCrew,
 				matchMode: matchMode,
@@ -760,7 +754,7 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	React.useEffect(() => {
 		setWorkerRunning(true);
-	}, [context, mapFilter, rarityFilter, fuseFilter, ownedFilter, searchFilter, matchMode, tierFilter]);	
+	}, [context, mapFilter, showIncomplete, rarityFilter, fuseFilter, ownedFilter, searchFilter, matchMode, tierFilter]);	
 
 	React.useEffect(() => {
 		window.setTimeout(() => {
@@ -853,6 +847,7 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 								onChange={(e, { value }) => setRarityFilter(value)}
 								closeOnChange
 							/>
+							
 						</Form.Group>
 					</Form>
 				</div>
@@ -897,6 +892,10 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 			);
 		});		
 
+		const pctgrade = crew.collectionScore! / topscore;
+		const pctgradeN = crew.collectionScoreN === -1 ? 1 : crew.collectionScoreN! / topscoren;
+		const lettergrade = numberToGrade(pctgrade);
+		const lettergradeN = numberToGrade(pctgradeN);
 		return (
 			<Table.Row key={crew.symbol}>
 				<Table.Cell>
@@ -930,14 +929,19 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 					)}
 				</Table.Cell>
 				<Table.Cell>
-					<div style={{color: gradeToColor(crew.collectionScore as number / topscore) ?? undefined}}>
-						{crew.collectionScore?.toLocaleString() ?? ''}
+					<div style={{color: gradeToColor(pctgrade) ?? undefined, textAlign: 'center' }}>
+						<div>{lettergrade}</div>
+						<sub>{crew.collectionScore?.toLocaleString() ?? ''}</sub>
 					</div>
 				</Table.Cell>
 				<Table.Cell>
-					<div style={{color: gradeToColor(crew.collectionScoreN === -1 ? 1 : (crew.collectionScoreN as number / topscoren)) ?? undefined}}>
-						{crew.collectionScoreN === -1 && <Icon name='check' color='green' /> ||
-						 (crew.collectionScoreN?.toLocaleString() ?? '')}
+					<div style={{color: gradeToColor(pctgradeN) ?? undefined, textAlign: 'center' }}>
+						{crew.collectionScoreN === -1 && <Icon name='check' color='green' />}
+						{crew.collectionScoreN !== -1 && 
+						<div style={{textAlign: 'center'}}>
+							<div>{lettergradeN}</div>
+							<sub>{crew.collectionScoreN?.toLocaleString() ?? ''}</sub>
+						</div>}
 					</div>
 				</Table.Cell>
 				<Table.Cell textAlign='center'>

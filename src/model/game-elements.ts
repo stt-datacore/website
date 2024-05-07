@@ -37,36 +37,44 @@ export interface KeystoneBase {
   flavor: string;
   icon: Icon;
   rarity?: number;
+  filter?: PolestarFilter;
   crew_archetype_id?: number;
-  quantity?: number;
+  // quantity?: number;
 }
 
 export interface Constellation extends KeystoneBase {
   type: "keystone_crate" | "crew_keystone_crate";
   keystones: number[];
-  quantity: number;
+  // quantity: number;
 }
 
 export interface Polestar extends KeystoneBase {
   type: "keystone";
-  quantity: number;
-  loaned: number;
-  crew_count: number;
-  filter?: Filter;
-  useful?: number
-  useful_alone?: boolean;
-  scan_odds?: number;
-  crate_count?: number;
-  owned_crate_count?: number;
-  owned_best_odds?: number;
-  owned_total_odds?: number;
+  // quantity: number;
+  // loaned: number;
+  // crew_count: number;
+  filter: PolestarFilter;
+  // useful?: number
+  // useful_alone?: boolean;
+  // scan_odds?: number;
+  // crate_count?: number;
+  // owned_crate_count?: number;
+  // owned_best_odds?: number;
+  // owned_total_odds?: number;
 }
 
 export interface Icon {
   file: string;
 }
 
-export interface Negatable { 
+export interface PolestarFilter {
+  type: "trait" | "rarity" | "skill";
+  trait?: string;
+  rarity?: number;
+  skill?: string;
+}
+
+export interface Negatable {
   negated: boolean;
 }
 
@@ -80,10 +88,6 @@ export interface TextSegment extends Negatable {
 }
 
 export interface Filter {
-  type: "trait" | "rarity" | "skill";
-  trait?: string;
-  rarity?: number;
-  skill?: string;
   textSegments?: TextSegment[];
   conditionArray?: FilterCondition[];
 }
@@ -137,15 +141,15 @@ export interface AvatarIcon {
 }
 
 export interface RetrievalOption {
-  key: string | 0; 
+  key: string | 0;
   value: string | 0;
   text: string;
   image?: AvatarIcon; // image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }}];
 }
 
-export interface FuseGroup {
-  [key: string]: number[][];
-}
+// export interface FuseGroup {
+//   [key: string]: number[][];
+// }
 
 export interface NumericOptions {
   key: number;
@@ -169,7 +173,7 @@ export interface InitialOptions {
   column?: string;
   direction?: 'ascending' | 'descending';
   rows?: number;
-  page?: number;  
+  page?: number;
 }
 
 export interface ISymbol {

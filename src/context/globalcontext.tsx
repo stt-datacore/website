@@ -13,12 +13,14 @@ export interface IDefaultGlobal {
     player: PlayerContextData;
     maxBuffs: BuffStatTable | undefined;
 	data?: any;
+	currentLang: string;
 };
 
 const defaultGlobal = {
     core: defaultCore,
     player: defaultPlayer,
-    maxBuffs: undefined
+    maxBuffs: undefined,
+	currentLang: 'en'
 } as IDefaultGlobal;
 
 export const GlobalContext = React.createContext<IDefaultGlobal>(defaultGlobal as IDefaultGlobal);

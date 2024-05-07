@@ -12,6 +12,7 @@ import ItemDisplay from '../itemdisplay';
 import CONFIG from '../CONFIG';
 import { useStateWithStorage } from '../../utils/storage';
 import { renderBonuses, renderKwipmentBonus } from '../item_presenters/item_presenter';
+import { isQuipped } from '../../utils/crewutils';
 
 interface IAssignment {
 	crew: PlayerCrew;
@@ -161,7 +162,19 @@ export const LineupViewer = (props: LineupViewerProps) => {
 };
 
 const PlayerViewPicker = (props: { dbid: string }) => {
-	const [layout, setLayout] = useStateWithStorage(props.dbid+'/voyage/layout', 'table-compact', { rememberForever: true });
+	let default_layout = 'table-compact';
+	if (window.location.search?.length) {
+		let search = new URLSearchParams(window.location.search);
+		if (search.has('layout')) {
+			let param_layer = search.get('layout');
+			if (param_layer && ['table-compact', 'table-standard', 'grid-cards', 'grid-icons'].includes(param_layer)) {
+				default_layout = param_layer;
+			}
+		}
+	}
+	
+	const [layout, setLayout] = useStateWithStorage(props.dbid+'/voyage/layout', default_layout, { rememberForever: true });
+
 	return (
 		<React.Fragment>
 			{(layout === 'table-compact' || layout === 'table-standard') && <TableView layout={layout} />}
@@ -293,7 +306,7 @@ const TableView = (props: ViewProps) => {
 								</Table.Cell>
 								<Table.Cell width={1} className='iconic' style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
 									<div style={{display:'flex', flexDirection:'row', gap: "0.5em", alignItems: "center", justifyContent: "right", marginRight: "0.5em"}}>
-										{(crew.kwipment as number[][])?.some(k => typeof k === 'number' ? !!k : k?.some(p => !!p)) && 
+										{isQuipped(crew) && 
 										<>
 										<Popup wide content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => typeof q === 'number' ? q : q[1]), globalContext.core.items)} mouseEnterDelay={POPUP_DELAY} trigger={
 												<span style={{ cursor: 'help' }}>
@@ -570,7 +583,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 					</Popup>
 				</div>
 				<div style={{display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: 'center'}}>
-				{(crew.kwipment as number[][])?.some(k => typeof k === 'number' ? !!k : k?.some(p => !!p)) && 
+				{isQuipped(crew) && 
 				<div>
 				<Popup wide content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => typeof q === 'number' ? q : q[1]), context.core.items)} mouseEnterDelay={POPUP_DELAY} trigger={
 						<span style={{ cursor: 'help' }}>

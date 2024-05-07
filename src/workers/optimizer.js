@@ -96,10 +96,10 @@ const Optimizer = {
             let voyagePairingEV = 0;
             let gauntletPairingEV = 0
             for (var skill in crew.base_skills) {
-              if (skill == primarySkill) {
+              if (skill === primarySkill) {
                 voyagePairingEV += (crew.base_skills[skill].core + (crew.base_skills[skill].range_min + crew.base_skills[skill].range_max) / 2) * 0.35;
                 gauntletPairingEV += (crew.base_skills[skill].range_min + crew.base_skills[skill].range_max) / 2
-              } else if (skill == secondarySkill) {
+              } else if (skill === secondarySkill) {
                 voyagePairingEV += (crew.base_skills[skill].core + (crew.base_skills[skill].range_min + crew.base_skills[skill].range_max) / 2) * 0.25;
                 gauntletPairingEV += (crew.base_skills[skill].range_min + crew.base_skills[skill].range_max) / 2
               } else {
@@ -120,7 +120,7 @@ const Optimizer = {
     });
   },
   /**
-   * 
+   *
    * @param {import('../model/player.js').PlayerData} saveData
    * @param {import('../model/crew.js').CrewMember[]} dataCoreCrew
    */
@@ -201,11 +201,11 @@ const Optimizer = {
         let chronsInvested = false;
         let immortalized = false;
 
-        if (crewProgress.level == 100) {
+        if (crewProgress.level === 100) {
           fullyLeveled = true;
         }
 
-        if ((crewProgress?.level >= 99) && (!crewProgress.equipment || crewProgress.equipment?.length == 4)) {
+        if ((crewProgress?.level >= 99) && (!crewProgress.equipment || crewProgress.equipment?.length === 4)) {
           fullyEquipped = true;
         }
         // if (!crewProgress.equipment) {
@@ -213,7 +213,7 @@ const Optimizer = {
         //   console.log(crew)
         //   console.log(crewProgress)
         // }
-        if (crewProgress.rarity == crew.max_rarity) {
+        if (crewProgress.rarity === crew.max_rarity) {
           fullyFused = true;
         }
 
@@ -253,7 +253,7 @@ const Optimizer = {
         signature: ''
       };
       for (var skill in crew.skillData[1].base_skills) {
-        if (!crew.skillSet.skillArray.includes(skill) && skill != "rarity") {
+        if (!crew.skillSet.skillArray.includes(skill) && skill !== "rarity") {
           crew.skillSet.skillArray.push(skill);
         }
       }
@@ -261,7 +261,7 @@ const Optimizer = {
 
       for (let skillIndex = 0; skillIndex < crew.skillSet.skillArray.length; skillIndex++) {
         crew.skillSet.signature += crew.skillSet.skillArray[skillIndex].slice(0, crew.skillSet.skillArray[skillIndex].indexOf('_'));
-        if (skillIndex != crew.skillSet.skillArray.length - 1) {
+        if (skillIndex !== crew.skillSet.skillArray.length - 1) {
           crew.skillSet.signature += "/";
         }
       }
@@ -373,7 +373,7 @@ const Optimizer = {
         // console.log(`Assigning ${crewName} to pool:`);
         // console.log(pool);
         // console.log(`Error! Pool has too many crew! Length is ${pool.assignedCrew.length} and seats is ${pool.seats}`);
-      } else if (pool.assignedCrew.length == pool.seats) {
+      } else if (pool.assignedCrew.length === pool.seats) {
         pool.full = true;
         Optimizer.fillSubSets(pool);
       }
@@ -437,11 +437,11 @@ const Optimizer = {
             relevantSkills.push(skill);
           }
         });
-        if (relevantSkills.length == 1) {
+        if (relevantSkills.length === 1) {
           crewWith1RelevantSkill.push(crewName);
-        } else if (relevantSkills.length == 2) {
+        } else if (relevantSkills.length === 2) {
           crewWith2RelevantSkills.push(crewName);
-        } else if (relevantSkills.length == 3) {
+        } else if (relevantSkills.length === 3) {
           crewWith3RelevantSkills.push(crewName);
         }
         crewWithRelevantSkillsLibrary[crewName] = relevantSkills;
@@ -787,7 +787,7 @@ const Optimizer = {
     let totalVoyageEV = 0;
     voyageCrew.forEach(crewName => {
       let crew = Optimizer.rosterLibrary[crewName];
-      if (crewName == candidateName) {
+      if (crewName === candidateName) {
         totalVoyageEV += candidate.skillData[rarityLevel].voyageMetrics[skillPairing];
       } else {
         totalVoyageEV += crew.skillData[crew.rarity].voyageMetrics[skillPairing];

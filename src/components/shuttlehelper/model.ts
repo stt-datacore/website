@@ -1,3 +1,5 @@
+import { IRosterCrew } from '../../components/eventplanner/model';
+
 export class Shuttlers {
 	shuttles: Shuttle[] = [];
 };
@@ -7,6 +9,7 @@ export class Shuttle {
 	groupId: string = '';	// Required: event.symbol for events
 	name: string = '';
 	faction: number = -1;
+	challenge_rating: number = 2000;
 	seats: ShuttleSeat[] = [];
 	priority: number = 0;
 	created: number = Date.now();
@@ -30,17 +33,6 @@ export class CrewScores {
 	constructor () {}
 };
 
-export function getSkillSetId(seat: ShuttleSeat): string {
-	const skillA = seat.skillA;
-	const skillB = seat.skillB;
-	let skills = [skillA, skillB];
-	if (skillA === '' || skillA === skillB)
-		skills = [skillB];
-	else if (skillB === '')
-		skills = [skillA];
-	return seat.operand+','+skills.sort((a, b)=>a.localeCompare(b));
-}
-
 export interface ISeatAssignment {
 	shuttleId: string;
 	seatNum: number;
@@ -53,7 +45,7 @@ export interface ISeatAssignment {
 
 export interface ICrewSkillSets {
 	[key: string]: ICrewScore[];
-}
+};
 
 export interface ICrewScore {
 	id: number;
@@ -70,4 +62,40 @@ export interface IShuttleScores {
 export interface IShuttleScore {
 	chance: number;
 	scores: number[];
+};
+
+export interface ITableColumn {
+	id: string;
+	title: string | JSX.Element;
+	align?: 'left' | 'right' | 'center';
+	span?: number;
+	sortField?: ITableSortField;
+};
+
+export interface ITableSortField {
+	id: string;
+	firstSort?: 'ascending' | 'descending';
+};
+
+export interface ITableData extends Shuttle {
+	status: string;
+	is_rental: boolean;
+	expires_in: number;
+	chance: number;
+};
+
+export interface IAssignableCrew extends IRosterCrew {
+	ssId: string;
+	score: number;
+};
+
+export interface IActiveEdit {
+	shuttleId: string;
+	seatNum: number;
+};
+
+export interface IDropdownOption {
+	key: string | number;
+	value: string | number;
+	text: string | JSX.Element;
 };

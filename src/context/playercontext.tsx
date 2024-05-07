@@ -10,8 +10,7 @@ import { stripPlayerData } from '../utils/playerutils';
 import { BossBattlesRoot } from '../model/boss';
 import { ShuttleAdventure } from '../model/shuttle';
 import { Archetype20, ArchetypeBase, Archetype17 } from '../model/archetype';
-import { calcQLots } from '../utils/equipment';
-import { getItemBonuses, getItemWithBonus } from '../utils/itemutils';
+import { getItemWithBonus } from '../utils/itemutils';
 
 export interface PlayerContextData {
 	loaded: boolean;
@@ -61,7 +60,7 @@ export const PlayerContext = React.createContext<PlayerContextData>(defaultPlaye
 
 export const PlayerProvider = (props: DataProviderProperties) => {
 	const coreData = React.useContext(DataContext);
-	const { crew, ship_schematics } = coreData;
+	const { crew, ship_schematics, translationLanguage } = coreData;
 
 	const { children } = props;
 
@@ -103,10 +102,19 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				}
 			}
 		}
-		
+
 		input.player.character.crew.forEach(crew => {
 			if (crew.active_status > 0) {
-				activeCrew.push({ id: crew.id, symbol: crew.symbol, rarity: crew.rarity, level: crew.level, equipment: crew.equipment.map((eq) => eq[0]), active_status: crew.active_status });
+				activeCrew.push({
+					id: crew.id,
+					symbol: crew.symbol,
+					rarity: crew.rarity,
+					level: crew.level,
+					equipment: crew.equipment.map((eq) => eq[0]),
+					active_status: crew.active_status,
+					active_id: crew.active_id,
+					active_index: crew.active_index
+				});
 			}
 		});
 
@@ -145,7 +153,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 		setSessionStates({...defaultSessionStates});
 		setLoaded(true);
-	}, [input, crew, ship_schematics]);
+	}, [input, crew, ship_schematics, translationLanguage]);
 
 	const reset = (): void => {
 		setStripped(undefined);

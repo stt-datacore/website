@@ -8,6 +8,8 @@ import CONFIG from '../../components/CONFIG';
 import { ConfigEditor } from './configeditor';
 import { Calculator } from './calculator';
 
+const VOYAGE_DEBUGGING: boolean = true;
+
 type ConfigInputProps = {
 	voyageConfig: IVoyageInputConfig | undefined;
 };
@@ -16,25 +18,32 @@ export const ConfigInput = (props: ConfigInputProps) => {
 	const [voyageConfig, setVoyageConfig] = React.useState<IVoyageInputConfig | undefined>(undefined);
 
 	React.useEffect(() => {
+		const printDebug = (): void => {
+			if (!VOYAGE_DEBUGGING) return;
+			console.log(debug.reduce((prev, curr) => prev + '\n\n' + curr, '***** CONFIG INPUT *****'));
+		};
+		const debug: string[] = [];
+		if (props.voyageConfig) {
+			if (voyageConfig)
+				debug.push(`Existing config: ${voyageConfig.skills.primary_skill}, ${voyageConfig.skills.secondary_skill}, ${voyageConfig.ship_trait}`);
+			else
+				debug.push('Existing config: None');
+			debug.push(`New config: ${props.voyageConfig.skills.primary_skill}, ${props.voyageConfig.skills.secondary_skill}, ${props.voyageConfig.ship_trait}`);
+			printDebug();
+		}
 		setVoyageConfig(props.voyageConfig);
 	}, [props.voyageConfig]);
 
-	const hasMinimumConfig = voyageConfig && voyageConfig.skills.primary_skill !== '' && voyageConfig.skills.secondary_skill !== '';
+	if (voyageConfig && voyageConfig.skills.primary_skill !== '' && voyageConfig.skills.secondary_skill !== '')
+		return <InputConfigCard voyageConfig={voyageConfig} setVoyageConfig={setVoyageConfig} />;
 
 	return (
 		<React.Fragment>
-			{hasMinimumConfig && (
-				<InputConfigCard voyageConfig={voyageConfig} setVoyageConfig={setVoyageConfig} />
-			)}
-			{!hasMinimumConfig && (
-				<React.Fragment>
-					<Header as='h3'>
-						No Voyage Configuration Available
-					</Header>
-					<p>Import your player data to help tailor this tool to your current voyage and roster. Otherwise, you can manually create a voyage and view the best crew in the game for any possible configuration.</p>
-					<ConfigEditor voyageConfig={voyageConfig} updateConfig={setVoyageConfig} />
-				</React.Fragment>
-			)}
+			<Header as='h3'>
+				No Voyage Configuration Available
+			</Header>
+			<p>Import your player data to help tailor this tool to your current voyage and roster. Otherwise, you can manually create a voyage and view the best crew in the game for any possible configuration.</p>
+			<ConfigEditor voyageConfig={voyageConfig} updateConfig={setVoyageConfig} />
 		</React.Fragment>
 	);
 };

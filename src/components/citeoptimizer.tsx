@@ -3,8 +3,7 @@ import React from 'react';
 import { Accordion, Button, Checkbox, Dropdown, Grid, Icon, Input, Label, Pagination, Popup, Rating, Segment, Tab, Table } from 'semantic-ui-react';
 import { calculateBuffConfig } from '../utils/voyageutils';
 
-import UnifiedWorker from 'worker-loader!../workers/unifiedWorker';
-import '../typings/worker';
+import { UnifiedWorker } from '../typings/worker';
 
 import { StatLabelProps } from '../components/statlabel';
 import { GlobalContext } from '../context/globalcontext';

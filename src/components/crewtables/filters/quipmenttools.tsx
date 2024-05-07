@@ -1,11 +1,10 @@
 import React from 'react';
-import { Form, Dropdown, Checkbox } from 'semantic-ui-react';
+import { Form, Dropdown, Checkbox, DropdownItemProps } from 'semantic-ui-react';
 
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
-import { printPortalStatus } from '../../../utils/crewutils';
-import { BuffStatTable } from '../../../utils/voyageutils';
-import { calcQLots } from '../../../utils/equipment';
 import { ItemWithBonus } from '../../../utils/itemutils';
+
+export type PowerMode = 'all' | 'core' | 'proficiency';
 
 type QuipmentToolsFilterProps = {
 	pageId: string;
@@ -15,15 +14,17 @@ type QuipmentToolsFilterProps = {
 	setCrewFilters: (crewFilters: ICrewFilter[]) => void;
     slots?: number;
     setSlots: (value?: number) => void;
-	pstMode: boolean;
-    setPstMode: (value: boolean) => void;
+	pstMode: boolean | 2 | 3;
+    setPstMode: (value: boolean | 2 | 3) => void;
+	powerMode: PowerMode;
+	setPowerMode: (value: PowerMode) => void;
 	altTitle?: string;
     hideForm?: boolean;
 	immortalOnly?: boolean;
 };
 
 export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
-	const { immortalOnly, maxxed, quipment, hideForm, crewFilters, setCrewFilters, slots, setSlots, pstMode, setPstMode } = props;
+	const { immortalOnly, maxxed, quipment, hideForm, crewFilters, setCrewFilters, slots, setSlots, pstMode, setPstMode, powerMode, setPowerMode } = props;
 
 	const [slotFilter, setSlotFilter] = React.useState<string>(slots ? `slot${slots}` : 'slot0');
 
@@ -37,7 +38,6 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 
 	const filterCrew = (crew: IRosterCrew) => {
         if (!immortalOnly || crew.immortal === undefined || crew.immortal < 0) {
-			//calcQLots(crew, quipment, buffConfig, maxxed, slots);
 			return true;
 		}
 		else {
@@ -63,6 +63,42 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
         return <></>;
     }
 
+	const contentOptions = [
+		{
+			key: 'normal',
+			value: false,
+			text: 'Individual Skills'
+		},
+		{
+			key: 'pst',
+			value: true,
+			text: 'Skill Order'
+		},
+		{
+			key: 'besttwo',
+			value: 2,
+			text: 'Skill Combos'
+		},
+	] as DropdownItemProps[];
+
+	const powerOptions = [
+		{
+			key: 'normal',
+			value: 'all',
+			text: 'Core and Proficiencies'
+		},
+		{
+			key: 'base',
+			value: 'core',
+			text: 'Core'
+		},
+		{
+			key: 'prof',
+			value: 'proficiency',
+			text: 'Proficiencies'
+		}
+	]
+
 	return (
 		<Form.Field style={{marginBottom: "1em", display: 'flex', flexWrap: 'wrap', flexDirection: 'row', alignItems: 'center', gap: "1em"}}>
 			<Dropdown
@@ -74,8 +110,24 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 				onChange={(e, { value }) => setSlotFilter(value as string)}
 				closeOnChange
 			/>
-			<Checkbox checked={pstMode} onChange={(e, { checked }) => setPstMode(!!checked)}
-				label={'Skill Order Mode'} />
+			<Dropdown
+				placeholder={'Skill mode'}				
+				selection
+				multiple={false}
+				options={contentOptions}
+				value={pstMode}
+				onChange={(e, { value }) => setPstMode(value as boolean | 2 | 3)}
+				closeOnChange
+			/>
+			<Dropdown
+				placeholder={'Power mode'}
+				selection
+				multiple={false}
+				options={powerOptions}
+				value={powerMode}
+				onChange={(e, { value }) => setPowerMode(value as PowerMode)}
+				closeOnChange
+			/>
 				
 		</Form.Field>
 	);

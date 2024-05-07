@@ -86,20 +86,24 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		const activeCrewIds = (ephemeral?.activeCrew ?? []).map(ac => {
 			return {
 				id: ac.id,
-				active_status: ac.active_status
+				active_status: ac.active_status,
+				active_id: ac.active_id,
+				active_index: ac.active_index
 			};
 		});
 
 		playerData.player.character.crew.forEach(crew => {
 			const crewman = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
 
-			// Re-attach active_status property
+			// Re-attach active_status, id, index properties
 			crewman.active_status = 0;
 			if (crew.immortal <= 0) {
 				const activeCrewId = crew.id;
 				const active = activeCrewIds.find(ac => ac.id === activeCrewId);
 				if (active) {
 					crewman.active_status = active.active_status ?? 0;
+					crewman.active_id = active.active_id ?? 0;
+					crewman.active_index = active.active_index ?? 0;
 					active.id = 0;	// Clear this id so that dupes are counted properly
 				}
 			}

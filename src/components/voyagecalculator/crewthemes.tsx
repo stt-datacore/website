@@ -4,18 +4,24 @@ import { Modal, Button, Form, Input, Dropdown, Table, Message, Icon } from 'sema
 import { IVoyageCrew } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
 import { appelate } from '../../utils/misc';
-import { getVariantTraits } from '../../utils/crewutils';
+import { crewCopy, getVariantTraits } from '../../utils/crewutils';
 
 interface IThemeOption {
 	key: string;
 	name: string;
 	description: string;
+	category: string;
 	keywords: string[];
 	eligible: number;
 	collectionCount?: number;
 	onSelect: () => void;
 	notes?: JSX.Element;
 };
+
+interface IThemeCategory {
+	name: string;
+	themes: IThemeOption[];
+}
 
 type CrewThemesProps = {
 	rosterType: 'allCrew' | 'myCrew';
@@ -30,6 +36,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 	const globalContext = React.useContext(GlobalContext);
 
 	const [themes, setThemes] = React.useState<IThemeOption[]>([] as IThemeOption[]);
+	const [categories, setCategories] = React.useState<IThemeCategory[]>([] as IThemeCategory[]);
 	const [selectedTheme, setSelectedTheme] = React.useState<IThemeOption | undefined>(undefined);
 
 	React.useEffect(() => {
@@ -57,6 +64,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 		return (
 			<CrewThemePicker
 				themes={themes}
+				categories={categories}
 				selectedTheme={selectedTheme}
 				setSelectedTheme={setSelectedTheme}
 			/>
@@ -79,6 +87,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				keywords: ['collection'],
 				eligible: eligibleIds.length,
 				collectionCount: collection.crew ? collection.crew.length : 0,
+				category: "Collections",
 				onSelect: () => filterByCrewIds(crewIds)
 			} as IThemeOption;
 			let notes: JSX.Element | undefined = undefined;
@@ -153,6 +162,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				description: `Crew from Star Trek ${series.name} (${series.key.toUpperCase()})`,
 				keywords: ['series'],
 				eligible: eligibleIds.length,
+				category: "Series",
 				onSelect: () => filterByCrewIds(crewIds)
 			} as IThemeOption;
 			const notes = getThemeNotes(eligibleIds.length);
@@ -165,6 +175,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			name: string;
 			description: string;
 			keywords: string[];
+			category: string;
 			filter: (crew: IVoyageCrew) => boolean;
 		};
 
@@ -199,12 +210,17 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			}
 		}
 
+		let traits = [ ... new Set(globalContext.core.crew.map(c => c.traits_named).flat()) ].sort();
+		console.log(traits);
+
+
 		const customThemes = [
 			{
 				key: 'super rare',
 				name: 'Super Rare Crew',
 				description: 'Super Rare (4 Star) Crew',
 				keywords: ['rarity'],
+				category: 'Roster',
 				filter: (crew: IVoyageCrew) => crew.max_rarity === 4
 			},
 			{
@@ -212,6 +228,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				name: 'Consolation Prize',
 				description: 'Removes your best crew in each skill, pair or triplet from the roster.',
 				keywords: ['ranking'],
+				category: 'Ranking',
 				filter: (crew: IVoyageCrew) => !topCrew.includes(crew.symbol)
 			},
 			{
@@ -219,6 +236,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				name: 'Alien Elites',
 				description: 'Extraterrestrial legendary crew',
 				keywords: ['trait'],
+				category: 'Traits',
 				filter: (crew: IVoyageCrew) => crew.max_rarity === 5 && !crew.traits.includes("human") && crew.traits_hidden.includes('nonhuman') && !crew.traits_hidden.includes('artificial_life')
 			},
 			{
@@ -226,6 +244,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				name: 'Ladies\' Choice',
 				description: 'Female crew',
 				keywords: ['trait'],
+				category: 'Traits',
 				filter: (crew: IVoyageCrew) => crew.traits_hidden.includes('female')
 			},
 			{
@@ -233,6 +252,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				name: 'Ad Astra Per Aspera',
 				description: 'Crew with the Starfleet trait',
 				keywords: ['trait'],
+				category: 'Traits',
 				filter: (crew: IVoyageCrew) => crew.traits.includes('starfleet')
 			},
 			{
@@ -240,6 +260,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				name: 'Extra-terrestrial',
 				description: 'Non-human crew',
 				keywords: ['trait'],
+				category: 'Traits',
 				filter: (crew: IVoyageCrew) => crew.traits_hidden.includes('nonhuman')
 			},
 			{
@@ -247,6 +268,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				name: 'Freshman Class',
 				description: 'Crew released in the past year',
 				keywords: ['age'],
+				category: 'Roster',
 				filter: (crew: IVoyageCrew) => {
 					const dtNow = Date.now();
 					const dtAdded = new Date(crew.date_added);
@@ -257,6 +279,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				key: 'captains',
 				name: 'Captain\'s Prerogative',
 				description: 'Captains who have leading roles in their respective shows (i.e. TOS Kirk, TNG Picard, DS9 Sisko, VOY Janeway, ENT Archer, DSC Burnham, or SNW Pike)',
+				category: 'Roster',
 				keywords: ['variant','series'],
 				filter: (crew: IVoyageCrew) => {
 					const captains = [
@@ -278,6 +301,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				name: 'Bottom of the Barrel',
 				description: 'Crew who are ranked Tier 10 by Big Book or graded F by CAB',
 				keywords: ['ranking'],
+				category: 'Ranking',
 				filter: (crew: IVoyageCrew) => crew.bigbook_tier === 10 || crew.cab_ov_grade === 'F'
 			},
 			{
@@ -285,6 +309,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				name: 'Double Majors',
 				description: 'Crew who have exactly 2 skills',
 				keywords: ['skill'],
+				category: 'Ranking',
 				filter: (crew: IVoyageCrew) => Object.keys(crew.base_skills).length === 2
 			},
 			{
@@ -292,6 +317,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				name: 'Matters of State',
 				description: 'Royalty, Politicians, and Diplomats',
 				keywords: ['trait'],
+				category: 'Traits',
 				filter: (crew: IVoyageCrew) => crew.traits.some(trait => ["royalty", "diplomat", "politician"].includes(trait))
 			},
 			{
@@ -299,6 +325,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				name: 'Vanity Fair',
 				description: 'Crew who are members of vanity collections',
 				keywords: ['trait'],
+				category: 'Traits',
 				filter: (crew: IVoyageCrew) => smallerCrew.includes(crew.symbol)
 			},
 			{
@@ -306,6 +333,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				name: 'Me, and Me, and also Me',
 				description: 'Crew who have five or more legendary variants',
 				keywords: ['trait'],
+				category: 'Roster',
 				filter: (crew: IVoyageCrew) => {
 					let vartrait = getVariantTraits(crew);
 					let ct = globalContext.core.crew.filter(fcrew => fcrew.max_rarity === 5 && fcrew.traits_hidden.some(th => vartrait.includes(th))).length;
@@ -317,25 +345,100 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				name: 'Moonlighting',
 				description: 'Crew who are top-ranked for gauntlet',
 				keywords: ['ranking'],
+				category: 'Ranking',
 				filter: (crew: IVoyageCrew) => crew.ranks.gauntletRank <= 20 || Object.keys(crew.ranks).filter(r => r.startsWith("G_"))?.some(key => crew.ranks[key] <= 20)
 			},
 			{
 				key: 'noquip',
 				name: 'Corporate Reach-back',
 				description: 'Crew with no unlocked quipment slots',
-				keywords: ['ranking'],
+				keywords: ['quipment'],
+				category: 'Quipment',
 				filter: (crew: IVoyageCrew) => !crew.immortal || crew.q_bits < 100
 			},
+			{
+				key: 'quipfocus',
+				name: 'Hunker Down',
+				description: 'Exclude crew that have run at least one continuum mission, but have fewer than four quipment slots unlocked',
+				keywords: ['quipment'],
+				category: 'Quipment',
+				filter: (crew: IVoyageCrew) => !crew.immortal || !(crew.q_bits > 0 && crew.q_bits < 1300)
+			},
+			{
+				key: 'lightside',
+				name: 'Luminous and Noble',
+				description: 'Crew with the following traits: Caregiver, Counselor, Cultural Figure, Hero, Innovator, Inspiring, Nurse, Physician, Prodigy',
+				keywords: ['traits'],
+				category: 'Traits',
+				filter: (crew: IVoyageCrew) => {
+					return crew.traits_named.some(t => ["Caregiver",
+						"Counselor",
+						"Cultural Figure",
+						"Hero",
+						"Innovator",
+						"Inspiring",
+						"Nurse",
+						"Physician",
+						"Prodigy"].includes(t))
+				}
+			},
+			{
+				key: 'darkside',
+				name: 'Dark and Edgy',
+				description: 'Crew with the following traits: Brutal, Crafty, Criminal, Maverick, Saboteur, Scoundrel, Smuggler, Thief, Villain',
+				keywords: ['traits'],
+				category: 'Traits',
+				filter: (crew: IVoyageCrew) => {
+					return crew.traits_named.some(t => ["Brutal",
+						"Crafty",
+						"Criminal",
+						"Maverick",
+						"Saboteur",
+						"Scoundrel",
+						"Smuggler",
+						"Thief",
+						"Villain"].includes(t))
+				}
+			}
 		] as ICustomTheme[];
 
 		if (props.rosterType === 'myCrew') {
 			customThemes.push({
-				key: 'meremortals',
-				name: 'Mere Mortals',
+				key: 'todolist',
+				name: 'To-Do List',
 				description: 'Crew who are not fully fused',
 				keywords: ['rarity'],
+				category: 'Roster',
 				filter: (crew: IVoyageCrew) => crew.rarity < crew.max_rarity
 			} as ICustomTheme);
+
+			customThemes.push({
+				key: 'todolistleg',
+				name: 'To-Do List (Legendaries)',
+				description: 'Legendary crew who are not fully fused',
+				keywords: ['rarity'],
+				category: 'Roster',
+				filter: (crew: IVoyageCrew) => crew.max_rarity === 5 && crew.rarity < crew.max_rarity
+			} as ICustomTheme);
+
+			customThemes.push({
+				key: 'meremortals',
+				name: 'Mere Mortals',
+				description: 'Crew who are not immortalized',
+				keywords: ['rarity'],
+				category: 'Roster',
+				filter: (crew: IVoyageCrew) => !crew.immortal
+			} as ICustomTheme);
+
+			customThemes.push({
+				key: 'meremortalsleg',
+				name: 'Mere Mortals (Legendaries)',
+				description: 'Legendary crew who are not immortalized',
+				keywords: ['rarity'],
+				category: 'Roster',
+				filter: (crew: IVoyageCrew) => crew.max_rarity === 5 && !crew.immortal
+			} as ICustomTheme);
+
 		}
 
 		customThemes.forEach(custom => {
@@ -345,6 +448,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				key: custom.key,
 				name: custom.name,
 				description: custom.description,
+				category: custom.category,
 				keywords: ['custom', ... custom.keywords],
 				eligible: eligibleIds.length,
 				onSelect: () => filterByCrewIds(crewIds)
@@ -353,7 +457,15 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			if (notes) theme.notes = notes;
 			themes.push(theme);
 		});
+		
+		const categories = [ ... new Set(themes.map(c => c.category)) ].sort().map(name => {
+			return {
+				name,
+				themes: themes.filter(t => t.category === name)
+			} as IThemeCategory;
+		});
 
+		setCategories(categories);
 		setThemes([...themes]);
 	}
 
@@ -387,12 +499,13 @@ export const CrewThemes = (props: CrewThemesProps) => {
 
 type CrewThemePickerProps = {
 	themes: IThemeOption[];
+	categories: IThemeCategory[];
 	selectedTheme: IThemeOption | undefined;
 	setSelectedTheme: (selectedTheme: IThemeOption | undefined) => void;
 };
 
 const CrewThemePicker = (props: CrewThemePickerProps) => {
-	const { themes, selectedTheme, setSelectedTheme } = props;
+	const { themes, selectedTheme, setSelectedTheme, categories } = props;
 
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 
@@ -410,7 +523,7 @@ const CrewThemePicker = (props: CrewThemePickerProps) => {
 			</Modal.Header>
 			<Modal.Content scrolling>
 				<p>Select a theme to consider crew who you normally wouldn't send out on voyages. Your voyage may not run as long as it would with your regulars, but the crew may yet surprise you!</p>
-				{modalIsOpen && <ThemesTable themes={themes} selectTheme={onThemeSelected} />}
+				{modalIsOpen && <ThemesTable themes={themes} categories={categories} selectTheme={onThemeSelected} />}
 			</Modal.Content>
 			<Modal.Actions>
 				{selectedTheme &&
@@ -441,6 +554,7 @@ const CrewThemePicker = (props: CrewThemePickerProps) => {
 
 type ThemesTableProps = {
 	themes: IThemeOption[];
+	categories: IThemeCategory[];
 	selectTheme: (theme: IThemeOption) => void;
 };
 
@@ -451,16 +565,22 @@ const ThemesTable = (props: ThemesTableProps) => {
 		direction: 'ascending'
 	});
 	const { data, column, direction } = state;
-
+	const { categories } = props;
+	
 	const [query, setQuery] = React.useState('');
 	const [highlightedTheme, setHighlightedTheme] = React.useState<IThemeOption | undefined>(undefined);
 	const [themeFilter, setThemeFilter] = React.useState<string>('ineligible');
+	const [activeCategories, setActiveCategories] = React.useState<string[] | undefined>(undefined);
 
 	const themeFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all themes' },
 		{ key: 'impossible', value: 'impossible', text: 'Hide impossible collection-based themes' },
 		{ key: 'ineligible', value: 'ineligible', text: 'Hide all ineligible themes' },
 	];
+
+	const themeCategoryOptions = categories.map(cat => ({
+		key: cat.name, value: cat.name, text: cat.name
+	}));
 
 	interface ICustomRow {
 		column: string;
@@ -482,6 +602,13 @@ const ThemesTable = (props: ThemesTableProps) => {
 		return re.test(theme.name) || re.test(theme.description) || theme.keywords.some(kw => re.test(kw));
 	}) as IThemeOption[];
 
+	const filteredCategories = categories
+		.filter(f => !activeCategories?.length || activeCategories.includes(f.name))
+		.map((cat) => ({
+		... cat,
+		themes: cat.themes.filter(f => filteredData.some(fs => fs.name === f.name))
+	}));
+
 	return (
 		<React.Fragment>
 			<Form>
@@ -496,7 +623,7 @@ const ThemesTable = (props: ThemesTableProps) => {
 						<Icon name='delete' />
 					</Button>
 				</Input>
-				<Form.Group inline>
+				<Form.Group inline style={{marginTop: "0.5em"}}>
 					<Form.Field
 						placeholder='Filter themes'
 						control={Dropdown}
@@ -506,9 +633,44 @@ const ThemesTable = (props: ThemesTableProps) => {
 						value={themeFilter}
 						onChange={(e, { value }) => setThemeFilter(value as string)}
 					/>
+					<Form.Field
+						placeholder='Filter categories'
+						control={Dropdown}
+						clearable
+						selection
+						multiple
+						options={themeCategoryOptions}
+						value={activeCategories}
+						onChange={(e, { value }) => setActiveCategories(value as string[])}
+					/>
 				</Form.Group>
 			</Form>
-			<Table sortable celled selectable striped>
+
+			{filteredCategories.map((cat) => (
+				<div style={{marginTop: '0.25em', marginBottom: '0.25em'}}>
+					<div className='ui header segment'>{cat.name}</div>
+					<Table sortable celled selectable striped>
+						<Table.Header>
+							<Table.Row>
+								{tableConfig.map((cell, idx) => (
+									<Table.HeaderCell key={idx}
+										textAlign={cell.align ?? 'center'}
+										sorted={column === cell.column ? direction : undefined}
+										onClick={() => dispatch({ type: 'CHANGE_SORT', column: cell.column, descendFirst: cell.descendFirst })}
+									>
+										{cell.title}
+									</Table.HeaderCell>
+								))}
+							</Table.Row>
+						</Table.Header>
+						<Table.Body>
+							{cat.themes.map(row => renderTableRow(row))}
+						</Table.Body>
+					</Table>	
+				</div>
+			))}
+
+			{/* <Table sortable celled selectable striped>
 				<Table.Header>
 					<Table.Row>
 						{tableConfig.map((cell, idx) => (
@@ -525,7 +687,7 @@ const ThemesTable = (props: ThemesTableProps) => {
 				<Table.Body>
 					{filteredData.map(row => renderTableRow(row))}
 				</Table.Body>
-			</Table>
+			</Table> */}
 			{filteredData.length === 0 && <p>No themes found.</p>}
 		</React.Fragment>
 	);

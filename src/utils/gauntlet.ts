@@ -1,6 +1,6 @@
 
 import { IDefaultGlobal } from "../context/globalcontext";
-import { ComputedBuff, CrewMember, Skill } from "../model/crew";
+import { ComputedSkill, CrewMember, Skill } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { Gauntlet, PairGroup } from "../model/gauntlets";
 import { CompletionState, PlayerBuffMode, PlayerCrew } from "../model/player";
@@ -9,34 +9,34 @@ import { FilterProps } from "../pages/gauntlets";
 import { applyCrewBuffs, getCrewPairScore, getCrewQuipment, getPlayerPairs, getSkills, shortToSkill, skillToShort, updatePairScore } from "./crewutils";
 import { ItemBonusInfo, getItemBonuses } from "./itemutils";
 
-export interface InternalSettings {    
-    crit5: number | string;
-    crit25: number | string;
-    crit45: number | string;
-    crit65: number | string;
-    minWeight: number | string;
-    maxWeight: number | string;
-    linearSkillIncidenceWeightPrimary: number | string;
-    linearSkillIndexWeightPrimary: number | string;
-    linearSkillIncidenceWeightSecondary: number | string;
-    linearSkillIndexWeightSecondary: number | string;
-    linearSkillIncidenceWeightTertiary: number | string;
-    linearSkillIndexWeightTertiary: number | string;
+export interface InternalSettings {
+	crit5: number | string;
+	crit25: number | string;
+	crit45: number | string;
+	crit65: number | string;
+	minWeight: number | string;
+	maxWeight: number | string;
+	linearSkillIncidenceWeightPrimary: number | string;
+	linearSkillIndexWeightPrimary: number | string;
+	linearSkillIncidenceWeightSecondary: number | string;
+	linearSkillIndexWeightSecondary: number | string;
+	linearSkillIncidenceWeightTertiary: number | string;
+	linearSkillIndexWeightTertiary: number | string;
 }
 
-export interface GauntletSettings extends InternalSettings {    
-    crit5: number;
-    crit25: number;
-    crit45: number;
-    crit65: number;
-    minWeight: number;
-    maxWeight: number;
-    linearSkillIncidenceWeightPrimary: number;
-    linearSkillIndexWeightPrimary: number;
-    linearSkillIncidenceWeightSecondary: number;
-    linearSkillIndexWeightSecondary: number;
-    linearSkillIncidenceWeightTertiary: number;
-    linearSkillIndexWeightTertiary: number;
+export interface GauntletSettings extends InternalSettings {
+	crit5: number;
+	crit25: number;
+	crit45: number;
+	crit65: number;
+	minWeight: number;
+	maxWeight: number;
+	linearSkillIncidenceWeightPrimary: number;
+	linearSkillIndexWeightPrimary: number;
+	linearSkillIncidenceWeightSecondary: number;
+	linearSkillIndexWeightSecondary: number;
+	linearSkillIncidenceWeightTertiary: number;
+	linearSkillIndexWeightTertiary: number;
 }
 
 export interface GauntletSettingsConfig {
@@ -45,8 +45,8 @@ export interface GauntletSettingsConfig {
 	defaultOptions: GauntletSettings;
 }
 
-export interface GauntletSettingsProps {	
-    config: GauntletSettingsConfig;    
+export interface GauntletSettingsProps {
+	config: GauntletSettingsConfig;
 	renderTrigger?: () => JSX.Element;
 	setIsOpen: (value: boolean) => void;
 	isOpen: boolean;
@@ -64,12 +64,12 @@ export const defaultSettings = {
 	crit65,
 	minWeight: 1,
 	maxWeight: 1,
-    linearSkillIncidenceWeightPrimary: 1.25,
-    linearSkillIndexWeightPrimary: 0.75,
-    linearSkillIncidenceWeightSecondary: 1.1,
-    linearSkillIndexWeightSecondary: 0.9,
-    linearSkillIncidenceWeightTertiary: 1.05,
-    linearSkillIndexWeightTertiary: 0.95,
+	linearSkillIncidenceWeightPrimary: 1.25,
+	linearSkillIndexWeightPrimary: 0.75,
+	linearSkillIncidenceWeightSecondary: 1.1,
+	linearSkillIndexWeightSecondary: 0.9,
+	linearSkillIncidenceWeightTertiary: 1.05,
+	linearSkillIndexWeightTertiary: 0.95,
 } as GauntletSettings;
 
 
@@ -82,9 +82,9 @@ export function getBernardsNumber<T extends CrewMember>(a: T, gauntlet?: Gauntle
 	else if (atrait >= 2) atrait = settings.crit45;
 	else if (atrait >= 1) atrait = settings.crit25;
 	else atrait = settings.crit5;
-	
+
 	apairs ??= getPlayerPairs(a, atrait, settings.minWeight, settings.maxWeight);
-	
+
 	let cn = 0;
 	let w = 0;
 
@@ -100,7 +100,7 @@ export function getBernardsNumber<T extends CrewMember>(a: T, gauntlet?: Gauntle
 			}
 		}
 		if (apairs.length === 1) cn /= 2;
-	}	
+	}
 	else if (apairs?.length && !("length" in apairs[0])) {
 		for (let skill of apairs as Skill[]) {
 			if (skill.range_max === 0) continue;
@@ -109,7 +109,7 @@ export function getBernardsNumber<T extends CrewMember>(a: T, gauntlet?: Gauntle
 				cn += dn;
 				w++;
 			}
-		}		
+		}
 	}
 
 	//cn /= w;
@@ -148,7 +148,7 @@ export function discoverPairs(crew: (PlayerCrew | CrewMember)[], featuredSkill?:
 
 export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gauntlet, settings: GauntletSettings, hideOpponents?: boolean, onlyActiveRound?: boolean, featuredSkill?: string, top?: number, maxResults?: number) {
 	featuredSkill ??= gauntlet.contest_data?.featured_skill;
-	const pairs = discoverPairs(crew, featuredSkill);	
+	const pairs = discoverPairs(crew, featuredSkill);
 	const featRank = skillToShort(featuredSkill ?? "") ?? "";
 	const ptop = top;
 	const pairGroups = [] as PairGroup[];
@@ -165,14 +165,14 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 
 		let srank = rpairs.map(p => shortToSkill(p) as string).sort();
 		let pjoin = srank.join();
-		
+
 		const hapres = rpairs.map(z => shortToSkill(z)).sort().join();
 
 		pairGroups.push({
 			pair: rpairs,
 			crew: crew.filter(c => rank in c.ranks && (!ptop || (ptop && c.ranks[rank] <= ptop)))
 				.map(d => d as PlayerCrew)
-				.filter((crew2) => {		
+				.filter((crew2) => {
 					if (hideOpponents && crew2.isOpponent) return false;
 
 					if (onlyActiveRound) {
@@ -182,118 +182,132 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 						else {
 							return crew2.isOpponent !== true;
 						}
-					}	
+					}
 					else {
 						return true;
 					}
 				})
-				.sort((a, b) => {
 
-					let atrait = gauntlet.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
-					let btrait = gauntlet.prettyTraits?.filter(t => b.traits_named.includes(t)).length ?? 0;
+		});
 
-					if (atrait >= 3) atrait = settings.crit65;
-					else if (atrait >= 2) atrait = settings.crit45;
-					else if (atrait >= 1) atrait = settings.crit25;
-					else atrait = settings.crit5;
+		let singleEntry = false;
 
-					if (btrait >= 3) btrait = settings.crit65;
-					else if (btrait >= 2) btrait = settings.crit45;
-					else if (btrait >= 1) btrait = settings.crit25;
-					else btrait = settings.crit5;
+		if (pairGroups[px].crew.length === 1) {
+			pairGroups[px].crew.push(pairGroups[px].crew[0]);
+			singleEntry = true;
+		}
 
-					let r = 0;
-					
-					let apairs = getPlayerPairs(a, atrait, settings.minWeight, settings.maxWeight);
-					let bpairs = getPlayerPairs(b, btrait, settings.minWeight, settings.maxWeight);
+		if (pairGroups[px].crew.length) {
+			pairGroups[px].crew.sort((a, b) => {
+				let atrait = gauntlet.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
+				let btrait = gauntlet.prettyTraits?.filter(t => b.traits_named.includes(t)).length ?? 0;
 
-					if (apairs && bpairs) {
-						let amatch = [] as Skill[];
-						let bmatch = [] as Skill[];
-						
-						[apairs, bpairs].forEach((pset, idx) => {
-							for(let wpair of pset) {
-								let djoin = wpair.map(s => s.skill).sort().join();
-								if (djoin === pjoin) {
-									if (idx === 0) amatch = wpair.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
-									else bmatch = wpair.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
+				if (atrait >= 3) atrait = settings.crit65;
+				else if (atrait >= 2) atrait = settings.crit45;
+				else if (atrait >= 1) atrait = settings.crit25;
+				else atrait = settings.crit5;
+
+				if (btrait >= 3) btrait = settings.crit65;
+				else if (btrait >= 2) btrait = settings.crit45;
+				else if (btrait >= 1) btrait = settings.crit25;
+				else btrait = settings.crit5;
+
+				let r = 0;
+
+				let apairs = getPlayerPairs(a, atrait, settings.minWeight, settings.maxWeight);
+				let bpairs = getPlayerPairs(b, btrait, settings.minWeight, settings.maxWeight);
+
+				if (apairs && bpairs) {
+					let amatch = [] as Skill[];
+					let bmatch = [] as Skill[];
+
+					[apairs, bpairs].forEach((pset, idx) => {
+						for (let wpair of pset) {
+							let djoin = wpair.map(s => s.skill).sort().join();
+							if (djoin === pjoin) {
+								if (idx === 0) amatch = wpair.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
+								else bmatch = wpair.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
+								return;
+							}
+						}
+						pset = pset?.filter(ap => ap.some(p2 => p2.skill && srank.includes(p2.skill)));
+
+						if (pset?.length) {
+							for (let p of pset[0]) {
+								if (p.skill && srank.includes(p.skill)) {
+									let glitch = [{
+										...p
+									},
+									{
+										...JSON.parse(JSON.stringify(EMPTY_SKILL)) as Skill,
+										skill: srank.find(sr => sr !== p.skill)
+									}
+									]
+									if (idx === 0) amatch = glitch.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
+									else bmatch = glitch.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
 									return;
 								}
 							}
-							pset = pset?.filter(ap => ap.some(p2 => p2.skill && srank.includes(p2.skill)));
+						}
+					});
 
-							if (pset?.length) {
-								for (let p of pset[0]) {
-									if (p.skill && srank.includes(p.skill)) {
-										let glitch = [{
-											... p
-										},
-										{ 
-											... JSON.parse(JSON.stringify(EMPTY_SKILL)) as Skill,
-											skill: srank.find(sr => sr !== p.skill)
-										}
-										]
-										if (idx === 0) amatch = glitch.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
-										else bmatch = glitch.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
-										return;
-									}
-								}
-							}
-						});
+					const ascore = amatch?.length ? getBernardsNumber(a, gauntlet, amatch, settings) : getBernardsNumber(a, gauntlet, apairs, settings);
+					const bscore = bmatch?.length ? getBernardsNumber(b, gauntlet, bmatch, settings) : getBernardsNumber(b, gauntlet, bpairs, settings);
 
-						const ascore = amatch?.length ? getBernardsNumber(a, gauntlet, amatch, settings) : getBernardsNumber(a, gauntlet, apairs, settings);
-						const bscore = bmatch?.length ? getBernardsNumber(b, gauntlet, bmatch, settings) : getBernardsNumber(b, gauntlet, bpairs, settings);
+					updatePairScore(a, { score: ascore, pair: amatch ?? apairs[0] });
+					updatePairScore(b, { score: bscore, pair: bmatch ?? bpairs[0] });
 
-						updatePairScore(a, { score: ascore, pair: amatch ?? apairs[0] });
-						updatePairScore(b, { score: bscore, pair: bmatch ?? bpairs[0] });
+					r = Math.round(bscore) - Math.round(ascore);
+					if (!r) r = a.name.localeCompare(b.name);
+				}
+				return r ? r : a.ranks[rank] - b.ranks[rank];
+			});
 
-						r = Math.round(bscore) - Math.round(ascore);
-						if (!r) r = a.name.localeCompare(b.name);					
+			if (singleEntry) {
+				pairGroups[px].crew.splice(0, 1);
+			}
+
+			gauntlet.pairMax ??= [];
+			gauntlet.pairMin ??= [];
+
+			pairGroups[px].crew.forEach((c) => {
+				let tstr = rpairs.map(z => shortToSkill(z));
+				let gp = gauntlet.pairMin?.find(fo => fo.pair.map(foz => foz.skill).sort().join("_") === tstr.sort().join("_"));
+				let ps = getCrewPairScore(c, rank);
+				if (!ps) return;
+
+				if (!gp) {
+					gp = {
+						...ps
+					};
+					gauntlet.pairMin ??= [];
+					gauntlet.pairMin.push(gp);
+				}
+				else {
+					if (ps.score < gp.score) {
+						gp.score = ps.score;
 					}
-					return r ? r : a.ranks[rank] - b.ranks[rank];
-				})					
-		});
-
-		gauntlet.pairMax ??= [];
-		gauntlet.pairMin ??= [];
-
-		pairGroups[px].crew.forEach((c) => {
-			let tstr = rpairs.map(z => shortToSkill(z));
-			let gp = gauntlet.pairMin?.find(fo => fo.pair.map(foz => foz.skill).sort().join("_") === tstr.sort().join("_"));
-			let ps = getCrewPairScore(c, rank);
-			if (!ps) return;
-
-			if (!gp) {
-				gp = {
-					... ps
-				};
-				gauntlet.pairMin ??= [];
-				gauntlet.pairMin.push(gp);
-			}
-			else {
-				if (ps.score < gp.score) {
-					gp.score = ps.score;
 				}
-			}
 
-			gp = gauntlet.pairMax?.find(fo => fo.pair.map(foz => foz.skill).sort().join("_") === tstr.sort().join("_"));
+				gp = gauntlet.pairMax?.find(fo => fo.pair.map(foz => foz.skill).sort().join("_") === tstr.sort().join("_"));
 
-			if (!gp) {
-				gp = {
-					... ps
-				};
-				gauntlet.pairMax ??= [];
-				gauntlet.pairMax.push(gp);
-			}
-			else {
-				if (ps.score > gp.score) {
-					gp.score = ps.score;
+				if (!gp) {
+					gp = {
+						...ps
+					};
+					gauntlet.pairMax ??= [];
+					gauntlet.pairMax.push(gp);
 				}
-			}
-			
-		})
+				else {
+					if (ps.score > gp.score) {
+						gp.score = ps.score;
+					}
+				}
 
+			});
+		}
 	}
+
 	if (maxResults) {
 		pairGroups.forEach((pg) => {
 			pg.crew = pg.crew.slice(0, maxResults);
@@ -303,7 +317,7 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 
 		const apair = a.pair.map(z => shortToSkill(z)).sort().join();
 		const bpair = b.pair.map(z => shortToSkill(z)).sort().join();
-		
+
 		if (apair !== bpair) {
 			if (apair === currSkills) return -1;
 			else if (bpair === currSkills) return 1;
@@ -322,7 +336,7 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 		else {
 			return 1;
 		}
-	})		
+	})
 
 	return pairGroups;
 }
@@ -343,7 +357,7 @@ function testFilterCrew(crew: PlayerCrew, filter: FilterProps, context: IDefault
 			})) return false;
 		}
 		if (filter.ownedStatus) {
-			switch(filter.ownedStatus) {
+			switch (filter.ownedStatus) {
 				case 'any':
 				case 'maxall':
 					return true;
@@ -353,13 +367,13 @@ function testFilterCrew(crew: PlayerCrew, filter: FilterProps, context: IDefault
 				case 'nofe':
 				case 'nofemax':
 					if (!hasPlayer) return true;
-					return !!crew.have && (crew.level !== 100 || crew.equipment?.length !== 4);						
+					return !!crew.have && (crew.level !== 100 || crew.equipment?.length !== 4);
 				case 'ownedmax':
 					if (!hasPlayer) return true;
-					 return !!crew.have;						
+					return !!crew.have;
 				case 'unfrozen':
 					if (!hasPlayer) return true;
-					return !!crew.have && crew.immortal <= 0;						
+					return !!crew.have && crew.immortal <= 0;
 				case 'owned':
 					if (!hasPlayer) return true;
 					return !!crew.have;
@@ -369,10 +383,10 @@ function testFilterCrew(crew: PlayerCrew, filter: FilterProps, context: IDefault
 				case 'portal':
 					return !crew.have && crew.in_portal;
 				case 'nonportal':
-					return !crew.have && !crew.in_portal; 
+					return !crew.have && !crew.in_portal;
 				case 'gauntlet':
-					 return !crew.have && !crew.in_portal && crew.traits_hidden.includes("exclusive_gauntlet")
-				
+					return !crew.have && !crew.in_portal && crew.traits_hidden.includes("exclusive_gauntlet")
+
 			}
 		}
 	}
@@ -381,15 +395,15 @@ function testFilterCrew(crew: PlayerCrew, filter: FilterProps, context: IDefault
 
 
 export interface GauntletCalcConfig {
-	context: IDefaultGlobal, 
+	context: IDefaultGlobal,
 	settings: GauntletSettings,
-	gauntlet: Gauntlet, 
+	gauntlet: Gauntlet,
 	buffMode: PlayerBuffMode;
 	equipmentCache: { [key: string]: EquipmentItem[] }
 	bonusCache: { [key: string]: ItemBonusInfo }
-	rankByPair?: string, 
-	range_max?: number, 
-	filter?: FilterProps, 
+	rankByPair?: string,
+	range_max?: number,
+	filter?: FilterProps,
 	textFilter?: string,
 	hideOpponents?: boolean,
 	onlyActiveRound?: boolean
@@ -397,7 +411,7 @@ export interface GauntletCalcConfig {
 
 export function calculateGauntlet(config: GauntletCalcConfig) {
 
-	const { bonusCache: bonusInfo, equipmentCache: crewQuip,settings, buffMode, context, gauntlet, range_max, filter, textFilter, hideOpponents, onlyActiveRound } = config;
+	const { bonusCache: bonusInfo, equipmentCache: crewQuip, settings, buffMode, context, gauntlet, range_max, filter, textFilter, hideOpponents, onlyActiveRound } = config;
 	let { rankByPair } = config;
 
 	if (rankByPair === '' || rankByPair === 'none') rankByPair = undefined;
@@ -405,14 +419,14 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	const rmax = range_max ?? 100;
 	const search = textFilter;
 
-	const { buffConfig, maxBuffs } = context.player;		
-	const { crew: allCrew, translation: allTraits } = context.core;		
+	const { buffConfig, maxBuffs } = context.player;
+	const { crew: allCrew, translation: allTraits } = context.core;
 
 	const availBuffs = ['none'] as PlayerBuffMode[];
 	const oppo = [] as PlayerCrew[];
 
 	if (gauntlet.opponents?.length && !hideOpponents) {
-		for (let op of gauntlet.opponents){
+		for (let op of gauntlet.opponents) {
 			const ocrew = op.crew_contest_data.crew[0];
 			const nfcrew = context.core.crew.find((cf) => cf.symbol === ocrew.archetype_symbol);
 			if (nfcrew) {
@@ -434,7 +448,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 				}
 
 				fcrew.rarity = ocrew.rarity;
-				fcrew.isOpponent = true;					
+				fcrew.isOpponent = true;
 				fcrew.ssId = op.player_id.toString();
 				fcrew.immortal = CompletionState.DisplayAsImmortalOpponent;
 				fcrew.have = false;
@@ -449,7 +463,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	}
 	if (maxBuffs && Object.keys(maxBuffs).length) {
 		availBuffs.push('max');
-	}	
+	}
 
 	const hasPlayer = !!context.player.playerData?.player?.character?.crew?.length;
 
@@ -459,7 +473,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	if (!prettyTraits) {
 		return null
 	}
-	
+
 	delete gauntlet.allCrew;
 	delete gauntlet.maximal;
 	delete gauntlet.minimal;
@@ -474,7 +488,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	else {
 		acc = allCrew;
 	}
-	
+
 	const workCrew = acc;
 
 	const matchedCrew1 =
@@ -496,8 +510,8 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 				}
 
 				// let c = context.player.playerData?.player?.character?.crew?.find(d => d.id === crew.id);
-				
-				if (!crew.isOpponent && crew.have) {						
+
+				if (!crew.isOpponent && crew.have) {
 					//crew = JSON.parse(JSON.stringify(c)) as PlayerCrew;
 
 					if (buffConfig && buffMode === 'player') {
@@ -513,7 +527,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 								bonusInfo[q.symbol] ??= getItemBonuses(q);
 								return bonusInfo[q.symbol];
 							}) ?? undefined;
-							
+
 							applyCrewBuffs(crew, buffConfig, undefined, bn);
 						}
 						else {
@@ -525,7 +539,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 					}
 					else {
 						for (let skill of Object.keys(crew.base_skills)) {
-							crew[skill] = { core: crew.base_skills[skill].core, min: crew.base_skills[skill].range_min, max: crew.base_skills[skill].range_max };								
+							crew[skill] = { core: crew.base_skills[skill].core, min: crew.base_skills[skill].range_min, max: crew.base_skills[skill].range_max };
 						}
 					}
 					// crew.have = true;
@@ -544,7 +558,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 					}
 				}
 
-				
+
 				if (!crew.isOpponent) {
 					if (gauntlet.contest_data?.selected_crew?.length && crew.immortal <= 0 && crew.have) {
 						let selcrew = gauntlet.contest_data.selected_crew.find((sel) => {
@@ -568,16 +582,16 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 								delete crew.science_skill;
 								delete crew.medicine_skill;
 
-								for (let selskill of selcrew.skills) {								
+								for (let selskill of selcrew.skills) {
 									let sk = selskill.skill;
 									crew.isDebuffed = (oskill[sk].range_max > selskill.max);
 									crew.skills[sk] = { core: 0, range_max: selskill.max, range_min: selskill.min } as Skill;
-									crew[sk] = { core: 0, max: selskill.max, min: selskill.min } as ComputedBuff;
+									crew[sk] = { core: 0, max: selskill.max, min: selskill.min } as ComputedSkill;
 								}
 							}
 						}
 					}
-			
+
 					if (!hasPlayer) crew.rarity = crew.max_rarity;
 					else if (!crew.have) crew.rarity = 0;
 					if (!crew.immortal || crew.immortal < 0) {
@@ -588,12 +602,12 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 					crew.immortal = CompletionState.DisplayAsImmortalOpponent;
 					crew.have = false;
 				}
-				
-				crew.pairs = getPlayerPairs(crew);					
+
+				crew.pairs = getPlayerPairs(crew);
 				return crew;
 			})
 			.filter((crew) => (!filter || testFilterCrew(crew, filter, context)))
-			.map((crew) => { 
+			.map((crew) => {
 				if (filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'ownedmax' || filter?.ownedStatus === 'maxall') {
 					if ((crew.level === 100 && crew.equipment?.length === 4) || !crew.have) return crew;
 					let fcrew = allCrew.find(z => z.symbol === crew.symbol);
@@ -602,11 +616,11 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 					crew.base_skills = JSON.parse(JSON.stringify(fcrew.base_skills));
 					crew.rarity = crew.max_rarity;
 					crew.level = 100;
-					crew.equipment = [0,1,2,3];
+					crew.equipment = [0, 1, 2, 3];
 					crew.immortal = CompletionState.DisplayAsImmortalOwned;
 					crew.skills ??= {};
 					for (let skill of Object.keys(crew.base_skills)) {
-						crew.skills[skill] = { ... crew.base_skills[skill] };
+						crew.skills[skill] = { ...crew.base_skills[skill] };
 					}
 					if (buffMode === 'player' && buffConfig) {
 						applyCrewBuffs(crew, buffConfig);
@@ -629,12 +643,12 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 				return crew;
 			})
 			.filter(crew => {
-				
-				let result = 
-					(			
-					(!rankByPair || (rankByPair in crew.ranks)) &&
-					(Object.keys(crew.base_skills).some(k => crew.base_skills[k].range_max >= rmax) || !!crew.isOpponent) ||
-					(prettyTraits.length && prettyTraits.filter(t => crew.traits_named.includes(t)).length > 1)
+
+				let result =
+					(
+						(!rankByPair || (rankByPair in crew.ranks)) &&
+						(Object.keys(crew.base_skills).some(k => crew.base_skills[k].range_max >= rmax) || !!crew.isOpponent) ||
+						(prettyTraits.length && prettyTraits.filter(t => crew.traits_named.includes(t)).length > 1)
 					);
 
 				return result;
@@ -677,44 +691,44 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 				return r;
 			});
 
-			let matchedResults: PlayerCrew[] | undefined = undefined;
+	let matchedResults: PlayerCrew[] | undefined = undefined;
 
 	if (gauntlet.prettyTraits?.length) {
 		const maxpg = 10;
 		let pgs = getPairGroups(matchedCrew1, gauntlet, settings, hideOpponents, onlyActiveRound, undefined, 100, maxpg);
-	
+
 		const incidence = {} as { [key: string]: number };
 		const avgidx = {} as { [key: string]: number };
 		const fsk = gauntlet.contest_data?.featured_skill;
 		let pc = 0;
-		for(let pg of pgs) {
+		for (let pg of pgs) {
 			let idx = 1;
-			
+
 			for (let pgcrew of pg.crew) {
-				incidence[pgcrew.symbol] ??= 0;				
+				incidence[pgcrew.symbol] ??= 0;
 				avgidx[pgcrew.symbol] ??= 0;
 
 				if (pg.pair.some(p => shortToSkill(p) === fsk) && pc === 0) {
 					incidence[pgcrew.symbol] += settings.linearSkillIncidenceWeightPrimary;
 					avgidx[pgcrew.symbol] += (idx * settings.linearSkillIndexWeightPrimary);
 				}
-				else if (pg.pair.some(p =>  shortToSkill(p) === fsk) && pc === 1) {
+				else if (pg.pair.some(p => shortToSkill(p) === fsk) && pc === 1) {
 					incidence[pgcrew.symbol] += settings.linearSkillIncidenceWeightSecondary;
 					avgidx[pgcrew.symbol] += (idx * settings.linearSkillIndexWeightSecondary);
 				}
-				else if (pg.pair.some(p =>  shortToSkill(p) === fsk) && pc === 2) {
+				else if (pg.pair.some(p => shortToSkill(p) === fsk) && pc === 2) {
 					incidence[pgcrew.symbol] += settings.linearSkillIncidenceWeightTertiary;
 					avgidx[pgcrew.symbol] += (idx * settings.linearSkillIndexWeightTertiary);
 				}
 				else {
 					incidence[pgcrew.symbol]++;
-					avgidx[pgcrew.symbol] += idx;	
+					avgidx[pgcrew.symbol] += idx;
 				}
 				idx++;
 			}
 			pc++;
 		}
-		
+
 		Object.keys(avgidx).forEach(key => {
 			avgidx[key] /= incidence[key];
 		});
@@ -738,7 +752,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	gauntlet.searchCrew = matchedCrew;
 
 	gauntlet.origRanks = {};
-	
+
 	let maximal = 0;
 	let minimal = 0;
 

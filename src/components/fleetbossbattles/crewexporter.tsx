@@ -2,10 +2,11 @@ import React from 'react';
 import { Header, Button, Popup, Message, Accordion, Form, Select, Input } from 'semantic-ui-react';
 
 import allTraits from '../../../static/structured/translation_en.json';
-import { BossCrew, ExportPreferences, FilteredGroup, Optimizer, ShowHideValue, Solver, SolverNode, SolverTrait } from '../../model/boss';
+import { BossCrew, ExportPreferences, FilteredGroup, Optimizer, ShowHideValue, SolveStatus, Solver, SolverNode, SolverTrait } from '../../model/boss';
 
 import { UserContext, SolverContext } from './context';
 import { exportDefaults } from './fbbdefaults';
+import { isNodeOpen, suppressDuplicateTraits } from './fbbutils';
 
 const exportCompact = {
 	header: 'hide',
@@ -83,7 +84,7 @@ const exportNodeGroups = (node: SolverNode, nodeGroups: FilteredGroup[], traitDa
 				.map(crew => formatCrewName(crew))
 				.join(`${prefValue(exportPrefs, 'delimiter')} `);
 			groupList += matchingCrew;
-			if (prefValue(exportPrefs, 'crew_traits') === 'show')
+			if (prefValue(exportPrefs, 'crew_traits') === 'show' && node.solveStatus !== SolveStatus.Unconfirmed)
 				groupList += ` (${sortedTraits(row.traits, node.alphaTest)})`;
 			nodeList += groupList;
 		});
@@ -115,15 +116,15 @@ const formatValue = (format: string, value: string) => {
 	return formattedValue;
 };
 
-const nodeTraits = (node: SolverNode) => {
+const nodeTraits = (node: SolverNode): string => {
 	const traitName = (trait: string, index: number) => {
-		let name = allTraits.trait_names[trait];
-		if (node.spotSolve && index >= node.givenTraitIds.length)
+		let name: string = allTraits.trait_names[trait];
+		if (node.solveStatus !== SolveStatus.Infallible && index >= node.givenTraitIds.length)
 			name = `[${name}]`;
 		return name;
 	};
-	const solved = node.traitsKnown.map((t, idx) => traitName(t, idx));
-	const unsolved = Array(node.hiddenLeft).fill('?');
+	const solved: string[] = node.traitsKnown.map((t, idx) => traitName(t, idx));
+	const unsolved: string[] = Array(node.hiddenLeft).fill('?');
 	return solved.concat(unsolved).join(', ');
 };
 
@@ -139,7 +140,9 @@ export const CrewNodeExporter = (props: CrewNodeExporterProps) => {
 	const { node, nodeGroups, traits } = props;
 
 	const copyNode = () => {
-		const output = exportNodeGroups(node, nodeGroups, traits, exportPrefs);
+		// When solve is unconfirmed, rewrite traitData to ignore duplicates
+		const traitData: SolverTrait[] = suppressDuplicateTraits(traits, node.solve);
+		const output = exportNodeGroups(node, nodeGroups, traitData, exportPrefs);
 		navigator.clipboard.writeText(output);
 	};
 
@@ -167,22 +170,30 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 	const { solver, optimizer } = props;
 
 	const copyFull = () => {
-		const openNodes = solver.nodes.filter(node => node.open);
-		let header = '';
-		if (prefValue(exportPrefs, 'header') === 'always' || (prefValue(exportPrefs, 'header') === 'initial' && solver.nodes.length-openNodes.length === 0)) {
-			header += `${description}, Chain #${chainIndex+1} (${solver.nodes.length-openNodes.length}/${solver.nodes.length})`;
+		const unsolvedNodes: number = solver.nodes.filter(node => isNodeOpen(node)).length;
+		const unconfirmedNodes: number = solver.nodes.filter(node => node.solveStatus === SolveStatus.Unconfirmed).length;
+
+		let solvedNodes: number = solver.nodes.length - unsolvedNodes;
+		if (prefValue(exportPrefs, 'solve') === 'spot') solvedNodes -= unconfirmedNodes;
+
+		let header: string = '';
+		if (prefValue(exportPrefs, 'header') === 'always' || (prefValue(exportPrefs, 'header') === 'initial' && solvedNodes === 0)) {
+			header += `${description}, Chain #${chainIndex+1} (${solvedNodes}/${solver.nodes.length} ${prefValue(exportPrefs, 'solve') === 'spot' ? 'confirmed ' : ''}solved)`;
 			header += '\n\n';
 		}
-		let output = '';
+		let output: string = '';
 		solver.nodes.forEach(node => {
-			let nodeList = '';
-			if (node.open) {
+			let nodeList: string = '';
+			if (isNodeOpen(node)) {
 				nodeList = exportNodeGroups(node, optimizer.groups[`node-${node.index}`], solver.traits, exportPrefs);
 			}
-			else {
-				if (prefValue(exportPrefs, 'solve') === 'always' || (prefValue(exportPrefs, 'solve') === 'spot' && node.spotSolve)) {
-					nodeList = `Node ${node.index+1} (${nodeTraits(node)})`;
-				}
+			else if (node.solveStatus === SolveStatus.Unconfirmed && (prefValue(exportPrefs, 'solve') === 'always' || prefValue(exportPrefs, 'solve') === 'spot')) {
+				// When solve is unconfirmed, rewrite traitData to ignore duplicates
+				const traitData: SolverTrait[] = suppressDuplicateTraits(solver.traits, node.solve);
+				nodeList = exportNodeGroups(node, optimizer.groups[`node-${node.index}`], traitData, exportPrefs);
+			}
+			else if ((node.solveStatus === SolveStatus.Infallible || node.solveStatus === SolveStatus.Confirmed) && prefValue(exportPrefs, 'solve') === 'always') {
+				nodeList = `Node ${node.index+1} (${nodeTraits(node)})`;
 			}
 			if (nodeList !== '') {
 				if (output !== '') output += '\n\n';

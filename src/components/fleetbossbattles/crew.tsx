@@ -1,7 +1,7 @@
 import React from 'react';
 import { Header, Form, Dropdown, Checkbox, Icon, Message } from 'semantic-ui-react';
 
-import { BossCrew, FilteredGroup, FilteredGroups, NodeRarities, NodeRarity, Optimizer, PossibleCombo, Solver, SolverNode, Spotter, SpotterPreferences, TraitRarities, ViableCombo } from '../../model/boss';
+import { BossCrew, FilteredGroup, FilteredGroups, NodeRarities, NodeRarity, Optimizer, PossibleCombo, Solve, SolveStatus, Solver, Spotter, SpotterPreferences, TraitRarities, ViableCombo } from '../../model/boss';
 import { crewCopy } from '../../utils/crewutils';
 
 import { UserContext, SolverContext } from './context';
@@ -9,7 +9,7 @@ import CrewGroups from './crewgroups';
 import CrewTable from './crewtable';
 import CrewChecklist from './crewchecklist';
 import { CrewFullExporter } from './crewexporter';
-import { getAllCombos, getComboIndexOf, removeCrewNodeCombo } from './fbbutils';
+import { isNodeOpen, getAllCombos, getComboIndexOf, removeCrewNodeCombo } from './fbbutils';
 
 type ChainCrewProps = {
 	view: string;
@@ -30,14 +30,34 @@ const ChainCrew = (props: ChainCrewProps) => {
 		if (spotterPrefs.onehand === 'hide') resolvedCrew = filterOneHandExceptions(resolvedCrew);
 		if (spotterPrefs.alpha === 'hide') resolvedCrew = filterAlphaExceptions(resolvedCrew);
 
-		const optimalCombos = getOptimalCombos(resolvedCrew);
+		const optimalCombos: ViableCombo[] = getOptimalCombos(resolvedCrew);
 
-		const rarities = {} as NodeRarities;
-		const groups = {} as FilteredGroups;
-		solver.nodes.filter(node => node.open).forEach(node => {
-			const nodeRarities = getRaritiesByNode(node, resolvedCrew);
-			rarities[`node-${node.index}`] = nodeRarities;
-			groups[`node-${node.index}`] = filterGroupsByNode(node, resolvedCrew, nodeRarities, optimalCombos, spotterPrefs);
+		const rarities: NodeRarities = {};
+		const groups: FilteredGroups = {};
+		solver.nodes.forEach(node => {
+			if (isNodeOpen(node)) {
+				const nodeCrew: BossCrew[] = resolvedCrew.filter(crew => !!crew.node_matches[`node-${node.index}`]);
+				const nodeRarities: NodeRarity = getNodeRarities(node.index, nodeCrew);
+				const nodeGroups: FilteredGroup[] = filterNodeGroups(node.index, node.hiddenLeft, node.alphaTest, nodeCrew, nodeRarities, optimalCombos, spotterPrefs);
+				rarities[`node-${node.index}`] = nodeRarities;
+				groups[`node-${node.index}`] = nodeGroups;
+			}
+			else {
+				// Calculate rarities, groups for unconfirmed solve
+				const unconfirmedSolve: Solve | undefined = spotter.solves.find(solve =>
+					solve.node === node.index && solve.crew.length > 0
+				);
+				if (unconfirmedSolve) {
+					let nodeCrew = crewCopy<BossCrew>(unconfirmedSolve.crew);
+					if (spotterPrefs.onehand === 'hide') nodeCrew = filterOneHandExceptions(nodeCrew);
+					if (spotterPrefs.alpha === 'hide') nodeCrew = filterAlphaExceptions(nodeCrew);
+					const nodeCombo: ViableCombo[] = [{ traits: unconfirmedSolve.traits, nodes: [node.index] }];
+					const nodeRarities: NodeRarity = getNodeRarities(node.index, nodeCrew);
+					const nodeGroups: FilteredGroup[] = filterNodeGroups(node.index, unconfirmedSolve.traits.length, node.alphaTest, nodeCrew, nodeRarities, nodeCombo, spotterPrefs);
+					rarities[`node-${node.index}`] = nodeRarities;
+					groups[`node-${node.index}`] = nodeGroups;
+				}
+			}
 		});
 
 		setOptimizer({
@@ -136,6 +156,12 @@ const ChainCrew = (props: ChainCrewProps) => {
 								checked={soloPrefs.shipAbility === 'show'}
 								onChange={(e, data) => setSoloPrefs({...soloPrefs, shipAbility: data.checked ? 'show' : 'hide'})}
 							/>
+							<Form.Field
+								control={Checkbox}
+								label='Confirm trait solves'
+								checked={spotterPrefs.confirmSolves}
+								onChange={(e, data) => setSpotterPrefs({...spotterPrefs, confirmSolves: data.checked})}
+							/>
 						</Form.Group>
 					</div>
 				</Form>
@@ -228,13 +254,14 @@ const ChainCrew = (props: ChainCrewProps) => {
 		return optimalCombos;
 	}
 
-	function getRaritiesByNode(node: SolverNode, crewList: BossCrew[]): NodeRarity {
-		const possibleCombos = [] as PossibleCombo[];
-		const traitRarity = {} as TraitRarities;
-		const crewByNode = crewList.filter(crew => !!crew.node_matches[`node-${node.index}`]);
-		crewByNode.forEach(crew => {
-			crew.node_matches[`node-${node.index}`].combos.forEach(combo => {
-				const existing = possibleCombos.find(possible => possible.combo.every(trait => combo.includes(trait)));
+	function getNodeRarities(nodeIndex: number, nodeCrew: BossCrew[]): NodeRarity {
+		const possibleCombos: PossibleCombo[] = [];
+		const traitRarity: TraitRarities = {};
+		nodeCrew.forEach(crew => {
+			crew.node_matches[`node-${nodeIndex}`].combos.forEach(combo => {
+				const existing: PossibleCombo | undefined = possibleCombos.find(possible =>
+					possible.combo.every(trait => combo.includes(trait))
+				);
 				if (existing) {
 					if (crew.in_portal) existing.crew.push(crew.symbol);
 				}
@@ -242,47 +269,47 @@ const ChainCrew = (props: ChainCrewProps) => {
 					possibleCombos.push({ combo, crew: crew.in_portal ? [crew.symbol] : []});
 				}
 			});
-			const portalValue = crew.in_portal ? 1 : 0;
-			crew.node_matches[`node-${node.index}`].traits.forEach(trait => {
+			const portalValue: number = crew.in_portal ? 1 : 0;
+			crew.node_matches[`node-${nodeIndex}`].traits.forEach(trait => {
 				traitRarity[trait] = traitRarity[trait] ? traitRarity[trait] + portalValue : portalValue;
 			});
 		});
-
 		return { combos: possibleCombos, traits: traitRarity };
 	}
 
-	function filterGroupsByNode(node: SolverNode, crewList: BossCrew[], rarities: NodeRarity, optimalCombos: ViableCombo[], spotterPrefs: SpotterPreferences): FilteredGroup[] {
-		const comboRarity = rarities.combos;
-		const traitRarity = rarities.traits;
-		const traitGroups = [] as string[][];
-		const crewByNode = crewList.filter(crew => !!crew.node_matches[`node-${node.index}`]);
-		crewByNode.forEach(crew => {
-			const crewNodeTraits = crew.node_matches[`node-${node.index}`].traits;
-			const exists = !!traitGroups.find(traits =>
+	function filterNodeGroups(nodeIndex: number, hiddenLeft: number, alphaTest: string, nodeCrew: BossCrew[], rarities: NodeRarity, optimalCombos: ViableCombo[], spotterPrefs: SpotterPreferences): FilteredGroup[] {
+		const comboRarity: PossibleCombo[] = rarities.combos;
+		const traitRarity: TraitRarities = rarities.traits;
+		const traitGroups: string[][] = [];
+		nodeCrew.forEach(crew => {
+			const crewNodeTraits: string[] = crew.node_matches[`node-${nodeIndex}`].traits;
+			const exists: boolean = !!traitGroups.find(traits =>
 				traits.length === crewNodeTraits.length && traits.every(trait => crewNodeTraits.includes(trait))
 			);
 			if (!exists) traitGroups.push(crewNodeTraits);
 		});
 
 		return traitGroups.map(traits => {
-			const score = traits.reduce((prev, curr) => prev + traitRarity[curr], 0);
+			const score: number = traits.reduce((prev, curr) => prev + traitRarity[curr], 0);
 
-			const matchingCrew = crewByNode.filter(crew =>
-				traits.length === crew.node_matches[`node-${node.index}`].traits.length
-					&& traits.every(trait => crew.node_matches[`node-${node.index}`].traits.includes(trait))
+			const matchingCrew: BossCrew[] = nodeCrew.filter(crew =>
+				traits.length === crew.node_matches[`node-${nodeIndex}`].traits.length
+					&& traits.every(trait => crew.node_matches[`node-${nodeIndex}`].traits.includes(trait))
 			);
-			const highestCoverage = matchingCrew.reduce((prev, curr) => Math.max(prev, curr.nodes_rarity), 0);
-			const crewList = matchingCrew.filter(crew => spotterPrefs.noncoverage !== 'hide' || highestCoverage === 1 || crew.nodes_rarity > 1);
+			const highestCoverage: number = matchingCrew.reduce((prev, curr) => Math.max(prev, curr.nodes_rarity), 0);
+			const crewList: BossCrew[] = matchingCrew.filter(crew => spotterPrefs.noncoverage !== 'hide' || highestCoverage === 1 || crew.nodes_rarity > 1);
 
-			const oneHandException = crewList.filter(crew => crew.onehand_rule.compliant > 0).length === 0;
+			const oneHandException: boolean = crewList.filter(crew => crew.onehand_rule.compliant > 0).length === 0;
 
-			let alphaExceptions = 0;
-			traits.forEach(trait => { if (trait.localeCompare(node.alphaTest, 'en') < 0) alphaExceptions++; });
-			const alphaException = traits.length - alphaExceptions < node.hiddenLeft;
+			let alphaExceptions: number = 0;
+			traits.forEach(trait => { if (trait.localeCompare(alphaTest, 'en') < 0) alphaExceptions++; });
+			const alphaException: boolean = traits.length - alphaExceptions < hiddenLeft;
 
-			const crewSet = [] as string[];
-			getAllCombos(traits, node.hiddenLeft).forEach(combo => {
-				const combos = comboRarity.find(rarity => rarity.combo.every(trait => combo.includes(trait)));
+			const crewSet: string[] = [];
+			getAllCombos(traits, hiddenLeft).forEach(combo => {
+				const combos: PossibleCombo | undefined  = comboRarity.find(rarity =>
+					rarity.combo.every(trait => combo.includes(trait))
+				);
 				if (combos) {
 					combos.crew.forEach(crew => {
 						if (!crewSet.includes(crew)) crewSet.push(crew);
@@ -291,11 +318,11 @@ const ChainCrew = (props: ChainCrewProps) => {
 			});
 
 			// Should never see unique or non-portal tags, if everything in solver works as expected
-			const uniqueCrew = crewSet.length === 1;
-			const nonPortal = crewSet.length === 0;
+			const uniqueCrew: boolean = crewSet.length === 1;
+			const nonPortal: boolean = crewSet.length === 0;
 
-			const nodeOptimalCombos = optimalCombos.filter(combos => combos.nodes.includes(node.index)).map(combos => combos.traits);
-			const nonOptimal = getComboIndexOf(nodeOptimalCombos, traits) === -1;
+			const nodeOptimalCombos: string[][] = optimalCombos.filter(combos => combos.nodes.includes(nodeIndex)).map(combos => combos.traits);
+			const nonOptimal: boolean = getComboIndexOf(nodeOptimalCombos, traits) === -1;
 
 			const notes = { oneHandException, alphaException, uniqueCrew, nonPortal, nonOptimal };
 
@@ -311,17 +338,49 @@ const ChainCrew = (props: ChainCrewProps) => {
 		);
 	}
 
-	function onNodeSolved(nodeIndex: number, traits: string[]): void {
-		const solves = [...spotter.solves];
+	function onNodeSolved(nodeIndex: number, traits: string[], bypassConfirmation: boolean = false): void {
+		const node = solver.nodes.find(node => node.index === nodeIndex);
+		if (!node) return;
+
+		// Reset solved traits to ? if passed an empty traits array
+		if (traits.length === 0) {
+			traits = Array(node.solve.length).fill('?');
+		}
+
+		// Keep list of crew who can confirm this solve
+		//	If all traits solved AND crew array set, solve status will be unconfirmed
+		//	If all traits solved AND crew array empty, solve status will be confirmed
+		let crew: BossCrew[] = [];
+		if (node.solveStatus !== SolveStatus.Unconfirmed && !bypassConfirmation) {
+			crew = solver.crew.slice().filter(crew =>
+				!!crew.node_matches[`node-${nodeIndex}`]
+					&& traits.every(trait => crew.traits.includes(trait))
+			);
+			crew.forEach(crew => {
+				// Only retain knowledge about the solved node and solved traits
+				crew.nodes_rarity = 1;
+				crew.node_matches = {
+					[`node-${nodeIndex}`]: {
+						index: nodeIndex,
+						combos: [traits],
+						traits: traits
+					}
+				};
+			});
+		}
+
+ 		const solves = [...spotter.solves];
 		const solve = solves.find(solve => solve.node === nodeIndex);
 		if (solve) {
 			solve.traits = traits;
+			solve.crew = crew;
 		}
 		else {
-			solves.push({ node: nodeIndex, traits });
+			solves.push({ node: nodeIndex, traits, crew });
 		}
+
 		updateSpotter({...spotter, solves});
-	}
+ 	}
 
 	function onCrewMarked(crewSymbol: string): void {
 		if (!spotter.attemptedCrew.includes(crewSymbol)) {

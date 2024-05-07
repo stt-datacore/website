@@ -2,18 +2,16 @@ import React, { Component } from "react";
 import {
     Table, Dropdown, Header, Grid, Button, DropdownItemProps
 } from "semantic-ui-react";
-import { RankMode, appelate } from "../../utils/misc";
+import { RankMode } from "../../utils/misc";
 import { CrewMember } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
 import { TinyStore } from "../../utils/tiny";
 import { GlobalContext } from "../../context/globalcontext";
 import { OwnedLabel } from "../crewtables/commonoptions";
 import { IRosterCrew } from "../crewtables/model";
-import { gradeToColor, skillToShort } from "../../utils/crewutils";
 import ItemDisplay from "../itemdisplay";
-import { RawVoyageRecord, guessSkillsFromCrew } from "../../utils/voyageutils";
+import { RawVoyageRecord } from "../../utils/voyageutils";
 import { navigate } from "gatsby";
-import CONFIG from "../CONFIG";
 import { VoyageHOFPeriod, VoyageStatEntry, niceNamesForPeriod, VoyageHOFProps, VoyageHOFState } from "../../model/hof";
 import { HofDetails, formatNumber } from "./hofdetails";
 import { CrewDropDown } from "../base/crewdropdown";
@@ -51,8 +49,11 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGl
                 if (!a) {
                     return 1;
                 }
-                else {
+                else if (!b) {
                     return -1;
+                }
+                else {
+                    return 0;
                 }
             }
             
@@ -86,6 +87,7 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGl
     const minVoy = rankedCrew.map(rc => rc?.crewCount ?? 0).reduce((p, n) => p < n ? p : n, maxVoy);
 
     rankedCrew.forEach((rc) => {
+        rc.seats = rc.seats.filter(f => f.seat_skill in rc.base_skills)
         rc.seats.sort((a, b) => b.crewCount - a.crewCount);
     })
 
@@ -98,12 +100,12 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGl
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell>Rank</Table.HeaderCell>
-                        <Table.HeaderCell textAlign="right">Crew</Table.HeaderCell>
+                        <Table.HeaderCell textAlign="left">Crew</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
                     {rankedCrew.map((crew, index) => (
-                        <React.Fragment>
+                        <React.Fragment key={`${crew.symbol}_${index}_stats`}>
                         <Table.Row key={crew?.symbol + "_" + period}>
                             <Table.Cell>
                                 <Header
@@ -122,7 +124,7 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGl
                                         cursor: "pointer",
                                         display: "grid",
                                         gridTemplateColumns: "80px auto",
-                                        gridTemplateAreas: `'icon name' 'footer footer'`,
+                                        gridTemplateAreas: `'icon name' 'footer footer' 'quip quip'`,
                                         gridGap: "1px",
                                     }}
                                 >
@@ -160,9 +162,8 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGl
                                         )}
                                         {crew?.have && <OwnedLabel statsPopup crew={crew as IRosterCrew} />}
                                     </div>
-                                    <div style={{marginTop: "0.5em", gridArea: "footer", display:'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center'}}>
+                                    <div style={{marginTop: "0.5em", marginRight: "0.5em", gridArea: "footer", display:'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                                     {crew.seats.map((seat, idx) => {
-
                                         return (<div 
                                             title={`${seat.crewCount.toLocaleString()} voyages.`}
                                             key={`${idx}_${crew.symbol}_seat_${seat.seat_skill}`} style={{display:'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center'}}>
@@ -172,10 +173,19 @@ const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGl
                                             <div>{Math.round(100 * (seat.crewCount / crew.crewCount))}%</div>
                                         </div>)
                                     })}
-                                    
+                                    </div>
+                                    {/* <div style={{gridArea: 'quip', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'left'}}>
+                                        {!!crew.quipmentCounts && Object.entries(crew.quipmentCounts).map(([key, value]) => {
+                                            const quip = context.core.items.find(f => f.kwipment_id === key);
 
-                                </div>
-
+                                            return <div key={`${key}_${value}_${crew.symbol}`} style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'left'}}>
+                                                {!!quip && <><img style={{height: "1.5em"}} src={`${process.env.GATSBY_ASSETS_URL}${quip.imageUrl}`} />
+                                                <span>{quip.name} - {value.toLocaleString()}</span>
+                                                </>
+                                                }
+                                            </div>
+                                        })}
+                                    </div> */}
                                 </div>
                             </Table.Cell>
                         </Table.Row>
@@ -336,13 +346,13 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         let rows = [] as { stats: VoyageStatEntry[], key: VoyageHOFPeriod }[][];
         let stats = Object.keys(niceNamesForPeriod)?.filter(p => !!p?.length);
        
-        while (stats.length) {
-            rows.push(stats.splice(0, 3).map(p => { return { stats: (voyageStats as Object)[p] as VoyageStatEntry[], key: p as VoyageHOFPeriod } } ))
-        }
-
         const filteredCrew = this.getFilteredCrew();
         const selection = filteredCrew?.filter(s => crewSymbol?.includes(s.symbol)).map(m => m?.id ?? 0);
         const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
+        while (stats.length) {            
+            rows.push(stats.splice(0, isMobile ? 1 : 3).map(p => { return { stats: (voyageStats as Object)[p] as VoyageStatEntry[], key: p as VoyageHOFPeriod } } ))
+        }
         
         const glanceDaysChoices = [
             {
@@ -468,16 +478,16 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                     />
                 </div>
                 <Grid columns={3} divided>
-                    {rows.map((row) => {
+                    {rows.map((row, rowidx) => {
 
                         return (
-                            <Grid.Row>
+                            <Grid.Row key={`stats_row_${rowidx}`}>
 
-                                {row.map((stats) => {
+                                {row.map((stats, colidx) => {
 
-                                    if (!niceNamesForPeriod[stats.key]) return <></>
+                                    if (!niceNamesForPeriod[stats.key]) return <React.Fragment key={`stats_col_${rowidx}_${colidx}`}></React.Fragment>
                                     return (
-                                        <Grid.Column>
+                                        <Grid.Column key={`stats_col_${rowidx}_${colidx}`}>
                                         <VoyageStatsForPeriod
                                             clickCrew={this.clickCrew}
                                             rankBy={rankBy}

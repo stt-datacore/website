@@ -118,6 +118,9 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 								}
 							/>
 						</p>
+						<p>
+							Click the link, above, to access data exports for spreadsheets including Take My Chrons and Do Not Airlock.
+						</p>
 						<p>Some pages on DataCore, notably fleet pages and event pages, may also link to your public profile.</p>
 						<p>
 							Information being shared is limited to:

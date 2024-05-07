@@ -1,4 +1,8 @@
-import { BossCrew, RarityStyle } from "../../model/boss";
+import { BossCrew, RarityStyle, SolveStatus, SolverNode, SolverTrait } from "../../model/boss";
+
+export function isNodeOpen(node: SolverNode): boolean {
+	return node.solveStatus === SolveStatus.Unsolved || node.solveStatus === SolveStatus.Partial;
+}
 
 export function getAllCombos(traits: string[], count: number): string[][] {
 	if (count === 1) return traits.map(trait => [trait]);
@@ -74,4 +78,24 @@ export function getStyleByRarity(rarity: number): RarityStyle {
 		color = '#333';
 	}
 	return { background, color };
+}
+
+export function suppressDuplicateTraits(traitData: SolverTrait[], solvedTraits: string[]): SolverTrait[] {
+	const newTraitData: SolverTrait[] = [];
+	traitData.forEach(datum => {
+		if (solvedTraits.includes(datum.trait)) {
+			const newDatum: SolverTrait | undefined = newTraitData.find(newDatum => newDatum.trait === datum.trait);
+			if (!newDatum) {
+				newTraitData.push({
+					...datum,
+					consumed: true,
+					poolCount: 1
+				});
+			}
+		}
+		else {
+			newTraitData.push(datum);
+		}
+	});
+	return newTraitData;
 }

@@ -232,7 +232,7 @@ export const RewardPicker = (props: RewardPickerProps) => {
 		disabled={disabled}
 		style={{width: "22em"}}
 		scrolling
-		placeholder={placeholder ?? 'Priortize rewards'}
+		placeholder={placeholder ?? 'Prioritize rewards'}
 		options={rrOpts} 
 		value={value}
 		multiple

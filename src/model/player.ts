@@ -3,7 +3,7 @@
 import { Ship } from "./ship";
 import { BossBattlesRoot } from "./boss";
 import { CaptainsBridgeRoot } from "./bridge";
-import { BaseSkills, ComputedBuff, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, Skill } from "./crew"
+import { BaseSkills, ComputedSkill, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, Skill } from "./crew"
 import { ShipAction, ShipBonus } from "./ship";
 import { EquipmentCommon, EquipmentItem } from "./equipment";
 import { Collection, Icon } from "./game-elements"
@@ -425,6 +425,8 @@ export interface Player {
     favorite?: boolean;
     ship_battle?: ShipBonus;
     active_status?: number;
+    active_id?: number;
+    active_index?: number;
   }
 
   /**
@@ -469,7 +471,7 @@ export interface Player {
     kwipment: number[][] | number[];
     kwipment_expiration: number[][] | number[];
     //kwipment_expirations?: Date[];
-    q_bits: number
+    q_bits: number;
 
     kwipment_slots?: EquipmentSlot[];
 
@@ -562,7 +564,7 @@ export interface Player {
 
 
     /** Citation Optimizer */
-    
+
     /** Used internally. Not part of source data.  */
     addedEV?: number;
     /** Used internally. Not part of source data.  */
@@ -610,17 +612,17 @@ export interface Player {
 
     // used for exports
     /** Used for exports and internally. Not part of source data.  */
-    command_skill?: ComputedBuff;
+    command_skill?: ComputedSkill;
     /** Used for exports and internally. Not part of source data.  */
-    diplomacy_skill?: ComputedBuff;
+    diplomacy_skill?: ComputedSkill;
     /** Used for exports and internally. Not part of source data.  */
-    security_skill?: ComputedBuff;
+    security_skill?: ComputedSkill;
     /** Used for exports and internally. Not part of source data.  */
-    science_skill?: ComputedBuff;
+    science_skill?: ComputedSkill;
     /** Used for exports and internally. Not part of source data.  */
-    medicine_skill?: ComputedBuff;
+    medicine_skill?: ComputedSkill;
     /** Used for exports and internally. Not part of source data.  */
-    engineering_skill?: ComputedBuff;
+    engineering_skill?: ComputedSkill;
 
     data: any;
   }

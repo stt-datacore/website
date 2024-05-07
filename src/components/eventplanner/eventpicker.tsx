@@ -2,14 +2,14 @@ import React from 'react';
 import { Form, Dropdown, Image, Header } from 'semantic-ui-react';
 
 import { LockedProspect } from '../../model/game-elements';
-import { ComputedBuff } from '../../model/crew';
+import { ComputedSkill } from '../../model/crew';
 import { CompletionState } from '../../model/player';
 
 import { GlobalContext } from '../../context/globalcontext';
 
 import ProspectPicker from '../../components/prospectpicker';
 import { EventCrewTable } from '../../components/eventplanner/eventcrewtable';
-import ShuttleHelper from '../../components/shuttlehelper/shuttlehelper';
+import { ShuttleHelper, EventShuttleHelper } from '../../components/shuttlehelper/shuttlehelper';
 
 import CONFIG from '../../components/CONFIG';
 import { useStateWithStorage } from '../../utils/storage';
@@ -66,7 +66,7 @@ export const EventPicker = (props: EventPickerProps) => {
 					prospect.level = 100;
 					prospect.immortal = CompletionState.DisplayAsImmortalUnowned;
 					CONFIG.SKILLS_SHORT.forEach(skill => {
-						let score: ComputedBuff = { core: 0, min: 0, max: 0 };
+						let score: ComputedSkill = { core: 0, min: 0, max: 0 };
 						if (prospect.base_skills[skill.name]) {
 							if (prospect.rarity === prospect.max_rarity)
 								score = applySkillBuff(buffConfig, skill.name, prospect.base_skills[skill.name]);
@@ -180,57 +180,31 @@ type EventShuttlesProps = {
 
 const EventShuttles = (props: EventShuttlesProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { playerData, ephemeral } = globalContext.player;
+	const { playerData } = globalContext.player;
 	const { eventData } = props;
 
-	const ShuttleProjection = () => {
-		if (!playerData) return (<></>);
+	if (!playerData) return <></>;
 
-		const SHUTTLE_DIFFICULTY = 4000;
-		const SHUTTLE_DURATION = 3*60*60;
-		const SHUTTLE_RATE = .9;
-
-		if (eventData.seconds_to_start !== 0) return (<></>);
-
-		let currentVP = 0, secondsToEndShuttles = eventData.seconds_to_end, endType = 'event';
-		// EventPlanner eventData doesn't hold VP or phases, so get those values from ephemeral events
-		if (ephemeral) {
-			const activeEvent = ephemeral.events.find(event => event.symbol === eventData.symbol);
-			if (!activeEvent) return (<></>);
-			currentVP = activeEvent.victory_points ?? 0;
-			if (activeEvent.content_types.length > 1) {
-				activeEvent.phases.forEach((phase, phaseIdx) => {
-					if (activeEvent.content_types[phaseIdx] === 'shuttles')
-						secondsToEndShuttles = phase.seconds_to_end;
-						endType = 'faction phase';
-				});
-			}
-		}
-
-		let estimatedVP = currentVP;
-		if (secondsToEndShuttles > 0) {
-			const runsLeft = Math.floor(secondsToEndShuttles/SHUTTLE_DURATION)*playerData.player.character.shuttle_bays;
-			const runsSuccessful = Math.floor(runsLeft*SHUTTLE_RATE);
-			const runsFailed = runsLeft - runsSuccessful;
-			estimatedVP += (runsSuccessful*SHUTTLE_DIFFICULTY)+(runsFailed*SHUTTLE_DIFFICULTY/5);
-			return (
-				<span> If you run {playerData.player.character.shuttle_bays} shuttles every 3 hours with a 90% success rate, you will have <b>{estimatedVP} VP</b> by the end of the {endType}.</span>
-			);
-		}
-
-		return (<></>);
-	};
-
-	if (!playerData) return (<></>);
+	// Only use EventShuttleHelper when 1) there's player data AND 2) there's an active event AND 3) using myCrew as roster
+	const eventMode = eventData.seconds_to_start === 0;
 
 	return (
 		<React.Fragment>
 			<Header as='h4'>Shuttle Helper</Header>
-			<p>
-				Use this tool to help plan your shuttles.
-				<ShuttleProjection />
-			</p>
-			<ShuttleHelper helperId='eventplanner' groupId={eventData.symbol} dbid={`${playerData.player.dbid}`} crew={props.crew} eventData={eventData} />
+			<p>Use this tool to help plan your shuttles.</p>
+			{!eventMode && (
+				<ShuttleHelper
+					rosterType={'myCrew'} rosterCrew={props.crew}
+					eventData={eventData}
+				/>
+			)}
+			{eventMode && (
+				<EventShuttleHelper
+					dbid={`${playerData.player.dbid}`}
+					rosterType={'myCrew'} rosterCrew={props.crew}
+					eventData={eventData}
+				/>
+			)}
 		</React.Fragment>
 	);
 };

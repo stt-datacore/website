@@ -167,20 +167,15 @@ export function populateItemCadetSources(items: EquipmentItem[], episodes: Missi
 
 
 export function combineItemBonuses(a: { [key: string]: Skill }, b: { [key: string]: Skill }) {
-	let result = { ...a, ...b };
-	let keys = Object.keys(result);
+	let result = { ...a };
+	let keys = Object.keys(b);
 	for (let key of keys) {
-		result[key] = { core: 0, range_min: 0, range_max: 0, skill: key };
+		result[key] ??= { core: 0, range_min: 0, range_max: 0, skill: key };
 
-		if (key in a) {
-			result[key].core += a[key].core;
-			result[key].range_max += a[key].range_min;
-			result[key].range_max += a[key].range_min;
-		}
 		if (key in b) {
 			result[key].core += b[key].core;
-			result[key].range_max += b[key].range_min;
-			result[key].range_max += b[key].range_min;
+			result[key].range_min += b[key].range_min;
+			result[key].range_max += b[key].range_max;
 		}
 	}
 	return result;

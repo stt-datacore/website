@@ -2,13 +2,19 @@ import React from 'react';
 import { Header, Icon, Button, Popup, Modal, Grid, Label, SemanticWIDTHS } from 'semantic-ui-react';
 
 import { ListedTraits } from './listedtraits';
-import { getStyleByRarity } from './fbbutils';
+import { getStyleByRarity, suppressDuplicateTraits } from './fbbutils';
 
 import ItemDisplay from '../itemdisplay';
 
 import allTraits from '../../../static/structured/translation_en.json';
-import { BossCrew, Optimizer, RarityStyle, Solver, SolverNode, SolverTrait } from '../../model/boss';
+import { BossCrew, NodeMatch, NodeRarity, Optimizer, PossibleCombo, RarityStyle, SolveStatus, Solver, SolverNode, SolverTrait, TraitRarities } from '../../model/boss';
 import { TinyShipSkill } from '../item_presenters/shipskill';
+
+interface ISolveOption {
+	key: number;
+	value: string[];
+	rarity: number;
+};
 
 type MarkGroupProps = {
 	node: SolverNode;
@@ -28,21 +34,43 @@ export const MarkGroup = (props: MarkGroupProps) => {
 		if (!modalIsOpen) setFirstTrait('');
 	}, [modalIsOpen]);
 
-	const nodeRarities = props.optimizer.rarities[`node-${node.index}`];
-	const comboRarity = nodeRarities.combos;
-	const traitRarity = nodeRarities.traits;
+	const nodeRarities: NodeRarity = props.optimizer.rarities[`node-${node.index}`];
+	const comboRarity: PossibleCombo[] = nodeRarities.combos;
+	const traitRarity: TraitRarities = nodeRarities.traits;
 
-	const GroupSolvePicker = () => {
-		const solveOptions = comboRarity.filter(rarity => rarity.combo.includes(firstTrait) && rarity.crew.length > 0)
-			.sort((a, b) => b.crew.length - a.crew.length)
+	let traitData: SolverTrait[] = props.solver.traits;
+
+	// When solve is unconfirmed, rewrite traitData to ignore duplicates
+	if (node.solveStatus === SolveStatus.Unconfirmed)
+		traitData = suppressDuplicateTraits(traitData, traits);
+
+	const GroupSolveOptions = (): JSX.Element => {
+		const solveOptions: ISolveOption[] = comboRarity.filter(rarity =>
+			(firstTrait === '' || rarity.combo.includes(firstTrait)) && rarity.crew.length > 0
+		).sort((a, b) => b.crew.length - a.crew.length)
 			.map((rarity, idx) => {
 				return {
 					key: idx,
 					value: rarity.combo,
 					rarity: rarity.crew.length
 				};
-		});
+			});
 
+		return (
+			<React.Fragment>
+				{solveOptions.map(option => (
+					<div key={option.key} style={{ marginBottom: '.5em' }}>
+						<SolveButton node={node}
+							traits={option.value ?? []} rarity={option.rarity} onehand={node.oneHandTest}
+							traitData={traitData} solveNode={handleSolveClick}
+						/>
+					</div>
+				)).reduce((prev, curr) => <>{prev} {curr}</>, <></>)}
+			</React.Fragment>
+		);
+	};
+
+	const GroupSolvePicker = (): JSX.Element => {
 		return (
 			<Modal
 				open={true}
@@ -50,7 +78,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 				size='tiny'
 			>
 				<Modal.Header>
-					Confirm the traits used to solve Node {node.index+1}
+					Identify the traits used to solve Node {node.index+1}
 				</Modal.Header>
 				<Modal.Content scrolling style={{ textAlign: 'center' }}>
 					<Header as='h4'>
@@ -60,14 +88,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 							</span>
 						)).reduce((prev, curr) => <>{prev} {curr}</>, <></>)}
 					</Header>
-					{solveOptions.map(option => (
-						<div key={option.key} style={{ marginBottom: '.5em' }}>
-							<SolveButton node={node}
-								traits={option.value ?? []} rarity={option.rarity} onehand={node.oneHandTest}
-								traitData={props.solver.traits} solveNode={handleSolveClick}
-							/>
-						</div>
-					)).reduce((prev, curr) => <>{prev} {curr}</>, <></>)}
+					<GroupSolveOptions />
 					<div style={{ marginTop: '2em' }}>
 						<Header as='h4'>Partial Solve</Header>
 						<SolveButton node={node}
@@ -84,12 +105,11 @@ export const MarkGroup = (props: MarkGroupProps) => {
 				</Modal.Actions>
 			</Modal>
 		);
-
-		function handleSolveClick(nodeIndex: number, traits: string[]): void {
-			props.solveNode(node.index, getUpdatedSolve(node, traits));
-			setModalIsOpen(false);
-		}
 	};
+
+	// When solve is unconfirmed, show solved traits and allow for single-click confirmation
+	if (node.solveStatus === SolveStatus.Unconfirmed)
+		return <GroupSolveOptions />;
 
 	return (
 		<React.Fragment>
@@ -104,8 +124,13 @@ export const MarkGroup = (props: MarkGroupProps) => {
 		</React.Fragment>
 	);
 
-	function handleSingleTrait(nodeIndex: number, traits: string[]): void {
-		const trait = traits[0];
+	function handleSolveClick(_nodeIndex: number, traits: string[]): void {
+		props.solveNode(node.index, getUpdatedSolve(node, traits));
+		setModalIsOpen(false);
+	}
+
+	function handleSingleTrait(_nodeIndex: number, traits: string[]): void {
+		const trait: string = traits[0];
 
 		// Always auto-solve when only 1 trait required
 		if (node.hiddenLeft === 1) {
@@ -131,7 +156,7 @@ type MarkCrewProps = {
 export const MarkCrew = (props: MarkCrewProps) => {
 	const { crew, trigger } = props;
 
-	const [showPicker, setShowPicker] = React.useState(false);
+	const [showPicker, setShowPicker] = React.useState<boolean>(false);
 
 	return (
 		<React.Fragment>
@@ -146,11 +171,11 @@ export const MarkCrew = (props: MarkCrewProps) => {
 	);
 
 	function renderCard(): JSX.Element {
-		const imageUrlPortrait = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
+		const imageUrlPortrait: string = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
 
 		return (
 			<Grid.Column key={crew.symbol} textAlign='center'>
-				<span style={{ display: 'inline-block', cursor: 'pointer' }} onClick={() => setShowPicker(true)}>
+				<span style={{ display: 'inline-block', cursor: 'pointer' }} onClick={() => trySolve(false)}>
 					<ItemDisplay
 						src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
 						size={60}
@@ -159,7 +184,7 @@ export const MarkCrew = (props: MarkCrewProps) => {
 					/>
 				</span>
 				<div>
-					<span style={{ cursor: 'pointer' }} onClick={() => setShowPicker(true)}>
+					<span style={{ cursor: 'pointer' }} onClick={() => trySolve(false)}>
 						{crew.only_frozen && <Icon name='snowflake' />}
 						{crew.only_expiring && <Icon name='warning sign' />}
 						<span style={{ fontStyle: crew.nodes_rarity > 1 ? 'italic' : 'normal' }}>
@@ -184,7 +209,7 @@ export const MarkCrew = (props: MarkCrewProps) => {
 					mouseEnterDelay={500}
 					hideOnScroll
 					trigger={
-						<Button icon compact onClick={() => trySolve()}>
+						<Button icon compact onClick={() => trySolve(true)}>
 							<Icon name='check' color='green' />
 						</Button>
 					}
@@ -203,14 +228,19 @@ export const MarkCrew = (props: MarkCrewProps) => {
 		);
 	}
 
-	function trySolve(): void {
-		// Always auto-solve when only 1 solution possible
+	function trySolve(autoSolve: boolean): void {
 		if (!crew.node_matches) return;
 		if (Object.values(crew.node_matches).length === 1) {
-			const match = Object.values(crew.node_matches)[0];
-			const node = props.solver.nodes.find(n => n.index === match.index);
+			const match: NodeMatch = Object.values(crew.node_matches)[0];
+			const node: SolverNode | undefined = props.solver.nodes.find(n => n.index === match.index);
 			if (node) {
-				if (match.traits.length === node.hiddenLeft) {
+				// Always auto-solve when only 1 solution possible and solve is unconfirmed
+				if (node.solveStatus === SolveStatus.Unconfirmed) {
+					props.solveNode(node.index, node.solve);
+					return;
+				}
+				// Auto-solve when only 1 solution possible and permitted from trigger
+				else if (autoSolve && match.traits.length === node.hiddenLeft) {
 					props.solveNode(node.index, getUpdatedSolve(node, match.traits));
 					return;
 				}
@@ -241,7 +271,7 @@ const SolvePicker = (props: SolvePickerProps) => {
 			size={nodeMatches.length === 1 ? 'tiny' : 'small'}
 		>
 			<Modal.Header>
-				Identify the traits solved by {crew.name}
+				Confirm the traits solved by {crew.name}
 			</Modal.Header>
 			<Modal.Content scrolling>
 				{renderOptions()}
