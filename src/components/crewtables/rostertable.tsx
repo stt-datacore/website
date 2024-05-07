@@ -28,7 +28,7 @@ import RosterSummary from './rostersummary';
 import { QuipmentScoreCells, getQuipmentTableConfig as getQuipmentTableConfig } from './views/quipmentscores';
 import { getItemWithBonus } from '../../utils/itemutils';
 import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from './views/topquipment';
-import { QuipmentToolsFilter } from './filters/quipmenttools';
+import { PowerMode, QuipmentToolsFilter } from './filters/quipmenttools';
 import { calcQLots } from '../../utils/equipment';
 import { CrewBuffModes } from './commonoptions';
 import { UnifiedWorker } from '../../typings/worker';
@@ -216,6 +216,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 	const [showBase, setShowBase] = React.useState<boolean>(false);
 
 	const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>('/quipmentTools/pstMode', false, { rememberForever: true });
+	const [powerMode, setPowerMode] = useStateWithStorage<PowerMode>('/quipmentTools/powerMode', 'all', { rememberForever: true });
 	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
 	
@@ -226,13 +227,18 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 	const getActiveBuffs = () => {
 		if (buffMode === 'none' || !buffMode) return undefined;
 
-		if (rosterType === 'myCrew') {
-			return globalContext.player.buffConfig;
+		if (buffMode === 'player') {
+			if (globalContext.player.buffConfig) {
+				return globalContext.player.buffConfig;
+			}
+			else {
+				return globalContext.maxBuffs;	
+			}
 		}
 		else if (buffMode === 'max') {
 			return globalContext.maxBuffs;
 		}
-		
+			
 		return undefined;
 	}
 
@@ -274,20 +280,22 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			id: 'qp_score',
 			available: true,
 			optionText: 'Show quipment scores',
-			form: <QuipmentToolsFilter 
-					maxxed={rosterType === 'allCrew' || rosterType === 'buyBack'}
-					quipment={quipment}
-					pstMode={pstMode}
-					setPstMode={setPstMode}
-					hideForm={true}
-					slots={slots}
-					setSlots={setSlots}
-					key='qpscore_tool'
-					pageId={pageId}												
-					crewFilters={crewFilters}
-					setCrewFilters={setCrewFilters}	
-				/>,
-			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
+			// form: <QuipmentToolsFilter 
+			// 		maxxed={rosterType === 'allCrew' || rosterType === 'buyBack'}
+			// 		quipment={quipment}
+			// 		pstMode={pstMode}
+			// 		setPstMode={setPstMode}
+			// 		powerMode={powerMode}
+			// 		setPowerMode={setPowerMode}
+			// 		hideForm={true}
+			// 		slots={slots}
+			// 		setSlots={setSlots}
+			// 		key='qpscore_tool'
+			// 		pageId={pageId}												
+			// 		crewFilters={crewFilters}
+			// 		setCrewFilters={setCrewFilters}	
+			// 	/>,
+			// //form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
 			tableConfig: getQuipmentTableConfig(rosterType === 'allCrew' || rosterType === 'buyBack'),			
 			renderTableCells: 
 				(crew: IRosterCrew) => 
@@ -321,7 +329,8 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 							quipment,
 							buffs: getActiveBuffs(),
 							max_qbits: rosterType === 'allCrew' || rosterType === 'buyBack',
-							slots	
+							slots,
+							mode: powerMode
 						}
 					});
 
@@ -334,6 +343,8 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					quipment={quipment}
 					pstMode={pstMode}
 					setPstMode={setPstMode}
+					powerMode={powerMode}
+					setPowerMode={setPowerMode}
 					slots={slots}
 					setSlots={setSlots}
 					key='qpbest_tool'
@@ -342,7 +353,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					setCrewFilters={setCrewFilters}	
 				/>,
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getTopQuipmentTableConfig(top, pstMode, rosterType === 'allCrew' || rosterType === 'buyBack'),
+			tableConfig: getTopQuipmentTableConfig(pstMode, rosterType === 'allCrew' || rosterType === 'buyBack', powerMode, getActiveBuffs()),
 			renderTableCells: 
 				(crew: IRosterCrew) => 
 					<TopQuipmentScoreCells 
@@ -483,7 +494,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			}
 		};
 		prepareCrew();
-	}, [rosterCrew, crewMarkups, slots, rosterType, tableView]);
+	}, [rosterCrew, crewMarkups, slots, powerMode, rosterType, tableView]);
 
 	React.useEffect(() => {
 		if (!tableView.startsWith("qp_")) {

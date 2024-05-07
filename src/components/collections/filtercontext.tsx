@@ -21,6 +21,7 @@ const DefaultData = {
     tierFilter: 1,
     hardFilter: false,
     favorited: true,
+    showIncomplete: false,
     setMapFilter: (value) => null,
     setSearchFilter: (value) => null,
     setRarityFilter: (value) => null,
@@ -34,7 +35,9 @@ const DefaultData = {
     setByCost: (value) => false,
     setTierFilter: (value) => 1,
     setHardFilter: (value) => null,
-    setFavorited: (value) => null
+    setFavorited: (value) => null,
+    setShowIncomplete: (value) => null
+
 } as CollectionFilterContextProps;
 
 export const CollectionFilterContext = React.createContext<CollectionFilterContextProps>(DefaultData);
@@ -66,6 +69,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
     const [hardFilter, internalSetHardFilter] = useStateWithStorage('collectionstool/colHardFilter', false, { rememberForever: true });
 	const [costMode, setCostMode] = useStateWithStorage<'normal' | 'sale'>("collectionstool/costMode", 'normal', { rememberForever: true });
 	const [matchMode, setMatchMode] = useStateWithStorage<CollectionMatchMode>("colOptimizer/matchMode", 'normal', { rememberForever: true });
+	const [showIncomplete, setShowIncomplete] = useStateWithStorage('colOptimizer/showIncomplete', false, { rememberForever: true });
     const [byCost, internalSetByCost] = useStateWithStorage("colOptimizer/sortByCost", false, { rememberForever: true });
     const [favorited, internalSetFavorited] = useStateWithStorage("colOptimizer/favorited", true, { rememberForever: true });
 
@@ -84,7 +88,6 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
 		setMapFilter({ ... mapFilter });
 	}
 
-    
     const data = {
         mapFilter,
         searchFilter,
@@ -98,6 +101,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
         tierFilter,
         hardFilter,
         favorited,
+        showIncomplete,
 
         setMapFilter,
         setSearchFilter,
@@ -114,7 +118,8 @@ export const CollectionFilterProvider = (props: CollectionFiltersProps) => {
 
         setShort: internalSetShort,
         setCostMode,
-        setMatchMode
+        setMatchMode,
+        setShowIncomplete
     } as CollectionFilterContextProps;
 
     return (<CollectionFilterContext.Provider value={data}>

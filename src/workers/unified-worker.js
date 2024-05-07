@@ -83,6 +83,7 @@ self.onmessage = (message) => {
         'questSolver': () => QuestSolver.solveQuest(message.data.config).then(data => postResult(data, false)),
         'ironywrit': () => BetaTachyon.scanCrew(message.data.config).then(data => postResult(data, false)),
         'colOptimizer': () => CollectionOptimizer.scanAll(message.data.config).then(data => postResult(data, false)),
+        'colOptimizer2': () => CollectionOptimizer.scanAll2(message.data.config).then(data => postResult(data, false)),
         'equipmentWorker': () => ItemsWorker.processItems(message.data.config).then(data => postResult(data, false)),
         'iampicard': () => voymod().then(mod => {
             let result = mod.calculate(JSON.stringify(message.data), res => {
@@ -92,10 +93,10 @@ self.onmessage = (message) => {
         }),
         'ussjohnjay': () => VoyagersWorker(message.data, postResult, transwarp.getEstimate),
         'qpower': () => {
-            const { crew, quipment, buffs, max_qbits, slots } = message.data.config;
+            const { crew, quipment, buffs, max_qbits, slots, mode } = message.data.config;
             crew.forEach((crew) => {
-                calcQLots(crew, quipment, buffs, max_qbits, slots);
-            });
+                calcQLots(crew, quipment, buffs, max_qbits, slots, mode);
+            });            
             postResult(crew, false);
         }
     };

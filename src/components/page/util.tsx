@@ -29,7 +29,7 @@ export interface NavItem {
 
 export const renderColumnsMenu = (menu: NavItem, columns: number = 2) => {
     return (
-        <Dropdown text={menu.title as string} item simple direction='left'>
+        <Dropdown key={v4()} text={menu.title as string} item simple direction='left'>
             {menu.subMenu && (
                 <Menu>
                     <Container fluid>
@@ -90,33 +90,31 @@ export const renderSubmenuItem = (item: NavItem, title?: string, asDropdown?: bo
     }
 
     return (
-        <>
         <Menu.Item fitted="horizontally" key={v4()} onClick={(e) => item.customAction ? item.customAction(e.nativeEvent, item) : (item.link ? navigate(item.link ?? '') : null)}
-                style={{borderRadius:"6px", paddingLeft:"0.5em", paddingRight:"0.5em"}}
-                >
-                <>
-                <div style={{
-                    display:"flex",
-                    flexDirection: "row",
-                    textAlign: "left",
-                    padding: "0.25em",
-                    lineHeight:"1.45em",
-                    alignItems: "center",
-                    justifyContent: "flex-start"
-                }}>
-                    {!!item.src && <div style={{width:"36px", marginRight: "1em"}}><img src={item.src} style={{height:'24px', margin: "0.5em", padding: 0}} alt={item.tooltip ?? item.textTitle ?? (typeof item.title === 'string' ? item.title : '')} /></div>}
-                    {item.title}
-                </div>
-                {!!item.subMenu?.length && <>
-                        <div style={{marginLeft: '1em'}}>
-                            {item.subMenu?.map((sub) => {
-                                return renderSubmenuItem(sub);
-                            })}
-                       </div>
-                    </>}
-                </>
-            </Menu.Item>
-    </>
+            style={{borderRadius:"6px", paddingLeft:"0.5em", paddingRight:"0.5em"}}
+            >
+            <>
+            <div style={{
+                display:"flex",
+                flexDirection: "row",
+                textAlign: "left",
+                padding: "0.25em",
+                lineHeight:"1.45em",
+                alignItems: "center",
+                justifyContent: "flex-start"
+            }}>
+                {!!item.src && <div style={{width:"36px", marginRight: "1em"}}><img src={item.src} style={{height:'24px', margin: "0.5em", padding: 0}} alt={item.tooltip ?? item.textTitle ?? (typeof item.title === 'string' ? item.title : '')} /></div>}
+                {item.title}
+            </div>
+            {!!item.subMenu?.length && <>
+                    <div style={{marginLeft: '1em'}}>
+                        {item.subMenu?.map((sub) => {
+                            return renderSubmenuItem(sub);
+                        })}
+                    </div>
+                </>}
+            </>
+        </Menu.Item>
     )
 }
 
@@ -151,13 +149,13 @@ export const createSubMenu = (title: string | JSX.Element | undefined, children:
 
     if (verticalLayout) {
         return (
-            <React.Fragment>
+            <React.Fragment key={v4()}>
             {<h3 style={{marginTop:"0.75em"}}>{header ?? text}<hr/></h3>}
             {children.map(item => item.customRender ? item.customRender(item) : (renderSubmenuItem(item)))}
             </React.Fragment>
         );
     } else {
-        return (<div>
+        return (<div key={v4()}>
             <Dropdown
                 key={v4()}
                 item

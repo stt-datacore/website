@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Icon, Dropdown, Button, Message } from 'semantic-ui-react';
+import { Table, Icon, Form, Dropdown, Button, Message } from 'semantic-ui-react';
 
 import allFactions from '../../../static/structured/factions.json';
 import { ShuttleAdventure } from '../../model/shuttle';
@@ -11,7 +11,7 @@ import { MissionsTable, MissionFactionView, SeatSkillView } from './missionstabl
 
 export const Missions = () => {
 	const shuttlersContext = React.useContext(ShuttlersContext);
-	const { groupId, activeShuttles, shuttlers, setShuttlers } = shuttlersContext;
+	const { helperId, groupId, activeShuttles, shuttlers, setShuttlers } = shuttlersContext;
 
 	const [data, setData] = React.useState<ITableData[]>([]);
 
@@ -54,7 +54,7 @@ export const Missions = () => {
 	}, [shuttlers, activeShuttles]);
 
 	const columns: ITableColumn[] = [
-		{ id: 'checklist', title: <CheckDropdown selectMissions={selectMissions} />, align: 'center' },
+		{ id: 'checklist', title: <Icon name='check' />, align: 'center', sortField: { id: '_priority' } },
 		{ id: 'name', title: 'Mission', sortField: { id: 'name' } },
 		{ id: 'status', title: 'Status', align: 'center', sortField: { id: 'status' } },
 		{ id: 'faction', title: 'Faction', align: 'center', sortField: { id: 'faction' } },
@@ -72,8 +72,9 @@ export const Missions = () => {
 	return (
 		<React.Fragment>
 			<p>Select all the missions that you want to run, then tap 'Recommend Crew' to see the best seats for your crew.</p>
+			<GroupToggles selectMissions={selectMissions} />
 			<MissionsTable
-				tableId='missions'
+				tableId={`${helperId}/missions`}
 				columns={columns}
 				data={data}
 				renderTableRow={renderTableRow}
@@ -193,14 +194,14 @@ export const Missions = () => {
 interface ICheckOption {
 	key: string;
 	text: string;
-	ids: string[];
+	ids?: string[];
 };
 
-type CheckDropdownProps = {
+type GroupTogglesProps = {
 	selectMissions: (shuttleIds: string[]) => void;
 };
 
-const CheckDropdown = (props: CheckDropdownProps) => {
+const GroupToggles = (props: GroupTogglesProps) => {
 	const shuttlersContext = React.useContext(ShuttlersContext);
 	const { groupId, activeShuttles, shuttlers } = shuttlersContext;
 
@@ -213,26 +214,28 @@ const CheckDropdown = (props: CheckDropdownProps) => {
 	}, [shuttlers, activeShuttles]);
 
 	const allIds: string[] = shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId).map(shuttle => shuttle.id);
-	const selectedCount: number = shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId && shuttle.priority > 0).length;
+	// const selectedCount: number = shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId && shuttle.priority > 0).length;
 
 	if (allIds.length === 0) return <></>;
 
 	return (
-		<Dropdown
-			icon='check'
-			floating
-		>
-			<Dropdown.Menu>
-				<Dropdown.Item icon='check' text={`Select all (${allIds.length})`} onClick={() => props.selectMissions(allIds)} />
-				{selectedCount > 0 && (
-					<Dropdown.Item icon='x' text='Unselect all' onClick={() => props.selectMissions([])} />
-				)}
-				{checkOptions.length > 0 && <Dropdown.Divider />}
-				{checkOptions.map(option => (
-					<Dropdown.Item key={option.key} text={option.text} onClick={() => props.selectMissions(option.ids)} />
-				))}
-			</Dropdown.Menu>
-		</Dropdown>
+		<Form>
+			<Form.Group inline>
+				<Button content={`Select all ${allIds.length}`} onClick={() => props.selectMissions(allIds)} />
+				<Button content='Unselect all' onClick={() => props.selectMissions([])} />
+				<Dropdown
+					placeholder='Select group'
+					button
+				>
+					<Dropdown.Menu>
+						{checkOptions.map(option => {
+							if (option.text === '-') return <Dropdown.Divider key={option.key} />;
+							return <Dropdown.Item key={option.key} text={option.text} onClick={() => props.selectMissions(option.ids ?? [])} />;
+						})}
+					</Dropdown.Menu>
+				</Dropdown>
+			</Form.Group>
+		</Form>
 	);
 
 	function getCheckOptions(shuttles: Shuttle[]): ICheckOption[] {
@@ -245,10 +248,19 @@ const CheckDropdown = (props: CheckDropdownProps) => {
 			if (shuttle.seats.length === 3)
 				threeSeaters.push(shuttle.id);
 		});
+
+		const factions: number[] = [];
+		shuttles.forEach(shuttle => {
+			if (shuttle.faction > 0 && !factions.includes(shuttle.faction)) factions.push(shuttle.faction);
+		});
+
 		if (threeSeaters.length > 0)
 			checkOptions.push({ key: 'three-seaters', text: `Select only 3-seaters (${threeSeaters.length})`, ids: threeSeaters });
 		if (fourSeaters.length > 0)
 			checkOptions.push({ key: 'four-seaters', text: `Select only 3- and 4- seaters (${fourSeaters.length})`, ids: fourSeaters });
+
+		if (threeSeaters.length + fourSeaters.length > 0 && (activeShuttles.length > 0 || factions.length > 1))
+			checkOptions.push({ key: 'divider1', text: '-' });
 
 		if (activeShuttles.length > 0) {
 			const runningIds: string[] = activeShuttles.filter(adventure => adventure.shuttles[0].state > 0).map(adventure => adventure.symbol);
@@ -257,10 +269,9 @@ const CheckDropdown = (props: CheckDropdownProps) => {
 			checkOptions.push({ key: `open-adventures`, text: `Select only open in-game (${activeIds.length})`, ids: activeIds });
 		}
 
-		const factions: number[] = [];
-		shuttles.forEach(shuttle => {
-			if (shuttle.faction > 0 && !factions.includes(shuttle.faction)) factions.push(shuttle.faction);
-		});
+		if ((threeSeaters.length + fourSeaters.length > 0 || activeShuttles.length > 0) && factions.length > 1)
+			checkOptions.push({ key: 'divider2', text: '-' });
+
 		if (factions.length > 1) {
 			factions.forEach(factionId => {
 				const ids: string[] = shuttles.filter(shuttle => shuttle.faction === factionId).map(shuttle => shuttle.id);

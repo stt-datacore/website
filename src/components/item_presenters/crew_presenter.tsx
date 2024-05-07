@@ -422,7 +422,7 @@ export class CrewPresenter extends React.Component<
         let key = "buffmode";
         if (this.context.player.playerData) key += "_player";
         this.tiny.setValue<PlayerBuffMode>(key, value, true);
-        if (this.props.selfRender) this.forceUpdate();
+        if (this.props.selfRender) setTimeout(() => this.forceUpdate());
     }
 
     protected get immortalMode(): PlayerImmortalMode {
@@ -463,7 +463,7 @@ export class CrewPresenter extends React.Component<
         } else {
             this.tiny.setValue<PlayerImmortalMode>(key, value, true);
         }
-        if (this.props.selfRender) this.forceUpdate();
+        if (this.props.selfRender) setTimeout(() => this.forceUpdate());
     }
 
     protected get validImmortalModes(): PlayerImmortalMode[] {

@@ -53,7 +53,7 @@ const CollectionsCrewCard = (props: CollectionsCrewCardProps): JSX.Element => {
     <ItemDisplay 
         size={64}
         src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
-        rarity={!crew.have ? 0 : crew.rarity}
+        rarity={crew.rarity}
         maxRarity={crew.max_rarity}
         targetGroup={'collectionsTarget'}
         itemSymbol={crew.symbol}
