@@ -168,6 +168,11 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'translation_fr'
 		] as ValidDemands[];
 
+		// Load English:
+		if (!Object.keys(data.translation).length && !demands.some(d => d.startsWith("translation_"))) {
+			demands.push("translation_en");
+		}
+
 		if (demands.includes('ship_schematics') && !demands.includes('battle_stations')) {
 			demands.push('battle_stations');
 		}
