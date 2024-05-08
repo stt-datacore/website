@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, Button, Table, Popup, Icon, Card, Label, SemanticICONS } from 'semantic-ui-react';
 
-import allTraits from '../../../static/structured/translation_en.json';
+//import allTraits from '../../../static/structured/translation_en.json';
 import { CrewMember, Skill } from '../../model/crew';
 import { PlayerCrew, Voyage, VoyageCrewSlot } from '../../model/player';
 import { Ship } from '../../model/ship';
@@ -13,6 +13,7 @@ import CONFIG from '../CONFIG';
 import { useStateWithStorage } from '../../utils/storage';
 import { renderBonuses, renderKwipmentBonus } from '../item_presenters/item_presenter';
 import { isQuipped } from '../../utils/crewutils';
+import { DataContext } from '../../context/datacontext';
 
 interface IAssignment {
 	crew: PlayerCrew;
@@ -219,6 +220,8 @@ const TableView = (props: ViewProps) => {
 	const { voyageConfig, rosterType, ship, shipData, assignments } = React.useContext(ViewContext);
 	const { layout } = props;
 	const globalContext = React.useContext(GlobalContext);
+	const { translation: allTraits } = globalContext.core;
+
 	const compact = layout === 'table-compact';
 
 	return (
@@ -550,6 +553,7 @@ type AssignmentCardProps = {
 };
 
 const AssignmentCard = (props: AssignmentCardProps) => {
+	const { translation: allTraits } = React.useContext(DataContext);
 	const { assignment: { crew, name, trait, bestRank }, showFinder, showSkills } = props;
 
 	const context = React.useContext(GlobalContext);

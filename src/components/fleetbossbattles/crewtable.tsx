@@ -10,10 +10,11 @@ import { SearchableTable, ITableConfigRow } from '../../components/searchabletab
 
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 
-import allTraits from '../../../static/structured/translation_en.json';
+//import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, Solver, Optimizer, TraitRarities, ViableCombo } from '../../model/boss';
 import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
 import { TinyShipSkill } from '../item_presenters/shipskill';
+import { DataContext } from '../../context/datacontext';
 
 type CrewTableProps = {
 	solver: Solver;
@@ -23,6 +24,7 @@ type CrewTableProps = {
 };
 
 const CrewTable = (props: CrewTableProps) => {
+	const { translation: allTraits } = React.useContext(DataContext);
 	const { solver, optimizer } = props;
 
 	const tableConfig: ITableConfigRow[] = [

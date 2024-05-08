@@ -33,7 +33,7 @@ const CollectionsTool = () => {
 	const { playerData } = context.player;
 	const { crew, collections: allCollections } = context.core;
 
-	if (!context.core.ready(['collections'])) {	
+	if (!context.core.collections?.length) {	
 		return context.core.spin ? context.core.spin() : <></>;
 	}
 

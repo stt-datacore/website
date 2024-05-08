@@ -45,7 +45,7 @@ type ProfilePageState = {
 
 export const ProfilePage = (props: ProfilePageProps) => {
 	const coreData = React.useContext(DataContext);
-	const isReady = coreData.ready ? coreData.ready(['crew', 'ship_schematics', 'items', 'all_buffs']) : false;
+	const isReady = !!Object.keys(coreData.translation).length;
 
 	const [lastModified, setLastModified] = React.useState<Date | undefined>(undefined);
 	const [strippedPlayerData, setStrippedPlayerData] = React.useState<PlayerData | undefined>(undefined);
