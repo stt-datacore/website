@@ -190,7 +190,16 @@ const CollectionOptimizer = {
                     ?.filter((f) => f?.length) ?? []
                 : [];
 
-            const workingCrew = collectionCrew.filter(f => !f.immortal || !f.have);
+            const workingCrew = collectionCrew.filter(f => !f.immortal || ((f.immortal && f.immortal < -1) && mapFilter.collectionsFilter?.length)).map(c => JSON.parse(JSON.stringify(c)));
+            workingCrew.forEach((f) => {
+                f.have = !(f.immortal && f.immortal < -1);
+                if (!f.have) {
+                    f.rarity = f.max_rarity;
+                    f.equipment = [0, 1, 2, 3];
+                    f.level = 100;
+                    f.highest_owned_rarity = 0;                    
+                }
+            })
             const workingCollections = playerCollections.filter((col) => col.progress !== 'n/a' && (col.claimable_milestone_index ?? 0) < (col.milestones?.length ?? 0) && workingCrew.some(crew => crew.collections.some(col2 => col2 === col.name)));
 
             const colInfo = workingCollections.map((col) => ({
