@@ -1,4 +1,4 @@
-import { checkCommonFilter, compareRewards, findColGroupsCrew, getOptCrew, neededStars, starCost } from "../utils/collectionutils";
+import { compareRewards, findColGroupsCrew, getOptCrew, neededStars, starCost } from "../utils/collectionutils";
 import {
     CollectionMap,
     CollectionGroup,
@@ -7,12 +7,8 @@ import {
     ColComboMap,
     ComboCostMap,
 } from "../model/collectionfilter";
-import { CompletionState, PlayerCollection, PlayerCrew } from "../model/player";
+import { PlayerCollection, PlayerCrew } from "../model/player";
 import { makeAllCombos } from "../utils/misc";
-
-function isSubset(set1: string[], set2: string[]) {
-    return set1.length < set2.length && set1.every(s => set2.includes(s));
-}
 
 function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: PlayerCollection[]) {
     let cname = colOptimized.collection.name;
