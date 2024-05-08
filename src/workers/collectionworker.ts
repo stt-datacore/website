@@ -190,7 +190,7 @@ const CollectionOptimizer = {
                     ?.filter((f) => f?.length) ?? []
                 : [];
 
-            const workingCrew = collectionCrew.filter(f => !f.immortal);
+            const workingCrew = collectionCrew.filter(f => !f.immortal || !f.have);
             const workingCollections = playerCollections.filter((col) => col.progress !== 'n/a' && (col.claimable_milestone_index ?? 0) < (col.milestones?.length ?? 0) && workingCrew.some(crew => crew.collections.some(col2 => col2 === col.name)));
 
             const colInfo = workingCollections.map((col) => ({
