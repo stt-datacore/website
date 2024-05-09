@@ -3,7 +3,7 @@ name: Assistant Kes
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal:
 date: 03/10/2023
 published: true

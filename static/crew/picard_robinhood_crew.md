@@ -3,7 +3,7 @@ name: Robin Hood
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 in_portal: true
 date: 19/06/2017
 published: true

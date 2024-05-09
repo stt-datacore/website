@@ -3,7 +3,7 @@ name: Night Terrors Troi
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal:
 date: 02/10/2023
 published: true

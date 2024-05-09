@@ -3,7 +3,7 @@ name: First Officer Burnham
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 25/09/2017
 published: true

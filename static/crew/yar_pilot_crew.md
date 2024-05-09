@@ -3,7 +3,7 @@ name: Aviator Yar
 rarity: 5
 series: original
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 in_portal: true
 date: 31/08/2016
 published: true

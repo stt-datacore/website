@@ -3,7 +3,7 @@ name: Admiral Pike
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal:
 date: 27/07/2023
 published: true

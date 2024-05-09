@@ -3,7 +3,7 @@ name: EV Suit Sam Kirk
 rarity: 4
 series: snw
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal:
 date: 19/09/2023
 published: true
