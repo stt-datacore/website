@@ -3,7 +3,7 @@ name: Fal-tor-pan Spock
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal: true
 date: 18/03/2021
 published: true

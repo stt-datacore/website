@@ -3,7 +3,7 @@ name: Tactical Stamets
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 in_portal: true
 date: 06/04/2021
 published: true

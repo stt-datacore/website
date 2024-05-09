@@ -3,7 +3,7 @@ name: Palor Toff
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 06/06/2023
 published: true
