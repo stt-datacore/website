@@ -294,7 +294,7 @@ const CollectionOptimizer = {
                 ci.relatives.forEach((cirkey) => {
                     let cirel = colInfo.find(c => c.name === cirkey);
                     if (cirel) {
-                        let crew = ci.crew.filter(cf => cirel.crew.includes(cf)).map(ccsym => workingCrew.find(c => c.symbol === ccsym) as PlayerCrew);
+                        let crew = ci.crew.filter(cf => cirel.crew.includes(cf)).map(ccsym => workingCrew.find(c => c.symbol === ccsym) as PlayerCrew).filter(f => f.have);
                         crew = normalCollectionSort(crew, searchFilter, searches, favorites);
                         //crew.sort((a, b) => a.name.localeCompare(b.name));
                         let col2 = workingCollections.find(wc => wc.name === cirel.name) as PlayerCollection;
