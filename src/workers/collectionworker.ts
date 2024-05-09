@@ -1,4 +1,4 @@
-import { checkCommonFilter, compareRewards, findColGroupsCrew, getOptCrew, neededStars, starCost } from "../utils/collectionutils";
+import { compareRewards, findColGroupsCrew, getOptCrew, neededStars, starCost } from "../utils/collectionutils";
 import {
     CollectionMap,
     CollectionGroup,
@@ -7,12 +7,8 @@ import {
     ColComboMap,
     ComboCostMap,
 } from "../model/collectionfilter";
-import { CompletionState, PlayerCollection, PlayerCrew } from "../model/player";
+import { PlayerCollection, PlayerCrew } from "../model/player";
 import { makeAllCombos } from "../utils/misc";
-
-function isSubset(set1: string[], set2: string[]) {
-    return set1.length < set2.length && set1.every(s => set2.includes(s));
-}
 
 function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: PlayerCollection[]) {
     let cname = colOptimized.collection.name;
@@ -190,9 +186,18 @@ const CollectionOptimizer = {
                     ?.filter((f) => f?.length) ?? []
                 : [];
 
-            const workingCrew = collectionCrew.filter(f => !f.immortal);
-            const workingCollections = playerCollections.filter((col) => col.progress !== 'n/a' && (col.claimable_milestone_index ?? 0) < (col.milestones?.length ?? 0) && workingCrew.some(crew => crew.collections.some(col2 => col2 === col.name)));
+            const eligCrew = collectionCrew.filter(f => !f.immortal || ((f.immortal && f.immortal < -1) && mapFilter.collectionsFilter?.length));
+            eligCrew.forEach((f) => {                
+                if (f.have === undefined) f.have = !(f.immortal && f.immortal < -1);
+                if (!f.have) {
+                    f.rarity = 0;
+                    f.equipment = [0, 1, 2, 3];
+                    f.level = 100;
+                    f.highest_owned_rarity = 0;
+                }
+            });
 
+            const workingCollections = playerCollections.filter((col) => col.progress !== 'n/a' && (col.claimable_milestone_index ?? 0) < (col.milestones?.length ?? 0) && eligCrew.some(crew => crew.collections.some(col2 => col2 === col.name)));
             const colInfo = workingCollections.map((col) => ({
                 name: col.name,
                 crew: [],
@@ -201,8 +206,10 @@ const CollectionOptimizer = {
             } as CollectionInfo));
 
             colInfo.forEach((col) => {
-                col.crew = workingCrew.filter(f => f.collections.some(col2 => col2 === col.name)).map(c => c.symbol);
+                col.crew = eligCrew.filter(f => f.collections.some(col2 => col2 === col.name)).map(c => c.symbol);
             });
+
+            const workingCrew = [ ... new Set(colInfo.map((col: CollectionInfo) => col.crew).flat()) ].map(symbol => eligCrew.find(sym => sym.symbol === symbol) as PlayerCrew) as PlayerCrew[];
 
             workingCrew.forEach((crew) => {
                 let crewcols = colInfo.filter(c => crew.collections.includes(c.name));
@@ -287,7 +294,7 @@ const CollectionOptimizer = {
                 ci.relatives.forEach((cirkey) => {
                     let cirel = colInfo.find(c => c.name === cirkey);
                     if (cirel) {
-                        let crew = ci.crew.filter(cf => cirel.crew.includes(cf)).map(ccsym => workingCrew.find(c => c.symbol === ccsym) as PlayerCrew);
+                        let crew = ci.crew.filter(cf => cirel.crew.includes(cf)).map(ccsym => workingCrew.find(c => c.symbol === ccsym) as PlayerCrew).filter(f => f.have);
                         crew = normalCollectionSort(crew, searchFilter, searches, favorites);
                         //crew.sort((a, b) => a.name.localeCompare(b.name));
                         let col2 = workingCollections.find(wc => wc.name === cirel.name) as PlayerCollection;
