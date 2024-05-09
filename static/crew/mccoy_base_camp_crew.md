@@ -3,7 +3,7 @@ name: Base Camp McCoy
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal: true
 date: 02/08/2023
 published: true

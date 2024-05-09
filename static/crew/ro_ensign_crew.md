@@ -3,7 +3,7 @@ name: Ensign Ro
 rarity: 2
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 in_portal: true
 date: 01/01/2016
 published: true
