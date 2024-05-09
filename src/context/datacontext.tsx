@@ -15,6 +15,7 @@ import { getItemWithBonus } from '../utils/itemutils';
 import { EventInstance } from '../model/events';
 import { StaticFaction } from '../model/shuttle';
 import { getSkillOrder, getVoyageQuotient } from '../utils/crewutils';
+import CONFIG from '../components/CONFIG';
 
 const DC_DEBUGGING: boolean = false;
 
@@ -255,6 +256,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 						if (result.demand.startsWith("translation_")) {
 							newData.translation = result.json;
 							newData.translationDemand = result.demand;
+							CONFIG.setLanguage(newData.translationDemand.slice(12))
 						}
 						else {
 							newData[result.demand] = result.json;

@@ -13,6 +13,7 @@ function rgbToHex(r: number, g: number, b: number): string {
 }
 
 export default class CONFIG {
+	
 	static readonly RARITIES: Rarity[] = [
 		{ name: 'Basic', color: 'Grey' },
 		{ name: 'Common', color: rgbToHex(155, 155, 155) },
@@ -234,8 +235,6 @@ export default class CONFIG {
 		"MED"
 	]
 
-	
-
 	static readonly CITATION_COST = [0, 500, 4500, 18000, 50000];
 
 	static readonly SERIES = [
@@ -244,4 +243,118 @@ export default class CONFIG {
 		'dsc', 'pic', 'low', 'snw', 'vst',
 		'original'
 	];
+	
+	static setLanguage(l: string) {
+		if (l === 'en') {
+			this.RARITIES.length = 0;
+			this.RARITIES.push(
+				{ name: 'Basic', color: 'Grey' },
+				{ name: 'Common', color: rgbToHex(155, 155, 155) },
+				{ name: 'Uncommon', color: rgbToHex(80, 170, 60) },
+				{ name: 'Rare', color: rgbToHex(90, 170, 255) },
+				{ name: 'Super Rare', color: rgbToHex(170, 45, 235) },
+				{ name: 'Legendary', color: rgbToHex(253, 210, 106) }
+			);
+
+			this.MASTERY_LEVELS.length = 0;
+			this.MASTERY_LEVELS.push(
+				{ name: 'Normal', imageUrl: 'mastery_lowest_icon' },
+				{ name: 'Elite', imageUrl: 'mastery_medium_icon' },
+				{ name: 'Epic', imageUrl: 'mastery_highest_icon' }		
+			)
+			
+			this.SKILLS.command_skill = 'Command';
+			this.SKILLS.science_skill = 'Science';
+			this.SKILLS.security_skill = 'Security';
+			this.SKILLS.engineering_skill = 'Engineering';
+			this.SKILLS.diplomacy_skill = 'Diplomacy';
+			this.SKILLS.medicine_skill = 'Medicine';
+
+			this.REWARDS_ITEM_TYPE[0] = 'None';
+			this.REWARDS_ITEM_TYPE[1] = 'Crew';
+			this.REWARDS_ITEM_TYPE[2] = 'Equipment';
+			this.REWARDS_ITEM_TYPE[3] = 'Component';
+			this.REWARDS_ITEM_TYPE[4] = 'Shuttle consumable';
+			this.REWARDS_ITEM_TYPE[5] = 'Ship part';
+			this.REWARDS_ITEM_TYPE[6] = 'Shuttle token';
+			this.REWARDS_ITEM_TYPE[7] = 'Crew experience training';
+			this.REWARDS_ITEM_TYPE[8] = 'Ship schematic';
+			this.REWARDS_ITEM_TYPE[9] = 'Replicator ration';
+			this.REWARDS_ITEM_TYPE[10] = 'Honorable citation';
+			this.REWARDS_ITEM_TYPE[11] = 'Buff';
+			this.REWARDS_ITEM_TYPE[12] = 'Starbase component';
+			this.REWARDS_ITEM_TYPE[13] = 'Voyage consumable';
+			this.REWARDS_ITEM_TYPE[14] = 'Continuum Quipment';
+			this.REWARDS_ITEM_TYPE[15] = 'Continuum Quipment Component';
+
+			this.CREW_SHIP_BATTLE_BONUS_TYPE[0] = 'Attack';
+			this.CREW_SHIP_BATTLE_BONUS_TYPE[1] = 'Evasion';
+			this.CREW_SHIP_BATTLE_BONUS_TYPE[2] = 'Accuracy';
+			// These are only for penalty
+			this.CREW_SHIP_BATTLE_BONUS_TYPE[3] = 'Shield Regeneration';			
+
+			this.CREW_SHIP_BATTLE_TRIGGER[0] = 'None';
+			this.CREW_SHIP_BATTLE_TRIGGER[1] = 'Position';
+			this.CREW_SHIP_BATTLE_TRIGGER[2] = 'Cloak';
+			this.CREW_SHIP_BATTLE_TRIGGER[4] = 'Boarding';
+
+			this.SHIP_BATTLE_GRANTS[0] = 'None';
+			this.SHIP_BATTLE_GRANTS[1] = 'Position';
+			this.SHIP_BATTLE_GRANTS[2] = 'Cloaked';
+			this.SHIP_BATTLE_GRANTS[4] = 'Boarding';
+			this.SHIP_BATTLE_GRANTS[16] = 'Shields Disruptor';
+
+			this.SHIP_BATTLE_GRANT_DESC[0] = 'None';
+			this.SHIP_BATTLE_GRANT_DESC[1] = 'Critical Rating increased';
+			this.SHIP_BATTLE_GRANT_DESC[2] = 'Ship is untargetable for a time';
+			this.SHIP_BATTLE_GRANT_DESC[4] = 'Deals gradual damage to enemy hull';
+			this.SHIP_BATTLE_GRANT_DESC[16] = 'Enemy shields become inoperable for a time';
+
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[0] = 'Increases bonus boost by +%VAL%';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[1] = 'Immediately deals %VAL%% damage';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[2] = 'Immediately repairs Hull by %VAL%%';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[3] = 'Immediately repairs Shields by %VAL%%';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[4] = '+%VAL% to Crit Rating';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[5] = '+%VAL% to Crit Bonus';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[6] = '+%VAL% to Shield Regeneration';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[7] = '+%VAL%% to Attack Speed';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[8] = 'Increases boarding damage by %VAL%%';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[9] = 'Resets enemy cooldown timers';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[10] = 'Speeds up cooldown timers by %VAL% seconds';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[11] = 'Decrease incoming hull damage by %VAL%%';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[12] = '%VAL%% of incoming damage also taken by the attacker';
+
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[0] = '+%VAL% to bonus boost';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[1] = '%VAL%% damage';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[2] = '%VAL%% hull repair';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[3] = '%VAL%% shield repair';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[4] = '+%VAL% crit rating';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[5] = '+%VAL% crit bonus';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[6] = '+%VAL% shield regen.';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[7] = '+%VAL%% attack speed';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[8] = '%VAL%% boarding damage';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[9] = 'Resets enemy cooldown timers';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[10] = '+%VAL%s to cooldown timers';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[11] = '-%VAL%% hull damage';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[12] = '%VAL%% reflection damage';
+
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[0] = 'Increases Bonus Boost';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[1] = 'Immediate Damage';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[2] = 'Immediately Repairs Hull';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[3] = 'Immediately Repairs Shields';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[4] = '+Crit Rating';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[5] = '+Crit Bonus';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[6] = '+Shield Regeneration';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[7] = '+Attack Speed';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[8] = 'Increases Boarding Damage';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[9] = 'Resets enemy cooldown timers';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[10] = 'Speeds Up Cooldown Timers';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[11] = 'Decrease Incoming Hull Damage';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[12] = 'Reflection Damage';
+
+		}
+	
+	
+	}
+
 }
