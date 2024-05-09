@@ -190,10 +190,10 @@ const CollectionOptimizer = {
             eligCrew.forEach((f) => {                
                 if (f.have === undefined) f.have = !(f.immortal && f.immortal < -1);
                 if (!f.have) {
-                    if (!f.rarity) f.rarity = f.max_rarity;
-                    if (!f.equipment) f.equipment = [0, 1, 2, 3];
-                    if (!f.level) f.level = 100;
-                    if (f.highest_owned_rarity === undefined) f.highest_owned_rarity = 0;
+                    f.rarity = 0;
+                    f.equipment = [0, 1, 2, 3];
+                    f.level = 100;
+                    f.highest_owned_rarity = 0;
                 }
             });
 
