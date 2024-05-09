@@ -190,10 +190,10 @@ const CollectionOptimizer = {
             eligCrew.forEach((f) => {                
                 if (f.have === undefined) f.have = !(f.immortal && f.immortal < -1);
                 if (!f.have) {
-                    if (!f.rarity) f.rarity = f.max_rarity;
-                    if (!f.equipment) f.equipment = [0, 1, 2, 3];
-                    if (!f.level) f.level = 100;
-                    if (f.highest_owned_rarity === undefined) f.highest_owned_rarity = 0;
+                    f.rarity = 0;
+                    f.equipment = [0, 1, 2, 3];
+                    f.level = 100;
+                    f.highest_owned_rarity = 0;
                 }
             });
 
@@ -294,7 +294,7 @@ const CollectionOptimizer = {
                 ci.relatives.forEach((cirkey) => {
                     let cirel = colInfo.find(c => c.name === cirkey);
                     if (cirel) {
-                        let crew = ci.crew.filter(cf => cirel.crew.includes(cf)).map(ccsym => workingCrew.find(c => c.symbol === ccsym) as PlayerCrew);
+                        let crew = ci.crew.filter(cf => cirel.crew.includes(cf)).map(ccsym => workingCrew.find(c => c.symbol === ccsym) as PlayerCrew).filter(f => f.have);
                         crew = normalCollectionSort(crew, searchFilter, searches, favorites);
                         //crew.sort((a, b) => a.name.localeCompare(b.name));
                         let col2 = workingCollections.find(wc => wc.name === cirel.name) as PlayerCollection;
