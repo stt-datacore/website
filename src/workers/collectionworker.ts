@@ -1,4 +1,4 @@
-import { checkCommonFilter, compareRewards, findColGroupsCrew, getOptCrew, neededStars, starCost } from "../utils/collectionutils";
+import { compareRewards, findColGroupsCrew, getOptCrew, neededStars, starCost } from "../utils/collectionutils";
 import {
     CollectionMap,
     CollectionGroup,
@@ -7,12 +7,8 @@ import {
     ColComboMap,
     ComboCostMap,
 } from "../model/collectionfilter";
-import { CompletionState, PlayerCollection, PlayerCrew } from "../model/player";
+import { PlayerCollection, PlayerCrew } from "../model/player";
 import { makeAllCombos } from "../utils/misc";
-
-function isSubset(set1: string[], set2: string[]) {
-    return set1.length < set2.length && set1.every(s => set2.includes(s));
-}
 
 function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: PlayerCollection[]) {
     let cname = colOptimized.collection.name;
@@ -190,9 +186,18 @@ const CollectionOptimizer = {
                     ?.filter((f) => f?.length) ?? []
                 : [];
 
-            const workingCrew = collectionCrew.filter(f => !f.immortal);
-            const workingCollections = playerCollections.filter((col) => col.progress !== 'n/a' && (col.claimable_milestone_index ?? 0) < (col.milestones?.length ?? 0) && workingCrew.some(crew => crew.collections.some(col2 => col2 === col.name)));
+            const eligCrew = collectionCrew.filter(f => !f.immortal || ((f.immortal && f.immortal < -1) && mapFilter.collectionsFilter?.length));
+            eligCrew.forEach((f) => {                
+                if (f.have === undefined) f.have = !(f.immortal && f.immortal < -1);
+                if (!f.have) {
+                    if (!f.rarity) f.rarity = f.max_rarity;
+                    if (!f.equipment) f.equipment = [0, 1, 2, 3];
+                    if (!f.level) f.level = 100;
+                    if (f.highest_owned_rarity === undefined) f.highest_owned_rarity = 0;
+                }
+            });
 
+            const workingCollections = playerCollections.filter((col) => col.progress !== 'n/a' && (col.claimable_milestone_index ?? 0) < (col.milestones?.length ?? 0) && eligCrew.some(crew => crew.collections.some(col2 => col2 === col.name)));
             const colInfo = workingCollections.map((col) => ({
                 name: col.name,
                 crew: [],
@@ -201,8 +206,10 @@ const CollectionOptimizer = {
             } as CollectionInfo));
 
             colInfo.forEach((col) => {
-                col.crew = workingCrew.filter(f => f.collections.some(col2 => col2 === col.name)).map(c => c.symbol);
+                col.crew = eligCrew.filter(f => f.collections.some(col2 => col2 === col.name)).map(c => c.symbol);
             });
+
+            const workingCrew = [ ... new Set(colInfo.map((col: CollectionInfo) => col.crew).flat()) ].map(symbol => eligCrew.find(sym => sym.symbol === symbol) as PlayerCrew) as PlayerCrew[];
 
             workingCrew.forEach((crew) => {
                 let crewcols = colInfo.filter(c => crew.collections.includes(c.name));
