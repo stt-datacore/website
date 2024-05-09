@@ -3,7 +3,7 @@ name: Botanist Sulu
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal: true
 date: 19/04/2022
 published: true

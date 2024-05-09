@@ -3,7 +3,7 @@ name: 25th Century Q
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 02/03/2022
 published: true

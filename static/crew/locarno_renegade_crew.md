@@ -3,7 +3,7 @@ name: Renegade Locarno
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal:
 date: 12/04/2024
 published: true

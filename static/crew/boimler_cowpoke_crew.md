@@ -3,7 +3,7 @@ name: Cowpoke Boimler
 rarity: 4
 series: original
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal: true
 date: 23/08/2022
 published: true
