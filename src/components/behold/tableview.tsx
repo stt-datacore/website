@@ -56,7 +56,7 @@ export const TableView = (props: TableViewProps) => {
 		});
 	});
 
-	const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
+	const rarityLabels = CONFIG.RARITIES.map(r => r.name);
 
 	return (
 		<div style={{ marginTop: '2em' }}>
@@ -115,7 +115,7 @@ export const TableView = (props: TableViewProps) => {
 				</Table.Cell>
 				<Table.Cell style={{ textAlign: 'center' }}>
 					<b>#{crew.ranks.voyRank}</b><br />
-					{crew.ranks.voyTriplet && <small>Triplet #{crew.ranks.voyTriplet.rank}</small>}
+					{crew.ranks.voyTriplet && <small>{CONFIG.TRIPLET_TEXT} #{crew.ranks.voyTriplet.rank}</small>}
 				</Table.Cell>
 				<Table.Cell style={{ textAlign: 'center' }}>
 					<b>#{crew.ranks.gauntletRank}</b>

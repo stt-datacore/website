@@ -59,7 +59,7 @@ type CrewCellProps = {
 
 export const CrewBaseCells = (props: CrewCellProps) => {
 	const { crew, pageId, tableType } = props;
-	const rarityLabels = ['Common', 'Uncommon', 'Rare', 'Super Rare', 'Legendary'];
+	const rarityLabels = CONFIG.RARITIES.map(r => r.name);
 	const tiny = TinyStore.getStore("index");
 	
 	const navToSearch = (crew: IRosterCrew) => {
@@ -80,7 +80,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 			<Table.Cell textAlign='center'>
 				<div style={{cursor:"pointer"}} onClick={(e) => navToSearch(crew)} title={crew.skill_order.map(sk => skillToShort(sk)).reduce((p, n) => p ? `${p}/${n}` : n)}>
 					<b>#{crew.ranks.voyRank}</b><br />
-					{crew.ranks.voyTriplet && <small>Triplet #{crew.ranks.voyTriplet.rank}</small>}
+					{crew.ranks.voyTriplet && <small>{CONFIG.TRIPLET_TEXT} #{crew.ranks.voyTriplet.rank}</small>}
 				</div>
 			</Table.Cell>
 			{CONFIG.SKILLS_SHORT.map(skill =>

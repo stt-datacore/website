@@ -2,7 +2,6 @@ import React from 'react';
 import { Label, Message, Rating, Table } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
-import { rarityLabels } from '../../model/game-elements';
 import { GlobalContext } from '../../context/globalcontext';
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 import { CrewHoverStat, CrewTarget } from '../../components/hovering/crewhoverstat';
@@ -15,6 +14,7 @@ import { gradeToColor, numberToGrade } from "../../utils/crewutils";
 
 import { IRosterCrew, RetrievableState } from './model';
 import { CombosModal } from './combos';
+import CONFIG from '../CONFIG';
 
 type RetrievalCrewTableProps = {
  	filteredCrew: IRosterCrew[];
@@ -66,6 +66,8 @@ const CrewRow = (props: CrewRowProps) => {
 
 	const [detailedView, setDetailedView] = React.useState<string>('');
 
+	const rarityLabels = CONFIG.RARITIES.map(r => r.name);
+
 	return (
 		<Table.Row key={crew.symbol}>
 			<Table.Cell>
@@ -111,7 +113,7 @@ const CrewRow = (props: CrewRowProps) => {
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<b>#{crew.ranks.voyRank}</b>
-					<br />{crew.ranks.voyTriplet && <small>Triplet #{crew.ranks.voyTriplet.rank}</small>}
+					<br />{crew.ranks.voyTriplet && <small>{CONFIG.TRIPLET_TEXT} #{crew.ranks.voyTriplet.rank}</small>}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<b>#{crew.ranks.gauntletRank}</b>
