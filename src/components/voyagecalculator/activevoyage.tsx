@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Image, Button } from 'semantic-ui-react';
 
-import allTraits from '../../../static/structured/translation_en.json';
+//import allTraits from '../../../static/structured/translation_en.json';
 import { Voyage } from '../../model/player';
 import { IVoyageCrew, IVoyageHistory, ITrackedCheckpoint } from '../../model/voyage';
 import { Estimate } from '../../model/worker';
@@ -26,6 +26,8 @@ type ActiveVoyageProps = {
 
 export const ActiveVoyage = (props: ActiveVoyageProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { translation: allTraits } = globalContext.core;
+
 	const { playerData, ephemeral } = globalContext.player;
 	const { showDetails, actionButtons } = props;
 

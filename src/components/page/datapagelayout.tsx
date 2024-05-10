@@ -60,7 +60,6 @@ const getNavigatorLanguage = () => {
 
 const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const globalContext = React.useContext(GlobalContext);
-	const [currentLanguage, setCurrentLanguage] = React.useState('en');
 	
 	const { children, pageId, pageTitle, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
 
@@ -69,16 +68,9 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const [playerPanel, setPlayerPanel] = React.useState<string | undefined>(undefined);
 
 	const demands = props.demands ?? [] as ValidDemands[];
-	const i18nDemand = 'translation_' + currentLanguage;
-
-	// React.useEffect(() => {
-	// 	if (!!globalContext.player?.playerData?.player?.lang && currentLanguage !== globalContext.player?.playerData?.player?.lang) {
-	// 		setCurrentLanguage(globalContext.player?.playerData?.player?.lang);
-	// 	}
-	// }, [globalContext.player]);
-
+	
 	React.useEffect(() => {
-		([i18nDemand, 'crew', 'collections', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
+		(['crew', 'collections', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
 			if (!demands.includes(required))
 				demands.push(required);
 		});
@@ -86,7 +78,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 		setTimeout(() => {
 			setIsReady(!!globalContext.core.ready && !!globalContext.core.ready(demands));
 		})
-	}, [currentLanguage, globalContext.core]);
+	}, [globalContext.core]);
 
 	// topAnchor div styled to scroll properly with a fixed header
 	const topAnchor = React.useRef<HTMLDivElement>(null);

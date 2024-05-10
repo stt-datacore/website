@@ -100,7 +100,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
         { title: "3rd Pair", key: "pair_3", reverse: true  },
         // { title: "Owned", key: "have" },
         { title: "In Portal", key: "in_portal" },
-        { title: "Q-Bits", key: "q_bits" }
+        { title: "QP", key: "q_bits" }
     ];
     const pageSizes = [1, 5, 10, 20, 50, 100].map(size => {
         return {
