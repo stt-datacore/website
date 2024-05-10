@@ -395,7 +395,7 @@ export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {
                 multi: false,
 				initialValue: [] as number[],
 				renderContent: () => <div style={{margin: "0.5em 0px"}}>
-					<ShipAbilityPicker selectedAbilities={this.state.options['abilities'] as string[]} setSelectedAbilities={(a) => this.setAbility(a)} />
+					<ShipAbilityPicker fluid selectedAbilities={this.state.options['abilities'] as string[]} setSelectedAbilities={(a) => this.setAbility(a)} />
 					</div>
 
             }]
