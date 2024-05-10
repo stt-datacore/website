@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
 import { Table, Icon, Pagination, Dropdown, Button, Input } from 'semantic-ui-react';
 
-import { findPotentialCrew, mergeShips } from '../utils/shiputils';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
-import { Ship, Schematics, Ability, ShipBonus, BattleStation } from '../model/ship';
-import { PlayerData } from '../model/player';
-import CONFIG from './CONFIG';
+import { Ship } from '../model/ship';
 import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
-import { useStateWithStorage } from '../utils/storage';
-import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { navigate } from 'gatsby';
 import { RarityFilter } from './crewtables/commonoptions';
-import { TriggerPicker } from './crewtables/shipoptions';
+import { ShipAbilityPicker, TriggerPicker } from './crewtables/shipoptions';
 import { isMobile } from 'react-device-detect';
 
 type ProfileShipsProps = {
@@ -28,6 +24,7 @@ type ProfileShipsState = {
 	activeShip?: Ship | null;
 	rarityFilter?: number[];
 	grantFilter?: string[];
+	abilityFilter: string[];
 	textFilter?: string;
 };
 
@@ -56,7 +53,8 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 			pagination_rows: 10,
 			pagination_page: 1,
 			data: [],
-			originals: []
+			originals: [],
+			abilityFilter: []
 		};
 	}
 
@@ -152,11 +150,17 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 			this.setState({...this.state, grantFilter: filter});
 		})		
 	}
+	private readonly setAbilityFilter = (filter: string[]) => {
+		window.setTimeout(() => {
+			this.setState({...this.state, abilityFilter: filter});
+		})		
+	}
+
 	private readonly setTextFilter = (filter?: string) => {
 		this.setState({ ...this.state, textFilter: filter });
 	}
 	render() {
-		const { textFilter, grantFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
+		const { textFilter, grantFilter, abilityFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
 		
 		const dataContext = this.context;
 		if (!dataContext || (!dataContext.core.ships && !dataContext.player.playerShips)) return <></>;
@@ -166,6 +170,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		let data = prefiltered.filter((ship) => {
 			if (rarityFilter && !!rarityFilter?.length && !rarityFilter.some((r) => ship.rarity === r)) return false;			
 			if (grantFilter && !!grantFilter?.length && !ship.actions?.some((action) => grantFilter.some((gf) => Number.parseInt(gf) === action.status))) return false;
+			if (abilityFilter && !!abilityFilter?.length && !ship.actions?.some((action) => abilityFilter.some((af) => action.ability?.type.toString() === af))) return false;
 			if (textFilter?.length) {
 				const usearch = textFilter.toLocaleUpperCase();
 				if (!ship.name?.toLocaleUpperCase().includes(usearch) 
@@ -195,7 +200,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 				flexDirection: "row"
 			}}>
 				<Input
-					style={{ width: isMobile ? '100%' : '50%' }}
+					style={{ width: isMobile ? '100%' : '30%' }}
 					iconPosition="left"
 					placeholder="Search by name or trait..."
 					value={textFilter}
@@ -216,6 +221,10 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 					marginLeft: "0.5em"
 				}}>
 					<TriggerPicker grants={true} altTitle='Filter ship grants' selectedTriggers={grantFilter} setSelectedTriggers={(value) => this.setGrantFilter(value as string[])} />
+				</div><div style={{
+					marginLeft: "0.5em"
+				}}>
+					<ShipAbilityPicker ship={true} selectedAbilities={this.state.abilityFilter} setSelectedAbilities={(value) => this.setAbilityFilter(value as string[])} />
 				</div>
 			</div>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">

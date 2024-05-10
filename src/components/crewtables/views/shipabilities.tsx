@@ -384,6 +384,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 				}}>
 					<div style={{marginRight: "1em", width: window.innerWidth < 725 ? "auto" : "25em"}}>
 						<ShipAbilityPicker
+								fluid
 								selectedAbilities={selectedAbilities ?? []}
 								setSelectedAbilities={(item) => setShipFilters({ ... shipFilters, selectedAbilities: item })}
 								availableAbilities={availableAbilities}
