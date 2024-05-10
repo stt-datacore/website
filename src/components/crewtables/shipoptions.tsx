@@ -132,11 +132,13 @@ export type ShipAbilityPickerProps = {
     availableAbilities?: string[];
     selectedAbilities: string[];
     setSelectedAbilities: (ability: string[]) => void | React.Dispatch<React.SetStateAction<string[]>>;
+	ship?: boolean;
+	fluid?: boolean;
 };
 
 export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
-	const { selectedAbilities, setSelectedAbilities } = props;
-    const availableAbilities = props.availableAbilities && props.availableAbilities.length ? props.availableAbilities : Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).slice(0, 9);
+	const { selectedAbilities, setSelectedAbilities, fluid } = props;
+    const availableAbilities = props.availableAbilities && props.availableAbilities.length ? props.availableAbilities : Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).slice(0, props.ship ? 12 : 9);
 
 	const [ability, setAbility] = React.useState(selectedAbilities);	
 
@@ -173,11 +175,11 @@ export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
                 search 
                 selection 
                 clearable                
-                fluid
-                multiple
+                fluid={fluid}
+                multiple				
 				placeholder={placeholder}
-				options={poolList}                
-				value={selectedAbilities}								
+				options={poolList}
+				value={selectedAbilities}
 				onChange={(e, { value }) => setAbility(value as string[])}
 			/>
 		</React.Fragment>
