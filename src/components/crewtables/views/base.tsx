@@ -45,7 +45,7 @@ export const getBaseTableConfig = (tableType: 'allCrew' | 'myCrew' | 'profileCre
 	}
 	else {
 		tableConfig.push(
-			{ width: 1, column: 'q_bits', title: 'Q-Bits' },
+			{ width: 1, column: 'q_bits', title: 'QP' },
 		);
 	}
 	return tableConfig;

@@ -270,6 +270,16 @@ export default class CONFIG {
 			this.SKILLS.diplomacy_skill = 'Diplomacy';
 			this.SKILLS.medicine_skill = 'Medicine';
 
+			this.SKILLS_SHORT.length = 0;
+			this.SKILLS_SHORT.push(
+				{ name: 'command_skill', short: 'CMD' },
+				{ name: 'science_skill', short: 'SCI' },
+				{ name: 'security_skill', short: 'SEC' },
+				{ name: 'engineering_skill', short: 'ENG' },
+				{ name: 'diplomacy_skill', short: 'DIP' },
+				{ name: 'medicine_skill', short: 'MED' }
+			);
+
 			this.REWARDS_ITEM_TYPE[0] = 'None';
 			this.REWARDS_ITEM_TYPE[1] = 'Crew';
 			this.REWARDS_ITEM_TYPE[2] = 'Equipment';
@@ -285,7 +295,7 @@ export default class CONFIG {
 			this.REWARDS_ITEM_TYPE[12] = 'Starbase component';
 			this.REWARDS_ITEM_TYPE[13] = 'Voyage consumable';
 			this.REWARDS_ITEM_TYPE[14] = 'Continuum Quipment';
-			this.REWARDS_ITEM_TYPE[15] = 'Continuum Quipment Component';
+			this.REWARDS_ITEM_TYPE[15] = 'Continuum Q-Bit';
 
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[0] = 'Attack';
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[1] = 'Evasion';
@@ -352,7 +362,155 @@ export default class CONFIG {
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[11] = 'Decrease Incoming Hull Damage';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[12] = 'Reflection Damage';
 
+			this.VOYAGE_SLOT_SKILLS.length = 0;
+			this.VOYAGE_SLOT_SKILLS.push(
+				"CMD",
+				"CMD",
+				"DIP",
+				"DIP",
+				"SEC",
+				"SEC",
+				"ENG",
+				"ENG",
+				"SCI",
+				"SCI",
+				"MED",
+				"MED");
 		}
+		// FRENCH
+		else if (l === 'fr') {
+			this.RARITIES.length = 0;
+			this.RARITIES.push(
+				{ name: 'Basique', color: 'Grey' },
+				{ name: 'Ordinaire', color: rgbToHex(155, 155, 155) },
+				{ name: 'Insolite', color: rgbToHex(80, 170, 60) },
+				{ name: 'Rare', color: rgbToHex(90, 170, 255) },
+				{ name: 'Super Rare', color: rgbToHex(170, 45, 235) },
+				{ name: 'Légendaire', color: rgbToHex(253, 210, 106) }
+			);
+
+			this.MASTERY_LEVELS.length = 0;
+			this.MASTERY_LEVELS.push(
+				{ name: 'Normal', imageUrl: 'mastery_lowest_icon' },
+				{ name: 'Élite', imageUrl: 'mastery_medium_icon' },
+				{ name: 'Épique', imageUrl: 'mastery_highest_icon' }		
+			)
+			
+			this.SKILLS.command_skill = 'Commandement';
+			this.SKILLS.science_skill = 'Science';
+			this.SKILLS.security_skill = 'Sécurité';
+			this.SKILLS.engineering_skill = 'Ingénierie';
+			this.SKILLS.diplomacy_skill = 'Diplomatie';
+			this.SKILLS.medicine_skill = 'Médecine';
+
+			this.SKILLS_SHORT.length = 0;
+			this.SKILLS_SHORT.push(
+				{ name: 'command_skill', short: 'CMD' },
+				{ name: 'science_skill', short: 'SCI' },
+				{ name: 'security_skill', short: 'SEC' },
+				{ name: 'engineering_skill', short: 'ING' },
+				{ name: 'diplomacy_skill', short: 'DIP' },
+				{ name: 'medicine_skill', short: 'MED' }
+			);
+
+			this.REWARDS_ITEM_TYPE[0] = 'Aucun';
+			this.REWARDS_ITEM_TYPE[1] = 'Équipage';
+			this.REWARDS_ITEM_TYPE[2] = 'Équipment';
+			this.REWARDS_ITEM_TYPE[3] = 'Composant';
+			this.REWARDS_ITEM_TYPE[4] = 'Modifications de navette';
+			this.REWARDS_ITEM_TYPE[5] = 'Piéce de navette';
+			this.REWARDS_ITEM_TYPE[6] = 'Jetons de navette';
+			this.REWARDS_ITEM_TYPE[7] = 'Entraînment Équipage';
+			this.REWARDS_ITEM_TYPE[8] = 'Plan de vaisseau';
+			this.REWARDS_ITEM_TYPE[9] = 'Ration de réplicateur';
+			this.REWARDS_ITEM_TYPE[10] = 'Mention honorable';
+			this.REWARDS_ITEM_TYPE[11] = 'Effet';
+			this.REWARDS_ITEM_TYPE[12] = 'Composant de base stellaire';
+			this.REWARDS_ITEM_TYPE[13] = 'Provision de voyage';
+			this.REWARDS_ITEM_TYPE[14] = 'Quipement de continuum';
+			this.REWARDS_ITEM_TYPE[15] = 'Q-Bits de continuum';
+
+			this.CREW_SHIP_BATTLE_BONUS_TYPE[0] = 'Attaque';
+			this.CREW_SHIP_BATTLE_BONUS_TYPE[1] = 'Évasion';
+			this.CREW_SHIP_BATTLE_BONUS_TYPE[2] = 'Précision';
+			// These are only for penalty
+			this.CREW_SHIP_BATTLE_BONUS_TYPE[3] = 'Régénération Bouclier';			
+
+			this.CREW_SHIP_BATTLE_TRIGGER[0] = 'Aucun';
+			this.CREW_SHIP_BATTLE_TRIGGER[1] = 'Position';
+			this.CREW_SHIP_BATTLE_TRIGGER[2] = 'Camouflé';
+			this.CREW_SHIP_BATTLE_TRIGGER[4] = 'Abordage';
+
+			this.SHIP_BATTLE_GRANTS[0] = 'Aucun';
+			this.SHIP_BATTLE_GRANTS[1] = 'Position';
+			this.SHIP_BATTLE_GRANTS[2] = 'Camouflé';
+			this.SHIP_BATTLE_GRANTS[4] = 'Abordage';
+			this.SHIP_BATTLE_GRANTS[16] = 'Disrupteur de boucliers';
+
+			this.SHIP_BATTLE_GRANT_DESC[0] = 'Aucun';
+			this.SHIP_BATTLE_GRANT_DESC[1] = 'Augmente votre taux de critiques';
+			this.SHIP_BATTLE_GRANT_DESC[2] = 'Vous rend impossible à cibler';
+			this.SHIP_BATTLE_GRANT_DESC[4] = 'Inflige des dégâts sur la durée à la coque ennemie';
+			this.SHIP_BATTLE_GRANT_DESC[16] = 'Les boucliers ennemis deviennent temporairement inopérants';
+
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[0] = 'Boost augmenté de +%VAL%';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[1] = 'Inflige immédiatement %VAL% % de dégâts';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[2] = 'Repare immédiatement %VAL% % de la coque';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[3] = 'Repare immédiatement %VAL% % des boucliers';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[4] = '+%VAL% à la chance du critique';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[5] = '+%VAL% au bonus critique';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[6] = '+%VAL% à la régénération des boucliers';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[7] = '+%VAL% % à la vitesse d\'attaque';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[8] = 'Augment %VAL% % de dégâts d\'abordage';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[9] = 'Réinitialise les temps de recharge ennemis';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[10] = 'Accélère les temps de recharge de %VAL% secondes';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[11] = 'Réduit les dégâts de coque subis de %VAL% %';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[12] = '%VAL% % des dégâts subis sont aussi infligés à l\'attaquant';
+
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[0] = 'Boost augmenté de +%VAL%';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[1] = '%VAL%% dégâts';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[2] = '%VAL%% repare de la coque';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[3] = '%VAL%% repare des boucliers';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[4] = '+%VAL% chance du critique';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[5] = '+%VAL% bonus critique';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[6] = '+%VAL% régén. des boucliers';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[7] = '+%VAL%% vitesse d\'attaque';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[8] = '%VAL%% dégâts d\'abordage';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[9] = 'Réinitialise le recharge d\'ennemis';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[10] = '+%VAL%s au temps de recharge';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[11] = '-%VAL%% dégâts du coque';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[12] = '%VAL%% dégâts réflexion';
+
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[0] = 'Boost augmenté';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[1] = 'Dégâts immédiatements';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[2] = 'Repare immédiatements de la coque';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[3] = 'Repare immédiatements des boucliers';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[4] = '+Crit Chance';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[5] = '+Crit Bonus';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[6] = '+Régénération boucliers';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[7] = '+Vitesse d\'attaque';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[8] = 'Augment de dégâts d\'abordage';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[9] = 'Réinitialise les temps de recharge ennemis';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[10] = 'Accélère les temps de recharge';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[11] = 'Réduit les dégâts de coque';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[12] = 'Dégâts réflexion';
+
+			this.VOYAGE_SLOT_SKILLS.length = 0;
+			this.VOYAGE_SLOT_SKILLS.push(
+				"CMD",
+				"CMD",
+				"DIP",
+				"DIP",
+				"SEC",
+				"SEC",
+				"ING",
+				"ING",
+				"SCI",
+				"SCI",
+				"MED",
+				"MED");
+		}
+	
 	
 	
 	}
