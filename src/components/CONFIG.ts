@@ -590,7 +590,7 @@ export default class CONFIG {
 			this.SHIP_BATTLE_GRANTS[4] = 'Entern';
 			this.SHIP_BATTLE_GRANTS[16] = 'Schilde-Disruptor';
 
-			this.SHIP_BATTLE_GRANT_DESC[0] = 'None';
+			this.SHIP_BATTLE_GRANT_DESC[0] = 'Keine';
 			this.SHIP_BATTLE_GRANT_DESC[1] = 'Erhöht deine Chance auf kritische Treffer';
 			this.SHIP_BATTLE_GRANT_DESC[2] = 'Das Schiff ist nicht anvisierbar werden kann';
 			this.SHIP_BATTLE_GRANT_DESC[4] = 'Verursacht DoT-Schaden an der Hülle des Feindes';
