@@ -7,6 +7,7 @@ import { ShipPickerFilter, mergeShips, filterBy } from "../../utils/shiputils";
 import CONFIG from "../CONFIG";
 import { getIconByKey } from "../item_presenters/shipskill";
 import { ShipSkillRanking } from "../../utils/crewutils";
+import { DataContext } from "../../context/datacontext";
 
 export type AbilityUsesProps = {    
     uses: number[];
@@ -138,7 +139,7 @@ export type ShipAbilityPickerProps = {
 
 export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
 	const { selectedAbilities, setSelectedAbilities, fluid } = props;
-    const availableAbilities = props.availableAbilities && props.availableAbilities.length ? props.availableAbilities : Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).slice(0, props.ship ? 12 : 9);
+    const availableAbilities = props.availableAbilities && props.availableAbilities.length ? props.availableAbilities : Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).slice(0, props.ship ? 13 : 9);
 
 	const [ability, setAbility] = React.useState(selectedAbilities);	
 
@@ -409,6 +410,54 @@ export const BonusPicker = (props: BonusPickerProps) => {
 				options={bonusOptions}
 				value={selectedBonuses ?? []}
 				onChange={(e, { value }) => setBonuses(value as number[])}
+				closeOnChange
+			/>
+		</Form.Field>
+	);
+};
+
+
+export type TraitPickerProps = {    
+    trait_list?: string[];
+	ship?: boolean;
+    zeroText?: string;
+	selectedTraits?: string[];
+	setSelectedTraits: (traits: string[] | undefined) => void;
+	altTitle?: string;
+};
+
+export const TraitPicker = (props: TraitPickerProps) => {
+
+	const core = React.useContext(DataContext);
+	const { selectedTraits, setSelectedTraits, ship } = props;	
+	const [traits, setTraits] = React.useState(selectedTraits);
+	
+	const useTraits = props.trait_list ?? (ship ? Object.keys(core.translation.ship_trait_names) : Object.keys(core.translation.trait_names));
+
+    const traitOptions = useTraits.map((u) => {
+        return {
+            key: u,
+			value: u,
+            text: ship ? core.translation.ship_trait_names[u] : core.translation.trait_names[u],
+        }
+    });
+
+	traitOptions.sort((a, b) => a.text.localeCompare(b.text));
+  
+	React.useEffect(() => {
+		setSelectedTraits(traits);
+	}, [traits])
+
+	return (
+		<Form.Field>
+			<Dropdown
+				placeholder={props.altTitle ?? 'Traits'} 
+				clearable
+				multiple
+				selection
+				options={traitOptions}
+				value={selectedTraits ?? []}
+				onChange={(e, { value }) => setTraits(value as string[])}
 				closeOnChange
 			/>
 		</Form.Field>
