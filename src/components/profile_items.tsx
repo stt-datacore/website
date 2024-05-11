@@ -342,6 +342,20 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		const { items, crew } = this.context.core;
 		if (!items || !crew) return;
 
+		let traits = 'gorn,brutal,duelist,hunter,survivalist,primal,saboteur,craft,tactician'.split(",");
+
+		let quip = items.filter(f => f.type === 14);
+		let oq = [] as EquipmentItem[];
+
+		for (let q of quip) {
+			if (q.traits_requirement?.length) {
+				if (q.traits_requirement.every(t => traits.includes(t))) {
+					oq.push(q);
+				}
+			}
+		}
+		console.log(oq);
+
 		if (this.state.data?.length && this.lastData === this.state.data) {
 			return;
 		}
