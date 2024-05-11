@@ -7,7 +7,7 @@ import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
 import { GlobalContext } from '../context/globalcontext';
 import { navigate } from 'gatsby';
 import { RarityFilter } from './crewtables/commonoptions';
-import { ShipAbilityPicker, TriggerPicker } from './crewtables/shipoptions';
+import { ShipAbilityPicker, TraitPicker, TriggerPicker } from './crewtables/shipoptions';
 import { isMobile } from 'react-device-detect';
 
 type ProfileShipsProps = {
@@ -25,6 +25,7 @@ type ProfileShipsState = {
 	rarityFilter?: number[];
 	grantFilter?: string[];
 	abilityFilter: string[];
+	traitFilter: string[];
 	textFilter?: string;
 };
 
@@ -54,7 +55,8 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 			pagination_page: 1,
 			data: [],
 			originals: [],
-			abilityFilter: []
+			abilityFilter: [],
+			traitFilter: []
 		};
 	}
 
@@ -142,14 +144,21 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	private readonly setRarityFilter = (filter: number[] | undefined) => {
 		window.setTimeout(() => {
 			this.setState({...this.state, rarityFilter: filter});
-		});
-		
+		});		
 	}
+
 	private readonly setGrantFilter = (filter: string[] | undefined) => {
 		window.setTimeout(() => {
 			this.setState({...this.state, grantFilter: filter});
 		})		
 	}
+
+	private readonly setTraitFilter = (filter: string[]) => {
+		window.setTimeout(() => {
+			this.setState({...this.state, traitFilter: filter});
+		})		
+	}
+
 	private readonly setAbilityFilter = (filter: string[]) => {
 		window.setTimeout(() => {
 			this.setState({...this.state, abilityFilter: filter});
@@ -160,7 +169,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		this.setState({ ...this.state, textFilter: filter });
 	}
 	render() {
-		const { textFilter, grantFilter, abilityFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
+		const { textFilter, grantFilter, traitFilter, abilityFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
 		
 		const dataContext = this.context;
 		if (!dataContext || (!dataContext.core.ships && !dataContext.player.playerShips)) return <></>;
@@ -171,6 +180,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 			if (rarityFilter && !!rarityFilter?.length && !rarityFilter.some((r) => ship.rarity === r)) return false;			
 			if (grantFilter && !!grantFilter?.length && !ship.actions?.some((action) => grantFilter.some((gf) => Number.parseInt(gf) === action.status))) return false;
 			if (abilityFilter && !!abilityFilter?.length && !ship.actions?.some((action) => abilityFilter.some((af) => action.ability?.type.toString() === af))) return false;
+			if (traitFilter && !!traitFilter?.length && !ship.traits?.some((trait) => traitFilter.includes(trait))) return false;
 			if (textFilter?.length) {
 				const usearch = textFilter.toLocaleUpperCase();
 				if (!ship.name?.toLocaleUpperCase().includes(usearch) 
@@ -221,10 +231,16 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 					marginLeft: "0.5em"
 				}}>
 					<TriggerPicker grants={true} altTitle='Filter ship grants' selectedTriggers={grantFilter} setSelectedTriggers={(value) => this.setGrantFilter(value as string[])} />
-				</div><div style={{
+				</div>
+				<div style={{
 					marginLeft: "0.5em"
 				}}>
 					<ShipAbilityPicker ship={true} selectedAbilities={this.state.abilityFilter} setSelectedAbilities={(value) => this.setAbilityFilter(value as string[])} />
+				</div>
+				<div style={{
+					marginLeft: "0.5em"
+				}}>
+					<TraitPicker ship={true} selectedTraits={this.state.traitFilter} setSelectedTraits={(value) => this.setTraitFilter(value as string[])} />
 				</div>
 			</div>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
