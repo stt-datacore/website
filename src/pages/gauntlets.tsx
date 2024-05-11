@@ -25,21 +25,13 @@ import { EquipmentItem } from '../model/equipment';
 import { GauntletPairTable } from '../components/gauntlet/pairtable';
 import { GauntletCrewTable } from '../components/gauntlet/gauntlettable';
 import { GauntletImportComponent } from '../components/gauntlet/gauntletimporter';
+import CONFIG from '../components/CONFIG';
 
 export type GauntletViewMode = 'big' | 'small' | 'table' | 'pair_cards';
 
 type SortDirection = 'ascending' | 'descending' | undefined;
 
 const isWindow = typeof window !== 'undefined';
-
-export const SKILLS = {
-	command_skill: 'CMD',
-	science_skill: 'SCI',
-	security_skill: 'SEC',
-	engineering_skill: 'ENG',
-	diplomacy_skill: 'DIP',
-	medicine_skill: 'MED'
-};
 
 const GauntletsPage = () => {	
 	return (
@@ -521,8 +513,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}] as Gauntlet[];
 
 		uniques = uniques.concat(pass2.sort((a, b) => {
-			let astr = `${a.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[a.contest_data?.featured_skill ?? ""]}`;
-			let bstr = `${b.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[b.contest_data?.featured_skill ?? ""]}`;
+			let astr = `${a.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${CONFIG.SKILLS_SHORT.find(sk => sk.name === a.contest_data?.featured_skill ?? "")?.short}`;
+			let bstr = `${b.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${CONFIG.SKILLS_SHORT.find(sk => sk.name === b.contest_data?.featured_skill ?? "")?.short}`;
 			return astr.localeCompare(bstr);
 		}) as Gauntlet[]);
 
@@ -729,7 +721,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			today: replaceIndex === 0 ? replaceGauntlet : today ? { ...today } : undefined,
 			yesterday: replaceIndex === 1 ? replaceGauntlet : yesterday ? { ...yesterday } : undefined,
 			activePrevGauntlet: replaceIndex === 2 ? replaceGauntlet : newSelGauntlet ?? activePrevGauntlet,
-			browsingGauntlet: replaceIndex === 3 ? replaceGauntlet : newBrowseGauntlet ?? browsingGauntlet,
+			browsingGauntlet: replaceIndex === 3 ? newBrowseGauntlet ?? replaceGauntlet : newBrowseGauntlet ?? browsingGauntlet,
 			liveGauntlet: replaceIndex === 4 ? replaceGauntlet : live ?? liveGauntlet,
 			sortKey: [...sortKey],
 			sortDirection: [...sortDirection],
@@ -828,9 +820,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			{ key: 'nonportal', value: 'nonportal', text: 'Non-Portal Crew' },
 		];
 
-		
-
-		const skills = ['CMD', 'DIP', 'SEC', 'SCI', 'ENG', 'MED'].sort();
+		const skills = CONFIG.SKILLS_SHORT.map(s => s.short).sort();
 		const skillFilters = [] as DropdownItemProps[];
 
 		for (let skill1 of skills) {
@@ -1136,7 +1126,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					}}>
 						<h2 style={{ fontSize: "2em", margin: "0.25em 0" }}>
 
-							{gauntlet.state !== "POWER" && (gauntlet.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/") + "/" + SKILLS[gauntlet.contest_data?.featured_skill ?? ""])}
+							{gauntlet.state !== "POWER" && (gauntlet.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/") + "/" + CONFIG.SKILLS_SHORT.find(sk => sk.name === gauntlet.contest_data?.featured_skill ?? "")?.short)}
 							{gauntlet.state === "POWER" && "Raw Power Scores"}
 							
 						</h2>
@@ -1456,10 +1446,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				text = 'Raw Power Scores'
 			}
 			else if (browsing) {
-				text = `${g.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[g.contest_data?.featured_skill ?? ""]}`;
+				text = `${g.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${CONFIG.SKILLS_SHORT.find(sk => sk.name === g.contest_data?.featured_skill ?? "")?.short}`;
 			}
 			else {
-				text = moment(g.date).utc(false).format('dddd, D MMMM YYYY') + ` (${g.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[g.contest_data?.featured_skill ?? ""]})`;
+				text = moment(g.date).utc(false).format('dddd, D MMMM YYYY') + ` (${g.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${CONFIG.SKILLS_SHORT.find(sk => sk.name === g.contest_data?.featured_skill ?? "")?.short})`;
 			}
 
 			return {
