@@ -202,7 +202,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
             level: crew.level,
             max_level: crew.max_level,
             rarity: crew.rarity,
-            equipment: crew?.equipment?.map((eq) => eq ? eq[0] : 0),
+            equipment: crew.equipment.map((eq) => eq[0]),
             kwipment: crew.kwipment,
             kwipment_expiration: crew.kwipment_expiration,
             q_bits: crew.q_bits,

@@ -405,20 +405,17 @@ export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {
         return DEFAULT_SHIP_OPTIONS;
     }
 
-	static readonly rarityOptions = [] as ModalOption[];
+	static readonly rarityOptions = [
+		{ key: '1*', value: 1, text: '1* Common' },
+		{ key: '2*', value: 2, text: '2* Uncommon' },
+		{ key: '3*', value: 3, text: '3* Rare' },
+		{ key: '4*', value: 4, text: '4* Super Rare' },
+		{ key: '5*', value: 5, text: '5* Legendary' }
+	];
 
 	constructor(props: OptionsModalProps<ShipCrewModalOptions>) {
 		super(props);
 
-		CONFIG.RARITIES.forEach((r, i) => {
-			if (i === 0) return;
-			ShipCrewOptionsModal.rarityOptions.length = 0;
-			ShipCrewOptionsModal.rarityOptions.push(
-				{ key: `${i}*`, value: i, text: `${i}* ${r.name}` }
-			)
-		});
-	
-		
 		this.state = {
 			isDefault: false,
 			isDirty: false,

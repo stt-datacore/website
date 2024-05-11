@@ -1,13 +1,12 @@
 import React from 'react';
 import { Header, Grid, Card, Image } from 'semantic-ui-react';
 
-//import allTraits from '../../../static/structured/translation_en.json';
+import allTraits from '../../../static/structured/translation_en.json';
 import { IVoyageInputConfig } from '../../model/voyage';
 import CONFIG from '../../components/CONFIG';
 
 import { ConfigEditor } from './configeditor';
 import { Calculator } from './calculator';
-import { DataContext } from '../../context/datacontext';
 
 const VOYAGE_DEBUGGING: boolean = true;
 
@@ -55,8 +54,6 @@ type InputConfigCardProps = {
 };
 
 const InputConfigCard = (props: InputConfigCardProps) => {
-	const { translation: allTraits } = React.useContext(DataContext);
-
 	const { voyageConfig, setVoyageConfig } = props;
 
 	return (

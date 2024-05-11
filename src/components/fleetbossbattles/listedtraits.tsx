@@ -1,8 +1,7 @@
 import React from 'react';
 
-//import allTraits from '../../../static/structured/translation_en.json';
+import allTraits from '../../../static/structured/translation_en.json';
 import { SolverTrait } from '../../model/boss';
-import { DataContext } from '../../context/datacontext';
 
 type ListedTraitsProps = {
 	traits: string[];
@@ -10,7 +9,6 @@ type ListedTraitsProps = {
 };
 
 export const ListedTraits = (props: ListedTraitsProps) => {
-	const { translation: allTraits } = React.useContext(DataContext);
 	const traitSort = (a: string, b: string) => {
 		if (a === '?') return 1;
 		if (b === '?') return -1;
@@ -34,7 +32,6 @@ type NamedTraitProps = {
 };
 
 const NamedTrait = (props: NamedTraitProps) => {
-	const { translation: allTraits } = React.useContext(DataContext);
 	const { trait, traitData } = props;
 
 	if (trait === '+' || trait === '?')

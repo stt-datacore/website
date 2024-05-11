@@ -9,7 +9,7 @@ import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet, GauntletRoot } from '../model/gauntlets';
-import { gradeToColor, shortToSkill, skillToShort } from '../utils/crewutils';
+import { gradeToColor, shortToSkill } from '../utils/crewutils';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { BuffNames } from '../components/item_presenters/crew_preparer';
 
@@ -25,7 +25,6 @@ import { EquipmentItem } from '../model/equipment';
 import { GauntletPairTable } from '../components/gauntlet/pairtable';
 import { GauntletCrewTable } from '../components/gauntlet/gauntlettable';
 import { GauntletImportComponent } from '../components/gauntlet/gauntletimporter';
-import CONFIG from '../components/CONFIG';
 
 export type GauntletViewMode = 'big' | 'small' | 'table' | 'pair_cards';
 
@@ -33,14 +32,14 @@ type SortDirection = 'ascending' | 'descending' | undefined;
 
 const isWindow = typeof window !== 'undefined';
 
-// export const SKILLS = {
-// 	command_skill: 'CMD',
-// 	science_skill: 'SCI',
-// 	security_skill: 'SEC',
-// 	engineering_skill: 'ENG',
-// 	diplomacy_skill: 'DIP',
-// 	medicine_skill: 'MED'
-// };
+export const SKILLS = {
+	command_skill: 'CMD',
+	science_skill: 'SCI',
+	security_skill: 'SEC',
+	engineering_skill: 'ENG',
+	diplomacy_skill: 'DIP',
+	medicine_skill: 'MED'
+};
 
 const GauntletsPage = () => {	
 	return (
@@ -522,8 +521,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}] as Gauntlet[];
 
 		uniques = uniques.concat(pass2.sort((a, b) => {
-			let astr = `${a.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${skillToShort(a.contest_data?.featured_skill ?? "")}`;
-			let bstr = `${b.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${skillToShort(b.contest_data?.featured_skill ?? "")}`;
+			let astr = `${a.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[a.contest_data?.featured_skill ?? ""]}`;
+			let bstr = `${b.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[b.contest_data?.featured_skill ?? ""]}`;
 			return astr.localeCompare(bstr);
 		}) as Gauntlet[]);
 
@@ -831,7 +830,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		
 
-		const skills = CONFIG.SKILLS_SHORT.map(s => s.short).sort();
+		const skills = ['CMD', 'DIP', 'SEC', 'SCI', 'ENG', 'MED'].sort();
 		const skillFilters = [] as DropdownItemProps[];
 
 		for (let skill1 of skills) {
@@ -1137,7 +1136,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					}}>
 						<h2 style={{ fontSize: "2em", margin: "0.25em 0" }}>
 
-							{gauntlet.state !== "POWER" && (gauntlet.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/") + "/" + skillToShort(gauntlet.contest_data?.featured_skill ?? ""))}
+							{gauntlet.state !== "POWER" && (gauntlet.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/") + "/" + SKILLS[gauntlet.contest_data?.featured_skill ?? ""])}
 							{gauntlet.state === "POWER" && "Raw Power Scores"}
 							
 						</h2>
@@ -1457,10 +1456,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				text = 'Raw Power Scores'
 			}
 			else if (browsing) {
-				text = `${g.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${skillToShort(g.contest_data?.featured_skill ?? "")}`;
+				text = `${g.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[g.contest_data?.featured_skill ?? ""]}`;
 			}
 			else {
-				text = moment(g.date).utc(false).format('dddd, D MMMM YYYY') + ` (${g.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${skillToShort(g.contest_data?.featured_skill ?? "")})`;
+				text = moment(g.date).utc(false).format('dddd, D MMMM YYYY') + ` (${g.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[g.contest_data?.featured_skill ?? ""]})`;
 			}
 
 			return {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, Message, Checkbox, Button } from 'semantic-ui-react';
 
-//import allTraits from '../../../static/structured/translation_en.json';
+import allTraits from '../../../static/structured/translation_en.json';
 import { PlayerCrew, VoyageCrewSlot } from '../../model/player';
 import { IVoyageCalcConfig, ITrackedVoyage } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
@@ -19,8 +19,6 @@ type VoyageModalProps = {
 
 export const VoyageModal = (props: VoyageModalProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { translation: allTraits } = globalContext.core;
-
 	const { history, setHistory } = React.useContext(HistoryContext);
 	const { voyage } = props;
 

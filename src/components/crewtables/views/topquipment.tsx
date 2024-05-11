@@ -29,7 +29,7 @@ export const getTopQuipmentTableConfig = (pstMode: boolean | 2 | 3, excludeQBits
     const config = [] as ITableConfigRow[];
     config.push({ width: 1, column: 'quipment_score', title: "Overall", reverse: true });
     if (pstMode) config.push({ width: 1, column: 'quipment_scores.trait_limited', title: "Specialty", reverse: true });
-    if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: 'QP', reverse: true });
+    if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: 'Q-Bits', reverse: true });
 
     // config.push({ 
     //     width: 1, 

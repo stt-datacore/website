@@ -1,13 +1,12 @@
 import React from 'react';
 import { Header, Button, Popup, Message, Accordion, Form, Select, Input } from 'semantic-ui-react';
 
-//import allTraits from '../../../static/structured/translation_en.json';
+import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, ExportPreferences, FilteredGroup, Optimizer, ShowHideValue, SolveStatus, Solver, SolverNode, SolverTrait } from '../../model/boss';
 
 import { UserContext, SolverContext } from './context';
 import { exportDefaults } from './fbbdefaults';
 import { isNodeOpen, suppressDuplicateTraits } from './fbbutils';
-import { DataContext } from '../../context/datacontext';
 
 const exportCompact = {
 	header: 'hide',
@@ -26,7 +25,6 @@ const exportCompact = {
 } as ExportPreferences;
 
 const exportNodeGroups = (node: SolverNode, nodeGroups: FilteredGroup[], traitData: SolverTrait[], exportPrefs: ExportPreferences) => {
-	const { translation: allTraits } = React.useContext(DataContext);
 	const compareTraits = (a, b) => b.traits.length - a.traits.length;
 	const compareCrew = (a, b) => b.crewList.length - a.crewList.length;
 	const compareScore = (a, b) => b.score - a.score;
@@ -119,7 +117,6 @@ const formatValue = (format: string, value: string) => {
 };
 
 const nodeTraits = (node: SolverNode): string => {
-	const { translation: allTraits } = React.useContext(DataContext);
 	const traitName = (trait: string, index: number) => {
 		let name: string = allTraits.trait_names[trait];
 		if (node.solveStatus !== SolveStatus.Infallible && index >= node.givenTraitIds.length)

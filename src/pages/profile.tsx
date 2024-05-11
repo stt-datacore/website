@@ -45,7 +45,9 @@ type ProfilePageState = {
 
 export const ProfilePage = (props: ProfilePageProps) => {
 	const coreData = React.useContext(DataContext);
-	const isReady = !!Object.keys(coreData.translation).length;
+	const globalContext = React.useContext(GlobalContext);
+
+	const isReady = coreData.ready ? coreData.ready(['crew', 'ship_schematics', 'items', 'all_buffs']) : false;
 
 	const [lastModified, setLastModified] = React.useState<Date | undefined>(undefined);
 	const [strippedPlayerData, setStrippedPlayerData] = React.useState<PlayerData | undefined>(undefined);
@@ -77,7 +79,8 @@ export const ProfilePage = (props: ProfilePageProps) => {
 								buffConfig: buffConfig,							
 								playerShips: profData?.player.character.ships								
 							},							
-							maxBuffs: coreData.all_buffs
+							maxBuffs: coreData.all_buffs,
+							currentLang: globalContext.currentLang
 						}}>
 							<ProfilePageComponent props={{ ...props, setLastModified: setLastModified, setPlayerData: setStrippedPlayerData }} />
 						</GlobalContext.Provider>

@@ -6,7 +6,6 @@ import { IRosterCrew } from './model';
 import { Skills } from '../item_presenters/classic_presenter';
 import { GlobalContext } from '../../context/globalcontext';
 import { printShortDistance } from '../../utils/misc';
-import CONFIG from '../CONFIG';
 
 export interface TraitOptions {
 	key: string;
@@ -22,15 +21,13 @@ type CrewRarityFilterProps = {
 };
 
 export const RarityFilter = (props: CrewRarityFilterProps) => {
-
-	const rarityFilterOptions = [] as any[];
-
-	CONFIG.RARITIES.forEach((r, i) => {
-		if (i === 0) return;
-		rarityFilterOptions.push(
-			{ key: `${i}*`, value: i, text: `${i}* ${r.name}` }
-		)
-	});
+	const rarityFilterOptions = [
+		{ key: '1*', value: 1, text: '1* Common' },
+		{ key: '2*', value: 2, text: '2* Uncommon' },
+		{ key: '3*', value: 3, text: '3* Rare' },
+		{ key: '4*', value: 4, text: '4* Super Rare' },
+		{ key: '5*', value: 5, text: '5* Legendary' }
+	];
 
 	return (
 		<Form.Field>

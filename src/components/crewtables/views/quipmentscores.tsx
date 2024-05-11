@@ -41,7 +41,7 @@ export const getQuipmentTableConfig = (excludeQBits?: boolean, excludeSpecialty?
         })
     })    
 
-    if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: 'QP', reverse: true });
+    if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: 'Q-Bits', reverse: true });
     return config;
 }
 

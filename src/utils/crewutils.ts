@@ -690,15 +690,22 @@ export function getPairScore(scores: GauntletPairScore[], pair: string) {
 
 
 export function shortToSkill(rank: string): PlayerSkill | undefined {
-	let f = CONFIG.SKILLS_SHORT.find(f => f.short === rank);
-	if (f) return f.name as PlayerSkill;
-	return undefined;
+	if (rank === "CMD") return "command_skill";
+	else if (rank === "SEC") return "security_skill";
+	else if (rank === "DIP") return "diplomacy_skill";
+	else if (rank === "SCI") return "science_skill";
+	else if (rank === "MED") return "medicine_skill";
+	else if (rank === "ENG") return "engineering_skill";
 }
 
 export function skillToShort(skill: PlayerSkill | string): string | undefined {
 	if (!skill) return "";
-	let f = CONFIG.SKILLS_SHORT.find(f => f.name === skill);
-	if (f) return f.short;
+	if (skill === "command_skill") return "CMD";
+	else if (skill === "security_skill") return "SEC";
+	else if (skill === "diplomacy_skill") return "DIP";
+	else if (skill === "science_skill") return "SCI";
+	else if (skill === "medicine_skill") return "MED";
+	else if (skill === "engineering_skill") return "ENG";
 }
 
 export function comparePairs(a: Skill[], b: Skill[], featuredSkill?: string, multiplier?: number) {

@@ -149,14 +149,14 @@ export interface GauntletContestCrew {
 
 export type GauntletViewMode = "big" | "small" | "table" | "pair_cards";
 
-// export const SKILLS = {
-//     command_skill: "CMD",
-//     science_skill: "SCI",
-//     security_skill: "SEC",
-//     engineering_skill: "ENG",
-//     diplomacy_skill: "DIP",
-//     medicine_skill: "MED",
-// };
+export const SKILLS = {
+    command_skill: "CMD",
+    science_skill: "SCI",
+    security_skill: "SEC",
+    engineering_skill: "ENG",
+    diplomacy_skill: "DIP",
+    medicine_skill: "MED",
+};
 
 export interface PairGroup {
     pair: string[];

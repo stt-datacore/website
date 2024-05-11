@@ -27,14 +27,13 @@ import { compareRewards, rewardsFilterPassFail, starCost } from '../../utils/col
 import { navToCrewPage } from '../../utils/nav';
 import { ICrewFilter, IRosterCrew } from '../crewtables/model';
 import { CrewMaintenanceFilter } from '../crewtables/filters/crewmaintenance';
-import CONFIG from '../CONFIG';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);	
 	const { playerData } = context.player;
 	const { crew, collections: allCollections } = context.core;
 
-	if (!context.core.collections?.length) {	
+	if (!context.core.ready(['collections'])) {	
 		return context.core.spin ? context.core.spin() : <></>;
 	}
 
@@ -580,15 +579,14 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 		{ key: 'nonportal', value: 'nonportal', text: 'Only show non-retrievable crew' }
 	];
 
-	const rarityFilterOptions = [] as any[];
-
-	CONFIG.RARITIES.forEach((r, i) => {
-		if (i === 0) return;
-		rarityFilterOptions.push(
-			{ key: `${i}*`, value: i, text: `${i}* ${r.name}` }
-		)
-	});
-
+	const rarityFilterOptions = [
+		{ key: '1*', value: 1, text: '1* Common' },
+		{ key: '2*', value: 2, text: '2* Uncommon' },
+		{ key: '3*', value: 3, text: '3* Rare' },
+		{ key: '4*', value: 4, text: '4* Super Rare' },
+		{ key: '5*', value: 5, text: '5* Legendary' }
+	];
+	
 	let selnum = undefined as number | undefined;
 
 	if (typeof window !== 'undefined' && !!window.location.search?.length) {

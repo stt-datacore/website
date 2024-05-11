@@ -1,6 +1,4 @@
-import { DropdownItemProps } from 'semantic-ui-react';
-import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps, ModalOption } from '../../components/base/optionsmodal_base';
-import CONFIG from '../CONFIG';
+import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps } from '../../components/base/optionsmodal_base';
 
 export interface BeholdModalOptions extends OptionsBase {
 	portal: string;
@@ -69,19 +67,17 @@ export class BeholdOptionsModal extends OptionsModal<BeholdModalOptions> {
 		{ key: 'original', value: 'original', text: 'Timelines Originals' }
 	];
 
-	static readonly rarityOptions = [] as ModalOption[];
+	static readonly rarityOptions = [
+		{ key: '1*', value: 1, text: '1* Common' },
+		{ key: '2*', value: 2, text: '2* Uncommon' },
+		{ key: '3*', value: 3, text: '3* Rare' },
+		{ key: '4*', value: 4, text: '4* Super Rare' },
+		{ key: '5*', value: 5, text: '5* Legendary' }
+	];
 
 	constructor(props: OptionsModalProps<BeholdModalOptions>) {
 		super(props);
 
-		CONFIG.RARITIES.forEach((r, i) => {
-			if (i === 0) return;
-			BeholdOptionsModal.rarityOptions.length = 0;
-			BeholdOptionsModal.rarityOptions.push(
-				{ key: `${i}*`, value: i, text: `${i}* ${r.name}` }
-			)
-		});
-	
 		this.state = {
 			isDefault: false,
 			isDirty: false,

@@ -4,8 +4,7 @@ import { Modal, Form, Button, Dropdown, Table, Message } from 'semantic-ui-react
 import { VoyageSkills } from '../../model/player';
 import { IVoyageInputConfig } from '../../model/voyage';
 import CONFIG from '../CONFIG';
-import { DataContext } from '../../context/datacontext';
-//import allTraits from '../../../static/structured/translation_en.json';
+import allTraits from '../../../static/structured/translation_en.json';
 
 interface ISelectOption {
 	key: string;
@@ -49,8 +48,6 @@ type ConfigEditorProps = {
 };
 
 export const ConfigEditor = (props: ConfigEditorProps) => {
-	const { translation: allTraits } = React.useContext(DataContext);
-
 	const { updateConfig } = props;
 
 	const [voyageConfig, setVoyageConfig] = React.useState(props.voyageConfig ?? defaultConfig);

@@ -1,11 +1,10 @@
 import React from 'react';
 import { Header, Dropdown, Form, Table, Icon, Grid, Label, Message, Button, Popup } from 'semantic-ui-react';
 
-//import allTraits from '../../../static/structured/translation_en.json';
+import allTraits from '../../../static/structured/translation_en.json';
 import { SolveStatus, Solver, SolverNode, SolverTrait, Spotter, TraitOption } from '../../model/boss';
 
 import { UserContext, SolverContext } from './context';
-import { DataContext } from '../../context/datacontext';
 
 type ChainTraitsProps = {
 	solver: Solver;
@@ -193,7 +192,6 @@ type TraitsChecklistProps = {
 };
 
 const TraitsChecklist = (props: TraitsChecklistProps) => {
-	const { translation: allTraits } = React.useContext(DataContext);
 	const { solver, spotter, updateSpotter } = props;
 
 	const traits = [] as string[];

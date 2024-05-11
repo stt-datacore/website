@@ -827,12 +827,11 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			let sp = filterText.split(":");
 			traits = sp[1].split(",");
 		}
-
-		const skillmap = CONFIG.SKILLS_SHORT.map((ss) => {
+		const skillmap = ['CMD', 'SCI', 'SEC', 'DIP', 'ENG', 'MED'].map(r => {
 			return {
-				key: ss.short.toLowerCase(),
-				value: ss.short.toLowerCase(),
-				text: CONFIG.SKILLS[ss.name]
+				key: r.toLowerCase(),
+				value: r.toLowerCase(),
+				text: appelate(shortToSkill(r) ?? '')
 			}
 		})
 

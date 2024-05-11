@@ -2,7 +2,7 @@ import React from 'react';
 import { Icon, Form, Button, Grid, Message, Segment, Checkbox, Select, Header, Image, Tab, Card, Popup, SemanticICONS } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
-//import allTraits from '../../../static/structured/translation_en.json';
+import allTraits from '../../../static/structured/translation_en.json';
 import { Voyage } from '../../model/player';
 import { IVoyageInputConfig, IVoyageCalcConfig, IVoyageCrew, IVoyageHistory } from '../../model/voyage';
 import { CalcResult, Calculation, Estimate, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
@@ -20,7 +20,6 @@ import { CIVASMessage } from './civas';
 
 import { defaultHistory, addVoyageToHistory, addCrewToHistory, removeVoyageFromHistory } from '../voyagehistory/utils';
 import CONFIG from '../CONFIG';
-import { DataContext } from '../../context/datacontext';
 
 // These preferences are per-user, so they need separate handlers when there's no player data
 interface IUserPrefsContext {
@@ -386,7 +385,6 @@ type BestShipCardProps = {
 
 // BestShipCard to be deprecated. The game should automatically select the best ship for your voyage
 const BestShipCard = (props: BestShipCardProps) => {
-	const { translation: allTraits } = React.useContext(DataContext);
 	const { voyageConfig, bestShip } = props;
 
 	if (!bestShip) return (<></>);

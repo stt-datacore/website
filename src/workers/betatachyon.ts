@@ -135,6 +135,7 @@ const BetaTachyon = {
             }
            
             const skills = ["command_skill", "diplomacy_skill", "science_skill", "engineering_skill", "security_skill", "medicine_skill"];
+            const shortskills = ["CMD", "DIP", "SCI", "ENG", "SEC", "MED"];
             const voyskills = ["command", "diplomacy", "science", "engineering", "security", "medicine"];
             const skillPairs = [] as string[][];
             const skillTriplets = [] as string[][];

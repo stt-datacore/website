@@ -60,7 +60,7 @@ export const PlayerContext = React.createContext<PlayerContextData>(defaultPlaye
 
 export const PlayerProvider = (props: DataProviderProperties) => {
 	const coreData = React.useContext(DataContext);
-	const { crew, ship_schematics, gameLanguage, setGameLanguage, translation } = coreData;
+	const { crew, ship_schematics, translationLanguage } = coreData;
 
 	const { children } = props;
 
@@ -80,12 +80,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const quipment = coreData.items.filter(i => i.type === 14).map(i => getItemWithBonus(i));
 
 	React.useEffect(() => {
-		if (!input || !ship_schematics.length || !crew.length || !Object.keys(translation).length) return;
-
-		if (gameLanguage !== input.player.lang) {
-			setGameLanguage(input.player.lang);
-			return;
-		}
+		if (!input || !ship_schematics.length || !crew.length) return;
 
 		// ephemeral data (e.g. active crew, active shuttles, voyage data, and event data)
 		//	can be misleading when outdated, so keep a copy for the current session only
@@ -158,7 +153,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 		setSessionStates({...defaultSessionStates});
 		setLoaded(true);
-	}, [input, crew, ship_schematics, translation]);
+	}, [input, crew, ship_schematics, translationLanguage]);
 
 	const reset = (): void => {
 		setStripped(undefined);
@@ -168,7 +163,6 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		setInput(undefined);
 		setSessionStates(undefined);
 		setLoaded(false);
-		setGameLanguage('en');
 		sessionStorage.clear();
 	};
 
