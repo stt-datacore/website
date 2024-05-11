@@ -83,7 +83,12 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		if (!input || !ship_schematics.length || !crew.length || !Object.keys(translation).length) return;
 
 		if (gameLanguage !== input.player.lang) {
-			setGameLanguage(input.player.lang);
+			if (input.player.lang === 'es') {
+				setGameLanguage('sp');
+			}
+			else {
+				setGameLanguage(input.player.lang);
+			}			
 			return;
 		}
 

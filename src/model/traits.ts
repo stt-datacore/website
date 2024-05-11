@@ -1,3 +1,10 @@
+
+export interface ItemTranslation {
+    symbol: string;
+    name: string;
+    flavor: string;
+}
+
 export interface TranslationSet {
     trait_names: TraitNames
     ship_trait_names: ShipTraitNames

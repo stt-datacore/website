@@ -8,7 +8,7 @@ import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
 import { Mission } from '../model/missions';
 import { Icon } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
-import { TranslationSet } from '../model/traits';
+import { ItemTranslation, TranslationSet } from '../model/traits';
 import { ContinuumMission } from '../model/continuum';
 import { calcQuipmentScore } from '../utils/equipment';
 import { getItemWithBonus } from '../utils/itemutils';
@@ -43,7 +43,10 @@ export type ValidDemands =
 	'translation_en' |
 	'translation_de' |
 	'translation_fr' |
-	'translation_sp';
+	'translation_sp' |
+	'items_de' |
+	'items_fr' |
+	'items_sp';
 
 export interface DataProviderProperties {
 	children: JSX.Element;
@@ -67,6 +70,7 @@ export interface ICoreData {
 	ship_schematics: Schematics[];
 	ships: Ship[];
 	translation: TranslationSet;
+	item_translations: ItemTranslation[];
 	translationDemand: string;
 	topQuipmentScores: QuipmentScores[];
 	gameLanguage: string;
@@ -102,6 +106,7 @@ const defaultData = {
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
 	translation: {} as TranslationSet,
+	item_translations: [] as ItemTranslation[],
 	translationDemand: 'translation_en',
 	topQuipmentScores: [] as QuipmentScores[],
 	gameLanguage: 'en'
@@ -173,15 +178,22 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'translation_en',
 			'translation_de',
 			'translation_sp',
-			'translation_fr'
+			'translation_fr',
+			'items_de',
+			'items_fr',
+			'items_sp'
 		] as ValidDemands[];
 
 		if (gameLanguage !== data.translationDemand.slice(12)) {
 			data.translation = {} as TranslationSet;
 			data.translationDemand = 'translation_' + (gameLanguage ?? 'en');
 			data.gameLanguage = gameLanguage;
-			demands = demands.filter(f => !f.startsWith("translation_"));
+			demands = demands.filter(f => !f.startsWith("translation_") && !f.startsWith("items_"));			
 			demands.push(data.translationDemand as ValidDemands);
+
+			if (demands.includes("items") && gameLanguage && gameLanguage !== 'en') {
+				demands.push(`items_${gameLanguage}` as ValidDemands);
+			}
 		}
 		// Load English:
 		else if (!Object.keys(data.translation).length && !demands.some(d => d.startsWith("translation_"))) {
@@ -204,6 +216,11 @@ export const DataProvider = (props: DataProviderProperties) => {
 				if (DC_DEBUGGING) console.log(demand);
 				if (demand.startsWith('translation_')) {
 					if (!Object.keys(data.translation).length || data.translationDemand !== demand) {
+						unsatisfied.push(demand);
+					}
+				}
+				else if (demand.startsWith('items_')) {
+					if (!data.item_translations.length || data.translationDemand !== demand) {
 						unsatisfied.push(demand);
 					}
 				}
@@ -258,6 +275,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 							newData.translationDemand = result.demand;
 							CONFIG.setLanguage(newData.translationDemand.slice(12))
 						}
+						else if (result.demand.startsWith("items_")) {
+							newData.item_translations = result.json;
+						}
 						else {
 							newData[result.demand] = result.json;
 						}
@@ -273,6 +293,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 				postProcessQuipmentScores(newData.crew, newData.items);
 				//calculateQPower(newData.crew, newData.items, newData.all_buffs);
 				newData.topQuipmentScores = calculateTopQuipment(newData.crew);
+			}
+			if (newData?.items?.length && unsatisfied.some(u => u.startsWith("items_"))) {
+				postProcessItemTranslations(newData);
 			}
 			if (newData?.crew?.length && unsatisfied.some(u => u.startsWith("translation_"))) {
 				postProcessCrewTranslations(newData);
@@ -454,6 +477,18 @@ export const DataProvider = (props: DataProviderProperties) => {
 					crew.obtained = getObtained(crew);
 				}
 			});
+		}
+	}
+
+	function postProcessItemTranslations(data: ICoreData): void {
+		if (data.items.length && data.item_translations?.length) {
+			data.items.forEach((item) => {
+				let arch = data.item_translations.find(f => f.symbol === item.symbol);
+				if (arch) {
+					item.name = arch.name;
+					item.flavor = arch.flavor;
+				}
+			})
 		}
 	}
 
