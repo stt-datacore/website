@@ -730,7 +730,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			today: replaceIndex === 0 ? replaceGauntlet : today ? { ...today } : undefined,
 			yesterday: replaceIndex === 1 ? replaceGauntlet : yesterday ? { ...yesterday } : undefined,
 			activePrevGauntlet: replaceIndex === 2 ? replaceGauntlet : newSelGauntlet ?? activePrevGauntlet,
-			browsingGauntlet: replaceIndex === 3 ? replaceGauntlet : newBrowseGauntlet ?? browsingGauntlet,
+			browsingGauntlet: replaceIndex === 3 ? newBrowseGauntlet ?? replaceGauntlet : newBrowseGauntlet ?? browsingGauntlet,
 			liveGauntlet: replaceIndex === 4 ? replaceGauntlet : live ?? liveGauntlet,
 			sortKey: [...sortKey],
 			sortDirection: [...sortDirection],
