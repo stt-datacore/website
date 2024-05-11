@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'gatsby';
 import { Table, Form, Dropdown, Pagination, Message } from 'semantic-ui-react';
 
-import allTraits from '../../../static/structured/translation_en.json';
+//import allTraits from '../../../static/structured/translation_en.json';
 import { ITrackedVoyage, ITrackedCheckpoint } from '../../model/voyage';
 import CONFIG from '../../components/CONFIG';
 import { formatTime } from '../../utils/voyageutils';
@@ -10,12 +10,15 @@ import { formatTime } from '../../utils/voyageutils';
 import { HistoryContext } from './context';
 import { VoyageModal } from './voyagemodal';
 import { removeVoyageFromHistory } from './utils';
+import { DataContext } from '../../context/datacontext';
 
 type VoyagesTableProps = {
 	activeVoyageId: number;
 };
 
 export const VoyagesTable = (props: VoyagesTableProps) => {
+	const { translation: allTraits } = React.useContext(DataContext);
+
 	const { history, setHistory } = React.useContext(HistoryContext);
 	const { activeVoyageId } = props;
 

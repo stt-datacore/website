@@ -6,9 +6,10 @@ import { getStyleByRarity, suppressDuplicateTraits } from './fbbutils';
 
 import ItemDisplay from '../itemdisplay';
 
-import allTraits from '../../../static/structured/translation_en.json';
+//import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, NodeMatch, NodeRarity, Optimizer, PossibleCombo, RarityStyle, SolveStatus, Solver, SolverNode, SolverTrait, TraitRarities } from '../../model/boss';
 import { TinyShipSkill } from '../item_presenters/shipskill';
+import { DataContext } from '../../context/datacontext';
 
 interface ISolveOption {
 	key: number;
@@ -25,6 +26,7 @@ type MarkGroupProps = {
 };
 
 export const MarkGroup = (props: MarkGroupProps) => {
+	const { translation: allTraits } = React.useContext(DataContext);
 	const { node, traits } = props;
 
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
@@ -260,6 +262,7 @@ type SolvePickerProps = {
 };
 
 const SolvePicker = (props: SolvePickerProps) => {
+	const { translation: allTraits } = React.useContext(DataContext);
 	const { crew, setModalIsOpen } = props;
 
 	const nodeMatches = Object.values(crew.node_matches);

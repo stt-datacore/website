@@ -13,7 +13,6 @@ export interface IDefaultGlobal {
     player: PlayerContextData;
     maxBuffs: BuffStatTable | undefined;
 	data?: any;
-	currentLang: string;
 };
 
 const defaultGlobal = {

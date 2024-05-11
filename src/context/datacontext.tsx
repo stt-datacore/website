@@ -10,11 +10,12 @@ import { Icon } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
 import { TranslationSet } from '../model/traits';
 import { ContinuumMission } from '../model/continuum';
-import { calcQLots, calcQuipmentScore } from '../utils/equipment';
+import { calcQuipmentScore } from '../utils/equipment';
 import { getItemWithBonus } from '../utils/itemutils';
 import { EventInstance } from '../model/events';
 import { StaticFaction } from '../model/shuttle';
 import { getSkillOrder, getVoyageQuotient } from '../utils/crewutils';
+import CONFIG from '../components/CONFIG';
 
 const DC_DEBUGGING: boolean = false;
 
@@ -66,8 +67,10 @@ export interface ICoreData {
 	ship_schematics: Schematics[];
 	ships: Ship[];
 	translation: TranslationSet;
-	translationLanguage: string;
+	translationDemand: string;
 	topQuipmentScores: QuipmentScores[];
+	gameLanguage: string;
+	setGameLanguage: (value: string) => void;
 };
 
 export interface ICoreContext extends ICoreData {
@@ -99,15 +102,17 @@ const defaultData = {
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
 	translation: {} as TranslationSet,
-	translationLanguage: 'translation_en',
-	topQuipmentScores: [] as QuipmentScores[]
+	translationDemand: 'translation_en',
+	topQuipmentScores: [] as QuipmentScores[],
+	gameLanguage: 'en'
 } as ICoreData;
 
 export const defaultCore = {
 	...defaultData,
 	ready: () => { return false; },
 	reset: () => { return false; },
-	spin: () => { return <></>; }
+	spin: () => { return <></>; },
+	setGameLanguage: () => { return; }
 } as ICoreContext;
 
 export const DataContext = React.createContext<ICoreContext>(defaultCore as ICoreContext);
@@ -117,6 +122,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 	const [isReadying, setIsReadying] = React.useState(false);
 	const [data, setData] = React.useState<ICoreData>(defaultData);
+	const [gameLanguage, setGameLanguage] = React.useState<string>('en');
 
 	const spin = (message?: string) => {
 		message ??= "Loading..."
@@ -127,7 +133,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 		...data,
 		ready,
 		reset,
-		spin
+		spin,
+		gameLanguage,
+		setGameLanguage
 	} as ICoreContext;
 
 	return (
@@ -137,9 +145,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 	);
 
 	function ready(demands: ValidDemands[] = []): boolean {
+		demands = [ ... demands ];
 		// Not ready if any valid demands are being processed
 		if (isReadying) return false;
-
 		// Fetch only if valid demand is not already satisfied
 		const valid = [
 			'all_buffs',
@@ -168,6 +176,20 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'translation_fr'
 		] as ValidDemands[];
 
+		if (gameLanguage !== data.translationDemand.slice(12)) {
+			data.translation = {} as TranslationSet;
+			data.translationDemand = 'translation_' + (gameLanguage ?? 'en');
+			data.gameLanguage = gameLanguage;
+			demands = demands.filter(f => !f.startsWith("translation_"));
+			demands.push(data.translationDemand as ValidDemands);
+		}
+		// Load English:
+		else if (!Object.keys(data.translation).length && !demands.some(d => d.startsWith("translation_"))) {
+			data.translationDemand = 'translation_en';
+			data.gameLanguage = 'en';
+			demands.push(data.translationDemand as ValidDemands);
+		}
+
 		if (demands.includes('ship_schematics') && !demands.includes('battle_stations')) {
 			demands.push('battle_stations');
 		}
@@ -181,7 +203,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (valid.includes(demand)) {
 				if (DC_DEBUGGING) console.log(demand);
 				if (demand.startsWith('translation_')) {
-					if (!Object.keys(data.translation).length || data.translationLanguage !== demand) {
+					if (!Object.keys(data.translation).length || data.translationDemand !== demand) {
 						unsatisfied.push(demand);
 					}
 				}
@@ -233,7 +255,8 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 						if (result.demand.startsWith("translation_")) {
 							newData.translation = result.json;
-							newData.translationLanguage = result.demand;
+							newData.translationDemand = result.demand;
+							CONFIG.setLanguage(newData.translationDemand.slice(12))
 						}
 						else {
 							newData[result.demand] = result.json;
@@ -273,14 +296,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 		});
 
 		return false;
-	}
-
-	function calculateQPower(crew: CrewMember[], items: EquipmentItem[], buffs: BuffStatTable) {
-		const quipment = items.filter(i => i.type === 14).map(i => getItemWithBonus(i));
-		crew.forEach((c) => {
-			calcQLots(c, quipment, buffs, true);
-			c.voyage_quotient = getVoyageQuotient(c);
-		});
 	}
 
 	function calculateTopQuipment(crew: CrewMember[]) {
@@ -408,21 +423,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 		return result ?? [];
 	}
 
-	// function processSkillBufs(result: any): BuffStatTable {
-	// 	let sks = {} as BuffStatTable;
-	// 	let skills = ['science', 'engineering', 'medicine', 'diplomacy', 'security', 'command'];
-	// 	let types = ['core', 'range_min', 'range_max'];
-	// 	for (let skill of skills) {
-	// 		for (let type of types) {
-	// 			let bkey = `${skill}_skill_${type}`;
-	// 			sks[bkey] = {} as IBuffStat;
-	// 			sks[bkey].percent_increase = result[skill][type];
-	// 			sks[bkey].multiplier = 1;
-	// 		}
-	// 	}
-	// 	return sks;
-	// }
-
 	function postProcessCollectionTranslations(data: ICoreData): void {
 		const colmap = {} as {[key:string]:string};
 		if (data.crew.length && data.collections.length && data.translation.collections) {
@@ -454,42 +454,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 					crew.obtained = getObtained(crew);
 				}
 			});
-		}
-	}
-
-	function getObtained(data: CrewMember) {
-		if (data.traits_hidden.includes("exclusive_honorhall") || data.symbol === "crusher_j_vox_crew") {
-			return "HonorHall";
-		}
-		else if (data.traits_hidden.includes("exclusive_gauntlet")) {
-			return "Gauntlet";
-		}
-		else if (data.traits_hidden.includes("exclusive_voyage")) {
-			return "Voyage";
-		}
-		else if (data.traits_hidden.includes("exclusive_collection")) {
-			return "Collection";
-		}
-		else if (data.traits_hidden.includes("exclusive_bridge")) {
-			return "BossBattle";
-		}
-		else if (data.traits_hidden.includes("exclusive_fusion")) {
-			return "Fuse";
-		}
-		else if (data.traits_hidden.includes("exclusive_achievement")) {
-			return "Achievement";
-		}
-		else if (data.symbol === "tuvok_mirror_crew") {
-			return "Faction";
-		}
-		else if (data.symbol === "boimler_evsuit_crew") {
-			return "WebStore";
-		}
-		else if (data.symbol === "quinn_crew") {
-			return "Missions";
-		}
-		else {
-			return "Event/Pack/Giveaway";
 		}
 	}
 
@@ -567,6 +531,44 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 		if (DC_DEBUGGING) console.log("Done with cadet missions.");
 	}
+
+	
+	function getObtained(data: CrewMember) {
+		if (data.traits_hidden.includes("exclusive_honorhall") || data.symbol === "crusher_j_vox_crew") {
+			return "HonorHall";
+		}
+		else if (data.traits_hidden.includes("exclusive_gauntlet")) {
+			return "Gauntlet";
+		}
+		else if (data.traits_hidden.includes("exclusive_voyage")) {
+			return "Voyage";
+		}
+		else if (data.traits_hidden.includes("exclusive_collection")) {
+			return "Collection";
+		}
+		else if (data.traits_hidden.includes("exclusive_bridge")) {
+			return "BossBattle";
+		}
+		else if (data.traits_hidden.includes("exclusive_fusion")) {
+			return "Fuse";
+		}
+		else if (data.traits_hidden.includes("exclusive_achievement")) {
+			return "Achievement";
+		}
+		else if (data.symbol === "tuvok_mirror_crew") {
+			return "Faction";
+		}
+		else if (data.symbol === "boimler_evsuit_crew") {
+			return "WebStore";
+		}
+		else if (data.symbol === "quinn_crew") {
+			return "Missions";
+		}
+		else {
+			return "Event/Pack/Giveaway";
+		}
+	}
+
 };
 
 export function randomCrew(symbol: string) {

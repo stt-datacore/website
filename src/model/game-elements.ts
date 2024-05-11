@@ -114,14 +114,6 @@ export interface Milestone {
   rewards: Reward[]
 }
 
-export const rarityLabels = [
-  "Common",
-  "Uncommon",
-  "Rare",
-  "Super Rare",
-  "Legendary",
-];
-
 export interface RarityOptions {
   key: string;
   value?: string | null | undefined;
