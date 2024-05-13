@@ -52,7 +52,7 @@ export const ChainSolver = () => {
 			});
 
 			let solveStatus: SolveStatus = SolveStatus.Unsolved;
-			let solve: string[] = node.hidden_traits;
+			let solve: string[] = node.hidden_traits.slice();
 			if (!solve.includes('?')) {
 				solveStatus = SolveStatus.Infallible;
 			}
