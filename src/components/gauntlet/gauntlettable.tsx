@@ -120,6 +120,11 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                 if (elcrit) {
                     elev[c.symbol] = elcrit;                    
                 }
+
+                if (elcrit) {
+                    elev[c.symbol] = elcrit;                    
+                }
+
             }
             setElevated(elev);
         }
