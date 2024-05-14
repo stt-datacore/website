@@ -73,7 +73,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 				}
 				overflowX='auto'
 				showFilterOptions={true}
-				showPermalink={rosterType === 'allCrew' || rosterType === 'buyBack'}
+				showPermalink={rosterType === 'allCrew'}
 				initOptions={initOptions}
 				lockable={lockableCrew}
 			/>
