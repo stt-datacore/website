@@ -473,12 +473,12 @@ export function calcQLots(
 			const outskills = Object.keys(skillbalance);
 			let value = 0;
 			if (outskills.length === 2) {
-				value = (skillbalance[outskills[0]].value + skillbalance[outskills[1]].value) / Math.abs(skillbalance[outskills[0]].value - skillbalance[outskills[1]].value);
+				value = ((skillbalance[outskills[0]].value + skillbalance[outskills[1]].value) / 2) / Math.abs(skillbalance[outskills[0]].value - skillbalance[outskills[1]].value);
 			}
 			else {
 				let values = Object.values(skillbalance).map(m => m.value).sort();
 				value = (Math.abs(values[2] - values[0]) + Math.abs(values[1] - values[0]) + Math.abs(values[1] - values[2])) / 3;
-				value = values.reduce((p, n) => p ? p + n : n, 0) / value;
+				value = (values.reduce((p, n) => p ? p + n : n, 0) / 3) / value;
 			}
 			baldiff.push({
 				value,

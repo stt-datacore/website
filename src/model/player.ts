@@ -53,7 +53,7 @@ export interface PlayerData {
     stripped?: boolean;
     citeMode?: CiteMode;
     calculatedDemands?: EquipmentItem[];
-    buyback_well: string[];
+    buyback_well: PlayerCrew[];
 }
 
 export interface Player {

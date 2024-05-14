@@ -192,7 +192,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     //     battle_stations: ship.battle_stations
     // }));
     
-    p.buyback_well = p.player.character.crew.filter((crew) => !!crew.in_buy_back_state).map(c => c.symbol) ?? [];
+    p.buyback_well = p.player.character.crew.filter((crew) => !!crew.in_buy_back_state) ?? [];
     p.player.character.crew = p.player.character.crew
         .filter((crew) => !crew.in_buy_back_state)
         .map((crew) => ({
