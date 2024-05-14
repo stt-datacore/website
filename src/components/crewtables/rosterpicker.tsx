@@ -88,7 +88,15 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				setRosterCrew([...buyBackCrew]);
 				return;
 			}
-			const crewMap = playerData.buyback_well?.map(b => globalContext.core.crew.find(f => f.symbol === b) as IRosterCrew);			
+			const crewMap = playerData.buyback_well?.map(b => {
+				let crew = globalContext.core.crew.find(f => f.symbol === b.symbol) as IRosterCrew;
+				if (!b.rarity) crew.rarity = 1;
+				else {
+					crew.rarity = b.rarity;
+				}
+				return crew;
+			});
+
 			rosterCrew = rosterizeAllCrew(crewMap);
 			setBuyBackCrew([...rosterCrew]);
 			setRosterCrew([...rosterCrew]);
@@ -150,7 +158,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				id: crewmanId++,
 				immortal: CompletionState.DisplayAsImmortalStatic,
 				level: playerData?.player.character.max_level ?? 100, // crew.max_level,   /* this property does not exist on core.crew!!! */,
-				rarity: crew.max_rarity,
+				rarity: ("rarity" in crew) ? crew.rarity : crew.max_rarity,
 				have: false,
 				command_skill: { core: 0, min: 0, max: 0 },
 				medicine_skill: { core: 0, min: 0, max: 0 },
