@@ -260,6 +260,13 @@ export function calculateGalaxyChance(skillValue: number) : number {
 	return Math.round(Math.min(val / 100, craft_config.specialist_maximum_success_chance)*100);
 }
 
+function guessSkirmishBonus(crew: IEventScoredCrew, eventData: IEventData) {
+	if (!eventData.bonus.includes(crew.symbol) && !eventData.featured.includes(crew.symbol)) return 1;
+	if (eventData.featured.includes(crew.symbol) || (new Date()).getTime() - (new Date(crew.date_added)).getTime() < (14 * 24 * 60 * 60 * 1000)) {
+		return 2;
+	}
+	return 1.5;
+}
 
 export function computeEventBest(
 	rosterCrew: IEventScoredCrew[],
@@ -297,10 +304,12 @@ export function computeEventBest(
 			if (applyBonus && eventData.featured.indexOf(crew.symbol) >= 0) {
 				if (phaseType === 'gather') crew.bonus = 10;
 				else if (phaseType === 'shuttles') crew.bonus = 3;
+				else if (phaseType === 'skirmish') crew.bonus = guessSkirmishBonus(crew, eventData);
 			}
 			else if (applyBonus && eventData.bonus.indexOf(crew.symbol) >= 0) {
 				if (phaseType === 'gather') crew.bonus = 5;
 				else if (phaseType === 'shuttles') crew.bonus = 2;
+				else if (phaseType === 'skirmish') crew.bonus = guessSkirmishBonus(crew, eventData);
 			}
 			if (crew.bonus > 1 || showPotential) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
