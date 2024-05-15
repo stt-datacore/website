@@ -59,7 +59,7 @@ type CrewCellProps = {
 
 export const CrewBaseCells = (props: CrewCellProps) => {
 	const { crew, pageId, tableType } = props;
-	const rarityLabels = CONFIG.RARITIES.map(r => r.name);
+	const rarityLabels = CONFIG.RARITIES.map(m => m.name);
 	const tiny = TinyStore.getStore("index");
 	
 	const navToSearch = (crew: IRosterCrew) => {
