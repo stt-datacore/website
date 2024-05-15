@@ -277,7 +277,7 @@ export function calculateGalaxyChance(skillValue: number) : number {
 }
 
 function getBonus(crew: IEventScoredCrew, eventData: IEventData, low: number, high: number) {
-	if (eventData.featured.includes(crew.symbol) || (eventData.bonusGuessed && (new Date()).getTime() - (new Date(crew.date_added)).getTime() < (14 * 24 * 60 * 60 * 1000))) {
+	if (eventData.featured.includes(crew.symbol) || (eventData.bonus.includes(crew.symbol) && eventData.bonusGuessed && (new Date()).getTime() - (new Date(crew.date_added)).getTime() < (14 * 24 * 60 * 60 * 1000))) {
 		return high;
 	}
 	else if (eventData.bonus.includes(crew.symbol)) {
