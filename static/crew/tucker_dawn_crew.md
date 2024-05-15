@@ -3,9 +3,9 @@ name: Dawn Trip Tucker
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 2
 in_portal:
-date:
+date: 14/05/2024
 published: true
 ---
 

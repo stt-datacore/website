@@ -3,7 +3,7 @@ name: Gotana-Retz
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 in_portal: true
 date: 21/06/2023
 published: true
