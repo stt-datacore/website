@@ -192,15 +192,15 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus:
 				featured.push(reward.symbol!);
 			}
 		}
-	}
+	}	
 
-	for (let ranked of activeEvent.ranked_brackets) {
-		for (let reward of ranked.rewards) {
-			if (allCrew.some(c => c.symbol === reward.symbol && c.max_rarity === 4)) {
-				featured.push(reward.symbol!);
-			}
-		}
-	}
+	// for (let ranked of activeEvent.ranked_brackets) {
+	// 	for (let reward of ranked.rewards) {
+	// 		if (allCrew.some(c => c.symbol === reward.symbol && c.max_rarity === 4)) {
+	// 			featured.push(reward.symbol!);
+	// 		}
+	// 	}
+	// }
 
 	// Guess bonus crew from bonus_text
 	//	bonus_text seems to be reliably available, but might be inconsistently written
@@ -276,12 +276,16 @@ export function calculateGalaxyChance(skillValue: number) : number {
 	return Math.round(Math.min(val / 100, craft_config.specialist_maximum_success_chance)*100);
 }
 
-function guessSkirmishBonus(crew: IEventScoredCrew, eventData: IEventData) {
-	if (!eventData.bonus.includes(crew.symbol) && !eventData.featured.includes(crew.symbol)) return 1;
-	if (eventData.featured.includes(crew.symbol) || (new Date()).getTime() - (new Date(crew.date_added)).getTime() < (14 * 24 * 60 * 60 * 1000)) {
-		return 2;
+function getBonus(crew: IEventScoredCrew, eventData: IEventData, low: number, high: number) {
+	if (eventData.featured.includes(crew.symbol) || (eventData.bonusGuessed && (new Date()).getTime() - (new Date(crew.date_added)).getTime() < (14 * 24 * 60 * 60 * 1000))) {
+		return high;
 	}
-	return 1.5;
+	else if (eventData.bonus.includes(crew.symbol)) {
+		return low;
+	}
+	else {
+		return 1;
+	}
 }
 
 export function computeEventBest(
@@ -290,7 +294,8 @@ export function computeEventBest(
 	phaseType: string,
 	buffConfig?: BuffStatTable,
 	applyBonus?: boolean, 
-	showPotential?: boolean) {
+	showPotential?: boolean,
+	) {
 
 	let bestCombos: IBestCombos = {};
 	const zeroCombos: IEventCombos = {};
@@ -317,15 +322,10 @@ export function computeEventBest(
 		// First adjust skill scores as necessary
 		if (applyBonus || showPotential) {
 			crew.bonus = 1;
-			if (applyBonus && eventData.featured.indexOf(crew.symbol) >= 0) {
-				if (phaseType === 'gather') crew.bonus = 10;
-				else if (phaseType === 'shuttles') crew.bonus = 3;
-				else if (phaseType === 'skirmish') crew.bonus = guessSkirmishBonus(crew, eventData);
-			}
-			else if (applyBonus && eventData.bonus.indexOf(crew.symbol) >= 0) {
-				if (phaseType === 'gather') crew.bonus = 5;
-				else if (phaseType === 'shuttles') crew.bonus = 2;
-				else if (phaseType === 'skirmish') crew.bonus = guessSkirmishBonus(crew, eventData);
+			if (applyBonus && (eventData.bonus.includes(crew.symbol) || eventData.featured.includes(crew.symbol))) {
+				if (phaseType === 'gather') crew.bonus = getBonus(crew, eventData, 5, 10);
+				else if (phaseType === 'shuttles') crew.bonus = getBonus(crew, eventData, 2, 3);
+				else if (phaseType === 'skirmish') crew.bonus = getBonus(crew, eventData, 1.5, 2);
 			}
 			if (crew.bonus > 1 || showPotential) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
