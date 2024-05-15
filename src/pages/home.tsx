@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import DataPageLayout from '../components/page/datapagelayout';
 import { GlobalContext } from '../context/globalcontext';
 import { Grid } from 'semantic-ui-react';
-import { SKILLS } from './gauntlets';
 import ItemDisplay from '../components/itemdisplay';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
-import { navigate } from 'gatsby';
+import { Link, navigate } from 'gatsby';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
+import CONFIG from '../components/CONFIG';
 
 const HomePage = () => {
 
@@ -50,11 +50,11 @@ class HomePageComponent extends Component<HomePageProps, HomePageState> {
         let crs = [ ... crew].sort((a, b) => b.date_added.getTime() - a.date_added.getTime())[0];
         const featured = crs;
         
-        const ship = ships.find(f => f.name === 'The Artifact');
+        const ship = ships[ships.length - 1];
         const equip = items.find(f => f.symbol === 'arabian_nights_holoprogram_quality5_equip');
 
         let todayGauntlet = gauntlets[0];
-        let gauntletStr = `${todayGauntlet.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${SKILLS[todayGauntlet.contest_data?.featured_skill ?? ""]}`
+        let gauntletStr = `${todayGauntlet.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${CONFIG.SKILLS_SHORT.find(f => f.name === todayGauntlet.contest_data?.featured_skill ?? "")?.short}`
         
         const cardStyle = {
             display: "flex",
@@ -90,7 +90,7 @@ class HomePageComponent extends Component<HomePageProps, HomePageState> {
                                     itemSymbol={exclusive.symbol}
                                     />}
                                     <div style={{display: 'flex', flexDirection: 'column'}}>
-                                    <h1>Gauntlets</h1>
+                                    <h1><Link to='/gauntlets'>Gauntlets</Link></h1>
                                     <div style={{textAlign: "left"}}>
                                         
                                         <h3>Today's Gauntlet</h3>
@@ -117,7 +117,7 @@ class HomePageComponent extends Component<HomePageProps, HomePageState> {
                                     itemSymbol={featured.symbol}
                                     />}
                                 <div style={{display: 'flex', flexDirection: 'column'}}>
-                                    <h1>Crew</h1>
+                                    <h1><Link to='/'>Crew</Link></h1>
                                     <div style={{textAlign: "left"}}>
                                          
                                         <h3>Newest Crew</h3>
@@ -151,10 +151,10 @@ class HomePageComponent extends Component<HomePageProps, HomePageState> {
                                         />
                                 </ShipTarget>}
                                 <div style={{display: 'flex', flexDirection: 'column'}}>
-                                    <h1>Ships</h1>
+                                    <h1><Link to='/ships'>Ships</Link></h1>
                                     <div style={{textAlign: "left"}}>
                                          
-                                        <h3>Featured Ships</h3>
+                                        <h3>Newest Ship</h3>
                                         <span style={{cursor: "pointer", fontWeight: "bold", textDecoration: "underline"}} onClick={(e) => navigate('/crew/'+featured.symbol)}>
                                         {ship?.name}
                                         </span>
@@ -166,40 +166,7 @@ class HomePageComponent extends Component<HomePageProps, HomePageState> {
                         </div>                    
                     </Grid.Column>
                 </Grid.Row>
-                <Grid.Row columns={3}>
-                    <Grid.Column>
-                        <div className='ui segment' style={cardStyle}>
-                            <div style={{display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: "center"}}>
-                                {equip && <ItemDisplay
-                                    style={{margin:"1em"}}
-                                    size={64}
-                                    rarity={equip.rarity}
-                                    maxRarity={equip.rarity}
-                                    src={`${process.env.GATSBY_ASSETS_URL}${equip.imageUrl}`}
-                                    targetGroup='homepage_items'
-                                    allCrew={crew}
-                                    allItems={items}
-                                    playerData={playerData}
-                                    itemSymbol={equip.symbol}
-                                    />}
-                                    <div style={{display: 'flex', flexDirection: 'column'}}>
-                                    <h1>Items</h1>
-                                    <div style={{textAlign: "left"}}>
-                                        
-                                        <h3>Items</h3>
-                                        <span>{equip?.name}</span>
-                                    </div>
-                                    
-                                </div>
-                            </div>
-                        </div>                    
-                    </Grid.Column>
-                    <Grid.Column>
-                              
-                    </Grid.Column>
-                    <Grid.Column>
-                    </Grid.Column>
-                </Grid.Row>
+                
             </Grid>
 
             <CrewHoverStat targetGroup='homepage' />
