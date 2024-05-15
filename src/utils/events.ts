@@ -186,6 +186,22 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus:
 	const bonus = [] as string[];
 	const featured = [] as string[];
 
+	for (let threshold of activeEvent.threshold_rewards) {
+		for (let reward of threshold.rewards) {
+			if (allCrew.some(c => c.symbol === reward.symbol && c.max_rarity === 5)) {
+				featured.push(reward.symbol!);
+			}
+		}
+	}
+
+	for (let ranked of activeEvent.ranked_brackets) {
+		for (let reward of ranked.rewards) {
+			if (allCrew.some(c => c.symbol === reward.symbol && c.max_rarity === 4)) {
+				featured.push(reward.symbol!);
+			}
+		}
+	}
+
 	// Guess bonus crew from bonus_text
 	//	bonus_text seems to be reliably available, but might be inconsistently written
 	if (activeEvent.bonus_text !== '') {
