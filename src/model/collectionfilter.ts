@@ -56,6 +56,8 @@ export interface CollectionFilterProps {
     hardFilter: boolean;
     favorited: boolean;
     showIncomplete: boolean;
+    tierFilter: number;
+    byCost: boolean;
 };
 
 
