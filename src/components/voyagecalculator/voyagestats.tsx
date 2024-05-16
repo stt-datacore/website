@@ -51,7 +51,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
 
-	worker: Worker;
+	worker: Worker | undefined = undefined;
 	ship?: Ship;
 	config: ExtendedVoyageStatsConfig;
 
@@ -59,7 +59,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		roster: [],
 	};
 
-	updateAndRun() {
+	updateAndRun(force?: boolean) {
 		const { estimate, numSims, ships, voyageData } = this.props;
 		
 		if (!voyageData)
@@ -67,7 +67,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 		this.ship = ships.length == 1 ? ships[0] : ships.find(s => s.id == voyageData.ship_id);
 
-		if (!estimate) {
+		if (!estimate || force) {
 			const duration = voyageData.voyage_duration ?? 0;
 			const correctedDuration = this.state.voyageBugDetected ? duration - duration%7200 : duration;
 
@@ -96,14 +96,21 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				this.config.variance += ((agg.range_max-agg.range_min)/(agg.core + agg.range_max))*skillOdds;
 			}
 
-			if (!this.worker) {
-				this.worker = new Worker();
-				this.worker.addEventListener('message', message => this.setState({ estimate: message.data.result }));
+			if (this.worker) {
+				this.worker.terminate();
+				this.worker.removeEventListener('message', this._eventListener);
+				this.worker = undefined;
 			}
-			
-			this.beginCalc();
-		}	
 
+			this.worker = new Worker();
+			this.worker.addEventListener('message', this._eventListener);
+
+			this.beginCalc();
+		}
+	}
+
+	private readonly _eventListener = (message) => {
+		this.setState({ estimate: message.data.result });
 	}
 
 	constructor(props: VoyageStatsProps | Readonly<VoyageStatsProps>) {
@@ -133,12 +140,12 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				if (this.config.selectedTime <= nextHour) {
 					this.config.selectedTime = nextHour + 2;
 				}
-				this.worker.postMessage({ worker: 'voyageEstimateExtended', config: this.config });
+				this.worker?.postMessage({ worker: 'voyageEstimateExtended', config: this.config });
 				return;
 			}
 		}		
 		
-		this.worker.postMessage({ worker: 'voyageEstimate', config: this.config });		
+		this.worker?.postMessage({ worker: 'voyageEstimate', config: this.config });		
 	}
 
 	componentWillUnmount() {
@@ -148,7 +155,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	componentDidUpdate(prevProps: Readonly<VoyageStatsProps>, prevState: Readonly<VoyageStatsState>, snapshot?: any): void {
 		if (prevProps.playerData !== this.props.playerData || prevProps.voyageData !== this.props.voyageData) {
-			this.updateAndRun();
+			this.updateAndRun(true);
 		}
 	}
 
