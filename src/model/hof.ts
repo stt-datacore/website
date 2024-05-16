@@ -1,6 +1,7 @@
 import { RankMode } from "../utils/misc";
 import { RawVoyageRecord } from "../utils/voyageutils";
 import { CrewMember } from "./crew";
+import { EquipmentItem } from "./equipment";
 import { PlayerCrew } from "./player";
 
 export interface VoyageHOFProps {};
@@ -32,6 +33,12 @@ export interface VoyageStatSeat {
     crewCount: number;
 }
 
+export interface CrewQuipStats {
+    kwipment_id: string,
+    count: number,
+    equipment: EquipmentItem
+}
+
 export interface VoyageStatEntry {
     crewSymbol: string;
     crewCount: number;
@@ -41,6 +48,7 @@ export interface VoyageStatEntry {
     endDate?: Date;
     seats: VoyageStatSeat[];
     quipmentCounts?: { [key: string]: number };
+    quipStats?: CrewQuipStats[];
 }
 
 export type VoyageHOFPeriod = "allTime" | "lastSevenDays" | "lastThirtyDays" | "lastSixMonths" | "lastNinetyDays" | "oneYear";
