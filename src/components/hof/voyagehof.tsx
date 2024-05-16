@@ -34,7 +34,8 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
             errorMessage: undefined,
             rankBy: this.tiny.getValue<RankMode>('rankMode', 'voyages') ?? 'voyages',
             glanceDays: this.tiny.getValue<number>('glanceDays', 28) ?? 28,
-            viewMode: 'rankings'
+            viewMode: 'rankings',
+            rows: []
         };
     }
 
@@ -150,7 +151,16 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry?type=voyage`)
             .then((response) => response.json())
             .then((voyageStats) => {
-                this.setState({ ...this.state, voyageStats });
+                const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+                let rows = [] as { stats: VoyageStatEntry[], key: VoyageHOFPeriod }[][];
+                let stats = Object.keys(niceNamesForPeriod)?.filter(p => !!p?.length);
+        
+                while (stats.length) {            
+                    rows.push(stats.splice(0, isMobile ? 1 : 2).map(p => { return { stats: (voyageStats as Object)[p] as VoyageStatEntry[], key: p as VoyageHOFPeriod } } ))
+                }
+        
+                this.setState({ ...this.state, voyageStats, rows });
+
                 setTimeout(() => {
                     if (window?.location?.search) {
                         let search = new URLSearchParams(window.location.search);
@@ -169,7 +179,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
     }
 
     render() {
-        const { crewSymbol, rawVoyages, rankBy, voyageStats, glanceDays, viewMode } = this.state;
+        const { crewSymbol, rawVoyages, rankBy, voyageStats, glanceDays, viewMode, rows } = this.state;
         const { crew: allCrew } = this.context.core;
 
         if (!this.state.voyageStats || !allCrew) {
@@ -182,17 +192,11 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         allCrew.forEach(c => {
             if (!c.id) c.id = c.archetype_id;
         })
-        let rows = [] as { stats: VoyageStatEntry[], key: VoyageHOFPeriod }[][];
-        let stats = Object.keys(niceNamesForPeriod)?.filter(p => !!p?.length);
        
         const filteredCrew = this.getFilteredCrew();
         const selection = filteredCrew?.filter(s => crewSymbol?.includes(s.symbol)).map(m => m?.id ?? 0);
         const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
-        while (stats.length) {            
-            rows.push(stats.splice(0, isMobile ? 1 : 2).map(p => { return { stats: (voyageStats as Object)[p] as VoyageStatEntry[], key: p as VoyageHOFPeriod } } ))
-        }
-        
         const glanceDaysChoices = [
             {
                 key: 'day1',
@@ -263,7 +267,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                         </Step.Content>
                     </Step>
     			</Step.Group>
-                {viewMode === 'details' && <React.Fragment>
+                {<div style={{display: viewMode === 'details' ? 'flex' : 'none', width: '100%', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                     <div style={{
                         width: isMobile ? "100%" : "50%",
                         display: "flex",
@@ -301,9 +305,9 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                     <Button style={{margin: "0.5em"}} onClick={(e) => this.setGlance()}>{"Clear Details View"}</Button>
                     }
                     
-                </React.Fragment>}
+                </div>}
 
-                {viewMode === 'rankings' && <React.Fragment>
+                {<div style={{display: viewMode === 'rankings' ? undefined : 'none'}}>
                 <div
                     style={{
                         margin: "1em",
@@ -366,7 +370,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                     })}
                 </Grid>
                     
-                </React.Fragment>}
+                </div>}
             </div>
         );
     }
