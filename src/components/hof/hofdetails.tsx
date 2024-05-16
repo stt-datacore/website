@@ -182,10 +182,12 @@ export const HofDetails = (props: HofDetailsProps) => {
         <React.Fragment>
             {!!crewSymbol?.length &&
                 (!rawVoyages || featuredList?.length !== crewSymbol?.length) &&
-                context.core.spin(
+                <div style={{height: "50%"}}>
+                {context.core.spin(
                     `Loading details for '${featuredList?.map((f) => f.name)?.join(", ") ?? crewSymbol
                     }' ...`
-                )}
+                )}</div>}
+                
             {!!crewSymbol && !!rawVoyages?.length && !!featuredList && (
                 <>
                     <div
