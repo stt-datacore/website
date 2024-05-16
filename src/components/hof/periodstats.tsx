@@ -2,7 +2,7 @@ import React from "react";
 import { Header, Pagination, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { CrewMember } from "../../model/crew";
-import { VoyageHOFPeriod, VoyageStatEntry, niceNamesForPeriod } from "../../model/hof";
+import { CrewQuipStats, VoyageHOFPeriod, VoyageStatEntry, niceNamesForPeriod } from "../../model/hof";
 import { PlayerCrew } from "../../model/player";
 import { RankMode } from "../../utils/misc";
 import { OwnedLabel } from "../crewtables/commonoptions";
@@ -19,20 +19,13 @@ export interface VoyageStatsProps {
     clickCrew: (value: string) => void;
 }
 
-interface CrewQuipStats {
-    [key: string]: {
-        kwipment_id: string,
-        count: number,
-        equipment: EquipmentItem
-    }[]
-}
 export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGlance }: VoyageStatsProps) => {
 
     const pageSize = 10;
     const context = React.useContext(GlobalContext);
+    const quipment = context.core.items.filter(i => i.type === 14);
     const myCrew = context.player.playerData?.player.character.crew ?? [];
-
-    const [crewQuip, setCrewQuip] = React.useState<CrewQuipStats>({});
+    
     const [rankedCrew, setRankedCrew] = React.useState<(PlayerCrew & VoyageStatEntry)[]>([]);
 
     const [totalPages, setTotalPages] = React.useState(0);
@@ -41,7 +34,7 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
 
     React.useEffect(() => {
         if (innerRankBy === '' || !stats?.length) return;
-        const newQuip = {} as CrewQuipStats;        
+        
         const newRank = innerRankBy;
         const newCrew = stats
             ?.map((s) => {
@@ -49,15 +42,15 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                 if (!crew) {
                     return undefined;
                 }
-                newQuip[crew.symbol] ??= [];
+                let newQuip = [] as CrewQuipStats[];
                 if (s.quipmentCounts) {
                     Object.entries(s.quipmentCounts).forEach(([key, value]) => {
-                        let cquip = newQuip[crew.symbol].find(f => f.kwipment_id === key);
+                        let cquip = newQuip.find(f => f.kwipment_id === key);
                         if (!cquip) {
-                            newQuip[crew.symbol].push({
+                            newQuip.push({
                                 kwipment_id: key,
                                 count: value,
-                                equipment: context.core.items.find(f => f.kwipment_id?.toString() === key)!
+                                equipment: quipment.find(f => f.kwipment_id?.toString() === key)!
                             });
                         }
                         else {
@@ -65,11 +58,14 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                         }
                     });
                 }
+                
+                newQuip.sort((a, b) => b.count - a.count);
 
                 return {
                     ...s,
                     ...crew,
-                    ...(myCrew.find(fc => fc.symbol === crew.symbol) ?? {})
+                    ...(myCrew.find(fc => fc.symbol === crew.symbol) ?? {}),
+                    quipStats: newQuip
                 };
             })
             .filter((s) => s)
@@ -106,11 +102,6 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
             })
             .slice(0, 100) as (PlayerCrew & VoyageStatEntry)[];
 
-        Object.keys(newQuip).forEach((key) => {
-            newQuip[key].sort((a, b) => b.count - a.count);
-        });
-
-        setCrewQuip(newQuip);
         setRankedCrew(newCrew);
         let pages = Math.ceil(newCrew.length / pageSize);
         setTotalPages(pages);
@@ -248,7 +239,7 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                                     </Table.Cell>
                                     <Table.Cell width={5}>
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', overflowY: 'auto', height: '14em' }}>
-                                            {Object.entries(crewQuip[crew.symbol]).map(([key, value]) => {
+                                            {Object.entries(crew.quipStats!).map(([key, value]) => {
                                                 let equipment = value.equipment;
                                                 return <div style={{ width: 'calc(32px + 0.5em)', marginTop: '0.25em', marginBottom: '0.25em', display: 'flex', flexDirection: 'column', justifyItems: 'center', gap: "0.25em", alignItems: 'center' }}>
                                                     {equipment && <ItemDisplay
