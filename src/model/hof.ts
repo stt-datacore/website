@@ -22,6 +22,7 @@ export interface VoyageHOFState {
     rawVoyages?: RawVoyageRecord[];
     glanceDays: number;
     viewMode: HOFViewModes;
+    rows: { stats: VoyageStatEntry[], key: VoyageHOFPeriod }[][];
 };
 
 export interface VoyageStatSeat {
