@@ -655,7 +655,7 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 		
 		<React.Fragment>
 
-			<RewardFilter 			
+			<RewardFilter
 					hardFilter={hardFilter}		
 					setHardFilter={setHardFilter}
 					grouped={short}
@@ -754,10 +754,10 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	React.useEffect(() => {
 		setWorkerRunning(true);
-	}, [context, mapFilter, showIncomplete, rarityFilter, fuseFilter, ownedFilter, searchFilter, matchMode, tierFilter]);	
+	}, [context, mapFilter, showIncomplete, rarityFilter, fuseFilter, ownedFilter, searchFilter, matchMode, tierFilter]);
 
 	React.useEffect(() => {
-		window.setTimeout(() => {
+		setTimeout(() => {
 			runWorker();
 		});		
 	}, [context, colContext]);

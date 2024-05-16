@@ -36,10 +36,8 @@ export const RewardFilter = (props: RewardFilterProps) => {
                     <Dropdown
                         multiple
                         placeholder={'Select crew ...'}
-                       
-                        style={{ width: narrow ? '100%' : '30%', margin: "0.5em 0" }}
-                        iconPosition="left"
-                        scrolling		
+                        clearable
+                        selection
                         options={crewSource?.map(ca => {
                             return {
                                 key: ca.name,
@@ -61,7 +59,7 @@ export const RewardFilter = (props: RewardFilterProps) => {
                     <RewardPicker 
                         short={grouped}
                         setShort={setGrouped}
-                        source={collectionSource} 
+                        source={collectionSource}
                         icons
                         value={selection} 
                         onChange={(value) => setSelection(value as string[] | undefined )}

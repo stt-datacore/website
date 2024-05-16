@@ -24,19 +24,12 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
     const colContext = React.useContext(CollectionFilterContext);
     const context = React.useContext(GlobalContext);
     const { workerRunning, playerCollections, colGroups } = props;
-    const { favorited, setFavorited, hardFilter, setHardFilter, costMode, setCostMode, setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
+    const { favorited, setFavorited, hardFilter, setHardFilter, costMode, setCostMode, setShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 	const [pageSize, setPageSize] = useStateWithStorage("colGroups/itemsPerPage", 1, { rememberForever: true });
 
 	const ownedCites = getOwnedCites(context.player.playerData?.player.character.items ?? [], costMode === 'sale');
-
-	const setShort = (value: boolean) => {
-		if (value !== short) {
-			internalSetShort(value);
-			setMapFilter({ ... mapFilter ?? {}, rewardFilter: [] });
-		}		
-	}
 
 	const [groupPage, setGroupPage] = React.useState(1);
 	const [groupPageCount, setGroupPageCount] = React.useState(1);
