@@ -5,6 +5,25 @@ import { PlayerCrew } from "./player";
 
 export interface VoyageHOFProps {};
 
+export type HOFViewModes = 'rankings' | 'details';
+
+export interface VoyageHOFState {
+    voyageStats?: {
+        lastSevenDays: VoyageStatEntry[];
+        lastThirtyDays: VoyageStatEntry[];
+        lastNinetyDays: VoyageStatEntry[];
+        lastSixMonths?: VoyageStatEntry[];
+        oneYear?: VoyageStatEntry[];
+        allTime?: VoyageStatEntry[];
+    };
+    errorMessage?: string;
+    rankBy: RankMode;
+    crewSymbol?: string[];
+    rawVoyages?: RawVoyageRecord[];
+    glanceDays: number;
+    viewMode: HOFViewModes;
+};
+
 export interface VoyageStatSeat {
     seat_skill: string;
     seat_index: number;
@@ -23,28 +42,12 @@ export interface VoyageStatEntry {
     quipmentCounts?: { [key: string]: number };
 }
 
-export interface VoyageHOFState {
-    voyageStats?: {
-        lastSevenDays: VoyageStatEntry[];
-        lastThirtyDays: VoyageStatEntry[];
-        lastNinetyDays: VoyageStatEntry[];
-        lastSixMonths?: VoyageStatEntry[];
-        oneYear?: VoyageStatEntry[];
-        allTime?: VoyageStatEntry[];
-    };
-    errorMessage?: string;
-    rankBy: RankMode;
-    crewSymbol?: string[];
-    rawVoyages?: RawVoyageRecord[];
-    glanceDays: number;
-};
-
 export type VoyageHOFPeriod = "allTime" | "lastSevenDays" | "lastThirtyDays" | "lastSixMonths" | "lastNinetyDays" | "oneYear";
 
 export const niceNamesForPeriod = {
-    lastNinetyDays: "Last 90 days",
-    lastThirtyDays: "Last 30 days",
     lastSevenDays: "Last 7 days",
+    lastThirtyDays: "Last 30 days",
+    lastNinetyDays: "Last 90 days",
     lastSixMonths: "Last 6 Months",
     oneYear: "Last Year",
 //    allTime: "All Time",

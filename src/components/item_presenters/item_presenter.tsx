@@ -67,6 +67,7 @@ export interface ItemPresenterProps extends PresenterProps {
     item: EquipmentItem;
     openItem?: (item: EquipmentItem) => void;
     crewTargetGroup?: string;
+    compact?: boolean;
 }
 
 export interface ItemPresenterState {
@@ -104,7 +105,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         const { playerData } = this.context.player;
         const { items } = this.context.core;
         const { mobileWidth } = this.state;
-        const compact = this.props.hover;    
+        const compact = this.props.hover || this.props.compact;
         const roster = playerData?.player?.character?.crew ?? [];
         const mode = this.demandMode;
 
@@ -327,7 +328,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     </div>
 
                     <div style={{display: "flex", flexDirection: "column", marginBottom:"1em"}}>
-                    {!!(item.recipe?.list?.length) && (
+                    {!!(item.recipe?.list?.length) && !compact && (
                             <div style={{fontSize: "8pt"}}>
                                 <Header as="h3">Recipe:</Header>
                                 <div style={{
