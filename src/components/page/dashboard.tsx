@@ -5,6 +5,7 @@ import Announcement from '../../components/announcement';
 
 import { PlayerInfo } from '../../components/playerdata/playerinfo';
 import { PlayerShareNotifications, PlayerSharePanel } from '../../components/playerdata/playershare';
+import { PlayerGlance } from './playerglance';
 
 type DashboardProps = {
 	activePanel: string | undefined;
@@ -13,7 +14,7 @@ type DashboardProps = {
 
 const Dashboard = (props: DashboardProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { playerData } = globalContext.player;
+	const { playerData, showPlayerGlance } = globalContext.player;	
 	const { activePanel, setActivePanel } = props;
 	const [dbidHash, setDbidHash] = React.useState<string | undefined>(undefined);
 
@@ -41,6 +42,8 @@ const Dashboard = (props: DashboardProps) => {
 					requestDismiss={() => { setActivePanel(undefined); }}
 				/>
 			}
+
+			{playerData && showPlayerGlance && <PlayerGlance />} 
 		</React.Fragment>
 	);
 };

@@ -54,6 +54,7 @@ export interface PlayerData {
     citeMode?: CiteMode;
     calculatedDemands?: EquipmentItem[];
     buyback_well: PlayerCrew[];
+    crew_crafting_root?: CrewCraftingRoot;
 }
 
 export interface Player {
@@ -1680,3 +1681,50 @@ export interface FillRate {
   quantity: number;
   time_unit: string;
 }
+
+
+export interface CrewCraftingRoot {
+  id: number
+  config: CraftingConfig
+  env: CraftingEnvironment
+  energy: CraftingEnergy
+}
+
+export interface CraftingConfig {
+  cost_discount_by_pool_size: CostDiscountByPoolSize
+  cost_by_rarity: CostByRarity
+  ism_subcoin_cost_to_open_crate: number
+}
+
+export interface CostDiscountByPoolSize {
+  [key: string]: number;
+}
+
+export interface CostByRarity {
+  [key: string]: CraftCost;
+}
+
+export interface CraftCost {
+  credits: number
+  energy: number
+}
+
+export interface CraftingEnvironment {
+  crew_source_stores: string[]
+  enabled: string
+}
+
+export interface CraftingEnergy {
+  id: number
+  quantity: number
+  regeneration: CraftingRegeneration
+  regenerated_at: number
+  coupons: number
+}
+
+export interface CraftingRegeneration {
+  increment: number
+  seconds: number
+  amount: number
+}
+
