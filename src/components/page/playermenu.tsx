@@ -3,7 +3,8 @@ import React from 'react';
 import { GlobalContext } from '../../context/globalcontext';
 import { NavItem, createSubMenu, renderSubmenuItem } from '../page/util';
 import NavigationSettings, { NavigationSettingsConfig } from '../page/settings';
-import { Dropdown } from 'semantic-ui-react';
+import { Dropdown, Icon } from 'semantic-ui-react';
+import { useStateWithStorage } from '../../utils/storage';
 
 type PlayerMenuProps = {
 	requestPanel: (target: string, panel: string | undefined) => void;
@@ -13,9 +14,8 @@ type PlayerMenuProps = {
 
 export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 	const globalContext = React.useContext(GlobalContext);
-	const { reset } = globalContext.player;
+	const { reset, showPlayerGlance, setShowPlayerGlance } = globalContext.player;
 	const [modalOpen, setModalOpen] = React.useState(false);
-
 	const {
 		requestPanel,
 	} = props;
@@ -70,10 +70,17 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 			customAction: (e, data) => setModalOpen(true)
 		},
 		{
+			title: <div><Icon name={showPlayerGlance ? 'toggle off' : 'toggle on'} />&nbsp;Toggle At-A-Glance Panel</div>,
+			checkVisible: (data) => !!playerData,
+			customAction: (e, data) => {
+				setShowPlayerGlance(!showPlayerGlance);
+			}
+		},
+		{
 			title: "Clear Player Data",
 			checkVisible: (data) => !!playerData,
 			customAction: (e, data) => { if (reset) reset(); }
-		},
+		}
 	] as NavItem[];
 
 	if (props.vertical) {
