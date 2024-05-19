@@ -52,7 +52,7 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 					<Loader content='Loading...' />
 				</Dimmer>
 				{requestDismiss &&
-					<Label as='a' corner='right' onClick={requestDismiss}>
+					<Label title={`Close ${caption} data upload panel`} as='a' corner='right' onClick={requestDismiss}>
 						<Icon name='delete' style={{ cursor: 'pointer' }}/>
 					</Label>
 				}

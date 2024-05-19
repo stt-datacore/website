@@ -8,6 +8,7 @@ import { Item, Label } from "semantic-ui-react";
 export interface PlayerBadgeProps {
     playerData: PlayerData;
     style?: React.CSSProperties;
+    
 }
 
 export const PlayerBadge = (props: PlayerBadgeProps) => {
@@ -23,21 +24,28 @@ export const PlayerBadge = (props: PlayerBadgeProps) => {
         portrait = portrait.replace("_icon.png", "_sm.png");
     }
 
+    const crewLimit = playerData.player.character.crew_limit;
+    const unfrozen = playerData.player.character.crew.filter(f => !f.immortal || f.immortal < 0).length;
+    const immortal = playerData.player.character.crew.filter(f => f.immortal).reduce((p, n) => p + Math.abs(n.immortal!), 0);
+
     const avatar = portrait;
 
     return <Item.Group style={style}>
         <Item>
             <Item.Image
+                
                 size='tiny'
-                src={avatar}
-            />
+            >
+                <img src={avatar} style={{height: '96px', width: '96px'}} />
+            </Item.Image>
 
             <Item.Content>
                 <Item.Header>{playerData.player.character.display_name}</Item.Header>
                 <Item.Meta style={{marginLeft: 0, marginTop: "0.25em"}}>
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>VIP {playerData.player.vip_level}</Label>
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>Level {playerData.player.character.level}</Label>
-                    <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{playerData.calc?.numImmortals} crew</Label>
+                    <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{immortal} immortals</Label>
+                    <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{unfrozen} / {crewLimit} crew</Label>
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{playerData.player.character.shuttle_bays} shuttles</Label>
                 </Item.Meta>
                 <Item.Description>
