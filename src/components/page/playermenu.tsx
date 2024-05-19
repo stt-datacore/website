@@ -14,7 +14,7 @@ type PlayerMenuProps = {
 
 export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 	const globalContext = React.useContext(GlobalContext);
-	const { reset, showPlayerGlance, setShowPlayerGlance } = globalContext.player;
+	const { reset, showPlayerGlance, setShowPlayerGlance, noGradeColors, setNoGradeColors } = globalContext.player;
 	const [modalOpen, setModalOpen] = React.useState(false);
 	const {
 		requestPanel,
@@ -74,6 +74,13 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 			checkVisible: (data) => !!playerData,
 			customAction: (e, data) => {
 				setShowPlayerGlance(!showPlayerGlance);
+			}
+		},
+		{
+			title: <div><Icon name={noGradeColors ? 'toggle off' : 'toggle on'} />&nbsp;Toggle grade coloring</div>,
+			checkVisible: (data) => !!playerData,
+			customAction: (e, data) => {
+				setNoGradeColors(!noGradeColors);
 			}
 		},
 		{
