@@ -96,7 +96,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 		<React.Fragment>
 			<Card fluid>
 				<Card.Content>
-					<Label as='a' corner='right' onClick={requestDismiss}>
+					<Label title={'Close player share panel'} as='a' corner='right' onClick={requestDismiss}>
 						<Icon name='delete' style={{ cursor: 'pointer' }} />
 					</Label>
 					<Card.Header>

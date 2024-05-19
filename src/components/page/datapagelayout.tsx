@@ -113,6 +113,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 			>
 				<MainContent narrowLayout={narrowLayout}>
 					<Dashboard
+						narrow={narrowLayout ?? false}
 						activePanel={dashboardPanel}
 						setActivePanel={setDashboardPanel}
 					/>

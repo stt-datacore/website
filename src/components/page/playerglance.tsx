@@ -2,7 +2,7 @@ import React from "react"
 import { GlobalContext } from "../../context/globalcontext"
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { Link, navigate } from "gatsby";
-import { Grid, Item, Label, Image } from "semantic-ui-react";
+import { Grid, Item, Label, Image, Icon } from "semantic-ui-react";
 import { PlayerBadge } from "./playerbadge";
 import { PlayerData } from "../../model/player";
 import { getOwnedCites } from "../../utils/collectionutils";
@@ -11,30 +11,30 @@ import { mergeItems } from "../../utils/itemutils";
 
 
 export interface PlayerResource {
-    name: string,
-    symbol?: string,
-    quantity: number,
-    imageUrl?: string,
+    name: string;
+    symbol?: string;
+    quantity: number;
+    imageUrl?: string;
     style?: React.CSSProperties;
-    click?: (e: any) => void
+    click?: (e: any) => void;
 }
 
 
 
 export interface PlayerGlanceProps {
-    
+    requestDismiss?: () => void;
+    narrow?: boolean;
 }
 
 export const PlayerGlance = (props: PlayerGlanceProps) => {
+    const { requestDismiss, narrow } = props;
 
     const globalContext = React.useContext(GlobalContext);
     const { isMobile } = globalContext;
-    const { translation } = globalContext.core;
     const { playerData } = globalContext.player;
 
     if (!playerData) return <></>;
     
-    const currEvent = playerData.player.character.events?.find(f => f.seconds_to_end && f.seconds_to_end > 0);
     const { money, premium_purchasable, honor, premium_earnable, shuttle_rental_tokens } = playerData.player;
     const quantum = playerData?.crew_crafting_root?.energy?.quantity;
     const valor = globalContext.player.ephemeral?.fleetBossBattlesRoot?.fleet_boss_battles_energy?.quantity;
@@ -110,25 +110,27 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
             click: (e) => navigate('/cite-opt')
         })
 
-    })
-
+    });
 
     return <div className={'ui segment'} 
         style={{
             width:"100%",
             display: 'flex',
-            flexDirection: isMobile ? 'column' : 'row',
+            flexDirection: isMobile || narrow ? 'column' : 'row',
             gap: '0.5em',
-            justifyContent: 'space-evenly',
+            justifyContent: isMobile || narrow ? 'center' : 'space-evenly',
             alignItems: 'center'
         }}>
-            <PlayerBadge playerData={playerData} style={{width: isMobile ? '100%' : '600px', margin: '0 2em'}} />
+            <Label title={'Close player at-a-glance panel'} as='a' corner='right' onClick={requestDismiss}>
+                <Icon name='delete' style={{ cursor: 'pointer' }} />
+            </Label>
+            <PlayerBadge playerData={playerData} style={{width: isMobile || narrow ? 'auto' : '600px', margin: '0 2em'}} />
             <div style={{
                 display: 'flex',
                 flexDirection: 'row',
                 flexWrap: 'wrap',
                 alignItems: 'center',
-                justifyContent: isMobile ? 'center' : 'flex-start',
+                justifyContent: isMobile || narrow ? 'center' : 'flex-start',
                 gap: '1em'
             }}>
                 {resources.map(res => {
