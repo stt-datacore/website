@@ -478,7 +478,7 @@ export function calcQLots(
 			}
 			else if (outskills.length === 3) {
 				let values = Object.values(skillbalance).map(m => m.value).sort();				
-				value = (values.reduce((p, n) => p ? p + n : n, 0)) - Math.abs(values.reduce((p, n) => p - n, 0));
+				value = (values.reduce((p, n) => p ? p + n : n, 0)) - Math.abs(values.reduce((p, n) => p ? p - n : n, 0));
 			}
 			baldiff.push({
 				value,
