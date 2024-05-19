@@ -472,13 +472,13 @@ export function calcQLots(
 			});
 			const outskills = Object.keys(skillbalance);
 			let value = 0;
+			
 			if (outskills.length === 2) {
-				value = ((skillbalance[outskills[0]].value + skillbalance[outskills[1]].value) / 2) / Math.abs(skillbalance[outskills[0]].value - skillbalance[outskills[1]].value);
+				value = (skillbalance[outskills[0]].value + skillbalance[outskills[1]].value) - (Math.abs(skillbalance[outskills[0]].value - skillbalance[outskills[1]].value));
 			}
-			else {
-				let values = Object.values(skillbalance).map(m => m.value).sort();
-				value = (Math.abs(values[2] - values[0]) + Math.abs(values[1] - values[0]) + Math.abs(values[1] - values[2])) / 3;
-				value = (values.reduce((p, n) => p ? p + n : n, 0) / 3) / value;
+			else if (outskills.length === 3) {
+				let values = Object.values(skillbalance).map(m => m.value).sort();				
+				value = (values.reduce((p, n) => p ? p + n : n, 0)) - Math.abs(values.reduce((p, n) => p ? p - n : n, 0));
 			}
 			baldiff.push({
 				value,
@@ -493,7 +493,7 @@ export function calcQLots(
 				let r = b.skills.length - a.skills.length;
 				if (r) return r;
 				// if (a.skills.length === 2) {
-					r = a.value - b.value;
+					r = b.value - a.value;
 				//}
 				// else {
 				// 	r = b.value - a.value;
@@ -687,7 +687,10 @@ export function calcQLots(
 	delete crew.q_best_two_three_lots;
 	delete crew.q_best_three_lots;
 	
-	if (crew.skill_order.length >= 2) {		
+	if (crew.skill_order.length >= 2) {	
+		if (crew.symbol.includes("gowron_chancellor")) {
+			console.log("break");
+		}	
 		crew.q_best_one_two_lots = calcBest(2, crew, max_qbits, max_slots, [0, 1]);		
 		addCrewPower(crew.q_best_one_two_lots);
 	}
