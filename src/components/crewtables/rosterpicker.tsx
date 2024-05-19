@@ -7,9 +7,11 @@ import { oneCrewCopy, applyCrewBuffs, getSkills } from '../../utils/crewutils';
 
 import { IRosterCrew, RosterType } from './model';
 import { CrewMember } from '../../model/crew';
+import { loadOfferCrew } from '../../utils/offers';
+import { appelate } from '../../utils/misc';
 
 type RosterPickerProps = {
-	rosterType: string;
+	rosterType: RosterType;
 	setRosterType: (rosterType: RosterType) => void;
 	setRosterCrew: (rosterCrew: IRosterCrew[]) => void;
 	buffMode?: PlayerBuffMode;
@@ -24,6 +26,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	const [allCrew, setAllCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [buyBackCrew, setBuyBackCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [myCrew, setMyCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
+	const [offerCrew, setOfferCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 
 	React.useEffect(() => {
 		const rosterType = playerData ? 'myCrew' : 'allCrew';
@@ -45,7 +48,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	const hasBuyBack = !!playerData.buyback_well?.length;
 
 	return (
-		<Step.Group fluid widths={hasBuyBack ? 3 : 2}>
+		<Step.Group fluid widths={hasBuyBack ? 4 : 3}>
 			<Step active={rosterType === 'myCrew'} onClick={() => setRosterType('myCrew')}>
 				<img src='/media/crew_icon.png' style={{ width: '3em', marginRight: '1em' }} />
 				<Step.Content>
@@ -61,6 +64,13 @@ export const RosterPicker = (props: RosterPickerProps) => {
 					<Step.Description>View crew in the buy-back well</Step.Description>
 				</Step.Content>
 			</Step>}
+			<Step active={rosterType === 'offers'} onClick={() => setRosterType('offers')}>
+			<img src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} style={{ width: '2em', marginRight: '1em' }} /> 
+				<Step.Content>
+					<Step.Title>Current Offers</Step.Title>
+					<Step.Description>Show crew in current offers</Step.Description>
+				</Step.Content>
+			</Step>
 			<Step active={rosterType === 'allCrew'} onClick={() => setRosterType('allCrew')}>
 				<Icon name='game' />
 				<Step.Content>
@@ -71,7 +81,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		</Step.Group>
 	);
 
-	function initializeRoster(rosterType: string, forceReload: boolean = false): void {
+	async function initializeRoster(rosterType: RosterType, forceReload: boolean = false): Promise<void> {
 		let rosterCrew = [] as IRosterCrew[];
 
 		if (rosterType === 'myCrew' && playerData) {
@@ -81,6 +91,26 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			}
 			rosterCrew = rosterizeMyCrew(playerData.player.character.crew, ephemeral?.activeCrew ?? []);
 			setMyCrew([...rosterCrew]);
+			setRosterCrew([...rosterCrew]);
+		}
+		else if (rosterType === 'offers') {
+			if (offerCrew && !forceReload) {
+				setRosterCrew([ ...offerCrew]);
+				return;
+			}
+
+			const offerData = await loadOfferCrew(globalContext.core.crew) ?? [];
+			const offers = {} as { [key: string]: string[] }
+			offerData.forEach((offer) => {
+				offer.crew.forEach((crew) => {
+					offers[crew.symbol] ??= [];
+					offers[crew.symbol].push(offer.name);
+				});
+			})
+			const crewMap = [ ... new Set((offerData)?.map(c => c.crew).flat()) ];
+			
+			rosterCrew = rosterizeAllCrew(crewMap, offers);
+			setOfferCrew([...rosterCrew]);
 			setRosterCrew([...rosterCrew]);
 		}
 		else if (rosterType === 'buyBack' && playerData) {
@@ -148,7 +178,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		return rosterCrew;
 	}
 
-	function rosterizeAllCrew(alternativeCrew?: CrewMember[]): IRosterCrew[] {
+	function rosterizeAllCrew(alternativeCrew?: CrewMember[], offerData?: { [key: string]: string[] }): IRosterCrew[] {
 		const rosterCrew = [] as IRosterCrew[];
 
 		let crewmanId = 1;
@@ -168,6 +198,9 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				science_skill: { core: 0, min: 0, max: 0 },
 			} as IRosterCrew;
 
+			if (offerData && offerData[crewman.symbol]) {
+				crewman.offer = offerData[crewman.symbol].map(s => appelate(s)).sort().join(" / ");
+			}
 			if (playerData) {
 				const owned = playerData.player.character.crew.filter(crew => crew.symbol === crewman.symbol);
 				crewman.have = owned.length > 0;

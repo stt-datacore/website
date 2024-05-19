@@ -3,7 +3,7 @@ import { Table } from 'semantic-ui-react';
 
 import CONFIG from '../../../components/CONFIG';
 
-import { IRosterCrew } from '../../../components/crewtables/model';
+import { IRosterCrew, RosterType } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
 import CABExplanation from '../../explanations/cabexplanation';
 import { formatTierLabel, printPortalStatus, qbitsToSlots, skillToShort } from '../../../utils/crewutils';
@@ -12,13 +12,20 @@ import VoyageExplanation from '../../explanations/voyexplanation';
 import { PlayerCrew } from '../../../model/player';
 import { CrewMember } from '../../../model/crew';
 
-export const getBaseTableConfig = (tableType: 'allCrew' | 'myCrew' | 'profileCrew' | 'buyBack') => {
+export const getBaseTableConfig = (tableType: RosterType) => {
 	const tableConfig = [] as ITableConfigRow[];
 	tableConfig.push(
 		{ width: 1, column: 'bigbook_tier', title: 'Tier' },
 		{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
-		{ width: 1, column: 'ranks.voyRank', title: <span>Voyage <VoyageExplanation /></span> }
+		
 	);
+	if (tableType !== 'offers') {
+		tableConfig.push({ width: 1, column: 'ranks.voyRank', title: <span>Voyage <VoyageExplanation /></span> })
+	}
+	else {
+		tableConfig.push({ width: 1, column: 'offer', title: 'Offer(s)' })
+	}
+
 	CONFIG.SKILLS_SHORT.forEach((skill) => {
 		tableConfig.push({
 			width: 1,
@@ -27,17 +34,19 @@ export const getBaseTableConfig = (tableType: 'allCrew' | 'myCrew' | 'profileCre
 			reverse: true
 		});
 	});
-	tableConfig.push(
-		{ 
-			width: 1, 
-			column: 'in_portal', 
-			title: 'In Portal',
-			customCompare: (a: PlayerCrew | CrewMember, b: PlayerCrew | CrewMember) => {				
-				return printPortalStatus(a, true, true, false, true).localeCompare(printPortalStatus(b, true, true, false, true));
-			}
-		},
-	);
-	if (tableType === 'allCrew' || tableType === 'buyBack') {
+	if (tableType !== 'offers') {
+		tableConfig.push(
+			{ 
+				width: 1, 
+				column: 'in_portal', 
+				title: 'In Portal',
+				customCompare: (a: PlayerCrew | CrewMember, b: PlayerCrew | CrewMember) => {				
+					return printPortalStatus(a, true, true, false, true).localeCompare(printPortalStatus(b, true, true, false, true));
+				}
+			},
+		);
+	}
+	if (['allCrew', 'offers', 'buyBack'].includes(tableType)) {
 		tableConfig.push(
 			{ width: 1, column: 'date_added', title: 'Release Date' },
 		);
@@ -54,7 +63,7 @@ export const getBaseTableConfig = (tableType: 'allCrew' | 'myCrew' | 'profileCre
 type CrewCellProps = {
 	pageId: string;
 	crew: IRosterCrew;
-	tableType: 'allCrew' | 'myCrew' | 'profileCrew' | 'buyBack'
+	tableType: RosterType
 };
 
 export const CrewBaseCells = (props: CrewCellProps) => {
@@ -77,12 +86,17 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<b>{crew.cab_ov}</b><br />
 				<small>{rarityLabels[crew.max_rarity-1]} #{crew.cab_ov_rank}</small>
 			</Table.Cell>
+			{tableType !== 'offers' && 
 			<Table.Cell textAlign='center'>
 				<div style={{cursor:"pointer"}} onClick={(e) => navToSearch(crew)} title={crew.skill_order.map(sk => skillToShort(sk)).reduce((p, n) => p ? `${p}/${n}` : n)}>
 					<b>#{crew.ranks.voyRank}</b><br />
 					{crew.ranks.voyTriplet && <small>Triplet #{crew.ranks.voyTriplet.rank}</small>}
 				</div>
-			</Table.Cell>
+			</Table.Cell>}
+			{tableType === 'offers' && 
+			<Table.Cell textAlign='center' width={3}>
+				<b>{crew.offer}</b>
+			</Table.Cell>}
 			{CONFIG.SKILLS_SHORT.map(skill =>
 				crew[skill.name].core > 0 ? (
 					<Table.Cell key={skill.name} textAlign='center'>
@@ -94,12 +108,13 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 					<Table.Cell key={skill.name} />
 				)
 			)}
+			{tableType !== 'offers' &&
 			<Table.Cell textAlign='center'>
 				<b title={printPortalStatus(crew, true, true, true)}>{printPortalStatus(crew, true, true)}</b>
-			</Table.Cell>
+			</Table.Cell>}
 			<Table.Cell textAlign='center' width={2}>
-				{(tableType === 'allCrew' || tableType === 'buyBack') && new Date(crew.date_added).toLocaleDateString()}
-				{tableType !== 'allCrew' && tableType !== 'buyBack' &&
+				{(['allCrew', 'offers', 'buyBack'].includes(tableType)) && new Date(crew.date_added).toLocaleDateString()}
+				{!['allCrew', 'offers', 'buyBack'].includes(tableType) &&
 					<div title={
 						crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
 						}>
