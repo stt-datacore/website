@@ -113,10 +113,10 @@ export class TinyStore {
 
             let keys = store.getKeys();
             for (let key of keys) {
-                let value = window.localStorage.getItem(pfxa + key);
+                let value = window?.localStorage.getItem(pfxa + key);
 
                 if (!value)
-                    value = window.sessionStorage.getItem(pfxa + key);
+                    value = window?.sessionStorage.getItem(pfxa + key);
 
                 if (value) {
 
@@ -128,10 +128,10 @@ export class TinyStore {
                     }
 
                     if (defaultSticky) {
-                        window.localStorage.setItem(pfxb + key, value);
+                        window?.localStorage.setItem(pfxb + key, value);
                     }
                     else {
-                        window.sessionStorage.setItem(pfxb + key, value);
+                        window?.sessionStorage.setItem(pfxb + key, value);
                     }
                 }
             }
@@ -203,11 +203,12 @@ export class TinyStore {
      * @returns
      */
     public getKeys(): string[] {
+        if (typeof window === 'undefined') return [];
         let keys = [] as string[];
-        let c = window.sessionStorage.length;
+        let c = window?.sessionStorage.length;
         let pfx = this.composeKey("");
         for (let i = 0; i < c; i++) {
-            let key = window.sessionStorage.key(i);
+            let key = window?.sessionStorage.key(i);
             if (key && key.startsWith(pfx)) {
                 key = key.replace(pfx, "");
                 if (!(key in keys))
@@ -215,9 +216,9 @@ export class TinyStore {
             }
         }
 
-        c = window.localStorage.length;
+        c = window?.localStorage.length;
         for (let i = 0; i < c; i++) {
-            let key = window.localStorage.key(i);
+            let key = window?.localStorage.key(i);
             if (key && key.startsWith(pfx)) {
                 key = key.replace(pfx, "");
                 if (!(key in keys))
@@ -233,16 +234,17 @@ export class TinyStore {
      * @returns
      */
     public getValues(): string[] {
+        if (typeof window === 'undefined') return [];
         let keys = this.getKeys();
         let objs = [] as string[];
         let pfx = this.composeKey("");
         for (let key of keys) {
-            let v = window.sessionStorage.getItem(pfx + key);
+            let v = window?.sessionStorage.getItem(pfx + key);
             if (v) {
                 objs.push(v);
             }
             else {
-                v = window.localStorage.getItem(pfx + key);
+                v = window?.localStorage.getItem(pfx + key);
                 if (v) {
                     objs.push(v);
                 }
@@ -258,8 +260,9 @@ export class TinyStore {
      * @returns
      */
     public isSticky(key: string): boolean {
+        if (typeof window === 'undefined') return false;
         let tkey = this.composeKey(key);
-        let t2 = window.localStorage.getItem(tkey);
+        let t2 = window?.localStorage.getItem(tkey);
         return (t2 !== null);
     }
 
@@ -269,13 +272,14 @@ export class TinyStore {
      * @returns
      */
     public makeSticky(key: string): boolean {
+        if (typeof window === 'undefined') return false;
         if (!this.containsKey(key))
             return false;
         if (!this.isSticky(key))
             return false;
         let tkey = this.composeKey(key);
-        window.localStorage.setItem(tkey, window.sessionStorage.getItem(tkey) as string);
-        window.sessionStorage.removeItem(tkey);
+        window?.localStorage.setItem(tkey, window?.sessionStorage.getItem(tkey) as string);
+        window?.sessionStorage.removeItem(tkey);
         return true;
     }
 
@@ -285,13 +289,14 @@ export class TinyStore {
      * @returns
      */
     public makeUnsticky(key: string): boolean {
+        if (typeof window === 'undefined') return false;
         if (!this.containsKey(key))
             return false;
         if (this.isSticky(key))
             return false;
         let tkey = this.composeKey(key);
-        window.sessionStorage.setItem(tkey, window.localStorage.getItem(tkey) as string);
-        window.localStorage.removeItem(tkey);
+        window?.sessionStorage.setItem(tkey, window?.localStorage.getItem(tkey) as string);
+        window?.localStorage.removeItem(tkey);
         return true;
     }
 
@@ -301,9 +306,10 @@ export class TinyStore {
      * @returns
      */
     public containsKey(key: string): boolean {
+        if (typeof window === 'undefined') return false;
         let tkey = this.composeKey(key);
-        let t1 = window.sessionStorage.getItem(tkey);
-        let t2 = window.localStorage.getItem(tkey);
+        let t1 = window?.sessionStorage.getItem(tkey);
+        let t2 = window?.localStorage.getItem(tkey);
         return t1 !== null || t2 !== null;
     }
 
@@ -312,9 +318,10 @@ export class TinyStore {
      * @param key
      */
     public removeValue(key: string) {
+        if (typeof window === 'undefined') return;
         let tkey = this.composeKey(key);
-        window.sessionStorage.removeItem(tkey);
-        window.localStorage.removeItem(tkey);
+        window?.sessionStorage.removeItem(tkey);
+        window?.localStorage.removeItem(tkey);
     }
 
     /**
@@ -333,6 +340,7 @@ export class TinyStore {
      * @param sticky Create/Set sticky (if not specified, the defaultSticky value is used)
      */
     public setValue<T>(key: string, value: T, sticky: boolean | undefined = undefined): void {
+        if (typeof window === 'undefined') return;
         let tkey = this.composeKey(key);
         sticky ??= this.defaultSticky;
 
@@ -348,12 +356,12 @@ export class TinyStore {
         }
 
         if (sticky) {
-            window.localStorage.setItem(tkey, json);
-            window.sessionStorage.removeItem(tkey);
+            window?.localStorage.setItem(tkey, json);
+            window?.sessionStorage.removeItem(tkey);
         }
         else {
-            window.sessionStorage.setItem(tkey, json);
-            window.localStorage.removeItem(tkey);
+            window?.sessionStorage.setItem(tkey, json);
+            window?.localStorage.removeItem(tkey);
         }
         
         this.onPropertyChanged(key);
@@ -368,12 +376,12 @@ export class TinyStore {
     public getValue<T>(key: string, defaultValue: T | undefined = undefined): T | undefined {
         let tkey = this.composeKey(key);
         let json: string | null;
-        
+        if (typeof window === 'undefined') return undefined;
         if (this.defaultSticky) {
-            json = window.localStorage.getItem(tkey) ?? window.sessionStorage.getItem(tkey);
+            json = window?.localStorage.getItem(tkey) ?? window?.sessionStorage.getItem(tkey);
         }
         else {
-            json = window.sessionStorage.getItem(tkey) ?? window.localStorage.getItem(tkey);
+            json = window?.sessionStorage.getItem(tkey) ?? window?.localStorage.getItem(tkey);
         }
 
         if (json) {            
@@ -386,7 +394,7 @@ export class TinyStore {
         return defaultValue as T;
     }
 
-    public getRapid<T>(key: string, defaultValue: T | undefined = undefined): T | undefined {
+    public getRapid<T>(key: string, defaultValue: T | undefined = undefined): T | undefined {        
         return this.rapid.get(key) ?? defaultValue;
     }
 

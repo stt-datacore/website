@@ -10,6 +10,16 @@ import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
 import { ItemBonusInfo, ItemWithBonus } from './itemutils';
 import { EquipmentItem } from '../model/equipment';
 import { calcQLots } from './equipment';
+import { TinyStore } from './tiny';
+
+
+const tiny = TinyStore.getStore(`global_playerSettings`);
+var gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
+tiny.subscribe((key) => {
+	if (key === 'noGradeColors') {
+		gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
+	}
+});
 
 export function exportCrewFields(): ExportField[] {
 	return [
@@ -934,7 +944,7 @@ export function traitNumberToColor(num: number): string | null {
 export function dynamicRangeColor(grade: number, max: number, min: number): string | null {
 	// grade -= min;
 	// max -= min;
-
+	if (gradeColorsDisabled) return null;
 	grade = (grade / max) * 100;
 
 	if (grade >= 90) {
@@ -975,7 +985,7 @@ export function numberToGrade(value: number, noneText?: string) {
 
 export function gradeToColor(grade: string | number, dryzero?: boolean): string | null {
 
-	if (!grade && dryzero) return null;
+	if (gradeColorsDisabled || (!grade && dryzero)) return null;
 
 	if (typeof grade === 'number' && grade < 1 && grade >= 0) {
 
