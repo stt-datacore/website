@@ -76,7 +76,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 		tiny.setRapid("search", "skill_order:" + sko);
 	};
 	const qbslots = qbitsToSlots(crew.q_bits);
-	const tierColor = crew.bigbook_tier ? gradeToColor((11 - crew.bigbook_tier) / 10) ?? undefined : undefined;
+	const tierColor = crew.bigbook_tier ? gradeToColor(crew.bigbook_tier) ?? undefined : undefined;
 	const gradeColor = gradeToColor(crew.cab_ov_grade) ?? undefined;
 	return (
 		<React.Fragment>
