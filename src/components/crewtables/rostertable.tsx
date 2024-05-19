@@ -199,7 +199,7 @@ interface IDataPrepared {
 	appliedFilters: string[];
 };
 
-const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profileCrew' | 'buyBack' }) => {
+const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, playerShips } = globalContext.player;
 	const { topQuipmentScores: top } = globalContext.core;
@@ -296,11 +296,11 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			// 		setCrewFilters={setCrewFilters}	
 			// 	/>,
 			// //form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getQuipmentTableConfig(rosterType === 'allCrew' || rosterType === 'buyBack'),			
+			tableConfig: getQuipmentTableConfig(['allCrew', 'offers', 'buyBack'].includes(rosterType)),
 			renderTableCells: 
 				(crew: IRosterCrew) => 
 					<QuipmentScoreCells 
-						excludeQBits={rosterType === 'allCrew' || rosterType === 'buyBack'}
+						excludeQBits={['allCrew', 'offers', 'buyBack'].includes(rosterType)}
 						excludeSkills={false} 
 						top={top[crew.max_rarity - 1]} 
 						crew={crew} />
@@ -328,7 +328,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 							crew,
 							quipment,
 							buffs: getActiveBuffs(),
-							max_qbits: rosterType === 'allCrew' || rosterType === 'buyBack',
+							max_qbits: ['allCrew', 'offers', 'buyBack'].includes(rosterType),
 							slots,
 							mode: powerMode
 						}
@@ -339,7 +339,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			},
 			form: <QuipmentToolsFilter 
 					immortalOnly={true}
-					maxxed={rosterType === 'allCrew' || rosterType === 'buyBack'}
+					maxxed={['allCrew', 'offers', 'buyBack'].includes(rosterType)}
 					quipment={quipment}
 					pstMode={pstMode}
 					setPstMode={setPstMode}
@@ -353,7 +353,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					setCrewFilters={setCrewFilters}	
 				/>,
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getTopQuipmentTableConfig(pstMode, rosterType === 'allCrew' || rosterType === 'buyBack', powerMode, getActiveBuffs()),
+			tableConfig: getTopQuipmentTableConfig(pstMode, ['allCrew', 'offers', 'buyBack'].includes(rosterType), powerMode, getActiveBuffs()),
 			renderTableCells: 
 				(crew: IRosterCrew) => 
 					<TopQuipmentScoreCells 
@@ -361,9 +361,9 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 						slots={slots}
 						buffConfig={getActiveBuffs()}
 						quipment={quipment}
-						excludeQBits={rosterType === 'allCrew' || rosterType === 'buyBack'}
+						excludeQBits={['allCrew', 'offers', 'buyBack'].includes(rosterType)}
 						targetGroup={`${pageId}/targetClassItem`} 
-						allslots={rosterType === 'allCrew' || rosterType === 'buyBack'}
+						allslots={['allCrew', 'offers', 'buyBack'].includes(rosterType)}
 						top={top[crew.max_rarity - 1]} 
 						crew={crew} />
 		},
@@ -413,7 +413,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 		},
 		{
 			id: 'ownership',
-			available: playerData && (rosterType === 'allCrew' || rosterType === 'buyBack'),
+			available: playerData && (['offers', 'allCrew', 'buyBack'].includes(rosterType)),
 			form:
 				<CrewOwnershipFilter
 					key='filter_allcrew_ownership'
@@ -548,7 +548,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 						crewFilters={crewFilters}
 						setCrewFilters={setCrewFilters}
 					/>
-					{(rosterType === 'allCrew' || rosterType === 'buyBack') && 
+					{(['allCrew', 'offers', 'buyBack'].includes(rosterType)) && 
 					<CrewBuffModes
 						buffMode={buffMode}
 						setBuffMode={setBuffMode}
