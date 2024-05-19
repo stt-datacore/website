@@ -6,7 +6,7 @@ import CONFIG from '../../../components/CONFIG';
 import { IRosterCrew, RosterType } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
 import CABExplanation from '../../explanations/cabexplanation';
-import { formatTierLabel, printPortalStatus, qbitsToSlots, skillToShort } from '../../../utils/crewutils';
+import { formatTierLabel, gradeToColor, printPortalStatus, qbitsToSlots, skillToShort } from '../../../utils/crewutils';
 import { TinyStore } from '../../../utils/tiny';
 import VoyageExplanation from '../../explanations/voyexplanation';
 import { PlayerCrew } from '../../../model/player';
@@ -76,15 +76,16 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 		tiny.setRapid("search", "skill_order:" + sko);
 	};
 	const qbslots = qbitsToSlots(crew.q_bits);
-
+	const tierColor = crew.bigbook_tier ? gradeToColor((11 - crew.bigbook_tier) / 10) ?? undefined : undefined;
+	const gradeColor = gradeToColor(crew.cab_ov_grade) ?? undefined;
 	return (
 		<React.Fragment>
 			<Table.Cell textAlign='center'>
-				<b>{formatTierLabel(crew)}</b>
+				<b style={{color: tierColor}}>{formatTierLabel(crew)}</b>
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
-				<b>{crew.cab_ov}</b><br />
-				<small>{rarityLabels[crew.max_rarity-1]} #{crew.cab_ov_rank}</small>
+				<b style={{color:gradeColor}}>{crew.cab_ov}</b><br />
+				<small><span  style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>{rarityLabels[crew.max_rarity]}</span><br />#{crew.cab_ov_rank}</small>
 			</Table.Cell>
 			{tableType !== 'offers' && 
 			<Table.Cell textAlign='center'>

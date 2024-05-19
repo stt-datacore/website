@@ -7,6 +7,7 @@ import { PlayerBadge } from "./playerbadge";
 import { PlayerData } from "../../model/player";
 import { getOwnedCites } from "../../utils/collectionutils";
 import CONFIG from "../CONFIG";
+import { mergeItems } from "../../utils/itemutils";
 
 
 export interface PlayerResource {
@@ -34,9 +35,17 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     if (!playerData) return <></>;
     
     const currEvent = playerData.player.character.events?.find(f => f.seconds_to_end && f.seconds_to_end > 0);
-    const { money, premium_purchasable, honor, premium_earnable } = playerData.player;
+    const { money, premium_purchasable, honor, premium_earnable, shuttle_rental_tokens } = playerData.player;
     const quantum = playerData?.crew_crafting_root?.energy?.quantity;
     const ownedCites = getOwnedCites(playerData?.player.character.items ?? [], false);
+    let revival = playerData.player.character.items.find(f => f.symbol === 'voyage_revival');
+    let coreRevival = globalContext.core.items.find(f => f.symbol === 'voyage_revival')!;
+    if (revival && coreRevival) {
+        revival = mergeItems([revival], [coreRevival])[0];
+    }
+    else {
+        revival = coreRevival;
+    }
 
     const resources = [] as PlayerResource[];
 
@@ -65,6 +74,18 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         quantity: quantum ?? 0,
         imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/crew_crafting_energy_detailed_icon.png`,
         click: (e) => navigate('/retrieval')
+    },
+    {
+        name: 'Voyage Revival Tokens',
+        quantity: revival?.quantity ?? 0,
+        imageUrl: `${process.env.GATSBY_ASSETS_URL}${revival.imageUrl}`,
+        click: (e) => navigate('/voyage')
+    },
+    {
+        name: 'Shuttle Rental Tokens',
+        quantity: shuttle_rental_tokens ?? 0,
+        imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/icon_shuttle_token.png`,
+        click: (e) => navigate('/shuttlehelper')
     });
 
     ownedCites.forEach((cite, idx) => {
