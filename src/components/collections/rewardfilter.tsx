@@ -38,11 +38,13 @@ export const RewardFilter = (props: RewardFilterProps) => {
                         placeholder={'Select crew ...'}
                         clearable
                         selection
+                        search
                         options={crewSource?.map(ca => {
                             return {
                                 key: ca.name,
                                 value: ca.name,
-                                text: 
+                                text: ca.name,
+                                content: 
                                     <div key={"dropdown_opt_"+ca.symbol} style={{display:"inline-flex", alignItems:"center", flexDirection:"row"}}>
                                         <img 
                                             src={`${process.env.GATSBY_ASSETS_URL}${ca.imageUrlPortrait}`} 
