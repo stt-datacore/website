@@ -8,10 +8,10 @@ export interface IRosterCrew extends PlayerCrew {
 		traits_matched?: string[];
 		crew_utility?: ICrewUtility;
 	}
-
+	offer?: string;
 };
 
-export type RosterType = 'allCrew' | 'myCrew' | 'profileCrew' | 'buyBack';
+export type RosterType = 'allCrew' | 'myCrew' | 'profileCrew' | 'buyBack' | 'offers';
 
 export interface ICrewFilter {
 	id: string;

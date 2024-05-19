@@ -5,7 +5,6 @@ import { PlayerCrew } from '../model/player';
 
 export type RankMode = "voyages" | "duration" | "voydur";
 
-
 export interface DropDownItem {
 	key: string;
 	value: string;

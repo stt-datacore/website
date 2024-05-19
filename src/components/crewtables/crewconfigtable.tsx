@@ -32,12 +32,12 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 
 	const [focusedCrew, setFocusedCrew] = React.useState<IRosterCrew | undefined | null>(undefined);
 
-	const showOwned = (rosterType === 'allCrew' || rosterType === 'buyBack') && !!playerData;
+	const showOwned = (['allCrew', 'offers', 'buyBack'].includes(rosterType)) && !!playerData;
 	const showTraitMatches = !!crewFilters.find(crewFilter => crewFilter.id === 'traits_matched');
 
 	const pseudos = ['name'];
 	if (rosterType === 'myCrew') pseudos.push('level', 'q_bits');
-	if ((rosterType === 'allCrew' || rosterType === 'buyBack') && playerData) pseudos.push('highest_owned_rarity');
+	if ((['allCrew', 'offers', 'buyBack'].includes(rosterType)) && playerData) pseudos.push('highest_owned_rarity');
 	pseudos.push('quipment_score');
 	pseudos.push('collections.length');
 	pseudos.push('date_added');
