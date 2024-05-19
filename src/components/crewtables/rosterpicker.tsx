@@ -1,5 +1,5 @@
 import React from 'react';
-import { Step, Icon } from 'semantic-ui-react';
+import { Step, Icon, Label } from 'semantic-ui-react';
 
 import { PlayerCrew, CompactCrew, CompletionState, PlayerBuffMode } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
@@ -67,7 +67,12 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			<Step active={rosterType === 'offers'} onClick={() => setRosterType('offers')}>
 			<img src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} style={{ width: '2em', marginRight: '1em' }} /> 
 				<Step.Content>
-					<Step.Title>Current Offers</Step.Title>
+					<Step.Title>Current Offers
+					{rosterType === 'offers' &&
+					<Label title={'Refresh offers'} as='a' corner='right' onClick={() => initializeRoster(rosterType, true)}>
+						<Icon name='refresh' style={{ cursor: 'pointer' }} />
+					</Label>}
+					</Step.Title>
 					<Step.Description>Show crew in current offers</Step.Description>
 				</Step.Content>
 			</Step>
