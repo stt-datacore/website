@@ -1,7 +1,7 @@
 
 
 import { Ship } from "./ship";
-import { BossBattlesRoot } from "./boss";
+import { BossBattlesRoot, Energy } from "./boss";
 import { CaptainsBridgeRoot } from "./bridge";
 import { BaseSkills, ComputedSkill, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, Skill } from "./crew"
 import { ShipAction, ShipBonus } from "./ship";
@@ -1714,7 +1714,7 @@ export interface CraftingEnvironment {
   enabled: string
 }
 
-export interface CraftingEnergy {
+export interface CraftingEnergy extends Energy {
   id: number
   quantity: number
   regeneration: CraftingRegeneration

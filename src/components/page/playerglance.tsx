@@ -37,6 +37,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const currEvent = playerData.player.character.events?.find(f => f.seconds_to_end && f.seconds_to_end > 0);
     const { money, premium_purchasable, honor, premium_earnable, shuttle_rental_tokens } = playerData.player;
     const quantum = playerData?.crew_crafting_root?.energy?.quantity;
+    const valor = globalContext.player.ephemeral?.fleetBossBattlesRoot?.fleet_boss_battles_energy?.quantity;
     const ownedCites = getOwnedCites(playerData?.player.character.items ?? [], false);
     let revival = playerData.player.character.items.find(f => f.symbol === 'voyage_revival');
     let coreRevival = globalContext.core.items.find(f => f.symbol === 'voyage_revival')!;
@@ -68,6 +69,12 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         name: 'Honor',
         quantity: honor ?? 0,
         imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`
+    },
+    {
+        name: 'Valor',
+        quantity: valor ?? 0,
+        imageUrl: `${process.env.GATSBY_ASSETS_URL}fleet_boss_battles_icons_fbb_energy_icon.png`,
+        click: (e) => navigate('/fbb')
     },
     {
         name: 'Quantum',
