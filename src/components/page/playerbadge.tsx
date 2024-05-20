@@ -32,12 +32,10 @@ export const PlayerBadge = (props: PlayerBadgeProps) => {
 
     return <Item.Group style={style}>
         <Item>
-            <Item.Image
-                
-                size='tiny'
-            >
-                <img src={avatar} style={{height: '96px', width: '96px'}} />
-            </Item.Image>
+
+            <div style={{display: 'inline', textAlign: 'center'}}>
+                <img src={avatar} style={{height: '84px', width: 'auto !important', margin: '0.5em', marginTop: 0}} />
+            </div>    
 
             <Item.Content>
                 <Item.Header>{playerData.player.character.display_name}</Item.Header>
