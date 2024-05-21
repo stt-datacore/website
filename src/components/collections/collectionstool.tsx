@@ -23,7 +23,7 @@ import { CollectionOptimizerTable } from './optimizerview';
 import CollectionsOverviewComponent from './overview';
 import { CollectionFilterContext, CollectionFilterProvider } from './filtercontext';
 import { RewardFilter } from './rewardfilter';
-import { compareRewards, rewardsFilterPassFail, starCost } from '../../utils/collectionutils';
+import { citeSymbols, compareRewards, makeCiteNeeds, rewardsFilterPassFail, starCost } from '../../utils/collectionutils';
 import { navToCrewPage } from '../../utils/nav';
 import { ICrewFilter, IRosterCrew } from '../crewtables/model';
 import { CrewMaintenanceFilter } from '../crewtables/filters/crewmaintenance';
@@ -609,6 +609,34 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 		}
 	}
 
+	const renderFancyCites = (size?: number) => {
+		size ??= 32;
+		const honor = playerData.player.honor;		
+		const cost = costMode === 'sale' ? 40000 : 50000;
+		const total = Math.floor(honor/cost);
+		if (honor < cost) return <></>
+		return <div style={{
+					textAlign: 'center',
+					width: '15em',
+					display: 'flex',
+					flexDirection: 'row',
+					alignItems: 'center',
+					justifyContent: 'space-between'
+				}}>
+					<div style={{fontSize: "0.8em", display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`} style={{height: `${size}px`, width: `${size}px`, marginBottom: '0.5em'}} />
+						{honor.toLocaleString()}				
+					</div>
+					<div style={{fontSize: '3em', display: 'inline', marginTop: '-0.8em'}}>
+						&rarr;
+					</div>
+					<div>				
+						<RewardsGrid size={size} kind={'need'} needs={[{symbol: citeSymbols[5], quantity: total}]} />
+					</div>
+				</div>
+
+	}
+
 	const offPageSelect = selnum;
 
 	const processWorkerResult = (result: CollectionWorkerResult) => {
@@ -780,9 +808,13 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 					})}						
 				</Step.Group>
 			</div>
-			<Header as='h4'>{tabPanes[tabIndex ?? 0].longTitle}</Header>
-				<p>{tabPanes[tabIndex ?? 0].longDescription}</p>
 
+			{/* <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%'}}>
+				{costMode && playerData?.player?.honor && renderFancyCites()}
+			</div> */}
+
+			<Header as='h4'>{tabPanes[tabIndex ?? 0].longTitle}</Header>
+			<p>{tabPanes[tabIndex ?? 0].longDescription}</p>
 			{tabPanes[tabIndex ?? 0].showFilters && 
 			<React.Fragment>
 				<div style={{ 
@@ -849,7 +881,6 @@ const CollectionsViews = (props: CollectionsViewsProps) => {
 								onChange={(e, { value }) => setRarityFilter(value)}
 								closeOnChange
 							/>
-							
 						</Form.Group>
 					</Form>
 				</div>
