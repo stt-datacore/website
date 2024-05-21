@@ -54,7 +54,7 @@ export default class CONFIG {
 		1: 'Crew',
 		2: 'Equipment',
 		3: 'Component',
-		4: 'Shuttle consumable',
+		4: 'Shuttle token',
 		5: 'Ship part',
 		6: 'Shuttle token',
 		7: 'Crew experience training',
@@ -63,9 +63,9 @@ export default class CONFIG {
 		10: 'Honorable citation',
 		11: 'Buff',
 		12: 'Starbase component',
-		13: 'Voyage consumable',
+		13: 'Voyage token',
 		14: 'Continuum Quipment',
-		15: 'Continuum Quipment Component'
+		15: 'Continuum Q-Bit (Component)'
 	};
 
 	static readonly CREW_SHIP_BATTLE_BONUS_TYPE: { [index: number]: string } = {
