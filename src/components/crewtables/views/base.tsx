@@ -48,13 +48,13 @@ export const getBaseTableConfig = (tableType: RosterType) => {
 	}
 	if (['allCrew', 'offers', 'buyBack'].includes(tableType)) {
 		tableConfig.push(
-			{ width: 1, column: 'date_added', title: 'Release Date' },
+			{ width: 1, column: 'date_added', title: 'Release Date', reverse: true },
 		);
 	
 	}
 	else {
 		tableConfig.push(
-			{ width: 1, column: 'q_bits', title: 'Q-Bits' },
+			{ width: 1, column: 'q_bits', title: 'QP', reverse: true },
 		);
 	}
 	return tableConfig;
