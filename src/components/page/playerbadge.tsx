@@ -43,7 +43,8 @@ export const PlayerBadge = (props: PlayerBadgeProps) => {
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>VIP {playerData.player.vip_level}</Label>
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>Level {playerData.player.character.level}</Label>
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{immortal} immortals</Label>
-                    <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{unfrozen} / {crewLimit} crew</Label>
+                    <Label style={{marginLeft: 0, marginTop: "0.25em"}} title={`${unfrozen} / ${crewLimit}`}>
+                        {crewLimit < unfrozen && <span style={{color: 'tomato'}}>!!</span>} {unfrozen} / {crewLimit} crew</Label>
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{playerData.player.character.shuttle_bays} shuttles</Label>
                 </Item.Meta>
                 <Item.Description>

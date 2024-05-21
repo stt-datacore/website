@@ -97,19 +97,34 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
 
     ownedCites.forEach((cite, idx) => {
         if (idx === 0) return;
-        if (cite.quantity <= 0) return;
+        if (cite.quantity <= 0 && idx !== 5) return;
         let item = globalContext.core.items.find(f => f.symbol === `honorable_citation_quality${idx}`);
         const img = `${process.env.GATSBY_ASSETS_URL}${item?.imageUrl}`;
-        resources.push({
-            name: `${idx}* Citation`,
-            quantity: cite.quantity,
-            imageUrl: img,
-            style: {                
-                border: `1.5px solid ${CONFIG.RARITIES[idx].color}`
-            },
-            click: (e) => navigate('/cite-opt')
-        })
+        
+        if (cite.quantity > 0) {
+            resources.push({
+                name: `${idx}* Citation`,
+                quantity: cite.quantity,
+                imageUrl: img,
+                style: {                
+                    border: `1.5px solid ${CONFIG.RARITIES[idx].color}`
+                },
+                click: (e) => navigate('/cite-opt')
+            });
+        }
 
+        // let h = Math.floor(honor / 40000);
+        // if (idx === 5 && h) {
+        //     resources.push({
+        //         name: `Potential Honor Sale Citations`,
+        //         quantity: h,
+        //         imageUrl: img,
+        //         style: {                
+        //             border: `1.5px dashed ${CONFIG.RARITIES[idx].color}`
+        //         },
+        //         click: (e) => navigate('/cite-opt')
+        //     });
+        // }
     });
 
     return <div className={'ui segment'} 

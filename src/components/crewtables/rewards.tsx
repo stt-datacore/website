@@ -32,6 +32,7 @@ export interface RewardsGridProps {
 	negative?: boolean;
 	targetGroup?: string;
 	crewTargetGroup?: string;
+	size?: number;
 }
 
 export const RewardsGrid = (props: RewardsGridProps) => {
@@ -159,7 +160,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 										allItems={items}
 										playerData={playerData}
 										src={`${process.env.GATSBY_ASSETS_URL}${img}`}
-										size={32}
+										size={props.size ?? 32}
 										maxRarity={reward.rarity}
 										rarity={reward.rarity}
 									/>
