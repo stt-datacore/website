@@ -8,6 +8,7 @@ import { PlayerData } from "../../model/player";
 import { getOwnedCites } from "../../utils/collectionutils";
 import CONFIG from "../CONFIG";
 import { mergeItems } from "../../utils/itemutils";
+import { useStateWithStorage } from "../../utils/storage";
 
 
 export interface PlayerResource {
@@ -17,6 +18,7 @@ export interface PlayerResource {
     imageUrl?: string;
     style?: React.CSSProperties;
     click?: (e: any) => void;
+    customRender?: (item: PlayerResource) => JSX.Element;
 }
 
 
@@ -27,6 +29,8 @@ export interface PlayerGlanceProps {
 }
 
 export const PlayerGlance = (props: PlayerGlanceProps) => {
+    const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'normal')
+
     const { requestDismiss, narrow } = props;
 
     const globalContext = React.useContext(GlobalContext);
@@ -48,6 +52,8 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         revival = coreRevival;
     }
 
+    const honorimg = `${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`;
+
     const resources = [] as PlayerResource[];
 
     resources.push({
@@ -68,7 +74,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     {
         name: 'Honor',
         quantity: honor ?? 0,
-        imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`
+        imageUrl: honorimg
     },
     {
         name: 'Valor',
@@ -112,19 +118,34 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 click: (e) => navigate('/cite-opt')
             });
         }
+    });
 
-        // let h = Math.floor(honor / 40000);
-        // if (idx === 5 && h) {
-        //     resources.push({
-        //         name: `Potential Honor Sale Citations`,
-        //         quantity: h,
-        //         imageUrl: img,
-        //         style: {                
-        //             border: `1.5px dashed ${CONFIG.RARITIES[idx].color}`
-        //         },
-        //         click: (e) => navigate('/cite-opt')
-        //     });
-        // }
+    let cite = globalContext.core.items.find(f => f.symbol === `honorable_citation_quality5`);    
+    const cite5img = `${process.env.GATSBY_ASSETS_URL}${cite?.imageUrl}`;
+    let h = Math.floor(honor / (costMode === 'normal' ? 50000 : 40000));
+    resources.push({
+        name: `Potential ${costMode === 'normal' ? '': 'Honor Sale '}Citations`,
+        quantity: h,
+        style: {                
+            border: `1.5px dashed ${CONFIG.RARITIES[5].color}`
+        },
+        customRender: (res) => {
+            return  <div title={res.name} className={'ui label'} key={res.name} style={{cursor: 'pointer', marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style}} onClick={(e) => res.click ? res.click(e) : 0}>
+            <div style={{width: '8em', display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                <Image size={'tiny'} avatar src={honorimg} style={{width: 'auto', height: '24px', marginRight: "0.5em"}} />
+                <Image size={'tiny'} avatar src={cite5img} style={{width: 'auto', height: '24px', marginRight: "0.5em"}} />
+            </div>
+            &nbsp;{res.quantity?.toLocaleString() ?? 0}
+        </div>
+        },
+        click: (e) => {
+            if (costMode === 'normal') {
+                setCostMode('sale');
+            }
+            else {
+                setCostMode('normal');
+            }
+        }
     });
 
     return <div className={'ui segment'} 
@@ -149,6 +170,9 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 gap: '1em'
             }}>
                 {resources.map(res => {
+                    if (res.customRender) {
+                        return res.customRender(res);
+                    }
                     let click = res.click;
                     return (
                         <div title={res.name} className={'ui label'} key={res.name} style={{cursor: click ? 'pointer' : undefined, marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style}} onClick={(e) => click ? click(e) : 0}>
