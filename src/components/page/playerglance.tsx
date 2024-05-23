@@ -29,7 +29,7 @@ export interface PlayerGlanceProps {
 }
 
 export const PlayerGlance = (props: PlayerGlanceProps) => {
-    const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'normal')
+    const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'normal', { rememberForever: true })
 
     const { requestDismiss, narrow } = props;
 
