@@ -23,6 +23,7 @@ export const getBaseTableConfig = (tableType: RosterType) => {
 		tableConfig.push({ width: 1, column: 'ranks.voyRank', title: <span>Voyage <VoyageExplanation /></span> })
 	}
 	else {
+		tableConfig.push({ width: 1, column: 'cost_text', title: 'Offer Cost' })
 		tableConfig.push({ width: 1, column: 'offer', title: 'Offer(s)' })
 	}
 
@@ -93,6 +94,10 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 					<b>#{crew.ranks.voyRank}</b><br />
 					{crew.ranks.voyTriplet && <small>Triplet #{crew.ranks.voyTriplet.rank}</small>}
 				</div>
+			</Table.Cell>}
+			{tableType === 'offers' && 
+			<Table.Cell textAlign='center' width={1}>
+				<b>{crew.cost_text}</b>
 			</Table.Cell>}
 			{tableType === 'offers' && 
 			<Table.Cell textAlign='center' width={3}>

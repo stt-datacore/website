@@ -9,6 +9,7 @@ import { IRosterCrew, RosterType } from './model';
 import { CrewMember } from '../../model/crew';
 import { loadOfferCrew } from '../../utils/offers';
 import { appelate } from '../../utils/misc';
+import { Offer, OfferCrew } from '../../model/offers';
 
 type RosterPickerProps = {
 	rosterType: RosterType;
@@ -105,11 +106,11 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			}
 
 			const offerData = await loadOfferCrew(globalContext.core.crew) ?? [];
-			const offers = {} as { [key: string]: string[] }
+			const offers = {} as { [key: string]: OfferCrew[] }
 			offerData.forEach((offer) => {
 				offer.crew.forEach((crew) => {
 					offers[crew.symbol] ??= [];
-					offers[crew.symbol].push(offer.name);
+					offers[crew.symbol].push(offer);
 				});
 			})
 			const crewMap = [ ... new Set((offerData)?.map(c => c.crew).flat()) ];
@@ -183,7 +184,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		return rosterCrew;
 	}
 
-	function rosterizeAllCrew(alternativeCrew?: CrewMember[], offerData?: { [key: string]: string[] }): IRosterCrew[] {
+	function rosterizeAllCrew(alternativeCrew?: CrewMember[], offerData?: { [key: string]: OfferCrew[] }): IRosterCrew[] {
 		const rosterCrew = [] as IRosterCrew[];
 
 		let crewmanId = 1;
@@ -204,7 +205,11 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			} as IRosterCrew;
 
 			if (offerData && offerData[crewman.symbol]) {
-				crewman.offer = offerData[crewman.symbol].map(s => appelate(s)).sort().join(" / ");
+				crewman.offer = offerData[crewman.symbol].map(s => appelate(s.name)).sort().join(" / ");
+				
+				crewman.cost_text = offerData[crewman.symbol].map(offer => offer.drop_info.map(drop => drop.cost).sort((a, b) => b - a)[0].toString()).join(" / ");
+				crewman.offers = offerData[crewman.symbol];
+
 			}
 			if (playerData) {
 				const owned = playerData.player.character.crew.filter(crew => crew.symbol === crewman.symbol);
