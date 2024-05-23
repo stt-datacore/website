@@ -1,5 +1,6 @@
 import { Skill } from '../../model/crew';
 import { EquipmentItem } from '../../model/equipment';
+import { Offer, OfferCrew as CrewOffer } from '../../model/offers';
 import { PlayerCrew, PlayerUtilityRanks } from '../../model/player';
 
 export interface IRosterCrew extends PlayerCrew {
@@ -9,6 +10,8 @@ export interface IRosterCrew extends PlayerCrew {
 		crew_utility?: ICrewUtility;
 	}
 	offer?: string;
+	cost_text?: string;
+	offers?: CrewOffer[];
 };
 
 export type RosterType = 'allCrew' | 'myCrew' | 'profileCrew' | 'buyBack' | 'offers';
