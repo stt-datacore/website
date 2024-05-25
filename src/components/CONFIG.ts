@@ -653,6 +653,141 @@ export default class CONFIG {
 				"MED",
 				"MED");
 		}
-		
+		// SPANISH
+		else if (l === 'sp' || l === 'es') {
+			this.TRIPLET_TEXT = 'Trillizo';
+
+			this.RARITIES.length = 0;
+			this.RARITIES.push(
+				{ name: 'Basico', color: 'Grey' },
+				{ name: 'Común', color: rgbToHex(155, 155, 155) },
+				{ name: 'Poco Común', color: rgbToHex(80, 170, 60) },
+				{ name: 'Especiale', color: rgbToHex(90, 170, 255) },
+				{ name: 'Excepcionale', color: rgbToHex(170, 45, 235) },
+				{ name: 'Legendario', color: rgbToHex(253, 210, 106) }
+			);
+
+			this.MASTERY_LEVELS.length = 0;
+			this.MASTERY_LEVELS.push(
+				{ name: 'Normal', imageUrl: 'mastery_lowest_icon' },
+				{ name: 'Élite', imageUrl: 'mastery_medium_icon' },
+				{ name: 'Épico', imageUrl: 'mastery_highest_icon' }		
+			)
+			
+			this.SKILLS.command_skill = 'Mando';
+			this.SKILLS.science_skill = 'Ciencia';
+			this.SKILLS.security_skill = 'Seguridad';
+			this.SKILLS.engineering_skill = 'Ingeniería';
+			this.SKILLS.diplomacy_skill = 'Diplomacia';
+			this.SKILLS.medicine_skill = 'Medicina';
+
+			this.SKILLS_SHORT.length = 0;
+			this.SKILLS_SHORT.push(
+				{ name: 'command_skill', short: 'MND' },
+				{ name: 'science_skill', short: 'CIE' },
+				{ name: 'security_skill', short: 'SEG' },
+				{ name: 'engineering_skill', short: 'ING' },
+				{ name: 'diplomacy_skill', short: 'DIP' },
+				{ name: 'medicine_skill', short: 'MED' }
+			);
+ // Equipamiento, Entrenamiento d experiencia de
+			this.REWARDS_ITEM_TYPE[0] = 'Ninguna';
+			this.REWARDS_ITEM_TYPE[1] = 'Tripulación';
+			this.REWARDS_ITEM_TYPE[2] = 'Equipamiento';
+			this.REWARDS_ITEM_TYPE[3] = 'Componente';
+			this.REWARDS_ITEM_TYPE[4] = 'Aumentos';
+			this.REWARDS_ITEM_TYPE[5] = 'Parte del barco';
+			this.REWARDS_ITEM_TYPE[6] = 'Fichas de lanzadera';
+			this.REWARDS_ITEM_TYPE[7] = 'Entrenamiento d experiencia de tripulación';
+			this.REWARDS_ITEM_TYPE[8] = 'Diagrama de nave';
+			this.REWARDS_ITEM_TYPE[9] = 'Ración de replicador';
+			this.REWARDS_ITEM_TYPE[10] = 'Distinción de Honor';
+			this.REWARDS_ITEM_TYPE[11] = 'Efecto';
+			this.REWARDS_ITEM_TYPE[12] = 'Componente de base estalar';
+			this.REWARDS_ITEM_TYPE[13] = 'Suministros del viaje';
+			this.REWARDS_ITEM_TYPE[14] = 'Quipo de Continuo';
+			this.REWARDS_ITEM_TYPE[15] = ' Q-Bits de Continuo';
+
+			this.CREW_SHIP_BATTLE_BONUS_TYPE[0] = 'Ataque';
+			this.CREW_SHIP_BATTLE_BONUS_TYPE[1] = 'Evasión';
+			this.CREW_SHIP_BATTLE_BONUS_TYPE[2] = 'Precisión';
+			// These are only for penalty
+			this.CREW_SHIP_BATTLE_BONUS_TYPE[3] = 'Regeneración de escudo';			
+
+			this.CREW_SHIP_BATTLE_TRIGGER[0] = 'Ninguna';
+			this.CREW_SHIP_BATTLE_TRIGGER[1] = 'Posición';
+			this.CREW_SHIP_BATTLE_TRIGGER[2] = 'Camuflado';
+			this.CREW_SHIP_BATTLE_TRIGGER[4] = 'Abordaje';
+
+			this.SHIP_BATTLE_GRANTS[0] = 'Ninguna';
+			this.SHIP_BATTLE_GRANTS[1] = 'Posición';
+			this.SHIP_BATTLE_GRANTS[2] = 'Camuflado';
+			this.SHIP_BATTLE_GRANTS[4] = 'Abordaje';
+			this.SHIP_BATTLE_GRANTS[16] = 'Distruptor de escudos';
+
+			this.SHIP_BATTLE_GRANT_DESC[0] = 'Ninguna';
+			this.SHIP_BATTLE_GRANT_DESC[1] = 'Aumenta tu probabilidad de infligir daño crítico';
+			this.SHIP_BATTLE_GRANT_DESC[2] = 'Tu nave e impide que te marquen como objetivo';
+			this.SHIP_BATTLE_GRANT_DESC[4] = 'Inflige daño continuado al casco del enemigo';
+			this.SHIP_BATTLE_GRANT_DESC[16] = 'Los escudos enemigas quedan inoperativos durante un tiempo';
+
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[0] = 'Aumento de Ataque +%VAL%';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[1] = 'Inflige un %VAL% % de daño de forma inmediata';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[2] = 'Repara el casco en un %VAL% % de forma inmediata';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[3] = 'Repara los escudos en un %VAL% % de forma inmediata';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[4] = '+%VAL% de frecuencia de crítico';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[5] = '+%VAL% de bonificación de crítico';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[6] = '+%VAL% de regeneración de escudo';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[7] = '+%VAL%^% de velocidad de ataque';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[8] = 'Aumenta el daño por abordaje de %VAL% %';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[9] = 'Restablece los contadores de recarga de los enemigos';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[10] = 'Acelera los contadores de recarga en %VAL% segundos';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[11] = 'Reduce los daños del casco recibidos en un %VAL% %';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[12] = 'Un %VAL% % del daño recibido también se le inflige al atacante';
+
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[0] = 'Aumento de Ataque +%VAL%';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[1] = '%VAL%% daño';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[2] = 'Repara el casco +%VAL% %';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[3] = 'Repera los escudos +%VAL% %';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[4] = '+%VAL% frec. de crít';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[5] = '+%VAL% boni. de crít';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[6] = '+%VAL% regen. escudo';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[7] = '+%VAL%% velocidad';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[8] = '%VAL%% daño abordaje';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[9] = 'Restablece los contadores enemigos';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[10] = '+%VAL%s recarga contadores';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[11] = '-%VAL%% daños del casco';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[12] = '%VAL%% daños de reflexión';
+
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[0] = 'Aumento de Ataque';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[1] = 'Daños inmediata';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[2] = 'Repara le casco inmediata';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[3] = 'Repara los escudos inmediata';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[4] = '+Frecuencia de crítico';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[5] = '+Bonificación de crítico';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[6] = '+Regeneración de escudo';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[7] = '+Velocidad de ataque';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[8] = 'Aumenta el daño por abordaje';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[9] = 'Restablece los contadores de recarga de los enemigos';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[10] = 'Acelera los contadores de recarga';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[11] = 'Reduce los daños del casco';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[12] = 'Daños de reflexión';
+
+			this.VOYAGE_SLOT_SKILLS.length = 0;
+
+			this.VOYAGE_SLOT_SKILLS.push(
+				"MND",
+				"MND",
+				"DIP",
+				"DIP",
+				"SEG",
+				"SEG",
+				"ING",
+				"ING",
+				"CIE",
+				"CIE",
+				"MED",
+				"MED");
+		}
 	}
 }
