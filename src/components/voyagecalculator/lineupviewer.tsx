@@ -1,7 +1,6 @@
 import React from 'react';
 import { Grid, Button, Table, Popup, Icon, Card, Label, SemanticICONS } from 'semantic-ui-react';
 
-//import allTraits from '../../../static/structured/translation_en.json';
 import { CrewMember, Skill } from '../../model/crew';
 import { PlayerCrew, Voyage, VoyageCrewSlot } from '../../model/player';
 import { Ship } from '../../model/ship';
@@ -13,7 +12,6 @@ import CONFIG from '../CONFIG';
 import { useStateWithStorage } from '../../utils/storage';
 import { renderBonuses, renderKwipmentBonus } from '../item_presenters/item_presenter';
 import { isQuipped } from '../../utils/crewutils';
-import { DataContext } from '../../context/datacontext';
 
 interface IAssignment {
 	crew: PlayerCrew;
@@ -173,7 +171,7 @@ const PlayerViewPicker = (props: { dbid: string }) => {
 			}
 		}
 	}
-	
+
 	const [layout, setLayout] = useStateWithStorage(props.dbid+'/voyage/layout', default_layout, { rememberForever: true });
 
 	return (
@@ -217,10 +215,10 @@ type ViewProps = {
 };
 
 const TableView = (props: ViewProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { TRAIT_NAMES } = globalContext.localized;
 	const { voyageConfig, rosterType, ship, shipData, assignments } = React.useContext(ViewContext);
 	const { layout } = props;
-	const globalContext = React.useContext(GlobalContext);
-	const { translation: allTraits } = globalContext.core;
 
 	const compact = layout === 'table-compact';
 
@@ -309,16 +307,16 @@ const TableView = (props: ViewProps) => {
 								</Table.Cell>
 								<Table.Cell width={1} className='iconic' style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
 									<div style={{display:'flex', flexDirection:'row', gap: "0.5em", alignItems: "center", justifyContent: "right", marginRight: "0.5em"}}>
-										{isQuipped(crew) && 
+										{isQuipped(crew) &&
 										<>
 										<Popup wide content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => typeof q === 'number' ? q : q[1]), globalContext.core.items)} mouseEnterDelay={POPUP_DELAY} trigger={
 												<span style={{ cursor: 'help' }}>
 													<img src={`${process.env.GATSBY_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 												</span>
-											} />										
+											} />
 										</>}
 										{crew.traits.includes(trait.toLowerCase()) &&
-											<Popup content={`${allTraits.trait_names[trait]} +25 AM`} mouseEnterDelay={POPUP_DELAY} trigger={
+											<Popup content={`${TRAIT_NAMES[trait]} +25 AM`} mouseEnterDelay={POPUP_DELAY} trigger={
 												<span style={{ cursor: 'help' }}>
 													<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 												</span>
@@ -553,10 +551,9 @@ type AssignmentCardProps = {
 };
 
 const AssignmentCard = (props: AssignmentCardProps) => {
-	const { translation: allTraits } = React.useContext(DataContext);
+	const globalContext = React.useContext(GlobalContext);
+	const { TRAIT_NAMES } = globalContext.localized;
 	const { assignment: { crew, name, trait, bestRank }, showFinder, showSkills } = props;
-
-	const context = React.useContext(GlobalContext);
 
 	return (
 		<Card style={{ padding: '.5em', textAlign: 'center', height: '100%' }}>
@@ -567,15 +564,15 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 			}
 			<div style={{ margin: '0 auto' }}>
 				<ItemDisplay
-				crewBackground='rich'
-					allCrew={context.core.crew}
-					playerData={context.player.playerData}
-					targetGroup='voyageLineup'
-					itemSymbol={crew.symbol}
-					src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
-					size={96}
-					maxRarity={crew.max_rarity}
-					rarity={crew.rarity}
+					crewBackground='rich'
+						allCrew={globalContext.core.crew}
+						playerData={globalContext.player.playerData}
+						targetGroup='voyageLineup'
+						itemSymbol={crew.symbol}
+						src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+						size={96}
+						maxRarity={crew.max_rarity}
+						rarity={crew.rarity}
 				/>
 			</div>
 			<div style={{ marginBottom: '2em' }}>
@@ -587,21 +584,25 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 					</Popup>
 				</div>
 				<div style={{display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: 'center'}}>
-				{isQuipped(crew) && 
-				<div>
-				<Popup wide content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => typeof q === 'number' ? q : q[1]), context.core.items)} mouseEnterDelay={POPUP_DELAY} trigger={
-						<span style={{ cursor: 'help' }}>
-							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ marginLeft: "0.25em", marginRight: "0.25em", height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
-						</span>
-					} />										
-				</div>}
-				{crew.traits.includes(trait.toLowerCase()) &&
-					<React.Fragment>
-						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
-						<span style={{ marginLeft: '.5em', verticalAlign: 'middle' }}>{allTraits.trait_names[trait]}</span>
-					</React.Fragment>
-				}
-
+					{isQuipped(crew) && (
+						<div>
+							<Popup wide
+								content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => typeof q === 'number' ? q : q[1]), globalContext.core.items)}
+								mouseEnterDelay={POPUP_DELAY}
+								trigger={
+									<span style={{ cursor: 'help' }}>
+										<img src={`${process.env.GATSBY_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ marginLeft: "0.25em", marginRight: "0.25em", height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+									</span>
+								}
+							/>
+						</div>
+					)}
+					{crew.traits.includes(trait.toLowerCase()) &&
+						<React.Fragment>
+							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+							<span style={{ marginLeft: '.5em', verticalAlign: 'middle' }}>{TRAIT_NAMES[trait]}</span>
+						</React.Fragment>
+					}
 				</div>
 				{showSkills &&
 					<div>{renderSkills()}</div>

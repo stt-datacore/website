@@ -1,13 +1,12 @@
 import React from 'react';
 import { Header, Grid, Card, Image } from 'semantic-ui-react';
 
-//import allTraits from '../../../static/structured/translation_en.json';
 import { IVoyageInputConfig } from '../../model/voyage';
+import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';
 
 import { ConfigEditor } from './configeditor';
 import { Calculator } from './calculator';
-import { DataContext } from '../../context/datacontext';
 
 const VOYAGE_DEBUGGING: boolean = true;
 
@@ -55,8 +54,8 @@ type InputConfigCardProps = {
 };
 
 const InputConfigCard = (props: InputConfigCardProps) => {
-	const { translation: allTraits } = React.useContext(DataContext);
-
+	const globalContext = React.useContext(GlobalContext);
+	const { SHIP_TRAIT_NAMES } = globalContext.localized;
 	const { voyageConfig, setVoyageConfig } = props;
 
 	return (
@@ -80,7 +79,7 @@ const InputConfigCard = (props: InputConfigCardProps) => {
 						</Card>
 						<Card>
 							<Card.Content>
-								<Card.Header>{voyageConfig.ship_trait !== '' ? (allTraits.ship_trait_names[voyageConfig.ship_trait] ?? voyageConfig.ship_trait) : '(None)'}</Card.Header>
+								<Card.Header>{voyageConfig.ship_trait !== '' ? (SHIP_TRAIT_NAMES[voyageConfig.ship_trait] ?? voyageConfig.ship_trait) : '(None)'}</Card.Header>
 								<p>ship trait</p>
 							</Card.Content>
 						</Card>

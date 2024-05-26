@@ -2,6 +2,7 @@ import React from 'react';
 
 import { DataContext, ICoreContext, defaultCore } from './datacontext';
 import { PlayerContext, PlayerContextData, defaultPlayer } from './playercontext';
+import { DefaultLocalizedData, LocalizedContext, ILocalizedData } from './localizedcontext';
 import { BuffStatTable } from "../utils/voyageutils";
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 
@@ -12,6 +13,7 @@ interface GlobalProviderProperties {
 export interface IDefaultGlobal {
     core: ICoreContext;
     player: PlayerContextData;
+	localized: ILocalizedData;
     maxBuffs: BuffStatTable | undefined;
 	data?: any;
 	isMobile: boolean;
@@ -20,6 +22,7 @@ export interface IDefaultGlobal {
 const defaultGlobal = {
     core: defaultCore,
     player: defaultPlayer,
+	localized: DefaultLocalizedData,
     maxBuffs: undefined
 } as IDefaultGlobal;
 
@@ -29,6 +32,7 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 
     const core = React.useContext(DataContext);
     const player = React.useContext(PlayerContext);
+	const localized = React.useContext(LocalizedContext);
 	const [isMobile, setIsMobile] = React.useState(typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH);
 	const { children } = props;
 
@@ -44,7 +48,7 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 	let maxBuffs: BuffStatTable | undefined;
 
 	maxBuffs = player.maxBuffs;
-	
+
 	if ((!maxBuffs || !(Object.keys(maxBuffs)?.length)) && core.all_buffs) {
 		maxBuffs = core.all_buffs;
 	}
@@ -52,6 +56,7 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 	const providerValue = {
         core,
         player,
+		localized,
         maxBuffs,
 		isMobile
 	} as IDefaultGlobal;

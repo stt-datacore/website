@@ -3,9 +3,8 @@ import { Modal, Form, Button, Dropdown, Table, Message } from 'semantic-ui-react
 
 import { VoyageSkills } from '../../model/player';
 import { IVoyageInputConfig } from '../../model/voyage';
+import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../CONFIG';
-import { DataContext } from '../../context/datacontext';
-//import allTraits from '../../../static/structured/translation_en.json';
 
 interface ISelectOption {
 	key: string;
@@ -49,8 +48,8 @@ type ConfigEditorProps = {
 };
 
 export const ConfigEditor = (props: ConfigEditorProps) => {
-	const { translation: allTraits } = React.useContext(DataContext);
-
+	const globalContext = React.useContext(GlobalContext);
+	const { TRAIT_NAMES, SHIP_TRAIT_NAMES } = globalContext.localized;
 	const { updateConfig } = props;
 
 	const [voyageConfig, setVoyageConfig] = React.useState(props.voyageConfig ?? defaultConfig);
@@ -130,7 +129,7 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 				return {
 					key: trait,
 					value: trait,
-					text: allTraits.ship_trait_names[trait] ?? trait
+					text: SHIP_TRAIT_NAMES[trait] ?? trait
 				};
 			}) as ISelectOption[];
 			shipTraitsList.sort((a, b) => a.text.localeCompare(b.text));
@@ -139,7 +138,7 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 				return {
 					key: trait,
 					value: trait,
-					text: allTraits.trait_names[trait]
+					text: TRAIT_NAMES[trait]
 				};
 			}) as ISelectOption[];
 			crewTraitsList.sort((a, b) => a.text.localeCompare(b.text));

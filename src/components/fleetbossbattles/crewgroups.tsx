@@ -2,13 +2,12 @@ import React from 'react';
 import { InView } from 'react-intersection-observer';
 import { Button, Message, Table, Label, Icon, Grid, SemanticWIDTHS } from 'semantic-ui-react';
 
-//import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, FilteredGroup, Optimizer, SolveStatus, Solver, SolverNode } from '../../model/boss';
+import { GlobalContext } from '../../context/globalcontext';
 
 import { UserContext } from './context';
 import { CrewNodeExporter } from './crewexporter';
 import { MarkGroup, MarkCrew } from './markbuttons';
-import { DataContext } from '../../context/datacontext';
 
 interface CrewGroupsProps {
 	solver: Solver;
@@ -35,7 +34,8 @@ type NodeGroupsProps = {
 };
 
 const NodeGroups = (props: NodeGroupsProps) => {
-	const { translation: allTraits } = React.useContext(DataContext);
+	const globalContext = React.useContext(GlobalContext);
+	const { TRAIT_NAMES } = globalContext.localized;
 	const { spotterPrefs } = React.useContext(UserContext);
 	const groupsContext = React.useContext(CrewGroupsContext);
 	const { node } = props;
@@ -87,7 +87,7 @@ const NodeGroups = (props: NodeGroupsProps) => {
 		const traits: string[ ] = node.traitsKnown.concat(Array(node.hiddenLeft).fill('?'));
 		const formattedTraits = traits.map((trait, idx) => (
 			<span key={idx}>
-				{idx > 0 ? <> + </> : <></>}{trait !== '?' ? allTraits.trait_names[trait] : '?'}
+				{idx > 0 ? <> + </> : <></>}{trait !== '?' ? TRAIT_NAMES[trait] : '?'}
 			</span>
 		)).reduce((prev, curr) => <>{prev} {curr}</>, <></>);
 		return (

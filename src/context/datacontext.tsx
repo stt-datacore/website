@@ -39,14 +39,7 @@ export type ValidDemands =
 	'missionsfull' |
 	'quests' |
 	'ship_schematics' |
-	'skill_bufs' |
-	'translation_en' |
-	'translation_de' |
-	'translation_fr' |
-	'translation_sp' |
-	'items_de' |
-	'items_fr' |
-	'items_sp';
+	'skill_bufs';
 
 export interface DataProviderProperties {
 	children: JSX.Element;
@@ -69,12 +62,12 @@ export interface ICoreData {
 	continuum_missions: ContinuumMission[];
 	ship_schematics: Schematics[];
 	ships: Ship[];
-	translation: TranslationSet;
-	item_translations: ItemTranslation[];
-	translationDemand: string;
+	// translation: TranslationSet;
+	// item_translations: ItemTranslation[];
+	// translationDemand: string;
 	topQuipmentScores: QuipmentScores[];
-	gameLanguage: string;
-	setGameLanguage: (value: string) => void;
+	// gameLanguage: string;
+	// setGameLanguage: (value: string) => void;
 };
 
 export interface ICoreContext extends ICoreData {
@@ -105,11 +98,11 @@ const defaultData = {
 	continuum_missions: [] as ContinuumMission[],
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
-	translation: {} as TranslationSet,
-	item_translations: [] as ItemTranslation[],
-	translationDemand: 'translation_en',
+	// translation: {} as TranslationSet,
+	// item_translations: [] as ItemTranslation[],
+	// translationDemand: 'translation_en',
 	topQuipmentScores: [] as QuipmentScores[],
-	gameLanguage: 'en'
+	// gameLanguage: 'en'
 } as ICoreData;
 
 export const defaultCore = {
@@ -117,7 +110,7 @@ export const defaultCore = {
 	ready: () => { return false; },
 	reset: () => { return false; },
 	spin: () => { return <></>; },
-	setGameLanguage: () => { return; }
+	// setGameLanguage: () => { return; }
 } as ICoreContext;
 
 export const DataContext = React.createContext<ICoreContext>(defaultCore as ICoreContext);
@@ -127,7 +120,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 	const [isReadying, setIsReadying] = React.useState(false);
 	const [data, setData] = React.useState<ICoreData>(defaultData);
-	const [gameLanguage, setGameLanguage] = React.useState<string>('en');
+	// const [gameLanguage, setGameLanguage] = React.useState<string>('en');
 
 	const spin = (message?: string) => {
 		message ??= "Loading..."
@@ -139,8 +132,8 @@ export const DataProvider = (props: DataProviderProperties) => {
 		ready,
 		reset,
 		spin,
-		gameLanguage,
-		setGameLanguage
+		// gameLanguage,
+		// setGameLanguage
 	} as ICoreContext;
 
 	return (
@@ -175,32 +168,32 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'quests',
 			'ship_schematics',
 			'skill_bufs',
-			'translation_en',
-			'translation_de',
-			'translation_sp',
-			'translation_fr',
-			'items_de',
-			'items_fr',
-			'items_sp'
+			// 'translation_en',
+			// 'translation_de',
+			// 'translation_sp',
+			// 'translation_fr',
+			// 'items_de',
+			// 'items_fr',
+			// 'items_sp'
 		] as ValidDemands[];
 
-		if (gameLanguage !== data.translationDemand.slice(12)) {
-			data.translation = {} as TranslationSet;
-			data.translationDemand = 'translation_' + (gameLanguage ?? 'en');
-			data.gameLanguage = gameLanguage;
-			demands = demands.filter(f => !f.startsWith("translation_") && !f.startsWith("items_"));			
-			demands.push(data.translationDemand as ValidDemands);
+		// if (gameLanguage !== data.translationDemand.slice(12)) {
+		// 	data.translation = {} as TranslationSet;
+		// 	data.translationDemand = 'translation_' + (gameLanguage ?? 'en');
+		// 	data.gameLanguage = gameLanguage;
+		// 	demands = demands.filter(f => !f.startsWith("translation_") && !f.startsWith("items_"));
+		// 	demands.push(data.translationDemand as ValidDemands);
 
-			if (demands.includes("items") && gameLanguage && gameLanguage !== 'en') {
-				demands.push(`items_${gameLanguage}` as ValidDemands);
-			}
-		}
-		// Load English:
-		else if (!Object.keys(data.translation).length && !demands.some(d => d.startsWith("translation_"))) {
-			data.translationDemand = 'translation_en';
-			data.gameLanguage = 'en';
-			demands.push(data.translationDemand as ValidDemands);
-		}
+		// 	if (demands.includes("items") && gameLanguage && gameLanguage !== 'en') {
+		// 		demands.push(`items_${gameLanguage}` as ValidDemands);
+		// 	}
+		// }
+		// // Load English:
+		// else if (!Object.keys(data.translation).length && !demands.some(d => d.startsWith("translation_"))) {
+		// 	data.translationDemand = 'translation_en';
+		// 	data.gameLanguage = 'en';
+		// 	demands.push(data.translationDemand as ValidDemands);
+		// }
 
 		if (demands.includes('ship_schematics') && !demands.includes('battle_stations')) {
 			demands.push('battle_stations');
@@ -214,17 +207,18 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (demand === 'skill_bufs') demand = 'all_buffs';
 			if (valid.includes(demand)) {
 				if (DC_DEBUGGING) console.log(demand);
-				if (demand.startsWith('translation_')) {
-					if (!Object.keys(data.translation).length || data.translationDemand !== demand) {
-						unsatisfied.push(demand);
-					}
-				}
-				else if (demand.startsWith('items_')) {
-					if (!data.item_translations.length || data.translationDemand !== demand) {
-						unsatisfied.push(demand);
-					}
-				}
-				else if (data[demand].length === 0 || (demand === 'all_buffs' && !Object.keys(data[demand])?.length)) {
+				// if (demand.startsWith('translation_')) {
+				// 	if (!Object.keys(data.translation).length || data.translationDemand !== demand) {
+				// 		unsatisfied.push(demand);
+				// 	}
+				// }
+				// else if (demand.startsWith('items_')) {
+				// 	if (!data.item_translations.length || data.translationDemand !== demand) {
+				// 		unsatisfied.push(demand);
+				// 	}
+				// }
+				// else
+				if (data[demand].length === 0 || (demand === 'all_buffs' && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);
 				}
 			}
@@ -270,17 +264,17 @@ export const DataProvider = (props: DataProviderProperties) => {
 					// 	break;
 					default:
 
-						if (result.demand.startsWith("translation_")) {
-							newData.translation = result.json;
-							newData.translationDemand = result.demand;
-							CONFIG.setLanguage(newData.translationDemand.slice(12))
-						}
-						else if (result.demand.startsWith("items_")) {
-							newData.item_translations = result.json;
-						}
-						else {
+						// if (result.demand.startsWith("translation_")) {
+						// 	newData.translation = result.json;
+						// 	newData.translationDemand = result.demand;
+						// 	CONFIG.setLanguage(newData.translationDemand.slice(12))
+						// }
+						// else if (result.demand.startsWith("items_")) {
+						// 	newData.item_translations = result.json;
+						// }
+						// else {
 							newData[result.demand] = result.json;
-						}
+						// }
 						break;
 				}
 			});
@@ -294,18 +288,18 @@ export const DataProvider = (props: DataProviderProperties) => {
 				//calculateQPower(newData.crew, newData.items, newData.all_buffs);
 				newData.topQuipmentScores = calculateTopQuipment(newData.crew);
 			}
-			if (newData?.items?.length && unsatisfied.some(u => u.startsWith("items_"))) {
-				postProcessItemTranslations(newData);
-			}
-			if (newData?.crew?.length && unsatisfied.some(u => u.startsWith("translation_"))) {
-				postProcessCrewTranslations(newData);
-			}
-			if (newData?.ship_schematics?.length && unsatisfied.some(u => u.startsWith("translation_"))) {
-				postProcessShipTranslations(newData);
-			}
-			if (newData?.crew?.length && newData?.collections?.length && unsatisfied.some(u => u.startsWith("translation_"))) {
-				postProcessCollectionTranslations(newData);
-			}
+			// if (newData?.items?.length && unsatisfied.some(u => u.startsWith("items_"))) {
+			// 	postProcessItemTranslations(newData);
+			// }
+			// if (newData?.crew?.length && unsatisfied.some(u => u.startsWith("translation_"))) {
+			// 	postProcessCrewTranslations(newData);
+			// }
+			// if (newData?.ship_schematics?.length && unsatisfied.some(u => u.startsWith("translation_"))) {
+			// 	postProcessShipTranslations(newData);
+			// }
+			// if (newData?.crew?.length && newData?.collections?.length && unsatisfied.some(u => u.startsWith("translation_"))) {
+			// 	postProcessCollectionTranslations(newData);
+			// }
 			if (unsatisfied.includes('ship_schematics') && unsatisfied.includes('battle_stations')) {
 				postProcessShipBattleStations(newData);
 			}
@@ -446,68 +440,68 @@ export const DataProvider = (props: DataProviderProperties) => {
 		return result ?? [];
 	}
 
-	function postProcessCollectionTranslations(data: ICoreData): void {
-		const colmap = {} as {[key:string]:string};
-		if (data.crew.length && data.collections.length && data.translation.collections) {
-			data.collections.forEach((col) => {
-				let arch = data.translation.collections.find(f => f.id === col.id);
-				if (arch) {
-					colmap[col.name] = arch.name;
-					col.name = arch.name;
-					col.description = arch.description;
-					
-				}
-			});
-			data.crew.forEach((crew) => {
-				crew.collections = crew.collections.map(col => colmap[col]);
-			})
-		}		
-	}
+	// function postProcessCollectionTranslations(data: ICoreData): void {
+	// 	const colmap = {} as {[key:string]:string};
+	// 	if (data.crew.length && data.collections.length && data.translation.collections) {
+	// 		data.collections.forEach((col) => {
+	// 			let arch = data.translation.collections.find(f => f.id === col.id);
+	// 			if (arch) {
+	// 				colmap[col.name] = arch.name;
+	// 				col.name = arch.name;
+	// 				col.description = arch.description;
 
-	function postProcessCrewTranslations(data: ICoreData): void {
-		if (data.crew.length && data.translation.crew_archetypes) {
-			data.crew.forEach((crew) => {
-				let arch = data.translation.crew_archetypes.find(f => f.symbol === crew.symbol);
-				crew.traits_named = crew.traits.map(t => data.translation.trait_names[t]);
-				crew.name = arch?.name ?? crew.name;
-				crew.short_name = arch?.short_name ?? crew.short_name;
+	// 			}
+	// 		});
+	// 		data.crew.forEach((crew) => {
+	// 			crew.collections = crew.collections.map(col => colmap[col]);
+	// 		})
+	// 	}
+	// }
 
-				crew.events ??= 0;
-				if (!crew.obtained?.length || crew.obtained === "N/A") {
-					crew.obtained = getObtained(crew);
-				}
-			});
-		}
-	}
+	// function postProcessCrewTranslations(data: ICoreData): void {
+	// 	if (data.crew.length && data.translation.crew_archetypes) {
+	// 		data.crew.forEach((crew) => {
+	// 			let arch = data.translation.crew_archetypes.find(f => f.symbol === crew.symbol);
+	// 			crew.traits_named = crew.traits.map(t => data.translation.trait_names[t]);
+	// 			crew.name = arch?.name ?? crew.name;
+	// 			crew.short_name = arch?.short_name ?? crew.short_name;
 
-	function postProcessItemTranslations(data: ICoreData): void {
-		if (data.items.length && data.item_translations?.length) {
-			data.items.forEach((item) => {
-				let arch = data.item_translations.find(f => f.symbol === item.symbol);
-				if (arch) {
-					item.name = arch.name;
-					item.flavor = arch.flavor;
-				}
-			})
-		}
-	}
+	// 			crew.events ??= 0;
+	// 			if (!crew.obtained?.length || crew.obtained === "N/A") {
+	// 				crew.obtained = getObtained(crew);
+	// 			}
+	// 		});
+	// 	}
+	// }
 
-	function postProcessShipTranslations(data: ICoreData): void {
-		if (data.ship_schematics.length && data.translation.ship_archetypes) {
-			data.ship_schematics.forEach((ship) => {
-				let arch = data.translation.ship_archetypes.find(f => f.symbol === ship.ship.symbol);
-				ship.ship.flavor = arch?.flavor ?? ship.ship.flavor;
-				ship.ship.traits_named = ship.ship.traits?.map(t => data.translation.ship_trait_names[t]);
-				ship.ship.name = arch?.name ?? ship.ship.name;
-				arch?.actions?.forEach((action) => {
-					let act = ship.ship.actions?.find(f => f.symbol === action.symbol);
-					if (act) {
-						act.name = action.name;
-					}
-				});
-			});
-		}
-	}
+	// function postProcessItemTranslations(data: ICoreData): void {
+	// 	if (data.items.length && data.item_translations?.length) {
+	// 		data.items.forEach((item) => {
+	// 			let arch = data.item_translations.find(f => f.symbol === item.symbol);
+	// 			if (arch) {
+	// 				item.name = arch.name;
+	// 				item.flavor = arch.flavor;
+	// 			}
+	// 		})
+	// 	}
+	// }
+
+	// function postProcessShipTranslations(data: ICoreData): void {
+	// 	if (data.ship_schematics.length && data.translation.ship_archetypes) {
+	// 		data.ship_schematics.forEach((ship) => {
+	// 			let arch = data.translation.ship_archetypes.find(f => f.symbol === ship.ship.symbol);
+	// 			ship.ship.flavor = arch?.flavor ?? ship.ship.flavor;
+	// 			ship.ship.traits_named = ship.ship.traits?.map(t => data.translation.ship_trait_names[t]);
+	// 			ship.ship.name = arch?.name ?? ship.ship.name;
+	// 			arch?.actions?.forEach((action) => {
+	// 				let act = ship.ship.actions?.find(f => f.symbol === action.symbol);
+	// 				if (act) {
+	// 					act.name = action.name;
+	// 				}
+	// 			});
+	// 		});
+	// 	}
+	// }
 
 	function postProcessShipBattleStations(data: ICoreData): void {
 		if (data.battle_stations.length && data.ship_schematics.length) {
@@ -567,7 +561,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		if (DC_DEBUGGING) console.log("Done with cadet missions.");
 	}
 
-	
+
 	function getObtained(data: CrewMember) {
 		if (data.traits_hidden.includes("exclusive_honorhall") || data.symbol === "crusher_j_vox_crew") {
 			return "HonorHall";

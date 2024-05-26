@@ -420,7 +420,8 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	const search = textFilter;
 
 	const { buffConfig, maxBuffs } = context.player;
-	const { crew: allCrew, translation: allTraits } = context.core;
+	const { crew: allCrew } = context.core;
+	const { TRAIT_NAMES } = context.localized;
 
 	const availBuffs = ['none'] as PlayerBuffMode[];
 	const oppo = [] as PlayerCrew[];
@@ -467,7 +468,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 
 	const hasPlayer = !!context.player.playerData?.player?.character?.crew?.length;
 
-	const prettyTraits = gauntlet.contest_data?.traits?.map(t => allTraits.trait_names[t]);
+	const prettyTraits = gauntlet.contest_data?.traits?.map(t => TRAIT_NAMES[t]);
 	gauntlet.prettyTraits = prettyTraits;
 
 	if (!prettyTraits) {

@@ -1,13 +1,12 @@
 import React from 'react';
 import { Header, Button, Popup, Message, Accordion, Form, Select, Input } from 'semantic-ui-react';
 
-//import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, ExportPreferences, FilteredGroup, Optimizer, ShowHideValue, SolveStatus, Solver, SolverNode, SolverTrait } from '../../model/boss';
+import { GlobalContext } from '../../context/globalcontext';
 
 import { UserContext, SolverContext } from './context';
 import { exportDefaults } from './fbbdefaults';
 import { isNodeOpen, suppressDuplicateTraits } from './fbbutils';
-import { DataContext } from '../../context/datacontext';
 
 const exportCompact = {
 	header: 'hide',
@@ -26,7 +25,8 @@ const exportCompact = {
 } as ExportPreferences;
 
 const exportNodeGroups = (node: SolverNode, nodeGroups: FilteredGroup[], traitData: SolverTrait[], exportPrefs: ExportPreferences) => {
-	const { translation: allTraits } = React.useContext(DataContext);
+	const globalContext = React.useContext(GlobalContext);
+	const { TRAIT_NAMES } = globalContext.localized;
 	const compareTraits = (a, b) => b.traits.length - a.traits.length;
 	const compareCrew = (a, b) => b.crewList.length - a.crewList.length;
 	const compareScore = (a, b) => b.score - a.score;
@@ -45,7 +45,7 @@ const exportNodeGroups = (node: SolverNode, nodeGroups: FilteredGroup[], traitDa
 
 	const sortedTraits = (traits: string[], alphaTest: string = '') => {
 		const traitNameInstance = (trait: string) => {
-			let name = allTraits.trait_names[trait];
+			let name = TRAIT_NAMES[trait];
 			if (prefValue(exportPrefs, 'duplicates') === 'number') {
 				const instances = traitData.filter(t => t.trait === trait);
 				if (instances.length > 1) {
@@ -119,9 +119,10 @@ const formatValue = (format: string, value: string) => {
 };
 
 const nodeTraits = (node: SolverNode): string => {
-	const { translation: allTraits } = React.useContext(DataContext);
+	const globalContext = React.useContext(GlobalContext);
+	const { TRAIT_NAMES } = globalContext.localized;
 	const traitName = (trait: string, index: number) => {
-		let name: string = allTraits.trait_names[trait];
+		let name: string = TRAIT_NAMES[trait];
 		if (node.solveStatus !== SolveStatus.Infallible && index >= node.givenTraitIds.length)
 			name = `[${name}]`;
 		return name;

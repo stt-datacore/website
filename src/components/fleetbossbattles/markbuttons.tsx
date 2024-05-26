@@ -6,10 +6,9 @@ import { getStyleByRarity, suppressDuplicateTraits } from './fbbutils';
 
 import ItemDisplay from '../itemdisplay';
 
-//import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, NodeMatch, NodeRarity, Optimizer, PossibleCombo, RarityStyle, SolveStatus, Solver, SolverNode, SolverTrait, TraitRarities } from '../../model/boss';
+import { GlobalContext } from '../../context/globalcontext';
 import { TinyShipSkill } from '../item_presenters/shipskill';
-import { DataContext } from '../../context/datacontext';
 
 interface ISolveOption {
 	key: number;
@@ -26,7 +25,8 @@ type MarkGroupProps = {
 };
 
 export const MarkGroup = (props: MarkGroupProps) => {
-	const { translation: allTraits } = React.useContext(DataContext);
+	const globalContext = React.useContext(GlobalContext);
+	const { TRAIT_NAMES } = globalContext.localized;
 	const { node, traits } = props;
 
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
@@ -86,7 +86,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 					<Header as='h4'>
 						{node.traitsKnown.map((trait, traitIndex) => (
 							<span key={traitIndex}>
-								{traitIndex > 0 ? ' + ': ''}{allTraits.trait_names[trait]}
+								{traitIndex > 0 ? ' + ': ''}{TRAIT_NAMES[trait]}
 							</span>
 						)).reduce((prev, curr) => <>{prev} {curr}</>, <></>)}
 					</Header>
@@ -115,7 +115,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 
 	return (
 		<React.Fragment>
-			{(traits.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map(trait => (
+			{(traits.sort((a, b) => TRAIT_NAMES[a].localeCompare(TRAIT_NAMES[b])).map(trait => (
 				<SolveButton key={trait} node={node}
 					traits={[trait]} rarity={traitRarity[trait]} onehand={false}
 					traitData={props.solver.traits} solveNode={handleSingleTrait}
@@ -262,7 +262,8 @@ type SolvePickerProps = {
 };
 
 const SolvePicker = (props: SolvePickerProps) => {
-	const { translation: allTraits } = React.useContext(DataContext);
+	const globalContext = React.useContext(GlobalContext);
+	const { TRAIT_NAMES } = globalContext.localized;
 	const { crew, setModalIsOpen } = props;
 
 	const nodeMatches = Object.values(crew.node_matches);
@@ -320,7 +321,7 @@ const SolvePicker = (props: SolvePickerProps) => {
 							<Header as='h4' style={{ marginBottom: '0' }}>
 								{node.traitsKnown.map((trait, traitIndex) => (
 									<span key={traitIndex}>
-										{traitIndex > 0 ? ' + ': ''}{allTraits.trait_names[trait]}
+										{traitIndex > 0 ? ' + ': ''}{TRAIT_NAMES[trait]}
 									</span>
 								)).reduce((prev, curr) => <>{prev} {curr}</>, <></>)}
 							</Header>

@@ -58,14 +58,14 @@ type CrewTraitFilterProps = {
 export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 	const [traitOptions, setTraitOptions] = React.useState<TraitOptions[] | undefined>(undefined);
 	const globalContext = React.useContext(GlobalContext);
-	const allTraits = globalContext.core.translation;
-	
+	const { TRAIT_NAMES } = globalContext.localized;
+
 	React.useEffect(() => {
-		const options = Object.keys(allTraits.trait_names).map(trait => {
+		const options = Object.keys(TRAIT_NAMES).map(trait => {
 			return {
 				key: trait,
 				value: trait,
-				text: allTraits.trait_names[trait]
+				text: TRAIT_NAMES[trait]
 			} as TraitOptions;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 		setTraitOptions([...options]);
@@ -233,14 +233,14 @@ export const OwnedLabel = (props: { crew: IRosterCrew, statsPopup?: boolean }) =
 	}
 
 	return (
-		<>{statsPopup && 
+		<>{statsPopup &&
 		<Popup trigger={
 			<Label style={{ whiteSpace: 'nowrap' }}>
 				Owned <Rating icon='star' rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size='small' disabled />
 				{/* <img title={"You own " + crew.name} style={{height:'12px', margin: "5px 4px 0px 4px" }} src='/media/vault.png'/>Yoyoyo */}
 			</Label>
-			} 
-			content={<Skills playerLevels={true} compact crew={crew} rarity={crew.rarity} />} 
+			}
+			content={<Skills playerLevels={true} compact crew={crew} rarity={crew.rarity} />}
 		/> ||
 		<Label style={{ whiteSpace: 'nowrap' }}>
 				Owned <Rating icon='star' rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size='small' disabled />

@@ -42,7 +42,7 @@ const isWindow = typeof window !== 'undefined';
 // 	medicine_skill: 'MED'
 // };
 
-const GauntletsPage = () => {	
+const GauntletsPage = () => {
 	return (
 		<DataPageLayout playerPromptType='recommend' demands={['gauntlets', 'all_buffs', 'crew', 'items']}>
 			<GauntletsPageComponent />
@@ -67,7 +67,7 @@ export interface FilterProps {
 	skillPairs?: string[];
 }
 
-export interface GauntletsPageState {	
+export interface GauntletsPageState {
 	liveGauntletRoot?: GauntletRoot;
 
 	gauntlets: Gauntlet[];
@@ -134,13 +134,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	constructor(props: GauntletsPageProps) {
 		super(props);
-		
+
 		const vmodes = [] as GauntletViewMode[];
 		const rmax = [] as number[];
 		const tops = [] as number[];
 		const fprops =[] as FilterProps[];
 		const skeys = [] as string[];
-		const sdir = [] as SortDirection[]; 
+		const sdir = [] as SortDirection[];
 		const aptabs = [] as (PlayerCrew | CrewMember)[][];
 		const dpairs = [] as string[][];
 		const rbpair = [] as string[];
@@ -150,7 +150,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		for (let i = 0; i < GauntletTabCount; i++) {
 			vmodes.push(this.tiny.getValue<GauntletViewMode>('viewMode_' + i, 'pair_cards') ?? 'pair_cards')
 			rmax.push(this.tiny.getValue('gauntletRangeMax_' + i, 100) ?? 100);
-			tops.push(this.tiny.getValue('gauntletTops_' + i, 100) ?? 100);			
+			tops.push(this.tiny.getValue('gauntletTops_' + i, 100) ?? 100);
 			fprops.push(this.tiny.getValue('gauntletFilter_' + i, DEFAULT_FILTER_PROPS) ?? DEFAULT_FILTER_PROPS);
 			tf.push(this.tiny.getValue('textFilter_' + i, '') ?? '');
 
@@ -187,7 +187,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			gauntlets: [],
 			browsingGauntlet: undefined,
 			uniques: [],
-			filterProps: fprops,			
+			filterProps: fprops,
 			activeTabIndex: activeTabIndex,
 			hideOpponents: this.tiny.getValue<boolean>('hideOpponents', false),
 			gauntletSettings: settings,
@@ -315,10 +315,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			vm[index] = max;
 			this.tiny.setValue('gauntletRangeMax_' + index, max, true);
 			this.inited = false;
-			this.setState({ ...this.state, loading: true });		
+			this.setState({ ...this.state, loading: true });
 			window.setTimeout(() => {
 				this.setState({ ... this.state, ranges: vm });
-			});		
+			});
 		}
 	}
 
@@ -334,7 +334,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			this.setState({ ... this.state, loading: true });
 			window.setTimeout(() => {
 				this.setState({ ... this.state, tops: vm, loading: false });
-			});			
+			});
 		}
 	}
 
@@ -349,7 +349,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	protected setHideOpponents(value: boolean) {
 		this.tiny.setValue('hideOpponents', value, true);
-		this.setState({ ...this.state, loading: true });		
+		this.setState({ ...this.state, loading: true });
 		this.inited = false;
 		window.setTimeout(() => {
 			this.setState({...this.state, hideOpponents: value });
@@ -374,7 +374,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			}
 			window.setTimeout(() => {
 				this.setState({ ... this.state, viewModes: vm, loading: false });
-			});			
+			});
 		}
 	}
 
@@ -397,14 +397,14 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		window.setTimeout(() => {
 			this.setState({...this.state, activeTabIndex: value, loading: false });
 		});
-		
+
 	}
 
 	protected getActiveTabIndex = () => {
 		return this.state.activeTabIndex;
 	}
 
-	componentDidMount() {		
+	componentDidMount() {
 		this.initData();
 	}
 
@@ -422,7 +422,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
                 for (let key of bi) {
                     delete this.bonusInfo[key];
                 }
-            }            
+            }
 		}
 		setTimeout(() => this.initData());
 	}
@@ -441,10 +441,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	readonly getGauntletCrew = (
-		gauntlet: Gauntlet, 
-		rankByPair?: string, 
-		range_max?: number, 
-		filter?: FilterProps, 
+		gauntlet: Gauntlet,
+		rankByPair?: string,
+		range_max?: number,
+		filter?: FilterProps,
 		textFilter?: string) => {
 
 		const availmodes = ['none'] as PlayerBuffMode[];
@@ -452,7 +452,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		if (this.context.player.buffConfig) {
 			availmodes.push('player');
 			availmodes.push('quipment');
-		} 
+		}
 
 		if (this.context.core.all_buffs) {
 			availmodes.push('max');
@@ -475,10 +475,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	initData() {
-		const { crew: allCrew, gauntlets: gauntsin, translation: allTraits } = this.context.core;
+		const { crew: allCrew, gauntlets: gauntsin } = this.context.core;
+		const { TRAIT_NAMES } = this.context.localized;
 		const { playerData } = this.context.player;
 		const { textFilter } = this.state;
-        
+
 		if (!(allCrew?.length) || !(gauntsin?.length)) return;
 		if (gauntsin.length && this.inited) return;
 
@@ -522,8 +523,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}] as Gauntlet[];
 
 		uniques = uniques.concat(pass2.sort((a, b) => {
-			let astr = `${a.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${skillToShort(a.contest_data?.featured_skill ?? "")}`;
-			let bstr = `${b.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${skillToShort(b.contest_data?.featured_skill ?? "")}`;
+			let astr = `${a.contest_data?.traits.map(t => TRAIT_NAMES[t]).join("/")}/${skillToShort(a.contest_data?.featured_skill ?? "")}`;
+			let bstr = `${b.contest_data?.traits.map(t => TRAIT_NAMES[t]).join("/")}/${skillToShort(b.contest_data?.featured_skill ?? "")}`;
 			return astr.localeCompare(bstr);
 		}) as Gauntlet[]);
 
@@ -569,12 +570,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			this.inited = true;
 
 			let actIdx = this.state.activeTabIndex;
-			
+
 			if (!hasPlayer) {
 				this.tiny.removeValue('liveGauntlet');
 				if (actIdx === 4) actIdx = 0;
 			}
-		
+
 			this.setState({
 				... this.state,
 				activeTabIndex: actIdx,
@@ -613,9 +614,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		this.setState({ ...this.state, loading: true });
 		window.setTimeout(() => {
 			this.setState({... this.state, filterProps: newOwned });
-		});	
+		});
 	}
-	
+
 	private readonly setOwnedStatus = (status: OwnedStatus, idx: number) => {
 		const newOwned = [ ... this.state.filterProps ];
 		newOwned[idx] = { ... newOwned[idx], ownedStatus: status };
@@ -624,7 +625,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		this.setState({ ...this.state, loading: true });
 		window.setTimeout(() => {
 			this.setState({... this.state, filterProps: newOwned });
-		});	
+		});
 	}
 
 	private readonly setMaxResults = (max: number, idx: number) => {
@@ -634,7 +635,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		this.setState({... this.state, loading: true });
 		window.setTimeout(() => {
 			this.setState({... this.state, filterProps: newOwned, loading: false });
-		});	
+		});
 	}
 
 	private readonly setTextFilter = (value: string, idx: number) => {
@@ -755,13 +756,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	renderTable(gauntlet: Gauntlet, data: (PlayerCrew | CrewMember)[], idx: number) {
-		
+
         if (!data) return <></>;
 
 		const { textFilter, filterProps } = this.state;
 		const filter = filterProps[idx];
-		
-		return <GauntletCrewTable 
+
+		return <GauntletCrewTable
             pageId={`gauntletPage_${idx}`}
             mode={idx === 4 ? 'live' : 'normal'}
 			gauntlets={idx === 3 && this.state.browsingGauntlet?.state === 'POWER' ? this.context.core.gauntlets : undefined}
@@ -774,13 +775,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
             setRankByPair={(value) => this.setState({...this.state, rankByPair: value})}
             />
 
-	}	
+	}
 
 	renderGauntlet(gauntletIn: Gauntlet | undefined, idx: number) {
 
 		const { loading, onlyActiveRound, activePageTabs, activePageIndexTab, totalPagesTab, viewModes, rankByPair, tops, filterProps } = this.state;
 		const { maxBuffs, buffConfig } = this.context.player;
-		const { translation: allTraits} = this.context.core;
+		const { TRAIT_NAMES } = this.context.localized;
 		const hasPlayer = !!(this.context.player.playerData?.player?.character?.crew?.length ?? 0);
 
 		const availBuffs = [] as { key: string | number, value: string | number, text: string, content?: JSX.Element }[];
@@ -791,7 +792,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const featuredCrew = this.context.core.crew.find((crew) => crew.symbol === gauntletIn?.jackpot_crew);
 		let jp = [] as CrewMember[];
-		
+
 		if (idx === 3) {
 			jp = this.context.core.crew.filter((crew) => {
 				return crew.traits_hidden.includes("exclusive_gauntlet");
@@ -807,7 +808,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const jackpots = jp;
 		//const oppocrew = (gauntletIn?.opponents?.map(o => o.crew_contest_data.crew ?? [])?.flat() ?? []);
-		
+
 		const filterOptions = hasPlayer ? [
 			{ key: 'any', value: 'any', text: 'All Crew' },
 			{ key: 'maxall', value: 'maxall', text: 'All Crew as Maxed' },
@@ -829,7 +830,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			{ key: 'nonportal', value: 'nonportal', text: 'Non-Portal Crew' },
 		];
 
-		
+
 
 		const skills = CONFIG.SKILLS_SHORT.map(s => s.short).sort();
 		const skillFilters = [] as DropdownItemProps[];
@@ -885,7 +886,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const gauntlet = gauntletIn;
 
-		const prettyTraits = gauntlet.state === "POWER" ? ["Raw Power Score"] : gauntlet.contest_data?.traits?.map(t => allTraits.trait_names[t]);
+		const prettyTraits = gauntlet.state === "POWER" ? ["Raw Power Score"] : gauntlet.contest_data?.traits?.map(t => TRAIT_NAMES[t]);
 
 		const pairs = discoverPairs(gauntlet.searchCrew ?? [])
 			.map((pair) => {
@@ -979,15 +980,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							style={{margin: "1em 0em"}}
 							defaultActiveIndex={-1}
 							panels={[{
-								index: 0, 
+								index: 0,
 								key: 0,
 								title: "Browse Gauntlet Exclusive Crew (Click Here)",
 								content: {
 									content: <>
 									<div style={{
 										display: "flex",
-										flexDirection:"row",			
-										flexWrap: "wrap",							
+										flexDirection:"row",
+										flexWrap: "wrap",
 										justifyContent: "flex-start",
 										alignItems: "left"
 									}}>
@@ -1052,16 +1053,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									style={{margin: "1em 0em"}}
 									defaultActiveIndex={-1}
 									panels={[{
-										index: 0, 
+										index: 0,
 										key: 0,
 										title: `Bracket Id: ${gauntlet.bracket_id}`,
 										content: {
 											content: <>
 											<div style={{
 												display: "flex",
-												flexDirection:"row",			
-												flexWrap: "wrap",							
-												justifyContent: "space-between",										
+												flexDirection:"row",
+												flexWrap: "wrap",
+												justifyContent: "space-between",
 											}}>
 												{jackpots.sort((a, b) => a.name.localeCompare(b.name))
 												.map((jcrew) => {
@@ -1100,7 +1101,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 										}
 									}]}
 								/>}
-								
+
 						</div>
 
 						<div style={{
@@ -1126,7 +1127,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 									onChange={(e, { value }) => this.setRangeMax(idx, value as number)} />
 								</div>
 							</div>
-							
+
 						</div>
 
 					</div>
@@ -1137,9 +1138,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					}}>
 						<h2 style={{ fontSize: "2em", margin: "0.25em 0" }}>
 
-							{gauntlet.state !== "POWER" && (gauntlet.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/") + "/" + skillToShort(gauntlet.contest_data?.featured_skill ?? ""))}
+							{gauntlet.state !== "POWER" && (gauntlet.contest_data?.traits.map(t => TRAIT_NAMES[t]).join("/") + "/" + skillToShort(gauntlet.contest_data?.featured_skill ?? ""))}
 							{gauntlet.state === "POWER" && "Raw Power Scores"}
-							
+
 						</h2>
 
 						<div style={{
@@ -1163,7 +1164,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						</div>
 					</div>
 				</div>
-					
+
 				<div style={{margin: "0.75em 0", fontSize: "10pt"}}>
 					<i><b>Note:</b> If owned crew are detected, then their current level in your roster may be used to compute their rank, depending on filter settings.</i>
 				</div>
@@ -1179,7 +1180,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row",
 						justifyContent: "flex-start"
 					}}>
-						{viewModes[idx] === 'pair_cards' && 
+						{viewModes[idx] === 'pair_cards' &&
 						<div style={{
 							display: "flex",
 							flexDirection: "column",
@@ -1196,7 +1197,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								onChange={(e, { value }) => this.setTops(idx, value as number)}
 							/>
 						</div>}
-						{viewModes[idx] === 'pair_cards' && 
+						{viewModes[idx] === 'pair_cards' &&
 						<div style={{
 							display: "flex",
 							flexDirection: "column",
@@ -1228,7 +1229,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							/>
 						</div>
 
-						
+
 						<div style={{
 							display: "flex",
 							flexDirection: "column",
@@ -1256,7 +1257,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							<div style={{marginLeft: "-1em", marginTop: "-0.5em"}}>
 								<Dropdown
 									title={"Filter by skills or pairs"}
-									placeholder="Skills & Pairs"										
+									placeholder="Skills & Pairs"
 									clearable
 									compact
 									inline
@@ -1319,7 +1320,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				</div>}
 
 				{loading && <div style={{height:"50vh", display: "flex", flexDirection: "row", justifyContent: "center", alignItems:"center"}}><div className='ui medium centered text active inline loader'>Calculating ...</div></div>}
-				
+
 				{(!loading) && (<div>
 
 					{viewModes[idx] !== 'table' && viewModes[idx] !== 'pair_cards' && <div style={{ margin: "1em 0", width: "100%" }}>
@@ -1339,7 +1340,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 					</div>
 					<Pagination fluid totalPages={totalPagesTab[idx]} activePage={activePageIndexTab[idx]} onPageChange={(e, data) => this.setActivePageTab(e, data, idx)} />
 					</div>}
-			
+
 					{viewModes[idx] === 'big' &&
 					<div style={{
 						display: "flex",
@@ -1369,7 +1370,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							</div>
 						))}
 					</div>}
-					
+
 					{viewModes[idx] === 'small' &&
 						<div style={{
 							display: "flex",
@@ -1435,9 +1436,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						</div>}
 
 					</div>)}
-					
+
 				</div>
-	
+
 				<br />
 			</div>
 		)
@@ -1446,7 +1447,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	renderBrowsableGauntletPage(browsing?: boolean, searching?: boolean) {
 		const { activePrevGauntlet, browsingGauntlet, gauntlets, uniques } = this.state;
-		const { translation: allTraits } = this.context.core;
+		const { TRAIT_NAMES } = this.context.localized;
 		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
 		const foreColor = theme === 'dark' ? 'white' : 'black';
 
@@ -1457,10 +1458,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				text = 'Raw Power Scores'
 			}
 			else if (browsing) {
-				text = `${g.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${skillToShort(g.contest_data?.featured_skill ?? "")}`;
+				text = `${g.contest_data?.traits.map(t => TRAIT_NAMES[t]).join("/")}/${skillToShort(g.contest_data?.featured_skill ?? "")}`;
 			}
 			else {
-				text = moment(g.date).utc(false).format('dddd, D MMMM YYYY') + ` (${g.contest_data?.traits.map(t => allTraits.trait_names[t]).join("/")}/${skillToShort(g.contest_data?.featured_skill ?? "")})`;
+				text = moment(g.date).utc(false).format('dddd, D MMMM YYYY') + ` (${g.contest_data?.traits.map(t => TRAIT_NAMES[t]).join("/")}/${skillToShort(g.contest_data?.featured_skill ?? "")})`;
 			}
 
 			return {
@@ -1530,10 +1531,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				this.inited = false;
 				this.tiny.setValue('liveGauntlet', '', false);
 				this.tiny.setValue('activeTabIndex', 0);
-				this.setState({ ... this.state, liveGauntlet: null, activeTabIndex: 0 });	
+				this.setState({ ... this.state, liveGauntlet: null, activeTabIndex: 0 });
 				return;
 			}
-			
+
 			const dts = gauntlet.bracket_id?.split("_");
 
 			if (dts !== undefined) {
@@ -1548,9 +1549,9 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 			this.inited = false;
 			// TODO: Dormant Code to merge previous rounds!
-			// 
+			//
 			// let json = this.tiny.getValue<string>('liveGauntlet');
-			
+
 			// const prevGauntlet = json ? JSON.parse(json) as Gauntlet : {} as Gauntlet;
 			// const curroppos = [ ... gauntlet.opponents ?? [] ];
 			// const prevoppos = [ ... prevGauntlet?.opponents ?? [] ];
@@ -1575,14 +1576,14 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			// 		prevoppos.push(oppo);
 			// 	}
 			// }
-			
+
 			// gauntlet.opponents = prevoppos;
 
 			//this.tiny.setValue('liveGauntlet', JSON.stringify(gauntlet), false);
 			this.tiny.setValue('liveGauntlet', gauntlet, false);
 			this.tiny.setValue('activeTabIndex', 4);
 
-			this.setState({ ... this.state, liveGauntlet: gauntlet, liveGauntletRoot: live, activeTabIndex: 4 });			
+			this.setState({ ... this.state, liveGauntlet: gauntlet, liveGauntletRoot: live, activeTabIndex: 4 });
 		}
 		catch {
 			this.tiny.setValue('activeTabIndex', 0);
@@ -1637,14 +1638,14 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		}
 
 		if (typeof window !== 'undefined' && hasPlayer) {
-			window["gauntletDataSetter"] = (value: string) => {				
+			window["gauntletDataSetter"] = (value: string) => {
 				this.parseGauntlet(JSON.parse(value));
 			}
 		}
 
 		return (
 			<>
-			{hasPlayer && 
+			{hasPlayer &&
 					<GauntletImportComponent
 						setGauntlet={(g) => this.parseGauntlet(g)}
 						clearGauntlet={() => this.clearGauntlet()}
@@ -1656,18 +1657,18 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						{tabPanes.map((pane, idx) => {
 							return (
 								<Step active={(activeTabIndex ?? 0) === idx} onClick={() => this.setActiveTabIndex(idx)}>
-									
+
 									<Step.Content>
 										<Step.Title>{pane.menuItem}</Step.Title>
 										<Step.Description>{pane.description}</Step.Description>
 									</Step.Content>
 								</Step>
 							)
-						})}						
+						})}
 					</Step.Group>
 					{tabPanes[activeTabIndex ?? 0].render()}
 
-					<GauntletSettingsPopup 
+					<GauntletSettingsPopup
 						isOpen={this.state.settingsOpen}
 						setIsOpen={this.setSettingsOpen}
 						config={{
