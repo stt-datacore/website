@@ -1,3 +1,5 @@
+import { SupportedLanguage } from "../context/localizedcontext";
+
 export interface Rarity {
 	name: string;
 	color: string;
@@ -246,7 +248,7 @@ export default class CONFIG {
 		'original'
 	];
 	
-	static setLanguage(l: string) {
+	static setLanguage(l: SupportedLanguage) {
 		
 		// ENGLISH
 		if (l === 'en') {			

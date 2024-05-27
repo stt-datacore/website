@@ -55,8 +55,11 @@ export interface CrewMember extends QuipmentScores {
     id?: number;
     symbol: string;
     name: string;
+    name_english?: string;
     short_name: string;
+    short_name_english?: string;
     flavor: string;
+    flavor_english?: string;
     archetype_id: number;
     max_rarity: number;
     equipment_slots: EquipmentSlot[];
@@ -73,7 +76,7 @@ export interface CrewMember extends QuipmentScores {
     imageUrlPortrait: string;
     imageUrlFullBody: string;
     series?: string;
-    traits_named: string[];
+    traits_named: string[];    
     collections: string[];
     nicknames: Nickname[];
     cab_ov: string;

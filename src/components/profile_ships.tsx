@@ -169,6 +169,8 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		this.setState({ ...this.state, textFilter: filter });
 	}
 	render() {
+		const { localized } = this.context;
+		const trait_names = localized.SHIP_TRAIT_NAMES;
 		const { textFilter, grantFilter, traitFilter, abilityFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
 		
 		const dataContext = this.context;
@@ -324,7 +326,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 									<div style={{ gridArea: 'stats', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
 										<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{ship.name}</span>
 									</div>
-									<div style={{ gridArea: 'description' }}>{ship.traits_named?.join(', ')}</div>
+									<div style={{ gridArea: 'description' }}>{ship.traits?.map(trait => trait_names[trait]).join(', ')}</div>
 								</div>
 							</Table.Cell>
 							<Table.Cell>{ship.antimatter}</Table.Cell>
