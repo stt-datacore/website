@@ -6,7 +6,7 @@ import { PlayerContext } from './playercontext';
 
 import { useStateWithStorage } from '../utils/storage';
 import CONFIG from '../components/CONFIG';
-import { DataContext, ICoreContext, ICoreData } from './datacontext';
+import { DataContext, ICoreContext } from './datacontext';
 import { CrewMember } from '../model/crew';
 import { EquipmentItem } from '../model/equipment';
 import { Schematics, Ship } from '../model/ship';
@@ -292,6 +292,8 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			return items.map((item) => {
 				item = { ... item };
 				let arch = translation.ITEM_ARCHETYPES[item.symbol];
+				let oldName = item.name;
+				if (!item.name_english) item.name_english = oldName;
 				if (arch) {
 					item.name = arch.name;
 					item.flavor = arch.flavor;

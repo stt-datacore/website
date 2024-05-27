@@ -209,7 +209,7 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus:
 		words.forEach(trait => {
 			// Search for exact name first
 			const testName = trait.trim();
-			const perfectName = allCrew.find(crew => crew.name === testName);
+			const perfectName = allCrew.find(crew => (crew.name_english ?? crew.name) === testName);
 			if (perfectName) {
 				featured.push(perfectName.symbol);
 				if (!bonus.includes(perfectName.symbol))

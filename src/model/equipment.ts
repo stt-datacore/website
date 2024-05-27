@@ -33,6 +33,7 @@ export interface EquipmentCommon extends PlayerEquipmentItem {
   symbol: string
   type: number
   name: string
+  name_english?: string;
   flavor: string
   flavorContext?: JSX.Element;
   rarity: number
@@ -56,6 +57,7 @@ export interface EquipmentItem extends EquipmentCommon {
   symbol: string
   type: number
   name: string
+  name_english?: string;
   flavor: string
   flavorContext?: JSX.Element;
   rarity: number
