@@ -11,6 +11,7 @@ import { CrewMember } from '../model/crew';
 import { EquipmentItem } from '../model/equipment';
 import { Schematics, Ship } from '../model/ship';
 import { Collection } from '../model/game-elements';
+import { mergeShips } from '../utils/shiputils';
 
 interface LocalizedProviderProps {
 	children?: JSX.Element;
@@ -135,16 +136,23 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		setPreferredLanguage
 	};
 
+	if (translated && Object.keys(translated)?.length && player.playerData) {
+		player.playerData.player.character.crew = postProcessCrewTranslations(player.playerData.player.character.crew, gameStrings)!
+		player.playerShips = mergeShips(translated.ship_schematics!, player.playerData.player.character.ships);
+	}
+
 	const newCoreData: ICoreContext = {
 		...coreData,
 		...translated
 	};
 
-	return (
+	return (		
 		<DataContext.Provider value={newCoreData}>
-			<LocalizedContext.Provider value={localizedData}>		
-				{children}
-			</LocalizedContext.Provider>
+			<PlayerContext.Provider value={player}>
+				<LocalizedContext.Provider value={localizedData}>		
+					{children}
+				</LocalizedContext.Provider>
+			</PlayerContext.Provider>
 		</DataContext.Provider>
 	);
 
@@ -258,7 +266,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		}
 	}
 
-	function postProcessCrewTranslations(crew: CrewMember[], translation: IGameStrings): CrewMember[] | undefined {
+	function postProcessCrewTranslations<T extends CrewMember>(crew: T[], translation: IGameStrings): T[] | undefined {
 		if (crew.length && translation.CREW_ARCHETYPES) {
 			return crew.map((crew) => {
 				crew = { ... crew };
