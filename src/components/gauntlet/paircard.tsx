@@ -17,7 +17,7 @@ export interface PairCardProps {
 }
 
 export const formatPair = (pair: Skill[], style?: React.CSSProperties, debuff?: boolean, disabled?: boolean): JSX.Element => {
-    if (!pair[0].skill) return <></>
+    if (!pair?.length || !pair[0]?.skill) return <></>
 
     const disabledOpacity = 0.5;
 
@@ -80,7 +80,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
     const context = React.useContext(GlobalContext);
     const { crew, pair, gauntlet, boostMode, onlyActiveRound } = props;
 
-    const skills = pair.map(m => shortToSkill(m));
+    const skills = pair.map(m => shortToSkill(m, true));
     const crewpair = [] as Skill[];
     const prettyTraits = gauntlet.prettyTraits;
     const crit = ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5);

@@ -676,7 +676,7 @@ export function updatePairScore(crew: PlayerCrew, pairScore: GauntletPairScore) 
 
 export function getCrewPairScore(crew: PlayerCrew, pair: string) {
 	pair = (pair.startsWith("G_") ? pair.slice(2) : pair).replace("/", "_");
-	let vp = pair.split("_").map(pp => (shortToSkill(pp))).sort();
+	let vp = pair.split("_").map(pp => (shortToSkill(pp, true))).sort();
 	for (let cp of crew.pairScores ?? []) {
 		let skills2 = cp.pair.map(p => p.skill ?? "").sort();
 		if (skills2.join() === vp.join()) {
@@ -688,7 +688,7 @@ export function getCrewPairScore(crew: PlayerCrew, pair: string) {
 
 export function getPairScore(scores: GauntletPairScore[], pair: string) {
 	pair = (pair.startsWith("G_") ? pair.slice(2) : pair).replace("/", "_");
-	let vp = pair.split("_").map(pp => (shortToSkill(pp))).sort();
+	let vp = pair.split("_").map(pp => (shortToSkill(pp, true))).sort();
 	for (let cp of scores ?? []) {
 		let skills2 = cp.pair.map(p => p.skill ?? "").sort();
 		if (skills2.join() === vp.join()) {
@@ -699,15 +699,15 @@ export function getPairScore(scores: GauntletPairScore[], pair: string) {
 }
 
 
-export function shortToSkill(rank: string): PlayerSkill | undefined {
-	let f = CONFIG.SKILLS_SHORT.find(f => f.short === rank);
+export function shortToSkill(rank: string, english?: boolean): PlayerSkill | undefined {
+	let f = english ? CONFIG.SKILLS_SHORT_ENGLISH.find(f => f.short === rank) : CONFIG.SKILLS_SHORT.find(f => f.short === rank);
 	if (f) return f.name as PlayerSkill;
 	return undefined;
 }
 
-export function skillToShort(skill: PlayerSkill | string): string | undefined {
+export function skillToShort(skill: PlayerSkill | string, english?: boolean): string | undefined {
 	if (!skill) return "";
-	let f = CONFIG.SKILLS_SHORT.find(f => f.name === skill);
+	let f = english ? CONFIG.SKILLS_SHORT_ENGLISH.find(f => f.name === skill) :  CONFIG.SKILLS_SHORT.find(f => f.name === skill);
 	if (f) return f.short;
 }
 

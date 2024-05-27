@@ -51,6 +51,15 @@ export default class CONFIG {
 		{ name: 'medicine_skill', short: 'MED' }
 	];
 
+	static readonly SKILLS_SHORT_ENGLISH = [
+		{ name: 'command_skill', short: 'CMD' },
+		{ name: 'science_skill', short: 'SCI' },
+		{ name: 'security_skill', short: 'SEC' },
+		{ name: 'engineering_skill', short: 'ENG' },
+		{ name: 'diplomacy_skill', short: 'DIP' },
+		{ name: 'medicine_skill', short: 'MED' }
+	];
+
 	static readonly REWARDS_ITEM_TYPE: { [index: number]: string } = {
 		0: 'None',
 		1: 'Crew',

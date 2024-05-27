@@ -149,7 +149,7 @@ export function discoverPairs(crew: (PlayerCrew | CrewMember)[], featuredSkill?:
 export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gauntlet, settings: GauntletSettings, hideOpponents?: boolean, onlyActiveRound?: boolean, featuredSkill?: string, top?: number, maxResults?: number) {
 	featuredSkill ??= gauntlet.contest_data?.featured_skill;
 	const pairs = discoverPairs(crew, featuredSkill);
-	const featRank = skillToShort(featuredSkill ?? "") ?? "";
+	const featRank = skillToShort(featuredSkill ?? "", true) ?? "";
 	const ptop = top;
 	const pairGroups = [] as PairGroup[];
 	const currSkills = [gauntlet.contest_data?.primary_skill ?? "", gauntlet.contest_data?.secondary_skill ?? ""].sort().join();
@@ -163,10 +163,10 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 
 		const px = pairGroups.length;
 
-		let srank = rpairs.map(p => shortToSkill(p) as string).sort();
+		let srank = rpairs.map(p => shortToSkill(p, true) as string).sort();
 		let pjoin = srank.join();
 
-		const hapres = rpairs.map(z => shortToSkill(z)).sort().join();
+		const hapres = rpairs.map(z => shortToSkill(z, true)).sort().join();
 
 		pairGroups.push({
 			pair: rpairs,
@@ -271,7 +271,7 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 			gauntlet.pairMin ??= [];
 
 			pairGroups[px].crew.forEach((c) => {
-				let tstr = rpairs.map(z => shortToSkill(z));
+				let tstr = rpairs.map(z => shortToSkill(z, true));
 				let gp = gauntlet.pairMin?.find(fo => fo.pair.map(foz => foz.skill).sort().join("_") === tstr.sort().join("_"));
 				let ps = getCrewPairScore(c, rank);
 				if (!ps) return;
@@ -315,8 +315,8 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 	}
 	pairGroups.sort((a, b) => {
 
-		const apair = a.pair.map(z => shortToSkill(z)).sort().join();
-		const bpair = b.pair.map(z => shortToSkill(z)).sort().join();
+		const apair = a.pair.map(z => shortToSkill(z, true)).sort().join();
+		const bpair = b.pair.map(z => shortToSkill(z, true)).sort().join();
 
 		if (apair !== bpair) {
 			if (apair === currSkills) return -1;
@@ -709,15 +709,15 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 				incidence[pgcrew.symbol] ??= 0;
 				avgidx[pgcrew.symbol] ??= 0;
 
-				if (pg.pair.some(p => shortToSkill(p) === fsk) && pc === 0) {
+				if (pg.pair.some(p => shortToSkill(p, true) === fsk) && pc === 0) {
 					incidence[pgcrew.symbol] += settings.linearSkillIncidenceWeightPrimary;
 					avgidx[pgcrew.symbol] += (idx * settings.linearSkillIndexWeightPrimary);
 				}
-				else if (pg.pair.some(p => shortToSkill(p) === fsk) && pc === 1) {
+				else if (pg.pair.some(p => shortToSkill(p, true) === fsk) && pc === 1) {
 					incidence[pgcrew.symbol] += settings.linearSkillIncidenceWeightSecondary;
 					avgidx[pgcrew.symbol] += (idx * settings.linearSkillIndexWeightSecondary);
 				}
-				else if (pg.pair.some(p => shortToSkill(p) === fsk) && pc === 2) {
+				else if (pg.pair.some(p => shortToSkill(p, true) === fsk) && pc === 2) {
 					incidence[pgcrew.symbol] += settings.linearSkillIncidenceWeightTertiary;
 					avgidx[pgcrew.symbol] += (idx * settings.linearSkillIndexWeightTertiary);
 				}
