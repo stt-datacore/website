@@ -2,7 +2,6 @@ import React from 'react';
 import { Icon } from 'semantic-ui-react';
 
 import { Action, ItemTranslation, ShipTraitNames, TraitNames, TranslationSet } from '../model/traits';
-import { PlayerContext } from './playercontext';
 
 import { useStateWithStorage } from '../utils/storage';
 import CONFIG from '../components/CONFIG';
@@ -50,7 +49,9 @@ interface IGameStrings {
 
 export interface ILocalizedData extends IGameStrings {
 	language: SupportedLanguage;
+	playerLanguage: SupportedLanguage;
 	setPreferredLanguage: (value: SupportedLanguage) => void;
+	setPlayerLanguage: (value: SupportedLanguage) => void;
 };
 
 const defaultGameStrings: IGameStrings = {
@@ -64,8 +65,10 @@ const defaultGameStrings: IGameStrings = {
 
 export const DefaultLocalizedData: ILocalizedData = {
 	language: 'en',
+	playerLanguage: 'en',
 	...defaultGameStrings,
 	setPreferredLanguage: () => false,
+	setPlayerLanguage: () => false,
 };
 
 export const LocalizedContext = React.createContext(DefaultLocalizedData);
@@ -85,7 +88,7 @@ function getBrowserLanguage(): SupportedLanguage {
     }
 }
 
-interface TranslatedCore {
+export interface TranslatedCore {
 	crew?: CrewMember[];
 	ship_schematics?: Schematics[];
 	ships?: Ship[];
@@ -94,7 +97,8 @@ interface TranslatedCore {
 }
 
 export const LocalizedProvider = (props: LocalizedProviderProps) => {
-	const player = React.useContext(PlayerContext);
+	//const player = React.useContext(PlayerContext);
+	const [playerLanguage, setPlayerLanguage] = React.useState<SupportedLanguage>('en');
 	const coreData = React.useContext(DataContext);
 
 	const { children } = props;
@@ -121,10 +125,10 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	// Override preferred language with language set in-game (Or should preferred override in-game?)
 	React.useEffect(() => {
-		if (player.playerData?.player?.lang) {
-			setLanguage(player.playerData.player.lang as SupportedLanguage);
+		if (playerLanguage) {
+			setLanguage(playerLanguage);
 		}
-	}, [player]);
+	}, [playerLanguage]);
 
 	if (!language)
 		return <span><Icon loading name='spinner' /> Loading translations...</span>;
@@ -132,7 +136,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	const localizedData: ILocalizedData = {
 		...gameStrings,
 		language,
-		setPreferredLanguage
+		playerLanguage,
+		setPreferredLanguage,
+		setPlayerLanguage
 	};
 
 	const newCoreData: ICoreContext = {
