@@ -96,7 +96,6 @@ export interface GauntletsPageState {
 
 	viewModes: GauntletViewMode[];
 	lastPlayerDate?: Date;
-	lastPlayerLang?: string;
 
 	textFilter: string[];
 
@@ -410,7 +409,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	componentDidUpdate() {
-		if (this.state.lastPlayerDate !== this.context.player.playerData?.calc?.lastModified || this.state.lastPlayerLang !== this.context.player.playerData?.player.lang) {
+		if (this.state.lastPlayerDate !== this.context.player.playerData?.calc?.lastModified) {
 			this.inited = false;
             let cp = Object.keys(this.crewQuip);
             let bi = Object.keys(this.bonusInfo);
@@ -588,7 +587,6 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				today,
 				yesterday,
 				lastPlayerDate: this.context.player.playerData?.calc?.lastModified,
-				lastPlayerLang: this.context.player.playerData?.player.lang,
 				activePrevGauntlet,
 				uniques,
 				loading: false

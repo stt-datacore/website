@@ -16,13 +16,13 @@ export const wrapPageElement = ({ element }) => {
 export const wrapRootElement = ({ element }) => {
 	return (
 		<DataProvider>
-			<PlayerProvider>
-				<LocalizedProvider>
+			<LocalizedProvider>
+				<PlayerProvider>
 					<GlobalProvider>
 						{element}
 					</GlobalProvider>
-				</LocalizedProvider>
-			</PlayerProvider>
+				</PlayerProvider>
+			</LocalizedProvider>
 		</DataProvider>
 	);
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import { Icon } from 'semantic-ui-react';
 
 import { Action, ItemTranslation, ShipTraitNames, TraitNames, TranslationSet } from '../model/traits';
-import { PlayerContext } from './playercontext';
+import { PlayerContext, PlayerContextData } from './playercontext';
 
 import { useStateWithStorage } from '../utils/storage';
 import CONFIG from '../components/CONFIG';
@@ -47,10 +47,13 @@ interface IGameStrings {
 			flavor: string;
 		};
 	};
+	changeDetect?: number;
 };
 
 export interface ILocalizedData extends IGameStrings {
 	language: SupportedLanguage;
+	gameLanguage?: SupportedLanguage;
+	setGameLanguage: (value: SupportedLanguage | undefined) => void;
 	setPreferredLanguage: (value: SupportedLanguage) => void;
 };
 
@@ -65,8 +68,10 @@ const defaultGameStrings: IGameStrings = {
 
 export const DefaultLocalizedData: ILocalizedData = {
 	language: 'en',
+	gameLanguage: undefined,
 	...defaultGameStrings,
 	setPreferredLanguage: () => false,
+	setGameLanguage: () => false,
 };
 
 export const LocalizedContext = React.createContext(DefaultLocalizedData);
@@ -112,8 +117,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	const [language, setLanguage] = useStateWithStorage<SupportedLanguage | undefined>('localized/language', undefined);
 	const [gameStrings, setGameStrings] = useStateWithStorage<IGameStrings>('localized/gamestrings', defaultGameStrings);
-	const [translated, setTranslated] = React.useState<TranslatedCore>({});	
-	
+	const [translated, setTranslated] = React.useState<TranslatedCore>({});
+	const [gameLanguage, setGameLanguage] = React.useState<SupportedLanguage | undefined>();
+
 	// Fetch and process game translation/items files on language change
 	
 	React.useEffect(() => {
@@ -122,8 +128,8 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	// Override preferred language with language set in-game (Or should preferred override in-game?)
 	React.useEffect(() => {
-		if (player.playerData?.player?.lang) {
-			setLanguage(player.playerData.player.lang as SupportedLanguage);
+		if (gameLanguage) {
+			setLanguage(gameLanguage as SupportedLanguage);
 		}
 	}, [player]);
 
@@ -132,14 +138,11 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	const localizedData: ILocalizedData = {
 		...gameStrings,
+		gameLanguage,		
 		language,
-		setPreferredLanguage
+		setPreferredLanguage,
+		setGameLanguage
 	};
-
-	if (translated && Object.keys(translated)?.length && player.playerData) {
-		player.playerData.player.character.crew = postProcessCrewTranslations(player.playerData.player.character.crew, gameStrings)!
-		player.playerShips = mergeShips(translated.ship_schematics!, player.playerData.player.character.ships);
-	}
 
 	const newCoreData: ICoreContext = {
 		...coreData,
@@ -148,11 +151,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	return (		
 		<DataContext.Provider value={newCoreData}>
-			<PlayerContext.Provider value={player}>
-				<LocalizedContext.Provider value={localizedData}>		
-					{children}
-				</LocalizedContext.Provider>
-			</PlayerContext.Provider>
+			<LocalizedContext.Provider value={localizedData}>		
+				{children}
+			</LocalizedContext.Provider>
 		</DataContext.Provider>
 	);
 
@@ -238,8 +239,8 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			let newItems = postProcessItemTranslations(coreData.items, translatedGameStrings);
 			setTranslated({ crew: newCrew, ship_schematics: newSchematics, ships: newShips, collections: newCollections, items: newItems });
 		}
-
-		setGameStrings({...translatedGameStrings});
+		let changeDetect = (gameStrings.changeDetect ?? 0)+1;
+		setGameStrings({...translatedGameStrings, changeDetect });
 	}
 	
 	function postProcessCollectionTranslations(collections: Collection[], mapped_crew: CrewMember[], translation: IGameStrings): Collection[] | undefined {
