@@ -12,7 +12,6 @@ import { ShuttleAdventure } from '../model/shuttle';
 import { Archetype20, ArchetypeBase, Archetype17 } from '../model/archetype';
 import { getItemWithBonus } from '../utils/itemutils';
 import { TinyStore } from '../utils/tiny';
-import { LocalizedContext, SupportedLanguage } from './localizedcontext';
 
 export interface PlayerContextData {
 	loaded: boolean;
@@ -73,8 +72,6 @@ const tiny = TinyStore.getStore(`global_playerSettings`);
 export const PlayerProvider = (props: DataProviderProperties) => {
 
 	const coreData = React.useContext(DataContext);
-	const { playerLanguage, setPlayerLanguage } = React.useContext(LocalizedContext);
-	
 	const { crew, ship_schematics } = coreData;
 
 	const { children } = props;
@@ -105,15 +102,15 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	React.useEffect(() => {
 		if (!input || !ship_schematics.length || !crew.length/* || !Object.keys(translation).length */) return;
 
-		if (playerLanguage !== input.player.lang) {
-			if (input.player.lang === 'es') {
-				setPlayerLanguage('sp');
-			}
-			else {
-				setPlayerLanguage(input.player.lang as SupportedLanguage);
-			}
-			return;
-		}
+		// if (gameLanguage !== input.player.lang) {
+		// 	if (input.player.lang === 'es') {
+		// 		setGameLanguage('sp');
+		// 	}
+		// 	else {
+		// 		setGameLanguage(input.player.lang);
+		// 	}
+		// 	return;
+		// }
 
 		// ephemeral data (e.g. active crew, active shuttles, voyage data, and event data)
 		//	can be misleading when outdated, so keep a copy for the current session only
@@ -186,7 +183,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 		setSessionStates({...defaultSessionStates});
 		setLoaded(true);
-	}, [input, crew, ship_schematics, playerLanguage]);
+	}, [input, crew, ship_schematics/*, translation*/]);
 
 	const reset = (): void => {
 		setStripped(undefined);

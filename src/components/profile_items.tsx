@@ -111,18 +111,18 @@ type ProfileItemsState = {
 	ignoreLimit?: boolean;
 };
 
-export function printRequiredTraits(item: EquipmentCommon): JSX.Element {
+export function printRequiredTraits(item: EquipmentCommon, trait_names: { [key: string]: string }): JSX.Element {
 
 	if (item.kwipment) {
 		if (item.traits_requirement?.length) {
 			let req = item.traits_requirement.map(t => t === 'doctor' ? 'physician' : t);
 			if (item.traits_requirement_operator === "and") {
 				return <Link to={`/?search=trait:${req.reduce((p, n) => p ? `${p},${n}` : n)}&filter=Whole%20word`}>
-					{req.map(t => appelate(t)).join(` ${item.traits_requirement_operator} `)}
+					{req.map(t => trait_names[t]).join(` ${item.traits_requirement_operator} `)}
 				</Link>
 			}
 			else {
-				return <>{req.map(t => <Link to={`/?search=trait:${t}&filter=Whole%20word`}>{appelate(t)}</Link>).reduce((p, n) => p ? <>{p} {item.traits_requirement_operator} {n}</> : n)}</>
+				return <>{req.map(t => <Link to={`/?search=trait:${t}&filter=Whole%20word`}>{trait_names[t]}</Link>).reduce((p, n) => p ? <>{p} {item.traits_requirement_operator} {n}</> : n)}</>
 			}
 		}
 	}
@@ -737,6 +737,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			let found: CrewMember[] | null = null;
 
 			const bonus = getItemBonuses(item as EquipmentItem);
+			const traits = this.context.localized.TRAIT_NAMES;
 
 			found = crew.filter((f) => {
 				let mrq = item.max_rarity_requirement ?? f.max_rarity;
@@ -772,15 +773,15 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 								}}>
 									{CONFIG.RARITIES[item.max_rarity_requirement].name}
 								</span>
-								&nbsp;crew with the following traits: {printRequiredTraits(item)}
+								&nbsp;crew with the following traits: {printRequiredTraits(item, traits)}
 							</div>)
-							flavor += `Equippable by up to ${CONFIG.RARITIES[item.max_rarity_requirement].name} crew with the following traits: ${printRequiredTraits(item)}`;
+							flavor += `Equippable by up to ${CONFIG.RARITIES[item.max_rarity_requirement].name} crew with the following traits: ${printRequiredTraits(item, traits)}`;
 						}
 						else {
 							output.push(<>
-								Equippable by crew with the following traits:&nbsp;{printRequiredTraits(item)}
+								Equippable by crew with the following traits:&nbsp;{printRequiredTraits(item, traits)}
 							</>)
-							flavor += `Equippable by crew with the following traits: ${printRequiredTraits(item)}`;
+							flavor += `Equippable by crew with the following traits: ${printRequiredTraits(item, traits)}`;
 						}
 					}
 					else if (item.max_rarity_requirement) {
@@ -864,7 +865,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 				return {
 					key: trait,
 					value: trait,
-					text: appelate(trait)
+					text: this.context.localized.TRAIT_NAMES[trait]
 				}
 			}));
 		}

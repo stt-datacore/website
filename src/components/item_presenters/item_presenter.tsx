@@ -199,6 +199,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         if (!item) return <></>;
         const { bonuses, bonusText } = getItemBonuses(item);
 		const ltMargin = 0;
+        const traits = this.context.localized.TRAIT_NAMES;
 
         return (<div style={{ 
                         fontSize: "12pt", 
@@ -314,7 +315,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
 									>
 									<div><b>Required Traits:</b>&nbsp;
 									<i>
-                                        {printRequiredTraits(item)}
+                                        {printRequiredTraits(item, traits)}
                                     </i></div>
 								</div>}             
                             <div>
