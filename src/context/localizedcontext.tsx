@@ -100,7 +100,7 @@ interface TranslatedCore {
 }
 
 export const LocalizedProvider = (props: LocalizedProviderProps) => {
-	const player = React.useContext(PlayerContext);
+	//const player = React.useContext(PlayerContext);
 	const coreData = React.useContext(DataContext);
 
 	const { children } = props;
@@ -131,7 +131,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		if (gameLanguage) {
 			setLanguage(gameLanguage as SupportedLanguage);
 		}
-	}, [player]);
+	}, [gameLanguage]);
 
 	if (!language)
 		return <span><Icon loading name='spinner' /> Loading translations...</span>;
@@ -238,9 +238,15 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			let newCollections = postProcessCollectionTranslations(coreData.collections, newCrew!, translatedGameStrings);
 			let newItems = postProcessItemTranslations(coreData.items, translatedGameStrings);
 			setTranslated({ crew: newCrew, ship_schematics: newSchematics, ships: newShips, collections: newCollections, items: newItems });
+			setTimeout(() => {
+				let changeDetect = (gameStrings.changeDetect ?? 0)+1;
+				setGameStrings({...translatedGameStrings, changeDetect });
+			});
 		}
-		let changeDetect = (gameStrings.changeDetect ?? 0)+1;
-		setGameStrings({...translatedGameStrings, changeDetect });
+		else {
+			let changeDetect = (gameStrings.changeDetect ?? 0)+1;
+			setGameStrings({...translatedGameStrings, changeDetect });
+		}		
 	}
 	
 	function postProcessCollectionTranslations(collections: Collection[], mapped_crew: CrewMember[], translation: IGameStrings): Collection[] | undefined {

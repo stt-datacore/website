@@ -73,7 +73,7 @@ const tiny = TinyStore.getStore(`global_playerSettings`);
 export const PlayerProvider = (props: DataProviderProperties) => {
 
 	const coreData = React.useContext(DataContext);
-	const { gameLanguage, setGameLanguage, changeDetect } = React.useContext(LocalizedContext);
+	const { gameLanguage, setGameLanguage, changeDetect, language } = React.useContext(LocalizedContext);
 	const { crew, ship_schematics } = coreData;
 
 	const { children } = props;
