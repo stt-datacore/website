@@ -47,38 +47,35 @@ const MainContent = ({ children, narrowLayout }) =>
 		<Container style={{ marginTop: '4em', marginBottom: '2em' }}>{children}</Container>
 	);
 
-const getNavigatorLanguage = () => {
-	let lang = 'en';
-	if (typeof navigator !== 'undefined') {
-		lang = navigator.language.slice(0, 2).toLowerCase();
-		if (lang === 'es') lang = 'sp';
-	}
-	return 'en';
-	// if (!['sp', 'en', 'fr', 'de'].includes(lang)) lang = 'en';
-	// return lang;
-}
+// const getNavigatorLanguage = () => {
+// 	let lang = 'en';
+// 	if (typeof navigator !== 'undefined') {
+// 		lang = navigator.language.slice(0, 2).toLowerCase();
+// 		if (lang === 'es') lang = 'sp';
+// 	}
+// 	return 'en';
+// 	// if (!['sp', 'en', 'fr', 'de'].includes(lang)) lang = 'en';
+// 	// return lang;
+// }
 
 const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const globalContext = React.useContext(GlobalContext);
-	
+
 	const { children, pageId, pageTitle, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
 
 	const [isReady, setIsReady] = React.useState(false);
 	const [dashboardPanel, setDashboardPanel] = React.useState<string | undefined>(undefined);
 	const [playerPanel, setPlayerPanel] = React.useState<string | undefined>(undefined);
 
-	const demands = props.demands ?? [] as ValidDemands[];
-	
 	React.useEffect(() => {
+		const demands: ValidDemands[] = props.demands ?? [];
 		(['crew', 'collections', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
 			if (!demands.includes(required))
 				demands.push(required);
 		});
-	
-		setTimeout(() => {
-			setIsReady(!!globalContext.core.ready && !!globalContext.core.ready(demands));
-		})
-	}, [globalContext.core]);
+		// Fetch core data AND localize it before datapage can access it
+		globalContext.readyLocalizedCore(demands, () => setIsReady(true));
+	}, []);
 
 	// topAnchor div styled to scroll properly with a fixed header
 	const topAnchor = React.useRef<HTMLDivElement>(null);
