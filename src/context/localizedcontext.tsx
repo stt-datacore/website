@@ -90,7 +90,10 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		undefined,
 		{
 			rememberForever: true,
-			onInitialize: () => initLanguage()
+			onInitialize: (_storageKey: string, language: SupportedLanguage | undefined)  => {
+				// If no language preference, use browser language
+				if (!language) processGameStrings(getBrowserLanguage());
+			}
 		}
 	);
 
@@ -125,16 +128,6 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			{children}
 		</LocalizedContext.Provider>
 	);
-
-	// Set initial language from preference; if no preference exists, use browser language
-	function initLanguage(): void {
-		if (preferredLanguage) {
-			processGameStrings(preferredLanguage);
-		}
-		else {
-			processGameStrings(getBrowserLanguage());
-		}
-	}
 
 	// Fetch translation and convert arrays to objects, as needed
 	async function processGameStrings(newLanguage: SupportedLanguage): Promise<void> {
