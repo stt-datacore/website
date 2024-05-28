@@ -155,9 +155,14 @@ const BetaTachyon = {
                 }
             }            
             
-            const skillScore = (skill: ComputedSkill) => {
+            const skillScore = (skill: ComputedSkill | Skill) => {
                 if (!skill?.core) return 0;
-                return skill.core;
+                if ("max" in skill) {
+                    return skill.core + (((skill.max ?? 0) + (skill.min ?? 0)) * 0.5);
+                }
+                else {
+                    return skill.core + (((skill.range_max ?? 0) + (skill.range_min ?? 0)) * 0.5);
+                }                
             }
 
             function getAMSeats(crew: PlayerCrew | CrewMember) {
@@ -176,7 +181,7 @@ const BetaTachyon = {
             }
             
             function getSkillOrder(crew: PlayerCrew | CrewMember, forceTwo?: boolean) {
-                const sk = [] as ComputedSkill[];
+                const sk = [] as Skill[];
                 let x = 0;
                 for (let skill of skills) {
                     if (skill in crew.base_skills) {
@@ -214,7 +219,7 @@ const BetaTachyon = {
                     }
                     x++;
                 }
-                sk.sort((a, b) => skillScore(b) - skillScore(a));                
+                sk.sort((a, b) => skillScore(b) - skillScore(a));
                 const output = {
                     crew: crew,
                     skills: [],
