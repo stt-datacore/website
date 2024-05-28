@@ -222,6 +222,7 @@ export interface VoyageImprovement {
 
 export interface CiteData {
 	crewToCite: PlayerCrew[];
+    crewToRetrieve: PlayerCrew[];
 	crewToTrain: PlayerCrew[];
     skillOrderRarities: SkillOrderRarity[];
 }
