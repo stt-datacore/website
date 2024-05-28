@@ -300,6 +300,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 				this.setState({ citeData: result, skoMap: skmap });	
 			}
 			else {
+				result.crewToRetrieve = result.crewToCite.filter(f => playerData.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length))
 				this.setState({ citeData: result });	
 			}
 
@@ -1289,6 +1290,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						<Tab
 						 	panes={[
 							{ menuItem: narrow ? 'Cite' : 'Crew To Cite', render: () => this.renderTable(citeData?.crewToCite, "cite", false) },
+							{ menuItem: narrow ? 'Retrievable' : 'Retrievable Only', render: () => this.renderTable(citeData?.crewToRetrieve, "retrieve", false) },
 							{ menuItem: narrow ? 'Train' : 'Crew To Train', render: () => this.renderTable(citeData?.crewToTrain, "train", true) },
 							{ menuItem: narrow ? 'Groups' : 'Voyage Groups' + (compareCount ? ' (' + compareCount + ')' : '') , render: () => this.renderVoyageGroups(citeData, confine) },
 						]} />
