@@ -85,4 +85,13 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 			{children}
 		</GlobalContext.Provider>
 	);
+
+	function readyLocalizedCore(demands: ValidDemands[], onReady: () => void): void {
+		core.ready(demands, () => {
+			setLocalizationTrigger({
+				triggered: true,
+				onReady
+			});
+		});
+	}
 };
