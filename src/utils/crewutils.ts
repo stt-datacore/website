@@ -1071,7 +1071,8 @@ export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): s
 	];
 	const ignoreRe = [
 		/^exclusive_/,		/* exclusive_ crew, e.g. bridge, collection, fusion, gauntlet, honorhall, voyage */
-		/^[a-z]{3}\d{4}$/	/* mega crew, e.g. feb2023 and apr2023 */
+		/^[a-z]{3}\d{4}$/,	/* mega crew, e.g. feb2023 and apr2023 */
+		/^[a-z]{4}\d{4}$/	/* mega crew, e.g. june2024 and july2024 */
 	];
 	const variantTraits = [] as string[];
 
