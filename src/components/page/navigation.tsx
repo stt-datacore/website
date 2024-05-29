@@ -8,6 +8,7 @@ import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { NavItem, createSubMenu, DefaultOpts, DefaultOptsMobile, drawMenuItem, MaxMenuItems, MaxMobileItems, getAllOptions as getAllMenuOptions, parsePermalink, renderColumnsMenu } from './util';
 import { useStateWithStorage } from '../../utils/storage';
 import { PlayerMenu } from "./playermenu";
+import { SupportedLanguage } from '../../context/localizedcontext';
 
 
 type NavigationProps = {
@@ -16,12 +17,30 @@ type NavigationProps = {
     children: JSX.Element;
 };
 
+function printLang(lang?: SupportedLanguage) {
+	if (lang === 'sp') return "ES";
+	return lang?.toUpperCase() ?? "EN";
+}
+
+function getLanguageIcon(lang?: SupportedLanguage) {
+	switch (lang) {
+		case 'en':
+			return `${process.env.GATSBY_ASSETS_URL}atlas/flag_english_icon.png`;
+		case 'de':
+			return `${process.env.GATSBY_ASSETS_URL}atlas/flag_german_icon.png`;
+		case 'fr':
+			return `${process.env.GATSBY_ASSETS_URL}atlas/flag_french_icon.png`;
+		case 'sp':
+			return `${process.env.GATSBY_ASSETS_URL}atlas/flag_spanish_icon.png`;
+			
+	}
+}
 
 export const Navigation = (props: NavigationProps) => {
 	const windowGlobal = typeof globalThis.window !== 'undefined' ? globalThis.window : undefined;
 
 	const context = React.useContext(GlobalContext);
-	const { t } = context.localized;
+	const { t, language, setPreferredLanguage } = context.localized;
 
     const [isMobile, setIsMobile] = React.useState(typeof windowGlobal !== 'undefined' && windowGlobal.innerWidth < DEFAULT_MOBILE_WIDTH);
     const [openBar, setOpenBar] = React.useState(false);
@@ -73,6 +92,7 @@ export const Navigation = (props: NavigationProps) => {
 		{ optionKey: 'fbb', src: '/media/fbb.png', title: "Fleet Boss Battles", link: "/fbb", sidebarRole: 'item' },	// Fleet boss battles added v9
 		{ optionKey: 'continuum', src: '/media/continuum.png', title: "Continuum Helper", link: "/continuum", sidebarRole: 'item' },	// Continuum missions added v10
 	];
+
 
 	
 	const pages = [
@@ -158,6 +178,42 @@ export const Navigation = (props: NavigationProps) => {
 			sidebarRole: 'heading',
 			subMenu: [
 				{ title: 'Worfle', link: '/crewchallenge' }
+			]
+		},
+		{
+			title: printLang(language),
+			src: getLanguageIcon(language),
+			sidebarRole: "heading",
+			right: true,
+			subMenu: [
+				{ 
+					src: getLanguageIcon('en'),
+					title: "EN",
+					customAction: (e) => {
+						setPreferredLanguage('en');
+					}
+				},
+				{ 
+					src: getLanguageIcon('de'),
+					title: "DE",
+					customAction: (e) => {
+						setPreferredLanguage('de');
+					}
+				},
+				{ 
+					src: getLanguageIcon('fr'),
+					title: "FR",
+					customAction: (e) => {
+						setPreferredLanguage('fr');
+					}
+				},
+				{ 
+					src: getLanguageIcon('sp'),
+					title: "ES",
+					customAction: (e) => {
+						setPreferredLanguage('sp');
+					}
+				}
 			]
 		},
 		{ optionKey: '_option0', checkVisible: () => false },
