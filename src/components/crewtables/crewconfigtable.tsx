@@ -27,6 +27,7 @@ type CrewConfigTableProps = {
 
 export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { CREW_ARCHETYPES } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { pageId, rosterType, initOptions, rosterCrew, crewFilters, lockableCrew } = props;
 
@@ -83,7 +84,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	);
 
 	function showThisCrew(crew: IRosterCrew, filters: [], filterType: string): boolean {
-		// Apply filters		
+		// Apply filters
 		let showCrew = true;
 		for (let i = 0; i < crewFilters.length; i++) {
 			if (!crewFilters[i].filterTest(crew)) {
@@ -119,7 +120,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name}</Link></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew, showOwned)}</div>
 					</div>

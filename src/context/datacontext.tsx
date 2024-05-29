@@ -71,7 +71,7 @@ export interface ICoreData {
 };
 
 export interface ICoreContext extends ICoreData {
-	ready: (demands: ValidDemands[]) => boolean;
+	ready: (demands: ValidDemands[], onReady: () => void) => void;
 	reset: () => boolean;
 	spin: (message?: string) => JSX.Element;
 };
@@ -142,10 +142,10 @@ export const DataProvider = (props: DataProviderProperties) => {
 		</DataContext.Provider>
 	);
 
-	function ready(demands: ValidDemands[] = []): boolean {
+	function ready(demands: ValidDemands[] = [], onReady: () => void): void {
 		demands = [ ... demands ];
 		// Not ready if any valid demands are being processed
-		if (isReadying) return false;
+		if (isReadying) return;
 		// Fetch only if valid demand is not already satisfied
 		const valid = [
 			'all_buffs',
@@ -228,7 +228,10 @@ export const DataProvider = (props: DataProviderProperties) => {
 		});
 
 		// Ready only if all valid demands are satisfied
-		if (unsatisfied.length === 0) return true;
+		if (unsatisfied.length === 0) {
+			onReady();
+			return;
+		}
 
 		// Alert page that processing has started
 		setIsReadying(true);
@@ -310,9 +313,8 @@ export const DataProvider = (props: DataProviderProperties) => {
 		}).finally(() => {
 			// Alert page that processing is done (successfully or otherwise)
 			setIsReadying(false);
+			onReady();
 		});
-
-		return false;
 	}
 
 	function calculateTopQuipment(crew: CrewMember[]) {
