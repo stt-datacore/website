@@ -5,7 +5,6 @@ import { PlayerContext, PlayerContextData, defaultPlayer } from './playercontext
 import { DefaultLocalizedData, LocalizedContext, ILocalizedData, TranslatedCore } from './localizedcontext';
 import { BuffStatTable } from "../utils/voyageutils";
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
-import { PlayerData } from '../model/player';
 
 interface GlobalProviderProperties {
 	children: JSX.Element;

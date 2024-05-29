@@ -925,7 +925,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		if (gauntlet.unavailable_msg) {
 			return (
 				<Message icon>
-					{randomCrew("q_jdl")}
+					{randomCrew("q_jdl", this.context.core.crew)}
 					<Message.Content>
 						<Message.Header>{gauntlet.unavailable_msg}</Message.Header>
 						{gauntlet.unavailable_desc_msg}

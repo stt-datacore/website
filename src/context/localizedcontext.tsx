@@ -10,7 +10,6 @@ import { DataContext } from './datacontext';
 import { PlayerContext, PlayerContextData } from './playercontext';
 import CONFIG from '../components/CONFIG';
 import { useStateWithStorage } from '../utils/storage';
-import { PlayerData } from '../model/player';
 
 interface LocalizedProviderProps {
 	children?: JSX.Element;
@@ -53,13 +52,11 @@ interface IGameStrings {
 			name: string;
 			flavor: string;
 		};
-	};
-	changeDetect?: number;
+	};	
 };
 
 export interface ILocalizedData extends IGameStrings {
 	language: SupportedLanguage;
-	gameLanguage?: SupportedLanguage;	
 	setPreferredLanguage: (value: SupportedLanguage) => void;
 	translateCore: () => TranslatedCore;
 	translatePlayer: (playerIn: PlayerContextData) => PlayerContextData;
@@ -76,7 +73,6 @@ const defaultGameStrings: IGameStrings = {
 
 export const DefaultLocalizedData: ILocalizedData = {
 	language: 'en',
-	gameLanguage: undefined,
 	...defaultGameStrings,
 	setPreferredLanguage: () => false,
 	translateCore: () => { return {}; },
@@ -121,8 +117,6 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	// Language and strings sent to UI
 	const [language, setLanguage] = useStateWithStorage<SupportedLanguage | undefined>('localized/language', undefined);
 	const [gameStrings, setGameStrings] = useStateWithStorage<IGameStrings>('localized/gamestrings', defaultGameStrings);
-	const [translated, setTranslated] = React.useState<TranslatedCore>({});
-	const [gameLanguage, setGameLanguage] = React.useState<SupportedLanguage | undefined>();
 
 	// Update language on user preference change
 	React.useEffect(() => {
@@ -142,7 +136,6 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	const localizedData: ILocalizedData = {
 		...gameStrings,
-		gameLanguage,		
 		language,
 		setPreferredLanguage,
 		translateCore,
