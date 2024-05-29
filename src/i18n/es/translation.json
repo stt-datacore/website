@@ -1,0 +1,18 @@
+{
+    "menu": {
+        "behold_helper": "Aayudante de Reconocimiento",
+        "shuttle_helper": "Ayudante de Lanzaderas",
+        "factions": "Facciones",
+        "event_planner": "Planificador de Eventos",
+        "gauntlet": "Reto",
+        "citation_optimizer": "Distinción de Honor Optimizador"
+    },
+    "gauntlet": {
+        "gauntlet": "Reto",
+        "gauntlets": "Retos",
+        "today_gauntlet": "Today's Gauntlet",
+        "yesterday_gauntlet": "Yesterday's Gauntlet",
+        "previous_gauntlets": "Previous Gauntlets",
+        "browse_gauntlets": "Browse Gauntlets"    
+    }
+}

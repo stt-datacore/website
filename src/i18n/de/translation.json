@@ -1,0 +1,18 @@
+{
+    "menu": {
+        "behold_helper": "Anblick Helfer",
+        "shuttle_helper": "Shuttle Helfer",
+        "factions": "Fraktionen",
+        "event_planner": "Ereignisplaner",
+        "gauntlet": "Herausforderung",
+        "citation_optimizer": "Ehrenvolle Erwähnung Optimierer"
+    },
+    "gauntlet": {
+        "gauntlet": "Herausforderung",
+        "gauntlets": "Herausforderungen",
+        "today_gauntlet": "Today's Gauntlet",
+        "yesterday_gauntlet": "Yesterday's Gauntlet",
+        "previous_gauntlets": "Previous Gauntlets",
+        "browse_gauntlets": "Browse Gauntlets"    
+    }
+}

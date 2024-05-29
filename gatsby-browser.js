@@ -1,5 +1,5 @@
 import React from 'react';
-
+import './src/i18n/config';
 import { DataProvider } from './src/context/datacontext';
 import { PlayerProvider } from './src/context/playercontext';
 import { GlobalProvider } from './src/context/globalcontext';

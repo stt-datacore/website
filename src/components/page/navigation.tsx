@@ -21,6 +21,8 @@ export const Navigation = (props: NavigationProps) => {
 	const windowGlobal = typeof globalThis.window !== 'undefined' ? globalThis.window : undefined;
 
 	const context = React.useContext(GlobalContext);
+	const { t } = context.localized;
+
     const [isMobile, setIsMobile] = React.useState(typeof windowGlobal !== 'undefined' && windowGlobal.innerWidth < DEFAULT_MOBILE_WIDTH);
     const [openBar, setOpenBar] = React.useState(false);
 
@@ -57,13 +59,13 @@ export const Navigation = (props: NavigationProps) => {
 	const avatar = portrait;
 
 	const toolsSubMenu: NavItem[] = [
-		{ optionKey: 'behold', src: '/media/portal.png', title: "Behold Helper", link: "/behold", sidebarRole: 'item' },	// Behold available at launch
-		{ optionKey: 'shuttles', src: '/media/shuttle_icon.png', title: "Shuttle Helper", link: "/shuttlehelper", sidebarRole: 'item' },	// Shuttles available at launch
-		{ optionKey: 'faction', title: "Factions", src: '/media/faction.png', link: "/factions", sidebarRole: 'item' },	// Factions available at launch
+		{ optionKey: 'behold', src: '/media/portal.png', title: t('menu.behold_helper'), link: "/behold", sidebarRole: 'item' },	// Behold available at launch
+		{ optionKey: 'shuttles', src: '/media/shuttle_icon.png', title: t('menu.shuttle_helper'), link: "/shuttlehelper", sidebarRole: 'item' },	// Shuttles available at launch
+		{ optionKey: 'faction', title: t('menu.factions'), src: '/media/faction.png', link: "/factions", sidebarRole: 'item' },	// Factions available at launch
 		// { optionKey: 'fleet', title: "Fleet", src: '/media/fleet_icon.png', link: "/fleet", sidebarRole: 'item' },	// Factions available at launch
-		{ optionKey: 'event', src: '/media/event.png', title: "Event Planner", link: "/eventplanner", sidebarRole: 'item' },	// Events added post-launch
-		{ optionKey: 'gauntlet', src: '/media/gauntlet.png', title: "Gauntlet", link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
-		{ optionKey: 'cite', src: `${process.env.GATSBY_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
+		{ optionKey: 'event', src: '/media/event.png', title: t('menu.event_planner'), link: "/eventplanner", sidebarRole: 'item' },	// Events added post-launch
+		{ optionKey: 'gauntlet', src: '/media/gauntlet.png', title: t('menu.gauntlet'), link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
+		{ optionKey: 'cite', src: `${process.env.GATSBY_ASSETS_URL}/atlas/star_reward.png`, title: t('menu.citation_optimizer'), link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
 		{ optionKey: 'voyage', src: "/media/voyage.png", title: "Voyage Calculator", link: "/voyage", sidebarRole: 'item' },	// Voyages added v3
 		{ optionKey: 'voyhist', src: "/media/antimatter_icon.png", title: "Voyage History", link: "/voyagehistory", sidebarRole: 'item' },	// Voyages added v3
 		{ optionKey: 'collection', src: '/media/vault.png', title: "Collection Planner", link: "/collections", sidebarRole: 'item' },	// Collections added v4

@@ -10,6 +10,8 @@ import { DataContext } from './datacontext';
 import { PlayerContext, PlayerContextData } from './playercontext';
 import CONFIG from '../components/CONFIG';
 import { useStateWithStorage } from '../utils/storage';
+import { useTranslation } from 'react-i18next';
+import { TFunction, TFunctionReturnOptionalDetails, TOptions, TOptionsBase } from 'i18next';
 
 interface LocalizedProviderProps {
 	children?: JSX.Element;
@@ -60,6 +62,7 @@ export interface ILocalizedData extends IGameStrings {
 	setPreferredLanguage: (value: SupportedLanguage) => void;
 	translateCore: () => TranslatedCore;
 	translatePlayer: (playerIn: PlayerContextData) => PlayerContextData;
+	t: (value: string) => string
 };
 
 const defaultGameStrings: IGameStrings = {
@@ -76,7 +79,8 @@ export const DefaultLocalizedData: ILocalizedData = {
 	...defaultGameStrings,
 	setPreferredLanguage: () => false,
 	translateCore: () => { return {}; },
-	translatePlayer: () => { return {} as PlayerContextData; }
+	translatePlayer: () => { return {} as PlayerContextData; },
+	t: () => ''
 };
 
 export const LocalizedContext = React.createContext(DefaultLocalizedData);
@@ -98,7 +102,7 @@ function getBrowserLanguage(): SupportedLanguage {
 
 export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	const core = React.useContext(DataContext);
-	const player = React.useContext(PlayerContext);
+	const player = React.useContext(PlayerContext);	
 	const { children } = props;
 
 	// Stored user preference
@@ -117,7 +121,8 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	// Language and strings sent to UI
 	const [language, setLanguage] = useStateWithStorage<SupportedLanguage | undefined>('localized/language', undefined);
 	const [gameStrings, setGameStrings] = useStateWithStorage<IGameStrings>('localized/gamestrings', defaultGameStrings);
-
+	const { t } = useTranslation(undefined, { lng: language === 'sp' ? 'es' : (language ?? 'en') });
+	
 	// Update language on user preference change
 	React.useEffect(() => {
 		if (preferredLanguage) fetchGameStrings(preferredLanguage);
@@ -139,7 +144,8 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		language,
 		setPreferredLanguage,
 		translateCore,
-		translatePlayer
+		translatePlayer,
+		t
 	};
 
 	return (

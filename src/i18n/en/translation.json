@@ -1,0 +1,18 @@
+{
+    "menu": {
+        "behold_helper": "Behold Helper",
+        "shuttle_helper": "Shuttle Helper",
+        "factions": "Factions",
+        "event_planner": "Event Planner",
+        "gauntlet": "Gauntlet",
+        "citation_optimizer": "Citation Optimizer"
+    },
+    "gauntlet": {
+        "gauntlet": "Gauntlet",
+        "gauntlets": "Gauntlets",
+        "today_gauntlet": "Today's Gauntlet",
+        "yesterday_gauntlet": "Yesterday's Gauntlet",
+        "previous_gauntlets": "Previous Gauntlets",
+        "browse_gauntlets": "Browse Gauntlets"    
+    }
+}

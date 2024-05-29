@@ -1,0 +1,18 @@
+{
+    "menu": {
+        "behold_helper": "Aide au choix",
+        "shuttle_helper": "Aide aux Navettes",
+        "factions": "Factions",
+        "event_planner": "Planificateur d'événements",
+        "gauntlet": "Gantelet",
+        "citation_optimizer": "Optimiseur des mentions honorables"
+    },
+    "gauntlet": {
+        "gauntlet": "Gantelet",
+        "gauntlets": "Gantelets",
+        "today_gauntlet": "Gantelet d'aujourd'hui",
+        "yesterday_gauntlet": "Gantelet d'hier",
+        "previous_gauntlets": "Gantelets précédents",
+        "browse_gauntlets": "Parcourez les gantelets"    
+    }
+}
