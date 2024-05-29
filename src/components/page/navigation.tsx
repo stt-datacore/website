@@ -32,7 +32,24 @@ function getLanguageIcon(lang?: SupportedLanguage) {
 			return `${process.env.GATSBY_ASSETS_URL}atlas/flag_french_icon.png`;
 		case 'sp':
 			return `${process.env.GATSBY_ASSETS_URL}atlas/flag_spanish_icon.png`;
+		default:
+			return `${process.env.GATSBY_ASSETS_URL}atlas/flag_english_icon.png`;
 			
+	}
+}
+
+function getLanguageFullName(lang?: SupportedLanguage) {
+	switch (lang) {
+		case 'en':
+			return "English";
+		case 'de':
+			return "Deutsche";
+		case 'fr':
+			return "Français";
+		case 'sp':
+			return "Español";
+		default :
+			return "English";
 	}
 }
 
@@ -183,12 +200,14 @@ export const Navigation = (props: NavigationProps) => {
 		{
 			title: printLang(language),
 			src: getLanguageIcon(language),
+			tooltip: getLanguageFullName(language),
 			sidebarRole: "heading",
 			right: true,
 			subMenu: [
 				{ 
 					src: getLanguageIcon('en'),
 					title: "EN",
+					tooltip: getLanguageFullName('en'),
 					customAction: (e) => {
 						setPreferredLanguage('en');
 					}
@@ -196,6 +215,7 @@ export const Navigation = (props: NavigationProps) => {
 				{ 
 					src: getLanguageIcon('de'),
 					title: "DE",
+					tooltip: getLanguageFullName('de'),
 					customAction: (e) => {
 						setPreferredLanguage('de');
 					}
@@ -203,6 +223,7 @@ export const Navigation = (props: NavigationProps) => {
 				{ 
 					src: getLanguageIcon('fr'),
 					title: "FR",
+					tooltip: getLanguageFullName('fr'),
 					customAction: (e) => {
 						setPreferredLanguage('fr');
 					}
@@ -210,6 +231,7 @@ export const Navigation = (props: NavigationProps) => {
 				{ 
 					src: getLanguageIcon('sp'),
 					title: "ES",
+					tooltip: getLanguageFullName('sp'),
 					customAction: (e) => {
 						setPreferredLanguage('sp');
 					}
