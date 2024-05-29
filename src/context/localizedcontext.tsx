@@ -7,9 +7,10 @@ import { EquipmentItem } from '../model/equipment';
 import { Schematics, Ship } from '../model/ship';
 import { Collection } from '../model/game-elements';
 import { DataContext } from './datacontext';
-import { PlayerContext } from './playercontext';
+import { PlayerContext, PlayerContextData } from './playercontext';
 import CONFIG from '../components/CONFIG';
 import { useStateWithStorage } from '../utils/storage';
+import { PlayerData } from '../model/player';
 
 interface LocalizedProviderProps {
 	children?: JSX.Element;
@@ -59,6 +60,7 @@ export interface ILocalizedData extends IGameStrings {
 	language: SupportedLanguage;
 	setPreferredLanguage: (value: SupportedLanguage) => void;
 	translateCore: () => TranslatedCore;
+	translatePlayer: (playerIn: PlayerContextData) => PlayerContextData;
 };
 
 const defaultGameStrings: IGameStrings = {
@@ -74,7 +76,8 @@ export const DefaultLocalizedData: ILocalizedData = {
 	language: 'en',
 	...defaultGameStrings,
 	setPreferredLanguage: () => false,
-	translateCore: () => { return {}; }
+	translateCore: () => { return {}; },
+	translatePlayer: () => { return {} as PlayerContextData; }
 };
 
 export const LocalizedContext = React.createContext(DefaultLocalizedData);
@@ -136,7 +139,8 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		...gameStrings,
 		language,
 		setPreferredLanguage,
-		translateCore
+		translateCore,
+		translatePlayer
 	};
 
 	return (
@@ -220,6 +224,19 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		};
 	}
 
+	function translatePlayer(context: PlayerContextData): PlayerContextData {		
+		const output = { ... context };
+		const { playerData } = context;
+		if (playerData) {
+			playerData.player.character.crew = postProcessCrewTranslations(playerData.player.character.crew, gameStrings)!;
+			if (playerData.player.character.unOwnedCrew) playerData.player.character.unOwnedCrew = postProcessCrewTranslations(playerData.player.character.unOwnedCrew, gameStrings)!;
+		}
+		if (output.playerShips) {
+			[,output.playerShips] = postProcessShipTranslations([], output.playerShips, gameStrings, true);
+		}
+		return output;
+	}
+
 	function postProcessCollectionTranslations(collections: Collection[], mapped_crew: CrewMember[], translation: IGameStrings): Collection[] | undefined {
 		const colmap = {} as {[key:string]:string};
 		if (mapped_crew.length && collections.length && translation.COLLECTIONS) {
@@ -293,9 +310,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		}
 	}
 
-	function postProcessShipTranslations(ship_schematics: Schematics[], ships: Ship[], translation: IGameStrings): [Schematics[], Ship[]] | [undefined, undefined] {
-		if (ship_schematics.length && translation.SHIP_ARCHETYPES) {
-			let result1 = ship_schematics.map((ship) => {
+	function postProcessShipTranslations(ship_schematics: Schematics[], ships: Ship[], translation: IGameStrings, ignoreSchematics?: boolean): [Schematics[], Ship[]] | [undefined, undefined] {
+		if ((ship_schematics.length || ignoreSchematics) && translation.SHIP_ARCHETYPES) {
+			let result1 = ignoreSchematics ? [] : ship_schematics.map((ship) => {
 				ship = { ... ship, ship: { ... ship.ship, actions: ship.ship.actions ? JSON.parse(JSON.stringify(ship.ship.actions)) : undefined }};
 				let arch = translation.SHIP_ARCHETYPES[ship.ship.symbol];
 				ship.ship.flavor = arch?.flavor ?? ship.ship.flavor;
@@ -315,6 +332,12 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				ship.flavor = arch?.flavor ?? ship.flavor;
 				ship.traits_named = ship.traits?.map(t => translation.SHIP_TRAIT_NAMES[t]);
 				ship.name = arch?.name ?? ship.name;
+				arch?.actions?.forEach((action) => {
+					let act = ship.actions?.find(f => f.symbol === action.symbol);
+					if (act) {
+						act.name = action.name;
+					}
+				});
 				return ship;
 			});
 			return [result1, result2];

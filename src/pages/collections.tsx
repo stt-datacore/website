@@ -2,13 +2,13 @@ import React from 'react';
 
 import DataPageLayout from "../components/page/datapagelayout";
 import CollectionsTool from '../components/collections/collectionstool';
-import { DataContext } from '../context/datacontext';
-import { PlayerContext } from '../context/playercontext';
+import { GlobalContext } from '../context/globalcontext';
 
 const CollectionsPage = () => {
-    const context = React.useContext(PlayerContext);
+    const context = React.useContext(GlobalContext);
+    
     return (
-        <DataPageLayout pageTitle={!!context.playerData ? "Collection Planner" : "Collections"} playerPromptType='recommend' demands={['collections']}>
+        <DataPageLayout pageTitle={!!context.player.playerData ? "Collection Planner" : "Collections"} playerPromptType='recommend' demands={['collections']}>
             <CollectionsTool />
         </DataPageLayout>
     )

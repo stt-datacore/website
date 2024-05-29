@@ -5,6 +5,7 @@ import { PlayerContext, PlayerContextData, defaultPlayer } from './playercontext
 import { DefaultLocalizedData, LocalizedContext, ILocalizedData, TranslatedCore } from './localizedcontext';
 import { BuffStatTable } from "../utils/voyageutils";
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
+import { PlayerData } from '../model/player';
 
 interface GlobalProviderProperties {
 	children: JSX.Element;
@@ -36,13 +37,18 @@ const defaultGlobal: IDefaultGlobal = {
 
 export const GlobalContext = React.createContext<IDefaultGlobal>(defaultGlobal);
 
+interface ILocalizedSet {
+	core: ICoreContext;
+	player: PlayerContextData;
+}
+
 export const GlobalProvider = (props: GlobalProviderProperties) => {
     const core = React.useContext(DataContext);
     const player = React.useContext(PlayerContext);
 	const localized = React.useContext(LocalizedContext);
 	const { children } = props;
 
-	const [localizedCore, setLocalizedCore] = React.useState<ICoreContext>({...core});
+	const [localizedSet, setLocalizedSet] = React.useState<ILocalizedSet>({ core, player });
 	const [localizationTrigger, setLocalizationTrigger] = React.useState<ILocalizationTrigger | undefined>(undefined);
 
 	const [isMobile, setIsMobile] = React.useState(typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH);
@@ -50,7 +56,8 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 	React.useEffect(() => {
 		if (!localizationTrigger) return;
 		const translatedCore: TranslatedCore = localized.translateCore();
-		setLocalizedCore({...core, ...translatedCore});
+		const translatedPlayer: PlayerContextData = localized.translatePlayer(player);
+		setLocalizedSet({ core: { ...core, ...translatedCore }, player: { ...player, ... translatedPlayer } });
 		localizationTrigger.onReady();
 	}, [localizationTrigger]);
 
@@ -71,9 +78,8 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 		maxBuffs = core.all_buffs;
 	}
 
-	const providerValue: IDefaultGlobal = {
-        core: localizedCore,
-        player,
+	const providerValue: IDefaultGlobal = {        
+        ...localizedSet,
 		localized,
         maxBuffs,
 		isMobile,
