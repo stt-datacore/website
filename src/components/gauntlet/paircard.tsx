@@ -2,7 +2,7 @@ import React from 'react';
 import { Skill, ComputedSkill, CrewMember } from '../../model/crew';
 import { Gauntlet, Opponent } from '../../model/gauntlets';
 import { PlayerCrew, CompletionState, PlayerBuffMode } from '../../model/player';
-import { shortToSkill, gradeToColor, getPairScore, getCrewPairScore, dynamicRangeColor, isImmortal } from '../../utils/crewutils';
+import { shortToSkill, gradeToColor, getPairScore, getCrewPairScore, dynamicRangeColor, isImmortal, getPlayerPairs } from '../../utils/crewutils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import ItemDisplay from '../itemdisplay';
 import { GlobalContext } from '../../context/globalcontext';
@@ -17,7 +17,7 @@ export interface PairCardProps {
 }
 
 export const formatPair = (pair: Skill[], style?: React.CSSProperties, debuff?: boolean, disabled?: boolean): JSX.Element => {
-    if (!pair[0].skill) return <></>
+    if (!pair?.length || !pair[0].skill) return <></>
 
     const disabledOpacity = 0.5;
 
@@ -126,29 +126,58 @@ export const GauntletPairCard = (props: PairCardProps) => {
     if (pstr in crew.ranks) {
         rnk = crew.ranks[pstr] as number;
     }
+    
+    let spair = pair?.map(p => shortToSkill(p) as string);
+    const pairs = crew.pairs ?? getPlayerPairs(crew);
 
-    for (let skill of skills) {
-        if (boostMode === 'player' && "skills" in crew && skill && skill in crew.skills) {
-            let cp = JSON.parse(JSON.stringify(crew.skills[skill] as Skill));
-            cp.skill = skill;
-            crewpair.push(cp);
-        }
-        else if (boostMode !== 'none' && skill && skill in crew && ((crew[skill] as ComputedSkill).core)) {
-            let cp = JSON.parse(JSON.stringify(crew[skill] as ComputedSkill)) as ComputedSkill;
-            cp.skill = skill;
-            crewpair.push({
-                core: cp.core,
-                range_max: cp.max,
-                range_min: cp.min,
-                skill: skill
-            });
-        }
-        else if (skill && skill in crew.base_skills) {
-            let cp = JSON.parse(JSON.stringify(crew.base_skills[skill] as Skill)) as Skill;
-            cp.skill = skill;
-            crewpair.push(cp);
+    if (spair[0] in crew && crew[spair[0]].max && spair[1] in crew && crew[spair[1]].max) {
+        let p = pairs?.find(pr => spair.includes(pr[0].skill!) && spair.includes(pr[1].skill!));
+        if (p) {
+            crewpair.push(p[0]);
+            crewpair.push(p[1]);
         }
     }
+    else if (spair[0] in crew && crew[spair[0]].max) {
+        let p = pairs?.find(pr => pr.some(px => px.skill === spair[0]));
+        if (p) {
+            if (p[0].skill === spair[0])
+                crewpair.push(p[0]);
+            else
+                crewpair.push(p[1]);
+        }
+    }
+    else if (spair[1] in crew && crew[spair[1]].max) {
+        let p = pairs?.find(pr => pr.some(px => px.skill === spair[1]));
+        if (p) {
+            if (p[0].skill === spair[1])
+                crewpair.push(p[0]);
+            else
+                crewpair.push(p[1]);
+        }
+    }
+
+    // for (let skill of skills) {
+    //     if (boostMode === 'player' && "skills" in crew && skill && skill in crew.skills) {
+    //         let cp = JSON.parse(JSON.stringify(crew.skills[skill] as Skill));
+    //         cp.skill = skill;
+    //         crewpair.push(cp);
+    //     }
+    //     else if (boostMode !== 'none' && skill && skill in crew && ((crew[skill] as ComputedSkill).core)) {
+    //         let cp = JSON.parse(JSON.stringify(crew[skill] as ComputedSkill)) as ComputedSkill;
+    //         cp.skill = skill;
+    //         crewpair.push({
+    //             core: cp.core,
+    //             range_max: cp.max,
+    //             range_min: cp.min,
+    //             skill: skill
+    //         });
+    //     }
+    //     else if (skill && skill in crew.base_skills) {
+    //         let cp = JSON.parse(JSON.stringify(crew.base_skills[skill] as Skill)) as Skill;
+    //         cp.skill = skill;
+    //         crewpair.push(cp);
+    //     }
+    // }
 
     return (
         <div
