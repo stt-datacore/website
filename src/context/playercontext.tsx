@@ -73,7 +73,7 @@ const tiny = TinyStore.getStore(`global_playerSettings`);
 export const PlayerProvider = (props: DataProviderProperties) => {
 
 	const coreData = React.useContext(DataContext);
-	const { gameLanguage, setGameLanguage, changeDetect, language } = React.useContext(LocalizedContext);
+	const { gameLanguage, changeDetect, language } = React.useContext(LocalizedContext);
 	const { crew, ship_schematics } = coreData;
 
 	const { children } = props;
@@ -104,15 +104,15 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	React.useEffect(() => {
 		if (!input || !ship_schematics.length || !crew.length/* || !Object.keys(translation).length */) return;
 
-		if (gameLanguage !== input.player.lang) {
-			if (input.player.lang === 'es') {
-				setGameLanguage('sp');
-			}
-			else {
-				setGameLanguage(input.player.lang as SupportedLanguage);
-			}
-			return;
-		}
+		// if (gameLanguage !== input.player.lang) {
+		// 	if (input.player.lang === 'es') {
+		// 		setGameLanguage('sp');
+		// 	}
+		// 	else {
+		// 		setGameLanguage(input.player.lang as SupportedLanguage);
+		// 	}
+		// 	return;
+		// }
 
 		// ephemeral data (e.g. active crew, active shuttles, voyage data, and event data)
 		//	can be misleading when outdated, so keep a copy for the current session only

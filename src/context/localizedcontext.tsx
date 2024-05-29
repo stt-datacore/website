@@ -59,8 +59,7 @@ interface IGameStrings {
 
 export interface ILocalizedData extends IGameStrings {
 	language: SupportedLanguage;
-	gameLanguage?: SupportedLanguage;
-	setGameLanguage: (value: SupportedLanguage | undefined) => void;
+	gameLanguage?: SupportedLanguage;	
 	setPreferredLanguage: (value: SupportedLanguage) => void;
 	translateCore: () => TranslatedCore;
 	translatePlayer: (playerIn: PlayerContextData) => PlayerContextData;
@@ -99,14 +98,6 @@ function getBrowserLanguage(): SupportedLanguage {
         default:
             return 'en';
     }
-}
-
-interface TranslatedCore {
-	crew?: CrewMember[];
-	ship_schematics?: Schematics[];
-	ships?: Ship[];
-	collections?: Collection[];
-	items?: EquipmentItem[];
 }
 
 export const LocalizedProvider = (props: LocalizedProviderProps) => {
@@ -211,7 +202,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			});
 		}
 		else {
-			const itemsJson: EquipmentItem[] = coreData.items;
+			const itemsJson: EquipmentItem[] = core.items;
 			itemsJson.forEach(item => {
 				itemArchetypes[item.symbol] = {
 					name: item.name,
@@ -371,107 +362,5 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		}
 	}
 	
-	function postProcessCollectionTranslations(collections: Collection[], mapped_crew: CrewMember[], translation: IGameStrings): Collection[] | undefined {
-		const colmap = {} as {[key:string]:string};
-		if (mapped_crew.length && collections.length && translation.COLLECTIONS) {
-			let result = collections.map((col) => {
-				col = { ...col };
-				let arch = translation.COLLECTIONS[col.id];
-				if (arch) {
-					colmap[col.name] = arch.name;
-					col.name = arch.name;
-					col.description = arch.description;
-
-				}
-				return col;
-			});
-			mapped_crew.forEach((crew) => {
-				crew.collections = crew.collections.map(col => colmap[col]);
-			});
-			return result;
-		}
-		else {
-			return undefined;
-		}
-	}
-
-	function postProcessCrewTranslations<T extends CrewMember>(crew: T[], translation: IGameStrings): T[] | undefined {
-		if (crew.length && translation.CREW_ARCHETYPES) {
-			return crew.map((crew) => {
-				crew = { ... crew };
-				let arch = translation.CREW_ARCHETYPES[crew.symbol];
-				
-				crew.traits_named = crew.traits.map(t => translation.TRAIT_NAMES[t]);
-
-				let oldName = crew.name;
-				crew.name = arch?.name ?? crew.name;				
-				if (!crew.name_english) {
-					crew.name_english = oldName;
-				}
-
-				oldName = crew.short_name;
-				crew.short_name = arch?.short_name ?? crew.short_name;
-				if (!crew.short_name_english) {
-					crew.short_name_english = oldName;
-				}
-
-				crew.events ??= 0;
-				return crew;
-			});
-		}
-		else {
-			return undefined;
-		}
-	}
-
-	function postProcessItemTranslations(items: EquipmentItem[], translation: IGameStrings): EquipmentItem[] | undefined {
-		if (items.length && translation.ITEM_ARCHETYPES) {
-			return items.map((item) => {
-				item = { ... item };
-				let arch = translation.ITEM_ARCHETYPES[item.symbol];
-				let oldName = item.name;
-				if (!item.name_english) item.name_english = oldName;
-				if (arch) {
-					item.name = arch.name;
-					item.flavor = arch.flavor;
-				}
-				return item;
-			})
-		}
-		else {
-			return undefined;
-		}
-	}
-
-	function postProcessShipTranslations(ship_schematics: Schematics[], ships: Ship[], translation: IGameStrings): [Schematics[], Ship[]] | [undefined, undefined] {
-		if (ship_schematics.length && translation.SHIP_ARCHETYPES) {
-			let result1 = ship_schematics.map((ship) => {
-				ship = { ... ship, ship: { ... ship.ship, actions: ship.ship.actions ? JSON.parse(JSON.stringify(ship.ship.actions)) : undefined }};
-				let arch = translation.SHIP_ARCHETYPES[ship.ship.symbol];
-				ship.ship.flavor = arch?.flavor ?? ship.ship.flavor;
-				ship.ship.traits_named = ship.ship.traits?.map(t => translation.SHIP_TRAIT_NAMES[t]);
-				ship.ship.name = arch?.name ?? ship.ship.name;
-				arch?.actions?.forEach((action) => {
-					let act = ship.ship.actions?.find(f => f.symbol === action.symbol);
-					if (act) {
-						act.name = action.name;
-					}
-				});
-				return ship;
-			});
-			let result2 = ships.map((ship) => {
-				ship = { ... ship, actions: ship.actions ? JSON.parse(JSON.stringify(ship.actions)): undefined };
-				let arch = translation.SHIP_ARCHETYPES[ship.symbol];
-				ship.flavor = arch?.flavor ?? ship.flavor;
-				ship.traits_named = ship.traits?.map(t => translation.SHIP_TRAIT_NAMES[t]);				
-				ship.name = arch?.name ?? ship.name;
-				return ship;
-			});
-			return [result1, result2];
-		}
-		else {
-			return [undefined, undefined];
-		}
-	}
-
+	
 };
