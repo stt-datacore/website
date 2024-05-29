@@ -297,9 +297,13 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			if (engine === 'beta_tachyon_pulse') {
 				let skmap = {} as { [key: string]: SkillOrderRarity };		
 				result.skillOrderRarities.forEach(sko => skmap[sko.skillorder] = sko);
+				let retrievable = result.crewToRetrieve.filter(f => playerData.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length))
+				result.crewToRetrieve = retrievable.map((r, i) => ({ ...r, pickerId: i + 1 }));
 				this.setState({ citeData: result, skoMap: skmap });	
 			}
 			else {
+				let retrievable = result.crewToCite.filter(f => playerData.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length))
+				result.crewToRetrieve = retrievable.map((r, i) => ({ ...JSON.parse(JSON.stringify(r)), pickerId: i + 1 }));
 				this.setState({ citeData: result });	
 			}
 
@@ -653,6 +657,10 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 		const { sort, direction } = this.state;
 		data = this.sortcrew(data ?? [], training, engine);
 
+		const formatVoyImp = (value: string) => {
+			return value.split("/").map(m => m+"_skill").map(skill => CONFIG.SKILLS[skill]).join("/");
+		}
+
 		return (<div style={{overflowX: "auto"}}>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
@@ -805,7 +813,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 									</React.Fragment>
 								}
 								<Table.Cell>
-									<Popup trigger={<b>{row.voyagesImproved?.length}</b>} content={row.voyagesImproved?.join(', ')} />
+									<Popup trigger={<b>{row.voyagesImproved?.length}</b>} content={row.voyagesImproved?.map(voy => formatVoyImp(voy)).join(', ')} />
 								</Table.Cell>
 								{engine === 'beta_tachyon_pulse' &&
 									<React.Fragment>
@@ -820,7 +828,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 											</div>
 										</Table.Cell>
 										<Table.Cell>
-											<Popup trigger={<b>{row.amTraits?.length}</b>} content={row.amTraits?.join(', ')} />
+											<Popup trigger={<b>{row.amTraits?.length}</b>} content={row.amTraits?.map(tr => this.context.core.translation.trait_names[tr]).join(', ')} />
 										</Table.Cell>
 										<Table.Cell>
 											<Popup trigger={<b>{row.collectionsIncreased?.length}</b>} content={row.collectionsIncreased?.join(' / ')} />
@@ -1289,6 +1297,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 						<Tab
 						 	panes={[
 							{ menuItem: narrow ? 'Cite' : 'Crew To Cite', render: () => this.renderTable(citeData?.crewToCite, "cite", false) },
+							{ menuItem: narrow ? 'Retrievable' : 'Retrievable Only', render: () => this.renderTable(citeData?.crewToRetrieve, "retrieve", false) },
 							{ menuItem: narrow ? 'Train' : 'Crew To Train', render: () => this.renderTable(citeData?.crewToTrain, "train", true) },
 							{ menuItem: narrow ? 'Groups' : 'Voyage Groups' + (compareCount ? ' (' + compareCount + ')' : '') , render: () => this.renderVoyageGroups(citeData, confine) },
 						]} />
