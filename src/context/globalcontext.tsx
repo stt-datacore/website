@@ -36,11 +36,6 @@ const defaultGlobal: IDefaultGlobal = {
 
 export const GlobalContext = React.createContext<IDefaultGlobal>(defaultGlobal);
 
-interface ILocalizedSet {
-	core: ICoreContext;
-	player: PlayerContextData;
-}
-
 export const GlobalProvider = (props: GlobalProviderProperties) => {
     const core = React.useContext(DataContext);
     const player = React.useContext(PlayerContext);
@@ -55,18 +50,17 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 	React.useEffect(() => {
 		if (!localizationTrigger) return;
 		const translatedCore: TranslatedCore = localized.translateCore();
-		const translatedPlayer: PlayerContextData = localized.translatePlayer(player);
 		setLocalizedCore({ ...core, ...translatedCore });
-		setLocalizedPlayer(translatedPlayer);
 		localizationTrigger.onReady();
-	}, [localizationTrigger, player]);
+	}, [localizationTrigger]);
 
-	// React.useEffect(() => {
-	// 	if (!localizationTrigger) return;
-	// 	const translatedPlayer: PlayerContextData = localized.translatePlayer(player);
-	// 	setLocalizedPlayer(translatedPlayer);
-	// 	localizationTrigger.onReady();
-	// }, [player]);
+	React.useEffect(() => {
+		const translatedPlayer: PlayerContextData = localized.translatePlayer(player);
+		setLocalizedPlayer(translatedPlayer);
+	}, [player]);
+
+	// Alternatively translate player in-place
+	// const localizedPlayer: PlayerContextData = localized.translatePlayer(player);
 
 	if (typeof window !== 'undefined') {
 		window.addEventListener('resize', (e) => {
@@ -85,7 +79,7 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 		maxBuffs = core.all_buffs;
 	}
 
-	const providerValue: IDefaultGlobal = {        
+	const providerValue: IDefaultGlobal = {
 		core: localizedCore,
 		player: localizedPlayer,
 		localized,
@@ -93,7 +87,7 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 		isMobile,
 		readyLocalizedCore
 	};
-	
+
 	return (
 		<GlobalContext.Provider value={providerValue}>
 			{children}
