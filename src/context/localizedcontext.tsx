@@ -11,7 +11,6 @@ import { PlayerContext, PlayerContextData } from './playercontext';
 import CONFIG from '../components/CONFIG';
 import { useStateWithStorage } from '../utils/storage';
 import { useTranslation } from 'react-i18next';
-import { TFunction, TFunctionReturnOptionalDetails, TOptions, TOptionsBase } from 'i18next';
 
 interface LocalizedProviderProps {
 	children?: JSX.Element;
@@ -62,7 +61,7 @@ export interface ILocalizedData extends IGameStrings {
 	setPreferredLanguage: (value: SupportedLanguage) => void;
 	translateCore: () => TranslatedCore;
 	translatePlayer: (playerIn: PlayerContextData) => PlayerContextData;
-	t: (value: string) => string
+	t: (value: string, options?: any) => string
 };
 
 const defaultGameStrings: IGameStrings = {
@@ -101,6 +100,7 @@ function getBrowserLanguage(): SupportedLanguage {
 }
 
 export const LocalizedProvider = (props: LocalizedProviderProps) => {
+	const { t, i18n } = useTranslation();
 	const core = React.useContext(DataContext);
 	const player = React.useContext(PlayerContext);	
 	const { children } = props;
@@ -121,11 +121,12 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	// Language and strings sent to UI
 	const [language, setLanguage] = useStateWithStorage<SupportedLanguage | undefined>('localized/language', undefined);
 	const [gameStrings, setGameStrings] = useStateWithStorage<IGameStrings>('localized/gamestrings', defaultGameStrings);
-	const { t } = useTranslation(undefined, { lng: language === 'sp' ? 'es' : (language ?? 'en') });
 	
 	// Update language on user preference change
 	React.useEffect(() => {
-		if (preferredLanguage) fetchGameStrings(preferredLanguage);
+		if (preferredLanguage) {
+			fetchGameStrings(preferredLanguage);
+		}
 	}, [preferredLanguage]);
 
 	// Update language on player data import (or revert to browser language on player data clear)
@@ -135,6 +136,10 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		const playerLanguage: SupportedLanguage = (player.playerData?.player?.lang ?? getBrowserLanguage()) as SupportedLanguage;
 		fetchGameStrings(playerLanguage);
 	}, [player]);
+
+	React.useEffect(() => {
+		i18n.changeLanguage(language === 'sp' ? 'es' : (language ?? 'en'));
+	}, [language])
 
 	if (!language)
 		return <span><Icon loading name='spinner' /> Loading translations...</span>;
