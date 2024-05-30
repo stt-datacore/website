@@ -205,30 +205,30 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		// Never assume symbols exist within archetypes
 		//	Fall back to defaults (i.e. English) if they don't exist
 		const crewArchetypes = {}, shipArchetypes = {}, collections = {}, itemArchetypes = {};
+		translationJson.crew_archetypes.forEach(crew => {
+			crewArchetypes[crew.symbol] = {
+				name: crew.name,
+				short_name: crew.short_name
+			};
+		});
+
+		translationJson.ship_archetypes.forEach(ship => {
+			shipArchetypes[ship.symbol] = {
+				name: ship.name,
+				flavor: ship.flavor,
+				actions: ship.actions
+			};
+		});
+
+		// Create a fake symbol for collections using collection id
+		translationJson.collections.forEach(collection => {
+			collections[`cc-${collection.id}`] = {
+				name: collection.name,
+				description: collection.description
+			}
+		});
+
 		if (newLanguage !== 'en') {
-			translationJson.crew_archetypes.forEach(crew => {
-				crewArchetypes[crew.symbol] = {
-					name: crew.name,
-					short_name: crew.short_name
-				};
-			});
-
-			translationJson.ship_archetypes.forEach(ship => {
-				shipArchetypes[ship.symbol] = {
-					name: ship.name,
-					flavor: ship.flavor,
-					actions: ship.actions
-				};
-			});
-
-			// Create a fake symbol for collections using collection id
-			translationJson.collections.forEach(collection => {
-				collections[`cc-${collection.id}`] = {
-					name: collection.name,
-					description: collection.description
-				}
-			});
-
 			const itemsResponse: Response = await fetch(`/structured/items_${newLanguage}.json`);
 			const itemsJson: ItemTranslation[] = await itemsResponse.json();
 			itemsJson.forEach(item => {
@@ -287,7 +287,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 					col.description = trcol.description;
 				}
 			});
-
+			
 			playerData.player.character.crew = postProcessCrewTranslations(playerData.player.character.crew, gameStrings)!;
 			playerData.player.character.crew.forEach((crew) => {
 				let coreCrew = core.crew.find(f => f.symbol === crew.symbol);
