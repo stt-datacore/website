@@ -10,7 +10,7 @@ import { DataContext } from './datacontext';
 import { PlayerContext, PlayerContextData } from './playercontext';
 import CONFIG from '../components/CONFIG';
 import { useStateWithStorage } from '../utils/storage';
-import { useTranslation } from 'react-i18next';
+//import { useTranslation } from 'react-i18next';
 
 interface LocalizedProviderProps {
 	children?: JSX.Element;
@@ -100,7 +100,7 @@ function getBrowserLanguage(): SupportedLanguage {
 }
 
 export const LocalizedProvider = (props: LocalizedProviderProps) => {
-	const { t, i18n } = useTranslation();
+	//const { t, i18n } = useTranslation();
 	const core = React.useContext(DataContext);
 	const player = React.useContext(PlayerContext);	
 	const { children } = props;
@@ -113,8 +113,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			rememberForever: true,
 			onInitialize: (_storageKey: string, language: SupportedLanguage | undefined)  => {
 				// If no language preference, use browser language
-				if (!language) fetchGameStrings(getBrowserLanguage());
-				else i18n.changeLanguage(language === 'sp' ? 'es' : (language ?? 'en'));
+				if (!language) fetchGameStrings(getBrowserLanguage());			
 			}
 		}
 	);
@@ -122,11 +121,11 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	// Language and strings sent to UI
 	const [language, setLanguage] = useStateWithStorage<SupportedLanguage | undefined>('localized/language', undefined);
 	const [gameStrings, setGameStrings] = useStateWithStorage<IGameStrings>('localized/gamestrings', defaultGameStrings);
-	
+	const [webStrings, setWebStrings] = useStateWithStorage<any>('localization/webstrings', {});
+
 	// Update language on user preference change
 	React.useEffect(() => {
 		if (preferredLanguage) {
-			i18n.changeLanguage(preferredLanguage === 'sp' ? 'es' : (preferredLanguage ?? 'en'));
 			fetchGameStrings(preferredLanguage);
 		}
 	}, [preferredLanguage]);
@@ -135,13 +134,23 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	//	Ignore player data change if user preferred language already set
 	React.useEffect(() => {
 		if (preferredLanguage) return;
-		const playerLanguage: SupportedLanguage = (player.playerData?.player?.lang ?? getBrowserLanguage()) as SupportedLanguage;
-		i18n.changeLanguage(playerLanguage === 'sp' ? 'es' : (playerLanguage ?? 'en'));
+		const playerLanguage: SupportedLanguage = (player.playerData?.player?.lang ?? getBrowserLanguage()) as SupportedLanguage;		
 		fetchGameStrings(playerLanguage);	
 	}, [player]);
 
 	if (!language)
 		return <span><Icon loading name='spinner' /> Loading translations...</span>;
+
+	const t = (v: string, opts?: any) => {
+		if (!webStrings) return v;
+		let p = v.split(".");
+		let c = p.length;
+		let obj = webStrings;
+		for (let i = 0; i < c; i++) {
+			obj = obj[p[i]];
+		}
+		return obj;
+	}
 
 	const localizedData: ILocalizedData = {
 		...gameStrings,
@@ -152,6 +161,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		t
 	};
 
+
 	return (
 		<LocalizedContext.Provider key={language} value={localizedData}>
 			{children}
@@ -160,7 +170,13 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	// Fetch translation and convert arrays to objects, as needed
 	async function fetchGameStrings(newLanguage: SupportedLanguage): Promise<void> {
-		if (language === newLanguage) return;
+		const webStringsResponse: Response = await fetch(`/structured/locales/${newLanguage}/translation.json`);
+		const webStringsJson: any = await webStringsResponse.json();
+
+		if (language === newLanguage) {
+			setWebStrings(webStringsJson);
+			return;
+		}
 
 		// TODO: Rework CONFIG translations
 		CONFIG.setLanguage(newLanguage);
@@ -221,9 +237,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			SHIP_ARCHETYPES: shipArchetypes,
 			COLLECTIONS: collections,
 			ITEM_ARCHETYPES: itemArchetypes
-		};
+		};		
 		setGameStrings({...translatedGameStrings});
-
+		setWebStrings(webStringsJson);
 		setLanguage(newLanguage);
 	}
 
@@ -364,6 +380,5 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			return [undefined, undefined];
 		}
 	}
-	
-	
+
 };

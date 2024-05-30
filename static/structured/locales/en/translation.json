@@ -1,0 +1,47 @@
+{
+    "menu": {
+        "about_title": "About",
+        "game_info_title": "Game Info",
+        "game_info": {
+            "episodes": "Episodes",
+            "events": "Events",
+            "voyage_hof": "Voyage Hall of Fame",
+            "misc_game_stats": "Misc Game Stats",
+            "bridge_crew_tool": "Bridge Crew Tool"
+        },
+        "player": {
+            "import_player_data_ellipses": "Import Player Data ..."
+        },
+        "roster_title": "Roster",
+        "roster": {
+            "crew": "Crew",
+            "ships": "Ships",
+            "items": "Items",
+            "unneeded_items": "Unneeded Items"
+        },
+        "tools_title": "Tools",
+        "tools": {
+            "behold_helper": "Behold Helper",
+            "shuttle_helper": "Shuttle Helper",
+            "factions": "Factions",
+            "event_planner": "Event Planner",
+            "gauntlet": "Gauntlet",
+            "citation_optimizer": "Citation Optimizer",
+            "voyage_calculator": "Voyage Calculator",
+            "voyage_history": "Voyage History",
+            "collection_planner": "Collection Planner",
+            "crew_retrieval": "Crew Retrieval",
+            "fleet_boss_battles": "Fleet Boss Battles",
+            "continuum_helper": "Continuum Helper"
+        },
+        "site_beta_switch": "Switch between production and beta"
+    },
+    "gauntlet": {
+        "gauntlet": "Gauntlet",
+        "gauntlets": "Gauntlets",
+        "today_gauntlet": "Today's Gauntlet",
+        "yesterday_gauntlet": "Yesterday's Gauntlet",
+        "previous_gauntlets": "Previous Gauntlets",
+        "browse_gauntlets": "Browse Gauntlets"    
+    }
+}

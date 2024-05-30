@@ -347,9 +347,9 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	let templateCrew = JSON.parse(JSON.stringify(origCrew)) as PlayerCrew;
 	let outputcrew = [] as PlayerCrew[];
 
-	if (origCrew.symbol === 'torres_injured_crew') {
-		console.log("break");
-	}
+	// if (origCrew.symbol === 'torres_injured_crew') {
+	// 	console.log("break");
+	// }
 	if (buffConfig && !Object.keys(buffConfig)?.length) buffConfig = undefined;
 
 	if ("prospect" in origCrew && origCrew.prospect && origCrew.rarity) {
