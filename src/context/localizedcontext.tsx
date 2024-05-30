@@ -6,7 +6,7 @@ import { CrewMember } from '../model/crew';
 import { EquipmentItem } from '../model/equipment';
 import { Schematics, Ship } from '../model/ship';
 import { Collection } from '../model/game-elements';
-import { DataContext } from './datacontext';
+import { DataContext, ICoreContext } from './datacontext';
 import { PlayerContext, PlayerContextData } from './playercontext';
 import CONFIG from '../components/CONFIG';
 import { useStateWithStorage } from '../utils/storage';
@@ -65,7 +65,7 @@ export interface ILocalizedData extends IGameStrings {
 	language: SupportedLanguage;
 	setPreferredLanguage: (value: SupportedLanguage) => void;
 	translateCore: () => TranslatedCore;
-	translatePlayer: (playerIn: PlayerContextData) => PlayerContextData;
+	translatePlayer: (localizedCore: ICoreContext) => PlayerContextData;
 	t: (value: string, options?: any) => string
 };
 
@@ -136,7 +136,12 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	// Update languages on user preference change
 	React.useEffect(() => {
 		if (preferredLanguage) {
-			fetchStrings(preferredLanguage, languages?.game ?? preferredLanguage);
+			if (player.playerData) {
+				fetchStrings(preferredLanguage, languages?.game ?? preferredLanguage);
+			}
+			else {
+				fetchStrings(preferredLanguage, preferredLanguage);
+			}
 		}
 	}, [preferredLanguage]);
 
@@ -203,6 +208,8 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 		// TODO: Rework CONFIG translations
 		CONFIG.setLanguage(gameLanguage);
+
+		console.log(gameLanguage);
 
 		const translationResponse: Response = await fetch(`/structured/translation_${gameLanguage}.json`);
 		const translationJson: TranslationSet = await translationResponse.json();
@@ -280,13 +287,13 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		};
 	}
 
-	function translatePlayer(context: PlayerContextData): PlayerContextData {
-		const output = { ... context };
-		const { playerData } = context;
+	function translatePlayer(localizedCore: ICoreContext): PlayerContextData {
+		const localizedPlayer: PlayerContextData = {...player};
+		const { playerData } = player;
 
 		// No need to translate player for English
 		if (!playerData || !languages || languages.game === 'en')
-			return output;
+			return localizedPlayer;
 
 		if (playerData && Object.keys(collectionMap).length) {
 			playerData.player.character.cryo_collections.forEach((col) => {
@@ -299,21 +306,21 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 			playerData.player.character.crew = postProcessCrewTranslations(playerData.player.character.crew, gameStrings)!;
 			playerData.player.character.crew.forEach((crew) => {
-				let coreCrew = core.crew.find(f => f.symbol === crew.symbol);
+				let coreCrew = localizedCore.crew.find(f => f.symbol === crew.symbol);
 				if (coreCrew) crew.collections = coreCrew.collections.map(col => collectionMap[col]);
 			});
 			if (playerData.player.character.unOwnedCrew) {
 				playerData.player.character.unOwnedCrew = postProcessCrewTranslations(playerData.player.character.unOwnedCrew, gameStrings)!;
 				playerData.player.character.unOwnedCrew.forEach((crew) => {
-					let coreCrew = core.crew.find(f => f.symbol === crew.symbol);
+					let coreCrew = localizedCore.crew.find(f => f.symbol === crew.symbol);
 					if (coreCrew) crew.collections = coreCrew.collections.map(col => collectionMap[col]);
 				});
 			}
 		}
-		if (output.playerShips) {
-			[,output.playerShips] = postProcessShipTranslations([], output.playerShips, gameStrings, true);
+		if (localizedPlayer.playerShips) {
+			[,localizedPlayer.playerShips] = postProcessShipTranslations([], localizedPlayer.playerShips, gameStrings, true);
 		}
-		return output;
+		return localizedPlayer;
 	}
 
 	function postProcessCollectionTranslations(collections: Collection[], mapped_crew: CrewMember[], translation: IGameStrings): Collection[] | undefined {

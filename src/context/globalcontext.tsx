@@ -55,9 +55,9 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 	}, [localizationTrigger]);
 
 	React.useEffect(() => {
-		const translatedPlayer: PlayerContextData = localized.translatePlayer(player);
+		const translatedPlayer: PlayerContextData = localized.translatePlayer(localizedCore);
 		setLocalizedPlayer(translatedPlayer);
-	}, [player]);
+	}, [localizedCore, player]);
 
 	// Alternatively translate player in-place
 	// const localizedPlayer: PlayerContextData = localized.translatePlayer(player);
