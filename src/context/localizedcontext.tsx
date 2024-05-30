@@ -114,6 +114,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			onInitialize: (_storageKey: string, language: SupportedLanguage | undefined)  => {
 				// If no language preference, use browser language
 				if (!language) fetchGameStrings(getBrowserLanguage());
+				else i18n.changeLanguage(language === 'sp' ? 'es' : (language ?? 'en'));
 			}
 		}
 	);
@@ -125,6 +126,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	// Update language on user preference change
 	React.useEffect(() => {
 		if (preferredLanguage) {
+			i18n.changeLanguage(preferredLanguage === 'sp' ? 'es' : (preferredLanguage ?? 'en'));
 			fetchGameStrings(preferredLanguage);
 		}
 	}, [preferredLanguage]);
@@ -134,12 +136,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	React.useEffect(() => {
 		if (preferredLanguage) return;
 		const playerLanguage: SupportedLanguage = (player.playerData?.player?.lang ?? getBrowserLanguage()) as SupportedLanguage;
-		fetchGameStrings(playerLanguage);
+		i18n.changeLanguage(playerLanguage === 'sp' ? 'es' : (playerLanguage ?? 'en'));
+		fetchGameStrings(playerLanguage);	
 	}, [player]);
-
-	React.useEffect(() => {
-		i18n.changeLanguage(language === 'sp' ? 'es' : (language ?? 'en'));
-	}, [language])
 
 	if (!language)
 		return <span><Icon loading name='spinner' /> Loading translations...</span>;
