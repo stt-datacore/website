@@ -104,6 +104,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	const core = React.useContext(DataContext);
 	const player = React.useContext(PlayerContext);	
 	const { children } = props;
+	const collectionMap = {} as {[key:string]:string};
 
 	// Stored user preference
 	const [preferredLanguage, setPreferredLanguage] = useStateWithStorage<SupportedLanguage | undefined>(
@@ -175,7 +176,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 
 	return (
-		<LocalizedContext.Provider value={localizedData}>
+		<LocalizedContext.Provider key={language} value={localizedData}>
 			{children}
 		</LocalizedContext.Provider>
 	);
@@ -280,7 +281,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		const { playerData } = context;
 		if (playerData) {
 			playerData.player.character.crew = postProcessCrewTranslations(playerData.player.character.crew, gameStrings)!;
-			if (playerData.player.character.unOwnedCrew) playerData.player.character.unOwnedCrew = postProcessCrewTranslations(playerData.player.character.unOwnedCrew, gameStrings)!;
+			if (playerData.player.character.unOwnedCrew) {
+				playerData.player.character.unOwnedCrew = postProcessCrewTranslations(playerData.player.character.unOwnedCrew, gameStrings)!;
+			}
 		}
 		if (output.playerShips) {
 			[,output.playerShips] = postProcessShipTranslations([], output.playerShips, gameStrings, true);
@@ -289,22 +292,20 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	}
 
 	function postProcessCollectionTranslations(collections: Collection[], mapped_crew: CrewMember[], translation: IGameStrings): Collection[] | undefined {
-		const colmap = {} as {[key:string]:string};
 		if (mapped_crew.length && collections.length && translation.COLLECTIONS) {
 			let result = collections.map((col) => {
 				col = { ...col };
-				colmap[col.name] = col.name;
+				collectionMap[col.name] = col.name;
 				let arch = translation.COLLECTIONS[`cc-${col.id}`];
 				if (arch) {
-					colmap[col.name] = arch.name;
+					collectionMap[col.name] = arch.name;
 					col.name = arch.name;
 					col.description = arch.description;
-
 				}
 				return col;
 			});
 			mapped_crew.forEach((crew) => {
-				crew.collections = crew.collections.map(col => colmap[col]);
+				crew.collections = crew.collections.map(col => collectionMap[col]);
 			});
 			return result;
 		}
