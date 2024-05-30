@@ -138,17 +138,16 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		fetchGameStrings(playerLanguage);	
 	}, [player]);
 
-	if (!language)
+	if (!language || !webStrings)
 		return <span><Icon loading name='spinner' /> Loading translations...</span>;
 
-	const t = (v: string, opts?: any) => {
+	function t(v: string, opts?: any) {
 		try {
 			if (!webStrings) return v;
 			let p = v.split(".");
-			let c = p.length;
 			let obj = webStrings;
-			for (let i = 0; i < c; i++) {
-				obj = obj[p[i]];
+			for (let key of p) {
+				obj = obj[key];
 			}
 			if (opts && typeof obj === 'string') {
 				let keys = Object.keys(opts);
@@ -176,7 +175,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 
 	return (
-		<LocalizedContext.Provider key={language} value={localizedData}>
+		<LocalizedContext.Provider value={localizedData}>
 			{children}
 		</LocalizedContext.Provider>
 	);

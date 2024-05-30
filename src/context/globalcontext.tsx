@@ -56,9 +56,9 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 		if (!localizationTrigger) return;
 		const translatedCore: TranslatedCore = localized.translateCore();
 		const translatedPlayer: PlayerContextData = localized.translatePlayer(player);
-		setLocalizedSet({ core: { ...core, ...translatedCore }, player: { ...player, ... translatedPlayer } });
+		setLocalizedSet({ core: { ...core, ...translatedCore }, player: translatedPlayer });
 		localizationTrigger.onReady();
-	}, [localizationTrigger]);
+	}, [localizationTrigger, player]);
 
 	if (typeof window !== 'undefined') {
 		window.addEventListener('resize', (e) => {
