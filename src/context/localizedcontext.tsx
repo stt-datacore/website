@@ -183,16 +183,21 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	// Fetch translation and convert arrays to objects, as needed
 	async function fetchGameStrings(newLanguage: SupportedLanguage): Promise<void> {
-		const webStringsResponse: Response = await fetch(`/structured/locales/${newLanguage}/translation.json`);
-		const webStringsJson: any = await webStringsResponse.json();
-
+		
 		if (language === newLanguage) {
-			setWebStrings(webStringsJson);
+			if (!webStrings) {
+				const webStringsResponse: Response = await fetch(`/structured/locales/${newLanguage}/translation.json`);
+				const webStringsJson: any = await webStringsResponse.json();
+				setWebStrings(webStringsJson);
+			}		
 			return;
 		}
 
 		// TODO: Rework CONFIG translations
 		CONFIG.setLanguage(newLanguage);
+
+		const webStringsResponse: Response = await fetch(`/structured/locales/${newLanguage}/translation.json`);
+		const webStringsJson: any = await webStringsResponse.json();
 
 		const translationResponse: Response = await fetch(`/structured/translation_${newLanguage}.json`);
 		const translationJson: TranslationSet = await translationResponse.json();
