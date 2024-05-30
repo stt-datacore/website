@@ -50,22 +50,24 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 	const [localizedCore, setLocalizedCore ] = React.useState<ICoreContext>(core);
 	const [localizedPlayer, setLocalizedPlayer] = React.useState<PlayerContextData>(player);
 	const [localizationTrigger, setLocalizationTrigger] = React.useState<ILocalizationTrigger | undefined>(undefined);
-
+	const [pp, setpp] = React.useState('no_player');
 	const [isMobile, setIsMobile] = React.useState(typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH);
 
 	React.useEffect(() => {
 		if (!localizationTrigger) return;
 		const translatedCore: TranslatedCore = localized.translateCore();
-		setLocalizedCore({ ...core, ...translatedCore });
-		localizationTrigger.onReady();
-	}, [localizationTrigger]);
-
-	React.useEffect(() => {
-		if (!localizationTrigger) return;
 		const translatedPlayer: PlayerContextData = localized.translatePlayer(player);
+		setLocalizedCore({ ...core, ...translatedCore });
 		setLocalizedPlayer(translatedPlayer);
 		localizationTrigger.onReady();
-	}, [player]);
+	}, [localizationTrigger, player]);
+
+	// React.useEffect(() => {
+	// 	if (!localizationTrigger) return;
+	// 	const translatedPlayer: PlayerContextData = localized.translatePlayer(player);
+	// 	setLocalizedPlayer(translatedPlayer);
+	// 	localizationTrigger.onReady();
+	// }, [player]);
 
 	if (typeof window !== 'undefined') {
 		window.addEventListener('resize', (e) => {
@@ -92,9 +94,9 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 		isMobile,
 		readyLocalizedCore
 	};
-
+	
 	return (
-		<GlobalContext.Provider value={providerValue}>
+		<GlobalContext.Provider key={pp} value={providerValue}>
 			{children}
 		</GlobalContext.Provider>
 	);

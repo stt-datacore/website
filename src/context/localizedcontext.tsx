@@ -279,7 +279,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	function translatePlayer(context: PlayerContextData): PlayerContextData {		
 		const output = { ... context };
 		const { playerData } = context;
-		if (playerData) {
+		if (playerData && Object.keys(collectionMap).length) {
 			playerData.player.character.crew = postProcessCrewTranslations(playerData.player.character.crew, gameStrings)!;
 			if (playerData.player.character.unOwnedCrew) {
 				playerData.player.character.unOwnedCrew = postProcessCrewTranslations(playerData.player.character.unOwnedCrew, gameStrings)!;
@@ -301,6 +301,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 					collectionMap[col.name] = arch.name;
 					col.name = arch.name;
 					col.description = arch.description;
+
 				}
 				return col;
 			});
