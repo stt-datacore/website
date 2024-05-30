@@ -280,9 +280,25 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		const output = { ... context };
 		const { playerData } = context;
 		if (playerData && Object.keys(collectionMap).length) {
+			playerData.player.character.cryo_collections.forEach((col) => {
+				if (gameStrings.COLLECTIONS[`cc-${col.type_id}`]) {
+					let trcol = gameStrings.COLLECTIONS[`cc-${col.type_id}`];
+					col.name = trcol.name;
+					col.description = trcol.description;
+				}
+			});
+
 			playerData.player.character.crew = postProcessCrewTranslations(playerData.player.character.crew, gameStrings)!;
+			playerData.player.character.crew.forEach((crew) => {
+				let coreCrew = core.crew.find(f => f.symbol === crew.symbol);
+				if (coreCrew) crew.collections = coreCrew.collections.map(col => collectionMap[col]);
+			});
 			if (playerData.player.character.unOwnedCrew) {
 				playerData.player.character.unOwnedCrew = postProcessCrewTranslations(playerData.player.character.unOwnedCrew, gameStrings)!;
+				playerData.player.character.unOwnedCrew.forEach((crew) => {
+					let coreCrew = core.crew.find(f => f.symbol === crew.symbol);
+					if (coreCrew) crew.collections = coreCrew.collections.map(col => collectionMap[col]);
+				});
 			}
 		}
 		if (output.playerShips) {
