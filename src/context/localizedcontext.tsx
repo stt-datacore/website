@@ -142,14 +142,27 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		return <span><Icon loading name='spinner' /> Loading translations...</span>;
 
 	const t = (v: string, opts?: any) => {
-		if (!webStrings) return v;
-		let p = v.split(".");
-		let c = p.length;
-		let obj = webStrings;
-		for (let i = 0; i < c; i++) {
-			obj = obj[p[i]];
+		try {
+			if (!webStrings) return v;
+			let p = v.split(".");
+			let c = p.length;
+			let obj = webStrings;
+			for (let i = 0; i < c; i++) {
+				obj = obj[p[i]];
+			}
+			if (opts && typeof obj === 'string') {
+				let keys = Object.keys(opts);
+				for (let key of keys) {
+					while (obj.indexOf(`{{${key}}}`) !== -1) {
+						obj = obj.replace(`{{${key}}}`, opts[key]);
+					}
+				}
+			}
+			return obj;
 		}
-		return obj;
+		catch {
+			return v;
+		}
 	}
 
 	const localizedData: ILocalizedData = {
