@@ -50,7 +50,6 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 	const [localizedCore, setLocalizedCore ] = React.useState<ICoreContext>(core);
 	const [localizedPlayer, setLocalizedPlayer] = React.useState<PlayerContextData>(player);
 	const [localizationTrigger, setLocalizationTrigger] = React.useState<ILocalizationTrigger | undefined>(undefined);
-	const [pp, setpp] = React.useState('no_player');
 	const [isMobile, setIsMobile] = React.useState(typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH);
 
 	React.useEffect(() => {
@@ -96,7 +95,7 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 	};
 	
 	return (
-		<GlobalContext.Provider key={pp} value={providerValue}>
+		<GlobalContext.Provider value={providerValue}>
 			{children}
 		</GlobalContext.Provider>
 	);
