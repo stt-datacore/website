@@ -1,11 +1,40 @@
 {
     "menu": {
-        "behold_helper": "Aide au choix",
-        "shuttle_helper": "Aide aux Navettes",
-        "factions": "Factions",
-        "event_planner": "Planificateur d'événements",
-        "gauntlet": "Gantelet",
-        "citation_optimizer": "Optimiseur des mentions honorables"
+        "about_title": "À propos",
+        "game_info_title": "Info jeu",
+        "game_info": {
+            "episodes": "Épisodes",
+            "events": "Événements",
+            "voyage_hof": "Temple de la renommée des voyages",
+            "misc_game_stats": "Statistiques diverses du jeu",
+            "bridge_crew_tool": "Outil pour l'équipage de la passerelle"
+        },
+        "player": {
+            "import_player_data_ellipses": "Importer les données ..."
+        },
+        "roster_title": "Liste",
+        "roster": {
+            "crew": "Équipage",
+            "ships": "Vaisseaux",
+            "items": "Inventaire",
+            "unneeded_items": "Inventaire inutile"
+        },
+        "tools_title": "Outils",
+        "tools": {
+            "behold_helper": "Aide au choix",
+            "shuttle_helper": "Aide aux Navettes",
+            "factions": "Factions",
+            "event_planner": "Planificateur d'événements",
+            "gauntlet": "Gantelet",
+            "citation_optimizer": "Optimiseur des mentions honorables",
+            "voyage_calculator": "Calculateur de voyage",
+            "voyage_history": "Histoire des voyages",
+            "collection_planner": "Planificateur de collections",
+            "crew_retrieval": "Récupération de l'équipage",
+            "fleet_boss_battles": "Combats de boss de flotte",
+            "continuum_helper": "Assistant de continuum"
+        },
+        "site_beta_switch": "Basculer entre la production et la version bêta"
     },
     "gauntlet": {
         "gauntlet": "Gantelet",

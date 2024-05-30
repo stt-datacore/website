@@ -95,19 +95,19 @@ export const Navigation = (props: NavigationProps) => {
 	const avatar = portrait;
 
 	const toolsSubMenu: NavItem[] = [
-		{ optionKey: 'behold', src: '/media/portal.png', title: t('menu.behold_helper'), link: "/behold", sidebarRole: 'item' },	// Behold available at launch
-		{ optionKey: 'shuttles', src: '/media/shuttle_icon.png', title: t('menu.shuttle_helper'), link: "/shuttlehelper", sidebarRole: 'item' },	// Shuttles available at launch
-		{ optionKey: 'faction', title: t('menu.factions'), src: '/media/faction.png', link: "/factions", sidebarRole: 'item' },	// Factions available at launch
+		{ optionKey: 'behold', src: '/media/portal.png', title: t('menu.tools.behold_helper'), link: "/behold", sidebarRole: 'item' },	// Behold available at launch
+		{ optionKey: 'shuttles', src: '/media/shuttle_icon.png', title: t('menu.tools.shuttle_helper'), link: "/shuttlehelper", sidebarRole: 'item' },	// Shuttles available at launch
+		{ optionKey: 'faction', title: t('menu.tools.factions'), src: '/media/faction.png', link: "/factions", sidebarRole: 'item' },	// Factions available at launch
 		// { optionKey: 'fleet', title: "Fleet", src: '/media/fleet_icon.png', link: "/fleet", sidebarRole: 'item' },	// Factions available at launch
-		{ optionKey: 'event', src: '/media/event.png', title: t('menu.event_planner'), link: "/eventplanner", sidebarRole: 'item' },	// Events added post-launch
-		{ optionKey: 'gauntlet', src: '/media/gauntlet.png', title: t('menu.gauntlet'), link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
-		{ optionKey: 'cite', src: `${process.env.GATSBY_ASSETS_URL}/atlas/star_reward.png`, title: t('menu.citation_optimizer'), link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
-		{ optionKey: 'voyage', src: "/media/voyage.png", title: "Voyage Calculator", link: "/voyage", sidebarRole: 'item' },	// Voyages added v3
-		{ optionKey: 'voyhist', src: "/media/antimatter_icon.png", title: "Voyage History", link: "/voyagehistory", sidebarRole: 'item' },	// Voyages added v3
-		{ optionKey: 'collection', src: '/media/vault.png', title: "Collection Planner", link: "/collections", sidebarRole: 'item' },	// Collections added v4
-		{ optionKey: 'retrieval', src: '/media/retrieval.png', title: "Crew Retrieval", link: "/retrieval", sidebarRole: 'item' },	// Crew retrieval added v8
-		{ optionKey: 'fbb', src: '/media/fbb.png', title: "Fleet Boss Battles", link: "/fbb", sidebarRole: 'item' },	// Fleet boss battles added v9
-		{ optionKey: 'continuum', src: '/media/continuum.png', title: "Continuum Helper", link: "/continuum", sidebarRole: 'item' },	// Continuum missions added v10
+		{ optionKey: 'event', src: '/media/event.png', title: t('menu.tools.event_planner'), link: "/eventplanner", sidebarRole: 'item' },	// Events added post-launch
+		{ optionKey: 'gauntlet', src: '/media/gauntlet.png', title: t('menu.tools.gauntlet'), link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
+		{ optionKey: 'cite', src: `${process.env.GATSBY_ASSETS_URL}/atlas/star_reward.png`, title: t('menu.tools.citation_optimizer'), link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
+		{ optionKey: 'voyage', src: "/media/voyage.png", title: t('menu.tools.voyage_calculator'), link: "/voyage", sidebarRole: 'item' },	// Voyages added v3
+		{ optionKey: 'voyhist', src: "/media/antimatter_icon.png", title: t('menu.tools.voyage_history'), link: "/voyagehistory", sidebarRole: 'item' },	// Voyages added v3
+		{ optionKey: 'collection', src: '/media/vault.png', title: t('menu.tools.collection_planner'), link: "/collections", sidebarRole: 'item' },	// Collections added v4
+		{ optionKey: 'retrieval', src: '/media/retrieval.png', title: t('menu.tools.crew_retrieval'), link: "/retrieval", sidebarRole: 'item' },	// Crew retrieval added v8
+		{ optionKey: 'fbb', src: '/media/fbb.png', title: t('menu.tools.fleet_boss_battles'), link: "/fbb", sidebarRole: 'item' },	// Fleet boss battles added v9
+		{ optionKey: 'continuum', src: '/media/continuum.png', title: t('menu.tools.continuum_helper'), link: "/continuum", sidebarRole: 'item' },	// Continuum missions added v10
 	];
 
 
@@ -138,7 +138,7 @@ export const Navigation = (props: NavigationProps) => {
 		},
 		{
 			src: `${process.env.GATSBY_ASSETS_URL}${'crew_portraits_cm_empty_sm.png'}`,
-			title: isMobile ? undefined : 'Import Player Data ...',
+			title: isMobile ? undefined : t('menu.player.import_player_data_ellipses'),
 			customAction: () => props.requestPanel('player', 'input'),
 			checkVisible: (data) => {
 				return !context.player.playerData;
@@ -244,24 +244,24 @@ export const Navigation = (props: NavigationProps) => {
 		{ optionKey: '_option3', checkVisible: () => false },
 		{ optionKey: '_option4', checkVisible: () => false },
 		{
-			title: 'Roster',
+			title: t('menu.roster_title'),
             sidebarRole: 'heading',
 			subMenu: [
-				{ optionKey: 'crew', src: '/media/crew_icon.png', title: 'Crew', link: '/', sidebarRole: 'item' },
-				{ optionKey: 'ship', src: '/media/ship_icon.png', title: 'Ships', link: '/ships', sidebarRole: 'item' },
-				{ optionKey: 'items', src: '/media/equipment_icon.png', title: 'Items', link: '/items', sidebarRole: 'item' },
-				{ optionKey: 'unneeded_items', src: '/media/equipment_icon.png', title: 'Unneeded Items', link: '/unneeded', sidebarRole: 'item' },
+				{ optionKey: 'crew', src: '/media/crew_icon.png', title: t('menu.roster.crew'), link: '/', sidebarRole: 'item' },
+				{ optionKey: 'ship', src: '/media/ship_icon.png', title: t('menu.roster.ships'), link: '/ships', sidebarRole: 'item' },
+				{ optionKey: 'items', src: '/media/equipment_icon.png', title: t('menu.roster.items'), link: '/items', sidebarRole: 'item' },
+				{ optionKey: 'unneeded_items', src: '/media/equipment_icon.png', title: t('menu.roster.unneeded_items'), link: '/unneeded', sidebarRole: 'item' },
 			]
 		},
 		{
-			title: 'Tools',
+			title: t('menu.tools_title'),
 			sidebarRole: 'heading',
 			subMenu: toolsSubMenu,
 			checkVisible: () => !isMobile,
 			customRender: (data) => renderColumnsMenu(data, 2)
 		},
 		{
-			title: 'Tools',
+			title: t('menu.tools_title'),
 			sidebarRole: 'heading',
 			subMenu: toolsSubMenu,
 			checkVisible: () => isMobile
@@ -311,14 +311,14 @@ export const Navigation = (props: NavigationProps) => {
 		// 	]
 		// },
 		{
-			title: 'Game Info',
+			title: t('menu.game_info_title'),
             sidebarRole: 'heading',
             subMenu: [
-				{ title: 'Episodes', link: '/episodes', sidebarRole: 'item' },
-				{ title: 'Events', link: '/events', sidebarRole: 'item' },
-				{ title: 'Voyage Hall of Fame', link: '/hall_of_fame', sidebarRole: 'item' },
-				{ title: "Misc Game Stats", link: "/stats", sidebarRole: 'item' },
-				{ title: "Bridge Crew Tool", link: "/bridgecrew", sidebarRole: 'item' },
+				{ title: t('menu.game_info.episodes'), link: '/episodes', sidebarRole: 'item' },
+				{ title: t('menu.game_info.events'), link: '/events', sidebarRole: 'item' },
+				{ title: t('menu.game_info.voyage_hof'), link: '/hall_of_fame', sidebarRole: 'item' },
+				{ title: t('menu.game_info.misc_game_stats'), link: "/stats", sidebarRole: 'item' },
+				{ title: t('menu.game_info.bridge_crew_tool'), link: "/bridgecrew", sidebarRole: 'item' },
 			]
 		},
 		// TODO: Use later?
@@ -339,7 +339,7 @@ export const Navigation = (props: NavigationProps) => {
 		},
 		{
 			title: <Icon name='bug' />,
-			textTitle: 'Switch between Production and Beta',
+			textTitle: t('menu.site_beta_switch'),
 			right: true,
 			customAction: (e, data) => {
 				if (typeof window !== 'undefined') {
@@ -486,11 +486,11 @@ export const Navigation = (props: NavigationProps) => {
 	}
 
 	if (!isMobile) {
-		rightItems.unshift(createSubMenu('About', about));
+		rightItems.unshift(createSubMenu(t('menu.about_title'), about));
 
 	}
 	else {
-		sidebarItems.push(createSubMenu('About', about, true));
+		sidebarItems.push(createSubMenu(t('menu.about_title'), about, true));
 	}
 
 	if (typeof windowGlobal !== 'undefined') {
