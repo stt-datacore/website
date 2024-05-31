@@ -34,7 +34,7 @@ function getLanguageIcon(lang?: SupportedLanguage) {
 			return `${process.env.GATSBY_ASSETS_URL}atlas/flag_spanish_icon.png`;
 		default:
 			return `${process.env.GATSBY_ASSETS_URL}atlas/flag_english_icon.png`;
-			
+
 	}
 }
 
@@ -111,7 +111,7 @@ export const Navigation = (props: NavigationProps) => {
 	];
 
 
-	
+
 	const pages = [
 		{
 			src: '/media/logo.png',
@@ -204,7 +204,7 @@ export const Navigation = (props: NavigationProps) => {
 			sidebarRole: "heading",
 			right: true,
 			subMenu: [
-				{ 
+				{
 					src: getLanguageIcon('en'),
 					title: "EN",
 					tooltip: getLanguageFullName('en'),
@@ -212,7 +212,7 @@ export const Navigation = (props: NavigationProps) => {
 						setPreferredLanguage('en');
 					}
 				},
-				{ 
+				{
 					src: getLanguageIcon('de'),
 					title: "DE",
 					tooltip: getLanguageFullName('de'),
@@ -220,7 +220,7 @@ export const Navigation = (props: NavigationProps) => {
 						setPreferredLanguage('de');
 					}
 				},
-				{ 
+				{
 					src: getLanguageIcon('fr'),
 					title: "FR",
 					tooltip: getLanguageFullName('fr'),
@@ -228,12 +228,18 @@ export const Navigation = (props: NavigationProps) => {
 						setPreferredLanguage('fr');
 					}
 				},
-				{ 
+				{
 					src: getLanguageIcon('sp'),
 					title: "ES",
 					tooltip: getLanguageFullName('sp'),
 					customAction: (e) => {
 						setPreferredLanguage('sp');
+					}
+				},
+				{
+					title: "Default",
+					customAction: (e) => {
+						setPreferredLanguage(undefined);
 					}
 				}
 			]

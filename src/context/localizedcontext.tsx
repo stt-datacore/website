@@ -58,7 +58,7 @@ interface IGameStrings {
 
 export interface ILocalizedData extends IGameStrings {
 	language: SupportedLanguage;
-	setPreferredLanguage: (value: SupportedLanguage) => void;
+	setPreferredLanguage: (value: SupportedLanguage | undefined) => void;
 	translateCore: () => TranslatedCore;
 	translatePlayer: (localizedCore: ICoreContext) => PlayerContextData;
 	t: (value: string, options?: any) => string
@@ -115,9 +115,11 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			onInitialize: (_storageKey: string, language: SupportedLanguage | undefined)  => {
 				// If no language preference, use browser language
 				if (!language) fetchStrings(getBrowserLanguage());
+				setPreferenceLoaded(true);
 			}
 		}
 	);
+	const [preferenceLoaded, setPreferenceLoaded] = React.useState<boolean>(false);
 
 	const [language, setLanguage] = useStateWithStorage<SupportedLanguage | undefined>('localized/language', undefined);
 
@@ -129,6 +131,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	React.useEffect(() => {
 		if (preferredLanguage) {
 			fetchStrings(preferredLanguage);
+		}
+		else if (preferenceLoaded) {
+			fetchStrings(getBrowserLanguage());
 		}
 	}, [preferredLanguage]);
 
