@@ -26,11 +26,6 @@ export interface TranslatedCore {
 	items?: EquipmentItem[];
 };
 
-interface ILanguages {
-	web: SupportedLanguage;
-	game: SupportedLanguage;
-};
-
 interface IGameStrings {
 	TRAIT_NAMES: TraitNames;
 	SHIP_TRAIT_NAMES: ShipTraitNames;
@@ -63,7 +58,7 @@ interface IGameStrings {
 
 export interface ILocalizedData extends IGameStrings {
 	language: SupportedLanguage;
-	setPreferredLanguage: (value: SupportedLanguage) => void;
+	setPreferredLanguage: (value: SupportedLanguage | undefined) => void;
 	translateCore: () => TranslatedCore;
 	translatePlayer: (localizedCore: ICoreContext) => PlayerContextData;
 	t: (value: string, options?: any) => string
@@ -111,53 +106,50 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	const { children } = props;
 	const collectionMap = {} as {[key:string]:string};
 
-	// Stored user preference for web language
+	// Stored user preference for language
 	const [preferredLanguage, setPreferredLanguage] = useStateWithStorage<SupportedLanguage | undefined>(
 		'preferredLanguage',
 		undefined,
 		{
 			rememberForever: true,
-			onInitialize: (_storageKey: string, webLanguage: SupportedLanguage | undefined)  => {
-				// If no web language preference, use browser language
-				if (!webLanguage) {
-					const browserLanguage: SupportedLanguage = getBrowserLanguage();
-					fetchStrings(browserLanguage, browserLanguage);
-				}
+			onInitialize: (_storageKey: string, language: SupportedLanguage | undefined)  => {
+				// If no language preference, use browser language
+				if (!language) fetchStrings(getBrowserLanguage());
+				setPreferenceLoaded(true);
 			}
 		}
 	);
+	const [preferenceLoaded, setPreferenceLoaded] = React.useState<boolean>(false);
 
-	const [languages, setLanguages] = useStateWithStorage<ILanguages | undefined>('localized/languages', undefined);
+	const [language, setLanguage] = useStateWithStorage<SupportedLanguage | undefined>('localized/language', undefined);
 
 	// Localized strings sent to UI
 	const [webStrings, setWebStrings] = useStateWithStorage<any>('localized/webstrings', {});
 	const [gameStrings, setGameStrings] = useStateWithStorage<IGameStrings>('localized/gamestrings', defaultGameStrings);
 
-	// Update languages on user preference change
+	// Update language on user preference change
 	React.useEffect(() => {
 		if (preferredLanguage) {
-			if (player.playerData) {
-				fetchStrings(preferredLanguage, languages?.game ?? preferredLanguage);
-			}
-			else {
-				fetchStrings(preferredLanguage, preferredLanguage);
-			}
+			fetchStrings(preferredLanguage);
+		}
+		else if (preferenceLoaded) {
+			fetchStrings(getBrowserLanguage());
 		}
 	}, [preferredLanguage]);
 
-	// Update languages on player data import (or revert to browser language on player data clear)
+	// Update language on player data import (or revert to browser language on player data clear)
 	React.useEffect(() => {
-		const browserLanguage: SupportedLanguage = getBrowserLanguage();
-		if (player.playerData) {
-			const playerLanguage: SupportedLanguage = player.playerData.player.lang as SupportedLanguage;
-			fetchStrings(preferredLanguage ?? browserLanguage, playerLanguage);
-		}
-		else {
-			fetchStrings(preferredLanguage ?? browserLanguage, preferredLanguage ?? browserLanguage);
+		if (!preferredLanguage) {
+			if (player.playerData) {
+				fetchStrings(player.playerData.player.lang as SupportedLanguage);
+			}
+			else {
+				fetchStrings(getBrowserLanguage());
+			}
 		}
 	}, [player]);
 
-	if (!languages)
+	if (!language)
 		return <span><Icon loading name='spinner' /> Loading translations...</span>;
 
 	function t(v: string, opts?: any) {
@@ -185,7 +177,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	const localizedData: ILocalizedData = {
 		...gameStrings,
-		language: languages.web,	// Sending only web language to UI
+		language,
 		setPreferredLanguage,
 		translateCore,
 		translatePlayer,
@@ -193,31 +185,29 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	};
 
 	return (
-		<LocalizedContext.Provider key={`${languages.web},${languages.game}`} value={localizedData}>
+		<LocalizedContext.Provider key={language} value={localizedData}>
 			{children}
 		</LocalizedContext.Provider>
 	);
 
 	// Fetch translation and convert arrays to objects, as needed
-	async function fetchStrings(webLanguage: SupportedLanguage, gameLanguage: SupportedLanguage): Promise<void> {
-		if (languages && languages.web === webLanguage && languages.game === gameLanguage)
+	async function fetchStrings(newLanguage: SupportedLanguage): Promise<void> {
+		if (language === newLanguage)
 			return;
 
-		const webStringsResponse: Response = await fetch(`/structured/locales/${webLanguage}/translation.json`);
+		const webStringsResponse: Response = await fetch(`/structured/locales/${newLanguage}/translation.json`);
 		const webStringsJson: any = await webStringsResponse.json();
 
 		// TODO: Rework CONFIG translations
-		CONFIG.setLanguage(gameLanguage);
+		CONFIG.setLanguage(newLanguage);
 
-		console.log(gameLanguage);
-
-		const translationResponse: Response = await fetch(`/structured/translation_${gameLanguage}.json`);
+		const translationResponse: Response = await fetch(`/structured/translation_${newLanguage}.json`);
 		const translationJson: TranslationSet = await translationResponse.json();
 
 		// Only process game strings for non-English locales
 		//	Remember to fall back to default values when directly accessing archetypes
 		const crewArchetypes = {}, shipArchetypes = {}, collections = {}, itemArchetypes = {};
-		if (gameLanguage !== 'en') {
+		if (newLanguage !== 'en') {
 			translationJson.crew_archetypes.forEach(crew => {
 				crewArchetypes[crew.symbol] = {
 					name: crew.name,
@@ -241,7 +231,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				}
 			});
 
-			const itemsResponse: Response = await fetch(`/structured/items_${gameLanguage}.json`);
+			const itemsResponse: Response = await fetch(`/structured/items_${newLanguage}.json`);
 			const itemsJson: ItemTranslation[] = await itemsResponse.json();
 			itemsJson.forEach(item => {
 				itemArchetypes[item.symbol] = {
@@ -263,15 +253,12 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		setWebStrings(webStringsJson);
 		setGameStrings({...translatedGameStrings});
 
-		setLanguages({
-			web: webLanguage,
-			game: gameLanguage
-		});
+		setLanguage(newLanguage);
 	}
 
 	function translateCore(): TranslatedCore {
 		// No need to translate core for English
-		if (core.crew.length === 0 || !languages || languages.game === 'en')
+		if (core.crew.length === 0 || language === 'en')
 			return {};
 
 		const newCrew = postProcessCrewTranslations(core.crew, gameStrings);
@@ -291,9 +278,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		const localizedPlayer: PlayerContextData = {...player};
 		const { playerData } = player;
 
-		// No need to translate player for English
-		if (!playerData || !languages || languages.game === 'en')
-			return localizedPlayer;
+		if (!playerData) return localizedPlayer;
 
 		if (playerData && Object.keys(collectionMap).length) {
 			playerData.player.character.cryo_collections.forEach((col) => {
