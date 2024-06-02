@@ -33,6 +33,10 @@ interface IGameStrings {
 		[symbol: string]: {
 			name: string;
 			short_name: string;
+			flavor: string;
+			action: {
+				name: string;
+			}
 		};
 	};
 	SHIP_ARCHETYPES: {
@@ -333,6 +337,11 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				crew.short_name = arch?.short_name ?? crew.short_name;
 				if (!crew.short_name_english) {
 					crew.short_name_english = oldName;
+				}
+				
+				if (arch.flavor !== undefined) crew.flavor = arch.flavor;
+				if (arch.action?.name !== undefined) {
+					crew.action.name = arch.action.name;
 				}
 
 				crew.events ??= 0;
