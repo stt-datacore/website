@@ -129,7 +129,7 @@
             },
             "title": "Publicar perfil en DataCore",
             "header": "{{share_profile.share.share_text}}. Una vez compartido, cualquier persona podrá acceder a su perfil público con este enlace:",
-            "instrucciones": {
+            "instructions": {
                 "line_1": "Haga clic en el enlace de arriba para acceder a las exportaciones de datos para hojas de cálculo, incluidas Take My Chrons y Do Not Airlock.",
                 "line_2": "Algunas páginas de DataCore, en particular páginas de flotas y páginas de eventos, también pueden vincularse a su perfil público.",
                 "line_3": "La información que se comparte se limita a: {{list}}. No se incluye información privada en su perfil público."
