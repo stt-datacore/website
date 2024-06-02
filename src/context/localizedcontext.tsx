@@ -198,7 +198,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			translationJson.crew_archetypes.forEach(crew => {
 				crewArchetypes[crew.symbol] = {
 					name: crew.name,
-					short_name: crew.short_name
+					short_name: crew.short_name,
+					flavor: crew.flavor,
+					action: { ... crew.action }
 				};
 			});
 

@@ -321,6 +321,10 @@ export interface TranslationSet {
     symbol: string
     name: string
     short_name: string
+    flavor: string
+    action: {
+      name: string
+    }
   }
   
   export interface ShipArchetype {
