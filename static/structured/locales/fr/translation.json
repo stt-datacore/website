@@ -2,6 +2,25 @@
     "clipboard": {
         "copied_exclaim": "Copié!"
     },
+    "global": { 
+        "yes": "Oui",
+        "no": "Non",
+        "never": "Jamais",
+        "enabled": "Activé",
+        "disabled": "Désactivé",
+        "show": "Montre",
+        "hide": "Masquer",
+        "shown": "Affiché",
+        "hidden": "Caché",
+        "search": "Recherche",
+        "search_ellipses": "Recherche...",
+        "obtained": "Obtenu Par"
+    },
+    "spinners": { 
+        "default": "Chargement des données...", 
+        "quipment": "Calcul de l'équipement...", 
+        "demands": "Calcul des demandes de l'équipage..." 
+    },
     "menu": {
         "about_title": "À propos",
         "game_info_title": "Info jeu",
@@ -150,6 +169,125 @@
             "exported_clipboard": "Profil copié dans le presse-papier !"
         }
     },
+    "pages": {
+        "crew_stats": "Statistiques de l'équipage"
+    },
+    "buffs": {
+        "no_buffs": "Aucun améliorations",
+        "player_buffs": "Améliorations des joueurs",
+        "max_buffs": "Améliorations maximum"
+    },
+    "hints": {
+        "apply_buffs": "Appliquer des améliorations",
+        "filter_by_rarity": "Filtrer par rareté",
+        "filter_by_trait": "Filtrer par trait",
+        "filter_by_portal_status": "Filtrer par statut du portail"
+    },
+    "options": {
+        "trait_match": {
+            "matches": "Correspondances",
+            "match": "Correspondre",
+            "any": "Correspondre à n'importe quel trait",
+            "match_two_plus": "Correspondre aux 2+ traits",
+            "match_all": "Correspondre tous les traits"
+        },
+        "text_match": {
+            "any": "Correspondre n'importe quel texte",
+            "whole_word": "Mot entier seulement",
+            "exact": "Correspondance exacte uniquement"
+        }
+    },
+    "crew_state": {
+        "owned": "Possédé(e)",
+        "unowned": "Pas Possédé(e)",
+        "immortalized": "Immortalisé(e)",
+        "frozen": "Congelé(e)",
+        "expires_in": "L'équipage expire dans {{time}}"
+    },
+    "crew_views": {
+        "base": "Afficher les compétences de base",
+        "ship": "Afficher les capacités du navire",
+        "gauntlet": "Afficher les rangs des gantelets",
+        "voyage": "Afficher les rangs des voyages",
+        "quipment": "Afficher les rangs des Quipements",
+        "max_quipment": "Afficher le Quipement Max",
+        "crew_utility": "Afficher l'utilitaire de l'équipage"      
+    },
+    "rank_names": {
+        "bigbook_tier": "Étage Big Book",
+        "cab_grade": "Catégorie CAB",
+        "voyage_rank": "Rang Voyage",
+        "gauntlet_rank": "Rang Gantelet",
+        "cab_rank": "Rang CAB",
+        "cab_rating": "Cote CAB",
+        "quipment_score": "Rang de Quipement"        
+    },
+    "data_names": {
+        "base": {
+            "crew": "Équipage",
+            "rarity": "Rareté",
+            "bigbook_tier": "Étage",
+            "cab_power": "CAB",
+            "voyage": "Voyage",
+            "gauntlet": "Gantelet",
+            "all_crew": "Afficher tout l'équipage",
+            "in_portal": "Dans le Portail",
+            "not_in_portal": "Pas dans le portail",
+            "not_yet_in_portal": "Pas encore dans le portail",
+            "never_in_portal": "Jamais dans le portail",
+            "uniquely_retrievable": "Récupérable de manière unique",
+            "not_uniquely_retrievable": "Pas récupérable de manière unique",
+            "less_than_100_retrieval": "< 100 % de Récupération",
+            "qp": "QP",
+            "release_date": "Début",
+            "offer_cost": "Coût de l'offre",
+            "offers": "Offre(s)",
+            "level": "Niveau",
+            "collection": "Collection",
+            "collections": "Collections",
+            "collection_fmt": "1 collections",
+            "collections_fmt": "{{count}} collections"
+        },
+        "ship": {
+            "ship": "Vaisseau",
+            "attack": "Attaque",
+            "boost": "Augmentation",
+            "boosts": "Augmentations",
+            "amount": "Montant",
+            "handicap": "Handicap",
+            "initialize": "Initialise",
+            "cycle_time": "Un cycle",
+            "cooldown": "Recharge",
+            "duration": "Durée",
+            "uses": "Utilisations",
+            "bonus_ability": "Capacité Bonus",
+            "trigger": "Déclenchement",
+            "accuracy": "Précision",
+            "charge_phases": "Phases de Chargement",
+            "crit_bonus": "Bonus Crit",
+            "crit_rating": "Chance du Crit",
+            "evasion": "Évasion",
+            "after_seconds": "Après {{seconds}}s, {{action}}",
+            "hull": "Coque",
+            "shields": "Boucliers",
+            "antimatter": "Antimatière",
+            "attack_speed": "Vitesse d'Attaque"
+        },
+        "quipment_ranks": {
+            "overall": "Ensemble",
+            "specialty": "Spécialité",
+            "first_pair": "Première Paire",
+            "second_pair": "Deuxième Paire",
+            "third_pair": "Troisième Paire",
+            "primary": "Primaire",
+            "secondary": "Secondaire",
+            "tertiary": "Tertiaire"
+        }
+    },
+    "data_notes": {
+        "gauntlet_determination": "Classements déterminés par précalcul. Pour des conseils spécifiques sur l'équipage à utiliser, consultez {{link}}.",
+        "voyage_determination": "Classements déterminés par précalcul. Pour des conseils spécifiques sur l'équipage à utiliser, consultez les {{link}}."
+    },
     "gauntlet": {
         "gauntlet": "Gantelet",
         "gauntlets": "Gantelets",
@@ -157,5 +295,37 @@
         "yesterday_gauntlet": "Gantelet d'hier",
         "previous_gauntlets": "Gantelets précédents",
         "browse_gauntlets": "Parcourez les gantelets"
+    },
+    "obtained": {
+        "long": {
+            "Gauntlet": "Gantelet Exclusif",
+            "Voyage": "Voyage Exclusif",
+            "WebStore": "Magasin en ligne",
+            "Faction": "Magasin des Factions",
+            "Fuse": "Fusion Exclusif",
+            "BossBattle": "Pont du Capitaine",
+            "Collection": "Étape des Collections",
+            "Missions": "Mission du Conseil Principal",
+            "Mega": "Méga Récurrent",
+            "Event": "Événement",
+            "Event/Pack/Giveaway": "Événement/Pack/Concours",
+            "Pack/Giveaway": "Pack/Concours",
+            "Honor Hall": "Hall de l'honneur"
+        },
+        "short": {
+            "Gauntlet": "Gantelet",
+            "Voyage": "Voyage",
+            "WebStore": "Magasin",
+            "Faction": "Faction",
+            "Fuse": "Fusion",
+            "BossBattle": "Pont",
+            "Collection": "Collection",
+            "Missions": "Missions",
+            "Mega": "Méga",
+            "Event": "Événement",
+            "Event/Pack/Giveaway": "Événement/Pack/Concours",
+            "Pack/Giveaway": "Pack/Concours",
+            "Honor Hall": "Hall de l'honneur"
+        }
     }
 }

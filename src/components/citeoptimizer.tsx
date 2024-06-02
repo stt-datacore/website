@@ -636,6 +636,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	renderTable(data?: PlayerCrew[], tabName?: string, training = true) {
 		if (!data || !this.context.player.playerData) return <></>;
+		const { t } = this.context.localized;
 		const [paginationPage, setPaginationPage] = this.createStateAccessors<number>(training ? 'trainingPage' : 'citePage');
 		const [otherPaginationPage, setOtherPaginationPage] = this.createStateAccessors<number>(training ? 'citePage' : 'trainingPage');
 		const [paginationRows, setPaginationRows] = this.createStateAccessors<number>('paginationRows', true);
@@ -828,7 +829,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 											</div>
 										</Table.Cell>
 										<Table.Cell>
-											<Popup trigger={<b>{row.amTraits?.length}</b>} content={row.amTraits?.map(tr => this.context.core.translation.trait_names[tr]).join(', ')} />
+											<Popup trigger={<b>{row.amTraits?.length}</b>} content={row.amTraits?.map(tr => this.context.localized.TRAIT_NAMES[tr]).join(', ')} />
 										</Table.Cell>
 										<Table.Cell>
 											<Popup trigger={<b>{row.collectionsIncreased?.length}</b>} content={row.collectionsIncreased?.join(' / ')} />
@@ -917,8 +918,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 									}
 
 								<Table.Cell>
-									<span title={printPortalStatus(crew, true, true)}>
-									{printPortalStatus(crew, true, true)}
+									<span title={printPortalStatus(crew, t, true, true)}>
+									{printPortalStatus(crew, t, true, true)}
 									</span>
 								</Table.Cell>
 								<Table.Cell>

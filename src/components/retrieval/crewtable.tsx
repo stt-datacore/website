@@ -22,6 +22,7 @@ type RetrievalCrewTableProps = {
 
 export const RetrievalCrewTable = (props: RetrievalCrewTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { buffConfig } = globalContext.player;
 	const { filteredCrew } = props;
 
@@ -61,6 +62,7 @@ type CrewRowProps = {
 
 const CrewRow = (props: CrewRowProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { crew, topQuipmentScore } = props;
 
@@ -151,9 +153,9 @@ const CrewRow = (props: CrewRowProps) => {
 		if (crew.retrievable === RetrievableState.Never)
 			return <Label color='red'>{crew.alt_source}</Label>;
 		else if (crew.retrievable === RetrievableState.InFuture)
-			return <Label color='red'>Not yet in portal</Label>;
+			return <Label color='red'>{t('data_names.base.not_yet_in_portal')}</Label>;
 		else if (crew.retrievable === RetrievableState.NonUnique)
-			return <Label color='red'>Not uniquely retrievable</Label>;
+			return <Label color='red'>{t('data_names.base.not_uniquely_retrievable')}</Label>;
 
 		return <CombosModal crew={crew} />;
 	}

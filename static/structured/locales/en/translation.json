@@ -2,6 +2,25 @@
     "clipboard": {
         "copied_exclaim": "Copied!"
     },
+    "global": { 
+        "yes": "Yes",
+        "no": "No",
+        "never": "Never",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "show": "Show",
+        "hide": "Hide",
+        "shown": "Shown",
+        "hidden": "Hidden",
+        "search": "Search",
+        "search_ellipses": "Search...",
+        "obtained": "Obtained"
+    },
+    "spinners": {
+        "default": "Loading data...",
+        "quipment": "Calculating quipment...",
+        "demands": "Calculating crew demands..."
+    },
     "menu": {
         "about_title": "About",
         "game_info_title": "Game Info",
@@ -152,6 +171,124 @@
             "exported_clipboard": "Profile copied to clipboard!"
         }
     },
+    "pages": {
+        "crew_stats": "Crew Stats"
+    },
+    "buffs": {
+        "no_buffs": "No buffs",
+        "player_buffs": "Player buffs",
+        "max_buffs": "Max buffs"
+    },
+    "hints": {
+        "apply_buffs": "Apply stat buffs",
+        "filter_by_rarity": "Filter by rarity",
+        "filter_by_trait": "Filter by trait",
+        "filter_by_portal_status": "Filter by portal status"
+    },
+    "options": {
+        "trait_match": {
+            "match": "Match",
+            "matches": "Matches",
+            "any": "Match any trait",
+            "match_two_plus": "Match 2+ traits",
+            "match_all": "Match all traits"
+        },
+        "text_match": {
+            "any": "Match any text",
+            "whole_word": "Whole word only",
+            "exact": "Exact match only"
+        }
+    },
+    "crew_state": {
+        "owned": "Owned",
+        "unowned": "Unowned",
+        "immortalized": "Immortalized",
+        "frozen": "Frozen",
+        "expires_in": "Crew expires in {{time}}"
+    },
+    "crew_views": {
+        "base": "Show base skills",
+        "ship": "Show ship abilities",
+        "gauntlet": "Show gauntlet ranks",
+        "voyage": "Show voyage ranks",
+        "quipment": "Show quipment scores",
+        "max_quipment": "Show max quipment",
+        "crew_utility": "Show crew utility"      
+    },
+    "rank_names": {
+        "bigbook_tier": "Big Book Tier",
+        "cab_grade": "CAB Grade",
+        "voyage_rank": "Voyage Rank",
+        "gauntlet_rank": "Gauntlet Rank",
+        "cab_rank": "CAB Rank",
+        "cab_rating": "CAB Rating",
+        "quipment_score": "Quipment Score"        
+    },
+    "data_names": {
+        "base": {
+            "crew": "Crew",
+            "rarity": "Rarity",
+            "bigbook_tier": "Tier",
+            "cab_power": "CAB",
+            "voyage": "Voyage",
+            "gauntlet": "Gauntlet",
+            "all_crew": "Show all crew",
+            "in_portal": "In Portal",
+            "not_in_portal": "Not In Portal",
+            "not_yet_in_portal": "Not yet in portal",
+            "never_in_portal": "Never In Portal",
+            "uniquely_retrievable": "Uniquely Retrievable",
+            "not_uniquely_retrievable": "Not Uniquely Retrievable",
+            "less_than_100_retrieval": "< 100% Retrieval",
+            "qp": "QP",
+            "release_date": "Release Date",
+            "offer_cost": "Offer Cost",
+            "offers": "Offer(s)",
+            "level": "Level",
+            "collection": "Collection",
+            "collections": "Collections",
+            "collection_fmt": "1 collection",
+            "collections_fmt": "{{count}} collections"
+        },
+        "ship": {
+            "ship": "Ship",
+            "attack": "Attack",
+            "boosts": "Boosts",
+            "amount": "Amount",
+            "handicap": "Handicap",
+            "initialize": "Initialize",
+            "cycle_time": "Cycle Time",
+            "cooldown": "Cooldown",
+            "duration": "Duration",
+            "uses": "Uses",
+            "bonus_ability": "Bonus Ability",
+            "trigger": "Trigger",
+            "accuracy": "Accuracy",
+            "charge_phases": "Charge Phases",
+            "crit_bonus": "Crit Bonus",
+            "crit_rating": "Crit Rating",
+            "evasion": "Evasion",
+            "after_seconds": "After {{seconds}}s, {{action}}",
+            "hull": "Hull",
+            "shields": "Shields",
+            "antimatter": "Antimatter",
+            "attack_speed": "Attack Speed"
+        },
+        "quipment_ranks": {
+            "overall": "Overall",
+            "specialty": "Specialty",
+            "first_pair": "First Pair",
+            "second_pair": "Second Pair",
+            "third_pair": "Third Pair",
+            "primary": "Primary",
+            "secondary": "Secondary",
+            "tertiary": "Tertiary"
+        }
+    },
+    "data_notes": {
+        "gauntlet_determination": "Rankings determined by precalculation. For specific advice on crew to use, consult {{link}}.",
+        "voyage_determination": "Rankings determined by precalculation. For specific advice on crew to use, consult the {{link}}."
+    },
     "gauntlet": {
         "gauntlet": "Gauntlet",
         "gauntlets": "Gauntlets",
@@ -159,5 +296,37 @@
         "yesterday_gauntlet": "Yesterday's Gauntlet",
         "previous_gauntlets": "Previous Gauntlets",
         "browse_gauntlets": "Browse Gauntlets"    
+    },
+    "obtained": {
+        "long": {
+            "Gauntlet": "Gauntlet Exclusive",
+            "Voyage": "Voyage Exclusive",
+            "WebStore": "Web Store",
+            "Faction": "Faction Store",
+            "Fuse": "Exclusive Fusion",
+            "BossBattle": "Captain's Bridge",
+            "Collection": "Collection Milestone",
+            "Missions": "Main Board Mission",
+            "Mega": "Recurring Mega",
+            "Event": "Event",
+            "Event/Pack/Giveaway": "Event/Pack/Giveaway",
+            "Pack/Giveaway": "Pack/Giveaway",
+            "Honor Hall": "Honor Hall"
+        },
+        "short": {
+            "Gauntlet": "Gauntlet",
+            "Voyage": "Voyage",
+            "WebStore": "Web Store",
+            "Faction": "Faction",
+            "Fuse": "Fusion",
+            "BossBattle": "Bridge",
+            "Collection": "Collection",
+            "Missions": "Missions",
+            "Mega": "Mega",
+            "Event": "Event",
+            "Event/Pack/Giveaway": "Event/Pack/Giveaway",
+            "Pack/Giveaway": "Pack/Giveaway",
+            "Honor Hall": "Honor Hall"
+        }
     }
 }

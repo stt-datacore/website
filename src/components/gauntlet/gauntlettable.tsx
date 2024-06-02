@@ -17,6 +17,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
 import { arrayIntersect } from "../../utils/misc";
 import CONFIG from "../CONFIG";
+import { GlobalContext } from "../../context/globalcontext";
 
 type SortDirection = 'ascending' | 'descending' | undefined;
 
@@ -37,6 +38,7 @@ export interface GauntletTableProps {
 
 export const GauntletCrewTable = (props: GauntletTableProps) => {
     const { filter, pageId, gauntlet, gauntlets, data, mode, textFilter, setTextFilter, rankByPair, setRankByPair } = props;
+    const { t } = React.useContext(GlobalContext).localized;
     if (!data) return <></>;
 
     const targetGroup = `${pageId}_gauntletTable`;
@@ -314,7 +316,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
         <Input
             style={{ width: isMobile ? '100%' : '50%' }}
             iconPosition="left"
-            placeholder="Search..."
+            placeholder={t('global.search_ellipses')}
             value={textFilter}
             onChange={(e, { value }) => setTextFilter(value)}>
             <input />
@@ -358,8 +360,8 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                     const pairs = crew.pairs ?? getPlayerPairs(crew);
                     const rank = gauntlet.origRanks ? gauntlet.origRanks[crew.symbol] : idx + pageStartIdx + 1;
                     const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol && crew.isSelected);
-                    const obtained = prettyObtained(crew);
-                    const color = printPortalStatus(crew, true, false) === 'Never' ? CONFIG.RARITIES[5].color : undefined;
+                    const obtained = prettyObtained(crew, t);
+                    const color = printPortalStatus(crew, t, true, false) === 'Never' ? CONFIG.RARITIES[5].color : undefined;
                     const qbslots = qbitsToSlots(crew.q_bits);
                     const trueImmo = isImmortal(crew);
 
@@ -428,8 +430,8 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                                 {crew.have === true ? "Yes" : "No"}
                             </Table.Cell> */}
                             <Table.Cell width={2}>
-                                <span title={printPortalStatus(crew, true, true, true)}>
-                                    {printPortalStatus(crew, true, false)}
+                                <span title={printPortalStatus(crew, t, true, true, true)}>
+                                    {printPortalStatus(crew, t, true, false)}
                                     {!!color && <div style={{color: color}}>{obtained}</div>}
                                 </span>
                             </Table.Cell>

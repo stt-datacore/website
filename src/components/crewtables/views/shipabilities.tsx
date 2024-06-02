@@ -17,23 +17,25 @@ import { ITableConfigRow } from '../../../components/searchabletable';
 
 const isWindow = typeof window !== 'undefined';
 
-export const shipTableConfig = [
-	{ width: 1, column: 'action.bonus_type', title: 'Boosts' },
-	{ width: 1, column: 'action.bonus_amount', title: 'Amount', reverse: true, tiebreakers: ['action.bonus_type'] },
-	{ width: 1, column: 'action.penalty.type', title: 'Handicap', tiebreakers: ['action.penalty.amount'] },
-	{ width: 1, column: 'action.initial_cooldown', title: 'Initialize' },
-	{ width: 1, column: 'action.cycle_time', title: 'Cycle Time' },
-	{ width: 1, column: 'action.cooldown', title: 'Cooldown' },
-	{ width: 1, column: 'action.duration', title: 'Duration', reverse: true },
-	{ width: 1, column: 'action.limit', title: 'Uses' },
-	{ width: 1, column: 'action.ability.amount', title: 'Bonus Ability', tiebreakers: ['action.ability.type'] },
-	{ width: 1, column: 'action.ability.condition', title: 'Trigger', tiebreakers: ['action.ability.type', 'action.ability.amount'] },
-	{ width: 1, column: 'action.charge_text', title: 'Charge Phases' },
-	{ width: 1, column: 'ship_battle.accuracy', title: 'Accuracy', reverse: true },
-	{ width: 1, column: 'ship_battle.crit_bonus', title: 'Crit Bonus', reverse: true },
-	{ width: 1, column: 'ship_battle.crit_chance', title: 'Crit Rating', reverse: true },
-	{ width: 1, column: 'ship_battle.evasion', title: 'Evasion', reverse: true }
-] as ITableConfigRow[];
+export function getShipTableConfig(t: (t: string, opt?: { [key: string]: string }) => string) {
+	return [
+		{ width: 1, column: 'action.bonus_type', title: t('data_names.ship.boosts') },
+		{ width: 1, column: 'action.bonus_amount', title: t('data_names.ship.amount'), reverse: true, tiebreakers: ['action.bonus_type'] },
+		{ width: 1, column: 'action.penalty.type', title: t('data_names.ship.handicap'), tiebreakers: ['action.penalty.amount'] },
+		{ width: 1, column: 'action.initial_cooldown', title: t('data_names.ship.initialize') },
+		{ width: 1, column: 'action.cycle_time', title: t('data_names.ship.cycle_time') },
+		{ width: 1, column: 'action.cooldown', title: t('data_names.ship.cooldown') },
+		{ width: 1, column: 'action.duration', title: t('data_names.ship.duration'), reverse: true },
+		{ width: 1, column: 'action.limit', title: t('data_names.ship.uses') },
+		{ width: 1, column: 'action.ability.amount', title: t('data_names.ship.bonus_ability'), tiebreakers: ['action.ability.type'] },
+		{ width: 1, column: 'action.ability.condition', title: t('data_names.ship.trigger'), tiebreakers: ['action.ability.type', 'action.ability.amount'] },
+		{ width: 1, column: 'action.charge_text', title: t('data_names.ship.charge_phases') },
+		{ width: 1, column: 'ship_battle.accuracy', title: t('data_names.ship.accuracy'), reverse: true },
+		{ width: 1, column: 'ship_battle.crit_bonus', title: t('data_names.ship.crit_bonus'), reverse: true },
+		{ width: 1, column: 'ship_battle.crit_chance', title: t('data_names.ship.crit_rating'), reverse: true },
+		{ width: 1, column: 'ship_battle.evasion', title: t('data_names.ship.evasion'), reverse: true }
+	] as ITableConfigRow[];
+}
 
 type CrewCellProps = {
 	crew: IRosterCrew;

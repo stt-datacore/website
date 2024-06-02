@@ -2,6 +2,25 @@
     "clipboard": {
         "copied_exclaim": "¡Copiada!"
     },
+    "global": { 
+        "yes": "Sí",
+        "no": "No",
+        "never": "Nunca",
+        "enabled": "Habilitado",
+        "disabled": "Desactivado",
+        "show": "Reloj",
+        "hide": "Ocultar",
+        "shown": "Mostrado",
+        "hidden": "Oculto",
+        "search": "Buscar",
+        "search_ellipses": "Buscar...",
+        "obtained": "Obtenido Por"
+    },
+    "spinners": {
+        "default": "Cargando datos...",
+        "quipment": "Quipo de cálculo...",
+        "demands": "Cálculo de las demandas de la tripulación..."
+    },
     "menu": {        
         "about_title": "Sobre",
         "game_info_title": "Info juego",
@@ -150,6 +169,125 @@
             "exported_clipboard": "¡Perfil copiado al portapapeles!"
         }
     },
+    "pages": {
+        "crew_stats": "Estadísticas de la tripulación"
+    },
+    "buffs": {
+        "no_buffs": "Aucun mejoras",
+        "player_buffs": "Mejoras de los juegos",
+        "max_buffs": "Mejoras máximas"
+    },
+    "hints": {
+        "apply_buffs": "Aplicar mejoras",
+        "filter_by_rarity": "Filtrar por rareza",
+        "filter_by_trait": "Filtrar por rasgo",
+        "filter_by_portal_status": "Filtrar por estado del portal"
+    },
+    "options": {
+        "trait_match": {
+            "matches": "Coincidencias",
+            "match": "Coincide",
+            "any": "Coincide con cualquier rasgo",
+            "match_two_plus": "Rasgos de Combina 2+",
+            "match_all": "Coincide con todos los rasgos"
+        },
+        "text_match": {
+            "any": "Coincidir con cualquier texto",
+            "whole_word": "Solo palabra completa",
+            "exact": "Sólo coincidencia exacta"
+        }
+    },
+    "crew_state": {
+        "owned": "Propiedad",
+        "unowned": "Sin Propiedad",
+        "immortalized": "Immortalizado",
+        "frozen": "Congelado",
+        "expires_in": "La tripulación caduca en {{time}}"
+    },
+    "crew_views": {
+        "base": "Mostrar habilidades básicas",
+        "ship": "Mostrar habilidades del barco",
+        "gauntlet": "Mostrar rangos de reto",
+        "voyage": "Mostrar rangos de viaje",
+        "quipment": "Mostrar rangos de Quipos",
+        "max_quipment": "Mostrar Quipo máximo",
+        "crew_utility": "Mostrar utilidad de tripulación"      
+    },    
+    "rank_names": {
+        "bigbook_tier": "Piso de Big Book",
+        "cab_grade": "Grado CAB",
+        "voyage_rank": "Rango de Viaje",
+        "gauntlet_rank": "Rango de Reto",
+        "cab_rank": "Rango de CAB",
+        "cab_rating": "Clasificación de CAB",
+        "quipment_score": "Puntuación del Quipo"        
+    },
+    "data_names": {
+        "base": {
+            "crew": "Tripulación",
+            "rarity": "Rareza",
+            "bigbook_tier": "Piso",
+            "cab_power": "CAB",
+            "voyage": "Viaje",
+            "gauntlet": "Reto",
+            "all_crew": "Mostrar toda la tripulación",
+            "in_portal": "En Portal",
+            "not_in_portal": "No en el portal",
+            "not_yet_in_portal": "Aún no en el portal",
+            "never_in_portal": "Nunca en el portal",
+            "uniquely_retrievable": "Únicamente recuperable",
+            "not_uniquely_retrievable": "No se puede recuperar de forma única",
+            "less_than_100_retrieval": "< 100% de Recuperación",
+            "qp": "QP",
+            "release_date": "Debut",
+            "offer_cost": "Costo de la Oferta",
+            "offers": "Oferta(s)",
+            "level": "Nivel",
+            "collection": "Coleccione",
+            "collections": "Colecciones",
+            "collection_fmt": "1 coleccione",
+            "collections_fmt": "{{count}} colecciones"
+        },
+        "ship": {
+            "ship": "Barco",
+            "attack": "Ataque",
+            "boost": "Aumento",
+            "boosts": "Aumentos",
+            "amount": "Cantidad",
+            "handicap": "Handicap",
+            "initialize": "Iniciar",
+            "cycle_time": "Uno ciclo",
+            "cooldown": "Recargar",
+            "duration": "Duración",
+            "uses": "Usos",
+            "bonus_ability": "Habilidad Bonus",
+            "trigger": "Activación",
+            "accuracy": "Precisión",
+            "charge_phases": "Fases de Carga",
+            "crit_bonus": "Bonificación de Crít",
+            "crit_rating": "Frecuencia de Crít",
+            "evasion": "Evasión",
+            "after_seconds": "Después {{seconds}}s, {{action}}",
+            "hull": "Casco",
+            "shields": "Escudos",
+            "antimatter": "Antimateria",
+            "attack_speed": "Velocidad de ataque"
+        },
+        "quipment_ranks": {
+            "overall": "Overall",
+            "specialty": "Specialty",
+            "first_pair": "First Pair",
+            "second_pair": "Second Pair",
+            "third_pair": "Third Pair",
+            "primary": "Primary",
+            "secondary": "Secondary",
+            "tertiary": "Tertiary"
+        }
+    },
+    "data_notes": {
+        "gauntlet_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre la tripulación a utilizar, consulte {{link}}.",
+        "voyage_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre la tripulación a utilizar, consulte {{link}}."
+    },
     "gauntlet": {
         "gauntlet": "Reto",
         "gauntlets": "Retos",
@@ -157,5 +295,37 @@
         "yesterday_gauntlet": "El reto de ayer",
         "previous_gauntlets": "Los retos anterior",
         "browse_gauntlets": "Explorar los retos"    
+    },
+    "obtained": {
+        "long": {
+            "Gauntlet": "Reto Exclusivo",
+            "Voyage": "Viaje Exclusiva",
+            "WebStore": "Tienda Virtual",
+            "Faction": "Tienda des Facciones",
+            "Fuse": "Fusión Exclusiva",
+            "BossBattle": "Puente del Capitán",
+            "Collection": "Hito de Colecciones",
+            "Missions": "Misión del Tablero Principal",
+            "Mega": "Mega Recurrente",
+            "Event": "Evento",
+            "Event/Pack/Giveaway": "Evento/Paquete/Sorteo",
+            "Pack/Giveaway": "Paquete/Sorteo",
+            "Honor Hall": "Salón de Honor"
+        },
+        "short": {
+            "Gauntlet": "Reto",
+            "Voyage": "Viaje",
+            "WebStore": "Tienda Virtual",
+            "Faction": "Faccione",
+            "Fuse": "Fusión",
+            "BossBattle": "Puente",
+            "Collection": "Colecciones",
+            "Missions": "Misión",
+            "Mega": "Mega",
+            "Event": "Evento",
+            "Event/Pack/Giveaway": "Evento/Paquete/Sorteo",
+            "Pack/Giveaway": "Paquete/Sorteo",
+            "Honor Hall": "Salón de Honor"
+        }
     }
 }

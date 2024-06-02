@@ -1429,26 +1429,28 @@ export function printSkillOrder(crew: PlayerCrew | CrewMember) {
 }
 
 
-export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
+export function prettyObtained(crew: PlayerCrew | CrewMember, t: (value: string, opts?: {[key:string]: string}) => string, long?: boolean) {
 	long ??= false;
 	let obstr = `${crew.obtained}`;
 	if (obstr === 'HonorHall') obstr = 'Honor Hall';
 	else if (obstr === 'FactionStore') obstr = 'Faction';
 
 	if (long) {
-		if (obstr === 'Voyage' || obstr === 'Gauntlet') obstr += " Exclusive";
-		else if (obstr === 'WebStore') obstr = 'Web Store';
-		else if (obstr === 'Faction') obstr = 'Faction Store';
-		else if (obstr === 'Fuse') obstr = 'Exclusive Fusion';
-		else if (obstr === 'BossBattle') obstr = 'Captain\'s Bridge';
-		else if (obstr === 'Collection') obstr = 'Collection Milestone';
-		else if (obstr === 'Missions') obstr = 'Main Board Mission';
-		else if (obstr === 'Mega') obstr = 'Recurring Mega';
+		obstr = t(`obtained.long.${obstr}`);
+		// if (obstr === 'Voyage' || obstr === 'Gauntlet') obstr += " Exclusive";
+		// else if (obstr === 'WebStore') obstr = 'Web Store';
+		// else if (obstr === 'Faction') obstr = 'Faction Store';
+		// else if (obstr === 'Fuse') obstr = 'Exclusive Fusion';
+		// else if (obstr === 'BossBattle') obstr = 'Captain\'s Bridge';
+		// else if (obstr === 'Collection') obstr = 'Collection Milestone';
+		// else if (obstr === 'Missions') obstr = 'Main Board Mission';
+		// else if (obstr === 'Mega') obstr = 'Recurring Mega';
 	}
 	else {
-		if (obstr === 'BossBattle') obstr = 'Bridge';
-		else if (obstr === 'Fuse') obstr = 'Fusion';
-		else if (obstr === 'WebStore') obstr = 'Web Store';
+		obstr = t(`obtained.short.${obstr}`);
+		// if (obstr === 'BossBattle') obstr = 'Bridge';
+		// else if (obstr === 'Fuse') obstr = 'Fusion';
+		// else if (obstr === 'WebStore') obstr = 'Web Store';
 	}
 
 	return obstr;
@@ -1463,19 +1465,19 @@ export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
  * @param withPortal True to prepend the string with "In Portal: "
  * @returns A formatted string conveying the portal status
  */
-export function printPortalStatus<T extends CrewMember>(crew: T, showNever?: boolean, obtainedIfNo?: boolean, long?: boolean, withPortal?: boolean) {
+export function printPortalStatus<T extends CrewMember>(crew: T, t: (value: string, opts?: {[key:string]: string}) => string, showNever?: boolean, obtainedIfNo?: boolean, long?: boolean, withPortal?: boolean) {
 	showNever ??= true;
 	long ??= false;
 	obtainedIfNo ??= false;
 
-	if (!showNever && !obtainedIfNo) return crew.in_portal ? "Yes" : "No";
+	if (!showNever && !obtainedIfNo) return crew.in_portal ? t('global.yes') : t('global.no');
 	let obstr = "";
 	if (obtainedIfNo) {
 		if (!crew.in_portal) {
-			obstr = prettyObtained(crew, long);
+			obstr = prettyObtained(crew, t, long);
 		}
 		else {
-			obstr = (crew.unique_polestar_combos?.length ? "Uniquely Retrievable" : "<100% Retrieval");
+			obstr = (crew.unique_polestar_combos?.length ? t('data_names.base.uniquely_retrievable') : t('data_names.base.less_than_100_retrieval'));
 		}
 	}
 
@@ -1483,10 +1485,10 @@ export function printPortalStatus<T extends CrewMember>(crew: T, showNever?: boo
 	let ob = crew.obtained?.toLowerCase() ?? "Unknown";
 
 	if (showNever && (ob.includes("faction") || ob.includes("missions") || ob.includes("fuse") || ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection"))) {
-		return (withPortal ? "In Portal: " : "") + `Never${obstr}`;
+		return (withPortal ? `${t('data_names.base.in_portal')}: ` : "") + `${t('global.never')}${obstr}`;
 	}
 
-	return (withPortal ? "In Portal: " : "") + `${crew.in_portal ? "Yes" : "No"}${obstr}`;
+	return (withPortal ? `${t('data_names.base.in_portal')}: ` : "") + `${crew.in_portal ? t('global.yes') : t('global.no')}${obstr}`;
 }
 
 export function getVoyageQuotient<T extends CrewMember>(crew: T) {

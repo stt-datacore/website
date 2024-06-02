@@ -515,6 +515,7 @@ export class CrewPresenter extends React.Component<
             hideStats,
         } = this.props;
 
+        const { t, tfmt } = this.context.localized;
         const { mobileWidth, pluginsUsed, selectedPlugin } = this.state;
 
         if (!inputCrew) {
@@ -674,7 +675,7 @@ export class CrewPresenter extends React.Component<
 
         const portalText = pt;
         const noPortalText = npt;
-        const isNever = printPortalStatus(crew) === 'Never';
+        const isNever = printPortalStatus(crew, t) === t('global.never');
         const isMobile = this.props.forceVertical || typeof window !== 'undefined' && window.innerWidth < mobileWidth;
 
         return crew ? (
@@ -1099,26 +1100,26 @@ export class CrewPresenter extends React.Component<
                                 {!isNever && 
                                 <>
                                 {(crew.in_portal && !!crew.unique_polestar_combos?.length) && 
-                                    <span title={printPortalStatus(crew, true, true, true, true)}>                                    
+                                    <span title={printPortalStatus(crew, t, true, true, true, true)}>                                    
                                     <StatLabel
                                         title=""
-                                        value={<span style={{color:"lightgreen", fontWeight:"bold"}}>Uniquely Retrievable</span>}
+                                        value={<span style={{color:"lightgreen", fontWeight:"bold"}}>{t('data_names.base.uniquely_retrievable')}</span>}
                                     />
                                     </span> 
                                     ||
-                                    <span title={printPortalStatus(crew, true, true, true, true)}>
+                                    <span title={printPortalStatus(crew, t, true, true, true, true)}>
                                     <StatLabel                                        
-                                        title="In Portal"
-                                        value={crew.in_portal ? <span style={{color:"lightgreen", fontWeight:"bold"}}>Yes</span> : printPortalStatus(crew, true) }
+                                        title={t('data_names.base.in_portal')}
+                                        value={crew.in_portal ? <span style={{color:"lightgreen", fontWeight:"bold"}}>{t('global.yes')}</span> : printPortalStatus(crew, t, true) }
                                     />
                                    </span>
                                 }
                                 </>}
                                 {isNever && 
-                                    <span title={printPortalStatus(crew, true, true, true, true)}>                                  
+                                    <span title={printPortalStatus(crew, t, true, true, true, true)}>                                  
                                     <StatLabel
-                                        title="Obtained"
-                                        value={<span style={{ padding:0, color: CONFIG.RARITIES[5].color, fontWeight:"bold"}}>{prettyObtained(crew)}</span>}                                        
+                                        title={t('global.obtained')}
+                                        value={<span style={{ padding:0, color: CONFIG.RARITIES[5].color, fontWeight:"bold"}}>{prettyObtained(crew, t)}</span>}                                        
                                     />
                                 </span>}
                             </div>

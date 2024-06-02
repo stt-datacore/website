@@ -122,10 +122,11 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 
 const Collections = (props: { crew: CrewMember }) => {
 	const { crew } = props;
+	const { t } = React.useContext(GlobalContext).localized;
 	if (crew.collections.length === 0) return (<></>);
 	return (
 		<p>
-			<b>Collections: </b>
+			<b>{t('data_names.base.collections')}: </b>
 			{crew.collections
 				.map(col => (
 					<Link key={col} to={`/collections?select=${encodeURIComponent(col)}`}>
@@ -176,9 +177,11 @@ const CrossFuses = (props: { crew: CrewMember }) => {
 
 const DateAdded = (props: { crew: CrewMember }) => {
 	const { crew } = props;
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	return (
 		<p>
-			<b>Release Date: </b>{new Date(crew.date_added).toLocaleDateString()} (<b>Obtained: </b>{prettyObtained(crew, true)})
+			<b>{t('data_names.base.release_date')}: </b>{new Date(crew.date_added).toLocaleDateString()} (<b>Obtained: </b>{prettyObtained(crew, t, true)})
 		</p>
 	);
 };

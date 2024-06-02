@@ -778,7 +778,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	renderGauntlet(gauntletIn: Gauntlet | undefined, idx: number) {
-
+		const { t } = this.context.localized;
 		const { loading, onlyActiveRound, activePageTabs, activePageIndexTab, totalPagesTab, viewModes, rankByPair, tops, filterProps } = this.state;
 		const { maxBuffs, buffConfig } = this.context.player;
 		const { TRAIT_NAMES } = this.context.localized;
@@ -1328,7 +1328,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						<Input
 							style={{ width: isMobile ? '100%' : '50%'}}
 							iconPosition="left"
-							placeholder="Search..."
+							placeholder={t('global.search_ellipses')}
 							value={this.state.textFilter[idx]}
 							onChange={(e, { value }) => this.setTextFilter(value, idx)}>
 							<input />

@@ -2,6 +2,25 @@
     "clipboard": {
         "copied_exclaim": "Kopiert!"
     },
+    "global": { 
+        "yes": "Ja",
+        "no": "Nein",
+        "never": "Niemals",
+        "enabled": "Aktiviert",
+        "disabled": "Deaktiviert",
+        "show": "Zeigen",
+        "hide": "Verstecken",
+        "shown": "Gezeigt",
+        "hidden": "Versteckt",
+        "search": "Suchen",
+        "search_ellipses": "Suchen...",
+        "obtained": "Erhalten Von"
+    },
+    "spinners": {
+        "default": "Daten werden geladen…",
+        "quipment": "Berechnungsausrüstung...",
+        "demands": "Crew fordert Berechnung..."
+    },
     "menu": {
         "about_title": "Über uns",
         "game_info_title": "Spiel Info",
@@ -150,6 +169,124 @@
             "exported_clipboard": "Profil in die Zwischenablage kopiert!"
         }
     },
+    "pages": {
+        "crew_stats": "Crew-Statistiken"
+    },
+    "buffs": {
+        "no_buffs": "Keine Verbesserungen",
+        "player_buffs": "Verbesserungen der Spieler",
+        "max_buffs": "Maximale Verbesserungen"
+    },
+    "hints": {
+        "apply_buffs": "Buffs anwenden",
+        "filter_by_rarity": "Filtern nach Seltenheit",
+        "filter_by_trait": "Filtern nach Merkmalen",
+        "filter_by_portal_status": "Filtern nach Portalstatus"
+    },
+    "options": {
+        "trait_match": {
+            "matches": "Übereinstimmungen",
+            "match": "Passt",
+            "any": "Passt zu jedem Merkmal",
+            "match_two_plus": "Kombiniere mehr als 2 Merkmale",
+            "match_all": "Alle Merkmale abgleichen"
+        },
+        "text_match": {
+            "any": "Passt zu jedem Text",
+            "whole_word": "Nur ganzes Wort",
+            "exact": "Nur genaue Übereinstimmung"
+        }
+    },
+    "crew_state": {
+        "owned": "Rekrutiert",
+        "unowned": "Nicht Rekrutiert",
+        "immortalized": "Unsterblich",
+        "frozen": "Eingefroren",
+        "expires_in": "Crew läuft in {{time}} ab"
+    },
+    "crew_views": {
+        "base": "Grundlegende Fähigkeiten zeigen",
+        "ship": "Schiffsfähigkeiten anzeigen",
+        "gauntlet": "Herausforderungsränge anzeigen",
+        "voyage": "Reiseränge anzeigen",
+        "quipment": "Rüstzeugswerte anzeigen",
+        "max_quipment": "Maximale Rüstzeug anzeigen",
+        "crew_utility": "Das Crew-Dienstprogramm"      
+    },    
+    "rank_names": {
+        "bigbook_tier": "Stufe „Big Book“",
+        "cab_grade": "CAB-Klasse",
+        "voyage_rank": "Reiserang",
+        "gauntlet_rank": "Herausforderungsrang",
+        "cab_rank": "CAB-Rang",
+        "cab_rating": "CAB-Bewertung",
+        "quipment_score": "Rüstzeug Werte"        
+    },
+    "data_names": {
+        "base": {
+            "crew": "Crew",
+            "rarity": "Seltenheit",
+            "bigbook_tier": "Stufe",
+            "cab_power": "CAB",
+            "voyage": "Reise",
+            "gauntlet": "Herausforderung",
+            "all_crew": "Die gesamte Crew anzeigen",
+            "in_portal": "Im Portal",
+            "not_in_portal": "Nicht im Portal",
+            "not_yet_in_portal": "Noch nicht im Portal",
+            "never_in_portal": "Nie im Portal",
+            "uniquely_retrievable": "Eindeutig abrufbar",
+            "not_uniquely_retrievable": "Nicht eindeutig abrufbar",            
+            "less_than_100_retrieval": "< 100 % Abrufbar",
+            "qp": "RL",
+            "release_date": "Debüt",
+            "offer_cost": "Angebotskosten",
+            "offers": "Angebot(e)",
+            "level": "Level",
+            "collection": "Sammlung",
+            "collections": "Sammlungen",
+            "collection_fmt": "1 Sammlung",
+            "collections_fmt": "{{count}} Sammlungen"
+        },
+        "ship": {
+            "ship": "Schiff",
+            "attack": "Angriffs",
+            "boosts": "Leistungssteigerung",
+            "amount": "Menge",
+            "handicap": "Handicap",
+            "initialize": "Initialisierungszeit",
+            "cycle_time": "Zykluszeit",
+            "cooldown": "Abklingzeit",
+            "duration": "Dauer",
+            "uses": "Verwendungen",
+            "bonus_ability": "Bonusfähigkeit",
+            "trigger": "Auslösend",
+            "accuracy": "Genauigkeit",
+            "charge_phases": "Ladephasen",
+            "crit_bonus": "Krit Bonus",
+            "crit_rating": "Krit Treffer",
+            "evasion": "Ausweichen",
+            "after_seconds": "Nach {{seconds}}s, {{action}}",
+            "hull": "Hülle",
+            "shields": "Schilde",
+            "antimatter": "Antimaterie",
+            "attack_speed": "Angriffsgeschwindigkeit"
+        },
+        "quipment_ranks": {
+            "overall": "Gesamtpunktzahl",
+            "specialty": "Spezialwertung",        
+            "first_pair": "Erstes Paar",
+            "second_pair": "Zweites Paar",
+            "third_pair": "Drittes Paar",
+            "primary": "Primär",
+            "secondary": "Sekundär",
+            "tertiary": "Tertiär"        
+        }
+    },
+    "data_notes": {
+        "gauntlet_determination": "Die Rangliste wurde durch Vorausberechnung ermittelt. Konkrete Ratschläge zur einzusetzenden Crew finden Sie unter {{link}}.",
+        "voyage_determination": "Die Rangliste wurde durch Vorausberechnung ermittelt. Konkrete Ratschläge zur einzusetzenden Crew finden Sie unter {{link}}."
+    },
     "gauntlet": {
         "gauntlet": "Herausforderung",
         "gauntlets": "Herausforderungen",
@@ -157,5 +294,37 @@
         "yesterday_gauntlet": "Die Herausforderung von gestern",
         "previous_gauntlets": "Vorherige Herausforderungen",
         "browse_gauntlets": "Herausforderungen durchlesen"
+    },
+    "obtained": {
+        "long": {
+            "Gauntlet": "Herausforderung Exklusiv",
+            "Voyage": "Reise Exklusiv",
+            "WebStore": "Web Store",
+            "Faction": "Fraktions-Store",
+            "Fuse": "Exklusiv Fusion",
+            "BossBattle": "Kapitänsbrücke",
+            "Collection": "Sammlungs-Meilenstein",
+            "Missions": "Hauptplatinen-Mission",
+            "Mega": "Wiederkehrende Mega",
+            "Event": "Ereignis",
+            "Event/Pack/Giveaway": "Veranstaltung/Paket/Giveaway",
+            "Pack/Giveaway": "Paket/Giveaway",
+            "Honor Hall": "Ehrenhalle"
+        },
+        "short": {
+            "Gauntlet": "Herausforderung",
+            "Voyage": "Reise",
+            "WebStore": "Web Store",
+            "Faction": "Fraktions",
+            "Fuse": "Fusion",
+            "BossBattle": "Brücke",
+            "Collection": "Sammlung",
+            "Missions": "Missionen",
+            "Mega": "Mega",
+            "Event": "Ereignis",
+            "Event/Pack/Giveaway": "Veranstaltung/Paket/Giveaway",
+            "Pack/Giveaway": "Paket/Giveaway",
+            "Honor Hall": "Ehrenhalle"
+        }
     }
 }
