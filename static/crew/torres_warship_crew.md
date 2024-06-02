@@ -3,9 +3,9 @@ name: Warship Torres
 rarity: 5
 series: original
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 2
 in_portal:
-date:
+date: 29/05/2024
 published: true
 ---
 
