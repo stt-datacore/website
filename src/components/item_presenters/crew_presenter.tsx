@@ -96,6 +96,7 @@ export class StatLabel extends React.Component<StatLabelProps> {
                     flexDirection: "row",
                     justifyContent: "space-between",
                     marginBottom: "0.5em",
+                    flexWrap: 'wrap',
                     marginLeft: 0,
                     width:
                         window.innerWidth < DEFAULT_MOBILE_WIDTH ? "12.5em" : "12.75em",
@@ -1042,7 +1043,7 @@ export class CrewPresenter extends React.Component<
                                 }}
                             >
                                 <StatLabel
-                                    title="Big Book Tier"
+                                    title={t('rank_names.bigbook_tier')}
                                     value={
                                         <div
                                             style={{
@@ -1056,11 +1057,11 @@ export class CrewPresenter extends React.Component<
                                 />
 
                                 <StatLabel
-                                    title="Voyage Rank"
+                                    title={t('rank_names.voyage_rank')}
                                     value={"" + crew.ranks.voyRank}
                                 />
 
-                                <StatLabel title="CAB Rating" value={crew.cab_ov ?? "?"} />
+                                <StatLabel title={t('rank_names.cab_rating')} value={crew.cab_ov ?? "?"} />
                             </div>
                         </div>
                     )}
@@ -1078,7 +1079,7 @@ export class CrewPresenter extends React.Component<
                                 }}
                             >
                                 <StatLabel
-                                    title="CAB Grade"
+                                    title={t('rank_names.cab_grade')}
                                     value={
                                         <div
                                             style={{
@@ -1093,7 +1094,7 @@ export class CrewPresenter extends React.Component<
                                     }
                                 />
                                 <StatLabel
-                                    title="Gauntlet Rank"
+                                    title={t('rank_names.gauntlet_rank')}
                                     value={"" + crew.ranks.gauntletRank}
                                 />
 
