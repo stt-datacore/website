@@ -3,7 +3,7 @@ name: Yeoman Martha Landon
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 in_portal:
 date: 02/01/2024
 published: true
