@@ -1,4 +1,7 @@
 {
+    "clipboard": {
+        "copied_exclaim": "Copied!"
+    },
     "menu": {
         "about_title": "About",
         "game_info_title": "Game Info",
@@ -10,7 +13,17 @@
             "bridge_crew_tool": "Bridge Crew Tool"
         },
         "player": {
-            "import_player_data_ellipses": "Import Player Data ..."
+            "import_player_data_ellipses": "Import Player Data ...",
+            "import_player_data": "Import Player Data",
+            "update_player_data": "Update Player Data",
+            "my_achievements": "My Achievements",
+            "my_charts_and_stats": "My Charts and Stats",
+            "share_profile": "Share Profile",
+            "menu_settings": "Menu Settings",
+            "toggle_glance": "Toggle At-A-Glance Panel",
+            "toggle_coloring": "Toggle grade coloring",
+            "clear_data": "Clear Player Data"
+
         },
         "roster_title": "Roster",
         "roster": {
@@ -35,6 +48,109 @@
             "continuum_helper": "Continuum Helper"
         },
         "site_beta_switch": "Switch between production and beta"
+    },
+    "header": {
+        "recommend": {
+            "title": "Player Data Recommended",
+            "description": "This page is better with player data.",
+            "tap_here": "Tap here to import your player data now."
+        },
+        "require": {
+            "title": "Player Data Required",
+            "description": "This page requires player data. Follow the instructions below to import your player data."
+        }
+    },
+    "json": {
+        "copy_and_paste": {
+            "title": "Copy and Paste",
+            "description_1": "Copy the contents of your {{data}},",
+            "description_2": "then paste everything into the text box below.",
+            "paste_here_placeholder": "Paste your {{data}} here",
+            "detailed_instructions": {
+                "title": "Detailed Instructions...",
+                "header": "DataCore cannot make direct requests to the game's servers, so you must follow these steps to import your {{data}}:",
+                "instructions": {
+                    "line_1": "Open this page in your browser: {{link}}",
+                    "line_2": "Sign in if asked, then wait for the page to finish loading. It should start with: {{jsonHint}} ...",
+                    "line_3": "Select everything in the page (Ctrl+A) and copy to clipboard (Ctrl+C).",
+                    "line_4": "Paste (Ctrl+V) in the text box above. Note that DataCore will intentionally display less data here to speed up the process."
+                },
+                "footer": "If you have multiple accounts, we recommend using your browser in incognito mode (Chrome) or in private mode (Edge / Firefox) to avoid caching your account credentials, making it easier to switch accounts."
+            }
+        },
+        "or": "OR",
+        "upload_file": {
+            "title": "Upload File",
+            "description_1": "Save your {{data}} to your device,",
+            "description_2": "then upload the file. Recommended for mobile users.",
+            "browse_ellipses": "Browse for {{data}} file to upload...",
+            "detailed_instructions": {
+                "title": "Detailed Instructions...",
+                "header": "DataCore cannot make direct requests to the game's servers, so you must follow these steps to import your {{data}}:",
+                "android": {
+                    "instructions": {
+                        "line_1": "Open this page on your device: {{link}}",
+                        "line_2": "Sign in if asked, then wait for the page to finish loading. It should start with: {{jsonHint}} ...",
+                        "line_3": "Tap the menu (three dots) icon while viewing the page.",
+                        "line_4": "Tap the download button, choose a location, and save.",
+                        "line_5": "Come back to this DataCore page.",
+                        "line_6": "Tap the \"Browse for {{data}} file to upload...\" button.",
+                        "line_7": "Choose the file starting with \"{{hint}}...\" from where you saved it."
+                    }
+                },
+                "ios": {
+                    "instructions": {
+                        "line_1": "Open this page on your device: {{link}}",
+                        "line_2": "Sign in if asked, then wait for the page to finish loading. It should start with: {{jsonHint}} ...",
+                        "line_3": "Tap the share icon while viewing the page.",
+                        "line_4": "Tap \"options\" and choose \"Web Archive\", tap \"save to files\", choose a location, and save.",
+                        "line_5": "Come back to this DataCore page.",
+                        "line_6": "Tap the \"Browse for player data file to upload...\" button.",
+                        "line_7": "Choose the file starting with \"{{hint}}...\" from where you saved it."
+                    }
+                }
+            }
+        }
+    },
+    "json_types": {
+        "player_data": "player data", 
+        "gauntlet_data": "gauntlet data",
+        "quest_data": "quest data"
+    },
+    "share_profile": {
+        "shared": {
+            "title": "Player Profile Shared!",
+            "description": "Your profile was uploaded successfully! Tap here to view your public profile."
+        },
+        "share": {
+            "share_text": "You can post your profile to the DataCore server to utilize personalized features of the discord bot, and let other users see your crew, ships, and items.",
+            "nag": {
+                "title": "Share Your Player Profile",
+                "nag_panel_share": "Follow the instructions below to post your player profile to the DataCore server.",
+                "nag_panel_not_share": "{{share_profile.share.share_text}} Tap here to learn more."
+            },
+            "title": "Post Profile to DataCore",
+            "header": "{{share_profile.share.share_text}}. Once shared, your public profile will be accessible by anyone with this link:",
+            "instructions": {
+                "line_1": "Click the link, above, to access data exports for spreadsheets including Take My Chrons and Do Not Airlock.",
+                "line_2": "Some pages on DataCore, notably fleet pages and event pages, may also link to your public profile.",
+                "line_3": "Information being shared is limited to: {{list}}. No private information is included in your public profile."
+            },
+            "info_list": "DBID, captain name, level, vip level, fleet name and role, achievements, completed missions, your crew, items and ships",
+            "check_auto_share": "Automatically post profile when importing player data",
+            "error": {
+                "error_header": "Failed to share player profile!",
+                "error_title": "Your profile failed to upload, with the error: {{errorMessage}}",
+                "error_panel_share": "Follow the instructions below to try again.",
+                "error_panel_not_share": "Tap here to try again."
+            },
+            "post_profile": "Post Profile"            
+        },
+        "export": {
+            "export_csv": "Export CSV",
+            "export_clipboard": "Copy to Clipboard",
+            "exported_clipboard": "Profile copied to clipboard!"
+        }
     },
     "gauntlet": {
         "gauntlet": "Gauntlet",

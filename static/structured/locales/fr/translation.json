@@ -1,4 +1,7 @@
 {
+    "clipboard": {
+        "copied_exclaim": "Copié!"
+    },
     "menu": {
         "about_title": "À propos",
         "game_info_title": "Info jeu",
@@ -10,7 +13,16 @@
             "bridge_crew_tool": "Outil pour l'équipage de la passerelle"
         },
         "player": {
-            "import_player_data_ellipses": "Importer les données ..."
+            "import_player_data_ellipses": "Importer les données ...",
+            "import_player_data": "Importer les données du joueur",
+            "update_player_data": "Mettre à jour les données",
+            "my_achievements": "Mes Trophées",
+            "my_charts_and_stats": "Mes graphiques et statistiques",
+            "share_profile": "Partager le profil",
+            "menu_settings": "Paramètres des menus",
+            "toggle_glance": "Basculer le panneau d'aperçu",
+            "toggle_coloring": "Changer la coloration des classements",
+            "clear_data": "Effacer les données du joueur"
         },
         "roster_title": "Liste",
         "roster": {
@@ -36,12 +48,114 @@
         },
         "site_beta_switch": "Basculer entre la production et la version bêta"
     },
+    "header": {
+        "recommend": {
+            "title": "Données du joueur recommandées",
+            "description": "Cette page est meilleure avec les données des joueurs.",
+            "tap_here": "Appuyez ici pour importer vos données de joueur maintenant."
+        },
+        "require": {
+            "title": "Données du joueur requises",
+            "description": "Cette page nécessite les données des joueurs. Suivez les instructions ci-dessous pour importer les données de votre joueur."
+        }
+    },
+    "json": {
+        "copy_and_paste": {
+            "title": "Copier et Coller",
+            "description_1": "Copiez le contenu de vos {{data}},",
+            "description_2": "puis collez le tout dans la zone de texte ci-dessous.",
+            "detailed_instructions": {
+                "title": "Des instructions détaillées...",
+                "header": "DataCore ne peut pas faire de requêtes directes aux serveurs du jeu, vous devez donc suivre ces étapes pour importer vos {{data}} :",
+                "instructions": {
+                    "line_1": "Ouvrez cette page dans votre navigateur : {{link}}",
+                    "line_2": "Connectez-vous si vous y êtes invité, puis attendez que la page ait fini de se charger. Il devrait commencer par : {{jsonHint}} ...",
+                    "line_3": "Sélectionnez tout sur la page (Ctrl+A) et copiez-le dans le presse-papiers (Ctrl+C).",
+                    "line_4": "Collez (Ctrl+V) dans la zone de texte ci-dessus. Notez que DataCore affichera intentionnellement moins de données ici pour accélérer le processus."
+                },
+                "footer": "Si vous possédez plusieurs comptes, nous vous recommandons d'utiliser votre navigateur en mode navigation privée (Chrome) ou en mode privé (Edge / Firefox) pour éviter de mettre en cache les informations d'identification de votre compte, ce qui facilite le changement de compte."
+            }
+        },
+        "or": "OU",
+        "upload_file": {
+            "title": "Télécharger un fichier",
+            "description_1": "Enregistrez vos {{data}} sur votre appareil,",
+            "description_2": "puis téléchargez le fichier. Recommandé pour les utilisateurs mobiles.",
+            "browse_ellipses": "Recherchez le fichier {{data}} à télécharger...",
+            "detailed_instructions": {
+                "title": "Des instructions détaillées...",
+                "header": "DataCore ne peut pas faire de requêtes directes aux serveurs du jeu, vous devez donc suivre ces étapes pour importer vos {{data}} :",
+                "android": {
+                    "instructions": {
+                        "line_1": "Ouvrez cette page sur votre appareil : {{link}}",
+                        "line_2": "Connectez-vous si vous y êtes invité, puis attendez que la page ait fini de se charger. Il devrait commencer par : {{jsonHint}} ...",
+                        "line_3": "Appuyez sur l'icône de menu (trois points) lors de l'affichage de la page.",
+                        "line_4": "Appuyez sur le bouton de téléchargement, choisissez un emplacement et enregistrez.",
+                        "line_5": "Revenez sur cette page DataCore.",
+                        "line_6": "Appuyez sur le bouton \"Rechercher le fichier {{data}} à télécharger...\".",
+                        "line_7": "Choisissez le fichier commençant par \"{{hint}}...\" à partir de l'endroit où vous l'avez enregistré."
+                    }
+                },
+                "ios": {
+                    "instructions": {
+                        "line_1": "Ouvrez cette page sur votre appareil : {{link}}",
+                        "line_2": "Connectez-vous si vous y êtes invité, puis attendez que la page ait fini de se charger. Il devrait commencer par : {{jsonHint}} ...",
+                        "line_3": "Appuyez sur l'icône de partage lors de l'affichage de la page.",
+                        "line_4": "Appuyez sur \"options\" et choisissez \"Web Archive\", appuyez sur \"enregistrer dans des fichiers\", choisissez un emplacement et enregistrez.",
+                        "line_5": "Revenez sur cette page DataCore.",
+                        "line_6": "Appuyez sur le bouton \"Rechercher le fichier {{data}} à télécharger...\".",
+                        "line_7": "Choisissez le fichier commençant par \"{{hint}}...\" à partir de l'endroit où vous l'avez enregistré."
+                    }
+                }
+            }
+        }
+    },
+    "json_types": {
+        "player_data": "données du joueur",
+        "gauntlet_data": "données de gantelet",
+        "quest_data": "données de quête"
+    },   
+    "share_profile": {
+        "shared": {
+            "title": "Profil du joueur partagé !",
+            "description": "Votre profil a été téléchargé avec succès ! Appuyez ici pour afficher votre profil public."
+        },
+        "share": {
+            "share_text": "Vous pouvez publier votre profil sur le serveur DataCore pour utiliser les fonctionnalités personnalisées du robot Discord et permettre aux autres utilisateurs de voir votre équipage, vos navires et vos objets.",
+            "nag": {
+                "title": "Partagez votre profil de joueur",
+                "nag_panel_share": "Suivez les instructions ci-dessous pour publier votre profil de joueur sur le serveur DataCore.",
+                "nag_panel_not_share": "{{share_profile.share.share_text}} Appuyez ici pour en savoir plus."
+            },
+            "title": "Publier le profil sur DataCore",
+            "header": "{{share_profile.share.share_text}}. Une fois partagé, votre profil public sera accessible à toute personne disposant de ce lien :",
+            "instructions": {
+                "line_1": "Cliquez sur le lien ci-dessus pour accéder aux exportations de données pour les feuilles de calcul, notamment Take My Chrons et Do Not Airlock.",
+                "line_2": "Certaines pages de DataCore, notamment les pages de flotte et les pages d'événements, peuvent également renvoyer vers votre profil public.",
+                "line_3": "Les informations partagées sont limitées à : {{list}}. Aucune information privée n'est incluse dans votre profil public."
+            },
+            "info_list": "DBID, nom du capitaine, niveau, niveau VIP, nom et rôle de la flotte, réalisations, missions accomplies, votre équipage, objets et navires",
+            "check_auto_share": "Publier automatiquement le profil lors de l'importation des données du joueur",
+            "error": {
+                "error_header": "Échec du partage du profil du joueur !",
+                "error_title": "Votre profil n'a pas pu être téléchargé, avec l'erreur : {{errorMessage}}",
+                "error_panel_share": "Suivez les instructions ci-dessous pour réessayer.",
+                "error_panel_not_share": "Appuyez ici pour réessayer."
+            },
+            "post_profile": "Publier un profil"
+        },
+        "export": {
+            "export_csv": "Exporter CSV",
+            "export_clipboard": "Copier dans le Presse-papiers",
+            "exported_clipboard": "Profil copié dans le presse-papier !"
+        }
+    },
     "gauntlet": {
         "gauntlet": "Gantelet",
         "gauntlets": "Gantelets",
         "today_gauntlet": "Gantelet d'aujourd'hui",
         "yesterday_gauntlet": "Gantelet d'hier",
         "previous_gauntlets": "Gantelets précédents",
-        "browse_gauntlets": "Parcourez les gantelets"    
+        "browse_gauntlets": "Parcourez les gantelets"
     }
 }

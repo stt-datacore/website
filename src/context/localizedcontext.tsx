@@ -61,7 +61,8 @@ export interface ILocalizedData extends IGameStrings {
 	setPreferredLanguage: (value: SupportedLanguage | undefined) => void;
 	translateCore: () => TranslatedCore;
 	translatePlayer: (localizedCore: ICoreContext) => PlayerContextData;
-	t: (value: string, options?: any) => string
+	t: (value: string, options?: { [key: string]: string }) => string,
+	tfmt(v: string, opts?: { [key: string]: string | JSX.Element }): JSX.Element
 };
 
 const defaultGameStrings: IGameStrings = {
@@ -79,7 +80,8 @@ export const DefaultLocalizedData: ILocalizedData = {
 	setPreferredLanguage: () => false,
 	translateCore: () => { return {}; },
 	translatePlayer: () => { return {} as PlayerContextData; },
-	t: () => ''
+	t: () => '',
+	tfmt: () => <></>
 };
 
 export const LocalizedContext = React.createContext(DefaultLocalizedData);
@@ -124,7 +126,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	const [language, setLanguage] = useStateWithStorage<SupportedLanguage | undefined>('localized/language', undefined);
 
 	// Localized strings sent to UI
-	const [webStrings, setWebStrings] = useStateWithStorage<any>('localized/webstrings', {});
+	const [webStringMap, setWebStringMap] = useStateWithStorage<{[key: string]: string}>('localized/webstrings', {});
 	const [gameStrings, setGameStrings] = useStateWithStorage<IGameStrings>('localized/gamestrings', defaultGameStrings);
 
 	// Update language on user preference change
@@ -152,36 +154,14 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	if (!language)
 		return <span><Icon loading name='spinner' /> Loading translations...</span>;
 
-	function t(v: string, opts?: any) {
-		try {
-			if (!webStrings) return v;
-			let p = v.split(".");
-			let obj = webStrings;
-			for (let key of p) {
-				obj = obj[key];
-			}
-			if (opts && typeof obj === 'string') {
-				let keys = Object.keys(opts);
-				for (let key of keys) {
-					while (obj.indexOf(`{{${key}}}`) !== -1) {
-						obj = obj.replace(`{{${key}}}`, opts[key]);
-					}
-				}
-			}
-			return obj;
-		}
-		catch {
-			return v;
-		}
-	}
-
 	const localizedData: ILocalizedData = {
 		...gameStrings,
 		language,
 		setPreferredLanguage,
 		translateCore,
 		translatePlayer,
-		t
+		t,
+		tfmt
 	};
 
 	return (
@@ -195,9 +175,12 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		if (language === newLanguage)
 			return;
 
-		const webStringsResponse: Response = await fetch(`/structured/locales/${newLanguage}/translation.json`);
-		const webStringsJson: any = await webStringsResponse.json();
+		const webStringsResponse: Response =
+			await fetch(`/structured/locales/${newLanguage}/translation.json`)
+				.catch((e) => fetch(`/structured/locales/en/translation.json`));
 
+		const webStringsJson: any = await webStringsResponse.json();
+	
 		// TODO: Rework CONFIG translations
 		CONFIG.setLanguage(newLanguage);
 
@@ -250,7 +233,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			ITEM_ARCHETYPES: itemArchetypes
 		};
 
-		setWebStrings(webStringsJson);
+		setWebStringMap(makeWebstringMap(webStringsJson));
 		setGameStrings({...translatedGameStrings});
 
 		setLanguage(newLanguage);
@@ -415,6 +398,123 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		else {
 			return [undefined, undefined];
 		}
+	}
+
+	function makeWebstringMap(translations: Object, current?: { [key: string]: string }, currentName?: string): { [key: string]: string } {
+		current ??= {};
+		currentName ??= '';
+
+		let keys = Object.keys(translations);
+		for (let key of keys) {
+			let fullkey = `${currentName ? currentName + '.' : ''}${key}`;
+			if (typeof translations[key] === 'string' || typeof translations[key] === 'number' || typeof translations[key] === 'boolean') {
+				current[fullkey] = translations[key] ? `${translations[key]}` : '';
+			}
+			else if (translations[key]) {
+				makeWebstringMap(translations[key], current, fullkey);
+			}
+		}
+		return current;
+	}
+	
+	function t(v: string, opts?: { [key: string]: string }) {
+		opts ??= {};
+		try {
+			let obj = webStringMap[v];
+			if (opts && typeof obj === 'string') {
+				let parts = getParts(obj);
+				let finals = [] as string[];
+
+				for (let part of parts) {
+					if (part.startsWith("{{") && part.endsWith("}}")) {
+						let key = part.slice(2, part.length - 2);
+						if (key in opts) {
+							finals.push(opts[key]);
+						}
+						else if (key in webStringMap) {
+							finals.push(webStringMap[key]);
+						}
+					}
+					else {
+						finals.push(part);
+					}
+				}
+				return finals.reduce((p, n) => p ? p + n : n);				
+			}
+			return obj;
+		}
+		catch {
+			return v;
+		}
+	}
+
+	function tfmt(v: string, opts?: { [key: string]: string | JSX.Element }): JSX.Element {
+		opts ??= {};
+		try {
+			if (!webStringMap) return <>{v}</>;
+			let obj = webStringMap[v];
+			if (opts && typeof obj === 'string') {				
+				let parts = getParts(obj);
+				let finals = [] as JSX.Element[];
+
+				for (let part of parts) {
+					if (part.startsWith("{{") && part.endsWith("}}")) {
+						let key = part.slice(2, part.length - 2);
+						if (key in opts) {
+							finals.push(<>{opts[key]}</>);
+						}
+						else if (key in webStringMap) {
+							finals.push(<>{webStringMap[key]}</>);
+						}
+					}
+					else {
+						finals.push(<>{part}</>);
+					}
+				}
+				return finals.reduce((p, n) => p ? <>{p}{n}</> : <>{n}</>);				
+			}
+			else {
+				return <>{obj}</>
+			}
+		}
+		catch {
+			return <>{v}</>;
+		}
+	}
+
+
+	function getParts(str: string) {
+		let output = [] as string[];
+		let c = str.length;
+		let inthing = false;
+		let csp = "";
+
+		for (let i = 0; i < c; i++) {
+			if (!inthing) {
+				if (str[i] === '{' && i < c - 1 && str[i + 1] === '{') {
+					if (csp) output.push(csp);
+					csp = '';
+					inthing = true;
+					i++;
+				}
+				else {
+					csp += str[i];
+				}
+			}			
+			else {
+				if (str[i] === '}' && i < c - 1 && str[i + 1] === '}') {
+					if (csp) output.push(`{{${csp}}}`);
+					csp = '';
+					inthing = false;
+					i++;
+				}
+				else {
+					csp += str[i];
+				}
+			}			
+		}
+		if (csp) output.push(csp);
+		return output;
 	}
 
 };
