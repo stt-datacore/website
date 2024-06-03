@@ -176,7 +176,25 @@
     },
     "pages": {
         "crew_stats": "Crew Stats",
-        "ships": "Ships"
+        "ships": "Ships",
+        "crew_view_modes": {
+            "owned_crew": { 
+                "name": "Owned Crew",
+                "description": "View only your owned crew"
+            },
+            "buyback_well": { 
+                "name": "Buy-Back Well",
+                "description": "View crew in the buy-back well"
+            },
+            "current_offers": {
+                "name": "Current Offers",
+                "description": "Show crew in current offers"
+            },
+            "game_roster": { 
+                "name": "Game Roster",
+                "description": "Overview of all crew in the game"
+            }
+        }
     },
     "buffs": {
         "no_buffs": "No buffs",

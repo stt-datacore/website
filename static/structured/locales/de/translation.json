@@ -174,7 +174,25 @@
     },
     "pages": {
         "crew_stats": "Crew-Statistiken",
-        "ships": "Schiffe"
+        "ships": "Schiffe",
+        "crew_view_modes": {
+            "owned_crew": { 
+                "name": "Eigene Crew",
+                "description": "Nur Ihr eigenes Crew anzeigen"
+            },
+            "buyback_well": { 
+                "name": "Rückkaufpool",
+                "description": "Besatzung im Rückkaufpool anzeigen"
+            },
+            "current_offers": {
+                "name": "Aktuelle Angebote",
+                "description": "Crew in aktuellen Angeboten anzeigen"
+            },
+            "game_roster": { 
+                "name": "Spieleliste",
+                "description": "Zusammenfassung der gesamten Spielcrew"
+            }
+        }
     },
     "buffs": {
         "no_buffs": "Keine Verbesserungen",

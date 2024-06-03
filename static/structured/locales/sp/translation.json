@@ -174,7 +174,25 @@
     },
     "pages": {
         "crew_stats": "Estadísticas de la tripulación",
-        "ships": "Barcos"
+        "ships": "Barcos",
+        "crew_view_modes": {
+            "owned_crew": { 
+                "name": "Tripulación Propia",
+                "description": "Ver solo tu propio equipo"
+            },
+            "buyback_well": { 
+                "name": "Pozo de Recompra",
+                "description": "Ver tripulación en el pozo de recompra"
+            },
+            "current_offers": {
+                "name": "Ofertas Actuales",
+                "description": "Mostrar tripulación en ofertas actuales"
+            },
+            "game_roster": { 
+                "name": "Lista de Juego",
+                "description": "Resumen de toda la tripulación del juego"
+            }
+        }
     },
     "buffs": {
         "no_buffs": "Aucun mejoras",

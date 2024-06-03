@@ -2,7 +2,7 @@
     "clipboard": {
         "copied_exclaim": "Copié!"
     },
-    "global": { 
+    "global": {
         "yes": "Oui",
         "no": "Non",
         "never": "Jamais",
@@ -19,10 +19,10 @@
         "bonus": "Prime",
         "bonuses": "Bonus"
     },
-    "spinners": { 
-        "default": "Chargement des données...", 
-        "quipment": "Calcul de l'équipement...", 
-        "demands": "Calcul des demandes de l'équipage..." 
+    "spinners": {
+        "default": "Chargement des données...",
+        "quipment": "Calcul de l'équipement...",
+        "demands": "Calcul des demandes de l'équipage..."
     },
     "menu": {
         "about_title": "À propos",
@@ -136,7 +136,7 @@
         "player_data": "données du joueur",
         "gauntlet_data": "données de gantelet",
         "quest_data": "données de quête"
-    },   
+    },
     "share_profile": {
         "shared": {
             "title": "Profil du joueur partagé !",
@@ -174,7 +174,25 @@
     },
     "pages": {
         "crew_stats": "Statistiques de l'équipage",
-        "ships": "Vaisseaux"
+        "ships": "Vaisseaux",
+        "crew_view_modes": {
+            "owned_crew": {
+                "name": "Propre Équipage",
+                "description": "Voir uniquement votre propre équipe"
+            },
+            "buyback_well": {
+                "name": "Pool de Rachat",
+                "description": "Voir l'équipage dans le pool de rachat"
+            },
+            "current_offers": {
+                "name": "Offres Actuelles",
+                "description": "Afficher l'équipage dans les offres en cours"
+            },
+            "game_roster": {
+                "name": "Liste de Jeu",
+                "description": "Résumé de toute l'équipe du jeu"
+            }
+        }
     },
     "buffs": {
         "no_buffs": "Aucun améliorations",
@@ -233,7 +251,7 @@
             "whole_word": "Mot entier seulement",
             "exact": "Correspondance exacte uniquement"
         }
-    },    
+    },
     "crew_views": {
         "base": "Afficher les compétences de base",
         "ship": "Afficher les capacités du navire",
@@ -241,7 +259,7 @@
         "voyage": "Afficher les rangs des voyages",
         "quipment": "Afficher les rangs des Quipements",
         "max_quipment": "Afficher le Quipement Max",
-        "crew_utility": "Afficher l'utilitaire de l'équipage"      
+        "crew_utility": "Afficher l'utilitaire de l'équipage"
     },
     "rank_names": {
         "bigbook_tier": "Étage Big Book",
@@ -250,7 +268,7 @@
         "gauntlet_rank": "Rang Gantelet",
         "cab_rank": "Rang CAB",
         "cab_rating": "Cote CAB",
-        "quipment_score": "Rang de Quipement"        
+        "quipment_score": "Rang de Quipement"
     },
     "data_names": {
         "base": {
