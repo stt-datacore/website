@@ -18,10 +18,10 @@ export type AbilityUsesProps = {
 };
 
 export const AbilityUses = (props: AbilityUsesProps) => {
-
+	const { t } = React.useContext(GlobalContext).localized;
 	const { selectedUses, setSelectedUses } = props;
 
-	const zeroText = props.zeroText ?? "Unlimited";
+	const zeroText = props.zeroText ?? t('data_names.ship.unlimited');
     const abilityUsesOptions = props.uses.map((u) => {
         return {
             key: u ? `${u}x` : zeroText,
@@ -33,7 +33,7 @@ export const AbilityUses = (props: AbilityUsesProps) => {
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder={props.altTitle ?? 'Battle uses'}
+				placeholder={props.altTitle ?? t('data_names.ship.uses_per_battle')}
 				clearable
 				multiple
 				selection
@@ -56,6 +56,7 @@ export type ShipPickerProps = {
 };
 
 export const ShipPicker = (props: ShipPickerProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { selectedShip, setSelectedShip, filter } = props;
 
     const [availableShips, setAvailableShips] = React.useState<Ship[] | undefined>(props.pool);
@@ -85,7 +86,7 @@ export const ShipPicker = (props: ShipPickerProps) => {
 			value: c.symbol,
 			image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.icon?.file.slice(1).replace('/', '_')}.png` },
 			text: c.name,
-			title: CONFIG.RARITIES[c.rarity].name + ` Ship / Attack ${c.attack?.toLocaleString()} / Shields ${c.shields?.toLocaleString()} / Hull ${c.hull?.toLocaleString()}`
+			title: CONFIG.RARITIES[c.rarity].name + ` ${t('data_names.ship.ship')} / ${t('data_names.ship.attack')} ${c.attack?.toLocaleString()} / ${t('data_names.ship.shields')} ${c.shields?.toLocaleString()} / ${t('data_names.ship.hull')} ${c.hull?.toLocaleString()}`
 		} as DropDownItem
 	));
 
@@ -134,16 +135,17 @@ export type ShipAbilityPickerProps = {
     selectedAbilities: string[];
     setSelectedAbilities: (ability: string[]) => void | React.Dispatch<React.SetStateAction<string[]>>;
 	ship?: boolean;
-	fluid?: boolean;
+	fluid?: boolean;	
 };
 
 export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { selectedAbilities, setSelectedAbilities, fluid } = props;
     const availableAbilities = props.availableAbilities && props.availableAbilities.length ? props.availableAbilities : Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).slice(0, props.ship ? 13 : 9);
 
 	const [ability, setAbility] = React.useState(selectedAbilities);
 
-	const placeholder = 'Select Ship Abilities';
+	const placeholder = t('hints.select_ship_abilities');
 	const poolList = availableAbilities?.map((c) => (
 		{
 			key: c,
@@ -196,12 +198,13 @@ export type ShipAbilityRankPickerProps = {
 };
 
 export const ShipAbilityRankPicker = (props: ShipAbilityRankPickerProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { selectedRankings: selectedAbilities, setSelectedRankings: setSelectedAbilities } = props;
     const availableAbilities = props.availableRankings;
 
 	const [selection, setSelection] = React.useState(selectedAbilities ?? []);
 
-	const placeholder = 'Select Ship Ability Amount';
+	const placeholder = t('hints.select_ship_ability_amount');
 
     React.useEffect(() => {
         setSelectedAbilities(selection);
@@ -320,7 +323,7 @@ export type TriggerPickerProps = {
 };
 
 export const TriggerPicker = (props: TriggerPickerProps) => {
-
+	const { t } = React.useContext(GlobalContext).localized;
 	const { grants, selectedTriggers, setSelectedTriggers } = props;
 
 	const [triggers, setTriggers] = React.useState<string[] | number[]>(selectedTriggers ?? []);
@@ -354,7 +357,7 @@ export const TriggerPicker = (props: TriggerPickerProps) => {
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder={props.altTitle ?? (grants ? 'Grants' : 'Triggers')}
+				placeholder={props.altTitle ?? (grants ? t('data_names.ship.grants') : t('data_names.ship.triggers'))}
 				clearable
 				multiple
 				selection
@@ -377,7 +380,7 @@ export type BonusPickerProps = {
 };
 
 export const BonusPicker = (props: BonusPickerProps) => {
-
+	const { t } = React.useContext(GlobalContext).localized;
 	const { selectedBonuses, setSelectedBonuses } = props;
 
 	const [bonsuses, setBonuses] = React.useState(selectedBonuses);
@@ -403,7 +406,7 @@ export const BonusPicker = (props: BonusPickerProps) => {
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder={props.altTitle ?? 'Bonuses'}
+				placeholder={props.altTitle ?? t('global.bonuses')}
 				clearable
 				multiple
 				selection
@@ -427,7 +430,7 @@ export type TraitPickerProps = {
 };
 
 export const TraitPicker = (props: TraitPickerProps) => {
-
+	const { t } = React.useContext(GlobalContext).localized;
 	const globalContext = React.useContext(GlobalContext);
 	const { TRAIT_NAMES, SHIP_TRAIT_NAMES } = globalContext.localized;
 	const { selectedTraits, setSelectedTraits, ship } = props;
@@ -452,7 +455,7 @@ export const TraitPicker = (props: TraitPickerProps) => {
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder={props.altTitle ?? 'Traits'}
+				placeholder={props.altTitle ?? t('hints.traits')}
 				clearable
 				multiple
 				selection

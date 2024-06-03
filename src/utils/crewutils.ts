@@ -1117,17 +1117,39 @@ export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): s
 	return variantTraits;
 }
 
-export function printImmoText(immo: number | CompletionState, item?: string, immoText?: string) {
-	item ??= "Crew";
-	immoText ??= "Immortalized";
+export function printImmoText(immo: number | CompletionState, item?: string, immoText?: string, t?: (value: string, opts?: { [key: string]: string }) => string) {
 
-	if (immo === -1) return `${item} Is ${immoText}`;
-	else if (immo === -5) return `${item} Is Shown ${immoText} (No Player Data)`;
-	else if (immo === -3) return `${item} Is Shown ${immoText} (Unowned)`;
-	else if (immo === -4) return `${item} Is Shown ${immoText} (Owned)`;
-	else if (immo === -2) return `${item} Is Shown ${immoText}`;
-	else if (immo >= 1) return `${item} Is Frozen (` + (immo === 1 ? "1 copy" : immo.toString() + " copies") + ")";
-	else return `${item} Is Not ${immoText}`;
+	if (t) {
+		item ??= t('data_names.base.crew');
+		immoText ??= t('crew_state.immortalized');
+	
+		if (immo === -1) return t('immo_text.item_is_level', { item, level: immoText });
+		else if (immo === -5) return t('immo_text.item_is_shown_no_player', { item, level: immoText });
+		else if (immo === -3) return t('immo_text.item_is_shown_unowned', { item, level: immoText });
+		else if (immo === -4) return t('immo_text.item_is_shown_owned', { item, level: immoText });
+		else if (immo === -2) return t('immo_text.item_is_shown', { item, level: immoText });
+		else if (immo >= 1) {
+			if (immo === 1) {
+				return(t('immo_text.item_is_frozen_one'))
+			}
+			else {
+				return(t('immo_text.item_is_frozen_many', { copes: `${immo}`}));
+			}			
+		}
+		else return `${item} Is Not ${immoText}`;
+	}
+	else {
+		item ??= "Crew";
+		immoText ??= "Immortalized";
+	
+		if (immo === -1) return `${item} Is ${immoText}`;
+		else if (immo === -5) return `${item} Is Shown ${immoText} (No Player Data)`;
+		else if (immo === -3) return `${item} Is Shown ${immoText} (Unowned)`;
+		else if (immo === -4) return `${item} Is Shown ${immoText} (Owned)`;
+		else if (immo === -2) return `${item} Is Shown ${immoText}`;
+		else if (immo >= 1) return `${item} Is Frozen (` + (immo === 1 ? "1 copy" : immo.toString() + " copies") + ")";
+		else return `${item} Is Not ${immoText}`;
+	}
 }
 
 export function getSkills(item: PlayerCrew | CrewMember | CompactCrew | BaseSkills): string[] {

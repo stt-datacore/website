@@ -14,7 +14,10 @@
         "hidden": "Oculto",
         "search": "Buscar",
         "search_ellipses": "Buscar...",
-        "obtained": "Obtenido Por"
+        "search_by_name_or_trait_ellipses": "Buscar por nombre o característica...",
+        "obtained": "Obtenido por",
+        "bonus": "Bonificacion",
+        "bonuses": "Bonificaciones"
     },
     "spinners": {
         "default": "Cargando datos...",
@@ -170,21 +173,53 @@
         }
     },
     "pages": {
-        "crew_stats": "Estadísticas de la tripulación"
+        "crew_stats": "Estadísticas de la tripulación",
+        "ships": "Barcos"
     },
     "buffs": {
         "no_buffs": "Aucun mejoras",
         "player_buffs": "Mejoras de los juegos",
         "max_buffs": "Mejoras máximas"
     },
+    "crew_state": {
+        "owned": "Propiedad",
+        "unowned": "Sin Propiedad",
+        "immortalized": "Inmortalizado",
+        "immortalized_m": "Inmortalizado",
+        "immortalized_f": "Inmortalizada",
+        "shown_immortalized": "Presentado Inmortalizado",
+        "shown_immortalized_m": "Presentado Inmortalizado",
+        "shown_immortalized_f": "Presentado Inmortalizada",
+        "unfused": "Sin fusionar",
+        "stars": "{{estrellas}} Estrellas",
+        "frozen": "Congelado",
+        "expires_in": "La tripulación caduca en {{time}}"
+    },
+    "immo_text": {
+        "item_is_level": "{{item}} es {{level}}",
+        "item_is_shown": "{{item}} se muestra {{level}}",
+        "item_is_shown_no_player": "{{item}} se muestra {{level}} (sin datos del jugador)",
+        "item_is_shown_owned": "{{item}} se muestra {{level}} (propiedad)",
+        "item_is_shown_unowned": "{{item}} se muestra {{level}} (sin propietario)",
+        "item_is_frozen_one": "{{item}} está congelado (1 copia)",
+        "item_is_frozen_many": "{{item}} está congelado ({{copies}} copias)"
+    },
     "hints": {
         "apply_buffs": "Aplicar mejoras",
         "filter_by_rarity": "Filtrar por rareza",
-        "filter_by_trait": "Filtrar por rasgo",
-        "filter_by_portal_status": "Filtrar por estado del portal"
+        "filter_by_trait": "Filtrar por característica",
+        "filter_by_portal_status": "Filtrar por estado del portal",
+        "filter_ship_rarity": "Filtrar la rareza del barco",
+        "filter_ship_grants": "Filtrar subvenciones para barcos",
+        "select_ship_ability": "Seleccionar capacidad del barco",
+        "select_ship_abilities": "Seleccionar habilidades del barco",
+        "select_ship_ability_amount": "Seleccione la cantidad de capacidad del barco",
+        "trait": "Característica",
+        "traits": "Características"
     },
     "options": {
         "trait_match": {
+            "trait": "Característica",
             "matches": "Coincidencias",
             "match": "Coincide",
             "any": "Coincide con cualquier rasgo",
@@ -196,13 +231,6 @@
             "whole_word": "Solo palabra completa",
             "exact": "Sólo coincidencia exacta"
         }
-    },
-    "crew_state": {
-        "owned": "Propiedad",
-        "unowned": "Sin Propiedad",
-        "immortalized": "Immortalizado",
-        "frozen": "Congelado",
-        "expires_in": "La tripulación caduca en {{time}}"
     },
     "crew_views": {
         "base": "Mostrar habilidades básicas",
@@ -261,6 +289,7 @@
             "duration": "Duración",
             "uses": "Activaciones",
             "uses_per_battle": "Activaciones por batalla",
+            "unlimited": "Ilimitado",
             "bonus_ability": "Habilidad Bonus",
             "trigger": "Activación",
             "equipment_bonus": "Bonificación de equipo",
@@ -278,22 +307,27 @@
             "hull": "Casco",
             "shields": "Escudos",
             "antimatter": "Antimateria",
-            "attack_speed": "Velocidad de ataque"
+            "attack_speed": "Velocidad de ataque",
+            "max_level": "Nivel máximo",
+            "grants": "Concesiones",
+            "triggers": "Activadores",
+            "battle_stations": "Estaciones de batalla",
+            "clear_station": "Borrar estación"
         },
         "quipment_ranks": {
-            "overall": "Overall",
-            "specialty": "Specialty",
-            "first_pair": "First Pair",
-            "second_pair": "Second Pair",
-            "third_pair": "Third Pair",
-            "primary": "Primary",
-            "secondary": "Secondary",
-            "tertiary": "Tertiary"
+            "overall": "General",
+            "specialty": "Especialidad",
+            "first_pair": "Primer par",
+            "second_pair": "Segundo par",
+            "third_pair": "Tercer par",
+            "primary": "Primario",
+            "secondary": "Secundario",
+            "tertiary": "Terciario"
         }
     },
     "ship_action": {
         "boost_by": "Aumenta {{type}} en {{amount}}",
-        "grant": "Otorga el estado {{grant}}: {{grant_description}}",
+        "grant": "Conferir estado {{grant}}: {{grant_description}}",
         "handicap": "Disminuir {{type}} en {{amount}}"
     },
     "data_notes": {

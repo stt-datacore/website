@@ -14,7 +14,10 @@
         "hidden": "Hidden",
         "search": "Search",
         "search_ellipses": "Search...",
-        "obtained": "Obtained"
+        "search_by_name_or_trait_ellipses": "Search by name or trait...",
+        "obtained": "Obtained",
+        "bonus": "Bonus",
+        "bonuses": "Bonuses"
     },
     "spinners": {
         "default": "Loading data...",
@@ -172,21 +175,53 @@
         }
     },
     "pages": {
-        "crew_stats": "Crew Stats"
+        "crew_stats": "Crew Stats",
+        "ships": "Ships"
     },
     "buffs": {
         "no_buffs": "No buffs",
         "player_buffs": "Player buffs",
         "max_buffs": "Max buffs"
     },
+    "crew_state": {
+        "owned": "Owned",
+        "unowned": "Unowned",
+        "immortalized": "Immortalized",
+        "immortalized_m": "Immortalized",
+        "immortalized_f": "Immortalized",
+        "shown_immortalized": "Shown Immortalized",
+        "shown_immortalized_m": "Immortalized",
+        "shown_immortalized_f": "Immortalized",
+        "unfused": "Unfused",
+        "stars": "{{stars}} Stars",
+        "frozen": "Frozen",
+        "expires_in": "Crew expires in {{time}}"
+    },
+    "immo_text": {
+        "item_is_level": "{{item}} is {{level}}",
+        "item_is_shown": "{{item}} Is Shown {{level}}",
+        "item_is_shown_no_player": "{{item}} Is Shown {{level}} (No Player Data)",
+        "item_is_shown_owned": "{{item}} Is Shown {{level}} (Owned)",
+        "item_is_shown_unowned": "{{item}} Is Shown {{level}} (Unowned)",
+        "item_is_frozen_one": "{{item}} Is Frozen (1 Copy)",
+        "item_is_frozen_many": "{{item}} Is Frozen ({{copies}} Copies)"
+    },
     "hints": {
         "apply_buffs": "Apply stat buffs",
         "filter_by_rarity": "Filter by rarity",
         "filter_by_trait": "Filter by trait",
-        "filter_by_portal_status": "Filter by portal status"
+        "filter_by_portal_status": "Filter by portal status",
+        "filter_ship_rarity": "Filter ship rarity",
+        "filter_ship_grants": "Filter ship grants",
+        "select_ship_ability": "Select ship ability",
+        "select_ship_abilities": "Select Ship Abilities",
+        "select_ship_ability_amount": "Select Ship Ability Amount",
+        "trait": "Trait",
+        "traits": "Traits"
     },
     "options": {
         "trait_match": {
+            "trait": "Trait",
             "match": "Match",
             "matches": "Matches",
             "any": "Match any trait",
@@ -198,14 +233,7 @@
             "whole_word": "Whole word only",
             "exact": "Exact match only"
         }
-    },
-    "crew_state": {
-        "owned": "Owned",
-        "unowned": "Unowned",
-        "immortalized": "Immortalized",
-        "frozen": "Frozen",
-        "expires_in": "Crew expires in {{time}}"
-    },
+    },    
     "crew_views": {
         "base": "Show base skills",
         "ship": "Show ship abilities",
@@ -262,6 +290,7 @@
             "duration": "Duration",
             "uses": "Uses",
             "uses_per_battle": "Uses per battle",
+            "unlimited": "Unlimited",
             "bonus_ability": "Bonus Ability",
             "trigger": "Trigger",
             "equipment_bonus": "Equipment Bonus",
@@ -279,7 +308,12 @@
             "hull": "Hull",
             "shields": "Shields",
             "antimatter": "Antimatter",
-            "attack_speed": "Attack Speed"
+            "attack_speed": "Attack Speed",
+            "max_level": "Max Level",
+            "grants": "Grants",
+            "triggers": "Triggers",
+            "battle_stations": "Battle Stations",
+            "clear_station": "Clear Station"
         },
         "quipment_ranks": {
             "overall": "Overall",

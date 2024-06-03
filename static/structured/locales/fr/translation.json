@@ -14,7 +14,10 @@
         "hidden": "Caché",
         "search": "Recherche",
         "search_ellipses": "Recherche...",
-        "obtained": "Obtenu Par"
+        "search_by_name_or_trait_ellipses": "Rechercher par nom ou caractéristique...",
+        "obtained": "Obtenu par",
+        "bonus": "Prime",
+        "bonuses": "Bonus"
     },
     "spinners": { 
         "default": "Chargement des données...", 
@@ -170,40 +173,65 @@
         }
     },
     "pages": {
-        "crew_stats": "Statistiques de l'équipage"
+        "crew_stats": "Statistiques de l'équipage",
+        "ships": "Vaisseaux"
     },
     "buffs": {
         "no_buffs": "Aucun améliorations",
         "player_buffs": "Améliorations des joueurs",
         "max_buffs": "Améliorations maximum"
     },
+    "crew_state": {
+        "owned": "Possédé(e)",
+        "unowned": "Pas Possédé(e)",
+        "immortalized": "Immortalisé(e)",
+        "immortalized_m": "Immortalisé",
+        "immortalized_f": "Immortalisée",
+        "shown_immortalized": "Présenté Immortalisé(e)",
+        "shown_immortalized_m": "Présenté Immortalisé",
+        "shown_immortalized_f": "Présenté Immortalisée",
+        "unfused": "Non fusionné",
+        "stars": "{{stars}} étoiles",
+        "frozen": "Congelé(e)",
+        "expires_in": "L'équipage expire dans {{time}}"
+    },
+    "immo_text": {
+        "item_is_level": "{{item}} est {{level}}",
+        "item_is_shown": "{{item}} est affiché {{level}}",
+        "item_is_shown_no_player": "{{item}} est affiché {{level}} (Aucune donnée du joueur)",
+        "item_is_shown_owned": "{{item}} est affiché {{level}} (possédé)",
+        "item_is_shown_unowned": "{{item}} est affiché {{level}} (sans propriétaire)",
+        "item_is_frozen_one": "{{item}} est gelé (1 copie)",
+        "item_is_frozen_many": "{{item}} est gelé ({{copies}} copies)"
+    },
     "hints": {
         "apply_buffs": "Appliquer des améliorations",
         "filter_by_rarity": "Filtrer par rareté",
         "filter_by_trait": "Filtrer par trait",
-        "filter_by_portal_status": "Filtrer par statut du portail"
+        "filter_by_portal_status": "Filtrer par statut du portail",
+        "filter_ship_rarity": "Filtrer la rareté des vaisseaux",
+        "filter_ship_grants": "Filtrer les subventions d'expédition",
+        "select_ship_ability": "Sélectionner la capacité du vaisseau",
+        "select_ship_abilities": "Sélectionner les capacités du vaisseau",
+        "select_ship_ability_amount": "Sélectionnez le montant de la capacité du vaisseau",
+        "trait": "Caractéristique",
+        "traits": "Caractéristiques"
     },
     "options": {
         "trait_match": {
+            "trait": "Caractéristique",
             "matches": "Correspondances",
             "match": "Correspondre",
-            "any": "Correspondre à n'importe quel trait",
-            "match_two_plus": "Correspondre aux 2+ traits",
-            "match_all": "Correspondre tous les traits"
+            "any": "Correspondre à n'importe quel caractéristique",
+            "match_two_plus": "Correspondre aux 2+ caractéristiques",
+            "match_all": "Correspondre tous les caractéristiques"
         },
         "text_match": {
             "any": "Correspondre n'importe quel texte",
             "whole_word": "Mot entier seulement",
             "exact": "Correspondance exacte uniquement"
         }
-    },
-    "crew_state": {
-        "owned": "Possédé(e)",
-        "unowned": "Pas Possédé(e)",
-        "immortalized": "Immortalisé(e)",
-        "frozen": "Congelé(e)",
-        "expires_in": "L'équipage expire dans {{time}}"
-    },
+    },    
     "crew_views": {
         "base": "Afficher les compétences de base",
         "ship": "Afficher les capacités du navire",
@@ -261,8 +289,9 @@
             "duration": "Durée",
             "uses": "Activations",
             "uses_per_battle": "Activations par bataille",
+            "unlimited": "Illimité",
             "bonus_ability": "Capacité Bonus",
-            "trigger": "Déclenchement",
+            "trigger": "Déclencheur",
             "equipment_bonus": "Bonus d'équipement",
             "accuracy": "Précision",
             "charge_phases": "Phases de Chargement",
@@ -278,7 +307,12 @@
             "hull": "Coque",
             "shields": "Boucliers",
             "antimatter": "Antimatière",
-            "attack_speed": "Vitesse d'Attaque"
+            "attack_speed": "Vitesse d'Attaque",
+            "max_level": "Niveau maximum",
+            "grants": "Octrois",
+            "triggers": "Déclencheurs",
+            "battle_stations": "Stations de combat",
+            "clear_station": "Effacer la station"
         },
         "quipment_ranks": {
             "overall": "Ensemble",
@@ -293,7 +327,7 @@
     },
     "ship_action": {
         "boost_by": "Augmente {{type}} de {{amount}}",
-        "grant": "Accorde le statut {{grant}} : {{grant_description}}",
+        "grant": "Conférer le statut {{grant}} : {{grant_description}}",
         "handicap": "Diminuer {{type}} de {{amount}}"
     },
     "data_notes": {

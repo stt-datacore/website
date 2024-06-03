@@ -170,6 +170,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	}
 	render() {
 		const { localized } = this.context;
+		const { t } = localized;
 		const trait_names = localized.SHIP_TRAIT_NAMES;
 		const { textFilter, grantFilter, traitFilter, abilityFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
 		
@@ -209,12 +210,13 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 
 			<div style={{
 				display: "flex",
-				flexDirection: "row"
+				flexDirection: "row",
+				gap: "0.5em"
 			}}>
 				<Input
 					style={{ width: isMobile ? '100%' : '30%' }}
 					iconPosition="left"
-					placeholder="Search by name or trait..."
+					placeholder={t('global.search_by_name_or_trait_ellipses')}
 					value={textFilter}
 					onChange={(e, { value }) => this.setTextFilter(value)}>
 						<input />
@@ -225,25 +227,15 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 				</Input>
 
 				<RarityFilter
-					altTitle='Filter ship rarity'
+					altTitle={t('hints.filter_ship_rarity')}
 					rarityFilter={rarityFilter ?? []}
 					setRarityFilter={this.setRarityFilter}
 				/>
-				<div style={{
-					marginLeft: "0.5em"
-				}}>
-					<TriggerPicker grants={true} altTitle='Filter ship grants' selectedTriggers={grantFilter} setSelectedTriggers={(value) => this.setGrantFilter(value as string[])} />
-				</div>
-				<div style={{
-					marginLeft: "0.5em"
-				}}>
-					<ShipAbilityPicker ship={true} selectedAbilities={this.state.abilityFilter} setSelectedAbilities={(value) => this.setAbilityFilter(value as string[])} />
-				</div>
-				<div style={{
-					marginLeft: "0.5em"
-				}}>
-					<TraitPicker ship={true} selectedTraits={this.state.traitFilter} setSelectedTraits={(value) => this.setTraitFilter(value as string[])} />
-				</div>
+					<TriggerPicker grants={true} altTitle={t('hints.filter_ship_grants')} selectedTriggers={grantFilter} setSelectedTriggers={(value) => this.setGrantFilter(value as string[])} />
+
+				<ShipAbilityPicker ship={true} selectedAbilities={this.state.abilityFilter} setSelectedAbilities={(value) => this.setAbilityFilter(value as string[])} />
+
+				<TraitPicker ship={true} selectedTraits={this.state.traitFilter} setSelectedTraits={(value) => this.setTraitFilter(value as string[])} />
 			</div>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
@@ -253,56 +245,56 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 							sorted={column === 'name' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('name')}
 						>
-							Ship
+							{t('data_names.ship.ship')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'antimatter' ? direction ?? undefined  : undefined}
 							onClick={() => this._handleSort('antimatter')}
 						>
-							Antimatter
+							{t('data_names.ship.antimatter')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'accuracy' ? direction ?? undefined  : undefined}
 							onClick={() => this._handleSort('accuracy')}
 						>
-							Accuracy
+							{t('data_names.ship.accuracy')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'attack' ? direction ?? undefined  : undefined}
 							onClick={() => this._handleSort('attack')}
 						>
-							Attack
+							{t('data_names.ship.attack')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'evasion' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('evasion')}
 						>
-							Evasion
+							{t('data_names.ship.evasion')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'hull' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('hull')}
 						>
-							Hull
+							{t('data_names.ship.hull')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'shields' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('shields')}
 						>
-							Shields
+							{t('data_names.ship.shields')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}							
 							sorted={column === 'max_level' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('max_level')}
 						>
-							Level
+							{t('data_names.ship.level')}
 						</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>

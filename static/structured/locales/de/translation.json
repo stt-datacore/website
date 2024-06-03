@@ -14,7 +14,10 @@
         "hidden": "Versteckt",
         "search": "Suchen",
         "search_ellipses": "Suchen...",
-        "obtained": "Erhalten Von"
+        "search_by_name_or_trait_ellipses": "Suche nach Name oder Merkmalen...",
+        "obtained": "Erhalten von",
+        "bonus": "Bonifikation",
+        "bonuses": "Boni"
     },
     "spinners": {
         "default": "Daten werden geladen…",
@@ -170,21 +173,53 @@
         }
     },
     "pages": {
-        "crew_stats": "Crew-Statistiken"
+        "crew_stats": "Crew-Statistiken",
+        "ships": "Schiffe"
     },
     "buffs": {
         "no_buffs": "Keine Verbesserungen",
         "player_buffs": "Verbesserungen der Spieler",
         "max_buffs": "Maximale Verbesserungen"
     },
+    "crew_state": {
+        "owned": "Rekrutiert",
+        "unowned": "Nicht Rekrutiert",
+        "immortalized": "Unsterblich",
+        "immortalized_m": "Unsterblich",
+        "immortalized_f": "Unsterblich",
+        "shown_immortalized": "Als unsterblich dargestellt",
+        "shown_immortalized_m": "Als unsterblich dargestellt",
+        "shown_immortalized_f": "Als unsterblich dargestellt",
+        "unfused": "Unfusioniert",
+        "stars": "{{stars}} Sterne",
+        "frozen": "Eingefroren",
+        "expires_in": "Crew läuft in {{time}} ab"
+    },
+    "immo_text": {
+        "item_is_level": "{{item}} ist {{level}}",
+        "item_is_shown": "{{item}} wird angezeigt {{level}}",
+        "item_is_shown_no_player": "{{item}} wird angezeigt {{level}} (keine Spielerdaten)",
+        "item_is_shown_owned": "{{item}} wird angezeigt {{level}} (im Besitz)",
+        "item_is_shown_unowned": "{{item}} wird angezeigt {{level}} (nicht im Besitz)",
+        "item_is_frozen_one": "{{item}} ist eingefroren (1 Kopie)",
+        "item_is_frozen_many": "{{item}} ist eingefroren ({{copies}} Kopien)"
+    },
     "hints": {
         "apply_buffs": "Buffs anwenden",
         "filter_by_rarity": "Filtern nach Seltenheit",
         "filter_by_trait": "Filtern nach Merkmalen",
-        "filter_by_portal_status": "Filtern nach Portalstatus"
+        "filter_by_portal_status": "Filtern nach Portalstatus",
+        "filter_ship_rarity": "Schiffsrarität filtern",
+        "filter_ship_grants": "Schiffszuschüsse filtern",
+        "select_ship_ability": "Schiffsfähigkeit auswählen",
+        "select_ship_abilities": "Schiffsfähigkeiten auswählen",
+        "select_ship_ability_amount": "Schiffsfähigkeitenbetrag auswählen",
+        "trait": "Merkmalen",
+        "traits": "Merkmalenen"
     },
     "options": {
         "trait_match": {
+            "trait": "Merkmalen",
             "matches": "Übereinstimmungen",
             "match": "Passt",
             "any": "Passt zu jedem Merkmal",
@@ -196,13 +231,6 @@
             "whole_word": "Nur ganzes Wort",
             "exact": "Nur genaue Übereinstimmung"
         }
-    },
-    "crew_state": {
-        "owned": "Rekrutiert",
-        "unowned": "Nicht Rekrutiert",
-        "immortalized": "Unsterblich",
-        "frozen": "Eingefroren",
-        "expires_in": "Crew läuft in {{time}} ab"
     },
     "crew_views": {
         "base": "Grundlegende Fähigkeiten zeigen",
@@ -260,8 +288,9 @@
             "duration": "Dauer",
             "uses": "Aktivierungen",
             "uses_per_battle": "Aktivierungen pro Gefecht",
+            "unlimited": "Unbegrenzt",
             "bonus_ability": "Bonusfähigkeit",
-            "trigger": "Auslösend",
+            "trigger": "Auslöser",
             "equipment_bonus": "Ausrüstungsbonus",
             "accuracy": "Genauigkeit",
             "charge_phases": "Ladephasen",
@@ -277,7 +306,12 @@
             "hull": "Hülle",
             "shields": "Schilde",
             "antimatter": "Antimaterie",
-            "attack_speed": "Angriffsgeschwindigkeit"
+            "attack_speed": "Angriffsgeschwindigkeit",
+            "max_level": "Höchstlevel",
+            "grants": "Verleihungen",
+            "triggers": "Auslöseren",
+            "battle_stations": "Kampfstationen",
+            "clear_station": "Station räumen"
         },
         "quipment_ranks": {
             "overall": "Gesamtpunktzahl",
@@ -292,7 +326,7 @@
     },
     "ship_action": {
         "boost_by": "Erhöht {{type}} um {{amount}}",
-        "grant": "Gewährt den {{grant}}-Status: {{grant_description}}",
+        "grant": "Verleihe den Status {{grant}}: {{grant_description}}",
         "handicap": "Verringern Sie {{type}} um {{amount}}"
     },
     "data_notes": {

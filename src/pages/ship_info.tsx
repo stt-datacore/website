@@ -203,6 +203,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 	}
 
 	render() {
+		const { t } = this.context.localized;
     	const { data, currentStationCrew, crewStations, modalOptions, modalOpen, activeShip, hoverItem } = this.state;
         let ship_key: string | undefined = this.props.ship;
 
@@ -300,7 +301,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
                 <ShipPresenter hover={false} ship={activeShip ?? ship} showIcon={true} storeName='shipProfile' />
 
-				<h3>Battle Stations</h3>
+				<h3>{t('data_names.ship.battle_stations')}</h3>
 				<div style={{
 					display: "flex",
 					flexDirection: "row",
@@ -336,7 +337,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 							}
 						</div>
 						<div>
-							<Button disabled={!crewStations[idx]} onClick={(e) => this.clearStation(idx)}>Clear Station</Button>
+							<Button disabled={!crewStations[idx]} onClick={(e) => this.clearStation(idx)}>{t('data_names.ship.clear_station')}</Button>
 						</div>
 					</div>
 					))}
