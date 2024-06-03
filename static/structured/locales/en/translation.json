@@ -320,7 +320,7 @@
             "crit_rating": "Crit Rating",
             "evasion": "Evasion",
             "charge_phase": {
-                "after_seconds": "After {{seconds}}s, ",
+                "after_seconds": "After {{seconds}}s ",
                 "bonus": "+{{amount}} to {{ability}}",
                 "cooldown": "{{time}}s cooldown",
                 "duration": "{{time}}s duration"

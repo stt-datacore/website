@@ -318,7 +318,7 @@
             "crit_rating": "Krit Treffer",
             "evasion": "Ausweichen",
             "charge_phase": {
-                "after_seconds": "Nach {{seconds}}s, ",
+                "after_seconds": "Nach {{seconds}}s ",
                 "bonus": "+{{amount}} zu {{ability}}",
                 "cooldown": "{{time}}s Abklingzeit",
                 "duration": "{{time}}s Dauer"

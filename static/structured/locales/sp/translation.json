@@ -319,7 +319,7 @@
             "crit_rating": "Frecuencia de Crít",
             "evasion": "Evasión",
             "charge_phase": {
-                "after_seconds": "Después de {{seconds}}s, ",
+                "after_seconds": "Después de {{seconds}}s ",
                 "bonus": "+{{amount}} a {{ability}}",
                 "cooldown": "{{time}}s recargar",
                 "duration": "{{time}}s duración"

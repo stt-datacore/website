@@ -319,7 +319,7 @@
             "crit_rating": "Chance du Crit",
             "evasion": "Évasion",
             "charge_phase": {
-                "after_seconds": "Après {{seconds}}s, ",
+                "after_seconds": "Après {{seconds}}s ",
                 "bonus": "+{{amount}} à {{ability}}",
                 "cooldown": "{{time}}s recharge",
                 "duration": "{{time}}s durée"
