@@ -190,11 +190,13 @@
         "immortalized_m": "Immortalized",
         "immortalized_f": "Immortalized",
         "shown_immortalized": "Shown Immortalized",
-        "shown_immortalized_m": "Immortalized",
-        "shown_immortalized_f": "Immortalized",
+        "shown_immortalized_m": "Shown Immortalized",
+        "shown_immortalized_f": "Shown Immortalized",
         "unfused": "Unfused",
         "stars": "{{stars}} Stars",
         "frozen": "Frozen",
+        "frozen_m": "Frozen",
+        "frozen_f": "Frozen",
         "expires_in": "Crew expires in {{time}}"
     },
     "immo_text": {

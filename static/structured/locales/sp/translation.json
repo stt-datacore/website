@@ -193,6 +193,8 @@
         "unfused": "Sin fusionar",
         "stars": "{{estrellas}} Estrellas",
         "frozen": "Congelado",
+        "frozen_m": "Congelado",
+        "frozen_f": "Congelada",
         "expires_in": "La tripulación caduca en {{time}}"
     },
     "immo_text": {

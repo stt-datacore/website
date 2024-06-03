@@ -135,12 +135,12 @@ export function descriptionLabel(crew: IRosterCrew,  showOwned?: boolean): JSX.E
 				<React.Fragment>
 					{crew.immortal >= CompletionState.Frozen &&
 						<Label style={{ whiteSpace: 'nowrap' }}>
-							<Icon name='snowflake' />{crew.immortal} {t('crew_state.frozen')}
+							<Icon name='snowflake' />{crew.immortal} {crew.traits_hidden.includes('female') ? t('crew_state.frozen_f') : t('crew_state.frozen_m')}
 						</Label>
 					}
 					{crew.immortal === CompletionState.Immortalized &&
 						<Label style={{ whiteSpace: 'nowrap' }}>
-							<Icon name='star' color='yellow' /> {t('crew_state.immortalized')}
+							<Icon name='star' color='yellow' /> {crew.traits_hidden.includes('female') ? t('crew_state.immortalized_f') : t('crew_state.immortalized_m')}
 						</Label>
 					}
 				</React.Fragment>
@@ -232,7 +232,7 @@ export const OwnedLabel = (props: { crew: IRosterCrew, statsPopup?: boolean }) =
 		return (
 			<Label style={{ whiteSpace: 'nowrap' }}>
 				<Icon name='star' color='yellow' />
-				{t('crew_state.immortalized')}
+				{crew.traits_hidden.includes('female') ? t('crew_state.immortalized_f') : t('crew_state.immortalized_m')}
 			</Label>
 		);
 	}

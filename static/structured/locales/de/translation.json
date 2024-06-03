@@ -193,6 +193,8 @@
         "unfused": "Unfusioniert",
         "stars": "{{stars}} Sterne",
         "frozen": "Eingefroren",
+        "frozen_m": "Eingefroren",
+        "frozen_f": "Eingefroren",
         "expires_in": "Crew läuft in {{time}} ab"
     },
     "immo_text": {

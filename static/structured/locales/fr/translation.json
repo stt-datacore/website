@@ -193,6 +193,8 @@
         "unfused": "Non fusionné",
         "stars": "{{stars}} étoiles",
         "frozen": "Congelé(e)",
+        "frozen_m": "Congelé",
+        "frozen_f": "Congelée",
         "expires_in": "L'équipage expire dans {{time}}"
     },
     "immo_text": {
