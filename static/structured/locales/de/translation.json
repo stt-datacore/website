@@ -258,15 +258,22 @@
             "cycle_time": "Zykluszeit",
             "cooldown": "Abklingzeit",
             "duration": "Dauer",
-            "uses": "Verwendungen",
+            "uses": "Aktivierungen",
+            "uses_per_battle": "Aktivierungen pro Gefecht",
             "bonus_ability": "Bonusfähigkeit",
             "trigger": "Auslösend",
+            "equipment_bonus": "Ausrüstungsbonus",
             "accuracy": "Genauigkeit",
             "charge_phases": "Ladephasen",
             "crit_bonus": "Krit Bonus",
             "crit_rating": "Krit Treffer",
             "evasion": "Ausweichen",
-            "after_seconds": "Nach {{seconds}}s, {{action}}",
+            "charge_phase": {
+                "after_seconds": "Nach {{seconds}}s, ",
+                "bonus": "+{{amount}} zu {{ability}}",
+                "cooldown": "{{time}}s Abklingzeit",
+                "duration": "{{time}}s Dauer"
+            },
             "hull": "Hülle",
             "shields": "Schilde",
             "antimatter": "Antimaterie",
@@ -282,6 +289,11 @@
             "secondary": "Sekundär",
             "tertiary": "Tertiär"        
         }
+    },
+    "ship_action": {
+        "boost_by": "Erhöht {{type}} um {{amount}}",
+        "grant": "Gewährt den {{grant}}-Status: {{grant_description}}",
+        "handicap": "Verringern Sie {{type}} um {{amount}}"
     },
     "data_notes": {
         "gauntlet_determination": "Die Rangliste wurde durch Vorausberechnung ermittelt. Konkrete Ratschläge zur einzusetzenden Crew finden Sie unter {{link}}.",

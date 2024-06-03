@@ -85,8 +85,18 @@ const checkedStyle: React.CSSProperties = {
 };
 
 export class StatLabel extends React.Component<StatLabelProps> {
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
+
     render() {
         const { title, value } = this.props;
+
+        let sizeDefault = '12.75em';
+        let sizeMobile = '12.5em';
+        if (this.context.localized.language === 'de') {
+            sizeDefault = '15em';
+            sizeMobile = '14em';
+        }
 
         return (            
             <Label
@@ -99,7 +109,7 @@ export class StatLabel extends React.Component<StatLabelProps> {
                     flexWrap: 'wrap',
                     marginLeft: 0,
                     width:
-                        window.innerWidth < DEFAULT_MOBILE_WIDTH ? "12.5em" : "12.75em",
+                        window.innerWidth < DEFAULT_MOBILE_WIDTH ? sizeMobile : sizeDefault,
                 }}
             >
                 {title}

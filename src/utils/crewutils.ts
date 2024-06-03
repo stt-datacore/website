@@ -878,7 +878,7 @@ export function getShipBonus(item?: PlayerCrew | CrewMember | ShipAction | Ship,
 	return bonusText;
 }
 
-export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction | Ship, index?: number): string[] {
+export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction | Ship, index?: number, t?: (value: string, opt?: { [key: string]: string }) => string): string[] {
 	const phases = [] as string[];
 	let charge_time = 0;
 
@@ -890,23 +890,46 @@ export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction 
 
 	if (!action || !action.charge_phases) return phases;
 	action.charge_phases.forEach(cp => {
+		// After {{seconds}}s, {{action}}
 		charge_time += cp.charge_time;
-		let phaseDescription = `After ${charge_time}s`;
+		let phaseDescription = '';
 
-		if (cp.ability_amount && action?.ability) {
-			phaseDescription += ', ' + CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type].replace('%VAL%', `${cp.ability_amount}`);
+		if (t) {
+			phaseDescription = t('data_names.ship.charge_phase.after_seconds', { seconds: `${charge_time}` });
+			if (cp.ability_amount && action?.ability) {
+				phaseDescription += ', ' + CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type].replace('%VAL%', `${cp.ability_amount}`);
+			}
+			if (cp.bonus_amount) {
+				phaseDescription += ", " + t('data_names.ship.charge_phase.bonus', {
+					amount: `${cp.bonus_amount}`,
+					ability: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type]
+				});				
+			}
+			if (cp.duration) {
+				phaseDescription += `, ` + t('data_names.ship.charge_phase.duration', {
+					time: `${cp.duration - action.duration}`
+				});				
+			}
+			if (cp.cooldown) {
+				phaseDescription += `, ` + t('data_names.ship.charge_phase.cooldown', {
+					time: `${cp.cooldown - action.cooldown}`
+				});
+			}
 		}
-
-		if (cp.bonus_amount) {
-			phaseDescription += `, +${cp.bonus_amount} to ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type]}`;
-		}
-
-		if (cp.duration) {
-			phaseDescription += `, +${cp.duration - action.duration}s duration`;
-		}
-
-		if (cp.cooldown) {
-			phaseDescription += `, +${cp.cooldown - action.cooldown}s cooldown`;
+		else {
+			phaseDescription = `After ${charge_time}s`;
+			if (cp.ability_amount && action?.ability) {
+				phaseDescription += ', ' + CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type].replace('%VAL%', `${cp.ability_amount}`);
+			}
+			if (cp.bonus_amount) {
+				phaseDescription += `, +${cp.bonus_amount} to ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type]}`;
+			}
+			if (cp.duration) {
+				phaseDescription += `, +${cp.duration - action.duration}s duration`;
+			}
+			if (cp.cooldown) {
+				phaseDescription += `, +${cp.cooldown - action.cooldown}s cooldown`;
+			}
 		}
 
 		phases.push(phaseDescription);

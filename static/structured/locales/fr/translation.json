@@ -259,15 +259,22 @@
             "cycle_time": "Un cycle",
             "cooldown": "Recharge",
             "duration": "Durée",
-            "uses": "Utilisations",
+            "uses": "Activations",
+            "uses_per_battle": "Activations par bataille",
             "bonus_ability": "Capacité Bonus",
             "trigger": "Déclenchement",
+            "equipment_bonus": "Bonus d'équipement",
             "accuracy": "Précision",
             "charge_phases": "Phases de Chargement",
             "crit_bonus": "Bonus Crit",
             "crit_rating": "Chance du Crit",
             "evasion": "Évasion",
-            "after_seconds": "Après {{seconds}}s, {{action}}",
+            "charge_phase": {
+                "after_seconds": "Après {{seconds}}s, ",
+                "bonus": "+{{amount}} à {{ability}}",
+                "cooldown": "{{time}}s recharge",
+                "duration": "{{time}}s durée"
+            },
             "hull": "Coque",
             "shields": "Boucliers",
             "antimatter": "Antimatière",
@@ -283,6 +290,11 @@
             "secondary": "Secondaire",
             "tertiary": "Tertiaire"
         }
+    },
+    "ship_action": {
+        "boost_by": "Augmente {{type}} de {{amount}}",
+        "grant": "Accorde le statut {{grant}} : {{grant_description}}",
+        "handicap": "Diminuer {{type}} de {{amount}}"
     },
     "data_notes": {
         "gauntlet_determination": "Classements déterminés par précalcul. Pour des conseils spécifiques sur l'équipage à utiliser, consultez {{link}}.",

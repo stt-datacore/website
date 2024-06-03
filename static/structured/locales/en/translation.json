@@ -261,14 +261,21 @@
             "cooldown": "Cooldown",
             "duration": "Duration",
             "uses": "Uses",
+            "uses_per_battle": "Uses per battle",
             "bonus_ability": "Bonus Ability",
             "trigger": "Trigger",
+            "equipment_bonus": "Equipment Bonus",
             "accuracy": "Accuracy",
             "charge_phases": "Charge Phases",
             "crit_bonus": "Crit Bonus",
             "crit_rating": "Crit Rating",
             "evasion": "Evasion",
-            "after_seconds": "After {{seconds}}s, {{action}}",
+            "charge_phase": {
+                "after_seconds": "After {{seconds}}s, ",
+                "bonus": "+{{amount}} to {{ability}}",
+                "cooldown": "{{time}}s cooldown",
+                "duration": "{{time}}s duration"
+            },    
             "hull": "Hull",
             "shields": "Shields",
             "antimatter": "Antimatter",
@@ -284,6 +291,11 @@
             "secondary": "Secondary",
             "tertiary": "Tertiary"
         }
+    },
+    "ship_action": {
+        "boost_by": "Boosts {{type}} by {{amount}}",
+        "grant": "Grants {{grant}} status: {{grant_description}}",
+        "handicap": "Decrease {{type}} by {{amount}}"
     },
     "data_notes": {
         "gauntlet_determination": "Rankings determined by precalculation. For specific advice on crew to use, consult {{link}}.",

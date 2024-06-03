@@ -259,15 +259,22 @@
             "cycle_time": "Uno ciclo",
             "cooldown": "Recargar",
             "duration": "Duración",
-            "uses": "Usos",
+            "uses": "Activaciones",
+            "uses_per_battle": "Activaciones por batalla",
             "bonus_ability": "Habilidad Bonus",
             "trigger": "Activación",
+            "equipment_bonus": "Bonificación de equipo",
             "accuracy": "Precisión",
             "charge_phases": "Fases de Carga",
             "crit_bonus": "Bonificación de Crít",
             "crit_rating": "Frecuencia de Crít",
             "evasion": "Evasión",
-            "after_seconds": "Después {{seconds}}s, {{action}}",
+            "charge_phase": {
+                "after_seconds": "Después de {{seconds}}s, ",
+                "bonus": "+{{amount}} a {{ability}}",
+                "cooldown": "{{time}}s recargar",
+                "duration": "{{time}}s duración"
+            },
             "hull": "Casco",
             "shields": "Escudos",
             "antimatter": "Antimateria",
@@ -283,6 +290,11 @@
             "secondary": "Secondary",
             "tertiary": "Tertiary"
         }
+    },
+    "ship_action": {
+        "boost_by": "Aumenta {{type}} en {{amount}}",
+        "grant": "Otorga el estado {{grant}}: {{grant_description}}",
+        "handicap": "Disminuir {{type}} en {{amount}}"
     },
     "data_notes": {
         "gauntlet_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre la tripulación a utilizar, consulte {{link}}.",
