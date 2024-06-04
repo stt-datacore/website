@@ -6,7 +6,7 @@ import { CrewMember } from '../../model/crew';
 import { PlayerCrew } from '../../model/player';
 import CONFIG from '../../components/CONFIG';
 import { StatLabel } from '../../components/statlabel';
-import { getCoolStats } from '../../utils/misc';
+import { getCoolStats, translateSkills } from '../../utils/misc';
 import { formatTierLabel, gradeToColor, numberToGrade, prettyObtained, printPortalStatus } from '../../utils/crewutils';
 import { GlobalContext } from '../../context/globalcontext';
 
@@ -142,8 +142,9 @@ type CrewRanksProps = {
 
 export const CrewRanks = (props: CrewRanksProps) => {
 	const { crew, myCrew } = props;
+	const { t } = React.useContext(GlobalContext).localized;
 	const [showPane, setShowPane] = React.useState(false);
-	const title = !!myCrew ? getMyCrewTitle(crew, myCrew) : getCoolStats(crew, false);
+	const title = !!myCrew ? getMyCrewTitle(crew, myCrew) : getCoolStats(t, crew, false);
 	return (
 		<Accordion style={{ }}>
 			<Accordion.Title
@@ -154,7 +155,7 @@ export const CrewRanks = (props: CrewRanksProps) => {
 				{!showPane && <>{title}</>}
 				{showPane && (
 					<React.Fragment>
-						{!!myCrew ? 'Ranks on your roster' : 'All ranks'}:
+						{!!myCrew ? t('cool_stats.ranks_on_your_roster') : t('cool_stats.all_ranks')}:
 					</React.Fragment>
 				)}
 			</Accordion.Title>
@@ -174,7 +175,7 @@ export const CrewRanks = (props: CrewRanksProps) => {
 		let b = [] as JSX.Element[];
 
 		const skillName = (shortName: string) => {
-			let ns = CONFIG?.SKILLS_SHORT?.find(c => c.short === shortName)?.name;
+			let ns = CONFIG?.SKILLS_SHORT_ENGLISH?.find(c => c.short === shortName)?.name;
 			if (ns) return CONFIG.SKILLS[ns];
 			else return null;
 		}
@@ -200,14 +201,14 @@ export const CrewRanks = (props: CrewRanksProps) => {
 			if (rank.startsWith('V_')) {
 				v.push(
 					<Statistic key={rank}>
-						<Statistic.Label>{rank.slice(2).replace('_', ' / ')}</Statistic.Label>
+						<Statistic.Label>{translateSkills(rank.slice(2).replace('_', ' / '), ' / ')}</Statistic.Label>
 						<Statistic.Value>{crew.ranks[rank] && rankLinker(!!myCrew, rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('G_')) {
 				g.push(
 					<Statistic key={rank}>
-						<Statistic.Label>{rank.slice(2).replace('_', ' / ')}</Statistic.Label>
+						<Statistic.Label>{translateSkills(rank.slice(2).replace('_', ' / '), ' / ')}</Statistic.Label>
 						<Statistic.Value>{crew.ranks[rank] && rankLinker(!!myCrew, rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
 					</Statistic>
 				);
@@ -224,18 +225,18 @@ export const CrewRanks = (props: CrewRanksProps) => {
 		return (
 			<React.Fragment>
 				<Segment>
-					<Header as="h5">Base ranks</Header>
+					<Header as="h5">{t('cool_stats.base_ranks')}</Header>
 					<Statistic.Group widths="three" size={'mini'} style={{ paddingBottom: '0.5em' }}>
 						{b}
 					</Statistic.Group>
 				</Segment>
 				<Segment>
-					<Header as="h5">Voyage skill ranks</Header>
+					<Header as="h5">{t('cool_stats.voyage_skill_ranks')}</Header>
 					{crew.ranks.voyTriplet && (
 						<React.Fragment>
 							<Statistic.Group widths="one" size={'mini'}>
 								<Statistic>
-									<Statistic.Label>{crew.ranks.voyTriplet.name}</Statistic.Label>
+									<Statistic.Label>{translateSkills(crew.ranks.voyTriplet.name, ' / ')}</Statistic.Label>
 									<Statistic.Value>{rankLinker(!!myCrew, tripletHandler('voyTriplet'), crew.symbol, 'ranks.voyRank', 'ascending', tripletFilter)}</Statistic.Value>
 								</Statistic>
 							</Statistic.Group>
@@ -247,7 +248,7 @@ export const CrewRanks = (props: CrewRanksProps) => {
 					</Statistic.Group>
 				</Segment>
 				<Segment>
-					<Header as="h5">Gauntlet pair ranks</Header>
+					<Header as="h5">{t('cool_stats.gauntlet_pair_ranks')}</Header>
 					<Statistic.Group widths="three" size={'mini'} style={{ paddingBottom: '0.5em' }}>
 						{g}
 					</Statistic.Group>
@@ -264,7 +265,7 @@ export const CrewRanks = (props: CrewRanksProps) => {
 				.map(([k, v]) => [k, roster.filter((c) => c.ranks[k] < crew.ranks[k]).length + 1])
 				.sort(([k1, v1], [k2, v2]) => (v1 as number) - (v2 as number))[0];
 			return [
-				(name as string).slice(2).replace('_', '/'),
+				translateSkills((name as string).slice(2).replace('_', '/')),
 				rank
 			];
 		}
@@ -275,20 +276,21 @@ export const CrewRanks = (props: CrewRanksProps) => {
 				c.ranks.voyTriplet.name == crew.ranks.voyTriplet?.name &&
 				crew.ranks.voyTriplet.rank > c.ranks.voyTriplet.rank).length + 1
 
-			return `#${rank} ${crew.ranks.voyTriplet?.name} on your roster`;
+			return t('cool_stats.rank_skill_roster', { rank: `${rank}`, skill: translateSkills(crew.ranks.voyTriplet!.name) } );
 		} else if (skillCount == 2) {
 			let [voyRankName, voyRank] = rankHandler('V');
 			let [gauntRankName, gauntRank] = rankHandler('G');
 
 			if (voyRank < gauntRank)
-				return `#${voyRank} ${voyRankName} voyage pair in your roster`;
+				return t('cool_stats.voyage_pair_roster', { rank: `${voyRank}`, skill: `${voyRankName}` })
+				//return `#${voyRank} ${voyRankName} voyage pair in your roster`;
 			else if (voyRank > gauntRank)
-				return `#${gauntRank} ${gauntRankName} gauntlet pair in your roster`;
+				return t('cool_stats.gauntlet_pair_roster', { rank: `${gauntRank}`, skill: `${gauntRankName}` });
 			else
-				return `#${voyRank} ${voyRankName} voyage/gauntlet pair in your roster`;
+				return t('cool_stats.voyage_gauntlet_pair_roster', { rank: `${voyRank}`, skill: `${voyRankName}` })
 		} else {
 			let [baseName, baseRank] = rankHandler('B');
-			return `#${baseRank} ${baseName} base in your roster`;
+			return t('cool_stats.base_roster', { rank: `${baseRank}`, skill: `${baseName}` });
 		}
 	}
 };

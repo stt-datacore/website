@@ -17,7 +17,15 @@
         "search_by_name_or_trait_ellipses": "Search by name or trait...",
         "obtained": "Obtained",
         "bonus": "Bonus",
-        "bonuses": "Bonuses"
+        "bonuses": "Bonuses",
+        "reset": "Reset",
+        "load_default_settings": "Load Default Settings",
+        "clear": "Clear",
+        "close": "Close",
+        "disable": "Disable",
+        "enable": "Enable",
+        "apply_filters": "Apply Filters",
+        "base": "Base"
     },
     "spinners": {
         "default": "Loading data...",
@@ -272,13 +280,36 @@
         "cab_rating": "CAB Rating",
         "quipment_score": "Quipment Score"        
     },
+    "cool_stats": {
+        "ranks_on_your_roster": "Ranks on your roster",
+        "all_ranks": "All Ranks",
+        "base_ranks": "Base ranks",
+        "voyage_skill_ranks": "Voyage skill ranks",
+        "gauntlet_pair_ranks": "Gauntlet pair ranks",
+        "show_detailed_ellipses": "Show detailed ranks and stats...",
+        "more_stats_ellipses": "more stats...",
+        "rank_skill_roster": "#{{rank}} {{skill}} on your roster",
+        "voyage_pair_roster": "#{{rank}} {{skill}} voyage pair in your roster",
+        "gauntlet_pair_roster": "#{{rank}} {{skill}} gauntlet pair in your roster",
+        "voyage_gauntlet_pair_roster": "#{{rank}} {{skill}} voyage/gauntlet pair in your roster",
+        "base_roster": "#{{rank}} {{skill}} base in your roster"
+    },
     "data_names": {
+        "crew_page": {
+            "can_cross_fuse_with": "Can cross-fuse with {{crew}}",
+            "all_fuses_ellipses": "All fuses...",
+            "all_fuse_skill_fffe_colon": "Skills at all fuses when fully leveled and fully equipped:",
+            "aka_colon": "Also known as:",
+            "coined_by": "coined by {{name}}",
+            "player_boosts_applied": "Player boosts applied"
+        },
         "base": {
             "crew": "Crew",
             "rarity": "Rarity",
             "bigbook_tier": "Tier",
             "cab_power": "CAB",
             "voyage": "Voyage",
+            "voyages": "Voyages",
             "gauntlet": "Gauntlet",
             "all_crew": "Show all crew",
             "in_portal": "In Portal",

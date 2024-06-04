@@ -89,7 +89,7 @@ const CrewRow = (props: CrewRowProps) => {
 					<div style={{ gridArea: 'stats' }}>
 						<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 					</div>
-					<div style={{ gridArea: 'description' }}>{getCoolStats(crew, false, false)}</div>
+					<div style={{ gridArea: 'description' }}>{getCoolStats(t, crew, false, false)}</div>
 				</div>
 			</Table.Cell>
 			<Table.Cell>

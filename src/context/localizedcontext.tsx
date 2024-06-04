@@ -10,6 +10,7 @@ import { DataContext, ICoreContext } from './datacontext';
 import { PlayerContext, PlayerContextData } from './playercontext';
 import CONFIG from '../components/CONFIG';
 import { useStateWithStorage } from '../utils/storage';
+import { TranslateMethod } from '../model/player';
 //import { useTranslation } from 'react-i18next';
 
 interface LocalizedProviderProps {
@@ -17,6 +18,8 @@ interface LocalizedProviderProps {
 };
 
 export type SupportedLanguage = 'en' | 'sp' | 'de' | 'fr';
+
+export type JSXTranslateMethod = (key: string, options?: { [key: string]: string | JSX.Element }) => JSX.Element;
 
 export interface TranslatedCore {
 	crew?: CrewMember[];
@@ -65,8 +68,8 @@ export interface ILocalizedData extends IGameStrings {
 	setPreferredLanguage: (value: SupportedLanguage | undefined) => void;
 	translateCore: () => TranslatedCore;
 	translatePlayer: (localizedCore: ICoreContext) => PlayerContextData;
-	t: (value: string, options?: { [key: string]: string }) => string,
-	tfmt(v: string, opts?: { [key: string]: string | JSX.Element }): JSX.Element
+	t: TranslateMethod,
+	tfmt: JSXTranslateMethod
 };
 
 const defaultGameStrings: IGameStrings = {

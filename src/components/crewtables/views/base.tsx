@@ -12,8 +12,9 @@ import VoyageExplanation from '../../explanations/voyexplanation';
 import { PlayerCrew } from '../../../model/player';
 import { CrewMember } from '../../../model/crew';
 import { GlobalContext } from '../../../context/globalcontext';
+import { TranslateMethod } from '../../../model/player';
 
-export const getBaseTableConfig = (tableType: RosterType, t: (t: string, opt?: { [key: string]: string }) => string) => {
+export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) => {
 	const tableConfig = [] as ITableConfigRow[];
 	tableConfig.push(
 		{ width: 1, column: 'bigbook_tier', title: t('data_names.base.bigbook_tier') },
@@ -65,8 +66,7 @@ export const getBaseTableConfig = (tableType: RosterType, t: (t: string, opt?: {
 type CrewCellProps = {
 	pageId: string;
 	crew: IRosterCrew;
-	tableType: RosterType,
-	t: (t: string, opt?: { [key: string]: string }) => string
+	tableType: RosterType
 };
 
 export const CrewBaseCells = (props: CrewCellProps) => {

@@ -2,14 +2,12 @@ import { simplejson2csv, ExportField } from './misc';
 import { BuffStatTable, calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
-import { CompactCrew, CompletionState, GauntletPairScore, Player, PlayerCrew, PlayerData } from '../model/player';
+import { CompactCrew, CompletionState, GauntletPairScore, PlayerCrew, PlayerData, TranslateMethod } from '../model/player';
 import { BaseSkills, ComputedSkill, CrewMember, PlayerSkill, Skill } from '../model/crew';
 import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
 import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
-//import { navigate } from 'gatsby';
 import { ItemBonusInfo, ItemWithBonus } from './itemutils';
 import { EquipmentItem } from '../model/equipment';
-import { calcQLots } from './equipment';
 import { TinyStore } from './tiny';
 
 
@@ -1474,7 +1472,7 @@ export function printSkillOrder(crew: PlayerCrew | CrewMember) {
 }
 
 
-export function prettyObtained(crew: PlayerCrew | CrewMember, t: (value: string, opts?: {[key:string]: string}) => string, long?: boolean) {
+export function prettyObtained(crew: PlayerCrew | CrewMember, t: TranslateMethod, long?: boolean) {
 	long ??= false;
 	let obstr = `${crew.obtained}`;
 	if (obstr === 'HonorHall') obstr = 'Honor Hall';
@@ -1510,7 +1508,7 @@ export function prettyObtained(crew: PlayerCrew | CrewMember, t: (value: string,
  * @param withPortal True to prepend the string with "In Portal: "
  * @returns A formatted string conveying the portal status
  */
-export function printPortalStatus<T extends CrewMember>(crew: T, t: (value: string, opts?: {[key:string]: string}) => string, showNever?: boolean, obtainedIfNo?: boolean, long?: boolean, withPortal?: boolean) {
+export function printPortalStatus<T extends CrewMember>(crew: T, t: TranslateMethod, showNever?: boolean, obtainedIfNo?: boolean, long?: boolean, withPortal?: boolean) {
 	showNever ??= true;
 	long ??= false;
 	obtainedIfNo ??= false;

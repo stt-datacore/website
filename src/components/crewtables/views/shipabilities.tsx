@@ -14,10 +14,11 @@ import { DEFAULT_MOBILE_WIDTH } from '../../../components/hovering/hoverstat';
 
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
+import { TranslateMethod } from '../../../model/player';
 
 const isWindow = typeof window !== 'undefined';
 
-export function getShipTableConfig(t: (t: string, opt?: { [key: string]: string }) => string) {
+export function getShipTableConfig(t: TranslateMethod) {
 	return [
 		{ width: 1, column: 'action.bonus_type', title: t('data_names.ship.boosts') },
 		{ width: 1, column: 'action.bonus_amount', title: t('data_names.ship.amount'), reverse: true, tiebreakers: ['action.bonus_type'] },

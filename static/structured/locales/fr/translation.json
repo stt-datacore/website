@@ -17,7 +17,15 @@
         "search_by_name_or_trait_ellipses": "Rechercher par nom ou caractéristique...",
         "obtained": "Obtenu par",
         "bonus": "Prime",
-        "bonuses": "Bonus"
+        "bonuses": "Bonus",
+        "reset": "Réinitialiser",
+        "load_default_settings": "Charger les paramètres par défaut",
+        "clear": "Effacer",
+        "close": "Fermer",
+        "disable": "Désactiver",
+        "enable": "Activer",
+        "apply_filters": "Appliquer des filtres",
+        "base": "Base"
     },
     "spinners": {
         "default": "Chargement des données...",
@@ -270,13 +278,36 @@
         "cab_rating": "Cote CAB",
         "quipment_score": "Rang de Quipement"
     },
+    "cool_stats": {
+        "ranks_on_your_roster": "Rangs sur votre liste",
+        "all_ranks": "Tous les rangs",
+        "base_ranks": "Rangs de base",
+        "voyage_skill_ranks": "Rangs de compétences de voyage",
+        "gauntlet_pair_ranks": "Rangs de paire de gantelets",
+        "show_detailed_ellipses": "Afficher les classements et statistiques détaillés...",
+        "more_stats_ellipses": "plus de statistiques...",
+        "rank_skill_roster": "#{{rank}} {{skill}} sur votre liste",
+        "voyage_pair_roster": "#{{rank}} {{skill}} paire de voyages dans votre liste",
+        "gauntlet_pair_roster": "#{{rank}} {{skill}} paire de gantelets dans votre liste",
+        "voyage_gauntlet_pair_roster": "#{{rank}} {{skill}} paire voyage/gantelet dans votre liste",
+        "base_roster": "#{{rank}} {{skill}} base dans votre liste"
+    },
     "data_names": {
+        "crew_page": {
+            "can_cross_fuse_with": "Peut effectuer une fusion croisée avec {{crew}}",
+            "all_fuses_ellipses": "Tous les fusibles...",
+            "all_fuse_skill_fffe_colon": "Les compétences de tous fusionnent lorsqu'elles sont entièrement nivelées et entièrement équipées :",
+            "aka_colon": "Aussi connu sous le nom de :",
+            "coined_by": "inventé par {{name}}",
+            "player_boosts_applied": "Boosts de joueur appliqués"
+        },
         "base": {
             "crew": "Équipage",
             "rarity": "Rareté",
             "bigbook_tier": "Étage",
             "cab_power": "CAB",
             "voyage": "Voyage",
+            "voyages": "Voyages",
             "gauntlet": "Gantelet",
             "all_crew": "Afficher tout l'équipage",
             "in_portal": "Dans le Portail",

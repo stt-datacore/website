@@ -14,8 +14,9 @@ import { PlayerCrew } from '../model/player';
 import { appelate } from '../utils/misc';
 import { GlobalContext } from '../context/globalcontext';
 import CONFIG from './CONFIG';
+import { TranslateMethod } from '../model/player';
 
-export function getFilterTypeOptions(t: (value: string, opts?: { [key: string]: string }) => string) {
+export function getFilterTypeOptions(t: TranslateMethod) {
 	return [
 		{ key : '0', value : 'Exact', text : t('options.text_match.any') },
 		{ key : '1', value : 'Whole word', text : t('options.text_match.whole_word') },

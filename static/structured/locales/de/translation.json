@@ -17,7 +17,15 @@
         "search_by_name_or_trait_ellipses": "Suche nach Name oder Merkmalen...",
         "obtained": "Erhalten von",
         "bonus": "Bonifikation",
-        "bonuses": "Boni"
+        "bonuses": "Boni",
+        "reset": "Zurücksetzen",
+        "load_default_settings": "Standardeinstellungen laden",
+        "clear": "Löschen",
+        "close": "Schließen",
+        "disable": "Deaktivieren",
+        "enable": "Aktivieren",
+        "apply_filters": "Filter anwenden",
+        "base": "Grundlage"
     },
     "spinners": {
         "default": "Daten werden geladen…",
@@ -270,13 +278,36 @@
         "cab_rating": "CAB-Bewertung",
         "quipment_score": "Rüstzeug Werte"        
     },
+    "cool_stats": {
+        "ranks_on_your_roster": "Ränge auf Ihrer Dienstplan",
+        "all_ranks": "Alle Ränge",
+        "base_ranks": "Basisränge",
+        "voyage_skill_ranks": "Reisefertigkeitsränge",
+        "gauntlet_pair_ranks": "Herausforderung-Paarränge",
+        "show_detailed_ellipses": "Detaillierte Ränge und Statistiken anzeigen …",
+        "more_stats_ellipses": "weitere Statistiken...",
+        "rank_skill_roster": "#{{rank}} {{skill}} auf Ihrer Liste",
+        "voyage_pair_roster": "#{{rank}} {{skill}} Reisepaar in Ihrem Dienstplan",
+        "gauntlet_pair_roster": "#{{rank}} {{skill}} Herausforderungpaar in Ihrem Dienstplan",
+        "voyage_gauntlet_pair_roster": "#{{rank}} {{skill}} Reise-/Herausforderungpaar in Ihrem Dienstplan",
+        "base_roster": "#{{rank}} {{skill}} Grundlage in Ihrem Dienstplan"
+    },
     "data_names": {
+        "crew_page": {
+            "can_cross_fuse_with": "Kann mit {{crew}} kreuzfusionieren",
+            "all_fuses_ellipses": "Alle Sicherungen...",
+            "all_fuse_skill_fffe_colon": "Fertigkeiten bei allen Sicherungen bei vollem Level und voller Ausrüstung:",
+            "aka_colon": "Auch bekannt als:",
+            "coined_by": "geprägt von {{name}}",
+            "player_boosts_applied": "Spieler-Boosts angewendet"
+        },
         "base": {
             "crew": "Crew",
             "rarity": "Seltenheit",
             "bigbook_tier": "Stufe",
             "cab_power": "CAB",
             "voyage": "Reise",
+            "voyages": "Reisen",
             "gauntlet": "Herausforderung",
             "all_crew": "Die gesamte Crew anzeigen",
             "in_portal": "Im Portal",

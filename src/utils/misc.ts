@@ -1,7 +1,8 @@
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
 import { AvatarIcon } from '../model/game-elements';
-import { PlayerCrew } from '../model/player';
+import { PlayerCrew, TranslateMethod } from '../model/player';
+import { shortToSkill, skillToShort } from './crewutils';
 
 export type RankMode = "voyages" | "duration" | "voydur";
 
@@ -14,46 +15,56 @@ export interface DropDownItem {
 	content?: JSX.Element;
 }
 
-export function getCoolStats(crew: PlayerCrew | CrewMember, simple: boolean, showMore: boolean = true): string {
+export function translateSkills(string: string, separator: string = '/'): string {
+	let skills = string.split(separator);
+	let output: string[] = [];
+	for (let skill of skills) {
+		let a = shortToSkill(skill, true);
+		if (a) {
+			let b = skillToShort(a);
+			if (b) {
+				output.push(b);
+			}
+		}
+	}
+	return output.join(separator);
+}
+
+export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, simple: boolean, showMore: boolean = true): string {
 	let stats = [] as string[];
 
 	const rankType = rank => {
-		return rank.startsWith('V_') ? 'Voyage' : rank.startsWith('G_') ? 'Gauntlet' : 'Base';
+		return rank.startsWith('V_') ? t('data_names.base.voyage') : rank.startsWith('G_') ? t('data_names.base.gauntlet') : t('global.base');
 	};
-
-	const skillName = short => {
-		let fskill = CONFIG.SKILLS_SHORT.find(c => c.short === short);
-		return fskill ? CONFIG.SKILLS[fskill.name] : null;
-	}
 
 	for (let rank in crew.ranks) {
 		if (simple) {
 			if (rank.startsWith('B_')) {
 				if (crew.ranks[rank] && crew.ranks[rank] <= 40) {
-					stats.push(`${rank.slice(2)} #${crew.ranks[rank]}`);
+					stats.push(`${translateSkills(rank.slice(2))} #${crew.ranks[rank]}`);
 				}
 			}
 		} else {
 			if (rank.startsWith('V_') || rank.startsWith('G_') || rank.startsWith('B_')) {
 				if (crew.ranks[rank] && crew.ranks[rank] <= 9) {
-					stats.push(`${rankType(rank)} #${crew.ranks[rank]} ${rank.slice(2).replace('_', ' / ')}`);
+					stats.push(`${rankType(rank)} #${crew.ranks[rank]} ${translateSkills(rank.slice(2).replace('_', ' / '), " / ")}`);
 				}
 			}
 			if (rank === 'voyTriplet') {
 				if (crew.ranks[rank] && (crew.ranks.voyTriplet?.rank ?? 0) <= 9)
-					stats.push(`Voyage #${crew.ranks.voyTriplet?.rank} ${crew.ranks.voyTriplet?.name}`);
+					stats.push(`${t('data_names.base.voyage')} #${crew.ranks.voyTriplet?.rank} ${crew.ranks.voyTriplet?.name ? translateSkills(crew.ranks.voyTriplet?.name, ' / ') : ''}`);
 			}
 		}
 	}
 
 	if (simple) {
-		stats.push(`Voyages #${crew.ranks.voyRank}`);
+		stats.push(`${t('data_names.base.voyages')} #${crew.ranks.voyRank}`);
 		return stats.join(' | ');
 	} else {
 		if (stats.length === 0) {
-			return showMore ? 'Show detailed ranks and stats...' : '';
+			return showMore ? t('cool_stats.show_detailed_ellipses') : '';
 		} else {
-			return stats.join(', ') + (showMore ? ', more stats...' : '');
+			return stats.join(', ') + (showMore ? `, ${t('cool_stats.more_stats_ellipses')}` : '');
 		}
 	}
 }
