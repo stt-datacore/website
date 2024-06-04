@@ -3,7 +3,7 @@ name: Richard Castillo
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 in_portal: true
 date: 01/01/2016
 published: true
