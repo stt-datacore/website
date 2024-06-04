@@ -3,7 +3,7 @@ name: Tarquin
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 09/10/2018
 published: true
