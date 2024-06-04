@@ -1596,5 +1596,22 @@
                 "skill": "diplomacy_skill"
             }
         ]
+    },
+    {
+        "symbol": "orion_vessel_ship",
+        "battle_stations": [
+            {
+                "skill": "command_skill"
+            },
+            {
+                "skill": "security_skill"
+            },
+            {
+                "skill": "security_skill"
+            },
+            {
+                "skill": "engineering_skill"
+            }
+        ]
     }
 ]
