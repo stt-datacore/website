@@ -296,7 +296,7 @@
         "crew_page": {
             "can_cross_fuse_with": "Peut effectuer une fusion croisée avec {{crew}}",
             "all_fuses_ellipses": "Tous les fusibles...",
-            "all_fuse_skill_fffe_colon": "Les compétences de tous fusionnent lorsqu'elles sont entièrement nivelées et entièrement équipées :",
+            "all_fuse_skill_fffe_colon": "Les compétences de tout des fusionments lorsqu'elles sont entièrement nivelées et entièrement équipées :",
             "aka_colon": "Aussi connu sous le nom de :",
             "coined_by": "inventé par {{name}}",
             "player_boosts_applied": "Boosts de joueur appliqués"
