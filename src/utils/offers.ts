@@ -27,7 +27,7 @@ export async function loadOfferCrew(crewList: CrewMember[], offerName?: string, 
         }
 
         if (!offer.primary_content[0].info_text) return;        
-        let split = offer.primary_content[0].info_text.split("<b>").map(sp => sp.replace(/<\/b>.*/, '').replace(/\n.*/g, '').trim());
+        let split = offer.primary_content[0].info_text.split(/\<[#A-Fa-f0-9]+\>/).map(sp => sp.replace(/\<\/[#A-Za-z0-9]+\>.*/, '').replace(/\n.*/g, '').trim());
         let crew = crewList.filter(f => split.includes(f.name));
         result.push({
             name: offer.primary_content[0].title,
