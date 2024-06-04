@@ -3,7 +3,7 @@ name: Indignant Seven
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 30/07/2019
 published: true
