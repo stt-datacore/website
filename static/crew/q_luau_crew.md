@@ -1,7 +1,7 @@
 ---
 name: Luau Q
 rarity: 5
-series: voy
+series: original
 memory_alpha:
 bigbook_tier: 7
 in_portal: true

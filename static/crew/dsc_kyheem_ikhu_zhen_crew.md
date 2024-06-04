@@ -3,7 +3,7 @@ name: Ikhu Zhen Kyheem
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 in_portal: true
 date: 21/06/2023
 published: true

@@ -3,7 +3,7 @@ name: Doctor Van Gogh
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 18/06/2020
 published: true

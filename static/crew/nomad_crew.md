@@ -3,7 +3,7 @@ name: Nomad
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 09/07/2019
 published: true

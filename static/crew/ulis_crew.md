@@ -3,7 +3,7 @@ name: Ulis
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 4
 in_portal:
 date: 09/01/2024
 published: true
