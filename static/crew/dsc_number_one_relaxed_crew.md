@@ -3,7 +3,7 @@ name: Relaxed Number One
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 in_portal: true
 date: 10/03/2020
 published: true

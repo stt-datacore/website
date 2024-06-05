@@ -3,7 +3,7 @@ name: Beowulf EMH
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 6
 in_portal: true
 date: 16/11/2021
 published: true

@@ -3,7 +3,7 @@ name: The Caretaker
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 in_portal:
 date: 27/02/2018
 published: true

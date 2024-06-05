@@ -3,7 +3,7 @@ name: Captain Spock
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 in_portal: true
 date: 14/11/2018
 published: true

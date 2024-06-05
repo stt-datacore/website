@@ -3,7 +3,7 @@ name: Mestral
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 3
 in_portal: true
 date: 29/03/2022
 published: true

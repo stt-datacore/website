@@ -3,7 +3,7 @@ name: Heist Bashir
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 in_portal: true
 date: 26/01/2021
 published: true

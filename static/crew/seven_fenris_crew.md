@@ -3,7 +3,7 @@ name: Fenris Ranger Seven
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal: true
 date: 23/04/2020
 published: true
