@@ -3,7 +3,7 @@ name: Dr. T'Ana
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal: true
 date: 20/04/2022
 published: true

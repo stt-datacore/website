@@ -3,7 +3,7 @@ name: Lucien
 rarity: 4
 series: tas
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 in_portal:
 date: 20/12/2017
 published: true

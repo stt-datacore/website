@@ -3,7 +3,7 @@ name: Vori Defender Chakotay
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 in_portal:
 date: 29/12/2022
 published: true

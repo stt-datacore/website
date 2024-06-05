@@ -3,7 +3,7 @@ name: Fesek
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 in_portal: true
 date: 03/10/2016
 published: true

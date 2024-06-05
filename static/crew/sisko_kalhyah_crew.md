@@ -3,7 +3,7 @@ name: Kal'Hyah Sisko
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 in_portal: true
 date: 07/10/2021
 published: true

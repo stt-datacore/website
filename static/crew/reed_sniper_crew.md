@@ -3,7 +3,7 @@ name: Sniper Reed
 rarity: 3
 series: ent
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 26/05/2016
 published: true
