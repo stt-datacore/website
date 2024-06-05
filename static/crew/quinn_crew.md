@@ -3,7 +3,7 @@ name: Quinn
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 6
 in_portal:
 date: 10/07/2019
 published: true

@@ -3,7 +3,7 @@ name: Kurros
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 01/05/2017
 published: true

@@ -3,7 +3,7 @@ name: Human Q
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 in_portal: true
 date: 17/01/2017
 published: true

@@ -3,7 +3,7 @@ name: Commander Ransom
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal: true
 date: 20/07/2022
 published: true
