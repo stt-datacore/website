@@ -78,6 +78,7 @@ export interface CrewMember extends QuipmentScores {
     series?: string;
     traits_named: string[];    
     collections: string[];
+    collection_ids: string[];
     nicknames: Nickname[];
     cab_ov: string;
     cab_ov_rank: number;
