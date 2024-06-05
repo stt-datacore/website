@@ -6,11 +6,11 @@ import { CrewMember } from '../model/crew';
 import { EquipmentItem } from '../model/equipment';
 import { Schematics, Ship } from '../model/ship';
 import { Collection } from '../model/game-elements';
-import { DataContext, ICoreContext } from './datacontext';
+import { CryoCollection, PlayerCrew, TranslateMethod } from '../model/player';
+import { DataContext } from './datacontext';
 import { PlayerContext, PlayerContextData } from './playercontext';
 import CONFIG from '../components/CONFIG';
 import { useStateWithStorage } from '../utils/storage';
-import { TranslateMethod } from '../model/player';
 //import { useTranslation } from 'react-i18next';
 
 interface LocalizedProviderProps {
@@ -29,18 +29,20 @@ export interface TranslatedCore {
 	items?: EquipmentItem[];
 };
 
+interface ICrewArchetype {
+	name: string;
+	short_name: string;
+	flavor?: string;
+	action?: {
+		name: string;
+	};
+};
+
 interface IGameStrings {
 	TRAIT_NAMES: TraitNames;
 	SHIP_TRAIT_NAMES: ShipTraitNames;
 	CREW_ARCHETYPES: {
-		[symbol: string]: {
-			name: string;
-			short_name: string;
-			flavor: string;
-			action: {
-				name: string;
-			}
-		};
+		[symbol: string]: ICrewArchetype;
 	};
 	SHIP_ARCHETYPES: {
 		[symbol: string]: {
@@ -67,7 +69,7 @@ export interface ILocalizedData extends IGameStrings {
 	language: SupportedLanguage;
 	setPreferredLanguage: (value: SupportedLanguage | undefined) => void;
 	translateCore: () => TranslatedCore;
-	translatePlayer: (localizedCore: ICoreContext) => PlayerContextData;
+	translatePlayer: () => PlayerContextData;
 	t: TranslateMethod,
 	tfmt: JSXTranslateMethod
 };
@@ -113,7 +115,6 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	const core = React.useContext(DataContext);
 	const player = React.useContext(PlayerContext);
 	const { children } = props;
-	const collectionMap = {} as {[key:string]:string};
 
 	// Stored user preference for language
 	const [preferredLanguage, setPreferredLanguage] = useStateWithStorage<SupportedLanguage | undefined>(
@@ -148,6 +149,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	// Update language on player data import (or revert to browser language on player data clear)
 	React.useEffect(() => {
+		if (!preferenceLoaded) return;
 		if (!preferredLanguage) {
 			if (player.playerData) {
 				fetchStrings(player.playerData.player.lang as SupportedLanguage);
@@ -187,7 +189,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				.catch((e) => fetch(`/structured/locales/en/translation.json`));
 
 		const webStringsJson: any = await webStringsResponse.json();
-	
+
 		// TODO: Rework CONFIG translations
 		CONFIG.setLanguage(newLanguage);
 
@@ -215,7 +217,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				};
 			});
 
-			// Create a fake symbol for collections using collection id
+			// Create a fake collection symbol based on id
 			translationJson.collections.forEach(collection => {
 				collections[`cc-${collection.id}`] = {
 					name: collection.name,
@@ -253,10 +255,10 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		if (core.crew.length === 0 || language === 'en')
 			return {};
 
-		const newCrew = postProcessCrewTranslations(core.crew, gameStrings);
+		const newCrew: CrewMember[] | undefined = postProcessCrewTranslations(core.crew, gameStrings);
 		const [newSchematics, newShips] = postProcessShipTranslations(core.ship_schematics, core.ships, gameStrings)
-		const newCollections = postProcessCollectionTranslations(core.collections, newCrew!, gameStrings);
-		const newItems = postProcessItemTranslations(core.items,gameStrings);
+		const newCollections: Collection[] | undefined = postProcessCollectionTranslations(core.collections, newCrew!, gameStrings);
+		const newItems: EquipmentItem[] | undefined = postProcessItemTranslations(core.items, gameStrings);
 		return {
 			crew: newCrew,
 			ship_schematics: newSchematics,
@@ -266,56 +268,61 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		};
 	}
 
-	function translatePlayer(localizedCore: ICoreContext): PlayerContextData {
-		const localizedPlayer: PlayerContextData = {...player};
+	function translatePlayer(): PlayerContextData {
 		const { playerData } = player;
+		if (!playerData) return player;
 
-		if (!playerData) return localizedPlayer;
+		// If COLLECTIONS is empty (i.e. language = English), collections may coalesce to values in player language
+		const localizedCryo: CryoCollection[] = playerData.player.character.cryo_collections.map(collection => {
+			const trcol = gameStrings.COLLECTIONS[`cc-${collection.type_id}`];
+			return {
+				...collection,
+				name: trcol?.name ?? collection.name,
+				description: trcol?.description ?? collection.description
+			};
+		});
 
-		if (playerData && Object.keys(collectionMap).length) {
-			playerData.player.character.cryo_collections.forEach((col) => {
-				if (gameStrings.COLLECTIONS[`cc-${col.type_id}`]) {
-					let trcol = gameStrings.COLLECTIONS[`cc-${col.type_id}`];
-					col.name = trcol.name;
-					col.description = trcol.description;
+		const localizedOwned: PlayerCrew[] = postProcessCrewTranslations(playerData.player.character.crew, gameStrings)!
+
+		let localizedUnOwned: PlayerCrew[] | undefined = undefined;
+		if (playerData.player.character.unOwnedCrew) {
+			localizedUnOwned = postProcessCrewTranslations(playerData.player.character.unOwnedCrew, gameStrings)!;
+		}
+
+		let localizedShips: Ship[] | undefined = undefined;
+		if (player.playerShips) {
+			[,localizedShips] = postProcessShipTranslations([], player.playerShips, gameStrings, true);
+		}
+
+		return {
+			...player,
+			playerData: {
+				...playerData,
+				player: {
+					...playerData.player,
+					character: {
+						...playerData.player.character,
+						cryo_collections: localizedCryo,
+						crew: localizedOwned,
+						unOwnedCrew: localizedUnOwned
+					}
 				}
-			});
-
-			playerData.player.character.crew = postProcessCrewTranslations(playerData.player.character.crew, gameStrings)!;
-			playerData.player.character.crew.forEach((crew) => {
-				let coreCrew = localizedCore.crew.find(f => f.symbol === crew.symbol);
-				if (coreCrew) crew.collections = coreCrew.collections.map(col => collectionMap[col]);
-			});
-			if (playerData.player.character.unOwnedCrew) {
-				playerData.player.character.unOwnedCrew = postProcessCrewTranslations(playerData.player.character.unOwnedCrew, gameStrings)!;
-				playerData.player.character.unOwnedCrew.forEach((crew) => {
-					let coreCrew = localizedCore.crew.find(f => f.symbol === crew.symbol);
-					if (coreCrew) crew.collections = coreCrew.collections.map(col => collectionMap[col]);
-				});
-			}
-		}
-		if (localizedPlayer.playerShips) {
-			[,localizedPlayer.playerShips] = postProcessShipTranslations([], localizedPlayer.playerShips, gameStrings, true);
-		}
-		return localizedPlayer;
+			},
+			playerShips: localizedShips
+		};
 	}
 
 	function postProcessCollectionTranslations(collections: Collection[], mapped_crew: CrewMember[], translation: IGameStrings): Collection[] | undefined {
 		if (mapped_crew.length && collections.length && translation.COLLECTIONS) {
-			let result = collections.map((col) => {
-				col = { ...col };
-				collectionMap[col.name] = col.name;
-				let arch = translation.COLLECTIONS[`cc-${col.id}`];
-				if (arch) {
-					collectionMap[col.name] = arch.name;
-					col.name = arch.name;
-					col.description = arch.description;
+			let result = collections.map((collection) => {
+				collection = { ...collection };
+				let trcol = translation.COLLECTIONS[`cc-${collection.id}`];
+				if (trcol) {
+					collection.name = trcol.name;
+					collection.description = trcol.description;
 
 				}
-				return col;
-			});
-			mapped_crew.forEach((crew) => {
-				crew.collections = crew.collections.map(col => collectionMap[col]);
+				return collection;
 			});
 			return result;
 		}
@@ -328,28 +335,33 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		if (crew.length && translation.CREW_ARCHETYPES) {
 			return crew.map((crew) => {
 				crew = { ... crew };
-				let arch = translation.CREW_ARCHETYPES[crew.symbol];
 
-				crew.traits_named = crew.traits.map(t => translation.TRAIT_NAMES[t]);
+				const arch: ICrewArchetype | undefined = translation.CREW_ARCHETYPES[crew.symbol];
+				if (arch) {
+					let oldName: string = crew.name;
+					crew.name = arch.name ?? crew.name;
+					if (!crew.name_english) {
+						crew.name_english = oldName;
+					}
 
-				let oldName = crew.name;
-				crew.name = arch?.name ?? crew.name;
-				if (!crew.name_english) {
-					crew.name_english = oldName;
+					oldName = crew.short_name;
+					crew.short_name = arch.short_name ?? crew.short_name;
+					if (!crew.short_name_english) {
+						crew.short_name_english = oldName;
+					}
+
+					if (arch.flavor !== undefined) crew.flavor = arch.flavor;
+
+					if (arch.action?.name !== undefined) {
+						crew.action.name = arch.action.name;
+					}
 				}
 
-				oldName = crew.short_name;
-				crew.short_name = arch?.short_name ?? crew.short_name;
-				if (!crew.short_name_english) {
-					crew.short_name_english = oldName;
-				}
-				
-				if (arch.flavor !== undefined) crew.flavor = arch.flavor;
-				if (arch.action?.name !== undefined) {
-					crew.action.name = arch.action.name;
-				}
-
+				// What scenarios would coalesce to unknown names here?
+				crew.traits_named = crew.traits.map(t => translation.TRAIT_NAMES[t] ?? `Unknown trait name ${t}`);
 				crew.events ??= 0;
+				crew.collections = crew.collection_ids.map(id => translation.COLLECTIONS[`cc-${id}`]?.name ?? `Unknown collection name ${id}`);
+
 				return crew;
 			});
 		}
@@ -430,7 +442,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		}
 		return current;
 	}
-	
+
 	function t(v: string, opts?: { [key: string]: string }) {
 		opts ??= {};
 		try {
@@ -453,7 +465,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 						finals.push(part);
 					}
 				}
-				return finals.reduce((p, n) => p ? p + n : n);				
+				return finals.reduce((p, n) => p ? p + n : n);
 			}
 			return obj;
 		}
@@ -467,7 +479,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		try {
 			if (!webStringMap) return <>{v}</>;
 			let obj = webStringMap[v];
-			if (opts && typeof obj === 'string') {				
+			if (opts && typeof obj === 'string') {
 				let parts = getParts(obj);
 				let finals = [] as JSX.Element[];
 
@@ -485,7 +497,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 						finals.push(<>{part}</>);
 					}
 				}
-				return finals.reduce((p, n) => p ? <>{p}{n}</> : <>{n}</>);				
+				return finals.reduce((p, n) => p ? <>{p}{n}</> : <>{n}</>);
 			}
 			else {
 				return <>{obj}</>
@@ -514,7 +526,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				else {
 					csp += str[i];
 				}
-			}			
+			}
 			else {
 				if (str[i] === '}' && i < c - 1 && str[i + 1] === '}') {
 					if (csp) output.push(`{{${csp}}}`);
@@ -525,7 +537,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				else {
 					csp += str[i];
 				}
-			}			
+			}
 		}
 		if (csp) output.push(csp);
 		return output;

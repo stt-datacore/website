@@ -55,12 +55,9 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 	}, [localizationTrigger]);
 
 	React.useEffect(() => {
-		const translatedPlayer: PlayerContextData = localized.translatePlayer(localizedCore);
+		const translatedPlayer: PlayerContextData = localized.translatePlayer();
 		setLocalizedPlayer(translatedPlayer);
 	}, [localizedCore, player]);
-
-	// Alternatively translate player in-place
-	// const localizedPlayer: PlayerContextData = localized.translatePlayer(player);
 
 	if (typeof window !== 'undefined') {
 		window.addEventListener('resize', (e) => {
