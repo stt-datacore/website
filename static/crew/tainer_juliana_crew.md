@@ -3,7 +3,7 @@ name: Juliana Tainer
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 25/12/2018
 published: true

@@ -3,7 +3,7 @@ name: Kal'Hyah Worf
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal:
 date: 24/02/2022
 published: true

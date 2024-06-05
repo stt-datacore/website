@@ -3,7 +3,7 @@ name: Ambassador Neelix
 rarity: 3
 series: voy
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 in_portal: true
 date: 01/08/2016
 published: true

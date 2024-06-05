@@ -3,7 +3,7 @@ name: Vox
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal:
 date: 22/08/2023
 published: true

@@ -3,7 +3,7 @@ name: Sphere-Builder Presage
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal: true
 date: 13/12/2018
 published: true

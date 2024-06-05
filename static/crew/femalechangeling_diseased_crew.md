@@ -3,7 +3,7 @@ name: Diseased Changeling Founder
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 in_portal: true
 date: 01/08/2018
 published: true

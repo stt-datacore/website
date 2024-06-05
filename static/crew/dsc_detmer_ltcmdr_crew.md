@@ -3,7 +3,7 @@ name: Lt. Commander Detmer
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 07/12/2022
 published: true
