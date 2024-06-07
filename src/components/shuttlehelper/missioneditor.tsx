@@ -4,6 +4,7 @@ import { Header, Table, Icon, Dropdown, Input, Button, Grid, Modal, Divider } fr
 import allFactions from '../../../static/structured/factions.json';
 
 import { Shuttle, ShuttleSeat, IDropdownOption } from './model';
+import CONFIG from '../CONFIG';
 
 type MissionEditorProps = {
 	shuttle: Shuttle;
@@ -134,14 +135,13 @@ type EditorSeatProps = {
 const EditorSeat = (props: EditorSeatProps) => {
 	const { seatNum, seat, updateMissionSeat } = props;
 
-	const skillOptions: IDropdownOption[] = [
-		{ key: 'CMD', text: 'CMD', value: 'command_skill' },
-		{ key: 'DIP', text: 'DIP', value: 'diplomacy_skill' },
-		{ key: 'ENG', text: 'ENG', value: 'engineering_skill' },
-		{ key: 'MED', text: 'MED', value: 'medicine_skill' },
-		{ key: 'SCI', text: 'SCI', value: 'science_skill' },
-		{ key: 'SEC', text: 'SEC', value: 'security_skill' }
-	];
+	const skillOptions: IDropdownOption[] = [];
+
+	CONFIG.SKILLS_SHORT.forEach((s) => {
+		skillOptions.push(
+			{ key: s.short, text: s.short, value: s.name }
+		)
+	});
 
 	return (
 		<Grid textAlign='center' columns={3}>

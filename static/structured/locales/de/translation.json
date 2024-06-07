@@ -1,0 +1,427 @@
+{
+    "clipboard": {
+        "copied_exclaim": "Kopiert!"
+    },
+    "global": { 
+        "yes": "Ja",
+        "no": "Nein",
+        "never": "Niemals",
+        "enabled": "Aktiviert",
+        "disabled": "Deaktiviert",
+        "show": "Zeigen",
+        "hide": "Verstecken",
+        "shown": "Gezeigt",
+        "hidden": "Versteckt",
+        "search": "Suchen",
+        "search_ellipses": "Suchen...",
+        "search_by_name_or_trait_ellipses": "Suche nach Name oder Merkmalen...",
+        "obtained": "Erhalten von",
+        "bonus": "Bonifikation",
+        "bonuses": "Boni",
+        "reset": "Zurücksetzen",
+        "load_default_settings": "Standardeinstellungen laden",
+        "clear": "Löschen",
+        "close": "Schließen",
+        "disable": "Deaktivieren",
+        "enable": "Aktivieren",
+        "apply_filters": "Filter anwenden",
+        "base": "Grundlage"
+    },
+    "spinners": {
+        "default": "Daten werden geladen…",
+        "quipment": "Berechnungsausrüstung...",
+        "demands": "Crew fordert Berechnung..."
+    },
+    "menu": {
+        "about_title": "Über uns",
+        "game_info_title": "Spiel Info",
+        "game_info": {
+            "episodes": "Folgen",
+            "events": "Veranstaltungen",
+            "voyage_hof": "Ruhmeshalle der Reise",
+            "misc_game_stats": "Verschiedene Spielstatistiken",
+            "bridge_crew_tool": "Brückenbesatzungswerkzeug"
+        },
+        "player": {
+            "import_player_data_ellipses": "Daten importieren ...",
+            "import_player_data": "Spielerdaten importieren",
+            "update_player_data": "Spielerdaten aktualisieren",
+            "my_achievements": "Meine Erfolge",
+            "my_charts_and_stats": "Meine Diagramme und Statistiken",
+            "share_profile": "Profil teilen",
+            "menu_settings": "Menüeinstellungen",
+            "toggle_glance": "Übersichtsfenster ein-/ausblenden",
+            "toggle_coloring": "Rangfarbgebung umschalten",
+            "clear_data": "Spielerdaten löschen"
+        },
+        "roster_title": "Dienstplan",
+        "roster": {
+            "crew": "Crew",
+            "ships": "Schiffe",
+            "items": "Inventar",
+            "unneeded_items": "Nicht benötigtes Inventar"
+        },
+        "tools_title": "Werkzeuge",
+        "tools": {
+            "behold_helper": "Anblick Helfer",
+            "shuttle_helper": "Shuttle Helfer",
+            "factions": "Fraktionen",
+            "event_planner": "Ereignisplaner",
+            "gauntlet": "Herausforderung",
+            "citation_optimizer": "Ehrenvolle Erwähnung Optimierer",
+            "voyage_calculator": "Reiserechner",
+            "voyage_history": "Reiseverlauf",
+            "collection_planner": "Sammlungsplaner",
+            "crew_retrieval": "Bergung der Besatzung",
+            "fleet_boss_battles": "Flottenbosskämpfe",
+            "continuum_helper": "Kontinuum-Helfer"
+        },
+        "site_beta_switch": "Wechseln zwischen Produktion und Beta"
+    },
+    "header": {
+        "recommend": {
+            "title": "Spielerdaten empfohlen",
+            "description": "Diese Seite ist mit Spielerdaten besser.",
+            "tap_here": "Tippen Sie hier, um Ihre Spielerdaten jetzt zu importieren."
+        },
+        "require": {
+            "title": "Spielerdaten erforderlich",
+            "description": "Für diese Seite sind Spielerdaten erforderlich. Befolgen Sie die nachstehenden Anweisungen, um Ihre Spielerdaten zu importieren."
+        }
+    },
+    "json": {
+        "copy_and_paste": {
+            "title": "Kopieren und Einfügen",
+            "description_1": "Kopieren Sie den Inhalt Ihrer {{data}}",
+            "description_2": "und fügen Sie dann alles in das Textfeld unten ein.",
+            "detailed_instructions": {
+                "title": "Detaillierte Anleitung...",
+                "header": "DataCore kann keine direkten Anfragen an die Server des Spiels stellen, daher müssen Sie diese Schritte befolgen, um Ihre {{data}} zu importieren:",
+                "instructions": {
+                    "line_1": "Öffnen Sie diese Seite in Ihrem Browser: {{link}}",
+                    "line_2": "Melden Sie sich an, wenn Sie dazu aufgefordert werden, und warten Sie, bis die Seite vollständig geladen ist. Sie sollte mit Folgendem beginnen: {{jsonHint}} ...",
+                    "line_3": "Wählen Sie alles auf der Seite aus (Strg+A) und kopieren Sie es in die Zwischenablage (Strg+C).",
+                    "line_4": "Fügen Sie (Strg+V) in das Textfeld oben ein. Beachten Sie, dass DataCore hier absichtlich weniger Daten anzeigt, um den Vorgang zu beschleunigen."
+                },
+                "footer": "Wenn Sie über mehrere Konten verfügen, empfehlen wir Ihnen, Ihren Browser im Inkognito-Modus (Chrome) oder im privaten Modus (Edge/Firefox) zu verwenden, um die Zwischenspeicherung Ihrer Kontoanmeldeinformationen zu vermeiden und den Kontenwechsel zu erleichtern."
+            }
+        },
+        "or": "ODER",
+        "upload_file": {
+            "title": "Datei hochladen",
+            "description_1": "Speichern Sie Ihre {{data}} auf Ihrem Gerät",
+            "description_2": "und laden Sie dann die Datei hoch. Empfohlen für mobile Benutzer.",
+            "browse_ellipses": "Suchen Sie nach der hochzuladenden {{data}}-Datei...",
+            "detailed_instructions": {
+                "title": "Detaillierte Anleitung...",
+                "header": "DataCore kann keine direkten Anfragen an die Server des Spiels stellen, daher müssen Sie diese Schritte befolgen, um Ihre {{data}} zu importieren:",
+                "android": {
+                    "instructions": {
+                        "line_1": "Öffnen Sie diese Seite auf Ihrem Gerät: {{link}}",
+                        "line_2": "Melden Sie sich an, wenn Sie dazu aufgefordert werden, und warten Sie, bis die Seite vollständig geladen ist. Sie sollte mit Folgendem beginnen: {{jsonHint}} ...",
+                        "line_3": "Tippen Sie beim Anzeigen der Seite auf das Menüsymbol (drei Punkte).",
+                        "line_4": "Tippen Sie auf die Download-Schaltfläche, wählen Sie einen Speicherort und speichern Sie.",
+                        "line_5": "Kommen Sie zu dieser DataCore-Seite zurück.",
+                        "line_6": "Tippen Sie auf die Schaltfläche \"Suchen Sie nach der hochzuladenden {{data}}-Datei...\".",
+                        "line_7": "Wählen Sie die Datei aus, die mit \"{{hint}}...\" beginnt und von der Sie sie gespeichert haben."
+                    }
+                },
+                "ios": {
+                    "instructions": {
+                        "line_1": "Öffnen Sie diese Seite auf Ihrem Gerät: {{link}}",
+                        "line_2": "Melden Sie sich an, wenn Sie dazu aufgefordert werden, und warten Sie, bis die Seite vollständig geladen ist. Sie sollte mit Folgendem beginnen: {{jsonHint}} ...",
+                        "line_3": "Tippen Sie beim Anzeigen der Seite auf das Teilen-Symbol.",
+                        "line_4": "Tippen Sie auf „Optionen“ und wählen Sie „Webarchiv“, tippen Sie auf „In Dateien speichern“, wählen Sie einen Speicherort und speichern Sie.",
+                        "line_5": "Kommen Sie zu dieser DataCore-Seite zurück.",
+                        "line_6": "Tippen Sie auf die Schaltfläche \"Suchen Sie nach der hochzuladenden {{data}}-Datei...\".",
+                        "line_7": "Wählen Sie die Datei aus, die mit \"{{hint}}...\" beginnt und von der Sie sie gespeichert haben."
+                    }
+                }
+            }
+        }
+    },
+    "json_types": {
+        "player_data": "Spielerdaten",
+        "gauntlet_data": "Herausforderungsdaten",
+        "quest_data": "Quest-Daten"
+    },
+    "share_profile": {
+        "shared": {
+            "title": "Spielerprofil geteilt!",
+            "description": "Ihr Profil wurde erfolgreich hochgeladen! Tippen Sie hier, um Ihr öffentliches Profil anzuzeigen."
+        },
+        "share": {
+            "share_text": "Sie können Ihr Profil auf dem DataCore-Server posten, um personalisierte Funktionen des Discord-Bots zu nutzen und anderen Benutzern die Möglichkeit zu geben, Ihre Crew, Schiffe und Gegenstände zu sehen.",
+            "nag": {
+                "title": "Teilen Sie Ihr Spielerprofil",
+                "nag_panel_share": "Folgen Sie den Anweisungen unten, um Ihr Spielerprofil auf dem DataCore-Server zu veröffentlichen.",
+                "nag_panel_not_share": "{{share_profile.share.share_text}} Tippen Sie hier, um mehr zu erfahren."
+            },
+            "title": "Profil auf DataCore posten",
+            "header": "{{share_profile.share.share_text}}. Nach der Freigabe ist Ihr öffentliches Profil für jeden über diesen Link zugänglich:",
+            "instructions": {
+                "line_1": "Klicken Sie auf den Link oben, um auf Datenexporte für Tabellenkalkulationen wie  „Take My Chrons“ und „Do Not Airlock“ zuzugreifen.",
+                "line_2": "Einige Seiten auf DataCore, insbesondere Flottenseiten und Veranstaltungsseiten, können auch auf Ihr öffentliches Profil verweisen.",
+                "line_3": "Die weitergegebenen Informationen sind beschränkt auf: {{list}}. In Ihrem öffentlichen Profil sind keine privaten Informationen enthalten."
+            },
+            "info_list": "DBID, Kapitänsname, Level, VIP-Level, Name und Rolle der Flotte, Erfolge, abgeschlossene Missionen, Ihre Crew, Gegenstände und Schiffe",
+            "check_auto_share": "Beim Importieren von Spielerdaten automatisch Profil posten",
+            "error": {
+                "error_header": "Spielerprofil konnte nicht geteilt werden!",
+                "error_title": "Ihr Profil konnte nicht hochgeladen werden, mit folgendem Fehler: {{errorMessage}}",
+                "error_panel_share": "Befolgen Sie die nachstehenden Anweisungen, um es erneut zu versuchen.",
+                "error_panel_not_share": "Tippen Sie hier, um es erneut zu versuchen."
+            },
+            "post_profile": "Profil posten"
+        },
+        "export": {
+            "export_csv": "CSV exportieren",
+            "export_clipboard": "In die Zwischenablage kopieren",
+            "exported_clipboard": "Profil in die Zwischenablage kopiert!"
+        }
+    },
+    "pages": {
+        "crew_stats": "Crew-Statistiken",
+        "ships": "Schiffe",
+        "crew_view_modes": {
+            "owned_crew": { 
+                "name": "Eigene Crew",
+                "description": "Nur Ihr eigenes Crew anzeigen"
+            },
+            "buyback_well": { 
+                "name": "Rückkaufpool",
+                "description": "Besatzung im Rückkaufpool anzeigen"
+            },
+            "current_offers": {
+                "name": "Aktuelle Angebote",
+                "description": "Crew in aktuellen Angeboten anzeigen"
+            },
+            "game_roster": { 
+                "name": "Spieleliste",
+                "description": "Zusammenfassung der gesamten Spielcrew"
+            }
+        }
+    },
+    "buffs": {
+        "no_buffs": "Keine Verbesserungen",
+        "player_buffs": "Verbesserungen der Spieler",
+        "max_buffs": "Maximale Verbesserungen"
+    },
+    "crew_state": {
+        "owned": "Rekrutiert",
+        "unowned": "Nicht Rekrutiert",
+        "immortalized": "Unsterblich",
+        "immortalized_m": "Unsterblich",
+        "immortalized_f": "Unsterblich",
+        "shown_immortalized": "Als unsterblich dargestellt",
+        "shown_immortalized_m": "Als unsterblich dargestellt",
+        "shown_immortalized_f": "Als unsterblich dargestellt",
+        "unfused": "Unfusioniert",
+        "stars": "{{stars}} Sterne",
+        "frozen": "Eingefroren",
+        "frozen_m": "Eingefroren",
+        "frozen_f": "Eingefroren",
+        "expires_in": "Crew läuft in {{time}} ab"
+    },
+    "immo_text": {
+        "item_is_level": "{{item}} ist {{level}}",
+        "item_is_shown": "{{item}} wird angezeigt {{level}}",
+        "item_is_shown_no_player": "{{item}} wird angezeigt {{level}} (keine Spielerdaten)",
+        "item_is_shown_owned": "{{item}} wird angezeigt {{level}} (im Besitz)",
+        "item_is_shown_unowned": "{{item}} wird angezeigt {{level}} (nicht im Besitz)",
+        "item_is_frozen_one": "{{item}} ist eingefroren (1 Kopie)",
+        "item_is_frozen_many": "{{item}} ist eingefroren ({{copies}} Kopien)"
+    },
+    "hints": {
+        "apply_buffs": "Buffs anwenden",
+        "filter_by_rarity": "Filtern nach Seltenheit",
+        "filter_by_trait": "Filtern nach Merkmalen",
+        "filter_by_portal_status": "Filtern nach Portalstatus",
+        "filter_ship_rarity": "Schiffsrarität filtern",
+        "filter_ship_grants": "Schiffszuschüsse filtern",
+        "select_ship_ability": "Schiffsfähigkeit auswählen",
+        "select_ship_abilities": "Schiffsfähigkeiten auswählen",
+        "select_ship_ability_amount": "Schiffsfähigkeitenbetrag auswählen",
+        "trait": "Merkmalen",
+        "traits": "Merkmalenen"
+    },
+    "options": {
+        "trait_match": {
+            "trait": "Merkmalen",
+            "matches": "Übereinstimmungen",
+            "match": "Passt",
+            "any": "Passt zu jedem Merkmal",
+            "match_two_plus": "Kombiniere mehr als 2 Merkmale",
+            "match_all": "Alle Merkmale abgleichen"
+        },
+        "text_match": {
+            "any": "Passt zu jedem Text",
+            "whole_word": "Nur ganzes Wort",
+            "exact": "Nur genaue Übereinstimmung"
+        }
+    },
+    "crew_views": {
+        "base": "Grundlegende Fähigkeiten zeigen",
+        "ship": "Schiffsfähigkeiten anzeigen",
+        "gauntlet": "Herausforderungsränge anzeigen",
+        "voyage": "Reiseränge anzeigen",
+        "quipment": "Rüstzeugswerte anzeigen",
+        "max_quipment": "Maximale Rüstzeug anzeigen",
+        "crew_utility": "Das Crew-Dienstprogramm"      
+    },    
+    "rank_names": {
+        "bigbook_tier": "Big Book Stufe",
+        "cab_grade": "CAB-Klasse",
+        "voyage_rank": "Reiserang",
+        "gauntlet_rank": "Herausforderungsrang",
+        "cab_rank": "CAB-Rang",
+        "cab_rating": "CAB-Bewertung",
+        "quipment_score": "Rüstzeug Werte"        
+    },
+    "cool_stats": {
+        "ranks_on_your_roster": "Ränge auf Ihrer Dienstplan",
+        "all_ranks": "Alle Ränge",
+        "base_ranks": "Basisränge",
+        "voyage_skill_ranks": "Reisefertigkeitsränge",
+        "gauntlet_pair_ranks": "Herausforderung-Paarränge",
+        "show_detailed_ellipses": "Detaillierte Ränge und Statistiken anzeigen …",
+        "more_stats_ellipses": "weitere Statistiken...",
+        "rank_skill_roster": "#{{rank}} {{skill}} auf Ihrer Liste",
+        "voyage_pair_roster": "#{{rank}} {{skill}} Reisepaar in Ihrem Dienstplan",
+        "gauntlet_pair_roster": "#{{rank}} {{skill}} Herausforderungpaar in Ihrem Dienstplan",
+        "voyage_gauntlet_pair_roster": "#{{rank}} {{skill}} Reise-/Herausforderungpaar in Ihrem Dienstplan",
+        "base_roster": "#{{rank}} {{skill}} Grundlage in Ihrem Dienstplan"
+    },
+    "data_names": {
+        "crew_page": {
+            "can_cross_fuse_with": "Kann mit {{crew}} kreuzfusionieren",
+            "all_fuses_ellipses": "Alle Sicherungen...",
+            "all_fuse_skill_fffe_colon": "Fertigkeiten bei allen Sicherungen bei vollem Level und voller Ausrüstung:",
+            "aka_colon": "Auch bekannt als:",
+            "coined_by": "geprägt von {{name}}",
+            "player_boosts_applied": "Spieler-Boosts angewendet"
+        },
+        "base": {
+            "crew": "Crew",
+            "rarity": "Seltenheit",
+            "bigbook_tier": "Stufe",
+            "cab_power": "CAB",
+            "voyage": "Reise",
+            "voyages": "Reisen",
+            "gauntlet": "Herausforderung",
+            "all_crew": "Die gesamte Crew anzeigen",
+            "in_portal": "Im Portal",
+            "not_in_portal": "Nicht im Portal",
+            "not_yet_in_portal": "Noch nicht im Portal",
+            "never_in_portal": "Nie im Portal",
+            "uniquely_retrievable": "Eindeutig abrufbar",
+            "not_uniquely_retrievable": "Nicht eindeutig abrufbar",            
+            "less_than_100_retrieval": "< 100 % Abrufbar",
+            "qp": "RL",
+            "release_date": "Debüt",
+            "offer_cost": "Angebotskosten",
+            "offers": "Angebot(e)",
+            "level": "Level",
+            "collection": "Sammlung",
+            "collections": "Sammlungen",
+            "collection_fmt": "1 Sammlung",
+            "collections_fmt": "{{count}} Sammlungen"
+        },
+        "ship": {
+            "ship": "Schiff",
+            "attack": "Angriffs",
+            "boosts": "Leistungssteigerung",
+            "amount": "Menge",
+            "handicap": "Handicap",
+            "initialize": "Initialisierungszeit",
+            "cycle_time": "Zykluszeit",
+            "cooldown": "Abklingzeit",
+            "duration": "Dauer",
+            "uses": "Aktivierungen",
+            "uses_per_battle": "Aktivierungen pro Gefecht",
+            "unlimited": "Unbegrenzt",
+            "bonus_ability": "Bonusfähigkeit",
+            "trigger": "Auslöser",
+            "equipment_bonus": "Ausrüstungsbonus",
+            "accuracy": "Genauigkeit",
+            "charge_phases": "Ladephasen",
+            "crit_bonus": "Krit Bonus",
+            "crit_rating": "Krit Treffer",
+            "evasion": "Ausweichen",
+            "charge_phase": {
+                "after_seconds": "Nach {{seconds}}s ",
+                "bonus": "+{{amount}} zu {{ability}}",
+                "cooldown": "{{time}}s Abklingzeit",
+                "duration": "{{time}}s Dauer"
+            },
+            "hull": "Hülle",
+            "shields": "Schilde",
+            "antimatter": "Antimaterie",
+            "attack_speed": "Angriffsgeschwindigkeit",
+            "max_level": "Höchstlevel",
+            "grants": "Verleihungen",
+            "triggers": "Auslöseren",
+            "battle_stations": "Kampfstationen",
+            "clear_station": "Station räumen"
+        },
+        "quipment_ranks": {
+            "overall": "Gesamtpunktzahl",
+            "specialty": "Spezialwertung",        
+            "first_pair": "Erstes Paar",
+            "second_pair": "Zweites Paar",
+            "third_pair": "Drittes Paar",
+            "primary": "Primär",
+            "secondary": "Sekundär",
+            "tertiary": "Tertiär"        
+        }
+    },
+    "ship_action": {
+        "boost_by": "Erhöht {{type}} um {{amount}}",
+        "grant": "Verleihe den Status {{grant}}: {{grant_description}}",
+        "handicap": "Verringern Sie {{type}} um {{amount}}"
+    },
+    "data_notes": {
+        "gauntlet_determination": "Die Rangliste wurde durch Vorausberechnung ermittelt. Konkrete Ratschläge zur einzusetzenden Crew finden Sie unter {{link}}.",
+        "voyage_determination": "Die Rangliste wurde durch Vorausberechnung ermittelt. Konkrete Ratschläge zur einzusetzenden Crew finden Sie unter {{link}}."
+    },
+    "gauntlet": {
+        "gauntlet": "Herausforderung",
+        "gauntlets": "Herausforderungen",
+        "today_gauntlet": "Die heutige Herausforderung",
+        "yesterday_gauntlet": "Die Herausforderung von gestern",
+        "previous_gauntlets": "Vorherige Herausforderungen",
+        "browse_gauntlets": "Herausforderungen durchlesen"
+    },
+    "obtained": {
+        "long": {
+            "Gauntlet": "Herausforderung Exklusiv",
+            "Voyage": "Reise Exklusiv",
+            "WebStore": "Web Store",
+            "Faction": "Fraktions-Store",
+            "Fuse": "Exklusiv Fusion",
+            "BossBattle": "Kapitänsbrücke",
+            "Collection": "Sammlungs-Meilenstein",
+            "Missions": "Hauptplatinen-Mission",
+            "Mega": "Wiederkehrende Mega",
+            "Event": "Ereignis",
+            "Event/Pack/Giveaway": "Veranstaltung/Paket/Giveaway",
+            "Pack/Giveaway": "Paket/Giveaway",
+            "Honor Hall": "Ehrenhalle"
+        },
+        "short": {
+            "Gauntlet": "Herausforderung",
+            "Voyage": "Reise",
+            "WebStore": "Web Store",
+            "Faction": "Fraktions",
+            "Fuse": "Fusion",
+            "BossBattle": "Brücke",
+            "Collection": "Sammlung",
+            "Missions": "Missionen",
+            "Mega": "Mega",
+            "Event": "Ereignis",
+            "Event/Pack/Giveaway": "Veranstaltung/Paket/Giveaway",
+            "Pack/Giveaway": "Paket/Giveaway",
+            "Honor Hall": "Ehrenhalle"
+        }
+    }
+}

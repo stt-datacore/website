@@ -20,6 +20,7 @@ type RosterPickerProps = {
 
 export const RosterPicker = (props: RosterPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { maxBuffs } = globalContext;
 	const { playerData, buffConfig: playerBuffs, ephemeral } = globalContext.player;
 	const { rosterType, setRosterType, setRosterCrew, buffMode } = props;
@@ -53,35 +54,35 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			<Step active={rosterType === 'myCrew'} onClick={() => setRosterType('myCrew')}>
 				<img src='/media/crew_icon.png' style={{ width: '3em', marginRight: '1em' }} />
 				<Step.Content>
-					<Step.Title>Owned Crew</Step.Title>
-					<Step.Description>View only your owned crew</Step.Description>
+					<Step.Title>{t('pages.crew_view_modes.owned_crew.name')}</Step.Title>
+					<Step.Description>{t('pages.crew_view_modes.owned_crew.description')}</Step.Description>
 				</Step.Content>
 			</Step>
 			{hasBuyBack && 
 			<Step active={rosterType === 'buyBack'} onClick={() => setRosterType('buyBack')}>
 				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`} style={{ width: '3em', marginRight: '1em' }} /> 
 				<Step.Content>
-					<Step.Title>Buy-Back Well</Step.Title>
-					<Step.Description>View crew in the buy-back well</Step.Description>
+					<Step.Title>{t('pages.crew_view_modes.buyback_well.name')}</Step.Title>
+					<Step.Description>{t('pages.crew_view_modes.buyback_well.description')}</Step.Description>
 				</Step.Content>
 			</Step>}
 			<Step active={rosterType === 'offers'} onClick={() => setRosterType('offers')}>
 			<img src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} style={{ width: '2em', marginRight: '1em' }} /> 
 				<Step.Content>
-					<Step.Title>Current Offers
+					<Step.Title>{t('pages.crew_view_modes.current_offers.name')}
 					{rosterType === 'offers' &&
 					<Label title={'Refresh offers'} as='a' corner='right' onClick={() => initializeRoster(rosterType, true)}>
 						<Icon name='refresh' style={{ cursor: 'pointer' }} />
 					</Label>}
 					</Step.Title>
-					<Step.Description>Show crew in current offers</Step.Description>
+					<Step.Description>{t('pages.crew_view_modes.current_offers.description')}</Step.Description>
 				</Step.Content>
 			</Step>
 			<Step active={rosterType === 'allCrew'} onClick={() => setRosterType('allCrew')}>
 				<Icon name='game' />
 				<Step.Content>
-					<Step.Title>Game Roster</Step.Title>
-					<Step.Description>Overview of all crew in the game</Step.Description>
+					<Step.Title>{t('pages.crew_view_modes.game_roster.name')}</Step.Title>
+					<Step.Description>{t('pages.crew_view_modes.game_roster.description')}</Step.Description>
 				</Step.Content>
 			</Step>
 		</Step.Group>

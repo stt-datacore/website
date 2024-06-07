@@ -6,6 +6,7 @@ import { IRosterCrew } from './model';
 import { Skills } from '../item_presenters/classic_presenter';
 import { GlobalContext } from '../../context/globalcontext';
 import { printShortDistance } from '../../utils/misc';
+import CONFIG from '../CONFIG';
 
 export interface TraitOptions {
 	key: string;
@@ -21,18 +22,20 @@ type CrewRarityFilterProps = {
 };
 
 export const RarityFilter = (props: CrewRarityFilterProps) => {
-	const rarityFilterOptions = [
-		{ key: '1*', value: 1, text: '1* Common' },
-		{ key: '2*', value: 2, text: '2* Uncommon' },
-		{ key: '3*', value: 3, text: '3* Rare' },
-		{ key: '4*', value: 4, text: '4* Super Rare' },
-		{ key: '5*', value: 5, text: '5* Legendary' }
-	];
+	const { t } = React.useContext(GlobalContext).localized;
+	const rarityFilterOptions = [] as any[];
+
+	CONFIG.RARITIES.forEach((r, i) => {
+		if (i === 0) return;
+		rarityFilterOptions.push(
+			{ key: `${i}*`, value: i, text: `${i}* ${r.name}` }
+		)
+	});
 
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder={props.altTitle ?? 'Filter by rarity'}
+				placeholder={props.altTitle ?? t('hints.filter_by_rarity')}
 				clearable
 				multiple={props.multiple ?? true}
 				selection
@@ -53,16 +56,17 @@ type CrewTraitFilterProps = {
 };
 
 export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const [traitOptions, setTraitOptions] = React.useState<TraitOptions[] | undefined>(undefined);
 	const globalContext = React.useContext(GlobalContext);
-	const allTraits = globalContext.core.translation;
-	
+	const { TRAIT_NAMES } = globalContext.localized;
+
 	React.useEffect(() => {
-		const options = Object.keys(allTraits.trait_names).map(trait => {
+		const options = Object.keys(TRAIT_NAMES).map(trait => {
 			return {
 				key: trait,
 				value: trait,
-				text: allTraits.trait_names[trait]
+				text: TRAIT_NAMES[trait]
 			} as TraitOptions;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 		setTraitOptions([...options]);
@@ -71,16 +75,16 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 	if (!traitOptions) return (<></>);
 
 	const minMatchOptions = [
-		{ key: '1+', value: 1, text: 'Match any trait' },
-		{ key: '2+', value: props.traitFilter.length > 2 ? 2 : 0, text: 'Match 2+ traits' },
-		{ key: 'all', value: props.traitFilter.length, text: 'Match all traits' }
+		{ key: '1+', value: 1, text: t('options.trait_match.any') },
+		{ key: '2+', value: props.traitFilter.length > 2 ? 2 : 0, text: t('options.trait_match.match_two_plus') },
+		{ key: 'all', value: props.traitFilter.length, text: t('options.trait_match.match_all') }
 	];
 
 	return (
 		<React.Fragment>
 			<Form.Field>
 				<Dropdown
-					placeholder='Filter by trait'
+					placeholder={t('hints.filter_by_trait')}
 					clearable
 					multiple
 					search
@@ -94,7 +98,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 			{props.traitFilter.length > 1 && (
 				<Form.Field>
 					<Dropdown
-						placeholder='Match'
+						placeholder={t('options.trait_match.match')}
 						selection
 						options={minMatchOptions.filter(option => option.value > 0)}
 						value={props.minTraitMatches}
@@ -107,21 +111,22 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 };
 
 
-export function descriptionLabel(crew: IRosterCrew, showOwned?: boolean): JSX.Element {
+export function descriptionLabel(crew: IRosterCrew,  showOwned?: boolean): JSX.Element {
+	const { t } = React.useContext(GlobalContext).localized;
 
 	const counts = [
-		{ name: 'collection', count: crew.collections.length }
+		{ name: crew.collections.length > 1 ? t('data_names.base.collections_fmt', { count: crew.collections.length.toString() }) : t('data_names.base.collection_fmt'), count: crew.collections.length }
 	];
 	const formattedCounts = counts.map((count, idx) => (
 		<span key={idx} style={{ whiteSpace: 'nowrap' }}>
-			{count.count} {count.name}{count.count !== 1 ? 's' : ''}{idx < counts.length-1 ? ',' : ''}
+			{count.name}
 		</span>
 	)).reduce((prev, curr) => <>{prev}&nbsp;{curr}</>);
 
 	return (
 		<div>
 			<React.Fragment>
-				{!!crew.expires_in && <Icon name='warning sign' title={`Crew expires in ${printShortDistance(undefined, crew.expires_in * 1000)}`} />}
+				{!!crew.expires_in && <Icon name='warning sign' title={ t('crew_state.expires_in', { time: printShortDistance(undefined, crew.expires_in * 1000) })} />}
 				{crew.favorite && <Icon name='heart' />}
 				{crew.prospect && <Icon name='add user' />}
 				{crew.active_status > 0 && <Icon name='space shuttle' />}
@@ -130,19 +135,19 @@ export function descriptionLabel(crew: IRosterCrew, showOwned?: boolean): JSX.El
 				<React.Fragment>
 					{crew.immortal >= CompletionState.Frozen &&
 						<Label style={{ whiteSpace: 'nowrap' }}>
-							<Icon name='snowflake' />{crew.immortal} frozen
+							<Icon name='snowflake' />{crew.immortal} {crew.traits_hidden.includes('female') ? t('crew_state.frozen_f') : t('crew_state.frozen_m')}
 						</Label>
 					}
 					{crew.immortal === CompletionState.Immortalized &&
 						<Label style={{ whiteSpace: 'nowrap' }}>
-							<Icon name='star' color='yellow' /> Immortalized
+							<Icon name='star' color='yellow' /> {crew.traits_hidden.includes('female') ? t('crew_state.immortalized_f') : t('crew_state.immortalized_m')}
 						</Label>
 					}
 				</React.Fragment>
 			}
 			{crew.immortal === CompletionState.NotComplete &&
 				<React.Fragment>
-					<span>Level {crew.level}, </span>
+					<span>{t('data_names.base.level')} {crew.level}, </span>
 				</React.Fragment>
 			}
 			{!crew.any_immortal && (crew.immortal === CompletionState.NotComplete || crew.immortal === CompletionState.DisplayAsImmortalStatic) &&
@@ -162,15 +167,16 @@ type CrewPortalFilterProps = {
 };
 
 export const PortalFilter = (props: CrewPortalFilterProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const portalFilterOptions = [
-		{ key: 'true', value: true, text: 'In Portal' },
-		{ key: 'false', value: false, text: 'Not In Portal' },
+		{ key: 'true', value: true, text: t('data_names.base.in_portal')},
+		{ key: 'false', value: false, text: t('data_names.base.not_in_portal')},
 	];
 
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder={props.altTitle ?? 'Filter by portal status'}
+				placeholder={props.altTitle ?? t('hints.filter_by_portal_status')}
 				clearable
 				selection
 				multiple={false}
@@ -191,20 +197,21 @@ export type CrewBuffModesProps = {
 }
 
 export const CrewBuffModes = (props: CrewBuffModesProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const buffModes = [] as DropdownItemProps[];
 
-	buffModes.push({ key: 'none', value: undefined, text: 'No Buffs' })
+	buffModes.push({ key: 'none', value: undefined, text: t('buffs.no_buffs') })
 
 	if (props.playerAvailable) {
-		buffModes.push({ key: 'player', value: 'player', text: 'Player Buffs' })
+		buffModes.push({ key: 'player', value: 'player', text: t('buffs.player_buffs') })
 	}
 
-	buffModes.push({ key: 'max', value: 'max', text: 'Max Buffs' })
+	buffModes.push({ key: 'max', value: 'max', text: t('buffs.max_buffs') })
 
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder={props.altTitle ?? 'Apply stat buffs'}
+				placeholder={props.altTitle ?? t('hints.apply_buffs')}
 				clearable
 				selection
 				multiple={false}
@@ -218,29 +225,30 @@ export const CrewBuffModes = (props: CrewBuffModesProps) => {
 };
 
 export const OwnedLabel = (props: { crew: IRosterCrew, statsPopup?: boolean }) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { statsPopup, crew } = props;
 
 	if (crew.any_immortal) {
 		return (
 			<Label style={{ whiteSpace: 'nowrap' }}>
 				<Icon name='star' color='yellow' />
-				Immortalized
+				{crew.traits_hidden.includes('female') ? t('crew_state.immortalized_f') : t('crew_state.immortalized_m')}
 			</Label>
 		);
 	}
 
 	return (
-		<>{statsPopup && 
+		<>{statsPopup &&
 		<Popup trigger={
 			<Label style={{ whiteSpace: 'nowrap' }}>
-				Owned <Rating icon='star' rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size='small' disabled />
+				{t('crew_state.owned')} <Rating icon='star' rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size='small' disabled />
 				{/* <img title={"You own " + crew.name} style={{height:'12px', margin: "5px 4px 0px 4px" }} src='/media/vault.png'/>Yoyoyo */}
 			</Label>
-			} 
-			content={<Skills playerLevels={true} compact crew={crew} rarity={crew.rarity} />} 
+			}
+			content={<Skills playerLevels={true} compact crew={crew} rarity={crew.rarity} />}
 		/> ||
 		<Label style={{ whiteSpace: 'nowrap' }}>
-				Owned <Rating icon='star' rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size='small' disabled />
+				{t('crew_state.owned')} <Rating icon='star' rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size='small' disabled />
 				{/* <img title={"You own " + crew.name} style={{height:'12px', margin: "5px 4px 0px 4px" }} src='/media/vault.png'/>Yoyoyo */}
 			</Label>
 		}</>

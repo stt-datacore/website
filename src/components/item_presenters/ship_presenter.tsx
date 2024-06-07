@@ -6,6 +6,7 @@ import { ShipSkill, ShipSkillProps } from "./shipskill";
 import { Ship } from "../../model/ship";
 import { TinyStore } from "../../utils/tiny";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { GlobalContext } from "../../context/globalcontext";
 
 export interface PresenterProps {
     hover: boolean;
@@ -32,6 +33,8 @@ export interface ShipPresenterState {
 }
 
 export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterState> {
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
 
     tiny: TinyStore;
 
@@ -72,12 +75,15 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
     render(): JSX.Element {
         const { ship: ship, touched, tabs, showIcon } = this.props;
         const { mobileWidth } = this.state;
+        
         const compact = this.props.hover;    
 
         if (!ship) {
             return <></>
         } 
        
+        const { t } = this.context.localized;
+
         const frozenStyle: React.CSSProperties = {
             background: 'transparent',
             color: 'white',            
@@ -107,7 +113,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
         
         let keys = [ "attack", "accuracy", "evasion", "shields", "hull", "antimatter"]
         let icons = [ "attack-color.png", "accuracy-color.png", "evasion-color.png", "shield-color.png", "hull-color.png", "antimatter-icon.png"]
-        let names = [ "Attack", "Accuracy", "Evasion", "Shields", "Hull", "Antimatter"]
+        let names = [ t('data_names.ship.attack'), t('data_names.ship.accuracy'), t('data_names.ship.evasion'), t('data_names.ship.shields'), t('data_names.ship.hull'), t('data_names.ship.antimatter')]
         
         let stats1: { name: string, value: number, icon: string }[]=[];
         let stats2: { name: string, value: number, icon: string }[]=[];
@@ -190,7 +196,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                             </a>
                         </h3>
                         <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>
-                            <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in ship ? printImmoText(ship.immortal ?? CompletionState.DisplayAsImmortalStatic, "Ship", "Max Level") : "Crew Is Shown Immortalized"}>
+                            <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in ship ? printImmoText(ship.immortal ?? CompletionState.DisplayAsImmortalStatic, t('data_names.ship.ship'), t('data_names.ship.max_level'), t) : t('immo_text.item_is_shown', { item: 'data_names.base.crew', level: 'crew_state.immortalized'})}>
                                 {
                                     "immortal" in ship && (
                                         ((ship.immortal === 0)) ? 

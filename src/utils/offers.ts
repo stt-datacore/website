@@ -22,13 +22,9 @@ export async function loadOfferCrew(crewList: CrewMember[], offerName?: string, 
     }
 
     offers?.forEach((offer) => {
-        if (offer.primary_content[0].info_text?.includes("Borg Baby Boimler")) {
-            console.log("here");
-        }
-
-        if (!offer.primary_content[0].info_text) return;        
+        if (!offer.primary_content[0].info_text) return;
         let split = offer.primary_content[0].info_text.split(/\<[#A-Fa-f0-9]+\>/).map(sp => sp.replace(/\<\/[#A-Za-z0-9]+\>.*/, '').replace(/\n.*/g, '').trim());
-        let crew = crewList.filter(f => split.includes(f.name));
+        let crew = crewList.filter(f => split.includes(f.name) || (f.name_english && split.includes(f.name_english)));
         result.push({
             name: offer.primary_content[0].title,
             crew,

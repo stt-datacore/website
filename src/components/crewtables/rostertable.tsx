@@ -20,7 +20,7 @@ import { CrewMaintenanceFilter } from './filters/crewmaintenance';
 import { CrewOwnershipFilter } from './filters/crewownership';
 import { CrewPortalFilter } from './filters/crewportal';
 import { getBaseTableConfig, CrewBaseCells } from './views/base';
-import { ShipAbilitiesFilter, shipTableConfig, CrewShipCells } from './views/shipabilities';
+import { ShipAbilitiesFilter, getShipTableConfig, CrewShipCells } from './views/shipabilities';
 import { getRanksTableConfig, CrewRankCells } from './views/ranks';
 import { CrewUtilityForm, getCrewUtilityTableConfig, CrewUtilityCells } from './views/crewutility';
 
@@ -201,6 +201,7 @@ interface IDataPrepared {
 
 const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { playerData, playerShips } = globalContext.player;
 	const { topQuipmentScores: top } = globalContext.core;
 	const tableContext = React.useContext(RosterTableContext);
@@ -246,7 +247,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 		{
 			id: 'ship',
 			available: true,
-			optionText: 'Show ship abilities',
+			optionText: t('crew_views.ship'),
 			form:
 				<ShipAbilitiesFilter
 					key='ship'
@@ -257,29 +258,33 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					crewFilters={crewFilters}
 					setCrewFilters={setCrewFilters}					
 				/>,
-			tableConfig: shipTableConfig,
+			tableConfig: getShipTableConfig(t),
 			renderTableCells: (crew: IRosterCrew) => <CrewShipCells crew={crew} />
 		},
 		{
 			id: 'g_ranks',
 			available: true,
-			optionText: 'Show gauntlet ranks',
-			form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult <Link to='/gauntlets'>Gauntlets</Link>.</p>,
+			optionText: t('crew_views.gauntlet'),
+			form: <p>{tfmt('data_notes.gauntlet_determination', {
+				link: <Link to='/gauntlets'>{t('menu.tools.gauntlet')}</Link>
+			})}</p>,
 			tableConfig: getRanksTableConfig('gauntlet'),
 			renderTableCells: (crew: IRosterCrew) => <CrewRankCells crew={crew} prefix='G_' />
 		},
 		{
 			id: 'v_ranks',
 			available: true,
-			optionText: 'Show voyage ranks',
-			form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
+			optionText: t('crew_views.voyage'),
+			form: <p>{tfmt('data_notes.voyage_determination', {
+				link: <Link to='/gauntlets'>{t('menu.tools.voyage_calculator')}</Link>
+			})}</p>,
 			tableConfig: getRanksTableConfig('voyage'),
 			renderTableCells: (crew: IRosterCrew) => <CrewRankCells crew={crew} prefix='V_' />
 		},
 		{
 			id: 'qp_score',
 			available: true,
-			optionText: 'Show quipment scores',
+			optionText: t('crew_views.quipment'),
 			// form: <QuipmentToolsFilter 
 			// 		maxxed={rosterType === 'allCrew' || rosterType === 'buyBack'}
 			// 		quipment={quipment}
@@ -308,8 +313,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 		{
 			id: 'qp_best',
 			available: true,
-			optionText: 'Show max quipment',
-			spinText: 'Calculating quipment...',
+			optionText: t('crew_views.max_quipment'),
+			spinText: t('spinners.quipment'),
 			worker: (crew: IRosterCrew[]) => {				
 				return new Promise((resolve, reject) => {
 
@@ -370,7 +375,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 		{
 			id: 'crew_utility',
 			available: playerData && rosterType === 'myCrew',
-			optionText: 'Show crew utility',
+			optionText: t('crew_views.crew_utility'),
 			form:
 				<CrewUtilityForm
 					pageId={pageId}
@@ -425,7 +430,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	] as IToggleableFilter[];
 
 	const tableViewOptions = [
-		{ key: 'base', value: '' as TableView, text: 'Show base skills' },
+		{ key: 'base', value: '' as TableView, text: t('crew_views.base') },
 	] as ITableViewOption[];
 
 	tableViews.forEach(view => {
@@ -523,7 +528,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			<Form>
 				<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: '1em' }}>
 					<Form.Field
-						placeholder='Show base skills'
+						placeholder={t('crew_views.base')}
 						control={Dropdown}
 						selection
 						clearable
@@ -568,8 +573,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					initOptions={initOptions}
 					rosterCrew={preparedCrew}
 					crewFilters={crewFilters}
-					tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType)}
-					renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells tableType={props.tableType} crew={crew} pageId={pageId} />}
+					tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t)}
+					renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells tableType={props.tableType} crew={crew} pageId={pageId} t={t} />}
 					lockableCrew={lockableCrew}
 					loading={isPreparing}
 				/>

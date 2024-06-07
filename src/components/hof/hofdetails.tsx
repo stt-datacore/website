@@ -39,12 +39,7 @@ export interface HofDetailsProps {
 }
 
 interface Seats {
-    CMD?: number;
-    DIP?: number;
-    SEC?: number;
-    ENG?: number;
-    SCI?: number;
-    MED?: number;
+    [key: string]: number;    
 }
 
 export const HofDetails = (props: HofDetailsProps) => {
@@ -86,7 +81,7 @@ export const HofDetails = (props: HofDetailsProps) => {
     });
 
     const addSeat = (x: number, crew: string) => {
-        let key = CONFIG.VOYAGE_CREW_SLOTS[x] + "," + crew;
+        let key = CONFIG.VOYAGE_CREW_SLOTS[x] + "," + crew;        
         seatMap[key] ??= 0;
         seatMap[key]++;
     };

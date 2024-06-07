@@ -85,8 +85,18 @@ const checkedStyle: React.CSSProperties = {
 };
 
 export class StatLabel extends React.Component<StatLabelProps> {
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
+
     render() {
         const { title, value } = this.props;
+
+        let sizeDefault = '12.75em';
+        let sizeMobile = '12.5em';
+        if (this.context.localized.language === 'de') {
+            sizeDefault = '15em';
+            sizeMobile = '14em';
+        }
 
         return (            
             <Label
@@ -96,9 +106,10 @@ export class StatLabel extends React.Component<StatLabelProps> {
                     flexDirection: "row",
                     justifyContent: "space-between",
                     marginBottom: "0.5em",
+                    flexWrap: 'wrap',
                     marginLeft: 0,
                     width:
-                        window.innerWidth < DEFAULT_MOBILE_WIDTH ? "12.5em" : "12.75em",
+                        window.innerWidth < DEFAULT_MOBILE_WIDTH ? sizeMobile : sizeDefault,
                 }}
             >
                 {title}
@@ -515,6 +526,7 @@ export class CrewPresenter extends React.Component<
             hideStats,
         } = this.props;
 
+        const { t, tfmt } = this.context.localized;
         const { mobileWidth, pluginsUsed, selectedPlugin } = this.state;
 
         if (!inputCrew) {
@@ -674,7 +686,7 @@ export class CrewPresenter extends React.Component<
 
         const portalText = pt;
         const noPortalText = npt;
-        const isNever = printPortalStatus(crew) === 'Never';
+        const isNever = printPortalStatus(crew, t) === t('global.never');
         const isMobile = this.props.forceVertical || typeof window !== 'undefined' && window.innerWidth < mobileWidth;
 
         return crew ? (
@@ -1041,7 +1053,7 @@ export class CrewPresenter extends React.Component<
                                 }}
                             >
                                 <StatLabel
-                                    title="Big Book Tier"
+                                    title={t('rank_names.bigbook_tier')}
                                     value={
                                         <div
                                             style={{
@@ -1055,11 +1067,11 @@ export class CrewPresenter extends React.Component<
                                 />
 
                                 <StatLabel
-                                    title="Voyage Rank"
+                                    title={t('rank_names.voyage_rank')}
                                     value={"" + crew.ranks.voyRank}
                                 />
 
-                                <StatLabel title="CAB Rating" value={crew.cab_ov ?? "?"} />
+                                <StatLabel title={t('rank_names.cab_rating')} value={crew.cab_ov ?? "?"} />
                             </div>
                         </div>
                     )}
@@ -1077,7 +1089,7 @@ export class CrewPresenter extends React.Component<
                                 }}
                             >
                                 <StatLabel
-                                    title="CAB Grade"
+                                    title={t('rank_names.cab_grade')}
                                     value={
                                         <div
                                             style={{
@@ -1092,33 +1104,33 @@ export class CrewPresenter extends React.Component<
                                     }
                                 />
                                 <StatLabel
-                                    title="Gauntlet Rank"
+                                    title={t('rank_names.gauntlet_rank')}
                                     value={"" + crew.ranks.gauntletRank}
                                 />
 
                                 {!isNever && 
                                 <>
                                 {(crew.in_portal && !!crew.unique_polestar_combos?.length) && 
-                                    <span title={printPortalStatus(crew, true, true, true, true)}>                                    
+                                    <span title={printPortalStatus(crew, t, true, true, true, true)}>                                    
                                     <StatLabel
                                         title=""
-                                        value={<span style={{color:"lightgreen", fontWeight:"bold"}}>Uniquely Retrievable</span>}
+                                        value={<span style={{color:"lightgreen", fontWeight:"bold"}}>{t('data_names.base.uniquely_retrievable')}</span>}
                                     />
                                     </span> 
                                     ||
-                                    <span title={printPortalStatus(crew, true, true, true, true)}>
+                                    <span title={printPortalStatus(crew, t, true, true, true, true)}>
                                     <StatLabel                                        
-                                        title="In Portal"
-                                        value={crew.in_portal ? <span style={{color:"lightgreen", fontWeight:"bold"}}>Yes</span> : printPortalStatus(crew, true) }
+                                        title={t('data_names.base.in_portal')}
+                                        value={crew.in_portal ? <span style={{color:"lightgreen", fontWeight:"bold"}}>{t('global.yes')}</span> : printPortalStatus(crew, t, true) }
                                     />
                                    </span>
                                 }
                                 </>}
                                 {isNever && 
-                                    <span title={printPortalStatus(crew, true, true, true, true)}>                                  
+                                    <span title={printPortalStatus(crew, t, true, true, true, true)}>                                  
                                     <StatLabel
-                                        title="Obtained"
-                                        value={<span style={{ padding:0, color: CONFIG.RARITIES[5].color, fontWeight:"bold"}}>{prettyObtained(crew)}</span>}                                        
+                                        title={t('global.obtained')}
+                                        value={<span style={{ padding:0, color: CONFIG.RARITIES[5].color, fontWeight:"bold"}}>{prettyObtained(crew, t)}</span>}                                        
                                     />
                                 </span>}
                             </div>

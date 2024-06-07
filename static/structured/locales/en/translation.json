@@ -1,0 +1,429 @@
+{
+    "clipboard": {
+        "copied_exclaim": "Copied!"
+    },
+    "global": { 
+        "yes": "Yes",
+        "no": "No",
+        "never": "Never",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "show": "Show",
+        "hide": "Hide",
+        "shown": "Shown",
+        "hidden": "Hidden",
+        "search": "Search",
+        "search_ellipses": "Search...",
+        "search_by_name_or_trait_ellipses": "Search by name or trait...",
+        "obtained": "Obtained",
+        "bonus": "Bonus",
+        "bonuses": "Bonuses",
+        "reset": "Reset",
+        "load_default_settings": "Load Default Settings",
+        "clear": "Clear",
+        "close": "Close",
+        "disable": "Disable",
+        "enable": "Enable",
+        "apply_filters": "Apply Filters",
+        "base": "Base"
+    },
+    "spinners": {
+        "default": "Loading data...",
+        "quipment": "Calculating quipment...",
+        "demands": "Calculating crew demands..."
+    },
+    "menu": {
+        "about_title": "About",
+        "game_info_title": "Game Info",
+        "game_info": {
+            "episodes": "Episodes",
+            "events": "Events",
+            "voyage_hof": "Voyage Hall of Fame",
+            "misc_game_stats": "Misc Game Stats",
+            "bridge_crew_tool": "Bridge Crew Tool"
+        },
+        "player": {
+            "import_player_data_ellipses": "Import Player Data ...",
+            "import_player_data": "Import Player Data",
+            "update_player_data": "Update Player Data",
+            "my_achievements": "My Achievements",
+            "my_charts_and_stats": "My Charts and Stats",
+            "share_profile": "Share Profile",
+            "menu_settings": "Menu Settings",
+            "toggle_glance": "Toggle At-A-Glance Panel",
+            "toggle_coloring": "Toggle grade coloring",
+            "clear_data": "Clear Player Data"
+
+        },
+        "roster_title": "Roster",
+        "roster": {
+            "crew": "Crew",
+            "ships": "Ships",
+            "items": "Items",
+            "unneeded_items": "Unneeded Items"
+        },
+        "tools_title": "Tools",
+        "tools": {
+            "behold_helper": "Behold Helper",
+            "shuttle_helper": "Shuttle Helper",
+            "factions": "Factions",
+            "event_planner": "Event Planner",
+            "gauntlet": "Gauntlet",
+            "citation_optimizer": "Citation Optimizer",
+            "voyage_calculator": "Voyage Calculator",
+            "voyage_history": "Voyage History",
+            "collection_planner": "Collection Planner",
+            "crew_retrieval": "Crew Retrieval",
+            "fleet_boss_battles": "Fleet Boss Battles",
+            "continuum_helper": "Continuum Helper"
+        },
+        "site_beta_switch": "Switch between production and beta"
+    },
+    "header": {
+        "recommend": {
+            "title": "Player Data Recommended",
+            "description": "This page is better with player data.",
+            "tap_here": "Tap here to import your player data now."
+        },
+        "require": {
+            "title": "Player Data Required",
+            "description": "This page requires player data. Follow the instructions below to import your player data."
+        }
+    },
+    "json": {
+        "copy_and_paste": {
+            "title": "Copy and Paste",
+            "description_1": "Copy the contents of your {{data}},",
+            "description_2": "then paste everything into the text box below.",
+            "paste_here_placeholder": "Paste your {{data}} here",
+            "detailed_instructions": {
+                "title": "Detailed Instructions...",
+                "header": "DataCore cannot make direct requests to the game's servers, so you must follow these steps to import your {{data}}:",
+                "instructions": {
+                    "line_1": "Open this page in your browser: {{link}}",
+                    "line_2": "Sign in if asked, then wait for the page to finish loading. It should start with: {{jsonHint}} ...",
+                    "line_3": "Select everything in the page (Ctrl+A) and copy to clipboard (Ctrl+C).",
+                    "line_4": "Paste (Ctrl+V) in the text box above. Note that DataCore will intentionally display less data here to speed up the process."
+                },
+                "footer": "If you have multiple accounts, we recommend using your browser in incognito mode (Chrome) or in private mode (Edge / Firefox) to avoid caching your account credentials, making it easier to switch accounts."
+            }
+        },
+        "or": "OR",
+        "upload_file": {
+            "title": "Upload File",
+            "description_1": "Save your {{data}} to your device,",
+            "description_2": "then upload the file. Recommended for mobile users.",
+            "browse_ellipses": "Browse for {{data}} file to upload...",
+            "detailed_instructions": {
+                "title": "Detailed Instructions...",
+                "header": "DataCore cannot make direct requests to the game's servers, so you must follow these steps to import your {{data}}:",
+                "android": {
+                    "instructions": {
+                        "line_1": "Open this page on your device: {{link}}",
+                        "line_2": "Sign in if asked, then wait for the page to finish loading. It should start with: {{jsonHint}} ...",
+                        "line_3": "Tap the menu (three dots) icon while viewing the page.",
+                        "line_4": "Tap the download button, choose a location, and save.",
+                        "line_5": "Come back to this DataCore page.",
+                        "line_6": "Tap the \"Browse for {{data}} file to upload...\" button.",
+                        "line_7": "Choose the file starting with \"{{hint}}...\" from where you saved it."
+                    }
+                },
+                "ios": {
+                    "instructions": {
+                        "line_1": "Open this page on your device: {{link}}",
+                        "line_2": "Sign in if asked, then wait for the page to finish loading. It should start with: {{jsonHint}} ...",
+                        "line_3": "Tap the share icon while viewing the page.",
+                        "line_4": "Tap \"options\" and choose \"Web Archive\", tap \"save to files\", choose a location, and save.",
+                        "line_5": "Come back to this DataCore page.",
+                        "line_6": "Tap the \"Browse for player data file to upload...\" button.",
+                        "line_7": "Choose the file starting with \"{{hint}}...\" from where you saved it."
+                    }
+                }
+            }
+        }
+    },
+    "json_types": {
+        "player_data": "player data", 
+        "gauntlet_data": "gauntlet data",
+        "quest_data": "quest data"
+    },
+    "share_profile": {
+        "shared": {
+            "title": "Player Profile Shared!",
+            "description": "Your profile was uploaded successfully! Tap here to view your public profile."
+        },
+        "share": {
+            "share_text": "You can post your profile to the DataCore server to utilize personalized features of the discord bot, and let other users see your crew, ships, and items.",
+            "nag": {
+                "title": "Share Your Player Profile",
+                "nag_panel_share": "Follow the instructions below to post your player profile to the DataCore server.",
+                "nag_panel_not_share": "{{share_profile.share.share_text}} Tap here to learn more."
+            },
+            "title": "Post Profile to DataCore",
+            "header": "{{share_profile.share.share_text}}. Once shared, your public profile will be accessible by anyone with this link:",
+            "instructions": {
+                "line_1": "Click the link, above, to access data exports for spreadsheets including Take My Chrons and Do Not Airlock.",
+                "line_2": "Some pages on DataCore, notably fleet pages and event pages, may also link to your public profile.",
+                "line_3": "Information being shared is limited to: {{list}}. No private information is included in your public profile."
+            },
+            "info_list": "DBID, captain name, level, vip level, fleet name and role, achievements, completed missions, your crew, items and ships",
+            "check_auto_share": "Automatically post profile when importing player data",
+            "error": {
+                "error_header": "Failed to share player profile!",
+                "error_title": "Your profile failed to upload, with the error: {{errorMessage}}",
+                "error_panel_share": "Follow the instructions below to try again.",
+                "error_panel_not_share": "Tap here to try again."
+            },
+            "post_profile": "Post Profile"            
+        },
+        "export": {
+            "export_csv": "Export CSV",
+            "export_clipboard": "Copy to Clipboard",
+            "exported_clipboard": "Profile copied to clipboard!"
+        }
+    },
+    "pages": {
+        "crew_stats": "Crew Stats",
+        "ships": "Ships",
+        "crew_view_modes": {
+            "owned_crew": { 
+                "name": "Owned Crew",
+                "description": "View only your owned crew"
+            },
+            "buyback_well": { 
+                "name": "Buy-Back Well",
+                "description": "View crew in the buy-back well"
+            },
+            "current_offers": {
+                "name": "Current Offers",
+                "description": "Show crew in current offers"
+            },
+            "game_roster": { 
+                "name": "Game Roster",
+                "description": "Overview of all crew in the game"
+            }
+        }
+    },
+    "buffs": {
+        "no_buffs": "No buffs",
+        "player_buffs": "Player buffs",
+        "max_buffs": "Max buffs"
+    },
+    "crew_state": {
+        "owned": "Owned",
+        "unowned": "Unowned",
+        "immortalized": "Immortalized",
+        "immortalized_m": "Immortalized",
+        "immortalized_f": "Immortalized",
+        "shown_immortalized": "Shown Immortalized",
+        "shown_immortalized_m": "Shown Immortalized",
+        "shown_immortalized_f": "Shown Immortalized",
+        "unfused": "Unfused",
+        "stars": "{{stars}} Stars",
+        "frozen": "Frozen",
+        "frozen_m": "Frozen",
+        "frozen_f": "Frozen",
+        "expires_in": "Crew expires in {{time}}"
+    },
+    "immo_text": {
+        "item_is_level": "{{item}} is {{level}}",
+        "item_is_shown": "{{item}} Is Shown {{level}}",
+        "item_is_shown_no_player": "{{item}} Is Shown {{level}} (No Player Data)",
+        "item_is_shown_owned": "{{item}} Is Shown {{level}} (Owned)",
+        "item_is_shown_unowned": "{{item}} Is Shown {{level}} (Unowned)",
+        "item_is_frozen_one": "{{item}} Is Frozen (1 Copy)",
+        "item_is_frozen_many": "{{item}} Is Frozen ({{copies}} Copies)"
+    },
+    "hints": {
+        "apply_buffs": "Apply stat buffs",
+        "filter_by_rarity": "Filter by rarity",
+        "filter_by_trait": "Filter by trait",
+        "filter_by_portal_status": "Filter by portal status",
+        "filter_ship_rarity": "Filter ship rarity",
+        "filter_ship_grants": "Filter ship grants",
+        "select_ship_ability": "Select ship ability",
+        "select_ship_abilities": "Select Ship Abilities",
+        "select_ship_ability_amount": "Select Ship Ability Amount",
+        "trait": "Trait",
+        "traits": "Traits"
+    },
+    "options": {
+        "trait_match": {
+            "trait": "Trait",
+            "match": "Match",
+            "matches": "Matches",
+            "any": "Match any trait",
+            "match_two_plus": "Match 2+ traits",
+            "match_all": "Match all traits"
+        },
+        "text_match": {
+            "any": "Match any text",
+            "whole_word": "Whole word only",
+            "exact": "Exact match only"
+        }
+    },    
+    "crew_views": {
+        "base": "Show base skills",
+        "ship": "Show ship abilities",
+        "gauntlet": "Show gauntlet ranks",
+        "voyage": "Show voyage ranks",
+        "quipment": "Show quipment scores",
+        "max_quipment": "Show max quipment",
+        "crew_utility": "Show crew utility"      
+    },
+    "rank_names": {
+        "bigbook_tier": "Big Book Tier",
+        "cab_grade": "CAB Grade",
+        "voyage_rank": "Voyage Rank",
+        "gauntlet_rank": "Gauntlet Rank",
+        "cab_rank": "CAB Rank",
+        "cab_rating": "CAB Rating",
+        "quipment_score": "Quipment Score"        
+    },
+    "cool_stats": {
+        "ranks_on_your_roster": "Ranks on your roster",
+        "all_ranks": "All Ranks",
+        "base_ranks": "Base ranks",
+        "voyage_skill_ranks": "Voyage skill ranks",
+        "gauntlet_pair_ranks": "Gauntlet pair ranks",
+        "show_detailed_ellipses": "Show detailed ranks and stats...",
+        "more_stats_ellipses": "more stats...",
+        "rank_skill_roster": "#{{rank}} {{skill}} on your roster",
+        "voyage_pair_roster": "#{{rank}} {{skill}} voyage pair in your roster",
+        "gauntlet_pair_roster": "#{{rank}} {{skill}} gauntlet pair in your roster",
+        "voyage_gauntlet_pair_roster": "#{{rank}} {{skill}} voyage/gauntlet pair in your roster",
+        "base_roster": "#{{rank}} {{skill}} base in your roster"
+    },
+    "data_names": {
+        "crew_page": {
+            "can_cross_fuse_with": "Can cross-fuse with {{crew}}",
+            "all_fuses_ellipses": "All fuses...",
+            "all_fuse_skill_fffe_colon": "Skills at all fuses when fully leveled and fully equipped:",
+            "aka_colon": "Also known as:",
+            "coined_by": "coined by {{name}}",
+            "player_boosts_applied": "Player boosts applied"
+        },
+        "base": {
+            "crew": "Crew",
+            "rarity": "Rarity",
+            "bigbook_tier": "Tier",
+            "cab_power": "CAB",
+            "voyage": "Voyage",
+            "voyages": "Voyages",
+            "gauntlet": "Gauntlet",
+            "all_crew": "Show all crew",
+            "in_portal": "In Portal",
+            "not_in_portal": "Not In Portal",
+            "not_yet_in_portal": "Not yet in portal",
+            "never_in_portal": "Never In Portal",
+            "uniquely_retrievable": "Uniquely Retrievable",
+            "not_uniquely_retrievable": "Not Uniquely Retrievable",
+            "less_than_100_retrieval": "< 100% Retrieval",
+            "qp": "QP",
+            "release_date": "Release Date",
+            "offer_cost": "Offer Cost",
+            "offers": "Offer(s)",
+            "level": "Level",
+            "collection": "Collection",
+            "collections": "Collections",
+            "collection_fmt": "1 collection",
+            "collections_fmt": "{{count}} collections"
+        },
+        "ship": {
+            "ship": "Ship",
+            "attack": "Attack",
+            "boosts": "Boosts",
+            "amount": "Amount",
+            "handicap": "Handicap",
+            "initialize": "Initialize",
+            "cycle_time": "Cycle Time",
+            "cooldown": "Cooldown",
+            "duration": "Duration",
+            "uses": "Uses",
+            "uses_per_battle": "Uses per battle",
+            "unlimited": "Unlimited",
+            "bonus_ability": "Bonus Ability",
+            "trigger": "Trigger",
+            "equipment_bonus": "Equipment Bonus",
+            "accuracy": "Accuracy",
+            "charge_phases": "Charge Phases",
+            "crit_bonus": "Crit Bonus",
+            "crit_rating": "Crit Rating",
+            "evasion": "Evasion",
+            "charge_phase": {
+                "after_seconds": "After {{seconds}}s ",
+                "bonus": "+{{amount}} to {{ability}}",
+                "cooldown": "{{time}}s cooldown",
+                "duration": "{{time}}s duration"
+            },    
+            "hull": "Hull",
+            "shields": "Shields",
+            "antimatter": "Antimatter",
+            "attack_speed": "Attack Speed",
+            "max_level": "Max Level",
+            "grants": "Grants",
+            "triggers": "Triggers",
+            "battle_stations": "Battle Stations",
+            "clear_station": "Clear Station"
+        },
+        "quipment_ranks": {
+            "overall": "Overall",
+            "specialty": "Specialty",
+            "first_pair": "First Pair",
+            "second_pair": "Second Pair",
+            "third_pair": "Third Pair",
+            "primary": "Primary",
+            "secondary": "Secondary",
+            "tertiary": "Tertiary"
+        }
+    },
+    "ship_action": {
+        "boost_by": "Boosts {{type}} by {{amount}}",
+        "grant": "Grants {{grant}} status: {{grant_description}}",
+        "handicap": "Decrease {{type}} by {{amount}}"
+    },
+    "data_notes": {
+        "gauntlet_determination": "Rankings determined by precalculation. For specific advice on crew to use, consult {{link}}.",
+        "voyage_determination": "Rankings determined by precalculation. For specific advice on crew to use, consult the {{link}}."
+    },
+    "gauntlet": {
+        "gauntlet": "Gauntlet",
+        "gauntlets": "Gauntlets",
+        "today_gauntlet": "Today's Gauntlet",
+        "yesterday_gauntlet": "Yesterday's Gauntlet",
+        "previous_gauntlets": "Previous Gauntlets",
+        "browse_gauntlets": "Browse Gauntlets"    
+    },
+    "obtained": {
+        "long": {
+            "Gauntlet": "Gauntlet Exclusive",
+            "Voyage": "Voyage Exclusive",
+            "WebStore": "Web Store",
+            "Faction": "Faction Store",
+            "Fuse": "Exclusive Fusion",
+            "BossBattle": "Captain's Bridge",
+            "Collection": "Collection Milestone",
+            "Missions": "Main Board Mission",
+            "Mega": "Recurring Mega",
+            "Event": "Event",
+            "Event/Pack/Giveaway": "Event/Pack/Giveaway",
+            "Pack/Giveaway": "Pack/Giveaway",
+            "Honor Hall": "Honor Hall"
+        },
+        "short": {
+            "Gauntlet": "Gauntlet",
+            "Voyage": "Voyage",
+            "WebStore": "Web Store",
+            "Faction": "Faction",
+            "Fuse": "Fusion",
+            "BossBattle": "Bridge",
+            "Collection": "Collection",
+            "Missions": "Missions",
+            "Mega": "Mega",
+            "Event": "Event",
+            "Event/Pack/Giveaway": "Event/Pack/Giveaway",
+            "Pack/Giveaway": "Pack/Giveaway",
+            "Honor Hall": "Honor Hall"
+        }
+    }
+}

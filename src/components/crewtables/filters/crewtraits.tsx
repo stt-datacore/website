@@ -68,13 +68,13 @@ export const CrewTraitMatchesCell = (props: CrewTraitMatchesCellProps) => {
 	const { crew } = props;
 	const traitList = crew.markup?.traits_matched;
 	const globalContext = React.useContext(GlobalContext);
-	const { translation: allTraits } = globalContext.core;
+	const { TRAIT_NAMES } = globalContext.localized;
 	if (!traitList) return (<Table.Cell />);
 	return (
 		<Table.Cell textAlign='center'>
-			{traitList.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map((trait, idx) => (
+			{traitList.sort((a, b) => TRAIT_NAMES[a].localeCompare(TRAIT_NAMES[b])).map((trait, idx) => (
 				<Label key={idx}>
-					{allTraits.trait_names[trait]}
+					{TRAIT_NAMES[trait]}
 				</Label>
 			)).reduce((prev, curr) => <>{prev}{` `}{curr}</>, <></>)}
 		</Table.Cell>

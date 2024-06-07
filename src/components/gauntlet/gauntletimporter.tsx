@@ -17,7 +17,8 @@ export const GauntletImportComponent = (props: GauntletImporterProps) => {
 
     const { currentHasRemote, gauntlet, setGauntlet, setError, clearGauntlet } = props;
     const context = React.useContext(GlobalContext);
-    const { playerData} = context.player;
+    const { playerData } = context.player;
+    const { t } = context.localized;
 	
 	const [collapsed, setCollapsed] = React.useState<boolean | undefined>(undefined);
 
@@ -86,7 +87,7 @@ export const GauntletImportComponent = (props: GauntletImporterProps) => {
 					config={{
                         pasteInMobile: true,
 						dataUrl: PLAYERLINK,
-						dataName: 'Gauntlet',
+						dataName: t('json_types.gauntlet_data'),
 						jsonHint: '{"action":"update","character":',
 						androidFileHint: 'status.json',
 						iOSFileHint: 'status?id'

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Header, Dropdown, Form, Table, Icon, Grid, Label, Message, Button, Popup } from 'semantic-ui-react';
 
-import allTraits from '../../../static/structured/translation_en.json';
 import { SolveStatus, Solver, SolverNode, SolverTrait, Spotter, TraitOption } from '../../model/boss';
+import { GlobalContext } from '../../context/globalcontext';
 
 import { UserContext, SolverContext } from './context';
 
@@ -192,6 +192,8 @@ type TraitsChecklistProps = {
 };
 
 const TraitsChecklist = (props: TraitsChecklistProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { TRAIT_NAMES } = globalContext.localized;
 	const { solver, spotter, updateSpotter } = props;
 
 	const traits = [] as string[];
@@ -202,7 +204,7 @@ const TraitsChecklist = (props: TraitsChecklistProps) => {
 			return {
 				key: trait,
 				value: trait,
-				text: allTraits.trait_names[trait]
+				text: TRAIT_NAMES[trait]
 			} as TraitOption;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 

@@ -66,13 +66,13 @@ export const defaultPlayer = {
 } as PlayerContextData;
 
 export const PlayerContext = React.createContext<PlayerContextData>(defaultPlayer as PlayerContextData);
-	
+
 const tiny = TinyStore.getStore(`global_playerSettings`);
 
 export const PlayerProvider = (props: DataProviderProperties) => {
 
 	const coreData = React.useContext(DataContext);
-	const { crew, ship_schematics, translationLanguage } = coreData;
+	const { crew, ship_schematics } = coreData;
 
 	const { children } = props;
 
@@ -173,7 +173,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 		setSessionStates({...defaultSessionStates});
 		setLoaded(true);
-	}, [input, crew, ship_schematics, translationLanguage]);
+	}, [input, crew, ship_schematics]);
 
 	const reset = (): void => {
 		setStripped(undefined);
@@ -183,6 +183,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		setInput(undefined);
 		setSessionStates(undefined);
 		setLoaded(false);
+		// setGameLanguage('en');
 		sessionStorage.clear();
 	};
 

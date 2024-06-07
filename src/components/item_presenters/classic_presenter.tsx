@@ -122,10 +122,11 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 
 const Collections = (props: { crew: CrewMember }) => {
 	const { crew } = props;
+	const { t } = React.useContext(GlobalContext).localized;
 	if (crew.collections.length === 0) return (<></>);
 	return (
 		<p>
-			<b>Collections: </b>
+			<b>{t('data_names.base.collections')}: </b>
 			{crew.collections
 				.map(col => (
 					<Link key={col} to={`/collections?select=${encodeURIComponent(col)}`}>
@@ -163,11 +164,13 @@ const CrewDemands = (props: { crew: CrewMember }) => {
 
 const CrossFuses = (props: { crew: CrewMember }) => {
 	const { crew } = props;
+	const { tfmt } = React.useContext(GlobalContext).localized;
 	if (crew.cross_fuse_targets && "symbol" in crew.cross_fuse_targets && crew.cross_fuse_targets.symbol) {
 		return (
 			<p>
-				Can cross-fuse with{' '}
-				<Link to={`/crew/${crew.cross_fuse_targets.symbol}/`}>{crew.cross_fuse_targets.name}</Link>.
+				{tfmt('data_names.crew_page.can_cross_fuse_with', {
+					crew: <Link to={`/crew/${crew.cross_fuse_targets.symbol}/`}>{crew.cross_fuse_targets.name}</Link>
+				})}
 			</p>
 		);
 	}
@@ -176,15 +179,18 @@ const CrossFuses = (props: { crew: CrewMember }) => {
 
 const DateAdded = (props: { crew: CrewMember }) => {
 	const { crew } = props;
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	return (
 		<p>
-			<b>Release Date: </b>{new Date(crew.date_added).toLocaleDateString()} (<b>Obtained: </b>{prettyObtained(crew, true)})
+			<b>{t('data_names.base.release_date')}: </b>{new Date(crew.date_added).toLocaleDateString()} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
 		</p>
 	);
 };
 
 export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { buffConfig } = globalContext.player;
 	const { crew, compact } = props;
 
@@ -199,8 +205,8 @@ export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 				onClick={() => setShowPane(!showPane)}
 			>
 				<Icon name={showPane ? 'caret down' : 'caret right' as SemanticICONS} />
-				{!showPane && <>All fuses...</>}
-				{showPane && <>Skills at all fuses when fully leveled and fully equipped:</>}
+				{!showPane && <>{t('data_names.crew_page.all_fuses_ellipses')}</>}
+				{showPane && <>{t('data_names.crew_page.all_fuse_skill_fffe_colon')}</>}
 			</Accordion.Title>
 			<Accordion.Content active={showPane}>
 				{showPane && (
@@ -279,14 +285,16 @@ export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 };
 
 const Nicknames = (props: { crew: CrewMember }) => {
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { crew } = props;
+
 	if (!crew.nicknames || crew.nicknames.length === 0) return (<></>);
 	return (
 		<p>
-			<b>Also known as: </b>
+			<b>{t("data_names.crew_page.aka_colon")} </b>
 			{crew.nicknames
 				.map((nick, idx) => (
-				<span key={idx}>{nick.cleverThing}{nick.creator ? <> (coined by <i>{nick.creator}</i>)</> : ''}</span>
+				<span key={idx}>{nick.cleverThing}{nick.creator ? <> ({tfmt('data_names.crew_page.coined_by', { name: <i>{nick.creator}</i>})})</> : ''}</span>
 			))
 			.reduce((prev, curr) => <>{prev}, {curr}</>)}
 		</p>
@@ -318,6 +326,7 @@ type SkillsProps = {
 
 export const Skills = (props: SkillsProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { buffConfig } = globalContext.player;
 	const { crew, rarity, compact } = props;
 	const owned = globalContext.player.playerData?.player.character.crew.find(f => f.symbol === crew.symbol);
@@ -360,15 +369,22 @@ export const Skills = (props: SkillsProps) => {
 				{buffConfig &&
 					<div style={{display:'flex', flexDirection: 'row', alignItems: 'center'}}>
 						<Icon name='arrow alternate circle up' size='small' style={{ color: 'lightgreen' }} />
-						{!compact && <>Player boosts applied</>}
+						{!compact && <>{t('data_names.crew_page.player_boosts_applied')}</>}
 					</div>
 				}
 			</div>
 			{(!playerLevels || !owned) && <div style={{marginTop:"0.5em"}}>
 				{owned && <OwnedLabel statsPopup={true} crew={owned} />}
 			</div> ||
-			<div className='ui segment'>
-				{!!owned?.immortal && <>{owned.immortal > 0 ? <><Icon name='snowflake' /> {owned.immortal} Frozen</> : <><Icon name='check' color='green' /> Immortalized</>}</> ||  <>Level {owned?.level}</>}
+			<div className='ui segment'>				
+				{!!owned?.immortal && <>
+					{owned.traits_hidden.includes('female') && <>
+						{owned.immortal > 0 ? <><Icon name='snowflake' /> {owned.immortal} {t('crew_states.frozen_f')}</> : <><Icon name='check' color='green' /> {t('crew_states.immortalized_f')}</>}</> ||  <>{t('data_names.base.level')} {owned?.level}
+					</>}				
+					{!owned.traits_hidden.includes('female') && <>
+						{owned.immortal > 0 ? <><Icon name='snowflake' /> {owned.immortal} {t('crew_states.frozen_m')}</> : <><Icon name='check' color='green' /> {t('crew_states.immortalized_m')}</>}</> ||  <>{t('data_names.base.level')} {owned?.level}
+					</>}				
+				</>}
 				<CrewItemsView crew={owned as PlayerCrew} />
 			</div>}
 		</Segment>
@@ -377,10 +393,11 @@ export const Skills = (props: SkillsProps) => {
 };
 
 const Traits = (props: { crew: CrewMember }) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { crew } = props;
 	return (
 		<p>
-			<b>Traits: </b>
+			<b>{t('hints.traits')}: </b>
 			{crew.traits_named
 				.map(trait => (
 					<Link key={trait} to={`/?search=trait:${trait}`}>

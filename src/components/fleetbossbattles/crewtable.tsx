@@ -10,8 +10,8 @@ import { SearchableTable, ITableConfigRow } from '../../components/searchabletab
 
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 
-import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, Solver, Optimizer, TraitRarities, ViableCombo } from '../../model/boss';
+import { GlobalContext } from '../../context/globalcontext';
 import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
 import { TinyShipSkill } from '../item_presenters/shipskill';
 
@@ -23,6 +23,8 @@ type CrewTableProps = {
 };
 
 const CrewTable = (props: CrewTableProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { TRAIT_NAMES } = globalContext.localized;
 	const { solver, optimizer } = props;
 
 	const tableConfig: ITableConfigRow[] = [
@@ -40,7 +42,7 @@ const CrewTable = (props: CrewTableProps) => {
 		const renderTitle = (node) => {
 			const formattedOpen = node.traitsKnown.map((trait, idx) => (
 				<span key={idx}>
-					{idx > 0 ? <><br />+ </> : <></>}{allTraits.trait_names[trait]}
+					{idx > 0 ? <><br />+ </> : <></>}{TRAIT_NAMES[trait]}
 				</span>
 			)).reduce((prev, curr) => <>{prev} {curr}</>, <></>);
 			const hidden = Array(node.hiddenLeft).fill('?').join(' + ');
@@ -185,7 +187,7 @@ const CrewTable = (props: CrewTableProps) => {
 
 		return (
 			<React.Fragment>
-				{nodeMatches.traits.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map((trait, idx) => (
+				{nodeMatches.traits.sort((a, b) => TRAIT_NAMES[a].localeCompare(TRAIT_NAMES[b])).map((trait, idx) => (
 					<Label key={idx} style={colorize(trait)}>
 						<ListedTraits traits={[trait]} traitData={solver.traits} />
 					</Label>

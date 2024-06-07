@@ -8,8 +8,6 @@ import { useStateWithStorage } from '../../utils/storage';
 import { exportCrew, downloadData } from '../../utils/crewutils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 
-const ShareText = "You can post your profile to the DataCore server to utilize personalized features of the discord bot, and let other users see your crew, ships, and items.";
-
 enum ProfileUploadState {
 	Idle,
 	AutoUpdate,
@@ -28,6 +26,7 @@ type PlayerShareNotificationsProps = {
 
 export const PlayerShareNotifications = (props: PlayerShareNotificationsProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { playerData, sessionStates, updateSessionState } = globalContext.player;
 	const uploadState = sessionStates?.profileUpload ?? ProfileUploadState.Idle;
 	const { dbid, activePanel, setActivePanel, dbidHash, setDbidHash } = props;
@@ -52,11 +51,11 @@ export const PlayerShareNotifications = (props: PlayerShareNotificationsProps) =
 			{showShareNag &&
 				<div style={{ margin: '1em 0' }}>
 					<Notification
-						header='Share Your Player Profile'
+						header={t('share_profile.share.nag.title')}
 						content={
 							<p>
-								{activePanel !== 'share' && <>{ShareText} Tap here to learn more.</>}
-								{activePanel === 'share' && <>Follow the instructions below to post your player profile to the DataCore server.</>}
+								{activePanel !== 'share' && <>{t('share_profile.share.nag.nag_panel_not_share')}</>}
+								{activePanel === 'share' && <>{t('share_profile.share.nag.nag_panel_share')}</>}
 							</p>
 						}
 						icon='share alternate'
@@ -83,6 +82,7 @@ type PlayerSharePanelProps = {
 
 export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { playerData, sessionStates, updateSessionState } = globalContext.player;
 	const uploadState = sessionStates?.profileUpload ?? ProfileUploadState.Idle;
 	const { requestDismiss, dbidHash } = props;
@@ -105,16 +105,16 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 						<Icon name='delete' style={{ cursor: 'pointer' }} />
 					</Label>
 					<Card.Header>
-						Post Profile to DataCore
+						{t('share_profile.share.title')}
 					</Card.Header>
 					<div style={{ margin: '1em 0' }}>
-						<p>{ShareText} Once shared, your public profile will be accessible by anyone with this link:</p>
+						<p>{t('share_profile.share.header')}</p>
 						<p style={{ margin: '1.25em 0', textAlign: 'center' }}>
 							<span style={{ fontWeight: 'bold', fontSize: '1.25em', marginRight: '1em' }}>
 								<Link to={!!dbidHash ? `/profile?hash=${dbidHash}` : `/profile?dbid=${dbid}`}>{PROFILE_LINK}</Link>
 							</span>
 							<Popup
-								content='Copied!'
+								content={t('clipboard.copied_exclaim')}
 								on='click'
 								position='right center'
 								size='tiny'
@@ -124,13 +124,11 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 							/>
 						</p>
 						<p>
-							Click the link, above, to access data exports for spreadsheets including Take My Chrons and Do Not Airlock.
+							{t('share_profile.share.instructions.line_1')}
 						</p>
-						<p>Some pages on DataCore, notably fleet pages and event pages, may also link to your public profile.</p>
+						<p>{t('share_profile.share.instructions.line_2')}</p>
 						<p>
-							Information being shared is limited to:
-							{` `}<b>DBID, captain name, level, vip level, fleet name and role, achievements, completed missions, your crew, items and ships</b>.
-							{` `}No private information is included in your public profile.
+							{tfmt('share_profile.share.instructions.line_3', { list: <b>{t('share_profile.share.info_list')}</b>})}
 						</p>
 					</div>
 					{(uploadState !== ProfileUploadState.Success) && (
@@ -141,7 +139,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 							color='blue'
 						>
 							<Icon name='share alternate' />
-							Post Profile
+							{t('share_profile.share.post_profile')}
 						</Button>
 					)}
 					{uploadState === ProfileUploadState.Success && (
@@ -149,7 +147,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 							<Form>
 								<Form.Field
 									control={Checkbox}
-									label='Automatically post profile when importing player data'
+									label={t('share_profile.share.check_auto_share')}
 									checked={profileAutoUpdate}
 									onChange={(e, { checked }) => setProfileAutoUpdate(checked)}
 								/>
@@ -167,17 +165,17 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 
 					<Button
 							onClick={() => exportCrewTool()}
-							content='Export CSV'
+							content={t('share_profile.export.export_csv')}
 							icon='table'
 							size='large'
 						/>
 					<Button
 							onClick={() => exportCrewToClipboard()}
-							content='Copy to Clipboard'
+							content={t('share_profile.export.export_clipboard')}
 							icon='clipboard'
 							size='large'
 						/>
-					{copied && <div>Profile copied to clipboard!</div>}
+					{copied && <div>{t('share_profile.export.exported_clipboard')}</div>}
 					</div>
 				</Card.Content>
 			</Card>
@@ -213,6 +211,7 @@ type PlayerProfileUploaderProps = {
 
 const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { strippedPlayerData, sessionStates, updateSessionState } = globalContext.player;
 	const uploadState = sessionStates?.profileUpload ?? ProfileUploadState.Idle;
 	const { dbid, activePanel, setActivePanel } = props;
@@ -237,10 +236,10 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 		<div style={{ margin: '1em 0' }}>
 			{showSuccess &&
 				<Notification
-					header='Player Profile Shared!'
+					header={t('share_profile.shared.title')}
 					content={
 						<p>
-							Your profile was uploaded successfully! Tap here to view your public profile.
+							{t('share_profile.shared.description')}
 						</p>
 					}
 					icon='share alternate'
@@ -250,13 +249,13 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 			}
 			{showFailure &&
 				<Notification
-					header='Failed to share player profile!'
+					header={t('share_profile.share.error.error_header')}
 					content={
 						<React.Fragment>
-							<p>Your profile failed to upload, with the error: "{errorMessage}"</p>
+							<p>{t('share_profile.share.error.error_title')}</p>
 							<p>
-								{activePanel !== 'share' && <>Tap here to try again.</>}
-								{activePanel === 'share' && <>Follow the instructions below to try again.</>}
+								{activePanel !== 'share' && <>{t('share_profile.share.error.error_panel_not_share')}</>}
+								{activePanel === 'share' && <>{t('share_profile.share.error.error_panel_share')}</>}
 							</p>
 						</React.Fragment>
 					}

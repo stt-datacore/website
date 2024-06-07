@@ -1,9 +1,8 @@
 import React from 'react';
-import { Link } from 'gatsby';
 import { Table, Form, Dropdown, Pagination, Message } from 'semantic-ui-react';
 
-import allTraits from '../../../static/structured/translation_en.json';
 import { ITrackedVoyage, ITrackedCheckpoint } from '../../model/voyage';
+import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';
 import { formatTime } from '../../utils/voyageutils';
 
@@ -16,6 +15,8 @@ type VoyagesTableProps = {
 };
 
 export const VoyagesTable = (props: VoyagesTableProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { SHIP_TRAIT_NAMES } = globalContext.localized;
 	const { history, setHistory } = React.useContext(HistoryContext);
 	const { activeVoyageId } = props;
 
@@ -173,7 +174,7 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 					{CONFIG.SKILLS[row.skills.secondary_skill]}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					{allTraits.ship_trait_names[row.ship_trait]}
+					{SHIP_TRAIT_NAMES[row.ship_trait] ?? row.ship_trait}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					{row.max_hp}
@@ -266,8 +267,8 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 		};
 		const compareDateDesc = (a: ITrackedVoyage, b: ITrackedVoyage) => b.created_at - a.created_at;
 		const compareShipTrait = (a: ITrackedVoyage, b: ITrackedVoyage) => {
-			const aShipTrait = allTraits.ship_trait_names[a.ship_trait];
-			const bShipTrait = allTraits.ship_trait_names[b.ship_trait];
+			const aShipTrait = SHIP_TRAIT_NAMES[a.ship_trait] ?? a.ship_trait;
+			const bShipTrait = SHIP_TRAIT_NAMES[b.ship_trait] ?? b.ship_trait;
 			if (direction === 'descending') return bShipTrait.localeCompare(aShipTrait);
 			return aShipTrait.localeCompare(bShipTrait);
 		};

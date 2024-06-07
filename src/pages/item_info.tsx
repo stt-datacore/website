@@ -284,6 +284,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		const ltMarginSmall = window?.innerWidth && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "0px" : "0.375em";
 		const ltMargin = window?.innerWidth && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "0px" : "0.75em";
 		const ltMarginBig = window?.innerWidth && window.innerWidth < DEFAULT_MOBILE_WIDTH ? "0px" : "1em";
+		const traits = this.context.localized.TRAIT_NAMES;
 
 		return (
 			<div>
@@ -371,7 +372,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 							>
 								<div><b>Required Traits:</b>&nbsp;
 									<i>
-										{printRequiredTraits(item_data.item)}
+										{printRequiredTraits(item_data.item, traits)}
 									</i></div>
 							</div>}
 					</div>
