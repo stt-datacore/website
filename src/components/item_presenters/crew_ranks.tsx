@@ -276,7 +276,7 @@ export const CrewRanks = (props: CrewRanksProps) => {
 				c.ranks.voyTriplet.name == crew.ranks.voyTriplet?.name &&
 				crew.ranks.voyTriplet.rank > c.ranks.voyTriplet.rank).length + 1
 
-			return t('cool_stats.rank_skill_roster', { rank: `${rank}`, skill: translateSkills(crew.ranks.voyTriplet!.name) } );
+			return t('cool_stats.rank_skill_roster', { rank: `${rank}`, skill: translateSkills(crew.ranks.voyTriplet!.name, " / ") } );
 		} else if (skillCount == 2) {
 			let [voyRankName, voyRank] = rankHandler('V');
 			let [gauntRankName, gauntRank] = rankHandler('G');
