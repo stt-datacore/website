@@ -399,8 +399,8 @@
         "previous_gauntlets": "Vorherige Herausforderungen",
         "browse_gauntlets": "Herausforderungen durchlesen",
         "skills_and_pairs": "Fähigkeiten & Paare",
-        "owned_status_title": "Besitzerstatus",
-        "show_buffs_title": "Buffs anzeigen",
+        "owned_status_heading": "Besitzerstatus",
+        "show_buffs_heading": "Buffs anzeigen",
         "owned_status": {
             "any": "Alle Crew",
             "maxall": "Alle Crew auf maximal",

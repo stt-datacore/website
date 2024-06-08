@@ -410,8 +410,8 @@
         "previous_gauntlets": "Gantelets précédents",
         "browse_gauntlets": "Parcourez les gantelets",
         "skills_and_pairs": "Compétences et paires",
-        "owned_status_title": "Statut de propriétaire",
-        "show_buffs_title": "Afficher les effets",
+        "owned_status_heading": "Statut de propriétaire",
+        "show_buffs_heading": "Afficher les effets",
         "owned_status": {
             "any": "Tout l'équipage",
             "maxall": "Tout l'équipage est au maximum",
