@@ -113,7 +113,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
         
         let keys = [ "attack", "accuracy", "evasion", "shields", "hull", "antimatter"]
         let icons = [ "attack-color.png", "accuracy-color.png", "evasion-color.png", "shield-color.png", "hull-color.png", "antimatter-icon.png"]
-        let names = [ t('data_names.ship.attack'), t('data_names.ship.accuracy'), t('data_names.ship.evasion'), t('data_names.ship.shields'), t('data_names.ship.hull'), t('data_names.ship.antimatter')]
+        let names = [ t('ship.attack'), t('ship.accuracy'), t('ship.evasion'), t('ship.shields'), t('ship.hull'), t('ship.antimatter')]
         
         let stats1: { name: string, value: number, icon: string }[]=[];
         let stats2: { name: string, value: number, icon: string }[]=[];
@@ -196,7 +196,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                             </a>
                         </h3>
                         <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>
-                            <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in ship ? printImmoText(ship.immortal ?? CompletionState.DisplayAsImmortalStatic, t('data_names.ship.ship'), t('data_names.ship.max_level'), t) : t('immo_text.item_is_shown', { item: 'data_names.base.crew', level: 'crew_state.immortalized'})}>
+                            <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in ship ? printImmoText(ship.immortal ?? CompletionState.DisplayAsImmortalStatic, t('ship.ship'), t('ship.max_level'), t) : t('immo_text.item_is_shown', { item: 'base.crew', level: 'crew_state.immortalized'})}>
                                 {
                                     "immortal" in ship && (
                                         ((ship.immortal === 0)) ? 

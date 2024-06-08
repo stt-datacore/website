@@ -226,13 +226,13 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                     </div>
                                 )}
                                 <li style={{ color: "white" }}>
-                                    <b>{t('data_names.ship.initialize')}</b>: {action.initial_cooldown}s,{" "}
-                                    <b>{t('data_names.ship.cooldown')}</b>: {action.cooldown}s,{" "}
-                                    <b>{t('data_names.ship.duration')}</b>: {action.duration}s
+                                    <b>{t('ship.initialize')}</b>: {action.initial_cooldown}s,{" "}
+                                    <b>{t('ship.cooldown')}</b>: {action.cooldown}s,{" "}
+                                    <b>{t('ship.duration')}</b>: {action.duration}s
                                 </li>
                                 {action.limit && (
                                     <li style={{ color: "white" }}>
-                                        <b>{t('data_names.ship.uses_per_battle')}</b>: {action.limit}{" "}
+                                        <b>{t('ship.uses_per_battle')}</b>: {action.limit}{" "}
                                         {drawBullets(action.limit)}
                                     </li>
                                 )}
@@ -262,7 +262,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                         }}
                                     >
                                         <div style={{ marginTop: "0px" }}>
-                                            {t('data_names.ship.bonus_ability')}
+                                            {t('ship.bonus_ability')}
                                         </div>
                                         {action.ability.condition > 0 && (
                                             <div style={{
@@ -271,7 +271,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                                 justifyContent: "flex-end",
                                                 alignItems: "center"
                                             }}>
-                                                <b>{t('data_names.ship.trigger')}</b>:{" "}
+                                                <b>{t('ship.trigger')}</b>:{" "}
                                                 <img style={{margin: "0.25em", height: "1em"}}  src={getTriggerIcon(action.ability.condition)} />
                                                 {
                                                     CONFIG.CREW_SHIP_BATTLE_TRIGGER[
@@ -316,7 +316,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                             {action.charge_phases && action.charge_phases.length && (
                                 <div>
                                     <div style={{ marginBottom: ".25em" }}>
-                                        {t('data_names.ship.charge_phases')}
+                                        {t('ship.charge_phases')}
                                     </div>
                                     <ol
                                         style={{
@@ -362,32 +362,32 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                     }
                     
                 <div>
-                    <div style={{ marginBottom: ".25em", marginTop: "0.25em" }}>{!isShip && t('data_names.ship.equipment_bonus')}</div>
+                    <div style={{ marginBottom: ".25em", marginTop: "0.25em" }}>{!isShip && t('ship.equipment_bonus')}</div>
                     <p>
                         {!!ship_battle.crit_bonus && (
                             <span>
-                                <b>{t('data_names.ship.crit_bonus')}:</b> +
+                                <b>{t('ship.crit_bonus')}:</b> +
                                 {ship_battle.crit_bonus}
                                 {` `}
                             </span>
                         )}
                         {!!ship_battle.crit_chance && (
                             <span>
-                                <b>{t('data_names.ship.crit_rating')}:</b> +
+                                <b>{t('ship.crit_rating')}:</b> +
                                 {ship_battle.crit_chance}
                                 {` `}
                             </span>
                         )}
                         {!isShip && !!ship_battle.accuracy &&
                             <span>
-                            <b>{t('data_names.ship.accuracy')}:</b> +
+                            <b>{t('ship.accuracy')}:</b> +
                             {ship_battle.accuracy}
                             {` `}
                             </span>
                         }
                         {!isShip && !!ship_battle.evasion &&
                             <span>
-                            <b>{t('data_names.ship.evasion')}:</b> +
+                            <b>{t('ship.evasion')}:</b> +
                             {ship_battle.evasion}
                             {` `}
                             </span>

@@ -126,7 +126,7 @@ const Collections = (props: { crew: CrewMember }) => {
 	if (crew.collections.length === 0) return (<></>);
 	return (
 		<p>
-			<b>{t('data_names.base.collections')}: </b>
+			<b>{t('base.collections')}: </b>
 			{crew.collections
 				.map(col => (
 					<Link key={col} to={`/collections?select=${encodeURIComponent(col)}`}>
@@ -168,7 +168,7 @@ const CrossFuses = (props: { crew: CrewMember }) => {
 	if (crew.cross_fuse_targets && "symbol" in crew.cross_fuse_targets && crew.cross_fuse_targets.symbol) {
 		return (
 			<p>
-				{tfmt('data_names.crew_page.can_cross_fuse_with', {
+				{tfmt('crew_page.can_cross_fuse_with', {
 					crew: <Link to={`/crew/${crew.cross_fuse_targets.symbol}/`}>{crew.cross_fuse_targets.name}</Link>
 				})}
 			</p>
@@ -183,7 +183,7 @@ const DateAdded = (props: { crew: CrewMember }) => {
 	const { t } = globalContext.localized;
 	return (
 		<p>
-			<b>{t('data_names.base.release_date')}: </b>{new Date(crew.date_added).toLocaleDateString()} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
+			<b>{t('base.release_date')}: </b>{new Date(crew.date_added).toLocaleDateString()} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
 		</p>
 	);
 };
@@ -205,8 +205,8 @@ export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 				onClick={() => setShowPane(!showPane)}
 			>
 				<Icon name={showPane ? 'caret down' : 'caret right' as SemanticICONS} />
-				{!showPane && <>{t('data_names.crew_page.all_fuses_ellipses')}</>}
-				{showPane && <>{t('data_names.crew_page.all_fuse_skill_fffe_colon')}</>}
+				{!showPane && <>{t('crew_page.all_fuses_ellipses')}</>}
+				{showPane && <>{t('crew_page.all_fuse_skill_fffe_colon')}</>}
 			</Accordion.Title>
 			<Accordion.Content active={showPane}>
 				{showPane && (
@@ -291,10 +291,10 @@ const Nicknames = (props: { crew: CrewMember }) => {
 	if (!crew.nicknames || crew.nicknames.length === 0) return (<></>);
 	return (
 		<p>
-			<b>{t("data_names.crew_page.aka_colon")} </b>
+			<b>{t("crew_page.aka_colon")} </b>
 			{crew.nicknames
 				.map((nick, idx) => (
-				<span key={idx}>{nick.cleverThing}{nick.creator ? <> ({tfmt('data_names.crew_page.coined_by', { name: <i>{nick.creator}</i>})})</> : ''}</span>
+				<span key={idx}>{nick.cleverThing}{nick.creator ? <> ({tfmt('crew_page.coined_by', { name: <i>{nick.creator}</i>})})</> : ''}</span>
 			))
 			.reduce((prev, curr) => <>{prev}, {curr}</>)}
 		</p>
@@ -369,7 +369,7 @@ export const Skills = (props: SkillsProps) => {
 				{buffConfig &&
 					<div style={{display:'flex', flexDirection: 'row', alignItems: 'center'}}>
 						<Icon name='arrow alternate circle up' size='small' style={{ color: 'lightgreen' }} />
-						{!compact && <>{t('data_names.crew_page.player_buffs_applied')}</>}
+						{!compact && <>{t('crew_page.player_buffs_applied')}</>}
 					</div>
 				}
 			</div>
@@ -378,7 +378,7 @@ export const Skills = (props: SkillsProps) => {
 			</div> ||
 			<div className='ui segment'>				
 				{!!owned?.immortal && <>
-					{owned.immortal > 0 ? <><Icon name='snowflake' /> {owned.immortal} {t('crew_states.frozen', { __gender: crewGender(crew) })}</> : <><Icon name='check' color='green' /> {t('crew_states.immortalized', { __gender: crewGender(crew) })}</>}</> ||  <>{t('data_names.base.level')} {owned?.level}				</>}
+					{owned.immortal > 0 ? <><Icon name='snowflake' /> {owned.immortal} {t('crew_states.frozen', { __gender: crewGender(crew) })}</> : <><Icon name='check' color='green' /> {t('crew_states.immortalized', { __gender: crewGender(crew) })}</>}</> ||  <>{t('base.level')} {owned?.level}				</>}
 				<CrewItemsView crew={owned as PlayerCrew} />
 			</div>}
 		</Segment>

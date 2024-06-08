@@ -115,7 +115,7 @@ export function descriptionLabel(crew: IRosterCrew,  showOwned?: boolean): JSX.E
 	const { t } = React.useContext(GlobalContext).localized;
 
 	const counts = [
-		{ name: crew.collections.length > 1 ? t('data_names.base.collections_fmt', { count: crew.collections.length.toString() }) : t('data_names.base.collection_fmt'), count: crew.collections.length }
+		{ name: crew.collections.length > 1 ? t('base.collections_fmt', { count: crew.collections.length.toString() }) : t('base.collection_fmt'), count: crew.collections.length }
 	];
 	const formattedCounts = counts.map((count, idx) => (
 		<span key={idx} style={{ whiteSpace: 'nowrap' }}>
@@ -147,7 +147,7 @@ export function descriptionLabel(crew: IRosterCrew,  showOwned?: boolean): JSX.E
 			}
 			{crew.immortal === CompletionState.NotComplete &&
 				<React.Fragment>
-					<span>{t('data_names.base.level')} {crew.level}, </span>
+					<span>{t('base.level')} {crew.level}, </span>
 				</React.Fragment>
 			}
 			{!crew.any_immortal && (crew.immortal === CompletionState.NotComplete || crew.immortal === CompletionState.DisplayAsImmortalStatic) &&
@@ -169,8 +169,8 @@ type CrewPortalFilterProps = {
 export const PortalFilter = (props: CrewPortalFilterProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const portalFilterOptions = [
-		{ key: 'true', value: true, text: t('data_names.base.in_portal')},
-		{ key: 'false', value: false, text: t('data_names.base.not_in_portal')},
+		{ key: 'true', value: true, text: t('base.in_portal')},
+		{ key: 'false', value: false, text: t('base.not_in_portal')},
 	];
 
 	return (

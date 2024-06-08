@@ -2,7 +2,7 @@
     "clipboard": {
         "copied_exclaim": "Kopiert!"
     },
-    "global": { 
+    "global": {
         "yes": "Ja",
         "no": "Nein",
         "never": "Niemals",
@@ -184,11 +184,11 @@
         "crew_stats": "Crew-Statistiken",
         "ships": "Schiffe",
         "crew_view_modes": {
-            "owned_crew": { 
+            "owned_crew": {
                 "name": "Eigene Crew",
                 "description": "Nur Ihr eigenes Crew anzeigen"
             },
-            "buyback_well": { 
+            "buyback_well": {
                 "name": "Rückkaufpool",
                 "description": "Crew im Rückkaufpool anzeigen"
             },
@@ -196,7 +196,7 @@
                 "name": "Aktuelle Angebote",
                 "description": "Crew in aktuellen Angeboten anzeigen"
             },
-            "game_roster": { 
+            "game_roster": {
                 "name": "Spieleliste",
                 "description": "Zusammenfassung der gesamten Spielcrew"
             }
@@ -272,8 +272,8 @@
         "voyage": "Reiseränge anzeigen",
         "quipment": "Rüstzeug anzeigen",
         "max_quipment": "Maximale Rüstzeug anzeigen",
-        "crew_utility": "Das Crew-Dienstprogramm"      
-    },    
+        "crew_utility": "Das Crew-Dienstprogramm"
+    },
     "rank_names": {
         "bigbook_tier": "Big Book Stufe",
         "cab_grade": "CAB-Klasse",
@@ -281,7 +281,7 @@
         "gauntlet_rank": "Herausforderungsrang",
         "cab_rank": "CAB-Rang",
         "cab_rating": "CAB-Bewertung",
-        "quipment_score": "Rüstzeug Werte"        
+        "quipment_score": "Rüstzeug Werte"
     },
     "cool_stats": {
         "ranks_on_your_roster": "Ränge auf Ihrer Dienstplan",
@@ -297,90 +297,88 @@
         "voyage_gauntlet_pair_roster": "#{{rank}} {{skill}} Reise-/Herausforderungpaar in Ihrem Dienstplan",
         "base_roster": "#{{rank}} {{skill}} Grundlage in Ihrem Dienstplan"
     },
-    "data_names": {
-        "crew_page": {
-            "can_cross_fuse_with": "Kann mit {{crew}} kreuzfusionieren",
-            "all_fuses_ellipses": "Alle Sicherungen...",
-            "all_fuse_skill_fffe_colon": "Fertigkeiten bei allen Sicherungen bei vollem Level und voller Ausrüstung:",
-            "aka_colon": "Auch bekannt als:",
-            "coined_by": "geprägt von {{name}}",
-            "player_buffs_applied": "Spieler-Buffs angewendet",
-            "no_buffs_applied": "Keine Buffs angewendet",
-            "max_buffs_applied": "Maximal Buffs angewendete"
+    "crew_page": {
+        "can_cross_fuse_with": "Kann mit {{crew}} kreuzfusionieren",
+        "all_fuses_ellipses": "Alle Sicherungen...",
+        "all_fuse_skill_fffe_colon": "Fertigkeiten bei allen Sicherungen bei vollem Level und voller Ausrüstung:",
+        "aka_colon": "Auch bekannt als:",
+        "coined_by": "geprägt von {{name}}",
+        "player_buffs_applied": "Spieler-Buffs angewendet",
+        "no_buffs_applied": "Keine Buffs angewendet",
+        "max_buffs_applied": "Maximal Buffs angewendete"
+    },
+    "base": {
+        "crew": "Crew",
+        "rarity": "Seltenheit",
+        "bigbook_tier": "Stufe",
+        "cab_power": "CAB",
+        "voyage": "Reise",
+        "voyages": "Reisen",
+        "gauntlet": "Herausforderung",
+        "all_crew": "Die gesamte Crew anzeigen",
+        "in_portal": "Im Zeitportal",
+        "not_in_portal": "Nicht im Zeitportal",
+        "not_yet_in_portal": "Noch nicht im Zeitportal",
+        "never_in_portal": "Nie im Zeitportal",
+        "uniquely_retrievable": "Eindeutig abrufbar",
+        "not_uniquely_retrievable": "Nicht eindeutig abrufbar",
+        "less_than_100_retrieval": "< 100 % Abrufbar",
+        "qp": "RL",
+        "release_date": "Debüt",
+        "offer_cost": "Angebotskosten",
+        "offers": "Angebot(e)",
+        "level": "Level",
+        "collection": "Sammlung",
+        "collections": "Sammlungen",
+        "collection_fmt": "1 Sammlung",
+        "collections_fmt": "{{count}} Sammlungen"
+    },
+    "ship": {
+        "ship": "Schiff",
+        "attack": "Angriffs",
+        "boosts": "Leistungssteigerung",
+        "amount": "Menge",
+        "handicap": "Handicap",
+        "initialize": "Initialisierungszeit",
+        "cycle_time": "Zykluszeit",
+        "cooldown": "Abklingzeit",
+        "duration": "Dauer",
+        "uses": "Aktivierungen",
+        "uses_per_battle": "Aktivierungen pro Gefecht",
+        "unlimited": "Unbegrenzt",
+        "bonus_ability": "Bonusfähigkeit",
+        "trigger": "Auslöser",
+        "equipment_bonus": "Ausrüstungsbonus",
+        "accuracy": "Genauigkeit",
+        "charge_phases": "Ladephasen",
+        "crit_bonus": "Krit Bonus",
+        "crit_rating": "Krit Treffer",
+        "evasion": "Ausweichen",
+        "charge_phase": {
+            "after_seconds": "Nach {{seconds}}s ",
+            "bonus": "+{{amount}} zu {{ability}}",
+            "cooldown": "{{time}}s Abklingzeit",
+            "duration": "{{time}}s Dauer"
         },
-        "base": {
-            "crew": "Crew",
-            "rarity": "Seltenheit",
-            "bigbook_tier": "Stufe",
-            "cab_power": "CAB",
-            "voyage": "Reise",
-            "voyages": "Reisen",
-            "gauntlet": "Herausforderung",
-            "all_crew": "Die gesamte Crew anzeigen",
-            "in_portal": "Im Zeitportal",
-            "not_in_portal": "Nicht im Zeitportal",
-            "not_yet_in_portal": "Noch nicht im Zeitportal",
-            "never_in_portal": "Nie im Zeitportal",
-            "uniquely_retrievable": "Eindeutig abrufbar",
-            "not_uniquely_retrievable": "Nicht eindeutig abrufbar",            
-            "less_than_100_retrieval": "< 100 % Abrufbar",
-            "qp": "RL",
-            "release_date": "Debüt",
-            "offer_cost": "Angebotskosten",
-            "offers": "Angebot(e)",
-            "level": "Level",
-            "collection": "Sammlung",
-            "collections": "Sammlungen",
-            "collection_fmt": "1 Sammlung",
-            "collections_fmt": "{{count}} Sammlungen"
-        },
-        "ship": {
-            "ship": "Schiff",
-            "attack": "Angriffs",
-            "boosts": "Leistungssteigerung",
-            "amount": "Menge",
-            "handicap": "Handicap",
-            "initialize": "Initialisierungszeit",
-            "cycle_time": "Zykluszeit",
-            "cooldown": "Abklingzeit",
-            "duration": "Dauer",
-            "uses": "Aktivierungen",
-            "uses_per_battle": "Aktivierungen pro Gefecht",
-            "unlimited": "Unbegrenzt",
-            "bonus_ability": "Bonusfähigkeit",
-            "trigger": "Auslöser",
-            "equipment_bonus": "Ausrüstungsbonus",
-            "accuracy": "Genauigkeit",
-            "charge_phases": "Ladephasen",
-            "crit_bonus": "Krit Bonus",
-            "crit_rating": "Krit Treffer",
-            "evasion": "Ausweichen",
-            "charge_phase": {
-                "after_seconds": "Nach {{seconds}}s ",
-                "bonus": "+{{amount}} zu {{ability}}",
-                "cooldown": "{{time}}s Abklingzeit",
-                "duration": "{{time}}s Dauer"
-            },
-            "hull": "Hülle",
-            "shields": "Schilde",
-            "antimatter": "Antimaterie",
-            "attack_speed": "Angriffsgeschwindigkeit",
-            "max_level": "Höchstlevel",
-            "grants": "Verleihungen",
-            "triggers": "Auslöseren",
-            "battle_stations": "Kampfstationen",
-            "clear_station": "Station räumen"
-        },
-        "quipment_ranks": {
-            "overall": "Gesamtpunktzahl",
-            "specialty": "Spezialwertung",        
-            "first_pair": "Erstes Paar",
-            "second_pair": "Zweites Paar",
-            "third_pair": "Drittes Paar",
-            "primary": "Primär",
-            "secondary": "Sekundär",
-            "tertiary": "Tertiär"        
-        }
+        "hull": "Hülle",
+        "shields": "Schilde",
+        "antimatter": "Antimaterie",
+        "attack_speed": "Angriffsgeschwindigkeit",
+        "max_level": "Höchstlevel",
+        "grants": "Verleihungen",
+        "triggers": "Auslöseren",
+        "battle_stations": "Kampfstationen",
+        "clear_station": "Station räumen"
+    },
+    "quipment_ranks": {
+        "overall": "Gesamtpunktzahl",
+        "specialty": "Spezialwertung",
+        "first_pair": "Erstes Paar",
+        "second_pair": "Zweites Paar",
+        "third_pair": "Drittes Paar",
+        "primary": "Primär",
+        "secondary": "Sekundär",
+        "tertiary": "Tertiär"
     },
     "ship_action": {
         "boost_by": "Erhöht {{type}} um {{amount}}",

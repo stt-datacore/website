@@ -17,16 +17,16 @@ import { TranslateMethod } from '../../../model/player';
 export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) => {
 	const tableConfig = [] as ITableConfigRow[];
 	tableConfig.push(
-		{ width: 1, column: 'bigbook_tier', title: t('data_names.base.bigbook_tier') },
-		{ width: 1, column: 'cab_ov', title: <span>{t('data_names.base.cab_power')} <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
+		{ width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier') },
+		{ width: 1, column: 'cab_ov', title: <span>{t('base.cab_power')} <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
 		
 	);
 	if (tableType !== 'offers') {
-		tableConfig.push({ width: 1, column: 'ranks.voyRank', title: <span>{t('data_names.base.voyage')} <VoyageExplanation /></span> })
+		tableConfig.push({ width: 1, column: 'ranks.voyRank', title: <span>{t('base.voyage')} <VoyageExplanation /></span> })
 	}
 	else {
-		tableConfig.push({ width: 1, column: 'cost_text', title: t('data_names.base.offer_cost') })
-		tableConfig.push({ width: 1, column: 'offer', title: t('data_names.base.offers') })
+		tableConfig.push({ width: 1, column: 'cost_text', title: t('base.offer_cost') })
+		tableConfig.push({ width: 1, column: 'offer', title: t('base.offers') })
 	}
 
 	CONFIG.SKILLS_SHORT.forEach((skill) => {
@@ -42,7 +42,7 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 			{ 
 				width: 1, 
 				column: 'in_portal', 
-				title: t('data_names.base.in_portal'),
+				title: t('base.in_portal'),
 				customCompare: (a: PlayerCrew | CrewMember, b: PlayerCrew | CrewMember) => {				
 					return printPortalStatus(a, t, true, true, false, true).localeCompare(printPortalStatus(b, t, true, true, false, true));
 				}
@@ -51,13 +51,13 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 	}
 	if (['allCrew', 'offers', 'buyBack'].includes(tableType)) {
 		tableConfig.push(
-			{ width: 1, column: 'date_added', title: t('data_names.base.release_date'), reverse: true },
+			{ width: 1, column: 'date_added', title: t('base.release_date'), reverse: true },
 		);
 	
 	}
 	else {
 		tableConfig.push(
-			{ width: 1, column: 'q_bits', title: t('data_names.base.qp'), reverse: true },
+			{ width: 1, column: 'q_bits', title: t('base.qp'), reverse: true },
 		);
 	}
 	return tableConfig;

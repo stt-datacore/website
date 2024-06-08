@@ -102,7 +102,7 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 						<StatLabel 
 							title={<>
 								<div style={{ width:"100%", textAlign:"center",display:'flex', flexDirection: 'column', justifyContent: 'center', color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
-									{t('data_names.base.uniquely_retrievable')}
+									{t('base.uniquely_retrievable')}
 								</div>
 							</>}
 						value="" />

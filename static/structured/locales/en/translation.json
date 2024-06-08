@@ -2,7 +2,7 @@
     "clipboard": {
         "copied_exclaim": "Copied!"
     },
-    "global": { 
+    "global": {
         "yes": "Yes",
         "no": "No",
         "never": "Never",
@@ -53,7 +53,6 @@
             "toggle_glance": "Toggle At-A-Glance Panel",
             "toggle_coloring": "Toggle grade coloring",
             "clear_data": "Clear Player Data"
-
         },
         "roster_title": "Roster",
         "roster": {
@@ -143,7 +142,7 @@
         }
     },
     "json_types": {
-        "player_data": "player data", 
+        "player_data": "player data",
         "gauntlet_data": "gauntlet data",
         "quest_data": "quest data"
     },
@@ -174,7 +173,7 @@
                 "error_panel_share": "Follow the instructions below to try again.",
                 "error_panel_not_share": "Tap here to try again."
             },
-            "post_profile": "Post Profile"            
+            "post_profile": "Post Profile"
         },
         "export": {
             "export_csv": "Export CSV",
@@ -186,11 +185,11 @@
         "crew_stats": "Crew Stats",
         "ships": "Ships",
         "crew_view_modes": {
-            "owned_crew": { 
+            "owned_crew": {
                 "name": "Owned Crew",
                 "description": "View only your owned crew"
             },
-            "buyback_well": { 
+            "buyback_well": {
                 "name": "Buy-Back Well",
                 "description": "View crew in the buy-back well"
             },
@@ -198,7 +197,7 @@
                 "name": "Current Offers",
                 "description": "Show crew in current offers"
             },
-            "game_roster": { 
+            "game_roster": {
                 "name": "Game Roster",
                 "description": "Overview of all crew in the game"
             }
@@ -266,7 +265,7 @@
             "whole_word": "Whole word only",
             "exact": "Exact match only"
         }
-    },    
+    },
     "crew_views": {
         "base": "Show base skills",
         "ship": "Show ship abilities",
@@ -274,7 +273,7 @@
         "voyage": "Show voyage ranks",
         "quipment": "Show quipment scores",
         "max_quipment": "Show max quipment",
-        "crew_utility": "Show crew utility"      
+        "crew_utility": "Show crew utility"
     },
     "rank_names": {
         "bigbook_tier": "Big Book Tier",
@@ -283,7 +282,7 @@
         "gauntlet_rank": "Gauntlet Rank",
         "cab_rank": "CAB Rank",
         "cab_rating": "CAB Rating",
-        "quipment_score": "Quipment Score"        
+        "quipment_score": "Quipment Score"
     },
     "cool_stats": {
         "ranks_on_your_roster": "Ranks on your roster",
@@ -299,90 +298,88 @@
         "voyage_gauntlet_pair_roster": "#{{rank}} {{skill}} voyage/gauntlet pair in your roster",
         "base_roster": "#{{rank}} {{skill}} base in your roster"
     },
-    "data_names": {
-        "crew_page": {
-            "can_cross_fuse_with": "Can cross-fuse with {{crew}}",
-            "all_fuses_ellipses": "All fuses...",
-            "all_fuse_skill_fffe_colon": "Skills at all fuses when fully leveled and fully equipped:",
-            "aka_colon": "Also known as:",
-            "coined_by": "coined by {{name}}",
-            "player_buffs_applied": "Player buffs applied",
-            "no_buffs_applied": "No buffs applied",
-            "max_buffs_applied": "Max buffs applied"
+    "crew_page": {
+        "can_cross_fuse_with": "Can cross-fuse with {{crew}}",
+        "all_fuses_ellipses": "All fuses...",
+        "all_fuse_skill_fffe_colon": "Skills at all fuses when fully leveled and fully equipped:",
+        "aka_colon": "Also known as:",
+        "coined_by": "coined by {{name}}",
+        "player_buffs_applied": "Player buffs applied",
+        "no_buffs_applied": "No buffs applied",
+        "max_buffs_applied": "Max buffs applied"
+    },
+    "base": {
+        "crew": "Crew",
+        "rarity": "Rarity",
+        "bigbook_tier": "Tier",
+        "cab_power": "CAB",
+        "voyage": "Voyage",
+        "voyages": "Voyages",
+        "gauntlet": "Gauntlet",
+        "all_crew": "Show all crew",
+        "in_portal": "In Portal",
+        "not_in_portal": "Not In Portal",
+        "not_yet_in_portal": "Not yet in portal",
+        "never_in_portal": "Never In Portal",
+        "uniquely_retrievable": "Uniquely Retrievable",
+        "not_uniquely_retrievable": "Not Uniquely Retrievable",
+        "less_than_100_retrieval": "< 100% Retrieval",
+        "qp": "QP",
+        "release_date": "Release Date",
+        "offer_cost": "Offer Cost",
+        "offers": "Offer(s)",
+        "level": "Level",
+        "collection": "Collection",
+        "collections": "Collections",
+        "collection_fmt": "1 collection",
+        "collections_fmt": "{{count}} collections"
+    },
+    "ship": {
+        "ship": "Ship",
+        "attack": "Attack",
+        "boosts": "Boosts",
+        "amount": "Amount",
+        "handicap": "Handicap",
+        "initialize": "Initialize",
+        "cycle_time": "Cycle Time",
+        "cooldown": "Cooldown",
+        "duration": "Duration",
+        "uses": "Uses",
+        "uses_per_battle": "Uses per battle",
+        "unlimited": "Unlimited",
+        "bonus_ability": "Bonus Ability",
+        "trigger": "Trigger",
+        "equipment_bonus": "Equipment Bonus",
+        "accuracy": "Accuracy",
+        "charge_phases": "Charge Phases",
+        "crit_bonus": "Crit Bonus",
+        "crit_rating": "Crit Rating",
+        "evasion": "Evasion",
+        "charge_phase": {
+            "after_seconds": "After {{seconds}}s ",
+            "bonus": "+{{amount}} to {{ability}}",
+            "cooldown": "{{time}}s cooldown",
+            "duration": "{{time}}s duration"
         },
-        "base": {
-            "crew": "Crew",
-            "rarity": "Rarity",
-            "bigbook_tier": "Tier",
-            "cab_power": "CAB",
-            "voyage": "Voyage",
-            "voyages": "Voyages",
-            "gauntlet": "Gauntlet",
-            "all_crew": "Show all crew",
-            "in_portal": "In Portal",
-            "not_in_portal": "Not In Portal",
-            "not_yet_in_portal": "Not yet in portal",
-            "never_in_portal": "Never In Portal",
-            "uniquely_retrievable": "Uniquely Retrievable",
-            "not_uniquely_retrievable": "Not Uniquely Retrievable",
-            "less_than_100_retrieval": "< 100% Retrieval",
-            "qp": "QP",
-            "release_date": "Release Date",
-            "offer_cost": "Offer Cost",
-            "offers": "Offer(s)",
-            "level": "Level",
-            "collection": "Collection",
-            "collections": "Collections",
-            "collection_fmt": "1 collection",
-            "collections_fmt": "{{count}} collections"
-        },
-        "ship": {
-            "ship": "Ship",
-            "attack": "Attack",
-            "boosts": "Boosts",
-            "amount": "Amount",
-            "handicap": "Handicap",
-            "initialize": "Initialize",
-            "cycle_time": "Cycle Time",
-            "cooldown": "Cooldown",
-            "duration": "Duration",
-            "uses": "Uses",
-            "uses_per_battle": "Uses per battle",
-            "unlimited": "Unlimited",
-            "bonus_ability": "Bonus Ability",
-            "trigger": "Trigger",
-            "equipment_bonus": "Equipment Bonus",
-            "accuracy": "Accuracy",
-            "charge_phases": "Charge Phases",
-            "crit_bonus": "Crit Bonus",
-            "crit_rating": "Crit Rating",
-            "evasion": "Evasion",
-            "charge_phase": {
-                "after_seconds": "After {{seconds}}s ",
-                "bonus": "+{{amount}} to {{ability}}",
-                "cooldown": "{{time}}s cooldown",
-                "duration": "{{time}}s duration"
-            },    
-            "hull": "Hull",
-            "shields": "Shields",
-            "antimatter": "Antimatter",
-            "attack_speed": "Attack Speed",
-            "max_level": "Max Level",
-            "grants": "Grants",
-            "triggers": "Triggers",
-            "battle_stations": "Battle Stations",
-            "clear_station": "Clear Station"
-        },
-        "quipment_ranks": {
-            "overall": "Overall",
-            "specialty": "Specialty",
-            "first_pair": "First Pair",
-            "second_pair": "Second Pair",
-            "third_pair": "Third Pair",
-            "primary": "Primary",
-            "secondary": "Secondary",
-            "tertiary": "Tertiary"
-        }
+        "hull": "Hull",
+        "shields": "Shields",
+        "antimatter": "Antimatter",
+        "attack_speed": "Attack Speed",
+        "max_level": "Max Level",
+        "grants": "Grants",
+        "triggers": "Triggers",
+        "battle_stations": "Battle Stations",
+        "clear_station": "Clear Station"
+    },
+    "quipment_ranks": {
+        "overall": "Overall",
+        "specialty": "Specialty",
+        "first_pair": "First Pair",
+        "second_pair": "Second Pair",
+        "third_pair": "Third Pair",
+        "primary": "Primary",
+        "secondary": "Secondary",
+        "tertiary": "Tertiary"
     },
     "ship_action": {
         "boost_by": "Boosts {{type}} by {{amount}}",
@@ -403,7 +400,7 @@
         "skills_and_pairs": "Skills & Pairs",
         "owned_status_heading": "Owned Status",
         "show_buffs_heading": "Show Buffs",
-        "owned_status": {            
+        "owned_status": {
             "any": "All Crew",
             "maxall": "All Crew as Maxed",
             "owned": "Owned Crew",

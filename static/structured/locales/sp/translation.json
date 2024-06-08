@@ -2,7 +2,7 @@
     "clipboard": {
         "copied_exclaim": "¡Copiada!"
     },
-    "global": { 
+    "global": {
         "yes": "Sí",
         "no": "No",
         "never": "Nunca",
@@ -32,7 +32,7 @@
         "quipment": "Quipo de cálculo...",
         "demands": "Cálculo de las demandas de la tripulación..."
     },
-    "menu": {        
+    "menu": {
         "about_title": "Sobre",
         "game_info_title": "Info juego",
         "game_info": {
@@ -141,7 +141,7 @@
         }
     },
     "json_types": {
-        "player_data": "datos del jugador", 
+        "player_data": "datos del jugador",
         "gauntlet_data": "datos del reto",
         "quest_data": "datos de la misión"
     },
@@ -184,11 +184,11 @@
         "crew_stats": "Estadísticas de la tripulación",
         "ships": "Barcos",
         "crew_view_modes": {
-            "owned_crew": { 
+            "owned_crew": {
                 "name": "Tripulación Propia",
                 "description": "Ver solo tu propio equipo"
             },
-            "buyback_well": { 
+            "buyback_well": {
                 "name": "Pozo de Recompra",
                 "description": "Ver tripulación en el pozo de recompra"
             },
@@ -196,7 +196,7 @@
                 "name": "Ofertas Actuales",
                 "description": "Mostrar tripulación en ofertas actuales"
             },
-            "game_roster": { 
+            "game_roster": {
                 "name": "Lista de Juego",
                 "description": "Resumen de toda la tripulación del juego"
             }
@@ -280,8 +280,8 @@
         "voyage": "Mostrar rangos de viaje",
         "quipment": "Mostrar rangos de Quipos",
         "max_quipment": "Mostrar Quipo máximo",
-        "crew_utility": "Mostrar utilidad de tripulación"      
-    },    
+        "crew_utility": "Mostrar utilidad de tripulación"
+    },
     "rank_names": {
         "bigbook_tier": "Piso de Big Book",
         "cab_grade": "Grado CAB",
@@ -289,7 +289,7 @@
         "gauntlet_rank": "Rango de Reto",
         "cab_rank": "Rango de CAB",
         "cab_rating": "Clasificación de CAB",
-        "quipment_score": "Puntuación del Quipo"        
+        "quipment_score": "Puntuación del Quipo"
     },
     "cool_stats": {
         "ranks_on_your_roster": "Rangos en tu lista",
@@ -305,91 +305,89 @@
         "voyage_gauntlet_pair_roster": "#{{rank}} {{skill}} par de viaje/reto en tu lista",
         "base_roster": "#{{rank}} {{skill}} base en tu lista"
     },
-    "data_names": {
-        "crew_page": {
-            "can_cross_fuse_with": "Puede realizar fusión cruzada con {{crew}}",
-            "all_fuses_ellipses": "Todos los fusibles...",
-            "all_fuse_skill_fffe_colon": "Habilidades en todos los fusibles cuando están completamente nivelados y equipados:",
-            "aka_colon": "También conocido como:",
-            "coined_by": "acuñado por {{name}}",
-            "player_buffs_applied": "Efectos de jugador aplicadas",
-            "no_buffs_applied": "No se aplican efectos",
-            "max_buffs_applied": "Efectos máximos aplicados"
+    "crew_page": {
+        "can_cross_fuse_with": "Puede realizar fusión cruzada con {{crew}}",
+        "all_fuses_ellipses": "Todos los fusibles...",
+        "all_fuse_skill_fffe_colon": "Habilidades en todos los fusibles cuando están completamente nivelados y equipados:",
+        "aka_colon": "También conocido como:",
+        "coined_by": "acuñado por {{name}}",
+        "player_buffs_applied": "Efectos de jugador aplicadas",
+        "no_buffs_applied": "No se aplican efectos",
+        "max_buffs_applied": "Efectos máximos aplicados"
+    },
+    "base": {
+        "crew": "Tripulación",
+        "rarity": "Rareza",
+        "bigbook_tier": "Piso",
+        "cab_power": "CAB",
+        "voyage": "Viaje",
+        "voyages": "Viajes",
+        "gauntlet": "Reto",
+        "all_crew": "Mostrar toda la tripulación",
+        "in_portal": "En Portal",
+        "not_in_portal": "No en el portal",
+        "not_yet_in_portal": "Aún no en el portal",
+        "never_in_portal": "Nunca en el portal",
+        "uniquely_retrievable": "Únicamente recuperable",
+        "not_uniquely_retrievable": "No se puede recuperar de forma única",
+        "less_than_100_retrieval": "< 100% de Recuperación",
+        "qp": "QP",
+        "release_date": "Debut",
+        "offer_cost": "Costo de la Oferta",
+        "offers": "Oferta(s)",
+        "level": "Nivel",
+        "collection": "Coleccione",
+        "collections": "Colecciones",
+        "collection_fmt": "1 coleccione",
+        "collections_fmt": "{{count}} colecciones"
+    },
+    "ship": {
+        "ship": "Barco",
+        "attack": "Ataque",
+        "boost": "Aumento",
+        "boosts": "Aumentos",
+        "amount": "Cantidad",
+        "handicap": "Handicap",
+        "initialize": "Iniciar",
+        "cycle_time": "Uno ciclo",
+        "cooldown": "Recargar",
+        "duration": "Duración",
+        "uses": "Activaciones",
+        "uses_per_battle": "Activaciones por batalla",
+        "unlimited": "Ilimitado",
+        "bonus_ability": "Habilidad Bonus",
+        "trigger": "Activación",
+        "equipment_bonus": "Bonificación de equipo",
+        "accuracy": "Precisión",
+        "charge_phases": "Fases de Carga",
+        "crit_bonus": "Bonificación de Crít",
+        "crit_rating": "Frecuencia de Crít",
+        "evasion": "Evasión",
+        "charge_phase": {
+            "after_seconds": "Después de {{seconds}}s ",
+            "bonus": "+{{amount}} a {{ability}}",
+            "cooldown": "{{time}}s recargar",
+            "duration": "{{time}}s duración"
         },
-        "base": {
-            "crew": "Tripulación",
-            "rarity": "Rareza",
-            "bigbook_tier": "Piso",
-            "cab_power": "CAB",
-            "voyage": "Viaje",
-            "voyages": "Viajes",
-            "gauntlet": "Reto",
-            "all_crew": "Mostrar toda la tripulación",
-            "in_portal": "En Portal",
-            "not_in_portal": "No en el portal",
-            "not_yet_in_portal": "Aún no en el portal",
-            "never_in_portal": "Nunca en el portal",
-            "uniquely_retrievable": "Únicamente recuperable",
-            "not_uniquely_retrievable": "No se puede recuperar de forma única",
-            "less_than_100_retrieval": "< 100% de Recuperación",
-            "qp": "QP",
-            "release_date": "Debut",
-            "offer_cost": "Costo de la Oferta",
-            "offers": "Oferta(s)",
-            "level": "Nivel",
-            "collection": "Coleccione",
-            "collections": "Colecciones",
-            "collection_fmt": "1 coleccione",
-            "collections_fmt": "{{count}} colecciones"
-        },
-        "ship": {
-            "ship": "Barco",
-            "attack": "Ataque",
-            "boost": "Aumento",
-            "boosts": "Aumentos",
-            "amount": "Cantidad",
-            "handicap": "Handicap",
-            "initialize": "Iniciar",
-            "cycle_time": "Uno ciclo",
-            "cooldown": "Recargar",
-            "duration": "Duración",
-            "uses": "Activaciones",
-            "uses_per_battle": "Activaciones por batalla",
-            "unlimited": "Ilimitado",
-            "bonus_ability": "Habilidad Bonus",
-            "trigger": "Activación",
-            "equipment_bonus": "Bonificación de equipo",
-            "accuracy": "Precisión",
-            "charge_phases": "Fases de Carga",
-            "crit_bonus": "Bonificación de Crít",
-            "crit_rating": "Frecuencia de Crít",
-            "evasion": "Evasión",
-            "charge_phase": {
-                "after_seconds": "Después de {{seconds}}s ",
-                "bonus": "+{{amount}} a {{ability}}",
-                "cooldown": "{{time}}s recargar",
-                "duration": "{{time}}s duración"
-            },
-            "hull": "Casco",
-            "shields": "Escudos",
-            "antimatter": "Antimateria",
-            "attack_speed": "Velocidad de ataque",
-            "max_level": "Nivel máximo",
-            "grants": "Concesiones",
-            "triggers": "Activadores",
-            "battle_stations": "Estaciones de batalla",
-            "clear_station": "Borrar estación"
-        },
-        "quipment_ranks": {
-            "overall": "General",
-            "specialty": "Especialidad",
-            "first_pair": "Primer par",
-            "second_pair": "Segundo par",
-            "third_pair": "Tercer par",
-            "primary": "Primario",
-            "secondary": "Secundario",
-            "tertiary": "Terciario"
-        }
+        "hull": "Casco",
+        "shields": "Escudos",
+        "antimatter": "Antimateria",
+        "attack_speed": "Velocidad de ataque",
+        "max_level": "Nivel máximo",
+        "grants": "Concesiones",
+        "triggers": "Activadores",
+        "battle_stations": "Estaciones de batalla",
+        "clear_station": "Borrar estación"
+    },
+    "quipment_ranks": {
+        "overall": "General",
+        "specialty": "Especialidad",
+        "first_pair": "Primer par",
+        "second_pair": "Segundo par",
+        "third_pair": "Tercer par",
+        "primary": "Primario",
+        "secondary": "Secundario",
+        "tertiary": "Terciario"
     },
     "ship_action": {
         "boost_by": "Aumenta {{type}} en {{amount}}",
@@ -411,7 +409,7 @@
         "owned_status_heading": "Estado de propiedad",
         "show_buffs_heading": "Mostrar Efectos",
         "owned_status": {
-           "any": "Toda la tripulación",
+            "any": "Toda la tripulación",
             "maxall": "Toda la tripulación está al máximo",
             "owned": "Tripulación propia",
             "ownedmax": "Tripulación máxima propia",
@@ -429,7 +427,7 @@
             "portal": "Equipo disponible en el portal",
             "gauntlet": "Tripulación exclusiva del reto",
             "nonportal": "Equipo fuera del portal"
-        } 
+        }
     },
     "obtained": {
         "long": {

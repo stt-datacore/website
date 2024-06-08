@@ -880,7 +880,7 @@ export class CrewPresenter extends React.Component<
                                     title={
                                         "immortal" in crew
                                             ? printImmoText(crew.immortal, undefined, undefined, t, crewGender(crew))
-                                            : t('immo_text.item_is_shown_immortalized', { item: t('data_names.base.crew'), __gender: crewGender(crew) ?? '' })
+                                            : t('immo_text.item_is_shown_immortalized', { item: t('base.crew'), __gender: crewGender(crew) ?? '' })
                                     }
                                 >
                                     {("immortal" in crew &&
@@ -1141,13 +1141,13 @@ export class CrewPresenter extends React.Component<
                                     <span title={printPortalStatus(crew, t, true, true, true, true)}>                                    
                                     <StatLabel
                                         title=""
-                                        value={<span style={{color:"lightgreen", fontWeight:"bold"}}>{t('data_names.base.uniquely_retrievable')}</span>}
+                                        value={<span style={{color:"lightgreen", fontWeight:"bold"}}>{t('base.uniquely_retrievable')}</span>}
                                     />
                                     </span> 
                                     ||
                                     <span title={printPortalStatus(crew, t, true, true, true, true)}>
                                     <StatLabel                                        
-                                        title={t('data_names.base.in_portal')}
+                                        title={t('base.in_portal')}
                                         value={crew.in_portal ? <span style={{color:"lightgreen", fontWeight:"bold"}}>{t('global.yes')}</span> : printPortalStatus(crew, t, true) }
                                     />
                                    </span>

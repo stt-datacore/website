@@ -19,12 +19,12 @@ export const CrewPortalFilter = (props: CrewPortalFilterProps) => {
 	const [portalFilter, setPortalFilter] = React.useState<string>('');
 
 	const portalFilterOptions = [
-		{ key: 'none', value: '', text: t('data_names.base.all_crew') },
-		{ key: 'inportal', value: 'inportal', text: t('data_names.base.in_portal') },
-		{ key: 'unique', value: 'unique', text: t('data_names.base.uniquely_retrievable') },
-		{ key: 'notunique', value: 'notunique', text: t('data_names.base.not_uniquely_retrievable') },
-		{ key: 'noninportal', value: 'notinportal', text: t('data_names.base.not_in_portal') },
-		{ key: 'neverportal', value: 'neverportal', text: t('data_names.base.never_in_portal') },
+		{ key: 'none', value: '', text: t('base.all_crew') },
+		{ key: 'inportal', value: 'inportal', text: t('base.in_portal') },
+		{ key: 'unique', value: 'unique', text: t('base.uniquely_retrievable') },
+		{ key: 'notunique', value: 'notunique', text: t('base.not_uniquely_retrievable') },
+		{ key: 'noninportal', value: 'notinportal', text: t('base.not_in_portal') },
+		{ key: 'neverportal', value: 'neverportal', text: t('base.never_in_portal') },
 	];
 
 	const filterByPortal = (crew: IRosterCrew) => {

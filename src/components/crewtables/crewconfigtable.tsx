@@ -45,8 +45,8 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	pseudos.push('date_added');
 
 	const tableConfig: ITableConfigRow[] = [
-		{ width: 3, column: 'name', title: t('data_names.base.crew'), pseudocolumns: pseudos },
-		{ width: 1, column: 'max_rarity', title: t('data_names.base.rarity'), reverse: true, tiebreakers: ['rarity'] },
+		{ width: 3, column: 'name', title: t('base.crew'), pseudocolumns: pseudos },
+		{ width: 1, column: 'max_rarity', title: t('base.rarity'), reverse: true, tiebreakers: ['rarity'] },
 	];
 	if (showTraitMatches) {
 		tableConfig.push(
