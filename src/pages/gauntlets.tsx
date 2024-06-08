@@ -1217,7 +1217,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
-							<h4><b>{t('gauntlet.show_buffs_title')}</b></h4>
+							<h4><b>{t('gauntlet.show_buffs_heading')}</b></h4>
 
 							<Dropdown
 								title={"Apply Buffs to Stats" + (idx === 4 ? " (Note: Opponent stats are not recomputed)" : "")}
@@ -1234,7 +1234,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
-							<h4><b>{t('gauntlet.owned_status_title')}</b></h4>
+							<h4><b>{t('gauntlet.owned_status_heading')}</b></h4>
 
 							<Dropdown
 								title="Filter Crew by Owned Status"

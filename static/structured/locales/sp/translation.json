@@ -408,8 +408,8 @@
         "previous_gauntlets": "Los retos anterior",
         "browse_gauntlets": "Explorar los retos",
         "skills_and_pairs": "Habilidades y pares",
-        "owned_status_title": "Estado de propiedad",
-        "show_buffs_title": "Mostrar Efectos",
+        "owned_status_heading": "Estado de propiedad",
+        "show_buffs_heading": "Mostrar Efectos",
         "owned_status": {
            "any": "Toda la tripulación",
             "maxall": "Toda la tripulación está al máximo",

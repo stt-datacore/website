@@ -401,8 +401,8 @@
         "previous_gauntlets": "Previous Gauntlets",
         "browse_gauntlets": "Browse Gauntlets",
         "skills_and_pairs": "Skills & Pairs",
-        "owned_status_title": "Owned Status",
-        "show_buffs_title": "Show Buffs",
+        "owned_status_heading": "Owned Status",
+        "show_buffs_heading": "Show Buffs",
         "owned_status": {            
             "any": "All Crew",
             "maxall": "All Crew as Maxed",
