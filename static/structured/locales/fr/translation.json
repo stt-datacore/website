@@ -203,29 +203,42 @@
         }
     },
     "buffs": {
-        "no_buffs": "Aucun améliorations",
-        "player_buffs": "Améliorations des joueurs",
-        "max_buffs": "Améliorations maximum"
+        "no_buffs": "Aucun effets",
+        "player_buffs": "Effets des joueurs",
+        "max_buffs": "Effets maximum"
     },
     "crew_state": {
-        "owned": "Possédé(e)",
-        "unowned": "Pas Possédé(e)",
+        "owned": "Possédée",
+        "unowned": "Pas Possédée",
         "immortalized": "Immortalisé(e)",
         "immortalized_m": "Immortalisé",
         "immortalized_f": "Immortalisée",
-        "shown_immortalized": "Présenté Immortalisé(e)",
-        "shown_immortalized_m": "Présenté Immortalisé",
-        "shown_immortalized_f": "Présenté Immortalisée",
-        "unfused": "Non fusionné",
+        "shown_immortalized": "Affiché Immortalisé(e)",
+        "shown_immortalized_m": "Affiché Immortalisé",
+        "shown_immortalized_f": "Affiché Immortalisée",
+        "unfused": "Non fusionné(e)",
+        "unfused_m": "Non fusionné",
+        "unfused_f": "Non fusionnée",
         "stars": "{{stars}} étoiles",
         "frozen": "Congelé(e)",
         "frozen_m": "Congelé",
         "frozen_f": "Congelée",
-        "expires_in": "L'équipage expire dans {{time}}"
+        "expires_in": "L'équipage expire dans {{time}}",
+        "owned_rarity": "Rareté Possédée",
+        "prospect_rarity": "Rareté Potentiel",
+        "prospective_crew_portal": "Équipage potentielle (dans le Portail)",
+        "prospective_crew_no_portal": "Équipage potentielle (pas dans le Portail)",
+        "unowned_portal": "Équipage sans propriétaire (dans le portail)",
+        "unowned_no_portal": "Équipage sans propriétaire (pas dans le Portail)",
+        "portal_available": "Disponible dans le Portail",
+        "not_in_portal": "Pas dans le Portail"
     },
     "immo_text": {
         "item_is_level": "{{item}} est {{level}}",
         "item_is_shown": "{{item}} est affiché {{level}}",
+        "item_is_shown_immortalized": "{{item}} est affiché Immortalisé(e)",
+        "item_is_shown_immortalized_m": "{{item}} est affiché Immortalisé",
+        "item_is_shown_immortalized_f": "{{item}} est affiché Immortalisée",
         "item_is_shown_no_player": "{{item}} est affiché {{level}} (Aucune donnée du joueur)",
         "item_is_shown_owned": "{{item}} est affiché {{level}} (possédé)",
         "item_is_shown_unowned": "{{item}} est affiché {{level}} (sans propriétaire)",
@@ -243,7 +256,8 @@
         "select_ship_abilities": "Sélectionner les capacités du vaisseau",
         "select_ship_ability_amount": "Sélectionnez le montant de la capacité du vaisseau",
         "trait": "Caractéristique",
-        "traits": "Caractéristiques"
+        "traits": "Caractéristiques",
+        "display_buffs": "Afficher effets"
     },
     "options": {
         "trait_match": {
@@ -299,7 +313,9 @@
             "all_fuse_skill_fffe_colon": "Les compétences de tout des fusionments lorsqu'elles sont entièrement nivelées et entièrement équipées :",
             "aka_colon": "Aussi connu sous le nom de :",
             "coined_by": "inventé par {{name}}",
-            "player_boosts_applied": "Boosts de joueur appliqués"
+            "player_buffs_applied": "Effets de joueur appliqués",
+            "no_buffs_applied": "Aucun effets appliqués",
+            "max_buffs_applied": "Maximum effets appliqués"
         },
         "base": {
             "crew": "Équipage",
