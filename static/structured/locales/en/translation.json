@@ -56,6 +56,10 @@
         "coined_by": "coined by {{name}}",
         "max_buffs_applied": "Max buffs applied",
         "no_buffs_applied": "No buffs applied",
+        "notes": {
+            "gauntlet_determination": "Rankings determined by precalculation. For specific advice on crew to use, consult {{link}}.",
+            "voyage_determination": "Rankings determined by precalculation. For specific advice on crew to use, consult the {{link}}."    
+        },
         "player_buffs_applied": "Player buffs applied"
     },
     "crew_state": {
@@ -85,10 +89,6 @@
         "ship": "Show ship abilities",
         "voyage": "Show voyage ranks"
     },
-    "data_notes": {
-        "gauntlet_determination": "Rankings determined by precalculation. For specific advice on crew to use, consult {{link}}.",
-        "voyage_determination": "Rankings determined by precalculation. For specific advice on crew to use, consult the {{link}}."
-    },
     "gauntlet": {
         "browse_gauntlets": "Browse Gauntlets",
         "gauntlet": "Gauntlet",
@@ -111,6 +111,9 @@
         "previous_gauntlets": "Previous Gauntlets",
         "show_buffs_heading": "Show Buffs",
         "skills_and_pairs": "Skills & Pairs",
+        "titles": {
+            
+        },
         "today_gauntlet": "Today's Gauntlet",
         "unowned_status": {
             "any": "All Crew",

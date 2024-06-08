@@ -56,6 +56,10 @@
         "coined_by": "acuñado por {{name}}",
         "max_buffs_applied": "Efectos máximos aplicados",
         "no_buffs_applied": "No se aplican efectos",
+        "notes": {
+            "gauntlet_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre la tripulación a utilizar, consulte {{link}}.",
+            "voyage_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre la tripulación a utilizar, consulte {{link}}."
+        },
         "player_buffs_applied": "Efectos de jugador aplicadas"
     },
     "crew_state": {
@@ -91,11 +95,10 @@
         "ship": "Mostrar habilidades del barco",
         "voyage": "Mostrar rangos de viaje"
     },
-    "data_notes": {
-        "gauntlet_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre la tripulación a utilizar, consulte {{link}}.",
-        "voyage_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre la tripulación a utilizar, consulte {{link}}."
-    },
     "gauntlet": {
+        "notes": {
+
+        },
         "browse_gauntlets": "Explorar los retos",
         "gauntlet": "Reto",
         "gauntlets": "Retos",

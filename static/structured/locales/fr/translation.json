@@ -56,6 +56,10 @@
         "coined_by": "inventé par {{name}}",
         "max_buffs_applied": "Maximum effets appliqués",
         "no_buffs_applied": "Aucun effets appliqués",
+        "notes": {
+            "gauntlet_determination": "Classements déterminés par précalcul. Pour des conseils spécifiques sur l'équipage à utiliser, consultez {{link}}.",
+            "voyage_determination": "Classements déterminés par précalcul. Pour des conseils spécifiques sur l'équipage à utiliser, consultez les {{link}}."    
+        },
         "player_buffs_applied": "Effets de joueur appliqués"
     },
     "crew_state": {
@@ -92,10 +96,6 @@
         "quipment": "Afficher les rangs des Quipements",
         "ship": "Afficher les capacités du navire",
         "voyage": "Afficher les rangs des voyages"
-    },
-    "data_notes": {
-        "gauntlet_determination": "Classements déterminés par précalcul. Pour des conseils spécifiques sur l'équipage à utiliser, consultez {{link}}.",
-        "voyage_determination": "Classements déterminés par précalcul. Pour des conseils spécifiques sur l'équipage à utiliser, consultez les {{link}}."
     },
     "gauntlet": {
         "browse_gauntlets": "Parcourez les gantelets",
