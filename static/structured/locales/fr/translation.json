@@ -408,7 +408,30 @@
         "today_gauntlet": "Gantelet d'aujourd'hui",
         "yesterday_gauntlet": "Gantelet d'hier",
         "previous_gauntlets": "Gantelets précédents",
-        "browse_gauntlets": "Parcourez les gantelets"
+        "browse_gauntlets": "Parcourez les gantelets",
+        "skills_and_pairs": "Compétences et paires",
+        "owned_status_title": "Statut de propriétaire",
+        "show_buffs_title": "Afficher les effets",
+        "owned_status": {
+            "any": "Tout l'équipage",
+            "maxall": "Tout l'équipage est au maximum",
+            "owned": "Équipage possédé",
+            "ownedmax": "Équipage possédé au maximum",
+            "fe": "Équipage possédé et entièrement équipé",
+            "nofe": "Équipage possédé, pas entièrement équipé",
+            "nofemax": "Équipage possédé, pas entièrement équipé au maximum",
+            "unfrozen": "Possédé, équipage non gelé",
+            "unowned": "Équipage sans propriétaire",
+            "portal": "Équipage sans propriétaire et disponible sur le portail",
+            "gauntlet": "Équipage exclusif gantelet sans propriétaire",
+            "nonportal": "Équipage sans propriétaire et hors portail"
+        },
+        "unowned_status": {
+            "any": "Tout l'équipage",
+            "portal": "Équipage disponible sur le portail",
+            "gauntlet": "Équipage exclusif gantelet",
+            "nonportal": "Équipage non-portail"
+        }
     },
     "obtained": {
         "long": {
