@@ -810,27 +810,25 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		//const oppocrew = (gauntletIn?.opponents?.map(o => o.crew_contest_data.crew ?? [])?.flat() ?? []);
 
 		const filterOptions = hasPlayer ? [
-			{ key: 'any', value: 'any', text: 'All Crew' },
-			{ key: 'maxall', value: 'maxall', text: 'All Crew as Maxed' },
-			{ key: 'owned', value: 'owned', text: 'Owned Crew' },
-			{ key: 'ownedmax', value: 'ownedmax', text: 'Owned Crew as Maxed' },
-			{ key: 'fe', value: 'fe', text: 'Owned, Fully Equipped Crew' },
-			{ key: 'nofe', value: 'nofe', text: 'Owned, Not Fully Equipped Crew' },
-			{ key: 'nofemax', value: 'nofemax', text: 'Owned, Not Fully Equipped Crew as Maxed' },
-			{ key: 'unfrozen', value: 'unfrozen', text: 'Owned, Unfrozen Crew' },
-			{ key: 'unowned', value: 'unowned', text: 'Unowned Crew' },
-			{ key: 'portal', value: 'portal', text: 'Unowned, Portal-Available Crew' },
-			{ key: 'gauntlet', value: 'gauntlet', text: 'Unowned, Gauntlet Exclusive Crew' },
-			{ key: 'nonportal', value: 'nonportal', text: 'Unowned, Non-Portal Crew' },
+			{ key: 'any', value: 'any', text: t('gauntlet.owned_status.any') },
+			{ key: 'maxall', value: 'maxall', text: t('gauntlet.owned_status.maxall') },
+			{ key: 'owned', value: 'owned', text: t('gauntlet.owned_status.owned') },
+			{ key: 'ownedmax', value: 'ownedmax', text: t('gauntlet.owned_status.ownedmax') },
+			{ key: 'fe', value: 'fe', text: t('gauntlet.owned_status.fe') },
+			{ key: 'nofe', value: 'nofe', text: t('gauntlet.owned_status.nofe') },
+			{ key: 'nofemax', value: 'nofemax', text: t('gauntlet.owned_status.nofemax') },
+			{ key: 'unfrozen', value: 'unfrozen', text: t('gauntlet.owned_status.unfrozen') },
+			{ key: 'unowned', value: 'unowned', text: t('gauntlet.owned_status.unowned') },
+			{ key: 'portal', value: 'portal', text: t('gauntlet.owned_status.portal') },
+			{ key: 'gauntlet', value: 'gauntlet', text: t('gauntlet.owned_status.gauntlet') },
+			{ key: 'nonportal', value: 'nonportal', text: t('gauntlet.owned_status.nonportal') }
 		] :
 		[
-			{ key: 'any', value: 'any', text: 'All Crew' },
-			{ key: 'portal', value: 'portal', text: 'Portal-Available Crew' },
-			{ key: 'gauntlet', value: 'gauntlet', text: 'Gauntlet Exclusive Crew' },
-			{ key: 'nonportal', value: 'nonportal', text: 'Non-Portal Crew' },
+			{ key: 'any', value: 'any', text: t('gauntlet.unowned_status.any') },
+			{ key: 'portal', value: 'portal', text: t('gauntlet.unowned_status.portal') },
+			{ key: 'gauntlet', value: 'gauntlet', text: t('gauntlet.unowned_status.gauntlet') },
+			{ key: 'nonportal', value: 'nonportal', text: t('gauntlet.unowned_status.nonportal') }
 		];
-
-
 
 		const skills = CONFIG.SKILLS_SHORT.map(s => s.short).sort();
 		const skillFilters = [] as DropdownItemProps[];
@@ -1219,7 +1217,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
-							<h4><b>Show Buffs</b></h4>
+							<h4><b>{t('gauntlet.show_buffs_title')}</b></h4>
 
 							<Dropdown
 								title={"Apply Buffs to Stats" + (idx === 4 ? " (Note: Opponent stats are not recomputed)" : "")}
@@ -1236,10 +1234,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
-							<h4><b>Owned Status</b></h4>
+							<h4><b>{t('gauntlet.owned_status_title')}</b></h4>
 
 							<Dropdown
 								title="Filter Crew by Owned Status"
+								scrolling
 								options={filterOptions}
 								value={filterProps[idx].ownedStatus}
 								onChange={(e, { value }) => this.setOwnedStatus(value as OwnedStatus, idx)}
@@ -1253,14 +1252,15 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
-							<h4><b>Skills &amp; Pairs</b></h4>
+							<h4><b>{t('gauntlet.skills_and_pairs')}</b></h4>
 							<div style={{marginLeft: "-1em", marginTop: "-0.5em"}}>
 								<Dropdown
 									title={"Filter by skills or pairs"}
-									placeholder="Skills & Pairs"
+									placeholder={t('gauntlet.skills_and_pairs')}
 									clearable
 									compact
 									inline
+									scrolling
 									multiple
 									options={skillFilters}
 									value={filterProps[idx].skillPairs ?? []}

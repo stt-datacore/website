@@ -207,7 +207,8 @@
     "buffs": {
         "no_buffs": "No buffs",
         "player_buffs": "Player buffs",
-        "max_buffs": "Max buffs"
+        "max_buffs": "Max buffs",
+        "quipment_buffs": "Quipment Buffs"
     },
     "crew_state": {
         "owned": "Owned",
@@ -398,7 +399,30 @@
         "today_gauntlet": "Today's Gauntlet",
         "yesterday_gauntlet": "Yesterday's Gauntlet",
         "previous_gauntlets": "Previous Gauntlets",
-        "browse_gauntlets": "Browse Gauntlets"    
+        "browse_gauntlets": "Browse Gauntlets",
+        "skills_and_pairs": "Skills & Pairs",
+        "owned_status_title": "Owned Status",
+        "show_buffs_title": "Show Buffs",
+        "owned_status": {            
+            "any": "All Crew",
+            "maxall": "All Crew as Maxed",
+            "owned": "Owned Crew",
+            "ownedmax": "Owned Crew as Maxed",
+            "fe": "Owned, Fully Equipped Crew",
+            "nofe": "Owned, Not Fully Equipped Crew",
+            "nofemax": "Owned, Not Fully Equipped Crew as Maxed",
+            "unfrozen": "Owned, Unfrozen Crew",
+            "unowned": "Unowned Crew",
+            "portal": "Unowned, Portal-Available Crew",
+            "gauntlet": "Unowned, Gauntlet Exclusive Crew",
+            "nonportal": "Unowned, Non-Portal Crew"
+        },
+        "unowned_status": {
+            "any": "All Crew",
+            "portal": "Portal-Available Crew",
+            "gauntlet": "Gauntlet Exclusive Crew",
+            "nonportal": "Non-Portal Crew"
+        }
     },
     "obtained": {
         "long": {

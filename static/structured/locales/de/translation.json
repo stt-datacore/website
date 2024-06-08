@@ -72,7 +72,7 @@
             "voyage_calculator": "Reiserechner",
             "voyage_history": "Reiseverlauf",
             "collection_planner": "Sammlungsplaner",
-            "crew_retrieval": "Bergung der Besatzung",
+            "crew_retrieval": "Bergung der Crew",
             "fleet_boss_battles": "Flottenbosskämpfe",
             "continuum_helper": "Kontinuum-Helfer"
         },
@@ -131,7 +131,7 @@
                         "line_1": "Öffnen Sie diese Seite auf Ihrem Gerät: {{link}}",
                         "line_2": "Melden Sie sich an, wenn Sie dazu aufgefordert werden, und warten Sie, bis die Seite vollständig geladen ist. Sie sollte mit Folgendem beginnen: {{jsonHint}} ...",
                         "line_3": "Tippen Sie beim Anzeigen der Seite auf das Teilen-Symbol.",
-                        "line_4": "Tippen Sie auf „Optionen“ und wählen Sie „Webarchiv“, tippen Sie auf „In Dateien speichern“, wählen Sie einen Speicherort und speichern Sie.",
+                        "line_4": "Tippen Sie auf \"Optionen\" und wählen Sie \"Webarchiv\", tippen Sie auf \"In Dateien speichern\", wählen Sie einen Speicherort und speichern Sie.",
                         "line_5": "Kommen Sie zu dieser DataCore-Seite zurück.",
                         "line_6": "Tippen Sie auf die Schaltfläche \"Suchen Sie nach der hochzuladenden {{data}}-Datei...\".",
                         "line_7": "Wählen Sie die Datei aus, die mit \"{{hint}}...\" beginnt und von der Sie sie gespeichert haben."
@@ -160,7 +160,7 @@
             "title": "Profil auf DataCore posten",
             "header": "{{share_profile.share.share_text}}. Nach der Freigabe ist Ihr öffentliches Profil für jeden über diesen Link zugänglich:",
             "instructions": {
-                "line_1": "Klicken Sie auf den Link oben, um auf Datenexporte für Tabellenkalkulationen wie  „Take My Chrons“ und „Do Not Airlock“ zuzugreifen.",
+                "line_1": "Klicken Sie auf den Link oben, um auf Datenexporte für Tabellenkalkulationen wie Take My Chrons und Do Not Airlock zuzugreifen.",
                 "line_2": "Einige Seiten auf DataCore, insbesondere Flottenseiten und Veranstaltungsseiten, können auch auf Ihr öffentliches Profil verweisen.",
                 "line_3": "Die weitergegebenen Informationen sind beschränkt auf: {{list}}. In Ihrem öffentlichen Profil sind keine privaten Informationen enthalten."
             },
@@ -190,7 +190,7 @@
             },
             "buyback_well": { 
                 "name": "Rückkaufpool",
-                "description": "Besatzung im Rückkaufpool anzeigen"
+                "description": "Crew im Rückkaufpool anzeigen"
             },
             "current_offers": {
                 "name": "Aktuelle Angebote",
@@ -397,7 +397,30 @@
         "today_gauntlet": "Die heutige Herausforderung",
         "yesterday_gauntlet": "Die Herausforderung von gestern",
         "previous_gauntlets": "Vorherige Herausforderungen",
-        "browse_gauntlets": "Herausforderungen durchlesen"
+        "browse_gauntlets": "Herausforderungen durchlesen",
+        "skills_and_pairs": "Fähigkeiten & Paare",
+        "owned_status_title": "Besitzerstatus",
+        "show_buffs_title": "Buffs anzeigen",
+        "owned_status": {
+            "any": "Alle Crew",
+            "maxall": "Alle Crew auf maximal",
+            "owned": "Eigene Crew",
+            "ownedmax": "Besessene Crew auf maximal",
+            "fe": "Eigene, voll ausgerüstete Crew",
+            "nofe": "Eigene, nicht vollständig ausgerüstete Crew",
+            "nofemax": "Maximal eigene, nicht vollständig ausgerüstete Crew",
+            "unfrozen": "Eigene, ungefrorene Crew",
+            "unowned": "Unbesessene Crew",
+            "portal": "Unbesessene, im Zeitportal verfügbare Crew",
+            "gauntlet": "Unbesessene, Herausforderung-exklusive Crew",
+            "nonportal": "Unbesessene, nicht zum Zeitportal gehörende Crew"
+        },
+        "unowned_status": {
+            "any": "Alle Crew",
+            "portal": "Zeitportal-verfügbare Crew",
+            "gauntlet": "Herausforderung-exklusive Crew",
+            "nonportal": "Nicht im Zeitportal Crew"
+        }
     },
     "obtained": {
         "long": {
