@@ -79,8 +79,9 @@ const SchematicFuel = (props: SchematicFuelProps) => {
 			}
 		})
 	).sort((a, b) => {
-		if (a.rarity === b.rarity)
+		if (a.rarity === b.rarity) 
 			return a.name.localeCompare(b.name);
+			
 		return b.rarity - a.rarity;
 	});
 
@@ -371,7 +372,7 @@ const FuelGrid = (props: FuelGridProps) => {
 								rarity={item.rarity}
 							/>
 							<p>
-								{linkToWiki ? renderLink(item.name) : item.name}
+								{linkToWiki ? renderLink(item.name, item.name_english) : item.name}
 								<br />({item.quantity} Owned)
 							</p>
 						</div>
@@ -381,8 +382,8 @@ const FuelGrid = (props: FuelGridProps) => {
 		</Segment>
 	);
 
-	function renderLink(itemName: string): JSX.Element {
-		const itemUrl: string = 'https://sttwiki.org/wiki/'+itemName.replace(/\s/g,'_').replace(/’/g,'\'');
+	function renderLink(itemName: string, itemEnglish?: string): JSX.Element {
+		const itemUrl: string = 'https://sttwiki.org/wiki/'+(itemEnglish ?? itemName).replace(/\s/g,'_').replace(/’/g,'\'');
 		return <a href={itemUrl}>{itemName}</a>;
 	};
 }

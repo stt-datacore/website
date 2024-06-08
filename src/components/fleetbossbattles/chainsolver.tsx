@@ -1,8 +1,8 @@
 import React from 'react';
 import { Header, Step, Icon, Message } from 'semantic-ui-react';
 
-import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, ComboCount, IgnoredCombo, NodeMatches, Rule, RuleException, Solve, SolveStatus, Solver, SolverNode, SolverTrait } from '../../model/boss';
+import { GlobalContext } from '../../context/globalcontext';
 
 import { UserContext, SolverContext } from './context';
 import ChainCrew from './crew';
@@ -19,6 +19,8 @@ const MAX_RARITY_BY_DIFFICULTY = {
 };
 
 export const ChainSolver = () => {
+	const globalContext = React.useContext(GlobalContext);
+	const { TRAIT_NAMES } = globalContext.localized;
 	const { bossCrew, spotterPrefs, userPrefs, setUserPrefs } = React.useContext(UserContext);
 	const { bossBattle: { difficultyId, chainIndex, chain }, spotter, setSpotter } = React.useContext(SolverContext);
 
@@ -39,7 +41,7 @@ export const ChainSolver = () => {
 				solverTraits.push({
 					id,
 					trait,
-					name: allTraits.trait_names[trait],
+					name: TRAIT_NAMES[trait],
 					poolCount: 0,
 					instance,
 					source: 'open',
@@ -90,7 +92,7 @@ export const ChainSolver = () => {
 			solverTraits.push({
 				id: solverTraits.length,
 				trait,
-				name: allTraits.trait_names[trait],
+				name: TRAIT_NAMES[trait],
 				poolCount: traitCount,
 				instance: traitCount,
 				source: 'pool',

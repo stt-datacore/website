@@ -2,14 +2,12 @@ import { simplejson2csv, ExportField } from './misc';
 import { BuffStatTable, calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
-import { CompactCrew, CompletionState, GauntletPairScore, Player, PlayerCrew, PlayerData } from '../model/player';
+import { CompactCrew, CompletionState, GauntletPairScore, PlayerCrew, PlayerData, TranslateMethod } from '../model/player';
 import { BaseSkills, ComputedSkill, CrewMember, PlayerSkill, Skill } from '../model/crew';
 import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
 import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
-//import { navigate } from 'gatsby';
 import { ItemBonusInfo, ItemWithBonus } from './itemutils';
 import { EquipmentItem } from '../model/equipment';
-import { calcQLots } from './equipment';
 import { TinyStore } from './tiny';
 
 
@@ -347,9 +345,9 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	let templateCrew = JSON.parse(JSON.stringify(origCrew)) as PlayerCrew;
 	let outputcrew = [] as PlayerCrew[];
 
-	if (origCrew.symbol === 'torres_injured_crew') {
-		console.log("break");
-	}
+	// if (origCrew.symbol === 'torres_injured_crew') {
+	// 	console.log("break");
+	// }
 	if (buffConfig && !Object.keys(buffConfig)?.length) buffConfig = undefined;
 
 	if ("prospect" in origCrew && origCrew.prospect && origCrew.rarity) {
@@ -676,7 +674,7 @@ export function updatePairScore(crew: PlayerCrew, pairScore: GauntletPairScore) 
 
 export function getCrewPairScore(crew: PlayerCrew, pair: string) {
 	pair = (pair.startsWith("G_") ? pair.slice(2) : pair).replace("/", "_");
-	let vp = pair.split("_").map(pp => (shortToSkill(pp))).sort();
+	let vp = pair.split("_").map(pp => (shortToSkill(pp, true))).sort();
 	for (let cp of crew.pairScores ?? []) {
 		let skills2 = cp.pair.map(p => p.skill ?? "").sort();
 		if (skills2.join() === vp.join()) {
@@ -688,7 +686,7 @@ export function getCrewPairScore(crew: PlayerCrew, pair: string) {
 
 export function getPairScore(scores: GauntletPairScore[], pair: string) {
 	pair = (pair.startsWith("G_") ? pair.slice(2) : pair).replace("/", "_");
-	let vp = pair.split("_").map(pp => (shortToSkill(pp))).sort();
+	let vp = pair.split("_").map(pp => (shortToSkill(pp, true))).sort();
 	for (let cp of scores ?? []) {
 		let skills2 = cp.pair.map(p => p.skill ?? "").sort();
 		if (skills2.join() === vp.join()) {
@@ -699,23 +697,16 @@ export function getPairScore(scores: GauntletPairScore[], pair: string) {
 }
 
 
-export function shortToSkill(rank: string): PlayerSkill | undefined {
-	if (rank === "CMD") return "command_skill";
-	else if (rank === "SEC") return "security_skill";
-	else if (rank === "DIP") return "diplomacy_skill";
-	else if (rank === "SCI") return "science_skill";
-	else if (rank === "MED") return "medicine_skill";
-	else if (rank === "ENG") return "engineering_skill";
+export function shortToSkill(rank: string, english?: boolean): PlayerSkill | undefined {
+	let f = english ? CONFIG.SKILLS_SHORT_ENGLISH.find(f => f.short === rank) : CONFIG.SKILLS_SHORT.find(f => f.short === rank);
+	if (f) return f.name as PlayerSkill;
+	return undefined;
 }
 
-export function skillToShort(skill: PlayerSkill | string): string | undefined {
+export function skillToShort(skill: PlayerSkill | string, english?: boolean): string | undefined {
 	if (!skill) return "";
-	if (skill === "command_skill") return "CMD";
-	else if (skill === "security_skill") return "SEC";
-	else if (skill === "diplomacy_skill") return "DIP";
-	else if (skill === "science_skill") return "SCI";
-	else if (skill === "medicine_skill") return "MED";
-	else if (skill === "engineering_skill") return "ENG";
+	let f = english ? CONFIG.SKILLS_SHORT_ENGLISH.find(f => f.name === skill) :  CONFIG.SKILLS_SHORT.find(f => f.name === skill);
+	if (f) return f.short;
 }
 
 export function comparePairs(a: Skill[], b: Skill[], featuredSkill?: string, multiplier?: number) {
@@ -885,7 +876,7 @@ export function getShipBonus(item?: PlayerCrew | CrewMember | ShipAction | Ship,
 	return bonusText;
 }
 
-export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction | Ship, index?: number): string[] {
+export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction | Ship, index?: number, t?: (value: string, opt?: { [key: string]: string }) => string): string[] {
 	const phases = [] as string[];
 	let charge_time = 0;
 
@@ -897,23 +888,46 @@ export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction 
 
 	if (!action || !action.charge_phases) return phases;
 	action.charge_phases.forEach(cp => {
+		// After {{seconds}}s, {{action}}
 		charge_time += cp.charge_time;
-		let phaseDescription = `After ${charge_time}s`;
+		let phaseDescription = '';
 
-		if (cp.ability_amount && action?.ability) {
-			phaseDescription += ', ' + CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type].replace('%VAL%', `${cp.ability_amount}`);
+		if (t) {
+			phaseDescription = t('ship.charge_phase.after_seconds', { seconds: `${charge_time}` });
+			if (cp.ability_amount && action?.ability) {
+				phaseDescription += ', ' + CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type].replace('%VAL%', `${cp.ability_amount}`);
+			}
+			if (cp.bonus_amount) {
+				phaseDescription += ", " + t('ship.charge_phase.bonus', {
+					amount: `${cp.bonus_amount}`,
+					ability: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type]
+				});				
+			}
+			if (cp.duration) {
+				phaseDescription += `, ` + t('ship.charge_phase.duration', {
+					time: `${cp.duration - action.duration}`
+				});				
+			}
+			if (cp.cooldown) {
+				phaseDescription += `, ` + t('ship.charge_phase.cooldown', {
+					time: `${cp.cooldown - action.cooldown}`
+				});
+			}
 		}
-
-		if (cp.bonus_amount) {
-			phaseDescription += `, +${cp.bonus_amount} to ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type]}`;
-		}
-
-		if (cp.duration) {
-			phaseDescription += `, +${cp.duration - action.duration}s duration`;
-		}
-
-		if (cp.cooldown) {
-			phaseDescription += `, +${cp.cooldown - action.cooldown}s cooldown`;
+		else {
+			phaseDescription = `After ${charge_time}s`;
+			if (cp.ability_amount && action?.ability) {
+				phaseDescription += ', ' + CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type].replace('%VAL%', `${cp.ability_amount}`);
+			}
+			if (cp.bonus_amount) {
+				phaseDescription += `, +${cp.bonus_amount} to ${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type]}`;
+			}
+			if (cp.duration) {
+				phaseDescription += `, +${cp.duration - action.duration}s duration`;
+			}
+			if (cp.cooldown) {
+				phaseDescription += `, +${cp.cooldown - action.cooldown}s cooldown`;
+			}
 		}
 
 		phases.push(phaseDescription);
@@ -1101,17 +1115,50 @@ export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): s
 	return variantTraits;
 }
 
-export function printImmoText(immo: number | CompletionState, item?: string, immoText?: string) {
-	item ??= "Crew";
-	immoText ??= "Immortalized";
+/**
+ * Get the crew gender as m or f for use with translation strings.
+ * Required for other languages.
+ * @param crew 
+ * @returns 
+ */
+export function crewGender<T extends CrewMember>(crew: T) {
+	if (crew.traits_hidden.includes('female')) return 'f';
+	else if (crew.traits_hidden.includes('male')) return 'm';
+	else return "";
+}
 
-	if (immo === -1) return `${item} Is ${immoText}`;
-	else if (immo === -5) return `${item} Is Shown ${immoText} (No Player Data)`;
-	else if (immo === -3) return `${item} Is Shown ${immoText} (Unowned)`;
-	else if (immo === -4) return `${item} Is Shown ${immoText} (Owned)`;
-	else if (immo === -2) return `${item} Is Shown ${immoText}`;
-	else if (immo >= 1) return `${item} Is Frozen (` + (immo === 1 ? "1 copy" : immo.toString() + " copies") + ")";
-	else return `${item} Is Not ${immoText}`;
+export function printImmoText(immo: number | CompletionState, item?: string, immoText?: string, t?: (value: string, opts?: { [key: string]: string }) => string, gender?: 'm' | 'f' | '') {
+	gender ??= '';	
+	if (t) {
+		item ??= t(`base.crew`, { __gender: gender });
+		immoText ??= t(`crew_state.immortalized`, { __gender: gender });
+		if (immo === -1) return t('item_state.item_is_level', { item, level: immoText, __gender: gender });
+		else if (immo === -5) return t('item_state.item_is_shown_no_player', { item, level: immoText, __gender: gender });
+		else if (immo === -3) return t('item_state.item_is_shown_unowned', { item, level: immoText, __gender: gender });
+		else if (immo === -4) return t('item_state.item_is_shown_owned', { item, level: immoText, __gender: gender });
+		else if (immo === -2) return t('item_state.item_is_shown', { item, level: immoText, __gender: gender });
+		else if (immo >= 1) {
+			if (immo === 1) {
+				return(t('item_state.item_is_frozen_one'))
+			}
+			else {
+				return(t('item_state.item_is_frozen_many', { copes: `${immo}`}));
+			}			
+		}
+		else return `${item} Is Not ${immoText}`;
+	}
+	else {
+		item ??= "Crew";
+		immoText ??= "Immortalized";
+	
+		if (immo === -1) return `${item} Is ${immoText}`;
+		else if (immo === -5) return `${item} Is Shown ${immoText} (No Player Data)`;
+		else if (immo === -3) return `${item} Is Shown ${immoText} (Unowned)`;
+		else if (immo === -4) return `${item} Is Shown ${immoText} (Owned)`;
+		else if (immo === -2) return `${item} Is Shown ${immoText}`;
+		else if (immo >= 1) return `${item} Is Frozen (` + (immo === 1 ? "1 copy" : immo.toString() + " copies") + ")";
+		else return `${item} Is Not ${immoText}`;
+	}
 }
 
 export function getSkills(item: PlayerCrew | CrewMember | CompactCrew | BaseSkills): string[] {
@@ -1436,26 +1483,28 @@ export function printSkillOrder(crew: PlayerCrew | CrewMember) {
 }
 
 
-export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
+export function prettyObtained(crew: PlayerCrew | CrewMember, t: TranslateMethod, long?: boolean) {
 	long ??= false;
 	let obstr = `${crew.obtained}`;
 	if (obstr === 'HonorHall') obstr = 'Honor Hall';
 	else if (obstr === 'FactionStore') obstr = 'Faction';
 
 	if (long) {
-		if (obstr === 'Voyage' || obstr === 'Gauntlet') obstr += " Exclusive";
-		else if (obstr === 'WebStore') obstr = 'Web Store';
-		else if (obstr === 'Faction') obstr = 'Faction Store';
-		else if (obstr === 'Fuse') obstr = 'Exclusive Fusion';
-		else if (obstr === 'BossBattle') obstr = 'Captain\'s Bridge';
-		else if (obstr === 'Collection') obstr = 'Collection Milestone';
-		else if (obstr === 'Missions') obstr = 'Main Board Mission';
-		else if (obstr === 'Mega') obstr = 'Recurring Mega';
+		obstr = t(`obtained.long.${obstr}`);
+		// if (obstr === 'Voyage' || obstr === 'Gauntlet') obstr += " Exclusive";
+		// else if (obstr === 'WebStore') obstr = 'Web Store';
+		// else if (obstr === 'Faction') obstr = 'Faction Store';
+		// else if (obstr === 'Fuse') obstr = 'Exclusive Fusion';
+		// else if (obstr === 'BossBattle') obstr = 'Captain\'s Bridge';
+		// else if (obstr === 'Collection') obstr = 'Collection Milestone';
+		// else if (obstr === 'Missions') obstr = 'Main Board Mission';
+		// else if (obstr === 'Mega') obstr = 'Recurring Mega';
 	}
 	else {
-		if (obstr === 'BossBattle') obstr = 'Bridge';
-		else if (obstr === 'Fuse') obstr = 'Fusion';
-		else if (obstr === 'WebStore') obstr = 'Web Store';
+		obstr = t(`obtained.short.${obstr}`);
+		// if (obstr === 'BossBattle') obstr = 'Bridge';
+		// else if (obstr === 'Fuse') obstr = 'Fusion';
+		// else if (obstr === 'WebStore') obstr = 'Web Store';
 	}
 
 	return obstr;
@@ -1470,19 +1519,19 @@ export function prettyObtained(crew: PlayerCrew | CrewMember, long?: boolean) {
  * @param withPortal True to prepend the string with "In Portal: "
  * @returns A formatted string conveying the portal status
  */
-export function printPortalStatus<T extends CrewMember>(crew: T, showNever?: boolean, obtainedIfNo?: boolean, long?: boolean, withPortal?: boolean) {
+export function printPortalStatus<T extends CrewMember>(crew: T, t: TranslateMethod, showNever?: boolean, obtainedIfNo?: boolean, long?: boolean, withPortal?: boolean) {
 	showNever ??= true;
 	long ??= false;
 	obtainedIfNo ??= false;
 
-	if (!showNever && !obtainedIfNo) return crew.in_portal ? "Yes" : "No";
+	if (!showNever && !obtainedIfNo) return crew.in_portal ? t('global.yes') : t('global.no');
 	let obstr = "";
 	if (obtainedIfNo) {
 		if (!crew.in_portal) {
-			obstr = prettyObtained(crew, long);
+			obstr = prettyObtained(crew, t, long);
 		}
 		else {
-			obstr = (crew.unique_polestar_combos?.length ? "Uniquely Retrievable" : "<100% Retrieval");
+			obstr = (crew.unique_polestar_combos?.length ? t('base.uniquely_retrievable') : t('base.less_than_100_retrieval'));
 		}
 	}
 
@@ -1490,10 +1539,10 @@ export function printPortalStatus<T extends CrewMember>(crew: T, showNever?: boo
 	let ob = crew.obtained?.toLowerCase() ?? "Unknown";
 
 	if (showNever && (ob.includes("faction") || ob.includes("missions") || ob.includes("fuse") || ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection"))) {
-		return (withPortal ? "In Portal: " : "") + `Never${obstr}`;
+		return (withPortal ? `${t('base.in_portal')}: ` : "") + `${t('global.never')}${obstr}`;
 	}
 
-	return (withPortal ? "In Portal: " : "") + `${crew.in_portal ? "Yes" : "No"}${obstr}`;
+	return (withPortal ? `${t('base.in_portal')}: ` : "") + `${crew.in_portal ? t('global.yes') : t('global.no')}${obstr}`;
 }
 
 export function getVoyageQuotient<T extends CrewMember>(crew: T) {

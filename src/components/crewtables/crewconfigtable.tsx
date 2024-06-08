@@ -27,6 +27,8 @@ type CrewConfigTableProps = {
 
 export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
+	const { CREW_ARCHETYPES } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { pageId, rosterType, initOptions, rosterCrew, crewFilters, lockableCrew } = props;
 
@@ -43,12 +45,12 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	pseudos.push('date_added');
 
 	const tableConfig: ITableConfigRow[] = [
-		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: pseudos },
-		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['rarity'] },
+		{ width: 3, column: 'name', title: t('base.crew'), pseudocolumns: pseudos },
+		{ width: 1, column: 'max_rarity', title: t('base.rarity'), reverse: true, tiebreakers: ['rarity'] },
 	];
 	if (showTraitMatches) {
 		tableConfig.push(
-			{ width: 1, column: 'traits_matched.length', title: 'Matches', reverse: true, tiebreakers: ['max_rarity', 'rarity'] }
+			{ width: 1, column: 'traits_matched.length', title: t('options.trait_match.matches'), reverse: true, tiebreakers: ['max_rarity', 'rarity'] }
 		);
 	}
 	(props.tableConfig ?? []).forEach(column => tableConfig.push(column));
@@ -83,7 +85,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	);
 
 	function showThisCrew(crew: IRosterCrew, filters: [], filterType: string): boolean {
-		// Apply filters		
+		// Apply filters
 		let showCrew = true;
 		for (let i = 0; i < crewFilters.length; i++) {
 			if (!crewFilters[i].filterTest(crew)) {
@@ -119,7 +121,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name}</Link></span>
 						</div>
 						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew, showOwned)}</div>
 					</div>

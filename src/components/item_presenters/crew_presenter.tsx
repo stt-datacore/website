@@ -1,9 +1,10 @@
 import * as React from "react";
 import { CrewMember, Skill, SkillData } from "../../model/crew";
-import { CompletionState, PlayerBuffMode, PlayerCrew, PlayerImmortalMode } from "../../model/player";
+import { CompletionState, PlayerBuffMode, PlayerCrew, PlayerImmortalMode, TranslateMethod } from "../../model/player";
 import { Dropdown, Rating } from "semantic-ui-react";
 import CrewStat from "../crewstat";
 import {
+    crewGender,
     formatTierLabel,
     getSkills,
     gradeToColor,
@@ -85,8 +86,18 @@ const checkedStyle: React.CSSProperties = {
 };
 
 export class StatLabel extends React.Component<StatLabelProps> {
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
+
     render() {
         const { title, value } = this.props;
+        
+        let sizeDefault = '12.75em';
+        let sizeMobile = '12.5em';
+        if (this.context.localized.language === 'de') {
+            sizeDefault = '15em';
+            sizeMobile = '14em';
+        }
 
         return (            
             <Label
@@ -96,9 +107,10 @@ export class StatLabel extends React.Component<StatLabelProps> {
                     flexDirection: "row",
                     justifyContent: "space-between",
                     marginBottom: "0.5em",
+                    flexWrap: 'wrap',
                     marginLeft: 0,
                     width:
-                        window.innerWidth < DEFAULT_MOBILE_WIDTH ? "12.5em" : "12.75em",
+                        window.innerWidth < DEFAULT_MOBILE_WIDTH ? sizeMobile : sizeDefault,
                 }}
             >
                 {title}
@@ -115,9 +127,7 @@ export interface CollectionDisplayProps {
 }
 
 export const CollectionDisplay = (props: CollectionDisplayProps) => {
-    const tinyCol = TinyStore.getStore('collections');
     const dispClick = (e, col: string) => {
-        
         navigate("/collections?select=" + encodeURIComponent(col));
     }
 
@@ -147,6 +157,7 @@ export interface BuffSelectorProps {
     setBuff: (value: PlayerBuffMode) => void;
     style?: React.CSSProperties | undefined;
     available: HoverSelectorConfig<PlayerBuffMode>[];
+    t: TranslateMethod
 }
 
 export interface ImmortalSelectorProps {
@@ -156,10 +167,13 @@ export interface ImmortalSelectorProps {
     setImmortalMode: (value: PlayerImmortalMode) => void;
     style?: React.CSSProperties | undefined;
     available: HoverSelectorConfig<PlayerImmortalMode>[];
+    t: TranslateMethod,
+    gender?: 'm' | 'f' | '';
 }
 
 
 function drawBuff(
+    t: TranslateMethod,
     key: string | number,
     data: PlayerBuffMode,
     buffClick?: (value: PlayerBuffMode) => void
@@ -182,7 +196,7 @@ function drawBuff(
                     title="No Boosts Applied"
                     style={{ ...dormantStyle, fontSize: "0.8em", marginRight: "0.5em" }}
                 />
-                {BuffNames[data]}
+                {t(BuffNames[data])}
             </div>
         );
     } else if (data === "player") {
@@ -198,7 +212,7 @@ function drawBuff(
                         marginRight: "0.5em",
                     }}
                 />
-                {BuffNames[data]}
+                {t(BuffNames[data])}
             </div>
         );
     } else if (data === "quipment") {
@@ -214,7 +228,7 @@ function drawBuff(
                         marginRight: "0.5em",
                     }}
                 />
-                {BuffNames[data]}
+                {t(BuffNames[data])}
             </div>
         );
     } else if (data === "max") {
@@ -226,7 +240,7 @@ function drawBuff(
                     title="Max Boosts Applied"
                     style={{ ...activeStyle, fontSize: "0.8em", marginRight: "0.5em" }}
                 />
-                {BuffNames[data]}
+                {t(BuffNames[data])}
             </div>
         );
     }
@@ -234,11 +248,13 @@ function drawBuff(
 }
 
 function drawImmo(
+    t: TranslateMethod,
     key: string | number,
     data: PlayerImmortalMode,
     immoClick?: (value: PlayerImmortalMode) => void,
     immoed?: boolean,
-    prospect?: boolean
+    prospect?: boolean,
+    gender?: "m" | "f" | ""
 ): JSX.Element {
     const immoclick = (
         e: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -250,57 +266,69 @@ function drawImmo(
         }
     };
 
-    if (data === "full") {
-        return (
-            <div style={{ display: "inline-flex" }}>
-                <i
-                    onClick={(e) => immoclick(e, data)}
-                    className={immoed ? "check icon" : "star icon"}
-                    title="Immortalized"
-                    style={{
-                        ...(immoed ? ownedGreenStyle : activeStyle),
-                        fontSize: "0.8em",
-                        marginRight: "0.5em",
-                    }}
-                />
-                {!immoed && "Shown "}{prospect ? ProspectImmortalNames[data] : ImmortalNames[data]}
-            </div>
-        );
-    } else if (data === "frozen") {
-        return (
-            <div style={{ display: "inline-flex" }}>
-                <i
-                    onClick={(e) => immoclick(e, data)}
-                    className="snowflake icon"
-                    title="Frozen"
-                    style={{ ...frozenStyle, fontSize: "0.8em", marginRight: "0.5em" }}
-                />
-                {prospect ? ProspectImmortalNames[data] : ImmortalNames[data]}
-            </div>
-        );
-    } else {
-        return (
-            <div style={{ display: "inline-flex" }}>
-                <i
-                    onClick={(e) => immoclick(e, data)}
-                    className="star icon"
-                    title=""
-                    style={{ ...dormantStyle, fontSize: "0.8em", marginRight: "0.5em" }}
-                />
-                {prospect ? ProspectImmortalNames[data] : ImmortalNames[data]}
-            </div>
-        );
+    let imname = '';
+    let icon = '';
+    let style = {} as React.CSSProperties;
+    let title = '';
+    if (data === 'full') {
+        if (!immoed) {
+            data = "shown_full";
+            icon = 'star icon';
+        }
+        else {
+            icon = 'check icon';
+        }
+        style = {
+            ...(immoed ? ownedGreenStyle : activeStyle),
+            fontSize: "0.8em",
+            marginRight: "0.5em",
+        };
+        title = t('crew_state.immortalized', { __gender: gender ?? '' });
     }
+    else if (data === 'frozen') {
+        icon = 'snowflake icon';
+        style = { ...frozenStyle, fontSize: "0.8em", marginRight: "0.5em" };
+        title = t('crew_state.frozen', { __gender: gender ?? '' });
+    }
+    else {
+        icon = 'star icon'
+        style = { ...dormantStyle, fontSize: "0.8em", marginRight: "0.5em" };
+    }
+    
+    if (prospect) {
+        imname = t(ProspectImmortalNames[data], { __gender: gender ?? '', stars: data.toString() });
+    }
+    else {
+        imname = t(ImmortalNames[data], { __gender: gender ?? '', stars: data.toString() });
+    }    
+
+    const immoName = imname;
+    const immoIcon = icon;
+    const immoStyle = style;
+    const immoTitle = title;
+
+    return (
+        <div key={key} style={{ display: "inline-flex" }}>
+            <i
+                onClick={(e) => immoclick(e, data)}
+                className={immoIcon}
+                title={immoTitle}
+                style={immoStyle}
+            />
+            {immoName}
+        </div>
+    );
 }
 
 export class BuffSelector extends React.Component<BuffSelectorProps> {
     render() {
+        const { t } = this.props;
         return (
             <div style={this.props.style}>
                 <Dropdown
                     inline
-                    trigger={drawBuff("buffTrig", this.props.buff)}
-                    placeholder={"Display Buffs"}
+                    trigger={drawBuff(this.props.t, "buffTrig", this.props.buff)}
+                    placeholder={t('hints.display_buffs')}
                     options={this.props.available}
                     value={this.props.buff}
                     onChange={(e, { value }) =>
@@ -315,17 +343,20 @@ export class BuffSelector extends React.Component<BuffSelectorProps> {
 
 export class ImmortalSelector extends React.Component<ImmortalSelectorProps> {
     render() {
+        const { t } = this.props;
         return (
             <div style={this.props.style}>
                 <Dropdown
                     inline
-                    placeholder={"Crew Level"}
+                    placeholder={t('hints.crew_level')}
                     trigger={drawImmo(
+                        this.props.t,
                         "immoTrig",
                         this.props.immortalMode,
                         undefined,
                         this.props.immoed,
-                        this.props.prospect
+                        this.props.prospect,
+                        this.props.gender
                     )}
                     options={this.props.available}
                     value={this.props.immortalMode}
@@ -515,6 +546,7 @@ export class CrewPresenter extends React.Component<
             hideStats,
         } = this.props;
 
+        const { t, tfmt } = this.context.localized;
         const { mobileWidth, pluginsUsed, selectedPlugin } = this.state;
 
         if (!inputCrew) {
@@ -607,7 +639,7 @@ export class CrewPresenter extends React.Component<
                 text: BuffNames[data],
             } as HoverSelectorConfig<PlayerBuffMode>;
 
-            buff.content = drawBuff(idx, data, clickBuff);
+            buff.content = drawBuff(t, idx, data, clickBuff);
             return buff;
         });
 
@@ -620,7 +652,7 @@ export class CrewPresenter extends React.Component<
                 text: crew.prospect ? ProspectImmortalNames[data] : ImmortalNames[data],
             } as HoverSelectorConfig<PlayerImmortalMode>;
 
-            immo.content = drawImmo(idx, data, clickImmo, immoed, crew.prospect);
+            immo.content = drawImmo(t, idx, data, clickImmo, immoed, crew.prospect, crewGender(crew));
             return immo;
         });
 
@@ -651,30 +683,34 @@ export class CrewPresenter extends React.Component<
         let pt: string | undefined = undefined;
         let npt: string | undefined = undefined;
 
+        /**
+         * 
+         */
         if (
             "immortal" in crew &&
             crew.immortal === CompletionState.DisplayAsImmortalUnowned
         ) {
             if (crew.prospect) {
-                pt = "Prospective Crew (Available in the Portal)";
-                npt = "Prospective Crew (Not in the Portal)";    
+                pt = t('crew_state.prospective_crew_portal');
+                npt = t('crew_state.prospective_crew_no_portal');                
             }
             else {
-                pt = "Unowned (Available in the Portal)";
-                npt = "Unowned (Not in the Portal)";    
+                pt = t('crew_state.unowned_portal');
+                npt = t('crew_state.unowned_no_portal');
             }
-        } else if (
+        } 
+        else if (
             !("immortal" in crew) ||
             ("immortal" in crew &&
                 crew.immortal === CompletionState.DisplayAsImmortalStatic)
         ) {
-            pt = "Available in the Portal";
-            npt = "Not in the Portal";
+            pt = t('crew_state.portal_available');
+            npt = t('crew_state.not_in_portal');
         }
 
         const portalText = pt;
         const noPortalText = npt;
-        const isNever = printPortalStatus(crew) === 'Never';
+        const isNever = printPortalStatus(crew, t) === t('global.never');
         const isMobile = this.props.forceVertical || typeof window !== 'undefined' && window.innerWidth < mobileWidth;
 
         return crew ? (
@@ -843,8 +879,8 @@ export class CrewPresenter extends React.Component<
                                     className="ui segment"
                                     title={
                                         "immortal" in crew
-                                            ? printImmoText(crew.immortal)
-                                            : "Crew Is Shown Immortalized"
+                                            ? printImmoText(crew.immortal, undefined, undefined, t, crewGender(crew))
+                                            : t('item_state.item_is_shown_immortalized', { item: t('base.crew'), __gender: crewGender(crew) ?? '' })
                                     }
                                 >
                                     {("immortal" in crew &&
@@ -909,6 +945,7 @@ export class CrewPresenter extends React.Component<
                                 }}
                             >
                                 <BuffSelector
+                                    t={t}
                                     available={availBuffs}
                                     buff={me.playerBuffMode}
                                     setBuff={(e) => clickBuff(e)}
@@ -922,11 +959,13 @@ export class CrewPresenter extends React.Component<
                                 }}
                             >
                                 <ImmortalSelector
+                                    t={t}
                                     immoed={immoed}
                                     prospect={crew.prospect}
                                     available={availImmos}
                                     immortalMode={me.immortalMode}
                                     setImmortalMode={(e) => clickImmo(e)}
+                                    gender={crewGender(crew)}
                                 />
                             </div>
                         </div>
@@ -1041,7 +1080,7 @@ export class CrewPresenter extends React.Component<
                                 }}
                             >
                                 <StatLabel
-                                    title="Big Book Tier"
+                                    title={t('rank_names.bigbook_tier')}
                                     value={
                                         <div
                                             style={{
@@ -1055,11 +1094,11 @@ export class CrewPresenter extends React.Component<
                                 />
 
                                 <StatLabel
-                                    title="Voyage Rank"
+                                    title={t('rank_names.voyage_rank')}
                                     value={"" + crew.ranks.voyRank}
                                 />
 
-                                <StatLabel title="CAB Rating" value={crew.cab_ov ?? "?"} />
+                                <StatLabel title={t('rank_names.cab_rating')} value={crew.cab_ov ?? "?"} />
                             </div>
                         </div>
                     )}
@@ -1077,7 +1116,7 @@ export class CrewPresenter extends React.Component<
                                 }}
                             >
                                 <StatLabel
-                                    title="CAB Grade"
+                                    title={t('rank_names.cab_grade')}
                                     value={
                                         <div
                                             style={{
@@ -1092,33 +1131,33 @@ export class CrewPresenter extends React.Component<
                                     }
                                 />
                                 <StatLabel
-                                    title="Gauntlet Rank"
+                                    title={t('rank_names.gauntlet_rank')}
                                     value={"" + crew.ranks.gauntletRank}
                                 />
 
                                 {!isNever && 
                                 <>
                                 {(crew.in_portal && !!crew.unique_polestar_combos?.length) && 
-                                    <span title={printPortalStatus(crew, true, true, true, true)}>                                    
+                                    <span title={printPortalStatus(crew, t, true, true, true, true)}>                                    
                                     <StatLabel
                                         title=""
-                                        value={<span style={{color:"lightgreen", fontWeight:"bold"}}>Uniquely Retrievable</span>}
+                                        value={<span style={{color:"lightgreen", fontWeight:"bold"}}>{t('base.uniquely_retrievable')}</span>}
                                     />
                                     </span> 
                                     ||
-                                    <span title={printPortalStatus(crew, true, true, true, true)}>
+                                    <span title={printPortalStatus(crew, t, true, true, true, true)}>
                                     <StatLabel                                        
-                                        title="In Portal"
-                                        value={crew.in_portal ? <span style={{color:"lightgreen", fontWeight:"bold"}}>Yes</span> : printPortalStatus(crew, true) }
+                                        title={t('base.in_portal')}
+                                        value={crew.in_portal ? <span style={{color:"lightgreen", fontWeight:"bold"}}>{t('global.yes')}</span> : printPortalStatus(crew, t, true) }
                                     />
                                    </span>
                                 }
                                 </>}
                                 {isNever && 
-                                    <span title={printPortalStatus(crew, true, true, true, true)}>                                  
+                                    <span title={printPortalStatus(crew, t, true, true, true, true)}>                                  
                                     <StatLabel
-                                        title="Obtained"
-                                        value={<span style={{ padding:0, color: CONFIG.RARITIES[5].color, fontWeight:"bold"}}>{prettyObtained(crew)}</span>}                                        
+                                        title={t('global.obtained')}
+                                        value={<span style={{ padding:0, color: CONFIG.RARITIES[5].color, fontWeight:"bold"}}>{prettyObtained(crew, t)}</span>}                                        
                                     />
                                 </span>}
                             </div>

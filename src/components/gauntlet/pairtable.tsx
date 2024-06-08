@@ -5,6 +5,7 @@ import { GauntletPairCard } from "./paircard";
 import { Gauntlet, PairGroup } from "../../model/gauntlets";
 import { Skill } from "../../model/crew";
 import { PlayerBuffMode } from "../../model/player";
+import CONFIG from "../CONFIG";
 
 
 export interface GauntletPairTableProps {
@@ -24,7 +25,7 @@ export const GauntletPairTable = (props: GauntletPairTableProps) => {
         let skilluse: string | undefined = undefined;
 
         if (typeof skill === 'string' && skill.length === 3 && skill.toUpperCase() === skill) {
-            skilluse = shortToSkill(skill);
+            skilluse = shortToSkill(skill, true);
         }
         else if (typeof skill === 'string') {
             skilluse = skill;
@@ -67,7 +68,7 @@ export const GauntletPairTable = (props: GauntletPairTableProps) => {
             {pairGroup.pair.map((p, ik) => {
                 return (
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
-                        <img key={ik} src={getSkillUrl(p)} style={{ height: "1em", maxWidth: "1em", marginLeft: "0.25em", marginRight: "0.25em" }} /> {p} {ik === 0 && <span>&nbsp;/&nbsp;</span>}
+                        <img key={ik} src={getSkillUrl(p)} style={{ height: "1em", maxWidth: "1em", marginLeft: "0.25em", marginRight: "0.25em" }} /> {skillToShort(shortToSkill(p, true)!)} {ik === 0 && <span>&nbsp;/&nbsp;</span>}
                     </div>
                 )
             })}

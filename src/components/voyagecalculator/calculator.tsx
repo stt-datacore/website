@@ -2,7 +2,7 @@ import React from 'react';
 import { Icon, Form, Button, Grid, Message, Segment, Checkbox, Select, Header, Image, Tab, Card, Popup, SemanticICONS } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
-import allTraits from '../../../static/structured/translation_en.json';
+//import allTraits from '../../../static/structured/translation_en.json';
 import { Voyage } from '../../model/player';
 import { IVoyageInputConfig, IVoyageCalcConfig, IVoyageCrew, IVoyageHistory } from '../../model/voyage';
 import { CalcResult, Calculation, Estimate, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
@@ -385,6 +385,8 @@ type BestShipCardProps = {
 
 // BestShipCard to be deprecated. The game should automatically select the best ship for your voyage
 const BestShipCard = (props: BestShipCardProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { SHIP_TRAIT_NAMES } = globalContext.localized;
 	const { voyageConfig, bestShip } = props;
 
 	if (!bestShip) return (<></>);
@@ -397,7 +399,7 @@ const BestShipCard = (props: BestShipCardProps) => {
 			<Card.Content>
 				<Image floated='left' src={`${process.env.GATSBY_ASSETS_URL}${bestShip.ship.icon?.file.slice(1).replace('/', '_')}.png`} style={{ height: '4em' }} />
 				<Card.Header>{bestShip.ship.name}</Card.Header>
-				<p>best ship{bestShip.traited && (<span style={{ marginLeft: '1em' }}>{` +`}{allTraits.ship_trait_names[voyageConfig.ship_trait]}</span>)}</p>
+				<p>best ship{bestShip.traited && (<span style={{ marginLeft: '1em' }}>{` +`}{SHIP_TRAIT_NAMES[voyageConfig.ship_trait]}</span>)}</p>
 				{bestShip.ship.index && (
 					<p style={{ marginTop: '.5em' }}>
 						The game should automatically select {bestShip.ship.name} for your voyage.

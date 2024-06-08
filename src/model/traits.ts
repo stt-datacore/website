@@ -1,3 +1,10 @@
+
+export interface ItemTranslation {
+    symbol: string;
+    name: string;
+    flavor: string;
+}
+
 export interface TranslationSet {
     trait_names: TraitNames
     ship_trait_names: ShipTraitNames
@@ -314,6 +321,10 @@ export interface TranslationSet {
     symbol: string
     name: string
     short_name: string
+    flavor: string
+    action: {
+      name: string
+    }
   }
   
   export interface ShipArchetype {

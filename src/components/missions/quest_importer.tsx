@@ -20,7 +20,8 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
     const { currentHasRemote, questId, quest, setQuest, setError, clearQuest } = props;
     const context = React.useContext(GlobalContext);
     const { playerData} = context.player;
-	
+	const { t } = context.localized;
+    
 	const [collapsed, setCollapsed] = React.useState<boolean | undefined>(undefined);
 
     const hasPlayer = !!playerData;
@@ -88,8 +89,8 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 					requestDismiss={() => setCollapsed(!collapsed && !!currentHasRemote)}
 					config={{
 						dataUrl: `https://app.startrektimelines.com/quest/conflict_info?id=${questId}&client_api=22&continuum=true`,
-						dataName: 'quest',
-						jsonHint: '{"id":',
+                        dataName: t('json_types.quest_data'),
+					    jsonHint: '{"id":',
 						androidFileHint: 'conflict_info.json',
 						iOSFileHint: 'conflict_info?id'
 					}}

@@ -203,6 +203,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 	}
 
 	render() {
+		const { t } = this.context.localized;
 		const { buffs, includeFrozen, excludeFF, onlyEvent, activeItem, searchFilter } = this.state;
 		const { crew: allCrew, items } = this.context.core;
 		const { playerData } = this.context.player;
@@ -306,7 +307,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 						<Menu.Item>
 							<Input
 								icon="search"
-								placeholder="Search..."
+								placeholder={t('global.search_ellipses')}
 								value={this.state.searchFilter}
 								onChange={(e, { value }) => this._onChangeFilter(value)}
 							/>

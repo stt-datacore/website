@@ -7,7 +7,7 @@ export interface IDemand {
 	equipment?: EquipmentItem;
 	factionOnly: boolean;
 	have: number;
-	crewSymbols: string[];	
+	crewSymbols: string[];
 }
 
 export interface ICrewDemandsMeta {
@@ -33,6 +33,7 @@ export interface EquipmentCommon extends PlayerEquipmentItem {
   symbol: string
   type: number
   name: string
+  name_english?: string;
   flavor: string
   flavorContext?: JSX.Element;
   rarity: number
@@ -47,7 +48,7 @@ export interface EquipmentCommon extends PlayerEquipmentItem {
   duration?: number;
   max_rarity_requirement?: number;
   traits_requirement_operator?: string; // "and" | "or" | "not" | "xor";
-  traits_requirement?: string[];  
+  traits_requirement?: string[];
   kwipment?: boolean;
   kwipment_id?: number | string;
 }
@@ -56,6 +57,7 @@ export interface EquipmentItem extends EquipmentCommon {
   symbol: string
   type: number
   name: string
+  name_english?: string;
   flavor: string
   flavorContext?: JSX.Element;
   rarity: number

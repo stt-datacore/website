@@ -145,6 +145,8 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 		let traits_named = schematic.ship.traits_named;
 
 		if (owned) {
+			schematic.ship.name = owned.name;
+			schematic.ship.flavor = owned.flavor;			
 			schematic.ship.accuracy = owned.accuracy;
 			schematic.ship.antimatter = owned.antimatter;
 			schematic.ship.attack = owned.attack;
