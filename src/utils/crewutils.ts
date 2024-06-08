@@ -1115,17 +1115,28 @@ export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): s
 	return variantTraits;
 }
 
-export function printImmoText(immo: number | CompletionState, item?: string, immoText?: string, t?: (value: string, opts?: { [key: string]: string }) => string) {
+/**
+ * Get the crew gender as m or f for use with translation strings.
+ * Required for other languages.
+ * @param crew 
+ * @returns 
+ */
+export function crewGender<T extends CrewMember>(crew: T) {
+	if (crew.traits_hidden.includes('female')) return 'f';
+	else if (crew.traits_hidden.includes('male')) return 'm';
+	else return "";
+}
 
+export function printImmoText(immo: number | CompletionState, item?: string, immoText?: string, t?: (value: string, opts?: { [key: string]: string }) => string, gender?: 'm' | 'f' | '') {
+	gender ??= '';	
 	if (t) {
-		item ??= t('data_names.base.crew');
-		immoText ??= t('crew_state.immortalized');
-	
-		if (immo === -1) return t('immo_text.item_is_level', { item, level: immoText });
-		else if (immo === -5) return t('immo_text.item_is_shown_no_player', { item, level: immoText });
-		else if (immo === -3) return t('immo_text.item_is_shown_unowned', { item, level: immoText });
-		else if (immo === -4) return t('immo_text.item_is_shown_owned', { item, level: immoText });
-		else if (immo === -2) return t('immo_text.item_is_shown', { item, level: immoText });
+		item ??= t(`data_names.base.crew`, { __gender: gender });
+		immoText ??= t(`crew_state.immortalized`, { __gender: gender });
+		if (immo === -1) return t('immo_text.item_is_level', { item, level: immoText, __gender: gender });
+		else if (immo === -5) return t('immo_text.item_is_shown_no_player', { item, level: immoText, __gender: gender });
+		else if (immo === -3) return t('immo_text.item_is_shown_unowned', { item, level: immoText, __gender: gender });
+		else if (immo === -4) return t('immo_text.item_is_shown_owned', { item, level: immoText, __gender: gender });
+		else if (immo === -2) return t('immo_text.item_is_shown', { item, level: immoText, __gender: gender });
 		else if (immo >= 1) {
 			if (immo === 1) {
 				return(t('immo_text.item_is_frozen_one'))
