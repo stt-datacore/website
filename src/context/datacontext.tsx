@@ -520,14 +520,19 @@ export const DataProvider = (props: DataProviderProperties) => {
 				}
 			}
 
-			let scsave = data.ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: sc.ship.level + 1 })) as Ship));
-			for (let ship of scsave) {
+			let scsave = data.ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: 0 })) as Ship));
+			let c = scsave.length;
+			for (let i = 0; i < c; i++) {
+				let ship = scsave[i];
 				if (ship.levels) {
-					let n = highestLevel(ship);
-					if (n === ship.level + 1) {
-						ship = { ...ship };
+					if (ship.name === 'The Artifact') {
+						console.log("here");
 					}
-				}	
+					let n = highestLevel(ship);
+					if (ship.max_level && n === ship.max_level + 1 && ship.levels[`${n}`].hull) {
+						scsave[i] = { ...ship, ...ship.levels[`${n}`] };
+					}
+				}				
 			}
 			data.ships = scsave;
 		}

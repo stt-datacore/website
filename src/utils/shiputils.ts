@@ -131,7 +131,8 @@ export function exportShips(ships: Ship[]): string {
 
 export function highestLevel(ship: Ship) {
 	if (!ship.levels || !Object.keys(ship.levels).length) return 0;
-	let highest = Object.keys(ship.levels).map(m => Number(m)).sort().reverse()[0];
+	let levels = Object.keys(ship.levels).map(m => Number(m)).sort((a ,b) => b - a);
+	let highest = levels[0];
 	return highest;
 }
 
@@ -169,9 +170,8 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 			schematic.ship.owned = false;
 			if (schematic.ship.levels) {
 				let h = highestLevel(schematic.ship);
-				if (h === schematic.ship.level + 1) {
+				if (schematic.ship.max_level && h === schematic.ship.max_level + 1 && schematic.ship.levels[`${h}`].hull) {
 					schematic.ship = { ... schematic.ship, ...schematic.ship.levels[`${h}`] };
-					schematic.ship.level = h - 1;
 				}
 			}
 			schematic.ship.level ??= 0;
