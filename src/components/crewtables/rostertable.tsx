@@ -265,7 +265,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			id: 'g_ranks',
 			available: true,
 			optionText: t('crew_views.gauntlet'),
-			form: <p>{tfmt('data_notes.gauntlet_determination', {
+			form: <p>{tfmt('crew_page.notes.gauntlet_determination', {
 				link: <Link to='/gauntlets'>{t('menu.tools.gauntlet')}</Link>
 			})}</p>,
 			tableConfig: getRanksTableConfig('gauntlet'),
@@ -275,7 +275,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			id: 'v_ranks',
 			available: true,
 			optionText: t('crew_views.voyage'),
-			form: <p>{tfmt('data_notes.voyage_determination', {
+			form: <p>{tfmt('crew_page.notes.voyage_determination', {
 				link: <Link to='/gauntlets'>{t('menu.tools.voyage_calculator')}</Link>
 			})}</p>,
 			tableConfig: getRanksTableConfig('voyage'),

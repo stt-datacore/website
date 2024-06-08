@@ -56,6 +56,10 @@
         "coined_by": "geprägt von {{name}}",
         "max_buffs_applied": "Maximal Buffs angewendete",
         "no_buffs_applied": "Keine Buffs angewendet",
+        "notes": {
+            "gauntlet_determination": "Die Rangliste wurde durch Vorausberechnung ermittelt. Konkrete Ratschläge zur einzusetzenden Crew finden Sie unter {{link}}.",
+            "voyage_determination": "Die Rangliste wurde durch Vorausberechnung ermittelt. Konkrete Ratschläge zur einzusetzenden Crew finden Sie unter {{link}}."
+        },
         "player_buffs_applied": "Spieler-Buffs angewendet"
     },
     "crew_state": {
@@ -84,10 +88,6 @@
         "quipment": "Rüstzeug anzeigen",
         "ship": "Schiffsfähigkeiten anzeigen",
         "voyage": "Reiseränge anzeigen"
-    },
-    "data_notes": {
-        "gauntlet_determination": "Die Rangliste wurde durch Vorausberechnung ermittelt. Konkrete Ratschläge zur einzusetzenden Crew finden Sie unter {{link}}.",
-        "voyage_determination": "Die Rangliste wurde durch Vorausberechnung ermittelt. Konkrete Ratschläge zur einzusetzenden Crew finden Sie unter {{link}}."
     },
     "gauntlet": {
         "browse_gauntlets": "Herausforderungen durchlesen",
