@@ -7,6 +7,7 @@ import { Skills } from '../item_presenters/classic_presenter';
 import { GlobalContext } from '../../context/globalcontext';
 import { printShortDistance } from '../../utils/misc';
 import CONFIG from '../CONFIG';
+import { crewGender } from '../../utils/crewutils';
 
 export interface TraitOptions {
 	key: string;
@@ -135,12 +136,12 @@ export function descriptionLabel(crew: IRosterCrew,  showOwned?: boolean): JSX.E
 				<React.Fragment>
 					{crew.immortal >= CompletionState.Frozen &&
 						<Label style={{ whiteSpace: 'nowrap' }}>
-							<Icon name='snowflake' />{crew.immortal} {crew.traits_hidden.includes('female') ? t('crew_state.frozen_f') : t('crew_state.frozen_m')}
+							<Icon name='snowflake' />{crew.immortal} {t('crew_state.frozen', { __gender: crewGender(crew) })}
 						</Label>
 					}
 					{crew.immortal === CompletionState.Immortalized &&
 						<Label style={{ whiteSpace: 'nowrap' }}>
-							<Icon name='star' color='yellow' /> {crew.traits_hidden.includes('female') ? t('crew_state.immortalized_f') : t('crew_state.immortalized_m')}
+							<Icon name='star' color='yellow' /> {t('crew_state.immortalized', { __gender: crewGender(crew) })}
 						</Label>
 					}
 				</React.Fragment>
@@ -232,7 +233,7 @@ export const OwnedLabel = (props: { crew: IRosterCrew, statsPopup?: boolean }) =
 		return (
 			<Label style={{ whiteSpace: 'nowrap' }}>
 				<Icon name='star' color='yellow' />
-				{crew.traits_hidden.includes('female') ? t('crew_state.immortalized_f') : t('crew_state.immortalized_m')}
+				{t('crew_state.immortalized', { __gender: crewGender(crew) })}
 			</Label>
 		);
 	}
