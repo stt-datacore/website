@@ -96,12 +96,10 @@
         "voyage": "Mostrar rangos de viaje"
     },
     "gauntlet": {
-        "notes": {
-
-        },
         "browse_gauntlets": "Explorar los retos",
         "gauntlet": "Reto",
         "gauntlets": "Retos",
+        "notes": {},
         "owned_status": {
             "any": "Toda la tripulación",
             "fe": "Tripulación propia y totalmente equipada",

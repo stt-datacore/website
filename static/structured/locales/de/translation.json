@@ -58,7 +58,7 @@
         "no_buffs_applied": "Keine Buffs angewendet",
         "notes": {
             "gauntlet_determination": "Die Rangliste wurde durch Vorausberechnung ermittelt. Konkrete Ratschläge zur einzusetzenden Crew finden Sie unter {{link}}.",
-            "voyage_determination": "Die Rangliste wurde durch Vorausberechnung ermittelt. Konkrete Ratschläge zur einzusetzenden Crew finden Sie unter {{link}}."    
+            "voyage_determination": "Die Rangliste wurde durch Vorausberechnung ermittelt. Konkrete Ratschläge zur einzusetzenden Crew finden Sie unter {{link}}."
         },
         "player_buffs_applied": "Spieler-Buffs angewendet"
     },

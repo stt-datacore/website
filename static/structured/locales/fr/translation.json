@@ -58,7 +58,7 @@
         "no_buffs_applied": "Aucun effets appliqués",
         "notes": {
             "gauntlet_determination": "Classements déterminés par précalcul. Pour des conseils spécifiques sur l'équipage à utiliser, consultez {{link}}.",
-            "voyage_determination": "Classements déterminés par précalcul. Pour des conseils spécifiques sur l'équipage à utiliser, consultez les {{link}}."    
+            "voyage_determination": "Classements déterminés par précalcul. Pour des conseils spécifiques sur l'équipage à utiliser, consultez les {{link}}."
         },
         "player_buffs_applied": "Effets de joueur appliqués"
     },

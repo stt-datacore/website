@@ -58,7 +58,7 @@
         "no_buffs_applied": "No buffs applied",
         "notes": {
             "gauntlet_determination": "Rankings determined by precalculation. For specific advice on crew to use, consult {{link}}.",
-            "voyage_determination": "Rankings determined by precalculation. For specific advice on crew to use, consult the {{link}}."    
+            "voyage_determination": "Rankings determined by precalculation. For specific advice on crew to use, consult the {{link}}."
         },
         "player_buffs_applied": "Player buffs applied"
     },
@@ -111,9 +111,6 @@
         "previous_gauntlets": "Previous Gauntlets",
         "show_buffs_heading": "Show Buffs",
         "skills_and_pairs": "Skills & Pairs",
-        "titles": {
-            
-        },
         "today_gauntlet": "Today's Gauntlet",
         "unowned_status": {
             "any": "All Crew",
