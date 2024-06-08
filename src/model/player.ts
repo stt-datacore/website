@@ -14,7 +14,7 @@ export type TranslateMethod = (key: string, options?: { [key: string]: string })
 
 export type PlayerBuffMode = 'none' | 'player' | 'max' | 'quipment';
 
-export type PlayerImmortalMode = 'owned' | 'min' | 2 | 3 | 4 | 'full' | 'frozen'
+export type PlayerImmortalMode = 'owned' | 'min' | 2 | 3 | 4 | 'full' | 'frozen' | 'shown_full';
 
 export interface AtlasIcon extends Icon {
     atlas_info: string
@@ -855,7 +855,7 @@ export interface Player {
     gather_pools?: GatherPool[]
     craft_bonus?: number
     refresh_cost?: RefreshCost
-    supports_boosts?: boolean
+    supports_buffs?: boolean
     shuttles?: Shuttle[]
     bonus_crew?: string[]
     bonus_traits?: string[]
