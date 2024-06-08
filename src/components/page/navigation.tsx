@@ -8,7 +8,7 @@ import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { NavItem, createSubMenu, DefaultOpts, DefaultOptsMobile, drawMenuItem, MaxMenuItems, MaxMobileItems, getAllOptions as getAllMenuOptions, parsePermalink, renderColumnsMenu } from './util';
 import { useStateWithStorage } from '../../utils/storage';
 import { PlayerMenu } from "./playermenu";
-import { SupportedLanguage } from '../../context/localizedcontext';
+import { SupportedLanguage, getBrowserLanguage } from '../../context/localizedcontext';
 
 
 type NavigationProps = {
@@ -237,7 +237,10 @@ export const Navigation = (props: NavigationProps) => {
 					}
 				},
 				{
-					title: "Default",
+					sidebarRole: 'separator'
+				},
+				{	src: getLanguageIcon(getBrowserLanguage()),
+					title: t('global.default'),
 					customAction: (e) => {
 						setPreferredLanguage(undefined);
 					}

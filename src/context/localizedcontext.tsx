@@ -95,7 +95,7 @@ export const DefaultLocalizedData: ILocalizedData = {
 
 export const LocalizedContext = React.createContext(DefaultLocalizedData);
 
-function getBrowserLanguage(): SupportedLanguage {
+export function getBrowserLanguage(): SupportedLanguage {
     if (typeof window === 'undefined') return 'en';
     let lang = navigator.language.slice(0, 2).toLowerCase();
     switch (lang) {
