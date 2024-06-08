@@ -129,6 +129,12 @@ export function exportShips(ships: Ship[]): string {
 	return simplejson2csv(ships, exportShipFields());
 }
 
+export function highestLevel(ship: Ship) {
+	if (!ship.levels || !Object.keys(ship.levels).length) return 0;
+	let highest = Object.keys(ship.levels).map(m => Number(m)).sort().reverse()[0];
+	return highest;
+}
+
 export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[] {
 	let newShips: Ship[] = [];
 	ship_schematics = JSON.parse(JSON.stringify(ship_schematics));
@@ -164,6 +170,13 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 		} else {
 			schematic.ship.level = 0;
 			schematic.ship.owned = false;
+			if (schematic.ship.levels) {
+				let h = highestLevel(schematic.ship);
+				if (h) {
+					schematic.ship = { ... schematic.ship, ...schematic.ship.levels[`${h}`] };
+					schematic.ship.level = h - 1;
+				}
+			}
 		}
 		
 		if (!schematic.ship.max_level) schematic.ship.max_level = 1;

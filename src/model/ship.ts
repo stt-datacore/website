@@ -39,13 +39,13 @@ export interface ShipLevelStats {
   accuracy: number
   evasion: number
   attack_power: number
-  attack_speed: number
+  attacks_per_second: number
   dps: any
   accuracy_power: number
   evasion_power: number
   accuracy_evasion: any
   shield_regen: number
-  crit_rating: number
+  crit_chance: number
   crit_bonus: number
   antimatter: number
   next_schematics: number
