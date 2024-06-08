@@ -34,7 +34,7 @@ export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, 
 	let stats = [] as string[];
 
 	const rankType = rank => {
-		return rank.startsWith('V_') ? t('data_names.base.voyage') : rank.startsWith('G_') ? t('data_names.base.gauntlet') : t('global.base');
+		return rank.startsWith('V_') ? t('base.voyage') : rank.startsWith('G_') ? t('base.gauntlet') : t('global.base');
 	};
 
 	for (let rank in crew.ranks) {
@@ -52,13 +52,13 @@ export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, 
 			}
 			if (rank === 'voyTriplet') {
 				if (crew.ranks[rank] && (crew.ranks.voyTriplet?.rank ?? 0) <= 9)
-					stats.push(`${t('data_names.base.voyage')} #${crew.ranks.voyTriplet?.rank} ${crew.ranks.voyTriplet?.name ? translateSkills(crew.ranks.voyTriplet?.name, ' / ') : ''}`);
+					stats.push(`${t('base.voyage')} #${crew.ranks.voyTriplet?.rank} ${crew.ranks.voyTriplet?.name ? translateSkills(crew.ranks.voyTriplet?.name, ' / ') : ''}`);
 			}
 		}
 	}
 
 	if (simple) {
-		stats.push(`${t('data_names.base.voyages')} #${crew.ranks.voyRank}`);
+		stats.push(`${t('base.voyages')} #${crew.ranks.voyRank}`);
 		return stats.join(' | ');
 	} else {
 		if (stats.length === 0) {

@@ -301,7 +301,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
                 <ShipPresenter hover={false} ship={activeShip ?? ship} showIcon={true} storeName='shipProfile' />
 
-				<h3>{t('data_names.ship.battle_stations')}</h3>
+				<h3>{t('ship.battle_stations')}</h3>
 				<div style={{
 					display: "flex",
 					flexDirection: "row",
@@ -337,7 +337,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 							}
 						</div>
 						<div>
-							<Button disabled={!crewStations[idx]} onClick={(e) => this.clearStation(idx)}>{t('data_names.ship.clear_station')}</Button>
+							<Button disabled={!crewStations[idx]} onClick={(e) => this.clearStation(idx)}>{t('ship.clear_station')}</Button>
 						</div>
 					</div>
 					))}

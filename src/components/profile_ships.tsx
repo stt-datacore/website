@@ -245,56 +245,56 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 							sorted={column === 'name' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('name')}
 						>
-							{t('data_names.ship.ship')}
+							{t('ship.ship')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'antimatter' ? direction ?? undefined  : undefined}
 							onClick={() => this._handleSort('antimatter')}
 						>
-							{t('data_names.ship.antimatter')}
+							{t('ship.antimatter')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'accuracy' ? direction ?? undefined  : undefined}
 							onClick={() => this._handleSort('accuracy')}
 						>
-							{t('data_names.ship.accuracy')}
+							{t('ship.accuracy')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'attack' ? direction ?? undefined  : undefined}
 							onClick={() => this._handleSort('attack')}
 						>
-							{t('data_names.ship.attack')}
+							{t('ship.attack')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'evasion' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('evasion')}
 						>
-							{t('data_names.ship.evasion')}
+							{t('ship.evasion')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'hull' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('hull')}
 						>
-							{t('data_names.ship.hull')}
+							{t('ship.hull')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'shields' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('shields')}
 						>
-							{t('data_names.ship.shields')}
+							{t('ship.shields')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							width={1}							
 							sorted={column === 'max_level' ? direction ?? undefined : undefined}
 							onClick={() => this._handleSort('max_level')}
 						>
-							{t('data_names.ship.level')}
+							{t('ship.level')}
 						</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>

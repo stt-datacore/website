@@ -21,7 +21,7 @@ export const AbilityUses = (props: AbilityUsesProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const { selectedUses, setSelectedUses } = props;
 
-	const zeroText = props.zeroText ?? t('data_names.ship.unlimited');
+	const zeroText = props.zeroText ?? t('ship.unlimited');
     const abilityUsesOptions = props.uses.map((u) => {
         return {
             key: u ? `${u}x` : zeroText,
@@ -33,7 +33,7 @@ export const AbilityUses = (props: AbilityUsesProps) => {
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder={props.altTitle ?? t('data_names.ship.uses_per_battle')}
+				placeholder={props.altTitle ?? t('ship.uses_per_battle')}
 				clearable
 				multiple
 				selection
@@ -86,7 +86,7 @@ export const ShipPicker = (props: ShipPickerProps) => {
 			value: c.symbol,
 			image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.icon?.file.slice(1).replace('/', '_')}.png` },
 			text: c.name,
-			title: CONFIG.RARITIES[c.rarity].name + ` ${t('data_names.ship.ship')} / ${t('data_names.ship.attack')} ${c.attack?.toLocaleString()} / ${t('data_names.ship.shields')} ${c.shields?.toLocaleString()} / ${t('data_names.ship.hull')} ${c.hull?.toLocaleString()}`
+			title: CONFIG.RARITIES[c.rarity].name + ` ${t('ship.ship')} / ${t('ship.attack')} ${c.attack?.toLocaleString()} / ${t('ship.shields')} ${c.shields?.toLocaleString()} / ${t('ship.hull')} ${c.hull?.toLocaleString()}`
 		} as DropDownItem
 	));
 
@@ -357,7 +357,7 @@ export const TriggerPicker = (props: TriggerPickerProps) => {
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder={props.altTitle ?? (grants ? t('data_names.ship.grants') : t('data_names.ship.triggers'))}
+				placeholder={props.altTitle ?? (grants ? t('ship.grants') : t('ship.triggers'))}
 				clearable
 				multiple
 				selection

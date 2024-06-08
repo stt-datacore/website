@@ -893,23 +893,23 @@ export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction 
 		let phaseDescription = '';
 
 		if (t) {
-			phaseDescription = t('data_names.ship.charge_phase.after_seconds', { seconds: `${charge_time}` });
+			phaseDescription = t('ship.charge_phase.after_seconds', { seconds: `${charge_time}` });
 			if (cp.ability_amount && action?.ability) {
 				phaseDescription += ', ' + CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type].replace('%VAL%', `${cp.ability_amount}`);
 			}
 			if (cp.bonus_amount) {
-				phaseDescription += ", " + t('data_names.ship.charge_phase.bonus', {
+				phaseDescription += ", " + t('ship.charge_phase.bonus', {
 					amount: `${cp.bonus_amount}`,
 					ability: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type]
 				});				
 			}
 			if (cp.duration) {
-				phaseDescription += `, ` + t('data_names.ship.charge_phase.duration', {
+				phaseDescription += `, ` + t('ship.charge_phase.duration', {
 					time: `${cp.duration - action.duration}`
 				});				
 			}
 			if (cp.cooldown) {
-				phaseDescription += `, ` + t('data_names.ship.charge_phase.cooldown', {
+				phaseDescription += `, ` + t('ship.charge_phase.cooldown', {
 					time: `${cp.cooldown - action.cooldown}`
 				});
 			}
@@ -1130,19 +1130,19 @@ export function crewGender<T extends CrewMember>(crew: T) {
 export function printImmoText(immo: number | CompletionState, item?: string, immoText?: string, t?: (value: string, opts?: { [key: string]: string }) => string, gender?: 'm' | 'f' | '') {
 	gender ??= '';	
 	if (t) {
-		item ??= t(`data_names.base.crew`, { __gender: gender });
+		item ??= t(`base.crew`, { __gender: gender });
 		immoText ??= t(`crew_state.immortalized`, { __gender: gender });
-		if (immo === -1) return t('immo_text.item_is_level', { item, level: immoText, __gender: gender });
-		else if (immo === -5) return t('immo_text.item_is_shown_no_player', { item, level: immoText, __gender: gender });
-		else if (immo === -3) return t('immo_text.item_is_shown_unowned', { item, level: immoText, __gender: gender });
-		else if (immo === -4) return t('immo_text.item_is_shown_owned', { item, level: immoText, __gender: gender });
-		else if (immo === -2) return t('immo_text.item_is_shown', { item, level: immoText, __gender: gender });
+		if (immo === -1) return t('item_state.item_is_level', { item, level: immoText, __gender: gender });
+		else if (immo === -5) return t('item_state.item_is_shown_no_player', { item, level: immoText, __gender: gender });
+		else if (immo === -3) return t('item_state.item_is_shown_unowned', { item, level: immoText, __gender: gender });
+		else if (immo === -4) return t('item_state.item_is_shown_owned', { item, level: immoText, __gender: gender });
+		else if (immo === -2) return t('item_state.item_is_shown', { item, level: immoText, __gender: gender });
 		else if (immo >= 1) {
 			if (immo === 1) {
-				return(t('immo_text.item_is_frozen_one'))
+				return(t('item_state.item_is_frozen_one'))
 			}
 			else {
-				return(t('immo_text.item_is_frozen_many', { copes: `${immo}`}));
+				return(t('item_state.item_is_frozen_many', { copes: `${immo}`}));
 			}			
 		}
 		else return `${item} Is Not ${immoText}`;
@@ -1531,7 +1531,7 @@ export function printPortalStatus<T extends CrewMember>(crew: T, t: TranslateMet
 			obstr = prettyObtained(crew, t, long);
 		}
 		else {
-			obstr = (crew.unique_polestar_combos?.length ? t('data_names.base.uniquely_retrievable') : t('data_names.base.less_than_100_retrieval'));
+			obstr = (crew.unique_polestar_combos?.length ? t('base.uniquely_retrievable') : t('base.less_than_100_retrieval'));
 		}
 	}
 
@@ -1539,10 +1539,10 @@ export function printPortalStatus<T extends CrewMember>(crew: T, t: TranslateMet
 	let ob = crew.obtained?.toLowerCase() ?? "Unknown";
 
 	if (showNever && (ob.includes("faction") || ob.includes("missions") || ob.includes("fuse") || ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection"))) {
-		return (withPortal ? `${t('data_names.base.in_portal')}: ` : "") + `${t('global.never')}${obstr}`;
+		return (withPortal ? `${t('base.in_portal')}: ` : "") + `${t('global.never')}${obstr}`;
 	}
 
-	return (withPortal ? `${t('data_names.base.in_portal')}: ` : "") + `${crew.in_portal ? t('global.yes') : t('global.no')}${obstr}`;
+	return (withPortal ? `${t('base.in_portal')}: ` : "") + `${crew.in_portal ? t('global.yes') : t('global.no')}${obstr}`;
 }
 
 export function getVoyageQuotient<T extends CrewMember>(crew: T) {

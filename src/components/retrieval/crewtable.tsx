@@ -153,9 +153,9 @@ const CrewRow = (props: CrewRowProps) => {
 		if (crew.retrievable === RetrievableState.Never)
 			return <Label color='red'>{crew.alt_source}</Label>;
 		else if (crew.retrievable === RetrievableState.InFuture)
-			return <Label color='red'>{t('data_names.base.not_yet_in_portal')}</Label>;
+			return <Label color='red'>{t('base.not_yet_in_portal')}</Label>;
 		else if (crew.retrievable === RetrievableState.NonUnique)
-			return <Label color='red'>{t('data_names.base.not_uniquely_retrievable')}</Label>;
+			return <Label color='red'>{t('base.not_uniquely_retrievable')}</Label>;
 
 		return <CombosModal crew={crew} />;
 	}
