@@ -1,4 +1,5 @@
-{
+{   
+    "fallback_test": "Testing 1, 2, 3",
     "base": {
         "all_crew": "Show all crew",
         "bigbook_tier": "Tier",
@@ -127,6 +128,7 @@
         "bonuses": "Bonuses",
         "clear": "Clear",
         "close": "Close",
+        "default": "Default",
         "disable": "Disable",
         "disabled": "Disabled",
         "enable": "Enable",
@@ -137,6 +139,7 @@
         "never": "Never",
         "no": "No",
         "obtained": "Obtained",
+        "portal": "Portal",
         "reset": "Reset",
         "search": "Search",
         "search_by_name_or_trait_ellipses": "Search by name or trait...",

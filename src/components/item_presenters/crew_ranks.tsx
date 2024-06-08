@@ -108,7 +108,7 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 						value="" />
 							||
 						<StatLabel 
-							title="Portal"
+							title={t('global.portal')}
 							value={<>
 								<div style={{ color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
 									{printPortalStatus(crew, t, true, false)}
@@ -127,9 +127,9 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 
 				}
 				{crew.quipment_grade && <StatLabel title={t('rank_names.quipment_score')} value={<span style={{color: gradeToColor(crew.quipment_grade) ?? undefined}}>{numberToGrade(crew.quipment_grade)}</span>} />}
-				{markdownRemark.frontmatter.events !== null && (
+				{/* {markdownRemark.frontmatter.events !== null && (
 				<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
-				)}
+				)} */}
 			</div>
 		</React.Fragment>
 	);

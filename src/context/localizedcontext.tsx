@@ -95,7 +95,7 @@ export const DefaultLocalizedData: ILocalizedData = {
 
 export const LocalizedContext = React.createContext(DefaultLocalizedData);
 
-function getBrowserLanguage(): SupportedLanguage {
+export function getBrowserLanguage(): SupportedLanguage {
     if (typeof window === 'undefined') return 'en';
     let lang = navigator.language.slice(0, 2).toLowerCase();
     switch (lang) {
@@ -129,12 +129,14 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			}
 		}
 	);
-	const [preferenceLoaded, setPreferenceLoaded] = React.useState<boolean>(false);
 
+	const [preferenceLoaded, setPreferenceLoaded] = React.useState<boolean>(false);
 	const [language, setLanguage] = useStateWithStorage<SupportedLanguage | undefined>('localized/language', undefined);
 
 	// Localized strings sent to UI
 	const [webStringMap, setWebStringMap] = useStateWithStorage<{[key: string]: string}>('localized/webstrings', {});
+	const [fallbackMap, setFallbackMap] = useStateWithStorage<{[key: string]: string}>('localized/fallback', {});
+
 	const [gameStrings, setGameStrings] = useStateWithStorage<IGameStrings>('localized/gamestrings', defaultGameStrings);
 
 	// Update language on user preference change
@@ -196,6 +198,19 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		const translationResponse: Response = await fetch(`/structured/translation_${newLanguage}.json`);
 		const translationJson: TranslationSet = await translationResponse.json();
 
+		let newFallbackMap = null as any;
+
+		if (!Object.keys(fallbackMap).length) {
+			if (newLanguage !== 'en') {
+				const fallbackResponse: Response = await fetch(`/structured/locales/en/translation.json`);
+				const fallbackJson: TranslationSet = await fallbackResponse.json();
+				newFallbackMap = fallbackJson;
+			}
+			else {
+				newFallbackMap = webStringsJson;
+			}
+		}
+
 		// Only process game strings for non-English locales
 		//	Remember to fall back to default values when directly accessing archetypes
 		const crewArchetypes = {}, shipArchetypes = {}, collections = {}, itemArchetypes = {};
@@ -244,6 +259,10 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			ITEM_ARCHETYPES: itemArchetypes
 		};
 
+		if (newFallbackMap) {
+			setFallbackMap(makeWebstringMap(newFallbackMap));
+		}
+		
 		setWebStringMap(makeWebstringMap(webStringsJson));
 		setGameStrings({...translatedGameStrings});
 
@@ -447,12 +466,12 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		opts ??= {};
 		if ("__gender" in opts && !!opts["__gender"] && typeof opts["__gender"] === 'string') {
 			let newkey = `${v}_${opts["__gender"]}`;
-			if (newkey in webStringMap) {
+			if (newkey in webStringMap || newkey in fallbackMap) {
 				v = newkey;
 			}
 		}
 		try {
-			let obj = webStringMap[v];
+			let obj = webStringMap[v] ?? fallbackMap[v];
 			if (opts && typeof obj === 'string') {
 				let parts = getParts(obj);
 				let finals = [] as string[];
@@ -465,6 +484,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 						}
 						else if (key in webStringMap) {
 							finals.push(webStringMap[key]);
+						}
+						else if (key in fallbackMap) {
+							finals.push(fallbackMap[key]);
 						}
 					}
 					else {
@@ -484,13 +506,13 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		opts ??= {};
 		if ("__gender" in opts && !!opts["__gender"] && typeof opts["__gender"] === 'string') {
 			let newkey = `${v}_${opts["__gender"]}`;
-			if (newkey in webStringMap) {
+			if (newkey in webStringMap || newkey in fallbackMap) {
 				v = newkey;
 			}
 		}
 		try {
-			if (!webStringMap) return <>{v}</>;
-			let obj = webStringMap[v];
+			if (!webStringMap && !fallbackMap) return <>{v}</>;
+			let obj = webStringMap[v] ?? fallbackMap[v];
 			if (opts && typeof obj === 'string') {
 				let parts = getParts(obj);
 				let finals = [] as JSX.Element[];
@@ -503,6 +525,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 						}
 						else if (key in webStringMap) {
 							finals.push(<>{webStringMap[key]}</>);
+						}
+						else if (key in fallbackMap) {
+							finals.push(<>{fallbackMap[key]}</>);
 						}
 					}
 					else {

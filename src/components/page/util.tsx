@@ -23,7 +23,7 @@ export interface NavItem {
 	checkVisible?: (data: NavItem) => boolean;
 	customAction?: (e: Event, data: NavItem) => void;
 	customRender?: (data: NavItem) => JSX.Element;
-    sidebarRole?: 'item' | 'heading';
+    sidebarRole?: 'item' | 'heading' | 'separator';
     optionKey?: string;
 }
 
@@ -69,7 +69,6 @@ const renderColumnsSubmenuItem = ((item: NavItem) => {
 
 export const renderSubmenuItem = (item: NavItem, title?: string, asDropdown?: boolean) => {
     //const menuKey = title?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
-
     if (asDropdown) {
         return (
             <Dropdown.Item key={v4()} onClick={(e) => item.customAction ? item.customAction(e.nativeEvent, item) : navigate(item.link ?? '')}
@@ -119,7 +118,9 @@ export const renderSubmenuItem = (item: NavItem, title?: string, asDropdown?: bo
 }
 
 function formatItem(page: NavItem, style?: React.CSSProperties) {
-
+    if (page.sidebarRole === 'separator') {
+        return <hr style={{color:"#777"}} />
+    }
     return (
         <div title={page.tooltip ?? page.textTitle ?? (typeof page.title === 'string' ? page.title : '')} 
             style={{
@@ -168,7 +169,7 @@ export const createSubMenu = (title: string | JSX.Element | undefined, children:
                     {children.map(item => {
                         if (item.customRender) return item.customRender(item);
                         return (!!item.subMenu?.length && createSubMenu(item.title, item.subMenu, verticalLayout, item, true) ||
-                            <Dropdown.Item icon={item.icon} key={v4()} onClick={(e) => item?.customAction ? item.customAction(e.nativeEvent, item) : navigate(item.link ?? '')}>
+                            <Dropdown.Item disabled={item.sidebarRole === 'separator'} icon={item.icon} key={v4()} onClick={(e) => item?.customAction ? item.customAction(e.nativeEvent, item) : navigate(item.link ?? '')}>
                                 {formatItem(item)}
                             </Dropdown.Item>
                         )
@@ -184,7 +185,7 @@ export const createSubMenu = (title: string | JSX.Element | undefined, children:
 export function drawMenuItem(page: NavItem, idx?: number, dropdown?: boolean) {
     //const menuKey = page.title?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? page.tooltip?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
     return (!!page.subMenu?.length && createSubMenu(page.title ?? '', page.subMenu, dropdown, page) ||
-        <Menu.Item key={v4()} style={{ padding: (!!page.src && !page.title) ? "0 0.5em" : "0 1.25em", height: "48px" }} className='link item'  onClick={(e) => page.customAction ? page.customAction(e.nativeEvent, page) : navigate(page.link ?? '')}>
+        <Menu.Item disabled={page.sidebarRole === 'separator'} key={v4()} style={{ padding: (!!page.src && !page.title) ? "0 0.5em" : "0 1.25em", height: "48px" }} className='link item'  onClick={(e) => page.customAction ? page.customAction(e.nativeEvent, page) : navigate(page.link ?? '')}>
             {formatItem(page)}
         </Menu.Item>)
 }
