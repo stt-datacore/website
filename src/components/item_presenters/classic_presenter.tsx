@@ -5,7 +5,7 @@ import { Segment, Accordion, Table, Rating, Icon, SemanticICONS } from 'semantic
 import { BaseSkills, CrewMember, SkillData } from '../../model/crew';
 import { GlobalContext } from '../../context/globalcontext';
 import CrewStat from '../../components/crewstat';
-import { applyCrewBuffs, prettyObtained } from '../../utils/crewutils';
+import { applyCrewBuffs, crewGender, prettyObtained } from '../../utils/crewutils';
 
 import { ShipSkill } from './shipskill';
 import { CrewRankHighlights, CrewRanks } from './crew_ranks';
@@ -369,7 +369,7 @@ export const Skills = (props: SkillsProps) => {
 				{buffConfig &&
 					<div style={{display:'flex', flexDirection: 'row', alignItems: 'center'}}>
 						<Icon name='arrow alternate circle up' size='small' style={{ color: 'lightgreen' }} />
-						{!compact && <>{t('data_names.crew_page.player_boosts_applied')}</>}
+						{!compact && <>{t('data_names.crew_page.player_buffs_applied')}</>}
 					</div>
 				}
 			</div>
@@ -378,13 +378,7 @@ export const Skills = (props: SkillsProps) => {
 			</div> ||
 			<div className='ui segment'>				
 				{!!owned?.immortal && <>
-					{owned.traits_hidden.includes('female') && <>
-						{owned.immortal > 0 ? <><Icon name='snowflake' /> {owned.immortal} {t('crew_states.frozen_f')}</> : <><Icon name='check' color='green' /> {t('crew_states.immortalized_f')}</>}</> ||  <>{t('data_names.base.level')} {owned?.level}
-					</>}				
-					{!owned.traits_hidden.includes('female') && <>
-						{owned.immortal > 0 ? <><Icon name='snowflake' /> {owned.immortal} {t('crew_states.frozen_m')}</> : <><Icon name='check' color='green' /> {t('crew_states.immortalized_m')}</>}</> ||  <>{t('data_names.base.level')} {owned?.level}
-					</>}				
-				</>}
+					{owned.immortal > 0 ? <><Icon name='snowflake' /> {owned.immortal} {t('crew_states.frozen', { __gender: crewGender(crew) })}</> : <><Icon name='check' color='green' /> {t('crew_states.immortalized', { __gender: crewGender(crew) })}</>}</> ||  <>{t('data_names.base.level')} {owned?.level}				</>}
 				<CrewItemsView crew={owned as PlayerCrew} />
 			</div>}
 		</Segment>
