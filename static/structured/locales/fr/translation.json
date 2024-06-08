@@ -165,7 +165,7 @@
         }
     },
     "hints": {
-        "apply_buffs": "Appliquer des améliorations",
+        "apply_buffs": "Appliquer des effets",
         "display_buffs": "Afficher effets",
         "filter_by_portal_status": "Filtrer par statut du portail",
         "filter_by_rarity": "Filtrer par rareté",
