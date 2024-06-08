@@ -170,7 +170,7 @@
         "trait": "Trait",
         "traits": "Traits"
     },
-    "immo_text": {
+    "item_state": {
         "item_is_frozen_many": "{{item}} is Frozen ({{copies}} Copies)",
         "item_is_frozen_one": "{{item}} is Frozen (1 Copy)",
         "item_is_level": "{{item}} is {{level}}",

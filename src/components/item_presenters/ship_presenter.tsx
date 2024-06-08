@@ -196,7 +196,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                             </a>
                         </h3>
                         <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>
-                            <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in ship ? printImmoText(ship.immortal ?? CompletionState.DisplayAsImmortalStatic, t('ship.ship'), t('ship.max_level'), t) : t('immo_text.item_is_shown', { item: 'base.crew', level: 'crew_state.immortalized'})}>
+                            <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in ship ? printImmoText(ship.immortal ?? CompletionState.DisplayAsImmortalStatic, t('ship.ship'), t('ship.max_level'), t) : t('item_state.item_is_shown', { item: 'base.crew', level: 'crew_state.immortalized'})}>
                                 {
                                     "immortal" in ship && (
                                         ((ship.immortal === 0)) ? 

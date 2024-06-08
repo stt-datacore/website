@@ -170,7 +170,7 @@
         "trait": "Merkmalen",
         "traits": "Merkmalenen"
     },
-    "immo_text": {
+    "item_state": {
         "item_is_frozen_many": "{{item}} ist eingefroren ({{copies}} Kopien)",
         "item_is_frozen_one": "{{item}} ist eingefroren (1 Kopie)",
         "item_is_level": "{{item}} ist {{level}}",

@@ -178,7 +178,7 @@
         "trait": "Caractéristique",
         "traits": "Caractéristiques"
     },
-    "immo_text": {
+    "item_state": {
         "item_is_frozen_many": "{{item}} est gelé ({{copies}} copies)",
         "item_is_frozen_one": "{{item}} est gelé (1 copie)",
         "item_is_level": "{{item}} est {{level}}",
