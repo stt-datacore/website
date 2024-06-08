@@ -168,15 +168,15 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 			}
 			schematic.ship.owned = true;
 		} else {
-			schematic.ship.level = 0;
 			schematic.ship.owned = false;
 			if (schematic.ship.levels) {
 				let h = highestLevel(schematic.ship);
-				if (h) {
+				if (h === schematic.ship.level + 1) {
 					schematic.ship = { ... schematic.ship, ...schematic.ship.levels[`${h}`] };
 					schematic.ship.level = h - 1;
 				}
 			}
+			schematic.ship.level ??= 0;
 		}
 		
 		if (!schematic.ship.max_level) schematic.ship.max_level = 1;
