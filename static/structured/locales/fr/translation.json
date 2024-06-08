@@ -205,7 +205,8 @@
     "buffs": {
         "no_buffs": "Aucun effets",
         "player_buffs": "Effets des joueurs",
-        "max_buffs": "Effets maximum"
+        "max_buffs": "Effets maximum",
+        "quipment_buffs": "Effets de quipement"
     },
     "crew_state": {
         "owned": "Possédée",

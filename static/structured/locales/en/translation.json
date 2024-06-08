@@ -207,7 +207,8 @@
     "buffs": {
         "no_buffs": "No buffs",
         "player_buffs": "Player buffs",
-        "max_buffs": "Max buffs"
+        "max_buffs": "Max buffs",
+        "quipment_buffs": "Quipment Buffs"
     },
     "crew_state": {
         "owned": "Owned",
