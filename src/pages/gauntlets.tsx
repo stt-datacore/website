@@ -856,19 +856,19 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		availBuffs.push({
 			key: 'none',
 			value: 'none',
-			text: BuffNames['none']
+			text: t(BuffNames['none'])
 		})
 
 		if (buffConfig) {
 			availBuffs.push({
 				key: 'player',
 				value: 'player',
-				text: BuffNames['player']
+				text: t(BuffNames['player'])
 			})
 			availBuffs.push({
 				key: 'quipment',
 				value: 'quipment',
-				text: BuffNames['quipment']
+				text: t(BuffNames['quipment'])
 			})
 
 		}
@@ -877,7 +877,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			availBuffs.push({
 				key: 'max',
 				value: 'max',
-				text: BuffNames['max']
+				text: t(BuffNames['max'])
 			})
 
 		}

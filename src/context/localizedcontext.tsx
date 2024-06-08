@@ -445,6 +445,12 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	function t(v: string, opts?: { [key: string]: string }) {
 		opts ??= {};
+		if ("__gender" in opts && !!opts["__gender"] && typeof opts["__gender"] === 'string') {
+			let newkey = `${v}_${opts["__gender"]}`;
+			if (newkey in webStringMap) {
+				v = newkey;
+			}
+		}
 		try {
 			let obj = webStringMap[v];
 			if (opts && typeof obj === 'string') {
@@ -476,6 +482,12 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	function tfmt(v: string, opts?: { [key: string]: string | JSX.Element }): JSX.Element {
 		opts ??= {};
+		if ("__gender" in opts && !!opts["__gender"] && typeof opts["__gender"] === 'string') {
+			let newkey = `${v}_${opts["__gender"]}`;
+			if (newkey in webStringMap) {
+				v = newkey;
+			}
+		}
 		try {
 			if (!webStringMap) return <>{v}</>;
 			let obj = webStringMap[v];

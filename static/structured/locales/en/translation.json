@@ -213,26 +213,29 @@
         "owned": "Owned",
         "unowned": "Unowned",
         "immortalized": "Immortalized",
-        "immortalized_m": "Immortalized",
-        "immortalized_f": "Immortalized",
         "shown_immortalized": "Shown Immortalized",
-        "shown_immortalized_m": "Shown Immortalized",
-        "shown_immortalized_f": "Shown Immortalized",
         "unfused": "Unfused",
         "stars": "{{stars}} Stars",
         "frozen": "Frozen",
-        "frozen_m": "Frozen",
-        "frozen_f": "Frozen",
-        "expires_in": "Crew expires in {{time}}"
+        "expires_in": "Crew expires in {{time}}",
+        "owned_rarity": "Owned Rarity",
+        "prospect_rarity": "Prospect Rarity",
+        "prospective_crew_portal": "Prospective Crew (In Portal)",
+        "prospective_crew_no_portal": "Prospective Crew (Not in Portal)",
+        "unowned_portal": "Unowned Crew (In Portal)",
+        "unowned_no_portal": "Unowned Crew (Not in Portal)",
+        "portal_available": "Available in Portal",
+        "not_in_portal": "Not in Portal"
     },
     "immo_text": {
         "item_is_level": "{{item}} is {{level}}",
-        "item_is_shown": "{{item}} Is Shown {{level}}",
-        "item_is_shown_no_player": "{{item}} Is Shown {{level}} (No Player Data)",
-        "item_is_shown_owned": "{{item}} Is Shown {{level}} (Owned)",
-        "item_is_shown_unowned": "{{item}} Is Shown {{level}} (Unowned)",
-        "item_is_frozen_one": "{{item}} Is Frozen (1 Copy)",
-        "item_is_frozen_many": "{{item}} Is Frozen ({{copies}} Copies)"
+        "item_is_shown": "{{item}} is shown {{level}}",
+        "item_is_shown_immortalized": "{{item}} is shown Immortalized",
+        "item_is_shown_no_player": "{{item}} is shown {{level}} (No Player Data)",
+        "item_is_shown_owned": "{{item}} is shown {{level}} (Owned)",
+        "item_is_shown_unowned": "{{item}} is shown {{level}} (Unowned)",
+        "item_is_frozen_one": "{{item}} is Frozen (1 Copy)",
+        "item_is_frozen_many": "{{item}} is Frozen ({{copies}} Copies)"
     },
     "hints": {
         "apply_buffs": "Apply stat buffs",
@@ -245,7 +248,8 @@
         "select_ship_abilities": "Select Ship Abilities",
         "select_ship_ability_amount": "Select Ship Ability Amount",
         "trait": "Trait",
-        "traits": "Traits"
+        "traits": "Traits",
+        "display_buffs": "Display Buffs"
     },
     "options": {
         "trait_match": {
@@ -301,7 +305,9 @@
             "all_fuse_skill_fffe_colon": "Skills at all fuses when fully leveled and fully equipped:",
             "aka_colon": "Also known as:",
             "coined_by": "coined by {{name}}",
-            "player_boosts_applied": "Player boosts applied"
+            "player_buffs_applied": "Player buffs applied",
+            "no_buffs_applied": "No buffs applied",
+            "max_buffs_applied": "Max buffs applied"
         },
         "base": {
             "crew": "Crew",

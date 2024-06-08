@@ -203,29 +203,33 @@
         }
     },
     "buffs": {
-        "no_buffs": "Keine Verbesserungen",
-        "player_buffs": "Verbesserungen der Spieler",
-        "max_buffs": "Maximale Verbesserungen"
+        "no_buffs": "Keine Buffs",
+        "player_buffs": "Buffs der Spieler",
+        "max_buffs": "Maximale Buffs",
+        "quipment_buffs": "Rüstzeug Buffs"
     },
     "crew_state": {
         "owned": "Rekrutiert",
         "unowned": "Nicht Rekrutiert",
         "immortalized": "Unsterblich",
-        "immortalized_m": "Unsterblich",
-        "immortalized_f": "Unsterblich",
         "shown_immortalized": "Als unsterblich dargestellt",
-        "shown_immortalized_m": "Als unsterblich dargestellt",
-        "shown_immortalized_f": "Als unsterblich dargestellt",
         "unfused": "Unfusioniert",
         "stars": "{{stars}} Sterne",
         "frozen": "Eingefroren",
-        "frozen_m": "Eingefroren",
-        "frozen_f": "Eingefroren",
-        "expires_in": "Crew läuft in {{time}} ab"
+        "expires_in": "Crew läuft in {{time}} ab",
+        "owned_rarity": "Seltenheit im Besitz",
+        "prospect_rarity": "Potenzielle Seltenheit",
+        "prospective_crew_portal": "Potenzielle Crew (Im Zeitportal)",
+        "prospective_crew_no_portal": "Potenzielle Crew (Nicht im Zeitportal)",
+        "unowned_portal": "Unbesessene Crew (Im Zeitportal)",
+        "unowned_no_portal": "Unbesessene Crew (Nicht im Zeitportal)",
+        "portal_available": "Im Zeitportal verfügbar",
+        "not_in_portal": "Nicht im Zeitportal"
     },
     "immo_text": {
         "item_is_level": "{{item}} ist {{level}}",
         "item_is_shown": "{{item}} wird angezeigt {{level}}",
+        "item_is_shown_immortalized": "{{item}} wird Unsterblich dargestellt",
         "item_is_shown_no_player": "{{item}} wird angezeigt {{level}} (keine Spielerdaten)",
         "item_is_shown_owned": "{{item}} wird angezeigt {{level}} (im Besitz)",
         "item_is_shown_unowned": "{{item}} wird angezeigt {{level}} (nicht im Besitz)",
@@ -243,7 +247,8 @@
         "select_ship_abilities": "Schiffsfähigkeiten auswählen",
         "select_ship_ability_amount": "Schiffsfähigkeitenbetrag auswählen",
         "trait": "Merkmalen",
-        "traits": "Merkmalenen"
+        "traits": "Merkmalenen",
+        "display_buffs": "Buffs anzeigen"
     },
     "options": {
         "trait_match": {
@@ -265,7 +270,7 @@
         "ship": "Schiffsfähigkeiten anzeigen",
         "gauntlet": "Herausforderungsränge anzeigen",
         "voyage": "Reiseränge anzeigen",
-        "quipment": "Rüstzeugswerte anzeigen",
+        "quipment": "Rüstzeug anzeigen",
         "max_quipment": "Maximale Rüstzeug anzeigen",
         "crew_utility": "Das Crew-Dienstprogramm"      
     },    
@@ -299,7 +304,9 @@
             "all_fuse_skill_fffe_colon": "Fertigkeiten bei allen Sicherungen bei vollem Level und voller Ausrüstung:",
             "aka_colon": "Auch bekannt als:",
             "coined_by": "geprägt von {{name}}",
-            "player_boosts_applied": "Spieler-Boosts angewendet"
+            "player_buffs_applied": "Spieler-Buffs angewendet",
+            "no_buffs_applied": "Keine Buffs angewendet",
+            "max_buffs_applied": "Maximal Buffs angewendete"
         },
         "base": {
             "crew": "Crew",
@@ -310,10 +317,10 @@
             "voyages": "Reisen",
             "gauntlet": "Herausforderung",
             "all_crew": "Die gesamte Crew anzeigen",
-            "in_portal": "Im Portal",
-            "not_in_portal": "Nicht im Portal",
-            "not_yet_in_portal": "Noch nicht im Portal",
-            "never_in_portal": "Nie im Portal",
+            "in_portal": "Im Zeitportal",
+            "not_in_portal": "Nicht im Zeitportal",
+            "not_yet_in_portal": "Noch nicht im Zeitportal",
+            "never_in_portal": "Nie im Zeitportal",
             "uniquely_retrievable": "Eindeutig abrufbar",
             "not_uniquely_retrievable": "Nicht eindeutig abrufbar",            
             "less_than_100_retrieval": "< 100 % Abrufbar",

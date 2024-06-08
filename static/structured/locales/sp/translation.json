@@ -203,9 +203,10 @@
         }
     },
     "buffs": {
-        "no_buffs": "Aucun mejoras",
-        "player_buffs": "Mejoras de los juegos",
-        "max_buffs": "Mejoras máximas"
+        "no_buffs": "Sin efectos",
+        "player_buffs": "Efectos de los juegos",
+        "max_buffs": "Efectos máximas",
+        "quipment_buffs": "Efectos de quipo"
     },
     "crew_state": {
         "owned": "Propiedad",
@@ -221,11 +222,22 @@
         "frozen": "Congelado",
         "frozen_m": "Congelado",
         "frozen_f": "Congelada",
-        "expires_in": "La tripulación caduca en {{time}}"
+        "expires_in": "La tripulación caduca en {{time}}",
+        "owned_rarity": "Rareza propia",
+        "prospect_rarity": "Posible Rareza",
+        "prospective_crew_portal": "Equipo potencial (en el portal)",
+        "prospective_crew_no_portal": "Equipo potencial (no en el portal)",
+        "unowned_portal": "Tripulación sin propietario (en el portal)",
+        "unowned_no_portal": "Tripulación sin propietario (no en el portal)",
+        "portal_available": "Disponible en el Portal",
+        "not_in_portal": "No en el portal"
     },
     "immo_text": {
         "item_is_level": "{{item}} es {{level}}",
         "item_is_shown": "{{item}} se muestra {{level}}",
+        "item_is_shown_immortalized": "{{item}} se muestra Inmortalizado",
+        "item_is_shown_immortalized_m": "{{item}} se muestra Inmortalizado",
+        "item_is_shown_immortalized_f": "{{item}} se muestra Inmortalizada",
         "item_is_shown_no_player": "{{item}} se muestra {{level}} (sin datos del jugador)",
         "item_is_shown_owned": "{{item}} se muestra {{level}} (propiedad)",
         "item_is_shown_unowned": "{{item}} se muestra {{level}} (sin propietario)",
@@ -233,7 +245,7 @@
         "item_is_frozen_many": "{{item}} está congelado ({{copies}} copias)"
     },
     "hints": {
-        "apply_buffs": "Aplicar mejoras",
+        "apply_buffs": "Aplicar efectos",
         "filter_by_rarity": "Filtrar por rareza",
         "filter_by_trait": "Filtrar por característica",
         "filter_by_portal_status": "Filtrar por estado del portal",
@@ -243,7 +255,8 @@
         "select_ship_abilities": "Seleccionar habilidades del barco",
         "select_ship_ability_amount": "Seleccione la cantidad de capacidad del barco",
         "trait": "Característica",
-        "traits": "Características"
+        "traits": "Características",
+        "display_buffs": "Mostrar efectos"
     },
     "options": {
         "trait_match": {
@@ -299,7 +312,9 @@
             "all_fuse_skill_fffe_colon": "Habilidades en todos los fusibles cuando están completamente nivelados y equipados:",
             "aka_colon": "También conocido como:",
             "coined_by": "acuñado por {{name}}",
-            "player_boosts_applied": "Mejoras de jugador aplicadas"
+            "player_buffs_applied": "Efectos de jugador aplicadas",
+            "no_buffs_applied": "No se aplican efectos",
+            "max_buffs_applied": "Efectos máximos aplicados"
         },
         "base": {
             "crew": "Tripulación",
