@@ -7,6 +7,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import { UserContext, SolverContext } from './context';
 import { exportDefaults } from './fbbdefaults';
 import { isNodeOpen, suppressDuplicateTraits } from './fbbutils';
+import { TraitNames } from '../../model/traits';
 
 const exportCompact = {
 	header: 'hide',
@@ -24,9 +25,7 @@ const exportCompact = {
 	flag_nonoptimal: ''
 } as ExportPreferences;
 
-const exportNodeGroups = (node: SolverNode, nodeGroups: FilteredGroup[], traitData: SolverTrait[], exportPrefs: ExportPreferences) => {
-	const globalContext = React.useContext(GlobalContext);
-	const { TRAIT_NAMES } = globalContext.localized;
+const exportNodeGroups = (node: SolverNode, nodeGroups: FilteredGroup[], traitData: SolverTrait[], exportPrefs: ExportPreferences, TRAIT_NAMES: TraitNames) => {
 	const compareTraits = (a, b) => b.traits.length - a.traits.length;
 	const compareCrew = (a, b) => b.crewList.length - a.crewList.length;
 	const compareScore = (a, b) => b.score - a.score;
@@ -98,7 +97,7 @@ const exportNodeGroups = (node: SolverNode, nodeGroups: FilteredGroup[], traitDa
 
 	let nodeHeader = `Node ${node.index+1}`;
 	if (prefValue(exportPrefs, 'node_traits') === 'show')
-		nodeHeader += ` (${nodeTraits(node)})`;
+		nodeHeader += ` (${nodeTraits(node, TRAIT_NAMES)})`;
 
 	output += formatValue(prefValue(exportPrefs, 'node_format'), nodeHeader) + '\n' + nodeList;
 
@@ -118,9 +117,7 @@ const formatValue = (format: string, value: string) => {
 	return formattedValue;
 };
 
-const nodeTraits = (node: SolverNode): string => {
-	const globalContext = React.useContext(GlobalContext);
-	const { TRAIT_NAMES } = globalContext.localized;
+const nodeTraits = (node: SolverNode, TRAIT_NAMES: TraitNames): string => {
 	const traitName = (trait: string, index: number) => {
 		let name: string = TRAIT_NAMES[trait];
 		if (node.solveStatus !== SolveStatus.Infallible && index >= node.givenTraitIds.length)
@@ -140,13 +137,14 @@ type CrewNodeExporterProps = {
 
 export const CrewNodeExporter = (props: CrewNodeExporterProps) => {
 	const userContext = React.useContext(UserContext);
+	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
 	const { exportPrefs } = userContext;
 	const { node, nodeGroups, traits } = props;
 
 	const copyNode = () => {
 		// When solve is unconfirmed, rewrite traitData to ignore duplicates
 		const traitData: SolverTrait[] = suppressDuplicateTraits(traits, node.solve);
-		const output = exportNodeGroups(node, nodeGroups, traitData, exportPrefs);
+		const output = exportNodeGroups(node, nodeGroups, traitData, exportPrefs, TRAIT_NAMES);
 		navigator.clipboard.writeText(output);
 	};
 
@@ -169,6 +167,7 @@ type CrewFullExporterProps = {
 };
 
 export const CrewFullExporter = (props: CrewFullExporterProps) => {
+	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
 	const { exportPrefs, setExportPrefs } = React.useContext(UserContext);
 	const { bossBattle: { description, chainIndex } } = React.useContext(SolverContext);
 	const { solver, optimizer } = props;
@@ -189,15 +188,15 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 		solver.nodes.forEach(node => {
 			let nodeList: string = '';
 			if (isNodeOpen(node)) {
-				nodeList = exportNodeGroups(node, optimizer.groups[`node-${node.index}`], solver.traits, exportPrefs);
+				nodeList = exportNodeGroups(node, optimizer.groups[`node-${node.index}`], solver.traits, exportPrefs, TRAIT_NAMES);
 			}
 			else if (node.solveStatus === SolveStatus.Unconfirmed && (prefValue(exportPrefs, 'solve') === 'always' || prefValue(exportPrefs, 'solve') === 'spot')) {
 				// When solve is unconfirmed, rewrite traitData to ignore duplicates
 				const traitData: SolverTrait[] = suppressDuplicateTraits(solver.traits, node.solve);
-				nodeList = exportNodeGroups(node, optimizer.groups[`node-${node.index}`], traitData, exportPrefs);
+				nodeList = exportNodeGroups(node, optimizer.groups[`node-${node.index}`], traitData, exportPrefs, TRAIT_NAMES);
 			}
 			else if ((node.solveStatus === SolveStatus.Infallible || node.solveStatus === SolveStatus.Confirmed) && prefValue(exportPrefs, 'solve') === 'always') {
-				nodeList = `Node ${node.index+1} (${nodeTraits(node)})`;
+				nodeList = `Node ${node.index+1} (${nodeTraits(node, TRAIT_NAMES)})`;
 			}
 			if (nodeList !== '') {
 				if (output !== '') output += '\n\n';
