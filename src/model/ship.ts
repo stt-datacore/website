@@ -18,6 +18,39 @@ export interface ShipBonus {
   crit_bonus?: number;
 }
 
+
+export interface ShipLevels {
+  "1": ShipLevelStats
+  "2": ShipLevelStats
+  "3": ShipLevelStats
+  "4": ShipLevelStats
+  "5": ShipLevelStats
+  "6": ShipLevelStats
+  "7"?: ShipLevelStats
+  "8"?: ShipLevelStats
+  "9"?: ShipLevelStats
+  "10"?: ShipLevelStats
+}
+
+export interface ShipLevelStats {
+  shields: number
+  hull: number
+  attack: number
+  accuracy: number
+  evasion: number
+  attack_power: number
+  attack_speed: number
+  dps: any
+  accuracy_power: number
+  evasion_power: number
+  accuracy_evasion: any
+  shield_regen: number
+  crit_rating: number
+  crit_bonus: number
+  antimatter: number
+  next_schematics: number
+}
+
 /**
  * Ship
  */
@@ -55,6 +88,7 @@ export interface Ship extends ShipBonus {
   index?: { left: number, right: number };
   immortal?: CompletionState | number;
   score?: number;
+  levels?: ShipLevels;
 }
 
 
