@@ -48,6 +48,13 @@
         "voyage_pair_roster": "#{{rank}} {{skill}} Reisepaar in Ihrem Dienstplan",
         "voyage_skill_ranks": "Reisefertigkeitsränge"
     },
+    "crew_ownership": {
+        "immortal": "Nur unsterbliche Crew anzeigen",
+        "mortal": "Nur nicht unsterbliche Crew anzeigen, die im Besitz ist",
+        "none": "Gesamte Crew anzeigen",
+        "owned": "Nur Crew anzeigen, die im Besitz ist",
+        "unowned": "Nur Crew anzeigen, die nicht im Besitz ist"
+    },
     "crew_page": {
         "aka_colon": "Auch bekannt als:",
         "all_fuse_skill_fffe_colon": "Fertigkeiten bei allen Sicherungen bei vollem Level und voller Ausrüstung:",
@@ -205,6 +212,7 @@
         "apply_buffs": "Buffs anwenden",
         "display_buffs": "Buffs anzeigen",
         "filter_by_portal_status": "Filtern nach Portalstatus",
+        "filter_by_progress": "Filtern nach Fortschritt",
         "filter_by_rarity": "Filtern nach Seltenheit",
         "filter_by_status": "Filtern nach Status",
         "filter_by_trait": "Filtern nach Merkmalen",
@@ -424,8 +432,8 @@
     "player_badge": {
         "n_immortals": "{{n}} Unsterbliche",
         "n_shuttles": "{{n}} Shuttles",
-        "x_y_crew": "{{x}} / {{y}} Crew",
-        "starbase_level": "Sternenbasis-Level"
+        "starbase_level": "Sternenbasis-Level",
+        "x_y_crew": "{{x}} / {{y}} Crew"
     },
     "prospect_picker": {
         "add_crew": "Crew Hinzufügen",

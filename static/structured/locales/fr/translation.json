@@ -48,6 +48,13 @@
         "voyage_pair_roster": "#{{rank}} {{skill}} paire de voyages dans votre liste",
         "voyage_skill_ranks": "Rangs de compétences de voyage"
     },
+    "crew_ownership": {
+        "immortal": "Afficher uniquement l'équipage immortalisé",
+        "mortal": "Afficher uniquement les non-immortels appartenant",
+        "none": "Afficher tout l'équipage",
+        "owned": "Afficher uniquement l'équipage appartenant",
+        "unowned": "Afficher uniquement les équipages sans propriétaire"
+    },
     "crew_page": {
         "aka_colon": "Aussi connu sous le nom de :",
         "all_fuse_skill_fffe_colon": "Les compétences de tout des fusionments lorsqu'elles sont entièrement nivelées et entièrement équipées :",
@@ -213,6 +220,7 @@
         "apply_buffs": "Appliquer des effets",
         "display_buffs": "Afficher effets",
         "filter_by_portal_status": "Filtrer par statut du portail",
+        "filter_by_progress": "Filtrer par progression",
         "filter_by_rarity": "Filtrer par rareté",
         "filter_by_status": "Filtrer par statut",
         "filter_by_trait": "Filtrer par trait",
@@ -434,8 +442,8 @@
     "player_badge": {
         "n_immortals": "{{n}} immortels",
         "n_shuttles": "{{n}} navettes",
-        "x_y_crew": "{{x}} / {{y}} équipage",
-        "starbase_level": "Niveau de base stellaire"
+        "starbase_level": "Niveau de base stellaire",
+        "x_y_crew": "{{x}} / {{y}} équipage"
     },
     "prospect_picker": {
         "add_crew": "Ajouter Équipage",
