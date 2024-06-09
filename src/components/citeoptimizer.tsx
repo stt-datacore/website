@@ -793,7 +793,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 										<div style={{ gridArea: 'stats' }}>
 											<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 										</div>
-										<div style={{ gridArea: 'description' }}>{descriptionLabel(crew, false)}</div>
+										<div style={{ gridArea: 'description' }}>{descriptionLabel(t, crew, false)}</div>
 									</div>
 								</Table.Cell>
 								<Table.Cell>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Dropdown, Icon, Label, Rating, Popup, DropdownItemProps } from 'semantic-ui-react';
 
-import { CompletionState, PlayerBuffMode } from '../../model/player';
+import { CompletionState, PlayerBuffMode, TranslateMethod } from '../../model/player';
 import { IRosterCrew } from './model';
 import { Skills } from '../item_presenters/classic_presenter';
 import { GlobalContext } from '../../context/globalcontext';
@@ -112,8 +112,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 };
 
 
-export function descriptionLabel(crew: IRosterCrew,  showOwned?: boolean): JSX.Element {
-	const { t } = React.useContext(GlobalContext).localized;
+export function descriptionLabel(t: TranslateMethod, crew: IRosterCrew,  showOwned?: boolean): JSX.Element {
 
 	const counts = [
 		{ name: crew.collections.length > 1 ? t('base.collections_fmt', { count: crew.collections.length.toString() }) : t('base.collection_fmt'), count: crew.collections.length }

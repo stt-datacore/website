@@ -123,7 +123,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name}</Link></span>
 						</div>
-						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew, showOwned)}</div>
+						<div style={{ gridArea: 'description' }}>{descriptionLabel(t, crew, showOwned)}</div>
 					</div>
 				</Table.Cell>
 				<Table.Cell>
