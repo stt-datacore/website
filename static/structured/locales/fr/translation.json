@@ -91,13 +91,13 @@
     "crew_utility": {
         "columns": {
             "g": "G",
-            "gauntlet_ranks": "Gauntlet Ranks",
-            "s": "S",
-            "shuttle_ranks": "Shuttle Ranks",
+            "gauntlet_ranks": "Rangs de Gantelet",
+            "s": "N",
+            "shuttle_ranks": "Rangs de la Navette",
             "u": "U",
             "utility": "Utilité",
             "v": "V",
-            "voyage_ranks": "Voyage Ranks"
+            "voyage_ranks": "Rangs de Voyage"
         },
         "consider_three_skill_check": "Considérez uniquement un équipage à 3 compétences pour les voyages et le gantelet",
         "custom": {
