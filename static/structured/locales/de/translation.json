@@ -80,11 +80,44 @@
         "unowned_no_portal": "Unbesessene Crew (Nicht im Zeitportal)",
         "unowned_portal": "Unbesessene Crew (Im Zeitportal)"
     },
+    "crew_utility": {
+        "columns": {
+            "g": "H",
+            "gauntlet_ranks": "Herausforderung-Ränge",
+            "s": "S",
+            "shuttle_ranks": "Shuttle-Ränge",
+            "u": "N",
+            "utility": "Nützlichkeit",
+            "v": "R",
+            "voyage_ranks": "Reise-Ränge"
+        },
+        "consider_three_skill_check": "Erwägen Sie nur eine Crew mit 3 Fähigkeiten für Reisen und Herausforderung",
+        "custom": {
+            "core": "Kern",
+            "gauntlet": "Herausforderung",
+            "shuttle_pairs": "Shuttle-Paare",
+            "voyage": "Reise"
+        },
+        "customize_button": "Passen Sie die Bewertung der Nützlichkeit an ...",
+        "customize_header": "Sie können den Nutzen für verschiedene Bereiche des Spiels messen. Eine höhere Zahl bedeutet, dass mehr Crew in diesem Spielbereich als nützlich angesehen wird.",
+        "header": "Die Crew-Nutzenklasse gibt die Anzahl der potenziell nützlichen Fähigkeiten an, die jede Crew im Vergleich zu anderen Crewmitgliedern mit ähnlichen Fähigkeiten besitzt. Spezifische Ratschläge zur einzusetzenden Crew finden Sie im {{event_planner}}, {{gauntlets}} oder {{voyage_calculator}}.",
+        "include_base_ranks_check": "Grundränge in die Crew-Nützlichkeitstabelle aufnehmen",
+        "roster": {
+            "base_shuttle": "Basis-/Shuttlepaar-Ränge auf Ihrer Liste",
+            "gauntlet": "Herausforderung-Ränge auf Ihrer Liste",
+            "voyage": "Reiseränge auf Ihrer Liste"
+        }
+    },
     "crew_views": {
+        "advanced_analysis": "Erweiterte Analyse",
         "base": "Grundlegende Fähigkeiten zeigen",
-        "crew_utility": "Das Crew-Dienstprogramm",
+        "crew_utility": "Crew-Nützlichkeitstool anzeigen",
         "gauntlet": "Herausforderungsränge anzeigen",
         "max_quipment": "Maximale Rüstzeug anzeigen",
+        "prospect": {
+            "description": "Fügen Sie potenzielle Crewmitglieder hinzu, um zu sehen, wie sie in Ihren vorhandenen Dienstplan passen.",
+            "title": "Potenzielle Crew"
+        },
         "quipment": "Rüstzeug anzeigen",
         "ship": "Schiffsfähigkeiten anzeigen",
         "voyage": "Reiseränge anzeigen"
@@ -121,6 +154,7 @@
         "yesterday_gauntlet": "Die Herausforderung von gestern"
     },
     "global": {
+        "any": "Beliebig",
         "apply_filters": "Filter anwenden",
         "base": "Grundlage",
         "bonus": "Bonifikation",
@@ -135,11 +169,15 @@
         "hidden": "Versteckt",
         "hide": "Verstecken",
         "load_default_settings": "Standardeinstellungen laden",
+        "loading_ellipses": "Wird geladen ...",
+        "loading_please_wait_ellipses": "Laden, bitte warten...",
         "never": "Niemals",
         "no": "Nein",
+        "none": "Keine",
         "obtained": "Erhalten von",
         "portal": "Zeitportal",
         "reset": "Zurücksetzen",
+        "rows_per_page": "Zeilen pro Seite",
         "search": "Suchen",
         "search_by_name_or_trait_ellipses": "Suche nach Name oder Merkmalen...",
         "search_ellipses": "Suchen...",
@@ -163,9 +201,12 @@
         "display_buffs": "Buffs anzeigen",
         "filter_by_portal_status": "Filtern nach Portalstatus",
         "filter_by_rarity": "Filtern nach Seltenheit",
+        "filter_by_status": "Filtern nach Status",
         "filter_by_trait": "Filtern nach Merkmalen",
         "filter_ship_grants": "Schiffszuschüsse filtern",
         "filter_ship_rarity": "Schiffsrarität filtern",
+        "roster_maintenance": "Dienstplanpflege",
+        "select_ship": "Schiff Auswählen",
         "select_ship_abilities": "Schiffsfähigkeiten auswählen",
         "select_ship_ability": "Schiffsfähigkeit auswählen",
         "select_ship_ability_amount": "Schiffsfähigkeitenbetrag auswählen",
@@ -317,6 +358,28 @@
         }
     },
     "options": {
+        "crew_status": {
+            "favorites": "Nur Lieblingscrew anzeigen",
+            "frozen": "Nur eingefrorene Crew anzeigen",
+            "frozen_dupes": "Nur eingefrorene doppelte Crew anzeigen",
+            "idle": "Nur inaktive Crew anzeigen",
+            "none": "Gesamte Crew anzeigen",
+            "thawed": "Nur nicht eingefrorene Crew anzeigen"
+        },
+        "roster_maintenance": {
+            "advanceable": "Nur Crew anzeigen, die nicht beanspruchte Plätze für Rüstzeug hat",
+            "buyback": "Crew mit Sicherungen im Rückkaufschacht anzeigen",
+            "dupes": "Nur doppelte Crew anzeigen",
+            "fodder": "Nur nicht fusionierte Crew anzeigen",
+            "freezable": "Nur einfrierbare Crew anzeigen",
+            "impact": "Nur Crew anzeigen, die 1 Sicherung benötigt",
+            "mortal": "Nur Nicht-Unsterbliche anzeigen",
+            "none": "Gesamte Crew anzeigen",
+            "priority": "Nur vollständig fusionierte Nicht-Unsterbliche anzeigen",
+            "quippable": "Nur Crew anzeigen, dieRüstzeug nehmen kann",
+            "quipped": "Nur Crew anzeigen, die Rüstzeug haben",
+            "threshold": "Nur Crew anzeigen, die 2 Sicherungen benötigt"
+        },
         "text_match": {
             "any": "Passt zu jedem Text",
             "exact": "Nur genaue Übereinstimmung",
@@ -353,6 +416,30 @@
         },
         "ships": "Schiffe"
     },
+    "prospect_picker": {
+        "add_crew": "Crew Hinzufügen",
+        "select_crew": "Crew Auswählen"
+    },
+    "quipment_dropdowns": {
+        "calc_mode": {
+            "core": "Grundkenntnisse",
+            "core_and_proficiencies": "Grundfertigkeiten und Kompetenzbereich",
+            "proficiencies": "Kompetenzbereich"
+        },
+        "calc_mode_label": "Berechnungsmodus",
+        "mode": {
+            "individual_skills": "Einzelne Fähigkeiten",
+            "skill_combos": "Fähigkeitskombinationen",
+            "skill_order": "Fähigkeitsreihenfolge"
+        },
+        "mode_label": "Fertigkeiten-Modus",
+        "slot_label": "Slots-Modus",
+        "slots": {
+            "n_slots": "Ausstatten {{slots}} Ablagefächer",
+            "natural": "Natürliche Ablagefächer ausstatten",
+            "one_slot": "Ausstatten 1 Ablagefach"
+        }
+    },
     "quipment_ranks": {
         "first_pair": "Erstes Paar",
         "overall": "Gesamtpunktzahl",
@@ -361,7 +448,8 @@
         "secondary": "Sekundär",
         "specialty": "Spezialwertung",
         "tertiary": "Tertiär",
-        "third_pair": "Drittes Paar"
+        "third_pair": "Drittes Paar",
+        "three_skills": "Drei Fähigkeiten"
     },
     "rank_names": {
         "bigbook_tier": "Big Book Stufe",
@@ -371,6 +459,63 @@
         "gauntlet_rank": "Herausforderungsrang",
         "quipment_score": "Rüstzeug Werte",
         "voyage_rank": "Reiserang"
+    },
+    "roster_summary": {
+        "by_rarity": "Nach Seltenheit",
+        "by_skill": "Nach Fähigkeit",
+        "rarity": {
+            "columns": {
+                "dupes": "Duplikat",
+                "frozen": "Gefroren",
+                "immortal": "Unsterblich+",
+                "owned": "Im Besitz",
+                "ownedPct": "% Im Besitz",
+                "portalPct": "% Zeitportal",
+                "progress": "Unsterblich",
+                "progressPct": "% Unsterblich",
+                "rarity": "Seltenheit",
+                "unfrozen": "Aufgetaut"
+            },
+            "footer_text": "Die Spalten \"Im Besitz\", \"% Im Besitz\", \"% Zeitportal\", \"Unsterblich\" und \"% Unsterblich\" berücksichtigen nur einzigartige Crewmitglieder. Alle anderen Spalten berücksichtigen Ihre Duplikate.",
+            "header_text": "Diese Tabelle unterteilt Ihre Liste nach Seltenheitsgrad und zeigt Ihren Fortschritt bei der Unsterblichkeit aller Crewmitglieder im Spiel.",
+            "immortal_cell_help": "Deine Erfolge im Spiel melden diese Zahl möglicherweise fälschlicherweise als {number}"
+        },
+        "skills": {
+            "columns": {
+                "average": "Durchschnittlich",
+                "best": "Beste",
+                "maxPct": {
+                    "description": "Zeigt, wie deine zehn besten Crewmitglieder im Vergleich zu allen anderen Crewmitgliedern im Spiel mit dieser Fähigkeit abschneiden.",
+                    "title": "% von Max"
+                },
+                "owned": "Im Besitz",
+                "ownedPct": "% Im Besitz",
+                "skills": "Fähigkeit",
+                "tenAverage": {
+                    "description": "Die durchschnittliche Punktzahl Ihrer zehn besten Crewmitglieder in dieser Fähigkeit",
+                    "title": "Zehn Besten"
+                }
+            },
+            "combos": {
+                "all": "Alle Fertigkeitskombinationen",
+                "pairs": "Nur Paare",
+                "singles": "Nur einzelne Fertigkeiten",
+                "skill_only": "Nur {{skill}}",
+                "triplets": "Nur Tripletten"
+            },
+            "combos_title": "Fähigkeiten filtern",
+            "footer_text": "Die Spalten Im Besitz und % im Besitz berücksichtigen nur einzigartige Crewmitglieder. Alle anderen Spalten berücksichtigen Ihre Duplikate.",
+            "header_text": "Diese Tabelle zeigt die Tiefe und Stärke Ihres Kaders in verschiedenen Bereichen des Spiels für jede relevante Fähigkeitskombination.",
+            "score": {
+                "core": "Kern",
+                "gauntlet": "Herausforderung",
+                "shuttles": "Shuttles",
+                "voyage": "Reise"
+            },
+            "score_title": "Punktzahl",
+            "three_skill_check": "Berücksichtigen Sie nur eine Besatzung mit drei Fähigkeiten"
+        },
+        "title": "Kaderübersicht"
     },
     "share_profile": {
         "export": {

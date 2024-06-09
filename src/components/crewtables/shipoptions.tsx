@@ -74,7 +74,7 @@ export const ShipPicker = (props: ShipPickerProps) => {
             });
     }
 
-	const placeholder = 'Select Ship';
+	const placeholder = t('hints.select_ship');
 
     React.useEffect(() => {
         setShip(selectedShip?.symbol ?? '');

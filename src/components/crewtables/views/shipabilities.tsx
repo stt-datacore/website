@@ -15,6 +15,7 @@ import { DEFAULT_MOBILE_WIDTH } from '../../../components/hovering/hoverstat';
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
 import { TranslateMethod } from '../../../model/player';
+import { GlobalContext } from '../../../context/globalcontext';
 
 const isWindow = typeof window !== 'undefined';
 
@@ -119,6 +120,7 @@ type ShipAbilitiesFilterProps = {
 };
 
 export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { rosterCrew, crewFilters, setCrewFilters } = props;
 
 	const [shipRarityFilter, setShipRarityFilter] = React.useState([] as number[]);
@@ -312,7 +314,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 				}}>
 					<div style={{marginRight: "1em"}}>
 						<RarityFilter
-								altTitle='Filter ship rarity'
+								altTitle={t('hints.filter_ship_rarity')}
 								rarityFilter={shipRarityFilter}
 								setRarityFilter={setShipRarityFilter}
 							/>

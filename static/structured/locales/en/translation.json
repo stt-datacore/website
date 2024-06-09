@@ -1,5 +1,4 @@
-{   
-    "fallback_test": "Testing 1, 2, 3",
+{
     "base": {
         "all_crew": "Show all crew",
         "bigbook_tier": "Tier",
@@ -81,11 +80,44 @@
         "unowned_no_portal": "Unowned Crew (Not in Portal)",
         "unowned_portal": "Unowned Crew (In Portal)"
     },
+    "crew_utility": {
+        "columns": {
+            "g": "G",
+            "gauntlet_ranks": "Gauntlet Ranks",
+            "s": "S",
+            "shuttle_ranks": "Shuttle Ranks",
+            "u": "U",
+            "utility": "Utility",
+            "v": "V",
+            "voyage_ranks": "Voyage Ranks"
+        },
+        "consider_three_skill_check": "Only consider 3-skill crew for voyages and gauntlet",
+        "custom": {
+            "core": "Core",
+            "gauntlet": "Gauntlet",
+            "shuttle_pairs": "Shuttle Pairs",
+            "voyage": "Voyage"
+        },
+        "customize_button": "Customize utility scoring...",
+        "customize_header": "You can measure utility for different areas of the game. A higher number will consider more crew as useful in that area of gameplay.",
+        "header": "Crew utility identifies the number of potentially useful skill sets each crew has, relative to others on your roster with similar skill sets. For specific advice on crew to use, consult the {{event_planner}}, {{gauntlets}}, or {{voyage_calculator}}.",
+        "include_base_ranks_check": "Include base ranks in crew utility table",
+        "roster": {
+            "base_shuttle": "Core / shuttle pair ranks on your roster",
+            "gauntlet": "Gauntlet ranks on your roster",
+            "voyage": "Voyage ranks on your roster"
+        }
+    },
     "crew_views": {
+        "advanced_analysis": "Advanced Analysis",
         "base": "Show base skills",
         "crew_utility": "Show crew utility",
         "gauntlet": "Show gauntlet ranks",
         "max_quipment": "Show max quipment",
+        "prospect": {
+            "description": "Add prospective crew to see how they fit into your existing roster.",
+            "title": "Prospective Crew"
+        },
         "quipment": "Show quipment scores",
         "ship": "Show ship abilities",
         "voyage": "Show voyage ranks"
@@ -122,6 +154,7 @@
         "yesterday_gauntlet": "Yesterday's Gauntlet"
     },
     "global": {
+        "any": "Any",
         "apply_filters": "Apply Filters",
         "base": "Base",
         "bonus": "Bonus",
@@ -136,11 +169,15 @@
         "hidden": "Hidden",
         "hide": "Hide",
         "load_default_settings": "Load Default Settings",
+        "loading_ellipses": "Loading ...",
+        "loading_please_wait_ellipses": "Loading. Please wait...",
         "never": "Never",
         "no": "No",
+        "none": "None",
         "obtained": "Obtained",
         "portal": "Portal",
         "reset": "Reset",
+        "rows_per_page": "Rows per page",
         "search": "Search",
         "search_by_name_or_trait_ellipses": "Search by name or trait...",
         "search_ellipses": "Search...",
@@ -164,9 +201,12 @@
         "display_buffs": "Display Buffs",
         "filter_by_portal_status": "Filter by portal status",
         "filter_by_rarity": "Filter by rarity",
+        "filter_by_status": "Filter by status",
         "filter_by_trait": "Filter by trait",
         "filter_ship_grants": "Filter ship grants",
         "filter_ship_rarity": "Filter ship rarity",
+        "roster_maintenance": "Roster maintenance",
+        "select_ship": "Select Ship",
         "select_ship_abilities": "Select Ship Abilities",
         "select_ship_ability": "Select ship ability",
         "select_ship_ability_amount": "Select Ship Ability Amount",
@@ -319,6 +359,28 @@
         }
     },
     "options": {
+        "crew_status": {
+            "favorites": "Only show favorite crew",
+            "frozen": "Only show frozen crew",
+            "frozen_dupes": "Only show frozen duplicate crew",
+            "idle": "Only show idle crew",
+            "none": "Show all crew",
+            "thawed": "Only show unfrozen crew"
+        },
+        "roster_maintenance": {
+            "advanceable": "Only show crew with unclaimed quipment slots",
+            "buyback": "Show crew with fuses in buy-back well",
+            "dupes": "Only show duplicate crew",
+            "fodder": "Only show unfused crew",
+            "freezable": "Only show freezable crew",
+            "impact": "Only show crew needing 1 fuse",
+            "mortal": "Only show non-immortals",
+            "none": "Show all crew",
+            "priority": "Only show fully-fused non-immortals",
+            "quippable": "Only show quippable crew",
+            "quipped": "Only show quipped crew",
+            "threshold": "Only show crew needing 2 fuses"
+        },
         "text_match": {
             "any": "Match any text",
             "exact": "Exact match only",
@@ -355,6 +417,30 @@
         },
         "ships": "Ships"
     },
+    "prospect_picker": {
+        "add_crew": "Add Crew",
+        "select_crew": "Select Crew"
+    },
+    "quipment_dropdowns": {
+        "calc_mode": {
+            "core": "Core Skill",
+            "core_and_proficiencies": "Core and Proficiency Ranges",
+            "proficiencies": "Proficiency Ranges"
+        },
+        "calc_mode_label": "Calculation Mode",
+        "mode": {
+            "individual_skills": "Individual Skills",
+            "skill_combos": "Skill Combos",
+            "skill_order": "Skill Order"
+        },
+        "mode_label": "Skill mode",
+        "slot_label": "Slot mode",
+        "slots": {
+            "n_slots": "Quip {{slots}} slots",
+            "natural": "Quip natural slots",
+            "one_slot": "Quip 1 slot"
+        }
+    },
     "quipment_ranks": {
         "first_pair": "First Pair",
         "overall": "Overall",
@@ -363,7 +449,8 @@
         "secondary": "Secondary",
         "specialty": "Specialty",
         "tertiary": "Tertiary",
-        "third_pair": "Third Pair"
+        "third_pair": "Third Pair",
+        "three_skills": "Three Skills"
     },
     "rank_names": {
         "bigbook_tier": "Big Book Tier",
@@ -373,6 +460,63 @@
         "gauntlet_rank": "Gauntlet Rank",
         "quipment_score": "Quipment Score",
         "voyage_rank": "Voyage Rank"
+    },
+    "roster_summary": {
+        "by_rarity": "By Rarity",
+        "by_skill": "By Skill",
+        "rarity": {
+            "columns": {
+                "dupes": "Duplicate",
+                "frozen": "Frozen",
+                "immortal": "Immortal+",
+                "owned": "Owned",
+                "ownedPct": "% Owned",
+                "portalPct": "% Portal",
+                "progress": "Immortal",
+                "progressPct": "% Immortal",
+                "rarity": "Rarity",
+                "unfrozen": "Unfrozen"
+            },
+            "footer_text": "The Owned, % Owned, % Portal, Immortal, and % Immortal columns consider unique crew only. All other columns consider your duplicates.",
+            "header_text": "This table breaks down your roster by rarity and shows your progress toward immortalizing all crew in the game.",
+            "immortal_cell_help": "Your achievements in-game may incorrectly report this number as {number}"
+        },
+        "skills": {
+            "columns": {
+                "average": "Average",
+                "best": "Best",
+                "maxPct": {
+                    "description": "How your ten best crew compare to all crew in the game with this skill",
+                    "title": "% of Max"
+                },
+                "owned": "Owned",
+                "ownedPct": "% Owned",
+                "skills": "Skill",
+                "tenAverage": {
+                    "description": "The average score of your ten best crew at this skill",
+                    "title": "Ten Best"
+                }
+            },
+            "combos": {
+                "all": "All skill combos",
+                "pairs": "Pairs only",
+                "singles": "Single skills only",
+                "skill_only": "{{skill}} only",
+                "triplets": "Triplets only"
+            },
+            "combos_title": "Filter skills",
+            "footer_text": "The Owned and % Owned columns consider unique crew only. All other columns consider your duplicates.",
+            "header_text": "This table shows the depth and strength of your roster at various areas of the game for every relevant skill combination.",
+            "score": {
+                "core": "Core",
+                "gauntlet": "Gauntlet",
+                "shuttles": "Shuttles",
+                "voyage": "Voyage"
+            },
+            "score_title": "Score",
+            "three_skill_check": "Only consider 3-skill crew"
+        },
+        "title": "Roster Summary"
     },
     "share_profile": {
         "export": {

@@ -57,6 +57,7 @@ type RosterTableProps = {
 
 export const RosterTable = (props: RosterTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData, buffConfig: playerBuffs } = globalContext.player;
 	const { initHighlight, buffMode, setBuffMode } = props;
 
@@ -132,7 +133,7 @@ export const RosterTable = (props: RosterTableProps) => {
 			{props.rosterType === 'myCrew' && playerData && playerBuffs &&
 				<React.Fragment>
 					<RosterProspects prospects={prospects} setProspects={setProspects} />
-					<Header as='h3'>Advanced Analysis</Header>
+					<Header as='h3'>{t('crew_views.advanced_analysis')}</Header>
 					<RosterSummary myCrew={props.rosterCrew} allCrew={globalContext.core.crew} buffConfig={playerBuffs} />
 				</React.Fragment>
 			}
@@ -148,13 +149,14 @@ type RosterProspectsProps = {
 const RosterProspects = (props: RosterProspectsProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { prospects, setProspects } = props;
+	const { t } = globalContext.localized;
 
 	const pool = globalContext.core.crew.sort((a, b) => a.name.localeCompare(b.name));
 
 	return (
 		<React.Fragment>
-			<Header as='h4'>Prospective Crew</Header>
-			<p>Add prospective crew to see how they fit into your existing roster.</p>
+			<Header as='h4'>{t('crew_views.prospect.title')}</Header>
+			<p>{t('crew_views.prospect.description')}</p>
 			<ProspectPicker pool={pool} prospects={prospects} setProspects={setProspects} />
 		</React.Fragment>
 	);
@@ -301,7 +303,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			// 		setCrewFilters={setCrewFilters}	
 			// 	/>,
 			// //form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getQuipmentTableConfig(['allCrew', 'offers', 'buyBack'].includes(rosterType)),
+			tableConfig: getQuipmentTableConfig(t, ['allCrew', 'offers', 'buyBack'].includes(rosterType)),
 			renderTableCells: 
 				(crew: IRosterCrew) => 
 					<QuipmentScoreCells 
@@ -358,7 +360,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					setCrewFilters={setCrewFilters}	
 				/>,
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getTopQuipmentTableConfig(pstMode, ['allCrew', 'offers', 'buyBack'].includes(rosterType), powerMode, getActiveBuffs()),
+			tableConfig: getTopQuipmentTableConfig(t, pstMode, ['allCrew', 'offers', 'buyBack'].includes(rosterType), powerMode, getActiveBuffs()),
 			renderTableCells: 
 				(crew: IRosterCrew) => 
 					<TopQuipmentScoreCells 
@@ -387,7 +389,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					showBase={showBase}
 					setShowBase={setShowBase}
 				/>,
-			tableConfig: getCrewUtilityTableConfig(showBase),
+			tableConfig: getCrewUtilityTableConfig(t, showBase),
 			renderTableCells: (crew: IRosterCrew) => <CrewUtilityCells pageId={pageId} showBase={showBase} crew={crew} />
 		},
 	] as ITableView[];
@@ -574,7 +576,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					rosterCrew={preparedCrew}
 					crewFilters={crewFilters}
 					tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t)}
-					renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells tableType={props.tableType} crew={crew} pageId={pageId} t={t} />}
+					renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells tableType={props.tableType} crew={crew} pageId={pageId} />}
 					lockableCrew={lockableCrew}
 					loading={isPreparing}
 				/>

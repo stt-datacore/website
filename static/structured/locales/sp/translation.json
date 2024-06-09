@@ -86,11 +86,44 @@
         "unowned_no_portal": "Tripulación sin propietario (no en el portal)",
         "unowned_portal": "Tripulación sin propietario (en el portal)"
     },
+    "crew_utility": {
+        "columns": {
+            "g": "R",
+            "gauntlet_ranks": "Rangos de Reto",
+            "s": "L",
+            "shuttle_ranks": "Rangos de Lanzadera",
+            "u": "U",
+            "utility": "Utilidad",
+            "v": "V",
+            "voyage_ranks": "Rangos de Viaje"
+        },
+        "consider_three_skill_check": "Solo considere tripulación de 3 habilidades para viajes y reto",
+        "custom": {
+            "core": "Básica",
+            "gauntlet": "Reto",
+            "shuttle_pairs": "Pares de Lanzadera",
+            "voyage": "Viaje"
+        },
+        "customize_button": "Personalizar la puntuación de utilidad...",
+        "customize_header": "Puedes medir la utilidad para diferentes áreas del juego. Un número mayor considerará que más tripulación es útil en esa área del juego.",
+        "header": "La utilidad de la tripulación identifica la cantidad de conjuntos de habilidades potencialmente útiles que tiene cada tripulación, en relación con otros en tu lista con conjuntos de habilidades similares. Para obtener consejos específicos sobre la tripulación a utilizar, consulte {{event_planner}}, {{gauntlets}} o {{voyage_calculator}}.",
+        "include_base_ranks_check": "Incluir rangos base en la tabla de utilidad de la tripulación.",
+        "roster": {
+            "base_shuttle": "El par base/lanzadera se ubica en su lista",
+            "gauntlet": "Reto se ubica en tu lista",
+            "voyage": "Viajes se ubica en tu lista"
+        }
+    },
     "crew_views": {
+        "advanced_analysis": "Análisis Avanzado",
         "base": "Mostrar habilidades básicas",
-        "crew_utility": "Mostrar utilidad de tripulación",
+        "crew_utility": "Mostrar utilidad para la tripulación",
         "gauntlet": "Mostrar rangos de reto",
         "max_quipment": "Mostrar Quipo máximo",
+        "prospect": {
+            "description": "Agrega miembros potenciales de la tripulación para ver cómo encajan en tu lista actual.",
+            "title": "Tripulación potencial"
+        },
         "quipment": "Mostrar rangos de Quipos",
         "ship": "Mostrar habilidades del barco",
         "voyage": "Mostrar rangos de viaje"
@@ -128,6 +161,7 @@
         "yesterday_gauntlet": "El reto de ayer"
     },
     "global": {
+        "any": "Cualquier",
         "apply_filters": "Aplicar filtros",
         "base": "Base",
         "bonus": "Bonificacion",
@@ -142,11 +176,15 @@
         "hidden": "Oculto",
         "hide": "Ocultar",
         "load_default_settings": "Cargar configuración predeterminada",
+        "loading_ellipses": "Cargando ...",
+        "loading_please_wait_ellipses": "Cargando. Espere por favor...",
         "never": "Nunca",
         "no": "No",
+        "none": "Ninguna",
         "obtained": "Obtenido por",
         "portal": "Portal",
         "reset": "Restablecer",
+        "rows_per_page": "Filas por página",
         "search": "Buscar",
         "search_by_name_or_trait_ellipses": "Buscar por nombre o característica...",
         "search_ellipses": "Buscar...",
@@ -170,9 +208,12 @@
         "display_buffs": "Mostrar efectos",
         "filter_by_portal_status": "Filtrar por estado del portal",
         "filter_by_rarity": "Filtrar por rareza",
+        "filter_by_status": "Filtrar por estado",
         "filter_by_trait": "Filtrar por característica",
         "filter_ship_grants": "Filtrar subvenciones para barcos",
         "filter_ship_rarity": "Filtrar la rareza del barco",
+        "roster_maintenance": "Mantenimiento de la lista",
+        "select_ship": "Seleccionar Barco",
         "select_ship_abilities": "Seleccionar habilidades del barco",
         "select_ship_ability": "Seleccionar capacidad del barco",
         "select_ship_ability_amount": "Seleccione la cantidad de capacidad del barco",
@@ -326,6 +367,28 @@
         }
     },
     "options": {
+        "crew_status": {
+            "favorites": "Mostrar sólo el equipo favorito",
+            "frozen": "Mostrar sólo tripulación congelada",
+            "frozen_dupes": "Mostrar sólo tripulación duplicada congelada",
+            "idle": "Mostrar sólo equipo inactivo",
+            "none": "Mostrar toda la tripulación",
+            "thawed": "Mostrar sólo la tripulación descongelada"
+        },
+        "roster_maintenance": {
+            "advanceable": "Solo mostrar equipo con espacios no reclamados para quipo",
+            "buyback": "Muestra equipo con fusibles en pozo de recompra",
+            "dupes": "Mostrar sólo tripulación duplicada",
+            "fodder": "Mostrar sólo equipo no fusionado",
+            "freezable": "Mostrar sólo tripulación congelable",
+            "impact": "Solo muestra al equipo que necesita 1 fusible",
+            "mortal": "Mostrar sólo a los no inmortales",
+            "none": "Mostrar toda la tripulación",
+            "priority": "Mostrar sólo no inmortales completamente fusionados",
+            "quippable": "Solo mostrar equipo que pueda aceptar quipo",
+            "quipped": "Mostrar sólo al equipo que tenga quipo",
+            "threshold": "Solo muestra al equipo que necesita 2 fusibles"
+        },
         "text_match": {
             "any": "Coincidir con cualquier texto",
             "exact": "Sólo coincidencia exacta",
@@ -362,6 +425,30 @@
         },
         "ships": "Barcos"
     },
+    "prospect_picker": {
+        "add_crew": "Agregar Tripulación",
+        "select_crew": "Seleccionar Tripulación"
+    },
+    "quipment_dropdowns": {
+        "calc_mode": {
+            "core": "Habilidades Básicas",
+            "core_and_proficiencies": "Habilidades Básicas y Rango de Competencia",
+            "proficiencies": "Rango de Competencia"
+        },
+        "calc_mode_label": "Modo de cálculo",
+        "mode": {
+            "individual_skills": "Habilidades individuales",
+            "skill_combos": "Combos de habilidades",
+            "skill_order": "Orden de habilidades"
+        },
+        "mode_label": "Modo habilidad",
+        "slot_label": "Modo de ranura",
+        "slots": {
+            "n_slots": "Quipar {(slots}} espacios",
+            "natural": "Quipar espacios naturales",
+            "one_slot": "Quipar 1 espacio"
+        }
+    },
     "quipment_ranks": {
         "first_pair": "Primer par",
         "overall": "General",
@@ -370,7 +457,8 @@
         "secondary": "Secundario",
         "specialty": "Especialidad",
         "tertiary": "Terciario",
-        "third_pair": "Tercer par"
+        "third_pair": "Tercer par",
+        "three_skills": "Tres Habilidades"
     },
     "rank_names": {
         "bigbook_tier": "Piso de Big Book",
@@ -380,6 +468,63 @@
         "gauntlet_rank": "Rango de Reto",
         "quipment_score": "Puntuación del Quipo",
         "voyage_rank": "Rango de Viaje"
+    },
+    "roster_summary": {
+        "by_rarity": "Por rareza",
+        "by_skill": "Por habilidad",
+        "rarity": {
+            "columns": {
+                "dupes": "Duplicar",
+                "frozen": "Congelado",
+                "immortal": "Inmortal+",
+                "owned": "Propiedad",
+                "ownedPct": "% Propiedad",
+                "portalPct": "% Portal",
+                "progress": "Inmortal",
+                "progressPct": "% Inmortal",
+                "rarity": "Rareza",
+                "unfrozen": "Descongelado"
+            },
+            "footer_text": "Las columnas Propiedad, % Propiedad, % Portal, Inmortal y % Inmortal consideran tripulación única únicamente. Todas las demás columnas consideran tus duplicados.",
+            "header_text": "Esta tabla desglosa tu lista por rareza y muestra tu progreso para inmortalizar a todos los miembros del equipo en el juego.",
+            "immortal_cell_help": "Es posible que tus logros en el juego informen incorrectamente este número como {number}"
+        },
+        "skills": {
+            "columns": {
+                "average": "Promedio",
+                "best": "Mejo",
+                "maxPct": {
+                    "description": "Cómo se comparan tus diez mejores tripulantes con todos los tripulantes del juego con esta habilidad",
+                    "title": "% del Máximo"
+                },
+                "owned": "Propiedad",
+                "ownedPct": "% Propiedad",
+                "skills": "Habilidad",
+                "tenAverage": {
+                    "description": "La puntuación media de tus diez mejores tripulantes en esta habilidad",
+                    "title": "Diez Mejores"
+                }
+            },
+            "combos": {
+                "all": "Todos los combos de habilidades",
+                "pairs": "Sólo pares",
+                "singles": "Solo habilidades individuales",
+                "skill_only": "{{skill}} solamente",
+                "triplets": "Sólo trillizos"
+            },
+            "combos_title": "Filtrar habilidades",
+            "footer_text": "Las columnas Propiedad y % Propiedad consideran únicamente a la tripulación única. Todas las demás columnas consideran sus duplicados.",
+            "header_text": "Esta tabla muestra la profundidad y fortaleza de tu plantilla en varias áreas del juego para cada combinación de habilidades relevante.",
+            "score": {
+                "core": "Básica",
+                "gauntlet": "Reto",
+                "shuttles": "Lanzaderas",
+                "voyage": "Viajes"
+            },
+            "score_title": "Puntaje",
+            "three_skill_check": "Solo considere tripulación de 3 habilidades"
+        },
+        "title": "Resumen de la Lista"
     },
     "share_profile": {
         "export": {

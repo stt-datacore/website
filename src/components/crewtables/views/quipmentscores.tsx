@@ -5,6 +5,7 @@ import CONFIG from "../../CONFIG";
 import { Table } from "semantic-ui-react";
 import { QuipmentScores } from "../../../model/crew";
 import { gradeToColor, numberToGrade, qbitsToSlots, skillToShort } from "../../../utils/crewutils";
+import { TranslateMethod } from "../../../model/player";
 
 
 
@@ -16,10 +17,10 @@ export interface QuipmentScoreProps {
     excludeQBits?: boolean;
 }
 
-export const getQuipmentTableConfig = (excludeQBits?: boolean, excludeSpecialty?: boolean) => {
+export const getQuipmentTableConfig = (t: TranslateMethod, excludeQBits?: boolean, excludeSpecialty?: boolean) => {
     const config = [] as ITableConfigRow[];    
-    config.push({ width: 1, column: 'quipment_score', title: "Overall", reverse: true });
-    if (!excludeSpecialty) config.push({ width: 1, column: 'quipment_scores.trait_limited', title: "Specialty", reverse: true });
+    config.push({ width: 1, column: 'quipment_score', title: t('quipment_ranks.overall'), reverse: true });
+    if (!excludeSpecialty) config.push({ width: 1, column: 'quipment_scores.trait_limited', title: t('quipment_ranks.specialty'), reverse: true });
 
     CONFIG.SKILLS_SHORT.map(p => p.name).forEach((skill) => {
         config.push({ 
@@ -41,7 +42,7 @@ export const getQuipmentTableConfig = (excludeQBits?: boolean, excludeSpecialty?
         })
     })    
 
-    if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: 'QP', reverse: true });
+    if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: t('base.qp'), reverse: true });
     return config;
 }
 

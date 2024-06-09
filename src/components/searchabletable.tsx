@@ -411,7 +411,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 										}}
 									/>
 									<span style={{ paddingLeft: '2em'}}>
-										Rows per page:{' '}
+										{t('global.rows_per_page')}:{' '}
 										<Dropdown
 											inline
 											upward

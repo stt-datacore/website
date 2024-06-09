@@ -5,6 +5,7 @@ import { CrewMember } from '../model/crew';
 import { PlayerCrew } from '../model/player';
 import { LockedProspect } from '../model/game-elements';
 import { DropDownItem } from '../utils/misc';
+import { GlobalContext } from '../context/globalcontext';
 
 type ProspectPickerProps = {
 	pool: (CrewMember | PlayerCrew)[];
@@ -13,8 +14,8 @@ type ProspectPickerProps = {
 };
 
 const ProspectPicker = (props: ProspectPickerProps) => {
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { pool, prospects, setProspects } = props;
-
 	enum OptionsState {
 		Uninitialized,
 		Initializing,
@@ -35,7 +36,7 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 
 	if (pool.length == 0) return (<></>);
 
-	const placeholder = options.state === OptionsState.Initializing ? 'Loading. Please wait...' : 'Select Crew';
+	const placeholder = options.state === OptionsState.Initializing ? t('global.loading_please_wait_ellipses') : t('prospect_picker.select_crew');
 
 	return (
 		<React.Fragment>
@@ -46,7 +47,7 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 				onFocus={() => { if (options.state === OptionsState.Uninitialized) populateOptions(); }}
 				onChange={(e, { value }) => setSelection(value as string)}
 			/>
-			<Button compact icon='add user' color='green' content='Add Crew' onClick={() => { addProspect(); }} style={{ marginLeft: '1em' }} />
+			<Button compact icon='add user' color='green' content={t('prospect_picker.add_crew')} onClick={() => { addProspect(); }} style={{ marginLeft: '1em' }} />
 			<Table celled striped collapsing unstackable compact="very">
 				<Table.Body>
 					{prospects.map((p, prospectNum) => (
