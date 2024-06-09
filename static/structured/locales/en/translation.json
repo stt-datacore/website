@@ -48,6 +48,13 @@
         "voyage_pair_roster": "#{{rank}} {{skill}} voyage pair in your roster",
         "voyage_skill_ranks": "Voyage skill ranks"
     },
+    "crew_ownership": {
+        "immortal": "Only show immortalized crew",
+        "mortal": "Only show owned non-immortals",
+        "none": "Show all crew",
+        "owned": "Only show owned crew",
+        "unowned": "Only show unowned crew"
+    },
     "crew_page": {
         "aka_colon": "Also known as:",
         "all_fuse_skill_fffe_colon": "Skills at all fuses when fully leveled and fully equipped:",
@@ -205,6 +212,7 @@
         "apply_buffs": "Apply stat buffs",
         "display_buffs": "Display Buffs",
         "filter_by_portal_status": "Filter by portal status",
+        "filter_by_progress": "Filter by progress",
         "filter_by_rarity": "Filter by rarity",
         "filter_by_status": "Filter by status",
         "filter_by_trait": "Filter by trait",
@@ -425,8 +433,8 @@
     "player_badge": {
         "n_immortals": "{{n}} immortals",
         "n_shuttles": "{{n}} shuttles",
-        "x_y_crew": "{{x}} / {{y}} crew",
-        "starbase_level": "Starbase level"
+        "starbase_level": "Starbase level",
+        "x_y_crew": "{{x}} / {{y}} crew"
     },
     "prospect_picker": {
         "add_crew": "Add Crew",

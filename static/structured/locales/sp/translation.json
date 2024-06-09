@@ -48,6 +48,13 @@
         "voyage_pair_roster": "#{{rank}} {{skill}} par de viajes en tu lista",
         "voyage_skill_ranks": "Rangos de habilidades de viaje"
     },
+    "crew_ownership": {
+        "immortal": "Solo muestra tripulación inmortalizada",
+        "mortal": "Solo mostrar propiedad de no inmortales",
+        "none": "Mostrar toda la tripulación",
+        "owned": "Sólo equipo propiedad del espectáculo",
+        "unowned": "Mostrar solo equipo sin propietario"
+    },
     "crew_page": {
         "aka_colon": "También conocido como:",
         "all_fuse_skill_fffe_colon": "Habilidades en todos los fusibles cuando están completamente nivelados y equipados:",
@@ -212,6 +219,7 @@
         "apply_buffs": "Aplicar efectos",
         "display_buffs": "Mostrar efectos",
         "filter_by_portal_status": "Filtrar por estado del portal",
+        "filter_by_progress": "Filtrar por progreso",
         "filter_by_rarity": "Filtrar por rareza",
         "filter_by_status": "Filtrar por estado",
         "filter_by_trait": "Filtrar por característica",
@@ -433,8 +441,8 @@
     "player_badge": {
         "n_immortals": "{{n}} inmortales",
         "n_shuttles": "{{n}} lanzaderas",
-        "x_y_crew": "{{x}} / {{y}} equipo",
-        "starbase_level": "Nivel de base estelar"
+        "starbase_level": "Nivel de base estelar",
+        "x_y_crew": "{{x}} / {{y}} equipo"
     },
     "prospect_picker": {
         "add_crew": "Agregar Tripulación",
