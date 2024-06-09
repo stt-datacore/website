@@ -162,6 +162,7 @@
         "yesterday_gauntlet": "Gantelet d'hier"
     },
     "global": {
+        "admiral": "Amiral",
         "any": "Quelconque",
         "apply_filters": "Appliquer des filtres",
         "base": "Base",
@@ -174,15 +175,18 @@
         "disabled": "Désactivé",
         "enable": "Activer",
         "enabled": "Activé",
+        "fleet": "Flotte",
         "hidden": "Caché",
         "hide": "Masquer",
         "load_default_settings": "Charger les paramètres par défaut",
         "loading_ellipses": "Chargement ...",
         "loading_please_wait_ellipses": "Chargement. S'il vous plaît, attendez...",
+        "member": "Membre",
         "never": "Jamais",
         "no": "Non",
         "none": "Aucun",
         "obtained": "Obtenu par",
+        "officer": "Officier",
         "portal": "Portail",
         "reset": "Réinitialiser",
         "rows_per_page": "Lignes par page",
@@ -191,6 +195,7 @@
         "search_ellipses": "Recherche...",
         "show": "Montre",
         "shown": "Affiché",
+        "squadron_leader": "Chef d'escadron",
         "yes": "Oui"
     },
     "header": {
@@ -425,6 +430,12 @@
             }
         },
         "ships": "Vaisseaux"
+    },
+    "player_badge": {
+        "n_immortals": "{{n}} immortels",
+        "n_shuttles": "{{n}} navettes",
+        "x_y_crew": "{{x}} / {{y}} équipage",
+        "starbase_level": "Niveau de base stellaire"
     },
     "prospect_picker": {
         "add_crew": "Ajouter Équipage",

@@ -1,19 +1,19 @@
 import React from "react";
-import { PlayerData } from "../../model/player";
+import { PlayerData, TranslateMethod } from "../../model/player";
 import { Link } from "gatsby";
 import { Item, Label } from "semantic-ui-react";
+import { GlobalContext } from "../../context/globalcontext";
 
 
 
 export interface PlayerBadgeProps {
     playerData: PlayerData;
     style?: React.CSSProperties;
-    
+    t: TranslateMethod;
 }
 
 export const PlayerBadge = (props: PlayerBadgeProps) => {
-
-    const { playerData, style } = props;
+    const { playerData, style, t } = props;
     if (!playerData) return <></>;
 
     let portrait = `${process.env.GATSBY_ASSETS_URL}${playerData?.player?.character?.crew_avatar
@@ -41,20 +41,20 @@ export const PlayerBadge = (props: PlayerBadgeProps) => {
                 <Item.Header>{playerData.player.character.display_name}</Item.Header>
                 <Item.Meta style={{marginLeft: 0, marginTop: "0.25em"}}>
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>VIP {playerData.player.vip_level}</Label>
-                    <Label style={{marginLeft: 0, marginTop: "0.25em"}}>Level {playerData.player.character.level}</Label>
-                    <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{immortal} immortals</Label>
+                    <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{t('base.level')} {playerData.player.character.level}</Label>
+                    <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{t("player_badge.n_immortals", { n: `${immortal}`})}</Label>
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}} title={`${unfrozen} / ${crewLimit}`}>
-                        {crewLimit < unfrozen && <span style={{color: 'tomato'}}>!!</span>} {unfrozen} / {crewLimit} crew</Label>
-                    <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{playerData.player.character.shuttle_bays} shuttles</Label>
+                        {crewLimit < unfrozen && <span style={{color: 'tomato'}}>!!</span>} {t('player_badge.x_y_crew', { x: `${unfrozen}`, y: `${crewLimit}`})}</Label>
+                    <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{ t('player_badge.n_shuttles', { n: `${playerData.player.character.shuttle_bays}` })}</Label>
                 </Item.Meta>
                 <Item.Description>
                     {playerData.player.fleet && (
                         <p>
-                            Fleet{' '}
+                            {t('global.fleet')}{' '}
                             <Link to={`/fleet_info?fleetid=${playerData.player.fleet.id}`}>
                                 <b>{playerData.player.fleet.slabel}</b>
                             </Link>{' '}<br/>
-                            ({playerData.player.fleet.rank})<br/> Starbase level {playerData.player.fleet.nstarbase_level}{' '}
+                            ({t(`global.${playerData.player.fleet.rank.toLowerCase()}`)?.toUpperCase()})<br/> {t('player_badge.starbase_level')} {playerData.player.fleet.nstarbase_level}{' '}
                         </p>
                     )}
                 </Item.Description>

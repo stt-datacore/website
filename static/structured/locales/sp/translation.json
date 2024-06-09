@@ -161,6 +161,7 @@
         "yesterday_gauntlet": "El reto de ayer"
     },
     "global": {
+        "admiral": "Almirante",
         "any": "Cualquier",
         "apply_filters": "Aplicar filtros",
         "base": "Base",
@@ -173,15 +174,18 @@
         "disabled": "Desactivado",
         "enable": "Habilitar",
         "enabled": "Habilitado",
+        "fleet": "Flota",
         "hidden": "Oculto",
         "hide": "Ocultar",
         "load_default_settings": "Cargar configuración predeterminada",
         "loading_ellipses": "Cargando ...",
         "loading_please_wait_ellipses": "Cargando. Espere por favor...",
+        "member": "Miembro",
         "never": "Nunca",
         "no": "No",
         "none": "Ninguna",
         "obtained": "Obtenido por",
+        "officer": "Oficial",
         "portal": "Portal",
         "reset": "Restablecer",
         "rows_per_page": "Filas por página",
@@ -190,6 +194,7 @@
         "search_ellipses": "Buscar...",
         "show": "Reloj",
         "shown": "Mostrado",
+        "squadron_leader": "Líder de escuadrón",
         "yes": "Sí"
     },
     "header": {
@@ -424,6 +429,12 @@
             }
         },
         "ships": "Barcos"
+    },
+    "player_badge": {
+        "n_immortals": "{{n}} inmortales",
+        "n_shuttles": "{{n}} lanzaderas",
+        "x_y_crew": "{{x}} / {{y}} equipo",
+        "starbase_level": "Nivel de base estelar"
     },
     "prospect_picker": {
         "add_crew": "Agregar Tripulación",

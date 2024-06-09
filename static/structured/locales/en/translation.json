@@ -154,6 +154,7 @@
         "yesterday_gauntlet": "Yesterday's Gauntlet"
     },
     "global": {
+        "admiral": "Admiral",
         "any": "Any",
         "apply_filters": "Apply Filters",
         "base": "Base",
@@ -166,15 +167,18 @@
         "disabled": "Disabled",
         "enable": "Enable",
         "enabled": "Enabled",
+        "fleet": "Fleet",
         "hidden": "Hidden",
         "hide": "Hide",
         "load_default_settings": "Load Default Settings",
         "loading_ellipses": "Loading ...",
         "loading_please_wait_ellipses": "Loading. Please wait...",
+        "member": "Member",
         "never": "Never",
         "no": "No",
         "none": "None",
         "obtained": "Obtained",
+        "officer": "Officer",
         "portal": "Portal",
         "reset": "Reset",
         "rows_per_page": "Rows per page",
@@ -183,6 +187,7 @@
         "search_ellipses": "Search...",
         "show": "Show",
         "shown": "Shown",
+        "squadron_leader": "Squadron Leader",
         "yes": "Yes"
     },
     "header": {
@@ -416,6 +421,12 @@
             }
         },
         "ships": "Ships"
+    },
+    "player_badge": {
+        "n_immortals": "{{n}} immortals",
+        "n_shuttles": "{{n}} shuttles",
+        "x_y_crew": "{{x}} / {{y}} crew",
+        "starbase_level": "Starbase level"
     },
     "prospect_picker": {
         "add_crew": "Add Crew",

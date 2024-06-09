@@ -19,6 +19,7 @@ const Dashboard = (props: DashboardProps) => {
 	const [dbidHash, setDbidHash] = React.useState<string | undefined>(undefined);
 	const isMobile = globalContext.isMobile;
 	const { playerData, showPlayerGlance, setShowPlayerGlance } = globalContext.player;	
+	const { t } = globalContext.localized;
 	const { activePanel, setActivePanel, narrow } = props;
 	const [mobileHideOverride, setMobileHideOverride] = React.useState(false);
 	const [hideOverrideHidden, setHideOverrideHidden] = React.useState(false);
@@ -29,6 +30,7 @@ const Dashboard = (props: DashboardProps) => {
 
 			{playerData && showPlayerGlance && (!isMobile || mobileHideOverride) &&
 				<PlayerGlance 
+					t={t}
 					narrow={narrow}
 					requestDismiss={() => { setShowPlayerGlance(false) }} />} 
 			{playerData && showPlayerGlance && (isMobile && !mobileHideOverride) && !hideOverrideHidden &&
