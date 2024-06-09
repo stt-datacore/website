@@ -154,6 +154,7 @@
         "yesterday_gauntlet": "Die Herausforderung von gestern"
     },
     "global": {
+        "admiral": "Admiral",
         "any": "Beliebig",
         "apply_filters": "Filter anwenden",
         "base": "Grundlage",
@@ -166,15 +167,18 @@
         "disabled": "Deaktiviert",
         "enable": "Aktivieren",
         "enabled": "Aktiviert",
+        "fleet": "Flotte",
         "hidden": "Versteckt",
         "hide": "Verstecken",
         "load_default_settings": "Standardeinstellungen laden",
         "loading_ellipses": "Wird geladen ...",
         "loading_please_wait_ellipses": "Laden, bitte warten...",
+        "member": "Mitglied",
         "never": "Niemals",
         "no": "Nein",
         "none": "Keine",
         "obtained": "Erhalten von",
+        "officer": "Offizier",
         "portal": "Zeitportal",
         "reset": "Zurücksetzen",
         "rows_per_page": "Zeilen pro Seite",
@@ -183,6 +187,7 @@
         "search_ellipses": "Suchen...",
         "show": "Zeigen",
         "shown": "Gezeigt",
+        "squadron_leader": "Geschwaderführer",
         "yes": "Ja"
     },
     "header": {
@@ -415,6 +420,12 @@
             }
         },
         "ships": "Schiffe"
+    },
+    "player_badge": {
+        "n_immortals": "{{n}} Unsterbliche",
+        "n_shuttles": "{{n}} Shuttles",
+        "x_y_crew": "{{x}} / {{y}} Crew",
+        "starbase_level": "Sternenbasis-Level"
     },
     "prospect_picker": {
         "add_crew": "Crew Hinzufügen",

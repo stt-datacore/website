@@ -4,7 +4,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { Link, navigate } from "gatsby";
 import { Grid, Item, Label, Image, Icon } from "semantic-ui-react";
 import { PlayerBadge } from "./playerbadge";
-import { PlayerData } from "../../model/player";
+import { PlayerData, TranslateMethod } from "../../model/player";
 import { getOwnedCites } from "../../utils/collectionutils";
 import CONFIG from "../CONFIG";
 import { mergeItems } from "../../utils/itemutils";
@@ -26,12 +26,13 @@ export interface PlayerResource {
 export interface PlayerGlanceProps {
     requestDismiss?: () => void;
     narrow?: boolean;
+    t: TranslateMethod
 }
 
-export const PlayerGlance = (props: PlayerGlanceProps) => {
+export const PlayerGlance = (props: PlayerGlanceProps) => {    
     const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'normal', { rememberForever: true })
 
-    const { requestDismiss, narrow } = props;
+    const { requestDismiss, narrow, t } = props;
 
     const globalContext = React.useContext(GlobalContext);
     const { isMobile } = globalContext;
@@ -160,7 +161,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
             <Label title={'Close player at-a-glance panel'} as='a' corner='right' onClick={requestDismiss}>
                 <Icon name='delete' style={{ cursor: 'pointer' }} />
             </Label>
-            <PlayerBadge playerData={playerData} style={{width: isMobile || narrow ? 'auto' : '600px', margin: '0 2em'}} />
+            <PlayerBadge t={t} playerData={playerData} style={{width: isMobile || narrow ? 'auto' : '600px', margin: '0 2em'}} />
             <div style={{
                 display: 'flex',
                 flexDirection: 'row',

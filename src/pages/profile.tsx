@@ -186,7 +186,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 	}
 
 	renderDesktop() {
-		
+		const { t } = this.context.localized;
 		const { playerData } = this.context.player ?? { playerData: undefined };
 		
 		const panes = [
@@ -222,7 +222,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 		return (
 			playerData?.player &&
 			(<>
-				<PlayerBadge playerData={playerData} />
+				<PlayerBadge t={t} playerData={playerData} />
 				<Menu compact>
 					<Menu.Item>
 						{playerData.calc?.lastModified ? <span>Last updated: {moment(playerData.calc.lastModified).format("llll")}</span> : <span />}
