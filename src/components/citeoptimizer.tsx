@@ -941,7 +941,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							/>
 							<div style={{ paddingLeft: '2em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 								
-								<div style={{marginRight:"0.5em"}}>Rows per page:</div>
+								<div style={{marginRight:"0.5em"}}>{t('global.rows_per_page')}:</div>
 								<Dropdown
 									inline
 									options={pagingOptions}

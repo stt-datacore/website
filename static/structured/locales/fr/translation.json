@@ -88,11 +88,44 @@
         "unowned_no_portal": "Équipage sans propriétaire (pas dans le Portail)",
         "unowned_portal": "Équipage sans propriétaire (dans le portail)"
     },
+    "crew_utility": {
+        "columns": {
+            "g": "G",
+            "gauntlet_ranks": "Gauntlet Ranks",
+            "s": "S",
+            "shuttle_ranks": "Shuttle Ranks",
+            "u": "U",
+            "utility": "Utilité",
+            "v": "V",
+            "voyage_ranks": "Voyage Ranks"
+        },
+        "consider_three_skill_check": "Considérez uniquement un équipage à 3 compétences pour les voyages et le gantelet",
+        "custom": {
+            "core": "Base",
+            "gauntlet": "Gantelet",
+            "shuttle_pairs": "Paires de Navettes",
+            "voyage": "Voyage"
+        },
+        "customize_button": "Personnaliser la notation d'utilité...",
+        "customize_header": "Vous pouvez mesurer l'utilité pour différents domaines du jeu. Un nombre plus élevé considérera qu'un plus grand nombre d'équipages est utile dans ce domaine du jeu.",
+        "header": "L'outil d'utilité de l'équipage identifie le nombre d'ensembles de compétences potentiellement utiles que possède chaque équipage, par rapport aux autres membres de votre liste possédant des ensembles de compétences similaires. Pour des conseils spécifiques sur l'équipage à utiliser, consultez les trois pages çi: {{event_planner}}, {{gauntlets}} ou {{voyage_calculator}}.",
+        "include_base_ranks_check": "Inclure les rangs de base dans le tableau d'utilité de l'équipage",
+        "roster": {
+            "base_shuttle": "La paire base/navette se classe sur votre liste",
+            "gauntlet": "Gantelet se classe sur votre liste",
+            "voyage": "Voyage se classe sur votre liste"
+        }
+    },
     "crew_views": {
+        "advanced_analysis": "Analyse Avancée",
         "base": "Afficher les compétences de base",
-        "crew_utility": "Afficher l'utilitaire de l'équipage",
+        "crew_utility": "Afficher d'utilité de l'équipage",
         "gauntlet": "Afficher les rangs des gantelets",
         "max_quipment": "Afficher le Quipement Max",
+        "prospect": {
+            "description": "Ajoutez des d'équipage potentiels pour voir comment ils s'intègrent dans votre liste actuelle.",
+            "title": "Équipage potentiel"
+        },
         "quipment": "Afficher les rangs des Quipements",
         "ship": "Afficher les capacités du navire",
         "voyage": "Afficher les rangs des voyages"
@@ -129,6 +162,7 @@
         "yesterday_gauntlet": "Gantelet d'hier"
     },
     "global": {
+        "any": "Quelconque",
         "apply_filters": "Appliquer des filtres",
         "base": "Base",
         "bonus": "Prime",
@@ -143,11 +177,15 @@
         "hidden": "Caché",
         "hide": "Masquer",
         "load_default_settings": "Charger les paramètres par défaut",
+        "loading_ellipses": "Chargement ...",
+        "loading_please_wait_ellipses": "Chargement. S'il vous plaît, attendez...",
         "never": "Jamais",
         "no": "Non",
+        "none": "Aucun",
         "obtained": "Obtenu par",
         "portal": "Portail",
         "reset": "Réinitialiser",
+        "rows_per_page": "Lignes par page",
         "search": "Recherche",
         "search_by_name_or_trait_ellipses": "Rechercher par nom ou caractéristique...",
         "search_ellipses": "Recherche...",
@@ -171,9 +209,12 @@
         "display_buffs": "Afficher effets",
         "filter_by_portal_status": "Filtrer par statut du portail",
         "filter_by_rarity": "Filtrer par rareté",
+        "filter_by_status": "Filtrer par statut",
         "filter_by_trait": "Filtrer par trait",
         "filter_ship_grants": "Filtrer les subventions d'expédition",
         "filter_ship_rarity": "Filtrer la rareté des vaisseaux",
+        "roster_maintenance": "Entretien de la liste",
+        "select_ship": "Sélectionnez Vaisseau",
         "select_ship_abilities": "Sélectionner les capacités du vaisseau",
         "select_ship_ability": "Sélectionner la capacité du vaisseau",
         "select_ship_ability_amount": "Sélectionnez le montant de la capacité du vaisseau",
@@ -327,6 +368,28 @@
         }
     },
     "options": {
+        "crew_status": {
+            "favorites": "Afficher uniquement l'équipage préféré",
+            "frozen": "Afficher uniquement l'équipage gelé",
+            "frozen_dupes": "Afficher uniquement l'équipage en double gelé",
+            "idle": "Afficher uniquement l'équipage inactif",
+            "none": "Afficher tout l'équipage",
+            "thawed": "Afficher uniquement l'équipage non gelé"
+        },
+        "roster_maintenance": {
+            "advanceable": "Afficher uniquement les équipages disposant d'emplacements du quipement non réclamés",
+            "buyback": "Afficher l'équipage avec les fusibles dans le puits de rachat",
+            "dupes": "Afficher uniquement l'équipage en double",
+            "fodder": "Afficher uniquement l'équipage non fusionné",
+            "freezable": "Afficher uniquement l'équipage congelable",
+            "impact": "Afficher uniquement l'équipage ayant besoin d'un fusible",
+            "mortal": "Afficher uniquement les non-immortels",
+            "none": "Afficher tout l'équipage",
+            "priority": "Afficher uniquement les non-immortels entièrement fusionnés",
+            "quippable": "Afficher uniquement l'équipage qui peut prendre du quipement",
+            "quipped": "Afficher uniquement les équipages qui ont un quipement",
+            "threshold": "Afficher uniquement l'équipage ayant besoin de 2 fusibles"
+        },
         "text_match": {
             "any": "Correspondre n'importe quel texte",
             "exact": "Correspondance exacte uniquement",
@@ -363,6 +426,30 @@
         },
         "ships": "Vaisseaux"
     },
+    "prospect_picker": {
+        "add_crew": "Ajouter Équipage",
+        "select_crew": "Sélectionnez l'Équipage"
+    },
+    "quipment_dropdowns": {
+        "calc_mode": {
+            "core": "Base Compétences",
+            "core_and_proficiencies": "Base et Plage de Compétences",
+            "proficiencies": "Plage de Compétences"
+        },
+        "calc_mode_label": "Mode de calcul",
+        "mode": {
+            "individual_skills": "Compétences individuelles",
+            "skill_combos": "Combos de compétences",
+            "skill_order": "Ordre des compétences"
+        },
+        "mode_label": "Mode Compétences",
+        "slot_label": "Mode Emplacements",
+        "slots": {
+            "n_slots": "Quiper {{slots}} emplacements",
+            "natural": "Quiper des emplacements naturels",
+            "one_slot": "Quiper 1 emplacement"
+        }
+    },
     "quipment_ranks": {
         "first_pair": "Première Paire",
         "overall": "Ensemble",
@@ -371,7 +458,8 @@
         "secondary": "Secondaire",
         "specialty": "Spécialité",
         "tertiary": "Tertiaire",
-        "third_pair": "Troisième Paire"
+        "third_pair": "Troisième Paire",
+        "three_skills": "Trois Compétences"
     },
     "rank_names": {
         "bigbook_tier": "Étage Big Book",
@@ -381,6 +469,63 @@
         "gauntlet_rank": "Rang Gantelet",
         "quipment_score": "Rang de Quipement",
         "voyage_rank": "Rang Voyage"
+    },
+    "roster_summary": {
+        "by_rarity": "Par rareté",
+        "by_skill": "Par compétence",
+        "rarity": {
+            "columns": {
+                "dupes": "Dupliquer",
+                "frozen": "Congelé",
+                "immortal": "Immortel+",
+                "owned": "Possédé",
+                "ownedPct": "% Possédé",
+                "portalPct": "% Portail",
+                "progress": "Immortel",
+                "progressPct": "% Immortel",
+                "rarity": "Rareté",
+                "unfrozen": "Dégelé"
+            },
+            "footer_text": "Les colonnes Possédé, % Possédé, % Portail, Immortel et % Immortel ne prennent en compte que l'équipage unique. Toutes les autres colonnes prennent en compte vos doublons.",
+            "header_text": "Ce tableau décompose votre effectif par rareté et montre votre progression vers l'immortalisation de tous les équipages du jeu.",
+            "immortal_cell_help": "Vos réalisations dans le jeu peuvent indiquer à tort ce numéro comme {number}"
+        },
+        "skills": {
+            "columns": {
+                "average": "Moyenne",
+                "best": "Meilleur",
+                "maxPct": {
+                    "description": "Comment vos dix meilleurs équipages se comparent à tous les équipages du jeu possédant cette compétence",
+                    "title": "% du Maximum"
+                },
+                "owned": "Possédé",
+                "ownedPct": "% Possédé",
+                "skills": "Compétence",
+                "tenAverage": {
+                    "description": "Le score moyen de vos dix meilleurs équipages dans cette compétence",
+                    "title": "Dix Meilleurs"
+                }
+            },
+            "combos": {
+                "all": "Tous les combos de compétences",
+                "pairs": "Paires uniquement",
+                "singles": "Compétences uniques uniquement",
+                "skill_only": "{{skill}} uniquement",
+                "triplets": "Triolets uniquement"
+            },
+            "combos_title": "Filtrer les compétences",
+            "footer_text": "Les colonnes Possédé et % Possédé ne prennent en compte que l'équipage unique. Toutes les autres colonnes prennent en compte vos doublons.",
+            "header_text": "Ce tableau montre la profondeur et la force de votre effectif dans différents domaines du jeu pour chaque combinaison de compétences pertinente.",
+            "score": {
+                "core": "Base",
+                "gauntlet": "Gantelet",
+                "shuttles": "Navettes",
+                "voyage": "Voyage"
+            },
+            "score_title": "Score",
+            "three_skill_check": "Considérez uniquement un équipage à 3 compétences"
+        },
+        "title": "Résumé de la Liste"
     },
     "share_profile": {
         "export": {

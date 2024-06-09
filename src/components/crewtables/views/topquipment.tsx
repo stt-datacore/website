@@ -12,6 +12,7 @@ import { ItemWithBonus } from "../../../utils/itemutils";
 import { appelate } from "../../../utils/misc";
 import { GlobalContext } from "../../../context/globalcontext";
 import { BuffStatTable } from "../../../utils/voyageutils";
+import { TranslateMethod } from "../../../model/player";
 
 export interface TopQuipmentScoreProps {
     crew: IRosterCrew;
@@ -25,11 +26,11 @@ export interface TopQuipmentScoreProps {
     buffConfig?: BuffStatTable;
 }
 
-export const getTopQuipmentTableConfig = (pstMode: boolean | 2 | 3, excludeQBits: boolean, powerMode: 'all' | 'core' | 'proficiency', buffConfig?: BuffStatTable) => {
+export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean | 2 | 3, excludeQBits: boolean, powerMode: 'all' | 'core' | 'proficiency', buffConfig?: BuffStatTable) => {
     const config = [] as ITableConfigRow[];
-    config.push({ width: 1, column: 'quipment_score', title: "Overall", reverse: true });
-    if (pstMode) config.push({ width: 1, column: 'quipment_scores.trait_limited', title: "Specialty", reverse: true });
-    if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: 'QP', reverse: true });
+    config.push({ width: 1, column: 'quipment_score', title: t('quipment_ranks.overall'), reverse: true });
+    if (pstMode) config.push({ width: 1, column: 'quipment_scores.trait_limited', title: t('quipment_ranks.specialty'), reverse: true });
+    if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: t('base.qp'), reverse: true });
 
     // config.push({ 
     //     width: 1, 
@@ -157,7 +158,7 @@ export const getTopQuipmentTableConfig = (pstMode: boolean | 2 | 3, excludeQBits
                 title: <div style={{display: 'inline-block'}}>
                 <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                     <span>
-                    {appelate(skill)}
+                    {t(`quipment_ranks.${skill}`)}
                     </span>                
                 </div>
                 </div>, 
@@ -175,7 +176,7 @@ export const getTopQuipmentTableConfig = (pstMode: boolean | 2 | 3, excludeQBits
                 title: <div style={{display: 'inline-block'}}>
                 <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                     <span>
-                    {appelate(skill)}
+                        {t(`quipment_ranks.${skill}`)}
                     </span>                
                 </div>
                 </div>, 

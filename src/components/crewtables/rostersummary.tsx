@@ -6,6 +6,7 @@ import { CompactCrew, CrewRoster, PlayerCrew } from '../../model/player';
 import { ComputedSkill, CrewMember, Skill, SkillsSummary } from '../../model/crew';
 import { BuffStatTable } from '../../utils/voyageutils';
 import { applySkillBuff } from '../../utils/crewutils';
+import { GlobalContext } from '../../context/globalcontext';
 
 type RosterSummaryProps = {
 	myCrew: PlayerCrew[];
@@ -14,6 +15,8 @@ type RosterSummaryProps = {
 };
 
 const RosterSummary = (props: RosterSummaryProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
+
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 	const [tableView, setTableView] = React.useState('rarity');
 
@@ -26,14 +29,14 @@ const RosterSummary = (props: RosterSummaryProps) => {
 			centered={false}
 		>
 			<Modal.Header>
-				Roster Summary
+				{t('roster_summary.title')}
 				<Button.Group floated='right'>
 					<Button onClick={() => setTableView('rarity')} positive={tableView === 'rarity' ? true : undefined}>
-						By Rarity
+						{t('roster_summary.by_rarity')}
 					</Button>
 					<Button.Or />
 					<Button onClick={() => setTableView('skill')} positive={tableView === 'skill' ? true : undefined}>
-						By Skill
+						{t('roster_summary.by_skill')}
 					</Button>
 				</Button.Group>
 			</Modal.Header>
@@ -43,7 +46,7 @@ const RosterSummary = (props: RosterSummaryProps) => {
 			</Modal.Content>
 			<Modal.Actions>
 				<Button onClick={() => setModalIsOpen(false)}>
-					Close
+					{t('global.close')}
 				</Button>
 			</Modal.Actions>
 		</Modal>
@@ -51,7 +54,7 @@ const RosterSummary = (props: RosterSummaryProps) => {
 
 	function renderTrigger(): JSX.Element {
 		return (
-			<Button icon='calculator' content='Roster Summary' size='large' />
+			<Button icon='calculator' content={t('roster_summary.title')} size='large' />
 		)
 	}
 };
@@ -62,6 +65,7 @@ type RarityDepthProps = {
 };
 
 const RarityDepth = (props: RarityDepthProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const [rarityData, setRarityData] = React.useState<CrewRoster[] | undefined>(undefined);
 
 	const isImmortal = c => c.level === 100 && c.rarity === c.max_rarity && c.equipment?.length === 4;
@@ -79,7 +83,7 @@ const RarityDepth = (props: RarityDepthProps) => {
 			{
 				key: 0,
 				rarity: 0,
-				name: 'Any',
+				name: t('global.any'),
 				total: props.allCrew.length,
 				owned: uniqueOwned.length,
 				ownedPct: uniqueOwned.length/props.allCrew.length,
@@ -123,13 +127,13 @@ const RarityDepth = (props: RarityDepthProps) => {
 	}, [props.myCrew]);
 
 	if (!rarityData)
-		return <><Icon loading name='spinner' /> Loading...</>;
+		return <><Icon loading name='spinner' /> {t('global.loading_ellipses')}</>;
 
 	return (
 		<React.Fragment>
-			<p>This table breaks down your roster by rarity and shows your progress toward immortalizing all crew in the game.</p>
+			<p>{t('roster_summary.rarity.header_text')}</p>
 			<RarityDepthTable data={rarityData} />
-			<p>The Owned, % Owned, % Portal, Immortal, and % Immortal columns consider unique crew only. All other columns consider your duplicates.</p>
+			<p>{t('roster_summary.rarity.footer_text')}</p>
 		</React.Fragment>
 	);
 };
@@ -139,6 +143,7 @@ type RarityDepthTableProps = {
 };
 
 const RarityDepthTable = (props: RarityDepthTableProps) => {
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const [state, dispatch] = React.useReducer(reducer, {
 		column: null,
 		data: props.data,
@@ -151,16 +156,16 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 	}, [props.data]);
 
 	const tableConfig = [
-		{ column: 'rarity', title: 'Rarity', center: false },
-		{ column: 'owned', title: 'Owned', center: true, reverse: true },
-		{ column: 'ownedPct', title: '% Owned', center: true, reverse: true },
-		{ column: 'portalPct', title: '% Portal', center: true, reverse: true },
-		{ column: 'progress', title: 'Immortal', center: true, reverse: true },
-		{ column: 'progressPct', title: '% Immortal', center: true, reverse: true },
-		{ column: 'immortal', title: 'Immortal+', center: true, reverse: true },
-		{ column: 'unfrozen', title: 'Unfrozen', center: true, reverse: true },
-		{ column: 'frozen', title: 'Frozen', center: true, reverse: true },
-		{ column: 'dupes', title: 'Duplicate', center: true, reverse: true }
+		{ column: 'rarity', title: t('roster_summary.rarity.columns.rarity'), center: false },
+		{ column: 'owned', title: t('roster_summary.rarity.columns.owned'), center: true, reverse: true },
+		{ column: 'ownedPct', title: t('roster_summary.rarity.columns.ownedPct'), center: true, reverse: true },
+		{ column: 'portalPct', title: t('roster_summary.rarity.columns.portalPct'), center: true, reverse: true },
+		{ column: 'progress', title: t('roster_summary.rarity.columns.progress'), center: true, reverse: true },
+		{ column: 'progressPct', title: t('roster_summary.rarity.columns.progressPct'), center: true, reverse: true },
+		{ column: 'immortal', title: t('roster_summary.rarity.columns.immortal'), center: true, reverse: true },
+		{ column: 'unfrozen', title: t('roster_summary.rarity.columns.unfrozen'), center: true, reverse: true },
+		{ column: 'frozen', title: t('roster_summary.rarity.columns.frozen'), center: true, reverse: true },
+		{ column: 'dupes', title: t('roster_summary.rarity.columns.dupes'), center: true, reverse: true }
 	];
 
 	return (
@@ -218,8 +223,8 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 				{immortal}
 				{rarity === 0 &&
 					<Popup
-						trigger=<Icon name='help' />
-						content=<p>Your achievements in-game may incorrectly report this number as <b>{immortal+1}</b>.</p>
+						trigger={<Icon name='help' />}
+						content={<p>{tfmt('roster_summary.rarity.immortal_cell_help', { number: <b>{immortal+1}</b> })}</p>}
 					/>
 				}
 			</React.Fragment>
@@ -275,6 +280,7 @@ type SkillDepthProps = {
 
 const SkillDepth = (props: SkillDepthProps) => {
 	const { buffConfig } = props;
+	const { t } = React.useContext(GlobalContext).localized;
 
 	const [skillData, setSkillData] = React.useState<SkillsSummary[] | undefined>(undefined);
 	const [scoreOption, setScoreOption] = React.useState('core');
@@ -343,7 +349,7 @@ const SkillDepth = (props: SkillDepthProps) => {
 				average: skillAverage,
 				best: {
 					score: crewBySkill.length > 0 ? skillScore(crewBySkill[0]) : 0,
-					name: crewBySkill.length > 0 ? crewBySkill[0].name ?? 'None' : 'None'
+					name: crewBySkill.length > 0 ? crewBySkill[0].name ?? t('global.none') : t('global.none')
 				},
 				tenAverage: myBestTenAverage,
 				maxPct: myBestTen.length > 0 ? getMaxPct(skills, myBestTen.length, myBestTenSum) : 0
@@ -393,36 +399,37 @@ const SkillDepth = (props: SkillDepthProps) => {
 	}, [props.myCrew, scoreOption, comboOption, preferVersatile]);
 
 	const scoreOptions = [
-		{ key: 'core', value: 'core', text: 'Core' },
-		{ key: 'shuttles', value: 'shuttles', text: 'Shuttles' },
-		{ key: 'gauntlet', value: 'gauntlet', text: 'Gauntlet' },
-		{ key: 'voyage', value: 'voyage', text: 'Voyage' }
+		{ key: 'core', value: 'core', text: t('roster_summary.skills.score.core') },
+		{ key: 'shuttles', value: 'shuttles', text: t('roster_summary.skills.score.shuttles') },
+		{ key: 'gauntlet', value: 'gauntlet', text: t('roster_summary.skills.score.gauntlet') },
+		{ key: 'voyage', value: 'voyage', text: t('roster_summary.skills.score.voyage') }
 	];
 
 	const comboOptions = [
-		{ key: 'all', value: 'all', text: 'All skill combos', excludes: [] },
-		{ key: 'singles', value: 'singles', text: 'Single skills only', excludes: [] },
-		{ key: 'pairs', value: 'pairs', text: 'Pairs only', excludes: ['core', 'shuttles'] },
-		{ key: 'triplets', value: 'triplets', text: 'Triplets only', excludes: ['core', 'shuttles'] }
+		{ key: 'all', value: 'all', text: t('roster_summary.skills.combos.all'), excludes: [] },
+		{ key: 'singles', value: 'singles', text: t('roster_summary.skills.combos.singles'), excludes: [] },
+		{ key: 'pairs', value: 'pairs', text: t('roster_summary.skills.combos.pairs'), excludes: ['core', 'shuttles'] },
+		{ key: 'triplets', value: 'triplets', text: t('roster_summary.skills.combos.triplets'), excludes: ['core', 'shuttles'] }
 	];
+
 	CONFIG.SKILLS_SHORT.forEach(skill => {
 		comboOptions.push({
-			key: skill.name, value: skill.name, text: `${CONFIG.SKILLS[skill.name]} only`, excludes: ['core']
+			key: skill.name, value: skill.name, text:t('roster_summary.skills.combos.skill_only', { skill: CONFIG.SKILLS[skill.name]}), excludes: ['core']
 		});
 	});
 
 	if (!skillData)
-		return <><Icon loading name='spinner' /> Loading...</>;
+		return <><Icon loading name='spinner' /> {t('global.loading_ellipses')}</>;
 
 	return (
 		<React.Fragment>
-			<p>This table shows the depth and strength of your roster at various areas of the game for every relevant skill combination.</p>
+			<p>{t('roster_summary.skills.header_text')}</p>
 			<div style={{ marginTop: '1em' }}>
 				<Form>
 					<Form.Group inline>
 						<Form.Field
 							control={Select}
-							label='Score'
+							label={t('roster_summary.skills.score_title')}
 							options={scoreOptions}
 							value={scoreOption}
 							onChange={(e, { value }) => { setScoreOption(value); setComboOption('all'); setPreferVersatile(false); }}
@@ -432,16 +439,16 @@ const SkillDepth = (props: SkillDepthProps) => {
 							<React.Fragment>
 								<Form.Field
 									control={Select}
-									label='Filter skills'
+									label={t('roster_summary.skills.combos_title')}
 									options={comboOptions.filter(combo => !combo.excludes.includes(scoreOption))}
 									value={comboOption}
 									onChange={(e, { value }) => setComboOption(value)}
-									placeholder='Filter skills'
+									placeholder={t('roster_summary.skills.combos_title')}
 								/>
 								{scoreOption !== 'core' && scoreOption !== 'shuttles' &&
 									<Form.Field
 										control={Checkbox}
-										label='Only consider 3-skill crew'
+										label={t('roster_summary.skills.three_skill_check')}
 										checked={preferVersatile}
 										onChange={(e, { checked }) => setPreferVersatile(checked)}
 									/>
@@ -452,7 +459,7 @@ const SkillDepth = (props: SkillDepthProps) => {
 				</Form>
 			</div>
 			<SkillDepthTable data={skillData} />
-			<p>The Owned and % Owned columns consider unique crew only. All other columns consider your duplicates.</p>
+			<p>{t('roster_summary.skills.footer_text')}</p>
 		</React.Fragment>
 	);
 };
@@ -462,6 +469,7 @@ type SkillDepthTableProps = {
 };
 
 const SkillDepthTable = (props: SkillDepthTableProps) => {
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const skillsMap = CONFIG.SKILLS_SHORT.map(skill => skill.name);
 
 	const [state, dispatch] = React.useReducer(reducer, {
@@ -476,13 +484,13 @@ const SkillDepthTable = (props: SkillDepthTableProps) => {
 	}, [props.data]);
 
 	const tableConfig = [
-		{ column: 'skills', title: 'Skill', center: false },
-		{ column: 'owned', title: 'Owned', center: true, reverse: true },
-		{ column: 'ownedPct', title: '% Owned', center: true, reverse: true },
-		{ column: 'average', title: 'Average', center: true, reverse: true },
-		{ column: 'best', title: 'Best', center: false, reverse: true },
-		{ column: 'tenAverage', title: <span>Ten Best <Popup trigger={<Icon name='help' />} content='The average score of your ten best crew at this skill' /></span>, center: true, reverse: true },
-		{ column: 'maxPct', title: <span>% of Max <Popup trigger={<Icon name='help' />} content='How your ten best crew compare to all crew in the game with this skill' /></span>, center: true, reverse: true }
+		{ column: 'skills', title: t('roster_summary.skills.columns.skills'), center: false },
+		{ column: 'owned', title: t('roster_summary.skills.columns.owned'), center: true, reverse: true },
+		{ column: 'ownedPct', title: t('roster_summary.skills.columns.ownedPct'), center: true, reverse: true },
+		{ column: 'average', title: t('roster_summary.skills.columns.average'), center: true, reverse: true },
+		{ column: 'best', title: t('roster_summary.skills.columns.best'), center: false, reverse: true },
+		{ column: 'tenAverage', title: <span>{t('roster_summary.skills.columns.tenAverage.title')} <Popup trigger={<Icon name='help' />} content={t('roster_summary.skills.columns.tenAverage.description')}  /></span>, center: true, reverse: true },
+		{ column: 'maxPct', title: <span>{t('roster_summary.skills.columns.maxPct.title')}  <Popup trigger={<Icon name='help' />} content={t('roster_summary.skills.columns.maxPct.description')}  /></span>, center: true, reverse: true }
 	];
 
 	return (
