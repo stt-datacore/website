@@ -48,39 +48,6 @@
         "voyage_pair_roster": "#{{rank}} {{skill}} paire de voyages dans votre liste",
         "voyage_skill_ranks": "Rangs de compétences de voyage"
     },
-    "event_type": {
-        "gather": "Galaxie",
-        "shuttles": "Faction",
-        "skirmish": "Escarmouche"
-    },
-    "event_planner": {
-        "heading": "Trouvez le meilleur équipage à utiliser lors d'un événement",
-        "warn_no_info": "Les informations sur le prochain événement ne sont pas encore disponibles à partir des données des joueurs. Veuillez réessayer plus tard.",
-        "select_phase": "Sélectionnez une phase",        
-        "table": {
-            "featured_crew_not_identified": "L'équipage en vedette n'est pas encore identifié pour cet événement.",
-            "crew_guessed": "La liste complète des équipages bénéficiant de bonus pour cet événement n'est pas encore disponible à partir des données des joueurs. Par conséquent, DataCore peut ne pas identifier toute votre éventuelle équipe événementielle.",
-            "columns": {
-                "crew": "Équipage",
-                "bonus": "Prime",
-                "best": "Meilleur",
-                "pair": "Paire"
-            },
-            "options": {
-                "event_crew": "Afficher uniquement l'équipage pour l'événement ({{list}})",
-                "apply_event_bonus": "Appliquer le bonus d'événement aux compétences",
-                "potential_skills": "Montrer les compétences potentielles d'un équipage non nivelé",
-                "show_frozen": "Afficher l'équipage gelé(e)",
-                "exclude_quipped": "Exclure l'équipage avec quipement actif",
-                "share_crew": "Afficher l'équipage partagé",
-                "share_crew_help": "Les nombres de compétences de l'équipage partagés sont basés sur vos effets de joueur et peuvent ne pas correspondre à la puissance réelle"
-            }
-        },
-        "skill_matrix": "Matrice de Compétences",
-        "skill_matrix_heading": "Cette matrice montre votre meilleur équipage pour chaque combinaison de compétences possible. Utilisez cette matrice pour identifier votre meilleur équipage pour cet événement. Appuyez sur une cellule pour voir les autres membres d'équipage possédant cette combinaison de compétences.",
-        "hide_duplicate_pairs": "Supprimer les paires en double",
-        "prospect_description": "Ajoutez un équipage potentiel (ou un équipage partagé potentiel) pour voir comment ils s'intègrent dans votre liste existante pour cet événement."
-    },
     "crew_ownership": {
         "immortal": "Afficher uniquement l'équipage immortalisé",
         "mortal": "Afficher uniquement les non-immortels appartenant",
@@ -169,6 +136,49 @@
         "quipment": "Afficher les rangs des Quipements",
         "ship": "Afficher les capacités du navire",
         "voyage": "Afficher les rangs des voyages"
+    },
+    "event_planner": {
+        "heading": "Trouvez le meilleur équipage à utiliser lors d'un événement",
+        "hide_duplicate_pairs": "Supprimer les paires en double",
+        "picker": {
+            "all_crew": {
+                "description": "Considérez tout l'équipage dans le jeu",
+                "title": "Meilleur Équipage Possible"
+            },
+            "owned_crew": {
+                "description": "Considérez uniquement votre équipage",
+                "title": "Équipage Possédé"
+            }
+        },
+        "prospect_description": "Ajoutez un équipage potentiel (ou un équipage partagé potentiel) pour voir comment ils s'intègrent dans votre liste existante pour cet événement.",
+        "select_phase": "Sélectionnez une phase",
+        "skill_matrix": "Matrice de Compétences",
+        "skill_matrix_heading": "Cette matrice montre votre meilleur équipage pour chaque combinaison de compétences possible. Utilisez cette matrice pour identifier votre meilleur équipage pour cet événement. Appuyez sur une cellule pour voir les autres membres d'équipage possédant cette combinaison de compétences.",
+        "table": {
+            "columns": {
+                "best": "Meilleur",
+                "bonus": "Prime",
+                "crew": "Équipage",
+                "pair": "Paire"
+            },
+            "crew_guessed": "La liste complète des équipages bénéficiant de bonus pour cet événement n'est pas encore disponible à partir des données des joueurs. Par conséquent, DataCore peut ne pas identifier toute votre éventuelle équipe événementielle.",
+            "featured_crew_not_identified": "L'équipage en vedette n'est pas encore identifié pour cet événement.",
+            "options": {
+                "apply_event_bonus": "Appliquer le bonus d'événement aux compétences",
+                "event_crew": "Afficher uniquement l'équipage pour l'événement ({{list}})",
+                "exclude_quipped": "Exclure l'équipage avec quipement actif",
+                "potential_skills": "Montrer les compétences potentielles d'un équipage non nivelé",
+                "share_crew": "Afficher l'équipage partagé",
+                "share_crew_help": "Les nombres de compétences de l'équipage partagés sont basés sur vos effets de joueur et peuvent ne pas correspondre à la puissance réelle",
+                "show_frozen": "Afficher l'équipage gelé(e)"
+            }
+        },
+        "warn_no_info": "Les informations sur le prochain événement ne sont pas encore disponibles à partir des données des joueurs. Veuillez réessayer plus tard."
+    },
+    "event_type": {
+        "gather": "Galaxie",
+        "shuttles": "Faction",
+        "skirmish": "Escarmouche"
     },
     "gauntlet": {
         "browse_gauntlets": "Parcourez les gantelets",

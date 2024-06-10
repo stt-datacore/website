@@ -48,39 +48,6 @@
         "voyage_pair_roster": "#{{rank}} {{skill}} par de viajes en tu lista",
         "voyage_skill_ranks": "Rangos de habilidades de viaje"
     },
-    "event_type": {
-        "gather": "Galaxia",
-        "shuttles": "Facción",
-        "skirmish": "Escaramuza"
-    },
-    "event_planner": {
-        "heading": "Encuentra el mejor equipo para usar durante un evento.",
-        "warn_no_info": "La información sobre el próximo evento aún no está disponible en los datos de los jugadores. Porfavor intente más tarde.",
-        "select_phase": "Seleccione una fase",        
-        "table": {
-            "featured_crew_not_identified": "Equipo destacado aún no identificado para este evento.",
-            "crew_guessed": "La lista completa de tripulantes con bonificaciones para este evento aún no está disponible en los datos de los jugadores. Como resultado, es posible que DataCore no identifique a todo el posible equipo del evento.",
-            "columns": {
-                "crew": "Tripulación",
-                "bonus": "Primo",
-                "best": "Mejo",
-                "pair": "Par"
-            },
-            "options": {
-                "event_crew": "Mostrar solo el equipo del evento ({{list}})",
-                "apply_event_bonus": "Aplicar bonificación de evento a las habilidades",
-                "potential_skills": "Mostrar habilidades potenciales de tripulación no nivelada.",
-                "show_frozen": "Mostrar tripulación congelada",
-                "exclude_quipped": "Excluir tripulación con quipo activo",
-                "share_crew": "Mostrar la tripulación que se comparte",
-                "share_crew_help": "Los números de habilidades de la tripulación que se comparten se basan en los efectos de tu jugador y pueden no coincidir con el poder real"
-            }
-        },
-        "skill_matrix": "Matriz de Habilidades",
-        "skill_matrix_heading": "Esta matriz muestra tu mejor equipo para cada combinación de habilidades posible. Utilice esta matriz para identificar su mejor equipo para este evento. Toca una celda para ver otros miembros del equipo con esa combinación de habilidades.",
-        "hide_duplicate_pairs": "Eliminar pares duplicados",
-        "prospect_description": "Agrega un equipo potencial (o un equipo potencial compartido) para ver cómo encajan en tu lista existente para este evento."
-    },
     "crew_ownership": {
         "immortal": "Solo muestra tripulación inmortalizada",
         "mortal": "Solo mostrar propiedad de no inmortales",
@@ -167,6 +134,49 @@
         "quipment": "Mostrar rangos de Quipos",
         "ship": "Mostrar habilidades del barco",
         "voyage": "Mostrar rangos de viaje"
+    },
+    "event_planner": {
+        "heading": "Encuentra el mejor equipo para usar durante un evento.",
+        "hide_duplicate_pairs": "Eliminar pares duplicados",
+        "picker": {
+            "all_crew": {
+                "description": "Considera a toda la tripulación en el juego",
+                "title": "La Mejor Tripulación Posible"
+            },
+            "owned_crew": {
+                "description": "Considere solo a su propia tripulación",
+                "title": "Tripulación Propia"
+            }
+        },
+        "prospect_description": "Agrega un equipo potencial (o un equipo potencial compartido) para ver cómo encajan en tu lista existente para este evento.",
+        "select_phase": "Seleccione una fase",
+        "skill_matrix": "Matriz de Habilidades",
+        "skill_matrix_heading": "Esta matriz muestra tu mejor equipo para cada combinación de habilidades posible. Utilice esta matriz para identificar su mejor equipo para este evento. Toca una celda para ver otros miembros del equipo con esa combinación de habilidades.",
+        "table": {
+            "columns": {
+                "best": "Mejo",
+                "bonus": "Primo",
+                "crew": "Tripulación",
+                "pair": "Par"
+            },
+            "crew_guessed": "La lista completa de tripulantes con bonificaciones para este evento aún no está disponible en los datos de los jugadores. Como resultado, es posible que DataCore no identifique a todo el posible equipo del evento.",
+            "featured_crew_not_identified": "Equipo destacado aún no identificado para este evento.",
+            "options": {
+                "apply_event_bonus": "Aplicar bonificación de evento a las habilidades",
+                "event_crew": "Mostrar solo el equipo del evento ({{list}})",
+                "exclude_quipped": "Excluir tripulación con quipo activo",
+                "potential_skills": "Mostrar habilidades potenciales de tripulación no nivelada.",
+                "share_crew": "Mostrar la tripulación que se comparte",
+                "share_crew_help": "Los números de habilidades de la tripulación que se comparten se basan en los efectos de tu jugador y pueden no coincidir con el poder real",
+                "show_frozen": "Mostrar tripulación congelada"
+            }
+        },
+        "warn_no_info": "La información sobre el próximo evento aún no está disponible en los datos de los jugadores. Porfavor intente más tarde."
+    },
+    "event_type": {
+        "gather": "Galaxia",
+        "shuttles": "Facción",
+        "skirmish": "Escaramuza"
     },
     "gauntlet": {
         "browse_gauntlets": "Explorar los retos",
