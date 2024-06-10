@@ -67,7 +67,8 @@
             "gauntlet_determination": "Die Rangliste wurde durch Vorausberechnung ermittelt. Konkrete Ratschläge zur einzusetzenden Crew finden Sie unter {{link}}.",
             "voyage_determination": "Die Rangliste wurde durch Vorausberechnung ermittelt. Konkrete Ratschläge zur einzusetzenden Crew finden Sie unter {{link}}."
         },
-        "player_buffs_applied": "Spieler-Buffs angewendet"
+        "player_buffs_applied": "Spieler-Buffs angewendet",
+        "variants": "Varianten von {{crew}}"
     },
     "crew_state": {
         "expires_in": "Crew läuft in {{time}} ab",
@@ -266,8 +267,14 @@
         "select_ship_abilities": "Schiffsfähigkeiten auswählen",
         "select_ship_ability": "Schiffsfähigkeit auswählen",
         "select_ship_ability_amount": "Schiffsfähigkeitenbetrag auswählen",
-        "trait": "Merkmalen",
-        "traits": "Merkmalenen"
+        "trait": "Merkmal",
+        "traits": "Merkmalen"
+    },
+    "items": {
+        "equippable_by": "Ausrüstbar durch: {{crew}}",
+        "equippable_by_rarity": "Ausrüstbar für bis zu {{rarity}} Crew.",
+        "equippable_by_traits": "Von der Crew mit den folgenden Merkmalen ausstattbar: {{traits}}",
+        "equippable_by_rarity_traits": "Ausrüstbar für bis zu {{rarity}} Crew mit den folgenden Merkmalen: {{traits}}"
     },
     "item_state": {
         "item_is_frozen_many": "{{item}} ist eingefroren ({{copies}} Kopien)",

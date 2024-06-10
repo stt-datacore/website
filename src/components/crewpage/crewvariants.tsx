@@ -15,6 +15,7 @@ type CrewVariantsProps = {
 
 export const CrewVariants = (props: CrewVariantsProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { traits_hidden } = props;
 
 	const [variants, setVariants] = React.useState<Variant[]>([] as Variant[]);
@@ -60,7 +61,7 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 	function renderGroup(group: Variant, idx: number): JSX.Element {
 		return (
 			<Segment key={idx}>
-				<Header as='h4'>Variants of {group.name}</Header>
+				<Header as='h4'>{t('crew_page.variants', { crew: group.name })}</Header>
 				<Grid centered padded>
 					{group.trait_variants.map(variant => (
 						<Grid.Column key={variant.symbol} textAlign='center' mobile={8} tablet={5} computer={4}>

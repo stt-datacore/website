@@ -55,6 +55,12 @@
         "owned": "Sólo equipo propiedad del espectáculo",
         "unowned": "Mostrar solo equipo sin propietario"
     },
+    "items": {
+        "equippable_by": "Equipable por: {{crew}}",
+        "equippable_by_rarity": "Equipable hasta por tripulación {{rarity}}.",
+        "equippable_by_traits": "Equipable por tripulación con los siguientes características: {{traits}}",
+        "equippable_by_rarity_traits": "Equipable hasta por tripulación {{rarity}} con las siguientes características: {{traits}}"
+    },
     "crew_page": {
         "aka_colon": "También conocido como:",
         "all_fuse_skill_fffe_colon": "Habilidades en todos los fusibles cuando están completamente nivelados y equipados:",
@@ -67,7 +73,8 @@
             "gauntlet_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre la tripulación a utilizar, consulte {{link}}.",
             "voyage_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre la tripulación a utilizar, consulte {{link}}."
         },
-        "player_buffs_applied": "Efectos de jugador aplicadas"
+        "player_buffs_applied": "Efectos de jugador aplicadas",
+        "variants": "Variantes de {{crew}}"
     },
     "crew_state": {
         "expires_in": "La tripulación caduca en {{time}}",
