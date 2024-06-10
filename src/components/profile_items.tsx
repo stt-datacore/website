@@ -813,6 +813,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 
 	render() {
+		const { t } = this.context.localized;
 		const { ownedQuipment, skills, traits: pftraits, crewType, crewSelection, addNeeded, column, direction, pagination_rows, pagination_page } = this.state;
 		let data = [...this.state.data ?? []];
 
@@ -1245,7 +1246,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 									onPageChange={(event, { activePage }) => this._onChangePage(activePage)}
 								/>
 								<span style={{ paddingLeft: '2em' }}>
-									Items per page:{' '}
+									{t('global.rows_per_page')}:{' '}
 									<Dropdown
 										inline
 										options={pagingOptions}

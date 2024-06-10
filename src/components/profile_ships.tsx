@@ -351,7 +351,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 								onPageChange={(event, { activePage }) => this._onChangePage(activePage)}
 							/>
 							<span style={{ paddingLeft: '2em' }}>
-								Ships per page:{' '}
+							 	{t('global.row_per_page')}:{' '}
 								<Dropdown
 									inline
 									options={pagingOptions}

@@ -462,7 +462,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                             onPageChange={(e, data) => setActivePage(data.activePage as number)} 
                             />                
                         <span style={{ paddingLeft: '2em' }}>
-                            Items per page:{' '}
+                            {t('global.rows_per_page')}:{' '}
                             <Dropdown 
                             options={pageSizes} 
                             value={itemsPerPage}
