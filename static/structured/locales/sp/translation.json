@@ -506,7 +506,7 @@
         "mode_label": "Modo habilidad",
         "slot_label": "Modo de ranura",
         "slots": {
-            "n_slots": "Quipar {(slots}} espacios",
+            "n_slots": "Quipar {{slots}} espacios",
             "natural": "Quipar espacios naturales",
             "one_slot": "Quipar 1 espacio"
         }
