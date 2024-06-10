@@ -11,11 +11,10 @@ import CONFIG from '../components/CONFIG';
 import { GlobalContext } from '../context/globalcontext';
 import { CrewMember } from '../model/crew';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
-import { PlayerBuffMode, PlayerCrew } from '../model/player';
+import { PlayerCrew } from '../model/player';
 import { EquipmentWorkerConfig, EquipmentWorkerResults } from '../model/worker';
-import { applyCrewBuffs, downloadData, oneCrewCopy, qbitsToSlots, shortToSkill, skillToShort } from '../utils/crewutils';
+import { downloadData, oneCrewCopy, qbitsToSlots, shortToSkill, skillToShort } from '../utils/crewutils';
 import { calcItemDemands, canBuildItem } from '../utils/equipment';
-import { appelate } from '../utils/misc';
 import { TinyStore } from '../utils/tiny';
 import { CrewHoverStat } from './hovering/crewhoverstat';
 import { ItemHoverStat } from './hovering/itemhoverstat';
@@ -722,13 +721,16 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 
 	createFlavor(item: EquipmentItem | EquipmentCommon) {
+		const { t, tfmt } = this.context.localized;
 		let output = [] as JSX.Element[];
 
 		let flavor = item.flavor ?? "";
 		if (flavor.startsWith("Equippable by: ")) {
 			let crew = flavor.replace("Equippable by: ", "").split(", ")?.map(s => this.context.core.crew.find(c => c.symbol === s)).filter(s => !!s) as CrewMember[];
 			if (crew?.length) output.push(<div>
-				Equippable by: {crew.map((crew) => <Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>).reduce((p, n) => <>{p}, {n}</>)}
+				{tfmt('items.equippable_by', {
+					crew: crew.map((crew) => <Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>).reduce((p, n) => <>{p}, {n}</>)
+				})}				
 			</div>)
 		}
 		const crew = this.context.core.crew;
@@ -767,45 +769,59 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					if (item.traits_requirement?.length) {
 						if (item.max_rarity_requirement) {
 							output.push(<div>
-								Equippable by up to <span style={{
-									color: CONFIG.RARITIES[item.max_rarity_requirement].color,
-									fontWeight: 'bold'
-								}}>
-									{CONFIG.RARITIES[item.max_rarity_requirement].name}
-								</span>
-								&nbsp;crew with the following traits: {printRequiredTraits(item, traits)}
-							</div>)
-							flavor += `Equippable by up to ${CONFIG.RARITIES[item.max_rarity_requirement].name} crew with the following traits: ${printRequiredTraits(item, traits)}`;
+								{tfmt("items.equippable_by_rarity_traits", {
+									rarity: <span style={{
+										color: CONFIG.RARITIES[item.max_rarity_requirement].color,
+										fontWeight: 'bold'
+									}}>
+										{CONFIG.RARITIES[item.max_rarity_requirement].name}
+									</span>,
+									traits: printRequiredTraits(item, traits)
+								})}
+							</div>);
+							flavor += t('items.equippable_by_rarity_traits', {
+								rarity: CONFIG.RARITIES[item.max_rarity_requirement].name,
+								traits: `${printRequiredTraits(item, traits)}`
+							});
 						}
 						else {
 							output.push(<>
-								Equippable by crew with the following traits:&nbsp;{printRequiredTraits(item, traits)}
-							</>)
-							flavor += `Equippable by crew with the following traits: ${printRequiredTraits(item, traits)}`;
+								{tfmt('items.equippable_by_traits', {
+									traits: printRequiredTraits(item, traits)
+								})}								
+							</>);							
+							flavor += t('items.equippable_by_traits', {
+								traits: `${printRequiredTraits(item, traits)}`
+							});
 						}
 					}
 					else if (item.max_rarity_requirement) {
 						output.push(<div>
-							Equippable by up to&nbsp;<span style={{
-								color: CONFIG.RARITIES[item.max_rarity_requirement].color,
-								fontWeight: 'bold'
-							}}>
-								{CONFIG.RARITIES[item.max_rarity_requirement].name}
-							</span>
-							&nbsp;crew.
-						</div>)
-						flavor += `Equippable by up to ${CONFIG.RARITIES[item.max_rarity_requirement].name} crew.`;
+								{tfmt("items.equippable_by_rarity", {
+									rarity: <span style={{
+										color: CONFIG.RARITIES[item.max_rarity_requirement].color,
+										fontWeight: 'bold'
+									}}>
+										{CONFIG.RARITIES[item.max_rarity_requirement].name}
+									</span>
+								})}
+						</div>);
+						flavor += t('items.equippable_by_rarity', {
+							rarity: CONFIG.RARITIES[item.max_rarity_requirement].name
+						});
 					}
 					else {
-						output.push(<div>Equippable by&nbsp;{found.length} crew.</div>)
-						flavor += `Equippable by ${found.length} crew.`;
+						output.push(<div>{t('equippable_by', { crew: found.length.toString() })}</div>)
+						flavor += t('equippable_by', { crew: found.length.toString() });
 					}
 				} else {
 					output.push(<div>
-						Equippable by:&nbsp;{found.map((crew) => <Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>).reduce((p, n) => <>{p}, {n}</>)}
+						{tfmt('equippable_by', {
+							crew: found.map((crew) => <Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>).reduce((p, n) => <>{p}, {n}</>)
+						})}
 					</div>)
 
-					flavor += 'Equippable by: ' + [...found.map(f => f.symbol)].join(', ');
+					flavor += t('equippable_by', { crew: [...found.map(f => f.symbol)].join(', ') });
 				}
 			}
 		}

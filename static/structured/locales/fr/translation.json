@@ -282,7 +282,13 @@
         "equippable_by": "Équipable par : {{crew}}",
         "equippable_by_rarity": "Peut être équipé jusqu'à un équipage {{rarity}}.",
         "equippable_by_traits": "Peut être équipé par l'équipage avec les caractéristiques suivantes : {{traits}}",
-        "equippable_by_rarity_traits": "Peut être équipé jusqu'à un équipage {{rarity}} avec les caractéristiques suivants : {{traits}}"
+        "equippable_by_rarity_traits": "Peut être équipé jusqu'à un équipage {{rarity}} avec les caractéristiques suivants : {{traits}}",
+        "duration": {
+            "title": "Durée: {{duration}}",
+            "n_days": "{{days}} jours",
+            "n_hours": "{{hours}} heures"
+        },
+        "required_traits": "Caractéristiques Requises: {{traits}}"
     },
     "item_state": {
         "item_is_frozen_many": "{{item}} est gelé ({{copies}} copies)",
@@ -600,7 +606,8 @@
         "export": {
             "export_clipboard": "Copier dans le Presse-papiers",
             "export_csv": "Exporter CSV",
-            "exported_clipboard": "Profil copié dans le presse-papier !"
+            "exported_clipboard": "Profil copié dans le presse-papier !",
+            "copy_dbid": "Copier DBID"
         },
         "share": {
             "check_auto_share": "Publier automatiquement le profil lors de l'importation des données du joueur",

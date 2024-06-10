@@ -1,29 +1,22 @@
 import React, { Component } from 'react';
-import { Header, Message, Icon, Rating, Image, Popup, Grid, Table, Checkbox, Label } from 'semantic-ui-react';
+import { Header, Message, Icon, Popup, Grid, Table, Checkbox } from 'semantic-ui-react';
 import { Link, navigate } from 'gatsby';
 
 import ItemSources from '../components/itemsources';
 import ItemDisplay from '../components/itemdisplay';
 import CONFIG from '../components/CONFIG';
-import { CompletionState, Demand, PlayerCrew, PlayerData } from '../model/player';
+import { CompletionState, PlayerCrew } from '../model/player';
 import { IDemand } from '../model/equipment';
-import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
-import { DataContext } from '../context/datacontext';
+import { EquipmentItem } from '../model/equipment';
 import { GlobalContext } from '../context/globalcontext';
-import { PlayerContext } from '../context/playercontext';
-import { BuffStatTable } from '../utils/voyageutils';
-import { ComputedSkill, CrewMember, Skill } from '../model/crew';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
-import { appelate } from '../utils/misc';
-import { prepareProfileData } from '../utils/crewutils';
 import ProfileItems, { printRequiredTraits } from '../components/profile_items';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import DataPageLayout from '../components/page/datapagelayout';
-import { formatDuration, getItemBonuses, getQuipmentCrew, populateItemCadetSources } from '../utils/itemutils';
+import { formatDuration, getItemBonuses, getQuipmentCrew } from '../utils/itemutils';
 import { renderBonuses } from '../components/item_presenters/item_presenter';
-import { RosterTable } from '../components/crewtables/rostertable';
 import { IRosterCrew } from '../components/crewtables/model';
 import { CrewConfigTable } from '../components/crewtables/crewconfigtable';
 import { TinyStore } from '../utils/tiny';
@@ -228,6 +221,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 	}
 
 	render() {
+		const { t, tfmt } = this.context.localized;
 		const { errorMessage, item_data } = this.state;
 		const { playerData } = this.context.player;
 		const { items } = this.context.core;
@@ -351,13 +345,14 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 								marginBottom: "4px",
 								marginLeft: ltMargin
 							}}>
-								Equippable by up to&nbsp;<span style={{
-									color: CONFIG.RARITIES[item_data.item.max_rarity_requirement].color,
-									fontWeight: 'bold'
-								}}>
-									{CONFIG.RARITIES[item_data.item.max_rarity_requirement].name}
-								</span>
-								&nbsp;crew.
+								{tfmt('items.equippable_by_rarity', {
+									rarity: <span style={{
+										color: CONFIG.RARITIES[item_data.item.max_rarity_requirement].color,
+										fontWeight: 'bold'
+									}}>
+										{CONFIG.RARITIES[item_data.item.max_rarity_requirement].name}
+									</span>
+								})}
 							</div>}
 						{!!item_data.item.kwipment && !!item_data.item.traits_requirement?.length &&
 							<div

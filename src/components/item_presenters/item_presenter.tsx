@@ -37,7 +37,8 @@ export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: strin
         alignItems: "left"
     }}>
         {Object.values(skills).map(((skill, idx) => {
-            const atext = appelate(skill.skill ?? "").replace("_", " ");
+            
+            const atext = CONFIG.SKILLS[skill.skill!];
             return (
                 <div
                     title={atext}
@@ -101,6 +102,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
     }
 
     render(): JSX.Element {
+        const { t, tfmt } = this.context.localized;
         const { item: item, touched, tabs, showIcon } = this.props;
         const { playerData } = this.context.player;
         const { items } = this.context.core;
