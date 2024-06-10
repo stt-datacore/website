@@ -274,7 +274,16 @@
         "equippable_by": "Equippable by: {{crew}}",
         "equippable_by_rarity": "Equippable by up to {{rarity}} crew.",
         "equippable_by_traits": "Equippable by crew with the following traits: {{traits}}",
-        "equippable_by_rarity_traits": "Equippable by up to {{rarity}} crew with the following traits: {{traits}}"
+        "equippable_by_rarity_traits": "Equippable by up to {{rarity}} crew with the following traits: {{traits}}",
+        "duration": {
+            "title": "Duration: {{duration}}",
+            "n_days": "{{days}} days",
+            "n_hours": "{{hours}} hours"
+        },
+        "required_traits": "Required Traits: {{traits}}",
+        "n_needed": "{{n}} needed",
+        "n_rewarded": "{{n}} rewarded",
+        "n_owned": "{{n}} owned"
     },
     "item_state": {
         "item_is_frozen_many": "{{item}} is Frozen ({{copies}} Copies)",
@@ -591,7 +600,8 @@
         "export": {
             "export_clipboard": "Copy to Clipboard",
             "export_csv": "Export CSV",
-            "exported_clipboard": "Profile copied to clipboard!"
+            "exported_clipboard": "Profile copied to clipboard!",
+            "copy_dbid": "Copy DBID"
         },
         "share": {
             "check_auto_share": "Automatically post profile when importing player data",

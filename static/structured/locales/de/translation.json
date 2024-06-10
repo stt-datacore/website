@@ -274,7 +274,13 @@
         "equippable_by": "Ausrüstbar durch: {{crew}}",
         "equippable_by_rarity": "Ausrüstbar für bis zu {{rarity}} Crew.",
         "equippable_by_traits": "Von der Crew mit den folgenden Merkmalen ausstattbar: {{traits}}",
-        "equippable_by_rarity_traits": "Ausrüstbar für bis zu {{rarity}} Crew mit den folgenden Merkmalen: {{traits}}"
+        "equippable_by_rarity_traits": "Ausrüstbar für bis zu {{rarity}} Crew mit den folgenden Merkmalen: {{traits}}",
+        "duration": {
+            "title": "Dauer: {{duration}}",
+            "n_days": "{{days}} Tage",
+            "n_hours": "{{hours}} Stunden"
+        },
+        "required_traits": "Erforderliche Merkmalen: {{traits}}"
     },
     "item_state": {
         "item_is_frozen_many": "{{item}} ist eingefroren ({{copies}} Kopien)",
@@ -590,7 +596,8 @@
         "export": {
             "export_clipboard": "In die Zwischenablage kopieren",
             "export_csv": "CSV exportieren",
-            "exported_clipboard": "Profil in die Zwischenablage kopiert!"
+            "exported_clipboard": "Profil in die Zwischenablage kopiert!",
+            "copy_dbid": "DBID kopieren"
         },
         "share": {
             "check_auto_share": "Beim Importieren von Spielerdaten automatisch Profil posten",

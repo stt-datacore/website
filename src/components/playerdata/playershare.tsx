@@ -91,6 +91,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 
 	const [profileAutoUpdate, setProfileAutoUpdate] = useStateWithStorage(dbid + '/tools/profileAutoUpdate', false, { rememberForever: true });
 	const [copied, setCopied] = React.useState(false);
+	const [dbidCopied, setDBIDCopied] = React.useState(false);
 
     if (!playerData) return (<></>);
 
@@ -156,26 +157,44 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 						</div>
 					)}
 
-					<div style={{display:'flex',
-						flexDirection:
-							window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
+					<div style={{
+						display: 'flex',
+						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
 						marginTop: "0.5em",
-						alignItems:
-							window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'flex-start' : 'center'}}>
-
-					<Button
-							onClick={() => exportCrewTool()}
-							content={t('share_profile.export.export_csv')}
-							icon='table'
-							size='large'
-						/>
-					<Button
-							onClick={() => exportCrewToClipboard()}
-							content={t('share_profile.export.export_clipboard')}
-							icon='clipboard'
-							size='large'
-						/>
-					{copied && <div>{t('share_profile.export.exported_clipboard')}</div>}
+						gap: "0.25em",						
+						alignItems: 'center'}}>
+						<Button
+								onClick={() => exportCrewTool()}
+								content={t('share_profile.export.export_csv')}
+								icon='table'
+								size='large'
+							/>
+						<Popup content={t('share_profile.export.exported_clipboard')}
+							openOnTriggerClick={false}
+							openOnTriggerMouseEnter={false}
+							open={copied}
+							trigger={
+								<Button
+								onClick={() => exportCrewToClipboard()}
+								content={t('share_profile.export.export_clipboard')}
+								icon='clipboard'
+								size='large'
+							/>
+							}
+						/>						
+						<Popup content={t('clipboard.copied_exclaim')}
+							openOnTriggerClick={false}
+							openOnTriggerMouseEnter={false}
+							open={dbidCopied}
+							trigger={
+								<Button
+								onClick={() => dbidToClipboard()}
+								content={t('share_profile.export.copy_dbid')}
+								icon='clipboard'
+								size='large'
+							/>
+							}
+						/>						
 					</div>
 				</Card.Content>
 			</Card>
@@ -195,9 +214,15 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 		let text = globalContext.player.playerData?.player.character.unOwnedCrew ? exportCrew(globalContext.player.playerData.player.character.crew.concat(globalContext.player.playerData.player.character.unOwnedCrew), '\t') : "";
 		navigator.clipboard.writeText(text);
 		setCopied(true);
-		window.setTimeout(() => {
-			setCopied(false);
-		}, 3500);
+		setTimeout(() => setCopied(false), 3500);
+	}
+
+	function dbidToClipboard(): void {
+		let text = globalContext.player.playerData?.player.dbid?.toString();
+		if (!text) return;
+		navigator.clipboard.writeText(text);
+		setDBIDCopied(true);
+		setTimeout(() => setDBIDCopied(false), 3500);
 	}
 };
 

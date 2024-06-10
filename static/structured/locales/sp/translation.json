@@ -59,7 +59,13 @@
         "equippable_by": "Equipable por: {{crew}}",
         "equippable_by_rarity": "Equipable hasta por tripulación {{rarity}}.",
         "equippable_by_traits": "Equipable por tripulación con los siguientes características: {{traits}}",
-        "equippable_by_rarity_traits": "Equipable hasta por tripulación {{rarity}} con las siguientes características: {{traits}}"
+        "equippable_by_rarity_traits": "Equipable hasta por tripulación {{rarity}} con las siguientes características: {{traits}}",
+        "duration": {
+            "title": "Duración: {{duration}}",
+            "n_days": "{{days}} días",
+            "n_hours": "{{hours}} horas"
+        },
+        "required_traits": "Características Requeridas: {{traits}}"
     },
     "crew_page": {
         "aka_colon": "También conocido como:",
@@ -599,7 +605,8 @@
         "export": {
             "export_clipboard": "Copiar al Portapapeles",
             "export_csv": "Exportar CSV",
-            "exported_clipboard": "¡Perfil copiado al portapapeles!"
+            "exported_clipboard": "¡Perfil copiado al portapapeles!",
+            "copy_dbid": "Copiar DBID"
         },
         "share": {
             "check_auto_share": "Publicar perfil automáticamente al importar datos de jugador",
