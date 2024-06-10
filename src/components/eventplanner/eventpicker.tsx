@@ -31,6 +31,7 @@ type EventPickerProps = {
 
 export const EventPicker = (props: EventPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData, buffConfig } = globalContext.player;
 	const { events, rosterType } = props;
 
@@ -103,9 +104,9 @@ export const EventPicker = (props: EventPickerProps) => {
 	});
 
 	const EVENT_TYPES = {
-		'shuttles': 'Faction',
-		'gather': 'Galaxy',
-		'skirmish': 'Skirmish'
+		'shuttles': t('event_type.shuttles'),
+		'gather': t('event_type.gather'),
+		'skirmish': t('event_type.skirmish')
 	};
 
 	const phaseList = [] as ISelectOptions[];
@@ -140,7 +141,7 @@ export const EventPicker = (props: EventPickerProps) => {
 			<div>{eventData.description}</div>
 			{phaseList.length > 1 && (
 				<div style={{ margin: '1em 0' }}>
-					Select a phase: <Dropdown selection options={phaseList} value={phaseIndex} onChange={(e, { value }) => setPhaseIndex(value as number) } />
+					{t('event_planner.select_phase')}: <Dropdown selection options={phaseList} value={phaseIndex} onChange={(e, { value }) => setPhaseIndex(value as number) } />
 				</div>
 			)}
 			<EventCrewTable rosterType={rosterType} rosterCrew={rosterCrew} eventData={eventData} phaseIndex={phaseIndex} lockable={lockable} />
@@ -161,13 +162,14 @@ type EventProspectsProps = {
 };
 
 const EventProspects = (props: EventProspectsProps) => {
+	const { t } = React.useContext(GlobalContext).localized; 
 	const { pool, prospects, setProspects } = props;
 	if (pool.length === 0) return (<></>);
 
 	return (
 		<React.Fragment>
-			<Header as='h4'>Prospective Crew</Header>
-			<p>Add prospective crew (or potential shared crew) to see how they fit into your existing roster for this event.</p>
+			<Header as='h4'>{t('crew_view.prospect.title')}</Header>
+			<p>{t('event_planner.prospect_description')}</p>
 			<ProspectPicker pool={pool} prospects={prospects} setProspects={setProspects} />
 		</React.Fragment>
 	);

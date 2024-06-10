@@ -18,6 +18,7 @@ type RosterPickerProps = {
 
 export const RosterPicker = (props: RosterPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData, ephemeral, buffConfig } = globalContext.player;
 	const { rosterType, setRosterType, setRosterCrew } = props;
 
@@ -42,15 +43,15 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			<Step active={rosterType === 'myCrew'} onClick={() => setRosterType('myCrew')}>
 				<Icon name='users' />
 				<Step.Content>
-					<Step.Title>Owned Crew</Step.Title>
-					<Step.Description>Only consider your owned crew</Step.Description>
+					<Step.Title>{t('event_planner.picker.owned_crew.title')}</Step.Title>
+					<Step.Description>{t('event_planner.picker.owned_crew.description')}</Step.Description>
 				</Step.Content>
 			</Step>
 			<Step active={rosterType === 'allCrew'} onClick={() => setRosterType('allCrew')}>
 				<Icon name='fire' />
 				<Step.Content>
-					<Step.Title>Best Possible Crew</Step.Title>
-					<Step.Description>Consider all crew in the game</Step.Description>
+					<Step.Title>{t('event_planner.picker.all_crew.title')}</Step.Title>
+					<Step.Description>{t('event_planner.picker.all_crew.description')}</Step.Description>
 				</Step.Content>
 			</Step>
 		</Step.Group>

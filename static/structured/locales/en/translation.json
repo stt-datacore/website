@@ -48,6 +48,49 @@
         "voyage_pair_roster": "#{{rank}} {{skill}} voyage pair in your roster",
         "voyage_skill_ranks": "Voyage skill ranks"
     },
+    "event_type": {
+        "gather": "Galaxy",
+        "shuttles": "Faction",
+        "skirmish": "Skirmish"
+    },
+    "event_planner": {
+        "heading": "Find the best crew to use during an event.",
+        "warn_no_info": "Information about the next event is not yet available from player data. Please try again at a later time.",
+        "select_phase": "Select a phase",        
+        "picker": {
+            "owned_crew": {
+                "title": "Owned Crew",
+                "description": "Only consider your owned crew"
+            },
+            "all_crew": {
+                "title": "Best Possible Crew",
+                "description": "Consider all crew in the game"
+            }            
+        },
+        "table": {
+            "featured_crew_not_identified": "Featured crew not yet identified for this event.",
+            "crew_guessed": "The full list of bonus crew for this event is not yet available from player data. As a result, DataCore may not identify all of your possible event crew.",
+            "columns": {
+                "crew": "Crew",
+                "bonus": "Bonus",
+                "best": "Best",
+                "pair": "Pair"
+            },
+            "options": {
+                "event_crew": "Only show event crew ({{list}})",
+                "apply_event_bonus": "Apply event bonus to skills",
+                "potential_skills": "Show potential skills of unleveled crew",
+                "show_frozen": "Show frozen crew",
+                "exclude_quipped": "Exclude quipped crew",
+                "share_crew": "Show share crew",
+                "share_crew_help": "Skill numbers of shared crew are based on your player buffs and may not match actual score"
+            }
+        },
+        "skill_matrix": "Skill Matrix",
+        "skill_matrix_heading": "This matrix shows your best crew for each possible skill combination. Use this matrix to identify your best crew for this event. Tap a cell to view other crew with that skill combination.",
+        "hide_duplicate_pairs": "Remove duplicate pairs",
+        "prospect_description": "Add prospective crew (or potential shared crew) to see how they fit into your existing roster for this event."
+    },
     "crew_ownership": {
         "immortal": "Only show immortalized crew",
         "mortal": "Only show owned non-immortals",
