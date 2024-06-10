@@ -67,7 +67,8 @@
             "gauntlet_determination": "Rankings determined by precalculation. For specific advice on crew to use, consult {{link}}.",
             "voyage_determination": "Rankings determined by precalculation. For specific advice on crew to use, consult the {{link}}."
         },
-        "player_buffs_applied": "Player buffs applied"
+        "player_buffs_applied": "Player buffs applied",
+        "variants": "Variants of {{crew}}"
     },
     "crew_state": {
         "expires_in": "Crew expires in {{time}}",
@@ -268,6 +269,12 @@
         "select_ship_ability_amount": "Select Ship Ability Amount",
         "trait": "Trait",
         "traits": "Traits"
+    },
+    "items": {
+        "equippable_by": "Equippable by: {{crew}}",
+        "equippable_by_rarity": "Equippable by up to {{rarity}} crew.",
+        "equippable_by_traits": "Equippable by crew with the following traits: {{traits}}",
+        "equippable_by_rarity_traits": "Equippable by up to {{rarity}} crew with the following traits: {{traits}}"
     },
     "item_state": {
         "item_is_frozen_many": "{{item}} is Frozen ({{copies}} Copies)",

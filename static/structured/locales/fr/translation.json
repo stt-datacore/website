@@ -67,7 +67,8 @@
             "gauntlet_determination": "Classements déterminés par précalcul. Pour des conseils spécifiques sur l'équipage à utiliser, consultez {{link}}.",
             "voyage_determination": "Classements déterminés par précalcul. Pour des conseils spécifiques sur l'équipage à utiliser, consultez les {{link}}."
         },
-        "player_buffs_applied": "Effets de joueur appliqués"
+        "player_buffs_applied": "Effets de joueur appliqués",
+        "variants": "Variantes de {{crew}}"
     },
     "crew_state": {
         "expires_in": "L'équipage expire dans {{time}}",
@@ -276,6 +277,12 @@
         "select_ship_ability_amount": "Sélectionnez le montant de la capacité du vaisseau",
         "trait": "Caractéristique",
         "traits": "Caractéristiques"
+    },
+    "items": {
+        "equippable_by": "Équipable par : {{crew}}",
+        "equippable_by_rarity": "Peut être équipé jusqu'à un équipage {{rarity}}.",
+        "equippable_by_traits": "Peut être équipé par l'équipage avec les caractéristiques suivantes : {{traits}}",
+        "equippable_by_rarity_traits": "Peut être équipé jusqu'à un équipage {{rarity}} avec les caractéristiques suivants : {{traits}}"
     },
     "item_state": {
         "item_is_frozen_many": "{{item}} est gelé ({{copies}} copies)",
