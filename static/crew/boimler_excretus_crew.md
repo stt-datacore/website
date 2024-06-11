@@ -3,7 +3,7 @@ name: Excretus of Borg
 rarity: 4
 series: low
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 in_portal: true
 date: 19/04/2023
 published: true
