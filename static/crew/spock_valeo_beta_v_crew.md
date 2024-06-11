@@ -3,7 +3,7 @@ name: Valeo Beta V Spock
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal:
 date: 27/09/2023
 published: true

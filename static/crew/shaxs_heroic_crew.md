@@ -3,7 +3,7 @@ name: Heroic Shaxs
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal:
 date: 16/05/2023
 published: true

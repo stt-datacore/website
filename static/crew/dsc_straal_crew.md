@@ -3,7 +3,7 @@ name: Straal
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 30/09/2021
 published: true
