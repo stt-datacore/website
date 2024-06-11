@@ -13,22 +13,22 @@ export interface ItemsPageProps {}
 const ItemsPage = (props: ItemsPageProps) => {
 	
 	const [activeTabIndex, setActiveTabIndex] = useStateWithStorage<number>('items/mode', 0, { rememberForever: true });	
-	const context = React.useContext(GlobalContext);
-
-	const hasPlayer = !!context.player.playerData;
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
+	const hasPlayer = !!globalContext.player.playerData;
 	const allActive = activeTabIndex === 0 || !hasPlayer;
 
 	React.useEffect(() => {
 		if (!hasPlayer && activeTabIndex === 1) {
 			setActiveTabIndex(0);
 		}
-	}, [context]);
+	}, [globalContext]);
 
-	const coreItems = JSON.parse(JSON.stringify(context.core.items.filter(item => item.type !== 14 || (!!item.max_rarity_requirement || !!item.traits_requirement?.length)))) as EquipmentItem[];
-	const crew = context.core.crew;
+	const coreItems = JSON.parse(JSON.stringify(globalContext.core.items.filter(item => item.type !== 14 || (!!item.max_rarity_requirement || !!item.traits_requirement?.length)))) as EquipmentItem[];
+	const crew = globalContext.core.crew;
 	if (hasPlayer) {
 		coreItems.forEach((item) => {
-			item.quantity = context.player.playerData?.player.character.items.find(i => i.symbol === item.symbol)?.quantity;
+			item.quantity = globalContext.player.playerData?.player.character.items.find(i => i.symbol === item.symbol)?.quantity;
 		});
 	}
 	coreItems.sort((a, b) => a.symbol.localeCompare(b.symbol));
@@ -61,43 +61,43 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 	quipCust.push({
 			field: 'duration',
-			text: 'Duration',
-			format: (value: number) => formatDuration(value)
+			text: t('items.columns.duration'),
+			format: (value: number) => formatDuration(value, t)
 		});
 
 	if (hasPlayer) {
 		quipCust.push({
 			field: 'quantity',
-			text: 'Owned',
-			format: (value: number) => value ? (value.toLocaleString()) : "Not Owned"
+			text: t('items.columns.owned'),
+			format: (value: number) => value ? (value.toLocaleString()) : t('crew_state.unowned')
 		});
 	}
 	
 	return (
 
-		<DataPageLayout playerPromptType='recommend' pageTitle='Items' demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet']}>
+		<DataPageLayout playerPromptType='recommend' pageTitle={t('menu.roster.items')} demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet']}>
 			<React.Fragment>
 			
 			<Step.Group fluid>
 				<Step active={activeTabIndex === 0} onClick={() => setActiveTabIndex(0)}>
 					<Step.Content>
-						<Step.Title>All Items</Step.Title>
-						<Step.Description>Overview of all items in the game.</Step.Description>
+						<Step.Title>{t('item_picker.all_items.title')}</Step.Title>
+						<Step.Description>{t('item_picker.all_items.description')}</Step.Description>
 					</Step.Content>
 				</Step>
 
 				{hasPlayer && <Step active={activeTabIndex === 1} onClick={() => setActiveTabIndex(1)}>
 					<Step.Content>
-						<Step.Title>Owned Items</Step.Title>
-						<Step.Description>Overview of all items owned (and also needed) by the player.</Step.Description>
+						<Step.Title>{t('item_picker.owned_items.title')}</Step.Title>
+						<Step.Description>{t('item_picker.owned_items.description')}</Step.Description>
 					</Step.Content>
 					
 				</Step>}
 
 				<Step active={activeTabIndex === 2} onClick={() => setActiveTabIndex(2)}>
 					<Step.Content>
-						<Step.Title>Quipment Browser</Step.Title>
-						<Step.Description>Browse quipment and place potential quipment on crew.</Step.Description>
+						<Step.Title>{t('item_picker.quipment_browser.title')}</Step.Title>
+						<Step.Description>{t('item_picker.quipment_browser.description')}</Step.Description>
 					</Step.Content>
 				</Step>
 			</Step.Group>

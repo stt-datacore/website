@@ -180,7 +180,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 	}
 
 	private makeCrewFlavors = (crew_levels: CrewLevel[]) => {
-
+		const { t } = this.context.localized;
 		let crews = {} as { [key: string]: number[] };
 		let owned = !!this.state.owned;
 
@@ -197,7 +197,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 			if (crew) {
 				//if (crew) crew = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
 				if (this.state.item_data?.item?.kwipment) {
-					crew.data = "Post-immortalization advancement";
+					crew.data = t('items.post_immortalization_advancement');
 				}
 				else {
 					crew.data = crews[symbol].join(", ");
@@ -227,7 +227,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		const { items } = this.context.core;
 
 		const crewTableCells = [
-			{ width: 2, column: 'data', title: 'Item Demand Levels' }
+			{ width: 2, column: 'data', title: t('items.columns.item_demand_levels') }
 		]
 
 		if (item_data === undefined || errorMessage !== undefined) {
@@ -333,8 +333,8 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 									marginLeft: ltMargin
 								}}
 							>
-								<div><b>Duration:</b>&nbsp;
-									<i>{formatDuration(item_data.item.duration)}</i></div>
+								<div><b>{t('ship.duration')}:</b>&nbsp;
+									<i>{formatDuration(item_data.item.duration, t)}</i></div>
 							</div>}
 						{!!item_data.item.max_rarity_requirement &&
 							<div style={{
@@ -365,10 +365,12 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 									marginLeft: ltMargin
 								}}
 							>
-								<div><b>Required Traits:</b>&nbsp;
-									<i>
+								<div><b>{tfmt('items.required_traits', { 
+									traits: <i>
 										{printRequiredTraits(item_data.item, traits)}
-									</i></div>
+										</i>
+								})}</b>&nbsp;
+									</div>
 							</div>}
 					</div>
 
@@ -394,7 +396,10 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 				{!!item_data.item.recipe && !!item_data.item.recipe.list?.length && (
 					<div>
-						<Header as="h3">Craft it for <img title={"Chronotons"} style={{ width: "1.5em", margin: 0, padding: 0, marginBottom: "2px" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} /> {item_data.item.recipe.craftCost.toLocaleString()} using this recipe:</Header>
+						<Header as="h3">
+							{tfmt('items.craft_for_chrons', {
+								cost: <><img title={"Chronotons"} style={{ width: "1.5em", margin: 0, padding: 0, marginBottom: "2px" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} /> {item_data.item.recipe.craftCost.toLocaleString()}</>
+							})}:</Header>
 						<Grid columns={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 1 : 3} padded>
 							{demands.map((entry, idx) => {
 								if (!entry.equipment) return <></>
@@ -420,7 +425,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 													/>
 												}
 												content={entry.equipment.name}
-												subheader={<div style={{fontSize:"0.8em"}}>Need {entry.count} {playerData?.player ? <>(Have <span style={{color:scolor}}>{hc}</span>)</> : ""} {entry.factionOnly ? ' (Faction Only)' : ''}</div>}
+												subheader={<div style={{fontSize:"0.8em"}}>{t('items.n_needed', { n: `${entry.count}` })} {playerData?.player ? <>({tfmt('items.n_owned', { n: <span style={{color:scolor}}>{hc}</span> })})</> : ""} {entry.factionOnly ? ` (${t('items.faction_only')})` : ''}</div>}
 											/>
 										}
 										header={
@@ -442,7 +447,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 				{!!(item_data.item.item_sources.length > 0) && (
 					<div>
-						<Header as="h3">Item sources:</Header>
+						<Header as="h3">{t('items.item_sources')}:</Header>
 						<ItemSources item_sources={item_data.item.item_sources} />
 						<br />
 					</div>
@@ -450,7 +455,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 				{item_data.crew_levels.length > 0 && (
 					<div>
-						<Header as="h3">Equippable by this crew:</Header>
+						<Header as="h3">{t('items.equippable_by', { crew: '' })}</Header>
 						{!!this.context.player.playerData &&
 							<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: "0.5em" }}>
 								<Checkbox id="item_info_owned_check_boolean" checked={this.state.owned} onChange={(e, { checked }) => this.setOwned(checked || false)} />
@@ -470,7 +475,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 				{!!builds && builds.length > 0 && (
 					<div>
-						<Header as="h3">Is used to build these:</Header>
+						<Header as="h3">{t('items.is_used_to_build')}:</Header>
 						<ProfileItems pageName='item_info' noWorker={true} hideOwnedInfo={true} data={builds} navigate={(symbol) => this.changeComponent(symbol)} />
 					</div>
 				)}

@@ -255,9 +255,12 @@
     "hints": {
         "apply_buffs": "Apply stat buffs",
         "display_buffs": "Display Buffs",
+        "filter_by_item_type": "Filter by item type",
+        "filter_by_owned_status": "Filter by owned status",
         "filter_by_portal_status": "Filter by portal status",
         "filter_by_progress": "Filter by progress",
-        "filter_by_rarity": "Filter by rarity",
+        "filter_by_rarity": "Filter by rarity",        
+        "filter_by_skill": "Filter by skill",
         "filter_by_status": "Filter by status",
         "filter_by_trait": "Filter by trait",
         "filter_ship_grants": "Filter ship grants",
@@ -270,21 +273,6 @@
         "trait": "Trait",
         "traits": "Traits"
     },
-    "items": {
-        "equippable_by": "Equippable by: {{crew}}",
-        "equippable_by_rarity": "Equippable by up to {{rarity}} crew.",
-        "equippable_by_traits": "Equippable by crew with the following traits: {{traits}}",
-        "equippable_by_rarity_traits": "Equippable by up to {{rarity}} crew with the following traits: {{traits}}",
-        "duration": {
-            "title": "Duration: {{duration}}",
-            "n_days": "{{days}} days",
-            "n_hours": "{{hours}} hours"
-        },
-        "required_traits": "Required Traits: {{traits}}",
-        "n_needed": "{{n}} needed",
-        "n_rewarded": "{{n}} rewarded",
-        "n_owned": "{{n}} owned"
-    },
     "item_state": {
         "item_is_frozen_many": "{{item}} is Frozen ({{copies}} Copies)",
         "item_is_frozen_one": "{{item}} is Frozen (1 Copy)",
@@ -294,6 +282,67 @@
         "item_is_shown_no_player": "{{item}} is shown {{level}} (No Player Data)",
         "item_is_shown_owned": "{{item}} is shown {{level}} (Owned)",
         "item_is_shown_unowned": "{{item}} is shown {{level}} (Unowned)"
+    },
+    "item_source": {
+        "missions": "Missions",
+        "ship_battles": "Ship battles",
+        "faction_missions": "Faction missions",
+        "cadet_missions": "Cadet missions"
+    },
+    "item_picker": {
+        "all_items": {
+            "title": "All Items",
+            "description": "Overview of all items in the game."
+        },
+        "owned_items": {
+            "title": "Owned Items",
+            "description": "Overview of all items owned (and also needed) by the player."
+        },
+        "quipment_browser": {
+            "title": "Quipment Browser",
+            "description": "Browse quipment and place potential quipment on crew."
+        }
+    },
+    "items": {        
+        "columns": {
+            "item_demand_levels": "Item demand levels",
+            "item": "Item",
+            "quantity": "Quantity",
+            "needed": "Needed",
+            "item_type": "Item type",
+            "duration": "{{ship.duration}}",
+            "rarity": "{{base.rarity}}",
+            "item_buffs": "Item buffs",
+            "flavor": "Flavor",
+            "owned": "{{crew_state.owned}}"
+        },        
+        "show_unowned_needed": "Show unowned needed items",
+        "post_immortalization_advancement": "Post-immortalization advancement",
+        "craft_for_chrons": "Craft it for {{cost}} using this recipe",
+        "duration": {
+            "n_days": "{{days}} days",
+            "n_hours": "{{hours}} hours",
+            "title": "Duration: {{duration}}"
+        },
+        "equippable_by": "Equippable by: {{crew}}",
+        "equippable_by_rarity": "Equippable by up to {{rarity}} crew.",
+        "equippable_by_rarity_traits": "Equippable by up to {{rarity}} crew with the following traits: {{traits}}",
+        "equippable_by_traits": "Equippable by crew with the following traits: {{traits}}",
+        "is_used_to_build": "Is used to build these",
+        "n_needed": "{{n}} needed",
+        "n_owned": "{{n}} owned",
+        "n_rewarded": "{{n}} rewarded",
+        "required_traits": "Required Traits: {{traits}}",
+        "any_trait_limited": "Any trait-limited quipment",
+        "any_non_trait_limited": "Any non-trait-limited quipment",
+        "options": {
+            "all_quipment": "Show all quipment",
+            "only_owned": "Show owned quipment",
+            "only_buildable": "Show buildable quipment",
+            "owned_or_buildable": "Show owned or buildable quipment"
+        },
+        "faction_only": "Faction Only",
+        "item_sources": "Item sources"
     },
     "json": {
         "copy_and_paste": {
@@ -598,10 +647,10 @@
     },
     "share_profile": {
         "export": {
+            "copy_dbid": "Copy DBID",
             "export_clipboard": "Copy to Clipboard",
             "export_csv": "Export CSV",
-            "exported_clipboard": "Profile copied to clipboard!",
-            "copy_dbid": "Copy DBID"
+            "exported_clipboard": "Profile copied to clipboard!"
         },
         "share": {
             "check_auto_share": "Automatically post profile when importing player data",

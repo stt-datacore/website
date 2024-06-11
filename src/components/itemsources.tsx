@@ -60,6 +60,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 	}
 
 	render() {
+		const { t, tfmt } = this.context.localized;
 		let disputeMissions = this.props.item_sources.filter(e => e.type === 0);
 		let shipBattles = this.props.item_sources.filter(e => e.type === 2);
 		let factions = this.props.item_sources.filter(e => e.type === 1);
@@ -95,7 +96,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 
 			res.push(
 				<p key={'disputeMissions'}>
-					<b style={{textDecoration: brief ? textDec : undefined}}>Missions: </b>{brief && <>{briefSepInit}</>}
+					<b style={{textDecoration: brief ? textDec : undefined}}>{t('item_source.missions')}: </b>{brief && <>{briefSepInit}</>}
 					{disputeMissions
 						.slice(0, (brief && isBriefed) ? briefLen : undefined)
 						.map((entry, idx) => (
@@ -121,7 +122,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 
 			res.push(
 				<p key={'shipBattles'}>
-					<b style={{textDecoration: brief ? textDec : undefined}}>Ship battles: </b>{brief && <>{briefSepInit}</>}
+					<b style={{textDecoration: brief ? textDec : undefined}}>{t('item_source.ship_battles')}: </b>{brief && <>{briefSepInit}</>}
 					{shipBattles
 						.slice(0, (brief && isBriefed) ? briefLen : undefined)
 						.map((entry, idx) => (
@@ -147,7 +148,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 
 			res.push(
 				<p key={'factions'}>
-					<b style={{textDecoration: brief ? textDec : undefined}}>Faction missions: </b>{brief && <>{briefSepInit}</>}
+					<b style={{textDecoration: brief ? textDec : undefined}}>{t('item_source.faction_missions')}: </b>{brief && <>{briefSepInit}</>}
 					{factions
 						.slice(0, (brief && isBriefed) ? briefLen : undefined)
 						.map((entry, idx) => <>{`${entry.name} (${entry.chance_grade}/5)`}</>)
@@ -163,7 +164,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 			cadets.sort((a, b) => (a.avg_cost ?? 0) - (b.avg_cost ?? 0));
 			res.push(
 				<p key={'disputeMissions'}>
-					<b style={{textDecoration: brief ? textDec : undefined}}>Cadet challenges: </b>{brief && <>{briefSepInit}</>}
+					<b style={{textDecoration: brief ? textDec : undefined}}>{t('item_source.cadet_missions')}: </b>{brief && <>{briefSepInit}</>}
 					{cadets
 						.slice(0, (brief && isBriefed) ? briefLen : undefined)
 						.map((entry, idx) => (

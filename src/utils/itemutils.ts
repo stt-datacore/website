@@ -3,7 +3,7 @@ import { CrewMember, Skill } from '../model/crew';
 import { EquipmentCommon, EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { ISymbol } from '../model/game-elements';
 import { Mission } from '../model/missions';
-import { AtlasIcon, BuffBase, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward } from '../model/player';
+import { AtlasIcon, BuffBase, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward, TranslateMethod } from '../model/player';
 import { getIconPath } from './assets';
 import { simplejson2csv, ExportField } from './misc';
 
@@ -348,12 +348,22 @@ export function getCollectionRewards(playerCollections: PlayerCollection[]) {
 	}).flat();
 }
 
-export function formatDuration(time: number) {
-	if (time <= 48) {
-		return `${time} Hours`;
+export function formatDuration(time: number, t?: TranslateMethod) {
+	if (t) {
+		if (time <= 48) {
+			return t('items.duration.n_hours', { hours: `${time}` });
+		}
+		else{
+			return t('items.duration.n_days', { days: `${time / 24}` });
+		}
 	}
-	else{
-		return `${Math.floor(time / 24)} Days`;
+	else {
+		if (time <= 48) {
+			return `${time} Hours`;
+		}
+		else{
+			return `${Math.floor(time / 24)} Days`;
+		}
 	}
 };
 

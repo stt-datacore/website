@@ -869,13 +869,13 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			traitFilterOpts.push({
 				key: 'any',
 				value: 'any',
-				text: 'Any Trait-Limited Quipment'
+				text: t('items.any_trait_limited')
 			});
 
 			traitFilterOpts.push({
 				key: 'none',
 				value: 'none',
-				text: 'Any Non-Trait-Limited Quipment'
+				text: t('items.any_non_trait_limited')
 			});
 
 			traitFilterOpts = traitFilterOpts.concat([...new Set(data.map(d => d.traits_requirement?.sort() ?? []).flat())]?.map(trait => {
@@ -891,23 +891,23 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 		const crewTypes = [{
 			key: 'all',
 			value: 'all',
-			text: 'All Crew'
+			text: t('options.roster_maintenance.none')
 		}];
 		if (!!playerData) {
 			crewTypes.push({
 				key: 'quippable',
 				value: 'quippable',
-				text: 'Quippable Crew'
+				text: t('options.roster_maintenance.quippable')
 			});
 			crewTypes.push({
 				key: 'owned',
 				value: 'owned',
-				text: 'Immortalized Crew'
+				text: t('crew_ownership.immortal')
 			});
 			crewTypes.push({
 				key: 'frozen',
 				value: 'frozen',
-				text: 'Frozen Crew'
+				text: t('options.crew_status.frozen')
 			});
 		}
 		if (bReady) {
@@ -923,22 +923,22 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			{
 				key: 'all',
 				value: 'all',
-				text: 'All Quipment'
+				text: t('items.options.all_quipment')
 			},
 			{
 				key: 'owned',
 				value: 'owned',
-				text: 'Owned Only'
+				text:  t('items.options.only_owned')
 			},
 			{
 				key: 'buildable',
 				value: 'buildable',
-				text: 'Buildable Only'
+				text:  t('items.options.only_buildable')
 			},
 			{
 				key: 'both',
 				value: 'both',
-				text: 'Owned or Buildable'
+				text:  t('items.options.owned_or_buildable')
 			}
 		] as DropdownItemProps[];
 
@@ -999,7 +999,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 											search 
 											selection
 											clearable
-											placeholder={"Search for a crew member..."}
+											placeholder={t('global.search_ellipses')}
 											labeled
 											options={crewChoices}
 											value={crewSelection}
@@ -1008,7 +1008,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 									</div>
 									<div style={{ marginLeft: "0.5em", marginRight: "0.5em" }}>
 										<Dropdown
-											placeholder={"Filter by owned status"}
+											placeholder={t('hints.filter_by_owned_status')}
 											options={crewTypes}
 											value={crewType}
 											onChange={(e, { value }) => this.setCrewType(value as CrewType)}
@@ -1018,12 +1018,12 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							}
 							<Input
 								style={{ width: "22em" }}
-								label={"Search Items"}
+								label={t('global.search_ellipses')}
 								value={filterText}
 								onChange={(e, { value }) => this._handleFilter(value as string)}
 							/>
 							<i className='delete icon'
-								title={"Clear Searches and Comparison Marks"}
+								title={t('global.clear')}
 								style={{
 									cursor: "pointer",
 									marginLeft: "0.75em"
@@ -1035,7 +1035,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							/>
 							{!buffs && <div style={{ marginLeft: "0.5em" }}>
 								<Dropdown
-									placeholder={"Filter by item type"}
+									placeholder={t('hints.filter_by_item_type')}
 									multiple
 									clearable
 									scrolling
@@ -1046,7 +1046,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							</div>}
 							{!buffs && <div style={{ marginLeft: "0.5em" }}>
 								<Dropdown
-									placeholder={"Filter by rarity"}
+									placeholder={t('hints.filter_by_rarity')}
 									multiple
 									clearable
 									options={rarities}
@@ -1056,7 +1056,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							</div>}
 							{buffs && <div style={{ marginLeft: "0.5em" }}>
 								<Dropdown
-									placeholder={"Filter by trait"}
+									placeholder={t('hints.filter_by_trait')}
 									multiple
 									clearable
 									scrolling
@@ -1067,7 +1067,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							</div>}
 							{buffs && <div style={{ marginLeft: "0.5em" }}>
 								<Dropdown
-									placeholder={"Filter by skill"}
+									placeholder={t('hints.filter_by_skill')}
 									multiple
 									clearable
 									scrolling
@@ -1078,7 +1078,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							</div>}
 							{buffs && <div style={{ marginLeft: "0.5em" }}>
 								<Dropdown
-									placeholder={"Owned status"}
+									placeholder={t('hints.filter_by_owned_status')}
 									scrolling
 									options={ownedOpts}
 									value={ownedQuipment}
@@ -1088,7 +1088,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 						</div>}
 
 					{!hideOwnedInfo && <div style={{ display: 'flex', flexDirection: 'row', justifyItems: 'flex-end', alignItems: 'center' }}>
-						<Checkbox checked={addNeeded} onChange={(e, { value }) => this._handleAddNeeded(!addNeeded)} /><span style={{ marginLeft: "0.5em", cursor: "pointer" }} onClick={(e) => this._handleAddNeeded(!addNeeded)}>Show Unowned Needed Items</span>
+						<Checkbox checked={addNeeded} onChange={(e, { value }) => this._handleAddNeeded(!addNeeded)} /><span style={{ marginLeft: "0.5em", cursor: "pointer" }} onClick={(e) => this._handleAddNeeded(!addNeeded)}>{t('items.show_unowned_needed')}</span>
 					</div>}
 				</div>}
 				{(!data || !bReady) && <div className='ui medium centered text active inline loader'>{"Calculating crew demands..."}</div>}
@@ -1118,14 +1118,14 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 								sorted={column === 'name' ? direction ?? undefined : undefined}
 								onClick={() => this._handleSort('name')}
 							>
-								Item
+								{t('items.columns.item')}
 							</Table.HeaderCell>
 							{!hideOwnedInfo && <Table.HeaderCell
 								width={1}
 								sorted={column === 'quantity' ? direction ?? undefined : undefined}
 								onClick={() => this._handleSort('quantity')}
 							>
-								Quantity
+								{t('items.columns.quantity')}
 							</Table.HeaderCell>}
 							{!hideOwnedInfo &&
 								<Table.HeaderCell
@@ -1133,21 +1133,21 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 									sorted={column === 'needed' ? direction ?? undefined : undefined}
 									onClick={() => this._handleSort('needed')}
 								>
-									Needed
-								</Table.HeaderCell>}
+								{t('items.columns.needed')}
+							</Table.HeaderCell>}
 							{!types?.length && <Table.HeaderCell
 								width={1}
 								sorted={column === 'type' ? direction ?? undefined : undefined}
 								onClick={() => this._handleSort('type')}
 							>
-								Item type
+								{t('items.columns.item_type')}
 							</Table.HeaderCell>}
 							<Table.HeaderCell
 								width={1}
 								sorted={column === 'rarity' ? direction ?? undefined : undefined}
 								onClick={() => this._handleSort('rarity')}
 							>
-								Rarity
+								{t('items.columns.rarity')}
 							</Table.HeaderCell>
 							{!!buffs &&
 								<Table.HeaderCell
@@ -1155,7 +1155,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 									sorted={column === 'buffs' ? direction ?? undefined : undefined}
 									onClick={() => this._handleSort('buffs')}
 								>
-									Item Buffs
+									{t('items.columns.item_buffs')}
 								</Table.HeaderCell>}
 							{!!flavor &&
 								<Table.HeaderCell
@@ -1163,7 +1163,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 									sorted={column === 'flavor' ? direction ?? undefined : undefined}
 									onClick={() => this._handleSort('flavor')}
 								>
-									Flavor
+									{t('items.columns.flavor')}
 								</Table.HeaderCell>}
 							{!hideOwnedInfo &&
 								<Table.HeaderCell
@@ -1171,7 +1171,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 									sorted={column === 'factionOnly' ? direction ?? undefined : undefined}
 									onClick={() => this._handleSort('factionOnly')}
 								>
-									Faction Only
+									{t('items.faction_only')}
 								</Table.HeaderCell>}
 							{!!customFields?.length &&
 								customFields.map((field) => (
@@ -1243,7 +1243,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 								<Table.Cell>{CONFIG.RARITIES[item.rarity].name}</Table.Cell>
 								{!!buffs && <Table.Cell>{this.renderBuffs(item)}</Table.Cell>}
 								{!!flavor && <Table.Cell>{this.createFlavor(item)}</Table.Cell>}
-								{!hideOwnedInfo && <Table.Cell>{item.factionOnly === undefined ? '' : (item.factionOnly === true ? 'Yes' : 'No')}</Table.Cell>}
+								{!hideOwnedInfo && <Table.Cell>{item.factionOnly === undefined ? '' : (item.factionOnly === true ? t('global.yes') : t('global.no'))}</Table.Cell>}
 								{!!customFields?.length &&
 									customFields.map((field) => (
 										<Table.Cell key={'custom_' + field.field + "_value"}>
@@ -1291,14 +1291,14 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 							onClick={(e) => { if (this.state.data) this._exportItems(this.state.data) }}
 							style={{ display: 'inline', flexDirection: 'row', justifyContent: 'space-evenly', cursor: 'pointer' }}
 						>
-							<span style={{ margin: '0 2em 0 0' }}>Export to CSV</span><i className='download icon' />
+							<span style={{ margin: '0 2em 0 0' }}>{t('share_profile.export.export_csv')}</span><i className='download icon' />
 						</div>
 						<div
 							className='ui button'
 							onClick={(e) => { if (this.state.data) this._exportItems(this.state.data, true) }}
 							style={{ marginRight: "2em", display: 'inline', flexDirection: 'row', justifyContent: 'space-evenly', cursor: 'pointer' }}
 						>
-							<span style={{ margin: '0 2em 0 0' }}>Copy to Clipboard</span><i className='clipboard icon' />
+							<span style={{ margin: '0 2em 0 0' }}>{t('share_profile.export.export_clipboard')}</span><i className='clipboard icon' />
 						</div>
 					</div>}
 			</div>

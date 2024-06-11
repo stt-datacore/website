@@ -242,7 +242,7 @@
         "reset": "Réinitialiser",
         "rows_per_page": "Lignes par page",
         "search": "Recherche",
-        "search_by_name_or_trait_ellipses": "Rechercher par nom ou caractéristique...",
+        "search_by_name_or_trait_ellipses": "Rechercher par nom ou trait...",
         "search_ellipses": "Recherche...",
         "show": "Montre",
         "shown": "Affiché",
@@ -263,9 +263,12 @@
     "hints": {
         "apply_buffs": "Appliquer des effets",
         "display_buffs": "Afficher effets",
+        "filter_by_item_type": "Filtrer par type d'article",
+        "filter_by_owned_status": "Filtrer par statut de propriété",
         "filter_by_portal_status": "Filtrer par statut du portail",
         "filter_by_progress": "Filtrer par progression",
         "filter_by_rarity": "Filtrer par rareté",
+        "filter_by_skill": "Filtrer par compétence",
         "filter_by_status": "Filtrer par statut",
         "filter_by_trait": "Filtrer par trait",
         "filter_ship_grants": "Filtrer les subventions d'expédition",
@@ -275,20 +278,8 @@
         "select_ship_abilities": "Sélectionner les capacités du vaisseau",
         "select_ship_ability": "Sélectionner la capacité du vaisseau",
         "select_ship_ability_amount": "Sélectionnez le montant de la capacité du vaisseau",
-        "trait": "Caractéristique",
-        "traits": "Caractéristiques"
-    },
-    "items": {
-        "equippable_by": "Équipable par : {{crew}}",
-        "equippable_by_rarity": "Peut être équipé jusqu'à un équipage {{rarity}}.",
-        "equippable_by_traits": "Peut être équipé par l'équipage avec les caractéristiques suivantes : {{traits}}",
-        "equippable_by_rarity_traits": "Peut être équipé jusqu'à un équipage {{rarity}} avec les caractéristiques suivants : {{traits}}",
-        "duration": {
-            "title": "Durée: {{duration}}",
-            "n_days": "{{days}} jours",
-            "n_hours": "{{hours}} heures"
-        },
-        "required_traits": "Caractéristiques Requises: {{traits}}"
+        "trait": "trait",
+        "traits": "traits"
     },
     "item_state": {
         "item_is_frozen_many": "{{item}} est gelé ({{copies}} copies)",
@@ -301,6 +292,67 @@
         "item_is_shown_no_player": "{{item}} est affiché {{level}} (Aucune donnée du joueur)",
         "item_is_shown_owned": "{{item}} est affiché {{level}} (possédé)",
         "item_is_shown_unowned": "{{item}} est affiché {{level}} (sans propriétaire)"
+    },
+    "item_source": {
+        "missions": "Missions",
+        "ship_battles": "Batailles de navires",
+        "faction_missions": "Missions de faction",
+        "cadet_missions": "Missions des cadets"
+    },
+    "item_picker": {
+        "all_items": {
+            "title": "Tous les articles",
+            "description": "Aperçu de tous les articles du jeu."
+        },
+        "owned_items": {
+            "title": "Articles possédés",
+            "description": "Aperçu de tous les articles possédés (et également nécessaires) par le joueur."
+        },
+        "quipment_browser": {
+            "title": "Navigateur Quipement",
+            "description": "Parcourir les quipements et placer quipement potentiel sur l'équipage."
+        }
+    },
+    "items": {
+        "show_unowned_needed": "Afficher les éléments nécessaires sans propriétaire",
+        "columns": {
+            "item_demand_levels": "Niveaux de demande d'articles",
+            "item": "Article",
+            "quantity": "Quantité",
+            "needed": "Nécessaire",
+            "item_type": "Type d'article",
+            "duration": "{{ship.duration}}",
+            "rarity": "{{base.rarity}}",
+            "item_buffs": "Effets d'article",
+            "flavor": "Saveur",
+            "owned": "{{crew_state.owned}}"
+        },
+        "post_immortalization_advancement": "Avancement après l'immortalisation",
+        "craft_for_chrons": "Fabriquez-le pour {{cost}} en utilisant cette recette",
+        "duration": {
+            "n_days": "{{days}} jours",
+            "n_hours": "{{hours}} heures",
+            "title": "Durée: {{duration}}"
+        },
+        "equippable_by": "Équipable par : {{crew}}",
+        "equippable_by_rarity": "Peut être équipé jusqu'à un équipage {{rarity}}.",
+        "equippable_by_rarity_traits": "Peut être équipé jusqu'à un équipage {{rarity}} avec les traits suivants : {{traits}}",
+        "equippable_by_traits": "Peut être équipé par l'équipage avec les traits suivantes : {{traits}}",
+        "is_used_to_build": "Est utilisé pour construire ces",
+        "n_needed": "{{n}} nécessaires",
+        "n_owned": "{{n}} possédée",
+        "n_rewarded": "{{n}} récompensé",
+        "required_traits": "traits Requises: {{traits}}",
+        "any_trait_limited": "Toutes des quipements limité par des traits",
+        "any_non_trait_limited": "Tout des quipements non limitées par des traits",
+        "options": {
+            "all_quipment": "Afficher tous les quipements",
+            "only_owned": "Afficher les quipements possédées",
+            "only_buildable": "Afficher les quipements constructibles",
+            "owned_or_buildable": "Afficher les quipements possédées ou constructibles"
+        },
+        "faction_only": "Factions uniquement",
+        "item_sources": "Sources d'article"
     },
     "json": {
         "copy_and_paste": {
@@ -465,12 +517,12 @@
             "whole_word": "Mot entier seulement"
         },
         "trait_match": {
-            "any": "Correspondre à n'importe quel caractéristique",
+            "any": "Correspondre à n'importe quel trait",
             "match": "Correspondre",
-            "match_all": "Correspondre tous les caractéristiques",
-            "match_two_plus": "Correspondre aux 2+ caractéristiques",
+            "match_all": "Correspondre tous les traits",
+            "match_two_plus": "Correspondre aux 2+ traits",
             "matches": "Correspondances",
-            "trait": "Caractéristique"
+            "trait": "trait"
         }
     },
     "pages": {
@@ -604,10 +656,10 @@
     },
     "share_profile": {
         "export": {
+            "copy_dbid": "Copier DBID",
             "export_clipboard": "Copier dans le Presse-papiers",
             "export_csv": "Exporter CSV",
-            "exported_clipboard": "Profil copié dans le presse-papier !",
-            "copy_dbid": "Copier DBID"
+            "exported_clipboard": "Profil copié dans le presse-papier !"
         },
         "share": {
             "check_auto_share": "Publier automatiquement le profil lors de l'importation des données du joueur",
