@@ -3,7 +3,7 @@ name: Rogue Jack Crusher
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal:
 date: 26/09/2023
 published: true
