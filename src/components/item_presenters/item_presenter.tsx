@@ -228,10 +228,10 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"8px"}}>
                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", fontStyle: "italic", fontSize: "0.8em" }}>
-                            {!!item.quantity && !!item.needed && <div>{item.quantity} Owned, {item.needed} Needed</div>}
-                            {!!item.quantity && !item.needed && !!item.isReward && <div>{item.quantity} Rewarded</div>}
-                            {!!item.quantity && !item.needed && !item.isReward && <div>{item.quantity} Owned</div>}
-                            {!item.quantity && !!item.needed && <div>{item.needed} Needed</div>}                                                    
+                            {!!item.quantity && !!item.needed && <div>{t("items.n_owned", { n: `${item.quantity}`})}, {t("items.n_needed", { n: `${item.needed}`})}</div>}
+                            {!!item.quantity && !item.needed && !!item.isReward && <div>{t("items.n_rewarded", { n: `${item.quantity}`})}</div>}
+                            {!!item.quantity && !item.needed && !item.isReward && <div>{t("items.n_owned", { n: `${item.quantity}`})}</div>}
+                            {!item.quantity && !!item.needed && <div>{t("items.n_needed", { n: `${item.needed}`})}</div>}                                                    
                         </div>
                     </div>
                 </div>
@@ -284,8 +284,8 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
 									marginLeft: ltMargin
 								}}
 								>
-								<div><b>Duration:</b>&nbsp;
-								<i>{formatDuration(item.duration)}</i></div>
+								<div><b>{t('ship.duration')}:</b>&nbsp;
+								<i>{formatDuration(item.duration, t)}</i></div>
 							</div>}
 							{!!item.max_rarity_requirement && 
 								<div style={{
@@ -296,13 +296,13 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
 									marginBottom: "4px",
 									marginLeft: ltMargin
 								}}>
-								Equippable by up to&nbsp;<span style={{
-									color: CONFIG.RARITIES[item.max_rarity_requirement].color,
-									fontWeight: 'bold'
-								}}>
-								{CONFIG.RARITIES[item.max_rarity_requirement].name}
-								</span>
-								&nbsp;crew.
+                                {tfmt('items.equippable_by_rarity', {
+                                    rarity: <span style={{
+                                        color: CONFIG.RARITIES[item.max_rarity_requirement].color,
+                                        fontWeight: 'bold'
+                                        }}>{CONFIG.RARITIES[item.max_rarity_requirement].name}
+                                    </span>
+                                })}
 							</div>}
 							{!!item.kwipment && !!item.traits_requirement?.length &&
 								<div
@@ -315,15 +315,15 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
 										marginLeft: ltMargin
 									}}
 									>
-									<div><b>Required Traits:</b>&nbsp;
-									<i>
-                                        {printRequiredTraits(item, traits)}
-                                    </i></div>
+									<div><b>
+                                        {tfmt('items.required_traits', { traits: <i>{printRequiredTraits(item, traits, t)}</i> })}
+                                        </b>
+                                    </div>
 								</div>}             
                             <div>
                             {!!((item.item_sources?.length ?? 0) > 0) && (
                             <div style={{fontSize: "8pt",marginRight: "1em", marginTop : "0.5em"}}>
-                                <Header as="h3">Item sources:</Header>
+                                <Header as="h3">{t('items.item_sources')}:</Header>
                                 <ItemSources refItem={item.symbol} brief={true} item_sources={item.item_sources} />
                                 <br />
                             </div>
@@ -333,7 +333,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     <div style={{display: "flex", flexDirection: "column", marginBottom:"1em"}}>
                     {!!(item.recipe?.list?.length) && !compact && (
                             <div style={{fontSize: "8pt"}}>
-                                <Header as="h3">Recipe:</Header>
+                                <Header as="h3">{t('items.recipe')}:</Header>
                                 <div style={{
                                     display: "flex",
                                     flexDirection: "row",
@@ -383,7 +383,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                                 flexDirection: "row",
                                 justifyContent: "space-between"
                             }}>
-                            <Header as="h3">Current Roster Demands:</Header>
+                            <Header as="h3">{t('items.current_demands')}:</Header>
                                 {/* <div style={{fontSize: "0.8em"}}>
                                 <Dropdown 
                                     options={demandOpts} 
