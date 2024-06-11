@@ -11,7 +11,7 @@ import CONFIG from '../components/CONFIG';
 import { GlobalContext } from '../context/globalcontext';
 import { CrewMember } from '../model/crew';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
-import { PlayerCrew } from '../model/player';
+import { PlayerCrew, TranslateMethod } from '../model/player';
 import { EquipmentWorkerConfig, EquipmentWorkerResults } from '../model/worker';
 import { downloadData, oneCrewCopy, qbitsToSlots, shortToSkill, skillToShort } from '../utils/crewutils';
 import { calcItemDemands, canBuildItem } from '../utils/equipment';
@@ -110,18 +110,18 @@ type ProfileItemsState = {
 	ignoreLimit?: boolean;
 };
 
-export function printRequiredTraits(item: EquipmentCommon, trait_names: { [key: string]: string }): JSX.Element {
+export function printRequiredTraits(item: EquipmentCommon, trait_names: { [key: string]: string }, t?: TranslateMethod): JSX.Element {
 
 	if (item.kwipment) {
 		if (item.traits_requirement?.length) {
 			let req = item.traits_requirement.map(t => t === 'doctor' ? 'physician' : t);
 			if (item.traits_requirement_operator === "and") {
 				return <Link to={`/?search=trait:${req.reduce((p, n) => p ? `${p},${n}` : n)}&filter=Whole%20word`}>
-					{req.map(t => trait_names[t]).join(` ${item.traits_requirement_operator} `)}
+					{req.map(t => trait_names[t]).join(` ${t ? t('global.' + item.traits_requirement_operator) : item.traits_requirement_operator} `)}
 				</Link>
 			}
 			else {
-				return <>{req.map(t => <Link to={`/?search=trait:${t}&filter=Whole%20word`}>{trait_names[t]}</Link>).reduce((p, n) => p ? <>{p} {item.traits_requirement_operator} {n}</> : n)}</>
+				return <>{req.map(t => <Link to={`/?search=trait:${t}&filter=Whole%20word`}>{trait_names[t]}</Link>).reduce((p, n) => p ? <>{p} {t ? t('global.' + item.traits_requirement_operator) : item.traits_requirement_operator} {n}</> : n)}</>
 			}
 		}
 	}

@@ -213,7 +213,10 @@
         "yesterday_gauntlet": "Gantelet d'hier"
     },
     "global": {
+        "show_n_more_ellipses": "Afficher {{n}} de plus...",
+        "show_less": "Montrer moins",
         "admiral": "Amiral",
+        "and": "et",
         "any": "Quelconque",
         "apply_filters": "Appliquer des filtres",
         "base": "Base",
@@ -238,6 +241,7 @@
         "none": "Aucun",
         "obtained": "Obtenu par",
         "officer": "Officier",
+        "or": "ou",
         "portal": "Portail",
         "reset": "Réinitialiser",
         "rows_per_page": "Lignes par page",
@@ -281,6 +285,26 @@
         "trait": "trait",
         "traits": "traits"
     },
+    "item_picker": {
+        "all_items": {
+            "description": "Aperçu de tous les articles du jeu.",
+            "title": "Tous les articles"
+        },
+        "owned_items": {
+            "description": "Aperçu de tous les articles possédés (et également nécessaires) par le joueur.",
+            "title": "Articles possédés"
+        },
+        "quipment_browser": {
+            "description": "Parcourir les quipements et placer quipement potentiel sur l'équipage.",
+            "title": "Navigateur Quipement"
+        }
+    },
+    "item_source": {
+        "cadet_missions": "Missions des cadets",
+        "faction_missions": "Missions de faction",
+        "missions": "Missions",
+        "ship_battles": "Batailles de navires"
+    },
     "item_state": {
         "item_is_frozen_many": "{{item}} est gelé ({{copies}} copies)",
         "item_is_frozen_one": "{{item}} est gelé (1 copie)",
@@ -293,41 +317,23 @@
         "item_is_shown_owned": "{{item}} est affiché {{level}} (possédé)",
         "item_is_shown_unowned": "{{item}} est affiché {{level}} (sans propriétaire)"
     },
-    "item_source": {
-        "missions": "Missions",
-        "ship_battles": "Batailles de navires",
-        "faction_missions": "Missions de faction",
-        "cadet_missions": "Missions des cadets"
-    },
-    "item_picker": {
-        "all_items": {
-            "title": "Tous les articles",
-            "description": "Aperçu de tous les articles du jeu."
-        },
-        "owned_items": {
-            "title": "Articles possédés",
-            "description": "Aperçu de tous les articles possédés (et également nécessaires) par le joueur."
-        },
-        "quipment_browser": {
-            "title": "Navigateur Quipement",
-            "description": "Parcourir les quipements et placer quipement potentiel sur l'équipage."
-        }
-    },
     "items": {
-        "show_unowned_needed": "Afficher les éléments nécessaires sans propriétaire",
+        "recipe": "Recette",
+        "current_demands": "Demandes actuelles",
+        "any_non_trait_limited": "Tout des quipements non limitées par des traits",
+        "any_trait_limited": "Toutes des quipements limité par des traits",
         "columns": {
-            "item_demand_levels": "Niveaux de demande d'articles",
-            "item": "Article",
-            "quantity": "Quantité",
-            "needed": "Nécessaire",
-            "item_type": "Type d'article",
             "duration": "{{ship.duration}}",
-            "rarity": "{{base.rarity}}",
-            "item_buffs": "Effets d'article",
             "flavor": "Saveur",
-            "owned": "{{crew_state.owned}}"
+            "item": "Article",
+            "item_buffs": "Effets d'article",
+            "item_demand_levels": "Niveaux de demande d'articles",
+            "item_type": "Type d'article",
+            "needed": "Nécessaire",
+            "owned": "{{crew_state.owned}}",
+            "quantity": "Quantité",
+            "rarity": "{{base.rarity}}"
         },
-        "post_immortalization_advancement": "Avancement après l'immortalisation",
         "craft_for_chrons": "Fabriquez-le pour {{cost}} en utilisant cette recette",
         "duration": {
             "n_days": "{{days}} jours",
@@ -338,21 +344,21 @@
         "equippable_by_rarity": "Peut être équipé jusqu'à un équipage {{rarity}}.",
         "equippable_by_rarity_traits": "Peut être équipé jusqu'à un équipage {{rarity}} avec les traits suivants : {{traits}}",
         "equippable_by_traits": "Peut être équipé par l'équipage avec les traits suivantes : {{traits}}",
+        "faction_only": "Factions uniquement",
         "is_used_to_build": "Est utilisé pour construire ces",
+        "item_sources": "Sources d'article",
         "n_needed": "{{n}} nécessaires",
         "n_owned": "{{n}} possédée",
         "n_rewarded": "{{n}} récompensé",
-        "required_traits": "traits Requises: {{traits}}",
-        "any_trait_limited": "Toutes des quipements limité par des traits",
-        "any_non_trait_limited": "Tout des quipements non limitées par des traits",
         "options": {
             "all_quipment": "Afficher tous les quipements",
-            "only_owned": "Afficher les quipements possédées",
             "only_buildable": "Afficher les quipements constructibles",
+            "only_owned": "Afficher les quipements possédées",
             "owned_or_buildable": "Afficher les quipements possédées ou constructibles"
         },
-        "faction_only": "Factions uniquement",
-        "item_sources": "Sources d'article"
+        "post_immortalization_advancement": "Avancement après l'immortalisation",
+        "required_traits": "Traits Requises: {{traits}}",
+        "show_unowned_needed": "Afficher les éléments nécessaires sans propriétaire"
     },
     "json": {
         "copy_and_paste": {
