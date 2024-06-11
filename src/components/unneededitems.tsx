@@ -9,9 +9,11 @@ import { ItemHoverStat } from './hovering/itemhoverstat';
 import ItemDisplay from '../components/itemdisplay';
 
 import { mergeItems } from '../utils/itemutils';
+import CONFIG from './CONFIG';
 
 export const UnneededItems = () => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { playerData } = globalContext.player;
 
 	const [playerItems, setPlayeritem] = React.useState<EquipmentCommon[]>([]);
@@ -31,7 +33,7 @@ export const UnneededItems = () => {
 
 	return (
 		<React.Fragment>
-			<p>You have <b>{itemCount}</b> items in your inventory. Note: continuum components do not count toward your inventory limit.</p>
+			<p>{tfmt('items_unneeded.summary', { n: <b>{itemCount}</b> })}</p>
 			{itemCount > thresholdWarning && renderWarning()}
 			<ItemHoverStat targetGroup='unneeded_items' />
 			<SchematicFuel playerSchematics={playerItems.filter(item => item.type === 8)} />
@@ -42,10 +44,9 @@ export const UnneededItems = () => {
 	function renderWarning(): JSX.Element {
 		return (
 			<Message warning>
-				<Message.Header>Inventory Limit Warning</Message.Header>
+				<Message.Header>{t('items_unneeded.limit_warning.title')}</Message.Header>
 				<p>
-					When your inventory reaches {itemLimit} items, the game will start randomly losing
-					items. Go and replicate away some of the items suggested below.
+					{t('items_unneeded.limit_warning.description', { n: `${itemLimit}`})}
 				</p>
 			</Message>
 		);
@@ -58,6 +59,7 @@ type SchematicFuelProps = {
 
 const SchematicFuel = (props: SchematicFuelProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { playerData, playerShips } = globalContext.player;
 
 	if (!playerData || !playerShips) return <></>;
@@ -89,8 +91,8 @@ const SchematicFuel = (props: SchematicFuelProps) => {
 
 	return (
 		<React.Fragment>
-			<Header as='h3'>Ship Schematics ({fuelList.length})</Header>
-			<p>The following ship schematics are safe to discard as they are used to upgrade <b>ships you have already maxed</b>.</p>
+			<Header as='h3'>{CONFIG.REWARDS_ITEM_TYPE[8]} ({fuelList.length})</Header>
+			<p>{tfmt('items_unneeded.ships_maxed_info', { max_text: <b>{t('items_unneeded.ships_maxed')}</b>})}</p>
 			<FuelGrid fuelList={fuelList} items={props.playerSchematics} />
 		</React.Fragment>
 	);
@@ -108,6 +110,7 @@ type EquipmentFuelProps = {
 
 const EquipmentFuel = (props: EquipmentFuelProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { playerData } = globalContext.player;
 
 	const [fodder, setFodder] = React.useState<IFodder[]>([]);
@@ -206,26 +209,26 @@ const EquipmentFuel = (props: EquipmentFuelProps) => {
 
 	return (
 		<React.Fragment>
-			<Header as='h3'>Equipment ({fuelList.length})</Header>
-			<p>The following equipment items are good candidates to discard as they are <b>no longer needed by any crew on your current roster</b>. Note: some items listed here might be useful as building blocks of other needed equipment. Tap an item name to consult the wiki for more information about the equipment.</p>
+			<Header as='h3'>{CONFIG.REWARDS_ITEM_TYPE[2]} ({fuelList.length})</Header>
+			<p>{tfmt('items_unneeded.dispose_candidate', { reason: <b>{t('items_unneeded.dispose_candidate_reason')}</b> })}</p>
 			<Form>
 				<Form.Group grouped>
 					<Form.Field
 						control={Checkbox}
-						label='Only show the most inefficient uses of inventory slots'
+						label={t('items_unneeded.options.inefficient')}
 						checked={hideEfficient}
 						onChange={(e, { checked }) => setHideEfficient(checked)}
 					/>
 					<Form.Field
 						control={Checkbox}
-						label='Only show single-use equipment'
+						label={t('items_unneeded.options.single_use')}
 						checked={hideGeneric}
 						onChange={(e, { checked }) => setHideGeneric(checked)}
 					/>
 					{!hideGeneric && (
 						<Form.Field
 							control={Checkbox}
-							label='Hide equipment that is useful for unowned crew'
+							label={t('items_unneeded.options.hide_generic')}
 							checked={hidePotential}
 							onChange={(e, { checked }) => setHidePotential(checked)}
 						/>
@@ -345,6 +348,7 @@ type FuelGridProps = {
 
 const FuelGrid = (props: FuelGridProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { fuelList, items, linkToWiki } = props;
 
@@ -373,7 +377,7 @@ const FuelGrid = (props: FuelGridProps) => {
 							/>
 							<p>
 								{linkToWiki ? renderLink(item.name, item.name_english) : item.name}
-								<br />({item.quantity} Owned)
+								<br />({t('items.n_owned', { n: `${item.quantity}`})})
 							</p>
 						</div>
 					</Grid.Column>

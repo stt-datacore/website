@@ -211,6 +211,24 @@
         },
         "yesterday_gauntlet": "El reto de ayer"
     },
+    "items_unneeded": {
+        "title": "{{menu.roster.unneeded_items}}",
+        "description": "Utilice esta herramienta para ayudar a identificar elementos que puede descartar de forma segura para liberar espacio en su inventario.",
+        "summary": "Tienes {{n}} artículos en tu inventario. Nota: los componentes continuos no cuentan para su límite de inventario.",
+        "limit_warning": {
+            "title": "Advertencia de Límite de Inventario",
+            "description": "Cuando tu inventario alcance {{n}} artículos, el juego comenzará a perder artículos aleatoriamente. Vaya y reproduzca algunos de los elementos sugeridos a continuación."
+        },
+        "ships_maxed_info": "Es seguro descartar los siguientes esquemas de barcos, ya que se utilizan para mejorar {{max_text}}",
+        "ships_maxed": "los barcos que ya ha completado",
+        "dispose_candidate": "Los siguientes elementos de equipo son buenos candidatos para descartar, ya que ningún equipo de su lista actual ya los necesita. Nota: algunos de los elementos enumerados aquí pueden resultar útiles como componentes básicos de otros equipos necesarios. Toque el nombre de un elemento para consultar la wiki y obtener más información sobre el equipo.",
+        "dispose_candidate_reason": "ningún equipo de su lista actual ya los necesita",
+        "options": {
+            "inefficient": "Mostrar solo los usos más ineficientes de los espacios de inventario",
+            "single_use": "Mostrar únicamente equipos de un solo uso",
+            "hide_generic": "Retire el equipo que sea útil para la tripulación sin propietario"
+        }
+    },
     "global": {
         "show_n_more_ellipses": "Mostrar {{n}} más ...",
         "show_less": "Muestra menos",

@@ -70,6 +70,24 @@
         "player_buffs_applied": "Player buffs applied",
         "variants": "Variants of {{crew}}"
     },
+    "items_unneeded": {
+        "title": "{{menu.roster.unneeded_items}}",
+        "description": "Use this tool to help identify items you can safely discard to free up space in your inventory.",
+        "summary": "You have {{n}} items in your inventory. Note: continuum components do not count toward your inventory limit.",
+        "limit_warning": {
+            "title": "Inventory Limit Warning",
+            "description": "When your inventory reaches {{n}} items, the game will start randomly losing items. Go and replicate away some of the items suggested below."
+        },
+        "ships_maxed_info": "The following ship schematics are safe to discard as they are used to upgrade {{max_text}}",
+        "ships_maxed": "ships you have already maxed",
+        "dispose_candidate": "The following equipment items are good candidates to discard as they are {{reason}}. Note: some items listed here might be useful as building blocks of other needed equipment. Tap an item name to consult the wiki for more information about the equipment.",
+        "dispose_candidate_reason": "no longer needed by any crew on your current roster",
+        "options": {
+            "inefficient": "Only show the most inefficient uses of inventory slots",
+            "single_use": "Only show single-use equipment",
+            "hide_generic": "Hide equipment that is useful for unowned crew"
+        }
+    },
     "crew_state": {
         "expires_in": "Crew expires in {{time}}",
         "frozen": "Frozen",
