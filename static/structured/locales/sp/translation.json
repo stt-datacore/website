@@ -55,18 +55,6 @@
         "owned": "Sólo equipo propiedad del espectáculo",
         "unowned": "Mostrar solo equipo sin propietario"
     },
-    "items": {
-        "equippable_by": "Equipable por: {{crew}}",
-        "equippable_by_rarity": "Equipable hasta por tripulación {{rarity}}.",
-        "equippable_by_traits": "Equipable por tripulación con los siguientes características: {{traits}}",
-        "equippable_by_rarity_traits": "Equipable hasta por tripulación {{rarity}} con las siguientes características: {{traits}}",
-        "duration": {
-            "title": "Duración: {{duration}}",
-            "n_days": "{{days}} días",
-            "n_hours": "{{hours}} horas"
-        },
-        "required_traits": "Características Requeridas: {{traits}}"
-    },
     "crew_page": {
         "aka_colon": "También conocido como:",
         "all_fuse_skill_fffe_colon": "Habilidades en todos los fusibles cuando están completamente nivelados y equipados:",
@@ -253,7 +241,7 @@
         "reset": "Restablecer",
         "rows_per_page": "Filas por página",
         "search": "Buscar",
-        "search_by_name_or_trait_ellipses": "Buscar por nombre o característica...",
+        "search_by_name_or_trait_ellipses": "Buscar por nombre o rasgo...",
         "search_ellipses": "Buscar...",
         "show": "Reloj",
         "shown": "Mostrado",
@@ -274,11 +262,14 @@
     "hints": {
         "apply_buffs": "Aplicar efectos",
         "display_buffs": "Mostrar efectos",
+        "filter_by_item_type": "Filtrar por tipo de artículo",
+        "filter_by_owned_status": "Filtrar por estado de propiedad",
         "filter_by_portal_status": "Filtrar por estado del portal",
         "filter_by_progress": "Filtrar por progreso",
         "filter_by_rarity": "Filtrar por rareza",
+        "filter_by_skill": "Filtrar por habilidad",
         "filter_by_status": "Filtrar por estado",
-        "filter_by_trait": "Filtrar por característica",
+        "filter_by_trait": "Filtrar por rasgo",
         "filter_ship_grants": "Filtrar subvenciones para barcos",
         "filter_ship_rarity": "Filtrar la rareza del barco",
         "roster_maintenance": "Mantenimiento de la lista",
@@ -286,8 +277,8 @@
         "select_ship_abilities": "Seleccionar habilidades del barco",
         "select_ship_ability": "Seleccionar capacidad del barco",
         "select_ship_ability_amount": "Seleccione la cantidad de capacidad del barco",
-        "trait": "Característica",
-        "traits": "Características"
+        "trait": "rasgo",
+        "traits": "rasgos"
     },
     "item_state": {
         "item_is_frozen_many": "{{item}} está congelado ({{copies}} copias)",
@@ -300,6 +291,67 @@
         "item_is_shown_no_player": "{{item}} se muestra {{level}} (sin datos del jugador)",
         "item_is_shown_owned": "{{item}} se muestra {{level}} (propiedad)",
         "item_is_shown_unowned": "{{item}} se muestra {{level}} (sin propietario)"
+    },
+    "item_source": {
+        "missions": "Misiones",
+        "ship_battles": "Batallas de barcos",
+        "faction_missions": "Misiones de facción",
+        "cadet_missions": "Misiones de cadetes"
+    },
+    "item_picker": {
+        "all_items": {
+            "title": "Todos los artículos",
+            "description": "Descripción general de todos los artículos del juego."
+        },
+        "owned_items": {
+            "title": "Artículos de propiedad",
+            "description": "Descripción general de todos los artículos que posee (y que también necesita) el jugador."
+        },
+        "quipment_browser": {
+            "title": "Quipo de navegador",
+            "description": "Examina el quipo y coloca quipo potencial en la tripulación."
+        }
+    },
+    "items": {
+        "show_unowned_needed": "Mostrar artículos necesarios sin propietario",
+        "columns": {
+            "item_demand_levels": "Niveles de demanda de artículos",
+            "item": "Artículo",
+            "quantity": "Cantidad",
+            "needed": "Necesario",
+            "item_type": "Tipo de artículo",
+            "duration": "{{ship.duration}}",
+            "rarity": "{{base.rarity}}",
+            "item_buffs": "Efectos de artículo",
+            "flavor": "Sabor",
+            "owned": "{{crew_state.owned}}"
+        },
+        "post_immortalization_advancement": "Avance posterior a la inmortalización",
+        "craft_for_chrons": "Hazlo por $2 usando esta receta",
+        "duration": {
+            "n_days": "{{days}} días",
+            "n_hours": "{{hours}} horas",
+            "title": "Duración: {{duration}}"
+        },
+        "equippable_by": "Equipable por: {{crew}}",
+        "equippable_by_rarity": "Equipable hasta por tripulación {{rarity}}.",
+        "equippable_by_rarity_traits": "Equipable hasta por tripulación {{rarity}} con las siguientes rasgos: {{traits}}",
+        "equippable_by_traits": "Equipable por tripulación con los siguientes rasgos: {{traits}}",
+        "is_used_to_build": "Se utiliza para construir estos",
+        "n_needed": "{{n}} necesario",
+        "n_owned": "{{n}} propiedad",
+        "n_rewarded": "{{n}} recompensados",
+        "required_traits": "rasgos Requeridas: {{traits}}",
+        "any_trait_limited": "Todo el quipo limitado por rasgos",
+        "any_non_trait_limited": "Todo el quipo no limitado por rasgos",
+        "options": {
+            "all_quipment": "Mostrar todos los quipos",
+            "only_owned": "Mostrar quipo propio",
+            "only_buildable": "Mostrar equipo construible",
+            "owned_or_buildable": "Mostrar equipo propio o construible"
+        },
+        "faction_only": "Solo facción",
+        "item_sources": "Fuentes de artículo"
     },
     "json": {
         "copy_and_paste": {
@@ -469,7 +521,7 @@
             "match_all": "Coincide con todos los rasgos",
             "match_two_plus": "Rasgos de Combina 2+",
             "matches": "Coincidencias",
-            "trait": "Característica"
+            "trait": "rasgo"
         }
     },
     "pages": {
@@ -603,10 +655,10 @@
     },
     "share_profile": {
         "export": {
+            "copy_dbid": "Copiar DBID",
             "export_clipboard": "Copiar al Portapapeles",
             "export_csv": "Exportar CSV",
-            "exported_clipboard": "¡Perfil copiado al portapapeles!",
-            "copy_dbid": "Copiar DBID"
+            "exported_clipboard": "¡Perfil copiado al portapapeles!"
         },
         "share": {
             "check_auto_share": "Publicar perfil automáticamente al importar datos de jugador",

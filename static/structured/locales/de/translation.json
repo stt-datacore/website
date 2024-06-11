@@ -75,7 +75,7 @@
         "frozen": "Eingefroren",
         "immortalized": "Unsterblich",
         "not_in_portal": "Nicht im Zeitportal",
-        "owned": "Rekrutiert",
+        "owned": "Im Besitz",
         "owned_rarity": "Seltenheit im Besitz",
         "portal_available": "Im Zeitportal verfügbar",
         "prospect_rarity": "Potenzielle Seltenheit",
@@ -84,7 +84,7 @@
         "shown_immortalized": "Als unsterblich dargestellt",
         "stars": "{{stars}} Sterne",
         "unfused": "Unfusioniert",
-        "unowned": "Nicht Rekrutiert",
+        "unowned": "Nicht im Besitz",
         "unowned_no_portal": "Unbesessene Crew (Nicht im Zeitportal)",
         "unowned_portal": "Unbesessene Crew (Im Zeitportal)"
     },
@@ -255,9 +255,12 @@
     "hints": {
         "apply_buffs": "Buffs anwenden",
         "display_buffs": "Buffs anzeigen",
+        "filter_by_item_type": "Filtern nach Artikeltyp",
+        "filter_by_owned_status": "Filtern nach Besitzstatus",
         "filter_by_portal_status": "Filtern nach Portalstatus",
         "filter_by_progress": "Filtern nach Fortschritt",
         "filter_by_rarity": "Filtern nach Seltenheit",
+        "filter_by_skill": "Filtern nach Fähigkeit",
         "filter_by_status": "Filtern nach Status",
         "filter_by_trait": "Filtern nach Merkmalen",
         "filter_ship_grants": "Schiffszuschüsse filtern",
@@ -270,18 +273,6 @@
         "trait": "Merkmal",
         "traits": "Merkmalen"
     },
-    "items": {
-        "equippable_by": "Ausrüstbar durch: {{crew}}",
-        "equippable_by_rarity": "Ausrüstbar für bis zu {{rarity}} Crew.",
-        "equippable_by_traits": "Von der Crew mit den folgenden Merkmalen ausstattbar: {{traits}}",
-        "equippable_by_rarity_traits": "Ausrüstbar für bis zu {{rarity}} Crew mit den folgenden Merkmalen: {{traits}}",
-        "duration": {
-            "title": "Dauer: {{duration}}",
-            "n_days": "{{days}} Tage",
-            "n_hours": "{{hours}} Stunden"
-        },
-        "required_traits": "Erforderliche Merkmalen: {{traits}}"
-    },
     "item_state": {
         "item_is_frozen_many": "{{item}} ist eingefroren ({{copies}} Kopien)",
         "item_is_frozen_one": "{{item}} ist eingefroren (1 Kopie)",
@@ -291,6 +282,67 @@
         "item_is_shown_no_player": "{{item}} wird angezeigt {{level}} (keine Spielerdaten)",
         "item_is_shown_owned": "{{item}} wird angezeigt {{level}} (im Besitz)",
         "item_is_shown_unowned": "{{item}} wird angezeigt {{level}} (nicht im Besitz)"
+    },
+    "item_source": {
+        "missions": "Missionen",
+        "ship_battles": "Schiffsschlachten",
+        "faction_missions": "Fraktionsmissionen",
+        "cadet_missions": "Kadettenmissionen"
+    },
+    "item_picker": {
+        "all_items": {
+            "title": "Alle Gegenstände",
+            "description": "Übersicht über alle Gegenstände im Spiel."
+        },
+        "owned_items": {
+            "title": "Besessene Gegenstände",
+            "description": "Übersicht über alle Gegenstände, die der Spieler besitzt (und auch benötigt)."
+        },
+        "quipment_browser": {
+            "title": "Rüstzeugsbrowser",
+            "description": "Rüstzeug durchsuchen und potenzielle Rüstzeug der Crew zuweisen."
+        }
+    },
+    "items": {
+        "show_unowned_needed": "Nicht im Besitz befindliche benötigte Artikel anzeigen",
+        "columns": {
+            "item_demand_levels": "Artikelnachfrageniveaus",
+            "item": "Artikel",
+            "quantity": "Menge",
+            "needed": "Erforderlich",
+            "item_type": "Artikeltyp",
+            "duration": "{{ship.duration}}",
+            "rarity": "{{base.rarity}}",
+            "item_buffs": "Gegenstands-Buffs",
+            "flavor": "Geschmack",
+            "owned": "{{crew_state.owned}}"
+        },
+        "post_immortalization_advancement": "Fortschritt nach der Unsterblichkeit",
+        "craft_for_chrons": "Stellen Sie es mit diesem Rezept für {{cost}} her",
+        "duration": {
+            "n_days": "{{days}} Tage",
+            "n_hours": "{{hours}} Stunden",
+            "title": "Dauer: {{duration}}"
+        },
+        "equippable_by": "Ausrüstbar durch: {{crew}}",
+        "equippable_by_rarity": "Ausrüstbar für bis zu {{rarity}} Crew.",
+        "equippable_by_rarity_traits": "Ausrüstbar für bis zu {{rarity}} Crew mit den folgenden Merkmalen: {{traits}}",
+        "equippable_by_traits": "Von der Crew mit den folgenden Merkmalen ausstattbar: {{traits}}",
+        "is_used_to_build": "Wird zum Bau dieser verwendet",
+        "n_needed": "{{n}} benötigt",
+        "n_owned": "{{n}} im Besitz",
+        "n_rewarded": "{{n}} belohnt",
+        "required_traits": "Erforderliche Merkmalen: {{traits}}",
+        "any_trait_limited": "Beliebig Merkmal-begrenzte Rüstzeugen",
+        "any_non_trait_limited": "Beliebig nicht Merkmal-begrenzte Rüstzeugen",
+        "options": {
+            "all_quipment": "Alle Rüstzeugen anzeigen",
+            "only_owned": "Eigene Rüstzeugen anzeigen",
+            "only_buildable": "Baubare Rüstzeugen anzeigen",
+            "owned_or_buildable": "Eigene oder baubare Rüstzeugen anzeigen"
+        },
+        "faction_only": "Nur Fraktion",
+        "item_sources": "Artikelquellen"
     },
     "json": {
         "copy_and_paste": {
@@ -594,10 +646,10 @@
     },
     "share_profile": {
         "export": {
+            "copy_dbid": "DBID kopieren",
             "export_clipboard": "In die Zwischenablage kopieren",
             "export_csv": "CSV exportieren",
-            "exported_clipboard": "Profil in die Zwischenablage kopiert!",
-            "copy_dbid": "DBID kopieren"
+            "exported_clipboard": "Profil in die Zwischenablage kopiert!"
         },
         "share": {
             "check_auto_share": "Beim Importieren von Spielerdaten automatisch Profil posten",
