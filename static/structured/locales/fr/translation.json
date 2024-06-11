@@ -212,6 +212,24 @@
         },
         "yesterday_gauntlet": "Gantelet d'hier"
     },
+    "items_unneeded": {
+        "title": "{{menu.roster.unneeded_items}}",
+        "description": "Utilisez cet outil pour vous aider à identifier les articles que vous pouvez jeter en toute sécurité afin de libérer de l'espace dans votre inventaire.",
+        "summary": "Vous avez {{n}} articles dans votre inventaire. Remarque : les composants du continuum ne sont pas pris en compte dans votre limite d'inventaire.",
+        "limit_warning": {
+            "title": "Avertissement de Limite d'Inventaire",
+            "description": "Lorsque votre inventaire atteint {{n}} articles, le jeu commencera à perdre des articles de manière aléatoire. Allez reproduire certains des articles suggérés ci-dessous."
+        },
+        "ships_maxed_info": "Les schémas de vaisseaux suivants peuvent être supprimés en toute sécurité car ils sont utilisés pour améliorer {{max_text}}.",
+        "ships_maxed": "les vaisseaux que vous avez déjà terminés",
+        "dispose_candidate": "Les éléments d'équipement suivants sont de bons candidats à éliminer car {{reason}}. Remarque : certains éléments répertoriés ici peuvent être utiles en tant qu’éléments de base pour d’autres équipements nécessaires. Appuyez sur le nom d'un élément pour consulter le wiki pour plus d'informations sur l'équipement.",
+        "dispose_candidate_reason": "ils ne sont plus nécessaires à aucun équipage de votre liste actuelle",
+        "options": {
+            "inefficient": "Afficher uniquement les utilisations les plus inefficaces des emplacements d'inventaire",
+            "single_use": "Afficher uniquement le matériel à usage unique",
+            "hide_generic": "Supprimer l'équipement utile à l'équipage sans propriétaire"
+        }
+    },
     "global": {
         "show_n_more_ellipses": "Afficher {{n}} de plus...",
         "show_less": "Montrer moins",

@@ -204,6 +204,24 @@
         },
         "yesterday_gauntlet": "Die Herausforderung von gestern"
     },
+    "items_unneeded": {
+        "title": "{{menu.roster.unneeded_items}}",
+        "description": "Verwenden Sie dieses Tool, um Elemente zu identifizieren, die Sie sicher entsorgen können, um Platz in Ihrem Inventar freizugeben.",
+        "summary": "Sie haben {{n}} Artikel in Ihrem Inventar. Hinweis: Kontinuumskomponenten werden nicht auf Ihr Inventarlimit angerechnet.",
+        "limit_warning": {
+            "title": "Warnung vor Lagerbestandsgrenzen",
+            "description": "Wenn Ihr Inventar {{n}} Gegenstände erreicht, beginnt das Spiel, zufällig Gegenstände zu verlieren. Gehen Sie und replizieren Sie einige der unten vorgeschlagenen Gegenstände."
+        },
+        "ships_maxed_info": "Die folgenden Schiffsbauplan können bedenkenlos entsorgt werden, da sie zum Aufrüsten {{max_text}} verwendet werden.",
+        "ships_maxed": "bereits fertiggestellter Schiffe",
+        "dispose_candidate": "Die folgenden Ausrüstungsgegenstände können gut entsorgt werden, {{reason}}. Hinweis: Einige der hier aufgeführten Gegenstände können als Bausteine ​​für andere benötigte Ausrüstung nützlich sein. Tippen Sie auf einen Gegenstandsnamen, um im Wiki weitere Informationen zur Ausrüstung zu erhalten.",
+        "dispose_candidate_reason": "da sie von keiner Crew in Ihrem aktuellen Dienstplan mehr benötigt werden",
+        "options": {
+            "inefficient": "Nur die ineffizienteste Nutzung von Inventarplätzen anzeigen",
+            "single_use": "Nur Einwegartikel anzeigen",
+            "hide_generic": "Entfernen Sie Ausrüstung, die für die nicht besessene Crew nützlich ist"
+        }
+    },
     "global": {
         "show_n_more_ellipses": "Zeige {{n}} weitere ...",
         "show_less": "Zeige weniger",
