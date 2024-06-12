@@ -1022,19 +1022,19 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 												{CONFIG.RARITIES[item.max_rarity_requirement].name}
 											</span>
 										),
-										traits: printRequiredTraits(item, traits),
+										traits: printRequiredTraits(item, traits, t),
 									})}
 								</div>
 							);
 							flavor += t("items.equippable_by_rarity_traits", {
 								rarity: CONFIG.RARITIES[item.max_rarity_requirement].name,
-								traits: `${printRequiredTraits(item, traits)}`,
+								traits: `${printRequiredTraits(item, traits, t)}`,
 							});
 						} else {
 							output.push(
 								<>
 									{tfmt("items.equippable_by_traits", {
-										traits: printRequiredTraits(item, traits),
+										traits: printRequiredTraits(item, traits, t),
 									})}
 								</>
 							);
