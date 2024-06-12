@@ -305,11 +305,11 @@
             "title": "All Items"
         },
         "owned_items": {
-            "description": "Overview of all items owned (and also needed) by the player.",
+            "description": "Overview of all items owned\n(and also needed) by the player.",
             "title": "Owned Items"
         },
         "quipment_browser": {
-            "description": "Browse quipment and place potential quipment on crew.",
+            "description": "Browse quipment and place\npotential quipment on crew.",
             "title": "Quipment Browser"
         }
     },

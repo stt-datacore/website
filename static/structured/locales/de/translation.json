@@ -305,11 +305,11 @@
             "title": "Alle Gegenstände"
         },
         "owned_items": {
-            "description": "Übersicht über alle Gegenstände, die der Spieler besitzt (und auch benötigt).",
+            "description": "Übersicht über alle Gegenstände,\ndie der Spieler besitzt (und auch benötigt).",
             "title": "Besessene Gegenstände"
         },
         "quipment_browser": {
-            "description": "Rüstzeug durchsuchen und potenzielle Rüstzeug der Crew zuweisen.",
+            "description": "Rüstzeug durchsuchen und potenzielle\nRüstzeug der Crew zuweisen.",
             "title": "Rüstzeugsbrowser"
         }
     },

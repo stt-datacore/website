@@ -313,11 +313,11 @@
             "title": "Tous les articles"
         },
         "owned_items": {
-            "description": "Aperçu de tous les articles possédés (et également nécessaires) par le joueur.",
+            "description": "Aperçu de tous les articles possédés\n(et également nécessaires) par le joueur.",
             "title": "Articles possédés"
         },
         "quipment_browser": {
-            "description": "Parcourir les quipements et placer quipement potentiel sur l'équipage.",
+            "description": "Parcourir les quipements et placer\nquipement potentiel sur l'équipage.",
             "title": "Navigateur Quipement"
         }
     },
