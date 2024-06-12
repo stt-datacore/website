@@ -367,7 +367,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 							>
 								<div><b>{tfmt('items.required_traits', { 
 									traits: <i>
-										{printRequiredTraits(item_data.item, traits)}
+										{printRequiredTraits(item_data.item, traits, t)}
 										</i>
 								})}</b>&nbsp;
 									</div>
