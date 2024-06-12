@@ -257,6 +257,10 @@
         "rows_per_page": "Zeilen pro Seite",
         "search": "Suchen",
         "search_by_name_or_trait_ellipses": "Suche nach Name oder Merkmalen...",
+        "search_crew": "Suche nach Crew",
+        "search_items": "Suche nach Artikel",
+        "search_crew_ellipses": "Suche nach Crew...",
+        "search_items_ellipses": "Suche nach Artikel...",
         "search_ellipses": "Suchen...",
         "show": "Zeigen",
         "shown": "Gezeigt",
@@ -521,8 +525,8 @@
             "mortal": "Nur Nicht-Unsterbliche anzeigen",
             "none": "Gesamte Crew anzeigen",
             "priority": "Nur vollständig fusionierte Nicht-Unsterbliche anzeigen",
-            "quippable": "Nur Crew anzeigen, dieRüstzeug nehmen kann",
-            "quipped": "Nur Crew anzeigen, die Rüstzeug haben",
+            "quippable": "Nur rüstbare Crew anzeigen",
+            "quipped": "Nur gerüstete Crew anzeigen",
             "threshold": "Nur Crew anzeigen, die 2 Sicherungen benötigt"
         },
         "text_match": {

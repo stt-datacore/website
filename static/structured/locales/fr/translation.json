@@ -265,6 +265,10 @@
         "rows_per_page": "Lignes par page",
         "search": "Recherche",
         "search_by_name_or_trait_ellipses": "Rechercher par nom ou trait...",
+        "search_crew": "Rechercher par équipage",
+        "search_items": "Rechercher par article",
+        "search_crew_ellipses": "Rechercher par équipage...",
+        "search_items_ellipses": "Rechercher par article...",
         "search_ellipses": "Recherche...",
         "show": "Montre",
         "shown": "Affiché",
@@ -300,8 +304,8 @@
         "select_ship_abilities": "Sélectionner les capacités du vaisseau",
         "select_ship_ability": "Sélectionner la capacité du vaisseau",
         "select_ship_ability_amount": "Sélectionnez le montant de la capacité du vaisseau",
-        "trait": "trait",
-        "traits": "traits"
+        "trait": "Trait",
+        "traits": "Traits"
     },
     "item_picker": {
         "all_items": {
@@ -531,8 +535,8 @@
             "mortal": "Afficher uniquement les non-immortels",
             "none": "Afficher tout l'équipage",
             "priority": "Afficher uniquement les non-immortels entièrement fusionnés",
-            "quippable": "Afficher uniquement l'équipage qui peut prendre du quipement",
-            "quipped": "Afficher uniquement les équipages qui ont un quipement",
+            "quippable": "Afficher uniquement l'équipage quipable",
+            "quipped": "Afficher uniquement les équipages quipé",
             "threshold": "Afficher uniquement l'équipage ayant besoin de 2 fusibles"
         },
         "text_match": {
