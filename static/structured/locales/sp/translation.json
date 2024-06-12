@@ -52,7 +52,7 @@
         "immortal": "Solo muestra tripulación inmortalizada",
         "mortal": "Solo mostrar propiedad de no inmortales",
         "none": "Mostrar toda la tripulación",
-        "owned": "Sólo equipo propiedad del espectáculo",
+        "owned": "Mostrar solo equipo propiedad",
         "unowned": "Mostrar solo equipo sin propietario"
     },
     "crew_page": {
