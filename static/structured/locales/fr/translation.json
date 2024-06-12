@@ -52,7 +52,7 @@
         "immortal": "Afficher uniquement l'équipage immortalisé",
         "mortal": "Afficher uniquement les non-immortels appartenant",
         "none": "Afficher tout l'équipage",
-        "owned": "Afficher uniquement l'équipage appartenant",
+        "owned": "Afficher uniquement l'équipage possédée",
         "unowned": "Afficher uniquement les équipages sans propriétaire"
     },
     "crew_page": {
@@ -135,7 +135,7 @@
             "title": "Équipage potentiel"
         },
         "quipment": "Afficher les rangs des Quipements",
-        "ship": "Afficher les capacités du navire",
+        "ship": "Afficher les capacités du vaisseau",
         "voyage": "Afficher les rangs des voyages"
     },
     "event_planner": {
@@ -220,7 +220,7 @@
             "title": "Avertissement de Limite d'Inventaire",
             "description": "Lorsque votre inventaire atteint {{n}} articles, le jeu commencera à perdre des articles de manière aléatoire. Allez reproduire certains des articles suggérés ci-dessous."
         },
-        "ships_maxed_info": "Les schémas de vaisseaux suivants peuvent être supprimés en toute sécurité car ils sont utilisés pour améliorer {{max_text}}.",
+        "ships_maxed_info": "Les plans de vaisseaux suivants peuvent être supprimés en toute sécurité car ils sont utilisés pour améliorer {{max_text}}.",
         "ships_maxed": "les vaisseaux que vous avez déjà terminés",
         "dispose_candidate": "Les éléments d'équipement suivants sont de bons candidats à éliminer car {{reason}}. Remarque : certains éléments répertoriés ici peuvent être utiles en tant qu’éléments de base pour d’autres équipements nécessaires. Appuyez sur le nom d'un élément pour consulter le wiki pour plus d'informations sur l'équipement.",
         "dispose_candidate_reason": "ils ne sont plus nécessaires à aucun équipage de votre liste actuelle",
@@ -325,7 +325,7 @@
         "cadet_missions": "Missions des cadets",
         "faction_missions": "Missions de faction",
         "missions": "Missions",
-        "ship_battles": "Batailles de navires"
+        "ship_battles": "Batailles de vaisseau"
     },
     "item_state": {
         "item_is_frozen_many": "{{item}} est gelé ({{copies}} copies)",
@@ -698,7 +698,7 @@
                 "error_title": "Votre profil n'a pas pu être téléchargé, avec l'erreur : {{errorMessage}}"
             },
             "header": "{{share_profile.share.share_text}}. Une fois partagé, votre profil public sera accessible à toute personne disposant de ce lien :",
-            "info_list": "DBID, nom du capitaine, niveau, niveau VIP, nom et rôle de la flotte, réalisations, missions accomplies, votre équipage, objets et navires",
+            "info_list": "DBID, nom du capitaine, niveau, niveau VIP, nom et rôle de la flotte, réalisations, missions accomplies, votre équipage, articles et vaisseaux",
             "instructions": {
                 "line_1": "Cliquez sur le lien ci-dessus pour accéder aux exportations de données pour les feuilles de calcul, notamment Take My Chrons et Do Not Airlock.",
                 "line_2": "Certaines pages de DataCore, notamment les pages de flotte et les pages d'événements, peuvent également renvoyer vers votre profil public.",
@@ -710,7 +710,7 @@
                 "title": "Partagez votre profil de joueur"
             },
             "post_profile": "Publier un profil",
-            "share_text": "Vous pouvez publier votre profil sur le serveur DataCore pour utiliser les fonctionnalités personnalisées du robot Discord et permettre aux autres utilisateurs de voir votre équipage, vos navires et vos objets.",
+            "share_text": "Vous pouvez publier votre profil sur le serveur DataCore pour utiliser les fonctionnalités personnalisées du robot Discord et permettre aux autres utilisateurs de voir votre équipage, vos vaisseaux et vos objets.",
             "title": "Publier le profil sur DataCore"
         },
         "shared": {
