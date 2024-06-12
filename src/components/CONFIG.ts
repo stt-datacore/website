@@ -707,10 +707,10 @@ export default class CONFIG {
 			this.REWARDS_ITEM_TYPE[2] = 'Equipamiento';
 			this.REWARDS_ITEM_TYPE[3] = 'Componente';
 			this.REWARDS_ITEM_TYPE[4] = 'Aumentos';
-			this.REWARDS_ITEM_TYPE[5] = 'Parte del barco';
+			this.REWARDS_ITEM_TYPE[5] = 'Parte del buques';
 			this.REWARDS_ITEM_TYPE[6] = 'Fichas de lanzadera';
 			this.REWARDS_ITEM_TYPE[7] = 'Entrenamiento d experiencia de tripulación';
-			this.REWARDS_ITEM_TYPE[8] = 'Diagrama de nave';
+			this.REWARDS_ITEM_TYPE[8] = 'Diagrama de buque';
 			this.REWARDS_ITEM_TYPE[9] = 'Ración de replicador';
 			this.REWARDS_ITEM_TYPE[10] = 'Distinción de Honor';
 			this.REWARDS_ITEM_TYPE[11] = 'Efecto';

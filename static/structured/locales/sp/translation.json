@@ -133,7 +133,7 @@
             "title": "Tripulación potencial"
         },
         "quipment": "Mostrar rangos de Quipos",
-        "ship": "Mostrar habilidades del barco",
+        "ship": "Mostrar habilidades del buque",
         "voyage": "Mostrar rangos de viaje"
     },
     "event_planner": {
@@ -219,8 +219,8 @@
             "title": "Advertencia de Límite de Inventario",
             "description": "Cuando tu inventario alcance {{n}} artículos, el juego comenzará a perder artículos aleatoriamente. Vaya y reproduzca algunos de los elementos sugeridos a continuación."
         },
-        "ships_maxed_info": "Es seguro descartar los siguientes esquemas de barcos, ya que se utilizan para mejorar {{max_text}}",
-        "ships_maxed": "los barcos que ya ha completado",
+        "ships_maxed_info": "Es seguro descartar los siguientes diagramas de buques, ya que se utilizan para mejorar {{max_text}}",
+        "ships_maxed": "los buques que ya ha completado",
         "dispose_candidate": "Los siguientes elementos de equipo son buenos candidatos para descartar, ya que ningún equipo de su lista actual ya los necesita. Nota: algunos de los elementos enumerados aquí pueden resultar útiles como componentes básicos de otros equipos necesarios. Toque el nombre de un elemento para consultar la wiki y obtener más información sobre el equipo.",
         "dispose_candidate_reason": "ningún equipo de su lista actual ya los necesita",
         "options": {
@@ -264,6 +264,10 @@
         "rows_per_page": "Filas por página",
         "search": "Buscar",
         "search_by_name_or_trait_ellipses": "Buscar por nombre o rasgo...",
+        "search_crew": "Buscar por tripulación",
+        "search_items": "Buscar por artículo",
+        "search_crew_ellipses": "Buscar por tripulación...",
+        "search_items_ellipses": "Buscar por artículo...",
         "search_ellipses": "Buscar...",
         "show": "Reloj",
         "shown": "Mostrado",
@@ -292,15 +296,15 @@
         "filter_by_skill": "Filtrar por habilidad",
         "filter_by_status": "Filtrar por estado",
         "filter_by_trait": "Filtrar por rasgo",
-        "filter_ship_grants": "Filtrar subvenciones para barcos",
-        "filter_ship_rarity": "Filtrar la rareza del barco",
+        "filter_ship_grants": "Filtrar subvenciones para buques",
+        "filter_ship_rarity": "Filtrar la rareza del buque",
         "roster_maintenance": "Mantenimiento de la lista",
-        "select_ship": "Seleccionar Barco",
-        "select_ship_abilities": "Seleccionar habilidades del barco",
-        "select_ship_ability": "Seleccionar capacidad del barco",
-        "select_ship_ability_amount": "Seleccione la cantidad de capacidad del barco",
-        "trait": "rasgo",
-        "traits": "rasgos"
+        "select_ship": "Seleccionar buque",
+        "select_ship_abilities": "Seleccionar habilidades del buque",
+        "select_ship_ability": "Seleccionar capacidad del buque",
+        "select_ship_ability_amount": "Seleccione la cantidad de capacidad del buque",
+        "trait": "Rasgo",
+        "traits": "Rasgos"
     },
     "item_picker": {
         "all_items": {
@@ -320,7 +324,7 @@
         "cadet_missions": "Misiones de cadetes",
         "faction_missions": "Misiones de facción",
         "missions": "Misiones",
-        "ship_battles": "Batallas de barcos"
+        "ship_battles": "Batallas de buques"
     },
     "item_state": {
         "item_is_frozen_many": "{{item}} está congelado ({{copies}} copias)",
@@ -513,26 +517,26 @@
     },
     "options": {
         "crew_status": {
-            "favorites": "Mostrar sólo el equipo favorito",
+            "favorites": "Mostrar sólo el tripulación favorito",
             "frozen": "Mostrar sólo tripulación congelada",
             "frozen_dupes": "Mostrar sólo tripulación duplicada congelada",
-            "idle": "Mostrar sólo equipo inactivo",
+            "idle": "Mostrar sólo tripulación inactivo",
             "none": "Mostrar toda la tripulación",
             "thawed": "Mostrar sólo la tripulación descongelada"
         },
         "roster_maintenance": {
-            "advanceable": "Solo mostrar equipo con espacios no reclamados para quipo",
-            "buyback": "Muestra equipo con fusibles en pozo de recompra",
+            "advanceable": "Solo mostrar tripulación con espacios no reclamados para quipo",
+            "buyback": "Muestra tripulación con fusibles en pozo de recompra",
             "dupes": "Mostrar sólo tripulación duplicada",
-            "fodder": "Mostrar sólo equipo no fusionado",
+            "fodder": "Mostrar sólo tripulación no fusionado",
             "freezable": "Mostrar sólo tripulación congelable",
-            "impact": "Solo muestra al equipo que necesita 1 fusible",
+            "impact": "Solo muestra al tripulación que necesita 1 fusible",
             "mortal": "Mostrar sólo a los no inmortales",
             "none": "Mostrar toda la tripulación",
             "priority": "Mostrar sólo no inmortales completamente fusionados",
-            "quippable": "Solo mostrar equipo que pueda aceptar quipo",
-            "quipped": "Mostrar sólo al equipo que tenga quipo",
-            "threshold": "Solo muestra al equipo que necesita 2 fusibles"
+            "quippable": "Solo mostrar tripulación equipable",
+            "quipped": "Mostrar sólo al tripulación quipada",
+            "threshold": "Solo muestra al tripulación que necesita 2 fusibles"
         },
         "text_match": {
             "any": "Coincidir con cualquier texto",
@@ -568,7 +572,7 @@
                 "name": "Tripulación Propia"
             }
         },
-        "ships": "Barcos"
+        "ships": "Buques"
     },
     "player_badge": {
         "n_immortals": "{{n}} inmortales",
@@ -693,7 +697,7 @@
                 "error_title": "Tu perfil no se pudo cargar, con el error: {{errorMessage}}"
             },
             "header": "{{share_profile.share.share_text}}. Una vez compartido, cualquier persona podrá acceder a su perfil público con este enlace:",
-            "info_list": "DBID, nombre del capitán, nivel, nivel vip, nombre y rol de la flota, logros, misiones completadas, tu tripulación, artículos y barcos",
+            "info_list": "DBID, nombre del capitán, nivel, nivel vip, nombre y rol de la flota, logros, misiones completadas, tu tripulación, artículos y buques",
             "instructions": {
                 "line_1": "Haga clic en el enlace de arriba para acceder a las exportaciones de datos para hojas de cálculo, incluidas Take My Chrons y Do Not Airlock.",
                 "line_2": "Algunas páginas de DataCore, en particular páginas de flotas y páginas de eventos, también pueden vincularse a su perfil público.",
@@ -705,7 +709,7 @@
                 "title": "Comparte tu perfil de jugador"
             },
             "post_profile": "Perfil de publicación",
-            "share_text": "Puedes publicar tu perfil en el servidor DataCore para utilizar funciones personalizadas del robot de Discord y permitir que otros usuarios vean tu tripulación, barcos y artículos.",
+            "share_text": "Puedes publicar tu perfil en el servidor DataCore para utilizar funciones personalizadas del robot de Discord y permitir que otros usuarios vean tu tripulación, buques y artículos.",
             "title": "Publicar perfil en DataCore"
         },
         "shared": {
@@ -744,7 +748,7 @@
         "initialize": "Iniciar",
         "max_level": "Nivel máximo",
         "shields": "Escudos",
-        "ship": "Barco",
+        "ship": "buque",
         "trigger": "Activación",
         "triggers": "Activadores",
         "unlimited": "Ilimitado",
