@@ -14,7 +14,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 	
 	const [activeTabIndex, setActiveTabIndex] = useStateWithStorage<number>('items/mode', 0, { rememberForever: true });	
 	const globalContext = React.useContext(GlobalContext);
-	const { t } = globalContext.localized;
+	const { t, tfmt } = globalContext.localized;
 	const hasPlayer = !!globalContext.player.playerData;
 	const allActive = activeTabIndex === 0 || !hasPlayer;
 
@@ -82,14 +82,14 @@ const ItemsPage = (props: ItemsPageProps) => {
 				<Step active={activeTabIndex === 0} onClick={() => setActiveTabIndex(0)}>
 					<Step.Content>
 						<Step.Title>{t('item_picker.all_items.title')}</Step.Title>
-						<Step.Description>{t('item_picker.all_items.description')}</Step.Description>
+						<Step.Description>{tfmt('item_picker.all_items.description')}</Step.Description>
 					</Step.Content>
 				</Step>
 
 				{hasPlayer && <Step active={activeTabIndex === 1} onClick={() => setActiveTabIndex(1)}>
 					<Step.Content>
 						<Step.Title>{t('item_picker.owned_items.title')}</Step.Title>
-						<Step.Description>{t('item_picker.owned_items.description')}</Step.Description>
+						<Step.Description>{tfmt('item_picker.owned_items.description')}</Step.Description>
 					</Step.Content>
 					
 				</Step>}
@@ -97,7 +97,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 				<Step active={activeTabIndex === 2} onClick={() => setActiveTabIndex(2)}>
 					<Step.Content>
 						<Step.Title>{t('item_picker.quipment_browser.title')}</Step.Title>
-						<Step.Description>{t('item_picker.quipment_browser.description')}</Step.Description>
+						<Step.Description>{tfmt('item_picker.quipment_browser.description')}</Step.Description>
 					</Step.Content>
 				</Step>
 			</Step.Group>

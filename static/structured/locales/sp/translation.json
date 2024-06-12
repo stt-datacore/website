@@ -308,15 +308,15 @@
     },
     "item_picker": {
         "all_items": {
-            "description": "Descripción general de todos los artículos del juego.",
+            "description": "Descripción general de todos los artículos\ndel juego.",
             "title": "Todos los artículos"
         },
         "owned_items": {
-            "description": "Descripción general de todos los artículos que posee (y que también necesita) el jugador.",
+            "description": "Descripción general de todos los artículos\nque posee (y que también necesita) el jugador.",
             "title": "Artículos de propiedad"
         },
         "quipment_browser": {
-            "description": "Examina el quipo y coloca quipo potencial en la tripulación.",
+            "description": "Examina el quipo y coloca quipo\npotencial en la tripulación.",
             "title": "Quipo de navegador"
         }
     },

@@ -518,7 +518,10 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				let finals = [] as JSX.Element[];
 
 				for (let part of parts) {
-					if (part.startsWith("{{") && part.endsWith("}}")) {
+					if (part === '\n') {
+						finals.push(<br />);
+					}
+					else if (part.startsWith("{{") && part.endsWith("}}")) {
 						let key = part.slice(2, part.length - 2);
 						if (key in opts) {
 							finals.push(<>{opts[key]}</>);
@@ -554,7 +557,14 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 		for (let i = 0; i < c; i++) {
 			if (!inthing) {
-				if (str[i] === '{' && i < c - 1 && str[i + 1] === '{') {
+				if (str[i] === '\n') {
+					if (csp) {
+						output.push(csp);
+						output.push('\n');
+					}
+					csp = '';
+				}
+				else if (str[i] === '{' && i < c - 1 && str[i + 1] === '{') {
 					if (csp) output.push(csp);
 					csp = '';
 					inthing = true;
