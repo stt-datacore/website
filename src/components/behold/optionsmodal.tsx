@@ -1,6 +1,9 @@
+import React from 'react';
 import { DropdownItemProps } from 'semantic-ui-react';
 import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps, ModalOption } from '../../components/base/optionsmodal_base';
 import CONFIG from '../CONFIG';
+import { GlobalContext } from '../../context/globalcontext';
+import { TranslateMethod } from '../../model/player';
 
 export interface BeholdModalOptions extends OptionsBase {
 	portal: string;
@@ -15,72 +18,73 @@ export const DEFAULT_BEHOLD_OPTIONS = {
 } as BeholdModalOptions;
 
 export class BeholdOptionsModal extends OptionsModal<BeholdModalOptions> {
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 	state: { isDefault: boolean; isDirty: boolean; options: any; modalIsOpen: boolean; };
 	props: any;
 
     protected getOptionGroups(): OptionGroup[] {
+		const { t } = this.context.localized;
+
+		const rarityOptions =
+			CONFIG.RARITIES.map((r, i) => {
+				if (i === 0) return undefined;
+				return  { key: `${i}*`, value: i, text: `${i}* ${r.name}` }
+			}).filter(f => f !== undefined) as ModalOption[];
+
+		const portalOptions = [
+			{ key: 'none', value: '', text: t('options.portal_status.none') },
+			{ key: 'portal', value: 'portal', text: t('options.portal_status.retrievable') },
+			{ key: 'portal-unique', value: 'portal-unique', text: t('options.portal_status.uniquely_retrievable') },
+			{ key: 'portal-nonunique', value: 'portal-nonunique', text: t('options.portal_status.not_uniquely_retrievable') },
+			{ key: 'nonportal', value: 'nonportal', text: t('options.portal_status.not_retrievable') }
+		];
+
+		const seriesOptions = [
+			{ key: 'tos', value: 'tos', text: t('series.tos') },
+			{ key: 'tas', value: 'tas', text: t('series.tas') },
+			{ key: 'tng', value: 'tng', text: t('series.tng') },
+			{ key: 'ds9', value: 'ds9', text: t('series.ds9') },
+			{ key: 'voy', value: 'voy', text: t('series.voy') },
+			{ key: 'ent', value: 'ent', text: t('series.ent') },
+			{ key: 'dsc', value: 'dsc', text: t('series.dsc') },
+			{ key: 'pic', value: 'pic', text: t('series.pic') },
+			{ key: 'low', value: 'low', text: t('series.low') },
+			{ key: 'snw', value: 'snw', text: t('series.snw') },
+			{ key: 'vst', value: 'vst', text: t('series.vst') },
+			{ key: 'original', value: 'original', text: t('series.original') },
+		];
+
         return [
             {
-                title: "Filter by retrieval option:",
+                title: `${t('hints.filter_by_portal_status')}:`,
                 key: 'portal',
-                options: BeholdOptionsModal.portalOptions,
+                options: portalOptions,
                 multi: false,
 				initialValue: ''
             },
             {
-                title: "Filter by series:",
+                title: `${t('hints.filter_by_series')}:`,
                 key: 'series',
                 multi: true,
-                options: BeholdOptionsModal.seriesOptions,
+                options: seriesOptions,
 				initialValue: [] as string[]
             },
             {
-                title: "Filter by rarity:",
+                title: `${t('hints.filter_by_rarity')}:`,
                 key: "rarities",
                 multi: true,
-                options: BeholdOptionsModal.rarityOptions,
+                options: rarityOptions,
 				initialValue: [] as number[]
             }]
     }
+
     protected getDefaultOptions(): BeholdModalOptions {
         return DEFAULT_BEHOLD_OPTIONS;
     }
 
-	static readonly portalOptions = [
-		{ key: 'none', value: '', text: 'Show all crew' },
-		{ key: 'portal', value: 'portal', text: 'Only show retrievable crew' },
-		{ key: 'portal-unique', value: 'portal-unique', text: 'Only show uniquely retrievable crew' },
-		{ key: 'portal-nonunique', value: 'portal-nonunique', text: 'Only show non-uniquely retrievable crew' },
-		{ key: 'nonportal', value: 'nonportal', text: 'Only show non-retrievable crew' }
-	];
-
-	static readonly seriesOptions = [
-		{ key: 'tos', value: 'tos', text: 'The Original Series' },
-		{ key: 'tas', value: 'tas', text: 'The Animated Series' },
-		{ key: 'tng', value: 'tng', text: 'The Next Generation' },
-		{ key: 'ds9', value: 'ds9', text: 'Deep Space Nine' },
-		{ key: 'voy', value: 'voy', text: 'Voyager' },
-		{ key: 'ent', value: 'ent', text: 'Enterprise' },
-		{ key: 'dsc', value: 'dsc', text: 'Discovery' },
-		{ key: 'pic', value: 'pic', text: 'Picard' },
-		{ key: 'low', value: 'low', text: 'Lower Decks' },
-		{ key: 'snw', value: 'snw', text: 'Strange New Worlds' },
-		{ key: 'vst', value: 'vst', text: 'Very Short Treks' },
-		{ key: 'original', value: 'original', text: 'Timelines Originals' }
-	];
-
-	static readonly rarityOptions = [] as ModalOption[];
-
 	constructor(props: OptionsModalProps<BeholdModalOptions>) {
 		super(props);
-
-		CONFIG.RARITIES.forEach((r, i) => {
-			if (i === 0) return;
-			BeholdOptionsModal.rarityOptions.length = 0;
-			BeholdOptionsModal.rarityOptions.push(
-				{ key: `${i}*`, value: i, text: `${i}* ${r.name}` }
-			)
-		});
 	
 		this.state = {
 			isDefault: false,
@@ -105,4 +109,5 @@ export class BeholdOptionsModal extends OptionsModal<BeholdModalOptions> {
 
 		return false;
 	}
+
 };

@@ -42,7 +42,7 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
 
-    protected readonly optionGroups: OptionGroup[];
+    protected optionGroups: OptionGroup[];
 
 	constructor(props: OptionsModalProps<TOptions>) {
 		super(props);
@@ -54,7 +54,6 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 			modalIsOpen: false            
 		} as OptionsModalState<TOptions>;
 
-        this.optionGroups = this.getOptionGroups();        
         this.state = newstate;
 	}
 
@@ -89,7 +88,7 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 		const { modalIsOpen, isDefault, isDirty, options } = this.state;
         const { modalTitle } = this.props;
 
-        const optionGroups = this.optionGroups;
+        const optionGroups = this.getOptionGroups();
 		const { t } = this.context.localized;
 
 		return (
@@ -135,11 +134,11 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 
 	renderTrigger(): JSX.Element {
 		const { isDefault } = this.state;
-
+		const { t } = this.context.localized;
 		return (
 			<Button>
 				<Icon name='filter' color={!isDefault ? 'green' : undefined} />
-				Filters
+				{t('global.filters')}
 			</Button>
 		);
 	}

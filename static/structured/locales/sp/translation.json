@@ -1,4 +1,45 @@
 {
+    "behold_helper": {
+        "heading": "Compare sus opciones para ayudar a decidir a quién agregar a su lista.",
+        "search_for_crew": "Buscar tripulación",
+        "preview_all": "Obtenga una vista previa de todos estos en su lista",
+        "share_page_heading": "Comparte esta página",
+        "share_help": "¿Quieres consejos sobre esta tripulación? Puede compartir un {{permalink}} en esta página para compartir más fácilmente en Discord u otros foros.",
+        "views": {
+            "classic": {
+                "title": "Vista clásica",
+                "description": "Comparar tripulación lado a lado"
+            },
+            "standard": {
+                "title": "Vista estándar",
+                "description": "Ver presentación estándar de la tripulación"
+            },
+            "table": {
+                "title": "Vista de tabla",
+                "description": "Sólo los números, todos ordenables"
+            },
+            "dismiss_all": {
+                "title": "Descartar todo",
+                "description": "Iniciar una nueva comparación"
+            }
+        },
+        "columns": {
+            "unique_retrievals": "Recuperaciones\nÚnicas",
+            "build_cost": "Costo de construcción",
+            "faction_items": "Objetos de facción"
+        }
+    },
+    "crew_picker": {
+        "search_by_name": "Buscar tripulación por nombre",
+        "no_results": "0 resultados encontrados. Pruebe diferentes opciones de búsqueda.",
+        "filter": "{{global.filters}}",
+        "close": "{{global.close}}",
+        "optional_filters": "Filtros Opcionales",
+        "tip": {
+            "double_tap": "Consejo: Toca dos veces para seleccionar un equipo más rápidamente."
+        },
+        "select_crew": "Seleccionar {{crew}}"
+    },
     "base": {
         "all_crew": "Mostrar toda la tripulación",
         "bigbook_tier": "Piso",
@@ -134,7 +175,11 @@
         },
         "quipment": "Mostrar rangos de Quipos",
         "ship": "Mostrar habilidades del buque",
-        "voyage": "Mostrar rangos de viaje"
+        "voyage": "Mostrar rangos de viaje",
+        "faction_items": "{{n}} artículos de facción",
+        "view_big_book": "Ver {{crew}} en Big Book",
+        "preview": "Vista previa de {{crew}} en tu lista",
+        "dismiss": "Descartar {{crew}}"
     },
     "event_planner": {
         "heading": "Encuentra el mejor equipo para usar durante un evento.",
@@ -211,27 +256,11 @@
         },
         "yesterday_gauntlet": "El reto de ayer"
     },
-    "items_unneeded": {
-        "title": "{{menu.roster.unneeded_items}}",
-        "description": "Utilice esta herramienta para ayudar a identificar elementos que puede descartar de forma segura para liberar espacio en su inventario.",
-        "summary": "Tienes {{n}} artículos en tu inventario. Nota: los componentes continuos no cuentan para su límite de inventario.",
-        "limit_warning": {
-            "title": "Advertencia de Límite de Inventario",
-            "description": "Cuando tu inventario alcance {{n}} artículos, el juego comenzará a perder artículos aleatoriamente. Vaya y reproduzca algunos de los elementos sugeridos a continuación."
-        },
-        "ships_maxed_info": "Es seguro descartar los siguientes diagramas de buques, ya que se utilizan para mejorar {{max_text}}",
-        "ships_maxed": "los buques que ya ha completado",
-        "dispose_candidate": "Los siguientes elementos de equipo son buenos candidatos para descartar, ya que ningún equipo de su lista actual ya los necesita. Nota: algunos de los elementos enumerados aquí pueden resultar útiles como componentes básicos de otros equipos necesarios. Toque el nombre de un elemento para consultar la wiki y obtener más información sobre el equipo.",
-        "dispose_candidate_reason": "ningún equipo de su lista actual ya los necesita",
-        "options": {
-            "inefficient": "Mostrar solo los usos más ineficientes de los espacios de inventario",
-            "single_use": "Mostrar únicamente equipos de un solo uso",
-            "hide_generic": "Retire el equipo que sea útil para la tripulación sin propietario"
-        }
-    },
     "global": {
-        "show_n_more_ellipses": "Mostrar {{n}} más ...",
-        "show_less": "Muestra menos",
+        "copy_permalink_clipboard": "Copiar enlace permanente al portapapeles",
+        "permalink": "enlace permanente",
+        "experimental": "Experimental",
+        "optional": "Opcional",
         "admiral": "Almirante",
         "and": "y",
         "any": "Cualquier",
@@ -246,6 +275,7 @@
         "disabled": "Desactivado",
         "enable": "Habilitar",
         "enabled": "Habilitado",
+        "filters": "Filtros",
         "fleet": "Flota",
         "hidden": "Oculto",
         "hide": "Ocultar",
@@ -265,11 +295,13 @@
         "search": "Buscar",
         "search_by_name_or_trait_ellipses": "Buscar por nombre o rasgo...",
         "search_crew": "Buscar por tripulación",
-        "search_items": "Buscar por artículo",
         "search_crew_ellipses": "Buscar por tripulación...",
-        "search_items_ellipses": "Buscar por artículo...",
         "search_ellipses": "Buscar...",
+        "search_items": "Buscar por artículo",
+        "search_items_ellipses": "Buscar por artículo...",
         "show": "Reloj",
+        "show_less": "Muestra menos",
+        "show_n_more_ellipses": "Mostrar {{n}} más ...",
         "shown": "Mostrado",
         "squadron_leader": "Líder de escuadrón",
         "yes": "Sí"
@@ -293,7 +325,9 @@
         "filter_by_portal_status": "Filtrar por estado del portal",
         "filter_by_progress": "Filtrar por progreso",
         "filter_by_rarity": "Filtrar por rareza",
+        "filter_by_ship_ability": "Filtrar por capacidad del buque",
         "filter_by_skill": "Filtrar por habilidad",
+        "filter_by_series": "Filtrar por serie",
         "filter_by_status": "Filtrar por estado",
         "filter_by_trait": "Filtrar por rasgo",
         "filter_ship_grants": "Filtrar subvenciones para buques",
@@ -339,8 +373,6 @@
         "item_is_shown_unowned": "{{item}} se muestra {{level}} (sin propietario)"
     },
     "items": {
-        "recipe": "Receta",
-        "current_demands": "Demandas actuales",
         "any_non_trait_limited": "Todo el quipo no limitado por rasgos",
         "any_trait_limited": "Todo el quipo limitado por rasgos",
         "columns": {
@@ -356,6 +388,7 @@
             "rarity": "{{base.rarity}}"
         },
         "craft_for_chrons": "Hazlo por {{cost}} usando esta receta",
+        "current_demands": "Demandas actuales",
         "duration": {
             "n_days": "{{days}} días",
             "n_hours": "{{hours}} horas",
@@ -378,8 +411,27 @@
             "owned_or_buildable": "Mostrar equipo propio o construible"
         },
         "post_immortalization_advancement": "Avance posterior a la inmortalización",
+        "recipe": "Receta",
         "required_traits": "Rasgos requeridas: {{traits}}",
         "show_unowned_needed": "Mostrar artículos necesarios sin propietario"
+    },
+    "items_unneeded": {
+        "description": "Utilice esta herramienta para ayudar a identificar elementos que puede descartar de forma segura para liberar espacio en su inventario.",
+        "dispose_candidate": "Los siguientes elementos de equipo son buenos candidatos para descartar, ya que ningún equipo de su lista actual ya los necesita. Nota: algunos de los elementos enumerados aquí pueden resultar útiles como componentes básicos de otros equipos necesarios. Toque el nombre de un elemento para consultar la wiki y obtener más información sobre el equipo.",
+        "dispose_candidate_reason": "ningún equipo de su lista actual ya los necesita",
+        "limit_warning": {
+            "description": "Cuando tu inventario alcance {{n}} artículos, el juego comenzará a perder artículos aleatoriamente. Vaya y reproduzca algunos de los elementos sugeridos a continuación.",
+            "title": "Advertencia de Límite de Inventario"
+        },
+        "options": {
+            "hide_generic": "Retire el equipo que sea útil para la tripulación sin propietario",
+            "inefficient": "Mostrar solo los usos más ineficientes de los espacios de inventario",
+            "single_use": "Mostrar únicamente equipos de un solo uso"
+        },
+        "ships_maxed": "los buques que ya ha completado",
+        "ships_maxed_info": "Es seguro descartar los siguientes diagramas de buques, ya que se utilizan para mejorar {{max_text}}",
+        "summary": "Tienes {{n}} artículos en tu inventario. Nota: los componentes continuos no cuentan para su límite de inventario.",
+        "title": "{{menu.roster.unneeded_items}}"
     },
     "json": {
         "copy_and_paste": {
@@ -515,6 +567,20 @@
             "WebStore": "Tienda Virtual"
         }
     },
+    "series": {
+        "tos": "La serie original",
+        "tas": "La serie animada",
+        "tng": "La nueva generación",
+        "ds9": "Espacio profundo nueve",
+        "voy": "Voyager",
+        "ent": "Enterprise",
+        "dsc": "Discovery",
+        "pic": "Picard",
+        "low": "Lower Decks",
+        "snw": "Strange New Worlds",
+        "vst": "Very Short Treks",
+        "original": "Timelines Originals"
+    },
     "options": {
         "crew_status": {
             "favorites": "Mostrar sólo el tripulación favorito",
@@ -523,6 +589,13 @@
             "idle": "Mostrar sólo tripulación inactivo",
             "none": "Mostrar toda la tripulación",
             "thawed": "Mostrar sólo la tripulación descongelada"
+        },
+        "portal_status": {
+            "none": "{{options.roster_maintenance.none}}",
+            "retrievable": "Mostrar sólo el equipo recuperable",
+            "not_retrievable": "Mostrar sólo tripulación no recuperable",
+            "uniquely_retrievable": "Mostrar sólo el equipo recuperable de forma única",
+            "not_uniquely_retrievable": "Mostrar sólo el equipo no recuperable de forma única"
         },
         "roster_maintenance": {
             "advanceable": "Solo mostrar tripulación con espacios no reclamados para quipo",

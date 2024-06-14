@@ -31,6 +31,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 	const { handleSelect } = props;
 
 	const context = React.useContext(GlobalContext);
+	const { t } = context.localized;
 	const { options, setOptions } = props;
 
 	const [crewList, setCrewList] = React.useState<(PlayerCrew | CrewMember)[]>([]);
@@ -80,7 +81,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 				<Input ref={inputRef}
 					size='mini' fluid
 					iconPosition='left'
-					placeholder='Search for crew by name'
+					placeholder={t('crew_picker.search_by_name')}
 					value={searchFilter}
 					onChange={(e, { value }) => { setSearchFilter(value); }}>
 						<input />
@@ -94,14 +95,14 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 				{renderGrid()}
 			</Modal.Content>
 			<Modal.Actions>
-				<PickerModal modalTitle='Optional filters' options={options} setOptions={setOptions} />
+				<PickerModal modalTitle={t('crew_picker.optional_filters')} options={options} setOptions={setOptions} />
 				{selectedCrew && (
 					<Button color='blue'
-						content={`Select ${selectedCrew.name}`}
+						content={t('crew_picker.select_crew', { crew: selectedCrew.name })}
 						onClick={() => confirmSelection(selectedCrew)} />
 				)}
 				{!selectedCrew && (
-					<Button content='Close' onClick={closeModal} />
+					<Button content={t('crew_picker.close')} onClick={closeModal} />
 				)}
 			</Modal.Actions>
 		</Modal>
@@ -117,14 +118,13 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 		return (
 			<Button fluid size='big' color='blue'>
 				<Icon name='zoom-in' />
-				Search for crew
+				{t('crew_picker.search_by_name')}
 			</Button>
 		);
 	}
 
 	function renderGrid(): JSX.Element {
 		const { filterCrew, renderCrewCaption } = props;
-
 		if (!modalIsOpen) return (<></>);
 
 		let data = filterCrew(crewList.slice(), searchFilter);
@@ -132,7 +132,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 
 		if (data.length === 0) return (
 			<Message>
-				0 results found. Please try different search options.
+				{t('crew_picker.no_results')}
 			</Message>
 		);
 
@@ -161,11 +161,11 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 					<InView as='div' style={{ margin: '2em 0', textAlign: 'center' }}
 						onChange={(inView, entry) => { if (inView) setPaginationPage(prevState => prevState + 1); }}
 					>
-						<Icon loading name='spinner' /> Loading...
+						<Icon loading name='spinner' /> {t('global.loading_ellipses')}
 					</InView>
 				)}
 				{itemsToShow >= data.length && (
-					<Message style={{ marginTop: '2em' }}>Tip: Double-tap to select a crew more quickly.</Message>
+					<Message style={{ marginTop: '2em' }}>{t('crew_picker.tip.double_tap')}</Message>
 				)}
 			</div>
 			</>

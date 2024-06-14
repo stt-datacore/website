@@ -371,6 +371,13 @@ export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {
 
     protected getOptionGroups(): OptionGroup[] {
 		const abilityOptions = [] as ModalOption[];
+		const { t } = this.context.localized;
+
+		const rarityOptions =
+			CONFIG.RARITIES.map((r, i) => {
+				if (i === 0) return undefined;
+				return  { key: `${i}*`, value: i, text: `${i}* ${r.name}` }
+			}).filter(f => f !== undefined) as ModalOption[];
 
 		Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT).forEach((key, idx) => {
 			if (idx >= 9) return;
@@ -383,14 +390,14 @@ export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {
 
 		return [
 			{
-                title: "Filter by rarity:",
+                title: `${t('hints.filter_by_rarity')}:`,
                 key: "rarities",
                 multi: true,
-                options: ShipCrewOptionsModal.rarityOptions,
+                options: rarityOptions,
 				initialValue: [] as number[]
             },
             {
-                title: "Filter by ship ability:",
+                title: `${t('hints.filter_by_ship_ability')}:`,
                 key: 'abilities',
                 options: abilityOptions,
                 multi: false,
@@ -406,20 +413,9 @@ export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {
         return DEFAULT_SHIP_OPTIONS;
     }
 
-	static readonly rarityOptions = [] as ModalOption[];
-
 	constructor(props: OptionsModalProps<ShipCrewModalOptions>) {
 		super(props);
 
-		CONFIG.RARITIES.forEach((r, i) => {
-			if (i === 0) return;
-			ShipCrewOptionsModal.rarityOptions.length = 0;
-			ShipCrewOptionsModal.rarityOptions.push(
-				{ key: `${i}*`, value: i, text: `${i}* ${r.name}` }
-			)
-		});
-	
-		
 		this.state = {
 			isDefault: false,
 			isDirty: false,
