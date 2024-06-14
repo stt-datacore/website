@@ -355,7 +355,7 @@
             "quantity": "Cantidad",
             "rarity": "{{base.rarity}}"
         },
-        "craft_for_chrons": "Hazlo por $2 usando esta receta",
+        "craft_for_chrons": "Hazlo por {{cost}} usando esta receta",
         "duration": {
             "n_days": "{{days}} días",
             "n_hours": "{{hours}} horas",
