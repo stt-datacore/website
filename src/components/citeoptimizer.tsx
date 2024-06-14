@@ -985,6 +985,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 	render() {
 		if (!this.context.player.playerData) return <></>;
+		const { t } = this.context.localized;
 		const buffConfig = calculateBuffConfig(this.context.player.playerData.player);
 		const [citeMode, setCiteMode] = this.createStateAccessors<CiteMode>('citeMode');
 		const [showEV, setShowEV] = this.createStateAccessors<boolean>('showEV', true);
@@ -1009,7 +1010,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			return {
 				key: s,
 				value: s,
-				text: appelate(s) + (idx === 1 ? " (Experimental)" : "")
+				text: appelate(s) + (idx === 1 ? ` (${t('global.experimental')})` : "")
 			}
 		});
 
@@ -1184,7 +1185,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					</div>
 				</Segment>
 				<Segment>
-					<h3>Filters</h3>
+					<h3>{t('global.filters')}</h3>
 					<div style={{
 						display: "flex",
 						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"

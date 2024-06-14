@@ -1,4 +1,45 @@
-{
+{   
+    "behold_helper": {
+        "heading": "Compare your Behold choices to help decide who to add to your roster.",
+        "search_for_crew": "Search for crew",
+        "preview_all": "Preview all in your roster",
+        "share_page_heading": "Share This Page",
+        "share_help": "Want advice on these crew? You can share a {{permalink}} to this page for easier sharing on Discord or other forums.",
+        "views": {
+            "classic": {
+                "title": "Classic View",
+                "description": "Compare crew side by side"
+            },
+            "standard": {
+                "title": "Standard View",
+                "description": "View standard crew presentation"
+            },
+            "table": {
+                "title": "Table View",
+                "description": "Just the numbers, all sortable"
+            },
+            "dismiss_all": {
+                "title": "Dismiss All",
+                "description": "Start a new comparison"
+            }
+        },
+        "columns": {
+            "unique_retrievals": "Unique\nRetrievals",
+            "build_cost": "Build Cost",
+            "faction_items": "Faction Items"
+        }
+    },
+    "crew_picker": {
+        "search_by_name": "Search for crew by name",
+        "no_results": "0 results found. Please try different search options.",
+        "filter": "{{global.filters}}",
+        "close": "{{global.close}}",
+        "optional_filters": "Optional Filters",
+        "tip": {
+            "double_tap": "Tip: Double-tap to select a crew more quickly."
+        },
+        "select_crew": "Select {{crew}}"
+    },
     "base": {
         "all_crew": "Show all crew",
         "bigbook_tier": "Tier",
@@ -128,7 +169,11 @@
         },
         "quipment": "Show quipment scores",
         "ship": "Show ship abilities",
-        "voyage": "Show voyage ranks"
+        "voyage": "Show voyage ranks",
+        "faction_items": "{{n}} faction items",
+        "view_big_book": "View {{crew}} on Big Book",
+        "preview": "Preview {{crew}} in your roster",
+        "dismiss": "Dismiss {{crew}}"
     },
     "event_planner": {
         "heading": "Find the best crew to use during an event.",
@@ -205,6 +250,10 @@
         "yesterday_gauntlet": "Yesterday's Gauntlet"
     },
     "global": {
+        "copy_permalink_clipboard": "Copy permalink to clipboard",
+        "permalink": "permalink",
+        "experimental": "Experimental",
+        "optional": "Optional",
         "admiral": "Admiral",
         "and": "and",
         "any": "Any",
@@ -219,6 +268,7 @@
         "disabled": "Disabled",
         "enable": "Enable",
         "enabled": "Enabled",
+        "filters": "Filters",
         "fleet": "Fleet",
         "hidden": "Hidden",
         "hide": "Hide",
@@ -268,12 +318,14 @@
         "filter_by_portal_status": "Filter by portal status",
         "filter_by_progress": "Filter by progress",
         "filter_by_rarity": "Filter by rarity",
+        "filter_by_ship_ability": "Filter by ship ability",
         "filter_by_skill": "Filter by skill",
         "filter_by_status": "Filter by status",
         "filter_by_trait": "Filter by trait",
         "filter_ship_grants": "Filter ship grants",
         "filter_ship_rarity": "Filter ship rarity",
         "roster_maintenance": "Roster maintenance",
+        "filter_by_series": "Filter by series",
         "select_ship": "Select Ship",
         "select_ship_abilities": "Select Ship Abilities",
         "select_ship_ability": "Select ship ability",
@@ -507,6 +559,20 @@
             "WebStore": "Web Store"
         }
     },
+    "series": {
+        "tos": "The Original Series",
+        "tas": "The Animated Series",
+        "tng": "The Next Generation",
+        "ds9": "Deep Space Nine",
+        "voy": "Voyager",
+        "ent": "Enterprise",
+        "dsc": "Discovery",
+        "pic": "Picard",
+        "low": "Lower Decks",
+        "snw": "Strange New Worlds",
+        "vst": "Very Short Treks",
+        "original": "Timelines Originals"
+    },
     "options": {
         "crew_status": {
             "favorites": "Only show favorite crew",
@@ -529,6 +595,13 @@
             "quippable": "Only show quippable crew",
             "quipped": "Only show quipped crew",
             "threshold": "Only show crew needing 2 fuses"
+        },
+        "portal_status": {
+            "none": "{{options.roster_maintenance.none}}",
+            "retrievable": "Only show retrievable crew",
+            "not_retrievable": "Only show non-retrievable crew",
+            "uniquely_retrievable": "Only show uniquely-retrievable crew",
+            "not_uniquely_retrievable": "Only show not uniquely-retrievable crew"            
         },
         "text_match": {
             "any": "Match any text",

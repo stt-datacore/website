@@ -9,6 +9,7 @@ import CABExplanation from '../explanations/cabexplanation';
 import CONFIG from '../../components/CONFIG';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import { formatTierLabel } from '../../utils/crewutils';
+import { GlobalContext } from '../../context/globalcontext';
 
 type TableViewProps = {
 	selectedCrew: string[];
@@ -17,6 +18,7 @@ type TableViewProps = {
 
 export const TableView = (props: TableViewProps) => {
 	const { selectedCrew } = props;
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 
 	const data = [] as CrewMember[];
 	selectedCrew.forEach(symbol => {
@@ -34,18 +36,18 @@ export const TableView = (props: TableViewProps) => {
 	});
 
 	const tableConfig: ITableConfigRow[] = [
-		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'date_added'] },
-		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true },
-		{ width: 1, column: 'bigbook_tier', title: 'Tier' },
-		{ width: 1, column: 'cab_ov', title: <span>CAB <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
-		{ width: 1, column: 'ranks.voyRank', title: 'Voyage' },
-		{ width: 1, column: 'ranks.gauntletRank', title: 'Gauntlet' },
-		{ width: 1, column: 'collections.length', title: 'Collections', reverse: true },
+		{ width: 3, column: 'name', title: t('base.crew'), pseudocolumns: ['name', 'date_added'] },
+		{ width: 1, column: 'max_rarity', title: t('base.rarity'), reverse: true },
+		{ width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier') },
+		{ width: 1, column: 'cab_ov', title: <span>{t('base.cab_power')} <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
+		{ width: 1, column: 'ranks.voyRank', title: t('base.voyage') },
+		{ width: 1, column: 'ranks.gauntletRank', title: t('base.gauntlet') },
+		{ width: 1, column: 'collections.length', title: t('base.collections'), reverse: true },
 		//{ width: 1, column: 'events', title: 'Events', reverse: true },
-		{ width: 1, column: 'unique_polestar_combos.length', title: <>Unique<br />Retrievals</>, reverse: true, tiebreakers: ['in_portal'] },
-		{ width: 1, column: 'factionOnlyTotal', title: <>Faction Items<br /><small>Build Cost</small></> },
-		{ width: 1, column: 'totalChronCost', title: <><img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} alt='Chroniton' style={{ height: '1em' }} /><br /><small>Build Cost</small></> },
-		{ width: 1, column: 'craftCost', title: <><img src={`${process.env.GATSBY_ASSETS_URL}currency_sc_currency_0.png`} alt='Credit' style={{ height: '1.1em' }} /><br /><small>Build Cost</small></> }
+		{ width: 1, column: 'unique_polestar_combos.length', title: <>{tfmt('behold_helper.columns.unique_retrievals')}</>, reverse: true, tiebreakers: ['in_portal'] },
+		{ width: 1, column: 'factionOnlyTotal', title: <>{tfmt('behold_helper.columns.faction_items')}<br /><small>{tfmt('behold_helper.columns.build_cost')}</small></> },
+		{ width: 1, column: 'totalChronCost', title: <><img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} alt='Chroniton' style={{ height: '1em' }} /><br /><small>{tfmt('behold_helper.columns.build_cost')}</small></> },
+		{ width: 1, column: 'craftCost', title: <><img src={`${process.env.GATSBY_ASSETS_URL}currency_sc_currency_0.png`} alt='Credit' style={{ height: '1.1em' }} /><br /><small>{tfmt('behold_helper.columns.build_cost')}</small></> }
 	];
 	CONFIG.SKILLS_SHORT.forEach((skill) => {
 		tableConfig.push({

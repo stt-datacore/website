@@ -139,7 +139,9 @@ const Collections = (props: { crew: CrewMember }) => {
 };
 
 const CrewDemands = (props: { crew: CrewMember }) => {
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { crew } = props;
+
 	const crewDemands = {
 		factionOnlyTotal: crew.factionOnlyTotal,
 		totalChronCost: crew.totalChronCost,
@@ -147,8 +149,9 @@ const CrewDemands = (props: { crew: CrewMember }) => {
 	};
 	return (
 		<div style={{ margin: '1em 0' }}>
-			<b>{crewDemands.factionOnlyTotal}</b>
-			{' faction items, '}
+			{tfmt("crew_views.faction_items", { 
+				n: <b>{crewDemands.factionOnlyTotal}</b>
+			})}
 			<span style={{ display: 'inline-block' }}>
 				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />
 			</span>{' '}

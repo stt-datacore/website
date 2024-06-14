@@ -1,4 +1,45 @@
 {
+    "behold_helper": {
+        "heading": "Vergleichen Sie Ihre Auswahl, um zu entscheiden, wen Sie zu Ihrem Dienstplan hinzufügen möchten.",
+        "search_for_crew": "Suche nach Crew",
+        "preview_all": "Alle in Ihrer Liste in der Vorschau anzeigen",
+        "share_page_heading": "Teile diese Seite",
+        "share_help": "Du möchtest Ratschläge zu dieser Crew? Du kannst einen {{permalink}} zu dieser Seite teilen, um das Teilen auf Discord oder anderen Foren zu erleichtern.",
+        "views": {
+            "classic": {
+                "title": "Klassische Ansicht",
+                "description": "Crew nebeneinander vergleichen"
+            },
+            "standard": {
+                "title": "Standardansicht",
+                "description": "Standard-Crewpräsentation anzeigen"
+            },
+            "table": {
+                "title": "Tabellenansicht",
+                "description": "Nur die Zahlen, alle sortierbar"
+            },
+            "dismiss_all": {
+                "title": "Alle schließen",
+                "description": "Neuen Vergleich starten"
+            }
+        },
+        "columns": {
+            "unique_retrievals": "Einzigartige\nAbrufe",
+            "build_cost": "Baukosten",
+            "faction_items": "Fraktionsartikel"
+        }
+    },
+    "crew_picker": {
+        "search_by_name": "Suche nach Crewmitgliedern nach Namen",
+        "no_results": "0 Ergebnisse gefunden. Bitte probieren Sie verschiedene Suchoptionen aus.",
+        "filter": "{{global.filters}}",
+        "close": "{{global.close}}",
+        "optional_filters": "Optionale Filter",
+        "tip": {
+            "double_tap": "Tipp: Tippen Sie doppelt, um schneller eine Crew auszuwählen."
+        },
+        "select_crew": "{{crew}} auszuwählen"
+    },
     "base": {
         "all_crew": "Die gesamte Crew anzeigen",
         "bigbook_tier": "Stufe",
@@ -128,7 +169,11 @@
         },
         "quipment": "Rüstzeug anzeigen",
         "ship": "Schiffsfähigkeiten anzeigen",
-        "voyage": "Reiseränge anzeigen"
+        "voyage": "Reiseränge anzeigen",
+        "faction_items": "{{n}} Fraktionsartikel",
+        "view_big_book": "{{crew}} im Big Book anzeigen",
+        "preview": "Vorschau von {{crew}} in Ihrem Dienstplan",
+        "dismiss": "{{crew}} abweisen"
     },
     "event_planner": {
         "heading": "Finden Sie die beste Crew für den Einsatz während einer Ereignis.",
@@ -205,6 +250,10 @@
         "yesterday_gauntlet": "Die Herausforderung von gestern"
     },
     "global": {
+        "copy_permalink_clipboard": "Permalink in die Zwischenablage kopieren",
+        "permalink": "Permalink",
+        "experimental": "Experimentell",
+        "optional": "Optional",
         "admiral": "Admiral",
         "and": "und",
         "any": "Beliebig",
@@ -219,6 +268,7 @@
         "disabled": "Deaktiviert",
         "enable": "Aktivieren",
         "enabled": "Aktiviert",
+        "filters": "Filter",
         "fleet": "Flotte",
         "hidden": "Versteckt",
         "hide": "Verstecken",
@@ -268,6 +318,8 @@
         "filter_by_portal_status": "Filtern nach Portalstatus",
         "filter_by_progress": "Filtern nach Fortschritt",
         "filter_by_rarity": "Filtern nach Seltenheit",
+        "filter_by_series": "Filtern nach Serie",
+        "filter_by_ship_ability": "Filtern nach Schiffsfähigkeit",
         "filter_by_skill": "Filtern nach Fähigkeit",
         "filter_by_status": "Filtern nach Status",
         "filter_by_trait": "Filtern nach Merkmalen",
@@ -506,6 +558,20 @@
             "WebStore": "Web Store"
         }
     },
+    "series": {
+        "tos": "Raumschiff Enterprise",
+        "tas": "Die Enterprise",
+        "tng": "Das nächste Jahrhundert",
+        "ds9": "Deep Space Nine",
+        "voy": "Raumschiff Voyager",
+        "ent": "Enterprise",
+        "dsc": "Discovery",
+        "pic": "Picard",
+        "low": "Lower Decks",
+        "snw": "Strange New Worlds",
+        "vst": "Very Short Treks",
+        "original": "Timelines Originals"
+    },
     "options": {
         "crew_status": {
             "favorites": "Nur Lieblingscrew anzeigen",
@@ -514,6 +580,13 @@
             "idle": "Nur inaktive Crew anzeigen",
             "none": "Gesamte Crew anzeigen",
             "thawed": "Nur nicht eingefrorene Crew anzeigen"
+        },
+        "portal_status": {
+            "none": "{{options.roster_maintenance.none}}",
+            "retrievable": "Nur abrufbare Crew anzeigen",
+            "not_retrievable": "Nur nicht abrufbare Crew anzeigen",
+            "uniquely_retrievable": "Nur eindeutig abrufbare Crew anzeigen",
+            "not_uniquely_retrievable": "Nur nicht eindeutig abrufbare Crew anzeigen"
         },
         "roster_maintenance": {
             "advanceable": "Nur Crew anzeigen, die nicht beanspruchte Plätze für Rüstzeug hat",

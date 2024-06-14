@@ -1,4 +1,45 @@
 {
+    "behold_helper": {
+        "heading": "Compare sus opciones para ayudar a decidir a quién agregar a su lista.",
+        "search_for_crew": "Buscar tripulación",
+        "preview_all": "Obtenga una vista previa de todos estos en su lista",
+        "share_page_heading": "Comparte esta página",
+        "share_help": "¿Quieres consejos sobre esta tripulación? Puede compartir un {{permalink}} en esta página para compartir más fácilmente en Discord u otros foros.",
+        "views": {
+            "classic": {
+                "title": "Vista clásica",
+                "description": "Comparar tripulación lado a lado"
+            },
+            "standard": {
+                "title": "Vista estándar",
+                "description": "Ver presentación estándar de la tripulación"
+            },
+            "table": {
+                "title": "Vista de tabla",
+                "description": "Sólo los números, todos ordenables"
+            },
+            "dismiss_all": {
+                "title": "Descartar todo",
+                "description": "Iniciar una nueva comparación"
+            }
+        },
+        "columns": {
+            "unique_retrievals": "Recuperaciones\nÚnicas",
+            "build_cost": "Costo de construcción",
+            "faction_items": "Objetos de facción"
+        }
+    },
+    "crew_picker": {
+        "search_by_name": "Buscar tripulación por nombre",
+        "no_results": "0 resultados encontrados. Pruebe diferentes opciones de búsqueda.",
+        "filter": "{{global.filters}}",
+        "close": "{{global.close}}",
+        "optional_filters": "Filtros Opcionales",
+        "tip": {
+            "double_tap": "Consejo: Toca dos veces para seleccionar un equipo más rápidamente."
+        },
+        "select_crew": "Seleccionar {{crew}}"
+    },
     "base": {
         "all_crew": "Mostrar toda la tripulación",
         "bigbook_tier": "Piso",
@@ -134,7 +175,11 @@
         },
         "quipment": "Mostrar rangos de Quipos",
         "ship": "Mostrar habilidades del buque",
-        "voyage": "Mostrar rangos de viaje"
+        "voyage": "Mostrar rangos de viaje",
+        "faction_items": "{{n}} artículos de facción",
+        "view_big_book": "Ver {{crew}} en Big Book",
+        "preview": "Vista previa de {{crew}} en tu lista",
+        "dismiss": "Descartar {{crew}}"
     },
     "event_planner": {
         "heading": "Encuentra el mejor equipo para usar durante un evento.",
@@ -212,6 +257,10 @@
         "yesterday_gauntlet": "El reto de ayer"
     },
     "global": {
+        "copy_permalink_clipboard": "Copiar enlace permanente al portapapeles",
+        "permalink": "enlace permanente",
+        "experimental": "Experimental",
+        "optional": "Opcional",
         "admiral": "Almirante",
         "and": "y",
         "any": "Cualquier",
@@ -226,6 +275,7 @@
         "disabled": "Desactivado",
         "enable": "Habilitar",
         "enabled": "Habilitado",
+        "filters": "Filtros",
         "fleet": "Flota",
         "hidden": "Oculto",
         "hide": "Ocultar",
@@ -275,7 +325,9 @@
         "filter_by_portal_status": "Filtrar por estado del portal",
         "filter_by_progress": "Filtrar por progreso",
         "filter_by_rarity": "Filtrar por rareza",
+        "filter_by_ship_ability": "Filtrar por capacidad del buque",
         "filter_by_skill": "Filtrar por habilidad",
+        "filter_by_series": "Filtrar por serie",
         "filter_by_status": "Filtrar por estado",
         "filter_by_trait": "Filtrar por rasgo",
         "filter_ship_grants": "Filtrar subvenciones para buques",
@@ -515,6 +567,20 @@
             "WebStore": "Tienda Virtual"
         }
     },
+    "series": {
+        "tos": "La serie original",
+        "tas": "La serie animada",
+        "tng": "La nueva generación",
+        "ds9": "Espacio profundo nueve",
+        "voy": "Voyager",
+        "ent": "Enterprise",
+        "dsc": "Discovery",
+        "pic": "Picard",
+        "low": "Lower Decks",
+        "snw": "Strange New Worlds",
+        "vst": "Very Short Treks",
+        "original": "Timelines Originals"
+    },
     "options": {
         "crew_status": {
             "favorites": "Mostrar sólo el tripulación favorito",
@@ -523,6 +589,13 @@
             "idle": "Mostrar sólo tripulación inactivo",
             "none": "Mostrar toda la tripulación",
             "thawed": "Mostrar sólo la tripulación descongelada"
+        },
+        "portal_status": {
+            "none": "{{options.roster_maintenance.none}}",
+            "retrievable": "Mostrar sólo el equipo recuperable",
+            "not_retrievable": "Mostrar sólo tripulación no recuperable",
+            "uniquely_retrievable": "Mostrar sólo el equipo recuperable de forma única",
+            "not_uniquely_retrievable": "Mostrar sólo el equipo no recuperable de forma única"
         },
         "roster_maintenance": {
             "advanceable": "Solo mostrar tripulación con espacios no reclamados para quipo",
