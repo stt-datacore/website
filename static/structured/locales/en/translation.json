@@ -70,24 +70,6 @@
         "player_buffs_applied": "Player buffs applied",
         "variants": "Variants of {{crew}}"
     },
-    "items_unneeded": {
-        "title": "{{menu.roster.unneeded_items}}",
-        "description": "Use this tool to help identify items you can safely discard to free up space in your inventory.",
-        "summary": "You have {{n}} items in your inventory. Note: continuum components do not count toward your inventory limit.",
-        "limit_warning": {
-            "title": "Inventory Limit Warning",
-            "description": "When your inventory reaches {{n}} items, the game will start randomly losing items. Go and replicate away some of the items suggested below."
-        },
-        "ships_maxed_info": "The following ship schematics are safe to discard as they are used to upgrade {{max_text}}",
-        "ships_maxed": "ships you have already maxed",
-        "dispose_candidate": "The following equipment items are good candidates to discard as they are {{reason}}. Note: some items listed here might be useful as building blocks of other needed equipment. Tap an item name to consult the wiki for more information about the equipment.",
-        "dispose_candidate_reason": "no longer needed by any crew on your current roster",
-        "options": {
-            "inefficient": "Only show the most inefficient uses of inventory slots",
-            "single_use": "Only show single-use equipment",
-            "hide_generic": "Hide equipment that is useful for unowned crew"
-        }
-    },
     "crew_state": {
         "expires_in": "Crew expires in {{time}}",
         "frozen": "Frozen",
@@ -223,8 +205,6 @@
         "yesterday_gauntlet": "Yesterday's Gauntlet"
     },
     "global": {
-        "show_n_more_ellipses": "Show {{n}} more ...",
-        "show_less": "Show less",
         "admiral": "Admiral",
         "and": "and",
         "any": "Any",
@@ -258,11 +238,13 @@
         "search": "Search",
         "search_by_name_or_trait_ellipses": "Search by name or trait...",
         "search_crew": "Search crew",
-        "search_items": "Search items",
         "search_crew_ellipses": "Search crew...",
+        "search_ellipses": "Search...",
+        "search_items": "Search items",
         "search_items_ellipses": "Search items...",
-        "search_ellipses": "Search...",        
         "show": "Show",
+        "show_less": "Show less",
+        "show_n_more_ellipses": "Show {{n}} more ...",
         "shown": "Shown",
         "squadron_leader": "Squadron Leader",
         "yes": "Yes"
@@ -344,9 +326,8 @@
             "quantity": "Quantity",
             "rarity": "{{base.rarity}}"
         },
-        "recipe": "Recipe",
-        "current_demands": "Current demands",
         "craft_for_chrons": "Craft it for {{cost}} using this recipe",
+        "current_demands": "Current demands",
         "duration": {
             "n_days": "{{days}} days",
             "n_hours": "{{hours}} hours",
@@ -369,8 +350,27 @@
             "owned_or_buildable": "Show owned or buildable quipment"
         },
         "post_immortalization_advancement": "Post-immortalization advancement",
+        "recipe": "Recipe",
         "required_traits": "Required Traits: {{traits}}",
         "show_unowned_needed": "Show unowned needed items"
+    },
+    "items_unneeded": {
+        "description": "Use this tool to help identify items you can safely discard to free up space in your inventory.",
+        "dispose_candidate": "The following equipment items are good candidates to discard as they are {{reason}}. Note: some items listed here might be useful as building blocks of other needed equipment. Tap an item name to consult the wiki for more information about the equipment.",
+        "dispose_candidate_reason": "no longer needed by any crew on your current roster",
+        "limit_warning": {
+            "description": "When your inventory reaches {{n}} items, the game will start randomly losing items. Go and replicate away some of the items suggested below.",
+            "title": "Inventory Limit Warning"
+        },
+        "options": {
+            "hide_generic": "Hide equipment that is useful for unowned crew",
+            "inefficient": "Only show the most inefficient uses of inventory slots",
+            "single_use": "Only show single-use equipment"
+        },
+        "ships_maxed": "ships you have already maxed",
+        "ships_maxed_info": "The following ship schematics are safe to discard as they are used to upgrade {{max_text}}",
+        "summary": "You have {{n}} items in your inventory. Note: continuum components do not count toward your inventory limit.",
+        "title": "{{menu.roster.unneeded_items}}"
     },
     "json": {
         "copy_and_paste": {

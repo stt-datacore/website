@@ -212,27 +212,7 @@
         },
         "yesterday_gauntlet": "Gantelet d'hier"
     },
-    "items_unneeded": {
-        "title": "{{menu.roster.unneeded_items}}",
-        "description": "Utilisez cet outil pour vous aider à identifier les articles que vous pouvez jeter en toute sécurité afin de libérer de l'espace dans votre inventaire.",
-        "summary": "Vous avez {{n}} articles dans votre inventaire. Remarque : les composants du continuum ne sont pas pris en compte dans votre limite d'inventaire.",
-        "limit_warning": {
-            "title": "Avertissement de Limite d'Inventaire",
-            "description": "Lorsque votre inventaire atteint {{n}} articles, le jeu commencera à perdre des articles de manière aléatoire. Allez reproduire certains des articles suggérés ci-dessous."
-        },
-        "ships_maxed_info": "Les plans de vaisseaux suivants peuvent être supprimés en toute sécurité car ils sont utilisés pour améliorer {{max_text}}.",
-        "ships_maxed": "les vaisseaux que vous avez déjà terminés",
-        "dispose_candidate": "Les éléments d'équipement suivants sont de bons candidats à éliminer car {{reason}}. Remarque : certains éléments répertoriés ici peuvent être utiles en tant qu’éléments de base pour d’autres équipements nécessaires. Appuyez sur le nom d'un élément pour consulter le wiki pour plus d'informations sur l'équipement.",
-        "dispose_candidate_reason": "ils ne sont plus nécessaires à aucun équipage de votre liste actuelle",
-        "options": {
-            "inefficient": "Afficher uniquement les utilisations les plus inefficaces des emplacements d'inventaire",
-            "single_use": "Afficher uniquement le matériel à usage unique",
-            "hide_generic": "Supprimer l'équipement utile à l'équipage sans propriétaire"
-        }
-    },
     "global": {
-        "show_n_more_ellipses": "Afficher {{n}} de plus...",
-        "show_less": "Montrer moins",
         "admiral": "Amiral",
         "and": "et",
         "any": "Quelconque",
@@ -266,11 +246,13 @@
         "search": "Recherche",
         "search_by_name_or_trait_ellipses": "Rechercher par nom ou trait...",
         "search_crew": "Rechercher par équipage",
-        "search_items": "Rechercher par article",
         "search_crew_ellipses": "Rechercher par équipage...",
-        "search_items_ellipses": "Rechercher par article...",
         "search_ellipses": "Recherche...",
+        "search_items": "Rechercher par article",
+        "search_items_ellipses": "Rechercher par article...",
         "show": "Montre",
+        "show_less": "Montrer moins",
+        "show_n_more_ellipses": "Afficher {{n}} de plus...",
         "shown": "Affiché",
         "squadron_leader": "Chef d'escadron",
         "yes": "Oui"
@@ -340,8 +322,6 @@
         "item_is_shown_unowned": "{{item}} est affiché {{level}} (sans propriétaire)"
     },
     "items": {
-        "recipe": "Recette",
-        "current_demands": "Demandes actuelles",
         "any_non_trait_limited": "Tout des quipements non limitées par des traits",
         "any_trait_limited": "Toutes des quipements limité par des traits",
         "columns": {
@@ -357,6 +337,7 @@
             "rarity": "{{base.rarity}}"
         },
         "craft_for_chrons": "Fabriquez-le pour {{cost}} en utilisant cette recette",
+        "current_demands": "Demandes actuelles",
         "duration": {
             "n_days": "{{days}} jours",
             "n_hours": "{{hours}} heures",
@@ -379,8 +360,27 @@
             "owned_or_buildable": "Afficher les quipements possédées ou constructibles"
         },
         "post_immortalization_advancement": "Avancement après l'immortalisation",
+        "recipe": "Recette",
         "required_traits": "Traits Requises: {{traits}}",
         "show_unowned_needed": "Afficher les éléments nécessaires sans propriétaire"
+    },
+    "items_unneeded": {
+        "description": "Utilisez cet outil pour vous aider à identifier les articles que vous pouvez jeter en toute sécurité afin de libérer de l'espace dans votre inventaire.",
+        "dispose_candidate": "Les éléments d'équipement suivants sont de bons candidats à éliminer car {{reason}}. Remarque : certains éléments répertoriés ici peuvent être utiles en tant qu’éléments de base pour d’autres équipements nécessaires. Appuyez sur le nom d'un élément pour consulter le wiki pour plus d'informations sur l'équipement.",
+        "dispose_candidate_reason": "ils ne sont plus nécessaires à aucun équipage de votre liste actuelle",
+        "limit_warning": {
+            "description": "Lorsque votre inventaire atteint {{n}} articles, le jeu commencera à perdre des articles de manière aléatoire. Allez reproduire certains des articles suggérés ci-dessous.",
+            "title": "Avertissement de Limite d'Inventaire"
+        },
+        "options": {
+            "hide_generic": "Supprimer l'équipement utile à l'équipage sans propriétaire",
+            "inefficient": "Afficher uniquement les utilisations les plus inefficaces des emplacements d'inventaire",
+            "single_use": "Afficher uniquement le matériel à usage unique"
+        },
+        "ships_maxed": "les vaisseaux que vous avez déjà terminés",
+        "ships_maxed_info": "Les plans de vaisseaux suivants peuvent être supprimés en toute sécurité car ils sont utilisés pour améliorer {{max_text}}.",
+        "summary": "Vous avez {{n}} articles dans votre inventaire. Remarque : les composants du continuum ne sont pas pris en compte dans votre limite d'inventaire.",
+        "title": "{{menu.roster.unneeded_items}}"
     },
     "json": {
         "copy_and_paste": {

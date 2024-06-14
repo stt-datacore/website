@@ -204,27 +204,7 @@
         },
         "yesterday_gauntlet": "Die Herausforderung von gestern"
     },
-    "items_unneeded": {
-        "title": "{{menu.roster.unneeded_items}}",
-        "description": "Verwenden Sie dieses Tool, um Elemente zu identifizieren, die Sie sicher entsorgen können, um Platz in Ihrem Inventar freizugeben.",
-        "summary": "Sie haben {{n}} Artikel in Ihrem Inventar. Hinweis: Kontinuumskomponenten werden nicht auf Ihr Inventarlimit angerechnet.",
-        "limit_warning": {
-            "title": "Warnung vor Lagerbestandsgrenzen",
-            "description": "Wenn Ihr Inventar {{n}} Gegenstände erreicht, beginnt das Spiel, zufällig Gegenstände zu verlieren. Gehen Sie und replizieren Sie einige der unten vorgeschlagenen Gegenstände."
-        },
-        "ships_maxed_info": "Die folgenden Schiffsbauplan können bedenkenlos entsorgt werden, da sie zum Aufrüsten {{max_text}} verwendet werden.",
-        "ships_maxed": "bereits fertiggestellter Schiffe",
-        "dispose_candidate": "Die folgenden Ausrüstungsgegenstände können gut entsorgt werden, {{reason}}. Hinweis: Einige der hier aufgeführten Gegenstände können als Bausteine ​​für andere benötigte Ausrüstung nützlich sein. Tippen Sie auf einen Gegenstandsnamen, um im Wiki weitere Informationen zur Ausrüstung zu erhalten.",
-        "dispose_candidate_reason": "da sie von keiner Crew in Ihrem aktuellen Dienstplan mehr benötigt werden",
-        "options": {
-            "inefficient": "Nur die ineffizienteste Nutzung von Inventarplätzen anzeigen",
-            "single_use": "Nur Einwegartikel anzeigen",
-            "hide_generic": "Entfernen Sie Ausrüstung, die für die nicht besessene Crew nützlich ist"
-        }
-    },
     "global": {
-        "show_n_more_ellipses": "Zeige {{n}} weitere ...",
-        "show_less": "Zeige weniger",
         "admiral": "Admiral",
         "and": "und",
         "any": "Beliebig",
@@ -258,11 +238,13 @@
         "search": "Suchen",
         "search_by_name_or_trait_ellipses": "Suche nach Name oder Merkmalen...",
         "search_crew": "Suche nach Crew",
-        "search_items": "Suche nach Artikel",
         "search_crew_ellipses": "Suche nach Crew...",
-        "search_items_ellipses": "Suche nach Artikel...",
         "search_ellipses": "Suchen...",
+        "search_items": "Suche nach Artikel",
+        "search_items_ellipses": "Suche nach Artikel...",
         "show": "Zeigen",
+        "show_less": "Zeige weniger",
+        "show_n_more_ellipses": "Zeige {{n}} weitere ...",
         "shown": "Gezeigt",
         "squadron_leader": "Geschwaderführer",
         "yes": "Ja"
@@ -330,8 +312,6 @@
         "item_is_shown_unowned": "{{item}} wird angezeigt {{level}} (nicht im Besitz)"
     },
     "items": {
-        "recipe": "Rezept",
-        "current_demands": "Aktuelle Anforderungen",
         "any_non_trait_limited": "Beliebig nicht Merkmal-begrenzte Rüstzeugen",
         "any_trait_limited": "Beliebig Merkmal-begrenzte Rüstzeugen",
         "columns": {
@@ -347,6 +327,7 @@
             "rarity": "{{base.rarity}}"
         },
         "craft_for_chrons": "Stellen Sie es mit diesem Rezept für {{cost}} her",
+        "current_demands": "Aktuelle Anforderungen",
         "duration": {
             "n_days": "{{days}} Tage",
             "n_hours": "{{hours}} Stunden",
@@ -369,8 +350,27 @@
             "owned_or_buildable": "Eigene oder baubare Rüstzeugen anzeigen"
         },
         "post_immortalization_advancement": "Fortschritt nach der Unsterblichkeit",
+        "recipe": "Rezept",
         "required_traits": "Erforderliche Merkmalen: {{traits}}",
         "show_unowned_needed": "Nicht im Besitz befindliche benötigte Artikel anzeigen"
+    },
+    "items_unneeded": {
+        "description": "Verwenden Sie dieses Tool, um Elemente zu identifizieren, die Sie sicher entsorgen können, um Platz in Ihrem Inventar freizugeben.",
+        "dispose_candidate": "Die folgenden Ausrüstungsgegenstände können gut entsorgt werden, {{reason}}. Hinweis: Einige der hier aufgeführten Gegenstände können als Bausteine ​​für andere benötigte Ausrüstung nützlich sein. Tippen Sie auf einen Gegenstandsnamen, um im Wiki weitere Informationen zur Ausrüstung zu erhalten.",
+        "dispose_candidate_reason": "da sie von keiner Crew in Ihrem aktuellen Dienstplan mehr benötigt werden",
+        "limit_warning": {
+            "description": "Wenn Ihr Inventar {{n}} Gegenstände erreicht, beginnt das Spiel, zufällig Gegenstände zu verlieren. Gehen Sie und replizieren Sie einige der unten vorgeschlagenen Gegenstände.",
+            "title": "Warnung vor Lagerbestandsgrenzen"
+        },
+        "options": {
+            "hide_generic": "Entfernen Sie Ausrüstung, die für die nicht besessene Crew nützlich ist",
+            "inefficient": "Nur die ineffizienteste Nutzung von Inventarplätzen anzeigen",
+            "single_use": "Nur Einwegartikel anzeigen"
+        },
+        "ships_maxed": "bereits fertiggestellter Schiffe",
+        "ships_maxed_info": "Die folgenden Schiffsbauplan können bedenkenlos entsorgt werden, da sie zum Aufrüsten {{max_text}} verwendet werden.",
+        "summary": "Sie haben {{n}} Artikel in Ihrem Inventar. Hinweis: Kontinuumskomponenten werden nicht auf Ihr Inventarlimit angerechnet.",
+        "title": "{{menu.roster.unneeded_items}}"
     },
     "json": {
         "copy_and_paste": {
