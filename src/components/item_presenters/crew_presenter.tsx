@@ -95,28 +95,40 @@ export class StatLabel extends React.Component<StatLabelProps> {
         let sizeDefault = '12.75em';
         let sizeMobile = '12.5em';
         if (this.context.localized.language === 'de') {
-            sizeDefault = '15em';
+            sizeDefault = '16em';
+            sizeMobile = '16em';
+        }
+        else if (this.context.localized.language === 'sp') {
+            sizeDefault = '14em';
             sizeMobile = '14em';
         }
 
-        return (            
+        const style = {
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "0.5em",
+            flexWrap: 'wrap',
+            marginLeft: 0,
+            width:
+            window.innerWidth < DEFAULT_MOBILE_WIDTH ? sizeMobile : sizeDefault,
+        } as React.CSSProperties;
+
+        return (<>
+            {!!title && 
             <Label
                 size={window.innerWidth < DEFAULT_MOBILE_WIDTH ? "small" : "medium"}
-                style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    marginBottom: "0.5em",
-                    flexWrap: 'wrap',
-                    marginLeft: 0,
-                    width:
-                        window.innerWidth < DEFAULT_MOBILE_WIDTH ? sizeMobile : sizeDefault,
-                }}
-            >
-                {title}
+                style={style}
+            >              
+                {title}  
                 <Label.Detail>{value}</Label.Detail>
             </Label>
-        );
+            }
+            {!title && 
+            <div className='ui label' style={{...style, justifyContent: 'center'}}>{value}</div>            
+            }
+        </>);
     }
 }
 
@@ -545,8 +557,8 @@ export class CrewPresenter extends React.Component<
             compact,
             hideStats,
         } = this.props;
-
-        const { t, tfmt } = this.context.localized;
+        
+        const { t, language } = this.context.localized;
         const { mobileWidth, pluginsUsed, selectedPlugin } = this.state;
 
         if (!inputCrew) {
@@ -819,7 +831,7 @@ export class CrewPresenter extends React.Component<
                         flexDirection: "column",
                         minHeight: "8em",
                         justifyContent: "space-between",
-                        width: isMobile ? "15m" : "32em",
+                        width: isMobile ? "15m" : (language === 'de' ? "40em" : (language === 'sp' ? '35em' : '32em')),
                     }}
                 >
                     <div
