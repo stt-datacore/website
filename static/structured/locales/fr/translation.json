@@ -1,6 +1,6 @@
 {
     "base": {
-        "all_crew": "Afficher tout l'équipage",
+        "all_crew": "Afficher tous l'équipiers",
         "bigbook_tier": "Étage",
         "cab_power": "CAB",
         "collection": "Collection",
@@ -33,8 +33,8 @@
         },
         "heading": "Comparez vos choix pour vous aider à décider qui ajouter à votre liste.",
         "preview_all": "Prévisualisez tout cela dans votre liste",
-        "search_for_crew": "Recherche d'équipage",
-        "share_help": "Vous voulez des conseils sur cet équipage ? Vous pouvez partager un {{permalink}} sur cette page pour un partage plus facile sur Discord ou d'autres forums.",
+        "search_for_crew": "Recherche des équipiers",
+        "share_help": "Vous voulez des conseils sur ces équipiers ? Vous pouvez partager un {{permalink}} sur cette page pour un partage plus facile sur Discord ou d'autres forums.",
         "share_page_heading": "Partager cette page",
         "views": {
             "classic": {
@@ -46,7 +46,7 @@
                 "title": "Tout rejeter"
             },
             "standard": {
-                "description": "Voir la présentation standard de l'équipage",
+                "description": "Voir la présentation standard de les équipiers",
                 "title": "Vue standard"
             },
             "table": {
@@ -65,12 +65,12 @@
         "copied_exclaim": "Copié!"
     },
     "consider_crew": {
-        "active_shuttles": "Considérez l'équipage sur les navettes actives",
-        "active_voyage": "Considérez l'équipage en voyage actif",
-        "consider_frozen": "Considérez l'équipage gelé",
-        "consider_shared": "Envisagez un équipage partagé",
-        "exclude_quipped": "Exclure l'équipage quipé",
-        "shared_crew_popup": "Les nombres de compétences de l'équipage partagé sont basés sur les buffs de vos joueurs et peuvent ne pas correspondre au score réel"
+        "active_shuttles": "Considérez l'équipiers sur les navettes actives",
+        "active_voyage": "Considérez l'équipiers en voyage actif",
+        "consider_frozen": "Considérez l'équipiers gelé",
+        "consider_shared": "Envisagez l'équipier partagé",
+        "exclude_quipped": "Exclure l'équipiers quipé",
+        "shared_crew_popup": "Les nombres de compétences de l'équipiers partagé sont basés sur les buffs de vos joueurs et peuvent ne pas correspondre au score réel"
     },
     "cool_stats": {
         "all_ranks": "Tous les rangs",
@@ -87,11 +87,11 @@
         "voyage_skill_ranks": "Rangs de compétences de voyage"
     },
     "crew_ownership": {
-        "immortal": "Afficher uniquement l'équipage immortalisé",
+        "immortal": "Afficher uniquement les équipiers immortalisé",
         "mortal": "Afficher uniquement les non-immortels appartenant",
-        "none": "Afficher tout l'équipage",
-        "owned": "Afficher uniquement l'équipage possédée",
-        "unowned": "Afficher uniquement les équipages sans propriétaire"
+        "none": "Afficher tous les équipiers",
+        "owned": "Afficher uniquement les équipiers possédée",
+        "unowned": "Afficher uniquement les équipiers sans propriétaire"
     },
     "crew_page": {
         "aka_colon": "Aussi connu sous le nom de :",
@@ -102,8 +102,8 @@
         "max_buffs_applied": "Maximum effets appliqués",
         "no_buffs_applied": "Aucun effets appliqués",
         "notes": {
-            "gauntlet_determination": "Classements déterminés par précalcul. Pour des conseils spécifiques sur l'équipage à utiliser, consultez {{link}}.",
-            "voyage_determination": "Classements déterminés par précalcul. Pour des conseils spécifiques sur l'équipage à utiliser, consultez les {{link}}."
+            "gauntlet_determination": "Classements déterminés par précalcul. Pour des conseils spécifiques sur l'équipiers à utiliser, consultez {{link}}.",
+            "voyage_determination": "Classements déterminés par précalcul. Pour des conseils spécifiques sur l'équipiers à utiliser, consultez les {{link}}."
         },
         "player_buffs_applied": "Effets de joueur appliqués",
         "variants": "Variantes de {{crew}}"
@@ -113,14 +113,14 @@
         "filter": "{{global.filters}}",
         "no_results": "0 résultat trouvé. Veuillez essayer différentes options de recherche.",
         "optional_filters": "Filtres Optionnels",
-        "search_by_name": "Rechercher un équipage par nom",
+        "search_by_name": "Rechercher un équipier par nom",
         "select_crew": "Sélectionner {{crew}}",
         "tip": {
-            "double_tap": "Conseil : appuyez deux fois pour sélectionner un équipage plus rapidement."
+            "double_tap": "Conseil : appuyez deux fois pour sélectionner un équipier plus rapidement."
         }
     },
     "crew_state": {
-        "expires_in": "L'équipage expire dans {{time}}",
+        "expires_in": "L'équipier expire dans {{time}}",
         "frozen": "Congelé(e)",
         "frozen_f": "Congelée",
         "frozen_m": "Congelé",
@@ -156,7 +156,7 @@
             "v": "V",
             "voyage_ranks": "Rangs de Voyage"
         },
-        "consider_three_skill_check": "Considérez uniquement un équipage à 3 compétences pour les voyages et le gantelet",
+        "consider_three_skill_check": "Considérez uniquement des équipiers ont 3 compétences pour les voyages et le gantelet",
         "custom": {
             "core": "Base",
             "gauntlet": "Gantelet",
@@ -176,14 +176,14 @@
     "crew_views": {
         "advanced_analysis": "Analyse Avancée",
         "base": "Afficher les compétences de base",
-        "crew_utility": "Afficher d'utilité de l'équipage",
+        "crew_utility": "Afficher d'utilité de l'équipier",
         "dismiss": "Rejeter {{crew}}",
         "faction_items": "{{n}} articles de faction",
         "gauntlet": "Afficher les rangs des gantelets",
         "max_quipment": "Afficher le Quipement Max",
         "preview": "Aperçu de {{crew}} dans votre liste",
         "prospect": {
-            "description": "Ajoutez des d'équipage potentiels pour voir comment ils s'intègrent dans votre liste actuelle.",
+            "description": "Ajoutez des des équipiers potentiels pour voir comment ils s'intègrent dans votre liste actuelle.",
             "title": "Équipage potentiel"
         },
         "quipment": "Afficher les rangs des Quipements",
@@ -200,12 +200,12 @@
         "title": "Durée: {{duration}}"
     },
     "event_planner": {
-        "heading": "Trouvez le meilleur équipage à utiliser lors d'un événement",
+        "heading": "Trouvez les meilleurs équipiers à utiliser lors d'un événement",
         "hide_duplicate_pairs": "Supprimer les paires en double",
-        "prospect_description": "Ajoutez un équipage potentiel (ou un équipage partagé potentiel) pour voir comment ils s'intègrent dans votre liste existante pour cet événement.",
+        "prospect_description": "Ajoutez un équipier potentiel (ou un équipier partagé potentiel) pour voir comment ils s'intègrent dans votre liste existante pour cet événement.",
         "select_phase": "Sélectionnez une phase",
         "skill_matrix": "Matrice de Compétences",
-        "skill_matrix_heading": "Cette matrice montre votre meilleur équipage pour chaque combinaison de compétences possible. Utilisez cette matrice pour identifier votre meilleur équipage pour cet événement. Appuyez sur une cellule pour voir les autres membres d'équipage possédant cette combinaison de compétences.",
+        "skill_matrix_heading": "Cette matrice montre vos meilleurs équipiers pour chaque combinaison de compétences possible. Utilisez cette matrice pour identifier votre meilleur équipage pour cet événement. Appuyez sur une cellule pour voir les autres équipiers possédant cette combinaison de compétences.",
         "table": {
             "columns": {
                 "best": "Meilleur",
@@ -214,15 +214,15 @@
                 "pair": "Paire"
             },
             "crew_guessed": "La liste complète des équipages bénéficiant de bonus pour cet événement n'est pas encore disponible à partir des données des joueurs. Par conséquent, DataCore peut ne pas identifier toute votre éventuelle équipe événementielle.",
-            "featured_crew_not_identified": "L'équipage en vedette n'est pas encore identifié pour cet événement.",
+            "featured_crew_not_identified": "L'équipier en vedette n'est pas encore identifié pour cet événement.",
             "options": {
                 "apply_event_bonus": "Appliquer le bonus d'événement aux compétences",
-                "event_crew": "Afficher uniquement l'équipage pour l'événement ({{list}})",
-                "exclude_quipped": "Exclure l'équipage avec quipement actif",
-                "potential_skills": "Montrer les compétences potentielles d'un équipage non nivelé",
-                "share_crew": "Afficher l'équipage partagé",
-                "share_crew_help": "Les nombres de compétences de l'équipage partagés sont basés sur vos effets de joueur et peuvent ne pas correspondre à la puissance réelle",
-                "show_frozen": "Afficher l'équipage gelé(e)"
+                "event_crew": "Afficher uniquement les équipiers pour l'événement ({{list}})",
+                "exclude_quipped": "Exclure les équipiers avec quipement actif",
+                "potential_skills": "Montrer les compétences potentielles d'un équipier non nivelé",
+                "share_crew": "Afficher l'équipier partagé",
+                "share_crew_help": "Les nombres de compétences de l'équipier partagé est basé sur vos effets de joueur et peuvent ne pas correspondre à la puissance réelle",
+                "show_frozen": "Afficher les équipiers gelé(e)"
             }
         },
         "warn_no_info": "Les informations sur le prochain événement ne sont pas encore disponibles à partir des données des joueurs. Veuillez réessayer plus tard."
@@ -237,18 +237,18 @@
         "gauntlet": "Gantelet",
         "gauntlets": "Gantelets",
         "owned_status": {
-            "any": "Tout l'équipage",
-            "fe": "Équipage possédé et entièrement équipé",
-            "gauntlet": "Équipage exclusif gantelet sans propriétaire",
-            "maxall": "Tout l'équipage est au maximum",
-            "nofe": "Équipage possédé, pas entièrement équipé",
-            "nofemax": "Équipage possédé, pas entièrement équipé au maximum",
-            "nonportal": "Équipage sans propriétaire et hors portail",
-            "owned": "Équipage possédé",
-            "ownedmax": "Équipage possédé au maximum",
-            "portal": "Équipage sans propriétaire et disponible sur le portail",
-            "unfrozen": "Possédé, équipage non gelé",
-            "unowned": "Équipage sans propriétaire"
+            "any": "Tous les équipiers",
+            "fe": "Équipiers possédés et entièrement équipé",
+            "gauntlet": "Équipiers exclusif gantelet sans propriétaire",
+            "maxall": "Tous les équipiers est au maximum",
+            "nofe": "Équipiers possédés, pas entièrement équipé",
+            "nofemax": "Équipiers possédés, pas entièrement équipé au maximum",
+            "nonportal": "Équipiers sans propriétaire et hors portail",
+            "owned": "Équipiers possédés",
+            "ownedmax": "Équipiers possédés au maximum",
+            "portal": "Équipiers sans propriétaires et disponibles sur le portail",
+            "unfrozen": "Possédés, équipiers non gelé",
+            "unowned": "Équipiers sans propriétaires"
         },
         "owned_status_heading": "Statut de propriétaire",
         "previous_gauntlets": "Gantelets précédents",
@@ -256,7 +256,7 @@
         "skills_and_pairs": "Compétences et paires",
         "today_gauntlet": "Gantelet d'aujourd'hui",
         "unowned_status": {
-            "any": "Tout l'équipage",
+            "any": "Tous les équipiers",
             "gauntlet": "Équipage exclusif gantelet",
             "nonportal": "Équipage non-portail",
             "portal": "Équipage disponible sur le portail"
@@ -304,8 +304,8 @@
         "rows_per_page": "Lignes par page",
         "search": "Recherche",
         "search_by_name_or_trait_ellipses": "Rechercher par nom ou trait...",
-        "search_crew": "Rechercher par équipage",
-        "search_crew_ellipses": "Rechercher par équipage...",
+        "search_crew": "Rechercher par équipiers",
+        "search_crew_ellipses": "Rechercher par équipiers...",
         "search_ellipses": "Recherche...",
         "search_items": "Rechercher par article",
         "search_items_ellipses": "Rechercher par article...",
@@ -360,7 +360,7 @@
             "title": "Articles possédés"
         },
         "quipment_browser": {
-            "description": "Parcourir les quipements et placer\nquipement potentiel sur l'équipage.",
+            "description": "Parcourir les quipements et placer\nquipement potentiel sur un équipier.",
             "title": "Navigateur Quipement"
         }
     },
@@ -400,9 +400,9 @@
         "craft_for_chrons": "Fabriquez-le pour {{cost}} en utilisant cette recette",
         "current_demands": "Demandes actuelles",
         "equippable_by": "Équipable par : {{crew}}",
-        "equippable_by_rarity": "Peut être équipé jusqu'à un équipage {{rarity}}.",
-        "equippable_by_rarity_traits": "Peut être équipé jusqu'à un équipage {{rarity}} avec les traits suivants : {{traits}}",
-        "equippable_by_traits": "Peut être équipé par l'équipage avec les traits suivantes : {{traits}}",
+        "equippable_by_rarity": "Peut être équipé jusqu'à un équipier {{rarity}}.",
+        "equippable_by_rarity_traits": "Peut être équipé jusqu'à un équipier {{rarity}} avec les traits suivants : {{traits}}",
+        "equippable_by_traits": "Peut être équipé par les équipiers avec les traits suivantes : {{traits}}",
         "faction_only": "Factions uniquement",
         "is_used_to_build": "Est utilisé pour construire ces",
         "item_sources": "Sources d'article",
@@ -423,13 +423,13 @@
     "items_unneeded": {
         "description": "Utilisez cet outil pour vous aider à identifier les articles que vous pouvez jeter en toute sécurité afin de libérer de l'espace dans votre inventaire.",
         "dispose_candidate": "Les éléments d'équipement suivants sont de bons candidats à éliminer car {{reason}}. Remarque : certains éléments répertoriés ici peuvent être utiles en tant qu’éléments de base pour d’autres équipements nécessaires. Appuyez sur le nom d'un élément pour consulter le wiki pour plus d'informations sur l'équipement.",
-        "dispose_candidate_reason": "ils ne sont plus nécessaires à aucun équipage de votre liste actuelle",
+        "dispose_candidate_reason": "ils ne sont plus nécessaires à aucun des équipiers de votre liste actuelle",
         "limit_warning": {
             "description": "Lorsque votre inventaire atteint {{n}} articles, le jeu commencera à perdre des articles de manière aléatoire. Allez reproduire certains des articles suggérés ci-dessous.",
             "title": "Avertissement de Limite d'Inventaire"
         },
         "options": {
-            "hide_generic": "Supprimer l'équipement utile à l'équipage sans propriétaire",
+            "hide_generic": "Supprimer l'équipement utile à les équipiers sans propriétaire",
             "inefficient": "Afficher uniquement les utilisations les plus inefficaces des emplacements d'inventaire",
             "single_use": "Afficher uniquement le matériel à usage unique"
         },
@@ -574,33 +574,33 @@
     },
     "options": {
         "crew_status": {
-            "favorites": "Afficher uniquement l'équipage préféré",
-            "frozen": "Afficher uniquement l'équipage gelé",
-            "frozen_dupes": "Afficher uniquement l'équipage en double gelé",
-            "idle": "Afficher uniquement l'équipage inactif",
-            "none": "Afficher tout l'équipage",
-            "thawed": "Afficher uniquement l'équipage non gelé"
+            "favorites": "Afficher uniquement les équipiers préférés",
+            "frozen": "Afficher uniquement les équipiers gelés",
+            "frozen_dupes": "Afficher uniquement les équipiers en double gelés",
+            "idle": "Afficher uniquement les équipiers inactifs",
+            "none": "Afficher tous les équipiers",
+            "thawed": "Afficher uniquement les équipiers non gelés"
         },
         "portal_status": {
             "none": "{{options.roster_maintenance.none}}",
-            "not_retrievable": "Afficher uniquement l'équipage non récupérable",
-            "not_uniquely_retrievable": "Afficher uniquement l'équipage non récupérable de manière unique",
-            "retrievable": "Afficher uniquement l'équipage récupérable",
-            "uniquely_retrievable": "Afficher uniquement l'équipage récupérable de manière unique"
+            "not_retrievable": "Afficher uniquement les équipiers non récupérables",
+            "not_uniquely_retrievable": "Afficher uniquement les équipages non récupérables de manière unique",
+            "retrievable": "Afficher uniquement les équipiers récupérables",
+            "uniquely_retrievable": "Afficher uniquement les équipiers récupérables de manière unique"
         },
         "roster_maintenance": {
-            "advanceable": "Afficher uniquement les équipages disposant d'emplacements du quipement non réclamés",
-            "buyback": "Afficher l'équipage avec les fusibles dans le puits de rachat",
-            "dupes": "Afficher uniquement l'équipage en double",
-            "fodder": "Afficher uniquement l'équipage non fusionné",
-            "freezable": "Afficher uniquement l'équipage congelable",
-            "impact": "Afficher uniquement l'équipage ayant besoin d'un fusible",
+            "advanceable": "Afficher uniquement les équipiers disposant d'emplacements du quipement non réclamés",
+            "buyback": "Afficher les équipiers avec les fusibles dans le puits de rachat",
+            "dupes": "Afficher uniquement les équipiers en doubles",
+            "fodder": "Afficher uniquement les équipiers non fusionnés",
+            "freezable": "Afficher uniquement les équipiers congelables",
+            "impact": "Afficher uniquement les équipiers ayant besoin d'un fusible",
             "mortal": "Afficher uniquement les non-immortels",
-            "none": "Afficher tout l'équipage",
+            "none": "Afficher tous les équipiers",
             "priority": "Afficher uniquement les non-immortels entièrement fusionnés",
-            "quippable": "Afficher uniquement l'équipage quipable",
-            "quipped": "Afficher uniquement les équipages quipé",
-            "threshold": "Afficher uniquement l'équipage ayant besoin de 2 fusibles"
+            "quippable": "Afficher uniquement les équipiers quipable",
+            "quipped": "Afficher uniquement les équipiers quipé",
+            "threshold": "Afficher uniquement les équipiers ayant besoin de 2 fusibles"
         },
         "text_match": {
             "any": "Correspondre n'importe quel texte",
@@ -620,20 +620,20 @@
         "crew_stats": "Statistiques de l'équipage",
         "crew_view_modes": {
             "buyback_well": {
-                "description": "Voir l'équipage dans le pool de rachat",
+                "description": "Voir les équipiers dans le pool de rachat",
                 "name": "Pool de Rachat"
             },
             "current_offers": {
-                "description": "Afficher l'équipage dans les offres en cours",
+                "description": "Afficher les équipiers dans les offres en cours",
                 "name": "Offres Actuelles"
             },
             "game_roster": {
-                "description": "Résumé de toute l'équipe du jeu",
+                "description": "Résumé l'équipage du jeu",
                 "name": "Liste de Jeu"
             },
             "owned_crew": {
-                "description": "Voir uniquement votre propre équipe",
-                "name": "Propre Équipage"
+                "description": "Voir uniquement vos propres équipiers",
+                "name": "Propres Équipiers"
             }
         },
         "ships": "Vaisseaux"
@@ -642,7 +642,7 @@
         "n_immortals": "{{n}} immortels",
         "n_shuttles": "{{n}} navettes",
         "starbase_level": "Niveau de base stellaire",
-        "x_y_crew": "{{x}} / {{y}} équipage"
+        "x_y_crew": "{{x}} / {{y}} équipiers"
     },
     "prospect_picker": {
         "add_crew": "Ajouter Équipage",
@@ -705,7 +705,7 @@
                 "unfrozen": "Dégelé"
             },
             "footer_text": "Les colonnes Possédé, % Possédé, % Portail, Immortel et % Immortel ne prennent en compte que l'équipage unique. Toutes les autres colonnes prennent en compte vos doublons.",
-            "header_text": "Ce tableau décompose votre effectif par rareté et montre votre progression vers l'immortalisation de tous les équipages du jeu.",
+            "header_text": "Ce tableau décompose votre effectif par rareté et montre votre progression vers l'immortalisation de tous les équipiers du jeu.",
             "immortal_cell_help": "Vos réalisations dans le jeu peuvent indiquer à tort ce numéro comme {number}"
         },
         "skills": {
@@ -741,7 +741,7 @@
                 "voyage": "Voyage"
             },
             "score_title": "Score",
-            "three_skill_check": "Considérez uniquement un équipage à 3 compétences"
+            "three_skill_check": "Considérez uniquement des équipiers à 3 compétences"
         },
         "title": "Résumé de la Liste"
     },
@@ -845,7 +845,7 @@
             "missions_selected": "{{n}} missions sélectionnées",
             "view_running": "afficher les missions en cours",
             "warn_replace": "Attention : cela remplacera toutes les recommandations existantes.",
-            "you_can_rearrange": "Vous pouvez réorganiser l’équipage pour équilibrer les chances de navette comme bon vous semble. Appuyez sur une attribution de siège pour modifier l'équipage affecté à ce siège. Verrouillez une mission pour garder cet équipage à ce siège lorsque vous demandez de nouvelles recommandations.",
+            "you_can_rearrange": "Vous pouvez réorganiser l'équipage pour équilibrer les chances de navette comme bon vous semble. Appuyez sur une attribution de siège pour modifier les équipiers affecté à ce siège. Verrouillez une mission pour garder cet équipage à ce siège lorsque vous demandez de nouvelles recommandations.",
             "you_can_view_running": "Vous pouvez {{link}}.",
             "you_have_n_running": "Vous avez {{n}} missions de navette en cours dans le jeu.",
             "you_have_one_running": "Vous avez 1 mission de navette en cours dans le jeu."
@@ -895,14 +895,14 @@
         },
         "mode": {
             "active_event": {
-                "active": "Événement actif ({{name}}). Toutes les navettes d'événement ouvertes dans le jeu seront importées et enregistrées. Les bonus seront appliqués à l'équipage de l'événement.",
-                "all": "Événement actif ({{name}}). Toutes les navettes d'événement ouvertes dans le jeu seront importées, mais PAS enregistrées. Les bonus seront appliqués à l'équipage de l'événement.",
-                "inactive": "Événement actif ({{name}}). Les navettes seront enregistrées. Les bonus seront appliqués à l'équipage de l'événement."
+                "active": "Événement actif ({{name}}). Toutes les navettes d'événement ouvertes dans le jeu seront importées et enregistrées. Les bonus seront appliqués à les équipiers de l'événement.",
+                "all": "Événement actif ({{name}}). Toutes les navettes d'événement ouvertes dans le jeu seront importées, mais PAS enregistrées. Les bonus seront appliqués à les équipiers de l'événement.",
+                "inactive": "Événement actif ({{name}}). Les navettes seront enregistrées. Les bonus seront appliqués à les équipiers de l'événement."
             },
             "heading": "Sélectionnez un type de mission",
             "inactive_event": {
-                "active": "Événement inactif ({{name}}). Aucune navette ne sera importée ou enregistrée. Les bonus seront appliqués à l'équipage de l'événement.",
-                "inactive": "Événement inactif ({{name}}). Les navettes ne seront PAS enregistrées. Les bonus seront appliqués à l'équipage de l'événement."
+                "active": "Événement inactif ({{name}}). Aucune navette ne sera importée ou enregistrée. Les bonus seront appliqués à les équipiers de l'événement.",
+                "inactive": "Événement inactif ({{name}}). Les navettes ne seront PAS enregistrées. Les bonus seront appliqués à les équipiers de l'événement."
             },
             "standard": {
                 "active": "Standard. Toutes les missions de navette ouvertes dans le jeu seront importées, mais les missions et les recommandations ne seront PAS enregistrées par l'assistant de navette.",
@@ -917,12 +917,12 @@
     },
     "tool_roster_picker": {
         "all_crew": {
-            "description": "Considérez tout l'équipage dans le jeu",
+            "description": "Considérez tous les équipiers dans le jeu",
             "title": "Meilleur Équipage Possible"
         },
         "owned_crew": {
-            "description": "Considérez uniquement votre équipage",
-            "title": "Équipage Possédé"
+            "description": "Considérez uniquement vos équipiers",
+            "title": "Équipiers Possédés"
         }
     }
 }
