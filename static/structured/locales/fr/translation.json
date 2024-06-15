@@ -922,7 +922,7 @@
         },
         "owned_crew": {
             "description": "Considérez uniquement vos équipiers",
-            "title": "Équipiers Possédés"
+            "title": "Équipage Possédé"
         }
     }
 }
