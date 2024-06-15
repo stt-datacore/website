@@ -61,6 +61,39 @@
         "player_buffs": "Buffs der Spieler",
         "quipment_buffs": "Rüstzeug Buffs"
     },
+    "cite_opt": {
+        "btp": {
+            "name": "Beta-Tachyonenpuls",
+            "settings": {
+                "antimatter": "Eigenschaften von Antimaterie",
+                "citeEffort": "Maximaler Aufwand",
+                "collections": "Sammlungen verbessern erhöhte Statistiken",
+                "equipment": "Rüstzeugspunktzahl",
+                "groupSparsity": "Reisegruppenknappheit",
+                "improved": "Verbesserte Reise",
+                "magic": "Maßgrenze (Magische Zahl)",
+                "never": "Niemals im Portal",
+                "portal": "Nicht im Portal",
+                "power": "Basis-Leistungswert",
+                "retrieval": "Abrufquoten",
+                "score": "Gesamtleistungsranking der Liste",
+                "skillRare": "Seltenheit nach Fähigkeitsreihenfolge",
+                "triplet": "Machtrang in der Fertigkeitsreihenfolge"
+            },
+            "settings_picker": {
+                "button_text": "Wählen Sie eine Voreinstellung aus...",
+                "change_button_text": "Ausgewählte Voreinstellung ändern...",
+                "heading": "Verwenden Sie dieses Tool, um Voreinstellungen für den „{{cite_opt.btp.name}}“-Algorithmus auszuwählen oder zu verwalten.",
+                "title": "Einstellungsauswahl für „{{cite_opt.btp.name}}“"
+            },
+            "settings_tweaker": {
+                "heading": "Die Zahl gibt die Gewichtung an, die auf jedes Merkmal angewendet wird",
+                "title": "„{{cite_opt.btp.name}}“ Einstellungs-Tweaker"
+            }
+        },
+        "engine": "Algorithmus",
+        "original_engine": "Ursprünglicher Algorithmus"
+    },
     "clipboard": {
         "copied_exclaim": "Kopiert!"
     },
@@ -256,6 +289,7 @@
         "yesterday_gauntlet": "Die Herausforderung von gestern"
     },
     "global": {
+        "advanced_settings": "Erweiterte Einstellungen",
         "admiral": "Admiral",
         "and": "und",
         "any": "Beliebig",
@@ -263,6 +297,7 @@
         "base": "Grundlage",
         "bonus": "Bonifikation",
         "bonuses": "Boni",
+        "cancel": "Abbrechen",
         "clear": "Löschen",
         "close": "Schließen",
         "copy_permalink_clipboard": "Permalink in die Zwischenablage kopieren",
@@ -282,6 +317,7 @@
         "loading_ellipses": "Wird geladen ...",
         "loading_please_wait_ellipses": "Laden, bitte warten...",
         "member": "Mitglied",
+        "name": "Name",
         "never": "Niemals",
         "no": "Nein",
         "none": "Keine",
@@ -294,6 +330,7 @@
         "recommend_crew": "Crew empfehlen",
         "reset": "Zurücksetzen",
         "rows_per_page": "Zeilen pro Seite",
+        "save": "Speichern",
         "search": "Suchen",
         "search_by_name_or_trait_ellipses": "Suche nach Name oder Merkmalen...",
         "search_crew": "Suche nach Crew",
@@ -844,7 +881,7 @@
             "columns": {
                 "faction": "Fraktion",
                 "mission": "Mission",
-                "name": "Name",
+                "name": "{{global.name}}",
                 "seat": "Sitz",
                 "seat_assignments": "Sitzplatzzuweisungen",
                 "skills": "Fähigkeiten",

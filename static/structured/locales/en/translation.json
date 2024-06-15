@@ -61,6 +61,39 @@
         "player_buffs": "Player buffs",
         "quipment_buffs": "Quipment Buffs"
     },
+    "cite_opt": {
+        "btp": {
+            "name": "Beta Tachyon Pulse",
+            "settings": {
+                "antimatter": "Antimatter Traits",
+                "citeEffort": "Effort To Max",
+                "collections": "Stat-Boosting Collections Increased",
+                "groupSparsity": "Voyage Group Sparsity",
+                "improved": "Voyages Improved",
+                "magic": "Magic number",
+                "never": "Never In Portal",
+                "portal": "Not In Portal",
+                "power": "Base Power Score",
+                "quipment": "Quipment Score",
+                "retrieval": "Retrieval Odds",
+                "score": "Overall Roster Power Rank",
+                "skillRare": "Skill-Order Rarity",
+                "triplet": "Power Rank Within Skill Order"
+            },
+            "settings_picker": {
+                "button_text": "Select a preset...",
+                "change_button_text": "Change selected preset...",
+                "heading": "Use this tool to select or manage presets for the \"{{cite_opt.btp.name}}\" engine.",
+                "title": "{{cite_opt.btp.name}} Settings Picker"
+            },
+            "settings_tweaker": {
+                "heading": "The number indicates the weight applied to each characteristic",
+                "title": "\"{{cite_opt.btp.name}}\" Settings Tweaker"
+            }
+        },
+        "engine": "Engine",
+        "original_engine": "Original Algorithm"
+    },
     "clipboard": {
         "copied_exclaim": "Copied!"
     },
@@ -256,6 +289,7 @@
         "yesterday_gauntlet": "Yesterday's Gauntlet"
     },
     "global": {
+        "advanced_settings": "Advanced Settings",
         "admiral": "Admiral",
         "and": "and",
         "any": "Any",
@@ -263,6 +297,7 @@
         "base": "Base",
         "bonus": "Bonus",
         "bonuses": "Bonuses",
+        "cancel": "Cancel",
         "clear": "Clear",
         "close": "Close",
         "copy_permalink_clipboard": "Copy permalink to clipboard",
@@ -282,6 +317,7 @@
         "loading_ellipses": "Loading ...",
         "loading_please_wait_ellipses": "Loading. Please wait...",
         "member": "Member",
+        "name": "Name",
         "never": "Never",
         "no": "No",
         "none": "None",
@@ -294,6 +330,7 @@
         "recommend_crew": "Recommend Crew",
         "reset": "Reset",
         "rows_per_page": "Rows per page",
+        "save": "Save",
         "search": "Search",
         "search_by_name_or_trait_ellipses": "Search by name or trait...",
         "search_crew": "Search crew",
@@ -845,7 +882,7 @@
             "columns": {
                 "faction": "Faction",
                 "mission": "Mission",
-                "name": "Name",
+                "name": "{{global.name}}",
                 "seat": "Seat",
                 "seat_assignments": "Seat Assignments",
                 "skills": "Skills",

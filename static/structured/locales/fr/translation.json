@@ -61,16 +61,49 @@
         "player_buffs": "Effets des joueurs",
         "quipment_buffs": "Effets de quipement"
     },
+    "cite_opt": {
+        "btp": {
+            "name": "Pouls bêta-tachyon",
+            "settings": {
+                "antimatter": "Caractéristiques de l'antimatière",
+                "citeEffort": "Effort au maximum",
+                "collections": "Collections améliorant les statistiques augmentées",
+                "groupSparsity": "Rareté des groupes de voyages",
+                "improved": "Voyages améliorés",
+                "magic": "Limite de mesure (nombre magique)",
+                "never": "Jamais dans le portail",
+                "portal": "Pas dans le portail",
+                "power": "Score de puissance de base",
+                "quipment": "Score de la quipement",
+                "retrieval": "Cotes de récupération",
+                "score": "Classement global de puissance de la liste",
+                "skillRare": "Rareté par ordre de compétence",
+                "triplet": "Rang de puissance dans l'ordre des compétences"
+            },
+            "settings_picker": {
+                "button_text": "Sélectionnez un préréglage...",
+                "change_button_text": "Modifier le préréglage sélectionné...",
+                "heading": "Utilisez cet outil pour sélectionner ou gérer les préréglages de l'algorithme « {{cite_opt.btp.name}} ».",
+                "title": "Sélecteur de paramètres « {{cite_opt.btp.name}} »"
+            },
+            "settings_tweaker": {
+                "heading": "Le chiffre indique le poids appliqué à chaque caractéristique",
+                "title": "Ajusteur des paramètres de l'algorithme\n« {{cite_opt.btp.name}} »"
+            }
+        },
+        "engine": "Algorithme",
+        "original_engine": "Algorithme Original"
+    },
     "clipboard": {
         "copied_exclaim": "Copié!"
     },
     "consider_crew": {
-        "active_shuttles": "Considérez l'équipiers sur les navettes actives",
-        "active_voyage": "Considérez l'équipiers en voyage actif",
-        "consider_frozen": "Considérez l'équipiers gelé",
-        "consider_shared": "Envisagez l'équipier partagé",
-        "exclude_quipped": "Exclure l'équipiers quipé",
-        "shared_crew_popup": "Les nombres de compétences de l'équipiers partagé sont basés sur les buffs de vos joueurs et peuvent ne pas correspondre au score réel"
+        "active_shuttles": "Considérez équipiers sur les navettes actives",
+        "active_voyage": "Considérez équipiers en voyage actif",
+        "consider_frozen": "Considérez équipiers gelés",
+        "consider_shared": "Envisagez équipier partagés",
+        "exclude_quipped": "Exclure équipiers quipés",
+        "shared_crew_popup": "Les nombres de compétences de l'équipier partagé sont basés sur les buffs de vos joueurs et peuvent ne pas correspondre au score réel"
     },
     "cool_stats": {
         "all_ranks": "Tous les rangs",
@@ -264,6 +297,7 @@
         "yesterday_gauntlet": "Gantelet d'hier"
     },
     "global": {
+        "advanced_settings": "Réglages Avancés",
         "admiral": "Amiral",
         "and": "et",
         "any": "Quelconque",
@@ -271,6 +305,7 @@
         "base": "Base",
         "bonus": "Prime",
         "bonuses": "Bonus",
+        "cancel": "Annuler",
         "clear": "Effacer",
         "close": "Fermer",
         "copy_permalink_clipboard": "Copier le lien permanent dans le presse-papiers",
@@ -290,6 +325,7 @@
         "loading_ellipses": "Chargement ...",
         "loading_please_wait_ellipses": "Chargement. S'il vous plaît, attendez...",
         "member": "Membre",
+        "name": "Nom",
         "never": "Jamais",
         "no": "Non",
         "none": "Aucun",
@@ -302,6 +338,7 @@
         "recommend_crew": "Recommander des équipages",
         "reset": "Réinitialiser",
         "rows_per_page": "Lignes par page",
+        "save": "Sauvegarder",
         "search": "Recherche",
         "search_by_name_or_trait_ellipses": "Rechercher par nom ou trait...",
         "search_crew": "Rechercher par équipiers",
@@ -855,7 +892,7 @@
             "columns": {
                 "faction": "Faction",
                 "mission": "Mission",
-                "name": "Nom",
+                "name": "{{global.name}}",
                 "seat": "Siège",
                 "seat_assignments": "Attributions des sièges",
                 "skills": "Compétences",
