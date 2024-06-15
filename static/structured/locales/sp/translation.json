@@ -1,6 +1,6 @@
 {
     "base": {
-        "all_crew": "Mostrar toda la tripulación",
+        "all_crew": "Mostrar toda las tripulantes",
         "bigbook_tier": "Piso",
         "cab_power": "CAB",
         "collection": "Coleccione",
@@ -33,12 +33,12 @@
         },
         "heading": "Compare sus opciones para ayudar a decidir a quién agregar a su lista.",
         "preview_all": "Obtenga una vista previa de todos estos en su lista",
-        "search_for_crew": "Buscar tripulación",
-        "share_help": "¿Quieres consejos sobre esta tripulación? Puede compartir un {{permalink}} en esta página para compartir más fácilmente en Discord u otros foros.",
+        "search_for_crew": "Buscar por tripulantes",
+        "share_help": "¿Quieres consejos sobre esta tripulante? Puede compartir un {{permalink}} en esta página para compartir más fácilmente en Discord u otros foros.",
         "share_page_heading": "Comparte esta página",
         "views": {
             "classic": {
-                "description": "Comparar tripulación lado a lado",
+                "description": "Comparar tripulantes lado a lado",
                 "title": "Vista clásica"
             },
             "dismiss_all": {
@@ -65,11 +65,11 @@
         "copied_exclaim": "¡Copiada!"
     },
     "consider_crew": {
-        "active_shuttles": "Considere la tripulación en lanzaderas activas",
-        "active_voyage": "Considere la tripulación en viaje activo",
-        "consider_frozen": "Considere tripulación congelada",
-        "consider_shared": "Considerar tripulación compartida",
-        "exclude_quipped": "Excluir tripulación con quipo activo",
+        "active_shuttles": "Considere las tripulantes en lanzaderas activas",
+        "active_voyage": "Considere las tripulantes en viaje activo",
+        "consider_frozen": "Considere las tripulantes congeladas",
+        "consider_shared": "Considerar las tripulantes compartidas",
+        "exclude_quipped": "Excluir las tripulantes con quipo activo",
         "shared_crew_popup": "Los números de habilidades del equipo compartido se basan en las ventajas de tu jugador y pueden no coincidir con la puntuación real"
     },
     "cool_stats": {
@@ -87,9 +87,9 @@
         "voyage_skill_ranks": "Rangos de habilidades de viaje"
     },
     "crew_ownership": {
-        "immortal": "Solo muestra tripulación inmortalizada",
+        "immortal": "Solo muestra tripulantes inmortalizada",
         "mortal": "Solo mostrar propiedad de no inmortales",
-        "none": "Mostrar toda la tripulación",
+        "none": "Mostrar todas tripulantes",
         "owned": "Mostrar solo equipo propiedad",
         "unowned": "Mostrar solo equipo sin propietario"
     },
@@ -102,8 +102,8 @@
         "max_buffs_applied": "Efectos máximos aplicados",
         "no_buffs_applied": "No se aplican efectos",
         "notes": {
-            "gauntlet_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre la tripulación a utilizar, consulte {{link}}.",
-            "voyage_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre la tripulación a utilizar, consulte {{link}}."
+            "gauntlet_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre las tripulantes a utilizar, consulte {{link}}.",
+            "voyage_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre las tripulantes a utilizar, consulte {{link}}."
         },
         "player_buffs_applied": "Efectos de jugador aplicadas",
         "variants": "Variantes de {{crew}}"
@@ -113,14 +113,14 @@
         "filter": "{{global.filters}}",
         "no_results": "0 resultados encontrados. Pruebe diferentes opciones de búsqueda.",
         "optional_filters": "Filtros Opcionales",
-        "search_by_name": "Buscar tripulación por nombre",
+        "search_by_name": "Buscar tripulantes por nombre",
         "select_crew": "Seleccionar {{crew}}",
         "tip": {
             "double_tap": "Consejo: Toca dos veces para seleccionar un equipo más rápidamente."
         }
     },
     "crew_state": {
-        "expires_in": "La tripulación caduca en {{time}}",
+        "expires_in": "La tripulante caduca en {{time}}",
         "frozen": "Congelado",
         "frozen_f": "Congelada",
         "frozen_m": "Congelado",
@@ -154,7 +154,7 @@
             "v": "V",
             "voyage_ranks": "Rangos de Viaje"
         },
-        "consider_three_skill_check": "Solo considere tripulación de 3 habilidades para viajes y reto",
+        "consider_three_skill_check": "Solo considere tripulantes de 3 habilidades para viajes y reto",
         "custom": {
             "core": "Básica",
             "gauntlet": "Reto",
@@ -162,8 +162,8 @@
             "voyage": "Viaje"
         },
         "customize_button": "Personalizar la puntuación de utilidad...",
-        "customize_header": "Puedes medir la utilidad para diferentes áreas del juego. Un número mayor considerará que más tripulación es útil en esa área del juego.",
-        "header": "La utilidad de la tripulación identifica la cantidad de conjuntos de habilidades potencialmente útiles que tiene cada tripulación, en relación con otros en tu lista con conjuntos de habilidades similares. Para obtener consejos específicos sobre la tripulación a utilizar, consulte {{event_planner}}, {{gauntlets}} o {{voyage_calculator}}.",
+        "customize_header": "Puedes medir la utilidad para diferentes áreas del juego. Un número mayor considerará que más tripulantes es útil en esa área del juego.",
+        "header": "La utilidad de la tripulación identifica la cantidad de conjuntos de habilidades potencialmente útiles que tiene cada tripulantes, en relación con otros en tu lista con conjuntos de habilidades similares. Para obtener consejos específicos sobre las tripulantes a utilizar, consulte {{event_planner}}, {{gauntlets}} o {{voyage_calculator}}.",
         "include_base_ranks_check": "Incluir rangos base en la tabla de utilidad de la tripulación.",
         "roster": {
             "base_shuttle": "El par base/lanzadera se ubica en su lista",
@@ -181,7 +181,7 @@
         "max_quipment": "Mostrar Quipo máximo",
         "preview": "Vista previa de {{crew}} en tu lista",
         "prospect": {
-            "description": "Agrega miembros potenciales de la tripulación para ver cómo encajan en tu lista actual.",
+            "description": "Agrega miembros potenciales de las tripulantes para ver cómo encajan en tu lista actual.",
             "title": "Tripulación potencial"
         },
         "quipment": "Mostrar rangos de Quipos",
@@ -216,11 +216,11 @@
             "options": {
                 "apply_event_bonus": "Aplicar bonificación de evento a las habilidades",
                 "event_crew": "Mostrar solo el equipo del evento ({{list}})",
-                "exclude_quipped": "Excluir tripulación con quipo activo",
-                "potential_skills": "Mostrar habilidades potenciales de tripulación no nivelada.",
-                "share_crew": "Mostrar la tripulación que se comparte",
-                "share_crew_help": "Los números de habilidades de la tripulación que se comparten se basan en los efectos de tu jugador y pueden no coincidir con el poder real",
-                "show_frozen": "Mostrar tripulación congelada"
+                "exclude_quipped": "Excluir tripulantes con quipo activo",
+                "potential_skills": "Mostrar habilidades potenciales de las tripulantes no nivelada.",
+                "share_crew": "Mostrar las tripulantes que se comparte",
+                "share_crew_help": "Los números de habilidades de la tripulante que se comparten se basan en los efectos de tu jugador y pueden no coincidir con el poder real",
+                "show_frozen": "Mostrar tripulantes congelada"
             }
         },
         "warn_no_info": "La información sobre el próximo evento aún no está disponible en los datos de los jugadores. Porfavor intente más tarde."
@@ -236,18 +236,18 @@
         "gauntlets": "Retos",
         "notes": {},
         "owned_status": {
-            "any": "Toda la tripulación",
-            "fe": "Tripulación propia y totalmente equipada",
-            "gauntlet": "Tripulación exclusiva del reto sin propietario",
-            "maxall": "Toda la tripulación está al máximo",
-            "nofe": "Tripulación propia, no totalmente equipada",
-            "nofemax": "Tripulación propia, no totalmente equipada al máximo",
-            "nonportal": "Tripulación sin propietario y fuera del portal",
-            "owned": "Tripulación propia",
-            "ownedmax": "Tripulación máxima propia",
-            "portal": "Tripulación sin propietario y disponible en el portal",
-            "unfrozen": "Tripulación poseída y descongelada",
-            "unowned": "Tripulación sin propietario"
+            "any": "Todas las tripulantes",
+            "fe": "Tripulantes propia y totalmente equipada",
+            "gauntlet": "Tripulantes exclusiva del reto sin propietario",
+            "maxall": "Todas de las tripulantes al máximo",
+            "nofe": "Tripulantes propias, no totalmente equipada",
+            "nofemax": "Tripulantes propias, no totalmente equipada al máximo",
+            "nonportal": "Tripulantes sin propietario y fuera del portal",
+            "owned": "Tripulantes propia",
+            "ownedmax": "Tripulantes máxima propia",
+            "portal": "Tripulantes sin propietario y disponible en el portal",
+            "unfrozen": "Tripulantes poseída y descongelada",
+            "unowned": "Tripulantes sin propietario"
         },
         "owned_status_heading": "Estado de propiedad",
         "previous_gauntlets": "Los retos anterior",
@@ -255,8 +255,8 @@
         "skills_and_pairs": "Habilidades y pares",
         "today_gauntlet": "El reto de hoy",
         "unowned_status": {
-            "any": "Toda la tripulación",
-            "gauntlet": "Tripulación exclusiva del reto",
+            "any": "Todas de las tripulantes",
+            "gauntlet": "Tripulantes exclusiva del reto",
             "nonportal": "Equipo fuera del portal",
             "portal": "Equipo disponible en el portal"
         },
@@ -632,7 +632,7 @@
             },
             "owned_crew": {
                 "description": "Ver solo tu propio equipo",
-                "name": "Tripulación Propia"
+                "name": "Tripulantes Propia"
             }
         },
         "ships": "Buques"
@@ -644,8 +644,8 @@
         "x_y_crew": "{{x}} / {{y}} equipo"
     },
     "prospect_picker": {
-        "add_crew": "Agregar Tripulación",
-        "select_crew": "Seleccionar Tripulación"
+        "add_crew": "Agregar tripulante",
+        "select_crew": "Seleccionar tripulante"
     },
     "quipment_dropdowns": {
         "calc_mode": {
@@ -731,7 +731,7 @@
                 "triplets": "Sólo trillizos"
             },
             "combos_title": "Filtrar habilidades",
-            "footer_text": "Las columnas Propiedad y % Propiedad consideran únicamente a la tripulación única. Todas las demás columnas consideran sus duplicados.",
+            "footer_text": "Las columnas Propiedad y % Propiedad consideran únicamente a la tripulantes únicas. Todas las demás columnas consideran sus duplicados.",
             "header_text": "Esta tabla muestra la profundidad y fortaleza de tu plantilla en varias áreas del juego para cada combinación de habilidades relevante.",
             "score": {
                 "core": "Básica",
@@ -740,7 +740,7 @@
                 "voyage": "Viajes"
             },
             "score_title": "Puntaje",
-            "three_skill_check": "Solo considere tripulación de 3 habilidades"
+            "three_skill_check": "Solo considere tripulantes de 3 habilidades"
         },
         "title": "Resumen de la Lista"
     },
@@ -844,7 +844,7 @@
             "missions_selected": "{{n}} misiones seleccionadas",
             "view_running": "ver las tareas en ejecución",
             "warn_replace": "Advertencia: esto reemplazará cualquier recomendación existente.",
-            "you_can_rearrange": "Puede reorganizar la tripulación para equilibrar las posibilidades de transporte como mejor le parezca. Toque una asignación de asiento para cambiar la tripulación asignada al asiento. Bloquee una asignación para mantener a ese equipo en ese asiento cuando solicite nuevas recomendaciones.",
+            "you_can_rearrange": "Puede reorganizar la tripulantes para equilibrar las posibilidades de transporte como mejor le parezca. Toque una asignación de asiento para cambiar la tripulante asignada al asiento. Bloquee una asignación para mantener a ese equipo en ese asiento cuando solicite nuevas recomendaciones.",
             "you_can_view_running": "Puedes {{link}}.",
             "you_have_n_running": "Tienes {{n}} misiones de lanzadera ejecutándose en el juego.",
             "you_have_one_running": "Tienes 1 misión de lanzadera ejecutándose en el juego."
@@ -862,7 +862,7 @@
                 "success_chance": "Oportunidad de éxito"
             },
             "create": "cree una misión",
-            "heading": "Selecciona todas las misiones que quieras ejecutar y luego toca '{{global.recommend_crew}}' para ver los mejores asientos para tu tripulación.",
+            "heading": "Selecciona todas las misiones que quieras ejecutar y luego toca '{{global.recommend_crew}}' para ver los mejores asientos para tu tripulantes.",
             "message": {
                 "missing": "Si la misión que desea no aparece en la lista anterior, {{link}} para ingresar los parámetros de la misión manualmente.",
                 "tip": "Consejo: abre las misiones de transporte en el juego antes de cargar los datos de tu jugador en DataCore para que esta herramienta pueda importar las misiones automáticamente."
@@ -911,16 +911,16 @@
     },
     "spinners": {
         "default": "Cargando datos...",
-        "demands": "Cálculo de las demandas de la tripulación...",
+        "demands": "Cálculo de las demandas de la tripulante...",
         "quipment": "Quipo de cálculo..."
     },
     "tool_roster_picker": {
         "all_crew": {
-            "description": "Considera a toda la tripulación en el juego",
+            "description": "Considera a toda la tripulantes en el juego",
             "title": "La Mejor Tripulación Posible"
         },
         "owned_crew": {
-            "description": "Considere solo a su propia tripulación",
+            "description": "Considere solo a su propia tripulantes",
             "title": "Tripulación Propia"
         }
     }
