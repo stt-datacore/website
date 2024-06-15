@@ -19,7 +19,7 @@ import { PortalFilter, RarityFilter, descriptionLabel } from './crewtables/commo
 import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 import ItemDisplay from './itemdisplay';
-import BetaTachyonSettingsPopup, { defaultSettings, permalinkToSettings } from './optimizer/btsettings';
+import BetaTachyonSettingsPopup, { DefaultBetaTachyonSettings, permalinkToSettings } from './optimizer/btsettings';
 import ProspectPicker from './prospectpicker';
 import { navToCrewPage } from '../utils/nav';
 
@@ -100,8 +100,8 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 			},
 			settingsOpen: false,
 			betaTachyonSettings: {
-				... defaultSettings,
-				... this.tiny.getValue<BetaTachyonSettings>('betaTachyonSettings', defaultSettings) ?? defaultSettings
+				... DefaultBetaTachyonSettings,
+				... this.tiny.getValue<BetaTachyonSettings>('betaTachyonSettings', DefaultBetaTachyonSettings) ?? DefaultBetaTachyonSettings
 			},
 			skoMap: {},
 			crewSkills: {},
@@ -1006,13 +1006,18 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 
 		const confine = [] as string[];
 
-		const engOptions = ['original', 'beta_tachyon_pulse'].map((s, idx) => {
-			return {
-				key: s,
-				value: s,
-				text: appelate(s) + (idx === 1 ? ` (${t('global.experimental')})` : "")
+		const engOptions = [
+			{
+				key: 'original',
+				value: 'original',
+				text: t('cite_opt.original_engine')
+			},
+			{
+				key: 'beta_tachyon_pulse',
+				value: 'beta_tachyon_pulse',
+				text: `${t('cite_opt.btp.name')} (${t('global.experimental')})`
 			}
-		});
+		]
 
 		if (workset) {
 			let ac = workset.crewToCite.concat(workset.crewToTrain);
@@ -1152,7 +1157,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 					]}
 				/>
 				<Segment>
-					<h3>Engine</h3>
+					<h3>{t('cite_opt.engine')}</h3>
 					<div style={{
 						display: "flex",
 						alignItems: "center",
@@ -1177,7 +1182,7 @@ class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerSta
 							config={{
 								current: this.state.betaTachyonSettings,
 								setCurrent: this.setSettings,
-								defaultOptions: defaultSettings
+								defaultOptions: DefaultBetaTachyonSettings
 								}} />
 							<Checkbox label={'Show EV Columns'} checked={showEV} onChange={(e, { checked }) => setShowEV(!!checked) } />
 						</>}

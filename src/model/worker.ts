@@ -173,9 +173,9 @@ export interface BetaTachyonSettings {
     citeEffort: number,
     // Antimatter Traits
     antimatter: number,
-    // Not In Portal Now
+    // Not In Portal
     portal: number,
-    // In Portal Ever
+    // Never In Portal
     never: number,
     // Stat-Boosting Collections Increased
     collections: number,

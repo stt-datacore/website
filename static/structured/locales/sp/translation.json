@@ -61,6 +61,39 @@
         "player_buffs": "Efectos de los juegos",
         "quipment_buffs": "Efectos de quipo"
     },
+    "cite_opt": {
+        "btp": {
+            "name": "Pulso Beta Taquión",
+            "settings": {
+                "antimatter": "Características de la antimateria",
+                "citeEffort": "Esfuerzo máximo",
+                "collections": "Colecciones que mejoran las estadísticas",
+                "groupSparsity": "Escasez de grupos de viajes",
+                "improved": "Viajes mejorados",
+                "magic": "Límite de medida (número mágico)",
+                "never": "Nunca en el portal",
+                "portal": "No en el portal",
+                "power": "Puntuación de potencia base",
+                "quipment": "Puntuación de quipo",
+                "retrieval": "Probabilidades de recuperación",
+                "score": "Clasificación de poder de la lista general",
+                "skillRare": "Rareza por orden de habilidad",
+                "triplet": "Rango de poder en orden de habilidad"
+            },
+            "settings_picker": {
+                "button_text": "Seleccione un ajuste preestablecido...",
+                "change_button_text": "Cambiar ajuste preestablecido seleccionado...",
+                "heading": "Utilice esta herramienta para seleccionar o administrar ajustes preestablecidos para el algoritmo \"{{cite_opt.btp.name}}\".",
+                "title": "Selector de configuración \"{{cite_opt.btp.name}}\""
+            },
+            "settings_tweaker": {
+                "heading": "El número indica el peso aplicado a cada característica",
+                "title": "Ajustador de configuración de algoritmo\n\"{{cite_opt.btp.name}}\""
+            }
+        },
+        "engine": "Algoritmo",
+        "original_engine": "Algoritmo Original"
+    },
     "clipboard": {
         "copied_exclaim": "¡Copiada!"
     },
@@ -263,6 +296,7 @@
         "yesterday_gauntlet": "El reto de ayer"
     },
     "global": {
+        "advanced_settings": "Ajustes Avanzados",
         "admiral": "Almirante",
         "and": "y",
         "any": "Cualquier",
@@ -270,6 +304,7 @@
         "base": "Base",
         "bonus": "Bonificacion",
         "bonuses": "Bonificaciones",
+        "cancel": "Cancelar",
         "clear": "Borrar",
         "close": "Cerca",
         "copy_permalink_clipboard": "Copiar enlace permanente al portapapeles",
@@ -289,6 +324,7 @@
         "loading_ellipses": "Cargando ...",
         "loading_please_wait_ellipses": "Cargando. Espere por favor...",
         "member": "Miembro",
+        "name": "Nombre",
         "never": "Nunca",
         "no": "No",
         "none": "Ninguna",
@@ -301,6 +337,7 @@
         "recommend_crew": "Recomendar tripulaciones",
         "reset": "Restablecer",
         "rows_per_page": "Filas por página",
+        "save": "Guardar",
         "search": "Buscar",
         "search_by_name_or_trait_ellipses": "Buscar por nombre o rasgo...",
         "search_crew": "Buscar por tripulación",
@@ -854,7 +891,7 @@
             "columns": {
                 "faction": "Facción",
                 "mission": "Misión",
-                "name": "Nombre",
+                "name": "{{global.name}}",
                 "seat": "Asiento",
                 "seat_assignments": "Asignación de asientos",
                 "skills": "Habilidades",
