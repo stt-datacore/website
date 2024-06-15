@@ -351,10 +351,10 @@ export function getCollectionRewards(playerCollections: PlayerCollection[]) {
 export function formatDuration(time: number, t?: TranslateMethod) {
 	if (t) {
 		if (time <= 48) {
-			return t('items.duration.n_hours', { hours: `${time}` });
+			return t('duration.n_hours', { hours: `${time}` });
 		}
 		else{
-			return t('items.duration.n_days', { days: `${time / 24}` });
+			return t('duration.n_days', { days: `${time / 24}` });
 		}
 	}
 	else {

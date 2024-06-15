@@ -1,45 +1,4 @@
 {
-    "behold_helper": {
-        "heading": "Vergleichen Sie Ihre Auswahl, um zu entscheiden, wen Sie zu Ihrem Dienstplan hinzufügen möchten.",
-        "search_for_crew": "Suche nach Crew",
-        "preview_all": "Alle in Ihrer Liste in der Vorschau anzeigen",
-        "share_page_heading": "Teile diese Seite",
-        "share_help": "Du möchtest Ratschläge zu dieser Crew? Du kannst einen {{permalink}} zu dieser Seite teilen, um das Teilen auf Discord oder anderen Foren zu erleichtern.",
-        "views": {
-            "classic": {
-                "title": "Klassische Ansicht",
-                "description": "Crew nebeneinander vergleichen"
-            },
-            "standard": {
-                "title": "Standardansicht",
-                "description": "Standard-Crewpräsentation anzeigen"
-            },
-            "table": {
-                "title": "Tabellenansicht",
-                "description": "Nur die Zahlen, alle sortierbar"
-            },
-            "dismiss_all": {
-                "title": "Alle schließen",
-                "description": "Neuen Vergleich starten"
-            }
-        },
-        "columns": {
-            "unique_retrievals": "Einzigartige\nAbrufe",
-            "build_cost": "Baukosten",
-            "faction_items": "Fraktionsartikel"
-        }
-    },
-    "crew_picker": {
-        "search_by_name": "Suche nach Crewmitgliedern nach Namen",
-        "no_results": "0 Ergebnisse gefunden. Bitte probieren Sie verschiedene Suchoptionen aus.",
-        "filter": "{{global.filters}}",
-        "close": "{{global.close}}",
-        "optional_filters": "Optionale Filter",
-        "tip": {
-            "double_tap": "Tipp: Tippen Sie doppelt, um schneller eine Crew auszuwählen."
-        },
-        "select_crew": "{{crew}} auszuwählen"
-    },
     "base": {
         "all_crew": "Die gesamte Crew anzeigen",
         "bigbook_tier": "Stufe",
@@ -66,6 +25,36 @@
         "voyage": "Reise",
         "voyages": "Reisen"
     },
+    "behold_helper": {
+        "columns": {
+            "build_cost": "Baukosten",
+            "faction_items": "Fraktionsartikel",
+            "unique_retrievals": "Einzigartige\nAbrufe"
+        },
+        "heading": "Vergleichen Sie Ihre Auswahl, um zu entscheiden, wen Sie zu Ihrem Dienstplan hinzufügen möchten.",
+        "preview_all": "Alle in Ihrer Liste in der Vorschau anzeigen",
+        "search_for_crew": "Suche nach Crew",
+        "share_help": "Du möchtest Ratschläge zu dieser Crew? Du kannst einen {{permalink}} zu dieser Seite teilen, um das Teilen auf Discord oder anderen Foren zu erleichtern.",
+        "share_page_heading": "Teile diese Seite",
+        "views": {
+            "classic": {
+                "description": "Crew nebeneinander vergleichen",
+                "title": "Klassische Ansicht"
+            },
+            "dismiss_all": {
+                "description": "Neuen Vergleich starten",
+                "title": "Alle schließen"
+            },
+            "standard": {
+                "description": "Standard-Crewpräsentation anzeigen",
+                "title": "Standardansicht"
+            },
+            "table": {
+                "description": "Nur die Zahlen, alle sortierbar",
+                "title": "Tabellenansicht"
+            }
+        }
+    },
     "buffs": {
         "max_buffs": "Maximale Buffs",
         "no_buffs": "Keine Buffs",
@@ -74,6 +63,14 @@
     },
     "clipboard": {
         "copied_exclaim": "Kopiert!"
+    },
+    "consider_crew": {
+        "active_shuttles": "Crew auf aktiven Shuttles berücksichtigen",
+        "active_voyage": "Crew auf aktiver Reise berücksichtigen",
+        "consider_frozen": "Eingefrorene Crew berücksichtigen",
+        "consider_shared": "Gemeinsame Crew berücksichtigen",
+        "exclude_quipped": "Crew mit aktiven Rüstzeugen ausschließen",
+        "shared_crew_popup": "Die Skill-Zahlen der gemeinsamen Crew basieren auf den Buffs Ihres Spielers und stimmen möglicherweise nicht mit dem tatsächlichen Punktestand überein"
     },
     "cool_stats": {
         "all_ranks": "Alle Ränge",
@@ -110,6 +107,17 @@
         },
         "player_buffs_applied": "Spieler-Buffs angewendet",
         "variants": "Varianten von {{crew}}"
+    },
+    "crew_picker": {
+        "close": "{{global.close}}",
+        "filter": "{{global.filters}}",
+        "no_results": "0 Ergebnisse gefunden. Bitte probieren Sie verschiedene Suchoptionen aus.",
+        "optional_filters": "Optionale Filter",
+        "search_by_name": "Suche nach Crewmitgliedern nach Namen",
+        "select_crew": "{{crew}} auszuwählen",
+        "tip": {
+            "double_tap": "Tipp: Tippen Sie doppelt, um schneller eine Crew auszuwählen."
+        }
     },
     "crew_state": {
         "expires_in": "Crew läuft in {{time}} ab",
@@ -161,33 +169,31 @@
         "advanced_analysis": "Erweiterte Analyse",
         "base": "Grundlegende Fähigkeiten zeigen",
         "crew_utility": "Crew-Nützlichkeitstool anzeigen",
+        "dismiss": "{{crew}} abweisen",
+        "faction_items": "{{n}} Fraktionsartikel",
         "gauntlet": "Herausforderungsränge anzeigen",
         "max_quipment": "Maximale Rüstzeug anzeigen",
+        "preview": "Vorschau von {{crew}} in Ihrem Dienstplan",
         "prospect": {
             "description": "Fügen Sie potenzielle Crewmitglieder hinzu, um zu sehen, wie sie in Ihren vorhandenen Dienstplan passen.",
             "title": "Potenzielle Crew"
         },
         "quipment": "Rüstzeug anzeigen",
         "ship": "Schiffsfähigkeiten anzeigen",
-        "voyage": "Reiseränge anzeigen",
-        "faction_items": "{{n}} Fraktionsartikel",
         "view_big_book": "{{crew}} im Big Book anzeigen",
-        "preview": "Vorschau von {{crew}} in Ihrem Dienstplan",
-        "dismiss": "{{crew}} abweisen"
+        "voyage": "Reiseränge anzeigen"
+    },
+    "duration": {
+        "n_d": "{{days}} T",
+        "n_days": "{{days}} Tage",
+        "n_h": "{{hours}} S",
+        "n_hours": "{{hours}} Stunden",
+        "n_m": "{{minutes}} M",
+        "title": "Dauer: {{duration}}"
     },
     "event_planner": {
         "heading": "Finden Sie die beste Crew für den Einsatz während einer Ereignis.",
         "hide_duplicate_pairs": "Entfernen doppelter Paare",
-        "picker": {
-            "all_crew": {
-                "description": "Betrachten Sie die gesamte Crew im Spiel",
-                "title": "Bestmögliche Crew"
-            },
-            "owned_crew": {
-                "description": "Berücksichtigen Sie nur Ihre eigene Crew",
-                "title": "Eigene Crew"
-            }
-        },
         "prospect_description": "Fügen Sie potenzielle Crew (oder potenzielle gemeinsame Crew) hinzu, um zu sehen, wie sie in Ihren vorhandenen Kader für diese Ereignis passen.",
         "select_phase": "Wählen Sie eine Phase aus",
         "skill_matrix": "Kompetenzmatrix",
@@ -250,10 +256,6 @@
         "yesterday_gauntlet": "Die Herausforderung von gestern"
     },
     "global": {
-        "copy_permalink_clipboard": "Permalink in die Zwischenablage kopieren",
-        "permalink": "Permalink",
-        "experimental": "Experimentell",
-        "optional": "Optional",
         "admiral": "Admiral",
         "and": "und",
         "any": "Beliebig",
@@ -263,11 +265,15 @@
         "bonuses": "Boni",
         "clear": "Löschen",
         "close": "Schließen",
+        "copy_permalink_clipboard": "Permalink in die Zwischenablage kopieren",
         "default": "Standard",
         "disable": "Deaktivieren",
         "disabled": "Deaktiviert",
+        "dismiss": "Abweisen",
+        "edit": "Bearbeiten",
         "enable": "Aktivieren",
         "enabled": "Aktiviert",
+        "experimental": "Experimentell",
         "filters": "Filter",
         "fleet": "Flotte",
         "hidden": "Versteckt",
@@ -281,8 +287,11 @@
         "none": "Keine",
         "obtained": "Erhalten von",
         "officer": "Offizier",
+        "optional": "Optional",
         "or": "oder",
+        "permalink": "Permalink",
         "portal": "Zeitportal",
+        "recommend_crew": "Crew empfehlen",
         "reset": "Zurücksetzen",
         "rows_per_page": "Zeilen pro Seite",
         "search": "Suchen",
@@ -380,11 +389,6 @@
         },
         "craft_for_chrons": "Stellen Sie es mit diesem Rezept für {{cost}} her",
         "current_demands": "Aktuelle Anforderungen",
-        "duration": {
-            "n_days": "{{days}} Tage",
-            "n_hours": "{{hours}} Stunden",
-            "title": "Dauer: {{duration}}"
-        },
         "equippable_by": "Ausrüstbar durch: {{crew}}",
         "equippable_by_rarity": "Ausrüstbar für bis zu {{rarity}} Crew.",
         "equippable_by_rarity_traits": "Ausrüstbar für bis zu {{rarity}} Crew mit den folgenden Merkmalen: {{traits}}",
@@ -558,20 +562,6 @@
             "WebStore": "Web Store"
         }
     },
-    "series": {
-        "tos": "Raumschiff Enterprise",
-        "tas": "Die Enterprise",
-        "tng": "Das nächste Jahrhundert",
-        "ds9": "Deep Space Nine",
-        "voy": "Raumschiff Voyager",
-        "ent": "Enterprise",
-        "dsc": "Discovery",
-        "pic": "Picard",
-        "low": "Lower Decks",
-        "snw": "Strange New Worlds",
-        "vst": "Very Short Treks",
-        "original": "Timelines Originals"
-    },
     "options": {
         "crew_status": {
             "favorites": "Nur Lieblingscrew anzeigen",
@@ -583,10 +573,10 @@
         },
         "portal_status": {
             "none": "{{options.roster_maintenance.none}}",
-            "retrievable": "Nur abrufbare Crew anzeigen",
             "not_retrievable": "Nur nicht abrufbare Crew anzeigen",
-            "uniquely_retrievable": "Nur eindeutig abrufbare Crew anzeigen",
-            "not_uniquely_retrievable": "Nur nicht eindeutig abrufbare Crew anzeigen"
+            "not_uniquely_retrievable": "Nur nicht eindeutig abrufbare Crew anzeigen",
+            "retrievable": "Nur abrufbare Crew anzeigen",
+            "uniquely_retrievable": "Nur eindeutig abrufbare Crew anzeigen"
         },
         "roster_maintenance": {
             "advanceable": "Nur Crew anzeigen, die nicht beanspruchte Plätze für Rüstzeug hat",
@@ -745,6 +735,20 @@
         },
         "title": "Kaderübersicht"
     },
+    "series": {
+        "ds9": "Deep Space Nine",
+        "dsc": "Discovery",
+        "ent": "Enterprise",
+        "low": "Lower Decks",
+        "original": "Timelines Originals",
+        "pic": "Picard",
+        "snw": "Strange New Worlds",
+        "tas": "Die Enterprise",
+        "tng": "Das nächste Jahrhundert",
+        "tos": "Raumschiff Enterprise",
+        "voy": "Raumschiff Voyager",
+        "vst": "Very Short Treks"
+    },
     "share_profile": {
         "export": {
             "copy_dbid": "DBID kopieren",
@@ -823,9 +827,91 @@
         "grant": "Verleihe den Status {{grant}}: {{grant_description}}",
         "handicap": "Verringern Sie {{type}} um {{amount}}"
     },
+    "shuttle_helper": {
+        "calculator": {
+            "change_missions": "Ändern Sie die Missionen",
+            "mission_selected": "1 Mission ausgewählt",
+            "missions_selected": "{{n}} Missionen ausgewählt",
+            "view_running": "laufende Aufgaben anzeigen",
+            "warn_replace": "Achtung: Dadurch werden alle vorhandenen Empfehlungen ersetzt.",
+            "you_can_rearrange": "Sie können die Crew neu ordnen, um die Shuttle-Chancen nach Belieben auszugleichen. Tippen Sie auf eine Sitzplatzzuweisung, um die dem Sitzplatz zugewiesene Crew zu ändern. Sperren Sie eine Zuweisung, um die Crew auf diesem Sitzplatz zu behalten, wenn Sie neue Empfehlungen anfordern.",
+            "you_can_view_running": "Sie können {{link}}.",
+            "you_have_n_running": "Sie haben {{n}} Shuttle-Missionen im Spiel laufen.",
+            "you_have_one_running": "Sie haben 1 Shuttle-Mission im Spiel laufen."
+        },
+        "heading": "Verwenden Sie dieses Tool, um Ihre Shuttle-Missionen zu planen.",
+        "missions": {
+            "columns": {
+                "faction": "Fraktion",
+                "mission": "Mission",
+                "name": "Name",
+                "seat": "Sitz",
+                "seat_assignments": "Sitzplatzzuweisungen",
+                "skills": "Fähigkeiten",
+                "status": "Status",
+                "success_chance": "Erfolgschance"
+            },
+            "create": "Erstellen Sie eine Mission",
+            "heading": "Wählen Sie alle Missionen aus, die Sie ausführen möchten, und tippen Sie dann auf „{{global.recommend_crew}}“, um die besten Plätze für Ihre Crew anzuzeigen.",
+            "message": {
+                "missing": "Wenn die gewünschte Mission oben nicht aufgeführt ist, {{link}}, um die Missionsparameter manuell einzugeben.",
+                "tip": "Tipp: Öffnen Sie Shuttle-Missionen im Spiel, bevor Sie Ihre Spielerdaten auf DataCore hochladen, damit dieses Tool die Missionen automatisch importieren kann."
+            },
+            "select": {
+                "all_n": "Alle {{n}} auswählen",
+                "group": "Wähle die Gruppe",
+                "groups": {
+                    "only_faction": "Wähle nur {{faction}} aus ({{length}})",
+                    "only_open": "Wählen Sie nur im Spiel öffnen ({{length}})",
+                    "only_running": "Wählen Sie nur das Laufen im Spiel ({{length}})",
+                    "only_three": "Wählen Sie nur 3- Sitzer ({{length}})",
+                    "only_three_four": "Wählen Sie nur 3- und 4- Sitzer ({{length}})"
+                },
+                "one_y": "1 / {{y}} Missionen ausgewählt",
+                "unselect": "Auswahl aufheben",
+                "x_y": "{{x}} / {{y}} Missionen ausgewählt"
+            },
+            "status": {
+                "expires_in": "Läuft ab in {{time}}",
+                "manual": "Manuell",
+                "no_missions": "Keine Missionen verfügbar.",
+                "not_open": "Nicht geöffnet",
+                "open_seat": "freier Sitzplatz",
+                "renting": "Vermieten",
+                "running": "Läuft",
+                "unknown": "Unbekannt"
+            }
+        },
+        "mode": {
+            "active_event": {
+                "active": "Aktives Ereignis ({{name}}). Alle Ereignis-Shuttles, die im Spiel geöffnet sind, werden importiert und gespeichert. Boni werden auf die Ereignis-Crew angewendet.",
+                "all": "Aktives Ereignis ({{name}}). Alle Ereignis-Shuttles, die im Spiel geöffnet sind, werden importiert, aber NICHT gespeichert. Boni werden auf die Ereignis-Crew angewendet.",
+                "inactive": "Aktives Ereignis ({{name}}). Shuttles werden gespeichert. Boni werden auf die Ereignis-Crew angewendet."
+            },
+            "heading": "Wählen Sie einen Missionstyp aus",
+            "inactive_event": {
+                "active": "Inaktives Ereignis ({{name}}). Es werden keine Shuttles importiert oder gespeichert. Boni werden auf die Ereignis-Crew angewendet.",
+                "inactive": "Inaktives Ereignis ({{name}}). Shuttles werden NICHT gespeichert. Boni werden auf die Ereignis-Crew angewendet."
+            },
+            "standard": {
+                "active": "Standard. Alle Shuttle-Missionen, die im Spiel geöffnet sind, werden importiert, aber Missionen und Empfehlungen werden NICHT vom Shuttle-Helfer gespeichert.",
+                "inactive": "Standard. Shuttle-Missionen und Empfehlungen werden NICHT vom Shuttle-Helfer gespeichert."
+            }
+        }
+    },
     "spinners": {
         "default": "Daten werden geladen…",
         "demands": "Crew fordert Berechnung...",
         "quipment": "Berechnungsausrüstung..."
+    },
+    "tool_roster_picker": {
+        "all_crew": {
+            "description": "Betrachten Sie die gesamte Crew im Spiel",
+            "title": "Bestmögliche Crew"
+        },
+        "owned_crew": {
+            "description": "Berücksichtigen Sie nur Ihre eigene Crew",
+            "title": "Eigene Crew"
+        }
     }
 }

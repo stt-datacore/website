@@ -8,6 +8,7 @@ import { useStateWithStorage } from '../../utils/storage';
 
 import { ShuttleSeat, ITableColumn, ITableData, ITableSortField } from './model';
 import { IRosterCrew } from '../eventplanner/model';
+import { GlobalContext } from '../../context/globalcontext';
 
 type MissionsTableProps = {
 	tableId: string;
@@ -21,7 +22,7 @@ type MissionsTableProps = {
 
 export const MissionsTable = (props: MissionsTableProps) => {
 	const { tableId, columns, defaultSort, renderTableRow, renderTableFooter } = props;
-
+	const { t } = React.useContext(GlobalContext).localized;
 	const [data, setData] = React.useState<ITableData[]>([]);
 	// !! Do not rememberForever the following preferences !!
 	const [sortColumn, setSortColumn] = useStateWithStorage<string>(`${tableId}/column`, defaultSort?.id ?? 'name');
@@ -66,7 +67,7 @@ export const MissionsTable = (props: MissionsTableProps) => {
 					{data.length === 0 && (
 						<Table.Row>
 							<Table.Cell colSpan={columnCount} textAlign='center'>
-								<p>No missions available.</p>
+								<p>{t('shuttle_helper.missions.status.no_missions')}</p>
 							</Table.Cell>
 						</Table.Row>
 					)}
@@ -143,13 +144,14 @@ type SeatSkillViewProps = {
 
 export const SeatSkillView = (props: SeatSkillViewProps) => {
 	const { seat } = props;
+	const { t } = React.useContext(GlobalContext).localized;
 	if (!seat.skillA) return <></>;
 	return (
 		<span style={{ whiteSpace: 'nowrap' }}>
 			<img alt={seat.skillA} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${seat.skillA}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 			{seat.skillB && (
 				<React.Fragment>
-					<span style={{ padding: '0 .3em' }}>{seat.operand}</span>
+					<span style={{ padding: '0 .3em' }}>{t(`global.${seat.operand.toLowerCase()}`).toUpperCase()}</span>
 					<img alt={seat.skillB} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${seat.skillB}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 				</React.Fragment>
 			)}

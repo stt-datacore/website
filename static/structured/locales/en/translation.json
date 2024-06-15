@@ -1,45 +1,4 @@
-{   
-    "behold_helper": {
-        "heading": "Compare your Behold choices to help decide who to add to your roster.",
-        "search_for_crew": "Search for crew",
-        "preview_all": "Preview all in your roster",
-        "share_page_heading": "Share This Page",
-        "share_help": "Want advice on these crew? You can share a {{permalink}} to this page for easier sharing on Discord or other forums.",
-        "views": {
-            "classic": {
-                "title": "Classic View",
-                "description": "Compare crew side by side"
-            },
-            "standard": {
-                "title": "Standard View",
-                "description": "View standard crew presentation"
-            },
-            "table": {
-                "title": "Table View",
-                "description": "Just the numbers, all sortable"
-            },
-            "dismiss_all": {
-                "title": "Dismiss All",
-                "description": "Start a new comparison"
-            }
-        },
-        "columns": {
-            "unique_retrievals": "Unique\nRetrievals",
-            "build_cost": "Build Cost",
-            "faction_items": "Faction Items"
-        }
-    },
-    "crew_picker": {
-        "search_by_name": "Search for crew by name",
-        "no_results": "0 results found. Please try different search options.",
-        "filter": "{{global.filters}}",
-        "close": "{{global.close}}",
-        "optional_filters": "Optional Filters",
-        "tip": {
-            "double_tap": "Tip: Double-tap to select a crew more quickly."
-        },
-        "select_crew": "Select {{crew}}"
-    },
+{
     "base": {
         "all_crew": "Show all crew",
         "bigbook_tier": "Tier",
@@ -66,6 +25,36 @@
         "voyage": "Voyage",
         "voyages": "Voyages"
     },
+    "behold_helper": {
+        "columns": {
+            "build_cost": "Build Cost",
+            "faction_items": "Faction Items",
+            "unique_retrievals": "Unique\nRetrievals"
+        },
+        "heading": "Compare your Behold choices to help decide who to add to your roster.",
+        "preview_all": "Preview all in your roster",
+        "search_for_crew": "Search for crew",
+        "share_help": "Want advice on these crew? You can share a {{permalink}} to this page for easier sharing on Discord or other forums.",
+        "share_page_heading": "Share This Page",
+        "views": {
+            "classic": {
+                "description": "Compare crew side by side",
+                "title": "Classic View"
+            },
+            "dismiss_all": {
+                "description": "Start a new comparison",
+                "title": "Dismiss All"
+            },
+            "standard": {
+                "description": "View standard crew presentation",
+                "title": "Standard View"
+            },
+            "table": {
+                "description": "Just the numbers, all sortable",
+                "title": "Table View"
+            }
+        }
+    },
     "buffs": {
         "max_buffs": "Max buffs",
         "no_buffs": "No buffs",
@@ -74,6 +63,14 @@
     },
     "clipboard": {
         "copied_exclaim": "Copied!"
+    },
+    "consider_crew": {
+        "active_shuttles": "Consider crew on active shuttles",
+        "active_voyage": "Consider crew on active voyage",
+        "consider_frozen": "Consider frozen crew",
+        "consider_shared": "Consider shared crew",
+        "exclude_quipped": "Exclude quipped crew",
+        "shared_crew_popup": "Skill numbers of shared crew are based on your player buffs and may not match actual score"
     },
     "cool_stats": {
         "all_ranks": "All Ranks",
@@ -110,6 +107,17 @@
         },
         "player_buffs_applied": "Player buffs applied",
         "variants": "Variants of {{crew}}"
+    },
+    "crew_picker": {
+        "close": "{{global.close}}",
+        "filter": "{{global.filters}}",
+        "no_results": "0 results found. Please try different search options.",
+        "optional_filters": "Optional Filters",
+        "search_by_name": "Search for crew by name",
+        "select_crew": "Select {{crew}}",
+        "tip": {
+            "double_tap": "Tip: Double-tap to select a crew more quickly."
+        }
     },
     "crew_state": {
         "expires_in": "Crew expires in {{time}}",
@@ -161,33 +169,31 @@
         "advanced_analysis": "Advanced Analysis",
         "base": "Show base skills",
         "crew_utility": "Show crew utility",
+        "dismiss": "Dismiss {{crew}}",
+        "faction_items": "{{n}} faction items",
         "gauntlet": "Show gauntlet ranks",
         "max_quipment": "Show max quipment",
+        "preview": "Preview {{crew}} in your roster",
         "prospect": {
             "description": "Add prospective crew to see how they fit into your existing roster.",
             "title": "Prospective Crew"
         },
         "quipment": "Show quipment scores",
         "ship": "Show ship abilities",
-        "voyage": "Show voyage ranks",
-        "faction_items": "{{n}} faction items",
         "view_big_book": "View {{crew}} on Big Book",
-        "preview": "Preview {{crew}} in your roster",
-        "dismiss": "Dismiss {{crew}}"
+        "voyage": "Show voyage ranks"
+    },
+    "duration": {
+        "n_d": "{{days}} d",
+        "n_days": "{{days}} days",
+        "n_h": "{{hours}} h",
+        "n_hours": "{{hours}} hours",
+        "n_m": "{{minutes}} m",
+        "title": "Duration: {{duration}}"
     },
     "event_planner": {
         "heading": "Find the best crew to use during an event.",
         "hide_duplicate_pairs": "Remove duplicate pairs",
-        "picker": {
-            "all_crew": {
-                "description": "Consider all crew in the game",
-                "title": "Best Possible Crew"
-            },
-            "owned_crew": {
-                "description": "Only consider your owned crew",
-                "title": "Owned Crew"
-            }
-        },
         "prospect_description": "Add prospective crew (or potential shared crew) to see how they fit into your existing roster for this event.",
         "select_phase": "Select a phase",
         "skill_matrix": "Skill Matrix",
@@ -250,10 +256,6 @@
         "yesterday_gauntlet": "Yesterday's Gauntlet"
     },
     "global": {
-        "copy_permalink_clipboard": "Copy permalink to clipboard",
-        "permalink": "permalink",
-        "experimental": "Experimental",
-        "optional": "Optional",
         "admiral": "Admiral",
         "and": "and",
         "any": "Any",
@@ -263,11 +265,15 @@
         "bonuses": "Bonuses",
         "clear": "Clear",
         "close": "Close",
+        "copy_permalink_clipboard": "Copy permalink to clipboard",
         "default": "Default",
         "disable": "Disable",
         "disabled": "Disabled",
+        "dismiss": "Dismiss",
+        "edit": "Edit",
         "enable": "Enable",
         "enabled": "Enabled",
+        "experimental": "Experimental",
         "filters": "Filters",
         "fleet": "Fleet",
         "hidden": "Hidden",
@@ -281,8 +287,11 @@
         "none": "None",
         "obtained": "Obtained",
         "officer": "Officer",
+        "optional": "Optional",
         "or": "or",
+        "permalink": "permalink",
         "portal": "Portal",
+        "recommend_crew": "Recommend Crew",
         "reset": "Reset",
         "rows_per_page": "Rows per page",
         "search": "Search",
@@ -318,6 +327,7 @@
         "filter_by_portal_status": "Filter by portal status",
         "filter_by_progress": "Filter by progress",
         "filter_by_rarity": "Filter by rarity",
+        "filter_by_series": "Filter by series",
         "filter_by_ship_ability": "Filter by ship ability",
         "filter_by_skill": "Filter by skill",
         "filter_by_status": "Filter by status",
@@ -325,7 +335,6 @@
         "filter_ship_grants": "Filter ship grants",
         "filter_ship_rarity": "Filter ship rarity",
         "roster_maintenance": "Roster maintenance",
-        "filter_by_series": "Filter by series",
         "select_ship": "Select Ship",
         "select_ship_abilities": "Select Ship Abilities",
         "select_ship_ability": "Select ship ability",
@@ -380,11 +389,6 @@
         },
         "craft_for_chrons": "Craft it for {{cost}} using this recipe",
         "current_demands": "Current demands",
-        "duration": {
-            "n_days": "{{days}} days",
-            "n_hours": "{{hours}} hours",
-            "title": "Duration: {{duration}}"
-        },
         "equippable_by": "Equippable by: {{crew}}",
         "equippable_by_rarity": "Equippable by up to {{rarity}} crew.",
         "equippable_by_rarity_traits": "Equippable by up to {{rarity}} crew with the following traits: {{traits}}",
@@ -559,20 +563,6 @@
             "WebStore": "Web Store"
         }
     },
-    "series": {
-        "tos": "The Original Series",
-        "tas": "The Animated Series",
-        "tng": "The Next Generation",
-        "ds9": "Deep Space Nine",
-        "voy": "Voyager",
-        "ent": "Enterprise",
-        "dsc": "Discovery",
-        "pic": "Picard",
-        "low": "Lower Decks",
-        "snw": "Strange New Worlds",
-        "vst": "Very Short Treks",
-        "original": "Timelines Originals"
-    },
     "options": {
         "crew_status": {
             "favorites": "Only show favorite crew",
@@ -581,6 +571,13 @@
             "idle": "Only show idle crew",
             "none": "Show all crew",
             "thawed": "Only show unfrozen crew"
+        },
+        "portal_status": {
+            "none": "{{options.roster_maintenance.none}}",
+            "not_retrievable": "Only show non-retrievable crew",
+            "not_uniquely_retrievable": "Only show not uniquely-retrievable crew",
+            "retrievable": "Only show retrievable crew",
+            "uniquely_retrievable": "Only show uniquely-retrievable crew"
         },
         "roster_maintenance": {
             "advanceable": "Only show crew with unclaimed quipment slots",
@@ -595,13 +592,6 @@
             "quippable": "Only show quippable crew",
             "quipped": "Only show quipped crew",
             "threshold": "Only show crew needing 2 fuses"
-        },
-        "portal_status": {
-            "none": "{{options.roster_maintenance.none}}",
-            "retrievable": "Only show retrievable crew",
-            "not_retrievable": "Only show non-retrievable crew",
-            "uniquely_retrievable": "Only show uniquely-retrievable crew",
-            "not_uniquely_retrievable": "Only show not uniquely-retrievable crew"            
         },
         "text_match": {
             "any": "Match any text",
@@ -746,6 +736,20 @@
         },
         "title": "Roster Summary"
     },
+    "series": {
+        "ds9": "Deep Space Nine",
+        "dsc": "Discovery",
+        "ent": "Enterprise",
+        "low": "Lower Decks",
+        "original": "Timelines Originals",
+        "pic": "Picard",
+        "snw": "Strange New Worlds",
+        "tas": "The Animated Series",
+        "tng": "The Next Generation",
+        "tos": "The Original Series",
+        "voy": "Voyager",
+        "vst": "Very Short Treks"
+    },
     "share_profile": {
         "export": {
             "copy_dbid": "Copy DBID",
@@ -824,9 +828,91 @@
         "grant": "Grants {{grant}} status: {{grant_description}}",
         "handicap": "Decrease {{type}} by {{amount}}"
     },
+    "shuttle_helper": {
+        "calculator": {
+            "change_missions": "Change Missions",
+            "mission_selected": "1 mission selected",
+            "missions_selected": "{{n}} missions selected",
+            "view_running": "View Running Assignments",
+            "warn_replace": "Warning: this will replace any existing recommendations.",
+            "you_can_rearrange": "You can rearrange crew to balance shuttle chances as you see fit. Tap a seat assignment to change the crew assigned to the seat. Lock an assignment to keep that crew in that seat when requesting new recommendations.",
+            "you_can_view_running": "You can {{link}}.",
+            "you_have_n_running": "You have {{n}} shuttle missions running in-game.",
+            "you_have_one_running": "You have 1 shuttle mission running in-game."
+        },
+        "heading": "Use this tool to help plan your shuttles.",
+        "missions": {
+            "columns": {
+                "faction": "Faction",
+                "mission": "Mission",
+                "name": "Name",
+                "seat": "Seat",
+                "seat_assignments": "Seat Assignments",
+                "skills": "Skills",
+                "status": "Status",
+                "success_chance": "Success Chance"
+            },
+            "create": "Create a Mission",
+            "heading": "Select all the missions that you want to run, then tap '{{global.recommend_crew}}' to see the best seats for your crew.",
+            "message": {
+                "missing": "If the mission you want isn't listed above, {{link}} to input the mission parameters manually.",
+                "tip": "Tip: open shuttle missions in-game before uploading your player data to DataCore so that this tool can import the missions automatically."
+            },
+            "select": {
+                "all_n": "Select all {{n}}",
+                "group": "Select group",
+                "groups": {
+                    "only_faction": "Select only {{faction}} ({{length}})",
+                    "only_open": "Select only open in-game ({{length}})",
+                    "only_running": "Select only running in-game ({{length}})",
+                    "only_three": "Select only 3- seaters ({{length}})",
+                    "only_three_four": "Select only 3- and 4- seaters ({{length}})"
+                },
+                "one_y": "1 / {{y}} missions selected",
+                "unselect": "Unselect all",
+                "x_y": "{{x}} / {{y}} missions selected"
+            },
+            "status": {
+                "expires_in": "Expires in {{time}}",
+                "manual": "Manual",
+                "no_missions": "No missions available.",
+                "not_open": "Not Open",
+                "open_seat": "Open Seat",
+                "renting": "Renting",
+                "running": "Running",
+                "unknown": "Unknown"
+            }
+        },
+        "mode": {
+            "active_event": {
+                "active": "Active Event ({{name}}). All event shuttles that are open in-game will be imported and saved. Bonuses will be applied to event crew.",
+                "all": "Active Event ({{name}}). All event shuttles that are open in-game will be imported, but NOT saved. Bonuses will be applied to event crew.",
+                "inactive": "Active Event ({{name}}). Shuttles will be saved. Bonuses will be applied to event crew."
+            },
+            "heading": "Select a mission type",
+            "inactive_event": {
+                "active": "Inactive Event ({{name}}). No shuttles will be imported or saved. Bonuses will be applied to event crew.",
+                "inactive": "Inactive Event ({{name}}). Shuttles will NOT be saved. Bonuses will be applied to event crew."
+            },
+            "standard": {
+                "active": "Standard. All shuttle missions that are open in-game will be imported, but missions and recommendations will NOT be saved by the shuttle helper.",
+                "inactive": "Standard. Shuttle missions and recommendations will NOT be saved by the shuttle helper."
+            }
+        }
+    },
     "spinners": {
         "default": "Loading data...",
         "demands": "Calculating crew demands...",
         "quipment": "Calculating quipment..."
+    },
+    "tool_roster_picker": {
+        "all_crew": {
+            "description": "Consider all crew in the game",
+            "title": "Best Possible Crew"
+        },
+        "owned_crew": {
+            "description": "Only consider your owned crew",
+            "title": "Owned Crew"
+        }
     }
 }

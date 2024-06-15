@@ -102,6 +102,7 @@ const NonPlayerCalculator = (props: CalculatorProps) => {
 
 const CalculatorForm = (props: CalculatorProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const calculatorContext = React.useContext(CalculatorContext);
 	const { rosterType } = calculatorContext;
@@ -187,7 +188,7 @@ const CalculatorForm = (props: CalculatorProps) => {
 						))}
 					</Form.Group>
 					<Button fluid size='big' color='green' onClick={() => startCalculation()} disabled={consideredCrew.length < 12}>
-						Recommend Crew
+						{t('global.recommend_crew')}
 					</Button>
 				</Form>
 			</div>
