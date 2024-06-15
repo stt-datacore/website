@@ -1,45 +1,4 @@
 {
-    "behold_helper": {
-        "heading": "Comparez vos choix pour vous aider à décider qui ajouter à votre liste.",
-        "search_for_crew": "Recherche d'équipage",
-        "preview_all": "Prévisualisez tout cela dans votre liste",
-        "share_page_heading": "Partager cette page",
-        "share_help": "Vous voulez des conseils sur cet équipage ? Vous pouvez partager un {{permalink}} sur cette page pour un partage plus facile sur Discord ou d'autres forums.",
-        "views": {
-            "classic": {
-                "title": "Vue classique",
-                "description": "Comparez les équipages côte à côte"
-            },
-            "standard": {
-                "title": "Vue standard",
-                "description": "Voir la présentation standard de l'équipage"
-            },
-            "table": {
-                "title": "Vue Tableau",
-                "description": "Juste les chiffres, tous triables"
-            },
-            "dismiss_all": {
-                "title": "Tout rejeter",
-                "description": "Démarrer une nouvelle comparaison"
-            }
-        },
-        "columns": {
-            "unique_retrievals": "Récupérations\nuniques",
-            "build_cost": "Coût de construction",
-            "faction_items": "Articles de faction"
-        }
-    },
-    "crew_picker": {
-        "search_by_name": "Rechercher un équipage par nom",
-        "no_results": "0 résultat trouvé. Veuillez essayer différentes options de recherche.",
-        "filter": "{{global.filters}}",
-        "close": "{{global.close}}",
-        "optional_filters": "Filtres Optionnels",
-        "tip": {
-            "double_tap": "Conseil : appuyez deux fois pour sélectionner un équipage plus rapidement."
-        },
-        "select_crew": "Sélectionner {{crew}}"
-    },
     "base": {
         "all_crew": "Afficher tout l'équipage",
         "bigbook_tier": "Étage",
@@ -66,6 +25,36 @@
         "voyage": "Voyage",
         "voyages": "Voyages"
     },
+    "behold_helper": {
+        "columns": {
+            "build_cost": "Coût de construction",
+            "faction_items": "Articles de faction",
+            "unique_retrievals": "Récupérations\nuniques"
+        },
+        "heading": "Comparez vos choix pour vous aider à décider qui ajouter à votre liste.",
+        "preview_all": "Prévisualisez tout cela dans votre liste",
+        "search_for_crew": "Recherche d'équipage",
+        "share_help": "Vous voulez des conseils sur cet équipage ? Vous pouvez partager un {{permalink}} sur cette page pour un partage plus facile sur Discord ou d'autres forums.",
+        "share_page_heading": "Partager cette page",
+        "views": {
+            "classic": {
+                "description": "Comparez les équipages côte à côte",
+                "title": "Vue classique"
+            },
+            "dismiss_all": {
+                "description": "Démarrer une nouvelle comparaison",
+                "title": "Tout rejeter"
+            },
+            "standard": {
+                "description": "Voir la présentation standard de l'équipage",
+                "title": "Vue standard"
+            },
+            "table": {
+                "description": "Juste les chiffres, tous triables",
+                "title": "Vue Tableau"
+            }
+        }
+    },
     "buffs": {
         "max_buffs": "Effets maximum",
         "no_buffs": "Aucun effets",
@@ -74,6 +63,14 @@
     },
     "clipboard": {
         "copied_exclaim": "Copié!"
+    },
+    "consider_crew": {
+        "active_shuttles": "Considérez l'équipage sur les navettes actives",
+        "active_voyage": "Considérez l'équipage en voyage actif",
+        "consider_frozen": "Considérez l'équipage gelé",
+        "consider_shared": "Envisagez un équipage partagé",
+        "exclude_quipped": "Exclure l'équipage quipé",
+        "shared_crew_popup": "Les nombres de compétences de l'équipage partagé sont basés sur les buffs de vos joueurs et peuvent ne pas correspondre au score réel"
     },
     "cool_stats": {
         "all_ranks": "Tous les rangs",
@@ -110,6 +107,17 @@
         },
         "player_buffs_applied": "Effets de joueur appliqués",
         "variants": "Variantes de {{crew}}"
+    },
+    "crew_picker": {
+        "close": "{{global.close}}",
+        "filter": "{{global.filters}}",
+        "no_results": "0 résultat trouvé. Veuillez essayer différentes options de recherche.",
+        "optional_filters": "Filtres Optionnels",
+        "search_by_name": "Rechercher un équipage par nom",
+        "select_crew": "Sélectionner {{crew}}",
+        "tip": {
+            "double_tap": "Conseil : appuyez deux fois pour sélectionner un équipage plus rapidement."
+        }
     },
     "crew_state": {
         "expires_in": "L'équipage expire dans {{time}}",
@@ -169,33 +177,31 @@
         "advanced_analysis": "Analyse Avancée",
         "base": "Afficher les compétences de base",
         "crew_utility": "Afficher d'utilité de l'équipage",
+        "dismiss": "Rejeter {{crew}}",
+        "faction_items": "{{n}} articles de faction",
         "gauntlet": "Afficher les rangs des gantelets",
         "max_quipment": "Afficher le Quipement Max",
+        "preview": "Aperçu de {{crew}} dans votre liste",
         "prospect": {
             "description": "Ajoutez des d'équipage potentiels pour voir comment ils s'intègrent dans votre liste actuelle.",
             "title": "Équipage potentiel"
         },
         "quipment": "Afficher les rangs des Quipements",
         "ship": "Afficher les capacités du vaisseau",
-        "voyage": "Afficher les rangs des voyages",
-        "faction_items": "{{n}} articles de faction",
         "view_big_book": "Voir {{crew}} sur Big Book",
-        "preview": "Aperçu de {{crew}} dans votre liste",
-        "dismiss": "Rejeter {{crew}}"
+        "voyage": "Afficher les rangs des voyages"
+    },
+    "duration": {
+        "n_d": "{{days}} j",
+        "n_days": "{{days}} jours",
+        "n_h": "{{hours}} h",
+        "n_hours": "{{hours}} heures",
+        "n_m": "{{minutes}} m",
+        "title": "Durée: {{duration}}"
     },
     "event_planner": {
         "heading": "Trouvez le meilleur équipage à utiliser lors d'un événement",
         "hide_duplicate_pairs": "Supprimer les paires en double",
-        "picker": {
-            "all_crew": {
-                "description": "Considérez tout l'équipage dans le jeu",
-                "title": "Meilleur Équipage Possible"
-            },
-            "owned_crew": {
-                "description": "Considérez uniquement votre équipage",
-                "title": "Équipage Possédé"
-            }
-        },
         "prospect_description": "Ajoutez un équipage potentiel (ou un équipage partagé potentiel) pour voir comment ils s'intègrent dans votre liste existante pour cet événement.",
         "select_phase": "Sélectionnez une phase",
         "skill_matrix": "Matrice de Compétences",
@@ -258,10 +264,6 @@
         "yesterday_gauntlet": "Gantelet d'hier"
     },
     "global": {
-        "copy_permalink_clipboard": "Copier le lien permanent dans le presse-papiers",
-        "permalink": "lien permanent",
-        "experimental": "Expérimental",
-        "optional": "Facultatif",
         "admiral": "Amiral",
         "and": "et",
         "any": "Quelconque",
@@ -271,11 +273,15 @@
         "bonuses": "Bonus",
         "clear": "Effacer",
         "close": "Fermer",
+        "copy_permalink_clipboard": "Copier le lien permanent dans le presse-papiers",
         "default": "Défaut",
         "disable": "Désactiver",
         "disabled": "Désactivé",
+        "dismiss": "Rejeter",
+        "edit": "Modifier",
         "enable": "Activer",
         "enabled": "Activé",
+        "experimental": "Expérimental",
         "filters": "Filtres",
         "fleet": "Flotte",
         "hidden": "Caché",
@@ -289,8 +295,11 @@
         "none": "Aucun",
         "obtained": "Obtenu par",
         "officer": "Officier",
+        "optional": "Facultatif",
         "or": "ou",
+        "permalink": "lien permanent",
         "portal": "Portail",
+        "recommend_crew": "Recommander des équipages",
         "reset": "Réinitialiser",
         "rows_per_page": "Lignes par page",
         "search": "Recherche",
@@ -326,9 +335,9 @@
         "filter_by_portal_status": "Filtrer par statut du portail",
         "filter_by_progress": "Filtrer par progression",
         "filter_by_rarity": "Filtrer par rareté",
+        "filter_by_series": "Filtrer par série",
         "filter_by_ship_ability": "Filtrer par la capacité du vaisseau",
         "filter_by_skill": "Filtrer par compétence",
-        "filter_by_series": "Filtrer par série",
         "filter_by_status": "Filtrer par statut",
         "filter_by_trait": "Filtrer par trait",
         "filter_ship_grants": "Filtrer les subventions d'expédition",
@@ -390,11 +399,6 @@
         },
         "craft_for_chrons": "Fabriquez-le pour {{cost}} en utilisant cette recette",
         "current_demands": "Demandes actuelles",
-        "duration": {
-            "n_days": "{{days}} jours",
-            "n_hours": "{{hours}} heures",
-            "title": "Durée: {{duration}}"
-        },
         "equippable_by": "Équipable par : {{crew}}",
         "equippable_by_rarity": "Peut être équipé jusqu'à un équipage {{rarity}}.",
         "equippable_by_rarity_traits": "Peut être équipé jusqu'à un équipage {{rarity}} avec les traits suivants : {{traits}}",
@@ -568,20 +572,6 @@
             "WebStore": "Magasin"
         }
     },
-    "series": {
-        "tos": "La série originale",
-        "tas": "La série animée",
-        "tng": "La Nouvelle Génération",
-        "ds9": "Deep Space Nine",
-        "voy": "Voyager",
-        "ent": "Enterprise",
-        "dsc": "Discovery",
-        "pic": "Picard",
-        "low": "Lower Decks",
-        "snw": "Strange New Worlds",
-        "vst": "Very Short Treks",
-        "original": "Timelines Originals"
-    },
     "options": {
         "crew_status": {
             "favorites": "Afficher uniquement l'équipage préféré",
@@ -593,10 +583,10 @@
         },
         "portal_status": {
             "none": "{{options.roster_maintenance.none}}",
-            "retrievable": "Afficher uniquement l'équipage récupérable",
             "not_retrievable": "Afficher uniquement l'équipage non récupérable",
-            "uniquely_retrievable": "Afficher uniquement l'équipage récupérable de manière unique",
-            "not_uniquely_retrievable": "Afficher uniquement l'équipage non récupérable de manière unique"
+            "not_uniquely_retrievable": "Afficher uniquement l'équipage non récupérable de manière unique",
+            "retrievable": "Afficher uniquement l'équipage récupérable",
+            "uniquely_retrievable": "Afficher uniquement l'équipage récupérable de manière unique"
         },
         "roster_maintenance": {
             "advanceable": "Afficher uniquement les équipages disposant d'emplacements du quipement non réclamés",
@@ -755,6 +745,20 @@
         },
         "title": "Résumé de la Liste"
     },
+    "series": {
+        "ds9": "Deep Space Nine",
+        "dsc": "Discovery",
+        "ent": "Enterprise",
+        "low": "Lower Decks",
+        "original": "Timelines Originals",
+        "pic": "Picard",
+        "snw": "Strange New Worlds",
+        "tas": "La série animée",
+        "tng": "La Nouvelle Génération",
+        "tos": "La série originale",
+        "voy": "Voyager",
+        "vst": "Very Short Treks"
+    },
     "share_profile": {
         "export": {
             "copy_dbid": "Copier DBID",
@@ -834,9 +838,91 @@
         "grant": "Conférer le statut {{grant}} : {{grant_description}}",
         "handicap": "Diminuer {{type}} de {{amount}}"
     },
+    "shuttle_helper": {
+        "calculator": {
+            "change_missions": "Modifier les missions",
+            "mission_selected": "1 mission sélectionnée",
+            "missions_selected": "{{n}} missions sélectionnées",
+            "view_running": "afficher les missions en cours",
+            "warn_replace": "Attention : cela remplacera toutes les recommandations existantes.",
+            "you_can_rearrange": "Vous pouvez réorganiser l’équipage pour équilibrer les chances de navette comme bon vous semble. Appuyez sur une attribution de siège pour modifier l'équipage affecté à ce siège. Verrouillez une mission pour garder cet équipage à ce siège lorsque vous demandez de nouvelles recommandations.",
+            "you_can_view_running": "Vous pouvez {{link}}.",
+            "you_have_n_running": "Vous avez {{n}} missions de navette en cours dans le jeu.",
+            "you_have_one_running": "Vous avez 1 mission de navette en cours dans le jeu."
+        },
+        "heading": "Utilisez cet outil pour vous aider à planifier vos missions de navette.",
+        "missions": {
+            "columns": {
+                "faction": "Faction",
+                "mission": "Mission",
+                "name": "Nom",
+                "seat": "Siège",
+                "seat_assignments": "Attributions des sièges",
+                "skills": "Compétences",
+                "status": "Statut",
+                "success_chance": "Chance de réussite"
+            },
+            "create": "créez une mission",
+            "heading": "Sélectionnez toutes les missions que vous souhaitez effectuer, puis appuyez sur « {{global.recommend_crew}} » pour voir les meilleurs sièges pour votre équipage.",
+            "message": {
+                "missing": "Si la mission souhaitée ne figure pas dans la liste ci-dessus, {{link}} pour saisir manuellement les paramètres de la mission.",
+                "tip": "Conseil : ouvrez les missions de navette dans le jeu avant de télécharger les données de votre joueur sur DataCore afin que cet outil puisse importer automatiquement les missions."
+            },
+            "select": {
+                "all_n": "Sélectionner les {{n}}",
+                "group": "Sélectionner un groupe",
+                "groups": {
+                    "only_faction": "Sélectionnez uniquement {{faction}} ({{length}})",
+                    "only_open": "Sélectionnez uniquement ouvert dans le jeu ({{length}})",
+                    "only_running": "Sélectionnez uniquement en cours d'exécution dans le jeu ({{length}})",
+                    "only_three": "Sélectionnez uniquement des 3 places ({{length}})",
+                    "only_three_four": "Sélectionnez uniquement des 3 places et des 4 places ({{length}})"
+                },
+                "one_y": "1 / {{y}} missions sélectionnées",
+                "unselect": "Désélectionner toutes",
+                "x_y": "{{x}} / {{y}} missions sélectionnées"
+            },
+            "status": {
+                "expires_in": "Expire dans {{time}}",
+                "manual": "Manuel",
+                "no_missions": "Aucune mission disponible.",
+                "not_open": "Pas ouvert",
+                "open_seat": "Siège ouvert",
+                "renting": "Louer",
+                "running": "En cours d'exécution",
+                "unknown": "Inconnu"
+            }
+        },
+        "mode": {
+            "active_event": {
+                "active": "Événement actif ({{name}}). Toutes les navettes d'événement ouvertes dans le jeu seront importées et enregistrées. Les bonus seront appliqués à l'équipage de l'événement.",
+                "all": "Événement actif ({{name}}). Toutes les navettes d'événement ouvertes dans le jeu seront importées, mais PAS enregistrées. Les bonus seront appliqués à l'équipage de l'événement.",
+                "inactive": "Événement actif ({{name}}). Les navettes seront enregistrées. Les bonus seront appliqués à l'équipage de l'événement."
+            },
+            "heading": "Sélectionnez un type de mission",
+            "inactive_event": {
+                "active": "Événement inactif ({{name}}). Aucune navette ne sera importée ou enregistrée. Les bonus seront appliqués à l'équipage de l'événement.",
+                "inactive": "Événement inactif ({{name}}). Les navettes ne seront PAS enregistrées. Les bonus seront appliqués à l'équipage de l'événement."
+            },
+            "standard": {
+                "active": "Standard. Toutes les missions de navette ouvertes dans le jeu seront importées, mais les missions et les recommandations ne seront PAS enregistrées par l'assistant de navette.",
+                "inactive": "Standard. Les missions et recommandations de la navette ne seront PAS enregistrées par l'assistant de la navette."
+            }
+        }
+    },
     "spinners": {
         "default": "Chargement des données...",
         "demands": "Calcul des demandes de l'équipage...",
         "quipment": "Calcul de l'équipement..."
+    },
+    "tool_roster_picker": {
+        "all_crew": {
+            "description": "Considérez tout l'équipage dans le jeu",
+            "title": "Meilleur Équipage Possible"
+        },
+        "owned_crew": {
+            "description": "Considérez uniquement votre équipage",
+            "title": "Équipage Possédé"
+        }
     }
 }

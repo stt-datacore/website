@@ -18,6 +18,7 @@ export const Calculator = () => {
 	const shuttlersContext = React.useContext(ShuttlersContext);
 	const { helperId, groupId, activeShuttles, rosterType, rosterCrew, eventData, shuttlers, setShuttlers, assigned, setAssigned } = shuttlersContext;
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { playerData } = globalContext.player;
 
 	const [considerActive, setConsiderActive] = useStateWithStorage<boolean>(helperId+'/considerActive', true);
@@ -59,8 +60,14 @@ export const Calculator = () => {
 					<React.Fragment>
 						{missionsRunning > 0 && rosterType === 'myCrew' && (
 							<Message>
-								<p>You have {missionsRunning} shuttle mission{missionsRunning !== 1 ? 's' : ''} running in-game.</p>
-								<p>You can <Button compact content='View Running Assignments' onClick={() => importAssignments()} />. {assigned.length > 0 && <>Warning: this will replace any existing recommendations.</>}</p>
+								<p>
+									{missionsRunning === 1 && t('shuttle_helper.calculator.you_have_one_running')}
+									{missionsRunning !== 1 && t('shuttle_helper.calculator.you_have_n_running', { n: `${missionsRunning}`})}
+								</p>
+								<p>
+									{tfmt('shuttle_helper.calculator.you_can_view_running', { link: <Button compact content={t('shuttle_helper.calculator.view_running')} onClick={() => importAssignments()} /> })} 
+									{assigned.length > 0 && t('shuttle_helper.calculator.warn_replace')}
+									</p>
 							</Message>
 						)}
 						<Missions />
@@ -72,7 +79,7 @@ export const Calculator = () => {
 							crewScores={crewScores}
 							updateCrewScores={updateCrewScores}
 						/>
-						<Button icon='backward' content='Change Missions' onClick={() => setActiveStep('missions')} />
+						<Button icon='backward' content={t('shuttle_helper.calculator.change_missions')} onClick={() => setActiveStep('missions')} />
 					</React.Fragment>
 				)}
 			</div>
@@ -81,25 +88,25 @@ export const Calculator = () => {
 					<Form.Group grouped>
 						<Form.Field
 							control={Checkbox}
-							label='Consider crew on active shuttles'
+							label={t('consider_crew.active_shuttles')}
 							checked={considerActive}
 							onChange={(e, { checked }) => setConsiderActive(checked)}
 						/>
 						<Form.Field
 							control={Checkbox}
-							label='Consider crew on active voyage'
+							label={t('consider_crew.active_voyage')}
 							checked={considerVoyage}
 							onChange={(e, { checked }) => setConsiderVoyage(checked)}
 						/>
 						<Form.Field
 							control={Checkbox}
-							label='Consider frozen crew'
+							label={t('consider_crew.consider_frozen')}
 							checked={considerFrozen}
 							onChange={(e, { checked }) => setConsiderFrozen(checked)}
 						/>
 						<Form.Field
 							control={Checkbox}
-							label='Exclude quipped crew'
+							label={t('consider_crew.exclude_quipped')}
 							checked={excludeQuipped}
 							onChange={(e, { checked }) => setExcludeQuipped(checked)}
 						/>
@@ -108,8 +115,8 @@ export const Calculator = () => {
 								control={Checkbox}
 								label={
 									<label>
-										Consider shared crew
-										<Popup content='Skill numbers of shared crew are based on your player buffs and may not match actual score' trigger={<Icon name='info' />} />
+										{t('consider_crew.consider_shared')}
+										<Popup content={t('consider_crew.shared_crew_popup')} trigger={<Icon name='info' />} />
 									</label>
 								}
 								checked={considerShared}
@@ -120,7 +127,7 @@ export const Calculator = () => {
 				)}
 				<Form.Group>
 					<Button fluid size='big' color='green' onClick={() => recommendShuttlers()} disabled={missionsSelected === 0}>
-						Recommend Crew
+						{t('global.recommend_crew')}
 					</Button>
 				</Form.Group>
 			</Form>
