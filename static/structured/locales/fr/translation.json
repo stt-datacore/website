@@ -633,7 +633,7 @@
             },
             "owned_crew": {
                 "description": "Voir uniquement vos propres équipiers",
-                "name": "Propres Équipiers"
+                "name": "Équipage Possédé"
             }
         },
         "ships": "Vaisseaux"
