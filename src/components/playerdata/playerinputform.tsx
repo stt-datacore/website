@@ -9,7 +9,7 @@
 // import { PlayerData } from '../../model/player';
 // import { iOS, mobileCheck } from '../../utils/misc';
 
-// export const PLAYERLINK = 'https://app.startrektimelines.com/player?client_api=20&only_read_state=true';
+// export const PLAYERLINK = 'https://app.startrektimelines.com/player?client_api=23&only_read_state=true';
 
 // type PlayerInputFormProps = {
 // 	setValidInput: (playerData: PlayerData | undefined) => void;
