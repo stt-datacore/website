@@ -1,10 +1,7 @@
 import React from 'react';
 import { Modal, Button, Form, Input, Dropdown, Table, Message, Icon } from 'semantic-ui-react';
 
-import { IVoyageCrew } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
-import { appelate } from '../../utils/misc';
-import { crewCopy, getVariantTraits } from '../../utils/crewutils';
 import { BetaTachyonSettings } from '../../model/worker';
 import { DefaultBetaTachyonSettings } from './btsettings';
 

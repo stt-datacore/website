@@ -1,6 +1,6 @@
 import React from 'react';
 import DataPageLayout from '../components/page/datapagelayout';
-import CiteOptimizer from '../components/citeoptimizer';
+import CiteOptimizer from '../components/optimizer/citeoptimizer';
 
 
 const CiteOptimizerPage = () => {
