@@ -845,10 +845,10 @@ const BetaTachyon = {
 
                 let icols = playerData.player.character.cryo_collections.filter(f => {
                     return !!f.claimable_milestone_index && 
-                        crew.collections.includes(f.name)
+                        crew.collection_ids.includes(`${f.type_id}`)
                 });
                 
-                let mcols = icols.map(ic => collections.find(fc => fc.name == ic.name)) as Collection[];
+                let mcols = icols.map(ic => collections.find(fc => fc.id?.toString() == ic.type_id?.toString())) as Collection[];
                 mcols = mcols.filter((col, idx) => {
                     if (icols[idx].claimable_milestone_index) {
                         return col?.milestones?.slice(icols[idx].claimable_milestone_index).some(m => !!m.buffs?.length);
