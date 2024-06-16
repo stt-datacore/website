@@ -87,7 +87,7 @@ const PlayerHeader = (props: PlayerHeaderProps) => {
 			{(activePanel === 'input' || enforceInput) &&
 				<JsonInputForm
 					config={{
-						dataUrl: 'https://app.startrektimelines.com/player?client_api=20&only_read_state=true',
+						dataUrl: 'https://app.startrektimelines.com/player?client_api=23&only_read_state=true',
 						dataName: t('json_types.player_data'),
 						jsonHint: '{"action":"update","player":',
 						androidFileHint: 'player.json',
