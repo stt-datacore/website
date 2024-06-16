@@ -62,6 +62,24 @@
         "quipment_buffs": "Quipment Buffs"
     },
     "cite_opt": {
+        "tabs": {
+            "cite": {
+                "title": "Crew to Cite",
+                "title_short": "Cite"
+            },
+            "train": {
+                "title": "Crew to Train",
+                "title_short": "Train"
+            },
+            "retrievable": {
+                "title": "Retrievable Only",
+                "title_short": "Retrievable"
+            },
+            "groups": {
+                "title": "Voyage Groups",
+                "short_title": "Groups"
+            }
+        },
         "btp": {
             "name": "Beta Tachyon Pulse",
             "settings": {
