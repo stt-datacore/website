@@ -9,6 +9,8 @@ import { Segment, Dropdown, Checkbox } from "semantic-ui-react";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { CiteMode, PlayerData } from "../../model/player";
 import { UnifiedWorker } from "../../typings/worker";
+import { CiteOptContext } from "./context";
+import { RarityFilter } from "../crewtables/commonoptions";
 
 export type CiteEngine = "original" | "beta_tachyon_pulse";
 
@@ -24,32 +26,24 @@ export const EngineRunnerContext = React.createContext<IEngineRunnerContext>({})
 
 export const EngineRunner = (props: EngineRunnerProps) => {
     const globalContext = React.useContext(GlobalContext);
-    const { t } = globalContext.localized;
     const { pageId } = props;
+    const dbid = globalContext.player.playerData?.player.dbid ?? '';
 
-    if (!globalContext.player.playerData) return <></>;
+    const [currentConfig, setCurrentConfig] = useStateWithStorage(`${dbid}/${pageId}/bt_config`, DefaultBetaTachyonSettings, { rememberForever: true });
 
-    const { dbid } = globalContext.player.playerData.player;
+    const citeContext = React.useContext(CiteOptContext);
+
+    const { t } = globalContext.localized;
+
+    const { citeConfig, setCiteConfig } = citeContext;
+    const { engine, setEngine } = citeContext;
+    const { results, setResults } = citeContext;
+
+    const { appliedProspects } = citeContext;
+
+    const { showEV } = citeConfig;
+    
     const [settingsOpen, setSettingsOpen] = React.useState(false);
-    const [engine, setEngine] = useStateWithStorage<CiteEngine>(
-        `${dbid}/${pageId}/cite_opt_engine`,
-        "beta_tachyon_pulse",
-        { rememberForever: true }
-    );
-    const [savedPresets, setSavedPresets] = useStateWithStorage<
-        BetaTachyonSettings[]
-    >(`${dbid}/${pageId}/bt_engine`, [], { rememberForever: true });
-    const [currentConfig, setCurrentConfig] =
-        useStateWithStorage<BetaTachyonSettings>(
-            `${dbid}/${pageId}/bt_config`,
-            DefaultBetaTachyonSettings,
-            { rememberForever: true }
-        );
-    const [showEV, setShowEV] = useStateWithStorage<boolean>(
-        `${dbid}/${pageId}/showEV`,
-        false,
-        { rememberForever: true }
-    );
 
     const builtIn = createBuiltInPresets();
 
@@ -65,6 +59,10 @@ export const EngineRunner = (props: EngineRunnerProps) => {
             text: `${t("cite_opt.btp.name")} (${t("global.experimental")})`,
         },
     ];
+
+    React.useEffect(() => {
+        runWorker();
+    }, [currentConfig, engine, citeConfig.rarities]);
 
     return (
         <React.Fragment>
@@ -85,7 +83,8 @@ export const EngineRunner = (props: EngineRunnerProps) => {
                     placeholder={"Select Engine"}
                     value={engine}
                     onChange={(e, { value }) => {
-                        setEngine(value as CiteEngine);
+                        setResults(undefined);
+                        setTimeout(() => setEngine(value as CiteEngine));                        
                     }}
                 />
 
@@ -96,15 +95,30 @@ export const EngineRunner = (props: EngineRunnerProps) => {
                             setIsOpen={setSettingsOpen}
                             config={{
                                 current: currentConfig,
-                                setCurrent: setCurrentConfig,
+                                setCurrent: (value) => {
+                                    setResults(undefined);
+                                    setTimeout(() => setCurrentConfig(value));                                    
+                                },
                                 defaultOptions: DefaultBetaTachyonSettings,
                             }}
                         />
                         <Checkbox
                             label={"Show EV Columns"}
                             checked={showEV}
-                            onChange={(e, { checked }) => setShowEV(!!checked)}
+                            onChange={(e, { checked }) => setCiteConfig({ ...citeConfig, showEV: !!checked })}
                         />
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "left", margin: 0, marginRight: "1em"}}>
+                        <RarityFilter
+                            altTitle='Calculate specific rarity'
+                            multiple={false}
+                            rarityFilter={citeConfig?.rarities ?? []}
+                            setRarityFilter={(data) => {
+                                setResults(undefined);
+                                setCiteConfig({ ...citeConfig, rarities: data });
+
+                            }}
+                            />
+                    </div>
                     </>
                 )}
             </div>
@@ -119,7 +133,6 @@ export const EngineRunner = (props: EngineRunnerProps) => {
             },
         ];
     }
-
     
 	function runWorker(citeMode?: CiteMode) {
 		const worker = new UnifiedWorker();
@@ -128,15 +141,17 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 
 		if (!globalContext.player.playerData) return;
 
-		let playerData = JSON.parse(JSON.stringify(this.context.player.playerData)) as PlayerData;		
+		let playerData = JSON.parse(JSON.stringify(globalContext.player.playerData)) as PlayerData;		
 
-		if (this.state.appliedProspects?.length) {
-			playerData.player.character.crew = playerData.player.character.crew.concat(this.state.appliedProspects);
+		if (appliedProspects?.length) {
+			playerData.player.character.crew = playerData.player.character.crew.concat(appliedProspects);
 		}
-
-		const engine = this.state.citeMode?.engine ?? "original";
 		
 		playerData.citeMode = citeMode;
+
+        if (citeConfig.rarities?.length) {
+            playerData.player.character.crew = playerData.player.character.crew.filter(f => citeConfig.rarities.includes(f.max_rarity))
+        }
 
 		worker.addEventListener('message', (message: { data: { result: any; }; }) => {
 			const result = message.data.result as CiteData;
@@ -146,12 +161,12 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 				result.skillOrderRarities.forEach(sko => skmap[sko.skillorder] = sko);
 				let retrievable = result.crewToRetrieve.filter(f => playerData.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length))
 				result.crewToRetrieve = retrievable.map((r, i) => ({ ...r, pickerId: i + 1 }));
-				this.setState({ citeData: result, skoMap: skmap });	
+                setResults({ citeData: result, skoMap: skmap });
 			}
 			else {
 				let retrievable = result.crewToCite.filter(f => playerData.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length))
 				result.crewToRetrieve = retrievable.map((r, i) => ({ ...JSON.parse(JSON.stringify(r)), pickerId: i + 1 }));
-				this.setState({ citeData: result });	
+                setResults({ citeData: result, skoMap: undefined });
 			}
 
 		});
@@ -170,13 +185,13 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 		else {
 			worker.postMessage({
 				worker: workerName,
-				config: { 
+				config: {
 					playerData,
 					inputCrew: allCrew,
 					collections,
 					buffs: buffConfig,
-					settings: this.state.betaTachyonSettings,
-					coreItems: this.context.core.items
+					settings: currentConfig,
+					coreItems: globalContext.core.items
 				} as BetaTachyonRunnerConfig
 			});	
 		}

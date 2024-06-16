@@ -5,26 +5,48 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { useStateWithStorage } from "../../utils/storage";
 import { GlobalContext } from "../../context/globalcontext";
 import { CiteMode } from "../../model/player";
-import { SymCheck } from "./context";
+import { CiteConfig, CiteOptContext, SymCheck } from "./context";
+import CONFIG from "../CONFIG";
 
 
 
-export interface CiteModeProviderProps {
+export interface CiteConfigPanelProps {
     pageId: string;
 }
 
 
-export const CiteModeConfigPanel = (props: CiteModeProviderProps) => {
+export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
     const globalContext = React.useContext(GlobalContext);
+    const citeContext = React.useContext(CiteOptContext);
     const { t } = globalContext.localized;
-    const { pageId } = props;
 
     if (!globalContext.player.playerData) return <></>;
+    
+    const { citeConfig, setCiteConfig } = citeContext;    
 
-    const { dbid } = globalContext.player.playerData.player;
-    const [citeMode, setCiteMode] = useStateWithStorage<CiteMode>(`${dbid}/${pageId}/citeMode`, {}, { rememberForever: true });
+    const priSkills = Object.entries(CONFIG.SKILLS).map(([skill, name]) => {
+        return {
+            key: skill.replace('_skill', ''),
+            value: skill.replace('_skill', ''),
+            text: name
+        }
+    });
 
-    const [checks, SetChecks] = React.useState<SymCheck[] | undefined>();
+    const secSkills = Object.entries(CONFIG.SKILLS).map(([skill, name]) => {
+        return {
+            key: skill.replace('_skill', ''),
+            value: skill.replace('_skill', ''),
+            text: name
+        }
+    });
+
+    const seatSkills = Object.entries(CONFIG.SKILLS).map(([skill, name]) => {
+        return {
+            key: skill.replace('_skill', ''),
+            value: skill.replace('_skill', ''),
+            text: name
+        }
+    });
 
     return <React.Fragment> 
             <Segment>
@@ -32,30 +54,20 @@ export const CiteModeConfigPanel = (props: CiteModeProviderProps) => {
                 <div style={{
                     display: "flex",
                     flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
-                }}>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "left", margin: 0, marginRight: "1em"}}>
-                        <RarityFilter
-                            altTitle='Calculate specific rarity'
-                            multiple={false}
-                            rarityFilter={citeMode?.rarities ?? []}
-                            setRarityFilter={(data) => {
-                                this.setState({ ...this.state, citeMode: { ... citeMode ?? {}, rarities: data }, citeData: null });
-                            }}
-                            />
-                    </div>
+                }}>                    
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "left"}}>
                         <PortalFilter
-                            portalFilter={citeMode?.portal}
+                            portalFilter={citeConfig?.portal}
                             setPortalFilter={(data) => {
-                                setCiteMode({ ... citeMode ?? {}, portal: data });
+                                setCiteConfig({ ... citeConfig ?? {}, portal: data });
                             }}
                             />
                     </div>
                     <div style={{ display: "flex", height: "3em", flexDirection: "row", justifyContent: "center", alignItems: "center", marginLeft: "1em"}}>
                         <Input
                             label={"Search"}
-                            value={citeMode.nameFilter}
-                            onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, nameFilter: value })}
+                            value={citeConfig.nameFilter}
+                            onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, nameFilter: value })}
                             />
                         <i className='delete icon'
                             title={"Clear Searches and Comparison Marks"}
@@ -64,9 +76,9 @@ export const CiteModeConfigPanel = (props: CiteModeProviderProps) => {
                                 marginLeft: "0.75em"
                             }}
                             onClick={(e) => {
-                                    setCiteMode({ ... citeMode ?? {}, nameFilter: '' });
-                                    window.setTimeout(() => {
-                                        this.setState({ ...this.state, checks: undefined });
+                                    setCiteConfig({ ... citeConfig ?? {}, nameFilter: '' });
+                                    setTimeout(() => {
+                                        setCiteConfig({ ...citeConfig, checks: [] });
                                     });
 
                                 }
@@ -80,8 +92,8 @@ export const CiteModeConfigPanel = (props: CiteModeProviderProps) => {
                             multiple
                             clearable
                             placeholder={"Filter by primary skill"}
-                            value={citeMode.priSkills}
-                            onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, priSkills: value as string[] })}
+                            value={citeConfig.priSkills}
+                            onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, priSkills: value as string[] })}
                             />
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
@@ -90,8 +102,8 @@ export const CiteModeConfigPanel = (props: CiteModeProviderProps) => {
                             multiple
                             clearable
                             placeholder={"Filter by secondary skill"}
-                            value={citeMode.secSkills}
-                            onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, secSkills: value as string[] })}
+                            value={citeConfig.secSkills}
+                            onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, secSkills: value as string[] })}
                             />
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
@@ -100,8 +112,8 @@ export const CiteModeConfigPanel = (props: CiteModeProviderProps) => {
                             multiple
                             clearable
                             placeholder={"Filter by voyage seating"}
-                            value={citeMode.seatSkills}
-                            onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, seatSkills: value as string[] })}
+                            value={citeConfig.seatSkills}
+                            onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, seatSkills: value as string[] })}
                             />
                     </div>
 

@@ -6,33 +6,39 @@ import { LockedProspect } from '../../model/game-elements';
 import { GlobalContext } from '../../context/globalcontext';
 import { CiteMode, PlayerCrew } from '../../model/player';
 import { applyCrewBuffs } from '../../utils/crewutils';
+import { CiteOptContext } from './context';
 
 export interface CitationProspectsProps {
     pageId: string;
-    citeMode: CiteMode;
 }
 
 export const CitationProspects = (props: CitationProspectsProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
-    const { pageId, citeMode } = props;
 
-    if (!globalContext.player.playerData) return <></>;
+    const citeContext = React.useContext(CiteOptContext);
 
-    const { dbid } = globalContext.player.playerData.player;
-    const [prospects, setProspects] = useStateWithStorage<LockedProspect[]>(`${dbid}/${pageId}/cite_opt/locked_prospects`, []);
-    const [unownedOnly, setUnownedOnly] = useStateWithStorage<boolean>(`${dbid}/${pageId}/cite_opt/locked_prospects`, true);
+    const dbid = globalContext.player.playerData?.player.dbid ?? '';
 
-    const [appliedProspects, setAppliedProspects] = React.useState<PlayerCrew[] | undefined>(undefined);
+    const { pageId } = props;
 
+    const { citeConfig, setCiteConfig } = citeContext;    
+    const { appliedProspects, setAppliedProspects } = citeContext;
+
+    const [prospects, setProspects] = useStateWithStorage<LockedProspect[]>(`${dbid}/${pageId}/cite_opt/locked_prospects`, [], { rememberForever: true });
+    const [unownedOnly, setUnownedOnly] = useStateWithStorage<boolean>(`${dbid}/${pageId}/cite_opt/locked_prospects`, false, { rememberForever: true });
+
+    React.useEffect(() => {
+        applyProspects();
+    }, [])
+    
     const corePool = globalContext.core.crew.filter(c => {
-        let res = Object.keys(c.base_skills).length === 3 && (!citeMode.rarities?.length || citeMode.rarities.includes(c.max_rarity));
+        let res = Object.keys(c.base_skills).length === 3 && (!citeConfig.rarities?.length || citeConfig.rarities.includes(c.max_rarity));
         if (res && unownedOnly) {
             res &&= !!globalContext.player.playerData?.player.character.unOwnedCrew?.find(f => f.symbol === c.symbol)
         }
         return res;
     });
-
 
     return <React.Fragment>
         <Segment>
@@ -52,9 +58,7 @@ export const CitationProspects = (props: CitationProspectsProps) => {
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.25em" }}>
                     <Button onClick={(e) => applyProspects()}>Apply Prospect State</Button>
                     <i>(State will only reflect in list once button is tapped)</i>
-
                 </div>
-
             </div>
 
         </Segment>
