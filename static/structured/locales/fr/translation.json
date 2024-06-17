@@ -91,8 +91,42 @@
                 "title": "Ajusteur des paramètres de l'algorithme\n« {{cite_opt.btp.name}} »"
             }
         },
+        "columns": {
+            "antimatter_traits": "Caractéristiques\npour\nl'antimatière",
+            "compare": "Comparer",
+            "crew": "{{base.crew}}",
+            "ev_per_cite": "EV par\ncitation",
+            "final_ev": "EV final",
+            "group_sparsity": "Disparité du\ngroupe de voyage",
+            "in_portal": "{{base.in_portal}}",
+            "quipment_score": "{{rank_names.quipment_score}}",
+            "rank": "Rang",
+            "rarity": "{{base.rarity}}",
+            "remaining_ev": "VE restant",
+            "skill_order": "Ordre des\ncompétences",
+            "stat_boosting": "Collections\naméliorant\nles statistiques",
+            "voyages_groups": "Groupes\nde voyages"
+        },
         "engine": "Algorithme",
-        "original_engine": "Algorithme Original"
+        "original_engine": "Algorithme Original",
+        "tabs": {
+            "cite": {
+                "title": "Équipiers à citer",
+                "title_short": "Citer"
+            },
+            "groups": {
+                "short_title": "Groupes",
+                "title": "Groupes des Voyages"
+            },
+            "retrievable": {
+                "title": "Récupérable Uniquement",
+                "title_short": "Récupérable"
+            },
+            "train": {
+                "title": "Équipiers à former",
+                "title_short": "Former"
+            }
+        }
     },
     "clipboard": {
         "copied_exclaim": "Copié!"
@@ -297,8 +331,8 @@
         "yesterday_gauntlet": "Gantelet d'hier"
     },
     "global": {
-        "advanced_settings": "Réglages Avancés",
         "admiral": "Amiral",
+        "advanced_settings": "Réglages Avancés",
         "and": "et",
         "any": "Quelconque",
         "apply_filters": "Appliquer des filtres",

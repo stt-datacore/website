@@ -44,8 +44,20 @@ export const EngineRunner = (props: EngineRunnerProps) => {
     const { showEV } = citeConfig;
     
     const [settingsOpen, setSettingsOpen] = React.useState(false);
+    const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>();
 
     const builtIn = createBuiltInPresets();
+    const playerData = globalContext.player.playerData ? JSON.parse(JSON.stringify(globalContext.player.playerData)) as PlayerData : undefined;		
+
+    if (playerData) {
+        playerData.citeMode = citeConfig;
+        if (appliedProspects?.length) {
+            playerData.player.character.crew = playerData.player.character.crew.concat(appliedProspects);
+        }
+        if (citeConfig.rarities?.length) {
+            playerData.player.character.crew = playerData.player.character.crew.filter(f => citeConfig.rarities.includes(f.max_rarity))
+        }
+    }
 
     const engOptions = [
         {
@@ -60,9 +72,17 @@ export const EngineRunner = (props: EngineRunnerProps) => {
         },
     ];
 
+
     React.useEffect(() => {
+        if (currentWorker) {
+            currentWorker.removeEventListener('message', workerResponse);
+            currentWorker.terminate();
+        }
+        setResults(undefined);        
         runWorker();
-    }, [currentConfig, engine, citeConfig.rarities]);
+    }, [currentConfig, engine, citeConfig.rarities, appliedProspects]);
+
+    if (!globalContext.player.playerData) return <></>
 
     return (
         <React.Fragment>
@@ -134,44 +154,33 @@ export const EngineRunner = (props: EngineRunnerProps) => {
         ];
     }
     
-	function runWorker(citeMode?: CiteMode) {
+    function workerResponse(message: { data: { result: any; }; }) {
+        const result = message.data.result as CiteData;
+
+        if (engine === 'beta_tachyon_pulse') {
+            let skmap = {} as { [key: string]: SkillOrderRarity };		
+            result.skillOrderRarities.forEach(sko => skmap[sko.skillorder] = sko);
+            let retrievable = result.crewToRetrieve.filter(f => playerData?.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length))
+            result.crewToRetrieve = retrievable.map((r, i) => ({ ...r, pickerId: i + 1 }));
+            setResults({ citeData: result, skoMap: skmap });
+        }
+        else {
+            let retrievable = result.crewToCite.filter(f => playerData?.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length))
+            result.crewToRetrieve = retrievable.map((r, i) => ({ ...JSON.parse(JSON.stringify(r)), pickerId: i + 1 }));
+            setResults({ citeData: result, skoMap: undefined });
+        }
+    }
+
+	function runWorker() {
 		const worker = new UnifiedWorker();
 		const { buffConfig } = globalContext.player;
         const { crew: allCrew, collections } = globalContext.core;
 
-		if (!globalContext.player.playerData) return;
-
-		let playerData = JSON.parse(JSON.stringify(globalContext.player.playerData)) as PlayerData;		
-
-		if (appliedProspects?.length) {
-			playerData.player.character.crew = playerData.player.character.crew.concat(appliedProspects);
-		}
-		
-		playerData.citeMode = citeMode;
-
-        if (citeConfig.rarities?.length) {
-            playerData.player.character.crew = playerData.player.character.crew.filter(f => citeConfig.rarities.includes(f.max_rarity))
-        }
-
-		worker.addEventListener('message', (message: { data: { result: any; }; }) => {
-			const result = message.data.result as CiteData;
-
-			if (engine === 'beta_tachyon_pulse') {
-				let skmap = {} as { [key: string]: SkillOrderRarity };		
-				result.skillOrderRarities.forEach(sko => skmap[sko.skillorder] = sko);
-				let retrievable = result.crewToRetrieve.filter(f => playerData.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length))
-				result.crewToRetrieve = retrievable.map((r, i) => ({ ...r, pickerId: i + 1 }));
-                setResults({ citeData: result, skoMap: skmap });
-			}
-			else {
-				let retrievable = result.crewToCite.filter(f => playerData.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length))
-				result.crewToRetrieve = retrievable.map((r, i) => ({ ...JSON.parse(JSON.stringify(r)), pickerId: i + 1 }));
-                setResults({ citeData: result, skoMap: undefined });
-			}
-
-		});
+		if (!globalContext.player.playerData || !worker) return;
 
 		const workerName = engine === 'original' ? 'citeOptimizer' : 'ironywrit';
+
+        worker.addEventListener('message', workerResponse);
 
 		if (engine === 'original') {
 			worker.postMessage({
@@ -195,6 +204,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 				} as BetaTachyonRunnerConfig
 			});	
 		}
+        
+        setCurrentWorker(worker);
 	}
-
 };

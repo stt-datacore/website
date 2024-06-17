@@ -48,7 +48,7 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
     const { tabName, data } = props;
     const [rows, setRows] = React.useState<PlayerCrew[]>([]);
 
-    const { t } = globalContext.localized;
+    const { t, tfmt } = globalContext.localized;
 
     const [paginationPage, setPaginationPage] = React.useState<number>(1);
     const [rowsPerPage, setRowsPerPage] = useStateWithStorage<number>(`${pageId}/rowsPerPage`, 25, { rememberForever: true });
@@ -86,80 +86,80 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
                         onClick={(e) => sort === 'pickerId' ? setDirection(direction === 'descending' ? 'ascending' : 'descending') : setSort('pickerId')}
                         sorted={sort === 'pickerId' ? direction : undefined}>
 
-                        Rank
+                        {t('cite_opt.columns.rank')}
                     </Table.HeaderCell>
                     <Table.HeaderCell
                         onClick={(e) => sort === 'name' ? setDirection(direction === 'descending' ? 'ascending' : 'descending') : setSort('name')}
                         sorted={sort === 'name' ? direction : undefined}>
-                        Crew
+                        {t('cite_opt.columns.crew')}
                     </Table.HeaderCell>
                     <Table.HeaderCell
                         onClick={(e) => sort === 'rarity' ? setDirection(direction === 'descending' ? 'ascending' : 'descending') : setSort('rarity')}
                         sorted={sort === 'rarity' ? direction : undefined}>
-                        Rarity
+                        {t('cite_opt.columns.rarity')}
                     </Table.HeaderCell>
                     {(engine !== 'beta_tachyon_pulse' || showEV) && <Table.HeaderCell
                         onClick={(e) => sort === 'finalEV' ? setDirection(direction === 'descending' ? 'ascending' : 'descending') : setSort('finalEV')}
                         sorted={sort === 'finalEV' ? direction : undefined}>
-                        Final EV
+                        {t('cite_opt.columns.final_ev')}
                     </Table.HeaderCell>}
                     {!training && (engine !== 'beta_tachyon_pulse' || showEV) &&
                         <React.Fragment>
                             <Table.HeaderCell
                                 onClick={(e) => sort === 'remainingEV' ? setDirection(direction === 'descending' ? 'ascending' : 'descending') : setSort('remainingEV')}
                                 sorted={sort === 'remainingEV' ? direction : undefined}>
-                                Remaining EV
+                                {t('cite_opt.columns.remaining_ev')}
                             </Table.HeaderCell>
                             <Table.HeaderCell
                                 onClick={(e) => sort === 'evPer' ? setDirection(direction === 'descending' ? 'ascending' : 'descending') : setSort('evPer')}
                                 sorted={sort === 'evPer' ? direction : undefined}>
-                                EV Per<br />Citation
+                                {tfmt('cite_opt.columns.ev_per_cite')}
                             </Table.HeaderCell>
                         </React.Fragment>
                     }
                     <Table.HeaderCell
                         onClick={(e) => sort === 'voyages' ? setDirection(direction === 'descending' ? 'ascending' : 'descending') : setSort('voyages')}
                         sorted={sort === 'voyages' ? direction : undefined}>
-                        Voyage<br />Groups
+                        {tfmt('cite_opt.columns.voyage_groups')}
                     </Table.HeaderCell>
                     {engine === 'beta_tachyon_pulse' &&
                         <React.Fragment>
                             <Table.HeaderCell
                                 onClick={(e) => sort === 'groupSparsity' ? setDirection(direction === 'descending' ? 'ascending' : 'descending') : setSort('groupSparsity')}
                                 sorted={sort === 'groupSparsity' ? direction : undefined}>
-                                Voyage<br />Group<br />Sparsity
+                                {tfmt('cite_opt.columns.group_sparsity')}
                             </Table.HeaderCell>
                             <Table.HeaderCell
                                 onClick={(e) => sort === 'amTraits' ? setDirection(direction === 'descending' ? 'ascending' : 'descending') : setSort('amTraits')}
                                 sorted={sort === 'amTraits' ? direction : undefined}>
-                                Antimatter<br />Traits
+                                {tfmt('cite_opt.columns.antimatter_traits')}
                             </Table.HeaderCell>
                             <Table.HeaderCell
                                 onClick={(e) => sort === 'colIncreased' ? setDirection(direction === 'descending' ? 'ascending' : 'descending') : setSort('colIncreased')}
                                 sorted={sort === 'colIncreased' ? direction : undefined}>
-                                Stat-<br />Boosting<br />Collections
+                                {tfmt('cite_opt.columns.stat_boosting')}
                             </Table.HeaderCell>
                             <Table.HeaderCell
                                 onClick={(e) => sort === 'skillOrder' ? setDirection(direction === 'descending' ? 'ascending' : 'descending') : setSort('skillOrder')}
                                 sorted={sort === 'skillOrder' ? direction : undefined}>
-                                Skill Order
+                                {tfmt('cite_opt.columns.skill_order')}
                             </Table.HeaderCell>
                             <Table.HeaderCell
                                 onClick={(e) => sort === 'quipment_score' ? setDirection(direction === 'descending' ? 'ascending' : 'descending') : setSort('quipment_score')}
                                 sorted={sort === 'quipment_score' ? direction : undefined}>
-                                Quipment<br />Score
+                                {tfmt('cite_opt.columns.quipment_score')}
                             </Table.HeaderCell>
                         </React.Fragment>
                     }
                     <Table.HeaderCell
                         onClick={(e) => sort === 'in_portal' ? setDirection(direction === 'descending' ? 'ascending' : 'descending') : setSort('in_portal')}
                         sorted={sort === 'in_portal' ? direction : undefined}>
-                        In Portal
+                        {tfmt('cite_opt.columns.in_portal')}
                     </Table.HeaderCell>
                     <Table.HeaderCell
                         onClick={(e) => sort === 'compare' ? setDirection(direction === 'descending' ? 'ascending' : 'descending') : setSort('compare')}
                         sorted={sort === 'compare' ? direction : undefined}>
-                        Compare
+                        {tfmt('cite_opt.columns.compare')}
                     </Table.HeaderCell>
                 </Table.Row>
             </Table.Header>

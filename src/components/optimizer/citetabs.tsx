@@ -97,17 +97,17 @@ export const CitationOptimizerTabs = (props: { pageId: string }) => {
     return <><Segment>
         {!citeData &&
             <>
-                <Icon loading name='spinner' /> Loading citation optimizer ...
+                <Icon loading name='spinner' /> {t('spinners.cite_opt')}
             </>}
 
         {citeData &&
             <>
                 <Tab
                     panes={[
-                        { menuItem: isMobile ? 'Cite' : 'Crew To Cite', render: () => <CiteOptTable data={citeData.crewToCite} tabName={'cite'} pageId={'cite'} training={false} /> },
-                        { menuItem: isMobile ? 'Retrievable' : 'Retrievable Only', render: () => <CiteOptTable data={citeData.crewToRetrieve} tabName={'retrieve'} pageId={'retrieve'} training={false} /> },
-                        { menuItem: isMobile ? 'Train' : 'Crew To Train', render: () => <CiteOptTable data={citeData.crewToTrain} tabName={'train'} pageId={'train'} training={true} /> },
-                        { menuItem: isMobile ? 'Groups' : 'Voyage Groups' + (compareCount ? ' (' + compareCount + ')' : ''), render: () => <VoyageGroupsComponent data={citeData} confine={confine} /> },
+                        { menuItem: isMobile ? t('cite_opt.tabs.cite.title_short') : t('cite_opt.tabs.cite.title'), render: () => <CiteOptTable data={citeData.crewToCite} tabName={'cite'} pageId={'cite'} training={false} /> },
+                        { menuItem: isMobile ? t('cite_opt.tabs.retrievable.title_short') : t('cite_opt.tabs.retrievable.title'), render: () => <CiteOptTable data={citeData.crewToRetrieve} tabName={'retrieve'} pageId={'retrieve'} training={false} /> },
+                        { menuItem: isMobile ? t('cite_opt.tabs.train.title_short') : t('cite_opt.tabs.train.title'), render: () => <CiteOptTable data={citeData.crewToTrain} tabName={'train'} pageId={'train'} training={true} /> },
+                        { menuItem: isMobile ? t('cite_opt.tabs.groups.title_short') : t('cite_opt.tabs.groups.title') + (compareCount ? ' (' + compareCount + ')' : ''), render: () => <VoyageGroupsComponent data={citeData} confine={confine} /> },
                     ]} />
             </>}
     </Segment>
