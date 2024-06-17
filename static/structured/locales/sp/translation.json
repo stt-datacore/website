@@ -91,8 +91,42 @@
                 "title": "Ajustador de configuración de algoritmo\n\"{{cite_opt.btp.name}}\""
             }
         },
+        "columns": {
+            "antimatter_traits": "Rasgos\nde antimateria",
+            "comparar": "Comparar",
+            "crew": "{{base.crew}}",
+            "ev_per_cite": "EV por\ncita",
+            "final_ev": "EV final",
+            "group_sparsity": "Escasez\nde grupos\nde viaje",
+            "in_portal": "{{base.in_portal}}",
+            "quipment_score": "{{rank_names.quipment_score}}",
+            "rank": "Rango",
+            "rarity": "{{base.rarity}}",
+            "remaining_ev": "EV restante",
+            "skill_order": "Orden\nde habilidades",
+            "stat_boosting": "Colecciones\nque aumentan\nlas estadísticas",
+            "voyages_groups": "Grupos\nde viaje"
+        },
         "engine": "Algoritmo",
-        "original_engine": "Algoritmo Original"
+        "original_engine": "Algoritmo Original",
+        "tabs": {
+            "cite": {
+                "title": "Tripulantes para citar",
+                "title_short": "Citar"
+            },
+            "groups": {
+                "short_title": "Grupos",
+                "title": "Grupos de Viaje"
+            },
+            "retrievable": {
+                "title": "Sólo Recuperable",
+                "title_short": "Recuperable"
+            },
+            "train": {
+                "title": "Tripulantes para entrenar",
+                "title_short": "Entrenar"
+            }
+        }
     },
     "clipboard": {
         "copied_exclaim": "¡Copiada!"
@@ -296,8 +330,8 @@
         "yesterday_gauntlet": "El reto de ayer"
     },
     "global": {
-        "advanced_settings": "Ajustes Avanzados",
         "admiral": "Almirante",
+        "advanced_settings": "Ajustes Avanzados",
         "and": "y",
         "any": "Cualquier",
         "apply_filters": "Aplicar filtros",

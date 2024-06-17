@@ -91,8 +91,42 @@
                 "title": "„{{cite_opt.btp.name}}“ Einstellungs-Tweaker"
             }
         },
+        "columns": {
+            "antimatter_traits": "Antimaterie-\nMerkmale",
+            "compare": "Vergleichen",
+            "crew": "{{base.crew}}",
+            "ev_per_cite": "EV pro\nZitierung",
+            "final_ev": "Endgültiger EV",
+            "group_sparsity": "Reisegruppen-\nSpärlichkeit",
+            "in_portal": "{{base.in_portal}}",
+            "quipment_score": "{{rank_names.quipment_score}}",
+            "rank": "Rang",
+            "rarity": "{{base.rarity}}",
+            "remaining_ev": "Verbleibender EV",
+            "skill_order": "Fertigkeitsreihenfolge",
+            "stat_boosting": "Stat-\nBoosting-\nSammlungen",
+            "voyages_groups": "Reisegruppen"
+        },
         "engine": "Algorithmus",
-        "original_engine": "Ursprünglicher Algorithmus"
+        "original_engine": "Ursprünglicher Algorithmus",
+        "tabs": {
+            "cite": {
+                "title": "Crew zu zitieren",
+                "title_short": "Zitieren"
+            },
+            "groups": {
+                "short_title": "Gruppen",
+                "title": "Reisegruppen"
+            },
+            "retrievable": {
+                "title": "Nur abrufbar",
+                "title_short": "Abrufbar"
+            },
+            "train": {
+                "title": "Crew zum Trainieren",
+                "title_short": "Trainieren"
+            }
+        }
     },
     "clipboard": {
         "copied_exclaim": "Kopiert!"
@@ -289,8 +323,8 @@
         "yesterday_gauntlet": "Die Herausforderung von gestern"
     },
     "global": {
-        "advanced_settings": "Erweiterte Einstellungen",
         "admiral": "Admiral",
+        "advanced_settings": "Erweiterte Einstellungen",
         "and": "und",
         "any": "Beliebig",
         "apply_filters": "Filter anwenden",
