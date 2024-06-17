@@ -4,6 +4,7 @@ import { EngineRunner } from './engines';
 import { CitationProspects } from './prospects';
 import { CiteConfigPanel } from './citeconfig';
 import { CitationOptimizerTabs } from './citetabs';
+import { CiteOptExplainer } from './explainer';
 
 
 
@@ -18,6 +19,7 @@ export const CiteOptComponent = () => {
 
         <CitationOptimizerConfigProvider pageId={pageId}>
             <React.Fragment>
+                <CiteOptExplainer />
                 <EngineRunner pageId={pageId} />
                 <CitationProspects pageId={pageId} />
                 <CiteConfigPanel pageId={pageId} />

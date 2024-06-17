@@ -62,24 +62,6 @@
         "quipment_buffs": "Quipment Buffs"
     },
     "cite_opt": {
-        "tabs": {
-            "cite": {
-                "title": "Crew to Cite",
-                "title_short": "Cite"
-            },
-            "train": {
-                "title": "Crew to Train",
-                "title_short": "Train"
-            },
-            "retrievable": {
-                "title": "Retrievable Only",
-                "title_short": "Retrievable"
-            },
-            "groups": {
-                "title": "Voyage Groups",
-                "short_title": "Groups"
-            }
-        },
         "btp": {
             "name": "Beta Tachyon Pulse",
             "settings": {
@@ -109,8 +91,42 @@
                 "title": "\"{{cite_opt.btp.name}}\" Settings Tweaker"
             }
         },
+        "columns": {
+            "crew": "{{base.crew}}",
+            "rarity": "{{base.rarity}}",
+            "quipment_score": "{{rank_names.quipment_score}}",
+            "in_portal": "{{base.in_portal}}",
+            "rank": "Rank",
+            "voyages_groups": "Voyage\nGroups",
+            "group_sparsity": "Voyage\nGroup\nSparsity",
+            "antimatter_traits": "Antimatter\nTraits",
+            "stat_boosting": "Stat-\nBoosting\nCollections",
+            "skill_order": "Skill\nOrder",
+            "final_ev": "Final EV",
+            "remaining_ev": "Remaining EV",
+            "ev_per_cite": "EV Per\nCitation",
+            "compare": "Compare"            
+        },
         "engine": "Engine",
-        "original_engine": "Original Algorithm"
+        "original_engine": "Original Algorithm",
+        "tabs": {
+            "cite": {
+                "title": "Crew to Cite",
+                "title_short": "Cite"
+            },
+            "groups": {
+                "short_title": "Groups",
+                "title": "Voyage Groups"
+            },
+            "retrievable": {
+                "title": "Retrievable Only",
+                "title_short": "Retrievable"
+            },
+            "train": {
+                "title": "Crew to Train",
+                "title_short": "Train"
+            }
+        }
     },
     "clipboard": {
         "copied_exclaim": "Copied!"
@@ -307,8 +323,8 @@
         "yesterday_gauntlet": "Yesterday's Gauntlet"
     },
     "global": {
-        "advanced_settings": "Advanced Settings",
         "admiral": "Admiral",
+        "advanced_settings": "Advanced Settings",
         "and": "and",
         "any": "Any",
         "apply_filters": "Apply Filters",
@@ -958,7 +974,8 @@
     "spinners": {
         "default": "Loading data...",
         "demands": "Calculating crew demands...",
-        "quipment": "Calculating quipment..."
+        "quipment": "Calculating quipment...",
+        "cite_opt": "Loading citation optimizer..."
     },
     "tool_roster_picker": {
         "all_crew": {

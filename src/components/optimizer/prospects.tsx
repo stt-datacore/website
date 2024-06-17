@@ -30,8 +30,24 @@ export const CitationProspects = (props: CitationProspectsProps) => {
 
     React.useEffect(() => {
         applyProspects();
-    }, [])
+    }, []);
     
+    React.useEffect(() => {
+        if (prospects.length !== undefined) {
+            let changed = false;
+            for (let p of prospects) {
+                if (p.rarity === p.max_rarity) {
+                    p.rarity = 1;
+                    changed = true;
+                }
+            }
+            if (changed) {
+                setProspects([ ... prospects ]);
+                return;
+            }
+        }
+    }, [prospects]);
+
     const corePool = globalContext.core.crew.filter(c => {
         let res = Object.keys(c.base_skills).length === 3 && (!citeConfig.rarities?.length || citeConfig.rarities.includes(c.max_rarity));
         if (res && unownedOnly) {
@@ -40,6 +56,7 @@ export const CitationProspects = (props: CitationProspectsProps) => {
         return res;
     });
 
+    if (!Array.isArray(prospects)) return <></>
     return <React.Fragment>
         <Segment>
             <h3>Prospects</h3>
@@ -47,7 +64,7 @@ export const CitationProspects = (props: CitationProspectsProps) => {
             <Checkbox checked={unownedOnly} onChange={(e, { checked }) => setUnownedOnly(!!checked)}
                 label={'Unowned Crew Only'} />
 
-            <div style={{ display: "flex", flexDirection: "row", gap: "1em", alignItems: "center", marginTop: "0.5em" }}>
+            <div style={{ display: "flex", flexDirection: "row", gap: "1em", alignItems: "flex-start", marginTop: "0.5em" }}>
 
                 <div style={{ display: "block" }}>
                     <ProspectPicker
@@ -65,6 +82,16 @@ export const CitationProspects = (props: CitationProspectsProps) => {
     </React.Fragment>
 
     function applyProspects() {
+        
+        if (!prospects) {
+            setProspects([]);
+            return;
+        }
+        else if (prospects.length === undefined) {
+            setProspects([]);
+            return;
+        }
+        
         const { crew } = globalContext.core;
         const { buffConfig } = globalContext.player;
 
