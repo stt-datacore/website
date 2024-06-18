@@ -3,7 +3,7 @@ name: Augment Commander O'Brien
 rarity: 5
 series: original
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 20/06/2018
 published: true
