@@ -416,7 +416,8 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 			crew = JSON.parse(JSON.stringify(templateCrew));
 		}
 		let workitem: PlayerCrew = owned;
-
+		
+		crew.is_new = owned.is_new;
 		crew.id = owned.id;
 		crew.expires_in = owned.expires_in;
 

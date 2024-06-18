@@ -628,6 +628,8 @@ export interface Player {
     engineering_skill?: ComputedSkill;
 
     data: any;
+
+    is_new?: boolean;
   }
 
   export interface GauntletPairScore {
