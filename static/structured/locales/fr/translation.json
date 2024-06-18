@@ -331,6 +331,9 @@
         "yesterday_gauntlet": "Gantelet d'hier"
     },
     "global": {
+        "new": "Nouveau",
+        "new_m": "Nouveau",
+        "new_f": "Nouvelle",
         "admiral": "Amiral",
         "advanced_settings": "Réglages Avancés",
         "and": "et",

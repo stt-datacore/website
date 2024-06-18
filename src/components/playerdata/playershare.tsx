@@ -7,6 +7,22 @@ import { Notification } from '../../components/page/notification';
 import { useStateWithStorage } from '../../utils/storage';
 import { exportCrew, downloadData } from '../../utils/crewutils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import { PlayerCrew } from '../../model/player';
+
+interface ShortCrew {
+	lastUpdate: Date,
+	shortCrewList: {
+		crew: [{
+			id: number,
+			rarity: number
+		}],
+		c_stored_immortals: number[],
+		stored_immortals: [{
+			id: number,
+			quantity: number
+		}]
+	}
+}
 
 enum ProfileUploadState {
 	Idle,
@@ -87,7 +103,6 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 	const [profileAutoUpdate, setProfileAutoUpdate] = useStateWithStorage(dbid + '/tools/profileAutoUpdate', false, { rememberForever: true });
 	const [copied, setCopied] = React.useState(false);
 	const [dbidCopied, setDBIDCopied] = React.useState(false);
-
     if (!playerData) return (<></>);
 
 	const PROFILE_LINK = typeof window !== 'undefined' ? window.location.origin + `/profile?dbid=${dbid}` : `${process.env.GATSBY_DATACORE_URL}profile/?dbid=${dbid}`;
@@ -236,6 +251,8 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 
 	const [showResponse, setShowResponse] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
+	
+	const { setNewCrew } = globalContext.player;
 
 	React.useEffect(() => {
 		if (!strippedPlayerData) return;
@@ -288,6 +305,26 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 
 	
 	function uploadProfile(): void {
+		let dbid = strippedPlayerData?.player.dbid;
+		if (dbid) {
+			fetch(`${process.env.GATSBY_DATACORE_URL}api/profile?dbid=${dbid}&short_crew=1`)
+				.then((result) => result.json())
+				.then((short_crew: ShortCrew) => {
+					if (setNewCrew) {
+						let changedCrew = strippedPlayerData?.player.character.crew.filter(f => !short_crew.shortCrewList.crew.find(cf => cf.id === f.archetype_id && cf.rarity === f.rarity));
+						setNewCrew(changedCrew);
+					}
+				})
+				.then(() => {
+					setTimeout(() => continueUpload());
+				})
+				.catch(() => {
+					setTimeout(() => continueUpload());
+				});
+		}
+	}
+
+	function continueUpload(): void {
 		let jsonBody = JSON.stringify({
 			dbid: strippedPlayerData?.player.dbid,
 			player_data: strippedPlayerData
@@ -299,7 +336,7 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 				'Content-Type': 'application/json'
 			},
 			body: jsonBody
-		}).then(() => {
+		}).then(() => {			
 			// if (uploadState === ProfileUploadState.ManualUpdate)
 			// 	if (typeof window !== 'undefined') window.open(profileLink, '_blank');
 			if (updateSessionState) updateSessionState('profileUpload', ProfileUploadState.Success);
@@ -311,4 +348,5 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 			setShowResponse(true);
 		});
 	}
+
 };

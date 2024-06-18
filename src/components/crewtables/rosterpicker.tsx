@@ -97,6 +97,12 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				return;
 			}
 			rosterCrew = rosterizeMyCrew(playerData.player.character.crew, ephemeral?.activeCrew ?? []);
+			if (globalContext.player.newCrew?.length) {
+				globalContext.player.newCrew.forEach((crew) => {
+					let rcrew = rosterCrew.filter(f => f.archetype_id === crew.archetype_id && f.rarity === crew.rarity);
+					rcrew?.forEach((c) => c.is_new = true)
+				});
+			}
 			setMyCrew([...rosterCrew]);
 			setRosterCrew([...rosterCrew]);
 		}
@@ -162,6 +168,10 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 		let crewmanId = 1;
 		myCrew.forEach(crew => {
+			if (crew.is_new) {
+				console.log('new crew', crew);
+			}
+		
 			const crewman = {
 				... oneCrewCopy(crew),
 				//id: crewmanId++,

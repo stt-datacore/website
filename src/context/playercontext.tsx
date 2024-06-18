@@ -1,5 +1,5 @@
-import React from 'react';
-import { CompactCrew, GameEvent, PlayerData, Voyage, VoyageDescription } from '../model/player';
+import React, { useState } from 'react';
+import { CompactCrew, GameEvent, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
 import { useStateWithStorage } from '../utils/storage';
 import { DataContext, DataProviderProperties } from './datacontext';
 import { BuffStatTable, calculateBuffConfig, calculateMaxBuffs } from '../utils/voyageutils';
@@ -20,6 +20,8 @@ export interface PlayerContextData {
 	noGradeColors: boolean,
 	setNoGradeColors: (value: boolean) => void
 	setInput?: (value: PlayerData | undefined) => void;
+	setNewCrew: (value: PlayerCrew[] | undefined) => void;
+	newCrew?: PlayerCrew[];
 	reset?: () => void;
 	playerData?: PlayerData;
 	ephemeral?: IEphemeralData;
@@ -56,6 +58,7 @@ const defaultSessionStates = {
 export const defaultPlayer = {
 	loaded: false,
 	setInput: () => {},
+	setNewCrew: () => false,
 	reset: () => {},
 	sessionStates: defaultSessionStates,
 	updateSessionState: () => {},
@@ -88,7 +91,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const [sessionStates, setSessionStates] = useStateWithStorage<ISessionStates | undefined>('sessionStates', defaultSessionStates);
 	const [showPlayerGlance, setShowPlayerGlance] = useStateWithStorage(`${stripped ? stripped.player.dbid : ''}_showPlayerGlance`, true, { rememberForever: true })
 	const [noGradeColors, internalSetNoGradeColors] = React.useState(tiny.getValue<boolean>('noGradeColors') ?? false)
-
+	const [newCrew, setNewCrew] = useStateWithStorage(`${stripped ? stripped.player.dbid : ''}/newCrew`, undefined as PlayerCrew[] | undefined);
 	const setNoGradeColors = (value: boolean) => {
 		tiny.setValue('noGradeColors', value, true);
 		internalSetNoGradeColors(value);
@@ -203,7 +206,9 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		showPlayerGlance,
 		setShowPlayerGlance,
 		noGradeColors,
-		setNoGradeColors
+		setNoGradeColors,
+		setNewCrew,
+		newCrew
 	} as PlayerContextData;
 
 	return (

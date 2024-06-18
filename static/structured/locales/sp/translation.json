@@ -330,6 +330,9 @@
         "yesterday_gauntlet": "El reto de ayer"
     },
     "global": {
+        "new": "Nuevo",
+        "new_m": "Neuvo",
+        "new_f": "Neuva",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
         "and": "y",
