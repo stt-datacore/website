@@ -222,7 +222,7 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 				<p>{t('fbb.crew_lists.heading')}</p>
 				<ExportOptions prefs={exportPrefs} updatePrefs={setExportPrefs} />
 				<Popup
-					content='Copied!'
+					content={t('clipboard.copied_exclaim')}
 					on='click'
 					position='right center'
 					size='tiny'
