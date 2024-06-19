@@ -315,6 +315,175 @@
         "shuttles": "Facción",
         "skirmish": "Escaramuza"
     },
+    "fbb": {
+        "select": "Selecciona una batalla contra un jefe",
+        "attempted": {
+            "clipboard": "Copiar intento de tripulantes al portapapeles",
+            "title": "Mantén un registro del equipo que ha sido juzgado por esta cadena combinada."
+        },
+        "cab": {
+            "header": "Le {{link}} est un autre outil qui peut vous aider, vous et votre flotte, à coordonner les attaques dans une bataille de boss de flotte. Cliquez sur le bouton ci-dessous pour copier les traits connus et la liste des traits possibles à utiliser avec cette feuille Google. (actuellement v3.02).",
+            "name": "FBB Combo Chain Helper",
+            "title": "CAB's {{fbb.cab.name}}"
+        },
+        "chain_n": "Cadena #{{n}}",
+        "columns": {
+            "coverage": "Cobertura",
+            "crew": "{{base.crew}}",
+            "given_traits": "Rasgos conocidos",
+            "mystery_traits": "Rasgos desconocidos",
+            "rarity": "{{base.rarity}}",
+            "trial": "Intento"
+        },
+        "crew_lists": {
+            "clipboard": "Copiar posible tripulación al portapapeles",
+            "heading": "Copie las listas de posibles tripulantes, agrupadas por nodos y rasgos, para compartirlas más fácilmente en Discord u otros foros.",
+            "customize": {
+                "heading": "Puede personalizar la apariencia de la exportación. Las siguientes preferencias se recordarán en todas las exportaciones posteriores.",
+                "options": {
+                    "alpha_exception": "Excepción alfa",
+                    "bullet": "Viñeta",
+                    "compact": "Compacto",
+                    "coverage_potential": "Potencial de cobertura",
+                    "crew_delimiter": "Delimitador de tripulación",
+                    "valores predeterminados": "valores predeterminados",
+                    "duplicate_traits": "Rasgos duplicados",
+                    "export_header": "Exportar encabezado",
+                    "formatting": "Formateando",
+                    "full_exports_only": "Sólo exportaciones completas",
+                    "load_preset_values": "Cargar valores preestablecidos",
+                    "node_header": "Encabezado de nódulo",
+                    "non_optimal": "No óptimo",
+                    "one_hand_exception": "Excepción de una mano",
+                    "possible_solutions": "Posibles soluciones",
+                    "solved_nodes": "Nodos resueltos",
+                    "traits": "Rasgos",
+                    "unique": "Único",
+                    "non_portal": "No Portal",
+                    "dropdowns": {
+                        "header": {
+                            "always": "Mostrar siempre la cadena del jefe",
+                            "initial": "Mostrar sólo en cadenas nuevas",
+                            "hide": "No mostrar"
+                        },
+                        "solve": {
+                            "always": "Mostrar siempre soluciones",
+                            "spot": "Mostrar sólo soluciones no confirmadas",
+                            "hide": "No mostrar"
+                        },
+                        "format": {
+                            "italic": "Cursiva (*)",
+                            "bold": "Negrita (**)",
+                            "bolditalic": "Negrita cursiva (***)",
+                            "underline": "Subrayado (__)",
+                            "italicunderline": "Subrayado en cursiva (*__)",
+                            "boldunderline": "Subrayado en negrita (**__)",
+                            "bolditalicunderline": "Subrayado en negrita y cursiva (***__)",
+                            "none": "Sin formato"
+                        },
+                        "show": {
+                            "show": "Mostrar",
+                            "hide": "No mostrar"
+                        },
+                        "bullet": {
+                            "simple": "Guión",
+                            "number": "Número",
+                            "full": "Nódulo y número",
+                            "none": "Ninguno"
+                        },
+                        "delimiter": {
+                            "comma": "Coma",
+                            "semicolon": "Punto y coma"
+                        },
+                        "duplicates": {
+                            "number": "Mostrar el número necesario",
+                            "ignore": "No numerar"
+                        }
+                    }
+                },
+                "title": "Personalizar exportación"
+            },
+            "title": "Exportar listas de tripulantes"
+        },
+        "heading": "Utilice esta herramienta para ayudar a activar bonificaciones de cadena combinada en una batalla contra un jefe de flota.",
+        "node_n": "Nódulo {{n}}",
+        "popup": {
+            "crew_solved": "¡{{crew}} resolvió un nódulo!",
+            "mark_as_tried": "Marcar como probado"
+        },
+        "possible_solutions": {
+            "heading": "Aquí está la tripulación que cumple con las condiciones de los nódulos restantes sin resolver.",
+            "tap_approve_decline": "Toque los botones {{aprobar}} {{rechazar}} para marcar a la tripulación como probada.",
+            "tap_trait_solve": "Toca un rasgo si resuelve un nódulo. Toca un equipo para marcarlo como probado.",
+            "title": "Posibles soluciones"
+        },
+        "current_solutions": {
+            "title": "Soluciones actuales",
+            "heading": "Esta tabla muestra el progreso de la cadena combinada actual. Actualiza los rasgos misteriosos cuando se resuelva un nódulo."
+        },
+        "possible_traits": {
+            "clipboard": "Copiar posibles rasgos al portapapeles",
+            "heading": "Esta tabla debe coincidir con la lista de posibles rasgos del juego.",
+            "hint": "Buscar rasgos",
+            "manual_exclusion": "Puedes excluir manualmente rasgos de la consideración.",
+            "title": "Posibles rasgos"
+        },
+        "sections": {
+            "crew": {
+                "description": "Búsqueda de tripulación individual",
+                "title": "Tripulación"
+            },
+            "groups": {
+                "description": "Ver soluciones agrupadas por características",
+                "title": "Grupos"
+            },
+            "traits": {
+                "description": "Ver la cadena combinada actual",
+                "title": "Rasgos"
+            }
+        },
+        "settings": {
+            "optimizations": {
+                "hide_non_optimal": "Ocultar tripulación no óptima",
+                "prioritize_coverage": "Priorizar tripulación con cobertura",
+                "title": "Optimizaciones"
+            },
+            "unofficial": {
+                "hide_alpha": "Eliminar excepciones alfa",
+                "hide_one_hand": "Eliminar excepciones de una mano",
+                "title": "Reglas no oficiales"
+            },
+            "user_prefs": {
+                "confirm_solves": "Confirmar rasgo resuelto",
+                "show_ship_ability": "Mostrar capacidad del buque",
+                "título": "Preferencias de usuario"
+            },
+            "warn": "Es posible que las soluciones correctas no aparezcan en la lista con la configuración actual."
+        },
+        "solves": {
+            "pending": "pendiente de confirmación",
+            "solved": "Nódulo {{n}} resuelto",
+            "partially_solved": "Nódulo {{n}} parcialmente resuelto"
+        },
+        "tips": {
+            "alpha_exceptions_a": "Excepciones alfa",
+            "alpha_exceptions_b": "son tripulantes que podrían ser excluidos según una regla no oficial que elimina algunos de sus rasgos por nombre. Sólo debes probar las excepciones alfa si has agotado todas las demás opciones enumeradas.",
+            "coverage_a": "Cobertura",
+            "coverage_b": "identifica al equipo que podría ser soluciones para múltiples nodos. En la vista de grupos, el equipo con cobertura está en cursiva; si prioriza al equipo con cobertura, algunos miembros del equipo se ocultarán cuando otros puedan probarse como posibles soluciones para más nodos. vista de tripulante, se enumera el número de nodos potenciales.",
+            "non_optimals_a": "No óptimos",
+            "non_optimals_b": "son tripulantes cuyos únicos rasgos coincidentes son un subconjunto de rasgos de otra posible solución para ese nódulo. Sólo debes probar una tripulante no óptima si no posees ninguna tripulante óptima.",
+            "one_hand_exception_a": "Excepciones de una mano",
+            "one_hand_exception_b": "son tripulantes que podrían ser descartados según una regla no oficial que limita las soluciones a rasgos con no más de un puñado de tripulantes coincidentes.",
+            "title": "Consejos",
+            "trait_colors_a": "Colores característicos",
+            "trait_colors_b": "ayuda a visualizar la rareza de cada rasgo por nódulo, por ejemplo, un rasgo dorado significa que su tripulante es la única tripulante posible con ese rasgo en ese nódulo, un rasgo morado es un rasgo compartido por 2 posibles tripulantes en ese nódulo, un El rasgo azul es compartido por 3 posibles tripulantes, etc. Tenga en cuenta que las posibles excepciones alfa siempre son naranjas, independientemente de la rareza.",
+            "trait_numbers_a": "Números de rasgos",
+            "trait_numbers_b": "identifica para cuántos nodos restantes ese rasgo es probablemente una solución, según una regla no oficial que dice que los rasgos duplicados en el grupo siempre son una solución."
+        },
+        "undo_solve": "Deshacer resolver",
+        "x_y_confirmed_solved": "{{x}}/{{y}} confirmado resuelto",
+        "x_y_solved": "{{x}}/{{y}} resuelto"
+    },
     "gauntlet": {
         "browse_gauntlets": "Explorar los retos",
         "gauntlet": "Reto",
@@ -348,6 +517,7 @@
         "yesterday_gauntlet": "El reto de ayer"
     },
     "global": {
+        "notes": "Notas",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
         "and": "y",
@@ -421,6 +591,7 @@
     "hints": {
         "apply_buffs": "Aplicar efectos",
         "display_buffs": "Mostrar efectos",
+        "filter_by_availability": "Filtrar por disponibilidad",
         "filter_by_item_type": "Filtrar por tipo de artículo",
         "filter_by_owned_status": "Filtrar por estado de propiedad",
         "filter_by_portal_status": "Filtrar por estado del portal",

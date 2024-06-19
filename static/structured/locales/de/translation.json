@@ -309,6 +309,175 @@
         "shuttles": "Fraktion",
         "skirmish": "Scharmützel"
     },
+    "fbb": {
+        "select": "Wähle einen Bosskampf aus",
+        "attempted": {
+            "clipboard": "Kopiere versuchten Crew in die Zwischenablage",
+            "title": "Behalte den Überblick über Crewmitglieder, die für diese Combo-Kette versucht wurden."
+        },
+        "cab": {
+            "header": "Der {{link}} ist ein weiteres Tool, das Ihnen und Ihrer Flotte dabei helfen kann, Angriffe in einem Fleet Boss Battle zu koordinieren. Klicken Sie auf die Schaltfläche unten, um die bekannten Merkmale und die Liste der möglichen Merkmale für die Verwendung mit diesem Google Sheet (derzeit v3.02) zu kopieren.",
+            "name": "FBB Combo Chain Helper",
+            "title": "CAB's FBB Combo Chain Helper"
+        },
+        "chain_n": "Kette #{{n}}",
+        "columns": {
+            "coverage": "Abdeckung",
+            "crew": "{{base.crew}}",
+            "given_traits": "Bekannte Merkmale",
+            "mystery_traits": "Unbekannte Merkmale",
+            "rarity": "{{base.rarity}}",
+            "trial": "Versuch"
+        },
+        "crew_lists": {
+            "clipboard": "Mögliche Crew in die Zwischenablage kopieren",
+            "heading": "Kopieren Sie die Listen möglicher Crewmitglieder, gruppiert nach Knoten und Merkmalen, um sie einfacher auf Discord oder anderen Foren teilen zu können.",
+            "customize": {
+                "heading": "Sie können das Erscheinungsbild des Exports anpassen. Die folgenden Einstellungen werden bei allen nachfolgenden Exporten gespeichert.",
+                "options": {
+                    "alpha_exception": "Alpha-Ausnahme",
+                    "bullet": "Aufzählungspunkt",
+                    "compact": "Kompakt",
+                    "coverage_potential": "Abdeckungspotenzial",
+                    "crew_delimiter": "Crew-Trennzeichen",
+                    "defaults": "Standardwerte",
+                    "duplicate_traits": "Doppelte Eigenschaften",
+                    "export_header": "Exportkopfzeile",
+                    "formatting": "Formatierung",
+                    "full_exports_only": "Nur vollständige Exporte",
+                    "load_preset_values": "Voreingestellte Werte laden",
+                    "node_header": "Knotenkopfzeile",
+                    "non_optimal": "Nicht optimal",
+                    "one_hand_exception": "Einhand-Ausnahme",
+                    "possible_solutions": "Mögliche Lösungen",
+                    "solved_nodes": "Gelöste Knoten",
+                    "traits": "Eigenschaften",
+                    "unique": "Einzigartig",
+                    "non_portal": "Kein Portal",
+                    "dropdowns": {
+                        "header": {
+                            "always": "Boss-Kette immer anzeigen",
+                            "initial": "Nur bei neuen Ketten anzeigen",
+                            "hide": "Nicht anzeigen"
+                        },
+                        "solve": {
+                            "always": "Immer Lösungen anzeigen",
+                            "spot": "Nur unbestätigte Lösungen anzeigen",
+                            "hide": "Nicht anzeigen"
+                        },
+                        "format": {
+                            "italic": "Kursiv (*)",
+                            "bold": "Fett (**)",
+                            "bolditalic": "Fett kursiv (***)",
+                            "underline": "Unterstrichen (__)",
+                            "italicunderline": "Kursiv unterstrichen (*__)",
+                            "boldunderline": "Fett unterstrichen (**__)",
+                            "bolditalicunderline": "Fett kursiv unterstrichen (***__)",
+                            "none": "Keine Formatierung"
+                        },
+                        "show": {
+                            "show": "Anzeigen",
+                            "hide": "Nicht anzeigen"
+                        },
+                        "bullet": {
+                            "simple": "Strich",
+                            "number": "Zahl",
+                            "full": "Knoten und Zahl",
+                            "none": "Keine"
+                        },
+                        "delimiter": {
+                            "comma": "Komma",
+                            "semicolon": "Semikolon"
+                        },
+                        "duplicates": {
+                            "number": "Erforderliche Nummer anzeigen",
+                            "ignore": "Nicht nummerieren"
+                        }
+                    }
+                },
+                "title": "Export anpassen"
+            },
+            "title": "Crewlisten exportieren"
+        },
+        "heading": "Verwenden Sie dieses Tool, um Combo-Kettenboni in einem Flottenbosskampf zu aktivieren.",
+        "node_n": "Knoten {{n}}",
+        "popup": {
+            "crew_solved": "{{crew}} hat einen Knoten gelöst!",
+            "mark_as_tried": "Als versucht markieren"
+        },
+        "possible_solutions": {
+            "heading": "Hier ist die Crew, die die Bedingungen der verbleibenden ungelösten Knoten erfüllt.",
+            "tap_approve_decline": "Tippen Sie auf die Schaltflächen {{approve}} {{decline}}, um die Crew als versucht zu markieren.",
+            "tap_trait_solve": "Tippen Sie auf eine Eigenschaft, wenn sie ein Problem löst. Tippen Sie auf eine Crew, um sie als ausprobiert zu markieren.",
+            "title": "Mögliche Lösungen"
+        },
+        "current_solutions": {
+            "title": "Aktuelle Lösungen",
+            "heading": "Diese Tabelle zeigt den Fortschritt der aktuellen Combo-Kette. Aktualisieren Sie die Mystery-Merkmale, wenn ein Knoten gelöst ist."
+        },
+        "possible_traits": {
+            "clipboard": "Mögliche Eigenschaften in die Zwischenablage kopieren",
+            "heading": "Diese Tabelle sollte mit der Liste der möglichen Eigenschaften im Spiel übereinstimmen.",
+            "hint": "Nach Eigenschaften suchen",
+            "manual_exclusion": "Sie können Eigenschaften manuell von der Betrachtung ausschließen.",
+            "title": "Mögliche Eigenschaften"
+        },
+        "sections": {
+            "crew": {
+                "description": "Suche nach individueller Crew",
+                "title": "Crew"
+            },
+            "groups": {
+                "description": "Lösungen nach Merkmalen gruppiert anzeigen",
+                "title": "Gruppen"
+            },
+            "traits": {
+                "description": "Aktuelle Kombinationskette anzeigen",
+                "title": "Merkmale"
+            }
+        },
+        "settings": {
+            "optimizations": {
+                "hide_non_optimal": "Nicht optimale Crew ausblenden",
+                "prioritize_coverage": "Crew mit Abdeckung priorisieren",
+                "title": "Optimierungen"
+            },
+            "unofficial": {
+                "hide_alpha": "Alpha-Ausnahmen entfernen",
+                "hide_one_hand": "Einhand-Ausnahmen entfernen",
+                "title": "Inoffizielle Regeln"
+            },
+            "user_prefs": {
+                "confirm_solves": "Bestätigung der Lösung der Eigenschaft",
+                "show_ship_ability": "Fähigkeit des Schiffs anzeigen",
+                "title": "Benutzereinstellungen"
+            },
+            "warn": "Mit den aktuellen Einstellungen werden möglicherweise keine korrekten Lösungen aufgeführt."
+        },
+        "solves": {
+            "pending": "Bestätigung steht aus",
+            "solved": "Knoten {{n}} gelöst",
+            "partially_solved": "Knoten {{n}} teilweise gelöst"
+        },
+        "tips": {
+            "alpha_exceptions_a": "Alpha-Ausnahmen",
+            "alpha_exceptions_b": "sind Crewmitglieder, die aufgrund einer inoffiziellen Regel ausgeschlossen werden könnten, die einige ihrer Eigenschaften namentlich ausschließt. Sie sollten Alpha-Ausnahmen nur ausprobieren, wenn Sie alle anderen aufgelisteten Optionen ausgeschöpft haben.",
+            "coverage": "Abdeckung",
+            "coverage_b": "identifiziert Crewmitglieder, die Lösungen für mehrere Knoten sein könnten. In der Gruppenansicht werden Crewmitglieder mit Abdeckung kursiv dargestellt; wenn Sie Crewmitglieder priorisieren, bei der Abdeckung werden einige Crewmitglieder ausgeblendet, während andere als mögliche Lösungen für weitere Knoten ausprobiert werden können. In der Crew-Ansicht wird die Anzahl der potenziellen Knoten aufgelistet.",
+            "non_optimals_a": "Nicht-Optimale",
+            "non_optimals_b": "sind Crewmitglieder, deren einzige übereinstimmende Eigenschaften eine Teilmenge von Eigenschaften einer anderen möglichen Lösung für diesen Knoten sind. Sie sollten nicht-optimale Crewmitglieder nur ausprobieren, wenn Sie keine optimale Crew besitzen.",
+            "one_hand_exception_a": "Einhand-Ausnahmen",
+            "one_hand_exception_b": "sind Crewmitglieder, die aufgrund einer inoffiziellen Regel ausgeschlossen werden könnten, die Lösungen auf Eigenschaften mit nicht mehr als einer Handvoll übereinstimmender Crewmitglieder beschränkt.",
+            "title": "Tippe",
+            "trait_colors": "Merkmalsfarben",
+            "trait_colors_b": "helfen, die Seltenheit jedes Merkmals pro Knoten zu visualisieren, z. B. bedeutet ein goldenes Merkmal, dass seine Crew die einzig mögliche Crew mit diesem Merkmal in diesem Knoten ist, ein violettes Merkmal ist ein Merkmal, das von 2 möglichen Crewmitgliedern in diesem Knoten geteilt wird, ein blaues Merkmal wird von 3 möglichen Crewmitgliedern geteilt usw. Beachten Sie, dass potenzielle Alpha-Ausnahmen unabhängig von der Seltenheit immer orange sind.",
+            "trait_numbers": "Merkmalsnummern",
+            "trait_numbers_b": "identifizieren, für wie viele verbleibende Knoten dieses Merkmal wahrscheinlich eine Lösung ist, basierend auf einer inoffiziellen Regel, dass doppelte Merkmale im Pool immer eine Lösung sind."
+        },
+        "undo_solve": "Lösen rückgängig machen",
+        "x_y_confirmed_solved": "{{x}}/{{y}} als gelöst bestätigt",
+        "x_y_solved": "{{x}}/{{y}} als gelöst"
+    },
     "gauntlet": {
         "browse_gauntlets": "Herausforderungen durchlesen",
         "gauntlet": "Herausforderung",
@@ -341,6 +510,7 @@
         "yesterday_gauntlet": "Die Herausforderung von gestern"
     },
     "global": {
+        "notes": "Anmerkungen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
         "and": "und",
@@ -412,6 +582,7 @@
     "hints": {
         "apply_buffs": "Buffs anwenden",
         "display_buffs": "Buffs anzeigen",
+        "filter_by_availability": "Filtern nach Verfügbarkeit",
         "filter_by_item_type": "Filtern nach Artikeltyp",
         "filter_by_owned_status": "Filtern nach Besitzstatus",
         "filter_by_portal_status": "Filtern nach Portalstatus",

@@ -157,6 +157,7 @@ type MarkCrewProps = {
 
 export const MarkCrew = (props: MarkCrewProps) => {
 	const { crew, trigger } = props;
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 
 	const [showPicker, setShowPicker] = React.useState<boolean>(false);
 
@@ -207,7 +208,7 @@ export const MarkCrew = (props: MarkCrewProps) => {
 		return (
 			<Button.Group>
 				<Popup
-					content={`${crew.name} solved a node!`}
+					content={t('fbb.popup.crew_solved', { crew: `${crew.name}`})}
 					mouseEnterDelay={500}
 					hideOnScroll
 					trigger={
@@ -217,7 +218,7 @@ export const MarkCrew = (props: MarkCrewProps) => {
 					}
 				/>
 				<Popup
-					content={`Mark as tried`}
+					content={t('fbb.popup.mark_as_tried')}
 					mouseEnterDelay={500}
 					hideOnScroll
 					trigger={

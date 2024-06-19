@@ -167,7 +167,7 @@ type CrewFullExporterProps = {
 };
 
 export const CrewFullExporter = (props: CrewFullExporterProps) => {
-	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
+	const { TRAIT_NAMES, t, tfmt } = React.useContext(GlobalContext).localized;
 	const { exportPrefs, setExportPrefs } = React.useContext(UserContext);
 	const { bossBattle: { description, chainIndex } } = React.useContext(SolverContext);
 	const { solver, optimizer } = props;
@@ -218,8 +218,8 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 	return (
 		<Message style={{ margin: '2em 0' }}>
 			<Message.Content>
-				<Message.Header>Export Crew Lists</Message.Header>
-				<p>Copy the lists of possible crew, grouped by nodes and traits, for easier sharing on Discord or other forums.</p>
+				<Message.Header>{t('fbb.crew_lists.title')}</Message.Header>
+				<p>{t('fbb.crew_lists.heading')}</p>
 				<ExportOptions prefs={exportPrefs} updatePrefs={setExportPrefs} />
 				<Popup
 					content='Copied!'
@@ -227,7 +227,7 @@ export const CrewFullExporter = (props: CrewFullExporterProps) => {
 					position='right center'
 					size='tiny'
 					trigger={
-						<Button icon='clipboard' content='Copy possible crew to clipboard' onClick={() => copyFull()} />
+						<Button icon='clipboard' content={t('fbb.crew_lists.clipboard')} onClick={() => copyFull()} />
 					}
 				/>
 				{/* <Popup
@@ -252,53 +252,99 @@ type ExportOptionsProps = {
 
 const ExportOptions = (props: ExportOptionsProps) => {
 	const { prefs, updatePrefs } = props;
-
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const [isActive, setIsActive] = React.useState(false);
 
 	const headerOptions = [
-		{ key: 'always', text: 'Always show boss chain', value: 'always' },
-		{ key: 'initial', text: 'Show on new chains only', value: 'initial' },
-		{ key: 'hide', text: 'Do not show', value: 'hide' }
+		{ key: 'always', text: t('fbb.crew_lists.customize.options.dropdowns.header.always'), value: 'always' },
+		{ key: 'initial', text: t('fbb.crew_lists.customize.options.dropdowns.header.initial'), value: 'initial' },
+		{ key: 'hide', text: t('fbb.crew_lists.customize.options.dropdowns.header.hide'), value: 'hide' }
 	];
 
 	const solveOptions = [
-		{ key: 'always', text: 'Always show solutions', value: 'always' },
-		{ key: 'spot', text: 'Show unconfirmed solutions only', value: 'spot' },
-		{ key: 'hide', text: 'Do not show', value: 'hide' }
+		{ key: 'always', text: t('fbb.crew_lists.customize.options.dropdowns.solve.always'), value: 'always' },
+		{ key: 'spot', text: t('fbb.crew_lists.customize.options.dropdowns.solve.spot'), value: 'spot' },
+		{ key: 'hide', text: t('fbb.crew_lists.customize.options.dropdowns.solve.hide'), value: 'hide' }
 	];
 
 	const formatOptions = [
-		{ key: 'italic', text: 'Italic (*)', value: 'italic' },
-		{ key: 'bold', text: 'Bold (**)', value: 'bold' },
-		{ key: 'bolditalic', text: 'Bold italic (***)', value: 'bolditalic' },
-		{ key: 'underline', text: 'Underline (__)', value: 'underline' },
-		{ key: 'italicunderline', text: 'Italic underline (*__)', value: 'italicunderline' },
-		{ key: 'boldunderline', text: 'Bold underline (**__)', value: 'boldunderline' },
-		{ key: 'bolditalicunderline', text: 'Bold italic underline (***__)', value: 'bolditalicunderline' },
-		{ key: 'none', text: 'No formatting', value: 'none' }
+		{ key: 'italic', text: t('fbb.crew_lists.customize.options.dropdowns.format.italic'), value: 'italic' },
+		{ key: 'bold', text: t('fbb.crew_lists.customize.options.dropdowns.format.bold'), value: 'bold' },
+		{ key: 'bolditalic', text: t('fbb.crew_lists.customize.options.dropdowns.format.bolditalic'), value: 'bolditalic' },
+		{ key: 'underline', text: t('fbb.crew_lists.customize.options.dropdowns.format.underline'), value: 'underline' },
+		{ key: 'italicunderline', text: t('fbb.crew_lists.customize.options.dropdowns.format.italicunderline'), value: 'italicunderline' },
+		{ key: 'boldunderline', text: t('fbb.crew_lists.customize.options.dropdowns.format.boldunderline'), value: 'boldunderline' },
+		{ key: 'bolditalicunderline', text: t('fbb.crew_lists.customize.options.dropdowns.format.bolditalicunderline'), value: 'bolditalicunderline' },
+		{ key: 'none', text: t('fbb.crew_lists.customize.options.dropdowns.format.none'), value: 'none' }
 	];
 
 	const showOptions = [
-		{ key: 'show', text: 'Show', value: 'show' },
-		{ key: 'hide', text: 'Do not show', value: 'hide' }
+		{ key: 'show', text: t('fbb.crew_lists.customize.options.dropdowns.show.show'), value: 'show' },
+		{ key: 'hide', text: t('fbb.crew_lists.customize.options.dropdowns.show.hide'), value: 'hide' }
 	];
 
 	const bulletOptions = [
-		{ key: 'simple', text: 'Dash', value: 'simple', example: '- Spock' },
-		{ key: 'number', text: 'Number', value: 'number', example: '1 Spock' },
-		{ key: 'full', text: 'Node and number', value: 'full', example: '2.1 Spock' },
-		{ key: 'none', text: 'None', value: 'none', example: 'Spock' }
+		{ key: 'simple', text: t('fbb.crew_lists.customize.options.dropdowns.bullet.simple'), example: '- Spock' },
+		{ key: 'number', text: t('fbb.crew_lists.customize.options.dropdowns.bullet.number'), example: '1 Spock' },
+		{ key: 'full', text: t('fbb.crew_lists.customize.options.dropdowns.bullet.full'), example: '2.1 Spock' },
+		{ key: 'none', text: t('fbb.crew_lists.customize.options.dropdowns.bullet.none'), example: 'Spock' }
 	];
 
 	const delimiterOptions = [
-		{ key: 'comma', text: 'Comma', value: ',', example: 'Spock, Lt Uhura' },
-		{ key: 'semicolon', text: 'Semicolon', value: ';', example: 'Spock; Lt. Uhura' }
+		{ key: 'comma', text: t('fbb.crew_lists.customize.options.dropdowns.delimiter.comma'), value: ',', example: 'Spock, Lt Uhura' },
+		{ key: 'semicolon', text: t('fbb.crew_lists.customize.options.dropdowns.delimiter.semicolon'), value: ';', example: 'Spock; Lt. Uhura' }
 	];
 
 	const duplicatesOptions = [
-		{ key: 'number', text: 'Show number needed', value: 'number' },
-		{ key: 'ignore', text: 'Do not number', value: 'ignore' }
+		{ key: 'number', text: t('fbb.crew_lists.customize.options.dropdowns.duplicates.number'), value: 'number' },
+		{ key: 'ignore', text: t('fbb.crew_lists.customize.options.dropdowns.duplicates.ignore'), value: 'ignore' }
 	];
+
+
+	// const headerOptions = [
+	// 	{ key: 'always', text: 'Always show boss chain', value: 'always' },
+	// 	{ key: 'initial', text: 'Show on new chains only', value: 'initial' },
+	// 	{ key: 'hide', text: 'Do not show', value: 'hide' }
+	// ];
+
+	// const solveOptions = [
+	// 	{ key: 'always', text: 'Always show solutions', value: 'always' },
+	// 	{ key: 'spot', text: 'Show unconfirmed solutions only', value: 'spot' },
+	// 	{ key: 'hide', text: 'Do not show', value: 'hide' }
+	// ];
+
+	// const formatOptions = [
+	// 	{ key: 'italic', text: 'Italic (*)', value: 'italic' },
+	// 	{ key: 'bold', text: 'Bold (**)', value: 'bold' },
+	// 	{ key: 'bolditalic', text: 'Bold italic (***)', value: 'bolditalic' },
+	// 	{ key: 'underline', text: 'Underline (__)', value: 'underline' },
+	// 	{ key: 'italicunderline', text: 'Italic underline (*__)', value: 'italicunderline' },
+	// 	{ key: 'boldunderline', text: 'Bold underline (**__)', value: 'boldunderline' },
+	// 	{ key: 'bolditalicunderline', text: 'Bold italic underline (***__)', value: 'bolditalicunderline' },
+	// 	{ key: 'none', text: 'No formatting', value: 'none' }
+	// ];
+
+	// const showOptions = [
+	// 	{ key: 'show', text: 'Show', value: 'show' },
+	// 	{ key: 'hide', text: 'Do not show', value: 'hide' }
+	// ];
+
+	// const bulletOptions = [
+	// 	{ key: 'simple', text: 'Dash', value: 'simple', example: '- Spock' },
+	// 	{ key: 'number', text: 'Number', value: 'number', example: '1 Spock' },
+	// 	{ key: 'full', text: 'Node and number', value: 'full', example: '2.1 Spock' },
+	// 	{ key: 'none', text: 'None', value: 'none', example: 'Spock' }
+	// ];
+
+	// const delimiterOptions = [
+	// 	{ key: 'comma', text: 'Comma', value: ',', example: 'Spock, Lt Uhura' },
+	// 	{ key: 'semicolon', text: 'Semicolon', value: ';', example: 'Spock; Lt. Uhura' }
+	// ];
+
+	// const duplicatesOptions = [
+	// 	{ key: 'number', text: 'Show number needed', value: 'number' },
+	// 	{ key: 'ignore', text: 'Do not number', value: 'ignore' }
+	// ];
 
 	return (
 		<div style={{ margin: '1em 0' }}>
@@ -307,7 +353,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 					active={isActive}
 					index={1}
 					onTitleClick={() => setIsActive(!isActive)}
-					title={{ content: 'Customize Export', icon: `caret ${isActive ? 'down' : 'right'}` }}
+					title={{ content: t('fbb.crew_lists.customize.title'), icon: `caret ${isActive ? 'down' : 'right'}` }}
 					content={{ children: () => renderPrefsForm() }}
 				/>
 			</Accordion>
@@ -319,14 +365,14 @@ const ExportOptions = (props: ExportOptionsProps) => {
 		return (
 			<div style={{ marginBottom: '2em', padding: '0 1.5em' }}>
 				<div>
-					You can customize the appearance of the export. The following preferences will be remembered on all subsequent exports.
+					{t('fbb.crew_lists.customize.heading')}					
 				</div>
 				<Form style={{ marginTop: '1em' }}>
 					<Form.Group grouped>
-						<Header as='h5'>Node header</Header>
+						<Header as='h5'>{t('fbb.crew_lists.customize.options.node_header')}</Header>
 						<Form.Group inline>
 							<Form.Field>
-								<label>Formatting</label>
+								<label>{t('fbb.crew_lists.customize.options.formatting')}</label>
 								<Select
 									options={formatOptions}
 									value={prefs.node_format ?? exportDefaults.node_format}
@@ -334,7 +380,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								/>
 							</Form.Field>
 							<Form.Field>
-								<label>Traits</label>
+								<label>{t('fbb.crew_lists.customize.options.traits')}</label>
 								<Select
 									options={showOptions}
 									value={prefs.node_traits ?? exportDefaults.node_traits}
@@ -342,10 +388,10 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								/>
 							</Form.Field>
 						</Form.Group>
-						<Header as='h5' style={{ marginTop: '1.5em' }}>Possible solutions</Header>
+						<Header as='h5' style={{ marginTop: '1.5em' }}>{t('fbb.crew_lists.customize.options.possible_solutions')}</Header>
 						<Form.Group inline>
 							<Form.Field>
-								<label>Bullet</label>
+								<label>{t('fbb.crew_lists.customize.options.bullet')}</label>
 								<Select
 									options={bulletOptions}
 									value={prefs.bullet ?? exportDefaults.bullet}
@@ -353,21 +399,21 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								/>
 							</Form.Field>
 							<Form.Field>
-								<label>Non-optimal</label>
+								<label>{t('fbb.crew_lists.customize.options.non_optimal')}</label>
 								<Input style={{ width: '5em' }}
 									value={prefs.flag_nonoptimal ?? exportDefaults.flag_nonoptimal}
 									onChange={(e, { value }) => updatePrefs({...prefs, flag_nonoptimal: value as string})}
 								/>
 							</Form.Field>
 							<Form.Field>
-								<label>One hand exception</label>
+								<label>{t('fbb.crew_lists.customize.options.one_hand_exception')}</label>
 								<Input style={{ width: '5em' }}
 									value={prefs.flag_onehand ?? exportDefaults.flag_onehand}
 									onChange={(e, { value }) => updatePrefs({...prefs, flag_onehand: value as string})}
 								/>
 							</Form.Field>
 							<Form.Field>
-								<label>Alpha exception</label>
+								<label>{t('fbb.crew_lists.customize.options.alpha_exception')}</label>
 								<Input style={{ width: '5em' }}
 									value={prefs.flag_alpha ?? exportDefaults.flag_alpha}
 									onChange={(e, { value }) => updatePrefs({...prefs, flag_alpha: value as string})}
@@ -376,7 +422,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 						</Form.Group>
 						<Form.Group inline>
 							<Form.Field>
-								<label>Crew delimiter</label>
+								<label>{t('fbb.crew_lists.customize.options.crew_delimiter')}</label>
 								<Select
 									options={delimiterOptions}
 									value={prefs.delimiter ?? exportDefaults.delimiter}
@@ -384,7 +430,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								/>
 							</Form.Field>
 							<Form.Field>
-								<label>Coverage potential</label>
+								<label>{t('fbb.crew_lists.customize.options.coverage_potential')}</label>
 								<Select
 									options={formatOptions}
 									value={prefs.coverage_format ?? exportDefaults.coverage_format}
@@ -394,7 +440,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 						</Form.Group>
 						<Form.Group inline>
 							<Form.Field>
-								<label>Traits</label>
+								<label>{t('fbb.crew_lists.customize.options.traits')}</label>
 								<Select
 									options={showOptions}
 									value={prefs.crew_traits ?? exportDefaults.crew_traits}
@@ -402,7 +448,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								/>
 							</Form.Field>
 							<Form.Field>
-								<label>Duplicate traits</label>
+								<label>{t('fbb.crew_lists.customize.options.duplicate_traits')}</label>
 								<Select
 									options={duplicatesOptions}
 									value={prefs.duplicates ?? exportDefaults.duplicates}
@@ -410,10 +456,10 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								/>
 							</Form.Field>
 						</Form.Group>
-						<Header as='h5' style={{ marginTop: '1.5em' }}>Full exports only</Header>
+						<Header as='h5' style={{ marginTop: '1.5em' }}>{t('fbb.crew_lists.customize.options.full_exports_only')}</Header>
 						<Form.Group inline>
 							<Form.Field>
-								<label>Export header</label>
+								<label>{t('fbb.crew_lists.customize.options.export_header')}</label>
 								<Select
 									options={headerOptions}
 									value={prefs.header ?? exportDefaults.header}
@@ -421,7 +467,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 								/>
 							</Form.Field>
 							<Form.Field>
-								<label>Solved nodes</label>
+								<label>{t('fbb.crew_lists.customize.options.solved_nodes')}</label>
 								<Select
 									options={solveOptions}
 									value={prefs.solve ?? exportDefaults.solve}
@@ -430,12 +476,12 @@ const ExportOptions = (props: ExportOptionsProps) => {
 							</Form.Field>
 						</Form.Group>
 						<Form.Group inline style={{ marginTop: '1.5em' }}>
-							<Header as='h5' style={{ marginRight: '1em' }}>Load preset values:</Header>
+							<Header as='h5' style={{ marginRight: '1em' }}>{t('fbb.crew_lists.customize.options.load_preset_values')}:</Header>
 							<Button compact onClick={() => setPresets(exportDefaults)}>
-								Defaults
+								{t('fbb.crew_lists.customize.options.defaults')}
 							</Button>
 							<Button compact onClick={() => setPresets(exportCompact)}>
-								Compact
+								{t('fbb.crew_lists.customize.options.compact')}
 							</Button>
 						</Form.Group>
 					</Form.Group>

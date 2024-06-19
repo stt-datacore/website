@@ -20,6 +20,7 @@ const MAX_RARITY_BY_DIFFICULTY = {
 
 export const ChainSolver = () => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { TRAIT_NAMES } = globalContext.localized;
 	const { bossCrew, spotterPrefs, userPrefs, setUserPrefs } = React.useContext(UserContext);
 	const { bossBattle: { difficultyId, chainIndex, chain }, spotter, setSpotter } = React.useContext(SolverContext);
@@ -255,28 +256,40 @@ export const ChainSolver = () => {
 	return (
 		<React.Fragment>
 			<Header as='h3'>
-				Chain #{chainIndex+1} <span style={{ marginLeft: '1em' }}>({solvedNodes}/{solver.nodes.length} {spotterPrefs.confirmSolves ? ' confirmed ' : ''} solved)</span>
+				{t('fbb.chain_n', { n: `${chainIndex+1}`})}
+				<span style={{ marginLeft: '1em' }}>
+					(
+					{spotterPrefs.confirmSolves && <>{t('fbb.x_y_confirmed_solved', {
+						x: `${solvedNodes}`,
+						y: `${solver.nodes.length}`
+					})}</>}
+					{!spotterPrefs.confirmSolves && <>{t('fbb.x_y_solved', {
+						x: `${solvedNodes}`,
+						y: `${solver.nodes.length}`
+					})}</>}
+					)
+				</span>
 			</Header>
 			<Step.Group fluid>
 				<Step active={userPrefs.view === 'crewgroups' && !chainSolved} onClick={() => setUserPrefs({...userPrefs, view: 'crewgroups'})}>
 					<Icon name='object group' />
 					<Step.Content>
-						<Step.Title>Groups</Step.Title>
-						<Step.Description>View solutions grouped by traits</Step.Description>
+						<Step.Title>{t('fbb.sections.groups.title')}</Step.Title>
+						<Step.Description>{t('fbb.sections.groups.description')}</Step.Description>
 					</Step.Content>
 				</Step>
 				<Step active={userPrefs.view === 'crewtable' && !chainSolved} onClick={() => setUserPrefs({...userPrefs, view: 'crewtable'})}>
 					<Icon name='users' />
 					<Step.Content>
-						<Step.Title>Crew</Step.Title>
-						<Step.Description>Search for individual crew</Step.Description>
+						<Step.Title>{t('fbb.sections.crew.title')}</Step.Title>
+						<Step.Description>{t('fbb.sections.crew.description')}</Step.Description>
 					</Step.Content>
 				</Step>
 				<Step active={userPrefs.view === 'traits' || chainSolved} onClick={() => setUserPrefs({...userPrefs, view: 'traits'})}>
 					<Icon name='tasks' />
 					<Step.Content>
-						<Step.Title>Traits</Step.Title>
-						<Step.Description>View current combo chain</Step.Description>
+						<Step.Title>{t('fbb.sections.traits.title')}</Step.Title>
+						<Step.Description>{t('fbb.sections.traits.description')}</Step.Description>
 					</Step.Content>
 				</Step>
 			</Step.Group>
