@@ -182,6 +182,7 @@ type EventShuttlesProps = {
 
 const EventShuttles = (props: EventShuttlesProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { eventData } = props;
 
@@ -192,8 +193,8 @@ const EventShuttles = (props: EventShuttlesProps) => {
 
 	return (
 		<React.Fragment>
-			<Header as='h4'>Shuttle Helper</Header>
-			<p>Use this tool to help plan your shuttles.</p>
+			<Header as='h4'>{t('menu.tools.shuttle_helper')}</Header>
+			<p>{t('shuttle_helper.heading')}</p>
 			{!eventMode && (
 				<ShuttleHelper
 					rosterType={'myCrew'} rosterCrew={props.crew}
