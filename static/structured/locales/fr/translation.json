@@ -91,27 +91,45 @@
                 "title": "Ajusteur des paramètres de l'algorithme\n« {{cite_opt.btp.name}} »"
             }
         },
+        "calc_specific_rarity": "Calculer la rareté spécifique",
         "columns": {
             "antimatter_traits": "Caractéristiques\npour\nl'antimatière",
             "compare": "Comparer",
             "crew": "{{base.crew}}",
-            "ev_per_cite": "EV par\ncitation",
-            "final_ev": "EV final",
+            "ev_per_cite": "VA par\ncitation",
+            "final_ev": "VA final",
             "group_sparsity": "Disparité du\ngroupe de voyage",
             "in_portal": "{{base.in_portal}}",
             "quipment_score": "{{rank_names.quipment_score}}",
             "rank": "Rang",
             "rarity": "{{base.rarity}}",
-            "remaining_ev": "VE restant",
+            "remaining_ev": "VA restant",
             "skill_order": "Ordre des\ncompétences",
             "stat_boosting": "Collections\naméliorant\nles statistiques",
             "voyages_groups": "Groupes\nde voyages"
         },
+        "config": {
+            "clear": "Effacer les recherches et les marques de comparaison"
+        },
         "engine": "Algorithme",
+        "ev": "VA",
+        "ev_explainer": {
+            "para_1": "La valeur attendue (VA) d'un équipage est la moyenne à laquelle vous pouvez vous attendre à ce qu'un équipage contribue à tous les voyages. VA Final représente un équipage entièrement fusionné. VA Left, bien que moins important, calcule la différence de contribution entre complètement fusionné et leur rang actuel. Voyages améliorés correspond au nombre de combinaisons de voyages auxquelles l'équipage contribue. Le primaire et le secondaire sont pris en compte, car le voyage CMD/DIP donnera des résultats différents de ceux du DIP/CMD.",
+            "para_2": "L'VA d'un équipage pour un voyage est déterminé en trouvant la moyenne de l'équipage pour la compétence « Base + (Min + Max) / 2 », en multipliant cela par 0,35 si la compétence est principale pour le voyage, 0,25 si elle est secondaire et 0,1. sinon. Pour déterminer dans quelle mesure l'équipage contribue au voyage total, nous trouvons le meilleur équipage pour le voyage, entièrement nivelé et équipé.",
+            "para_3": "La « formation » est considérée comme simplement la mise à niveau et l'équipement de l'équipage considéré à sa rareté actuelle. Cela se fait en comparant l'VA total actuel de tous les voyages avec ceux comme si l'équipage considéré était entièrement nivelé et équipé au niveau de rareté actuel.",
+            "para_4": "\"Citer\" envisageait de fusionner, de niveler et d'équiper entièrement l'équipage considéré. Cela se fait en comparant l'VA total actuel de tous les voyages avec ceux comme si l'équipage considéré était entièrement nivelé, équipé et fusionné.",
+            "title": "VA Explainer - Algorithme d'origine uniquement (cliquez pour agrandir)"
+        },
+        "ev_show": "Afficher les colonnes VA",
+        "expected_value": "Valeur attendue",
         "original_engine": "Algorithme Original",
+        "prospect": {
+            "apply": "Appliquer l'état potentiel",
+            "apply_notice": "L'état ne sera reflété dans la liste qu'une fois le bouton appuyé"
+        },
         "tabs": {
             "cite": {
-                "title": "Équipiers à citer",
+                "title": "Équipiers à Citer",
                 "title_short": "Citer"
             },
             "groups": {
@@ -123,7 +141,7 @@
                 "title_short": "Récupérable"
             },
             "train": {
-                "title": "Équipiers à former",
+                "title": "Équipiers à Former",
                 "title_short": "Former"
             }
         }
@@ -331,9 +349,6 @@
         "yesterday_gauntlet": "Gantelet d'hier"
     },
     "global": {
-        "new": "Nouveau",
-        "new_m": "Nouveau",
-        "new_f": "Nouvelle",
         "admiral": "Amiral",
         "advanced_settings": "Réglages Avancés",
         "and": "et",
@@ -364,6 +379,9 @@
         "member": "Membre",
         "name": "Nom",
         "never": "Jamais",
+        "new": "Nouveau",
+        "new_f": "Nouvelle",
+        "new_m": "Nouveau",
         "no": "Non",
         "none": "Aucun",
         "obtained": "Obtenu par",
@@ -407,13 +425,16 @@
         "filter_by_item_type": "Filtrer par type d'article",
         "filter_by_owned_status": "Filtrer par statut de propriété",
         "filter_by_portal_status": "Filtrer par statut du portail",
+        "filter_by_primary_skill": "Filtrer par compétence principale",
         "filter_by_progress": "Filtrer par progression",
         "filter_by_rarity": "Filtrer par rareté",
+        "filter_by_secondary_skill": "Filtrer par compétence secondaire",
         "filter_by_series": "Filtrer par série",
         "filter_by_ship_ability": "Filtrer par la capacité du vaisseau",
         "filter_by_skill": "Filtrer par compétence",
         "filter_by_status": "Filtrer par statut",
         "filter_by_trait": "Filtrer par trait",
+        "filter_by_voyage_seating": "Filtrer par sièges de voyage",
         "filter_ship_grants": "Filtrer les subventions d'expédition",
         "filter_ship_rarity": "Filtrer la rareté des vaisseaux",
         "roster_maintenance": "Entretien de la liste",
@@ -985,6 +1006,7 @@
         }
     },
     "spinners": {
+        "cite_opt": "Chargement l'Optimiseur des mentions honorable...",
         "default": "Chargement des données...",
         "demands": "Calcul des demandes de l'équipage...",
         "quipment": "Calcul de l'équipement..."

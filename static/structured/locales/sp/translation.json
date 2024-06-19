@@ -91,24 +91,42 @@
                 "title": "Ajustador de configuración de algoritmo\n\"{{cite_opt.btp.name}}\""
             }
         },
+        "calc_specific_rarity": "Calcular rareza específica",
         "columns": {
             "antimatter_traits": "Rasgos\nde antimateria",
             "comparar": "Comparar",
             "crew": "{{base.crew}}",
-            "ev_per_cite": "EV por\ncita",
-            "final_ev": "EV final",
+            "ev_per_cite": "VE por\ncita",
+            "final_ev": "VE final",
             "group_sparsity": "Escasez\nde grupos\nde viaje",
             "in_portal": "{{base.in_portal}}",
             "quipment_score": "{{rank_names.quipment_score}}",
             "rank": "Rango",
             "rarity": "{{base.rarity}}",
-            "remaining_ev": "EV restante",
+            "remaining_ev": "VE restante",
             "skill_order": "Orden\nde habilidades",
             "stat_boosting": "Colecciones\nque aumentan\nlas estadísticas",
             "voyages_groups": "Grupos\nde viaje"
         },
+        "config": {
+            "clear": "Borrar búsquedas y marcas de comparación"
+        },
         "engine": "Algoritmo",
+        "ev": "VE",
+        "ev_explainer": {
+            "para_1": "El valor esperado (VE) de una tripulación es el promedio que se puede esperar que contribuya una tripulación en todos los viajes. VE Final cuenta con la tripulación totalmente fusionada. VE Left, aunque es menos importante, calcula la diferencia en la contribución entre los completamente fusionados y su rango actual. Viajes mejorados es en cuántas de las combinaciones de viajes contribuye la tripulación. Se tienen en cuenta el primario y el secundario, porque el viaje MND/DIP producirá resultados diferentes que DIP/MND.",
+            "para_2": "El VE de una tripulación para un viaje se calcula encontrando el promedio de la tripulación para la habilidad \"Base + (Min + Max) / 2\", multiplicándolo por 0,35 si la habilidad es la principal para el viaje, 0,25 si es secundaria y 0,1. de lo contrario. Para saber cuánto contribuye la tripulación al viaje total, buscamos la mejor tripulación para el viaje que esté completamente nivelada y equipada.",
+            "para_3": "El \"entrenamiento\" se considera simplemente nivelar y equipar a la tripulación considerada en su rareza actual. Esto se hace comparando el VE total actual de todos los viajes con aquellos como si la tripulación considerada estuviera completamente nivelada y equipada con la rareza actual.",
+            "para_4": "\"Citar\" consideró fusionar, nivelar y equipar completamente a la tripulación considerada. Esto se hace comparando el VE total actual de todos los viajes con aquellos como si la tripulación considerada estuviera completamente nivelada, equipada y fusionada.",
+            "title": "Explicador de VE: solo algoritmo original (haga clic para ampliar)"
+        },
+        "ev_show": "Mostrar las columnas VE",
+        "expected_value": "Valor esperado",
         "original_engine": "Algoritmo Original",
+        "prospect": {
+            "apply": "Aplicar Estado prospectivo",
+            "apply_notice": "El estado sólo se reflejará en la lista una vez que se toque el botón"
+        },
         "tabs": {
             "cite": {
                 "title": "Tripulantes para citar",
@@ -330,9 +348,6 @@
         "yesterday_gauntlet": "El reto de ayer"
     },
     "global": {
-        "new": "Nuevo",
-        "new_m": "Neuvo",
-        "new_f": "Neuva",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
         "and": "y",
@@ -363,6 +378,9 @@
         "member": "Miembro",
         "name": "Nombre",
         "never": "Nunca",
+        "new": "Nuevo",
+        "new_f": "Neuva",
+        "new_m": "Neuvo",
         "no": "No",
         "none": "Ninguna",
         "obtained": "Obtenido por",
@@ -406,13 +424,16 @@
         "filter_by_item_type": "Filtrar por tipo de artículo",
         "filter_by_owned_status": "Filtrar por estado de propiedad",
         "filter_by_portal_status": "Filtrar por estado del portal",
+        "filter_by_primary_skill": "Filtrar por habilidad principal",
         "filter_by_progress": "Filtrar por progreso",
         "filter_by_rarity": "Filtrar por rareza",
+        "filter_by_secondary_skill": "Filtrar por habilidad secundaria",
         "filter_by_series": "Filtrar por serie",
         "filter_by_ship_ability": "Filtrar por capacidad del buque",
         "filter_by_skill": "Filtrar por habilidad",
         "filter_by_status": "Filtrar por estado",
         "filter_by_trait": "Filtrar por rasgo",
+        "filter_by_voyage_seating": "Filtrar por asientos de viaje",
         "filter_ship_grants": "Filtrar subvenciones para buques",
         "filter_ship_rarity": "Filtrar la rareza del buque",
         "roster_maintenance": "Mantenimiento de la lista",
@@ -984,6 +1005,7 @@
         }
     },
     "spinners": {
+        "cite_opt": "Cargando Distinción de Honor Optimizador...",
         "default": "Cargando datos...",
         "demands": "Cálculo de las demandas de la tripulante...",
         "quipment": "Quipo de cálculo..."
