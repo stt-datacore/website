@@ -309,6 +309,175 @@
         "shuttles": "Faction",
         "skirmish": "Skirmish"
     },
+    "fbb": {
+        "select": "Select a boss battle",
+        "attempted": {
+            "clipboard": "Copy attempted crew to clipboard",
+            "title": "Keep track of crew who have been tried for this combo chain."
+        },
+        "cab": {
+            "header": "The {{link}} is another tool that can help you and your fleet coordinate attacks in a Fleet Boss Battle. Click the button below to copy the known traits and the list of possible traits for use with this Google Sheet (currently v3.02).",
+            "name": "FBB Combo Chain Helper",
+            "title": "CAB's FBB Combo Chain Helper"
+        },
+        "chain_n": "Chain #{{n}}",
+        "columns": {
+            "coverage": "Coverage",
+            "crew": "{{base.crew}}",
+            "given_traits": "Given Traits",
+            "mystery_traits": "Mystery Traits",
+            "rarity": "{{base.rarity}}",
+            "trial": "Trial"
+        },
+        "crew_lists": {
+            "clipboard": "Copy possible crew to clipboard",
+            "heading": "Copy the lists of possible crew, grouped by nodes and traits, for easier sharing on Discord or other forums.",
+            "customize": {
+                "heading": "You can customize the appearance of the export. The following preferences will be remembered on all subsequent exports.",
+                "options": {
+                    "alpha_exception": "Alpha exception",
+                    "bullet": "Bullet",
+                    "compact": "Compact",
+                    "coverage_potential": "Coverage potential",
+                    "crew_delimiter": "Crew delimiter",
+                    "defaults": "Defaults",
+                    "duplicate_traits": "Duplicate traits",
+                    "export_header": "Export header",
+                    "formatting": "Formatting",
+                    "full_exports_only": "Full exports only",
+                    "load_preset_values": "Load preset values",
+                    "node_header": "Node header",
+                    "non_optimal": "Non-optimal",
+                    "one_hand_exception": "One hand exception",
+                    "possible_solutions": "Possible solutions",
+                    "solved_nodes": "Solved nodes",
+                    "traits": "Traits",
+                    "unique": "Unique",
+                    "non_portal": "Non Portal",
+                    "dropdowns": {
+                        "header": {
+                            "always": "Always show boss chain",
+                            "initial": "Show on new chains only",
+                            "hide": "Do not show"
+                        },
+                        "solve": {
+                            "always": "Always show solutions",
+                            "spot": "Show unconfirmed solutions only",
+                            "hide": "Do not show"
+                        },
+                        "format": {
+                            "italic": "Italic (*)",
+                            "bold": "Bold (**)",
+                            "bolditalic": "Bold italic (***)",
+                            "underline": "Underline (__)",
+                            "italicunderline": "Italic underline (*__)",
+                            "boldunderline": "Bold underline (**__)",
+                            "bolditalicunderline": "Bold italic underline (***__)",
+                            "none": "No formatting"
+                        },
+                        "show": {
+                            "show": "Show",
+                            "hide": "Do not show"
+                        },
+                        "bullet": {
+                            "simple": "Dash",
+                            "number": "Number",
+                            "full": "Node and number",
+                            "none": "None"
+                        },
+                        "delimiter": {
+                            "comma": "Comma",
+                            "semicolon": "Semicolon"
+                        },
+                        "duplicates": {
+                            "number": "Show number needed",
+                            "ignore": "Do not number"
+                        }
+                    }
+                },
+                "title": "Customize Export"
+            },
+            "title": "Export Crew Lists"
+        },
+        "heading": "Use this tool to help activate combo chain bonuses in a fleet boss battle.",
+        "node_n": "Node {{n}}",
+        "popup": {
+            "crew_solved": "{{crew}} solved a node!",
+            "mark_as_tried": "Mark as tried"
+        },
+        "possible_solutions": {
+            "heading": "Here are the crew who satisfy the conditions of the remaining unsolved nodes.",
+            "tap_approve_decline": "Tap the {{approve}} {{decline}} buttons to mark crew as tried.",
+            "tap_trait_solve": "Tap a trait if it solves a node. Tap a crew to mark as tried.",
+            "title": "Possible Solutions"
+        },
+        "current_solutions": {
+            "title": "Current Solutions",
+            "heading": "This table shows the progress of the current combo chain. Update the mystery traits when a node is solved."
+        },
+        "possible_traits": {
+            "clipboard": "Copy possible traits to clipboard",
+            "heading": "This table should match the list of possible traits in-game.",
+            "hint": "Search for traits",
+            "manual_exclusion": "You can manually exclude traits from consideration.",
+            "title": "Possible Traits"
+        },
+        "sections": {
+            "crew": {
+                "description": "Search for individual crew",
+                "title": "Crew"
+            },
+            "groups": {
+                "description": "View solutions grouped by traits",
+                "title": "Groups"
+            },
+            "traits": {
+                "description": "View current combo chain",
+                "title": "Traits"
+            }
+        },
+        "settings": {
+            "optimizations": {
+                "hide_non_optimal": "Hide non-optimal crew",
+                "prioritize_coverage": "Prioritize crew with coverage",
+                "title": "Optimizations"
+            },
+            "unofficial": {
+                "hide_alpha": "Hide alpha exceptions",
+                "hide_one_hand": "Hide one hand exceptions",
+                "title": "Unofficial Rules"
+            },
+            "user_prefs": {
+                "confirm_solves": "Confirm trait solves",
+                "show_ship_ability": "Show ship ability",
+                "title": "User Preferences"
+            },
+            "warn": "Correct solutions may not be listed with the current settings."
+        },
+        "solves": {
+            "pending": "pending confirmation",
+            "solved": "Node {{n}} solved",
+            "partially_solved": "Node {{n}} partially solved"
+        },
+        "tips": {
+            "alpha_exceptions_a": "Alpha exceptions",
+            "alpha_exceptions_b": "are crew who might be ruled out based on an unofficial rule that eliminates some of their traits by name. You should only try alpha exceptions if you've exhausted all other listed options.",
+            "coverage_a": "Coverage",
+            "coverage_b": "identifies crew who might be solutions to multiple nodes. In groups view, crew with coverage are italicized; if you prioritize crew with coverage, some crew will be hidden when others can be tried as possible solutions for more nodes. In crew view, the number of potential nodes is listed.",
+            "non_optimals_a": "Non-optimals",
+            "non_optimals_b": "are crew whose only matching traits are a subset of traits of another possible solution for that node. You should only try non-optimal crew if you don't own any optimal crew.",
+            "one_hand_exception_a": "One hand exceptions",
+            "one_hand_exception_b": "are crew who might be ruled out based on an unofficial rule that limits solutions to traits with no more than a handful of matching crew.",
+            "title": "Tips",
+            "trait_colors_a": "Trait colors",
+            "trait_colors_b": "help visualize the rarity of each trait per node, e.g. a gold trait means its crew is the only possible crew with that trait in that node, a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc. Note that potential alpha exceptions are always orange, regardless of rarity.",
+            "trait_numbers_a": "Trait numbers",
+            "trait_numbers_b": "identify how many remaining nodes that trait is likely a solution for, based on an unofficial rule that duplicate traits in the pool are always a solution."
+        },
+        "undo_solve": "Undo Solve",
+        "x_y_confirmed_solved": "{{x}}/{{y}} confirmed solved",
+        "x_y_solved": "{{x}}/{{y}} solved"
+    },
     "gauntlet": {
         "browse_gauntlets": "Browse Gauntlets",
         "gauntlet": "Gauntlet",
@@ -341,6 +510,7 @@
         "yesterday_gauntlet": "Yesterday's Gauntlet"
     },
     "global": {
+        "notes": "Notes",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
         "and": "and",
@@ -412,6 +582,7 @@
     "hints": {
         "apply_buffs": "Apply stat buffs",
         "display_buffs": "Display Buffs",
+        "filter_by_availability": "Filter by availability",
         "filter_by_item_type": "Filter by item type",
         "filter_by_owned_status": "Filter by owned status",
         "filter_by_portal_status": "Filter by portal status",

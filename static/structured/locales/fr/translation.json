@@ -317,6 +317,175 @@
         "shuttles": "Faction",
         "skirmish": "Escarmouche"
     },
+    "fbb": {
+        "select": "Sélectionnez un combat de boss",
+        "attempted": {
+            "clipboard": "Copier la tentative des équipiers dans le presse-papier",
+            "title": "Gardez une trace des membres des équipiers qui ont été jugés pour cette chaîne combo."
+        },
+        "cab": {
+            "header": "Le {{link}} est un autre outil qui peut vous aider, vous et votre flotte, à coordonner les attaques dans une bataille de boss de flotte. Cliquez sur le bouton ci-dessous pour copier les traits connus et la liste des traits possibles à utiliser avec cette feuille Google. (actuellement v3.02).",
+            "name": "FBB Combo Chain Helper",
+            "title": "CAB's FBB Combo Chain Helper"
+        },
+        "chain_n": "Chaîne #{{n}}",
+        "columns": {
+            "coverage": "Couverture",
+            "crew": "{{base.crew}}",
+            "given_traits": "Traits connus",
+            "mystery_traits": "Traits inconnus",
+            "rarity": "{{base.rarity}}",
+            "trial": "Tentative"
+        },
+        "crew_lists": {
+            "clipboard": "Copier l'équipage possible dans le presse-papiers",
+            "heading": "Copiez les listes d'équipages possibles, regroupées par nœuds et traits, pour un partage plus facile sur Discord ou d'autres forums.",
+            "customize": {
+                "heading": "Vous pouvez personnaliser l'apparence de l'exportation. Les préférences suivantes seront mémorisées lors de toutes les exportations ultérieures.",
+                "options": {
+                    "alpha_exception": "Exception alpha",
+                    "bullet": "Puce",
+                    "compact": "Compacte",
+                    "coverage_potential": "Potentiel de couverture",
+                    "crew_delimiter": "Délimiteur d'équipage",
+                    "defaults": "Par défaut",
+                    "duplicate_traits": "Caractéristiques en double",
+                    "export_header": "Exporter l'en-tête",
+                    "formatting": "Formatage",
+                    "full_exports_only": "Exportations complètes uniquement",
+                    "load_preset_values": "Charger les valeurs prédéfinies",
+                    "node_header": "En-tête du nodule",
+                    "non_optimal": "Non optimal",
+                    "one_hand_exception": "Exception à une main",
+                    "possible_solutions": "Solutions possibles",
+                    "solved_nodes": "Nœuds résolus",
+                    "traits": "Traits",
+                    "unique": "Unique",
+                    "non_portal": "Non portail",
+                    "dropdowns": {
+                        "header": {
+                            "always": "Toujours afficher la chaîne de boss",
+                            "initial": "Afficher uniquement sur les nouvelles chaînes",
+                            "hide": "Ne pas afficher"
+                        },
+                        "solve": {
+                            "always": "Toujours afficher les solutions",
+                            "spot": "Afficher uniquement les solutions non confirmées",
+                            "hide": "Ne pas afficher"
+                        },
+                        "format": {
+                            "italic": "Italique (*)",
+                            "bold": "Gras (**)",
+                            "bolditalic": "Gras italique (***)",
+                            "underline": "Souligné (__)",
+                            "italicunderline": "Souligné en italique (*__)",
+                            "boldunderline": "Souligné en gras (**__)",
+                            "bolditalicunderline": "Souligné en gras et italique (***__)",
+                            "none": "Aucun formatage"
+                        },
+                        "show": {
+                            "show": "Afficher",
+                            "hide": "Ne pas afficher"
+                        },
+                        "bullet": {
+                            "simple": "Trait",
+                            "number": "Numéro",
+                            "full": "Nodule et numéro",
+                            "none": "Aucun"
+                        },
+                        "delimiter": {
+                            "comma": "virgule",
+                            "semicolon": "Point-virgule"
+                        },
+                        "duplicates": {
+                            "number": "Afficher le numéro nécessaire",
+                            "ignore": "Ne pas numéroter"
+                        }
+                    }
+                },
+                "title": "Personnaliser l'exportation"
+            },
+            "title": "Exporter les listes d'équipage"
+        },
+        "heading": "Utilisez cet outil pour vous aider à activer les bonus de chaîne de combo lors d'une bataille contre un boss de flotte.",
+        "node_n": "Nodule {{n}}",
+        "popup": {
+            "crew_solved": "{{crew}} a résolu un nodule !",
+            "mark_as_tried": "Marquer comme essayé"
+        },
+        "possible_solutions": {
+            "heading": "Voici l'équipage qui satisfait aux conditions des nodules non résolus restants.",
+            "tap_approve_decline": "Appuyez sur les boutons {{approve}} {{decline}} pour marquer l'équipage comme essayé.",
+            "tap_trait_solve": "Appuyez sur un trait s'il résout un nodule. Appuyez sur un équipage pour le marquer comme essayé.",
+            "title": "Solutions possibles"
+        },
+        "current_solutions": {
+            "title": "Solutions actuelles",
+            "heading": "Ce tableau montre la progression de la chaîne de combo actuelle. Mettez à jour les traits mystères lorsqu'un nodule est résolu."
+        },
+        "possible_traits": {
+            "clipboard": "Copier les traits possibles dans le presse-papier",
+            "heading": "Ce tableau doit correspondre à la liste des traits possibles dans le jeu.",
+            "hint": "Rechercher des traits",
+            "manual_exclusion": "Vous pouvez exclure manuellement des traits.",
+            "title": "Traits possibles"
+        },
+        "sections": {
+            "crew": {
+                "description": "Rechercher un équipage individuel",
+                "title": "Équipage"
+            },
+            "groups": {
+                "description": "Afficher les solutions regroupées par traits",
+                "title": "Groupes"
+            },
+            "traits": {
+                "description": "Afficher la chaîne de combo actuelle",
+                "title": "Traits"
+            }
+        },
+        "settings": {
+            "optimizations": {
+                "hide_non_optimal": "Supprimer l'équipage non optimal",
+                "prioritize_coverage": "Donner la priorité à l'équipage avec couverture",
+                "title": "Optimisations"
+            },
+            "unofficial": {
+                "hide_alpha": "Supprimer les exceptions alpha",
+                "hide_one_hand": "Supprimer les exceptions d'une main",
+                "title": "Règles non officielles"
+            },
+            "user_prefs": {
+                "confirm_solves": "Confirmer la résolution des traits",
+                "show_ship_ability": "Afficher les capacités du vaisseau",
+                "title": "Préférences utilisateur"
+            },
+            "warn": "Les solutions correctes peuvent ne pas être répertoriées avec les paramètres actuels."
+        },
+        "solves": {
+            "pending": "pending confirmation",
+            "solved": "Node {{n}} solved",
+            "partially_solved": "Node {{n}} partially solved"
+        },
+        "tips": {
+            "alpha_exceptions_a": "Exceptions alpha",
+            "alpha_exceptions_b": "sont des membres d'équipiers qui pourraient être exclus sur la base d'une règle non officielle qui élimine nommément certains de leurs traits. Vous ne devriez essayer les exceptions alpha que si vous avez épuisé toutes les autres options répertoriées.",
+            "coverage_a": "Couverture",
+            "coverage_b": "identifie les équipiers qui pourrait être une solution pour plusieurs nodules. Dans la vue des groupes, les équipages avec couverture sont en italique ; si vous donnez la priorité aux équipages avec couverture, certains équipages seront masqués tandis que d'autres pourront être essayés comme solutions possibles pour plus de nodules. Dans vue de l'équipage, le nombre de nodules potentiels est répertorié.",
+            "non_optimals_a": "Non optimaux",
+            "non_optimals_b": "sont des équipiers dont les seuls traits correspondants sont un sous-ensemble de traits d'une autre solution possible pour ce nodule. Vous ne devriez essayer un équipage non optimal que si vous ne possédez aucun équipage optimal.",
+            "one_hand_exception_a": "Exceptions à une main",
+            "one_hand_exception_b": "sont des équipiers qui pourraient être exclus sur la base d'une règle non officielle qui limite les solutions aux traits avec pas plus d'une poignée d'équipages correspondants.",
+            "title": "Conseils",
+            "trait_colors_a": "Couleurs des traits",
+            "trait_colors_b": "aide à visualiser la rareté de chaque trait par nodule, par exemple, un trait doré signifie que son équipage est le seul équipage possible avec ce trait dans ce nodule, un trait violet est un trait partagé par 2 équipages possibles dans ce nodule, un le trait bleu est partagé par 3 équipages possibles, etc. Notez que les exceptions alpha potentielles sont toujours orange, quelle que soit la rareté.",
+            "trait_numbers_a": "Numéros de traits",
+            "trait_numbers_b": "identifie le nombre de nodules restants pour lesquels ce trait est probablement une solution, sur la base d'une règle non officielle selon laquelle les traits en double dans le pool sont toujours une solution."
+        },
+        "undo_solve": "Annuler la résolution",
+        "x_y_confirmed_solved": "{{x}}/{{y}} confirmé résolu",
+        "x_y_solved": "{{x}}/{{y}} résolu"
+    },
     "gauntlet": {
         "browse_gauntlets": "Parcourez les gantelets",
         "gauntlet": "Gantelet",
@@ -349,6 +518,7 @@
         "yesterday_gauntlet": "Gantelet d'hier"
     },
     "global": {
+        "notes": "Remarques",
         "admiral": "Amiral",
         "advanced_settings": "Réglages Avancés",
         "and": "et",
@@ -422,6 +592,7 @@
     "hints": {
         "apply_buffs": "Appliquer des effets",
         "display_buffs": "Afficher effets",
+        "filter_by_availability": "Filtrer par disponibilité",
         "filter_by_item_type": "Filtrer par type d'article",
         "filter_by_owned_status": "Filtrer par statut de propriété",
         "filter_by_portal_status": "Filtrer par statut du portail",
