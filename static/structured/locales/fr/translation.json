@@ -394,7 +394,7 @@
                             "none": "Aucun"
                         },
                         "delimiter": {
-                            "comma": "virgule",
+                            "comma": "Virgule",
                             "semicolon": "Point-virgule"
                         },
                         "duplicates": {
@@ -463,9 +463,9 @@
             "warn": "Les solutions correctes peuvent ne pas être répertoriées avec les paramètres actuels."
         },
         "solves": {
-            "pending": "pending confirmation",
-            "solved": "Node {{n}} solved",
-            "partially_solved": "Node {{n}} partially solved"
+            "pending": "en attente de confirmation",
+            "solved": "Nodule {{n}} résolu",
+            "partially_solved": "Nodule {{n}} partiellement résolu"
         },
         "tips": {
             "alpha_exceptions_a": "Exceptions alpha",
@@ -478,9 +478,9 @@
             "one_hand_exception_b": "sont des équipiers qui pourraient être exclus sur la base d'une règle non officielle qui limite les solutions aux traits avec pas plus d'une poignée d'équipages correspondants.",
             "title": "Conseils",
             "trait_colors_a": "Couleurs des traits",
-            "trait_colors_b": "aide à visualiser la rareté de chaque trait par nodule, par exemple, un trait doré signifie que son équipage est le seul équipage possible avec ce trait dans ce nodule, un trait violet est un trait partagé par 2 équipages possibles dans ce nodule, un le trait bleu est partagé par 3 équipages possibles, etc. Notez que les exceptions alpha potentielles sont toujours orange, quelle que soit la rareté.",
+            "trait_colors_b": "aident à visualiser la rareté de chaque trait par nodule, par exemple, un trait doré signifie que son équipage est le seul équipage possible avec ce trait dans ce nodule, un trait violet est un trait partagé par 2 équipages possibles dans ce nodule, un le trait bleu est partagé par 3 équipages possibles, etc. Notez que les exceptions alpha potentielles sont toujours orange, quelle que soit la rareté.",
             "trait_numbers_a": "Numéros de traits",
-            "trait_numbers_b": "identifie le nombre de nodules restants pour lesquels ce trait est probablement une solution, sur la base d'une règle non officielle selon laquelle les traits en double dans le pool sont toujours une solution."
+            "trait_numbers_b": "identifient le nombre de nodules restants pour lesquels ce trait est probablement une solution, sur la base d'une règle non officielle selon laquelle les traits en double dans le pool sont toujours une solution."
         },
         "undo_solve": "Annuler la résolution",
         "x_y_confirmed_solved": "{{x}}/{{y}} confirmé résolu",
