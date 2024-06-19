@@ -137,7 +137,7 @@ type CrewNodeExporterProps = {
 
 export const CrewNodeExporter = (props: CrewNodeExporterProps) => {
 	const userContext = React.useContext(UserContext);
-	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
+	const { t, TRAIT_NAMES } = React.useContext(GlobalContext).localized;
 	const { exportPrefs } = userContext;
 	const { node, nodeGroups, traits } = props;
 
@@ -150,7 +150,7 @@ export const CrewNodeExporter = (props: CrewNodeExporterProps) => {
 
 	return (
 		<Popup
-			content='Copied!'
+			content={t('clipboard.copied_exclaim')}
 			on='click'
 			position='bottom center'
 			size='tiny'
