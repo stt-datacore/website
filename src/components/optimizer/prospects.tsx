@@ -25,28 +25,12 @@ export const CitationProspects = (props: CitationProspectsProps) => {
     const { citeConfig, setCiteConfig } = citeContext;    
     const { appliedProspects, setAppliedProspects } = citeContext;
 
-    const [prospects, setProspects] = useStateWithStorage<LockedProspect[]>(`${dbid}/${pageId}/cite_opt/locked_prospects`, [], { rememberForever: true });
+    const [prospects, internalSetProspects] = useStateWithStorage<LockedProspect[]>(`${dbid}/${pageId}/cite_opt/locked_prospects`, [], { rememberForever: true });
     const [unownedOnly, setUnownedOnly] = useStateWithStorage<boolean>(`${dbid}/${pageId}/cite_opt/locked_prospects`, false, { rememberForever: true });
 
     React.useEffect(() => {
-        applyProspects();
+        if (prospects?.length) applyProspects();
     }, []);
-    
-    React.useEffect(() => {
-        if (prospects.length !== undefined) {
-            let changed = false;
-            for (let p of prospects) {
-                if (p.rarity === p.max_rarity) {
-                    p.rarity = 1;
-                    changed = true;
-                }
-            }
-            if (changed) {
-                setProspects([ ... prospects ]);
-                return;
-            }
-        }
-    }, [prospects]);
 
     const corePool = globalContext.core.crew.filter(c => {
         let res = Object.keys(c.base_skills).length === 3 && (!citeConfig.rarities?.length || citeConfig.rarities.includes(c.max_rarity));
@@ -73,7 +57,7 @@ export const CitationProspects = (props: CitationProspectsProps) => {
                         pool={corePool} />
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.25em" }}>
-                    <Button onClick={(e) => applyProspects()}>Apply Prospect State</Button>
+                    <Button onClick={(e) => setTimeout(() => applyProspects())}>Apply Prospect State</Button>
                     <i>(State will only reflect in list once button is tapped)</i>
                 </div>
             </div>
@@ -135,6 +119,12 @@ export const CitationProspects = (props: CitationProspectsProps) => {
         setAppliedProspects(outcrew);
     }
 
+    function setProspects(prospects: LockedProspect[]) {
+        prospects.forEach(p => {
+            if (p.rarity === p.max_rarity) p.rarity = 1;
+        });
+        internalSetProspects(prospects);
+    }
 }
 
 
