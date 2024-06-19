@@ -16,22 +16,22 @@ export const CiteOptExplainer = () => {
                     {
                         index: 0,
                         key: 0,
-                        title: 'EV Explainer (Click To Expand)',
+                        title: t('cite_opt.ev_explainer.title'),
                         content: {
                             content: (
                                 <div>
                                     {/* <h3>Explanation</h3> */}
                                     <p>
-                                        A crew's Expected Value (EV) is the average you can expect a crew to contribute to all voyages. EV Final accounts for the crew fully fused. EV Left, while less important, calculates the difference in contribution between fully fused and their current rank. Voyages Improved is how many of the voyage combinations the crew contributes to. Primary and secondary are taken into account, because CMD/DIP voyage will yield different results than DIP/CMD.
+                                        {t('cite_opt.ev_explainer.para_1')}
                                     </p>
                                     <p>
-                                        A crew's EV for a voyage is found by finding the crew's average for the skill "Base + (Min + Max) / 2", multiplying that by 0.35 if the skill is the primary for the voyage, 0.25 if it is secondary, and 0.1 otherwise. To find how much the crew contributes to the total voyage, we find the best crew for the voyage that are fully leveled and equipped.
+                                        {t('cite_opt.ev_explainer.para_2')}
                                     </p>
                                     <p>
-                                        "Training" is considered simply leveling and equipping the considered crew <u>at their current rarity</u>. This is done by comparing the current total EV of all voyages with those as if the considered crew were fully leveled and equiped <u>at current rarity</u>.
+                                        {t('cite_opt.ev_explainer.para_3')}
                                     </p>
                                     <p>
-                                        "Citing" considered <u>fully fusing</u>, leveling and equipping the considered crew. This is done by comparing the current total EV of all voyages with those as if the considered crew were fully leveled and equiped <u>and fused</u>.
+                                        {t('cite_opt.ev_explainer.para_4')}
                                     </p>
                                 </div>
                             )

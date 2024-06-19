@@ -123,13 +123,13 @@ export const EngineRunner = (props: EngineRunnerProps) => {
                             }}
                         />
                         <Checkbox
-                            label={"Show EV Columns"}
+                            label={t('cite_opt.ev_show')}
                             checked={showEV}
                             onChange={(e, { checked }) => setCiteConfig({ ...citeConfig, showEV: !!checked })}
                         />
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "left", margin: 0, marginRight: "1em"}}>
                         <RarityFilter
-                            altTitle='Calculate specific rarity'
+                            altTitle={t('cite_opt.calc_specific_rarity')}
                             multiple={false}
                             rarityFilter={citeConfig?.rarities ?? []}
                             setRarityFilter={(data) => {

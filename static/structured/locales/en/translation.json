@@ -91,24 +91,42 @@
                 "title": "\"{{cite_opt.btp.name}}\" Settings Tweaker"
             }
         },
+        "calc_specific_rarity": "Calculate specific rarity",
         "columns": {
-            "crew": "{{base.crew}}",
-            "rarity": "{{base.rarity}}",
-            "quipment_score": "{{rank_names.quipment_score}}",
-            "in_portal": "{{base.in_portal}}",
-            "rank": "Rank",
-            "voyages_groups": "Voyage\nGroups",
-            "group_sparsity": "Voyage\nGroup\nSparsity",
             "antimatter_traits": "Antimatter\nTraits",
-            "stat_boosting": "Stat-\nBoosting\nCollections",
-            "skill_order": "Skill\nOrder",
-            "final_ev": "Final EV",
-            "remaining_ev": "Remaining EV",
+            "compare": "Compare",
+            "crew": "{{base.crew}}",
             "ev_per_cite": "EV Per\nCitation",
-            "compare": "Compare"            
+            "final_ev": "Final EV",
+            "group_sparsity": "Voyage\nGroup\nSparsity",
+            "in_portal": "{{base.in_portal}}",
+            "quipment_score": "{{rank_names.quipment_score}}",
+            "rank": "Rank",
+            "rarity": "{{base.rarity}}",
+            "remaining_ev": "Remaining EV",
+            "skill_order": "Skill\nOrder",
+            "stat_boosting": "Stat-\nBoosting\nCollections",
+            "voyages_groups": "Voyage\nGroups"
+        },
+        "config": {
+            "clear": "Clear Searches and Comparison Marks"
         },
         "engine": "Engine",
+        "ev": "EV",
+        "ev_explainer": {
+            "para_1": "A crew's Expected Value (EV) is the average you can expect a crew to contribute to all voyages. EV Final accounts for the crew fully fused. EV Left, while less important, calculates the difference in contribution between fully fused and their current rank. Voyages Improved is how many of the voyage combinations the crew contributes to. Primary and secondary are taken into account, because CMD/DIP voyage will yield different results than DIP/CMD.",
+            "para_2": "A crew's EV for a voyage is found by finding the crew's average for the skill \"Base + (Min + Max) / 2\", multiplying that by 0.35 if the skill is the primary for the voyage, 0.25 if it is secondary, and 0.1 otherwise. To find how much the crew contributes to the total voyage, we find the best crew for the voyage that are fully leveled and equipped.",
+            "para_3": "\"Training\" is considered simply leveling and equipping the considered crew at their current rarity. This is done by comparing the current total EV of all voyages with those as if the considered crew were fully leveled and equiped at current rarity.",
+            "para_4": "\"Citing\" considered fully fusing, leveling and equipping the considered crew. This is done by comparing the current total EV of all voyages with those as if the considered crew were fully leveled and equiped and fused.",
+            "title": "EV Explainer - Original Engine Only (Click to expand)"
+        },
+        "ev_show": "Show EV columns",
+        "expected_value": "Expected Value",
         "original_engine": "Original Algorithm",
+        "prospect": {
+            "apply": "Apply Prospect State",
+            "apply_notice": "State will only reflect in list once button is tapped"
+        },
         "tabs": {
             "cite": {
                 "title": "Crew to Cite",
@@ -323,7 +341,6 @@
         "yesterday_gauntlet": "Yesterday's Gauntlet"
     },
     "global": {
-        "new": "New",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
         "and": "and",
@@ -354,6 +371,7 @@
         "member": "Member",
         "name": "Name",
         "never": "Never",
+        "new": "New",
         "no": "No",
         "none": "None",
         "obtained": "Obtained",
@@ -397,13 +415,16 @@
         "filter_by_item_type": "Filter by item type",
         "filter_by_owned_status": "Filter by owned status",
         "filter_by_portal_status": "Filter by portal status",
+        "filter_by_primary_skill": "Filter by primary skill",
         "filter_by_progress": "Filter by progress",
         "filter_by_rarity": "Filter by rarity",
+        "filter_by_secondary_skill": "Filter by secondary skill",
         "filter_by_series": "Filter by series",
         "filter_by_ship_ability": "Filter by ship ability",
         "filter_by_skill": "Filter by skill",
         "filter_by_status": "Filter by status",
         "filter_by_trait": "Filter by trait",
+        "filter_by_voyage_seating": "Filter by voyage seating",
         "filter_ship_grants": "Filter ship grants",
         "filter_ship_rarity": "Filter ship rarity",
         "roster_maintenance": "Roster maintenance",
@@ -973,10 +994,10 @@
         }
     },
     "spinners": {
+        "cite_opt": "Loading citation optimizer...",
         "default": "Loading data...",
         "demands": "Calculating crew demands...",
-        "quipment": "Calculating quipment...",
-        "cite_opt": "Loading citation optimizer..."
+        "quipment": "Calculating quipment..."
     },
     "tool_roster_picker": {
         "all_crew": {

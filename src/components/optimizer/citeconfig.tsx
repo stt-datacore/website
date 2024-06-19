@@ -65,12 +65,12 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                     </div>
                     <div style={{ display: "flex", height: "3em", flexDirection: "row", justifyContent: "center", alignItems: "center", marginLeft: "1em"}}>
                         <Input
-                            label={"Search"}
+                            label={t('global.search')}
                             value={citeConfig.nameFilter}
                             onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, nameFilter: value })}
                             />
                         <i className='delete icon'
-                            title={"Clear Searches and Comparison Marks"}
+                            title={t('cite_opt.config.clear')}
                             style={{
                                 cursor: "pointer",
                                 marginLeft: "0.75em"
@@ -91,7 +91,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                             options={priSkills}
                             multiple
                             clearable
-                            placeholder={"Filter by primary skill"}
+                            placeholder={t('hints.filter_by_primary_skill')}
                             value={citeConfig.priSkills}
                             onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, priSkills: value as string[] })}
                             />
@@ -101,7 +101,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                             options={secSkills}
                             multiple
                             clearable
-                            placeholder={"Filter by secondary skill"}
+                            placeholder={t('hints.filter_by_secondary_skill')}
                             value={citeConfig.secSkills}
                             onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, secSkills: value as string[] })}
                             />
@@ -111,7 +111,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                             options={seatSkills}
                             multiple
                             clearable
-                            placeholder={"Filter by voyage seating"}
+                            placeholder={t('hints.filter_by_voyage_seating')}
                             value={citeConfig.seatSkills}
                             onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, seatSkills: value as string[] })}
                             />

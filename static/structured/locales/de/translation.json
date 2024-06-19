@@ -91,24 +91,42 @@
                 "title": "„{{cite_opt.btp.name}}“ Einstellungs-Tweaker"
             }
         },
+        "calc_specific_rarity": "Spezifische Seltenheit berechnen",
         "columns": {
             "antimatter_traits": "Antimaterie-\nMerkmale",
             "compare": "Vergleichen",
             "crew": "{{base.crew}}",
-            "ev_per_cite": "EV pro\nZitierung",
-            "final_ev": "Endgültiger EV",
+            "ev_per_cite": "EW pro\nZitierung",
+            "final_ev": "Endgültiger EW",
             "group_sparsity": "Reisegruppen-\nSpärlichkeit",
             "in_portal": "{{base.in_portal}}",
             "quipment_score": "{{rank_names.quipment_score}}",
             "rank": "Rang",
             "rarity": "{{base.rarity}}",
-            "remaining_ev": "Verbleibender EV",
+            "remaining_ev": "Verbleibender EW",
             "skill_order": "Fertigkeitsreihenfolge",
             "stat_boosting": "Stat-\nBoosting-\nSammlungen",
             "voyages_groups": "Reisegruppen"
         },
+        "config": {
+            "clear": "Löschen Sie die Such- und Vergleichsmarkierungen"
+        },
         "engine": "Algorithmus",
+        "ev": "EW",
+        "ev_explainer": {
+            "para_1": "Der erwartete Wert (VW) einer Crew ist der durchschnittliche Beitrag, den eine Crew zu allen Reisen leisten kann. Der endgültige EW gilt für die vollständig fusionierte Crew. Der verbleibende EW ist zwar weniger wichtig, berechnet aber die Differenz des Beitrags zwischen vollständig fusioniert und ihrem aktuellen Rang. Verbesserte Reisen gibt an, zu wie vielen Reisekombinationen die Crew beiträgt. Primäre und sekundäre werden berücksichtigt, da KOM/DIP-Reisen andere Ergebnisse liefern als DIP/KOM.",
+            "para_2": "Der EW einer Crew für eine Reise wird ermittelt, indem der Durchschnitt der Crew für die Fertigkeit „Basis + (Min. + Max.) / 2“ ermittelt und mit 0,35 multipliziert wird, wenn die Fertigkeit die primäre für die Reise ist, mit 0,25, wenn sie sekundär ist, und andernfalls mit 0,1. Um herauszufinden, wie viel die Crew zur gesamten Reise beiträgt, suchen wir die beste Crew für die Reise, die vollständig aufgerüstet und ausgerüstet ist.",
+            "para_3": "Unter „Ausbildung“ versteht man einfach das Leveln und Ausrüsten der betreffenden Crew auf ihrem aktuellen Seltenheitsgrad. Dies geschieht durch Vergleichen des aktuellen Gesamt-EW aller Fahrten mit denen, als ob die betreffende Crew vollständig gelevelt und auf ihrem aktuellen Seltenheitsgrad ausgerüstet wäre.",
+            "para_4": "Unter „Zitieren“ versteht man das vollständige Verschmelzen, Leveln und Ausrüsten der betreffenden Crew. Dies geschieht durch Vergleichen des aktuellen Gesamt-EW aller Fahrten mit denen, als ob die betreffende Crew vollständig gelevelt, ausgerüstet und verschmelzt wäre.",
+            "title": "EW-Erklärer - Nur Originalalgorithmus (zum Vergrößern klicken)"
+        },
+        "ev_show": "EW-Spalten anzeigen",
+        "expected_value": "Erwarteter Wert",
         "original_engine": "Ursprünglicher Algorithmus",
+        "prospect": {
+            "apply": "Prospektiven Status anwenden",
+            "apply_notice": "Der Status wird erst in der Liste angezeigt, wenn die Schaltfläche angetippt wird"
+        },
         "tabs": {
             "cite": {
                 "title": "Crew zu zitieren",
@@ -323,7 +341,6 @@
         "yesterday_gauntlet": "Die Herausforderung von gestern"
     },
     "global": {
-        "new": "Neu",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
         "and": "und",
@@ -354,6 +371,7 @@
         "member": "Mitglied",
         "name": "Name",
         "never": "Niemals",
+        "new": "Neu",
         "no": "Nein",
         "none": "Keine",
         "obtained": "Erhalten von",
@@ -397,13 +415,16 @@
         "filter_by_item_type": "Filtern nach Artikeltyp",
         "filter_by_owned_status": "Filtern nach Besitzstatus",
         "filter_by_portal_status": "Filtern nach Portalstatus",
+        "filter_by_primary_skill": "Nach primärer Fähigkeit filtern",
         "filter_by_progress": "Filtern nach Fortschritt",
         "filter_by_rarity": "Filtern nach Seltenheit",
+        "filter_by_secondary_skill": "Nach sekundärer Fähigkeit filtern",
         "filter_by_series": "Filtern nach Serie",
         "filter_by_ship_ability": "Filtern nach Schiffsfähigkeit",
         "filter_by_skill": "Filtern nach Fähigkeit",
         "filter_by_status": "Filtern nach Status",
         "filter_by_trait": "Filtern nach Merkmalen",
+        "filter_by_voyage_seating": "Nach Reisebestuhlung filtern",
         "filter_ship_grants": "Schiffszuschüsse filtern",
         "filter_ship_rarity": "Schiffsrarität filtern",
         "roster_maintenance": "Dienstplanpflege",
@@ -972,6 +993,7 @@
         }
     },
     "spinners": {
+        "cite_opt": "Laden Ehrenvolle Erwähnung Optimierer...",
         "default": "Daten werden geladen…",
         "demands": "Crew fordert Berechnung...",
         "quipment": "Berechnungsausrüstung..."

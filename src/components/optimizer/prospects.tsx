@@ -43,7 +43,7 @@ export const CitationProspects = (props: CitationProspectsProps) => {
     if (!Array.isArray(prospects)) return <></>
     return <React.Fragment>
         <Segment>
-            <h3>Prospects</h3>
+            <h3>{t('crew_views.prospect.title')}</h3>
 
             <Checkbox checked={unownedOnly} onChange={(e, { checked }) => setUnownedOnly(!!checked)}
                 label={'Unowned Crew Only'} />
@@ -57,8 +57,8 @@ export const CitationProspects = (props: CitationProspectsProps) => {
                         pool={corePool} />
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.25em" }}>
-                    <Button onClick={(e) => setTimeout(() => applyProspects())}>Apply Prospect State</Button>
-                    <i>(State will only reflect in list once button is tapped)</i>
+                    <Button onClick={(e) => setTimeout(() => applyProspects())}>{t('cite_opt.prospect.apply')}</Button>
+                    <i>({t('cite_opt.prospect.apply_notice')})</i>
                 </div>
             </div>
 
