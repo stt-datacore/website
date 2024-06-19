@@ -476,9 +476,9 @@
             "one_hand_exception_b": "son tripulantes que podrían ser descartados según una regla no oficial que limita las soluciones a rasgos con no más de un puñado de tripulantes coincidentes.",
             "title": "Consejos",
             "trait_colors_a": "Colores característicos",
-            "trait_colors_b": "ayuda a visualizar la rareza de cada rasgo por nódulo, por ejemplo, un rasgo dorado significa que su tripulante es la única tripulante posible con ese rasgo en ese nódulo, un rasgo morado es un rasgo compartido por 2 posibles tripulantes en ese nódulo, un El rasgo azul es compartido por 3 posibles tripulantes, etc. Tenga en cuenta que las posibles excepciones alfa siempre son naranjas, independientemente de la rareza.",
+            "trait_colors_b": "ayudan a visualizar la rareza de cada rasgo por nódulo, por ejemplo, un rasgo dorado significa que su tripulante es la única tripulante posible con ese rasgo en ese nódulo, un rasgo morado es un rasgo compartido por 2 posibles tripulantes en ese nódulo, un El rasgo azul es compartido por 3 posibles tripulantes, etc. Tenga en cuenta que las posibles excepciones alfa siempre son naranjas, independientemente de la rareza.",
             "trait_numbers_a": "Números de rasgos",
-            "trait_numbers_b": "identifica para cuántos nodos restantes ese rasgo es probablemente una solución, según una regla no oficial que dice que los rasgos duplicados en el grupo siempre son una solución."
+            "trait_numbers_b": "identifican para cuántos nodos restantes ese rasgo es probablemente una solución, según una regla no oficial que dice que los rasgos duplicados en el grupo siempre son una solución."
         },
         "undo_solve": "Deshacer resolver",
         "x_y_confirmed_solved": "{{x}}/{{y}} confirmado resuelto",
