@@ -284,10 +284,10 @@ const ExportOptions = (props: ExportOptionsProps) => {
 	];
 
 	const bulletOptions = [
-		{ key: 'simple', text: t('fbb.crew_lists.customize.options.dropdowns.bullet.simple'), example: '- Spock' },
-		{ key: 'number', text: t('fbb.crew_lists.customize.options.dropdowns.bullet.number'), example: '1 Spock' },
-		{ key: 'full', text: t('fbb.crew_lists.customize.options.dropdowns.bullet.full'), example: '2.1 Spock' },
-		{ key: 'none', text: t('fbb.crew_lists.customize.options.dropdowns.bullet.none'), example: 'Spock' }
+		{ key: 'simple', text: t('fbb.crew_lists.customize.options.dropdowns.bullet.simple'), value: 'simple', example: '- Spock' },
+		{ key: 'number', text: t('fbb.crew_lists.customize.options.dropdowns.bullet.number'), value: 'number', example: '1 Spock' },
+		{ key: 'full', text: t('fbb.crew_lists.customize.options.dropdowns.bullet.full'), value: 'full', example: '2.1 Spock' },
+		{ key: 'none', text: t('fbb.crew_lists.customize.options.dropdowns.bullet.none'), value: 'none', example: 'Spock' }
 	];
 
 	const delimiterOptions = [
