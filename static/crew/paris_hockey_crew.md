@@ -3,7 +3,7 @@ name: Hockey Paris
 rarity: 3
 series: voy
 memory_alpha:
-bigbook_tier: 1
+bigbook_tier: 2
 in_portal: true
 date: 23/06/2016
 published: true
