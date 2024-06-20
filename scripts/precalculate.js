@@ -16,7 +16,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getItemBonuses = exports.getSkillOrder = void 0;
+exports.highestLevel = exports.getItemBonuses = exports.getSkillOrder = void 0;
 var _ = require("lodash");
 require("lodash.combinations");
 var fs = require("fs");
@@ -428,6 +428,7 @@ function main() {
     });
     processCrew(crewlist);
     postProcessQuipmentScores(crewlist, items);
+    calculateTopQuipment();
     fs.writeFileSync(STATIC_PATH + 'crew.json', JSON.stringify(crewlist));
     // Calculate some skill set stats for the BigBook
     var counts = {};
@@ -697,6 +698,7 @@ function generateMissions() {
     //generate per-episode page after processing
     var disputes = JSON.parse(fs.readFileSync(STATIC_PATH + 'disputes.json', 'utf-8'));
     var missionsfull = JSON.parse(fs.readFileSync(STATIC_PATH + 'missionsfull.json', 'utf-8'));
+    var cadet = JSON.parse(fs.readFileSync(STATIC_PATH + 'cadet.txt', 'utf-8'));
     var episodes = [];
     for (var _i = 0, missionsfull_1 = missionsfull; _i < missionsfull_1.length; _i++) {
         var mission = missionsfull_1[_i];
@@ -728,6 +730,8 @@ function generateMissions() {
     }
     episodes = episodes.sort(function (a, b) { return a.episode - b.episode; });
     fs.writeFileSync(STATIC_PATH + 'episodes.json', JSON.stringify(episodes));
+    postProcessCadetItems(items, cadet);
+    fs.writeFileSync(STATIC_PATH + 'items.json', JSON.stringify(items));
 }
 function isQuipmentMatch(crew, item) {
     var _a, _b, _c;
@@ -772,8 +776,8 @@ function calcQuipmentScore(crew, quipment, overallOnly) {
         }
     });
 }
-function calculateTopQuipment(crew) {
-    var _a, _b;
+function calculateTopQuipment() {
+    var _a;
     var scores = [];
     for (var i = 0; i < 5; i++) {
         scores.push({
@@ -786,22 +790,12 @@ function calculateTopQuipment(crew) {
                 engineering_skill: 0,
                 security_skill: 0,
                 trait_limited: 0
-            },
-            voyage_quotient: 0,
-            voyage_quotients: {
-                command_skill: 0,
-                diplomacy_skill: 0,
-                medicine_skill: 0,
-                science_skill: 0,
-                engineering_skill: 0,
-                security_skill: 0,
-                trait_limited: 0
             }
         });
     }
     var qkeys = Object.keys(scores[0].quipment_scores);
-    for (var _i = 0, crew_1 = crew; _i < crew_1.length; _i++) {
-        var c = crew_1[_i];
+    for (var _i = 0, crewlist_8 = crewlist; _i < crewlist_8.length; _i++) {
+        var c = crewlist_8[_i];
         var r = c.max_rarity - 1;
         var skscore = scores[r].quipment_scores;
         if (!c.quipment_score || !c.quipment_scores)
@@ -809,24 +803,10 @@ function calculateTopQuipment(crew) {
         if (c.quipment_score > ((_a = scores[r].quipment_score) !== null && _a !== void 0 ? _a : 0)) {
             scores[r].quipment_score = c.quipment_score;
         }
-        for (var _c = 0, qkeys_1 = qkeys; _c < qkeys_1.length; _c++) {
-            var key = qkeys_1[_c];
+        for (var _b = 0, qkeys_1 = qkeys; _b < qkeys_1.length; _b++) {
+            var key = qkeys_1[_b];
             if (c.quipment_scores[key] > skscore[key]) {
                 skscore[key] = c.quipment_scores[key];
-            }
-        }
-        var vqscore = scores[r].voyage_quotients;
-        if (!c.voyage_quotient)
-            continue;
-        if (scores[r].voyage_quotient === 0 || c.voyage_quotient < ((_b = scores[r].voyage_quotient) !== null && _b !== void 0 ? _b : 0)) {
-            scores[r].voyage_quotient = c.voyage_quotient;
-        }
-        if (!c.voyage_quotients)
-            continue;
-        for (var _d = 0, qkeys_2 = qkeys; _d < qkeys_2.length; _d++) {
-            var key = qkeys_2[_d];
-            if (c.voyage_quotients[key] > vqscore[key]) {
-                vqscore[key] = c.voyage_quotients[key];
             }
         }
     }
@@ -855,10 +835,11 @@ function calculateTopQuipment(crew) {
             });
         }
     };
-    for (var _e = 0, crew_2 = crew; _e < crew_2.length; _e++) {
-        var c = crew_2[_e];
+    for (var _c = 0, crewlist_9 = crewlist; _c < crewlist_9.length; _c++) {
+        var c = crewlist_9[_c];
         _loop_10(c);
     }
+    fs.writeFileSync(STATIC_PATH + "top_quipment_scores.json", JSON.stringify(scores));
     return scores;
 }
 function getSkillOrder(crew) {
@@ -951,6 +932,83 @@ function postProcessQuipmentScores(crew, items) {
         calcQuipmentScore(crew, quipment);
     });
 }
+function postProcessCadetItems(items, cadet) {
+    var _a, _b, _c;
+    var cadetforitem = cadet.filter(function (f) { return f.cadet; });
+    if (cadetforitem === null || cadetforitem === void 0 ? void 0 : cadetforitem.length) {
+        var _loop_11 = function (item) {
+            for (var _d = 0, cadetforitem_1 = cadetforitem; _d < cadetforitem_1.length; _d++) {
+                var ep = cadetforitem_1[_d];
+                var quests = ep.quests.filter(function (q) { var _a; return q.quest_type === 'ConflictQuest' && ((_a = q.mastery_levels) === null || _a === void 0 ? void 0 : _a.some(function (ml) { var _a; return (_a = ml.rewards) === null || _a === void 0 ? void 0 : _a.some(function (r) { var _a; return (_a = r.potential_rewards) === null || _a === void 0 ? void 0 : _a.some(function (px) { return px.symbol === item.symbol; }); }); })); });
+                if (quests === null || quests === void 0 ? void 0 : quests.length) {
+                    var _loop_12 = function (quest) {
+                        if ((_a = quest.mastery_levels) === null || _a === void 0 ? void 0 : _a.length) {
+                            var x = 0;
+                            for (var _f = 0, _g = quest.mastery_levels; _f < _g.length; _f++) {
+                                var ml = _g[_f];
+                                if ((_b = ml.rewards) === null || _b === void 0 ? void 0 : _b.some(function (r) { var _a; return (_a = r.potential_rewards) === null || _a === void 0 ? void 0 : _a.some(function (pr) { return pr.symbol === item.symbol; }); })) {
+                                    var mx = (_c = ml.rewards.map(function (r) { var _a; return (_a = r.potential_rewards) === null || _a === void 0 ? void 0 : _a.length; }).reduce(function (prev, curr) { return Math.max(prev !== null && prev !== void 0 ? prev : 0, curr !== null && curr !== void 0 ? curr : 0); })) !== null && _c !== void 0 ? _c : 0;
+                                    mx = (1 / mx) * 1.80;
+                                    var qitem = {
+                                        type: 4,
+                                        mastery: x,
+                                        name: quest.name,
+                                        energy_quotient: 1,
+                                        chance_grade: 5 * mx,
+                                        mission_symbol: quest.symbol,
+                                        cost: 1,
+                                        avg_cost: 1 / mx,
+                                        cadet_mission: ep.episode_title,
+                                        cadet_symbol: ep.symbol
+                                    };
+                                    if (!item.item_sources.find(function (f) { return f.mission_symbol === quest.symbol; })) {
+                                        item.item_sources.push(qitem);
+                                    }
+                                }
+                                x++;
+                            }
+                        }
+                    };
+                    for (var _e = 0, quests_1 = quests; _e < quests_1.length; _e++) {
+                        var quest = quests_1[_e];
+                        _loop_12(quest);
+                    }
+                }
+            }
+        };
+        for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
+            var item = items_1[_i];
+            _loop_11(item);
+        }
+    }
+}
+function highestLevel(ship) {
+    if (!ship.levels || !Object.keys(ship.levels).length)
+        return 0;
+    var levels = Object.keys(ship.levels).map(function (m) { return Number(m); }).sort(function (a, b) { return b - a; });
+    var highest = levels[0];
+    return highest;
+}
+exports.highestLevel = highestLevel;
+function processShips() {
+    var ship_schematics = JSON.parse(fs.readFileSync(STATIC_PATH + 'ship_schematics.json', 'utf-8'));
+    var battle_stations = JSON.parse(fs.readFileSync(STATIC_PATH + 'battle_stations.json', 'utf-8'));
+    var data = { ship_schematics: ship_schematics, battle_stations: battle_stations };
+    if (data.battle_stations.length && data.ship_schematics.length) {
+        var _loop_13 = function (sch) {
+            var battle = data.battle_stations.find(function (b) { return b.symbol === sch.ship.symbol; });
+            if (battle) {
+                sch.ship.battle_stations = battle.battle_stations;
+            }
+        };
+        for (var _i = 0, _a = data.ship_schematics; _i < _a.length; _i++) {
+            var sch = _a[_i];
+            _loop_13(sch);
+        }
+        fs.writeFileSync(STATIC_PATH + "ship_schematics.json", JSON.stringify(data.ship_schematics));
+    }
+}
 main();
 updateExcelSheet();
 generateMissions();
+processShips();

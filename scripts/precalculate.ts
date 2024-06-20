@@ -10,9 +10,10 @@ import 'lodash.combinations';
 import * as fs from 'fs';
 import * as showdown from 'showdown';
 import * as ExcelJS from 'exceljs';
-import { EquipmentItem, IDemand } from '../src/model/equipment';
+import { EquipmentItem, EquipmentItemSource, IDemand } from '../src/model/equipment';
 import { BaseSkills, ComputedSkill, CrewMember, EquipmentSlot, QuipmentScores, Ranks, Skill, SkillQuipmentScores } from '../src/model/crew';
 import { Mission } from '../src/model/missions';
+import { BattleStation, BattleStations, Schematics, Ship } from '../src/model/ship';
 
 const STATIC_PATH = `${__dirname}/../static/structured/`;
 
@@ -448,6 +449,7 @@ function main() {
 
 	processCrew(crewlist);
 	postProcessQuipmentScores(crewlist, items);
+	calculateTopQuipment();
 
 	fs.writeFileSync(STATIC_PATH + 'crew.json', JSON.stringify(crewlist));
 
@@ -770,6 +772,7 @@ function generateMissions() {
 
 	let disputes = JSON.parse(fs.readFileSync(STATIC_PATH + 'disputes.json', 'utf-8'));
 	let missionsfull = JSON.parse(fs.readFileSync(STATIC_PATH + 'missionsfull.json', 'utf-8')) as Mission[];
+	let cadet = JSON.parse(fs.readFileSync(STATIC_PATH + 'cadet.txt', 'utf-8')) as Mission[];
 
 	let episodes = [] as Mission[];
 	for (let mission of missionsfull) {
@@ -799,6 +802,9 @@ function generateMissions() {
 	episodes = episodes.sort((a, b) => a.episode - b.episode);
 
 	fs.writeFileSync(STATIC_PATH + 'episodes.json', JSON.stringify(episodes));
+
+	postProcessCadetItems(items, cadet);
+	fs.writeFileSync(STATIC_PATH + 'items.json', JSON.stringify(items));
 }
 
 function isQuipmentMatch<T extends CrewMember>(crew: T, item: EquipmentItem): boolean {
@@ -850,7 +856,7 @@ function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemWithBonu
 }
 
 
-function calculateTopQuipment(crew: CrewMember[]) {
+function calculateTopQuipment() {
 
 	const scores = [] as QuipmentScores[];
 	for (let i = 0; i < 5; i++) {
@@ -864,23 +870,13 @@ function calculateTopQuipment(crew: CrewMember[]) {
 				engineering_skill: 0,
 				security_skill: 0,
 				trait_limited: 0
-			} as SkillQuipmentScores,
-			voyage_quotient: 0,
-			voyage_quotients: {
-				command_skill: 0,
-				diplomacy_skill: 0,
-				medicine_skill: 0,
-				science_skill: 0,
-				engineering_skill: 0,
-				security_skill: 0,
-				trait_limited: 0
 			} as SkillQuipmentScores
 		} as QuipmentScores);
 	}
 
 	const qkeys = Object.keys(scores[0].quipment_scores as SkillQuipmentScores);
 
-	for (let c of crew) {
+	for (let c of crewlist) {
 		const r = c.max_rarity - 1;
 		const skscore = scores[r].quipment_scores as SkillQuipmentScores;
 
@@ -893,21 +889,9 @@ function calculateTopQuipment(crew: CrewMember[]) {
 				skscore[key] = c.quipment_scores[key];
 			}
 		}
-		const vqscore = scores[r].voyage_quotients as SkillQuipmentScores;
-
-		if (!c.voyage_quotient) continue;
-		if (scores[r].voyage_quotient === 0 || c.voyage_quotient < (scores[r].voyage_quotient ?? 0)) {
-			scores[r].voyage_quotient = c.voyage_quotient;
-		}
-		if (!c.voyage_quotients) continue;
-		for (let key of qkeys) {
-			if (c.voyage_quotients[key] > vqscore[key]) {
-				vqscore[key] = c.voyage_quotients[key];
-			}
-		}
 	}
 
-	for (let c of crew) {
+	for (let c of crewlist) {
 		const r = c.max_rarity - 1;
 		const skscore = scores[r].quipment_scores as SkillQuipmentScores;
 		const escore = scores[r].quipment_score as number;
@@ -931,7 +915,8 @@ function calculateTopQuipment(crew: CrewMember[]) {
 			})
 		}
 	}
-
+	
+	fs.writeFileSync(STATIC_PATH + "top_quipment_scores.json", JSON.stringify(scores));
 	return scores;
 }
 
@@ -1033,6 +1018,71 @@ function postProcessQuipmentScores(crew: CrewMember[], items: EquipmentItem[]) {
 	});
 }
 
+function postProcessCadetItems(items: EquipmentItem[], cadet: Mission[]): void {
+	const cadetforitem = cadet.filter(f => f.cadet);
+
+	if (cadetforitem?.length) {
+		for(const item of items) {
+			for (let ep of cadetforitem) {
+				let quests = ep.quests.filter(q => q.quest_type === 'ConflictQuest' && q.mastery_levels?.some(ml => ml.rewards?.some(r => r.potential_rewards?.some(px => px.symbol === item.symbol))));
+				if (quests?.length) {
+					for (let quest of quests) {
+						if (quest.mastery_levels?.length) {
+							let x = 0;
+							for (let ml of quest.mastery_levels) {
+								if (ml.rewards?.some(r => r.potential_rewards?.some(pr => pr.symbol === item.symbol))) {
+									let mx = ml.rewards.map(r => r.potential_rewards?.length).reduce((prev, curr) => Math.max(prev ?? 0, curr ?? 0)) ?? 0;
+									mx = (1/mx) * 1.80;
+									let qitem = {
+										type: 4,
+										mastery: x,
+										name: quest.name,
+										energy_quotient: 1,
+										chance_grade: 5 * mx,
+										mission_symbol: quest.symbol,
+										cost: 1,
+										avg_cost: 1/mx,
+										cadet_mission: ep.episode_title,
+										cadet_symbol: ep.symbol
+									} as EquipmentItemSource;
+									if (!item.item_sources.find(f => f.mission_symbol === quest.symbol)) {
+										item.item_sources.push(qitem);
+									}
+								}
+								x++;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+export function highestLevel(ship: Ship) {
+	if (!ship.levels || !Object.keys(ship.levels).length) return 0;
+	let levels = Object.keys(ship.levels).map(m => Number(m)).sort((a ,b) => b - a);
+	let highest = levels[0];
+	return highest;
+}
+
+function processShips(): void {
+	let ship_schematics = JSON.parse(fs.readFileSync(STATIC_PATH + 'ship_schematics.json', 'utf-8')) as Schematics[];
+	let battle_stations = JSON.parse(fs.readFileSync(STATIC_PATH + 'battle_stations.json', 'utf-8')) as BattleStations[];
+	let data = { ship_schematics, battle_stations };
+	if (data.battle_stations.length && data.ship_schematics.length) {
+		for (let sch of data.ship_schematics) {
+			let battle = data.battle_stations.find(b => b.symbol === sch.ship.symbol);
+			if (battle) {
+				sch.ship.battle_stations = battle.battle_stations;
+			}
+		}
+
+		fs.writeFileSync(STATIC_PATH + "ship_schematics.json", JSON.stringify(data.ship_schematics));
+	}
+}
+
 main();
 updateExcelSheet();
 generateMissions();
+processShips();
