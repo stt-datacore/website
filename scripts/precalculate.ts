@@ -10,15 +10,26 @@ import 'lodash.combinations';
 import * as fs from 'fs';
 import * as showdown from 'showdown';
 import * as ExcelJS from 'exceljs';
-import { EquipmentIngredient, EquipmentItem, IDemand } from '../src/model/equipment';
-import { CrewMember, EquipmentSlot, Ranks } from '../src/model/crew';
+import { EquipmentItem, IDemand } from '../src/model/equipment';
+import { BaseSkills, ComputedSkill, CrewMember, EquipmentSlot, QuipmentScores, Ranks, Skill, SkillQuipmentScores } from '../src/model/crew';
 import { Mission } from '../src/model/missions';
 
 const STATIC_PATH = `${__dirname}/../static/structured/`;
 
 let crewlist = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf-8')) as (CrewMember & { _comboIds?: string[][] }) [];
-let items = JSON.parse(fs.readFileSync(STATIC_PATH + 'items.json', 'utf-8'));
+let items = JSON.parse(fs.readFileSync(STATIC_PATH + 'items.json', 'utf-8')) as EquipmentItem[];
 let skill_bufs = JSON.parse(fs.readFileSync(STATIC_PATH + 'skill_bufs.json', 'utf-8'));
+
+interface ItemBonusInfo {
+    bonusText: string[];
+    bonuses: { [key: string]: Skill };
+}
+
+interface ItemWithBonus {
+	item: EquipmentItem;
+	bonusInfo: ItemBonusInfo;
+}
+
 
 const SKILLS = {
 	command_skill: 'CMD',
@@ -232,7 +243,7 @@ function main() {
 
 	fs.writeFileSync(STATIC_PATH + 'misc_stats.json', JSON.stringify({ alldemands, perFaction, perTrait }));
 
-	let getSkillWithBonus = (crew_skills, skillName, skillType) => {
+	let getSkillWithBonus = (crew_skills: BaseSkills, skillName: string, skillType: string) => {
 		return crew_skills[skillName][skillType] * (skill_bufs[skillName.replace('_skill', '')][skillType] + 1.1);
 	};
 
@@ -434,6 +445,9 @@ function main() {
 
 		return a.date_added.getTime() - b.date_added.getTime();
 	});
+
+	processCrew(crewlist);
+	postProcessQuipmentScores(crewlist, items);
 
 	fs.writeFileSync(STATIC_PATH + 'crew.json', JSON.stringify(crewlist));
 
@@ -785,6 +799,238 @@ function generateMissions() {
 	episodes = episodes.sort((a, b) => a.episode - b.episode);
 
 	fs.writeFileSync(STATIC_PATH + 'episodes.json', JSON.stringify(episodes));
+}
+
+function isQuipmentMatch<T extends CrewMember>(crew: T, item: EquipmentItem): boolean {
+	if (item.kwipment) {
+		if (!item.max_rarity_requirement) return false;
+		const bonus = getItemBonuses(item);
+
+		let mrq = item.max_rarity_requirement;
+		let rr = mrq >= crew.max_rarity;
+
+		if (!!item.traits_requirement?.length) {
+			if (item.traits_requirement_operator === "and") {
+				rr &&= item.traits_requirement?.every(t => crew.traits.includes(t) || crew.traits_hidden.includes(t));
+			}
+			else {
+				rr &&= item.traits_requirement?.some(t => crew.traits.includes(t) || crew.traits_hidden.includes(t));
+			}
+		}
+
+		rr &&= Object.keys(bonus.bonuses).some(skill => skill in crew.base_skills);
+		return rr;
+	}
+
+	return false;
+}
+
+function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemWithBonus[], overallOnly?: boolean) {
+	let qps = quipment.filter(f => isQuipmentMatch(crew, f.item));
+	crew.quipment_score = qps.map(m => Object.values(m.bonusInfo.bonuses).map((n: Skill) => n.skill && n.skill in crew.base_skills && crew.base_skills[n.skill].core ? n.core + n.range_min + n.range_max : 0)).flat().reduce((p, n) => p + n, 0) * crew.max_rarity;
+	if (overallOnly) return;
+
+	crew.quipment_scores ??= {		
+		command_skill: 0,
+		medicine_skill: 0,
+		diplomacy_skill: 0,
+		science_skill: 0,
+		security_skill: 0,
+		engineering_skill: 0,
+		trait_limited: 0
+	};
+
+	crew.quipment_scores.trait_limited = qps.filter(f => !!f.item.traits_requirement?.length).map(m => Object.values(m.bonusInfo.bonuses).map((n: Skill) => n.core + n.range_min + n.range_max)).flat().reduce((p, n) => p + n, 0) * crew.max_rarity;
+
+	Object.keys(SKILLS).forEach(sk => {
+		if (crew.quipment_scores) {
+			crew.quipment_scores[sk] = qps.map(m => Object.values(m.bonusInfo.bonuses).filter(f => f.skill === sk).map((n: Skill) => n.core + n.range_min + n.range_max)).flat().reduce((p, n) => p + n, 0) * crew.max_rarity;
+		}
+	});
+}
+
+
+function calculateTopQuipment(crew: CrewMember[]) {
+
+	const scores = [] as QuipmentScores[];
+	for (let i = 0; i < 5; i++) {
+		scores.push({
+			quipment_score: 0,
+			quipment_scores: {
+				command_skill: 0,
+				diplomacy_skill: 0,
+				medicine_skill: 0,
+				science_skill: 0,
+				engineering_skill: 0,
+				security_skill: 0,
+				trait_limited: 0
+			} as SkillQuipmentScores,
+			voyage_quotient: 0,
+			voyage_quotients: {
+				command_skill: 0,
+				diplomacy_skill: 0,
+				medicine_skill: 0,
+				science_skill: 0,
+				engineering_skill: 0,
+				security_skill: 0,
+				trait_limited: 0
+			} as SkillQuipmentScores
+		} as QuipmentScores);
+	}
+
+	const qkeys = Object.keys(scores[0].quipment_scores as SkillQuipmentScores);
+
+	for (let c of crew) {
+		const r = c.max_rarity - 1;
+		const skscore = scores[r].quipment_scores as SkillQuipmentScores;
+
+		if (!c.quipment_score || !c.quipment_scores) continue;
+		if (c.quipment_score > (scores[r].quipment_score ?? 0)) {
+			scores[r].quipment_score = c.quipment_score;
+		}
+		for (let key of qkeys) {
+			if (c.quipment_scores[key] > skscore[key]) {
+				skscore[key] = c.quipment_scores[key];
+			}
+		}
+		const vqscore = scores[r].voyage_quotients as SkillQuipmentScores;
+
+		if (!c.voyage_quotient) continue;
+		if (scores[r].voyage_quotient === 0 || c.voyage_quotient < (scores[r].voyage_quotient ?? 0)) {
+			scores[r].voyage_quotient = c.voyage_quotient;
+		}
+		if (!c.voyage_quotients) continue;
+		for (let key of qkeys) {
+			if (c.voyage_quotients[key] > vqscore[key]) {
+				vqscore[key] = c.voyage_quotients[key];
+			}
+		}
+	}
+
+	for (let c of crew) {
+		const r = c.max_rarity - 1;
+		const skscore = scores[r].quipment_scores as SkillQuipmentScores;
+		const escore = scores[r].quipment_score as number;
+		if (c.quipment_score && escore) {
+			c.quipment_grade = c.quipment_score / escore;
+		}
+		if (c.quipment_scores) {
+			Object.keys(c.quipment_scores).forEach((key) => {
+				if (key in skscore) {
+					c.quipment_grades ??= {
+						command_skill: 0,
+						diplomacy_skill: 0,
+						medicine_skill: 0,
+						science_skill: 0,
+						engineering_skill: 0,
+						security_skill: 0,
+						trait_limited: 0
+					}
+					c.quipment_grades[key] = (c.quipment_scores as SkillQuipmentScores)[key] / skscore[key];
+				}
+			})
+		}
+	}
+
+	return scores;
+}
+
+export function getSkillOrder<T extends CrewMember>(crew: T) {
+	const sk = [] as ComputedSkill[];
+
+	for (let skill of Object.keys(SKILLS)) {
+		if (skill in crew.base_skills && !!crew.base_skills[skill].core) {
+			sk.push({ ...crew.base_skills[skill], skill: skill });
+		}
+	}
+
+	sk.sort((a, b) => b.core - a.core);
+	const output = [] as string[];
+
+	if (sk.length > 0 && sk[0].skill) {
+		output.push(sk[0].skill);
+	}
+	if (sk.length > 1 && sk[1].skill) {
+		output.push(sk[1].skill);
+	}
+	if (sk.length > 2 && sk[2].skill) {
+		output.push(sk[2].skill);
+	}
+
+	return output;
+}
+
+
+const STATS_CONFIG: { [index: number]: { symbol: string, skill: string, stat: string } } = {
+	2: { symbol: 'engineering_skill_core', skill: 'engineering_skill', stat: 'core' },
+	3: { symbol: 'engineering_skill_range_min', skill: 'engineering_skill', stat: 'range_min' },
+	4: { symbol: 'engineering_skill_range_max', skill: 'engineering_skill', stat: 'range_max' },
+	6: { symbol: 'command_skill_core', skill: 'command_skill', stat: 'core' },
+	7: { symbol: 'command_skill_range_min', skill: 'command_skill', stat: 'range_min' },
+	8: { symbol: 'command_skill_range_max', skill: 'command_skill', stat: 'range_max' },
+	14: { symbol: 'science_skill_core', skill: 'science_skill', stat: 'core' },
+	15: { symbol: 'science_skill_range_min', skill: 'science_skill', stat: 'range_min' },
+	16: { symbol: 'science_skill_range_max', skill: 'science_skill', stat: 'range_max' },
+	18: { symbol: 'diplomacy_skill_core', skill: 'diplomacy_skill', stat: 'core' },
+	19: { symbol: 'diplomacy_skill_range_min', skill: 'diplomacy_skill', stat: 'range_min' },
+	20: { symbol: 'diplomacy_skill_range_max', skill: 'diplomacy_skill', stat: 'range_max' },
+	22: { symbol: 'security_skill_core', skill: 'security_skill', stat: 'core' },
+	23: { symbol: 'security_skill_range_min', skill: 'security_skill', stat: 'range_min' },
+	24: { symbol: 'security_skill_range_max', skill: 'security_skill', stat: 'range_max' },
+	26: { symbol: 'medicine_skill_core', skill: 'medicine_skill', stat: 'core' },
+	27: { symbol: 'medicine_skill_range_min', skill: 'medicine_skill', stat: 'range_min' },
+	28: { symbol: 'medicine_skill_range_max', skill: 'medicine_skill', stat: 'range_max' }
+};
+
+
+export function getItemBonuses(item: EquipmentItem): ItemBonusInfo {
+    let bonusText = [] as string[];
+    let bonuses = {} as { [key: string]: Skill };
+    
+    if (item.bonuses) {
+        for (let [key, value] of Object.entries(item.bonuses)) {
+            let bonus = STATS_CONFIG[Number.parseInt(key)];
+            if (bonus) {
+                bonusText.push(`+${value} ${bonus.symbol}`);	
+                bonuses[bonus.skill] ??= { core: 0, range_min: 0, range_max: 0 } as Skill;
+                bonuses[bonus.skill][bonus.stat] = value;				
+                bonuses[bonus.skill].skill = bonus.skill;
+            } else {
+                // TODO: what kind of bonus is this?
+            }
+        }
+    }
+
+    return {
+        bonusText,
+        bonuses
+    };
+}
+
+function getItemWithBonus(item: EquipmentItem) {
+	return {
+		item,
+		bonusInfo: getItemBonuses(item)
+	} as ItemWithBonus;
+}
+
+function processCrew(result: CrewMember[]): CrewMember[] {
+	result.forEach((item) => {
+		item.skill_order = getSkillOrder(item);
+		item.action.cycle_time = item.action.cooldown + item.action.duration;
+		if (typeof item.date_added === 'string') {
+			item.date_added = new Date(item.date_added);
+		}
+	});
+
+	return result;
+}
+
+function postProcessQuipmentScores(crew: CrewMember[], items: EquipmentItem[]) {
+	const quipment = items.filter(f => f.type === 14).map(item => getItemWithBonus(item));
+	crew.forEach(crew => {
+		calcQuipmentScore(crew, quipment);
+	});
 }
 
 main();

@@ -4,7 +4,19 @@
 // const ExcelJS = require('exceljs');
 // require('lodash.combinations');
 // const _ = require('lodash');
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getItemBonuses = exports.getSkillOrder = void 0;
 var _ = require("lodash");
 require("lodash.combinations");
 var fs = require("fs");
@@ -414,6 +426,8 @@ function main() {
         }
         return a.date_added.getTime() - b.date_added.getTime();
     });
+    processCrew(crewlist);
+    postProcessQuipmentScores(crewlist, items);
     fs.writeFileSync(STATIC_PATH + 'crew.json', JSON.stringify(crewlist));
     // Calculate some skill set stats for the BigBook
     var counts = {};
@@ -714,6 +728,228 @@ function generateMissions() {
     }
     episodes = episodes.sort(function (a, b) { return a.episode - b.episode; });
     fs.writeFileSync(STATIC_PATH + 'episodes.json', JSON.stringify(episodes));
+}
+function isQuipmentMatch(crew, item) {
+    var _a, _b, _c;
+    if (item.kwipment) {
+        if (!item.max_rarity_requirement)
+            return false;
+        var bonus = getItemBonuses(item);
+        var mrq = item.max_rarity_requirement;
+        var rr = mrq >= crew.max_rarity;
+        if (!!((_a = item.traits_requirement) === null || _a === void 0 ? void 0 : _a.length)) {
+            if (item.traits_requirement_operator === "and") {
+                rr && (rr = (_b = item.traits_requirement) === null || _b === void 0 ? void 0 : _b.every(function (t) { return crew.traits.includes(t) || crew.traits_hidden.includes(t); }));
+            }
+            else {
+                rr && (rr = (_c = item.traits_requirement) === null || _c === void 0 ? void 0 : _c.some(function (t) { return crew.traits.includes(t) || crew.traits_hidden.includes(t); }));
+            }
+        }
+        rr && (rr = Object.keys(bonus.bonuses).some(function (skill) { return skill in crew.base_skills; }));
+        return rr;
+    }
+    return false;
+}
+function calcQuipmentScore(crew, quipment, overallOnly) {
+    var _a;
+    var qps = quipment.filter(function (f) { return isQuipmentMatch(crew, f.item); });
+    crew.quipment_score = qps.map(function (m) { return Object.values(m.bonusInfo.bonuses).map(function (n) { return n.skill && n.skill in crew.base_skills && crew.base_skills[n.skill].core ? n.core + n.range_min + n.range_max : 0; }); }).flat().reduce(function (p, n) { return p + n; }, 0) * crew.max_rarity;
+    if (overallOnly)
+        return;
+    (_a = crew.quipment_scores) !== null && _a !== void 0 ? _a : (crew.quipment_scores = {
+        command_skill: 0,
+        medicine_skill: 0,
+        diplomacy_skill: 0,
+        science_skill: 0,
+        security_skill: 0,
+        engineering_skill: 0,
+        trait_limited: 0
+    });
+    crew.quipment_scores.trait_limited = qps.filter(function (f) { var _a; return !!((_a = f.item.traits_requirement) === null || _a === void 0 ? void 0 : _a.length); }).map(function (m) { return Object.values(m.bonusInfo.bonuses).map(function (n) { return n.core + n.range_min + n.range_max; }); }).flat().reduce(function (p, n) { return p + n; }, 0) * crew.max_rarity;
+    Object.keys(SKILLS).forEach(function (sk) {
+        if (crew.quipment_scores) {
+            crew.quipment_scores[sk] = qps.map(function (m) { return Object.values(m.bonusInfo.bonuses).filter(function (f) { return f.skill === sk; }).map(function (n) { return n.core + n.range_min + n.range_max; }); }).flat().reduce(function (p, n) { return p + n; }, 0) * crew.max_rarity;
+        }
+    });
+}
+function calculateTopQuipment(crew) {
+    var _a, _b;
+    var scores = [];
+    for (var i = 0; i < 5; i++) {
+        scores.push({
+            quipment_score: 0,
+            quipment_scores: {
+                command_skill: 0,
+                diplomacy_skill: 0,
+                medicine_skill: 0,
+                science_skill: 0,
+                engineering_skill: 0,
+                security_skill: 0,
+                trait_limited: 0
+            },
+            voyage_quotient: 0,
+            voyage_quotients: {
+                command_skill: 0,
+                diplomacy_skill: 0,
+                medicine_skill: 0,
+                science_skill: 0,
+                engineering_skill: 0,
+                security_skill: 0,
+                trait_limited: 0
+            }
+        });
+    }
+    var qkeys = Object.keys(scores[0].quipment_scores);
+    for (var _i = 0, crew_1 = crew; _i < crew_1.length; _i++) {
+        var c = crew_1[_i];
+        var r = c.max_rarity - 1;
+        var skscore = scores[r].quipment_scores;
+        if (!c.quipment_score || !c.quipment_scores)
+            continue;
+        if (c.quipment_score > ((_a = scores[r].quipment_score) !== null && _a !== void 0 ? _a : 0)) {
+            scores[r].quipment_score = c.quipment_score;
+        }
+        for (var _c = 0, qkeys_1 = qkeys; _c < qkeys_1.length; _c++) {
+            var key = qkeys_1[_c];
+            if (c.quipment_scores[key] > skscore[key]) {
+                skscore[key] = c.quipment_scores[key];
+            }
+        }
+        var vqscore = scores[r].voyage_quotients;
+        if (!c.voyage_quotient)
+            continue;
+        if (scores[r].voyage_quotient === 0 || c.voyage_quotient < ((_b = scores[r].voyage_quotient) !== null && _b !== void 0 ? _b : 0)) {
+            scores[r].voyage_quotient = c.voyage_quotient;
+        }
+        if (!c.voyage_quotients)
+            continue;
+        for (var _d = 0, qkeys_2 = qkeys; _d < qkeys_2.length; _d++) {
+            var key = qkeys_2[_d];
+            if (c.voyage_quotients[key] > vqscore[key]) {
+                vqscore[key] = c.voyage_quotients[key];
+            }
+        }
+    }
+    var _loop_10 = function (c) {
+        var r = c.max_rarity - 1;
+        var skscore = scores[r].quipment_scores;
+        var escore = scores[r].quipment_score;
+        if (c.quipment_score && escore) {
+            c.quipment_grade = c.quipment_score / escore;
+        }
+        if (c.quipment_scores) {
+            Object.keys(c.quipment_scores).forEach(function (key) {
+                var _a;
+                if (key in skscore) {
+                    (_a = c.quipment_grades) !== null && _a !== void 0 ? _a : (c.quipment_grades = {
+                        command_skill: 0,
+                        diplomacy_skill: 0,
+                        medicine_skill: 0,
+                        science_skill: 0,
+                        engineering_skill: 0,
+                        security_skill: 0,
+                        trait_limited: 0
+                    });
+                    c.quipment_grades[key] = c.quipment_scores[key] / skscore[key];
+                }
+            });
+        }
+    };
+    for (var _e = 0, crew_2 = crew; _e < crew_2.length; _e++) {
+        var c = crew_2[_e];
+        _loop_10(c);
+    }
+    return scores;
+}
+function getSkillOrder(crew) {
+    var sk = [];
+    for (var _i = 0, _a = Object.keys(SKILLS); _i < _a.length; _i++) {
+        var skill = _a[_i];
+        if (skill in crew.base_skills && !!crew.base_skills[skill].core) {
+            sk.push(__assign(__assign({}, crew.base_skills[skill]), { skill: skill }));
+        }
+    }
+    sk.sort(function (a, b) { return b.core - a.core; });
+    var output = [];
+    if (sk.length > 0 && sk[0].skill) {
+        output.push(sk[0].skill);
+    }
+    if (sk.length > 1 && sk[1].skill) {
+        output.push(sk[1].skill);
+    }
+    if (sk.length > 2 && sk[2].skill) {
+        output.push(sk[2].skill);
+    }
+    return output;
+}
+exports.getSkillOrder = getSkillOrder;
+var STATS_CONFIG = {
+    2: { symbol: 'engineering_skill_core', skill: 'engineering_skill', stat: 'core' },
+    3: { symbol: 'engineering_skill_range_min', skill: 'engineering_skill', stat: 'range_min' },
+    4: { symbol: 'engineering_skill_range_max', skill: 'engineering_skill', stat: 'range_max' },
+    6: { symbol: 'command_skill_core', skill: 'command_skill', stat: 'core' },
+    7: { symbol: 'command_skill_range_min', skill: 'command_skill', stat: 'range_min' },
+    8: { symbol: 'command_skill_range_max', skill: 'command_skill', stat: 'range_max' },
+    14: { symbol: 'science_skill_core', skill: 'science_skill', stat: 'core' },
+    15: { symbol: 'science_skill_range_min', skill: 'science_skill', stat: 'range_min' },
+    16: { symbol: 'science_skill_range_max', skill: 'science_skill', stat: 'range_max' },
+    18: { symbol: 'diplomacy_skill_core', skill: 'diplomacy_skill', stat: 'core' },
+    19: { symbol: 'diplomacy_skill_range_min', skill: 'diplomacy_skill', stat: 'range_min' },
+    20: { symbol: 'diplomacy_skill_range_max', skill: 'diplomacy_skill', stat: 'range_max' },
+    22: { symbol: 'security_skill_core', skill: 'security_skill', stat: 'core' },
+    23: { symbol: 'security_skill_range_min', skill: 'security_skill', stat: 'range_min' },
+    24: { symbol: 'security_skill_range_max', skill: 'security_skill', stat: 'range_max' },
+    26: { symbol: 'medicine_skill_core', skill: 'medicine_skill', stat: 'core' },
+    27: { symbol: 'medicine_skill_range_min', skill: 'medicine_skill', stat: 'range_min' },
+    28: { symbol: 'medicine_skill_range_max', skill: 'medicine_skill', stat: 'range_max' }
+};
+function getItemBonuses(item) {
+    var _a;
+    var _b;
+    var bonusText = [];
+    var bonuses = {};
+    if (item.bonuses) {
+        for (var _i = 0, _c = Object.entries(item.bonuses); _i < _c.length; _i++) {
+            var _d = _c[_i], key = _d[0], value = _d[1];
+            var bonus = STATS_CONFIG[Number.parseInt(key)];
+            if (bonus) {
+                bonusText.push("+".concat(value, " ").concat(bonus.symbol));
+                (_a = bonuses[_b = bonus.skill]) !== null && _a !== void 0 ? _a : (bonuses[_b] = { core: 0, range_min: 0, range_max: 0 });
+                bonuses[bonus.skill][bonus.stat] = value;
+                bonuses[bonus.skill].skill = bonus.skill;
+            }
+            else {
+                // TODO: what kind of bonus is this?
+            }
+        }
+    }
+    return {
+        bonusText: bonusText,
+        bonuses: bonuses
+    };
+}
+exports.getItemBonuses = getItemBonuses;
+function getItemWithBonus(item) {
+    return {
+        item: item,
+        bonusInfo: getItemBonuses(item)
+    };
+}
+function processCrew(result) {
+    result.forEach(function (item) {
+        item.skill_order = getSkillOrder(item);
+        item.action.cycle_time = item.action.cooldown + item.action.duration;
+        if (typeof item.date_added === 'string') {
+            item.date_added = new Date(item.date_added);
+        }
+    });
+    return result;
+}
+function postProcessQuipmentScores(crew, items) {
+    var quipment = items.filter(function (f) { return f.type === 14; }).map(function (item) { return getItemWithBonus(item); });
+    crew.forEach(function (crew) {
+        calcQuipmentScore(crew, quipment);
+    });
 }
 main();
 updateExcelSheet();
