@@ -318,7 +318,7 @@
         "skirmish": "Escarmouche"
     },
     "fbb": {
-        "select": "Sélectionnez un combat de boss",
+        "alert_no_solution": "Aucune solution possible trouvée pour ce nodule. Vous devrez peut-être modifier vos filtres, revérifier vos traits résolus ou réinitialiser la liste des tentatives d'équipage.",
         "attempted": {
             "clipboard": "Copier la tentative des équipiers dans le presse-papier",
             "title": "Gardez une trace des membres des équipiers qui ont été jugés pour cette chaîne combo."
@@ -339,7 +339,6 @@
         },
         "crew_lists": {
             "clipboard": "Copier l'équipage possible dans le presse-papiers",
-            "heading": "Copiez les listes d'équipages possibles, regroupées par nœuds et traits, pour un partage plus facile sur Discord ou d'autres forums.",
             "customize": {
                 "heading": "Vous pouvez personnaliser l'apparence de l'exportation. Les préférences suivantes seront mémorisées lors de toutes les exportations ultérieures.",
                 "options": {
@@ -349,6 +348,46 @@
                     "coverage_potential": "Potentiel de couverture",
                     "crew_delimiter": "Délimiteur d'équipage",
                     "defaults": "Par défaut",
+                    "dropdowns": {
+                        "bullet": {
+                            "full": "Nodule et numéro",
+                            "none": "Aucun",
+                            "number": "Numéro",
+                            "simple": "Trait"
+                        },
+                        "delimiter": {
+                            "comma": "Virgule",
+                            "semicolon": "Point-virgule"
+                        },
+                        "duplicates": {
+                            "ignore": "Ne pas numéroter",
+                            "number": "Afficher le numéro nécessaire"
+                        },
+                        "format": {
+                            "bold": "Gras (**)",
+                            "bolditalic": "Gras italique (***)",
+                            "bolditalicunderline": "Souligné en gras et italique (***__)",
+                            "boldunderline": "Souligné en gras (**__)",
+                            "italic": "Italique (*)",
+                            "italicunderline": "Souligné en italique (*__)",
+                            "none": "Aucun formatage",
+                            "underline": "Souligné (__)"
+                        },
+                        "header": {
+                            "always": "Toujours afficher la chaîne de boss",
+                            "hide": "Ne pas afficher",
+                            "initial": "Afficher uniquement sur les nouvelles chaînes"
+                        },
+                        "show": {
+                            "hide": "Ne pas afficher",
+                            "show": "Afficher"
+                        },
+                        "solve": {
+                            "always": "Toujours afficher les solutions",
+                            "hide": "Ne pas afficher",
+                            "spot": "Afficher uniquement les solutions non confirmées"
+                        }
+                    },
                     "duplicate_traits": "Caractéristiques en double",
                     "export_header": "Exporter l'en-tête",
                     "formatting": "Formatage",
@@ -356,59 +395,26 @@
                     "load_preset_values": "Charger les valeurs prédéfinies",
                     "node_header": "En-tête du nodule",
                     "non_optimal": "Non optimal",
+                    "non_portal": "Non portail",
                     "one_hand_exception": "Exception à une main",
                     "possible_solutions": "Solutions possibles",
                     "solved_nodes": "Nodules résolus",
                     "traits": "Traits",
-                    "unique": "Unique",
-                    "non_portal": "Non portail",
-                    "dropdowns": {
-                        "header": {
-                            "always": "Toujours afficher la chaîne de boss",
-                            "initial": "Afficher uniquement sur les nouvelles chaînes",
-                            "hide": "Ne pas afficher"
-                        },
-                        "solve": {
-                            "always": "Toujours afficher les solutions",
-                            "spot": "Afficher uniquement les solutions non confirmées",
-                            "hide": "Ne pas afficher"
-                        },
-                        "format": {
-                            "italic": "Italique (*)",
-                            "bold": "Gras (**)",
-                            "bolditalic": "Gras italique (***)",
-                            "underline": "Souligné (__)",
-                            "italicunderline": "Souligné en italique (*__)",
-                            "boldunderline": "Souligné en gras (**__)",
-                            "bolditalicunderline": "Souligné en gras et italique (***__)",
-                            "none": "Aucun formatage"
-                        },
-                        "show": {
-                            "show": "Afficher",
-                            "hide": "Ne pas afficher"
-                        },
-                        "bullet": {
-                            "simple": "Trait",
-                            "number": "Numéro",
-                            "full": "Nodule et numéro",
-                            "none": "Aucun"
-                        },
-                        "delimiter": {
-                            "comma": "Virgule",
-                            "semicolon": "Point-virgule"
-                        },
-                        "duplicates": {
-                            "number": "Afficher le numéro nécessaire",
-                            "ignore": "Ne pas numéroter"
-                        }
-                    }
+                    "unique": "Unique"
                 },
                 "title": "Personnaliser l'exportation"
             },
+            "heading": "Copiez les listes d'équipages possibles, regroupées par nœuds et traits, pour un partage plus facile sur Discord ou d'autres forums.",
             "title": "Exporter les listes d'équipage"
         },
+        "current_solutions": {
+            "heading": "Ce tableau montre la progression de la chaîne de combo actuelle. Mettez à jour les traits mystères lorsqu'un nodule est résolu.",
+            "title": "Solutions actuelles"
+        },
         "heading": "Utilisez cet outil pour vous aider à activer les bonus de chaîne de combo lors d'une bataille contre un boss de flotte.",
+        "identify_solve_n": "Identifier les traits utilisées pour résoudre le nodule {{n}}",
         "node_n": "Nodule {{n}}",
+        "partial_solve": "Partiellement résolu",
         "popup": {
             "crew_solved": "{{crew}} a résolu un nodule !",
             "mark_as_tried": "Marquer comme essayé"
@@ -418,10 +424,6 @@
             "tap_approve_decline": "Appuyez sur les boutons {{approve}} {{decline}} pour marquer l'équipage comme essayé.",
             "tap_trait_solve": "Appuyez sur un trait s'il résout un nodule. Appuyez sur un équipage pour le marquer comme essayé.",
             "title": "Solutions possibles"
-        },
-        "current_solutions": {
-            "title": "Solutions actuelles",
-            "heading": "Ce tableau montre la progression de la chaîne de combo actuelle. Mettez à jour les traits mystères lorsqu'un nodule est résolu."
         },
         "possible_traits": {
             "clipboard": "Copier les traits possibles dans le presse-papier",
@@ -444,6 +446,7 @@
                 "title": "Traits"
             }
         },
+        "select": "Sélectionnez un combat de boss",
         "settings": {
             "optimizations": {
                 "hide_non_optimal": "Supprimer l'équipage non optimal",
@@ -463,9 +466,9 @@
             "warn": "Les solutions correctes peuvent ne pas être répertoriées avec les paramètres actuels."
         },
         "solves": {
+            "partially_solved": "Nodule {{n}} partiellement résolu",
             "pending": "en attente de confirmation",
-            "solved": "Nodule {{n}} résolu",
-            "partially_solved": "Nodule {{n}} partiellement résolu"
+            "solved": "Nodule {{n}} résolu"
         },
         "tips": {
             "alpha_exceptions_a": "Exceptions alpha",
@@ -518,7 +521,6 @@
         "yesterday_gauntlet": "Gantelet d'hier"
     },
     "global": {
-        "notes": "Remarques",
         "admiral": "Amiral",
         "advanced_settings": "Réglages Avancés",
         "and": "et",
@@ -554,6 +556,7 @@
         "new_m": "Nouveau",
         "no": "Non",
         "none": "Aucun",
+        "notes": "Remarques",
         "obtained": "Obtenu par",
         "officer": "Officier",
         "optional": "Facultatif",

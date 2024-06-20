@@ -26,7 +26,7 @@ type MarkGroupProps = {
 
 export const MarkGroup = (props: MarkGroupProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { TRAIT_NAMES } = globalContext.localized;
+	const { t, TRAIT_NAMES } = globalContext.localized;
 	const { node, traits } = props;
 
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
@@ -80,6 +80,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 				size='tiny'
 			>
 				<Modal.Header>
+					{t('fbb.identify_solve_n', { n: `${node.index+1}`})}
 					Identify the traits used to solve Node {node.index+1}
 				</Modal.Header>
 				<Modal.Content scrolling style={{ textAlign: 'center' }}>
@@ -92,7 +93,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 					</Header>
 					<GroupSolveOptions />
 					<div style={{ marginTop: '2em' }}>
-						<Header as='h4'>Partial Solve</Header>
+						<Header as='h4'>{t('fbb.partial_solve')}</Header>
 						<SolveButton node={node}
 							traits={[firstTrait, '?']} rarity={traitRarity[firstTrait]} onehand={false}
 							traitData={props.solver.traits} solveNode={handleSolveClick}
@@ -102,7 +103,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 				<Modal.Actions>
 					<TipsPopup />
 					<Button onClick={() => setModalIsOpen(false)}>
-						Close
+						{t('global.close')}
 					</Button>
 				</Modal.Actions>
 			</Modal>
