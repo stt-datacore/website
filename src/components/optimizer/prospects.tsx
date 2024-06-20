@@ -46,7 +46,7 @@ export const CitationProspects = (props: CitationProspectsProps) => {
             <h3>{t('crew_views.prospect.title')}</h3>
 
             <Checkbox checked={unownedOnly} onChange={(e, { checked }) => setUnownedOnly(!!checked)}
-                label={'Unowned Crew Only'} />
+                label={t('crew_ownership.unowned')} />
 
             <div style={{ display: "flex", flexDirection: "row", gap: "1em", alignItems: "flex-start", marginTop: "0.5em" }}>
 

@@ -67,7 +67,8 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 			return {
 				key: trait,
 				value: trait,
-				text: TRAIT_NAMES[trait]
+				text: TRAIT_NAMES[trait],
+				//content: <div style={{display:'flex', alignItems: 'center'}}><img style={{height:'24px',margin: '0.25em'}} src={`${process.env.GATSBY_ASSETS_URL}items_keystones_${trait}.png`} />{TRAIT_NAMES[trait]}</div>
 			} as TraitOptions;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 		setTraitOptions([...options]);
