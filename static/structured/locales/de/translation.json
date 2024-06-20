@@ -310,7 +310,7 @@
         "skirmish": "Scharmützel"
     },
     "fbb": {
-        "select": "Wähle einen Bosskampf aus",
+        "alert_no_solution": "Für diesen Knoten wurden keine möglichen Lösungen gefunden. Möglicherweise müssen Sie Ihre Filter ändern, Ihre gelösten Merkmale noch einmal überprüfen oder die Liste der versuchten Crew zurücksetzen.",
         "attempted": {
             "clipboard": "Kopiere versuchten Crew in die Zwischenablage",
             "title": "Behalte den Überblick über Crewmitglieder, die für diese Combo-Kette versucht wurden."
@@ -331,7 +331,6 @@
         },
         "crew_lists": {
             "clipboard": "Mögliche Crew in die Zwischenablage kopieren",
-            "heading": "Kopieren Sie die Listen möglicher Crewmitglieder, gruppiert nach Knoten und Merkmalen, um sie einfacher auf Discord oder anderen Foren teilen zu können.",
             "customize": {
                 "heading": "Sie können das Erscheinungsbild des Exports anpassen. Die folgenden Einstellungen werden bei allen nachfolgenden Exporten gespeichert.",
                 "options": {
@@ -341,6 +340,46 @@
                     "coverage_potential": "Abdeckungspotenzial",
                     "crew_delimiter": "Crew-Trennzeichen",
                     "defaults": "Standardwerte",
+                    "dropdowns": {
+                        "bullet": {
+                            "full": "Knoten und Zahl",
+                            "none": "Keine",
+                            "number": "Zahl",
+                            "simple": "Strich"
+                        },
+                        "delimiter": {
+                            "comma": "Komma",
+                            "semicolon": "Semikolon"
+                        },
+                        "duplicates": {
+                            "ignore": "Nicht nummerieren",
+                            "number": "Erforderliche Nummer anzeigen"
+                        },
+                        "format": {
+                            "bold": "Fett (**)",
+                            "bolditalic": "Fett kursiv (***)",
+                            "bolditalicunderline": "Fett kursiv unterstrichen (***__)",
+                            "boldunderline": "Fett unterstrichen (**__)",
+                            "italic": "Kursiv (*)",
+                            "italicunderline": "Kursiv unterstrichen (*__)",
+                            "none": "Keine Formatierung",
+                            "underline": "Unterstrichen (__)"
+                        },
+                        "header": {
+                            "always": "Boss-Kette immer anzeigen",
+                            "hide": "Nicht anzeigen",
+                            "initial": "Nur bei neuen Ketten anzeigen"
+                        },
+                        "show": {
+                            "hide": "Nicht anzeigen",
+                            "show": "Anzeigen"
+                        },
+                        "solve": {
+                            "always": "Immer Lösungen anzeigen",
+                            "hide": "Nicht anzeigen",
+                            "spot": "Nur unbestätigte Lösungen anzeigen"
+                        }
+                    },
                     "duplicate_traits": "Doppelte Eigenschaften",
                     "export_header": "Exportkopfzeile",
                     "formatting": "Formatierung",
@@ -348,59 +387,26 @@
                     "load_preset_values": "Voreingestellte Werte laden",
                     "node_header": "Knotenkopfzeile",
                     "non_optimal": "Nicht optimal",
+                    "non_portal": "Kein Portal",
                     "one_hand_exception": "Einhand-Ausnahme",
                     "possible_solutions": "Mögliche Lösungen",
                     "solved_nodes": "Gelöste Knoten",
                     "traits": "Eigenschaften",
-                    "unique": "Einzigartig",
-                    "non_portal": "Kein Portal",
-                    "dropdowns": {
-                        "header": {
-                            "always": "Boss-Kette immer anzeigen",
-                            "initial": "Nur bei neuen Ketten anzeigen",
-                            "hide": "Nicht anzeigen"
-                        },
-                        "solve": {
-                            "always": "Immer Lösungen anzeigen",
-                            "spot": "Nur unbestätigte Lösungen anzeigen",
-                            "hide": "Nicht anzeigen"
-                        },
-                        "format": {
-                            "italic": "Kursiv (*)",
-                            "bold": "Fett (**)",
-                            "bolditalic": "Fett kursiv (***)",
-                            "underline": "Unterstrichen (__)",
-                            "italicunderline": "Kursiv unterstrichen (*__)",
-                            "boldunderline": "Fett unterstrichen (**__)",
-                            "bolditalicunderline": "Fett kursiv unterstrichen (***__)",
-                            "none": "Keine Formatierung"
-                        },
-                        "show": {
-                            "show": "Anzeigen",
-                            "hide": "Nicht anzeigen"
-                        },
-                        "bullet": {
-                            "simple": "Strich",
-                            "number": "Zahl",
-                            "full": "Knoten und Zahl",
-                            "none": "Keine"
-                        },
-                        "delimiter": {
-                            "comma": "Komma",
-                            "semicolon": "Semikolon"
-                        },
-                        "duplicates": {
-                            "number": "Erforderliche Nummer anzeigen",
-                            "ignore": "Nicht nummerieren"
-                        }
-                    }
+                    "unique": "Einzigartig"
                 },
                 "title": "Export anpassen"
             },
+            "heading": "Kopieren Sie die Listen möglicher Crewmitglieder, gruppiert nach Knoten und Merkmalen, um sie einfacher auf Discord oder anderen Foren teilen zu können.",
             "title": "Crewlisten exportieren"
         },
+        "current_solutions": {
+            "heading": "Diese Tabelle zeigt den Fortschritt der aktuellen Combo-Kette. Aktualisieren Sie die Mystery-Merkmale, wenn ein Knoten gelöst ist.",
+            "title": "Aktuelle Lösungen"
+        },
         "heading": "Verwenden Sie dieses Tool, um Combo-Kettenboni in einem Flottenbosskampf zu aktivieren.",
+        "identify_solve_n": "Identifizieren Sie die Merkmale, die zur Lösung des Knotens {{n}} verwendet werden",
         "node_n": "Knoten {{n}}",
+        "partial_solve": "Teilweise gelöst",
         "popup": {
             "crew_solved": "{{crew}} hat einen Knoten gelöst!",
             "mark_as_tried": "Als versucht markieren"
@@ -410,10 +416,6 @@
             "tap_approve_decline": "Tippen Sie auf die Schaltflächen {{approve}} {{decline}}, um die Crew als versucht zu markieren.",
             "tap_trait_solve": "Tippen Sie auf eine Eigenschaft, wenn sie ein Problem löst. Tippen Sie auf eine Crew, um sie als ausprobiert zu markieren.",
             "title": "Mögliche Lösungen"
-        },
-        "current_solutions": {
-            "title": "Aktuelle Lösungen",
-            "heading": "Diese Tabelle zeigt den Fortschritt der aktuellen Combo-Kette. Aktualisieren Sie die Mystery-Merkmale, wenn ein Knoten gelöst ist."
         },
         "possible_traits": {
             "clipboard": "Mögliche Eigenschaften in die Zwischenablage kopieren",
@@ -436,6 +438,7 @@
                 "title": "Merkmale"
             }
         },
+        "select": "Wähle einen Bosskampf aus",
         "settings": {
             "optimizations": {
                 "hide_non_optimal": "Nicht optimale Crew ausblenden",
@@ -455,9 +458,9 @@
             "warn": "Mit den aktuellen Einstellungen werden möglicherweise keine korrekten Lösungen aufgeführt."
         },
         "solves": {
+            "partially_solved": "Knoten {{n}} teilweise gelöst",
             "pending": "Bestätigung steht aus",
-            "solved": "Knoten {{n}} gelöst",
-            "partially_solved": "Knoten {{n}} teilweise gelöst"
+            "solved": "Knoten {{n}} gelöst"
         },
         "tips": {
             "alpha_exceptions_a": "Alpha-Ausnahmen",
@@ -510,7 +513,6 @@
         "yesterday_gauntlet": "Die Herausforderung von gestern"
     },
     "global": {
-        "notes": "Anmerkungen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
         "and": "und",
@@ -544,6 +546,7 @@
         "new": "Neu",
         "no": "Nein",
         "none": "Keine",
+        "notes": "Anmerkungen",
         "obtained": "Erhalten von",
         "officer": "Offizier",
         "optional": "Optional",

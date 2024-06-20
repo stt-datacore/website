@@ -74,7 +74,7 @@ const NodeGroups = (props: NodeGroupsProps) => {
 										<Button compact icon='undo' content={t('fbb.undo_solve')} onClick={() => groupsContext.solveNode(node.index, [])} />
 									</span>
 								</span>
-							)}
+							) || <>{tfmt('fbb.node_n', { n: `${node.index+1}`})}</>}
 						</p>
 					</div>
 					<div>
@@ -84,7 +84,7 @@ const NodeGroups = (props: NodeGroupsProps) => {
 			</Message>
 			{nodeGroups.length === 0 && (
 				<Message>
-					No possible solutions found for this node. You may need to change your filters, double-check your solved traits, or reset the list of attempted crew.
+					{t('fbb.alert_no_solution')}					
 				</Message>
 			)}
 			{nodeGroups.length > 0 && <GroupTable node={node} data={nodeGroups} />}
