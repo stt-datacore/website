@@ -1,5 +1,5 @@
 import React from 'react';
-import { CollectionFilterContext } from './filtercontext';
+import { CollectionsContext } from './context';
 import { Pagination, Table, Grid, Image, Dropdown, Button, Checkbox, Icon, Input, Progress } from 'semantic-ui-react';
 import { Reward, BuffBase, PlayerCrew, PlayerCollection } from '../../model/player';
 import { RewardPicker, RewardsGrid } from '../crewtables/rewards';
@@ -29,7 +29,7 @@ interface ComboConfig {
 }
 
 export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
-    const colContext = React.useContext(CollectionFilterContext);
+    const colContext = React.useContext(CollectionsContext);
     const context = React.useContext(GlobalContext);
     const { workerRunning, playerCollections } = props;
     const { favorited, setFavorited, showIncomplete, setShowIncomplete, hardFilter, setHardFilter, byCost, setByCost, matchMode, setMatchMode, costMode, setCostMode, setShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;

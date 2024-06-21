@@ -1,7 +1,7 @@
 import React from 'react';
 import { GlobalContext } from '../../context/globalcontext';
 import { PlayerCollection, BuffBase, Reward } from '../../model/player';
-import { CollectionFilterContext } from './filtercontext';
+import { CollectionsContext } from './context';
 import { Image, Icon, Checkbox, Pagination, Table, Grid, Dropdown, Progress } from 'semantic-ui-react';
 import { RewardPicker, RewardsGrid } from '../crewtables/rewards';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
@@ -21,7 +21,7 @@ export interface GroupTableProps {
 
 
 export const CollectionGroupTable = (props: GroupTableProps) => {
-    const colContext = React.useContext(CollectionFilterContext);
+    const colContext = React.useContext(CollectionsContext);
     const context = React.useContext(GlobalContext);
     const { workerRunning, playerCollections, colGroups } = props;
     const { favorited, setFavorited, hardFilter, setHardFilter, costMode, setCostMode, setShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;

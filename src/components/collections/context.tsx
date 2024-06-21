@@ -1,12 +1,11 @@
 import React from 'react';
 
-import { GlobalContext } from '../../context/globalcontext';
 import { PlayerCollection, PlayerCrew } from "../../model/player";
-import { getCollectionRewards } from '../../utils/itemutils';
 import { useStateWithStorage } from '../../utils/storage';
-import { TinyStore } from '../../utils/tiny';
-import { MapFilterOptions, CollectionFilterContextProps, CollectionMap, CollectionGroup, CollectionMatchMode, CollectionFilterProps } from '../../model/collectionfilter';
+import { MapFilterOptions, ICollectionsContext, CollectionMatchMode, CollectionsToolSettings } from '../../model/collectionfilter';
 import { checkCommonFilter, checkRewardFilter } from '../../utils/collectionutils';
+import { Filter } from '../../model/game-elements';
+import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 
 const DefaultConfig = {
     mapFilter: {} as MapFilterOptions,
@@ -22,28 +21,29 @@ const DefaultConfig = {
     hardFilter: false,
     favorited: true,
     showIncomplete: false,
-} as CollectionFilterProps;
+} as CollectionsToolSettings;
 
 const DefaultData = {
     ... DefaultConfig,
-    setMapFilter: (value) => null,
-    setSearchFilter: (value) => null,
-    setRarityFilter: (value) => null,
-    setFuseFilter: (value) => null,
-    setOwnedFilter: (value) => null,
-    checkCommonFilter: (value) => false,
-    checkRewardFilter: (value) => false,
-    setShort: (value) => false,
-    setCostMode: (value) => false,
-    setMatchMode: (value) => false,
-    setByCost: (value) => false,
-    setTierFilter: (value) => 1,
-    setHardFilter: (value) => null,
-    setFavorited: (value) => null,
-    setShowIncomplete: (value) => null
-} as CollectionFilterContextProps;
+    setMapFilter: () => null,
+    setSearchFilter: () => null,
+    setRarityFilter: () => null,
+    setFuseFilter: () => null,
+    setOwnedFilter: () => null,
+    checkCommonFilter: () => false,
+    checkRewardFilter: () => false,
+    setShort: () => false,
+    setCostMode: () => false,
+    setMatchMode: () => false,
+    setByCost: () => false,
+    setTierFilter: () => 1,
+    setHardFilter: () => null,
+    setFavorited: () => null,
+    setShowIncomplete: () => null,
+    showThisCrew: () => false,
+} as ICollectionsContext;
 
-export const CollectionFilterContext = React.createContext<CollectionFilterContextProps>(DefaultData);
+export const CollectionsContext = React.createContext<ICollectionsContext>(DefaultData);
 
 export interface CollectionFiltersProviderProps {
     pageId: string;
@@ -51,16 +51,7 @@ export interface CollectionFiltersProviderProps {
     children: JSX.Element;
 }
 export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) => {
-    const context = React.useContext(GlobalContext);
-    const { children, pageId, playerCollections } = props;
-	const tinyCol = TinyStore.getStore('collections');   
-
-	const offsel = tinyCol.getValue<string | undefined>(pageId + "/selectedCollection");    
-	const selColId = playerCollections.find(f => f.name === offsel)?.id;
-	const defaultMap = {
-		collectionsFilter: selColId !== undefined ? [selColId] : [] as number[],
-		rewardFilter: []
-	} as MapFilterOptions;
+    const { children, pageId } = props;
 
     const [collectionSettings, setCollectionSettings] = useStateWithStorage(pageId +'/collectionSettings', DefaultConfig, { rememberForever: true });
 
@@ -134,12 +125,36 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
         setShort,
         setCostMode,
         setMatchMode,
-        setShowIncomplete
-    } as CollectionFilterContextProps;
+        setShowIncomplete,
+        showThisCrew
+    } as ICollectionsContext;
 
-    return (<CollectionFilterContext.Provider value={data}>
+    return (<CollectionsContext.Provider value={data}>
         {children}    
-    </CollectionFilterContext.Provider>)
+    </CollectionsContext.Provider>)
+
+    function showThisCrew(crew: PlayerCrew, filters: Filter[], filterType: string | null | undefined): boolean {
+
+        if (crew.immortal === -1 || crew.immortal > 0) {
+            return false;
+        }
+
+        if (!filterType) return true;
+
+        if (collectionSettings.mapFilter.collectionsFilter && collectionSettings.mapFilter.collectionsFilter.length > 0) {
+            let hasAllCollections = true;
+            for (let i = 0; i < collectionSettings.mapFilter.collectionsFilter.length; i++) {
+                if (!crew.unmaxedIds?.includes(collectionSettings.mapFilter.collectionsFilter[i])) {
+                    hasAllCollections = false;
+                    break;
+                }
+            }
+            if (!hasAllCollections) return false;
+        }
+        if (!checkCommonFilter(collectionSettings, crew)) return false;
+        return crewMatchesSearchFilter(crew, filters, filterType);
+    }
+
 } 
 
 
