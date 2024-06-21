@@ -322,7 +322,7 @@
             "title": "Mantén un registro del equipo que ha sido juzgado por esta cadena combinada."
         },
         "cab": {
-            "header": "Le {{link}} est un autre outil qui peut vous aider, vous et votre flotte, à coordonner les attaques dans une bataille de boss de flotte. Cliquez sur le bouton ci-dessous pour copier les traits connus et la liste des traits possibles à utiliser avec cette feuille Google. (actuellement v3.02).",
+            "header": "El {{link}} es otra herramienta que puede ayudarte a ti y a tu flota a coordinar ataques en una batalla contra el jefe de la flota. Haga clic en el botón a continuación para copiar los rasgos conocidos y la lista de posibles rasgos para usar con esta hoja de Google. (actualmente v3.02). Nota: esta herramienta solo está disponible en inglés.",
             "name": "FBB Combo Chain Helper",
             "title": "CAB's {{fbb.cab.name}}"
         },
