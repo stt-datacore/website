@@ -316,7 +316,7 @@
             "title": "Behalte den Überblick über Crewmitglieder, die für diese Combo-Kette versucht wurden."
         },
         "cab": {
-            "header": "Der {{link}} ist ein weiteres Tool, das Ihnen und Ihrer Flotte dabei helfen kann, Angriffe in einem Fleet Boss Battle zu koordinieren. Klicken Sie auf die Schaltfläche unten, um die bekannten Merkmale und die Liste der möglichen Merkmale für die Verwendung mit diesem Google Sheet (derzeit v3.02) zu kopieren.",
+            "header": "Der {{link}} ist ein weiteres Tool, das Ihnen und Ihrer Flotte dabei helfen kann, Angriffe in einem Fleet Boss Battle zu koordinieren. Klicken Sie auf die Schaltfläche unten, um die bekannten Merkmale und die Liste der möglichen Merkmale für die Verwendung mit diesem Google Sheet (derzeit v3.02) zu kopieren. Hinweis: Dieses Tool ist nur auf Englisch verfügbar.",
             "name": "FBB Combo Chain Helper",
             "title": "CAB's FBB Combo Chain Helper"
         },
