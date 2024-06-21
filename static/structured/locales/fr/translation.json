@@ -318,7 +318,7 @@
         "skirmish": "Escarmouche"
     },
     "fbb": {
-        "alert_no_solution": "Aucune solution possible trouvée pour ce nodule. Vous devrez peut-être modifier vos filtres, revérifier vos traits résolus ou réinitialiser la liste des tentatives d'équipage.",
+        "alert_no_solution": "Aucune solution possible trouvée pour ce nodule. Vous devrez peut-être modifier vos filtres, revérifier vos traits résolus ou réinitialiser la liste des tentatives d'équipiers.",
         "attempted": {
             "clipboard": "Copier la tentative des équipiers dans le presse-papier",
             "title": "Gardez une trace des membres des équipiers qui ont été jugés pour cette chaîne combo."
