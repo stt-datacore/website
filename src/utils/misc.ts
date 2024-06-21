@@ -30,7 +30,7 @@ export function translateSkills(string: string, separator: string = '/'): string
 	return output.join(separator);
 }
 
-export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, simple: boolean, showMore: boolean = true): string {
+export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, simple: boolean, showMore: boolean = true, bThreshold = 40, gThreshold = 9, vThreshold = 9): string {
 	let stats = [] as string[];
 
 	const rankType = rank => {
@@ -40,18 +40,18 @@ export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, 
 	for (let rank in crew.ranks) {
 		if (simple) {
 			if (rank.startsWith('B_')) {
-				if (crew.ranks[rank] && crew.ranks[rank] <= 40) {
+				if (crew.ranks[rank] && crew.ranks[rank] <= bThreshold) {
 					stats.push(`${translateSkills(rank.slice(2))} #${crew.ranks[rank]}`);
 				}
 			}
 		} else {
 			if (rank.startsWith('V_') || rank.startsWith('G_') || rank.startsWith('B_')) {
-				if (crew.ranks[rank] && crew.ranks[rank] <= 9) {
+				if (crew.ranks[rank] && crew.ranks[rank] <= gThreshold) {
 					stats.push(`${rankType(rank)} #${crew.ranks[rank]} ${translateSkills(rank.slice(2).replace('_', ' / '), " / ")}`);
 				}
 			}
 			if (rank === 'voyTriplet') {
-				if (crew.ranks[rank] && (crew.ranks.voyTriplet?.rank ?? 0) <= 9)
+				if (crew.ranks[rank] && (crew.ranks.voyTriplet?.rank ?? 0) <= vThreshold)
 					stats.push(`${t('base.voyage')} #${crew.ranks.voyTriplet?.rank} ${crew.ranks.voyTriplet?.name ? translateSkills(crew.ranks.voyTriplet?.name, ' / ') : ''}`);
 			}
 		}
