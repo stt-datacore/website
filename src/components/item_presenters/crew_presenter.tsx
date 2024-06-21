@@ -39,6 +39,7 @@ import {
 import { Ship } from "../../model/ship";
 import { navigate } from "gatsby";
 import CONFIG from "../CONFIG";
+import { getCoolStats } from "../../utils/misc";
 
 const dormantStyle: React.CSSProperties = {
     background: "transparent",
@@ -1012,6 +1013,13 @@ export class CrewPresenter extends React.Component<
 
                         <div style={{ width: "4px" }} />
                     </div>
+                    <div style={{
+                                marginTop: '0.5em',
+                                marginBottom: '0.5em',
+                                fontSize: '0.8em'
+                            }}>
+                                {getCoolStats(t, crew, false, false, 50, 20, 20)}
+                    </div>
                     <div
                         style={{
                             textAlign: "left",
@@ -1079,7 +1087,7 @@ export class CrewPresenter extends React.Component<
                         </div>
                     )}
                     {!hideStats && (
-                        <div>
+                        <div>                            
                             <div
                                 style={{
                                     textAlign: "center",
