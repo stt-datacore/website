@@ -324,7 +324,7 @@
             "title": "Gardez une trace des membres des équipiers qui ont été jugés pour cette chaîne combo."
         },
         "cab": {
-            "header": "Le {{link}} est un autre outil qui peut vous aider, vous et votre flotte, à coordonner les attaques dans une bataille de boss de flotte. Cliquez sur le bouton ci-dessous pour copier les traits connus et la liste des traits possibles à utiliser avec cette feuille Google. (actuellement v3.02).",
+            "header": "Le {{link}} est un autre outil qui peut vous aider, vous et votre flotte, à coordonner les attaques dans une bataille de boss de flotte. Cliquez sur le bouton ci-dessous pour copier les traits connus et la liste des traits possibles à utiliser avec cette feuille Google. (actuellement v3.02). Remarque : cet outil est uniquement disponible en anglais.",
             "name": "FBB Combo Chain Helper",
             "title": "CAB's FBB Combo Chain Helper"
         },
