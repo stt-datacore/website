@@ -526,11 +526,6 @@ export interface Player {
      */
     immortal: CompletionState | number;
 
-    /**
-     * Return the ID numbers of all the collections the crew is a member of
-     */
-    collectionIds?: number[];
-
     /** Used internally. Not part of source data.  */
     unmaxedIds?: number[];
 

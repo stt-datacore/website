@@ -316,13 +316,13 @@
         "skirmish": "Escaramuza"
     },
     "fbb": {
-        "select": "Selecciona una batalla contra un jefe",
+        "alert_no_solution": "No se encontraron soluciones posibles para este nódulo. Es posible que necesites cambiar tus filtros, volver a verificar tus rasgos resueltos o restablecer la lista de tripulantes intentados.",
         "attempted": {
             "clipboard": "Copiar intento de tripulantes al portapapeles",
             "title": "Mantén un registro del equipo que ha sido juzgado por esta cadena combinada."
         },
         "cab": {
-            "header": "Le {{link}} est un autre outil qui peut vous aider, vous et votre flotte, à coordonner les attaques dans une bataille de boss de flotte. Cliquez sur le bouton ci-dessous pour copier les traits connus et la liste des traits possibles à utiliser avec cette feuille Google. (actuellement v3.02).",
+            "header": "El {{link}} es otra herramienta que puede ayudarte a ti y a tu flota a coordinar ataques en una batalla contra el jefe de la flota. Haga clic en el botón a continuación para copiar los rasgos conocidos y la lista de posibles rasgos para usar con esta hoja de Google. (actualmente v3.02). Nota: esta herramienta solo está disponible en inglés.",
             "name": "FBB Combo Chain Helper",
             "title": "CAB's {{fbb.cab.name}}"
         },
@@ -337,7 +337,6 @@
         },
         "crew_lists": {
             "clipboard": "Copiar posible tripulación al portapapeles",
-            "heading": "Copie las listas de posibles tripulantes, agrupadas por nodos y rasgos, para compartirlas más fácilmente en Discord u otros foros.",
             "customize": {
                 "heading": "Puede personalizar la apariencia de la exportación. Las siguientes preferencias se recordarán en todas las exportaciones posteriores.",
                 "options": {
@@ -346,7 +345,46 @@
                     "compact": "Compacto",
                     "coverage_potential": "Potencial de cobertura",
                     "crew_delimiter": "Delimitador de tripulación",
-                    "valores predeterminados": "valores predeterminados",
+                    "dropdowns": {
+                        "bullet": {
+                            "full": "Nódulo y número",
+                            "none": "Ninguno",
+                            "number": "Número",
+                            "simple": "Guión"
+                        },
+                        "delimiter": {
+                            "comma": "Coma",
+                            "semicolon": "Punto y coma"
+                        },
+                        "duplicates": {
+                            "ignore": "No numerar",
+                            "number": "Mostrar el número necesario"
+                        },
+                        "format": {
+                            "bold": "Negrita (**)",
+                            "bolditalic": "Negrita cursiva (***)",
+                            "bolditalicunderline": "Subrayado en negrita y cursiva (***__)",
+                            "boldunderline": "Subrayado en negrita (**__)",
+                            "italic": "Cursiva (*)",
+                            "italicunderline": "Subrayado en cursiva (*__)",
+                            "none": "Sin formato",
+                            "underline": "Subrayado (__)"
+                        },
+                        "header": {
+                            "always": "Mostrar siempre la cadena del jefe",
+                            "hide": "No mostrar",
+                            "initial": "Mostrar sólo en cadenas nuevas"
+                        },
+                        "show": {
+                            "hide": "No mostrar",
+                            "show": "Mostrar"
+                        },
+                        "solve": {
+                            "always": "Mostrar siempre soluciones",
+                            "hide": "No mostrar",
+                            "spot": "Mostrar sólo soluciones no confirmadas"
+                        }
+                    },
                     "duplicate_traits": "Rasgos duplicados",
                     "export_header": "Exportar encabezado",
                     "formatting": "Formateando",
@@ -354,59 +392,27 @@
                     "load_preset_values": "Cargar valores preestablecidos",
                     "node_header": "Encabezado de nódulo",
                     "non_optimal": "No óptimo",
+                    "non_portal": "No Portal",
                     "one_hand_exception": "Excepción de una mano",
                     "possible_solutions": "Posibles soluciones",
                     "solved_nodes": "Nodos resueltos",
                     "traits": "Rasgos",
                     "unique": "Único",
-                    "non_portal": "No Portal",
-                    "dropdowns": {
-                        "header": {
-                            "always": "Mostrar siempre la cadena del jefe",
-                            "initial": "Mostrar sólo en cadenas nuevas",
-                            "hide": "No mostrar"
-                        },
-                        "solve": {
-                            "always": "Mostrar siempre soluciones",
-                            "spot": "Mostrar sólo soluciones no confirmadas",
-                            "hide": "No mostrar"
-                        },
-                        "format": {
-                            "italic": "Cursiva (*)",
-                            "bold": "Negrita (**)",
-                            "bolditalic": "Negrita cursiva (***)",
-                            "underline": "Subrayado (__)",
-                            "italicunderline": "Subrayado en cursiva (*__)",
-                            "boldunderline": "Subrayado en negrita (**__)",
-                            "bolditalicunderline": "Subrayado en negrita y cursiva (***__)",
-                            "none": "Sin formato"
-                        },
-                        "show": {
-                            "show": "Mostrar",
-                            "hide": "No mostrar"
-                        },
-                        "bullet": {
-                            "simple": "Guión",
-                            "number": "Número",
-                            "full": "Nódulo y número",
-                            "none": "Ninguno"
-                        },
-                        "delimiter": {
-                            "comma": "Coma",
-                            "semicolon": "Punto y coma"
-                        },
-                        "duplicates": {
-                            "number": "Mostrar el número necesario",
-                            "ignore": "No numerar"
-                        }
-                    }
+                    "valores predeterminados": "valores predeterminados"
                 },
                 "title": "Personalizar exportación"
             },
+            "heading": "Copie las listas de posibles tripulantes, agrupadas por nodos y rasgos, para compartirlas más fácilmente en Discord u otros foros.",
             "title": "Exportar listas de tripulantes"
         },
+        "current_solutions": {
+            "heading": "Esta tabla muestra el progreso de la cadena combinada actual. Actualiza los rasgos misteriosos cuando se resuelva un nódulo.",
+            "title": "Soluciones actuales"
+        },
         "heading": "Utilice esta herramienta para ayudar a activar bonificaciones de cadena combinada en una batalla contra un jefe de flota.",
+        "identify_solve_n": "Identificar los rasgos utilizados para resolver el nódulo {{n}}",
         "node_n": "Nódulo {{n}}",
+        "partial_solve": "Parcialmente resuelto",
         "popup": {
             "crew_solved": "¡{{crew}} resolvió un nódulo!",
             "mark_as_tried": "Marcar como probado"
@@ -416,10 +422,6 @@
             "tap_approve_decline": "Toque los botones {{aprobar}} {{rechazar}} para marcar a la tripulación como probada.",
             "tap_trait_solve": "Toca un rasgo si resuelve un nódulo. Toca un equipo para marcarlo como probado.",
             "title": "Posibles soluciones"
-        },
-        "current_solutions": {
-            "title": "Soluciones actuales",
-            "heading": "Esta tabla muestra el progreso de la cadena combinada actual. Actualiza los rasgos misteriosos cuando se resuelva un nódulo."
         },
         "possible_traits": {
             "clipboard": "Copiar posibles rasgos al portapapeles",
@@ -442,6 +444,7 @@
                 "title": "Rasgos"
             }
         },
+        "select": "Selecciona una batalla contra un jefe",
         "settings": {
             "optimizations": {
                 "hide_non_optimal": "Ocultar tripulación no óptima",
@@ -461,9 +464,9 @@
             "warn": "Es posible que las soluciones correctas no aparezcan en la lista con la configuración actual."
         },
         "solves": {
+            "partially_solved": "Nódulo {{n}} parcialmente resuelto",
             "pending": "pendiente de confirmación",
-            "solved": "Nódulo {{n}} resuelto",
-            "partially_solved": "Nódulo {{n}} parcialmente resuelto"
+            "solved": "Nódulo {{n}} resuelto"
         },
         "tips": {
             "alpha_exceptions_a": "Excepciones alfa",
@@ -517,7 +520,6 @@
         "yesterday_gauntlet": "El reto de ayer"
     },
     "global": {
-        "notes": "Notas",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
         "and": "y",
@@ -553,6 +555,7 @@
         "new_m": "Neuvo",
         "no": "No",
         "none": "Ninguna",
+        "notes": "Notas",
         "obtained": "Obtenido por",
         "officer": "Oficial",
         "optional": "Opcional",

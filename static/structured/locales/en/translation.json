@@ -310,7 +310,7 @@
         "skirmish": "Skirmish"
     },
     "fbb": {
-        "select": "Select a boss battle",
+        "alert_no_solution": "No possible solutions found for this node. You may need to change your filters, double-check your solved traits, or reset the list of attempted crew.",
         "attempted": {
             "clipboard": "Copy attempted crew to clipboard",
             "title": "Keep track of crew who have been tried for this combo chain."
@@ -331,7 +331,6 @@
         },
         "crew_lists": {
             "clipboard": "Copy possible crew to clipboard",
-            "heading": "Copy the lists of possible crew, grouped by nodes and traits, for easier sharing on Discord or other forums.",
             "customize": {
                 "heading": "You can customize the appearance of the export. The following preferences will be remembered on all subsequent exports.",
                 "options": {
@@ -341,6 +340,46 @@
                     "coverage_potential": "Coverage potential",
                     "crew_delimiter": "Crew delimiter",
                     "defaults": "Defaults",
+                    "dropdowns": {
+                        "bullet": {
+                            "full": "Node and number",
+                            "none": "None",
+                            "number": "Number",
+                            "simple": "Dash"
+                        },
+                        "delimiter": {
+                            "comma": "Comma",
+                            "semicolon": "Semicolon"
+                        },
+                        "duplicates": {
+                            "ignore": "Do not number",
+                            "number": "Show number needed"
+                        },
+                        "format": {
+                            "bold": "Bold (**)",
+                            "bolditalic": "Bold italic (***)",
+                            "bolditalicunderline": "Bold italic underline (***__)",
+                            "boldunderline": "Bold underline (**__)",
+                            "italic": "Italic (*)",
+                            "italicunderline": "Italic underline (*__)",
+                            "none": "No formatting",
+                            "underline": "Underline (__)"
+                        },
+                        "header": {
+                            "always": "Always show boss chain",
+                            "hide": "Do not show",
+                            "initial": "Show on new chains only"
+                        },
+                        "show": {
+                            "hide": "Do not show",
+                            "show": "Show"
+                        },
+                        "solve": {
+                            "always": "Always show solutions",
+                            "hide": "Do not show",
+                            "spot": "Show unconfirmed solutions only"
+                        }
+                    },
                     "duplicate_traits": "Duplicate traits",
                     "export_header": "Export header",
                     "formatting": "Formatting",
@@ -348,59 +387,26 @@
                     "load_preset_values": "Load preset values",
                     "node_header": "Node header",
                     "non_optimal": "Non-optimal",
+                    "non_portal": "Non Portal",
                     "one_hand_exception": "One hand exception",
                     "possible_solutions": "Possible solutions",
                     "solved_nodes": "Solved nodes",
                     "traits": "Traits",
-                    "unique": "Unique",
-                    "non_portal": "Non Portal",
-                    "dropdowns": {
-                        "header": {
-                            "always": "Always show boss chain",
-                            "initial": "Show on new chains only",
-                            "hide": "Do not show"
-                        },
-                        "solve": {
-                            "always": "Always show solutions",
-                            "spot": "Show unconfirmed solutions only",
-                            "hide": "Do not show"
-                        },
-                        "format": {
-                            "italic": "Italic (*)",
-                            "bold": "Bold (**)",
-                            "bolditalic": "Bold italic (***)",
-                            "underline": "Underline (__)",
-                            "italicunderline": "Italic underline (*__)",
-                            "boldunderline": "Bold underline (**__)",
-                            "bolditalicunderline": "Bold italic underline (***__)",
-                            "none": "No formatting"
-                        },
-                        "show": {
-                            "show": "Show",
-                            "hide": "Do not show"
-                        },
-                        "bullet": {
-                            "simple": "Dash",
-                            "number": "Number",
-                            "full": "Node and number",
-                            "none": "None"
-                        },
-                        "delimiter": {
-                            "comma": "Comma",
-                            "semicolon": "Semicolon"
-                        },
-                        "duplicates": {
-                            "number": "Show number needed",
-                            "ignore": "Do not number"
-                        }
-                    }
+                    "unique": "Unique"
                 },
                 "title": "Customize Export"
             },
+            "heading": "Copy the lists of possible crew, grouped by nodes and traits, for easier sharing on Discord or other forums.",
             "title": "Export Crew Lists"
         },
+        "current_solutions": {
+            "heading": "This table shows the progress of the current combo chain. Update the mystery traits when a node is solved.",
+            "title": "Current Solutions"
+        },
         "heading": "Use this tool to help activate combo chain bonuses in a fleet boss battle.",
+        "identify_solve_n": "Identify the traits used to solve Node {{n}}",
         "node_n": "Node {{n}}",
+        "partial_solve": "Partial Solve",
         "popup": {
             "crew_solved": "{{crew}} solved a node!",
             "mark_as_tried": "Mark as tried"
@@ -410,10 +416,6 @@
             "tap_approve_decline": "Tap the {{approve}} {{decline}} buttons to mark crew as tried.",
             "tap_trait_solve": "Tap a trait if it solves a node. Tap a crew to mark as tried.",
             "title": "Possible Solutions"
-        },
-        "current_solutions": {
-            "title": "Current Solutions",
-            "heading": "This table shows the progress of the current combo chain. Update the mystery traits when a node is solved."
         },
         "possible_traits": {
             "clipboard": "Copy possible traits to clipboard",
@@ -436,6 +438,7 @@
                 "title": "Traits"
             }
         },
+        "select": "Select a boss battle",
         "settings": {
             "optimizations": {
                 "hide_non_optimal": "Hide non-optimal crew",
@@ -455,9 +458,9 @@
             "warn": "Correct solutions may not be listed with the current settings."
         },
         "solves": {
+            "partially_solved": "Node {{n}} partially solved",
             "pending": "pending confirmation",
-            "solved": "Node {{n}} solved",
-            "partially_solved": "Node {{n}} partially solved"
+            "solved": "Node {{n}} solved"
         },
         "tips": {
             "alpha_exceptions_a": "Alpha exceptions",
@@ -510,7 +513,6 @@
         "yesterday_gauntlet": "Yesterday's Gauntlet"
     },
     "global": {
-        "notes": "Notes",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
         "and": "and",
@@ -544,6 +546,7 @@
         "new": "New",
         "no": "No",
         "none": "None",
+        "notes": "Notes",
         "obtained": "Obtained",
         "officer": "Officer",
         "optional": "Optional",
