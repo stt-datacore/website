@@ -18,12 +18,14 @@
         "not_yet_in_portal": "Aún no en el portal",
         "offer_cost": "Costo de la Oferta",
         "offers": "Oferta(s)",
+        "on_shuttle": "En lanzadera",
+        "on_voyage": "En viaje",
         "qp": "QP",
         "rarity": "Rareza",
         "release_date": "Debut",
-        "uniquely_retrievable": "Únicamente recuperable",
-        "voyage": "Viaje",
-        "voyages": "Viajes"
+        "shuttle": "Lanzadera",
+        "shuttles": "Lanzaderas",
+        "uniquely_retrievable": "Únicamente recuperable"
     },
     "behold_helper": {
         "columns": {
