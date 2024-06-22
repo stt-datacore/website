@@ -18,9 +18,13 @@
         "not_yet_in_portal": "Noch nicht im Zeitportal",
         "offer_cost": "Angebotskosten",
         "offers": "Angebot(e)",
+        "on_shuttle": "Im Shuttle",
+        "on_voyage": "Auf Reise",
         "qp": "RL",
         "rarity": "Seltenheit",
         "release_date": "Debüt",
+        "shuttle": "Shuttle",
+        "shuttles": "Shuttles",
         "uniquely_retrievable": "Eindeutig abrufbar",
         "voyage": "Reise",
         "voyages": "Reisen"

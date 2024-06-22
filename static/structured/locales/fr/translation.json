@@ -18,12 +18,14 @@
         "not_yet_in_portal": "Pas encore dans le portail",
         "offer_cost": "Coût de l'offre",
         "offers": "Offre(s)",
+        "on_shuttle": "En navette",
+        "on_voyage": "En voyage",
         "qp": "QP",
         "rarity": "Rareté",
         "release_date": "Début",
-        "uniquely_retrievable": "Récupérable de manière unique",
-        "voyage": "Voyage",
-        "voyages": "Voyages"
+        "shuttle": "Navette",
+        "shuttles": "Navettes",
+        "uniquely_retrievable": "Récupérable de manière unique"
     },
     "behold_helper": {
         "columns": {

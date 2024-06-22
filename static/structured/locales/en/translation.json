@@ -23,7 +23,11 @@
         "release_date": "Release Date",
         "uniquely_retrievable": "Uniquely Retrievable",
         "voyage": "Voyage",
-        "voyages": "Voyages"
+        "voyages": "Voyages",
+        "shuttle": "Shuttle",
+        "shuttles": "Shuttles",
+        "on_voyage": "On voyage",
+        "on_shuttle": "On shuttle"
     },
     "behold_helper": {
         "columns": {
