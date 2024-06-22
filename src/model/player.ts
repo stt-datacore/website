@@ -10,6 +10,8 @@ import { Collection, Icon } from "./game-elements";
 import { ShuttleAdventure } from "./shuttle";
 import { ArchetypeRoot17, ArchetypeRoot20 } from "./archetype";
 
+export const ISM_ID = 14152;
+
 export type TranslateMethod = (key: string, options?: { [key: string]: string }) => string;
 
 export type PlayerBuffMode = 'none' | 'player' | 'max' | 'quipment';

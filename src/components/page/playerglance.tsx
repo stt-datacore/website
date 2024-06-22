@@ -4,7 +4,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { Link, navigate } from "gatsby";
 import { Grid, Item, Label, Image, Icon } from "semantic-ui-react";
 import { PlayerBadge } from "./playerbadge";
-import { PlayerData, TranslateMethod } from "../../model/player";
+import { ISM_ID, PlayerData, TranslateMethod } from "../../model/player";
 import { getOwnedCites } from "../../utils/collectionutils";
 import CONFIG from "../CONFIG";
 import { mergeItems } from "../../utils/itemutils";
@@ -41,6 +41,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     if (!playerData) return <></>;
     
     const { money, premium_purchasable, honor, premium_earnable, shuttle_rental_tokens } = playerData.player;
+    const ism = playerData?.forte_root.items.find(f => f.id === ISM_ID)?.quantity ?? 0;
     const quantum = playerData?.crew_crafting_root?.energy?.quantity;
     const valor = globalContext.player.ephemeral?.fleetBossBattlesRoot?.fleet_boss_battles_energy?.quantity;
     const ownedCites = getOwnedCites(playerData?.player.character.items ?? [], false);
@@ -58,45 +59,51 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const resources = [] as PlayerResource[];
 
     resources.push({
-        name: 'Credits',
+        name: t('global.item_types.credits'),
         quantity: money,
         imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/soft_currency_icon.png`
     },
     {
-        name: 'Dilithium',
+        name: t('global.item_types.dilithium'),
         quantity: premium_purchasable,
         imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`
     },
     {
-        name: 'Merits',
+        name: t('global.item_types.merits'),
         quantity: premium_earnable ?? 0,
         imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/pe_currency_icon.png`
     },
     {
-        name: 'Honor',
+        name: t('global.item_types.honor'),
         quantity: honor ?? 0,
         imageUrl: honorimg
     },
     {
-        name: 'Valor',
+        name: t('global.item_types.valor'),
         quantity: valor ?? 0,
         imageUrl: `${process.env.GATSBY_ASSETS_URL}fleet_boss_battles_icons_fbb_energy_icon.png`,
         click: (e) => navigate('/fbb')
     },
     {
-        name: 'Quantum',
+        name: t('global.item_types.quantum'),
         quantity: quantum ?? 0,
         imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/crew_crafting_energy_detailed_icon.png`,
         click: (e) => navigate('/retrieval')
     },
     {
-        name: 'Voyage Revival Tokens',
+        name: t('global.item_types.interstellar_medium'),
+        quantity: ism ?? 0,
+        imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/managed_game_coin_detailed_icon.png`,
+        click: (e) => navigate('/retrieval')
+    },
+    {
+        name: t('global.item_types.voyage_consumable'),
         quantity: revival?.quantity ?? 0,
         imageUrl: `${process.env.GATSBY_ASSETS_URL}${revival.imageUrl}`,
         click: (e) => navigate('/voyage')
     },
     {
-        name: 'Shuttle Rental Tokens',
+        name: t('global.item_types.shuttle_token'),
         quantity: shuttle_rental_tokens ?? 0,
         imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/icon_shuttle_token.png`,
         click: (e) => navigate('/shuttlehelper')
@@ -110,7 +117,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         
         if (cite.quantity > 0) {
             resources.push({
-                name: `${idx}* Citation`,
+                name: `${idx}* ` + t('global.item_types.honorable_citation'),
                 quantity: cite.quantity,
                 imageUrl: img,
                 style: {                
@@ -125,7 +132,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const cite5img = `${process.env.GATSBY_ASSETS_URL}${cite?.imageUrl}`;
     let h = Math.floor(honor / (costMode === 'normal' ? 50000 : 40000));
     resources.push({
-        name: `Potential ${costMode === 'normal' ? '': 'Honor Sale '}Citations`,
+        name: `${costMode === 'normal' ? t('global.item_types.potential_cites'): t('global.item_types.potential_cites_honor_sale')}`,
         quantity: h,
         style: {                
             border: `1.5px dashed ${CONFIG.RARITIES[5].color}`

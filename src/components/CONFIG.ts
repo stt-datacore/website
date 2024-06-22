@@ -301,7 +301,7 @@ export default class CONFIG {
 			this.REWARDS_ITEM_TYPE[1] = 'Crew';
 			this.REWARDS_ITEM_TYPE[2] = 'Equipment';
 			this.REWARDS_ITEM_TYPE[3] = 'Component';
-			this.REWARDS_ITEM_TYPE[4] = 'Shuttle consumable';
+			this.REWARDS_ITEM_TYPE[4] = 'Shuttle boosts';
 			this.REWARDS_ITEM_TYPE[5] = 'Ship part';
 			this.REWARDS_ITEM_TYPE[6] = 'Shuttle token';
 			this.REWARDS_ITEM_TYPE[7] = 'Crew experience training';
