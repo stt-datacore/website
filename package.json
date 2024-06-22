@@ -7,6 +7,7 @@
   "scripts": {
     "build": "gatsby build",
     "buildci": "gatsby build && rimraf ./public/media/assets",
+    "buildpc": "tsc scripts/precalculate.ts --skipLibCheck",
     "clean": "gatsby clean",
     "develop": "gatsby develop -p 8881",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
@@ -43,7 +44,7 @@
     "gatsby-transformer-json": "^5.13.1",
     "gatsby-transformer-remark": "^6.13.1",
     "localforage": "^1.10.0",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "lodash.combinations": "^18.11.1",
     "lz-string": "^1.5.0",
     "marked": "^12.0.1",
@@ -70,12 +71,15 @@
     "url": "https://github.com/stt-datacore/website/issues"
   },
   "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
     "@types/react-helmet": "^6.1.11",
+    "@types/showdown": "^2.0.6",
     "@types/tinycolor2": "^1.4.6",
     "@types/uuid": "^9.0.8",
     "cypress": "^13.8.0",
     "dotenv": "^16.4.5",
     "showdown": "^2.1.0",
-    "start-server-and-test": "^2.0.3"
+    "start-server-and-test": "^2.0.3",
+    "typescript": "^5.4.5"
   }
 }
