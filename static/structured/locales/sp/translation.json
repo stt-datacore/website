@@ -490,36 +490,23 @@
         "x_y_solved": "{{x}}/{{y}} resuelto"
     },
     "gauntlet": {
-        "jackpot_crew": "Tripulante del premio",
-        "jackpot_crew_for_date": "Tripulante del premio mayor para {{date}}",
-        "browse_gauntlet_exclusives": "Buscar tripulantes exclusivos de reto (toca aquí)",
-        "pages": {
-            "browse_gauntlets": {
-                "heading": "Explorar todos los retos conocidos",
-                "title": "Buscar retos",
-                "short": "Buscar"
-            },
-            "previous_gauntlets": {
-                "heading": "Ver retos anteriores por fecha",
-                "title": "Retos anteriores",
-                "short": "Anteriores"
-            },
-            "today_gauntlet": {
-                "heading": "{{gauntlet.pages.today_gauntlet.title}}",
-                "title": "El desafío de hoy",
-                "short": "Hoy"
-            },
-            "yesterday_gauntlet": {
-                "heading": "{{gauntlet.pages.yesterday_gauntlet.title}}",
-                "title": "El reto de ayer",
-                "short": "Ayer"
-            },
-            "live_gauntlet": {
-                "title": "Reto en vivo",
-                "heading": "Ronda de reto en vivo",
-                "short": "En vivo"
-            }
+        "advanced": {
+            "crit_multiplier": "{{p}}% multiplicador de críticos",
+            "incidence": "Peso de incidencia de habilidad lineal {{name}}",
+            "index": "Ponderación del índice de habilidad lineal {{name}}",
+            "min_multiplier": "Multiplicador de competencia mínimo",
+            "max_multiplier": "Multiplicador de competencia máximo",
+            "primary": "{{quipment_ranks.primary}}",
+            "secondary": "{{quipment_ranks.secondary}}",
+            "tertiary": "{{quipment_ranks.tertiary}}"
         },
+        "no_limit": "Sin límite",
+        "top_n": "Los {{n}} primeros",
+        "show_top_crew": "Mostrar a los mejores tripulantes",
+        "max_results_per_table": "Resultados máximos por tabla",
+        "apply_buffs": "Aplicar efectos a las estadísticas",
+        "base_power": "Poder básico",
+        "browse_gauntlet_exclusives": "Buscar tripulantes exclusivos de reto (toca aquí)",
         "columns": {
             "crew": "{{base.crew}}",
             "crits": "{{ship.crit_rating}}",
@@ -534,7 +521,22 @@
         },
         "gauntlet": "Reto",
         "gauntlets": "Retos",
+        "hide_opponents": "Quitar oponentes",
+        "import": {
+            "click_here": "Toca aquí para cargar tus datos",
+            "heading": "Puedes acceder a tus partidas de reto en vivo de forma similar a cómo accedes actualmente a tus datos de jugador.",
+            "title": "Datos del reto en vivo"
+        },
+        "jackpot_crew": "Tripulante del premio",
+        "jackpot_crew_for_date": "Tripulante del premio mayor para {{date}}",
+        "min_max_proficiency": "Competencia máxima mínima",
+        "note_live_crew_highlight_msg": "Nota: Tu equipo de guantelete seleccionado aparecerá resaltado en verde, mientras que los oponentes aparecerán resaltados en rojo.",
+        "note_opponent_stats_no_calc_msg": "Nota: Las estadísticas del oponente no se vuelven a calcular",
+        "note_owned_crew_power_calc_msg": "Nota: Si se detecta tripulación propia, entonces su nivel actual en su lista puede usarse para calcular su rango, dependiendo de la configuración del filtro.",
+        "note_unleveled_crew_max_highlight_pair_msg": "Nota: Los equipos propios sin nivel que se muestran al máximo tienen competencias subrayadas y resaltadas en verde.",
+        "note_unleveled_crew_max_highlight_table_msg": "Nota: Los equipos propios sin nivel que se muestran al máximo están resaltados en verde.",
         "notes": {},
+        "only_highlight_active_round": "Resaltar solo la ronda activa",
         "owned_status": {
             "any": "Todas las tripulantes",
             "fe": "Tripulantes propia y totalmente equipada",
@@ -550,6 +552,33 @@
             "unowned": "Tripulantes sin propietario"
         },
         "owned_status_heading": "Estado de propiedad",
+        "pages": {
+            "browse_gauntlets": {
+                "heading": "Explorar todos los retos conocidos",
+                "short": "Buscar",
+                "title": "Buscar retos"
+            },
+            "live_gauntlet": {
+                "heading": "Ronda de reto en vivo",
+                "short": "En vivo",
+                "title": "Reto en vivo"
+            },
+            "previous_gauntlets": {
+                "heading": "Ver retos anteriores por fecha",
+                "short": "Anteriores",
+                "title": "Retos anteriores"
+            },
+            "today_gauntlet": {
+                "heading": "{{gauntlet.pages.today_gauntlet.title}}",
+                "short": "Hoy",
+                "title": "El desafío de hoy"
+            },
+            "yesterday_gauntlet": {
+                "heading": "{{gauntlet.pages.yesterday_gauntlet.title}}",
+                "short": "Ayer",
+                "title": "El reto de ayer"
+            }
+        },
         "show_buffs_heading": "Mostrar Efectos",
         "skills_and_pairs": "Habilidades y pares",
         "unowned_status": {
@@ -557,6 +586,25 @@
             "gauntlet": "Tripulantes exclusiva del reto",
             "nonportal": "Equipo fuera del portal",
             "portal": "Equipo disponible en el portal"
+        },
+        "view_modes": {
+            "big": {
+                "heading": "Ver tripulación en presentaciones grandes",
+                "title": "Presentación grande"
+            },
+            "pair_cards": {
+                "heading": "Ver tripulación agrupada en tablas de pares",
+                "title": "Tablas de pares"
+            },
+            "small": {
+                "heading": "Ver tripulación en pequeñas presentaciones",
+                "title": "Presentación pequeño"
+            },
+            "table": {
+                "heading": "Ver tripulación clasificada linealmente",
+                "title": "Tabla"
+            },
+            "title": "Modo de vista"
         }
     },
     "global": {
@@ -616,6 +664,7 @@
             "valor": "Valor",
             "voyage_consumable": "Fichas de avivamiento del viaje"
         },
+        "load_defaults": "Cargar predeterminadas",
         "load_default_settings": "Cargar configuración predeterminada",
         "loading_ellipses": "Cargando ...",
         "loading_please_wait_ellipses": "Cargando. Espere por favor...",
