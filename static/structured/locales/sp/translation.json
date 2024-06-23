@@ -490,7 +490,48 @@
         "x_y_solved": "{{x}}/{{y}} resuelto"
     },
     "gauntlet": {
-        "browse_gauntlets": "Explorar los retos",
+        "jackpot_crew": "Tripulante del premio",
+        "jackpot_crew_for_date": "Tripulante del premio mayor para {{date}}",
+        "browse_gauntlet_exclusives": "Buscar tripulantes exclusivos de reto (toca aquí)",
+        "pages": {
+            "browse_gauntlets": {
+                "heading": "Explorar todos los retos conocidos",
+                "title": "Buscar retos",
+                "short": "Buscar"
+            },
+            "previous_gauntlets": {
+                "heading": "Ver retos anteriores por fecha",
+                "title": "Retos anteriores",
+                "short": "Anteriores"
+            },
+            "today_gauntlet": {
+                "heading": "{{gauntlet.pages.today_gauntlet.title}}",
+                "title": "El desafío de hoy",
+                "short": "Hoy"
+            },
+            "yesterday_gauntlet": {
+                "heading": "{{gauntlet.pages.yesterday_gauntlet.title}}",
+                "title": "El reto de ayer",
+                "short": "Ayer"
+            },
+            "live_gauntlet": {
+                "title": "Reto en vivo",
+                "heading": "Ronda de reto en vivo",
+                "short": "En vivo"
+            }
+        },
+        "columns": {
+            "crew": "{{base.crew}}",
+            "crits": "{{ship.crit_rating}}",
+            "first_pair": "{{quipment_ranks.first_pair}}",
+            "high_crits": "45% + 65% críticos",
+            "in_portal": "{{base.in_portal}}",
+            "qp": "{{base.qp}}",
+            "rank": "{{cite_opt.columns.rank}}",
+            "rarity": "{{base.rarity}}",
+            "second_pair": "{{quipment_ranks.second_pair}}",
+            "third_pair": "{{quipment_ranks.third_pair}}"
+        },
         "gauntlet": "Reto",
         "gauntlets": "Retos",
         "notes": {},
@@ -509,17 +550,14 @@
             "unowned": "Tripulantes sin propietario"
         },
         "owned_status_heading": "Estado de propiedad",
-        "previous_gauntlets": "Los retos anterior",
         "show_buffs_heading": "Mostrar Efectos",
         "skills_and_pairs": "Habilidades y pares",
-        "today_gauntlet": "El reto de hoy",
         "unowned_status": {
             "any": "Todas de las tripulantes",
             "gauntlet": "Tripulantes exclusiva del reto",
             "nonportal": "Equipo fuera del portal",
             "portal": "Equipo disponible en el portal"
-        },
-        "yesterday_gauntlet": "El reto de ayer"
+        }
     },
     "global": {
         "admiral": "Almirante",
