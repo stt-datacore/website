@@ -492,7 +492,48 @@
         "x_y_solved": "{{x}}/{{y}} résolu"
     },
     "gauntlet": {
-        "browse_gauntlets": "Parcourez les gantelets",
+        "jackpot_crew": "Équipier Jackpot",
+        "jackpot_crew_for_date": "Équipier Jackpot pour {{date}}",
+        "browse_gauntlet_exclusives": "Parcourir l'équipage exclusif de gantelet (appuyez ici)",
+        "pages": {
+            "browse_gauntlets": {
+                "heading": "Parcourir tous les gants connus",
+                "title": "Parcourir les gantelets",
+                "short": "Parcourir"
+            },
+            "previous_gauntlets": {
+                "heading": "Afficher les gantelets\nprécédents par date",
+                "title": "Gantelets précédents",
+                "short": "Précédents"
+            },
+            "today_gauntlet": {
+                "heading": "{{gauntlet.pages.today_gauntlet.title}}",
+                "title": "Le gantelet d'aujourd'hui",
+                "short": "Aujourd'hui"
+            },
+            "yesterday_gauntlet": {
+                "heading": "{{gauntlet.pages.yesterday_gauntlet.title}}",
+                "title": "Le gantelet d'hier",
+                "short": "Hier"
+            },
+            "live_gauntlet": {
+                "title": "Gantelet en direct",
+                "heading": "Ronde de gantelet en direct",
+                "short": "En direct"
+            }
+        },
+        "columns": {
+            "crew": "{{base.crew}}",
+            "crits": "{{ship.crit_rating}}",
+            "first_pair": "{{quipment_ranks.first_pair}}",
+            "high_crits": "45% + 65% de critiques",
+            "in_portal": "{{base.in_portal}}",
+            "qp": "{{base.qp}}",
+            "rank": "{{cite_opt.columns.rank}}",
+            "rarity": "{{base.rarity}}",
+            "second_pair": "{{quipment_ranks.second_pair}}",
+            "third_pair": "{{quipment_ranks.third_pair}}"
+        },
         "gauntlet": "Gantelet",
         "gauntlets": "Gantelets",
         "owned_status": {
@@ -510,17 +551,14 @@
             "unowned": "Équipiers sans propriétaires"
         },
         "owned_status_heading": "Statut de propriétaire",
-        "previous_gauntlets": "Gantelets précédents",
         "show_buffs_heading": "Afficher les effets",
         "skills_and_pairs": "Compétences et paires",
-        "today_gauntlet": "Gantelet d'aujourd'hui",
         "unowned_status": {
             "any": "Tous les équipiers",
             "gauntlet": "Équipage exclusif gantelet",
             "nonportal": "Équipage non-portail",
             "portal": "Équipage disponible sur le portail"
-        },
-        "yesterday_gauntlet": "Gantelet d'hier"
+        }
     },
     "global": {
         "admiral": "Amiral",
