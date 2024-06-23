@@ -43,15 +43,15 @@ export const GauntletImportComponent = (props: GauntletImporterProps) => {
 			<React.Fragment>
                 {!currentHasRemote && <Notification
                     color={'blue'}
-                    header={`Live Gauntlet Data`}
+                    header={t('gauntlet.import.title')}
                     content={
                         <div style={{cursor: 'pointer'}} onClick={(e) => setCollapsed(false)}>
-						<p>You can access your live gauntlet matches in a similar way to how you access your player data, currently.</p>
+						<p>{t('gauntlet.import.heading')}</p>
 						<p>
-							Click here to upload your data.
+                        {t('gauntlet.import.click_here')}
 						</p>
                         <p>
-                            <b><a onClick={() => setCollapsed(false)} target='_blank' href={PLAYERLINK}>Live Gauntlet Data</a></b>
+                            <b><a onClick={() => setCollapsed(false)} target='_blank' href={PLAYERLINK}>{t('gauntlet.live.title')}</a></b>
                         </p>
                         </div>
                     }

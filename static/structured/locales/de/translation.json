@@ -486,36 +486,23 @@
         "x_y_solved": "{{x}}/{{y}} als gelöst"
     },
     "gauntlet": {
-        "jackpot_crew": "Jackpot-Crew",
-        "jackpot_crew_for_date": "Jackpot-Crew für {{date}}",
-        "browse_gauntlet_exclusives": "Durchsuche die exklusive Crew der Herausforderung (hier tippen)",
-        "pages": {
-            "browse_gauntlets": {
-                "heading": "Alle bekannten\nHerausforderungen durchsuchen",
-                "title": "Herausforderungen durchsuchen",
-                "short": "Durchsuchen"
-            },
-            "previous_gauntlets": {
-                "heading": "Frühere Herausforderungen\nnach Datum anzeigen",
-                "title": "Frühere Herausforderungen",
-                "short": "Frühere"
-            },
-            "today_gauntlet": {
-                "heading": "{{gauntlet.pages.today_gauntlet.title}}",
-                "title": "Heutige Herausforderung",
-                "short": "Heutige"
-            },
-            "yesterday_gauntlet": {
-                "heading": "{{gauntlet.pages.yesterday_gauntlet.title}}",
-                "title": "Gesterne Herausforderung",
-                "short": "Gesterne"
-            },
-            "live_gauntlet": {
-                "title": "Live-Herausforderung",
-                "heading": "Live-Herausforderungsrunde",
-                "short": "Live"
-            }
+        "advanced": {
+            "crit_multiplier": "{{p}} % Krit-Multiplikator",
+            "incidence": "{{name}} lineares Kompetenzvorkommensgewicht",
+            "index": "{{name}} lineares Fähigkeitsindexgewicht",
+            "min_multiplier": "Multiplikator für Mindestkompetenzen",
+            "max_multiplier": "Multiplikator für maximale Kompetenz",
+            "primary": "{{quipment_ranks.primary}}",
+            "secondary": "{{quipment_ranks.secondary}}",
+            "tertiary": "{{quipment_ranks.tertiary}}"
         },
+        "no_limit": "Keine Begrenzung",
+        "top_n": "Die Top {{n}}",
+        "show_top_crew": "Top-Crew anzeigen",
+        "max_results_per_table": "Maximale Ergebnisse pro Tabelle",
+        "apply_buffs": "Buffs auf Statistiken anwenden",
+        "base_power": "Grundleistung",
+        "browse_gauntlet_exclusives": "Durchsuche die exklusive Crew der Herausforderung (hier tippen)",
         "columns": {
             "crew": "{{base.crew}}",
             "crits": "{{ship.crit_rating}}",
@@ -530,6 +517,21 @@
         },
         "gauntlet": "Herausforderung",
         "gauntlets": "Herausforderungen",
+        "hide_opponents": "Gegner entfernen",
+        "import": {
+            "click_here": "Tippen Sie hier, um Ihre Daten hochzuladen",
+            "heading": "Sie können auf Ihre Live-Herausforderung auf ähnliche Weise zugreifen, wie Sie derzeit auf Ihre Spielerdaten zugreifen.",
+            "title": "Live-Herausforderungsdaten"
+        },
+        "jackpot_crew": "Jackpot-Crew",
+        "jackpot_crew_for_date": "Jackpot-Crew für {{date}}",
+        "min_max_proficiency": "Mindest- und Höchstkompetenz",
+        "note_live_crew_highlight_msg": "Hinweis: Ihre ausgewählte Gauntlet-Crew wird grün hervorgehoben, während Gegner rot hervorgehoben werden.",
+        "note_opponent_stats_no_calc_msg": "Hinweis: Gegnerstatistiken werden nicht neu berechnet",
+        "note_owned_crew_power_calc_msg": "Hinweis: Wenn eigene Crewmitglieder erkannt werden, kann je nach Filtereinstellungen deren aktuelles Level in Ihrer Liste zur Berechnung ihres Rangs verwendet werden.",
+        "note_unleveled_crew_max_highlight_pair_msg": "Hinweis: Unleveled, eigene Crew, die als maximal angezeigt wird, hat Fähigkeiten, die unterstrichen und grün hervorgehoben sind.",
+        "note_unleveled_crew_max_highlight_table_msg": "Hinweis: Unleveled, eigene Crew, die als maximal angezeigt wird, ist grün hervorgehoben.",
+        "only_highlight_active_round": "Nur aktive Runde hervorheben",
         "owned_status": {
             "any": "Alle Crew",
             "fe": "Eigene, voll ausgerüstete Crew",
@@ -545,6 +547,33 @@
             "unowned": "Unbesessene Crew"
         },
         "owned_status_heading": "Besitzerstatus",
+        "pages": {
+            "browse_gauntlets": {
+                "heading": "Alle bekannten\nHerausforderungen durchsuchen",
+                "short": "Durchsuchen",
+                "title": "Herausforderungen durchsuchen"
+            },
+            "live_gauntlet": {
+                "heading": "Live-Herausforderungsrunde",
+                "short": "Live",
+                "title": "Live-Herausforderung"
+            },
+            "previous_gauntlets": {
+                "heading": "Frühere Herausforderungen\nnach Datum anzeigen",
+                "short": "Frühere",
+                "title": "Frühere Herausforderungen"
+            },
+            "today_gauntlet": {
+                "heading": "{{gauntlet.pages.today_gauntlet.title}}",
+                "short": "Heutige",
+                "title": "Heutige Herausforderung"
+            },
+            "yesterday_gauntlet": {
+                "heading": "{{gauntlet.pages.yesterday_gauntlet.title}}",
+                "short": "Gesterne",
+                "title": "Gesterne Herausforderung"
+            }
+        },
         "show_buffs_heading": "Buffs anzeigen",
         "skills_and_pairs": "Fähigkeiten & Paare",
         "unowned_status": {
@@ -552,6 +581,25 @@
             "gauntlet": "Herausforderung-exklusive Crew",
             "nonportal": "Nicht im Zeitportal Crew",
             "portal": "Zeitportal-verfügbare Crew"
+        },
+        "view_modes": {
+            "big": {
+                "heading": "Sehen Sie die Crew in großen Präsentationen",
+                "title": "Große Präsentation"
+            },
+            "pair_cards": {
+                "heading": "Siehe Crew in Paartabellen gruppiert",
+                "title": "Paartabellen"
+            },
+            "small": {
+                "heading": "Sehen Sie die Crew in kleinen Präsentationen",
+                "title": "Kleine Präsentation"
+            },
+            "table": {
+                "heading": "Siehe lineare Rangfolge der Crew",
+                "title": "Tabelle"
+            },
+            "title": "Ansichtsmodus"
         }
     },
     "global": {
@@ -611,6 +659,7 @@
             "valor": "Tapferkeit",
             "voyage_consumable": "Reise-Wiederbelebungs-Token"
         },
+        "load_defaults": "Standards laden",
         "load_default_settings": "Standardeinstellungen laden",
         "loading_ellipses": "Wird geladen ...",
         "loading_please_wait_ellipses": "Laden, bitte warten...",

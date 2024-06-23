@@ -11,7 +11,7 @@ import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { CrewMember, Skill } from '../model/crew';
 import { TinyStore } from '../utils/tiny';
 import { Gauntlet, GauntletRoot } from '../model/gauntlets';
-import { gradeToColor, shortToSkill, skillToShort } from '../utils/crewutils';
+import { gradeToColor, prettyObtained, shortToSkill, skillToShort } from '../utils/crewutils';
 import { CrewPresenter } from '../components/item_presenters/crew_presenter';
 import { BuffNames } from '../components/item_presenters/crew_preparer';
 
@@ -886,7 +886,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const gauntlet = gauntletIn;
 
-		const prettyTraits = gauntlet.state === "POWER" ? ["Raw Power Score"] : gauntlet.contest_data?.traits?.map(t => TRAIT_NAMES[t]);
+		const prettyTraits = gauntlet.state === "POWER" ? [t('gauntlet.base_power')] : gauntlet.contest_data?.traits?.map(t => TRAIT_NAMES[t]);
 
 		const pairs = discoverPairs(gauntlet.searchCrew ?? [])
 			.map((pair) => {
@@ -904,22 +904,26 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const displayOptions = [{
 			key: "pair_cards",
 			value: "pair_cards",
-			text: "Pair Groups"
+			text: t('gauntlet.view_modes.pair_cards.title'),
+			title: t('gauntlet.view_modes.pair_cards.heading')
 		},
 		{
 			key: "table",
 			value: "table",
-			text: "Table"
+			text: t('gauntlet.view_modes.table.title'),
+			title: t('gauntlet.view_modes.table.heading'),
 		},
 		{
 			key: "big",
 			value: "big",
-			text: "Large Presentation"
+			text: t('gauntlet.view_modes.big.title'),
+			title: t('gauntlet.view_modes.big.heading'),
 		},
 		{
 			key: "small",
 			value: "small",
-			text: "Small Presentation"
+			text: t('gauntlet.view_modes.small.title'),
+			heading: t('gauntlet.view_modes.small.heading')
 		}]
 
 		if (gauntlet.unavailable_msg) {
@@ -1114,7 +1118,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								marginBottom: "0.25em",
 								textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
 							}}>
-								<h4 style={{ marginRight: "0.5em" }}><b>Minimum Proficiency Max:&nbsp;</b></h4>
+								<h4 style={{ marginRight: "0.5em" }}><b>{t('gauntlet.min_max_proficiency')}:&nbsp;</b></h4>
 								<div>
 								<Dropdown
 									style={{
@@ -1139,7 +1143,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						<h2 style={{ fontSize: "2em", margin: "0.25em 0" }}>
 
 							{gauntlet.state !== "POWER" && (gauntlet.contest_data?.traits.map(t => TRAIT_NAMES[t]).join("/") + "/" + skillToShort(gauntlet.contest_data?.featured_skill ?? ""))}
-							{gauntlet.state === "POWER" && "Raw Power Scores"}
+							{gauntlet.state === "POWER" && t('gauntlet.base_power')}
 
 						</h2>
 
@@ -1152,9 +1156,10 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								flexDirection: "column",
 								textAlign: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "left" : "right"
 							}}>
-								<h4><b>View Mode</b></h4>
+								<h4><b>{t('gauntlet.view_modes.title')}</b></h4>
 
 								<Dropdown
+									title={t(`gauntlet.view_modes.${viewModes[idx]}.heading`)}
 									direction={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'right' : 'left'}
 									options={displayOptions}
 									value={viewModes[idx]}
@@ -1166,7 +1171,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				</div>
 
 				<div style={{margin: "0.75em 0", fontSize: "10pt"}}>
-					<i><b>Note:</b> If owned crew are detected, then their current level in your roster may be used to compute their rank, depending on filter settings.</i>
+					<i>{t('gauntlet.note_owned_crew_power_calc_msg')}</i>
 				</div>
 
 				<div style={{
@@ -1188,11 +1193,11 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
-							<h4><b>Show Top Crew</b></h4>
+							<h4><b>{t('gauntlet.show_top_crew')}</b></h4>
 
 							<Dropdown
 								title="Filter Crew by Rank"
-								options={[0, 1, 2, 3, 4, 5, 10, 15, 20, 50, 100].map(o => { return { text: o ? "Top " + o : "No Limit", key: o, value: o } })}
+								options={[0, 1, 2, 3, 4, 5, 10, 15, 20, 50, 100].map(o => { return { text: o ? t('gauntlet.top_n', { n: `${o}`}) : t('gauntlet.no_limit'), key: o, value: o } })}
 								value={tops[idx]}
 								onChange={(e, { value }) => this.setTops(idx, value as number)}
 							/>
@@ -1204,7 +1209,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 0 0",
 							textAlign: "left"
 						}}>
-							<h4><b>Max Results Per Section</b></h4>
+							<h4><b>{t('gauntlet.max_results_per_table')}</b></h4>
 
 							<Dropdown
 								title="Limit Total Results Per Section"
@@ -1222,7 +1227,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							<h4><b>{t('gauntlet.show_buffs_heading')}</b></h4>
 
 							<Dropdown
-								title={"Apply Buffs to Stats" + (idx === 4 ? " (Note: Opponent stats are not recomputed)" : "")}
+								title={t('gauntlet.apply_buffs') + (idx === 4 ? ` (${t('gauntlet.note_opponent_stats_no_calc_msg')})` : "")}
 								options={availBuffs}
 								value={this.getBuffState(availBuffs.map(b => b.key) as PlayerBuffMode[])}
 								onChange={(e, { value }) => this.setBuffState(value as PlayerBuffMode)}
@@ -1239,7 +1244,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							<h4><b>{t('gauntlet.owned_status_heading')}</b></h4>
 
 							<Dropdown
-								title="Filter Crew by Owned Status"
+								title={t('hints.filter_by_owned_status')}
 								scrolling
 								options={filterOptions}
 								value={filterProps[idx].ownedStatus}
@@ -1257,7 +1262,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							<h4><b>{t('gauntlet.skills_and_pairs')}</b></h4>
 							<div style={{marginLeft: "-1em", marginTop: "-0.5em"}}>
 								<Dropdown
-									title={"Filter by skills or pairs"}
+									title={t('hints.filter_by_skill')}
 									placeholder={t('gauntlet.skills_and_pairs')}
 									clearable
 									compact
@@ -1280,7 +1285,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							}}>
 
 								<Checkbox
-									title="Highlight Active Round Only"
+									title={t('gauntlet.only_highlight_active_round')}
 									options={filterOptions}
 									checked={this.getActiveRound()}
 									onChange={(e, { checked }) => this.setActiveRound(checked as boolean)}
@@ -1295,7 +1300,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 								textAlign: "left"
 							}}>
 								<Checkbox
-									title="Hide Opponents"
+									title={t('gauntlet.hide_opponents')}
 									options={filterOptions}
 									checked={this.getHideOpponents()}
 									onChange={(e, { checked }) => this.setHideOpponents(checked as boolean)}
@@ -1309,16 +1314,16 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 				{idx === 4 &&
 				<div style={{margin: "1em 0 0 0", fontSize: "10pt"}}>
-					<i><b>Note:</b> Your selected gauntlet crew will appear highlighted in green, while opponents will appear highlighted in red.</i>
+					<i>{t('gauntlet.note_live_crew_highlight_msg')}</i>
 				</div>}
 				{idx !== 4 && viewModes[idx] === 'table' && (filterProps[idx].ownedStatus === 'ownedmax' || filterProps[idx].ownedStatus === 'maxall') &&
 				<div style={{margin: "1em 0 0 0", fontSize: "10pt"}}>
-					<i><b>Note:</b> Unleveled, owned crew that are shown maxed are highlighted in green.</i>
+					<i>{t('gauntlet.note_unleveled_crew_max_highlight_table_msg')}</i>
 				</div>
 				}
 				{viewModes[idx] === 'pair_cards' && (filterProps[idx].ownedStatus === 'ownedmax' || filterProps[idx].ownedStatus === 'maxall') &&
 				<div style={{margin: "1em 0 0 0", fontSize: "10pt"}}>
-					<i><b>Note:</b> Unleveled, owned crew that are shown maxed have proficiencies that are underlined and highlighted in green.</i>
+					<i>{t('gauntlet.note_unleveled_crew_max_highlight_pair_msg')}</i>
 				</div>}
 
 				{loading && <div style={{height:"50vh", display: "flex", flexDirection: "row", justifyContent: "center", alignItems:"center"}}><div className='ui medium centered text active inline loader'>Calculating ...</div></div>}
@@ -1457,7 +1462,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			let text = "";
 
 			if (g.state === "POWER") {
-				text = 'Raw Power Scores'
+				text = t('gauntlet.base_power')
 			}
 			else if (browsing) {
 				text = `${g.contest_data?.traits.map(t => TRAIT_NAMES[t]).join("/")}/${skillToShort(g.contest_data?.featured_skill ?? "")}`;
@@ -1502,13 +1507,13 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	whyNoPortal(crew: PlayerCrew | CrewMember) {
-		if (crew.obtained?.toLowerCase().includes("gauntlet")) return "Unowned (Gauntlet Exclusive)";
-		else if (crew.obtained?.toLowerCase().includes("voyage")) return "Unowned (Voyage Exclusive)";
-		else if (crew.obtained?.toLowerCase().includes("honor")) return "Unowned (Honor Hall)";
-		else if (crew.obtained?.toLowerCase().includes("boss")) return "Unowned (Fleet Boss Exclusive)";
-		else
-		return "Unowned (Not in Portal)";
-
+		const { t } = this.context.localized;
+		prettyObtained(crew, t, true)
+		if (crew.obtained?.toLowerCase().includes("gauntlet") ||
+		crew.obtained?.toLowerCase().includes("voyage") ||
+		crew.obtained?.toLowerCase().includes("honor") ||
+		crew.obtained?.toLowerCase().includes("boss")) return `${t('crew_state.unowned')} (${prettyObtained(crew, this.context.localized.t, true)})`;
+		else return t('crew_state.unowned_no_portal');
 	}
 
 	private readonly clearGauntlet = () => {

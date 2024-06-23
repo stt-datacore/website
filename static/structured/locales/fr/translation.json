@@ -492,36 +492,23 @@
         "x_y_solved": "{{x}}/{{y}} résolu"
     },
     "gauntlet": {
-        "jackpot_crew": "Équipier Jackpot",
-        "jackpot_crew_for_date": "Équipier Jackpot pour {{date}}",
-        "browse_gauntlet_exclusives": "Parcourir l'équipage exclusif de gantelet (appuyez ici)",
-        "pages": {
-            "browse_gauntlets": {
-                "heading": "Parcourir tous les gants connus",
-                "title": "Parcourir les gantelets",
-                "short": "Parcourir"
-            },
-            "previous_gauntlets": {
-                "heading": "Afficher les gantelets\nprécédents par date",
-                "title": "Gantelets précédents",
-                "short": "Précédents"
-            },
-            "today_gauntlet": {
-                "heading": "{{gauntlet.pages.today_gauntlet.title}}",
-                "title": "Le gantelet d'aujourd'hui",
-                "short": "Aujourd'hui"
-            },
-            "yesterday_gauntlet": {
-                "heading": "{{gauntlet.pages.yesterday_gauntlet.title}}",
-                "title": "Le gantelet d'hier",
-                "short": "Hier"
-            },
-            "live_gauntlet": {
-                "title": "Gantelet en direct",
-                "heading": "Ronde de gantelet en direct",
-                "short": "En direct"
-            }
+        "advanced": {
+            "crit_multiplier": "Multiplicateur de critiques de {{p}} %",
+            "incidence": "Pondération d’incidence des compétences linéaires {{name}}",
+            "index": "Pondération de l'indice de compétence linéaire {{name}}",
+            "min_multiplier": "Multiplicateur de compétence minimum",
+            "max_multiplier": "Multiplicateur de compétence maximum",
+            "primary": "{{quipment_ranks.primary}}",
+            "secondary": "{{quipment_ranks.secondary}}",
+            "tertiary": "{{quipment_ranks.tertiary}}"
         },
+        "no_limit": "Sans limites",
+        "top_n": "Haut {{n}}",
+        "show_top_crew": "Afficher les meilleurs membres d'équipage",
+        "max_results_per_table": "Max. de résultats par table",
+        "apply_buffs": "Appliquer des effets aux statistiques",
+        "base_power": "Puissance de base",
+        "browse_gauntlet_exclusives": "Parcourir l'équipage exclusif de gantelet (appuyez ici)",
         "columns": {
             "crew": "{{base.crew}}",
             "crits": "{{ship.crit_rating}}",
@@ -536,6 +523,21 @@
         },
         "gauntlet": "Gantelet",
         "gauntlets": "Gantelets",
+        "hide_opponents": "Supprimer les adversaires",
+        "import": {
+            "click_here": "Appuyez ici pour télécharger vos données",
+            "heading": "Vous pouvez accéder à vos matchs gantelets en direct de la même manière que vous accédez actuellement à vos données de joueur.",
+            "title": "Données du gantelet en direct"
+        },
+        "jackpot_crew": "Équipier Jackpot",
+        "jackpot_crew_for_date": "Équipier Jackpot pour {{date}}",
+        "min_max_proficiency": "Compétence maximale minimale",
+        "note_live_crew_highlight_msg": "Remarque : votre équipage de gant sélectionné apparaîtra surligné en vert, tandis que vos adversaires apparaîtront surlignés en rouge.",
+        "note_opponent_stats_no_calc_msg": "Remarque : les statistiques des adversaires ne sont pas recalculées",
+        "note_owned_crew_power_calc_msg": "Remarque : Si un équipage détenu est détecté, leur niveau actuel dans votre liste peut être utilisé pour calculer leur classement, en fonction des paramètres de filtre.",
+        "note_unleveled_crew_max_highlight_pair_msg": "Remarque : les équipages possédés sans niveau et affichés au maximum ont des compétences soulignées et surlignées en vert.",
+        "note_unleveled_crew_max_highlight_table_msg": "Remarque : les équipages possédés sans niveau et affichés au maximum sont surlignés en vert.",
+        "only_highlight_active_round": "Mettre en évidence uniquement le tour actif",
         "owned_status": {
             "any": "Tous les équipiers",
             "fe": "Équipiers possédés et entièrement équipé",
@@ -551,6 +553,33 @@
             "unowned": "Équipiers sans propriétaires"
         },
         "owned_status_heading": "Statut de propriétaire",
+        "pages": {
+            "browse_gauntlets": {
+                "heading": "Parcourir tous les gants connus",
+                "short": "Parcourir",
+                "title": "Parcourir les gantelets"
+            },
+            "live_gauntlet": {
+                "heading": "Ronde de gantelet en direct",
+                "short": "En direct",
+                "title": "Gantelet en direct"
+            },
+            "previous_gauntlets": {
+                "heading": "Afficher les gantelets\nprécédents par date",
+                "short": "Précédents",
+                "title": "Gantelets précédents"
+            },
+            "today_gauntlet": {
+                "heading": "{{gauntlet.pages.today_gauntlet.title}}",
+                "short": "Aujourd'hui",
+                "title": "Le gantelet d'aujourd'hui"
+            },
+            "yesterday_gauntlet": {
+                "heading": "{{gauntlet.pages.yesterday_gauntlet.title}}",
+                "short": "Hier",
+                "title": "Le gantelet d'hier"
+            }
+        },
         "show_buffs_heading": "Afficher les effets",
         "skills_and_pairs": "Compétences et paires",
         "unowned_status": {
@@ -558,6 +587,25 @@
             "gauntlet": "Équipage exclusif gantelet",
             "nonportal": "Équipage non-portail",
             "portal": "Équipage disponible sur le portail"
+        },
+        "view_modes": {
+            "big": {
+                "heading": "Voir l'équipage dans de grandes présentations",
+                "title": "Grande présentation"
+            },
+            "pair_cards": {
+                "heading": "Voir l'équipage regroupé en tables de paires",
+                "title": "Tables des paires"
+            },
+            "small": {
+                "heading": "Voir l'équipage dans de petites présentations",
+                "title": "Petite présentation"
+            },
+            "table": {
+                "heading": "Voir l'équipage classé de manière linéaire",
+                "title": "Table"
+            },
+            "title": "Mode d'affichage"
         }
     },
     "global": {
@@ -617,6 +665,7 @@
             "valor": "Valeur",
             "voyage_consumable": "Jetons de renaissance du voyage"
         },
+        "load_defaults": "Charger les défauts",
         "load_default_settings": "Charger les paramètres par défaut",
         "loading_ellipses": "Chargement ...",
         "loading_please_wait_ellipses": "Chargement. S'il vous plaît, attendez...",

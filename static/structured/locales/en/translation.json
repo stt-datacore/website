@@ -486,36 +486,23 @@
         "x_y_solved": "{{x}}/{{y}} solved"
     },
     "gauntlet": {
-        "jackpot_crew": "Jackpot Crew",
-        "jackpot_crew_for_date": "Jackpot Crew for {{date}}",
-        "browse_gauntlet_exclusives": "Browse Gauntlet Exclusive Crew (Click Here)",
-        "pages": {
-            "browse_gauntlets": {
-                "heading": "Browse through all known gauntlets",
-                "title": "Browse Gauntlets",
-                "short": "Browse"
-            },
-            "previous_gauntlets": {
-                "heading": "View previous gauntlets by date",
-                "title": "Previous Gauntlets",
-                "short": "Previous"
-            },
-            "today_gauntlet": {
-                "heading": "{{gauntlet.pages.today_gauntlet.title}}",
-                "title": "Today's Gauntlet",
-                "short": "Today"
-            },
-            "yesterday_gauntlet": {
-                "heading": "{{gauntlet.pages.yesterday_gauntlet.title}}",
-                "title": "Yesterday's Gauntlet",
-                "short": "Yesterday"
-            },
-            "live_gauntlet": {
-                "title": "Live Gauntlet",
-                "heading": "Live gauntlet round",
-                "short": "Live"
-            }
+        "advanced": {
+            "crit_multiplier": "{{p}}% crit multiplier",
+            "incidence": "{{name}} linear skill incidence weight",
+            "index": "{{name}} linear skill index weight",
+            "min_multiplier": "Minimum proficiency multiplier",
+            "max_multiplier": "Maximum proficiency multiplier",
+            "primary": "{{quipment_ranks.primary}}",
+            "secondary": "{{quipment_ranks.secondary}}",
+            "tertiary": "{{quipment_ranks.tertiary}}"
         },
+        "no_limit": "No limit",
+        "top_n": "Top {{n}}",
+        "show_top_crew": "Show top crew",
+        "max_results_per_table": "Max results per table",
+        "apply_buffs": "Apply buffs to stats",
+        "base_power": "Base Power",
+        "browse_gauntlet_exclusives": "Browse Gauntlet Exclusive Crew (Click Here)",
         "columns": {
             "crew": "{{base.crew}}",
             "crits": "{{ship.crit_rating}}",
@@ -530,6 +517,21 @@
         },
         "gauntlet": "Gauntlet",
         "gauntlets": "Gauntlets",
+        "hide_opponents": "Hide opponents",
+        "import": {
+            "click_here": "Click here to upload your data",
+            "heading": "You can access your live gauntlet matches in a similar way to how you access your player data, currently.",
+            "title": "Live gauntlet data"
+        },
+        "jackpot_crew": "Jackpot Crew",
+        "jackpot_crew_for_date": "Jackpot Crew for {{date}}",
+        "min_max_proficiency": "Minimum max-proficiency",
+        "note_live_crew_highlight_msg": "Note: Your selected gauntlet crew will appear highlighted in green, while opponents will appear highlighted in red.",
+        "note_opponent_stats_no_calc_msg": "Note: Opponent stats are not recomputed",
+        "note_owned_crew_power_calc_msg": "Note: If owned crew are detected, then their current level in your roster may be used to compute their rank, depending on filter settings.",
+        "note_unleveled_crew_max_highlight_pair_msg": "Note: Unleveled, owned crew that are shown maxed have proficiencies that are underlined and highlighted in green.",
+        "note_unleveled_crew_max_highlight_table_msg": "Note: Unleveled, owned crew that are shown maxed are highlighted in green.",
+        "only_highlight_active_round": "Only highlight active round",
         "owned_status": {
             "any": "All Crew",
             "fe": "Owned, Fully Equipped Crew",
@@ -545,6 +547,33 @@
             "unowned": "Unowned Crew"
         },
         "owned_status_heading": "Owned Status",
+        "pages": {
+            "browse_gauntlets": {
+                "heading": "Browse through all known gauntlets",
+                "short": "Browse",
+                "title": "Browse Gauntlets"
+            },
+            "live_gauntlet": {
+                "heading": "Live gauntlet round",
+                "short": "Live",
+                "title": "Live Gauntlet"
+            },
+            "previous_gauntlets": {
+                "heading": "View previous gauntlets by date",
+                "short": "Previous",
+                "title": "Previous Gauntlets"
+            },
+            "today_gauntlet": {
+                "heading": "{{gauntlet.pages.today_gauntlet.title}}",
+                "short": "Today",
+                "title": "Today's Gauntlet"
+            },
+            "yesterday_gauntlet": {
+                "heading": "{{gauntlet.pages.yesterday_gauntlet.title}}",
+                "short": "Yesterday",
+                "title": "Yesterday's Gauntlet"
+            }
+        },
         "show_buffs_heading": "Show Buffs",
         "skills_and_pairs": "Skills & Pairs",
         "unowned_status": {
@@ -552,6 +581,25 @@
             "gauntlet": "Gauntlet Exclusive Crew",
             "nonportal": "Non-Portal Crew",
             "portal": "Portal-Available Crew"
+        },
+        "view_modes": {
+            "big": {
+                "heading": "See crew in large presentations",
+                "title": "Large Presentation"
+            },
+            "pair_cards": {
+                "heading": "See crew grouped into pair tables",
+                "title": "Pair tables"
+            },
+            "small": {
+                "heading": "See crew in small presentations",
+                "title": "Small Presentation"
+            },
+            "table": {
+                "heading": "See crew ranked linearly",
+                "title": "Table"
+            },
+            "title": "View Mode"
         }
     },
     "global": {
@@ -610,8 +658,9 @@
             "starbase_component": "Starbase component",
             "valor": "Valor",
             "voyage_consumable": "Voyage Revival Tokens"
-        },
+        },        
         "load_default_settings": "Load Default Settings",
+        "load_defaults": "Load Defaults",
         "loading_ellipses": "Loading ...",
         "loading_please_wait_ellipses": "Loading. Please wait...",
         "member": "Member",
