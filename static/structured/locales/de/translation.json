@@ -486,7 +486,48 @@
         "x_y_solved": "{{x}}/{{y}} als gelöst"
     },
     "gauntlet": {
-        "browse_gauntlets": "Herausforderungen durchlesen",
+        "jackpot_crew": "Jackpot-Crew",
+        "jackpot_crew_for_date": "Jackpot-Crew für {{date}}",
+        "browse_gauntlet_exclusives": "Durchsuche die exklusive Crew der Herausforderung (hier tippen)",
+        "pages": {
+            "browse_gauntlets": {
+                "heading": "Alle bekannten\nHerausforderungen durchsuchen",
+                "title": "Herausforderungen durchsuchen",
+                "short": "Durchsuchen"
+            },
+            "previous_gauntlets": {
+                "heading": "Frühere Herausforderungen\nnach Datum anzeigen",
+                "title": "Frühere Herausforderungen",
+                "short": "Frühere"
+            },
+            "today_gauntlet": {
+                "heading": "{{gauntlet.pages.today_gauntlet.title}}",
+                "title": "Heutige Herausforderung",
+                "short": "Heutige"
+            },
+            "yesterday_gauntlet": {
+                "heading": "{{gauntlet.pages.yesterday_gauntlet.title}}",
+                "title": "Gesterne Herausforderung",
+                "short": "Gesterne"
+            },
+            "live_gauntlet": {
+                "title": "Live-Herausforderung",
+                "heading": "Live-Herausforderungsrunde",
+                "short": "Live"
+            }
+        },
+        "columns": {
+            "crew": "{{base.crew}}",
+            "crits": "{{ship.crit_rating}}",
+            "first_pair": "{{quipment_ranks.first_pair}}",
+            "high_crits": "45 % + 65 % kritische Treffer",
+            "in_portal": "{{base.in_portal}}",
+            "qp": "{{base.qp}}",
+            "rank": "{{cite_opt.columns.rank}}",
+            "rarity": "{{base.rarity}}",
+            "second_pair": "{{quipment_ranks.second_pair}}",
+            "third_pair": "{{quipment_ranks.third_pair}}"
+        },
         "gauntlet": "Herausforderung",
         "gauntlets": "Herausforderungen",
         "owned_status": {
@@ -504,17 +545,14 @@
             "unowned": "Unbesessene Crew"
         },
         "owned_status_heading": "Besitzerstatus",
-        "previous_gauntlets": "Vorherige Herausforderungen",
         "show_buffs_heading": "Buffs anzeigen",
         "skills_and_pairs": "Fähigkeiten & Paare",
-        "today_gauntlet": "Die heutige Herausforderung",
         "unowned_status": {
             "any": "Alle Crew",
             "gauntlet": "Herausforderung-exklusive Crew",
             "nonportal": "Nicht im Zeitportal Crew",
             "portal": "Zeitportal-verfügbare Crew"
-        },
-        "yesterday_gauntlet": "Die Herausforderung von gestern"
+        }
     },
     "global": {
         "admiral": "Admiral",

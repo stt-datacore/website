@@ -1,7 +1,9 @@
 import React from 'react';
 import { Pagination, PaginationProps, Icon, Message, Dropdown, Button, Accordion, Checkbox, DropdownItemProps, Step, Input } from 'semantic-ui-react';
 import * as moment from 'moment';
-
+import 'moment/locale/es';
+import 'moment/locale/fr';
+import 'moment/locale/de';
 import { randomCrew } from '../context/datacontext';
 import { GlobalContext } from '../context/globalcontext';
 import { PlayerBuffMode, PlayerCrew, PlayerImmortalMode } from '../model/player';
@@ -898,7 +900,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				}
 			});
 
-		const prettyDate = gauntlet.state === "POWER" ? "" : (!gauntlet.template ? moment(gauntlet.date).utc(false).format('dddd, D MMMM YYYY') : "");
+		const prettyDate = gauntlet.state === "POWER" ? "" : (!gauntlet.template ? moment(gauntlet.date).utc(false).locale(this.context.localized.language === 'sp' ? 'es' : this.context.localized.language).format('dddd, D MMMM YYYY') : "");
 		const displayOptions = [{
 			key: "pair_cards",
 			value: "pair_cards",
@@ -942,8 +944,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				overflowX: "auto"
 			}}>
 
-				{idx < 2 && <h1 style={{ margin: 0, marginBottom: "0.5em", padding: 0 }}>{idx === 0 ? "Today" : "Yesterday"}'s Gauntlet</h1>}
-				{idx === 4 && <h1 style={{ margin: 0, marginBottom: "0.5em", padding: 0 }}>Live Gauntlet</h1>}
+				{idx < 2 && <h1 style={{ margin: 0, marginBottom: "0.5em", padding: 0 }}>{idx === 0 ? t('gauntlet.pages.today_gauntlet.title') : t('gauntlet.pages.yesterday_gauntlet.title')}</h1>}
+				{idx === 4 && <h1 style={{ margin: 0, marginBottom: "0.5em", padding: 0 }}>{t('gauntlet.pages.live_gauntlet.title')}</h1>}
 				{/* {idx === 2 && <h1>Previous Gauntlets</h1>} */}
 				<div style={{
 					display: "flex",
@@ -971,7 +973,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							/>
 						</div>
 					}
-					{idx !== 3 && <div><h2 style={{ margin: 0, padding: 0 }}>{featuredCrew?.name}</h2><i>Jackpot Crew for {prettyDate}</i></div>}
+					{idx !== 3 && <div><h2 style={{ margin: 0, padding: 0 }}>{featuredCrew?.name}</h2><i>{t('gauntlet.jackpot_crew_for_date', { date: prettyDate})}</i></div>}
 
 					{!!jackpots?.length && idx === 3 &&
 						<Accordion
@@ -980,7 +982,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 							panels={[{
 								index: 0,
 								key: 0,
-								title: "Browse Gauntlet Exclusive Crew (Click Here)",
+								title: t('gauntlet.browse_gauntlet_exclusives'),
 								content: {
 									content: <>
 									<div style={{
@@ -1018,7 +1020,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 														itemSymbol={jcrew?.symbol}
 													/>
 													<i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin:"0.5em 0 0 0"}}>{jcrew.name}</i>
-													<i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin:"0.25em 0 0 0"}}>({moment(jcrew.date_added).format("D MMM YYYY")})</i>
+													<i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin:"0.25em 0 0 0"}}>({moment(jcrew.date_added).locale(this.context.localized.language === 'sp' ? 'es' : this.context.localized.language).format("D MMM YYYY")})</i>
 												</div>
 											)
 										})}
@@ -1447,7 +1449,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 	renderBrowsableGauntletPage(browsing?: boolean, searching?: boolean) {
 		const { activePrevGauntlet, browsingGauntlet, gauntlets, uniques } = this.state;
-		const { TRAIT_NAMES } = this.context.localized;
+		const { TRAIT_NAMES, t } = this.context.localized;
 		const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
 		const foreColor = theme === 'dark' ? 'white' : 'black';
 
@@ -1477,7 +1479,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row",
 				justifyContent: "space-between"
 			}}>
-				<h1>{browsing ? "Browse" : "Previous"} Gauntlets</h1>
+				<h1>{browsing ? t('gauntlet.pages.browse_gauntlets.title') : t('gauntlet.pages.previous_gauntlets.title')}</h1>
 
 				<div style={{
 					display: "flex",
@@ -1592,6 +1594,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	}
 
 	render() {
+		const { tfmt } = this.context.localized;
 		const { gauntlets, today, yesterday, liveGauntlet, activeTabIndex } = this.state;
 		const isMobile = isWindow && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 		const hasPlayer = !!this.context.player.playerData?.player?.character?.crew?.length;
@@ -1602,32 +1605,32 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 
 		const tabPanes = [
 			{
-				menuItem: isMobile ? "Today" : "Today's Gauntlet",
+				menuItem: isMobile ? tfmt('gauntlet.pages.today_gauntlet.short') : tfmt('gauntlet.pages.today_gauntlet.title'),
 				render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(today, 0)}</div>,
-				description: "Today's gauntlet"
+				description: tfmt('gauntlet.pages.today_gauntlet.heading')
 			},
 			{
-				menuItem: isMobile ? "Yesterday" : "Yesterday's Gauntlet",
+				menuItem: isMobile ? tfmt('gauntlet.pages.yesterday_gauntlet.short') : tfmt('gauntlet.pages.yesterday_gauntlet.title'),
 				render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(yesterday, 1)}</div>,
-				description: "Yesterday's gauntlet"
+				description: tfmt('gauntlet.pages.yesterday_gauntlet.heading')
 			},
 			{
-				menuItem: isMobile ? "Previous" : "Previous Gauntlets",
+				menuItem: isMobile ? tfmt('gauntlet.pages.previous_gauntlets.short') : tfmt('gauntlet.pages.previous_gauntlets.title'),
 				render: () => <div style={{ fontSize: fs }}>{this.renderBrowsableGauntletPage()}</div>,
-				description: "Browse previous gauntlets by date"
+				description: tfmt('gauntlet.pages.previous_gauntlets.heading')
 			},
 			{
-				menuItem: isMobile ? "Browse" : "Browse Gauntlets",
+				menuItem: isMobile ? tfmt('gauntlet.pages.browse_gauntlets.short') : tfmt('gauntlet.pages.browse_gauntlets.title'),
 				render: () => <div style={{ fontSize: fs }}>{this.renderBrowsableGauntletPage(true, true)}</div>,
-				description: "Browse through all known gauntlets"
+				description: tfmt('gauntlet.pages.browse_gauntlets.heading')
 			}
 		]
 
 		if (liveGauntlet && hasPlayer){
 			tabPanes.push({
-					menuItem: isMobile ? "Live" : "Live Gauntlet",
+					menuItem: isMobile ? tfmt('gauntlet.pages.live_gauntlet.short') : tfmt('gauntlet.pages.live_gauntlet.title'),
 					render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(liveGauntlet, 4)}</div>,
-					description: "Live gauntlet round"
+					description: tfmt('gauntlet.pages.live_gauntlet.heading')
 				},
 			)
 		}
