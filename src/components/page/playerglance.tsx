@@ -45,6 +45,10 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const quantum = playerData?.crew_crafting_root?.energy?.quantity;
     const valor = globalContext.player.ephemeral?.fleetBossBattlesRoot?.fleet_boss_battles_energy?.quantity;
     const ownedCites = getOwnedCites(playerData?.player.character.items ?? [], false);
+    const cadet = playerData?.player.character.cadet_tickets?.current ?? 0;
+    const pvp = playerData?.player.character.pvp_tickets?.current ?? 0;
+    const shuttle = playerData?.player.shuttle_rental_tokens ?? 0;
+    
     let revival = playerData.player.character.items.find(f => f.symbol === 'voyage_revival');
     let coreRevival = globalContext.core.items.find(f => f.symbol === 'voyage_revival')!;
     if (revival && coreRevival) {
@@ -95,6 +99,18 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         quantity: ism ?? 0,
         imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/managed_game_coin_detailed_icon.png`,
         click: (e) => navigate('/retrieval')
+    },
+    {
+        name: t('global.item_types.arena_tickets'),
+        quantity: pvp,
+        imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/fleetmarker_icon.png`,
+        click: (e) => navigate('/voyage')
+    },
+    {
+        name: t('global.item_types.cadet_challenge_tickets'),
+        quantity: cadet,
+        imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/cadet_icon.png`,
+        click: (e) => navigate('/voyage')
     },
     {
         name: t('global.item_types.voyage_consumable'),
