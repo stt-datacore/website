@@ -1468,7 +1468,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				text = `${g.contest_data?.traits.map(t => TRAIT_NAMES[t]).join("/")}/${skillToShort(g.contest_data?.featured_skill ?? "")}`;
 			}
 			else {
-				text = moment(g.date).utc(false).format('dddd, D MMMM YYYY') + ` (${g.contest_data?.traits.map(t => TRAIT_NAMES[t]).join("/")}/${skillToShort(g.contest_data?.featured_skill ?? "")})`;
+				text = moment(g.date).locale(this.context.localized.language === 'sp' ? 'es' : this.context.localized.language).utc(false).format('dddd, D MMMM YYYY') + ` (${g.contest_data?.traits.map(t => TRAIT_NAMES[t]).join("/")}/${skillToShort(g.contest_data?.featured_skill ?? "")})`;
 			}
 
 			return {
