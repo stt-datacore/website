@@ -275,7 +275,7 @@
     "duration": {
         "n_d": "{{days}} T",
         "n_days": "{{days}} Tage",
-        "n_h": "{{hours}} S",
+        "n_h": "{{hours}} Std",
         "n_hours": "{{hours}} Stunden",
         "n_m": "{{minutes}} M",
         "title": "Dauer: {{duration}}"

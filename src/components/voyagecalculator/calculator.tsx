@@ -258,7 +258,7 @@ const CalculatorForm = (props: CalculatorProps) => {
 					const result = prevResults.find(r => r.id === requestId);
 					if (result) {
 						if (calcState === CalculatorState.Done) {
-							result.name = formatTime(reqResult.estimate.refills[0].result);
+							result.name = formatTime(reqResult.estimate.refills[0].result, t);
 							result.calcState = CalculatorState.Done;
 						}
 						result.result = reqResult;
@@ -274,7 +274,7 @@ const CalculatorForm = (props: CalculatorProps) => {
 				setResults(prevResults => [...prevResults, {
 					id: requestId+'-'+idx,
 					requestId,
-					name: formatTime(reqResult.estimate.refills[0].result),
+					name: formatTime(reqResult.estimate.refills[0].result, t),
 					calcState: CalculatorState.Done,
 					result: reqResult
 				}]);
@@ -524,7 +524,7 @@ type ResultsGroupProps = {
 
 const ResultsGroup = (props: ResultsGroupProps) => {
 	const globalContext = React.useContext(GlobalContext);
-
+	const { t } = globalContext.localized;
 	const calculatorContext = React.useContext(CalculatorContext);
 	const userPrefs = React.useContext(UserPrefsContext);
 
@@ -653,15 +653,15 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 		switch (method) {
 			case 'median':
 				sortName = 'estimated runtime';
-				sortValue = formatTime(bestValues.median);
+				sortValue = formatTime(bestValues.median, t);
 				break;
 			case 'minimum':
 				sortName = 'guaranteed minimum';
-				sortValue = formatTime(bestValues.minimum);
+				sortValue = formatTime(bestValues.minimum, t);
 				break;
 			case 'moonshot':
 				sortName = 'moonshot';
-				sortValue = formatTime(bestValues.moonshot);
+				sortValue = formatTime(bestValues.moonshot, t);
 				break;
 			case 'dilemma':
 				sortName = 'dilemma chance';
@@ -682,7 +682,7 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 			request.abort();
 			const result = results.find(prev => prev.id === requestId);
 			if (result && result.result) {
-				result.name = formatTime(result.result.estimate.refills[0].result);
+				result.name = formatTime(result.result.estimate.refills[0].result, t);
 				result.calcState = CalculatorState.Done;
 			}
 			else {
@@ -725,7 +725,7 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 			if (!message.data.inProgress) {
 				const estimate = message.data.result;
 				const result = results[resultIndex];
-				result.name = formatTime(estimate.refills[0].result);
+				result.name = formatTime(estimate.refills[0].result, t);
 				if (result.result) result.result.estimate = estimate;
 				result.confidenceState = 2;
 				setResults([...results]);
@@ -769,6 +769,7 @@ type ResultPaneProps = {
 
 const ResultPane = (props: ResultPaneProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
+	const { t } = React.useContext(GlobalContext).localized;
 	const { rosterType, activeVoyageId } = calculatorContext;
 	const {
 		result, resultIndex,
@@ -837,9 +838,9 @@ const ResultPane = (props: ResultPaneProps) => {
 				<Message attached>
 					<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', rowGap: '1em' }}>
 						<div>
-							Estimate: <b>{formatTime(result.estimate.refills[0].result)}</b>{` `}
-							(expected range: {formatTime(result.estimate.refills[0].saferResult)} to{` `}
-								{formatTime(result.estimate.refills[0].moonshotResult)})
+							Estimate: <b>{formatTime(result.estimate.refills[0].result, t)}</b>{` `}
+							(expected range: {formatTime(result.estimate.refills[0].saferResult, t)} to{` `}
+								{formatTime(result.estimate.refills[0].moonshotResult, t)})
 							{analysis !== '' && (<div style={{ marginTop: '1em' }}>{analysis}</div>)}
 						</div>
 						<div>

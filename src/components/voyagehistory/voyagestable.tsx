@@ -16,6 +16,7 @@ type VoyagesTableProps = {
 
 export const VoyagesTable = (props: VoyagesTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { SHIP_TRAIT_NAMES } = globalContext.localized;
 	const { history, setHistory } = React.useContext(HistoryContext);
 	const { activeVoyageId } = props;
@@ -180,8 +181,8 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 					{row.max_hp}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					<b>{formatTime(row.estimate.median)}</b>
-					<br />({`${formatTime(row.estimate.minimum)} - ${formatTime(row.estimate.moonshot)}`})
+					<b>{formatTime(row.estimate.median, t)}</b>
+					<br />({`${formatTime(row.estimate.minimum, t)} - ${formatTime(row.estimate.moonshot, t)}`})
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					{renderLastEstimate(row.checkpoint)}
@@ -198,9 +199,9 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 			estimateType = 'failed';
 		return (
 			<React.Fragment>
-				<b>{formatTime(checkpoint.estimate.median)}</b>
+				<b>{formatTime(checkpoint.estimate.median, t)}</b>
 				<div>
-					({estimateType} at {formatTime(checkpoint.runtime)}
+					({estimateType} at {formatTime(checkpoint.runtime, t)}
 					{checkpoint.hp > 0 && <><br />with {checkpoint.hp} AM left</>})
 				</div>
 			</React.Fragment>
