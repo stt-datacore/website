@@ -24,6 +24,7 @@ import { CollectionOptimizerTable } from './optimizerview';
 import CollectionsOverviewComponent from './overview';
 import { ProgressTable } from './progresstable';
 import { RewardFilter } from './rewardfilter';
+import { WorkerContext } from '../../context/workercontext';
 
 export interface CollectionsViewsProps {
 	allCrew: (CrewMember | PlayerCrew)[];
@@ -43,9 +44,12 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	if (!playerData) return <></>;
 
 	const colContext = React.useContext(CollectionsContext);
+	const workerContext = React.useContext(WorkerContext);
 
-	const [worker, setWorker] = React.useState<UnifiedWorker | undefined>();
-	const [workerRunning, setWorkerRunning] = React.useState(false);
+	// const [worker, setWorker] = React.useState<UnifiedWorker | undefined>();
+	// const [workerRunning, setWorkerRunning] = React.useState(false);
+	const workerRunning = workerContext.running;
+	
 	const [colGroups, setColGroups] = React.useState<CollectionMap[]>([]);
 	const [colOptimized, setColOptimized] = React.useState<CollectionGroup[]>([]);
 	const [costMap, setCostMap] = React.useState<ComboCostMap[]>([]);
@@ -285,24 +289,25 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	];
 
 	React.useEffect(() => {
-		if (worker) {
-			worker.terminate();
-			worker.removeEventListener('message', processWorkerResult);
-		}
-		setWorkerRunning(true);
-		setWorker(undefined);		
+		runWorker();
+		// if (worker) {
+		// 	worker.terminate();
+		// 	worker.removeEventListener('message', processWorkerResult);
+		// }
+		// setWorkerRunning(true);
+		// setWorker(undefined);		
 	}, [context, mapFilter, showIncomplete, rarityFilter, fuseFilter, ownedFilter, searchFilter, matchMode, tierFilter]);
 
-	React.useEffect(() => {
-		if (worker) {
-			runWorker(worker);
-		}
-		else {
-			let worker = new UnifiedWorker();
-			worker.addEventListener('message', processWorkerResult);
-			setWorker(worker);
-		}
-	}, [worker]);
+	// React.useEffect(() => {
+	// 	if (worker) {
+	// 		runWorker(worker);
+	// 	}
+	// 	else {
+	// 		let worker = new UnifiedWorker();
+	// 		worker.addEventListener('message', processWorkerResult);
+	// 		setWorker(worker);
+	// 	}
+	// }, [worker]);
 
 	return (
 		<React.Fragment>
@@ -408,36 +413,59 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 		setColGroups(result.maps);
 		setColOptimized(result.groups);
 		setCostMap(result.costMap);
-		setTimeout(() => {
-			setWorkerRunning(false);
-		});		
+		// setTimeout(() => {
+		// 	setWorkerRunning(false);
+		// });		
 	}
 
-	function runWorker(worker: UnifiedWorker) {		
-		const workerName = 'colOptimizer2';
-
-		worker.postMessage({
-			worker: workerName,
-			config: {
-				playerCollections,
-				playerData: context.player.playerData,
-				filterProps: {
-					mapFilter: offPageSelect ? { ... mapFilter, collectionsFilter: [offPageSelect] } : mapFilter,
-					searchFilter,
-					rarityFilter,
-					fuseFilter,
-					ownedFilter,
-					short,
-					costMode,
-					favorited,
-					showIncomplete
-				},
-				collectionCrew,
-				matchMode: matchMode,
-				byCost: byCost
-			} as CollectionWorkerConfig
-		});
+	function runWorker() {
+		const options = {
+			playerCollections,
+			playerData: context.player.playerData,
+			filterProps: {
+				mapFilter: offPageSelect ? { ... mapFilter, collectionsFilter: [offPageSelect] } : mapFilter,
+				searchFilter,
+				rarityFilter,
+				fuseFilter,
+				ownedFilter,
+				short,
+				costMode,
+				favorited,
+				showIncomplete
+			},
+			collectionCrew,
+			matchMode: matchMode,
+			byCost: byCost
+		} as CollectionWorkerConfig
+		
+		workerContext.runWorker(options, processWorkerResult)
 	}
+
+	// function runWorker(worker: UnifiedWorker) {		
+	// 	const workerName = 'colOptimizer2';
+
+	// 	worker.postMessage({
+	// 		worker: workerName,
+	// 		config: {
+	// 			playerCollections,
+	// 			playerData: context.player.playerData,
+	// 			filterProps: {
+	// 				mapFilter: offPageSelect ? { ... mapFilter, collectionsFilter: [offPageSelect] } : mapFilter,
+	// 				searchFilter,
+	// 				rarityFilter,
+	// 				fuseFilter,
+	// 				ownedFilter,
+	// 				short,
+	// 				costMode,
+	// 				favorited,
+	// 				showIncomplete
+	// 			},
+	// 			collectionCrew,
+	// 			matchMode: matchMode,
+	// 			byCost: byCost
+	// 		} as CollectionWorkerConfig
+	// 	});
+	// }
 
 	function renderTable(workerRunning: boolean) {		
 		return (

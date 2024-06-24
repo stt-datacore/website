@@ -8,6 +8,7 @@ import CollectionsOverviewComponent from './overview';
 import { CollectionsContext, CollectionFilterProvider } from './context';
 import { CollectionsViews } from './collectionsviews';
 import { rewardsFilterPassFail } from '../../utils/collectionutils';
+import { WorkerProvider } from '../../context/workercontext';
 
 const CollectionsTool = () => {
 	const context = React.useContext(GlobalContext);	
@@ -162,6 +163,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 	return (
 		<React.Fragment>
 			<div ref={crewAnchor} />
+			<WorkerProvider workerName='colOptimizer2'>
 				<CollectionsViews 
 					topCrewScore={topCrewScore}
 					topStarScore={topStarScore}
@@ -169,6 +171,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 					allCrew={allCrew} 
 					playerCollections={playerCollections} 
 					collectionCrew={collectionCrew} />
+			</WorkerProvider>
 		</React.Fragment>
 	);
 
