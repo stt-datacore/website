@@ -1191,6 +1191,7 @@
             "cooldown": "{{time}}s cooldown",
             "duration": "{{time}}s duration"
         },
+        "crew_with_trigger_check": "Only show crew with matching trigger",
         "charge_phases": "Charge Phases",
         "clear_station": "Clear Station",
         "cooldown": "Cooldown",

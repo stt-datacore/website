@@ -1201,6 +1201,7 @@
             "cooldown": "{{time}}s recharge",
             "duration": "{{time}}s durée"
         },
+        "crew_with_trigger_check": "Afficher uniquement les équipiers avec le déclencheur correspondant",
         "charge_phases": "Phases de Chargement",
         "clear_station": "Effacer la station",
         "cooldown": "Recharge",
