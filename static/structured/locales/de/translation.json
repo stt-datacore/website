@@ -1190,6 +1190,7 @@
             "cooldown": "{{time}}s Abklingzeit",
             "duration": "{{time}}s Dauer"
         },
+        "crew_with_trigger_check": "Nur Crew mit passendem Auslöser anzeigen",
         "charge_phases": "Ladephasen",
         "clear_station": "Station räumen",
         "cooldown": "Abklingzeit",

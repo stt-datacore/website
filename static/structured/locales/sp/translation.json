@@ -1200,6 +1200,7 @@
             "cooldown": "{{time}}s recargar",
             "duration": "{{time}}s duración"
         },
+        "crew_with_trigger_check": "Mostrar solo las tripulantes con el activador coincidente",
         "charge_phases": "Fases de Carga",
         "clear_station": "Borrar estación",
         "cooldown": "Recargar",
@@ -1234,7 +1235,7 @@
             "missions_selected": "{{n}} misiones seleccionadas",
             "view_running": "ver las tareas en ejecución",
             "warn_replace": "Advertencia: esto reemplazará cualquier recomendación existente.",
-            "you_can_rearrange": "Puede reorganizar la tripulantes para equilibrar las posibilidades de transporte como mejor le parezca. Toque una asignación de asiento para cambiar la tripulante asignada al asiento. Bloquee una asignación para mantener a ese equipo en ese asiento cuando solicite nuevas recomendaciones.",
+            "you_can_rearrange": "Puede reorganizar las tripulantes para equilibrar las posibilidades de transporte como mejor le parezca. Toque una asignación de asiento para cambiar la tripulante asignada al asiento. Bloquee una asignación para mantener a ese equipo en ese asiento cuando solicite nuevas recomendaciones.",
             "you_can_view_running": "Puedes {{link}}.",
             "you_have_n_running": "Tienes {{n}} misiones de lanzadera ejecutándose en el juego.",
             "you_have_one_running": "Tienes 1 misión de lanzadera ejecutándose en el juego."
