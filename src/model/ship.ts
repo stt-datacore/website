@@ -154,15 +154,19 @@ export interface BattleStations {
 export type BattleMode = 'pvp' | 'fbb' | 'skirmish';
 
 export interface ShipWorkerConfig {
-    ships: Ship,
-    crew: CrewMember[],    
-    battle_mode: BattleMode
+    ship: Ship,
+    crew: CrewMember[],
+    battle_mode: BattleMode,
+    max_rarity?: number,
+    opponents?: Ship[]
 }
 
 export interface MultiShipWorkerConfig {
   ships: Ship[],
   crew: CrewMember[],
-  battle_mode: BattleMode
+  battle_mode: BattleMode, 
+  max_rarity?: number,
+  opponents?: Ship[]
 }
 
 export interface ShipWorkerItem {
