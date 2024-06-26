@@ -290,12 +290,6 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	React.useEffect(() => {
 		runWorker();
-		// if (worker) {
-		// 	worker.terminate();
-		// 	worker.removeEventListener('message', processWorkerResult);
-		// }
-		// setWorkerRunning(true);
-		// setWorker(undefined);		
 	}, [context, mapFilter, showIncomplete, rarityFilter, fuseFilter, ownedFilter, searchFilter, matchMode, tierFilter]);
 
 	// React.useEffect(() => {
@@ -413,9 +407,6 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 		setColGroups(result.maps);
 		setColOptimized(result.groups);
 		setCostMap(result.costMap);
-		// setTimeout(() => {
-		// 	setWorkerRunning(false);
-		// });		
 	}
 
 	function runWorker() {
@@ -438,34 +429,8 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 			byCost: byCost
 		} as CollectionWorkerConfig
 		
-		workerContext.runWorker(options, processWorkerResult)
+		workerContext.runWorker('colOptimizer2', options, processWorkerResult)
 	}
-
-	// function runWorker(worker: UnifiedWorker) {		
-	// 	const workerName = 'colOptimizer2';
-
-	// 	worker.postMessage({
-	// 		worker: workerName,
-	// 		config: {
-	// 			playerCollections,
-	// 			playerData: context.player.playerData,
-	// 			filterProps: {
-	// 				mapFilter: offPageSelect ? { ... mapFilter, collectionsFilter: [offPageSelect] } : mapFilter,
-	// 				searchFilter,
-	// 				rarityFilter,
-	// 				fuseFilter,
-	// 				ownedFilter,
-	// 				short,
-	// 				costMode,
-	// 				favorited,
-	// 				showIncomplete
-	// 			},
-	// 			collectionCrew,
-	// 			matchMode: matchMode,
-	// 			byCost: byCost
-	// 		} as CollectionWorkerConfig
-	// 	});
-	// }
 
 	function renderTable(workerRunning: boolean) {		
 		return (

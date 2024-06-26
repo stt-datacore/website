@@ -1,4 +1,3 @@
-import { IDefaultGlobal } from "../context/globalcontext";
 import { Filter } from "./game-elements";
 import { PlayerCollection, PlayerCrew, PlayerData } from "./player";
 
