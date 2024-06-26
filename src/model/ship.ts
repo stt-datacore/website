@@ -1,3 +1,4 @@
+import { CrewMember } from "./crew";
 import { Icon } from "./game-elements";
 import { CompletionState } from "./player";
 
@@ -148,4 +149,27 @@ export interface ChargePhase {
 export interface BattleStations {
 	symbol: string;
 	battle_stations: BattleStation[]
+}
+
+export type BattleMode = 'pvp' | 'fbb' | 'skirmish';
+
+export interface ShipWorkerConfig {
+    ships: Ship,
+    crew: CrewMember[],    
+    battle_mode: BattleMode
+}
+
+export interface MultiShipWorkerConfig {
+  ships: Ship[],
+  crew: CrewMember[],
+  battle_mode: BattleMode
+}
+
+export interface ShipWorkerItem {
+    ship: Ship,
+    crew: CrewMember[]
+}
+
+export interface ShipWorkerResults {
+    ships: ShipWorkerItem[]
 }

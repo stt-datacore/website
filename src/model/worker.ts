@@ -1,17 +1,13 @@
 import { BossBattlesRoot } from "./boss";
 import { BaseSkills, CrewMember, PlayerSkill, Skill } from "./crew";
-import { PlayerBuffMode, PlayerCollection, PlayerCrew, PlayerData } from "./player";
+import { PlayerCrew, PlayerData } from "./player";
 import { Ship } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
 import { EquipmentCommon, EquipmentItem } from "./equipment";
 import { Collection } from "./game-elements";
-import { GlobalContext, IDefaultGlobal } from "../context/globalcontext";
 import { ICoreData } from "../context/datacontext";
-import { Mission, MissionChallenge, MissionTraitBonus, ProtoMission, Quest, QuestFilterConfig } from "./missions";
-import { ContinuumMission } from "./continuum";
+import { MissionChallenge, MissionTraitBonus, QuestFilterConfig } from "./missions";
 import { IEphemeralData } from "../context/playercontext";
-import { Gauntlet, GauntletFilterProps, PairGroup } from "./gauntlets";
-import { GauntletSettings } from "../utils/gauntlet";
 
 export interface GameWorkerOptionsList {
     key: number;
