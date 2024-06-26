@@ -163,7 +163,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 	return (
 		<React.Fragment>
 			<div ref={crewAnchor} />
-			<WorkerProvider workerName='colOptimizer2'>
+			<WorkerProvider>
 				<CollectionsViews 
 					topCrewScore={topCrewScore}
 					topStarScore={topStarScore}
