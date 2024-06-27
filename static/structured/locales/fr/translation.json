@@ -1195,6 +1195,7 @@
         "bonus_ability": "Capacité Bonus",
         "boost": "Augmentation",
         "boosts": "Augmentations",
+        "calculated_crew": "Équipage calculé",
         "charge_phase": {
             "after_seconds": "Après {{seconds}}s ",
             "bonus": "+{{amount}} à {{ability}}",

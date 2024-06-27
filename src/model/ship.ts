@@ -161,7 +161,8 @@ export interface ShipWorkerConfig {
     min_rarity?: number,
     opponents?: Ship[],
     action_types?: number[],
-    ability_types?: number[]
+    ability_types?: number[],
+    max_results?: number
 }
 
 export interface MultiShipWorkerConfig {
@@ -172,12 +173,14 @@ export interface MultiShipWorkerConfig {
   min_rarity?: number,
   opponents?: Ship[],
   action_types?: number[],
-  ability_types?: number[]
+  ability_types?: number[],
+  max_results?: number
 }
 
 export interface ShipWorkerItem {
     ship: Ship,
     crew: CrewMember[]
+    attack: number;
 }
 
 export interface ShipWorkerResults {

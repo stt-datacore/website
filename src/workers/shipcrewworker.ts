@@ -109,12 +109,16 @@ export const PowerTable = {
     40: 305989
 };
 
-export function sumAttack(ship: Ship, actions: ShipAction[]) {
+export function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship) {
     let base_attack = ship.attack;
+    let base_acc = ship.accuracy;
     let bonus = ship.crit_bonus / (100 * 100);
     let chance = getCritChance(ship.crit_chance) / 100;
     let sum_attack = base_attack;
-    let highest = 0;
+    let highest_dmg = 0;
+    let highest_acc = 0;
+    let sum_acc = base_acc;
+    
     actions.forEach((action) => {
         if (action.ability?.type === 4) {
             chance += (getCritChance(action.ability.amount) / 100);
@@ -123,15 +127,31 @@ export function sumAttack(ship: Ship, actions: ShipAction[]) {
             bonus += (action.ability.amount / (100 * 100));
         }
         if (action.bonus_type === 0) {
-            if (highest < action.bonus_amount) {
-                highest = action.bonus_amount;
+            if (highest_dmg < action.bonus_amount) {
+                highest_dmg = action.bonus_amount;
+            }            
+        }
+        if (action.bonus_type === 2) {
+            if (highest_acc < action.bonus_amount) {
+                highest_acc = action.bonus_amount;
             }            
         }
     });
 
-    if (highest) {
-        sum_attack += PowerTable[highest];
+    if (highest_dmg) {
+        sum_attack += PowerTable[highest_dmg];
     }
+    if (highest_acc) {
+        sum_acc += PowerTable[highest_acc];
+    }
+
+    if (opponent) {
+        sum_attack *= hitChance(sum_acc, opponent.evasion);
+    }
+    else {
+        sum_attack *= hitChance(sum_acc, ship.evasion);
+    }
+
     sum_attack += ((sum_attack * bonus) * chance);
     return sum_attack;
 }
@@ -148,6 +168,7 @@ export interface Attacks {
     actions: ShipAction[];
     second: number;
     attack: number;
+    ship: Ship;
 }
 
 export function getOverlaps(ship: Ship, crew: CrewMember[]) {
@@ -226,7 +247,8 @@ export function getOverlaps(ship: Ship, crew: CrewMember[]) {
         attacks.push({
             actions: [...current],
             second: sec,
-            attack: atk
+            attack: atk,
+            ship
         });
     }
 
@@ -265,10 +287,11 @@ const ShipCrewWorker = {
     calc: (options: ShipWorkerConfig) => {
         return new Promise<ShipWorkerResults>((resolve, reject) => {
             const { ship, crew, battle_mode, opponents, action_types, ability_types } = options;
+            const max_results = options.max_results ?? 10;
             const max_rarity = options.max_rarity ?? 5;
             const min_rarity = options.min_rarity ?? 1;
             const maxvalues = [0, 0, 0, 0, 0].map(o => [0, 0, 0, 0]);
-
+            
             const workCrew = crew.filter((crew) => {
                 if (!crew.skill_order.some(skill => ship.battle_stations?.some(bs => bs.skill === skill))) return false;
                 if (crew.action.ability?.condition && !ship.actions?.some(act => act.status === crew.action.ability?.condition)) return false;
@@ -346,17 +369,21 @@ const ShipCrewWorker = {
                 });
                 
                 attacks.sort((a, b) => {
-                    let aa = a.attacks.map(a => a.attack).reduce((p, n) => p + n, 0) / a.attacks.length;
-                    let ba = b.attacks.map(b => b.attack).reduce((p, n) => p + n, 0) / b.attacks.length;
+                    let aa = a.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0) / a.attacks.length;
+                    let ba = b.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0) / b.attacks.length;
                     return ba - aa;
                 });
             }
 
-            let attack_crew = attacks.slice(0, 10).map(a => a.crew.map(c => workCrew.find(f => f.id === c)!));
+            let attack_crew = attacks.slice(0, max_results).map(a => a.crew.map(c => workCrew.find(f => f.id === c)!));
             let results = [] as ShipWorkerItem[];
+            
+            let attack_numbers = attack_crew.map(c => 0);
 
-            attack_crew.forEach((crew_set) => {
+            attack_crew.forEach((crew_set, idx) => {
+                attack_numbers[idx] = attacks[idx].attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0) / attacks[idx].attacks.length;
                 let result_crew = [] as CrewMember[];
+                let ship = attacks[idx].attacks[0].ship;
                 ship.battle_stations?.forEach((bs) => {
                     for (let c of crew_set) {
                         if (!result_crew.includes(c)) {
@@ -370,7 +397,8 @@ const ShipCrewWorker = {
                 
                 results.push({
                     ship,
-                    crew: result_crew
+                    crew: result_crew,
+                    attack: attack_numbers[idx]
                 });
             });
             
