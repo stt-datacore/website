@@ -3,7 +3,7 @@ name: Ambassador Troi
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 01/01/2016
 published: true
