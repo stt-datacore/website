@@ -291,7 +291,8 @@ const ShipCrewWorker = {
             const max_rarity = options.max_rarity ?? 5;
             const min_rarity = options.min_rarity ?? 1;
             const maxvalues = [0, 0, 0, 0, 0].map(o => [0, 0, 0, 0]);
-            
+            const power_depth = options.power_depth ?? 2;
+
             const workCrew = crew.filter((crew) => {
                 if (!crew.skill_order.some(skill => ship.battle_stations?.some(bs => bs.skill === skill))) return false;
                 if (crew.action.ability?.condition && !ship.actions?.some(act => act.status === crew.action.ability?.condition)) return false;
@@ -317,7 +318,7 @@ const ShipCrewWorker = {
                 }                
             })
             .filter((crew) => {
-                if (crew.action.bonus_amount < maxvalues[crew.max_rarity - 1][crew.action.bonus_type] - 1) return false;
+                if (crew.action.bonus_amount < maxvalues[crew.max_rarity - 1][crew.action.bonus_type] - power_depth) return false;
                 return true;
             })
             .sort((a, b) => {
