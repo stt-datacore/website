@@ -375,37 +375,39 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			{
 				key: 'lightside',
 				name: 'Luminous and Noble',
-				description: 'Crew with the following traits: Caregiver, Counselor, Cultural Figure, Hero, Innovator, Inspiring, Nurse, Physician, Prodigy',
+				description: 'Crew with the following traits: Caregiver, Counselor, Cultural Figure, Hero, Innovator, Inspiring, Nurse, Physician, Prodigy, Playful',
 				keywords: ['traits'],
 				category: 'Traits',
 				filter: (crew: IVoyageCrew) => {
-					return crew.traits_named.some(t => ["Caregiver",
-						"Counselor",
-						"Cultural Figure",
-						"Hero",
-						"Innovator",
-						"Inspiring",
-						"Nurse",
-						"Physician",
-						"Prodigy"].includes(t))
+					return crew.traits.some(t => ["caregiver",
+						"counselor",
+						"cultural_figure",
+						"hero",
+						"innovator",
+						"inspiring",
+						"nurse",
+						"doctor",
+						"prodigy",
+						"playful"].includes(t))
 				}
 			},
 			{
 				key: 'darkside',
 				name: 'Dark and Edgy',
-				description: 'Crew with the following traits: Brutal, Crafty, Criminal, Maverick, Saboteur, Scoundrel, Smuggler, Thief, Villain',
+				description: 'Crew with the following traits: Brutal, Crafty, Criminal, Maverick, Saboteur, Scoundrel, Smuggler, Thief, Villain, Vengeful',
 				keywords: ['traits'],
 				category: 'Traits',
 				filter: (crew: IVoyageCrew) => {
-					return crew.traits_named.some(t => ["Brutal",
-						"Crafty",
-						"Criminal",
-						"Maverick",
-						"Saboteur",
-						"Scoundrel",
-						"Smuggler",
-						"Thief",
-						"Villain"].includes(t))
+					return crew.traits.some(t => ["Brutal",
+						"crafty",
+						"criminal",
+						"maverick",
+						"saboteur",
+						"scoundrel",
+						"smuggler",
+						"thief",
+						"villain",
+						"vengeful"].includes(t))
 				}
 			}
 		] as ICustomTheme[];

@@ -243,7 +243,9 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 					ship,
 					crew: this.context.player.playerData!.player.character.crew!,
 					battle_mode: 'pvp',
-					min_rarity: ship.rarity,
+					power_depth: 3,
+					min_rarity: ship.rarity - 1,
+					max_rarity: ship.rarity,
 					max_results: 50
 				} as ShipWorkerConfig
 			});
