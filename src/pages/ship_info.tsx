@@ -85,13 +85,13 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 	}
 
 	private readonly setSuggestion = (sug: string) => {
-		const { crewStations, suggestions } = this.state;
-		if (!crewStations?.length || !suggestions?.length) return;
-		let ids = sug.split(",").map(s => Number.parseInt(s));
-		let f = suggestions.find(f => f.crew.every(c => ids.some(s => s === c.id)));
+		const { suggestions, activeShip } = this.state;
+		if (!suggestions?.length || !activeShip) return;
+		let ids = sug?.length ? sug.split(",").map(s => Number.parseInt(s)) : [];
+		let f = sug?.length ? suggestions.find(f => f.crew.every(c => ids.some(s => s === c.id))) : undefined;
 		
-		this.setState({...this.state, crewStations: f?.crew as PlayerCrew[] || [] });
-		if (isWindow) window.setTimeout(() => this.setActiveShip());
+		this.setState({...this.state, crewStations: f?.crew as PlayerCrew[] ?? activeShip.battle_stations?.map(b => undefined) });
+		setTimeout(() => this.setActiveShip());
 	}
 
 	private readonly getSuggestion = () => {
@@ -426,6 +426,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 							justifyContent: "center",
 							alignItems: "center"
 						}}>
+						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "32px", margin: '1em'}} />
 						<div
 							onClick={(e) => this.clickStation(idx, bs.skill)}
 							className="ui segment button"
