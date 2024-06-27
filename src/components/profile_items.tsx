@@ -32,6 +32,7 @@ import { PlayerCrew, TranslateMethod } from "../model/player";
 import { EquipmentWorkerConfig, EquipmentWorkerResults } from "../model/worker";
 import {
 	downloadData,
+	getCrewQuipment,
 	oneCrewCopy,
 	qbitsToSlots,
 	shortToSkill,
@@ -472,7 +473,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 
 	private makeTrialCrew = (crew: PlayerCrew) => {
-		if (!crew) return undefined;
+		if (!crew || !this.context.core.crew?.length) return undefined;
 
 		crew = oneCrewCopy({
 			...(this.context.core.crew.find(
@@ -1373,7 +1374,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 												clearable
 												scrolling
 												options={rewardFilterOpts}
-												value={itemType}
+												value={itemType || []}
 												onChange={(e, { value }) =>
 													this._handleItemType(value as number[] | undefined)
 												}
@@ -1387,7 +1388,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 												multiple
 												clearable
 												options={rarities}
-												value={rarity}
+												value={rarity || []}
 												onChange={(e, { value }) =>
 													this._handleRarity(value as number[] | undefined)
 												}
@@ -1402,7 +1403,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 												clearable
 												scrolling
 												options={traitFilterOpts}
-												value={traits}
+												value={traits || []}
 												onChange={(e, { value }) =>
 													this._handleTraits(value as string[] | undefined)
 												}
@@ -1417,7 +1418,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 												clearable
 												scrolling
 												options={skillmap}
-												value={skills}
+												value={skills || []}
 												onChange={(e, { value }) =>
 													this._handleSkills(value as string[] | undefined)
 												}

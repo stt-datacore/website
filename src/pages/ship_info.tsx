@@ -19,6 +19,7 @@ import DataPageLayout from '../components/page/datapagelayout';
 import { WorkerProvider } from '../context/workercontext';
 import { UnifiedWorker } from '../typings/worker';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
+import { ShipRosterCalc } from '../components/ship/rostercalc';
 
 const isWindow = typeof window !== 'undefined';
 
@@ -37,8 +38,6 @@ type ShipProfileState = {
 	crewStations: (PlayerCrew | undefined)[];
 	modalOpen: boolean;
 	hoverItem?: PlayerCrew | CrewMember;
-	suggestions?: ShipWorkerItem[];
-	running?: boolean;
 };
 
 const pagingOptions = [
@@ -62,7 +61,6 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
 
-	private readonly worker: UnifiedWorker = new UnifiedWorker();
 	constructor(props: ShipProfileProps) {
 		super(props);
 
@@ -77,27 +75,11 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 		};
 
 		const me = this;
-		this.worker.addEventListener('message', (result: { data: { result: { ships: ShipWorkerItem[] } }}) => {
-			const resultCrew = result.data.result.ships[0].crew as PlayerCrew[];
-			me.setState({ ...me.state, crewStations: resultCrew, running: false, suggestions: result.data.result.ships, modalOpen: false, currentStationCrew: [], currentStation: -1 })
-			setTimeout(() => me.setActiveShip());
-		});
 	}
 
-	private readonly setSuggestion = (sug: string) => {
-		const { suggestions, activeShip } = this.state;
-		if (!suggestions?.length || !activeShip) return;
-		let ids = sug?.length ? sug.split(",").map(s => Number.parseInt(s)) : [];
-		let f = sug?.length ? suggestions.find(f => f.crew.every(c => ids.some(s => s === c.id))) : undefined;
-		
-		this.setState({...this.state, crewStations: f?.crew as PlayerCrew[] ?? activeShip.battle_stations?.map(b => undefined) });
+	private readonly setCrewStations = (crewStations: (PlayerCrew | undefined)[]) => {
+		this.setState({...this.state, crewStations });
 		setTimeout(() => this.setActiveShip());
-	}
-
-	private readonly getSuggestion = () => {
-		const { crewStations, suggestions } = this.state;
-		if (!crewStations?.length || !suggestions?.length) return undefined;
-		return suggestions.find(f => f.crew.every(c => crewStations.some(s => s?.id === c.id)))?.crew?.map(m => m.id)?.join(",");
 	}
 
 	private readonly setModalOpen = (value: boolean) => {
@@ -229,35 +211,14 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 				}
 	
 				this.setState({ ... this.state, inputShip: ship, crewStations: n, data: this.context.player.playerShips ?? [], originals: this.context.core.ships ?? []});
-				if (isWindow) window.setTimeout(() => this.setActiveShip());
-				this.runWorker(ship);
+				if (isWindow) window.setTimeout(() => this.setActiveShip());				
 			}
-		}
-	}
-
-	private runWorker(ship: Ship) {
-		if (this.context.player.playerData) {
-			this.worker.postMessage({
-				worker: 'shipworker',
-				config: {
-					ship,
-					crew: this.context.player.playerData!.player.character.crew!,
-					battle_mode: 'pvp',
-					power_depth: 3,
-					min_rarity: ship.rarity - 1,
-					max_rarity: ship.rarity,
-					max_results: 50
-				} as ShipWorkerConfig
-			});
-			setTimeout(() => {
-				this.setState({ ... this.state, running: true })
-			});
 		}
 	}
 
 	render() {
 		const { t } = this.context.localized;
-    	const { running, data, currentStationCrew, crewStations, modalOptions, modalOpen, activeShip, hoverItem } = this.state;
+    	const { data, currentStationCrew, crewStations, modalOptions, modalOpen, activeShip, hoverItem } = this.state;
         let ship_key: string | undefined = this.props.ship;
 
         if (!ship_key) {
@@ -313,32 +274,9 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 		}
 
         const ship = data.find(d => d.symbol === ship_key);
-        if (!ship) return <></>
+        if (!ship || !this.context.player.playerData) return <></>
 		
-		const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
-		
-		const suggOpts = this.state.suggestions?.map((sug, idx) => {
-			return {
-				key: sug.ship.symbol + `_sug_${idx}`,
-				value: sug.crew.map(c => c.id).join(","),
-				text: sug.crew.map(c => c.name).join(", "),
-				content: <div style={{width: '100%', gap: '0.5em', display:'flex', flexWrap: 'wrap', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly'}}>
-					<div style={{display:'flex', width: '100%', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5em'}}>
-						{sug.crew.map((crew, idx) => <div style={{display:'flex', width: `${98 / ship.battle_stations!.length}%`, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.25em', textAlign: 'center'}}>
-							<img style={{width: '24px'}} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
-							{crew.name}
-						</div>)}
-					</div>
-					<div>
-						{t('ship.crit_bonus')}{' '}{sug.ship.crit_bonus}
-						{', '}
-						{t('ship.crit_rating')}{' '}{sug.ship.crit_chance}
-						{', '}
-						{t('global.percentile')}{' '}{sug.attack.toFixed(1)}
-					</div>
-				</div>
-			}
-		})
+		const crew = this.context.player.playerData.player.character.crew
 		
 		return (<>
 			<div>
@@ -377,38 +315,13 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 						</Message.Content>
 					</Message>
 
-                <ShipPresenter hover={false} ship={activeShip ?? ship} showIcon={true} storeName='shipProfile' />
-
-				<div className={'ui segment'} style={{
-					display: 'flex',
-					flexDirection: 'column',
-					justifyContent: 'left',
-					alignItems: 'center',
-					width: isMobile ? '100%' : '50%'
-				}}>
-					{!running && <>
-						<h3>{t('ship.calculated_crew')}</h3>
-						<div className={'ui segment'} style={{
-							display: 'flex',
-							flexDirection: 'row',
-							justifyContent: 'left',
-							alignItems: 'center',
-							width: '100%'
-						}}>						
-							<Dropdown 
-								search 
-								fluid
-								scrolling
-								selection        
-								clearable
-								value={this.getSuggestion()}
-								onChange={(e, { value }) => this.setSuggestion(value as string)}
-								options={suggOpts}
-								/>						
-						</div>
-					</>}
-					{running && this.context.core.spin(t('spinners.default'))}
-				</div>
+				<WorkerProvider>
+					<ShipRosterCalc 
+						crew={crew} 
+						ships={[activeShip ?? ship]} 
+						crewStations={crewStations} 
+						setCrewStations={this.setCrewStations} />
+				</WorkerProvider>
 
 				<h3>{t('ship.battle_stations')}</h3>
 
@@ -417,7 +330,8 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 					flexDirection: "row",
 					justifyContent: "center",
 					alignItems: "center",
-					padding: 0
+					padding: 0,
+					marginBottom: '2em'
 				}}>
 					{ship.battle_stations?.map((bs, idx) => (
 						<div key={idx} style={{
@@ -453,6 +367,8 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 					</div>
 					))}
 				</div>
+
+                <ShipPresenter hover={false} ship={activeShip ?? ship} showIcon={true} storeName='shipProfile' />
 
             </div>
 			</>);
