@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Icon, Message, Button } from 'semantic-ui-react';
 
 import { findPotentialCrew } from '../utils/shiputils';
-import { Ship, ShipWorkerConfig } from '../model/ship';
+import { Ship, ShipWorkerConfig, ShipWorkerItem } from '../model/ship';
 import { PlayerCrew } from '../model/player';
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
@@ -12,7 +12,7 @@ import { navigate } from 'gatsby';
 import { ModalOption, OptionGroup, OptionsBase, OptionsModal, OptionsModalProps } from '../components/base/optionsmodal_base';
 import { ShipAbilityPicker } from '../components/crewtables/shipoptions';
 import CrewPicker from '../components/crewpicker';
-import { getShipBonus, getSkills } from '../utils/crewutils';
+import { crewCopy, getShipBonus, getSkills } from '../utils/crewutils';
 import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
 import { getActionColor, getShipBonusIcon } from '../components/item_presenters/shipskill';
 import DataPageLayout from '../components/page/datapagelayout';
@@ -73,11 +73,12 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 			modalOpen: false
 		};
 
-		this.worker.addEventListener('message', this.afterWorker);
-	}
-
-	private readonly afterWorker = (result: any) => {
-
+		const me = this;
+		this.worker.addEventListener('message', (result: { data: { result: { ships: ShipWorkerItem[] } }}) => {
+			const resultCrew = crewCopy(result.data.result.ships[0].crew) as PlayerCrew[];
+			me.setState({ ...me.state, crewStations: resultCrew, modalOpen: false, currentStationCrew: [], currentStation: -1 })
+			setTimeout(() => me.setActiveShip());
+		});
 	}
 
 	private readonly setModalOpen = (value: boolean) => {
@@ -90,14 +91,14 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 		let stations = [ ... this.state.crewStations ];
 		stations[this.state.currentStation] = crew as PlayerCrew;
 		this.setState({ ... this.state, crewStations: stations, modalOpen: false, currentStationCrew: [], currentStation: -1 });
-		if (isWindow) window.setTimeout(() => this.setActiveShip());
+		setTimeout(() => this.setActiveShip());
 	}
 
 	private clearStation(index: number) {
 		let stations = [ ... this.state.crewStations ];
 		stations[index] = undefined;
 		this.setState({ ... this.state, crewStations: stations, modalOpen: false, currentStationCrew: [], currentStation: -1 });
-		if (isWindow) window.setTimeout(() => this.setActiveShip());
+		setTimeout(() => this.setActiveShip());
 	}
 
 	private clickStation(index: number, skill: string) {
