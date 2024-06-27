@@ -5,8 +5,10 @@ import DataPageLayout from '../components/page/datapagelayout';
 import ProfileItems, { CustomFieldDef } from '../components/profile_items';
 import { GlobalContext } from '../context/globalcontext';
 import { EquipmentItem } from '../model/equipment';
-import { binaryLocate, formatDuration } from '../utils/itemutils';
+import { binaryLocate, formatDuration, getItemWithBonus, getPossibleQuipment } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
+import { PlayerCrew } from '../model/player';
+import { getCrewQuipment, oneCrewCopy } from '../utils/crewutils';
 
 export interface ItemsPageProps {}
 
@@ -72,7 +74,25 @@ const ItemsPage = (props: ItemsPageProps) => {
 			format: (value: number) => value ? (value.toLocaleString()) : t('crew_state.unowned')
 		});
 	}
-	
+
+	// // Don't delete!!!! This is to preview crew quipment
+	// if (globalContext.core?.crew?.length) {
+	// 	let crnew = oneCrewCopy(globalContext.core.crew.find(f => f.symbol === 'vash_qless_crew')!);
+	// 	crnew!.traits = ["human", "federation", "exoarchaeology", "civilian", "romantic", "crafty", "smuggler", "merchant", "casual", "playful"]
+	// 	crnew!.skill_order = ['science_skill', 'diplomacy_skill', 'medicine_skill']
+	// 	crnew!.base_skills.medicine_skill = crnew!.base_skills.command_skill;
+	// 	delete crnew!.base_skills.command_skill;
+	// 	let crewquip = getPossibleQuipment(crnew as PlayerCrew, globalContext.core.items.filter(f => f.type === 14));
+	// 	let text = '';
+	// 	if (crewquip?.length) {
+	// 		crewquip.forEach(item => {
+	// 			let bonus = getItemWithBonus(item);
+	// 			text += (`${item.name}\n    ${bonus.bonusInfo.bonusText.join('\n    ')}\n`)
+	// 		})
+	// 		console.log(text);
+	// 	}
+	// }
+
 	return (
 
 		<DataPageLayout playerPromptType='recommend' pageTitle={t('menu.roster.items')} demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet']}>
