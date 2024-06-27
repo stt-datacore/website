@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Icon, Message, Button } from 'semantic-ui-react';
 
 import { findPotentialCrew } from '../utils/shiputils';
-import { Ship } from '../model/ship';
+import { Ship, ShipWorkerConfig } from '../model/ship';
 import { PlayerCrew } from '../model/player';
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
@@ -16,6 +16,8 @@ import { getShipBonus, getSkills } from '../utils/crewutils';
 import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
 import { getActionColor, getShipBonusIcon } from '../components/item_presenters/shipskill';
 import DataPageLayout from '../components/page/datapagelayout';
+import { WorkerProvider } from '../context/workercontext';
+import { UnifiedWorker } from '../typings/worker';
 
 const isWindow = typeof window !== 'undefined';
 
@@ -57,6 +59,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
 
+	private readonly worker: UnifiedWorker = new UnifiedWorker();
 	constructor(props: ShipProfileProps) {
 		super(props);
 
@@ -69,7 +72,14 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 			currentStation: 0,
 			modalOpen: false
 		};
+
+		this.worker.addEventListener('message', this.afterWorker);
 	}
+
+	private readonly afterWorker = (result: any) => {
+
+	}
+
 	private readonly setModalOpen = (value: boolean) => {
 		if (this.state.modalOpen !== value) {
 			this.setState({ ... this.state, modalOpen: value });
@@ -199,8 +209,21 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 				this.setState({ ... this.state, inputShip: ship, crewStations: n, data: this.context.player.playerShips ?? [], originals: this.context.core.ships ?? []});
 				if (isWindow) window.setTimeout(() => this.setActiveShip());
 			}
+			if (this.context.player.playerData) {
+				this.worker.postMessage({
+					worker: 'shipworker',
+					config: {
+						ship,
+						crew: this.context.player.playerData!.player.character.crew!,
+						battle_mode: 'pvp',
+						min_rarity: 5
+					} as ShipWorkerConfig
+				});
+			}
 		}
 	}
+
+
 
 	render() {
 		const { t } = this.context.localized;
@@ -261,7 +284,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
         const ship = data.find(d => d.symbol === ship_key);
         if (!ship) return <></>
-
+		
 		return (<>
 			<div>
 			<CrewPicker

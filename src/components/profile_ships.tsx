@@ -38,7 +38,6 @@ const pagingOptions = [
 
 
 class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
-
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
 	inited: boolean;
@@ -89,8 +88,6 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	_onChangePage(activePage) {
 		this.setState({ pagination_page: activePage });
 	}
-
-	
 
 	_handleSort(clickedColumn) {
 		const { column, direction } = this.state;
@@ -168,6 +165,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	private readonly setTextFilter = (filter?: string) => {
 		this.setState({ ...this.state, textFilter: filter });
 	}
+
 	render() {
 		const { localized } = this.context;
 		const { t } = localized;
