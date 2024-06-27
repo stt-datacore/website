@@ -1185,6 +1185,7 @@
         "battle_stations": "Battle Stations",
         "bonus_ability": "Bonus Ability",
         "boosts": "Boosts",
+        "calculated_crew": "Calculated Crew",
         "charge_phase": {
             "after_seconds": "After {{seconds}}s ",
             "bonus": "+{{amount}} to {{ability}}",

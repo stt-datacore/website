@@ -1,3 +1,4 @@
+import { CrewMember } from "./crew";
 import { Icon } from "./game-elements";
 import { CompletionState } from "./player";
 
@@ -148,4 +149,40 @@ export interface ChargePhase {
 export interface BattleStations {
 	symbol: string;
 	battle_stations: BattleStation[]
+}
+
+export type BattleMode = 'pvp' | 'fbb' | 'skirmish';
+
+export interface ShipWorkerConfig {
+    ship: Ship,
+    crew: CrewMember[],
+    battle_mode: BattleMode,
+    max_rarity?: number,
+    min_rarity?: number,
+    opponents?: Ship[],
+    action_types?: number[],
+    ability_types?: number[],
+    max_results?: number
+}
+
+export interface MultiShipWorkerConfig {
+  ships: Ship[],
+  crew: CrewMember[],
+  battle_mode: BattleMode, 
+  max_rarity?: number,
+  min_rarity?: number,
+  opponents?: Ship[],
+  action_types?: number[],
+  ability_types?: number[],
+  max_results?: number
+}
+
+export interface ShipWorkerItem {
+    ship: Ship,
+    crew: CrewMember[]
+    attack: number;
+}
+
+export interface ShipWorkerResults {
+    ships: ShipWorkerItem[]
 }
