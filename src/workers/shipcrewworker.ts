@@ -401,6 +401,12 @@ const ShipCrewWorker = {
                     attack: attack_numbers[idx]
                 });
             });
+
+            let max = attack_numbers[0];
+
+            results.forEach((result) => {
+                result.attack = (result.attack / max) * 100;
+            })
             
             resolve({
                 ships: results

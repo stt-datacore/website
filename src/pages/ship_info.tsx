@@ -321,8 +321,8 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 				value: sug.crew.map(c => c.id).join(","),
 				text: sug.crew.map(c => c.name).join(", "),
 				content: <div style={{width: '100%', gap: '0.5em', display:'flex', flexWrap: 'wrap', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly'}}>
-					<div style={{display:'flex', width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly'}}>
-						{sug.crew.map((crew, idx) => <div style={{display:'flex', width: `${100 / ship.battle_stations!.length}%`, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.25em'}}>
+					<div style={{display:'flex', width: '100%', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5em'}}>
+						{sug.crew.map((crew, idx) => <div style={{display:'flex', width: `${98 / ship.battle_stations!.length}%`, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.25em', textAlign: 'center'}}>
 							<img style={{width: '24px'}} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							{crew.name}
 						</div>)}
@@ -332,7 +332,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 						{', '}
 						{t('ship.crit_rating')}{' '}{sug.ship.crit_chance}
 						{', '}
-						{t('ship.attack')}{' '}{sug.attack.toFixed(0)}
+						{t('global.percentile')}{' '}{sug.attack.toFixed(1)}
 					</div>
 				</div>
 			}
