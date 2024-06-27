@@ -365,6 +365,14 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				filter: (crew: IVoyageCrew) => !crew.immortal || !(crew.q_bits > 0 && crew.q_bits < 1300)
 			},
 			{
+				key: 'quipnotmax',
+				name: 'Prior Commitments',
+				description: 'Exclude crew that can be fully quipped',
+				keywords: ['quipment'],
+				category: 'Quipment',
+				filter: (crew: IVoyageCrew) => !crew.immortal || !(crew.q_bits >= 1300)
+			},
+			{
 				key: 'lightside',
 				name: 'Luminous and Noble',
 				description: 'Crew with the following traits: Caregiver, Counselor, Cultural Figure, Hero, Innovator, Inspiring, Nurse, Physician, Prodigy',

@@ -609,6 +609,7 @@
         }
     },
     "global": {
+        "percentile": "Centile",
         "admiral": "Amiral",
         "advanced_settings": "Réglages Avancés",
         "and": "et",

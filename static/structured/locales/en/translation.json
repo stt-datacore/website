@@ -603,6 +603,7 @@
         }
     },
     "global": {
+        "percentile": "Percentile",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
         "and": "and",
