@@ -597,16 +597,8 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
  * @returns A deep copy an array of crew with Date objects ensured
  */
 export function crewCopy<T extends CrewMember>(crew: T[]): T[] {
-	let result = JSON.parse(JSON.stringify(crew)) as T[];
-	for (let item of result) {
-		if (typeof item.date_added === 'string') {
-			item.date_added = new Date(item.date_added);
-		}
-	}
-
-	return result;
+	return (JSON.parse(JSON.stringify(crew)) as T[]).map(c => ({...c, date_added: new Date(c.date_added) }));
 }
-
 
 /**
  * Make a deep copy of any crew type, while also ensuring Date object for date_added.
@@ -615,10 +607,7 @@ export function crewCopy<T extends CrewMember>(crew: T[]): T[] {
  */
 export function oneCrewCopy<T extends CrewMember>(crew: T): T {
 	let result = JSON.parse(JSON.stringify(crew)) as T;
-	if (typeof crew.date_added === 'string') {
-		crew.date_added = new Date(crew.date_added);
-	}
-
+	crew.date_added = new Date(crew.date_added);
 	return result;
 }
 

@@ -603,6 +603,8 @@
         }
     },
     "global": {
+        "min_rarity": "Min. Seltenheit",
+        "max_rarity": "Max. Seltenheit",
         "percentile": "Perzentil",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
@@ -1177,6 +1179,11 @@
         }
     },
     "ship": {
+        "battle_mode": "Kampfmodus",
+        "pvp": "{{global.item_types.arena}}",
+        "fbb": "{{menu.tools.fleet_boss_battles}}",
+        "skirmish": "{{event_type.skirmish}}",
+        "power_depth": "Tiefe des Leistungsniveaus",
         "accuracy": "Genauigkeit",
         "amount": "Menge",
         "antimatter": "Antimaterie",
