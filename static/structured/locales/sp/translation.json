@@ -608,6 +608,8 @@
         }
     },
     "global": {
+        "min_rarity": "Rareza mín.",
+        "max_rarity": "Rareza máx.",
         "percentile": "Percentil",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
@@ -1185,7 +1187,12 @@
             "title": "¡Perfil de jugador compartido!"
         }
     },
-    "ship": {
+    "ship": {        
+        "battle_mode": "Modo de batalla",
+        "pvp": "{{global.item_types.arena}}",
+        "fbb": "{{menu.tools.fleet_boss_battles}}",
+        "skirmish": "{{event_type.skirmish}}",
+        "power_depth": "Profundidad del nivel de potencia",
         "accuracy": "Precisión",
         "amount": "Cantidad",
         "antimatter": "Antimateria",
