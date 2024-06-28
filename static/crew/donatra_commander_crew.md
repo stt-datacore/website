@@ -3,7 +3,7 @@ name: Commander Donatra
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 in_portal: true
 date: 12/09/2018
 published: true

@@ -3,7 +3,7 @@ name: Merry Men Troi
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 in_portal: true
 date: 04/06/2019
 published: true
