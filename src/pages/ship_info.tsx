@@ -317,8 +317,9 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 				<WorkerProvider>
 					<ShipRosterCalc 
+						pageId={'shipInfo'}
 						crew={crew} 
-						ships={[activeShip ?? ship]} 
+						ships={[ship]} 
 						crewStations={crewStations} 
 						setCrewStations={this.setCrewStations} />
 				</WorkerProvider>
