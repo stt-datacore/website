@@ -7,6 +7,7 @@ import { WorkerContext } from "../../context/workercontext";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { PlayerCrew } from "../../model/player";
 import { useStateWithStorage } from "../../utils/storage";
+import { BossShip } from "../../model/boss";
 
 
 
@@ -34,10 +35,11 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [battleMode, setBattleMode] = useStateWithStorage<BattleMode>(`${pageId}/${ship.symbol}/battleMode`, 'pvp', { rememberForever: true });
     const [powerDepth, setPowerDepth] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/powerDepth`, 1, { rememberForever: true });
     const [minRarity, setMinRarity] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/minRarity`, ship.rarity - 1, { rememberForever: true });
+    const [opponent, setOpponent] = React.useState<Ship | undefined>();
 
     React.useEffect(() => {
         if (ships?.length && crew?.length) {
-            
+            if (battleMode.startsWith('fbb') && !opponent) return;
             const config = {
                 ship: JSON.parse(JSON.stringify(ship)),
                 crew,
@@ -45,12 +47,28 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 power_depth: powerDepth,
                 min_rarity: minRarity,
                 max_rarity: ship.rarity,
-                max_results: 50
+                max_results: 50,
+                opponents: opponent ? [opponent] : undefined
             } as ShipWorkerConfig;
     
             runWorker('shipworker', config, afterWorker);
         }
-    }, [powerDepth, battleMode, minRarity]);
+    }, [powerDepth, battleMode, minRarity, opponent]);
+
+    React.useEffect(() => {
+        if (battleMode.startsWith('fbb')) {
+            let rarity = Number.parseInt(battleMode.slice(4));
+            let boss = globalContext.player.ephemeral?.fleetBossBattlesRoot?.statuses.find(gr => gr.desc_id === rarity + 1)?.boss_ship;
+            if (boss) {
+                boss = JSON.parse(JSON.stringify(boss)) as BossShip;
+                boss.rarity = rarity;
+            }        
+            setOpponent(boss);
+        }
+        else {
+            setOpponent(undefined);
+        }
+    }, [battleMode]);
 
     const suggOpts = suggestions?.map((sug, idx) => {
         return {
@@ -70,16 +88,23 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     {t('ship.crit_rating')}{' '}{sug.ship.crit_chance}
                     {', '}
                     {t('global.percentile')}{' '}{sug.attack.toFixed(1)}
+                    {/* {', '}
+                    {t('ship.duration')}{' '}{sug.battle_time.toFixed()} */}
                 </div>
             </div>
         }
     });
 
-    const battleModes = ['pvp', 'fbb', 'skirmish'].map((mode) => {
+    const battleModes = ['pvp', 'skirmish', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'].map((mode) => {
+        let rarity = 0;
+        if (mode.startsWith('fbb')) {
+            let sp = mode.split("_");
+            rarity = Number.parseInt(sp[1]);
+        }
         return {
             key: mode,
             value: mode,
-            text: t(`ship.${mode}`)
+            text: t(`ship.${mode.startsWith('fbb') ? 'fbb' : mode}`) + (mode.startsWith('fbb') ?  ` ${rarity}*` : '')
         }
     });
 
@@ -105,7 +130,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 					flexDirection: 'column',
 					justifyContent: 'left',
 					alignItems: 'center',
-					width: isMobile ? '100%' : '50%'
+					width: isMobile ? '100%' : '70%'
 				}}>
 					{!running && <div style={{display: 'inline', textAlign: 'left', width: '100%'}}>
 						<h3>{t('ship.calculated_crew')}</h3>

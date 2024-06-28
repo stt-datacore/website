@@ -151,7 +151,7 @@ export interface BattleStations {
 	battle_stations: BattleStation[]
 }
 
-export type BattleMode = 'pvp' | 'fbb' | 'skirmish';
+export type BattleMode = 'pvp' | 'skirmish' | 'fbb_0' | 'fbb_1' | 'fbb_2' | 'fbb_3' | 'fbb_4' | 'fbb_5';
 
 export interface ShipWorkerConfig {
     ship: Ship,
@@ -183,6 +183,7 @@ export interface ShipWorkerItem {
     ship: Ship,
     crew: CrewMember[]
     attack: number;
+    battle_time: number;
 }
 
 export interface ShipWorkerResults {
