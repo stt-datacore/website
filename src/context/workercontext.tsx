@@ -50,23 +50,24 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
     private readonly cancel = (clear?: boolean) => {
         const { worker } = this.state;
         worker?.terminate();
-        worker?.removeEventListener('message', this.afterWorker);
+        worker?.removeEventListener('message', this.workerMessage);
         if (clear) {
             this.setState({ ... this.state, workerName: null, data: {}, callback: null, worker: null, context: { ... this.state.context, running: false, runningWorker: null }});
         }
     }
 
-    private readonly afterWorker = (data: any) => {
+    private readonly workerMessage = (data: any) => {        
         if (this.state.callback) {
             this.state.callback(data);
         }
+        if (data.data.inProgress) return;
         this.setState({ ... this.state, workerName: null, data: {}, callback: null, worker: null, context: { ... this.state.context, running: false, runningWorker: null }});
     }
 
     private readonly createWorker = () => {
         this.cancel();
         const worker = new UnifiedWorker();
-        worker.addEventListener('message', this.afterWorker);
+        worker.addEventListener('message', this.workerMessage);
         return worker;
     }
 

@@ -99,7 +99,7 @@ self.onmessage = (message) => {
             });            
             postResult(crew, false);
         },
-        'shipworker': () => ShipCrewWorker.calc(message.data.config).then(data => postResult(data, false)),
+        'shipworker': () => ShipCrewWorker.calc(message.data.config, progress => postResult(progress, true)).then(data => postResult(data, false)),
         'bestshipworker': () => ShipCrewWorker.bestFinder(message.data.config).then(data => postResult(data, false)),
     };
 
