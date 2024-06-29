@@ -198,15 +198,15 @@ export interface Attacks {
     ship: Ship;
 }
 
-export function getOverlaps(ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number) {
-    ship = {...ship};
+export function getOverlaps(input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, time = 300) {
+    let ship: Ship | undefined = {...input_ship};
     defense ??= 0;
     if (crew) {        
         crew.forEach((c) => {
-            ship.accuracy += c.ship_battle.accuracy ?? 0;
-            ship.evasion += c.ship_battle.evasion ?? 0;
-            ship.crit_bonus += c.ship_battle.crit_bonus ?? 0;
-            ship.crit_chance += c.ship_battle.crit_chance ?? 0;
+            ship!.accuracy += c.ship_battle.accuracy ?? 0;
+            ship!.evasion += c.ship_battle.evasion ?? 0;
+            ship!.crit_bonus += c.ship_battle.crit_bonus ?? 0;
+            ship!.crit_chance += c.ship_battle.crit_chance ?? 0;
         });    
     }
     
@@ -215,9 +215,11 @@ export function getOverlaps(ship: Ship, crew: CrewMember[], opponent?: Ship, def
 
     const attacks = [] as Attacks[];
     let allactions = [...ship.actions ?? [], ... crew.map(c => c.action) ];
+    let alen = allactions.length;    
     let uses = allactions.map(a => 0);
     let state_time = allactions.map(a => 0);
     let inited = allactions.map(a => false);
+    let active = allactions.map(a => false);
     let atm = 1;
     const current = [] as ShipAction[];
 
@@ -228,68 +230,66 @@ export function getOverlaps(ship: Ship, crew: CrewMember[], opponent?: Ship, def
         oppoattack = (opponent.attack * opponent.attacks_per_second * hitChance(opponent.accuracy, ship.evasion));
     }
 
-    for (let sec = 0; sec < 300; sec++) {
+    const activate = (action: ShipAction, actidx: number) => {
+        if (!action.ability?.condition || current.some(act => act.status === action.ability?.condition)) {
+            if (action.ability?.type === 1) {
+                atm += (action.ability.amount / 100);
+            }
+            else if (action.ability?.type === 2) {
+                let pctneed = 1 - (hull / orighull);
+                let pctfix = action.ability.amount / 100;
+                if (pctneed >= pctfix) {
+                    hull += (orighull * pctfix);
+                }
+                else {
+                    return;
+                }
+            }
+            else if (action.ability?.type === 10) {
+                let time = action.ability.amount;
+                for (let idx = 0; idx < alen; idx++) {
+                    if (!active[idx] && inited[idx]) {
+                        state_time[idx] += time;
+                    }
+                }       
+            }
+            current.push(action);
+            cloaked = action.status === 2;
+            uses[actidx]++;
+            state_time[actidx] = 1;
+            inited[actidx] = true;
+            active[actidx] = true;
+        }
+    }
+
+    const deactivate = (action: ShipAction, actidx: number) => {
+        let idx = current.findIndex(f => f === action);
+        if (idx != -1) current.splice(idx, 1)
+        state_time[actidx] = 1;
+        active[actidx] = false;
+    }
+
+    for (let sec = 0; sec < time; sec++) {
         atm = 1;
        
         for (let action of allactions) {
             let actidx = allactions.findIndex(f => f === action);
             if (!inited[actidx] && action.initial_cooldown <= sec && !current.includes(action)) {
-                if (!action.ability?.condition || current.some(act => act.status === action.ability?.condition)) {
-                    if (action.ability?.type === 1) {
-                        atm += (action.ability.amount / 100);
-                    }
-                    else if (action.ability?.type === 2) {
-                        let pctneed = 1 - (hull / orighull);
-                        let pctfix = action.ability.amount / 100;
-                        if (pctneed >= pctfix) {
-                            hull += (orighull * pctfix);
-                        }
-                        else {
-                            continue;
-                        }
-                    }
-                    current.push(action);
-                    cloaked = action.status === 2;
-                    uses[actidx]++;
-                    state_time[actidx] = 1;
-                    inited[actidx] = true;
-                }
+                activate(action, actidx);
             }
             else if (inited[actidx] && current.includes(action)) {
                 state_time[actidx]++;
                 if (state_time[actidx] > action.duration) {
-                    let idx = current.findIndex(f => f === action);
-                    if (idx != -1) current.splice(idx, 1)
-                    state_time[actidx] = 1;
+                    deactivate(action, actidx);
                 }
             }
             else if (inited[actidx] && !current.includes(action) && (!action.limit || uses[actidx] < action.limit)) {
                 state_time[actidx]++;
                 if (state_time[actidx] > action.cooldown) {
-                    if (!action.ability?.condition || current.some(act => act.status === action.ability?.condition)) {
-                        if (action.ability?.type === 1) {
-                            atm += (action.ability.amount / 100);
-                        }
-                        else if (action.ability?.type === 2) {
-                            let pctneed = 1 - (hull / orighull);
-                            let pctfix = action.ability.amount / 100;
-                            if (pctneed >= pctfix) {
-                                hull += (orighull * pctfix);
-                            }
-                            else {
-                                continue;
-                            }
-                        }
-                        current.push(action);
-                        cloaked = action.status === 2;
-                        uses[actidx]++;
-                        state_time[actidx] = 1;
-                        inited[actidx] = true;
-                    }
+                    activate(action, actidx);
                 }
             }
         }
-
 
         let sumattack = sumAttack(ship, current, opponent);
         let atk = sumattack * ship.attacks_per_second;
@@ -298,11 +298,14 @@ export function getOverlaps(ship: Ship, crew: CrewMember[], opponent?: Ship, def
         }        
 
         if (!cloaked) {
+            let mul = current.filter(f => f.ability?.type === 11).map(m => m.ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
+            mul = 1 - (mul / 100);        
+            
             if (!oppoattack) {
-                hull -= (atk - (atk * defense));
+                hull -= (atk - (atk * defense)) * mul;
             }
             else {
-                hull -= (oppoattack - (oppoattack * defense));
+                hull -= (oppoattack - (oppoattack * defense)) * mul;
             }
         }
 
@@ -316,6 +319,7 @@ export function getOverlaps(ship: Ship, crew: CrewMember[], opponent?: Ship, def
         if (hull <= 0) break;
     }
 
+    ship = undefined;
     return attacks;
 }
 
@@ -501,81 +505,12 @@ const ShipCrewWorker = {
 
             let count = crew_combos.length;
             let i = 0;
-            for (let combo of crew_combos) {
-
-                attacks.push({
-                    crew: combo.map(cb => cb.id!),
-                    attacks: getOverlaps(ship, combo, opponent, defense)
-                });
-                i++;
-                reportProgress({ format: 'ship.calc.calculating_pct_ellipses', options: { percent: `${((i / count) * 100).toFixed()}` } });
-            }
-
-            reportProgress({ format: 'sorting_finalizing_ellipses' });
-
-            if (!battle_mode.startsWith('fbb')) {
-                attacks.forEach((attack) => {
-                    attack.attacks.splice(9)
-                });
-
-                attacks.sort((a, b) => {
-                    let r = 0;
-                    let aa: number;
-                    let ba: number;
-                    aa = a.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0) / a.attacks.length;
-                    ba = b.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0) / b.attacks.length;
-                    r = ba - aa;
-                    if (r) return r;
-                    aa = a.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0);
-                    ba = b.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0);
-                    r = ba - aa;
-                    if (r) return r;
-                    aa = a.attacks.length;
-                    ba = b.attacks.length;
-                    r = ba - aa;
-                    if (r) return r;
-                    aa = a.attacks.reduce((p, n) => p + n.actions.length, 0);
-                    ba = b.attacks.reduce((p, n) => p + n.actions.length, 0);                
-                    r = ba - aa;
-                    if (r) return r;
-                    return r;
-                });
-            }      
-            else {
-                attacks.sort((a, b) => {
-                    let r = 0;
-                    let aa: number;
-                    let ba: number;
-                    aa = a.attacks.reduce((p, n) => p + n.attack, 0);
-                    ba = b.attacks.reduce((p, n) => p + n.attack, 0);
-                    r = ba - aa;
-                    if (r) return r;
-                    aa = a.attacks.length;
-                    ba = b.attacks.length;
-                    r = ba - aa;
-                    if (r) return r;
-                    aa = a.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0);
-                    ba = b.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0);
-                    r = ba - aa;
-                    if (r) return r;
-                    aa = a.attacks.reduce((p, n) => p + n.actions.length, 0);
-                    ba = b.attacks.reduce((p, n) => p + n.actions.length, 0);                
-                    r = ba - aa;
-                    if (r) return r;
-                    return r;
-                });
-    
-            }
-
-            let attack_crew = attacks.slice(0, max_results).map(a => a.crew.map(c => workCrew.find(f => f.id === c)!));
+            let progress = -1;
             let results = [] as ShipWorkerItem[];
-            
-            let attack_numbers = attack_crew.map(c => 0);
 
-            attack_crew.forEach((crew_set, idx) => {
-                attack_numbers[idx] = attacks[idx].attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0) / attacks[idx].attacks.length;
+            const processAttack = (attacks: Attacks[], crew_set: CrewMember[]) => {
                 let result_crew = [] as CrewMember[];
-                let ship = attacks[idx].attacks[0].ship;
+                
                 ship.battle_stations?.forEach((bs) => {
                     for (let c of crew_set) {
                         if (!result_crew.includes(c)) {
@@ -588,17 +523,87 @@ const ShipCrewWorker = {
                 });
                 
                 results.push({
-                    ship,
+                    activations: attacks.reduce((p, n) => p + n.actions.length, 0),
+                    attack: attacks.reduce((p, n) => p + n.attack, 0),
+                    battle_time: attacks.length,
                     crew: result_crew,
-                    attack: attack_numbers[idx],
-                    battle_time: attacks[idx].attacks.length
+                    percentile: 0,
+                    ship,
+                    weighted_attack: attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0),
                 });
-            });
+            }
 
-            let max = attack_numbers[0];
+            const time = battle_mode.startsWith('fbb') ? 300 : 10;
+
+            for (let combo of crew_combos) {
+                if (!(i % 10)) {
+                    let p = Math.round((i / count) * 100);
+
+                    if (p !== progress) {
+                        progress = p;
+                        reportProgress({ format: 'ship.calc.calculating_pct_ellipses', options: { percent: `${p}` } });
+                    }
+                }
+                
+                let overlaps = getOverlaps(ship, combo, opponent, defense, time);
+                processAttack(overlaps, combo);
+                overlaps.length = 0;
+                i++;
+            }
+
+            reportProgress({ format: 'ship.calc.sorting_finalizing_ellipses' });
+
+            if (!battle_mode.startsWith('fbb')) {
+                results.sort((a, b) => {
+                    let r = 0;
+                    let aa: number;
+                    let ba: number;
+                    aa = a.weighted_attack;
+                    ba = b.weighted_attack;
+                    r = ba - aa;
+                    if (r) return r;
+                    aa = a.attack;
+                    ba = b.attack;
+                    r = ba - aa;
+                    if (r) return r;
+                    aa = a.activations;
+                    ba = b.activations;
+                    r = ba - aa;
+                    if (r) return r;
+                    return r;
+                });
+            }      
+            else {
+                results.sort((a, b) => {
+                    let r = 0;
+                    let aa: number;
+                    let ba: number;
+                    aa = a.attack;
+                    ba = b.attack;
+                    r = ba - aa;
+                    if (r) return r;
+                    aa = a.battle_time;
+                    ba = b.battle_time;
+                    r = ba - aa;
+                    if (r) return r;
+                    aa = a.weighted_attack;
+                    ba = b.weighted_attack;
+                    r = ba - aa;
+                    if (r) return r;
+                    aa = a.activations;
+                    ba = b.activations;
+                    r = ba - aa;
+                    if (r) return r;
+                    return r;
+                });
+    
+            }
+
+            results = results.slice(0, 100);
+            let max = results[0].attack;
 
             results.forEach((result) => {
-                result.attack = (result.attack / max) * 100;
+                result.percentile = (result.attack / max) * 100;
             })
             
             resolve({

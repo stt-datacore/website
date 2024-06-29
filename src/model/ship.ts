@@ -179,6 +179,9 @@ export interface ShipWorkerItem {
     crew: CrewMember[]
     attack: number;
     battle_time: number;
+    weighted_attack: number;
+    activations: number;
+    percentile: number;
 }
 
 export interface ShipWorkerResults {

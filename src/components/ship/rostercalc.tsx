@@ -81,13 +81,15 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     </div>)}
                 </div>
                 <div>
-                    {t('ship.crit_bonus')}{' '}{sug.ship.crit_bonus}
+                    {t('ship.crit_bonus')}{': '}{sug.ship.crit_bonus}
                     {', '}
-                    {t('ship.crit_rating')}{' '}{sug.ship.crit_chance}
+                    {t('ship.crit_rating')}{': '}{sug.ship.crit_chance}
                     {', '}
-                    {t('global.percentile')}{' '}{sug.attack.toFixed(1)}
-                    {/* {', '}
-                    {t('ship.duration')}{' '}{sug.battle_time.toFixed()} */}
+                    {t('global.percentile')}{': '}{sug.percentile.toFixed(1)}
+                    {', '}
+                    {t('ship.attack')}{': '}{sug.attack.toLocaleString()}
+                    {', '}
+                    {t('ship.duration')}{': '}{sug.battle_time.toFixed()}
                 </div>
             </div>
         }
