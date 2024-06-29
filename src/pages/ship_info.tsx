@@ -121,7 +121,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 		const query = (input: string) => input.toLowerCase().replace(/[^a-z0-9]/g, '').indexOf(myFilter.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
 		let data = crew.filter(crew =>
 			true
-				&& (!crewStations.some((c) => c?.symbol === crew.symbol))
+				&& (!crewStations.some((c) => c?.id === crew.id))
 				&& (searchFilter === '' || (query(crew.name) || query(crew.short_name)))
 				&& (!this.state.modalOptions.rarities?.length || this.state.modalOptions.rarities.some((r) => crew.max_rarity === r))
 				&& (!this.state.modalOptions.abilities?.length || this.state.modalOptions.abilities.some((a) => crew.action.ability?.type.toString() === a))

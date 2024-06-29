@@ -1,7 +1,7 @@
 import React from "react";
 import { CrewMember } from "../../model/crew";
 import { BattleMode, Ship, ShipWorkerConfig, ShipWorkerItem } from "../../model/ship"
-import { Button, Dropdown, DropdownItemProps } from "semantic-ui-react";
+import { Button, Dropdown, DropdownItemProps, SearchResults } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { WorkerContext } from "../../context/workercontext";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
@@ -24,7 +24,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;		
     const globalContext = React.useContext(GlobalContext);
     const workerContext = React.useContext(WorkerContext);
-    const { running, runWorker } = workerContext;
+    const { running, runWorker, cancel } = workerContext;
     const { t } = globalContext.localized;
 
     const { ships, crew, crewStations, setCrewStations, pageId } = props;
@@ -37,6 +37,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [minRarity, setMinRarity] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/minRarity`, ship.rarity - 1, { rememberForever: true });
     const [opponent, setOpponent] = React.useState<Ship | undefined>();
     const [defense, setDefense] = React.useState<number | undefined>();
+    const [progressMsg, setProgressMsg] = React.useState<string>('');
 
     // React.useEffect(() => {
     //     recommend()
@@ -143,7 +144,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             />
 					</div>}
 					{running && <div style={{display: 'flex', textAlign: 'center', height: '5.5em', width: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-                        {globalContext.core.spin(t('spinners.default'))}
+                        {globalContext.core.spin(progressMsg || t('spinners.default'))}
                     </div>}
                     <div style={{display: 'inline', textAlign: 'left', marginTop: '0.5em', width: '100%'}}>
                         <div style={{
@@ -190,12 +191,16 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         </div>
                     </div>
                     <div style={{marginTop: "1em"}}>
-                        <Button color='green' onClick={() => recommend()}>{t('global.recommend_crew')}</Button>
+                        <Button color='green' onClick={() => recommend()}>{running ? t('global.cancel') : t('global.recommend_crew')}</Button>
                     </div>
 				</div>
     </React.Fragment>
 
     function recommend() {
+        if (running) {
+            cancel();
+            return;
+        }
         if (ships?.length && crew?.length) {
             if (battleMode.startsWith('fbb') && !opponent) return;
             const config = {
@@ -209,8 +214,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 opponents: opponent ? [opponent] : undefined,
                 defense
             } as ShipWorkerConfig;
-    
-            runWorker('shipworker', config, afterWorker);
+
+            setProgressMsg('');
+            runWorker('shipworker', config, workerMessage);
         }
     }
 
@@ -227,11 +233,15 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         return suggestions.find(f => f.crew.every(c => crewStations.some(s => s?.id === c.id)))?.crew?.map(m => m.id)?.join(",");
     }
 
-    function afterWorker(result: { data: { result: { ships: ShipWorkerItem[] } }}) {
-        const resultCrew = result.data.result.ships[0].crew as PlayerCrew[];
-        setSuggestions(result.data.result.ships);
-        setTimeout(() => {
-            setCrewStations(result.data.result.ships[0].crew as PlayerCrew[])
-        });        
+    function workerMessage(result: { data: { result: { ships?: ShipWorkerItem[], format?: string, options?: any }, inProgress: boolean }}) {
+        if (!result.data.inProgress && result.data.result.ships) {
+            setSuggestions(result.data.result.ships);
+            setTimeout(() => {
+                setCrewStations(result.data.result.ships![0].crew as PlayerCrew[])
+            });        
+        }
+        else if (result.data.inProgress && result.data.result.format) {
+            setProgressMsg(t(result.data.result.format, result.data.result.options));
+        }
     }
 }

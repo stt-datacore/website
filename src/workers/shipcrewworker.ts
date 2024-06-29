@@ -362,7 +362,7 @@ function canSeatAll(ship: Ship, crew: CrewMember[]): CrewMember[] | false {
 }
 
 const ShipCrewWorker = {
-    calc: (options: ShipWorkerConfig) => {
+    calc: (options: ShipWorkerConfig, reportProgress: (data: { format: string, options?: any }) => boolean = () => true) => {
         return new Promise<ShipWorkerResults>((resolve, reject) => {
             const { ship, battle_mode, opponents, action_types, ability_types, defense } = options;
             const opponent = opponents?.length ? opponents[0] : undefined;            
@@ -495,16 +495,23 @@ const ShipCrewWorker = {
             // let test_run = getOverlaps(ship, find_crew, opponent, defense);
 
             //const crew_combos = makeAllCombos(workCrew.map(c => c.id), 60000, undefined, undefined, seats)?.filter(f => f.length === seats) as any as number[][];
+            reportProgress({ format: 'ship.calc.generating_permutations_ellipses' });
             const crew_combos = getPermutations(workCrew, seats, (set) => canSeatAll(ship, set), 250000);
             let attacks = [] as { crew: number[], attacks: Attacks[] }[];
 
-
+            let count = crew_combos.length;
+            let i = 0;
             for (let combo of crew_combos) {
+
                 attacks.push({
                     crew: combo.map(cb => cb.id!),
                     attacks: getOverlaps(ship, combo, opponent, defense)
                 });
+                i++;
+                reportProgress({ format: 'ship.calc.calculating_pct_ellipses', options: { percent: `${((i / count) * 100).toFixed()}` } });
             }
+
+            reportProgress({ format: 'sorting_finalizing_ellipses' });
 
             if (!battle_mode.startsWith('fbb')) {
                 attacks.forEach((attack) => {
@@ -559,7 +566,6 @@ const ShipCrewWorker = {
                 });
     
             }
-
 
             let attack_crew = attacks.slice(0, max_results).map(a => a.crew.map(c => workCrew.find(f => f.id === c)!));
             let results = [] as ShipWorkerItem[];

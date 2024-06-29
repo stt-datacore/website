@@ -1189,6 +1189,11 @@
         }
     },
     "ship": {
+        "calc": {
+            "generating_permutations_ellipses": "Génération de permutations...",
+            "calculating_pct_ellipses": "Calcul ({{percent}} % terminé)...",
+            "sorting_finalizing_ellipses": "Tri et finalisation des résultats..."
+        },
         "battle_mode": "Mode de combat",
         "pvp": "{{global.item_types.arena}}",
         "fbb": "{{menu.tools.fleet_boss_battles}}",
