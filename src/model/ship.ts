@@ -153,23 +153,9 @@ export interface BattleStations {
 
 export type BattleMode = 'pvp' | 'skirmish' | 'fbb_0' | 'fbb_1' | 'fbb_2' | 'fbb_3' | 'fbb_4' | 'fbb_5';
 
-export interface ShipWorkerConfig {
-    ship: Ship,
-    crew: CrewMember[],
-    battle_mode: BattleMode,
-    power_depth?: number,
-    max_rarity?: number,
-    min_rarity?: number,
-    opponents?: Ship[],
-    action_types?: number[],
-    ability_types?: number[],
-    max_results?: number
-}
-
-export interface MultiShipWorkerConfig {
-  ships: Ship[],
+export interface ShipWorkerConfigBase {
   crew: CrewMember[],
-  battle_mode: BattleMode, 
+  battle_mode: BattleMode,
   power_depth?: number,
   max_rarity?: number,
   min_rarity?: number,
@@ -177,6 +163,15 @@ export interface MultiShipWorkerConfig {
   action_types?: number[],
   ability_types?: number[],
   max_results?: number
+  defense?: number;
+}
+
+export interface ShipWorkerConfig extends ShipWorkerConfigBase {
+    ship: Ship,
+}
+
+export interface MultiShipWorkerConfig extends ShipWorkerConfigBase {
+  ships: Ship[],
 }
 
 export interface ShipWorkerItem {
