@@ -486,13 +486,13 @@ const ShipCrewWorker = {
                 return;
             }
 
-            let test_combo = ['tpring_spock_crew', 'torres_caretaker_crew', 'kirk_chances_crew', 'goodgey_crew'];
-            let find_crew = workCrew.filter(c => test_combo.includes(c.symbol) && c.max_rarity === (c as PlayerCrew).rarity);
-            find_crew.sort((a, b) => {
-                return test_combo.findIndex(f => f === a.symbol) - test_combo.findIndex(f => f === b.symbol)
-            });
+            // let test_combo = ['tpring_spock_crew', 'torres_caretaker_crew', 'kirk_chances_crew', 'goodgey_crew'];
+            // let find_crew = workCrew.filter(c => test_combo.includes(c.symbol) && c.max_rarity === (c as PlayerCrew).rarity);
+            // find_crew.sort((a, b) => {
+            //     return test_combo.findIndex(f => f === a.symbol) - test_combo.findIndex(f => f === b.symbol)
+            // });
 
-            let test_run = getOverlaps(ship, find_crew, opponent, defense);
+            // let test_run = getOverlaps(ship, find_crew, opponent, defense);
 
             //const crew_combos = makeAllCombos(workCrew.map(c => c.id), 60000, undefined, undefined, seats)?.filter(f => f.length === seats) as any as number[][];
             const crew_combos = getPermutations(workCrew, seats, (set) => canSeatAll(ship, set), 250000);
