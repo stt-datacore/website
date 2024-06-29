@@ -1,7 +1,7 @@
 import React from "react";
 import { CrewMember } from "../../model/crew";
 import { BattleMode, Ship, ShipWorkerConfig, ShipWorkerItem } from "../../model/ship"
-import { Dropdown, DropdownItemProps } from "semantic-ui-react";
+import { Button, Dropdown, DropdownItemProps } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { WorkerContext } from "../../context/workercontext";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
@@ -36,33 +36,30 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [powerDepth, setPowerDepth] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/powerDepth`, 1, { rememberForever: true });
     const [minRarity, setMinRarity] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/minRarity`, ship.rarity - 1, { rememberForever: true });
     const [opponent, setOpponent] = React.useState<Ship | undefined>();
+    const [defense, setDefense] = React.useState<number | undefined>();
+
+    // React.useEffect(() => {
+    //     recommend()
+    // }, [powerDepth, battleMode, minRarity, opponent]);
 
     React.useEffect(() => {
-        if (ships?.length && crew?.length) {
-            if (battleMode.startsWith('fbb') && !opponent) return;
-            const config = {
-                ship: JSON.parse(JSON.stringify(ship)),
-                crew,
-                battle_mode: battleMode,
-                power_depth: powerDepth,
-                min_rarity: minRarity,
-                max_rarity: ship.rarity,
-                max_results: 50,
-                opponents: opponent ? [opponent] : undefined
-            } as ShipWorkerConfig;
-    
-            runWorker('shipworker', config, afterWorker);
+        if (globalContext.player.playerData) {
+            let bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_boss_ship_attack');
+            if (bs?.value) {
+                setDefense(bs.value);
+            }
+            else {
+                setDefense(undefined);
+            }
         }
-    }, [powerDepth, battleMode, minRarity, opponent]);
 
-    React.useEffect(() => {
         if (battleMode.startsWith('fbb')) {
             let rarity = Number.parseInt(battleMode.slice(4));
             let boss = globalContext.player.ephemeral?.fleetBossBattlesRoot?.statuses.find(gr => gr.desc_id === rarity + 1)?.boss_ship;
             if (boss) {
                 boss = JSON.parse(JSON.stringify(boss)) as BossShip;
                 boss.rarity = rarity;
-            }        
+            }
             setOpponent(boss);
         }
         else {
@@ -145,7 +142,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             options={suggOpts}
                             />
 					</div>}
-					{running && globalContext.core.spin(t('spinners.default'))}
+					{running && <div style={{display: 'flex', textAlign: 'center', height: '5.5em', width: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                        {globalContext.core.spin(t('spinners.default'))}
+                    </div>}
                     <div style={{display: 'inline', textAlign: 'left', marginTop: '0.5em', width: '100%'}}>
                         <div style={{
                                 display: 'flex',
@@ -190,8 +189,30 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             </div>
                         </div>
                     </div>
+                    <div style={{marginTop: "1em"}}>
+                        <Button color='green' onClick={() => recommend()}>{t('global.recommend_crew')}</Button>
+                    </div>
 				</div>
     </React.Fragment>
+
+    function recommend() {
+        if (ships?.length && crew?.length) {
+            if (battleMode.startsWith('fbb') && !opponent) return;
+            const config = {
+                ship: JSON.parse(JSON.stringify(ship)),
+                crew,
+                battle_mode: battleMode,
+                power_depth: powerDepth,
+                min_rarity: minRarity,
+                max_rarity: ship.rarity,
+                max_results: 50,
+                opponents: opponent ? [opponent] : undefined,
+                defense
+            } as ShipWorkerConfig;
+    
+            runWorker('shipworker', config, afterWorker);
+        }
+    }
 
     function setSuggestion(sug: string) {
         if (!suggestions?.length || !ships[shipIdx]) return;

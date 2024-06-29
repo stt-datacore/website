@@ -1,4 +1,5 @@
 import { CrewMember } from "../model/crew";
+import { PlayerCrew } from "../model/player";
 import { MultiShipWorkerConfig, Ship, ShipAction, ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults } from "../model/ship"
 import { crewCopy, oneCrewCopy } from "../utils/crewutils";
 import { makeAllCombos } from "../utils/misc";
@@ -57,6 +58,7 @@ export const CritTable = {
 const CritTiers = Object.keys(CritTable).map(m => Number.parseInt(m));
 
 function getCritChance(n: number) {
+    if (n >= 10000) return CritTable[10000];
     if (n in CritTable) return CritTable[n];
     let c = CritTiers.length;
     for (let i = 0; i < c - 1; i++) {
@@ -121,7 +123,7 @@ export function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship) {
     let base_acc = ship.accuracy;
     let base_eva = ship.evasion;
     let bonus = ship.crit_bonus / (100 * 100);
-    let chance = getCritChance(ship.crit_chance) / 100;
+    let crit = ship.crit_chance;
     let sum_attack = base_attack;
     let highest_dmg = 0;
     let highest_acc = 0;
@@ -129,13 +131,18 @@ export function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship) {
 
     actions.forEach((action) => {
         if (action.ability?.type === 4) {
-            chance += (getCritChance(action.ability.amount) / 100);
+            crit += action.ability.amount;
         }
         else if (action.ability?.type === 5) {
             bonus += (action.ability.amount / (100 * 100));
-        }
+        }        
         if (action.bonus_type === 0) {
-            if (highest_dmg < action.bonus_amount) {
+            if (action.ability?.type === 0) {
+                if (highest_dmg < action.bonus_amount + action.ability.amount) {
+                    highest_dmg = action.bonus_amount + action.ability.amount;
+                }
+            }
+            else if (highest_dmg < action.bonus_amount) {
                 highest_dmg = action.bonus_amount;
             }
         }
@@ -145,6 +152,16 @@ export function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship) {
             }
         }
     });
+    
+    if (actions.some(a => a.status === 1)) {
+        crit += 1000;
+    }
+    
+    if (actions.some(a => a.status === 3)) {
+        sum_attack += (ship.attack / 2);
+    }
+
+    let chance = getCritChance(crit) / 100;
 
     if (highest_dmg) {
         sum_attack += PowerTable[highest_dmg];
@@ -153,14 +170,16 @@ export function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship) {
         sum_acc += PowerTable[highest_acc];
     }
 
+    sum_attack += ((sum_attack * bonus) * chance);
+
     if (opponent) {
         sum_attack *= hitChance(sum_acc, opponent.evasion);
+
     }
     else {
         sum_attack *= hitChance(sum_acc, base_eva);
     }
 
-    sum_attack += ((sum_attack * bonus) * chance);
     return sum_attack;
 }
 
@@ -179,8 +198,9 @@ export interface Attacks {
     ship: Ship;
 }
 
-export function getOverlaps(ship: Ship, crew: CrewMember[], opponent?: Ship) {
+export function getOverlaps(ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number) {
     ship = {...ship};
+    defense ??= 0;
     if (crew) {        
         crew.forEach((c) => {
             ship.accuracy += c.ship_battle.accuracy ?? 0;
@@ -201,11 +221,16 @@ export function getOverlaps(ship: Ship, crew: CrewMember[], opponent?: Ship) {
     let atm = 1;
     const current = [] as ShipAction[];
 
+    let cloaked = false;
+    let oppoattack = 0;
+
+    if (opponent) {
+        oppoattack = (opponent.attack * opponent.attacks_per_second * hitChance(opponent.accuracy, ship.evasion));
+    }
 
     for (let sec = 0; sec < 300; sec++) {
-        let highhr = allactions.filter((f, idx) => f.ability?.type === 2 && (!f.limit || uses[idx] < f.limit)).map(m => m.ability?.amount ?? 0).reduce((p, n) => p > n ? p : n, 0);
         atm = 1;
-        
+       
         for (let action of allactions) {
             let actidx = allactions.findIndex(f => f === action);
             if (!inited[actidx] && action.initial_cooldown <= sec && !current.includes(action)) {
@@ -214,11 +239,17 @@ export function getOverlaps(ship: Ship, crew: CrewMember[], opponent?: Ship) {
                         atm += (action.ability.amount / 100);
                     }
                     else if (action.ability?.type === 2) {
-                        if (current.some(c => c.ability?.type === 2)) continue;
-                        if ((hull / orighull) > (action.ability.amount / 100)) continue;
-                        hull += (orighull * (action.ability.amount / 100));
+                        let pctneed = 1 - (hull / orighull);
+                        let pctfix = action.ability.amount / 100;
+                        if (pctneed >= pctfix) {
+                            hull += (orighull * pctfix);
+                        }
+                        else {
+                            continue;
+                        }
                     }
                     current.push(action);
+                    cloaked = action.status === 2;
                     uses[actidx]++;
                     state_time[actidx] = 1;
                     inited[actidx] = true;
@@ -236,35 +267,44 @@ export function getOverlaps(ship: Ship, crew: CrewMember[], opponent?: Ship) {
                 state_time[actidx]++;
                 if (state_time[actidx] > action.cooldown) {
                     if (!action.ability?.condition || current.some(act => act.status === action.ability?.condition)) {
-                        current.push(action);
-                        uses[actidx]++;
-                        state_time[actidx] = 1;
-                        inited[actidx] = true;
                         if (action.ability?.type === 1) {
                             atm += (action.ability.amount / 100);
                         }
                         else if (action.ability?.type === 2) {
-                            hull += (orighull * (action.ability.amount / 100));
+                            let pctneed = 1 - (hull / orighull);
+                            let pctfix = action.ability.amount / 100;
+                            if (pctneed >= pctfix) {
+                                hull += (orighull * pctfix);
+                            }
+                            else {
+                                continue;
+                            }
                         }
+                        current.push(action);
+                        cloaked = action.status === 2;
+                        uses[actidx]++;
+                        state_time[actidx] = 1;
+                        inited[actidx] = true;
                     }
                 }
             }
         }
 
+
         let sumattack = sumAttack(ship, current, opponent);
         let atk = sumattack * ship.attacks_per_second;
         if (atm > 1) {
-            atk += sumattack * (atm - 1);
-        }
-
-        if (opponent) {
-            hull -= (opponent.attack * opponent.attacks_per_second * hitChance(opponent.accuracy, ship.evasion));
-        }
-        else {
-            hull -= atk;
+            atk += sumattack * atm;
         }        
 
-        if (hull <= 0) break;
+        if (!cloaked) {
+            if (!oppoattack) {
+                hull -= (atk - (atk * defense));
+            }
+            else {
+                hull -= (oppoattack - (oppoattack * defense));
+            }
+        }
 
         attacks.push({
             actions: [...current],
@@ -272,6 +312,8 @@ export function getOverlaps(ship: Ship, crew: CrewMember[], opponent?: Ship) {
             attack: atk,
             ship
         });
+
+        if (hull <= 0) break;
     }
 
     return attacks;
@@ -322,8 +364,8 @@ function canSeatAll(ship: Ship, crew: CrewMember[]): CrewMember[] | false {
 const ShipCrewWorker = {
     calc: (options: ShipWorkerConfig) => {
         return new Promise<ShipWorkerResults>((resolve, reject) => {
-            const { ship, battle_mode, opponents, action_types, ability_types } = options;
-            const opponent = opponents?.length ? opponents[0] : undefined;
+            const { ship, battle_mode, opponents, action_types, ability_types, defense } = options;
+            const opponent = opponents?.length ? opponents[0] : undefined;            
             let max_results = options.max_results ?? 10;
             let max_rarity = options.max_rarity ?? 5;
             let min_rarity = options.min_rarity ?? 1;
@@ -356,32 +398,44 @@ const ShipCrewWorker = {
             })
             .sort((a, b) => {
                 let r = 0;
-                if (a.action.ability && !b.action.ability) return -1;
-                if (!a.action.ability && b.action.ability) return 1;
+
+                // check for bonus abilities, first
                 if (a.action.ability && b.action.ability) {
                     if (battle_mode.startsWith('fbb')) {
-                        if ([1, 2].includes(a.action.ability.type) && ![1, 2].includes(b.action.ability.type)) return -1;
-                        if ([1, 2].includes(b.action.ability.type) && ![1, 2].includes(a.action.ability.type)) return 1;
-                        if ([4, 5].includes(a.action.ability.type) && ![4, 5].includes(b.action.ability.type)) return -1;
-                        if ([4, 5].includes(b.action.ability.type) && ![4, 5].includes(a.action.ability.type)) return 1;    
+                        if ([1, 2, 5].includes(a.action.ability.type) && ![1, 2, 5].includes(b.action.ability.type)) return -1;
+                        if ([1, 2, 5].includes(b.action.ability.type) && ![1, 2, 5].includes(a.action.ability.type)) return 1;
                     }
-                    r = a.action.ability.type - b.action.ability.type;
-                    if (r) return r;
-                    r = a.action.ability.amount - b.action.ability.amount;
-                    if (r) return r;
-                    r = a.action.ability.condition - b.action.ability.condition;
+                    else {
+                        if ([1, 5].includes(a.action.ability.type) && ![1, 5].includes(b.action.ability.type)) return -1;
+                        if ([1, 5].includes(b.action.ability.type) && ![1, 5].includes(a.action.ability.type)) return 1;
+                    }
+                    if (a.action.ability.type === b.action.ability.type) {
+                        r = a.action.ability.amount - b.action.ability.amount;
+                        if (r) return r;
+                        r = a.action.ability.condition - b.action.ability.condition;
+                        if (r) return r;
+                    }
+                    else {
+                        r = a.action.ability.type - b.action.ability.type;
+                        if (r) return r;
+                    }
+                }
+                else {
+                    if (a.action.ability && !b.action.ability) return -1;
+                    if (!a.action.ability && b.action.ability) return 1;
+                }
+
+                // check the bonus amount/type
+                if (a.action.bonus_type === b.action.bonus_type) {
+                    r = b.action.bonus_amount - a.action.bonus_amount;
                     if (r) return r;
                 }
-                if (a.ship_battle.crit_bonus && b.ship_battle.crit_bonus) {
-                    r = b.ship_battle.crit_bonus - a.ship_battle.crit_bonus;
+                else {
+                    r = a.action.bonus_type - b.action.bonus_type;
+                    if (r) return r;
                 }
-                if (a.ship_battle.crit_chance && b.ship_battle.crit_chance) {
-                    r = b.ship_battle.crit_chance - a.ship_battle.crit_chance;
-                }
-                r = b.action.bonus_amount - a.action.bonus_amount;
-                if (r) return r;
-                r = a.action.bonus_type - b.action.bonus_type;
-                if (r) return r;
+
+                // check durations
                 r = a.action.initial_cooldown - b.action.initial_cooldown;
                 if (r) return r;
                 r = a.action.duration - b.action.duration;
@@ -394,10 +448,26 @@ const ShipCrewWorker = {
                     r = b.action.limit - a.action.limit;
                     if (r) return r;
                 }
-                if (!r) {
-                    // console.log(`completely identical stats! ${a.name}, ${b.name}`)
+
+                // check passives
+                if (a.ship_battle.crit_bonus && b.ship_battle.crit_bonus) {
+                    r = b.ship_battle.crit_bonus - a.ship_battle.crit_bonus;
+                }
+                if (a.ship_battle.crit_chance && b.ship_battle.crit_chance) {
+                    r = b.ship_battle.crit_chance - a.ship_battle.crit_chance;
+                }
+                if (a.ship_battle.accuracy && b.ship_battle.accuracy) {
+                    r = b.ship_battle.accuracy - a.ship_battle.accuracy;
+                }
+                if (a.ship_battle.evasion && b.ship_battle.evasion) {
+                    r = b.ship_battle.evasion - a.ship_battle.evasion;
+                }
+
+                // check other stats
+                if (!r) {                    
                     r = Object.values(a.ranks).filter(t => typeof t === 'number').reduce((p, n) => p + n, 0) - Object.values(b.ranks).filter(t => typeof t === 'number').reduce((p, n) => p + n, 0)
                     if (!r) {
+                        // !!
                         console.log(`completely identical stats! ${a.name}, ${b.name}`);
                     }
                 }
@@ -415,15 +485,24 @@ const ShipCrewWorker = {
                 reject("No battlestations");
                 return;
             }
-            
+
+            let test_combo = ['tpring_spock_crew', 'torres_caretaker_crew', 'kirk_chances_crew', 'goodgey_crew'];
+            let find_crew = workCrew.filter(c => test_combo.includes(c.symbol) && c.max_rarity === (c as PlayerCrew).rarity);
+            find_crew.sort((a, b) => {
+                return test_combo.findIndex(f => f === a.symbol) - test_combo.findIndex(f => f === b.symbol)
+            });
+
+            let test_run = getOverlaps(ship, find_crew, opponent, defense);
+
             //const crew_combos = makeAllCombos(workCrew.map(c => c.id), 60000, undefined, undefined, seats)?.filter(f => f.length === seats) as any as number[][];
             const crew_combos = getPermutations(workCrew, seats, (set) => canSeatAll(ship, set), 250000);
             let attacks = [] as { crew: number[], attacks: Attacks[] }[];
 
+
             for (let combo of crew_combos) {
                 attacks.push({
                     crew: combo.map(cb => cb.id!),
-                    attacks: getOverlaps(ship, combo, opponent)
+                    attacks: getOverlaps(ship, combo, opponent, defense)
                 });
             }
 
@@ -431,36 +510,56 @@ const ShipCrewWorker = {
                 attacks.forEach((attack) => {
                     attack.attacks.splice(9)
                 });
-            }      
 
-            attacks.sort((a, b) => {
-                let r = 0;
-                let aa: number;
-                let ba: number;
-                if (battle_mode.startsWith('fbb')) {
+                attacks.sort((a, b) => {
+                    let r = 0;
+                    let aa: number;
+                    let ba: number;
+                    aa = a.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0) / a.attacks.length;
+                    ba = b.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0) / b.attacks.length;
+                    r = ba - aa;
+                    if (r) return r;
+                    aa = a.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0);
+                    ba = b.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0);
+                    r = ba - aa;
+                    if (r) return r;
                     aa = a.attacks.length;
                     ba = b.attacks.length;
                     r = ba - aa;
                     if (r) return r;
-                }
-                aa = a.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0) / a.attacks.length;
-                ba = b.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0) / b.attacks.length;
-                r = ba - aa;
-                if (r) return r;
-                aa = a.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0);
-                ba = b.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0);
-                r = ba - aa;
-                if (r) return r;
-                aa = a.attacks.length;
-                ba = b.attacks.length;
-                r = ba - aa;
-                if (r) return r;
-                aa = a.attacks.reduce((p, n) => p + n.actions.length, 0);
-                ba = b.attacks.reduce((p, n) => p + n.actions.length, 0);                
-                r = ba - aa;
-                if (r) return r;
-                return r;
-            });
+                    aa = a.attacks.reduce((p, n) => p + n.actions.length, 0);
+                    ba = b.attacks.reduce((p, n) => p + n.actions.length, 0);                
+                    r = ba - aa;
+                    if (r) return r;
+                    return r;
+                });
+            }      
+            else {
+                attacks.sort((a, b) => {
+                    let r = 0;
+                    let aa: number;
+                    let ba: number;
+                    aa = a.attacks.reduce((p, n) => p + n.attack, 0);
+                    ba = b.attacks.reduce((p, n) => p + n.attack, 0);
+                    r = ba - aa;
+                    if (r) return r;
+                    aa = a.attacks.length;
+                    ba = b.attacks.length;
+                    r = ba - aa;
+                    if (r) return r;
+                    aa = a.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0);
+                    ba = b.attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0);
+                    r = ba - aa;
+                    if (r) return r;
+                    aa = a.attacks.reduce((p, n) => p + n.actions.length, 0);
+                    ba = b.attacks.reduce((p, n) => p + n.actions.length, 0);                
+                    r = ba - aa;
+                    if (r) return r;
+                    return r;
+                });
+    
+            }
+
 
             let attack_crew = attacks.slice(0, max_results).map(a => a.crew.map(c => workCrew.find(f => f.id === c)!));
             let results = [] as ShipWorkerItem[];
