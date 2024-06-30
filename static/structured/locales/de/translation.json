@@ -276,8 +276,11 @@
         "n_d": "{{days}} T",
         "n_days": "{{days}} Tage",
         "n_h": "{{hours}} Std",
+        "n_hour_class": "{{hours}}-Stunden",
         "n_hours": "{{hours}} Stunden",
         "n_m": "{{minutes}} M",
+        "n_minute_class": "{{minutes}}-minute",
+        "n_minutes": "{{minutes}} minuten",
         "title": "Dauer: {{duration}}"
     },
     "event_planner": {
@@ -490,16 +493,12 @@
             "crit_multiplier": "{{p}} % Krit-Multiplikator",
             "incidence": "{{name}} lineares Kompetenzvorkommensgewicht",
             "index": "{{name}} lineares Fähigkeitsindexgewicht",
-            "min_multiplier": "Multiplikator für Mindestkompetenzen",
             "max_multiplier": "Multiplikator für maximale Kompetenz",
+            "min_multiplier": "Multiplikator für Mindestkompetenzen",
             "primary": "{{quipment_ranks.primary}}",
             "secondary": "{{quipment_ranks.secondary}}",
             "tertiary": "{{quipment_ranks.tertiary}}"
         },
-        "no_limit": "Keine Begrenzung",
-        "top_n": "Die Top {{n}}",
-        "show_top_crew": "Top-Crew anzeigen",
-        "max_results_per_table": "Maximale Ergebnisse pro Tabelle",
         "apply_buffs": "Buffs auf Statistiken anwenden",
         "base_power": "Grundleistung",
         "browse_gauntlet_exclusives": "Durchsuche die exklusive Crew der Herausforderung (hier tippen)",
@@ -525,7 +524,9 @@
         },
         "jackpot_crew": "Jackpot-Crew",
         "jackpot_crew_for_date": "Jackpot-Crew für {{date}}",
+        "max_results_per_table": "Maximale Ergebnisse pro Tabelle",
         "min_max_proficiency": "Mindest- und Höchstkompetenz",
+        "no_limit": "Keine Begrenzung",
         "note_live_crew_highlight_msg": "Hinweis: Ihre ausgewählte Gauntlet-Crew wird grün hervorgehoben, während Gegner rot hervorgehoben werden.",
         "note_opponent_stats_no_calc_msg": "Hinweis: Gegnerstatistiken werden nicht neu berechnet",
         "note_owned_crew_power_calc_msg": "Hinweis: Wenn eigene Crewmitglieder erkannt werden, kann je nach Filtereinstellungen deren aktuelles Level in Ihrer Liste zur Berechnung ihres Rangs verwendet werden.",
@@ -575,7 +576,9 @@
             }
         },
         "show_buffs_heading": "Buffs anzeigen",
+        "show_top_crew": "Top-Crew anzeigen",
         "skills_and_pairs": "Fähigkeiten & Paare",
+        "top_n": "Die Top {{n}}",
         "unowned_status": {
             "any": "Alle Crew",
             "gauntlet": "Herausforderung-exklusive Crew",
@@ -603,9 +606,6 @@
         }
     },
     "global": {
-        "min_rarity": "Min. Seltenheit",
-        "max_rarity": "Max. Seltenheit",
-        "percentile": "Perzentil",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
         "and": "und",
@@ -662,11 +662,13 @@
             "valor": "Tapferkeit",
             "voyage_consumable": "Reise-Wiederbelebungs-Token"
         },
-        "load_defaults": "Standards laden",
         "load_default_settings": "Standardeinstellungen laden",
+        "load_defaults": "Standards laden",
         "loading_ellipses": "Wird geladen ...",
         "loading_please_wait_ellipses": "Laden, bitte warten...",
+        "max_rarity": "Max. Seltenheit",
         "member": "Mitglied",
+        "min_rarity": "Min. Seltenheit",
         "name": "Name",
         "never": "Niemals",
         "new": "Neu",
@@ -677,6 +679,7 @@
         "officer": "Offizier",
         "optional": "Optional",
         "or": "oder",
+        "percentile": "Perzentil",
         "permalink": "Permalink",
         "portal": "Zeitportal",
         "recommend_crew": "Crew empfehlen",
@@ -801,7 +804,8 @@
         "post_immortalization_advancement": "Fortschritt nach der Unsterblichkeit",
         "recipe": "Rezept",
         "required_traits": "Erforderliche Merkmalen: {{traits}}",
-        "show_unowned_needed": "Nicht im Besitz befindliche benötigte Artikel anzeigen"
+        "show_unowned_needed": "Nicht im Besitz befindliche benötigte Artikel anzeigen",
+        "this_will_require_items": "Hierzu sind {{items}} erforderlich."
     },
     "items_unneeded": {
         "description": "Verwenden Sie dieses Tool, um Elemente zu identifizieren, die Sie sicher entsorgen können, um Platz in Ihrem Inventar freizugeben.",
@@ -1179,24 +1183,20 @@
         }
     },
     "ship": {
-        "calc": {
-            "generating_permutations_ellipses": "Permutationen werden generiert ...",
-            "calculating_pct_ellipses": "Berechnung ({{percent}} % abgeschlossen) ...",
-            "sorting_finalizing_ellipses": "Ergebnisse sortieren und finalisieren ..."
-        },
-        "battle_mode": "Kampfmodus",
-        "pvp": "{{global.item_types.arena}}",
-        "fbb": "{{menu.tools.fleet_boss_battles}}",
-        "skirmish": "{{event_type.skirmish}}",
-        "power_depth": "Tiefe des Leistungsniveaus",
         "accuracy": "Genauigkeit",
         "amount": "Menge",
         "antimatter": "Antimaterie",
         "attack": "Angriffs",
         "attack_speed": "Angriffsgeschwindigkeit",
+        "battle_mode": "Kampfmodus",
         "battle_stations": "Kampfstationen",
         "bonus_ability": "Bonusfähigkeit",
         "boosts": "Leistungssteigerung",
+        "calc": {
+            "calculating_pct_ellipses": "Berechnung ({{percent}} % abgeschlossen) ...",
+            "generating_permutations_ellipses": "Permutationen werden generiert ...",
+            "sorting_finalizing_ellipses": "Ergebnisse sortieren und finalisieren ..."
+        },
         "calculated_crew": "Kalkulierte Crew",
         "charge_phase": {
             "after_seconds": "Nach {{seconds}}s ",
@@ -1204,23 +1204,27 @@
             "cooldown": "{{time}}s Abklingzeit",
             "duration": "{{time}}s Dauer"
         },
-        "crew_with_trigger_check": "Nur Crew mit passendem Auslöser anzeigen",
         "charge_phases": "Ladephasen",
         "clear_station": "Station räumen",
         "cooldown": "Abklingzeit",
+        "crew_with_trigger_check": "Nur Crew mit passendem Auslöser anzeigen",
         "crit_bonus": "Krit Bonus",
         "crit_rating": "Krit Treffer",
         "cycle_time": "Zykluszeit",
         "duration": "Dauer",
         "equipment_bonus": "Ausrüstungsbonus",
         "evasion": "Ausweichen",
+        "fbb": "{{menu.tools.fleet_boss_battles}}",
         "grants": "Verleihungen",
         "handicap": "Handicap",
         "hull": "Hülle",
         "initialize": "Initialisierungszeit",
         "max_level": "Höchstlevel",
+        "power_depth": "Tiefe des Leistungsniveaus",
+        "pvp": "{{global.item_types.arena}}",
         "shields": "Schilde",
         "ship": "Schiff",
+        "skirmish": "{{event_type.skirmish}}",
         "trigger": "Auslöser",
         "triggers": "Auslöseren",
         "unlimited": "Unbegrenzt",
@@ -1244,17 +1248,29 @@
             "you_have_n_running": "Sie haben {{n}} Shuttle-Missionen im Spiel laufen.",
             "you_have_one_running": "Sie haben 1 Shuttle-Mission im Spiel laufen."
         },
+        "event": {
+            "current_vp": "Aktuelle SP: {{vp}}",
+            "finish_event_with_colon": "Sie beenden die Veranstaltung mit:",
+            "finish_phase_with_colon": "Sie beenden die Fraktionsphase mit:",
+            "runner": "Führen Sie alle {{rate}} {{count}} x {{duration}} Shuttles aus",
+            "victory_points": "Siegpunkte",
+            "vp": "SP"
+        },
         "heading": "Verwenden Sie dieses Tool, um Ihre Shuttle-Missionen zu planen.",
         "missions": {
             "columns": {
+                "best": "{{event_planner.table.columns.best}}",
+                "current_assignment": "Aktuelle Zuweisung",
                 "faction": "Fraktion",
+                "here": "Hier",
                 "mission": "Mission",
                 "name": "{{global.name}}",
                 "seat": "Sitz",
                 "seat_assignments": "Sitzplatzzuweisungen",
                 "skills": "Fähigkeiten",
                 "status": "Status",
-                "success_chance": "Erfolgschance"
+                "success_chance": "Erfolgschance",
+                "there": "Da"
             },
             "create": "Erstellen Sie eine Mission",
             "heading": "Wählen Sie alle Missionen aus, die Sie ausführen möchten, und tippen Sie dann auf „{{global.recommend_crew}}“, um die besten Plätze für Ihre Crew anzuzeigen.",
@@ -1262,6 +1278,9 @@
                 "missing": "Wenn die gewünschte Mission oben nicht aufgeführt ist, {{link}}, um die Missionsparameter manuell einzugeben.",
                 "tip": "Tipp: Öffnen Sie Shuttle-Missionen im Spiel, bevor Sie Ihre Spielerdaten auf DataCore hochladen, damit dieses Tool die Missionen automatisch importieren kann."
             },
+            "n_percent_chance": "{{n}} % Chance",
+            "next_seat": "Nächster Sitzplatz",
+            "schedule_other": "Planen Sie andere Shuttles",
             "select": {
                 "all_n": "Alle {{n}} auswählen",
                 "group": "Wähle die Gruppe",

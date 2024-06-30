@@ -193,7 +193,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         </div>
                     </div>
                     <div style={{marginTop: "1em"}}>
+                        
                         <Button color='green' onClick={() => recommend()}>{running ? t('global.cancel') : t('global.recommend_crew')}</Button>
+                        {!running && <Button onClick={() => setSuggestions([])}>{t('global.clear')}</Button>}
                     </div>
 				</div>
     </React.Fragment>

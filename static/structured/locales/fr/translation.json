@@ -282,8 +282,11 @@
         "n_d": "{{days}} j",
         "n_days": "{{days}} jours",
         "n_h": "{{hours}} h",
+        "n_hour_class": "{{hours}}-heure",
         "n_hours": "{{hours}} heures",
         "n_m": "{{minutes}} m",
+        "n_minute_class": "{{minutes}}-minute",
+        "n_minutes": "{{minutes}} minutes",
         "title": "Durée: {{duration}}"
     },
     "event_planner": {
@@ -496,16 +499,12 @@
             "crit_multiplier": "Multiplicateur de critiques de {{p}} %",
             "incidence": "Pondération d’incidence des compétences linéaires {{name}}",
             "index": "Pondération de l'indice de compétence linéaire {{name}}",
-            "min_multiplier": "Multiplicateur de compétence minimum",
             "max_multiplier": "Multiplicateur de compétence maximum",
+            "min_multiplier": "Multiplicateur de compétence minimum",
             "primary": "{{quipment_ranks.primary}}",
             "secondary": "{{quipment_ranks.secondary}}",
             "tertiary": "{{quipment_ranks.tertiary}}"
         },
-        "no_limit": "Sans limites",
-        "top_n": "Haut {{n}}",
-        "show_top_crew": "Afficher les meilleurs membres d'équipage",
-        "max_results_per_table": "Max. de résultats par table",
         "apply_buffs": "Appliquer des effets aux statistiques",
         "base_power": "Puissance de base",
         "browse_gauntlet_exclusives": "Parcourir l'équipage exclusif de gantelet (appuyez ici)",
@@ -531,7 +530,9 @@
         },
         "jackpot_crew": "Équipier Jackpot",
         "jackpot_crew_for_date": "Équipier Jackpot pour {{date}}",
+        "max_results_per_table": "Max. de résultats par table",
         "min_max_proficiency": "Compétence maximale minimale",
+        "no_limit": "Sans limites",
         "note_live_crew_highlight_msg": "Remarque : votre équipage de gant sélectionné apparaîtra surligné en vert, tandis que vos adversaires apparaîtront surlignés en rouge.",
         "note_opponent_stats_no_calc_msg": "Remarque : les statistiques des adversaires ne sont pas recalculées",
         "note_owned_crew_power_calc_msg": "Remarque : Si un équipage détenu est détecté, leur niveau actuel dans votre liste peut être utilisé pour calculer leur classement, en fonction des paramètres de filtre.",
@@ -581,7 +582,9 @@
             }
         },
         "show_buffs_heading": "Afficher les effets",
+        "show_top_crew": "Afficher les meilleurs membres d'équipage",
         "skills_and_pairs": "Compétences et paires",
+        "top_n": "Haut {{n}}",
         "unowned_status": {
             "any": "Tous les équipiers",
             "gauntlet": "Équipage exclusif gantelet",
@@ -609,9 +612,6 @@
         }
     },
     "global": {
-        "min_rarity": "Rareté min.",
-        "max_rarity": "Rareté max.",
-        "percentile": "Centile",
         "admiral": "Amiral",
         "advanced_settings": "Réglages Avancés",
         "and": "et",
@@ -668,11 +668,13 @@
             "valor": "Valeur",
             "voyage_consumable": "Jetons de renaissance du voyage"
         },
-        "load_defaults": "Charger les défauts",
         "load_default_settings": "Charger les paramètres par défaut",
+        "load_defaults": "Charger les défauts",
         "loading_ellipses": "Chargement ...",
         "loading_please_wait_ellipses": "Chargement. S'il vous plaît, attendez...",
+        "max_rarity": "Rareté max.",
         "member": "Membre",
+        "min_rarity": "Rareté min.",
         "name": "Nom",
         "never": "Jamais",
         "new": "Nouveau",
@@ -685,6 +687,7 @@
         "officer": "Officier",
         "optional": "Facultatif",
         "or": "ou",
+        "percentile": "Centile",
         "permalink": "lien permanent",
         "portal": "Portail",
         "recommend_crew": "Recommander des équipiers",
@@ -811,7 +814,8 @@
         "post_immortalization_advancement": "Avancement après l'immortalisation",
         "recipe": "Recette",
         "required_traits": "Traits Requises: {{traits}}",
-        "show_unowned_needed": "Afficher les éléments nécessaires sans propriétaire"
+        "show_unowned_needed": "Afficher les éléments nécessaires sans propriétaire",
+        "this_will_require_items": "Cela nécessitera {{items}}"
     },
     "items_unneeded": {
         "description": "Utilisez cet outil pour vous aider à identifier les articles que vous pouvez jeter en toute sécurité afin de libérer de l'espace dans votre inventaire.",
@@ -1189,25 +1193,21 @@
         }
     },
     "ship": {
-        "calc": {
-            "generating_permutations_ellipses": "Génération de permutations...",
-            "calculating_pct_ellipses": "Calcul ({{percent}} % terminé)...",
-            "sorting_finalizing_ellipses": "Tri et finalisation des résultats..."
-        },
-        "battle_mode": "Mode de combat",
-        "pvp": "{{global.item_types.arena}}",
-        "fbb": "{{menu.tools.fleet_boss_battles}}",
-        "skirmish": "{{event_type.skirmish}}",
-        "power_depth": "Profondeur du niveau de puissance",
         "accuracy": "Précision",
         "amount": "Montant",
         "antimatter": "Antimatière",
         "attack": "Attaque",
         "attack_speed": "Vitesse d'Attaque",
+        "battle_mode": "Mode de combat",
         "battle_stations": "Stations de combat",
         "bonus_ability": "Capacité Bonus",
         "boost": "Augmentation",
         "boosts": "Augmentations",
+        "calc": {
+            "calculating_pct_ellipses": "Calcul ({{percent}} % terminé)...",
+            "generating_permutations_ellipses": "Génération de permutations...",
+            "sorting_finalizing_ellipses": "Tri et finalisation des résultats..."
+        },
         "calculated_crew": "Équipage calculé",
         "charge_phase": {
             "after_seconds": "Après {{seconds}}s ",
@@ -1215,23 +1215,27 @@
             "cooldown": "{{time}}s recharge",
             "duration": "{{time}}s durée"
         },
-        "crew_with_trigger_check": "Afficher uniquement les équipiers avec le déclencheur correspondant",
         "charge_phases": "Phases de Chargement",
         "clear_station": "Effacer la station",
         "cooldown": "Recharge",
+        "crew_with_trigger_check": "Afficher uniquement les équipiers avec le déclencheur correspondant",
         "crit_bonus": "Bonus Crit",
         "crit_rating": "Chance du Crit",
         "cycle_time": "Un cycle",
         "duration": "Durée",
         "equipment_bonus": "Bonus d'équipement",
         "evasion": "Évasion",
+        "fbb": "{{menu.tools.fleet_boss_battles}}",
         "grants": "Octrois",
         "handicap": "Handicap",
         "hull": "Coque",
         "initialize": "Initialise",
         "max_level": "Niveau maximum",
+        "power_depth": "Profondeur du niveau de puissance",
+        "pvp": "{{global.item_types.arena}}",
         "shields": "Boucliers",
         "ship": "Vaisseau",
+        "skirmish": "{{event_type.skirmish}}",
         "trigger": "Déclencheur",
         "triggers": "Déclencheurs",
         "unlimited": "Illimité",
@@ -1255,17 +1259,29 @@
             "you_have_n_running": "Vous avez {{n}} missions de navette en cours dans le jeu.",
             "you_have_one_running": "Vous avez 1 mission de navette en cours dans le jeu."
         },
+        "event": {
+            "current_vp": "PV actuels: {{vp}}",
+            "finish_event_with_colon": "Vous terminerez l'événement avec :",
+            "finish_phase_with_colon": "Vous terminerez la phase de faction avec :",
+            "runner": "Exécutez {{count}} x {{duration}} navettes tous les {{rate}}",
+            "victory_points": "Points de victoire",
+            "vp": "PV"
+        },
         "heading": "Utilisez cet outil pour vous aider à planifier vos missions de navette.",
         "missions": {
             "columns": {
+                "best": "{{event_planner.table.columns.best}}",
+                "current_assignment": "Attribution Actuelle",
                 "faction": "Faction",
+                "here": "Ici",
                 "mission": "Mission",
                 "name": "{{global.name}}",
                 "seat": "Siège",
-                "seat_assignments": "Attributions des sièges",
+                "seat_assignments": "Attributions des Sièges",
                 "skills": "Compétences",
                 "status": "Statut",
-                "success_chance": "Chance de réussite"
+                "success_chance": "Chance de Réussite",
+                "there": "Là"
             },
             "create": "créez une mission",
             "heading": "Sélectionnez toutes les missions que vous souhaitez effectuer, puis appuyez sur « {{global.recommend_crew}} » pour voir les meilleurs sièges pour votre équipage.",
@@ -1273,6 +1289,9 @@
                 "missing": "Si la mission souhaitée ne figure pas dans la liste ci-dessus, {{link}} pour saisir manuellement les paramètres de la mission.",
                 "tip": "Conseil : ouvrez les missions de navette dans le jeu avant de télécharger les données de votre joueur sur DataCore afin que cet outil puisse importer automatiquement les missions."
             },
+            "n_percent_chance": "{{n}} % de Chance",
+            "next_seat": "Siège Suivant",
+            "schedule_other": "Programmer d'autres navettes",
             "select": {
                 "all_n": "Sélectionner les {{n}}",
                 "group": "Sélectionner un groupe",
