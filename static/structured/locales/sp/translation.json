@@ -155,6 +155,7 @@
         "active_shuttles": "Considere las tripulantes en lanzaderas activas",
         "active_voyage": "Considere las tripulantes en viaje activo",
         "consider_frozen": "Considere las tripulantes congeladas",
+        "consider_unowned": "Considere las tripulantes sin propietario",
         "consider_shared": "Considerar las tripulantes compartidas",
         "exclude_quipped": "Excluir las tripulantes con quipo activo",
         "shared_crew_popup": "Los números de habilidades del equipo compartido se basan en las ventajas de tu jugador y pueden no coincidir con la puntuación real"
@@ -625,6 +626,7 @@
         "bonuses": "Bonificaciones",
         "cancel": "Cancelar",
         "clear": "Borrar",
+        "clear_all": "Borrar todo",
         "close": "Cerca",
         "copy_permalink_clipboard": "Copiar enlace permanente al portapapeles",
         "default": "Predeterminada",

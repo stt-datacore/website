@@ -152,11 +152,12 @@
         "copied_exclaim": "Copié!"
     },
     "consider_crew": {
-        "active_shuttles": "Considérez équipiers sur les navettes actives",
-        "active_voyage": "Considérez équipiers en voyage actif",
-        "consider_frozen": "Considérez équipiers gelés",
-        "consider_shared": "Envisagez équipier partagés",
-        "exclude_quipped": "Exclure équipiers quipés",
+        "active_shuttles": "Considérez les équipiers sur les navettes actives",
+        "active_voyage": "Considérez les équipiers en voyage actif",
+        "consider_frozen": "Considérez les équipiers gelés",
+        "consider_unowned": "Considérez les équipiers sans propriétaire",
+        "consider_shared": "Envisagez l'équipier partagé",
+        "exclude_quipped": "Exclure les équipiers quipés",
         "shared_crew_popup": "Les nombres de compétences de l'équipier partagé sont basés sur les buffs de vos joueurs et peuvent ne pas correspondre au score réel"
     },
     "cool_stats": {
@@ -626,6 +627,7 @@
         "bonuses": "Bonus",
         "cancel": "Annuler",
         "clear": "Effacer",
+        "clear_all": "Tout effacer",
         "close": "Fermer",
         "copy_permalink_clipboard": "Copier le lien permanent dans le presse-papiers",
         "default": "Défaut",

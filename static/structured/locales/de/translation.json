@@ -157,6 +157,7 @@
         "active_shuttles": "Crew auf aktiven Shuttles berücksichtigen",
         "active_voyage": "Crew auf aktiver Reise berücksichtigen",
         "consider_frozen": "Eingefrorene Crew berücksichtigen",
+        "consider_unowned": "Unbesessene Crew berücksichtigen",
         "consider_shared": "Gemeinsame Crew berücksichtigen",
         "exclude_quipped": "Crew mit aktiven Rüstzeugen ausschließen",
         "shared_crew_popup": "Die Skill-Zahlen der gemeinsamen Crew basieren auf den Buffs Ihres Spielers und stimmen möglicherweise nicht mit dem tatsächlichen Punktestand überein"
@@ -620,6 +621,7 @@
         "bonuses": "Boni",
         "cancel": "Abbrechen",
         "clear": "Löschen",
+        "clear_all": "Alles löschen",
         "close": "Schließen",
         "copy_permalink_clipboard": "Permalink in die Zwischenablage kopieren",
         "default": "Standard",
@@ -1214,7 +1216,7 @@
             "duration": "{{time}}s Dauer"
         },
         "charge_phases": "Ladephasen",
-        "clear_station": "Station räumen",
+        "clear_station": "Station löschen",
         "cooldown": "Abklingzeit",
         "crew_with_trigger_check": "Nur Crew mit passendem Auslöser anzeigen",
         "crit_bonus": "Krit Bonus",

@@ -157,6 +157,7 @@
         "active_shuttles": "Consider crew on active shuttles",
         "active_voyage": "Consider crew on active voyage",
         "consider_frozen": "Consider frozen crew",
+        "consider_unowned": "Consider unowned crew",
         "consider_shared": "Consider shared crew",
         "exclude_quipped": "Exclude quipped crew",
         "shared_crew_popup": "Skill numbers of shared crew are based on your player buffs and may not match actual score"
@@ -620,6 +621,7 @@
         "bonuses": "Bonuses",
         "cancel": "Cancel",
         "clear": "Clear",
+        "clear_all": "Clear All",
         "close": "Close",
         "copy_permalink_clipboard": "Copy permalink to clipboard",
         "default": "Default",

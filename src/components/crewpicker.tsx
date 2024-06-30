@@ -3,10 +3,7 @@ import { InView } from 'react-intersection-observer';
 import { Modal, Input, Button, Icon, Grid, Rating, Message, Dropdown, SemanticCOLORS } from 'semantic-ui-react';
 import { PlayerCrew } from '../model/player';
 import { CrewMember } from '../model/crew';
-import { DataContext } from '../context/datacontext';
-import { PlayerContext } from '../context/playercontext';
 import { GlobalContext } from '../context/globalcontext';
-import { CrewHoverStat, CrewTarget } from './hovering/crewhoverstat';
 import { OptionsModal, OptionsModalProps, OptionsModalState, OptionGroup, OptionsBase } from './base/optionsmodal_base';
 
 export interface CrewPickerProps<T extends OptionsBase> {

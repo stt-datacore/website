@@ -1,7 +1,7 @@
 import React from "react";
 import { CrewMember } from "../../model/crew";
 import { BattleMode, Ship, ShipWorkerConfig, ShipWorkerItem } from "../../model/ship"
-import { Button, Dropdown, DropdownItemProps, SearchResults } from "semantic-ui-react";
+import { Button, Checkbox, Dropdown, DropdownItemProps, SearchResults } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { WorkerContext } from "../../context/workercontext";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
@@ -18,6 +18,10 @@ export interface RosterCalcProps {
     crew: (CrewMember | PlayerCrew)[],
     crewStations: (PlayerCrew | undefined)[],
     setCrewStations: (value: (PlayerCrew | undefined)[]) => void
+    considerFrozen: boolean;
+    setConsiderFrozen: (value: boolean) => void;
+    considerUnowned: boolean;
+    setConsiderUnowned: (value: boolean) => void;
 }
 
 export const ShipRosterCalc = (props: RosterCalcProps) => {
@@ -27,7 +31,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const { running, runWorker, cancel } = workerContext;
     const { t } = globalContext.localized;
 
-    const { ships, crew, crewStations, setCrewStations, pageId } = props;
+    const { ships, crew, crewStations, setCrewStations, pageId, considerFrozen, setConsiderFrozen, considerUnowned, setConsiderUnowned } = props;
     const shipIdx = props.shipIdx ?? 0;
     const ship = ships[shipIdx];
 
@@ -223,8 +227,35 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                     />	
                             </div>
                         </div>
+                        <div style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                alignItems: 'flex-end',
+                                width: '100%',
+                                margin: '1em',
+                                gap: '1em'
+                            }}>
+                            <div style={{display:'flex', alignItems:'center', gap: '1em'}}>
+                                <Checkbox 
+                                    value={t('consider_crew.consider_frozen')}
+                                    checked={considerFrozen}
+                                    onChange={(e, { checked }) => setConsiderFrozen(checked as boolean)} />
+                                
+                                {t('consider_crew.consider_frozen')}
+                            </div>
+
+                            {!!globalContext.player.playerData && 
+                                <div style={{display:'flex', alignItems:'center', gap: '1em'}}>
+                                    <Checkbox 
+                                        checked={considerUnowned}
+                                        onChange={(e, { checked }) => setConsiderUnowned(checked as boolean)} />
+                                    {t('consider_crew.consider_unowned')}
+                                </div>}
+
+                        </div>
                     </div>
-                    <div style={{marginTop: "1em"}}>                        
+                    <div> 
                         <Button color='green' onClick={() => recommend()}>{running ? t('global.cancel') : t('global.recommend_crew')}</Button>
                         {!running && crewStations?.filter(c => !!c).length === ship?.battle_stations?.length && 
                             <Button color='green' onClick={() => recommend(true)}>{t('ship.calc.run_current_line_up')}</Button>}

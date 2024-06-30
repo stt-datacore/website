@@ -28,7 +28,7 @@ type ShipProfileProps = {
 };
 
 type ShipProfileState = {
-	data?: Ship[];
+	ships?: Ship[];
 	originals: Ship[];
 	activeShip?: Ship | null;
 	inputShip?: Ship | null;
@@ -39,6 +39,7 @@ type ShipProfileState = {
 	modalOpen: boolean;
 	hoverItem?: PlayerCrew | CrewMember;
 	considerFrozen: boolean;
+	considerUnowned: boolean;
 };
 
 const pagingOptions = [
@@ -68,23 +69,28 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 		super(props);
 		
 		this.state = {
-			data: this.loadData(),
+			ships: this.loadData(),
 			originals: [],
 			currentStationCrew: [],
 			modalOptions: DEFAULT_SHIP_OPTIONS,
 			crewStations: [],
 			currentStation: 0,
 			modalOpen: false,
-			considerFrozen: false
+			considerFrozen: false,
+			considerUnowned: false
 		};
 
 		const me = this;
 	}
-	
-	private readonly getCrew = (frozen?: boolean) => {
+
+	private readonly getCrew = () => {
 		if (!this.context) return [];
-		frozen ??= this.state.considerFrozen;
-		return this.context.player.playerData?.player.character.crew.filter(crew => frozen || crew.immortal <= 0) ?? this.context.core.crew;
+		let frozen = this.state.considerFrozen;
+		let results = this.context.player.playerData?.player.character.crew.filter(crew => frozen || crew.immortal <= 0) ?? this.context.core.crew;
+		if (this.state.considerUnowned && this.context?.player?.playerData) {
+			results = results.concat(this.context.player.playerData.player.character.unOwnedCrew ?? []);
+		}
+		return results;
 	}
 
 	private readonly setCrewStations = (crewStations: (PlayerCrew | undefined)[]) => {
@@ -105,9 +111,14 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 		setTimeout(() => this.setActiveShip());
 	}
 
-	private clearStation(index: number) {
+	private clearStation(index?: number) {
 		let stations = [ ... this.state.crewStations ];
-		stations[index] = undefined;
+		if (index !== undefined) {
+			stations[index] = undefined;
+		}
+		else {
+			stations = stations.map(sta => undefined);
+		}		
 		this.setState({ ... this.state, crewStations: stations, modalOpen: false, currentStationCrew: [], currentStation: -1 });
 		setTimeout(() => this.setActiveShip());
 	}
@@ -118,6 +129,14 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 		let newCrew: (PlayerCrew | CrewMember)[] = this.getCrew().filter((crew) => getSkills(crew).includes(skill)) ?? [];
 		if (inputShip) newCrew = findPotentialCrew(inputShip, newCrew, false);
 		this.setState({ ... this.state, modalOpen: true, currentStationCrew: newCrew, currentStation: index });
+	}
+
+	private setConsiderFrozen = (value: boolean) => {
+		this.setState({ ...this.state, considerFrozen: value });
+	}
+
+	private setConsiderUnowned = (value: boolean) => {
+		this.setState({ ...this.state, considerUnowned: value });
 	}
 
 	private setOptions(options: ShipCrewModalOptions) {
@@ -131,7 +150,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 		const query = (input: string) => input.toLowerCase().replace(/[^a-z0-9]/g, '').indexOf(myFilter.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
 
 
-		let data = crew.filter(crew => {
+		let ships = crew.filter(crew => {
 			return (!crewStations.some((c) => {
 					if (!c) return false;
 					if (c?.id) {
@@ -146,7 +165,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 				&& (!this.state?.modalOptions?.abilities?.length || this.state?.modalOptions?.abilities?.some((a) => crew.action.ability?.type.toString() === a));
 		});
 
-		data.sort((a, b) => {
+		ships.sort((a, b) => {
 			let r = b.action.bonus_amount - a.action.bonus_amount;
 
 			if (!r) {
@@ -167,7 +186,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 			return r;
 		})
-		return data;
+		return ships;
 	}
 
 	private readonly setActiveShip = () => {
@@ -212,9 +231,9 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 	componentDidMount(): void {
 		let newHasPlayer = !!this.context?.player?.playerData;		
 		if (!this.context) return;
-		if (!this.state?.data?.length || this._hasPlayer !== newHasPlayer) {			
+		if (!this.state?.ships?.length || this._hasPlayer !== newHasPlayer) {			
 			this._hasPlayer = newHasPlayer;
-			this.setState({ ...this.state, data: this.loadData() });
+			this.setState({ ...this.state, ships: this.loadData() });
 		}
 	}
 
@@ -238,8 +257,8 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 		if (!this.context) return;
 
-		const data = this.loadData();
-		const ship = data.find(d => d.symbol === ship_key);
+		const ships = this.loadData();
+		const ship = ships.find(d => d.symbol === ship_key);
 
 		if (ship) {
 			if (ship !== this.state.activeShip) {
@@ -248,7 +267,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 					n.push(undefined);
 				}
 	
-				this.setState({ ... this.state, inputShip: ship, crewStations: n, data, originals: this.context.core.ships ?? []});
+				this.setState({ ... this.state, inputShip: ship, crewStations: n, ships, originals: this.context.core.ships ?? []});
 				if (isWindow) window.setTimeout(() => this.setActiveShip());				
 			}
 		}
@@ -256,7 +275,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 	render() {
 		const { t } = this.context.localized;
-    	const { considerFrozen, data, currentStationCrew, crewStations, modalOptions, modalOpen, activeShip, hoverItem } = this.state;
+    	const { considerFrozen, ships, currentStationCrew, crewStations, modalOptions, modalOpen, activeShip, hoverItem } = this.state;
         let ship_key: string | undefined = this.props.ship;
 
         if (!ship_key) {
@@ -266,7 +285,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
             }
         }
 		if (isWindow && window.location.href.includes("ship")) {
-			if (!ship_key || !data) {
+			if (!ship_key || !ships) {
 				navigate('/ships');
 			}
 		}
@@ -308,12 +327,12 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 			</div>)
 		}
 
-        const ship = data?.find(d => d.symbol === ship_key);
+        const ship = ships?.find(d => d.symbol === ship_key);
         if (!ship) {			
 			return <></>;
 		}
 		
-		const crew = this.getCrew(considerFrozen);
+		const crew = this.getCrew();
 		
 		return (<>
 			<div>
@@ -358,7 +377,12 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 						crew={crew} 
 						ships={[ship]} 
 						crewStations={crewStations} 
-						setCrewStations={this.setCrewStations} />
+						setCrewStations={this.setCrewStations} 
+						considerFrozen={this.state.considerFrozen}
+						considerUnowned={this.state.considerUnowned}
+						setConsiderFrozen={this.setConsiderFrozen}
+						setConsiderUnowned={this.setConsiderUnowned}
+						/>
 				</WorkerProvider>
 
 				<h3>{t('ship.battle_stations')}</h3>
@@ -404,6 +428,10 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 						</div>
 					</div>
 					))}
+				</div>
+
+				<div>
+					<Button disabled={crewStations.every(cs => !cs)} onClick={(e) => this.clearStation()}>{t('global.clear_all')}</Button>
 				</div>
 
                 <ShipPresenter hover={false} ship={activeShip ?? ship} showIcon={true} storeName='shipProfile' />
