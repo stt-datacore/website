@@ -157,8 +157,8 @@
         "active_shuttles": "Crew auf aktiven Shuttles berücksichtigen",
         "active_voyage": "Crew auf aktiver Reise berücksichtigen",
         "consider_frozen": "Eingefrorene Crew berücksichtigen",
-        "consider_unowned": "Unbesessene Crew berücksichtigen",
         "consider_shared": "Gemeinsame Crew berücksichtigen",
+        "consider_unowned": "Unbesessene Crew berücksichtigen",
         "exclude_quipped": "Crew mit aktiven Rüstzeugen ausschließen",
         "shared_crew_popup": "Die Skill-Zahlen der gemeinsamen Crew basieren auf den Buffs Ihres Spielers und stimmen möglicherweise nicht mit dem tatsächlichen Punktestand überein"
     },
@@ -607,10 +607,6 @@
         }
     },
     "global": {
-        "work_in_progress": {
-            "title": "In Arbeit!",
-            "heading": "Diese Seite befindet sich in Bearbeitung. Einige Funktionen und Features sind möglicherweise nicht funktionsfähig, defekt, fehlen, sind unvollständig oder ändern sich jederzeit."
-        },
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
         "and": "und",
@@ -704,6 +700,10 @@
         "show_n_more_ellipses": "Zeige {{n}} weitere ...",
         "shown": "Gezeigt",
         "squadron_leader": "Geschwaderführer",
+        "work_in_progress": {
+            "heading": "Diese Seite befindet sich in Bearbeitung. Einige Funktionen und Features sind möglicherweise nicht funktionsfähig, defekt, fehlen, sind unvollständig oder ändern sich jederzeit.",
+            "title": "In Arbeit!"
+        },
         "yes": "Ja"
     },
     "header": {
@@ -1029,8 +1029,8 @@
                 "name": "Eigene Crew"
             }
         },
-        "ships": "Schiffe",
-        "ship_info": "Schiffsinfo"
+        "ship_info": "Schiffsinfo",
+        "ships": "Schiffe"
     },
     "player_badge": {
         "n_immortals": "{{n}} Unsterbliche",
@@ -1190,24 +1190,22 @@
         }
     },
     "ship": {
-        "boosts_x_by_y": "Steigert {{x}} um {{y}}",
         "accuracy": "Genauigkeit",
         "amount": "Menge",
         "antimatter": "Antimaterie",
+        "arena_metric": "Arena-Messmetrik",
         "attack": "Angriffs",
-        "weighted_attack": "Gewichteter Angriffs",
-        "min_attack": "Min. Angriffs",
-        "max_attack": "Max. Angriffs",
         "attack_speed": "Angriffsgeschwindigkeit",
         "battle_mode": "Kampfmodus",
         "battle_stations": "Kampfstationen",
         "bonus_ability": "Bonusfähigkeit",
         "boosts": "Leistungssteigerung",
+        "boosts_x_by_y": "Steigert {{x}} um {{y}}",
         "calc": {
             "calculating_pct_ellipses": "Berechnung ({{percent}} % abgeschlossen) ...",
             "generating_permutations_ellipses": "Permutationen werden generiert ...",
-            "sorting_finalizing_ellipses": "Ergebnisse sortieren und finalisieren ...",
-            "run_current_line_up": "Aktuelle Crew ausführen"
+            "run_current_line_up": "Aktuelle Crew ausführen",
+            "sorting_finalizing_ellipses": "Ergebnisse sortieren und finalisieren ..."
         },
         "calculated_crew": "Kalkulierte Crew",
         "charge_phase": {
@@ -1231,7 +1229,9 @@
         "handicap": "Handicap",
         "hull": "Hülle",
         "initialize": "Initialisierungszeit",
+        "max_attack": "Max. Angriffs",
         "max_level": "Höchstlevel",
+        "min_attack": "Min. Angriffs",
         "power_depth": "Tiefe des Leistungsniveaus",
         "pvp": "{{global.item_types.arena}}",
         "shields": "Schilde",
@@ -1241,7 +1241,8 @@
         "triggers": "Auslöseren",
         "unlimited": "Unbegrenzt",
         "uses": "Aktivierungen",
-        "uses_per_battle": "Aktivierungen pro Gefecht"
+        "uses_per_battle": "Aktivierungen pro Gefecht",
+        "weighted_attack": "Gewichteter Angriffs"
     },
     "ship_action": {
         "boost_by": "Erhöht {{type}} um {{amount}}",

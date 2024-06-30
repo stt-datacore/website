@@ -155,8 +155,8 @@
         "active_shuttles": "Considere las tripulantes en lanzaderas activas",
         "active_voyage": "Considere las tripulantes en viaje activo",
         "consider_frozen": "Considere las tripulantes congeladas",
-        "consider_unowned": "Considere las tripulantes sin propietario",
         "consider_shared": "Considerar las tripulantes compartidas",
+        "consider_unowned": "Considere las tripulantes sin propietario",
         "exclude_quipped": "Excluir las tripulantes con quipo activo",
         "shared_crew_popup": "Los números de habilidades del equipo compartido se basan en las ventajas de tu jugador y pueden no coincidir con la puntuación real"
     },
@@ -612,10 +612,6 @@
         }
     },
     "global": {
-        "work_in_progress": {
-            "title": "¡Trabajo en progreso!",
-            "heading": "Esta página es un trabajo en progreso. Algunas funciones y características pueden no funcionar, estar rotas, faltar, estar incompletas o cambiar en cualquier momento."
-        },
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
         "and": "y",
@@ -711,6 +707,10 @@
         "show_n_more_ellipses": "Mostrar {{n}} más ...",
         "shown": "Mostrado",
         "squadron_leader": "Líder de escuadrón",
+        "work_in_progress": {
+            "heading": "Esta página es un trabajo en progreso. Algunas funciones y características pueden no funcionar, estar rotas, faltar, estar incompletas o cambiar en cualquier momento.",
+            "title": "¡Trabajo en progreso!"
+        },
         "yes": "Sí"
     },
     "header": {
@@ -1038,8 +1038,8 @@
                 "name": "Tripulantes Propia"
             }
         },
-        "ships": "Buques",
-        "ship_info": "Información del buque"
+        "ship_info": "Información del buque",
+        "ships": "Buques"
     },
     "player_badge": {
         "n_immortals": "{{n}} inmortales",
@@ -1199,25 +1199,23 @@
         }
     },
     "ship": {
-        "boosts_x_by_y": "Aumenta {{x}} en {{y}}",
         "accuracy": "Precisión",
         "amount": "Cantidad",
         "antimatter": "Antimateria",
+        "arena_metric": "Métrica de arena",
         "attack": "Ataque",
-        "weighted_attack": "Ataque ponderada",
-        "min_attack": "Ataque máx.",
-        "max_attack": "Ataque mín.",
         "attack_speed": "Velocidad de ataque",
         "battle_mode": "Modo de batalla",
         "battle_stations": "Estaciones de batalla",
         "bonus_ability": "Habilidad Bonus",
         "boost": "Aumento",
         "boosts": "Aumentos",
+        "boosts_x_by_y": "Aumenta {{x}} en {{y}}",
         "calc": {
             "calculating_pct_ellipses": "Calculando ({{percent}}% completado) ...",
             "generating_permutations_ellipses": "Generando permutaciones...",
-            "sorting_finalizing_ellipses": "Ordenar y finalizar resultados...",
-            "run_current_line_up": "Ejecutar tripulantes actuales"
+            "run_current_line_up": "Ejecutar tripulantes actuales",
+            "sorting_finalizing_ellipses": "Ordenar y finalizar resultados..."
         },
         "calculated_crew": "Tripulación calculada",
         "charge_phase": {
@@ -1241,7 +1239,9 @@
         "handicap": "Handicap",
         "hull": "Casco",
         "initialize": "Iniciar",
+        "max_attack": "Ataque mín.",
         "max_level": "Nivel máximo",
+        "min_attack": "Ataque máx.",
         "power_depth": "Profundidad del nivel de potencia",
         "pvp": "{{global.item_types.arena}}",
         "shields": "Escudos",
@@ -1251,7 +1251,8 @@
         "triggers": "Activadores",
         "unlimited": "Ilimitado",
         "uses": "Activaciones",
-        "uses_per_battle": "Activaciones por batalla"
+        "uses_per_battle": "Activaciones por batalla",
+        "weighted_attack": "Ataque ponderada"
     },
     "ship_action": {
         "boost_by": "Aumenta {{type}} en {{amount}}",

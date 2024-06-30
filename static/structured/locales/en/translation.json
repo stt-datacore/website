@@ -157,8 +157,8 @@
         "active_shuttles": "Consider crew on active shuttles",
         "active_voyage": "Consider crew on active voyage",
         "consider_frozen": "Consider frozen crew",
-        "consider_unowned": "Consider unowned crew",
         "consider_shared": "Consider shared crew",
+        "consider_unowned": "Consider unowned crew",
         "exclude_quipped": "Exclude quipped crew",
         "shared_crew_popup": "Skill numbers of shared crew are based on your player buffs and may not match actual score"
     },
@@ -607,10 +607,6 @@
         }
     },
     "global": {
-        "work_in_progress": {
-            "title": "Work In Progress!",
-            "heading": " This page is a work in progress. Some functions and features may be non-functional, broken, missing, incomplete, or change at any time."
-        },
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
         "and": "and",
@@ -704,6 +700,10 @@
         "show_n_more_ellipses": "Show {{n}} more ...",
         "shown": "Shown",
         "squadron_leader": "Squadron Leader",
+        "work_in_progress": {
+            "heading": " This page is a work in progress. Some functions and features may be non-functional, broken, missing, incomplete, or change at any time.",
+            "title": "Work In Progress!"
+        },
         "yes": "Yes"
     },
     "header": {
@@ -1030,8 +1030,8 @@
                 "name": "Owned Crew"
             }
         },
-        "ships": "Ships",
-        "ship_info": "Ship Info"
+        "ship_info": "Ship Info",
+        "ships": "Ships"
     },
     "player_badge": {
         "n_immortals": "{{n}} immortals",
@@ -1191,24 +1191,22 @@
         }
     },
     "ship": {
-        "boosts_x_by_y": "Boosts {{x}} by {{y}}",
         "accuracy": "Accuracy",
         "amount": "Amount",
         "antimatter": "Antimatter",
+        "arena_metric": "Arena Metric",
         "attack": "Attack",
-        "min_attack": "Min. Attack",
-        "max_attack": "Max. Attack",
-        "weighted_attack": "Weighted Attack",
         "attack_speed": "Attack Speed",
         "battle_mode": "Battle mode",
         "battle_stations": "Battle Stations",
         "bonus_ability": "Bonus Ability",
         "boosts": "Boosts",
+        "boosts_x_by_y": "Boosts {{x}} by {{y}}",
         "calc": {
             "calculating_pct_ellipses": "Calculating ({{percent}}% complete) ...",
             "generating_permutations_ellipses": "Generating permutations ...",
-            "sorting_finalizing_ellipses": "Sorting and finalizing results ...",
-            "run_current_line_up": "Run Current Crew"
+            "run_current_line_up": "Run Current Crew",
+            "sorting_finalizing_ellipses": "Sorting and finalizing results ..."
         },
         "calculated_crew": "Calculated Crew",
         "charge_phase": {
@@ -1232,7 +1230,9 @@
         "handicap": "Handicap",
         "hull": "Hull",
         "initialize": "Initialize",
+        "max_attack": "Max. Attack",
         "max_level": "Max Level",
+        "min_attack": "Min. Attack",
         "power_depth": "Power level depth",
         "pvp": "{{global.item_types.arena}}",
         "shields": "Shields",
@@ -1242,7 +1242,8 @@
         "triggers": "Triggers",
         "unlimited": "Unlimited",
         "uses": "Uses",
-        "uses_per_battle": "Uses per battle"
+        "uses_per_battle": "Uses per battle",
+        "weighted_attack": "Weighted Attack"
     },
     "ship_action": {
         "boost_by": "Boosts {{type}} by {{amount}}",

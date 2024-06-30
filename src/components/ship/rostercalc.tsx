@@ -98,7 +98,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 <hr style={{width:'100%', opacity: '0.25'}}/>
                 <div style={{
                     display: 'grid', 
-                    gridTemplateAreas: "'bonus rating percentile duration' 'blank min max blank2'",
+                    gridTemplateAreas: "'bonus rating percentile duration' 'weighted min max metric'",
                     gridTemplateColumns: '20% 20% 20% 20%',
                     lineHeight: '1.25em',
                     paddingLeft: '2em',
@@ -122,15 +122,17 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         {t('ship.duration')}{': '}<br />{sug.battle_time.toFixed()}
                     </div>
                    
+                    <div style={{gridArea: 'weighted'}}>
+                        {t('ship.weighted_attack')}{': '}<br />{Math.round(sug.weighted_attack).toLocaleString()}
+                    </div>
                     <div style={{gridArea: 'min'}}>
                         {t('ship.min_attack')}{': '}<br />{Math.round(sug.min_attack).toLocaleString()}
                     </div>
                     <div style={{gridArea: 'max'}}>
                         {battleMode.startsWith("fbb") && <b>*</b>} {t('ship.max_attack')}{': '}<br />{Math.round(sug.max_attack).toLocaleString()}
                     </div>
-
-                    <div style={{gridArea: 'blank2'}}>
-                        {!battleMode.startsWith("fbb") && <b>*</b>} {t('ship.weighted_attack')}{': '}<br />{Math.round(sug.weighted_attack).toLocaleString()}
+                    <div style={{gridArea: 'metric'}}>
+                        {!battleMode.startsWith("fbb") && <b>*</b>} {t('ship.arena_metric')}{': '}<br />{Math.round(sug.arena_metric).toLocaleString()}
                     </div>
                 </div>
             </div>

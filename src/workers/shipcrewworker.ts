@@ -475,7 +475,7 @@ const ShipCrewWorker = {
         return new Promise<ShipWorkerResults>((resolve, reject) => {
             const { ship, battle_mode, opponents, action_types, ability_types, defense, offense } = options;
             const opponent = opponents?.length ? opponents[0] : undefined;            
-            let max_results = options.max_results ?? 10;
+            let max_results = options.max_results ?? 100;
             let max_rarity = options.max_rarity ?? 5;
             let min_rarity = options.min_rarity ?? 1;
             let maxvalues = [0, 0, 0, 0, 0].map(o => [0, 0, 0, 0]);
@@ -615,7 +615,8 @@ const ShipCrewWorker = {
 
             const processAttack = (attacks: Attacks[], crew_set: CrewMember[]) => {
                 let result_crew = [] as CrewMember[];
-                
+                const ship = attacks[0].ship;
+
                 ship.battle_stations?.forEach((bs) => {
                     for (let c of crew_set) {
                         if (!result_crew.includes(c)) {
@@ -626,17 +627,36 @@ const ShipCrewWorker = {
                         }
                     }
                 });
+
+                const activations = attacks.reduce((p, n) => p + n.actions.length, 0);
+                const attack = attacks.reduce((p, n) => p + n.attack, 0);
+                const min_attack = attacks.reduce((p, n) => p + n.min_attack, 0);
+                const max_attack = attacks.reduce((p, n) => p + n.max_attack, 0);
+                const battle_time = attacks.length;            
+                const weighted_attack = attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0);
+                let highest_attack = 0;
+                let high_attack_second = 0;
                 
+                attacks.forEach((attack) => {
+                    if (attack.max_attack > highest_attack) {
+                        highest_attack = attack.max_attack;
+                        high_attack_second = attack.second + 1;
+                    }
+                });
+                
+                const arena_metric = (highest_attack / high_attack_second);
+
                 results.push({
-                    activations: attacks.reduce((p, n) => p + n.actions.length, 0),
-                    attack: attacks.reduce((p, n) => p + n.attack, 0),
-                    min_attack: attacks.reduce((p, n) => p + n.min_attack, 0),
-                    max_attack: attacks.reduce((p, n) => p + n.max_attack, 0),
-                    battle_time: attacks.length,
+                    activations,
+                    attack,
+                    min_attack,
+                    max_attack,
+                    battle_time,
                     crew: result_crew,
                     percentile: 0,
                     ship: attacks[0].ship,
-                    weighted_attack: attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0),
+                    weighted_attack,
+                    arena_metric
                 });
             }
 
@@ -689,6 +709,10 @@ const ShipCrewWorker = {
                     let r = 0;
                     let aa: number;
                     let ba: number;
+                    aa = a.arena_metric;
+                    ba = b.arena_metric;
+                    r = ba - aa;
+                    if (r) return r;
                     aa = a.weighted_attack;
                     ba = b.weighted_attack;
                     r = ba - aa;
@@ -705,16 +729,15 @@ const ShipCrewWorker = {
                 });
             }      
 
-            results = results.slice(0, 100);
-
+            results = results.slice(0, max_results);
             results.forEach((result) => {
                 if (battle_mode.startsWith('fbb')) {
                     let max = results[0].attack;
                     result.percentile = (result.attack / max) * 100;
                 }
                 else {
-                    let max = results[0].weighted_attack;
-                    result.percentile = (result.weighted_attack / max) * 100;
+                    let max = results[0].arena_metric;
+                    result.percentile = (result.arena_metric / max) * 100;
                 }
             });
             

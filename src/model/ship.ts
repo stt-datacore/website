@@ -183,8 +183,9 @@ export interface ShipWorkerItem {
     max_attack: number;
     battle_time: number;
     weighted_attack: number;
+    arena_metric: number;
     activations: number;
-    percentile: number;
+    percentile: number;    
 }
 
 export interface ShipWorkerResults {
