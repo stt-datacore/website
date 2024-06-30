@@ -606,6 +606,10 @@
         }
     },
     "global": {
+        "work_in_progress": {
+            "title": "In Arbeit!",
+            "heading": "Diese Seite befindet sich in Bearbeitung. Einige Funktionen und Features sind möglicherweise nicht funktionsfähig, defekt, fehlen, sind unvollständig oder ändern sich jederzeit."
+        },
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
         "and": "und",
@@ -1023,7 +1027,8 @@
                 "name": "Eigene Crew"
             }
         },
-        "ships": "Schiffe"
+        "ships": "Schiffe",
+        "ship_info": "Schiffsinfo"
     },
     "player_badge": {
         "n_immortals": "{{n}} Unsterbliche",
@@ -1183,6 +1188,7 @@
         }
     },
     "ship": {
+        "boosts_x_by_y": "Steigert {{x}} um {{y}}",
         "accuracy": "Genauigkeit",
         "amount": "Menge",
         "antimatter": "Antimaterie",
@@ -1195,7 +1201,8 @@
         "calc": {
             "calculating_pct_ellipses": "Berechnung ({{percent}} % abgeschlossen) ...",
             "generating_permutations_ellipses": "Permutationen werden generiert ...",
-            "sorting_finalizing_ellipses": "Ergebnisse sortieren und finalisieren ..."
+            "sorting_finalizing_ellipses": "Ergebnisse sortieren und finalisieren ...",
+            "run_current_line_up": "Aktuelle Crew ausführen"
         },
         "calculated_crew": "Kalkulierte Crew",
         "charge_phase": {

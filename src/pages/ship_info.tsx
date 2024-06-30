@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Icon, Message, Button, FormInput, Dropdown, Input } from 'semantic-ui-react';
 
-import { findPotentialCrew } from '../utils/shiputils';
+import { findPotentialCrew, mergeShips } from '../utils/shiputils';
 import { Ship, ShipWorkerConfig, ShipWorkerItem } from '../model/ship';
 import { PlayerCrew } from '../model/player';
 import CONFIG from '../components/CONFIG';
@@ -28,7 +28,7 @@ type ShipProfileProps = {
 };
 
 type ShipProfileState = {
-	data: Ship[];
+	data?: Ship[];
 	originals: Ship[];
 	activeShip?: Ship | null;
 	inputShip?: Ship | null;
@@ -38,6 +38,7 @@ type ShipProfileState = {
 	crewStations: (PlayerCrew | undefined)[];
 	modalOpen: boolean;
 	hoverItem?: PlayerCrew | CrewMember;
+	considerFrozen: boolean;
 };
 
 const pagingOptions = [
@@ -48,10 +49,10 @@ const pagingOptions = [
 ];
 
 const ShipInfoPage = () => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized 	
 
-	const [title, setTitle] = React.useState('Ship Details');
-
-	return <DataPageLayout pageTitle={title}>
+	return <DataPageLayout pageTitle={t('pages.ship_info')} demands={['ship_schematics', 'battle_stations']}>
 		<ShipProfile />
 	</DataPageLayout>
 	
@@ -63,18 +64,25 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 	constructor(props: ShipProfileProps) {
 		super(props);
-
+		
 		this.state = {
-			data: [],
+			data: this.loadData(),
 			originals: [],
 			currentStationCrew: [],
 			modalOptions: DEFAULT_SHIP_OPTIONS,
 			crewStations: [],
 			currentStation: 0,
-			modalOpen: false
+			modalOpen: false,
+			considerFrozen: false
 		};
 
 		const me = this;
+	}
+	
+	private readonly getCrew = (frozen?: boolean) => {
+		if (!this.context) return [];
+		frozen ??= this.state.considerFrozen;
+		return this.context.player.playerData?.player.character.crew.filter(crew => frozen || crew.immortal <= 0) ?? this.context.core.crew;
 	}
 
 	private readonly setCrewStations = (crewStations: (PlayerCrew | undefined)[]) => {
@@ -105,7 +113,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 	private clickStation(index: number, skill: string) {
 		const { inputShip } = this.state;
 
-		let newCrew: (PlayerCrew | CrewMember)[] = this.context.player.playerData?.player.character.crew.filter((crew) => getSkills(crew).includes(skill)) ?? [];
+		let newCrew: (PlayerCrew | CrewMember)[] = this.getCrew().filter((crew) => getSkills(crew).includes(skill)) ?? [];
 		if (inputShip) newCrew = findPotentialCrew(inputShip, newCrew, false);
 		this.setState({ ... this.state, modalOpen: true, currentStationCrew: newCrew, currentStation: index });
 	}
@@ -119,13 +127,23 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 		const myFilter = searchFilter ??= '';
 		const query = (input: string) => input.toLowerCase().replace(/[^a-z0-9]/g, '').indexOf(myFilter.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
-		let data = crew.filter(crew =>
-			true
-				&& (!crewStations.some((c) => c?.id === crew.id))
+
+
+		let data = crew.filter(crew => {
+			return (!crewStations.some((c) => {
+					if (!c) return false;
+					if (c?.id) {
+						return c?.id === crew?.id;
+					}
+					else {
+						return c?.symbol === crew?.symbol
+					}
+				}))
 				&& (searchFilter === '' || (query(crew.name) || query(crew.short_name)))
-				&& (!this.state.modalOptions.rarities?.length || this.state.modalOptions.rarities.some((r) => crew.max_rarity === r))
-				&& (!this.state.modalOptions.abilities?.length || this.state.modalOptions.abilities.some((a) => crew.action.ability?.type.toString() === a))
-		);
+				&& (!this.state?.modalOptions?.rarities?.length || this.state?.modalOptions?.rarities?.some((r) => crew.max_rarity === r))
+				&& (!this.state?.modalOptions?.abilities?.length || this.state?.modalOptions?.abilities?.some((a) => crew.action.ability?.type.toString() === a));
+		});
+
 		data.sort((a, b) => {
 			let r = b.action.bonus_amount - a.action.bonus_amount;
 
@@ -183,6 +201,18 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 		this.setState({ ... this.state, activeShip: newship });
 	}
+	
+	private readonly loadData = () => {
+		if (!this.context && !this.state?.data?.length) return [];
+		return this.state?.data?.length ? this.state.data : this.context?.player?.playerShips ?? mergeShips(this.context.core.ship_schematics, []) ?? [];
+	}
+
+	componentDidMount(): void {
+		if (!this.context) return;
+		if (!this.state?.data?.length) {			
+			this.setState({ ...this.state, data: this.loadData() });
+		}
+	}
 
 	componentDidUpdate() {
 		if (this.state.inputShip) return;
@@ -201,7 +231,8 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 		if (!this.context) return;
 
-		const ship = this.context.player.playerShips?.find(d => d.symbol === ship_key);
+		const data = this.loadData();
+		const ship = data.find(d => d.symbol === ship_key);
 
 		if (ship) {
 			if (ship !== this.state.activeShip) {
@@ -210,7 +241,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 					n.push(undefined);
 				}
 	
-				this.setState({ ... this.state, inputShip: ship, crewStations: n, data: this.context.player.playerShips ?? [], originals: this.context.core.ships ?? []});
+				this.setState({ ... this.state, inputShip: ship, crewStations: n, data, originals: this.context.core.ships ?? []});
 				if (isWindow) window.setTimeout(() => this.setActiveShip());				
 			}
 		}
@@ -218,7 +249,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 
 	render() {
 		const { t } = this.context.localized;
-    	const { data, currentStationCrew, crewStations, modalOptions, modalOpen, activeShip, hoverItem } = this.state;
+    	const { considerFrozen, data, currentStationCrew, crewStations, modalOptions, modalOpen, activeShip, hoverItem } = this.state;
         let ship_key: string | undefined = this.props.ship;
 
         if (!ship_key) {
@@ -245,13 +276,10 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 					<div style={{
 						color: getActionColor(crew.action.bonus_type)
 					}}>
-						Boosts{" "}
-                        {
-                        	CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[
-                            	crew.action.bonus_type
-                            	]
-						}{" "}
-                        by {crew.action.bonus_amount}
+						{t('ship.boosts_x_by_y', {
+							x: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type],
+							y: `${crew.action.bonus_amount}`
+						})}
 					</div>
 					<div style={{
 						display: "flex",
@@ -273,10 +301,12 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 			</div>)
 		}
 
-        const ship = data.find(d => d.symbol === ship_key);
-        if (!ship || !this.context.player.playerData) return <></>
+        const ship = data?.find(d => d.symbol === ship_key);
+        if (!ship) {			
+			return <></>;
+		}
 		
-		const crew = this.context.player.playerData.player.character.crew
+		const crew = this.getCrew(considerFrozen);
 		
 		return (<>
 			<div>
@@ -310,8 +340,8 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 				<Message icon warning>
 					<Icon name="exclamation triangle" />
 					<Message.Content>
-						<Message.Header>Work in progress!</Message.Header>
-							This section is under development and not fully functional yet.
+						<Message.Header>{t('global.work_in_progress.title')}</Message.Header>
+							{t('global.work_in_progress.heading')}
 						</Message.Content>
 					</Message>
 

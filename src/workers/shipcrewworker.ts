@@ -629,28 +629,7 @@ const ShipCrewWorker = {
             }
 
             reportProgress({ format: 'ship.calc.sorting_finalizing_ellipses' });
-
-            if (!battle_mode.startsWith('fbb')) {
-                results.sort((a, b) => {
-                    let r = 0;
-                    let aa: number;
-                    let ba: number;
-                    aa = a.weighted_attack;
-                    ba = b.weighted_attack;
-                    r = ba - aa;
-                    if (r) return r;
-                    aa = a.attack;
-                    ba = b.attack;
-                    r = ba - aa;
-                    if (r) return r;
-                    aa = a.activations;
-                    ba = b.activations;
-                    r = ba - aa;
-                    if (r) return r;
-                    return r;
-                });
-            }      
-            else {
+            if (battle_mode.startsWith('fbb')) {
                 results.sort((a, b) => {
                     let r = 0;
                     let aa: number;
@@ -675,13 +654,39 @@ const ShipCrewWorker = {
                 });
     
             }
+            else {
+                results.sort((a, b) => {
+                    let r = 0;
+                    let aa: number;
+                    let ba: number;
+                    aa = a.weighted_attack;
+                    ba = b.weighted_attack;
+                    r = ba - aa;
+                    if (r) return r;
+                    aa = a.attack;
+                    ba = b.attack;
+                    r = ba - aa;
+                    if (r) return r;
+                    aa = a.activations;
+                    ba = b.activations;
+                    r = ba - aa;
+                    if (r) return r;
+                    return r;
+                });
+            }      
 
             results = results.slice(0, 100);
-            let max = results[0].attack;
 
             results.forEach((result) => {
-                result.percentile = (result.attack / max) * 100;
-            })
+                if (battle_mode.startsWith('fbb')) {
+                    let max = results[0].attack;
+                    result.percentile = (result.attack / max) * 100;
+                }
+                else {
+                    let max = results[0].weighted_attack;
+                    result.percentile = (result.weighted_attack / max) * 100;
+                }
+            });
             
             resolve({
                 ships: results
