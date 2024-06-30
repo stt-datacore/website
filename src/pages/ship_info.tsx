@@ -416,7 +416,7 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 								justifyContent: "center",
 								alignItems: "center"}}>
 							{crewStations[idx] && (
-								<CrewTarget inputItem={crewStations[idx]}  targetGroup='ship_profile'>
+								<CrewTarget inputItem={crewStations[idx]} targetGroup='ship_profile'>
 								<img src={`${process.env.GATSBY_ASSETS_URL}${crewStations[idx]?.imageUrlPortrait}`} style={{ height: "128px"}} />
 								</CrewTarget>
 							) ||

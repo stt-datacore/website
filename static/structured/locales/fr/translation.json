@@ -1205,6 +1205,7 @@
         "amount": "Montant",
         "antimatter": "Antimatière",
         "attack": "Attaque",
+        "weighted_attack": "Attaque pondéré",
         "min_attack": "Attaque min.",
         "max_attack": "Attaque max.",
         "attack_speed": "Vitesse d'Attaque",

@@ -605,7 +605,7 @@ const ShipCrewWorker = {
 
             //const crew_combos = makeAllCombos(workCrew.map(c => c.id), 60000, undefined, undefined, seats)?.filter(f => f.length === seats) as any as number[][];
             reportProgress({ format: 'ship.calc.generating_permutations_ellipses' });
-            const crew_combos = getPermutations(workCrew, seats, (set) => canSeatAll(ship, set), 250000);
+            const crew_combos = getPermutations(workCrew, seats, (set) => canSeatAll(ship, set), 300000);
             let attacks = [] as { crew: number[], attacks: Attacks[] }[];
 
             let count = crew_combos.length;

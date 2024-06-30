@@ -1198,6 +1198,7 @@
         "attack": "Attack",
         "min_attack": "Min. Attack",
         "max_attack": "Max. Attack",
+        "weighted_attack": "Weighted Attack",
         "attack_speed": "Attack Speed",
         "battle_mode": "Battle mode",
         "battle_stations": "Battle Stations",

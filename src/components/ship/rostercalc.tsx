@@ -8,6 +8,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { PlayerCrew } from "../../model/player";
 import { useStateWithStorage } from "../../utils/storage";
 import { BossShip } from "../../model/boss";
+import { CrewTarget } from "../hovering/crewhoverstat";
 
 
 
@@ -88,11 +89,13 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             content: <div style={{width: '100%', gap: '0.5em', display:'flex', flexWrap: 'wrap', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly'}}>
                 <div style={{display:'flex', width: '100%', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5em'}}>
                     {sug.crew.map((crew, idx) => <div style={{display:'flex', width: `${98 / ships[shipIdx].battle_stations!.length}%`, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.25em', textAlign: 'center'}}>
-                        <img style={{width: '24px'}} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+                        
+                        <img style={{width: '32px', margin: '0.25em'}} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+                        
                         {crew.name}
                     </div>)}
                 </div>
-                <hr style={{width:'100%'}}/>
+                <hr style={{width:'100%', opacity: '0.25'}}/>
                 <div style={{
                     display: 'grid', 
                     gridTemplateAreas: "'bonus rating percentile duration' 'blank min max blank2'",
@@ -107,24 +110,27 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     }}>
                     
                     <div style={{gridArea: 'bonus'}}>
-                        {t('ship.crit_bonus')}{': '}{sug.ship.crit_bonus}
+                        {t('ship.crit_bonus')}{': '}<br />{sug.ship.crit_bonus}
                     </div>
                     <div style={{gridArea: 'rating'}}>
-                        {t('ship.crit_rating')}{': '}{sug.ship.crit_chance}
+                        {t('ship.crit_rating')}{': '}<br />{sug.ship.crit_chance}
                     </div>
                     <div style={{gridArea: 'percentile'}}>
-                        {t('global.percentile')}{': '}{sug.percentile.toFixed(1)}
+                        {t('global.percentile')}{': '}<br />{sug.percentile.toFixed(1)}
                     </div>
                     <div style={{gridArea: 'duration'}}>
-                        {t('ship.duration')}{': '}{sug.battle_time.toFixed()}
+                        {t('ship.duration')}{': '}<br />{sug.battle_time.toFixed()}
                     </div>
-                    
-                    
+                   
                     <div style={{gridArea: 'min'}}>
-                        {t('ship.min_attack')}{': '}{Math.round(sug.min_attack).toLocaleString()}
+                        {t('ship.min_attack')}{': '}<br />{Math.round(sug.min_attack).toLocaleString()}
                     </div>
                     <div style={{gridArea: 'max'}}>
-                        {t('ship.max_attack')}{': '}{Math.round(sug.max_attack).toLocaleString()}
+                        {battleMode.startsWith("fbb") && <b>*</b>} {t('ship.max_attack')}{': '}<br />{Math.round(sug.max_attack).toLocaleString()}
+                    </div>
+
+                    <div style={{gridArea: 'blank2'}}>
+                        {!battleMode.startsWith("fbb") && <b>*</b>} {t('ship.weighted_attack')}{': '}<br />{Math.round(sug.weighted_attack).toLocaleString()}
                     </div>
                 </div>
             </div>
@@ -175,7 +181,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             fluid
                             scrolling
                             selection        
-                            clearable
+                            clearable                            
                             value={getSuggestion()}
                             onChange={(e, { value }) => setSuggestion(value as string)}
                             options={suggOpts}

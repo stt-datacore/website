@@ -1204,6 +1204,7 @@
         "amount": "Cantidad",
         "antimatter": "Antimateria",
         "attack": "Ataque",
+        "weighted_attack": "Ataque ponderada",
         "min_attack": "Ataque máx.",
         "max_attack": "Ataque mín.",
         "attack_speed": "Velocidad de ataque",
