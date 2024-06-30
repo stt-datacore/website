@@ -164,6 +164,7 @@ export interface ShipWorkerConfigBase {
   ability_types?: number[],
   max_results?: number
   defense?: number;
+  offense?: number;
 }
 
 export interface ShipWorkerConfig extends ShipWorkerConfigBase {

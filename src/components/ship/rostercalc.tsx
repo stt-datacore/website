@@ -37,6 +37,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [minRarity, setMinRarity] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/minRarity`, ship.rarity - 1, { rememberForever: true });
     const [opponent, setOpponent] = React.useState<Ship | undefined>();
     const [defense, setDefense] = React.useState<number | undefined>();
+    const [offense, setOffense] = React.useState<number | undefined>();
     const [progressMsg, setProgressMsg] = React.useState<string>('');
 
     // React.useEffect(() => {
@@ -51,6 +52,13 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             }
             else {
                 setDefense(undefined);
+            }
+            bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_player_ship_attack');
+            if (bs?.value) {
+                setOffense(bs.value);
+            }
+            else {
+                setOffense(undefined);
             }
         }
 
@@ -80,16 +88,22 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         {crew.name}
                     </div>)}
                 </div>
-                <div>
-                    {t('ship.crit_bonus')}{': '}{sug.ship.crit_bonus}
-                    {', '}
-                    {t('ship.crit_rating')}{': '}{sug.ship.crit_chance}
-                    {', '}
-                    {t('global.percentile')}{': '}{sug.percentile.toFixed(1)}
-                    {', '}
-                    {t('ship.attack')}{': '}{sug.attack.toLocaleString()}
-                    {', '}
-                    {t('ship.duration')}{': '}{sug.battle_time.toFixed()}
+                <div style={{width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly'}}>
+                    <div>
+                        {t('ship.crit_bonus')}{': '}{sug.ship.crit_bonus}
+                    </div>
+                    <div>
+                        {t('ship.crit_rating')}{': '}{sug.ship.crit_chance}
+                    </div>
+                    <div>
+                        {t('global.percentile')}{': '}{sug.percentile.toFixed(1)}
+                    </div>
+                    <div>
+                        {t('ship.attack')}{': '}{Math.round(sug.attack).toLocaleString()}
+                    </div>
+                    <div>
+                        {t('ship.duration')}{': '}{sug.battle_time.toFixed()}
+                    </div>
                 </div>
             </div>
         }
@@ -216,7 +230,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 max_rarity: ship.rarity,
                 max_results: 50,
                 opponents: opponent ? [opponent] : undefined,
-                defense
+                defense,
+                offense
             } as ShipWorkerConfig;
 
             setProgressMsg('');
