@@ -202,6 +202,7 @@ interface BonusAction extends ShipAction {
     orig_ability_amount?: number;
     orig_cooldown?: number;
     current_phase?: number;
+    comes_from: 'ship' | 'crew';
 }
 
 export function getOverlaps(input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 300) {
@@ -220,19 +221,18 @@ export function getOverlaps(input_ship: Ship, crew: CrewMember[], opponent?: Shi
     let orighull = ship.hull;
 
     const attacks = [] as Attacks[];
-    let allactions = [...ship.actions ?? [], ... crew.map(c => c.action) ] as BonusAction[];
-
-    for (let i in allactions) {
-        if (allactions[i].charge_phases?.length) {
-            allactions[i] = JSON.parse(JSON.stringify(allactions[i])) as BonusAction;            
-            if (allactions[i].ability) {
-                allactions[i].orig_ability_amount = allactions[i].ability?.amount;
-                allactions[i].orig_bonus = allactions[i].bonus_amount;
-                allactions[i].orig_cooldown = allactions[i].cooldown;
-                allactions[i].current_phase = 0;
+    let allactions = JSON.parse(JSON.stringify([...ship.actions ?? [], ... crew.map(c => c.action) ])) as BonusAction[];
+    allactions.forEach((action, i) => {
+        action.comes_from = i >= (ship!.actions?.length ?? 0) ? 'crew' : 'ship';
+        if (action.charge_phases?.length) {
+            if (action.ability) {
+                action.orig_ability_amount = action.ability?.amount;
+                action.orig_bonus = action.bonus_amount;
+                action.orig_cooldown = action.cooldown;
+                action.current_phase = 0;
             }
         }
-    }
+    });
 
     let alen = allactions.length;    
     let uses = allactions.map(a => 0);
@@ -311,7 +311,7 @@ export function getOverlaps(input_ship: Ship, crew: CrewMember[], opponent?: Shi
                 let time = action.ability.amount;
                 for (let idx = 0; idx < alen; idx++) {
                     if (!active[idx] && inited[idx]) {
-                        state_time[idx] += time;
+                        if (!allactions[idx].current_phase || allactions[idx].comes_from === 'ship') state_time[idx] += time;
                     }
                 }       
             }
