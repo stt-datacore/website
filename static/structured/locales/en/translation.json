@@ -606,6 +606,10 @@
         }
     },
     "global": {
+        "work_in_progress": {
+            "title": "Work In Progress!",
+            "heading": " This page is a work in progress. Some functions and features may be non-functional, broken, missing, incomplete, or change at any time."
+        },
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
         "and": "and",
@@ -1024,7 +1028,8 @@
                 "name": "Owned Crew"
             }
         },
-        "ships": "Ships"
+        "ships": "Ships",
+        "ship_info": "Ship Info"
     },
     "player_badge": {
         "n_immortals": "{{n}} immortals",
@@ -1184,6 +1189,7 @@
         }
     },
     "ship": {
+        "boosts_x_by_y": "Boosts {{x}} by {{y}}",
         "accuracy": "Accuracy",
         "amount": "Amount",
         "antimatter": "Antimatter",
@@ -1196,7 +1202,8 @@
         "calc": {
             "calculating_pct_ellipses": "Calculating ({{percent}}% complete) ...",
             "generating_permutations_ellipses": "Generating permutations ...",
-            "sorting_finalizing_ellipses": "Sorting and finalizing results ..."
+            "sorting_finalizing_ellipses": "Sorting and finalizing results ...",
+            "run_current_line_up": "Run Current Crew"
         },
         "calculated_crew": "Calculated Crew",
         "charge_phase": {

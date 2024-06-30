@@ -611,6 +611,10 @@
         }
     },
     "global": {
+        "work_in_progress": {
+            "title": "¡Trabajo en progreso!",
+            "heading": "Esta página es un trabajo en progreso. Algunas funciones y características pueden no funcionar, estar rotas, faltar, estar incompletas o cambiar en cualquier momento."
+        },
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
         "and": "y",
@@ -1032,7 +1036,8 @@
                 "name": "Tripulantes Propia"
             }
         },
-        "ships": "Buques"
+        "ships": "Buques",
+        "ship_info": "Información del buque"
     },
     "player_badge": {
         "n_immortals": "{{n}} inmortales",
@@ -1192,6 +1197,7 @@
         }
     },
     "ship": {
+        "boosts_x_by_y": "Aumenta {{x}} en {{y}}",
         "accuracy": "Precisión",
         "amount": "Cantidad",
         "antimatter": "Antimateria",
@@ -1205,7 +1211,8 @@
         "calc": {
             "calculating_pct_ellipses": "Calculando ({{percent}}% completado) ...",
             "generating_permutations_ellipses": "Generando permutaciones...",
-            "sorting_finalizing_ellipses": "Ordenar y finalizar resultados..."
+            "sorting_finalizing_ellipses": "Ordenar y finalizar resultados...",
+            "run_current_line_up": "Ejecutar tripulantes actuales"
         },
         "calculated_crew": "Tripulación calculada",
         "charge_phase": {

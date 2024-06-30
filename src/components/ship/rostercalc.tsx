@@ -109,7 +109,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
     });
 
-    const battleModes = ['pvp', 'skirmish', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'].map((mode) => {
+    const battleModes = (globalContext.player.playerData ? ['pvp', 'skirmish', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'] : ['pvp', 'skirmish']).map((mode) => {
         let rarity = 0;
         if (mode.startsWith('fbb')) {
             let sp = mode.split("_");
@@ -206,15 +206,16 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             </div>
                         </div>
                     </div>
-                    <div style={{marginTop: "1em"}}>
-                        
+                    <div style={{marginTop: "1em"}}>                        
                         <Button color='green' onClick={() => recommend()}>{running ? t('global.cancel') : t('global.recommend_crew')}</Button>
+                        {!running && crewStations?.filter(c => !!c).length === ship?.battle_stations?.length && 
+                            <Button color='green' onClick={() => recommend(true)}>{t('ship.calc.run_current_line_up')}</Button>}
                         {!running && <Button onClick={() => setSuggestions([])}>{t('global.clear')}</Button>}
                     </div>
 				</div>
     </React.Fragment>
 
-    function recommend() {
+    function recommend(current?: boolean) {
         if (running) {
             cancel();
             return;
@@ -223,7 +224,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             if (battleMode.startsWith('fbb') && !opponent) return;
             const config = {
                 ship: JSON.parse(JSON.stringify(ship)),
-                crew,
+                crew: current ? crewStations : crew,
                 battle_mode: battleMode,
                 power_depth: powerDepth,
                 min_rarity: minRarity,

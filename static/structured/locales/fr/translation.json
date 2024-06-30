@@ -612,6 +612,10 @@
         }
     },
     "global": {
+        "work_in_progress": {
+            "title": "Travail en cours !",
+            "heading": "Cette page est un travail en cours. Certaines fonctions et fonctionnalités peuvent être non fonctionnelles, cassées, manquantes, incomplètes ou modifiées à tout moment."
+        },
         "admiral": "Amiral",
         "advanced_settings": "Réglages Avancés",
         "and": "et",
@@ -1033,7 +1037,8 @@
                 "name": "Équipage Possédé"
             }
         },
-        "ships": "Vaisseaux"
+        "ships": "Vaisseaux",
+        "ship_info": "Informations sur le vaisseau"
     },
     "player_badge": {
         "n_immortals": "{{n}} immortels",
@@ -1193,6 +1198,7 @@
         }
     },
     "ship": {
+        "boosts_x_by_y": "Augmente {{x}} de {{y}}",
         "accuracy": "Précision",
         "amount": "Montant",
         "antimatter": "Antimatière",
@@ -1206,7 +1212,8 @@
         "calc": {
             "calculating_pct_ellipses": "Calcul ({{percent}} % terminé)...",
             "generating_permutations_ellipses": "Génération de permutations...",
-            "sorting_finalizing_ellipses": "Tri et finalisation des résultats..."
+            "sorting_finalizing_ellipses": "Tri et finalisation des résultats...",
+            "run_current_line_up": "Exécuter les équipiers actuelles"
         },
         "calculated_crew": "Équipage calculé",
         "charge_phase": {
