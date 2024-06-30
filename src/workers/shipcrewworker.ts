@@ -605,7 +605,7 @@ const ShipCrewWorker = {
                     battle_time: attacks.length,
                     crew: result_crew,
                     percentile: 0,
-                    ship,
+                    ship: attacks[0].ship,
                     weighted_attack: attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0),
                 });
             }
