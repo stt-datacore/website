@@ -174,6 +174,9 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 				let h = highestLevel(schematic.ship);
 				if (schematic.ship.max_level && h === schematic.ship.max_level + 1 && schematic.ship.levels[`${h}`].hull) {
 					schematic.ship = { ... schematic.ship, ...schematic.ship.levels[`${h}`] };
+					schematic.ship.attack = schematic.ship.levels![`${h}`].attack_power;
+					schematic.ship.accuracy = schematic.ship.levels![`${h}`].accuracy_power;
+					schematic.ship.evasion = schematic.ship.levels![`${h}`].evasion_power;
 				}
 			}
 			schematic.ship.level ??= 0;
