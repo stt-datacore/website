@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Divider, Dropdown, Message } from 'semantic-ui-react';
 
 import { IEventData } from '../../model/events';
-import { GameEvent, PlayerEquipmentItem } from '../../model/player';
+import { GameEvent, PlayerEquipmentItem, TranslateMethod } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
 
 import { IShuttleScores, IDropdownOption } from './model';
@@ -60,6 +60,7 @@ type EventProjectionProps = {
 export const EventProjection = (props: EventProjectionProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, ephemeral } = globalContext.player;
+	const { t, tfmt } = globalContext.localized;
 	const { eventData, shuttleScores } = props;
 
 	const [eventState, setEventState] = React.useState<IEventState>(defaultEventState);
@@ -143,11 +144,14 @@ export const EventProjection = (props: EventProjectionProps) => {
 					{renderNeeds()}
 				</div>
 				<div style={{ textAlign: 'center' }}>
-					You will finish the {eventState.endType} with:
+					{eventState.endType === 'event' && t('shuttle_helper.event.finish_event_with_colon')}
+					{eventState.endType === 'faction phase' && t('shuttle_helper.event.finish_faction_with_colon')}					
 					<div style={{ margin: '.5em 0', fontSize: '2em' }}>
-						<b>{getProjection().toLocaleString()} VP</b>
+						<b>
+							{getProjection().toLocaleString()} {t('shuttle_helper.event.vp')}
+						</b>
 					</div>
-					(Current VP: {eventState.currentVP.toLocaleString()})
+					({t('shuttle_helper.event.current_vp', { vp: eventState.currentVP.toLocaleString() })})
 				</div>
 			</div>
 		</Message>
@@ -235,13 +239,16 @@ export const EventProjection = (props: EventProjectionProps) => {
 				projections.boosts.type === 'timeReduction' && projections.boosts.rarity === boostRarity
 			).reduce((prev, curr) => prev + curr.boosts.count, 0);
 			if (timeReductions > 0) {
+				const itemReference: PlayerEquipmentItem | undefined = globalContext.core.items.find(item =>
+					item.symbol === `time_bonus_${boostRarity}_shuttle_consumable`
+				);
 				const itemInventory: PlayerEquipmentItem | undefined = playerData?.player.character.items.find(item =>
 					item.symbol === `time_bonus_${boostRarity}_shuttle_consumable`
 				);
 				needs.push(
 					<span>
-						<b>{timeReductions} {boostRarity}* time reduction{timeReductions !== 1 ? 's' : ''}</b>
-						{itemInventory && <>{` `}({itemInventory.quantity} in inventory)</>}
+						<b>{timeReductions} x {boostRarity}* {itemReference?.name}</b>
+						{itemInventory && <>{` `}({t('items.n_owned', { n: `${itemInventory.quantity}` })})</>}
 					</span>
 				);
 			}
@@ -251,13 +258,13 @@ export const EventProjection = (props: EventProjectionProps) => {
 
 		return (
 			<div style={{ marginTop: '2em', textAlign: 'center' }}>
-				This will require {
-					needs.map((need, idx) => {
+				{tfmt('items.this_will_require_items', {
+					items: <>{needs.map((need, idx) => {
 						let delimiter: string = idx > 0 ? ', ' : '';
-						if (needs.length > 1 && idx === needs.length - 1) delimiter += ' and ';
+						if (needs.length > 1 && idx === needs.length - 1) delimiter += ` ${t('global.and')} `;
 						return <span key={idx}>{delimiter}{need}</span>;
-					})
-				}.
+					})}</>
+				})}
 			</div>
 		);
 	}
@@ -270,6 +277,7 @@ type SchedulerProps = {
 };
 
 const Scheduler = (props: SchedulerProps) => {
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { scoredShuttles, schedules, setSchedules } = props;
 
 	const scheduledShuttles: number = schedules.reduce((prev, curr) => prev + curr.shuttleCount, 0);
@@ -279,7 +287,7 @@ const Scheduler = (props: SchedulerProps) => {
 			{schedules.map((schedule, idx) => renderSchedule(schedule, idx))}
 			{scheduledShuttles < scoredShuttles && (
 				<div style={{ marginTop: '2em' }}>
-					<Button compact content='Schedule other shuttles' onClick={addSchedule} />
+					<Button compact content={t('shuttle_helper.missions.schedule_other')} onClick={addSchedule} />
 				</div>
 			)}
 		</React.Fragment>
@@ -343,12 +351,18 @@ type ScheduleRowProps = {
 };
 
 const ScheduleRow = (props: ScheduleRowProps) => {
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { schedule, setSchedule, maxShuttles, firstSchedule, deleteSchedule } = props;
+	
 	return (
 		<React.Fragment>
 			{!firstSchedule && <Divider horizontal>And</Divider>}
 			<div>
-				Run {renderCount()} x {renderDuration()} shuttle(s) every {renderRate()}
+				{tfmt('shuttle_helper.event.runner', {
+					count: renderCount(),
+					duration: renderDuration(),
+					rate: renderRate()
+				})}				
 				{!firstSchedule && (
 					<span style={{ paddingLeft: '1em' }}>
 						<Button compact icon='x' onClick={deleteSchedule} />
@@ -378,12 +392,12 @@ const ScheduleRow = (props: ScheduleRowProps) => {
 
 	function renderDuration(): JSX.Element {
 		const durationOptions: IDropdownOption[] = [
-			{ key: '30m', value: 30, text: <span style={{ whiteSpace: 'nowrap' }}>30-minute</span> },
-			{ key: '60m', value: 60, text: <span style={{ whiteSpace: 'nowrap' }}>60-minute</span> },
-			{ key: '90m', value: 90, text: <span style={{ whiteSpace: 'nowrap' }}>90-minute</span> },
-			{ key: '2h', value: 120, text: <span style={{ whiteSpace: 'nowrap' }}>2-hour</span> },
-			{ key: '3h', value: 180, text: <span style={{ whiteSpace: 'nowrap' }}>3-hour</span> },
-			{ key: '9h', value: 540, text: <span style={{ whiteSpace: 'nowrap' }}>9-hour</span> }
+			{ key: '30m', value: 30, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_minute_class', { minutes: '30'})}</span> },
+			{ key: '60m', value: 60, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_minute_class', { minutes: '60'})}</span> },
+			{ key: '90m', value: 90, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_minute_class', { minutes: '90'})}</span> },
+			{ key: '2h', value: 120, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hour_class', { hours: '2'})}</span> },
+			{ key: '3h', value: 180, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hour_class', { hours: '3'})}</span> },
+			{ key: '9h', value: 540, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hour_class', { hours: '9'})}</span> }
 		];
 		return (
 			<Dropdown
@@ -398,49 +412,49 @@ const ScheduleRow = (props: ScheduleRowProps) => {
 
 	function renderRate(): JSX.Element {
 		let regularityOptions: IDropdownOption[] = [
-			{ key: '3h', value: 180/180, text: <span style={{ whiteSpace: 'nowrap' }}>3 hours</span> },
-			{ key: '3.5h', value: 180/210, text: <span style={{ whiteSpace: 'nowrap' }}>3.5 hours</span> },
-			{ key: '4h', value: 180/240, text: <span style={{ whiteSpace: 'nowrap' }}>4 hours</span> },
-			{ key: '6h', value: 180/360, text: <span style={{ whiteSpace: 'nowrap' }}>6 hours</span> },
-			{ key: '9h', value: 180/540, text: <span style={{ whiteSpace: 'nowrap' }}>9 hours</span> },
-			{ key: '12h', value: 180/720, text: <span style={{ whiteSpace: 'nowrap' }}>12 hours</span> },
-			{ key: '24h', value: 180/1440, text: <span style={{ whiteSpace: 'nowrap' }}>24 hours</span> }
+			{ key: '3h', value: 180/180, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '3'})}</span> },
+			{ key: '3.5h', value: 180/210, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '3.5'})}</span> },
+			{ key: '4h', value: 180/240, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '4'})}</span> },
+			{ key: '6h', value: 180/360, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '6'})}</span> },
+			{ key: '9h', value: 180/540, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '9'})}</span> },
+			{ key: '12h', value: 180/720, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '12'})}</span> },
+			{ key: '24h', value: 180/1440, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '24'})}</span> }
 		];
 		if (schedule.shuttleDuration === 30) {
 			regularityOptions = [
-				{ key: '30m', value: 30/30, text: <span style={{ whiteSpace: 'nowrap' }}>30 minutes</span> },
-				{ key: '40m', value: 30/40, text: <span style={{ whiteSpace: 'nowrap' }}>40 minutes</span> },
-				{ key: '50m', value: 30/50, text: <span style={{ whiteSpace: 'nowrap' }}>50 minutes</span> }
+				{ key: '30m', value: 30/30, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_minutes', { minutes: '30'})}</span> },
+				{ key: '40m', value: 30/40, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_minutes', { minutes: '40'})}</span> },
+				{ key: '50m', value: 30/50, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_minutes', { minutes: '50'})}</span> }
 			];
 		}
 		else if (schedule.shuttleDuration === 60) {
 			regularityOptions = [
-				{ key: '60m', value: 60/60, text: <span style={{ whiteSpace: 'nowrap' }}>30 minutes</span> },
-				{ key: '70m', value: 60/70, text: <span style={{ whiteSpace: 'nowrap' }}>70 minutes</span> },
-				{ key: '80m', value: 60/80, text: <span style={{ whiteSpace: 'nowrap' }}>80 minutes</span> }
+				{ key: '60m', value: 60/60, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_minutes', { minutes: '30'})}</span> },
+				{ key: '70m', value: 60/70, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_minutes', { minutes: '70'})}</span> },
+				{ key: '80m', value: 60/80, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_minutes', { minutes: '80'})}</span> }
 			];
 		}
 		else if (schedule.shuttleDuration === 90) {
 			regularityOptions = [
-				{ key: '90m', value: 90/90, text: <span style={{ whiteSpace: 'nowrap' }}>90 minutes</span> },
-				{ key: '105m', value: 90/105, text: <span style={{ whiteSpace: 'nowrap' }}>105 minutes</span> },
-				{ key: '120m', value: 90/120, text: <span style={{ whiteSpace: 'nowrap' }}>2 hours</span> },
-				{ key: '150m', value: 90/150, text: <span style={{ whiteSpace: 'nowrap' }}>2.5 hours</span> }
+				{ key: '90m', value: 90/90, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_minutes', { minutes: '90'})}</span> },
+				{ key: '105m', value: 90/105, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_minutes', { minutes: '105'})}</span> },
+				{ key: '120m', value: 90/120, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '2'})}</span> },
+				{ key: '150m', value: 90/150, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '2.5'})}</span> }
 			];
 		}
 		else if (schedule.shuttleDuration === 120) {
 			regularityOptions = [
-				{ key: '120m', value: 120/120, text: <span style={{ whiteSpace: 'nowrap' }}>2 hours</span> },
-				{ key: '135m', value: 120/135, text: <span style={{ whiteSpace: 'nowrap' }}>2.25 hours</span> },
-				{ key: '150m', value: 120/150, text: <span style={{ whiteSpace: 'nowrap' }}>2.5 hours</span> }
+				{ key: '120m', value: 120/120, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '2'})}</span> },
+				{ key: '135m', value: 120/135, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '2.25'})}</span> },
+				{ key: '150m', value: 120/150, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '2.5'})}</span> }
 			];
 		}
 		else if (schedule.shuttleDuration === 540) {
 			regularityOptions = [
-				{ key: '9h', value: 540/540, text: <span style={{ whiteSpace: 'nowrap' }}>9 hours</span> },
-				{ key: '12h', value: 540/720, text: <span style={{ whiteSpace: 'nowrap' }}>12 hours</span> },
-				{ key: '18h', value: 540/1080, text: <span style={{ whiteSpace: 'nowrap' }}>18 hours</span> },
-				{ key: '24h', value: 540/1440, text: <span style={{ whiteSpace: 'nowrap' }}>24 hours</span> }
+				{ key: '9h', value: 540/540, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '9'})}</span> },
+				{ key: '12h', value: 540/720, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '12'})}</span> },
+				{ key: '18h', value: 540/1080, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '18'})}</span> },
+				{ key: '24h', value: 540/1440, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '24'})}</span> }
 			];
 		}
 		return (

@@ -276,8 +276,11 @@
         "n_d": "{{days}} d",
         "n_days": "{{days}} days",
         "n_h": "{{hours}} h",
+        "n_hour_class": "{{hours}}-hour",
         "n_hours": "{{hours}} hours",
         "n_m": "{{minutes}} m",
+        "n_minute_class": "{{minutes}}-minute",
+        "n_minutes": "{{minutes}} minutes",
         "title": "Duration: {{duration}}"
     },
     "event_planner": {
@@ -490,16 +493,12 @@
             "crit_multiplier": "{{p}}% crit multiplier",
             "incidence": "{{name}} linear skill incidence weight",
             "index": "{{name}} linear skill index weight",
-            "min_multiplier": "Minimum proficiency multiplier",
             "max_multiplier": "Maximum proficiency multiplier",
+            "min_multiplier": "Minimum proficiency multiplier",
             "primary": "{{quipment_ranks.primary}}",
             "secondary": "{{quipment_ranks.secondary}}",
             "tertiary": "{{quipment_ranks.tertiary}}"
         },
-        "no_limit": "No limit",
-        "top_n": "Top {{n}}",
-        "show_top_crew": "Show top crew",
-        "max_results_per_table": "Max results per table",
         "apply_buffs": "Apply buffs to stats",
         "base_power": "Base Power",
         "browse_gauntlet_exclusives": "Browse Gauntlet Exclusive Crew (Click Here)",
@@ -525,7 +524,9 @@
         },
         "jackpot_crew": "Jackpot Crew",
         "jackpot_crew_for_date": "Jackpot Crew for {{date}}",
+        "max_results_per_table": "Max results per table",
         "min_max_proficiency": "Minimum max-proficiency",
+        "no_limit": "No limit",
         "note_live_crew_highlight_msg": "Note: Your selected gauntlet crew will appear highlighted in green, while opponents will appear highlighted in red.",
         "note_opponent_stats_no_calc_msg": "Note: Opponent stats are not recomputed",
         "note_owned_crew_power_calc_msg": "Note: If owned crew are detected, then their current level in your roster may be used to compute their rank, depending on filter settings.",
@@ -575,7 +576,9 @@
             }
         },
         "show_buffs_heading": "Show Buffs",
+        "show_top_crew": "Show top crew",
         "skills_and_pairs": "Skills & Pairs",
+        "top_n": "Top {{n}}",
         "unowned_status": {
             "any": "All Crew",
             "gauntlet": "Gauntlet Exclusive Crew",
@@ -603,9 +606,6 @@
         }
     },
     "global": {
-        "min_rarity": "Min. rarity",
-        "max_rarity": "Max. rarity",
-        "percentile": "Percentile",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
         "and": "and",
@@ -661,12 +661,14 @@
             "starbase_component": "Starbase component",
             "valor": "Valor",
             "voyage_consumable": "Voyage Revival Tokens"
-        },        
+        },
         "load_default_settings": "Load Default Settings",
         "load_defaults": "Load Defaults",
         "loading_ellipses": "Loading ...",
         "loading_please_wait_ellipses": "Loading. Please wait...",
+        "max_rarity": "Max. rarity",
         "member": "Member",
+        "min_rarity": "Min. rarity",
         "name": "Name",
         "never": "Never",
         "new": "New",
@@ -677,6 +679,7 @@
         "officer": "Officer",
         "optional": "Optional",
         "or": "or",
+        "percentile": "Percentile",
         "permalink": "permalink",
         "portal": "Portal",
         "recommend_crew": "Recommend Crew",
@@ -801,7 +804,8 @@
         "post_immortalization_advancement": "Post-immortalization advancement",
         "recipe": "Recipe",
         "required_traits": "Required Traits: {{traits}}",
-        "show_unowned_needed": "Show unowned needed items"
+        "show_unowned_needed": "Show unowned needed items",
+        "this_will_require_items": "This will require {{items}}"
     },
     "items_unneeded": {
         "description": "Use this tool to help identify items you can safely discard to free up space in your inventory.",
@@ -1180,24 +1184,20 @@
         }
     },
     "ship": {
-        "calc": {
-            "generating_permutations_ellipses": "Generating permutations ...",
-            "calculating_pct_ellipses": "Calculating ({{percent}}% complete) ...",
-            "sorting_finalizing_ellipses": "Sorting and finalizing results ..."
-        },
-        "battle_mode": "Battle mode",
-        "pvp": "{{global.item_types.arena}}",
-        "fbb": "{{menu.tools.fleet_boss_battles}}",
-        "skirmish": "{{event_type.skirmish}}",
-        "power_depth": "Power level depth",
         "accuracy": "Accuracy",
         "amount": "Amount",
         "antimatter": "Antimatter",
         "attack": "Attack",
         "attack_speed": "Attack Speed",
+        "battle_mode": "Battle mode",
         "battle_stations": "Battle Stations",
         "bonus_ability": "Bonus Ability",
         "boosts": "Boosts",
+        "calc": {
+            "calculating_pct_ellipses": "Calculating ({{percent}}% complete) ...",
+            "generating_permutations_ellipses": "Generating permutations ...",
+            "sorting_finalizing_ellipses": "Sorting and finalizing results ..."
+        },
         "calculated_crew": "Calculated Crew",
         "charge_phase": {
             "after_seconds": "After {{seconds}}s ",
@@ -1205,23 +1205,27 @@
             "cooldown": "{{time}}s cooldown",
             "duration": "{{time}}s duration"
         },
-        "crew_with_trigger_check": "Only show crew with matching trigger",
         "charge_phases": "Charge Phases",
         "clear_station": "Clear Station",
         "cooldown": "Cooldown",
+        "crew_with_trigger_check": "Only show crew with matching trigger",
         "crit_bonus": "Crit Bonus",
         "crit_rating": "Crit Rating",
         "cycle_time": "Cycle Time",
         "duration": "Duration",
         "equipment_bonus": "Equipment Bonus",
         "evasion": "Evasion",
+        "fbb": "{{menu.tools.fleet_boss_battles}}",
         "grants": "Grants",
         "handicap": "Handicap",
         "hull": "Hull",
         "initialize": "Initialize",
         "max_level": "Max Level",
+        "power_depth": "Power level depth",
+        "pvp": "{{global.item_types.arena}}",
         "shields": "Shields",
         "ship": "Ship",
+        "skirmish": "{{event_type.skirmish}}",
         "trigger": "Trigger",
         "triggers": "Triggers",
         "unlimited": "Unlimited",
@@ -1245,17 +1249,29 @@
             "you_have_n_running": "You have {{n}} shuttle missions running in-game.",
             "you_have_one_running": "You have 1 shuttle mission running in-game."
         },
+        "event": {
+            "current_vp": "Current VP: {{vp}}",
+            "finish_event_with_colon": "You will finish the event with:",
+            "finish_phase_with_colon": "You will finish the faction phase with:",
+            "runner": "Run {{count}} x {{duration}} shuttles every {{rate}}",
+            "victory_points": "Victory Points",
+            "vp": "VP"
+        },
         "heading": "Use this tool to help plan your shuttles.",
         "missions": {
             "columns": {
+                "best": "{{event_planner.table.columns.best}}",
+                "current_assignment": "Current Assignment",
                 "faction": "Faction",
+                "here": "Here",
                 "mission": "Mission",
                 "name": "{{global.name}}",
                 "seat": "Seat",
                 "seat_assignments": "Seat Assignments",
                 "skills": "Skills",
                 "status": "Status",
-                "success_chance": "Success Chance"
+                "success_chance": "Success Chance",
+                "there": "There"
             },
             "create": "Create a Mission",
             "heading": "Select all the missions that you want to run, then tap '{{global.recommend_crew}}' to see the best seats for your crew.",
@@ -1263,6 +1279,9 @@
                 "missing": "If the mission you want isn't listed above, {{link}} to input the mission parameters manually.",
                 "tip": "Tip: open shuttle missions in-game before uploading your player data to DataCore so that this tool can import the missions automatically."
             },
+            "n_percent_chance": "{{n}}% Chance",
+            "next_seat": "Next Seat",
+            "schedule_other": "Schedule other shuttles",
             "select": {
                 "all_n": "Select all {{n}}",
                 "group": "Select group",
