@@ -1193,6 +1193,8 @@
         "amount": "Menge",
         "antimatter": "Antimaterie",
         "attack": "Angriffs",
+        "min_attack": "Min. Angriffs",
+        "max_attack": "Max. Angriffs",
         "attack_speed": "Angriffsgeschwindigkeit",
         "battle_mode": "Kampfmodus",
         "battle_stations": "Kampfstationen",

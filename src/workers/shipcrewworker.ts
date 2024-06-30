@@ -122,9 +122,11 @@ export function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, of
     let base_attack = ship.attack;
     let base_acc = ship.accuracy;
     let base_eva = ship.evasion;
-    let bonus = ship.crit_bonus / (100 * 100);
+    let bonus = ship.crit_bonus;
     let crit = ship.crit_chance;
     let sum_attack = base_attack;
+    let min_attack = base_attack;
+    let max_attack = base_attack;
     let highest_dmg = 0;
     let highest_acc = 0;
     let sum_acc = base_acc;
@@ -134,7 +136,7 @@ export function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, of
             crit += action.ability.amount;
         }
         else if (action.ability?.type === 5) {
-            bonus += (action.ability.amount / (100 * 100));
+            bonus += action.ability.amount;
         }        
         if (action.bonus_type === 0) {
             if (action.ability?.type === 0) {
@@ -170,17 +172,32 @@ export function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, of
         sum_acc += PowerTable[highest_acc];
     }
 
-    sum_attack += ((sum_attack * bonus) * chance);
+    bonus /= 10000;
 
+    max_attack += ((sum_attack * bonus)); 
+    sum_attack += ((sum_attack * bonus) * chance);
+    min_attack = sum_attack;
+
+    let hc = 0;
     if (opponent) {
-        sum_attack *= hitChance(sum_acc, opponent.evasion);
+        hc = hitChance(sum_acc, opponent.evasion);
     }
     else {
-        sum_attack *= hitChance(sum_acc, base_eva);
+        hc = hitChance(sum_acc, base_eva);
     }
+
+    min_attack *= hc;
+    sum_attack *= hc;
+    max_attack *= hc;
+
     offense ??= 0;
-    offense = sum_attack * offense;
-    return sum_attack + offense;
+    let atk_off = sum_attack * offense;
+    sum_attack += atk_off;
+    atk_off = min_attack * offense;
+    min_attack += atk_off;
+    atk_off = max_attack * offense;
+    max_attack += atk_off;
+    return [max_attack, sum_attack, min_attack];
 }
 
 export function hitChance(acc: number, opp_eva: number) {
@@ -191,12 +208,15 @@ export function hitsPerSecond(ship: Ship) {
     return ship.attacks_per_second;
 }
 
-export interface Attacks {
+interface Attacks {
     actions: ShipAction[];
     second: number;
     attack: number;
+    min_attack: number;
+    max_attack: number;
     ship: Ship;
 }
+
 interface BonusAction extends ShipAction {
     orig_bonus?: number;
     orig_ability_amount?: number;
@@ -368,11 +388,17 @@ export function getOverlaps(input_ship: Ship, crew: CrewMember[], opponent?: Shi
             }
         }
 
-        let sumattack = sumAttack(ship, current, opponent, offense);
+        let [maxattack, sumattack, minattack] = sumAttack(ship, current, opponent, offense);
+        
+        let min = minattack * ship.attacks_per_second;
         let atk = sumattack * ship.attacks_per_second;
+        let max = maxattack * ship.attacks_per_second;
+
         if (atm > 1) {
+            min += minattack * atm;
             atk += sumattack * atm;
-        }        
+            max += maxattack * atm;
+        }
 
         if (!cloaked) {
             let mul = current.filter(f => f.ability?.type === 11).map(m => m.ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
@@ -389,7 +415,9 @@ export function getOverlaps(input_ship: Ship, crew: CrewMember[], opponent?: Shi
         attacks.push({
             actions: [...current],
             second: sec,
-            attack: atk,
+            attack: max,
+            min_attack: min,
+            max_attack: max,
             ship
         });
 
@@ -602,6 +630,8 @@ const ShipCrewWorker = {
                 results.push({
                     activations: attacks.reduce((p, n) => p + n.actions.length, 0),
                     attack: attacks.reduce((p, n) => p + n.attack, 0),
+                    min_attack: attacks.reduce((p, n) => p + n.min_attack, 0),
+                    max_attack: attacks.reduce((p, n) => p + n.max_attack, 0),
                     battle_time: attacks.length,
                     crew: result_crew,
                     percentile: 0,
