@@ -280,8 +280,11 @@
         "n_d": "{{days}} d",
         "n_days": "{{days}} días",
         "n_h": "{{hours}} h",
+        "n_hour_class": "{{hours}}-hora",
         "n_hours": "{{hours}} horas",
         "n_m": "{{minutes}} m",
+        "n_minute_class": "{{minutes}}-minuto",
+        "n_minutes": "{{minutes}} minutos",
         "title": "Duración: {{duration}}"
     },
     "event_planner": {
@@ -494,16 +497,12 @@
             "crit_multiplier": "{{p}}% multiplicador de críticos",
             "incidence": "Peso de incidencia de habilidad lineal {{name}}",
             "index": "Ponderación del índice de habilidad lineal {{name}}",
-            "min_multiplier": "Multiplicador de competencia mínimo",
             "max_multiplier": "Multiplicador de competencia máximo",
+            "min_multiplier": "Multiplicador de competencia mínimo",
             "primary": "{{quipment_ranks.primary}}",
             "secondary": "{{quipment_ranks.secondary}}",
             "tertiary": "{{quipment_ranks.tertiary}}"
         },
-        "no_limit": "Sin límite",
-        "top_n": "Los {{n}} primeros",
-        "show_top_crew": "Mostrar a los mejores tripulantes",
-        "max_results_per_table": "Resultados máximos por tabla",
         "apply_buffs": "Aplicar efectos a las estadísticas",
         "base_power": "Poder básico",
         "browse_gauntlet_exclusives": "Buscar tripulantes exclusivos de reto (toca aquí)",
@@ -529,7 +528,9 @@
         },
         "jackpot_crew": "Tripulante del premio",
         "jackpot_crew_for_date": "Tripulante del premio mayor para {{date}}",
+        "max_results_per_table": "Resultados máximos por tabla",
         "min_max_proficiency": "Competencia máxima mínima",
+        "no_limit": "Sin límite",
         "note_live_crew_highlight_msg": "Nota: Tu equipo de guantelete seleccionado aparecerá resaltado en verde, mientras que los oponentes aparecerán resaltados en rojo.",
         "note_opponent_stats_no_calc_msg": "Nota: Las estadísticas del oponente no se vuelven a calcular",
         "note_owned_crew_power_calc_msg": "Nota: Si se detecta tripulación propia, entonces su nivel actual en su lista puede usarse para calcular su rango, dependiendo de la configuración del filtro.",
@@ -580,7 +581,9 @@
             }
         },
         "show_buffs_heading": "Mostrar Efectos",
+        "show_top_crew": "Mostrar a los mejores tripulantes",
         "skills_and_pairs": "Habilidades y pares",
+        "top_n": "Los {{n}} primeros",
         "unowned_status": {
             "any": "Todas de las tripulantes",
             "gauntlet": "Tripulantes exclusiva del reto",
@@ -608,9 +611,6 @@
         }
     },
     "global": {
-        "min_rarity": "Rareza mín.",
-        "max_rarity": "Rareza máx.",
-        "percentile": "Percentil",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
         "and": "y",
@@ -667,11 +667,13 @@
             "valor": "Valor",
             "voyage_consumable": "Fichas de avivamiento del viaje"
         },
-        "load_defaults": "Cargar predeterminadas",
         "load_default_settings": "Cargar configuración predeterminada",
+        "load_defaults": "Cargar predeterminadas",
         "loading_ellipses": "Cargando ...",
         "loading_please_wait_ellipses": "Cargando. Espere por favor...",
+        "max_rarity": "Rareza máx.",
         "member": "Miembro",
+        "min_rarity": "Rareza mín.",
         "name": "Nombre",
         "never": "Nunca",
         "new": "Nuevo",
@@ -684,6 +686,7 @@
         "officer": "Oficial",
         "optional": "Opcional",
         "or": "o",
+        "percentile": "Percentil",
         "permalink": "enlace permanente",
         "portal": "Portal",
         "recommend_crew": "Recomendar tripulantes",
@@ -810,7 +813,8 @@
         "post_immortalization_advancement": "Avance posterior a la inmortalización",
         "recipe": "Receta",
         "required_traits": "Rasgos requeridas: {{traits}}",
-        "show_unowned_needed": "Mostrar artículos necesarios sin propietario"
+        "show_unowned_needed": "Mostrar artículos necesarios sin propietario",
+        "this_will_require_items": "Cela nécessitera {{items}}"
     },
     "items_unneeded": {
         "description": "Utilice esta herramienta para ayudar a identificar elementos que puede descartar de forma segura para liberar espacio en su inventario.",
@@ -1187,50 +1191,50 @@
             "title": "¡Perfil de jugador compartido!"
         }
     },
-    "ship": {        
-        "calc": {
-            "generating_permutations_ellipses": "Generando permutaciones...",
-            "calculating_pct_ellipses": "Calculando ({{percent}}% completado) ...",
-            "sorting_finalizing_ellipses": "Ordenar y finalizar resultados..."
-        },
-        "battle_mode": "Modo de batalla",
-        "pvp": "{{global.item_types.arena}}",
-        "fbb": "{{menu.tools.fleet_boss_battles}}",
-        "skirmish": "{{event_type.skirmish}}",
-        "power_depth": "Profundidad del nivel de potencia",
+    "ship": {
         "accuracy": "Precisión",
         "amount": "Cantidad",
         "antimatter": "Antimateria",
         "attack": "Ataque",
         "attack_speed": "Velocidad de ataque",
+        "battle_mode": "Modo de batalla",
         "battle_stations": "Estaciones de batalla",
         "bonus_ability": "Habilidad Bonus",
         "boost": "Aumento",
         "boosts": "Aumentos",
+        "calc": {
+            "calculating_pct_ellipses": "Calculando ({{percent}}% completado) ...",
+            "generating_permutations_ellipses": "Generando permutaciones...",
+            "sorting_finalizing_ellipses": "Ordenar y finalizar resultados..."
+        },
+        "calculated_crew": "Tripulación calculada",
         "charge_phase": {
             "after_seconds": "Después de {{seconds}}s ",
             "bonus": "+{{amount}} a {{ability}}",
             "cooldown": "{{time}}s recargar",
             "duration": "{{time}}s duración"
         },
-        "calculated_crew": "Tripulación calculada",
-        "crew_with_trigger_check": "Mostrar solo las tripulantes con el activador coincidente",
         "charge_phases": "Fases de Carga",
         "clear_station": "Borrar estación",
         "cooldown": "Recargar",
+        "crew_with_trigger_check": "Mostrar solo las tripulantes con el activador coincidente",
         "crit_bonus": "Bonificación de Crít",
         "crit_rating": "Frecuencia de Crít",
         "cycle_time": "Uno ciclo",
         "duration": "Duración",
         "equipment_bonus": "Bonificación de equipo",
         "evasion": "Evasión",
+        "fbb": "{{menu.tools.fleet_boss_battles}}",
         "grants": "Concesiones",
         "handicap": "Handicap",
         "hull": "Casco",
         "initialize": "Iniciar",
         "max_level": "Nivel máximo",
+        "power_depth": "Profundidad del nivel de potencia",
+        "pvp": "{{global.item_types.arena}}",
         "shields": "Escudos",
         "ship": "buque",
+        "skirmish": "{{event_type.skirmish}}",
         "trigger": "Activación",
         "triggers": "Activadores",
         "unlimited": "Ilimitado",
@@ -1254,17 +1258,29 @@
             "you_have_n_running": "Tienes {{n}} misiones de lanzadera ejecutándose en el juego.",
             "you_have_one_running": "Tienes 1 misión de lanzadera ejecutándose en el juego."
         },
+        "event": {
+            "current_vp": "PV actuales: {{vp}}",
+            "finish_event_with_colon": "Terminarás el evento con:",
+            "finish_phase_with_colon": "Terminarás la fase de facción con:",
+            "runner": "Ejecute {{count}} x {{duration}} lanzaderas cada {{rate}}",
+            "victory_points": "Puntos de victoria",
+            "vp": "PV"
+        },
         "heading": "Utilice esta herramienta para ayudarle a planificar sus misiones de lanzadera.",
         "missions": {
             "columns": {
+                "best": "{{event_planner.table.columns.best}}",
+                "current_assignment": "Asignación Actual",
                 "faction": "Facción",
+                "here": "Aquí",
                 "mission": "Misión",
                 "name": "{{global.name}}",
                 "seat": "Asiento",
-                "seat_assignments": "Asignación de asientos",
+                "seat_assignments": "Asignación de Asientos",
                 "skills": "Habilidades",
                 "status": "Estado",
-                "success_chance": "Oportunidad de éxito"
+                "success_chance": "Posibilidad de Éxito",
+                "there": "Allá"
             },
             "create": "cree una misión",
             "heading": "Selecciona todas las misiones que quieras ejecutar y luego toca '{{global.recommend_crew}}' para ver los mejores asientos para tu tripulantes.",
@@ -1272,6 +1288,9 @@
                 "missing": "Si la misión que desea no aparece en la lista anterior, {{link}} para ingresar los parámetros de la misión manualmente.",
                 "tip": "Consejo: abre las misiones de transporte en el juego antes de cargar los datos de tu jugador en DataCore para que esta herramienta pueda importar las misiones automáticamente."
             },
+            "n_percent_chance": "{{n}}% de Probabilidad",
+            "next_seat": "Próximo Asiento",
+            "schedule_other": "Programar otras lanzaderas",
             "select": {
                 "all_n": "Seleccionar los {{n}}",
                 "group": "Seleccionar un grupo",
