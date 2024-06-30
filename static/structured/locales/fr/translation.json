@@ -155,8 +155,8 @@
         "active_shuttles": "Considérez les équipiers sur les navettes actives",
         "active_voyage": "Considérez les équipiers en voyage actif",
         "consider_frozen": "Considérez les équipiers gelés",
-        "consider_unowned": "Considérez les équipiers sans propriétaire",
         "consider_shared": "Envisagez l'équipier partagé",
+        "consider_unowned": "Considérez les équipiers sans propriétaire",
         "exclude_quipped": "Exclure les équipiers quipés",
         "shared_crew_popup": "Les nombres de compétences de l'équipier partagé sont basés sur les buffs de vos joueurs et peuvent ne pas correspondre au score réel"
     },
@@ -613,10 +613,6 @@
         }
     },
     "global": {
-        "work_in_progress": {
-            "title": "Travail en cours !",
-            "heading": "Cette page est un travail en cours. Certaines fonctions et fonctionnalités peuvent être non fonctionnelles, cassées, manquantes, incomplètes ou modifiées à tout moment."
-        },
         "admiral": "Amiral",
         "advanced_settings": "Réglages Avancés",
         "and": "et",
@@ -712,6 +708,10 @@
         "show_n_more_ellipses": "Afficher {{n}} de plus...",
         "shown": "Affiché",
         "squadron_leader": "Chef d'escadron",
+        "work_in_progress": {
+            "heading": "Cette page est un travail en cours. Certaines fonctions et fonctionnalités peuvent être non fonctionnelles, cassées, manquantes, incomplètes ou modifiées à tout moment.",
+            "title": "Travail en cours !"
+        },
         "yes": "Oui"
     },
     "header": {
@@ -1039,8 +1039,8 @@
                 "name": "Équipage Possédé"
             }
         },
-        "ships": "Vaisseaux",
-        "ship_info": "Informations sur le vaisseau"
+        "ship_info": "Informations sur le vaisseau",
+        "ships": "Vaisseaux"
     },
     "player_badge": {
         "n_immortals": "{{n}} immortels",
@@ -1200,25 +1200,23 @@
         }
     },
     "ship": {
-        "boosts_x_by_y": "Augmente {{x}} de {{y}}",
         "accuracy": "Précision",
         "amount": "Montant",
         "antimatter": "Antimatière",
+        "arena_metric": "Métrique de l'arène",
         "attack": "Attaque",
-        "weighted_attack": "Attaque pondéré",
-        "min_attack": "Attaque min.",
-        "max_attack": "Attaque max.",
         "attack_speed": "Vitesse d'Attaque",
         "battle_mode": "Mode de combat",
         "battle_stations": "Stations de combat",
         "bonus_ability": "Capacité Bonus",
         "boost": "Augmentation",
         "boosts": "Augmentations",
+        "boosts_x_by_y": "Augmente {{x}} de {{y}}",
         "calc": {
             "calculating_pct_ellipses": "Calcul ({{percent}} % terminé)...",
             "generating_permutations_ellipses": "Génération de permutations...",
-            "sorting_finalizing_ellipses": "Tri et finalisation des résultats...",
-            "run_current_line_up": "Exécuter les équipiers actuelles"
+            "run_current_line_up": "Exécuter les équipiers actuelles",
+            "sorting_finalizing_ellipses": "Tri et finalisation des résultats..."
         },
         "calculated_crew": "Équipage calculé",
         "charge_phase": {
@@ -1242,7 +1240,9 @@
         "handicap": "Handicap",
         "hull": "Coque",
         "initialize": "Initialise",
+        "max_attack": "Attaque max.",
         "max_level": "Niveau maximum",
+        "min_attack": "Attaque min.",
         "power_depth": "Profondeur du niveau de puissance",
         "pvp": "{{global.item_types.arena}}",
         "shields": "Boucliers",
@@ -1252,7 +1252,8 @@
         "triggers": "Déclencheurs",
         "unlimited": "Illimité",
         "uses": "Activations",
-        "uses_per_battle": "Activations par bataille"
+        "uses_per_battle": "Activations par bataille",
+        "weighted_attack": "Attaque pondéré"
     },
     "ship_action": {
         "boost_by": "Augmente {{type}} de {{amount}}",
