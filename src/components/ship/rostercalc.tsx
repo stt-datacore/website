@@ -88,21 +88,39 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         {crew.name}
                     </div>)}
                 </div>
-                <div style={{width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly'}}>
-                    <div>
+                <hr style={{width:'100%'}}/>
+                <div style={{
+                    display: 'grid', 
+                    gridTemplateAreas: "'bonus rating percentile duration' 'blank min max blank2'",
+                    gridTemplateColumns: '20% 20% 20% 20%',
+                    lineHeight: '1.25em',
+                    paddingLeft: '2em',
+                    paddingRight: '2em',
+                    justifyContent: 'center',
+                    width: '100%',
+                    gap: '1em',
+                    alignItems: 'center'
+                    }}>
+                    
+                    <div style={{gridArea: 'bonus'}}>
                         {t('ship.crit_bonus')}{': '}{sug.ship.crit_bonus}
                     </div>
-                    <div>
+                    <div style={{gridArea: 'rating'}}>
                         {t('ship.crit_rating')}{': '}{sug.ship.crit_chance}
                     </div>
-                    <div>
+                    <div style={{gridArea: 'percentile'}}>
                         {t('global.percentile')}{': '}{sug.percentile.toFixed(1)}
                     </div>
-                    <div>
-                        {t('ship.attack')}{': '}{Math.round(sug.attack).toLocaleString()}
-                    </div>
-                    <div>
+                    <div style={{gridArea: 'duration'}}>
                         {t('ship.duration')}{': '}{sug.battle_time.toFixed()}
+                    </div>
+                    
+                    
+                    <div style={{gridArea: 'min'}}>
+                        {t('ship.min_attack')}{': '}{Math.round(sug.min_attack).toLocaleString()}
+                    </div>
+                    <div style={{gridArea: 'max'}}>
+                        {t('ship.max_attack')}{': '}{Math.round(sug.max_attack).toLocaleString()}
                     </div>
                 </div>
             </div>

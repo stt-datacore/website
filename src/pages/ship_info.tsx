@@ -61,6 +61,8 @@ const ShipInfoPage = () => {
 class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
+	
+	private _hasPlayer = false;
 
 	constructor(props: ShipProfileProps) {
 		super(props);
@@ -203,19 +205,24 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 	}
 	
 	private readonly loadData = () => {
-		if (!this.context && !this.state?.data?.length) return [];
-		return this.state?.data?.length ? this.state.data : this.context?.player?.playerShips ?? mergeShips(this.context.core.ship_schematics, []) ?? [];
+		if (!this.context) return [];
+		return this.context?.player?.playerShips ?? mergeShips(this.context.core.ship_schematics, []) ?? [];
 	}
 
 	componentDidMount(): void {
+		let newHasPlayer = !!this.context?.player?.playerData;		
 		if (!this.context) return;
-		if (!this.state?.data?.length) {			
+		if (!this.state?.data?.length || this._hasPlayer !== newHasPlayer) {			
+			this._hasPlayer = newHasPlayer;
 			this.setState({ ...this.state, data: this.loadData() });
 		}
 	}
 
 	componentDidUpdate() {
-		if (this.state.inputShip) return;
+		let newHasPlayer = !!this.context?.player?.playerData;		
+		if (this._hasPlayer === newHasPlayer && this.state.inputShip) return;
+		this._hasPlayer = newHasPlayer;
+
 		let ship_key: string | undefined = this.props.ship;
 
         if (!ship_key) {
