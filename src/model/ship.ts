@@ -177,6 +177,7 @@ export interface ShipWorkerConfigBase {
     offense?: number;
     get_attacks?: boolean;
     effects?: BossEffect[];
+    max_duration?: number;
 }
 
 export interface ShipWorkerConfig extends ShipWorkerConfigBase {
