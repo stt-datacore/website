@@ -26,7 +26,7 @@ export interface RosterCalcProps {
 }
 
 export const ShipRosterCalc = (props: RosterCalcProps) => {
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;		
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     const globalContext = React.useContext(GlobalContext);
     const { playerShips } = globalContext.player;
     const workerContext = React.useContext(WorkerContext);
@@ -47,23 +47,12 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [defense, setDefense] = React.useState<number | undefined>();
     const [offense, setOffense] = React.useState<number | undefined>();
     const [progressMsg, setProgressMsg] = React.useState<string>('');
-    const [calcTrigger, setCalcTrigger] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        if (suggestions?.length) {
-            setSuggestion(0);
-        }
-        else {
-            setSuggestion(undefined);
-        }        
-    }, [suggestions]);
-
-    React.useEffect(() => {
-        if (calcTrigger && crewStations.every(sta => !!sta)) {
-            setCalcTrigger(false);
+        if (!hideGraph) {
             recommend(true);
         }
-    }, [crewStations, calcTrigger]);
+    }, [hideGraph]);
 
     React.useEffect(() => {
         if (globalContext.player.playerData) {
@@ -94,13 +83,12 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
         else {
             setOpponent(undefined);
-        }
-        setCalcTrigger(true);
+        }         
     }, [battleMode]);
 
     React.useEffect(() => {
         if (typeof window !== 'undefined' && playerShips && !windowLoaded) {
-            setWindowLoaded(true);
+            setWindowLoaded(true);            
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has("battle_mode") && urlParams.has('rarity')) {
                 try {
@@ -112,12 +100,10 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         if (f) {
                             setTimeout(() => {
                                 setBattleMode(s as BattleMode)
-                                setTimeout(() => {
-                                    let csnew = f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew);
-                                    if (!crewStations.every((cs, idx) => csnew[idx].id === cs?.id)) {
-                                        setCrewStations(f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew));
-                                    }
-                                });
+                                let csnew = f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew);
+                                if (!crewStations.every((cs, idx) => csnew[idx].id === cs?.id)) {
+                                    setCrewStations(f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew));
+                                }
                             }, 1000);
                         }
                     }
@@ -126,7 +112,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
                 }
             }
-        }    
+        }
     });
 
     React.useEffect(() => {
@@ -138,18 +124,18 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             key: `_sug_${idx}`,
             value: idx,
             text: sug.crew.map(c => c.name).join(", "),
-            content: <div style={{width: '100%', gap: '0.5em', display:'flex', flexWrap: 'wrap', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly'}}>
-                <div style={{display:'flex', width: '100%', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5em'}}>
-                    {sug.crew.map((crew, idx) => <div style={{display:'flex', width: `${98 / ships[shipIdx].battle_stations!.length}%`, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.25em', textAlign: 'center'}}>
-                        
-                        <img style={{width: '32px', margin: '0.25em'}} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
-                        
+            content: <div style={{ width: '100%', gap: '0.5em', display: 'flex', flexWrap: 'wrap', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                <div style={{ display: 'flex', width: '100%', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5em' }}>
+                    {sug.crew.map((crew, idx) => <div style={{ display: 'flex', width: `${98 / ships[shipIdx].battle_stations!.length}%`, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.25em', textAlign: 'center' }}>
+
+                        <img style={{ width: '32px', margin: '0.25em' }} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+
                         {crew.name}
                     </div>)}
                 </div>
-                <hr style={{width:'100%', opacity: '0.25'}}/>
+                <hr style={{ width: '100%', opacity: '0.25' }} />
                 <div style={{
-                    display: 'grid', 
+                    display: 'grid',
                     gridTemplateAreas: "'bonus rating percentile duration' 'weighted min max metric'",
                     gridTemplateColumns: '20% 20% 20% 20%',
                     lineHeight: '1.25em',
@@ -159,31 +145,31 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     width: '100%',
                     gap: '1em',
                     alignItems: 'center'
-                    }}>
-                    
-                    <div style={{gridArea: 'bonus'}}>
+                }}>
+
+                    <div style={{ gridArea: 'bonus' }}>
                         {t('ship.crit_bonus')}{': '}<br />{sug.ship.crit_bonus}
                     </div>
-                    <div style={{gridArea: 'rating'}}>
+                    <div style={{ gridArea: 'rating' }}>
                         {t('ship.crit_rating')}{': '}<br />{sug.ship.crit_chance}
                     </div>
-                    <div style={{gridArea: 'percentile'}}>
+                    <div style={{ gridArea: 'percentile' }}>
                         {t('global.percentile')}{': '}<br />{sug.percentile.toFixed(1)}
                     </div>
-                    <div style={{gridArea: 'duration'}}>
+                    <div style={{ gridArea: 'duration' }}>
                         {t('ship.duration')}{': '}<br />{sug.battle_time.toFixed()}
                     </div>
-                   
-                    <div style={{gridArea: 'weighted'}}>
+
+                    <div style={{ gridArea: 'weighted' }}>
                         {t('ship.weighted_attack')}{': '}<br />{Math.round(sug.weighted_attack).toLocaleString()}
                     </div>
-                    <div style={{gridArea: 'min'}}>
+                    <div style={{ gridArea: 'min' }}>
                         {t('ship.min_attack')}{': '}<br />{Math.round(sug.min_attack).toLocaleString()}
                     </div>
-                    <div style={{gridArea: 'max'}}>
+                    <div style={{ gridArea: 'max' }}>
                         {battleMode.startsWith("fbb") && <b>*</b>} {t('ship.max_attack')}{': '}<br />{Math.round(sug.max_attack).toLocaleString()}
                     </div>
-                    <div style={{gridArea: 'metric'}}>
+                    <div style={{ gridArea: 'metric' }}>
                         {!battleMode.startsWith("fbb") && <b>*</b>} {t('ship.arena_metric')}{': '}<br />{Math.round(sug.arena_metric).toLocaleString()}
                     </div>
                 </div>
@@ -200,7 +186,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         return {
             key: mode,
             value: mode,
-            text: t(`ship.${mode.startsWith('fbb') ? 'fbb' : mode}`) + (mode.startsWith('fbb') ?  ` ${rarity}*` : '')
+            text: t(`ship.${mode.startsWith('fbb') ? 'fbb' : mode}`) + (mode.startsWith('fbb') ? ` ${rarity}*` : '')
         }
     });
 
@@ -219,118 +205,126 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             text: `${r}*`
         })
     }
-    
+
     return <React.Fragment>
         <div className={'ui segment'} style={{
-					display: 'flex',
-					flexDirection: 'column',
-					justifyContent: 'left',
-					alignItems: 'center',
-					width: isMobile ? '100%' : '70%'
-				}}>
-					{!running && <div style={{display: 'inline', textAlign: 'left', width: '100%'}}>
-						<h3>{t('ship.calculated_crew')}</h3>
-                        <Dropdown 
-                            search 
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'left',
+            alignItems: 'center',
+            width: isMobile ? '100%' : '70%'
+        }}>
+            {!running && <div style={{ display: 'inline', textAlign: 'left', width: '100%' }}>
+                <h3>{t('ship.calculated_crew')}</h3>
+                <Dropdown
+                    search
+                    fluid
+                    scrolling
+                    selection
+                    clearable
+                    value={getSuggestion()}
+                    onChange={(e, { value }) => setSuggestion(value as number)}
+                    options={suggOpts}
+                />
+            </div>}
+            {running && <div style={{ display: 'flex', textAlign: 'center', height: '5.5em', width: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                {globalContext.core.spin(progressMsg || t('spinners.default'))}
+            </div>}
+            <div style={{ display: 'inline', textAlign: 'left', marginTop: '0.5em', width: '100%' }}>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-end',
+                    width: '100%',
+                    gap: '1em'
+                }}>
+                    <div style={{ display: 'inline', width: '30%' }}>
+                        <h4>{t('ship.battle_mode')}</h4>
+                        <Dropdown
                             fluid
                             scrolling
-                            selection        
-                            clearable                            
-                            value={getSuggestion()}
-                            onChange={(e, { value }) => setSuggestion(value as number)}
-                            options={suggOpts}
-                            />
-					</div>}
-					{running && <div style={{display: 'flex', textAlign: 'center', height: '5.5em', width: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-                        {globalContext.core.spin(progressMsg || t('spinners.default'))}
-                    </div>}
-                    <div style={{display: 'inline', textAlign: 'left', marginTop: '0.5em', width: '100%'}}>
-                        <div style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                alignItems: 'flex-end',
-                                width: '100%',
-                                gap: '1em'
-                            }}>						
-                            <div style={{display: 'inline', width: '30%'}}>
-                                <h4>{t('ship.battle_mode')}</h4>
-                                <Dropdown 
-                                    fluid
-                                    scrolling
-                                    selection
-                                    value={battleMode}
-                                    onChange={(e, { value }) => setBattleMode(value as BattleMode)}
-                                    options={battleModes}
-                                    />	
-                            </div>
-                            <div style={{display: 'inline', width: '30%'}}>
-                                <h4>{t('ship.power_depth')}</h4>
-                                <Dropdown 
-                                    fluid
-                                    scrolling
-                                    selection
-                                    value={powerDepth}
-                                    onChange={(e, { value }) => setPowerDepth(value as number)}
-                                    options={powerDepths}
-                                    />	
-                            </div>
-                            <div style={{display: 'inline', width: '30%'}}>
-                                <h4>{t('global.min_rarity')}</h4>
-                                <Dropdown 
-                                    fluid
-                                    scrolling
-                                    selection
-                                    value={minRarity}
-                                    onChange={(e, { value }) => setMinRarity(value as number)}
-                                    options={rarities}
-                                    />	
-                            </div>
-                        </div>
-                        <div style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'center',
-                                alignItems: 'flex-end',
-                                width: '100%',
-                                margin: '1em',
-                                gap: '1em'
-                            }}>
-                            <div style={{display:'flex', alignItems:'center', gap: '1em'}}>
-                                <Checkbox 
-                                    label={t('consider_crew.consider_frozen')}
-                                    value={t('consider_crew.consider_frozen')}
-                                    checked={considerFrozen}
-                                    onChange={(e, { checked }) => setConsiderFrozen(checked as boolean)} />
-                            </div>
-
-                            {!!globalContext.player.playerData && 
-                                <div style={{display:'flex', alignItems:'center', gap: '1em'}}>
-                                    <Checkbox 
-                                        label={t('consider_crew.consider_unowned')}
-                                        checked={considerUnowned}
-                                        onChange={(e, { checked }) => setConsiderUnowned(checked as boolean)} />                                    
-                                </div>}
-
-                        </div>
+                            selection
+                            value={battleMode}
+                            onChange={(e, { value }) => setBattleMode(value as BattleMode)}
+                            options={battleModes}
+                        />
                     </div>
-                    <div> 
-                        <Button color='green' onClick={() => recommend()}>{running ? t('global.cancel') : t('global.recommend_crew')}</Button>
-                        {!running && crewStations?.filter(c => !!c).length === ship?.battle_stations?.length && 
-                            <Button color='green' onClick={() => recommend(true)}>{t('ship.calc.run_current_line_up')}</Button>}
-                        {!running && <Button onClick={() => { setSuggestions([]); setSuggestion(undefined); setActiveSuggestion(undefined); }}>{t('global.clear')}</Button>}
-                        {!running && !!activeSuggestion?.attacks?.length && hideGraph && <Button onClick={() => setHideGraph(false)}>{t('ship.calc.show_battle_graph')}</Button>}
+                    <div style={{ display: 'inline', width: '30%' }}>
+                        <h4>{t('ship.power_depth')}</h4>
+                        <Dropdown
+                            fluid
+                            scrolling
+                            selection
+                            value={powerDepth}
+                            onChange={(e, { value }) => setPowerDepth(value as number)}
+                            options={powerDepths}
+                        />
                     </div>
-                    {!!activeSuggestion?.attacks?.length && !hideGraph &&
-                    <div className={'ui segment'} style={{width: '100%'}}>
-                        <Label as='a' corner='right' onClick={() => setHideGraph(true)}>
-                            <Icon name='delete' style={{ cursor: 'pointer' }}/>
-                        </Label>
-                        <div style={{width: '100%', height: '540px', overflow: 'scroll'}}>
-                            <BattleGraph battle={activeSuggestion} />
-                        </div>
-                    </div>}
-				</div>
+                    <div style={{ display: 'inline', width: '30%' }}>
+                        <h4>{t('global.min_rarity')}</h4>
+                        <Dropdown
+                            fluid
+                            scrolling
+                            selection
+                            value={minRarity}
+                            onChange={(e, { value }) => setMinRarity(value as number)}
+                            options={rarities}
+                        />
+                    </div>
+                </div>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'flex-end',
+                    width: '100%',
+                    margin: '1em',
+                    gap: '1em'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
+                        <Checkbox
+                            label={t('consider_crew.consider_frozen')}
+                            value={t('consider_crew.consider_frozen')}
+                            checked={considerFrozen}
+                            onChange={(e, { checked }) => setConsiderFrozen(checked as boolean)} />
+                    </div>
+
+                    {!!globalContext.player.playerData &&
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
+                            <Checkbox
+                                label={t('consider_crew.consider_unowned')}
+                                checked={considerUnowned}
+                                onChange={(e, { checked }) => setConsiderUnowned(checked as boolean)} />
+                        </div>}
+
+                </div>
+            </div>
+            <div>
+                <Button color='green' onClick={() => recommend()}>{running ? t('global.cancel') : t('global.recommend_crew')}</Button>
+                {!running && crewStations?.filter(c => !!c).length === ship?.battle_stations?.length &&
+                    <Button color='green' onClick={() => recommend(true)}>{t('ship.calc.run_current_line_up')}</Button>}
+                {!running && <Button onClick={() => { setSuggestions([]); setSuggestion(undefined); setActiveSuggestion(undefined); }}>{t('global.clear')}</Button>}
+                {!running && crewStations?.filter(c => !!c).length === ship?.battle_stations?.length && (!activeSuggestion?.attacks?.length || hideGraph) && 
+                    <Button onClick={() => {
+                        if (!hideGraph && !activeSuggestion?.attacks?.length) {
+                            recommend(true) 
+                        }
+                        else {
+                            setHideGraph(false);
+                        }                        
+                    }}>{t('ship.calc.show_battle_graph')}</Button>}
+            </div>
+            {!!activeSuggestion?.attacks?.length && !hideGraph &&
+                <div className={'ui segment'} style={{ width: '100%' }}>
+                    <Label as='a' corner='right' onClick={() => setHideGraph(true)}>
+                        <Icon name='delete' style={{ cursor: 'pointer' }} />
+                    </Label>
+                    <div style={{ width: '100%', height: '540px', overflow: 'scroll' }}>
+                        <BattleGraph battle={activeSuggestion} />
+                    </div>
+                </div>}
+        </div>
     </React.Fragment>
 
     function recommend(current?: boolean) {
@@ -368,7 +362,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         else {
             setActiveSuggestion(suggestions[idx]);
         }
-        
+
     }
 
     function getSuggestion() {
@@ -377,9 +371,20 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         return idx;
     }
 
-    function workerMessage(result: { data: { result: { ships?: ShipWorkerItem[], format?: string, options?: any }, inProgress: boolean }}) {
-        if (!result.data.inProgress && result.data.result.ships?.length) {            
-            setSuggestions(result.data.result.ships);            
+    function workerMessage(result: { data: { result: { ships?: ShipWorkerItem[], format?: string, options?: any }, inProgress: boolean } }) {
+        if (!result.data.inProgress && result.data.result.ships?.length) {
+            if (result.data.result.ships.length === 1 && suggestions?.length && suggestions.length > 1) {
+                let r = result.data.result.ships[0];
+                let sug = suggestions.findIndex(f => f.crew.every((cr1, idx) => r.crew.findIndex(cr2 => cr2.id === cr1.id) === idx))
+                if (sug !== -1) {
+                    suggestions[sug] = r;
+                    setSuggestions([...suggestions]);
+                    setTimeout(() => setSuggestion(sug));
+                    return;
+                }
+            }
+            setSuggestions(result.data.result.ships);
+            setTimeout(() => setSuggestion(0));
         }
         else if (result.data.inProgress && result.data.result.format) {
             setProgressMsg(t(result.data.result.format, result.data.result.options));

@@ -287,7 +287,6 @@ export function getOverlaps(input_ship: Ship, crew: CrewMember[], opponent?: Shi
             if (action.ability && cinfo.ability_amount) {
                 action.ability.amount = cinfo.ability_amount!
             }
-            action.current_phase = phase;
         }
     }
 
@@ -308,13 +307,19 @@ export function getOverlaps(input_ship: Ship, crew: CrewMember[], opponent?: Shi
                 else {
                     if (action.charge_phases) {
                         if (!action.current_phase) {
-                            bumpAction(action, 1);
+                            action.current_phase = 1;
                             state_time[actidx] = 1;
                             inited[actidx] = true;
                         }
                         else if (action.current_phase < action.charge_phases.length) {
-                            bumpAction(action, action.current_phase + 1);
+                            bumpAction(action, action.current_phase);
+                            action.current_phase++;
                             state_time[actidx] = 1;
+                            inited[actidx] = true;
+                        }
+                        else if (action.current_phase === action.charge_phases.length) {
+                            bumpAction(action, action.current_phase);
+                            action.current_phase++;
                             inited[actidx] = true;
                         }
                     }
@@ -339,15 +344,20 @@ export function getOverlaps(input_ship: Ship, crew: CrewMember[], opponent?: Shi
         else {
             if (action.charge_phases) {
                 if (!action.current_phase) {
-                    bumpAction(action, 1);
+                    action.current_phase = 1;
                     state_time[actidx] = 1;
                     inited[actidx] = true;
                 }
                 else if (action.current_phase < action.charge_phases.length) {
-                    bumpAction(action, action.current_phase + 1);
+                    bumpAction(action, action.current_phase);
                     state_time[actidx] = 1;
                     inited[actidx] = true;
-                }             
+                }
+                else if (action.current_phase === action.charge_phases.length) {
+                    bumpAction(action, action.current_phase);
+                    action.current_phase++;
+                    inited[actidx] = true;
+                }
             }
             return;
         }
