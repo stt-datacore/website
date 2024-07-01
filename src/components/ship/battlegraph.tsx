@@ -26,7 +26,7 @@ export const BattleGraph = (props: BattleGraphProps) => {
     }, [battle])
 
     if (!battle || !chartData?.length) {
-        return <>{t('global.no_items_found')}</>
+        return <>{globalContext.core.spin(t('spinners.default'))}</>
     }
 
     return <div className={className}
