@@ -1235,6 +1235,14 @@
         "min_attack": "Min. Attack",
         "power_depth": "Power level depth",
         "pvp": "{{global.item_types.arena}}",
+        "pvp_divisions": {
+            "admiral": "Admiral Division",
+            "captain": "Captain Division",
+            "commander": "Commander Division"
+        },
+        "show": {
+            "only_in_use": "Show only ships currently in use"
+        },
         "shields": "Shields",
         "ship": "Ship",
         "skirmish": "{{event_type.skirmish}}",

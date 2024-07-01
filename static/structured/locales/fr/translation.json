@@ -1245,6 +1245,14 @@
         "min_attack": "Attaque min.",
         "power_depth": "Profondeur du niveau de puissance",
         "pvp": "{{global.item_types.arena}}",
+        "pvp_divisions": {
+            "admiral": "Division Amiral",
+            "captain": "Division Capitaine",
+            "commander": "Division Commandeur"
+        },
+        "show": {
+            "only_in_use": "Afficher uniquement les vaisseaux actuellement utilisés"
+        },
         "shields": "Boucliers",
         "ship": "Vaisseau",
         "skirmish": "{{event_type.skirmish}}",
