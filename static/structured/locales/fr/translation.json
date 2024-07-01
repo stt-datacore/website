@@ -683,6 +683,7 @@
         "new_f": "Nouvelle",
         "new_m": "Nouveau",
         "no": "Non",
+        "no_items_found": "Aucun élément trouvé",        
         "none": "Aucun",
         "notes": "Remarques",
         "obtained": "Obtenu par",
@@ -1216,7 +1217,8 @@
             "calculating_pct_ellipses": "Calcul ({{percent}} % terminé)...",
             "generating_permutations_ellipses": "Génération de permutations...",
             "run_current_line_up": "Exécuter les équipiers actuelles",
-            "sorting_finalizing_ellipses": "Tri et finalisation des résultats..."
+            "sorting_finalizing_ellipses": "Tri et finalisation des résultats...",
+            "show_battle_graph": "Afficher le graphique de combat"
         },
         "calculated_crew": "Équipage calculé",
         "charge_phase": {

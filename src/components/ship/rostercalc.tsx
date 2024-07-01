@@ -1,7 +1,7 @@
 import React from "react";
 import { CrewMember } from "../../model/crew";
-import { BattleMode, Ship, ShipWorkerConfig, ShipWorkerItem } from "../../model/ship"
-import { Button, Checkbox, Dropdown, DropdownItemProps, SearchResults } from "semantic-ui-react";
+import { AttackInstant, BattleMode, Ship, ShipWorkerConfig, ShipWorkerItem } from "../../model/ship"
+import { Button, Checkbox, Dropdown, DropdownItemProps, Icon, Label, SearchResults } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { WorkerContext } from "../../context/workercontext";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
@@ -10,8 +10,7 @@ import { useStateWithStorage } from "../../utils/storage";
 import { BossShip } from "../../model/boss";
 import { CrewTarget } from "../hovering/crewhoverstat";
 import { getShipsInUse } from "../../utils/shiputils";
-
-
+import { BattleGraph } from "./battlegraph";
 
 export interface RosterCalcProps {
     pageId: string;
@@ -37,7 +36,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const { ships, crew, crewStations, setCrewStations, pageId, considerFrozen, setConsiderFrozen, considerUnowned, setConsiderUnowned } = props;
     const shipIdx = props.shipIdx ?? 0;
     const ship = ships[shipIdx];
-
+    const [windowLoaded, setWindowLoaded] = React.useState(false);
+    const [hideGraph, setHideGraph] = React.useState(true);
+    const [activeSuggestion, setActiveSuggestion] = React.useState<ShipWorkerItem | undefined>(undefined);
     const [suggestions, setSuggestions] = React.useState<ShipWorkerItem[]>([]);
     const [battleMode, setBattleMode] = useStateWithStorage<BattleMode>(`${pageId}/${ship.symbol}/battleMode`, 'pvp', { rememberForever: true });
     const [powerDepth, setPowerDepth] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/powerDepth`, 1, { rememberForever: true });
@@ -46,10 +47,23 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [defense, setDefense] = React.useState<number | undefined>();
     const [offense, setOffense] = React.useState<number | undefined>();
     const [progressMsg, setProgressMsg] = React.useState<string>('');
-    
-    // React.useEffect(() => {
-    //     recommend()
-    // }, [powerDepth, battleMode, minRarity, opponent]);
+    const [calcTrigger, setCalcTrigger] = React.useState<boolean>(false);
+
+    React.useEffect(() => {
+        if (suggestions?.length) {
+            setSuggestion(0);
+        }
+        else {
+            setSuggestion(undefined);
+        }        
+    }, [suggestions]);
+
+    React.useEffect(() => {
+        if (calcTrigger && crewStations.every(sta => !!sta)) {
+            setCalcTrigger(false);
+            recommend(true);
+        }
+    }, [crewStations, calcTrigger]);
 
     React.useEffect(() => {
         if (globalContext.player.playerData) {
@@ -81,10 +95,12 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         else {
             setOpponent(undefined);
         }
+        setCalcTrigger(true);
     }, [battleMode]);
 
     React.useEffect(() => {
-        if (typeof window !== 'undefined' && playerShips) {
+        if (typeof window !== 'undefined' && playerShips && !windowLoaded) {
+            setWindowLoaded(true);
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has("battle_mode") && urlParams.has('rarity')) {
                 try {
@@ -92,25 +108,35 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     let s = urlParams.get('battle_mode')!;
                     if (['pvp', 'skirmish', 'fbb_0', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'].includes(s)) {
                         let ships = getShipsInUse(globalContext.player);
-                        let f = ships.find(f => f.ship.symbol === ship.symbol && f.battle_mode === s && f.rarity === rarity);
+                        const f = ships.find(f => f.ship.symbol === ship.symbol && f.battle_mode === s && f.rarity === rarity);
                         if (f) {
-                            setBattleMode(s as BattleMode);
-                            setCrewStations(f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew));
+                            setTimeout(() => {
+                                setBattleMode(s as BattleMode)
+                                setTimeout(() => {
+                                    let csnew = f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew);
+                                    if (!crewStations.every((cs, idx) => csnew[idx].id === cs?.id)) {
+                                        setCrewStations(f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew));
+                                    }
+                                });
+                            }, 1000);
                         }
-                        
-                    }                
+                    }
                 }
                 catch {
 
                 }
             }
         }    
-    }, [playerShips]);
+    });
+
+    React.useEffect(() => {
+        setCrewStations(activeSuggestion?.crew as PlayerCrew[] ?? ships[shipIdx].battle_stations?.map(b => undefined));
+    }, [activeSuggestion])
 
     const suggOpts = suggestions?.map((sug, idx) => {
         return {
-            key: sug.ship.symbol + `_sug_${idx}`,
-            value: sug.crew.map(c => c.id).join(","),
+            key: `_sug_${idx}`,
+            value: idx,
             text: sug.crew.map(c => c.name).join(", "),
             content: <div style={{width: '100%', gap: '0.5em', display:'flex', flexWrap: 'wrap', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly'}}>
                 <div style={{display:'flex', width: '100%', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5em'}}>
@@ -193,7 +219,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             text: `${r}*`
         })
     }
-
+    
     return <React.Fragment>
         <div className={'ui segment'} style={{
 					display: 'flex',
@@ -211,7 +237,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             selection        
                             clearable                            
                             value={getSuggestion()}
-                            onChange={(e, { value }) => setSuggestion(value as string)}
+                            onChange={(e, { value }) => setSuggestion(value as number)}
                             options={suggOpts}
                             />
 					</div>}
@@ -292,8 +318,18 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         <Button color='green' onClick={() => recommend()}>{running ? t('global.cancel') : t('global.recommend_crew')}</Button>
                         {!running && crewStations?.filter(c => !!c).length === ship?.battle_stations?.length && 
                             <Button color='green' onClick={() => recommend(true)}>{t('ship.calc.run_current_line_up')}</Button>}
-                        {!running && <Button onClick={() => setSuggestions([])}>{t('global.clear')}</Button>}
+                        {!running && <Button onClick={() => { setSuggestions([]); setSuggestion(undefined); setActiveSuggestion(undefined); }}>{t('global.clear')}</Button>}
+                        {!running && !!activeSuggestion?.attacks?.length && hideGraph && <Button onClick={() => setHideGraph(false)}>{t('ship.calc.show_battle_graph')}</Button>}
                     </div>
+                    {!!activeSuggestion?.attacks?.length && !hideGraph &&
+                    <div className={'ui segment'} style={{width: '100%'}}>
+                        <Label as='a' corner='right' onClick={() => setHideGraph(true)}>
+                            <Icon name='delete' style={{ cursor: 'pointer' }}/>
+                        </Label>
+                        <div style={{width: '100%', height: '540px', overflow: 'scroll'}}>
+                            <BattleGraph battle={activeSuggestion} />
+                        </div>
+                    </div>}
 				</div>
     </React.Fragment>
 
@@ -314,33 +350,36 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 max_results: 50,
                 opponents: opponent ? [opponent] : undefined,
                 defense,
-                offense
+                offense,
+                get_attacks: !!current
             } as ShipWorkerConfig;
 
             setProgressMsg('');
+            setActiveSuggestion(undefined);
             runWorker('shipworker', config, workerMessage);
         }
     }
 
-    function setSuggestion(sug: string) {
+    function setSuggestion(idx: number | undefined) {
         if (!suggestions?.length || !ships[shipIdx]) return;
-        let ids = sug?.length ? sug.split(",").map(s => Number.parseInt(s)) : [];
-        let f = sug?.length ? suggestions.find(f => f.crew.every(c => ids.some(s => s === c.id))) : undefined;
+        if (idx === undefined || idx < 0 || idx >= suggestions.length) {
+            setActiveSuggestion(undefined);
+        }
+        else {
+            setActiveSuggestion(suggestions[idx]);
+        }
         
-        setCrewStations(f?.crew as PlayerCrew[] ?? ships[shipIdx].battle_stations?.map(b => undefined))
     }
 
-    function getSuggestion() {    
-        if (!crewStations?.length || !suggestions?.length) return '';
-        return suggestions.find(f => f.crew.every(c => crewStations.some(s => s?.id === c.id)))?.crew?.map(m => m.id)?.join(",");
+    function getSuggestion() {
+        let idx = suggestions?.findIndex(fi => fi === activeSuggestion);
+        if (idx === -1) return undefined;
+        return idx;
     }
 
     function workerMessage(result: { data: { result: { ships?: ShipWorkerItem[], format?: string, options?: any }, inProgress: boolean }}) {
-        if (!result.data.inProgress && result.data.result.ships) {
-            setSuggestions(result.data.result.ships);
-            setTimeout(() => {
-                setCrewStations(result.data.result.ships![0].crew as PlayerCrew[])
-            });        
+        if (!result.data.inProgress && result.data.result.ships?.length) {            
+            setSuggestions(result.data.result.ships);            
         }
         else if (result.data.inProgress && result.data.result.format) {
             setProgressMsg(t(result.data.result.format, result.data.result.options));
