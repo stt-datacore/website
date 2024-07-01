@@ -668,7 +668,7 @@ const ShipCrewWorker = {
                 });
             }
 
-            const time = battle_mode.startsWith('fbb') ? 300 : 10;
+            const time = options.max_duration || (battle_mode.startsWith('fbb') ? 180 : 10);
 
             for (let combo of crew_combos) {
                 if (!(i % 10)) {
