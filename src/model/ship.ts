@@ -1,6 +1,6 @@
 import { CrewMember } from "./crew";
 import { Icon } from "./game-elements";
-import { CompletionState } from "./player";
+import { CompletionState, PlayerCrew } from "./player";
 
 
 export interface Schematics {
@@ -95,9 +95,8 @@ export interface Ship extends ShipBonus {
 
 export interface BattleStation {
   skill: string;
+  crew?: PlayerCrew | CrewMember;
 }
-
-
 
 export interface ShipAction {
   bonus_amount: number;
@@ -151,7 +150,17 @@ export interface BattleStations {
 	battle_stations: BattleStation[]
 }
 
+export type PvpDivision = 'commander' | 'captain' | 'admiral';
+
 export type BattleMode = 'pvp' | 'skirmish' | 'fbb_0' | 'fbb_1' | 'fbb_2' | 'fbb_3' | 'fbb_4' | 'fbb_5';
+
+
+export interface ShipInUse {
+    battle_mode: BattleMode;  
+    pvp_division?: PvpDivision;
+    ship: Ship;
+    rarity: number;
+}
 
 export interface ShipWorkerConfigBase {
   crew: CrewMember[],

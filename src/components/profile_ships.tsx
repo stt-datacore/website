@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
-import { Table, Icon, Pagination, Dropdown, Button, Input } from 'semantic-ui-react';
+import { Table, Icon, Pagination, Dropdown, Button, Input, Checkbox } from 'semantic-ui-react';
 
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
-import { Ship } from '../model/ship';
+import { Ship, ShipInUse } from '../model/ship';
 import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
 import { GlobalContext } from '../context/globalcontext';
 import { navigate } from 'gatsby';
 import { RarityFilter } from './crewtables/commonoptions';
 import { ShipAbilityPicker, TraitPicker, TriggerPicker } from './crewtables/shipoptions';
 import { isMobile } from 'react-device-detect';
+import { getShipsInUse } from '../utils/shiputils';
+import CONFIG from './CONFIG';
 
 type ProfileShipsProps = {
 };
@@ -27,6 +29,8 @@ type ProfileShipsState = {
 	abilityFilter: string[];
 	traitFilter: string[];
 	textFilter?: string;
+	shipsInUse?: ShipInUse[];
+	onlyUsed?: boolean;
 };
 
 const pagingOptions = [
@@ -67,6 +71,25 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		this.initData();
 	}
 
+	printUsage(ship: Ship) {
+		const { shipsInUse } = this.state;
+		const { t } = this.context.localized;
+		let usages = shipsInUse?.filter(f => f.ship.id === ship.id);
+		let texts = [] as JSX.Element[];
+		if (usages?.length) {			
+			for (let usage of usages) {
+				if (usage.battle_mode.startsWith('fbb')) {					
+					texts.push(<a onClick={() => navigate(`/ship_info?ship=${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer'}}>{`${t(`ship.fbb`)} ${usage.rarity}*`}</a>);
+				}
+				else if (usage.battle_mode === 'pvp') {					
+					texts.push(<a onClick={() => navigate(`/ship_info?ship=${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer'}}>{`${t('ship.pvp')}: ${t(`ship.pvp_divisions.${usage.pvp_division}`)}`}</a>);
+				}
+			}
+		}
+		if (!texts.length) return <></>
+		return texts.reduce((p, n) => p ? <>{p}<br />{n}</> : n)
+	}
+
 	initData() {
 		const hp = !!this.context.player.playerData;
 		if (hp !== this.hasPlayer) {
@@ -77,7 +100,8 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		
 		this.inited = true;
 		if (this.context.player.playerShips?.length) {
-			this.setState({ ... this.state, data: this.context.player.playerShips });
+			let shipsInUse = getShipsInUse(this.context.player);
+			this.setState({ ... this.state, data: this.context.player.playerShips, shipsInUse });
 		}
 		else {
 			this.setState({ ... this.state, data: this.context.core.ships });
@@ -188,6 +212,9 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 					&& !ship.traits?.some(t => t.toLocaleUpperCase().includes(usearch)) 
 					&& !ship.traits_hidden?.some(t => t.toLocaleUpperCase().includes(textFilter))) return false;
 			} 
+			if (this.state.onlyUsed && this.state.shipsInUse?.length) {
+				return this.state.shipsInUse.some(usage => usage.ship.id === ship.id);
+			}
 			return true;
 		})
 
@@ -205,7 +232,6 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 		
 		return (<div>	
-
 			<div style={{
 				display: "flex",
 				flexDirection: "row",
@@ -232,8 +258,10 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 					<TriggerPicker grants={true} altTitle={t('hints.filter_ship_grants')} selectedTriggers={grantFilter} setSelectedTriggers={(value) => this.setGrantFilter(value as string[])} />
 
 				<ShipAbilityPicker ship={true} selectedAbilities={this.state.abilityFilter} setSelectedAbilities={(value) => this.setAbilityFilter(value as string[])} />
-
 				<TraitPicker ship={true} selectedTraits={this.state.traitFilter} setSelectedTraits={(value) => this.setTraitFilter(value as string[])} />
+			</div>
+			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1em', margin: '1em'}}>
+				<Checkbox label={t('ship.show.only_in_use')} checked={this.state.onlyUsed ?? false} onChange={(e, { checked }) => this.setState({ ... this.state, onlyUsed: checked as boolean})} />				
 			</div>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
@@ -304,7 +332,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 									style={{
 										display: 'grid',
 										gridTemplateColumns: '60px auto',
-										gridTemplateAreas: `'icon stats' 'icon description'`,
+										gridTemplateAreas: `'icon stats' 'icon description' 'icon usages'`,
 										gridGap: '1px'
 									}}
 								>
@@ -317,6 +345,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 										<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{ship.name}</span>
 									</div>
 									<div style={{ gridArea: 'description' }}>{ship.traits?.map(trait => trait_names[trait]).join(', ')}</div>
+									<div style={{ gridArea: 'usages', fontWeight: 'bold'}}>{this.printUsage(ship)}</div>
 								</div>
 							</Table.Cell>
 							<Table.Cell>{ship.antimatter}</Table.Cell>

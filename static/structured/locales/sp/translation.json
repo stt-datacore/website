@@ -1244,6 +1244,14 @@
         "min_attack": "Ataque máx.",
         "power_depth": "Profundidad del nivel de potencia",
         "pvp": "{{global.item_types.arena}}",
+        "pvp_divisions": {
+            "admiral": "División de almirante",
+            "captain": "División de capitán",
+            "commander": "División de comandante"
+        },
+        "show": {
+            "only_in_use": "Mostrar sólo los buques actualmente en uso"
+        },
         "shields": "Escudos",
         "ship": "buque",
         "skirmish": "{{event_type.skirmish}}",
