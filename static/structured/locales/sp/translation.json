@@ -682,6 +682,7 @@
         "new_f": "Neuva",
         "new_m": "Neuvo",
         "no": "No",
+        "no_items_found": "No se encontraron elementos",        
         "none": "Ninguna",
         "notes": "Notas",
         "obtained": "Obtenido por",
@@ -1215,7 +1216,8 @@
             "calculating_pct_ellipses": "Calculando ({{percent}}% completado) ...",
             "generating_permutations_ellipses": "Generando permutaciones...",
             "run_current_line_up": "Ejecutar tripulantes actuales",
-            "sorting_finalizing_ellipses": "Ordenar y finalizar resultados..."
+            "sorting_finalizing_ellipses": "Ordenar y finalizar resultados...",
+            "show_battle_graph": "Mostrar Gráfico de Batalla"
         },
         "calculated_crew": "Tripulación calculada",
         "charge_phase": {

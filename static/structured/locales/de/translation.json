@@ -675,6 +675,7 @@
         "never": "Niemals",
         "new": "Neu",
         "no": "Nein",
+        "no_items_found": "Keine Elemente gefunden",        
         "none": "Keine",
         "notes": "Anmerkungen",
         "obtained": "Erhalten von",
@@ -1205,7 +1206,8 @@
             "calculating_pct_ellipses": "Berechnung ({{percent}} % abgeschlossen) ...",
             "generating_permutations_ellipses": "Permutationen werden generiert ...",
             "run_current_line_up": "Aktuelle Crew ausführen",
-            "sorting_finalizing_ellipses": "Ergebnisse sortieren und finalisieren ..."
+            "sorting_finalizing_ellipses": "Ergebnisse sortieren und finalisieren ...",
+            "show_battle_graph": "Kampfdiagramm anzeigen"
         },
         "calculated_crew": "Kalkulierte Crew",
         "charge_phase": {

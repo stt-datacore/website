@@ -1,6 +1,6 @@
 import { CrewMember } from "../model/crew";
 import { PlayerCrew } from "../model/player";
-import { MultiShipWorkerConfig, Ship, ShipAction, ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults } from "../model/ship"
+import { AttackInstant, MultiShipWorkerConfig, Ship, ShipAction, ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults } from "../model/ship"
 import { crewCopy, oneCrewCopy } from "../utils/crewutils";
 import { makeAllCombos } from "../utils/misc";
 
@@ -208,15 +208,6 @@ export function hitsPerSecond(ship: Ship) {
     return ship.attacks_per_second;
 }
 
-interface Attacks {
-    actions: ShipAction[];
-    second: number;
-    attack: number;
-    min_attack: number;
-    max_attack: number;
-    ship: Ship;
-}
-
 interface BonusAction extends ShipAction {
     orig_bonus?: number;
     orig_ability_amount?: number;
@@ -240,7 +231,9 @@ export function getOverlaps(input_ship: Ship, crew: CrewMember[], opponent?: Shi
     let hull = ship.hull;
     let orighull = ship.hull;
 
-    const attacks = [] as Attacks[];
+    const attacks = [] as AttackInstant[];
+    crew.forEach(c => c.action.crew = c.id!);
+    
     let allactions = JSON.parse(JSON.stringify([...ship.actions ?? [], ... crew.map(c => c.action) ])) as BonusAction[];
     allactions.forEach((action, i) => {
         action.comes_from = i >= (ship!.actions?.length ?? 0) ? 'crew' : 'ship';
@@ -252,6 +245,7 @@ export function getOverlaps(input_ship: Ship, crew: CrewMember[], opponent?: Shi
                 action.current_phase = 0;
             }
         }
+        
     });
 
     let alen = allactions.length;    
@@ -474,7 +468,8 @@ const ShipCrewWorker = {
     calc: (options: ShipWorkerConfig, reportProgress: (data: { format: string, options?: any }) => boolean = () => true) => {
         return new Promise<ShipWorkerResults>((resolve, reject) => {
             const { ship, battle_mode, opponents, action_types, ability_types, defense, offense } = options;
-            const opponent = opponents?.length ? opponents[0] : undefined;            
+            const opponent = opponents?.length ? opponents[0] : undefined;
+            
             let max_results = options.max_results ?? 100;
             let max_rarity = options.max_rarity ?? 5;
             let min_rarity = options.min_rarity ?? 1;
@@ -595,6 +590,8 @@ const ShipCrewWorker = {
                 return;
             }
 
+            const get_attacks = options.get_attacks && workCrew.length === seats;
+
             // let test_combo = ['tpring_spock_crew', 'torres_caretaker_crew', 'kirk_chances_crew', 'goodgey_crew'];
             // let find_crew = workCrew.filter(c => test_combo.includes(c.symbol) && c.max_rarity === (c as PlayerCrew).rarity);
             // find_crew.sort((a, b) => {
@@ -606,14 +603,14 @@ const ShipCrewWorker = {
             //const crew_combos = makeAllCombos(workCrew.map(c => c.id), 60000, undefined, undefined, seats)?.filter(f => f.length === seats) as any as number[][];
             reportProgress({ format: 'ship.calc.generating_permutations_ellipses' });
             const crew_combos = getPermutations(workCrew, seats, (set) => canSeatAll(ship, set), 300000);
-            let attacks = [] as { crew: number[], attacks: Attacks[] }[];
+            let attacks = [] as { crew: number[], attacks: AttackInstant[] }[];
 
             let count = crew_combos.length;
             let i = 0;
             let progress = -1;
             let results = [] as ShipWorkerItem[];
 
-            const processAttack = (attacks: Attacks[], crew_set: CrewMember[]) => {
+            const processAttack = (attacks: AttackInstant[], crew_set: CrewMember[]) => {
                 let result_crew = [] as CrewMember[];
                 const ship = attacks[0].ship;
 
@@ -656,7 +653,8 @@ const ShipCrewWorker = {
                     percentile: 0,
                     ship: attacks[0].ship,
                     weighted_attack,
-                    arena_metric
+                    arena_metric,
+                    attacks: get_attacks ? attacks : undefined
                 });
             }
 
@@ -674,7 +672,7 @@ const ShipCrewWorker = {
                 
                 let overlaps = getOverlaps(ship, combo, opponent, defense, offense, time);
                 processAttack(overlaps, combo);
-                overlaps.length = 0;
+                if (!get_attacks) overlaps.length = 0;
                 i++;
             }
 

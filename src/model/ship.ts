@@ -1,3 +1,4 @@
+import { BossEffect } from "./boss";
 import { CrewMember } from "./crew";
 import { Icon } from "./game-elements";
 import { CompletionState, PlayerCrew } from "./player";
@@ -163,17 +164,19 @@ export interface ShipInUse {
 }
 
 export interface ShipWorkerConfigBase {
-  crew: CrewMember[],
-  battle_mode: BattleMode,
-  power_depth?: number,
-  max_rarity?: number,
-  min_rarity?: number,
-  opponents?: Ship[],
-  action_types?: number[],
-  ability_types?: number[],
-  max_results?: number
-  defense?: number;
-  offense?: number;
+    crew: CrewMember[],
+    battle_mode: BattleMode,
+    power_depth?: number,
+    max_rarity?: number,
+    min_rarity?: number,
+    opponents?: Ship[],
+    action_types?: number[],
+    ability_types?: number[],
+    max_results?: number
+    defense?: number;
+    offense?: number;
+    get_attacks?: boolean;
+    effects?: BossEffect[];
 }
 
 export interface ShipWorkerConfig extends ShipWorkerConfigBase {
@@ -181,8 +184,19 @@ export interface ShipWorkerConfig extends ShipWorkerConfigBase {
 }
 
 export interface MultiShipWorkerConfig extends ShipWorkerConfigBase {
-  ships: Ship[],
+    ships: Ship[],
 }
+
+
+export interface AttackInstant {
+  actions: ShipAction[];
+  second: number;
+  attack: number;
+  min_attack: number;
+  max_attack: number;
+  ship: Ship;
+}
+
 
 export interface ShipWorkerItem {
     ship: Ship,
@@ -194,7 +208,8 @@ export interface ShipWorkerItem {
     weighted_attack: number;
     arena_metric: number;
     activations: number;
-    percentile: number;    
+    percentile: number;
+    attacks?: AttackInstant[];
 }
 
 export interface ShipWorkerResults {
