@@ -84,7 +84,7 @@ export const BattleGraph = (props: BattleGraphProps) => {
                 // truncateTickAt: 0
 
             }}
-            layers={['grid', 'axes', 'labels', 'lines', 'points', 'mesh']}
+            layers={['grid', 'axes', 'labels', 'lines',  'mesh']}
             margin={{ top: 40, right: 30, bottom: 40, left: 300 }}
             useMesh={true}
             interpolation={'smooth'}
@@ -147,13 +147,13 @@ export const BattleGraph = (props: BattleGraphProps) => {
             for (let curr of results) {
                 if (attack.actions.some(act => act.crew?.toString() === curr.id || act.symbol === curr.id)) {
                     curr.data.push({
-                        x: `${attack.second}`,
+                        x: `${attack.second + 1}`,
                         y: (i * 2) - 1
                     });
                 }
                 else {
                     curr.data.push({
-                        x: `${attack.second}`,
+                        x: `${attack.second + 1}`,
                         y: (i * 2)
                     });
                 }

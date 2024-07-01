@@ -1,37 +1,18 @@
 import { CrewMember } from "../model/crew";
-import { PlayerCrew } from "../model/player";
 import { AttackInstant, MultiShipWorkerConfig, Ship, ShipAction, ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults } from "../model/ship"
-import { crewCopy, oneCrewCopy } from "../utils/crewutils";
-import { makeAllCombos } from "../utils/misc";
+import { crewCopy } from "../utils/crewutils";
 
-function getPermutations<T>(array: T[], size: number, check?: (set: T[]) => T[] | false, max?: number) {
-    function p(t: T[], i: number) {
-        if (t.length === size) {
-            if (!check) {
-                result.push(t);
-            }
-            else {
-                let response = check(t);
-                if (response) result.push(response);
-            }
-            return;
-        }
-        if (i + 1 > array.length) {
-            return;
-        }
-        if (max && result.length >= max) return;
-        p(t.concat(array[i]), i + 1);
-        p(t, i + 1);
-    }
-
-    var result = [] as T[][];
-    p([], 0);
-    return result;
+interface BonusAction extends ShipAction {
+    orig_bonus?: number;
+    orig_ability_amount?: number;
+    orig_cooldown?: number;
+    current_phase?: number;
+    comes_from: 'ship' | 'crew';
 }
 
-export interface SlopeDetail { chance: number, slope: number | undefined }
+interface SlopeDetail { chance: number, slope: number | undefined }
 
-export const DetailCritTable = {
+const DetailCritTable = {
     400: { chance: 4, slope: 0.0125 as number | undefined },
     800: { chance: 9, slope: 0.0175 as number | undefined },
     1200: { chance: 16, slope: 0.01333 as number | undefined },
@@ -43,7 +24,7 @@ export const DetailCritTable = {
     10000: { chance: 50, slope: undefined as number | undefined }
 } as { [key: string]: SlopeDetail }
 
-export const CritTable = {
+const CritTable = {
     400: 4,
     800: 9,
     1200: 16,
@@ -57,24 +38,7 @@ export const CritTable = {
 
 const CritTiers = Object.keys(CritTable).map(m => Number.parseInt(m));
 
-function getCritChance(n: number) {
-    if (n >= 10000) return CritTable[10000];
-    if (n in CritTable) return CritTable[n];
-    let c = CritTiers.length;
-    for (let i = 0; i < c - 1; i++) {
-        if (n >= CritTiers[i] && n <= CritTiers[i + 1]) {
-            let detail = DetailCritTable[CritTiers[i]];
-            if (detail && detail.slope) {
-                let mm = n - CritTiers[i];
-                mm *= detail.slope;
-                return detail.chance + mm;
-            }
-        }
-    }    
-    return 0;
-}
-
-export const PowerTable = {
+const PowerTable = {
     0: 0,
     1: 1200,
     2: 1560,
@@ -118,15 +82,31 @@ export const PowerTable = {
     40: 305989
 };
 
-export function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, offense?: number) {
+function getCritChance(n: number) {
+    if (n >= 10000) return CritTable[10000];
+    if (n in CritTable) return CritTable[n];
+    let c = CritTiers.length;
+    for (let i = 0; i < c - 1; i++) {
+        if (n >= CritTiers[i] && n <= CritTiers[i + 1]) {
+            let detail = DetailCritTable[CritTiers[i]];
+            if (detail && detail.slope) {
+                let mm = n - CritTiers[i];
+                mm *= detail.slope;
+                return detail.chance + mm;
+            }
+        }
+    }    
+    return 0;
+}
+
+function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, offense?: number) {
     let base_attack = ship.attack;
     let base_acc = ship.accuracy;
     let base_eva = ship.evasion;
     let bonus = ship.crit_bonus;
     let crit = ship.crit_chance;
     let sum_attack = base_attack;
-    let min_attack = base_attack;
-    let max_attack = base_attack;
+    
     let highest_dmg = 0;
     let highest_acc = 0;
     let sum_acc = base_acc;
@@ -168,17 +148,22 @@ export function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, of
     if (highest_dmg) {
         sum_attack += PowerTable[highest_dmg];
     }
+
     if (highest_acc) {
         sum_acc += PowerTable[highest_acc];
     }
 
     bonus /= 10000;
 
-    max_attack += ((sum_attack * bonus)); 
+    let min_attack = 0;
+    let max_attack = 0;
+    
+    max_attack = sum_attack + ((sum_attack * bonus)); 
     sum_attack += ((sum_attack * bonus) * chance);
     min_attack = sum_attack;
 
     let hc = 0;
+    
     if (opponent) {
         hc = hitChance(sum_acc, opponent.evasion);
     }
@@ -191,32 +176,24 @@ export function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, of
     max_attack *= hc;
 
     offense ??= 0;
+    
     let atk_off = sum_attack * offense;
     sum_attack += atk_off;
+    
     atk_off = min_attack * offense;
     min_attack += atk_off;
+
     atk_off = max_attack * offense;
     max_attack += atk_off;
+
     return [max_attack, sum_attack, min_attack];
 }
 
-export function hitChance(acc: number, opp_eva: number) {
+function hitChance(acc: number, opp_eva: number) {
     return 1 / (1 + Math.exp(-1.9 * (acc / opp_eva - 0.55)));
 }
 
-export function hitsPerSecond(ship: Ship) {
-    return ship.attacks_per_second;
-}
-
-interface BonusAction extends ShipAction {
-    orig_bonus?: number;
-    orig_ability_amount?: number;
-    orig_cooldown?: number;
-    current_phase?: number;
-    comes_from: 'ship' | 'crew';
-}
-
-export function getOverlaps(input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 300) {
+export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180) {
     let ship: Ship | undefined = {...input_ship};
     defense ??= 0;
     if (crew) {        
@@ -290,6 +267,27 @@ export function getOverlaps(input_ship: Ship, crew: CrewMember[], opponent?: Shi
         }
     }
 
+    const processChargePhases = (action: BonusAction, actidx: number) => {
+        if (action.charge_phases) {
+            if (!action.current_phase) {
+                action.current_phase = 1;
+                state_time[actidx] = 1;
+                inited[actidx] = true;
+            }
+            else if (action.current_phase < action.charge_phases.length) {
+                bumpAction(action, action.current_phase);
+                action.current_phase++;
+                state_time[actidx] = 1;
+                inited[actidx] = true;
+            }
+            else if (action.current_phase === action.charge_phases.length) {
+                bumpAction(action, action.current_phase);
+                action.current_phase++;
+                inited[actidx] = true;
+            }
+        }
+    }
+
     const activate = (action: BonusAction, actidx: number) => {
         if (!action.ability?.condition || current.some(act => act.status === action.ability?.condition)) {
             if (action.ability?.type === 1) {
@@ -305,24 +303,7 @@ export function getOverlaps(input_ship: Ship, crew: CrewMember[], opponent?: Shi
                     }
                 }
                 else {
-                    if (action.charge_phases) {
-                        if (!action.current_phase) {
-                            action.current_phase = 1;
-                            state_time[actidx] = 1;
-                            inited[actidx] = true;
-                        }
-                        else if (action.current_phase < action.charge_phases.length) {
-                            bumpAction(action, action.current_phase);
-                            action.current_phase++;
-                            state_time[actidx] = 1;
-                            inited[actidx] = true;
-                        }
-                        else if (action.current_phase === action.charge_phases.length) {
-                            bumpAction(action, action.current_phase);
-                            action.current_phase++;
-                            inited[actidx] = true;
-                        }
-                    }
+                    processChargePhases(action, actidx);
                     return;
                 }
             }
@@ -342,23 +323,7 @@ export function getOverlaps(input_ship: Ship, crew: CrewMember[], opponent?: Shi
             active[actidx] = true;
         }
         else {
-            if (action.charge_phases) {
-                if (!action.current_phase) {
-                    action.current_phase = 1;
-                    state_time[actidx] = 1;
-                    inited[actidx] = true;
-                }
-                else if (action.current_phase < action.charge_phases.length) {
-                    bumpAction(action, action.current_phase);
-                    state_time[actidx] = 1;
-                    inited[actidx] = true;
-                }
-                else if (action.current_phase === action.charge_phases.length) {
-                    bumpAction(action, action.current_phase);
-                    action.current_phase++;
-                    inited[actidx] = true;
-                }
-            }
+            processChargePhases(action, actidx);
             return;
         }
     }
@@ -430,6 +395,31 @@ export function getOverlaps(input_ship: Ship, crew: CrewMember[], opponent?: Shi
 
     ship = undefined;
     return attacks;
+}
+
+function getPermutations<T>(array: T[], size: number, check?: (set: T[]) => T[] | false, max?: number) {
+    function p(t: T[], i: number) {
+        if (t.length === size) {
+            if (!check) {
+                result.push(t);
+            }
+            else {
+                let response = check(t);
+                if (response) result.push(response);
+            }
+            return;
+        }
+        if (i + 1 > array.length) {
+            return;
+        }
+        if (max && result.length >= max) return;
+        p(t.concat(array[i]), i + 1);
+        p(t, i + 1);
+    }
+
+    var result = [] as T[][];
+    p([], 0);
+    return result;
 }
 
 function canSeatAll(ship: Ship, crew: CrewMember[]): CrewMember[] | false {
@@ -613,7 +603,6 @@ const ShipCrewWorker = {
             //const crew_combos = makeAllCombos(workCrew.map(c => c.id), 60000, undefined, undefined, seats)?.filter(f => f.length === seats) as any as number[][];
             reportProgress({ format: 'ship.calc.generating_permutations_ellipses' });
             const crew_combos = getPermutations(workCrew, seats, (set) => canSeatAll(ship, set), 300000);
-            let attacks = [] as { crew: number[], attacks: AttackInstant[] }[];
 
             let count = crew_combos.length;
             let i = 0;
@@ -680,7 +669,7 @@ const ShipCrewWorker = {
                     }
                 }
                 
-                let overlaps = getOverlaps(ship, combo, opponent, defense, offense, time);
+                let overlaps = iterateBattle(ship, combo, opponent, defense, offense, time);
                 processAttack(overlaps, combo);
                 if (!get_attacks) overlaps.length = 0;
                 i++;
