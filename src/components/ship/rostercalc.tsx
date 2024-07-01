@@ -9,6 +9,7 @@ import { PlayerCrew } from "../../model/player";
 import { useStateWithStorage } from "../../utils/storage";
 import { BossShip } from "../../model/boss";
 import { CrewTarget } from "../hovering/crewhoverstat";
+import { getShipsInUse } from "../../utils/shiputils";
 
 
 
@@ -28,6 +29,7 @@ export interface RosterCalcProps {
 export const ShipRosterCalc = (props: RosterCalcProps) => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;		
     const globalContext = React.useContext(GlobalContext);
+    const { playerShips } = globalContext.player;
     const workerContext = React.useContext(WorkerContext);
     const { running, runWorker, cancel } = workerContext;
     const { t } = globalContext.localized;
@@ -44,7 +46,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [defense, setDefense] = React.useState<number | undefined>();
     const [offense, setOffense] = React.useState<number | undefined>();
     const [progressMsg, setProgressMsg] = React.useState<string>('');
-
+    
     // React.useEffect(() => {
     //     recommend()
     // }, [powerDepth, battleMode, minRarity, opponent]);
@@ -80,6 +82,30 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setOpponent(undefined);
         }
     }, [battleMode]);
+
+    React.useEffect(() => {
+        if (typeof window !== 'undefined' && playerShips) {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has("battle_mode") && urlParams.has('rarity')) {
+                try {
+                    let rarity = Number.parseInt(urlParams.get('rarity')!);
+                    let s = urlParams.get('battle_mode')!;
+                    if (['pvp', 'skirmish', 'fbb_0', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'].includes(s)) {
+                        let ships = getShipsInUse(globalContext.player);
+                        let f = ships.find(f => f.ship.symbol === ship.symbol && f.battle_mode === s && f.rarity === rarity);
+                        if (f) {
+                            setBattleMode(s as BattleMode);
+                            setCrewStations(f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew));
+                        }
+                        
+                    }                
+                }
+                catch {
+
+                }
+            }
+        }    
+    }, [playerShips]);
 
     const suggOpts = suggestions?.map((sug, idx) => {
         return {
@@ -246,19 +272,18 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             }}>
                             <div style={{display:'flex', alignItems:'center', gap: '1em'}}>
                                 <Checkbox 
+                                    label={t('consider_crew.consider_frozen')}
                                     value={t('consider_crew.consider_frozen')}
                                     checked={considerFrozen}
                                     onChange={(e, { checked }) => setConsiderFrozen(checked as boolean)} />
-                                
-                                {t('consider_crew.consider_frozen')}
                             </div>
 
                             {!!globalContext.player.playerData && 
                                 <div style={{display:'flex', alignItems:'center', gap: '1em'}}>
                                     <Checkbox 
+                                        label={t('consider_crew.consider_unowned')}
                                         checked={considerUnowned}
-                                        onChange={(e, { checked }) => setConsiderUnowned(checked as boolean)} />
-                                    {t('consider_crew.consider_unowned')}
+                                        onChange={(e, { checked }) => setConsiderUnowned(checked as boolean)} />                                    
                                 </div>}
 
                         </div>

@@ -243,13 +243,12 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
 		this._hasPlayer = newHasPlayer;
 
 		let ship_key: string | undefined = this.props.ship;
-
-        if (!ship_key) {
-            const urlParams = new URLSearchParams(window.location.search);
+        if (!ship_key) {            
+			const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('ship')) {
                 ship_key = urlParams.get('ship') ?? undefined;
             }
-        }
+        }		
 
 		if (!ship_key) {
 			navigate('/ships');

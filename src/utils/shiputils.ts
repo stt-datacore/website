@@ -1,11 +1,12 @@
 import { BaseSkillFields, BaseSkills, CrewMember, Skill } from "../model/crew";
-import { PlayerCrew } from "../model/player";
-import { ShipAction } from "../model/ship";
+import { PlayerCrew, Setup } from "../model/player";
+import { BattleMode, PvpDivision, ShipAction, ShipInUse } from "../model/ship";
 import { Schematics, Ship } from "../model/ship";
 import { simplejson2csv, ExportField } from './misc';
 import { StatsSorter } from "./statssorter";
 import { shipStatSortConfig  } from "../utils/crewutils";
 import CONFIG from "../components/CONFIG";
+import { PlayerContextData } from "../context/playercontext";
 
 export function exportShipFields(): ExportField[] {
 	return [
@@ -145,6 +146,7 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 		let traits_named = schematic.ship.traits_named;
 
 		if (owned) {
+			schematic.ship.id = owned.id;
 			schematic.ship.name = owned.name;
 			schematic.ship.flavor = owned.flavor;			
 			schematic.ship.accuracy = owned.accuracy;
@@ -270,15 +272,73 @@ export function printTriggers(ship: Ship): string {
 	return s;
 }
 
-export interface TierRank {
-	type?: number;
-	ability?: number;
-	value: number;
-	tier: number;
-}
+export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
+	const results = [] as ShipInUse[];
+	if (!playerContext.playerData || !playerContext.ephemeral || !playerContext.playerShips) return [];
 
-export function calculateBattleTiers(allCrew: (CrewMember | PlayerCrew)[]) {
+	function setupToSlots(setup: Setup, ship: Ship) {
+		let slots = setup.slots.map(id => playerContext.playerData?.player.character.crew.find(cf => cf.id === id));
+		if (slots?.length === ship.battle_stations?.length && slots?.every(e => !!e)) {
+			ship.battle_stations?.forEach((station, idx) => {
+				station.crew = slots[idx];
+			});
+			return true;
+		}
+		return false;
+	}
 
+	playerContext.playerData.player.character.pvp_divisions?.forEach((division) => {
+		let id = division.setup.ship_id;
+		let ship = playerContext.playerShips?.find(f => f.id === id);
+		if (ship) {
+			let pvp_division: PvpDivision | undefined = undefined;
+			let rarity = 0;
+			switch (division.tier) {
+				case 0:
+					pvp_division = 'commander';
+					rarity = 3;
+					break;
+				case 1:
+					pvp_division = 'captain';
+					rarity = 4;
+					break;
+				case 2:
+					pvp_division = 'admiral';
+					rarity = 5;
+					break;
+				default: 
+					break;
+			}
+			if (!pvp_division) return;
+			ship = JSON.parse(JSON.stringify(ship)) as Ship;
+			if (setupToSlots(division.setup, ship)) {
+				results.push({
+					ship,
+					battle_mode: 'pvp',
+					pvp_division,
+					rarity
+				});
+			}
+		}
+	});
 
+	playerContext.playerData.player.character.fbb_difficulties?.forEach((fbb) => {
+		if (!fbb.setup) return;
+		let id = fbb.setup.ship_id;
+		let ship = playerContext.playerShips?.find(f => f.id === id);
+		if (ship) {
+			let battle_mode = `fbb_${fbb.id - 1}` as BattleMode;
+			if (!battle_mode) return;
+			ship = JSON.parse(JSON.stringify(ship)) as Ship;
+			if (setupToSlots(fbb.setup, ship)) {
+				results.push({
+					ship,
+					battle_mode,
+					rarity: fbb.id - 1
+				});
+			}
+		}
+	});
 
+	return results;
 }
