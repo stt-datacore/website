@@ -105,7 +105,7 @@ export const BattleGraph = (props: BattleGraphProps) => {
             enableGridY={true}
             isInteractive={chartData[0].data.length < 50}
             defaultActiveSerieIds={[]}            
-            lineTooltip={(series) => 'Welcome'}
+            lineTooltip={(series) => ''}
             pointTooltip={(series) => ''}
             role={''}
             //animate={true}
