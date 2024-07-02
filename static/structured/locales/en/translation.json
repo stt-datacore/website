@@ -1208,7 +1208,8 @@
             "generating_permutations_ellipses": "Generating permutations ...",
             "run_current_line_up": "Run Current Crew",
             "sorting_finalizing_ellipses": "Sorting and finalizing results ...",
-            "show_battle_graph": "Show Battle Graph"
+            "show_battle_graph": "Show Battle Graph",
+            "ignore_skill": "Ignore skills"
         },
         "calculated_crew": "Calculated Crew",
         "charge_phase": {

@@ -11,6 +11,7 @@ import { ShipAbilityPicker, TraitPicker, TriggerPicker } from './crewtables/ship
 import { isMobile } from 'react-device-detect';
 import { getShipsInUse } from '../utils/shiputils';
 import CONFIG from './CONFIG';
+import { TinyStore } from '../utils/tiny';
 
 type ProfileShipsProps = {
 };
@@ -46,11 +47,12 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 	context!: React.ContextType<typeof GlobalContext>;
 	inited: boolean;
 	hasPlayer: boolean;
-
+	private readonly tiny = TinyStore.getStore('profile_ships');
 	constructor(props: ProfileShipsProps) {
 		super(props);
 
 		this.state = {
+			onlyUsed: this.tiny.getValue<boolean>('only_used'),
 			column: null,
 			direction: null,
 			searchFilter: '',
@@ -190,6 +192,11 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		this.setState({ ...this.state, textFilter: filter });
 	}
 
+	private readonly setOnlyUsed = (value?: boolean) => {
+		this.tiny.setValue('only_used', value)
+		this.setState({ ...this.state, onlyUsed: value });
+	}
+
 	render() {
 		const { localized } = this.context;
 		const { t } = localized;
@@ -261,7 +268,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 				<TraitPicker ship={true} selectedTraits={this.state.traitFilter} setSelectedTraits={(value) => this.setTraitFilter(value as string[])} />
 			</div>
 			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1em', margin: '1em'}}>
-				<Checkbox label={t('ship.show.only_in_use')} checked={this.state.onlyUsed ?? false} onChange={(e, { checked }) => this.setState({ ... this.state, onlyUsed: checked as boolean})} />				
+				<Checkbox label={t('ship.show.only_in_use')} checked={this.state.onlyUsed ?? false} onChange={(e, { checked }) => this.setOnlyUsed(checked as boolean)} />
 			</div>
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>

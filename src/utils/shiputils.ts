@@ -345,30 +345,36 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 	return results;
 }
 
-export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[]): Ship | false {
+export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true): Ship | false {
 	if (!ship?.battle_stations?.length || !crewStations?.length || crewStations.length !== ship.battle_stations.length) return false;
-	for (let action of ship.actions ?? []) {
-		action.source = ship.name;
-	}
+
 	let newship = JSON.parse(JSON.stringify(ship)) as Ship;
+	let x = 0;
+
+	for (let action of newship.actions ?? []) {
+		action.source = newship.name;
+	}
+
 	for (let crew of crewStations) {
 		if (crew === undefined) continue;
+
 		newship.crit_bonus ??= 0;
-		newship.crit_bonus += crew.ship_battle.crit_bonus ?? 0;
-
 		newship.crit_chance ??= 0;
-		newship.crit_chance += crew.ship_battle.crit_chance ?? 0;
-
 		newship.evasion ??= 0;
-		newship.evasion += crew.ship_battle.evasion ?? 0;
-
 		newship.accuracy ??= 0;
-		newship.accuracy += crew.ship_battle.accuracy ?? 0;
+
+		if (crew.skill_order.includes(ship.battle_stations[x].skill)) {
+			newship.crit_bonus += crew.ship_battle.crit_bonus ?? 0;
+			newship.crit_chance += crew.ship_battle.crit_chance ?? 0;
+			newship.evasion += crew.ship_battle.evasion ?? 0;
+			newship.accuracy += crew.ship_battle.accuracy ?? 0;
+		}
 
 		newship.actions ??= [];
 		crew.action.source = crew.name;
 		if (crew.id !== undefined) crew.action.crew = crew.id;
-		newship.actions.push(crew.action);
+		if (pushAction) newship.actions.push(crew.action);
+		x++;
 	}
 
 	return newship;

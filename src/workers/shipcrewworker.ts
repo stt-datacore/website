@@ -1,6 +1,7 @@
 import { CrewMember } from "../model/crew";
 import { AttackInstant, MultiShipWorkerConfig, Ship, ShipAction, ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults } from "../model/ship"
 import { crewCopy } from "../utils/crewutils";
+import { setupShip } from "../utils/shiputils";
 
 interface BonusAction extends ShipAction {
     orig_bonus?: number;
@@ -194,17 +195,11 @@ function hitChance(acc: number, opp_eva: number) {
 }
 
 export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180) {
-    let ship: Ship | undefined = {...input_ship};
+    let ship = setupShip(input_ship, crew, false) || undefined;
     defense ??= 0;
-    if (crew) {        
-        crew.forEach((c) => {
-            ship!.accuracy += c.ship_battle.accuracy ?? 0;
-            ship!.evasion += c.ship_battle.evasion ?? 0;
-            ship!.crit_bonus += c.ship_battle.crit_bonus ?? 0;
-            ship!.crit_chance += c.ship_battle.crit_chance ?? 0;
-        });    
-    }
-    
+    offense ??= 0;
+    if (!ship) return [];
+
     let hull = ship.hull;
     let orighull = ship.hull;
 
@@ -271,13 +266,13 @@ export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: S
         if (action.charge_phases) {
             if (!action.current_phase) {
                 action.current_phase = 1;
-                state_time[actidx] = 0;
+                state_time[actidx] = 1;
                 inited[actidx] = true;
             }
             else if (action.current_phase < action.charge_phases.length) {
                 bumpAction(action, action.current_phase);
                 action.current_phase++;
-                state_time[actidx] = 0;
+                state_time[actidx] = 1;
                 inited[actidx] = true;
             }
             else if (action.current_phase === action.charge_phases.length) {
@@ -318,7 +313,7 @@ export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: S
             current.push(action);
             cloaked = action.status === 2;
             uses[actidx]++;
-            state_time[actidx] = 0;
+            state_time[actidx] = 1;
             inited[actidx] = true;
             active[actidx] = true;
         }
@@ -331,7 +326,7 @@ export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: S
     const deactivate = (action: ShipAction, actidx: number) => {
         let idx = current.findIndex(f => f === action);
         if (idx != -1) current.splice(idx, 1)
-        state_time[actidx] = 0;
+        state_time[actidx] = 1;
         active[actidx] = false;
     }
 
@@ -340,18 +335,18 @@ export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: S
        
         for (let action of allactions) {
             let actidx = allactions.findIndex(f => f === action);
-            if (!inited[actidx] && sec >= action.initial_cooldown && !current.includes(action)) {
+            if (!inited[actidx] && sec > action.initial_cooldown && !current.includes(action)) {
                 activate(action, actidx);
             }
             else if (inited[actidx] && current.includes(action)) {
                 state_time[actidx]++;
-                if (state_time[actidx] >= action.duration) {
+                if (state_time[actidx] > action.duration) {
                     deactivate(action, actidx);
                 }
             }
             else if (inited[actidx] && !current.includes(action) && (!action.limit || uses[actidx] < action.limit)) {
                 state_time[actidx]++;
-                if (state_time[actidx] >= action.cooldown) {
+                if (state_time[actidx] > action.cooldown) {
                     activate(action, actidx);
                 }
             }
@@ -467,7 +462,7 @@ function canSeatAll(ship: Ship, crew: CrewMember[]): CrewMember[] | false {
 const ShipCrewWorker = {
     calc: (options: ShipWorkerConfig, reportProgress: (data: { format: string, options?: any }) => boolean = () => true) => {
         return new Promise<ShipWorkerResults>((resolve, reject) => {
-            const { ship, battle_mode, opponents, action_types, ability_types, defense, offense } = options;
+            const { ship, battle_mode, opponents, action_types, ability_types, defense, offense, ignore_skill } = options;
             const opponent = opponents?.length ? opponents[0] : undefined;
             
             let max_results = options.max_results ?? 100;
@@ -477,7 +472,7 @@ const ShipCrewWorker = {
             let power_depth = options.power_depth ?? 2;
 
             const workCrew = crewCopy(options.crew).filter((crew) => {
-                if (!crew.skill_order.some(skill => ship.battle_stations?.some(bs => bs.skill === skill))) return false;
+                if (!ignore_skill && !crew.skill_order.some(skill => ship.battle_stations?.some(bs => bs.skill === skill))) return false;
                 if (crew.action.ability?.condition && !ship.actions?.some(act => act.status === crew.action.ability?.condition)) return false;
                 
                 if (action_types?.length) {
@@ -499,6 +494,11 @@ const ShipCrewWorker = {
                 else {
                     return false;
                 }                
+            })
+            .filter((crew) => {
+                if (battle_mode.startsWith('fbb') && crew.action.limit) return false;
+                if (crew.action.bonus_amount < (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] - power_depth) && (!battle_mode.startsWith('fbb') || crew.action.ability?.type !== 2)) return false;
+                return true;
             })
             .sort((a, b) => {
                 let r = 0;
@@ -577,11 +577,6 @@ const ShipCrewWorker = {
                 }
                 return r;
             })
-            .filter((crew) => {
-                if (battle_mode.startsWith('fbb') && crew.action.limit) return false;
-                if (crew.action.bonus_amount < (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] - power_depth) && (!battle_mode.startsWith('fbb') || crew.action.ability?.type !== 2)) return false;
-                return true;
-            });
 
             let seats = ship.battle_stations?.length;
 

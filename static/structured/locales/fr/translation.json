@@ -1218,7 +1218,8 @@
             "generating_permutations_ellipses": "Génération de permutations...",
             "run_current_line_up": "Exécuter les équipiers actuelles",
             "sorting_finalizing_ellipses": "Tri et finalisation des résultats...",
-            "show_battle_graph": "Afficher le graphique de combat"
+            "show_battle_graph": "Afficher le graphique de combat",
+            "ignore_skill": "Ignorer les compétences"
         },
         "calculated_crew": "Équipage calculé",
         "charge_phase": {

@@ -47,77 +47,34 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [battleConfig, setBattleConfig] = React.useState<BattleConfig>({});
     const [activeSuggestion, setActiveSuggestion] = React.useState<ShipWorkerItem | undefined>(undefined);
     const [suggestions, setSuggestions] = React.useState<ShipWorkerItem[]>([]);
-    const [battleMode, setBattleMode] = useStateWithStorage<BattleMode>(`${pageId}/${ship.symbol}/battleMode`, 'pvp', { rememberForever: true });
+    const [lastBattleMode, setLastBattleMode] = useStateWithStorage<BattleMode | null>(`${pageId}/${ship.symbol}/lastBattleMode`, null, { rememberForever: true });
+    const [battleMode, setBattleMode] = useStateWithStorage<BattleMode>(`${pageId}/${ship.symbol}/battleMode`, lastBattleMode ?? 'pvp');
     const [powerDepth, setPowerDepth] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/powerDepth`, 1, { rememberForever: true });
+    const [ignoreSkill, setIgnoreSkill] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/powerDepth`, false, { rememberForever: true });
     const [minRarity, setMinRarity] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/minRarity`, ship.rarity - 1, { rememberForever: true });
     const [progressMsg, setProgressMsg] = React.useState<string>('');
 
-    React.useEffect(() => {
-        if (!hideGraph) {
-            recommend(true);
-        }
-    }, [hideGraph]);
-
-    React.useEffect(() => {
-        const newconfig = { ...battleConfig };
-        if (globalContext.player.playerData) {
-            let bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_boss_ship_attack');
-            newconfig.defense = bs?.value;
-            bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_player_ship_attack');
-            newconfig.offense = bs?.value;
-        }
-        if (battleMode.startsWith('fbb')) {
-            let rarity = Number.parseInt(battleMode.slice(4));
-            let boss = globalContext.player.ephemeral?.fleetBossBattlesRoot?.statuses.find(gr => gr.desc_id === rarity + 1)?.boss_ship;
-            if (boss) {
-                boss = JSON.parse(JSON.stringify(boss)) as BossShip;
-                boss.rarity = rarity;
-            }
-            newconfig.opponent = boss;
-        }
-        else {
-            newconfig.opponent = undefined;
-        }         
-        setBattleConfig(newconfig);
-    }, [battleMode]);
-
-    React.useEffect(() => {
-        if (typeof window !== 'undefined' && playerShips && !windowLoaded) {
-            setWindowLoaded(true);
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has("battle_mode") && urlParams.has('rarity')) {
-                try {
-                    let rarity = Number.parseInt(urlParams.get('rarity')!);
-                    let bmode = urlParams.get('battle_mode')! as BattleMode;
-                    if (['pvp', 'skirmish', 'fbb_0', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'].includes(bmode)) {
-                        let ships = getShipsInUse(globalContext.player);
-                        const f = ships.find(f => f.ship.symbol === ship.symbol && f.battle_mode === bmode && f.rarity === rarity);
-                        if (f) {
-                            setCrewStations(f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew));
-                            setTimeout(() => {
-                                setBattleMode(bmode);                                
-                            });
-                        }
-                    }
-                }
-                catch {
-
-                }
+    const battleModes = [] as DropdownItemProps[];
+    (globalContext.player.playerData ? ['pvp', 'skirmish', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'] : ['pvp', 'skirmish']).forEach((mode) => {
+        let rarity = 0;
+        if (mode.startsWith('fbb')) {            
+            let sp = mode.split("_");
+            rarity = Number.parseInt(sp[1]);
+            if (ship) {
+                if (rarity === 5 && ship.rarity !== 5) return;
+                if (rarity === 4 && ship.rarity < 4) return;
+                if (rarity === 3 && (ship.rarity < 3 || ship.rarity > 4)) return;
+                if (rarity === 2 && (ship.rarity < 2 || ship.rarity > 4)) return;
+                if (rarity === 1 && ship.rarity > 3) return;
+                if (rarity === 0 && ship.rarity > 2) return;
             }
         }
+        battleModes.push({
+            key: mode,
+            value: mode,
+            text: t(`ship.${mode.startsWith('fbb') ? 'fbb' : mode}`) + (mode.startsWith('fbb') ? ` ${rarity}*` : '')
+        });
     });
-
-    React.useEffect(() => {
-        if (!activeSuggestion) return;
-        setCrewStations(activeSuggestion?.crew as PlayerCrew[] ?? ships[shipIdx].battle_stations?.map(b => undefined));
-    }, [activeSuggestion]);
-
-    React.useEffect(() => {
-        if (suggestions?.length && (!activeSuggestion || sugWait !== undefined)) {
-            setSuggestion(sugWait ?? 0);
-            setSugWait(undefined);
-        }
-    }, [suggestions, sugWait]);
 
     const suggOpts = suggestions?.map((sug, idx) => {
         return {
@@ -177,19 +134,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
     });
 
-    const battleModes = (globalContext.player.playerData ? ['pvp', 'skirmish', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'] : ['pvp', 'skirmish']).map((mode) => {
-        let rarity = 0;
-        if (mode.startsWith('fbb')) {
-            let sp = mode.split("_");
-            rarity = Number.parseInt(sp[1]);
-        }
-        return {
-            key: mode,
-            value: mode,
-            text: t(`ship.${mode.startsWith('fbb') ? 'fbb' : mode}`) + (mode.startsWith('fbb') ? ` ${rarity}*` : '')
-        }
-    });
-
     const powerDepths = [0, 1, 2, 3, 4].map((pd) => ({
         key: `pd_${pd}`,
         value: pd,
@@ -205,6 +149,73 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             text: `${r}*`
         })
     }
+
+    React.useEffect(() => {
+        if (!hideGraph) {
+            recommend(true);
+        }
+    }, [hideGraph]);
+
+    React.useEffect(() => {
+        const newconfig = { ...battleConfig };
+        if (globalContext.player.playerData) {
+            let bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_boss_ship_attack');
+            newconfig.defense = bs?.value;
+            bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_player_ship_attack');
+            newconfig.offense = bs?.value;
+        }
+        if (battleMode.startsWith('fbb')) {
+            let rarity = Number.parseInt(battleMode.slice(4));
+            let boss = globalContext.player.ephemeral?.fleetBossBattlesRoot?.statuses.find(gr => gr.desc_id === rarity + 1)?.boss_ship;
+            if (boss) {
+                boss = JSON.parse(JSON.stringify(boss)) as BossShip;
+                boss.rarity = rarity;
+            }
+            newconfig.opponent = boss;
+        }
+        else {
+            newconfig.opponent = undefined;
+        }         
+        setBattleConfig(newconfig);        
+    }, [battleMode]);
+
+    React.useEffect(() => {
+        if (typeof window !== 'undefined' && playerShips && !windowLoaded && ship) {
+            setWindowLoaded(true);
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has("battle_mode") && urlParams.has('rarity')) {
+                try {
+                    let rarity = Number.parseInt(urlParams.get('rarity')!);
+                    let bmode = urlParams.get('battle_mode')! as BattleMode;
+                    if (['pvp', 'skirmish', 'fbb_0', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'].includes(bmode)) {
+                        let ships = getShipsInUse(globalContext.player);
+                        const f = ships.find(f => f.ship.symbol === ship.symbol && f.battle_mode === bmode && f.rarity === rarity);
+                        if (f) {
+                            setCrewStations(f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew));
+                            setTimeout(() => {
+                                setBattleMode(bmode);                         
+                            });
+                        }
+                    }
+                }
+                catch {
+
+                }
+            }
+        }
+    });
+
+    React.useEffect(() => {
+        if (!activeSuggestion) return;
+        setCrewStations(activeSuggestion?.crew as PlayerCrew[] ?? ships[shipIdx].battle_stations?.map(b => undefined));
+    }, [activeSuggestion]);
+
+    React.useEffect(() => {
+        if (suggestions?.length && (!activeSuggestion || sugWait !== undefined)) {
+            setSuggestion(sugWait ?? 0);
+            setSugWait(undefined);
+        }
+    }, [suggestions, sugWait]);
 
     return <React.Fragment>
         <div className={'ui segment'} style={{
@@ -246,7 +257,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             scrolling
                             selection
                             value={battleMode}
-                            onChange={(e, { value }) => setBattleMode(value as BattleMode)}
+                            onChange={(e, { value }) => {
+                                selectBattleMode(value as BattleMode)
+                            }}
                             options={battleModes}
                         />
                     </div>
@@ -282,21 +295,30 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     margin: '1em',
                     gap: '1em'
                 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
-                        <Checkbox
-                            label={t('consider_crew.consider_frozen')}
-                            value={t('consider_crew.consider_frozen')}
-                            checked={considerFrozen}
-                            onChange={(e, { checked }) => setConsiderFrozen(checked as boolean)} />
-                    </div>
-
-                    {!!globalContext.player.playerData &&
+                    {!!globalContext.player.playerData && <>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
+                            <Checkbox
+                                label={t('consider_crew.consider_frozen')}
+                                value={t('consider_crew.consider_frozen')}
+                                checked={considerFrozen}
+                                onChange={(e, { checked }) => setConsiderFrozen(checked as boolean)} />
+                        </div>
+                    
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
                             <Checkbox
                                 label={t('consider_crew.consider_unowned')}
                                 checked={considerUnowned}
                                 onChange={(e, { checked }) => setConsiderUnowned(checked as boolean)} />
-                        </div>}
+                        </div>
+                    </>}
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
+                        <Checkbox
+                                label={t('ship.calc.ignore_skill')}
+                                value={t('ship.calc.ignore_skill')}
+                                checked={ignoreSkill}
+                                onChange={(e, { checked }) => setIgnoreSkill(checked as boolean)} />
+                    </div>
 
                 </div>
             </div>
@@ -349,7 +371,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 opponents: battleConfig.opponent ? [battleConfig.opponent] : undefined,
                 defense: battleConfig.defense,
                 offense: battleConfig.offense,
-                get_attacks: !!current
+                get_attacks: !!current,
+                ignore_skill: ignoreSkill
             } as ShipWorkerConfig;
 
             setProgressMsg('');
@@ -357,6 +380,11 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setSuggestions([]);
             runWorker('shipworker', config, workerMessage);
         }
+    }
+
+    function selectBattleMode(battleMode: BattleMode) {
+        setBattleMode(battleMode);
+        setLastBattleMode(battleMode);
     }
 
     function clearAll() {
