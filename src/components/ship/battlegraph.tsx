@@ -47,12 +47,12 @@ export const BattleGraph = (props: BattleGraphProps) => {
     const graphOpts = [{
         key: 'bump',
         value: 'bump',
-        text: "Bump"
+        text: t('graph.bump')
     },
     {
         key: 'swarm',
         value: 'swarm',
-        text: "Swarm"
+        text: t('graph.swarm')
     }]
 
     return <div className={className}

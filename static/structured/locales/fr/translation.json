@@ -683,7 +683,7 @@
         "new_f": "Nouvelle",
         "new_m": "Nouveau",
         "no": "Non",
-        "no_items_found": "Aucun élément trouvé",        
+        "no_items_found": "Aucun élément trouvé",
         "none": "Aucun",
         "notes": "Remarques",
         "obtained": "Obtenu par",
@@ -714,6 +714,10 @@
             "title": "Travail en cours !"
         },
         "yes": "Oui"
+    },
+    "graph": {
+        "bump": "Graphique de bosse",
+        "swarm": "Graphique d'essaim"
     },
     "header": {
         "recommend": {
@@ -1216,10 +1220,10 @@
         "calc": {
             "calculating_pct_ellipses": "Calcul ({{percent}} % terminé)...",
             "generating_permutations_ellipses": "Génération de permutations...",
+            "ignore_skill": "Ignorer les compétences",
             "run_current_line_up": "Exécuter les équipiers actuelles",
-            "sorting_finalizing_ellipses": "Tri et finalisation des résultats...",
             "show_battle_graph": "Afficher le graphique de combat",
-            "ignore_skill": "Ignorer les compétences"
+            "sorting_finalizing_ellipses": "Tri et finalisation des résultats..."
         },
         "calculated_crew": "Équipage calculé",
         "charge_phase": {
@@ -1253,11 +1257,11 @@
             "captain": "Division Capitaine",
             "commander": "Division Commandeur"
         },
+        "shields": "Boucliers",
+        "ship": "Vaisseau",
         "show": {
             "only_in_use": "Afficher uniquement les vaisseaux actuellement utilisés"
         },
-        "shields": "Boucliers",
-        "ship": "Vaisseau",
         "skirmish": "{{event_type.skirmish}}",
         "trigger": "Déclencheur",
         "triggers": "Déclencheurs",

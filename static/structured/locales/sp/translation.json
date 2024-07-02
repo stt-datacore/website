@@ -682,7 +682,7 @@
         "new_f": "Neuva",
         "new_m": "Neuvo",
         "no": "No",
-        "no_items_found": "No se encontraron elementos",        
+        "no_items_found": "No se encontraron elementos",
         "none": "Ninguna",
         "notes": "Notas",
         "obtained": "Obtenido por",
@@ -713,6 +713,10 @@
             "title": "¡Trabajo en progreso!"
         },
         "yes": "Sí"
+    },
+    "graph": {
+        "bump": "Gráfico de impacto",
+        "swarm": "Gráfico de enjambre"
     },
     "header": {
         "recommend": {
@@ -1215,10 +1219,10 @@
         "calc": {
             "calculating_pct_ellipses": "Calculando ({{percent}}% completado) ...",
             "generating_permutations_ellipses": "Generando permutaciones...",
+            "ignore_skill": "Ignora las habilidades",
             "run_current_line_up": "Ejecutar tripulantes actuales",
-            "sorting_finalizing_ellipses": "Ordenar y finalizar resultados...",
             "show_battle_graph": "Mostrar Gráfico de Batalla",
-            "ignore_skill": "Ignora las habilidades"
+            "sorting_finalizing_ellipses": "Ordenar y finalizar resultados..."
         },
         "calculated_crew": "Tripulación calculada",
         "charge_phase": {
@@ -1252,11 +1256,11 @@
             "captain": "División de capitán",
             "commander": "División de comandante"
         },
+        "shields": "Escudos",
+        "ship": "buque",
         "show": {
             "only_in_use": "Mostrar sólo los buques actualmente en uso"
         },
-        "shields": "Escudos",
-        "ship": "buque",
         "skirmish": "{{event_type.skirmish}}",
         "trigger": "Activación",
         "triggers": "Activadores",
