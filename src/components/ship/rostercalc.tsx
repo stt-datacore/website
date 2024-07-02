@@ -25,6 +25,12 @@ export interface RosterCalcProps {
     setConsiderUnowned: (value: boolean) => void;
 }
 
+interface BattleConfig {
+    defense?: number;
+    offense?: number;
+    opponent?: Ship;
+}
+
 export const ShipRosterCalc = (props: RosterCalcProps) => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     const globalContext = React.useContext(GlobalContext);
@@ -32,20 +38,18 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const workerContext = React.useContext(WorkerContext);
     const { running, runWorker, cancel } = workerContext;
     const { t } = globalContext.localized;
-
+    const [sugWait, setSugWait] = React.useState<number | undefined>();
     const { ships, crew, crewStations, setCrewStations, pageId, considerFrozen, setConsiderFrozen, considerUnowned, setConsiderUnowned } = props;
     const shipIdx = props.shipIdx ?? 0;
     const ship = ships[shipIdx];
     const [windowLoaded, setWindowLoaded] = React.useState(false);
     const [hideGraph, setHideGraph] = React.useState(true);
+    const [battleConfig, setBattleConfig] = React.useState<BattleConfig>({});
     const [activeSuggestion, setActiveSuggestion] = React.useState<ShipWorkerItem | undefined>(undefined);
     const [suggestions, setSuggestions] = React.useState<ShipWorkerItem[]>([]);
     const [battleMode, setBattleMode] = useStateWithStorage<BattleMode>(`${pageId}/${ship.symbol}/battleMode`, 'pvp', { rememberForever: true });
     const [powerDepth, setPowerDepth] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/powerDepth`, 1, { rememberForever: true });
     const [minRarity, setMinRarity] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/minRarity`, ship.rarity - 1, { rememberForever: true });
-    const [opponent, setOpponent] = React.useState<Ship | undefined>();
-    const [defense, setDefense] = React.useState<number | undefined>();
-    const [offense, setOffense] = React.useState<number | undefined>();
     const [progressMsg, setProgressMsg] = React.useState<string>('');
 
     React.useEffect(() => {
@@ -55,23 +59,13 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     }, [hideGraph]);
 
     React.useEffect(() => {
+        const newconfig = { ...battleConfig };
         if (globalContext.player.playerData) {
             let bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_boss_ship_attack');
-            if (bs?.value) {
-                setDefense(bs.value);
-            }
-            else {
-                setDefense(undefined);
-            }
+            newconfig.defense = bs?.value;
             bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_player_ship_attack');
-            if (bs?.value) {
-                setOffense(bs.value);
-            }
-            else {
-                setOffense(undefined);
-            }
+            newconfig.offense = bs?.value;
         }
-
         if (battleMode.startsWith('fbb')) {
             let rarity = Number.parseInt(battleMode.slice(4));
             let boss = globalContext.player.ephemeral?.fleetBossBattlesRoot?.statuses.find(gr => gr.desc_id === rarity + 1)?.boss_ship;
@@ -79,32 +73,33 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 boss = JSON.parse(JSON.stringify(boss)) as BossShip;
                 boss.rarity = rarity;
             }
-            setOpponent(boss);
+            newconfig.opponent = boss;
         }
         else {
-            setOpponent(undefined);
+            newconfig.opponent = undefined;
         }         
+        setBattleConfig(newconfig);
     }, [battleMode]);
 
     React.useEffect(() => {
         if (typeof window !== 'undefined' && playerShips && !windowLoaded) {
-            setWindowLoaded(true);            
+            setWindowLoaded(true);
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has("battle_mode") && urlParams.has('rarity')) {
                 try {
                     let rarity = Number.parseInt(urlParams.get('rarity')!);
-                    let s = urlParams.get('battle_mode')!;
-                    if (['pvp', 'skirmish', 'fbb_0', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'].includes(s)) {
+                    let bmode = urlParams.get('battle_mode')! as BattleMode;
+                    if (['pvp', 'skirmish', 'fbb_0', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'].includes(bmode)) {
                         let ships = getShipsInUse(globalContext.player);
-                        const f = ships.find(f => f.ship.symbol === ship.symbol && f.battle_mode === s && f.rarity === rarity);
+                        const f = ships.find(f => f.ship.symbol === ship.symbol && f.battle_mode === bmode && f.rarity === rarity);
                         if (f) {
                             setTimeout(() => {
-                                setBattleMode(s as BattleMode)
+                                setBattleMode(bmode);
                                 let csnew = f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew);
                                 if (!crewStations.every((cs, idx) => csnew[idx].id === cs?.id)) {
                                     setCrewStations(f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew));
                                 }
-                            }, 1000);
+                            });
                         }
                     }
                 }
@@ -117,7 +112,14 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
     React.useEffect(() => {
         setCrewStations(activeSuggestion?.crew as PlayerCrew[] ?? ships[shipIdx].battle_stations?.map(b => undefined));
-    }, [activeSuggestion])
+    }, [activeSuggestion]);
+
+    React.useEffect(() => {
+        if (suggestions?.length && (!activeSuggestion || sugWait !== undefined)) {
+            setSuggestion(sugWait ?? 0);
+            setSugWait(undefined);
+        }
+    }, [suggestions, sugWait]);
 
     const suggOpts = suggestions?.map((sug, idx) => {
         return {
@@ -333,23 +335,24 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             return;
         }
         if (ships?.length && crew?.length) {
-            if (battleMode.startsWith('fbb') && !opponent) return;
+            if (battleMode.startsWith('fbb') && !battleConfig.opponent) return;
             const config = {
                 ship: JSON.parse(JSON.stringify(ship)),
-                crew: current ? crewStations : crew,
+                crew: JSON.parse(JSON.stringify(current ? crewStations : crew)),
                 battle_mode: battleMode,
                 power_depth: powerDepth,
                 min_rarity: minRarity,
                 max_rarity: ship.rarity,
                 max_results: 50,
-                opponents: opponent ? [opponent] : undefined,
-                defense,
-                offense,
+                opponents: battleConfig.opponent ? [battleConfig.opponent] : undefined,
+                defense: battleConfig.defense,
+                offense: battleConfig.offense,
                 get_attacks: !!current
             } as ShipWorkerConfig;
 
             setProgressMsg('');
             setActiveSuggestion(undefined);
+            setSuggestions([]);
             runWorker('shipworker', config, workerMessage);
         }
     }
@@ -362,7 +365,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         else {
             setActiveSuggestion(suggestions[idx]);
         }
-
     }
 
     function getSuggestion() {
@@ -378,13 +380,13 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 let sug = suggestions.findIndex(f => f.crew.every((cr1, idx) => r.crew.findIndex(cr2 => cr2.id === cr1.id) === idx))
                 if (sug !== -1) {
                     suggestions[sug] = r;
-                    setSuggestions([...suggestions]);
-                    setTimeout(() => setSuggestion(sug));
+                    setSugWait(sug);
+                    setSuggestions([...suggestions]);                    
                     return;
                 }
             }
-            setSuggestions(result.data.result.ships);
-            setTimeout(() => setSuggestion(0));
+            setSugWait(0);
+            setSuggestions(result.data.result.ships);            
         }
         else if (result.data.inProgress && result.data.result.format) {
             setProgressMsg(t(result.data.result.format, result.data.result.options));
