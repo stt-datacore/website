@@ -6,6 +6,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { PresenterPluginProps, PresenterPlugin, PresenterPluginState } from "./presenter_plugin";
 import { CrewMember } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
+import { GlobalContext } from "../../context/globalcontext";
 
 const imageMap = new Map<string, string>();
 
@@ -87,6 +88,9 @@ export interface ShipSkillProps extends PresenterPluginProps<Ship | PlayerCrew |
 }
 
 export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, ShipSkillProps, PresenterPluginState> {
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
+
     static title = "Ship Ability";
     
     constructor(props: ShipSkillProps) {
@@ -96,6 +100,8 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
 
     render() {
         if (!this.props.context) return <></>
+        const { t, tfmt } = this.context.localized;
+
         const isShip = ("hull" in this.props.context);
         const ship_battle = ("hull" in this.props.context ? this.props.context : this.props.context.ship_battle)
         const actions = ("hull" in this.props.context ? this.props.context.actions ?? [] : [this.props.context.action]);
@@ -198,48 +204,35 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                 }}
                             >
                                 <li>
-                                    Boosts{" "}
-                                    {
-                                        CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[
-                                            action.bonus_type
-                                        ]
-                                    }{" "}
-                                    by {action.bonus_amount}
+                                    {t("ship_action.boost_by", {
+                                        type: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type],
+                                        amount: action.bonus_amount?.toString() ?? ''
+                                    })}
                                 </li>
                                 {"status" in action && ((action.status ?? 0) > 0) && (
                                     <li>
-                                        Grants<b>{" "}
-                                        {
-                                            CONFIG.SHIP_BATTLE_GRANTS[
-                                                action.status ?? 0
-                                            ]
-                                        }{" "}</b>status:<br />
-                                        {
-                                            CONFIG.SHIP_BATTLE_GRANT_DESC[
-                                                action.status ?? 0
-                                            ]
-                                        }
+                                        {t("ship_action.grant", {
+                                            grant: CONFIG.SHIP_BATTLE_GRANTS[action.status ?? 0],
+                                            grant_description: CONFIG.SHIP_BATTLE_GRANT_DESC[action.status ?? 0]
+                                        })}
                                     </li>
                                 )}
                                 {action.penalty && (
                                     <div style={{color: getActionColor(0)}}>
-                                        Decrease{" "}
-                                        {
-                                            CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[
-                                                action.penalty.type
-                                            ]
-                                        }{" "}
-                                        by {action.penalty.amount}
+                                        {t("ship_action.handicap", {
+                                            type: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.penalty.type],
+                                            amount: action.penalty.amount.toString()
+                                        })}
                                     </div>
                                 )}
                                 <li style={{ color: "white" }}>
-                                    <b>Initialize</b>: {action.initial_cooldown}s,{" "}
-                                    <b>Cooldown</b>: {action.cooldown}s,{" "}
-                                    <b>Duration</b>: {action.duration}s
+                                    <b>{t('ship.initialize')}</b>: {action.initial_cooldown}s,{" "}
+                                    <b>{t('ship.cooldown')}</b>: {action.cooldown}s,{" "}
+                                    <b>{t('ship.duration')}</b>: {action.duration}s
                                 </li>
                                 {action.limit && (
                                     <li style={{ color: "white" }}>
-                                        <b>Uses Per Battle</b>: {action.limit}{" "}
+                                        <b>{t('ship.uses_per_battle')}</b>: {action.limit}{" "}
                                         {drawBullets(action.limit)}
                                     </li>
                                 )}
@@ -269,7 +262,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                         }}
                                     >
                                         <div style={{ marginTop: "0px" }}>
-                                            Bonus Ability
+                                            {t('ship.bonus_ability')}
                                         </div>
                                         {action.ability.condition > 0 && (
                                             <div style={{
@@ -278,7 +271,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                                 justifyContent: "flex-end",
                                                 alignItems: "center"
                                             }}>
-                                                <b>Trigger</b>:{" "}
+                                                <b>{t('ship.trigger')}</b>:{" "}
                                                 <img style={{margin: "0.25em", height: "1em"}}  src={getTriggerIcon(action.ability.condition)} />
                                                 {
                                                     CONFIG.CREW_SHIP_BATTLE_TRIGGER[
@@ -323,7 +316,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                             {action.charge_phases && action.charge_phases.length && (
                                 <div>
                                     <div style={{ marginBottom: ".25em" }}>
-                                        Charge Phases
+                                        {t('ship.charge_phases')}
                                     </div>
                                     <ol
                                         style={{
@@ -332,7 +325,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                             paddingLeft: "0",
                                         }}
                                     >
-                                        {getShipChargePhases(action).map((phase, idx) => (
+                                        {getShipChargePhases(action, undefined, t).map((phase, idx) => (
                                             <li key={idx}>{phase}</li>
                                         ))}
                                     </ol>
@@ -369,32 +362,32 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                     }
                     
                 <div>
-                    <div style={{ marginBottom: ".25em", marginTop: "0.25em" }}>{!isShip && "Equipment Bonus"}</div>
+                    <div style={{ marginBottom: ".25em", marginTop: "0.25em" }}>{!isShip && t('ship.equipment_bonus')}</div>
                     <p>
                         {!!ship_battle.crit_bonus && (
                             <span>
-                                <b>Crit Bonus:</b> +
+                                <b>{t('ship.crit_bonus')}:</b> +
                                 {ship_battle.crit_bonus}
                                 {` `}
                             </span>
                         )}
                         {!!ship_battle.crit_chance && (
                             <span>
-                                <b>Crit Rating:</b> +
+                                <b>{t('ship.crit_rating')}:</b> +
                                 {ship_battle.crit_chance}
                                 {` `}
                             </span>
                         )}
                         {!isShip && !!ship_battle.accuracy &&
                             <span>
-                            <b>Accuracy:</b> +
+                            <b>{t('ship.accuracy')}:</b> +
                             {ship_battle.accuracy}
                             {` `}
                             </span>
                         }
                         {!isShip && !!ship_battle.evasion &&
                             <span>
-                            <b>Evasion:</b> +
+                            <b>{t('ship.evasion')}:</b> +
                             {ship_battle.evasion}
                             {` `}
                             </span>

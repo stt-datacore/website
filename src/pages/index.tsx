@@ -19,6 +19,7 @@ type IndexPageProps = {
 
 const IndexPage = (props: IndexPageProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
 
 	const [initOptions, setInitOptions] = React.useState<InitialOptions | undefined>(undefined);
@@ -57,7 +58,7 @@ const IndexPage = (props: IndexPageProps) => {
 	}, [searchExtra]);
 
 	return (
-		<DataPageLayout pageTitle='Crew Stats' playerPromptType='recommend'>
+		<DataPageLayout pageTitle={t('pages.crew_stats')} playerPromptType='recommend'>
 			<React.Fragment>
 				<RosterPicker
 					buffMode={playerData ? playerBuffMode : buffMode}

@@ -3,6 +3,7 @@ import { Modal, Input, Button } from 'semantic-ui-react';
 import { GlobalContext } from '../../context/globalcontext';
 import { OptionsBase } from '../base/optionsmodal_base';
 import { BetaTachyonSettings } from '../../model/worker';
+import { BetaTachyonPresets } from './btpresets';
 
 interface InternalSettings {
     name?: string,
@@ -84,27 +85,27 @@ export function permalinkToSettings() {
     if (!params.size) return undefined;
 
     let newConfig = {
-        ... defaultSettings,
-        improved: Number.parseFloat(params.get("imp") ?? defaultSettings.improved.toString()),
-        power: Number.parseFloat(params.get("pow") ?? defaultSettings.power.toString()),
-        citeEffort: Number.parseFloat(params.get("cite") ?? defaultSettings.citeEffort.toString()),
-        antimatter: Number.parseFloat(params.get("am") ?? defaultSettings.antimatter.toString()),
-        portal: Number.parseFloat(params.get("portal") ?? defaultSettings.portal.toString()),
-        never: Number.parseFloat(params.get("never") ?? defaultSettings.never.toString()),
-        collections: Number.parseFloat(params.get("col") ?? defaultSettings.collections.toString()),
-        skillRare: Number.parseFloat(params.get("rare") ?? defaultSettings.skillRare.toString()),
-        score: Number.parseFloat(params.get("score") ?? defaultSettings.score.toString()),
-        triplet: Number.parseFloat(params.get("tri") ?? defaultSettings.triplet.toString()),
-        magic: Number.parseFloat(params.get("magic") ?? defaultSettings.magic.toString()),
-        retrieval: Number.parseFloat(params.get("odds") ?? defaultSettings.retrieval.toString()),
-        quipment: Number.parseFloat(params.get("quip") ?? defaultSettings.quipment.toString()),
-        groupSparsity: Number.parseFloat(params.get("gs") ?? defaultSettings.groupSparsity.toString()),
+        ... DefaultBetaTachyonSettings,
+        improved: Number.parseFloat(params.get("imp") ?? DefaultBetaTachyonSettings.improved.toString()),
+        power: Number.parseFloat(params.get("pow") ?? DefaultBetaTachyonSettings.power.toString()),
+        citeEffort: Number.parseFloat(params.get("cite") ?? DefaultBetaTachyonSettings.citeEffort.toString()),
+        antimatter: Number.parseFloat(params.get("am") ?? DefaultBetaTachyonSettings.antimatter.toString()),
+        portal: Number.parseFloat(params.get("portal") ?? DefaultBetaTachyonSettings.portal.toString()),
+        never: Number.parseFloat(params.get("never") ?? DefaultBetaTachyonSettings.never.toString()),
+        collections: Number.parseFloat(params.get("col") ?? DefaultBetaTachyonSettings.collections.toString()),
+        skillRare: Number.parseFloat(params.get("rare") ?? DefaultBetaTachyonSettings.skillRare.toString()),
+        score: Number.parseFloat(params.get("score") ?? DefaultBetaTachyonSettings.score.toString()),
+        triplet: Number.parseFloat(params.get("tri") ?? DefaultBetaTachyonSettings.triplet.toString()),
+        magic: Number.parseFloat(params.get("magic") ?? DefaultBetaTachyonSettings.magic.toString()),
+        retrieval: Number.parseFloat(params.get("odds") ?? DefaultBetaTachyonSettings.retrieval.toString()),
+        quipment: Number.parseFloat(params.get("quip") ?? DefaultBetaTachyonSettings.quipment.toString()),
+        groupSparsity: Number.parseFloat(params.get("gs") ?? DefaultBetaTachyonSettings.groupSparsity.toString()),
     } as BetaTachyonSettings;
 
-    Object.keys(defaultSettings).forEach(k => {
+    Object.keys(DefaultBetaTachyonSettings).forEach(k => {
         if (k !== 'name') {
             if (newConfig[k] === undefined || Number.isNaN(newConfig[k])) {
-                newConfig[k] = defaultSettings[k];
+                newConfig[k] = DefaultBetaTachyonSettings[k];
             }    
         }
     });
@@ -114,7 +115,7 @@ export function permalinkToSettings() {
     return newConfig;
 }
 
-export const defaultSettings = {
+export const DefaultBetaTachyonSettings = {
     // Voyages Improved
     improved: 1,
     // Base Power Score
@@ -147,12 +148,13 @@ export const defaultSettings = {
 
 const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSettingsProps) => {
 	const context = React.useContext(GlobalContext);
+    const { t, tfmt } = context.localized;
 	const { config } = props;    
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 	const inputRef = React.createRef<Input>();
 
     const [workConf, setWorkConf] = React.useState(config);
-    const [innerSettings, setInnerSettings] = React.useState<InternalSettings>({ ... defaultSettings, ... config.current });
+    const [innerSettings, setInnerSettings] = React.useState<InternalSettings>({ ... DefaultBetaTachyonSettings, ... config.current });
 
     const [showCopied, setShowCopied] = React.useState(false);
     
@@ -177,7 +179,6 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
         setInnerSettings(current);
     }
 
-
 	return (
 		<Modal
 			open={modalIsOpen}
@@ -189,33 +190,36 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
 		>
 			<Modal.Header>
                 <React.Fragment>
-                    Beta Tachyon Pulse Settings Tweaker<br />
-                    <sub style={{fontStyle:'italic'}}>(The number indicates the weight applied to each characteristic)</sub>
+                    {tfmt('cite_opt.btp.settings_tweaker.title')}<br />
+                    <sub style={{fontStyle:'italic'}}>({tfmt('cite_opt.btp.settings_tweaker.heading')})</sub>
                 </React.Fragment>
 			</Modal.Header>
 			<Modal.Content scrolling>
 				{renderGrid()}
 			</Modal.Content>
 			<Modal.Actions>
-                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}}>
-                    <Button 
+                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end'}}>
+                    <div style={{ display: 'flex', gap: "0.5em", flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'flex-end'}}>
+                        <Button 
                             style={{alignSelf: "flex-start"}}
-                            content={`Permalink`}
+                            content={t('global.permalink')}
                             icon={showCopied ? 'green chain' : 'chain'}
                             
                             onClick={() => copyPermalink()} />
                             
-                        <Button style={{alignSelf: "flex-end"}} content='Load Defaults' onClick={() => setCurrent(defaultSettings)} />
-                        </div>
-                    <div>
-                        <Button 
-                                style={{alignSelf: "flex-end"}}
-                                color='blue'
-                                content={`Save`}
-                                onClick={() => confirmSelection()} />
-                        <Button style={{alignSelf: "flex-end"}} content='Cancel' onClick={closeModal} />
+                        <Button style={{alignSelf: "flex-end"}} content={t('global.load_default_settings')} onClick={() => setCurrent(DefaultBetaTachyonSettings)} />
+                    </div>
+                    <div style={{ display: 'flex', gap: "0.5em", flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'flex-end'}}>
+                        {/* <BetaTachyonPresets activeSettings={innerSettingsToSettings()} setActiveSettings={setCurrent} /> */}
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'flex-end'}}>
+                            <Button 
+                                    style={{alignSelf: "flex-end"}}
+                                    color='blue'
+                                    content={t('global.save')}
+                                    onClick={() => confirmSelection()} />
+                            <Button style={{alignSelf: "flex-end"}} content={t('global.cancel')} onClick={closeModal} />
 
+                        </div>
                     </div>
                 </div>
 			</Modal.Actions>
@@ -255,7 +259,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
             maxHeight: '40em'
         }}>
                 <div style={rowStyle}>
-                    <div style={textStyle}>Settings Name<br />(Optional):</div>
+                    <div style={textStyle}>{t('global.name')} ({t('global.optional')}):</div>
                     <Input
                         style={inputStyle}
                         placeholder="Value"
@@ -265,7 +269,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                 </div>
                
                 <div style={rowStyle}>
-                    <div style={textStyle}>Measure Limit<br />(Magic Number):</div>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.magic')}:</div>
                     <Input
                         style={inputStyle}
                         placeholder="Value"
@@ -275,7 +279,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                 </div>
                
                 <div style={rowStyle}>
-                    <div style={textStyle}>Voyage Improvement:</div>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.improved')}:</div>
                     <Input
                         style={inputStyle}
                         placeholder="Value"
@@ -285,7 +289,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                 </div>
                
                 <div style={rowStyle}>
-                    <div style={textStyle}>Voyage Group Sparsity:</div>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.groupSparsity')}:</div>
                     <Input
                         style={inputStyle}
                         placeholder="Value"
@@ -295,7 +299,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                 </div>
                
                 <div style={rowStyle}>
-                    <div style={textStyle}>Base Power:</div>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.power')}:</div>
                     <Input
                         style={inputStyle}
                         placeholder="Value"
@@ -305,7 +309,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                 </div>
                
                 <div style={rowStyle}>
-                    <div style={textStyle}>Effort To Max:</div>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.citeEffort')}:</div>
                     <Input
                         style={inputStyle}
                         placeholder="Value"
@@ -315,7 +319,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                 </div>
                
                 <div style={rowStyle}>
-                    <div style={textStyle}>Antimatter Traits:</div>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.antimatter')}:</div>
                     <Input
                         style={inputStyle}
                         placeholder="Value"
@@ -325,7 +329,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                 </div>
                
                 <div style={rowStyle}>
-                    <div style={textStyle}>Quipment Score:</div>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.quipment')}:</div>
                     <Input
                         style={inputStyle}
                         placeholder="Value"
@@ -335,7 +339,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                 </div>
                
                 <div style={rowStyle}>
-                    <div style={textStyle}>Not In Portal:</div>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.portal')}:</div>
                     <Input
                         style={inputStyle}
                         placeholder="Value"
@@ -345,7 +349,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                 </div>
                
                 <div style={rowStyle}>
-                    <div style={textStyle}>Never In Portal:</div>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.never')}:</div>
                     <Input
                         style={inputStyle}
                         placeholder="Value"
@@ -355,7 +359,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                 </div>
                
                 <div style={rowStyle}>
-                    <div style={textStyle}>Retrieval Odds:</div>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.retrieval')}:</div>
                     <Input
                         style={inputStyle}
                         placeholder="Value"
@@ -365,7 +369,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                 </div>
     
                 <div style={rowStyle}>
-                    <div style={textStyle}>Collections:</div>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.collections')}:</div>
                     <Input
                         style={inputStyle}
                         placeholder="Value"
@@ -375,7 +379,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                 </div>
                
                 <div style={rowStyle}>
-                    <div style={textStyle}>Skill Order Rarity:</div>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.skillRare')}:</div>
                     <Input
                         style={inputStyle}
                         placeholder="Value"
@@ -385,7 +389,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                 </div>
     
                 <div style={rowStyle}>
-                    <div style={textStyle}>Rank (Overall):</div>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.score')}:</div>
                     <Input
                         style={inputStyle}
                         placeholder="Value"
@@ -395,7 +399,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
                 </div>
 
                 <div style={rowStyle}>
-                    <div style={textStyle}>Rank (Skill Order):</div>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.triplet')}:</div>
                     <Input
                         style={inputStyle}
                         placeholder="Value"
@@ -426,7 +430,7 @@ const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSetti
 	function renderDefaultTrigger(): JSX.Element {
 		return (
         <Button>            
-            Advanced Settings
+            {t('global.advanced_settings')}
         </Button>
 		);
 	}

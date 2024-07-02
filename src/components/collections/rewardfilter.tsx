@@ -36,15 +36,15 @@ export const RewardFilter = (props: RewardFilterProps) => {
                     <Dropdown
                         multiple
                         placeholder={'Select crew ...'}
-                       
-                        style={{ width: narrow ? '100%' : '30%', margin: "0.5em 0" }}
-                        iconPosition="left"
-                        scrolling		
+                        clearable
+                        selection
+                        search
                         options={crewSource?.map(ca => {
                             return {
                                 key: ca.name,
                                 value: ca.name,
-                                text: 
+                                text: ca.name,
+                                content: 
                                     <div key={"dropdown_opt_"+ca.symbol} style={{display:"inline-flex", alignItems:"center", flexDirection:"row"}}>
                                         <img 
                                             src={`${process.env.GATSBY_ASSETS_URL}${ca.imageUrlPortrait}`} 
@@ -61,7 +61,7 @@ export const RewardFilter = (props: RewardFilterProps) => {
                     <RewardPicker 
                         short={grouped}
                         setShort={setGrouped}
-                        source={collectionSource} 
+                        source={collectionSource}
                         icons
                         value={selection} 
                         onChange={(value) => setSelection(value as string[] | undefined )}

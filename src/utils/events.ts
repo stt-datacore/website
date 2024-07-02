@@ -186,6 +186,22 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus:
 	const bonus = [] as string[];
 	const featured = [] as string[];
 
+	for (let threshold of activeEvent.threshold_rewards) {
+		for (let reward of threshold.rewards) {
+			if (allCrew.some(c => c.symbol === reward.symbol && c.max_rarity === 5)) {
+				featured.push(reward.symbol!);
+			}
+		}
+	}
+
+	// for (let ranked of activeEvent.ranked_brackets) {
+	// 	for (let reward of ranked.rewards) {
+	// 		if (allCrew.some(c => c.symbol === reward.symbol && c.max_rarity === 4)) {
+	// 			featured.push(reward.symbol!);
+	// 		}
+	// 	}
+	// }
+
 	// Guess bonus crew from bonus_text
 	//	bonus_text seems to be reliably available, but might be inconsistently written
 	if (activeEvent.bonus_text !== '') {
@@ -193,7 +209,7 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus:
 		words.forEach(trait => {
 			// Search for exact name first
 			const testName = trait.trim();
-			const perfectName = allCrew.find(crew => crew.name === testName);
+			const perfectName = allCrew.find(crew => (crew.name_english ?? crew.name) === testName);
 			if (perfectName) {
 				featured.push(perfectName.symbol);
 				if (!bonus.includes(perfectName.symbol))
@@ -260,14 +276,26 @@ export function calculateGalaxyChance(skillValue: number) : number {
 	return Math.round(Math.min(val / 100, craft_config.specialist_maximum_success_chance)*100);
 }
 
+function getBonus(crew: IEventScoredCrew, eventData: IEventData, low: number, high: number) {
+	if (eventData.featured.includes(crew.symbol) || (eventData.bonus.includes(crew.symbol) && eventData.bonusGuessed && (new Date()).getTime() - (new Date(crew.date_added)).getTime() < (14 * 24 * 60 * 60 * 1000))) {
+		return high;
+	}
+	else if (eventData.bonus.includes(crew.symbol)) {
+		return low;
+	}
+	else {
+		return 1;
+	}
+}
 
 export function computeEventBest(
 	rosterCrew: IEventScoredCrew[],
 	eventData: IEventData,
 	phaseType: string,
 	buffConfig?: BuffStatTable,
-	applyBonus?: boolean, 
-	showPotential?: boolean) {
+	applyBonus?: boolean,
+	showPotential?: boolean,
+	) {
 
 	let bestCombos: IBestCombos = {};
 	const zeroCombos: IEventCombos = {};
@@ -280,7 +308,7 @@ export function computeEventBest(
 			zeroCombos[firstSkill.name+','+secondSkill.name] = 0;
 		}
 	}
-	
+
 	const getPairScore = (crew: IRosterCrew, primary: string, secondary: string) => {
 		if (phaseType === 'shuttles') {
 			if (secondary) return crew[primary].core+(crew[secondary].core/4);
@@ -294,13 +322,10 @@ export function computeEventBest(
 		// First adjust skill scores as necessary
 		if (applyBonus || showPotential) {
 			crew.bonus = 1;
-			if (applyBonus && eventData.featured.indexOf(crew.symbol) >= 0) {
-				if (phaseType === 'gather') crew.bonus = 10;
-				else if (phaseType === 'shuttles') crew.bonus = 3;
-			}
-			else if (applyBonus && eventData.bonus.indexOf(crew.symbol) >= 0) {
-				if (phaseType === 'gather') crew.bonus = 5;
-				else if (phaseType === 'shuttles') crew.bonus = 2;
+			if (applyBonus && (eventData.bonus.includes(crew.symbol) || eventData.featured.includes(crew.symbol))) {
+				if (phaseType === 'gather') crew.bonus = getBonus(crew, eventData, 5, 10);
+				else if (phaseType === 'shuttles') crew.bonus = getBonus(crew, eventData, 2, 3);
+				else if (phaseType === 'skirmish') crew.bonus = getBonus(crew, eventData, 1.5, 2);
 			}
 			if (crew.bonus > 1 || showPotential) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
@@ -353,13 +378,13 @@ export function computeEventBest(
 
 		crew.combos = combos;
 		crew.bestPair = bestPair;
-		crew.bestSkill = bestSkill;	
+		crew.bestSkill = bestSkill;
 	});
 
 	return bestCombos;
 }
 
-export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventData[]> {	
+export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventData[]> {
 	const { ephemeral } = globalContext.player;
 
 	// Get event data from recently uploaded playerData

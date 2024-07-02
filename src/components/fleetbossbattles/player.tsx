@@ -74,6 +74,7 @@ interface BossBattleOption {
 
 const BossBattlePicker = () => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { ephemeral } = globalContext.player;
 
 	const [bossBattleOptions, setBossBattleOptions] = React.useState<BossBattleOption[] | undefined>(undefined);
@@ -118,7 +119,7 @@ const BossBattlePicker = () => {
 			{bossBattleOptions.length > 0 &&
 				<div style={{ display: 'flex', flexFlow: 'row wrap', alignItems: 'center', columnGap: '1em' }}>
 					<Dropdown selection
-						placeholder='Select a boss battle'
+						placeholder={t('fbb.select')}
 						options={bossBattleOptions}
 						value={activeBossBattleId}
 						onChange={(e, { value }) => setActiveBossBattleId(value as number)}

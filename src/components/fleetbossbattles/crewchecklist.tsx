@@ -4,6 +4,7 @@ import { Button, Dropdown, Form, Popup } from 'semantic-ui-react';
 import { RetrievalOptions } from '../../model/game-elements';
 
 import { UserContext } from './context'
+import { GlobalContext } from '../../context/globalcontext';
 
 type CrewChecklistProps = {
 	attemptedCrew: string[];
@@ -12,6 +13,9 @@ type CrewChecklistProps = {
 
 const CrewChecklist = (props: CrewChecklistProps) => {
 	const userContext = React.useContext(UserContext);
+	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
+
 	const { bossCrew } = userContext;
 	const { updateAttempts } = props;
 
@@ -34,9 +38,9 @@ const CrewChecklist = (props: CrewChecklistProps) => {
 	}
 	return (
 		<div style={{ margin: '2em 0' }}>
-			Keep track of crew who have been tried for this combo chain.
+			{t('fbb.attempted.title')}
 			<Form.Field
-				placeholder='Search for crew'
+				placeholder={t('behold_helper.search_for_crew')}
 				control={Dropdown}
 				clearable
 				fluid
@@ -50,12 +54,12 @@ const CrewChecklist = (props: CrewChecklistProps) => {
 			/>
 			<div style={{marginTop:"0.5em"}}>
 				<Popup
-					content='Copied!'
+					content={t('clipboard.copied_exclaim')}
 					on='click'
 					position='right center'
 					size='tiny'
 					trigger={
-						<Button icon='clipboard' content='Copy attempted crew to clipboard' onClick={() => copyFull()} />
+						<Button icon='clipboard' content={t('fbb.attempted.clipboard')} onClick={() => copyFull()} />
 					}
 				/>
 			</div>

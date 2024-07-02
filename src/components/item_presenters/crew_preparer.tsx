@@ -8,30 +8,32 @@ import { EquipmentItem } from "../../model/equipment";
 import { ItemBonusInfo, getItemBonuses } from "../../utils/itemutils";
 
 export const BuffNames = {
-    'none': "Unboosted",
-    'player': "Player Boosts",
-    'max': "Max Boosts",
-    'quipment': "Quipment Boosts"
+    'none': "buffs.no_buffs",
+    'player': "buffs.player_buffs",
+    'max': "buffs.max_buffs",
+    'quipment': "buffs.quipment_buffs"
 }
 
 export const ImmortalNames = {
-    "owned": "Owned Rarity",
-    "min": "Unfused",
-    "full": "Immortalized",
-    2: "2 Stars", 
-    3: "3 Stars", 
-    4: "4 Stars", 
-    "frozen": "Frozen",    
+    "owned": "crew_state.owned_rarity",
+    "min": "crew_state.unfused",
+    "full": "crew_state.immortalized",
+    "shown_full": "crew_state.shown_immortalized",
+    2: "crew_state.stars",
+    3: "crew_state.stars", 
+    4: "crew_state.stars", 
+    "frozen": "crew_state.frozen",    
 }
 
 export const ProspectImmortalNames = {
-    "owned": "Prospect Rarity",
-    "min": "Unfused",
-    "full": "Immortalized",
-    2: "2 Stars", 
-    3: "3 Stars", 
-    4: "4 Stars", 
-    "frozen": "Frozen",    
+    "owned": "crew_state.prospect_rarity",
+    "min": "crew_state.unfused",
+    "full": "crew_state.immortalized",
+    "shown_full": "crew_state.shown_immortalized",
+    2: "crew_state.stars",
+    3: "crew_state.stars", 
+    4: "crew_state.stars", 
+    "frozen": "crew_state.frozen",    
 }
 
 
@@ -132,7 +134,7 @@ export function applyImmortalState(state: PlayerImmortalMode, reference: CrewMem
     if (state === 'owned') {
         pres = prepareOne(reference, playerData, buffConfig);
     }
-    else if (state === 'full' || state === 'frozen') {
+    else if (state === 'shown_full' || state === 'full' || state === 'frozen') {
         pres = prepareOne(reference, playerData, buffConfig, PREPARE_MAX_RARITY);
     }
     else if (state === 'min') {

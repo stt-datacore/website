@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card, Image, Button } from 'semantic-ui-react';
 
-import allTraits from '../../../static/structured/translation_en.json';
 import { Voyage } from '../../model/player';
 import { IVoyageCrew, IVoyageHistory, ITrackedCheckpoint } from '../../model/voyage';
 import { Estimate } from '../../model/worker';
@@ -26,6 +25,8 @@ type ActiveVoyageProps = {
 
 export const ActiveVoyage = (props: ActiveVoyageProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { SHIP_TRAIT_NAMES } = globalContext.localized;
+
 	const { playerData, ephemeral } = globalContext.player;
 	const { showDetails, actionButtons } = props;
 
@@ -78,7 +79,7 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 					<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', rowGap: '1em' }}>
 						<div>
 							<p>
-								Active voyage: <b>{CONFIG.SKILLS[voyageConfig.skills.primary_skill]}</b> / <b>{CONFIG.SKILLS[voyageConfig.skills.secondary_skill]}</b> / <b>{allTraits.ship_trait_names[voyageConfig.ship_trait] ?? voyageConfig.ship_trait}</b>
+								Active voyage: <b>{CONFIG.SKILLS[voyageConfig.skills.primary_skill]}</b> / <b>{CONFIG.SKILLS[voyageConfig.skills.secondary_skill]}</b> / <b>{SHIP_TRAIT_NAMES[voyageConfig.ship_trait] ?? voyageConfig.ship_trait}</b>
 							</p>
 							<p style={{ marginTop: '.5em' }}>
 								Your voyage {msgTypes[voyageConfig.state]} <b><span style={{ whiteSpace: 'nowrap' }}>{voyageDuration}</span></b>.

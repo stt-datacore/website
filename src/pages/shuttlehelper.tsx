@@ -11,7 +11,7 @@ import { ShuttleHelper, EventShuttleHelper } from '../components/shuttlehelper/s
 const ShuttleHelperPage = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
-
+	const { t, tfmt } = globalContext.localized;
 	const [rosterType, setRosterType] = React.useState<'myCrew' | 'allCrew'>(playerData ? 'myCrew' : 'allCrew');
 	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[]>([]);
 	const [eventData, setEventData] = React.useState<IEventData | undefined>(undefined);
@@ -22,8 +22,8 @@ const ShuttleHelperPage = () => {
 	return (
 		<DataPageLayout
 			demands={['event_instances']}
-			pageTitle='Shuttle Helper'
-			pageDescription='Use this tool to help plan your shuttles.'
+			pageTitle={t('menu.tools.shuttle_helper')}
+			pageDescription={t('shuttle_helper.heading')}
 			playerPromptType='recommend'
 		>
 			<React.Fragment>

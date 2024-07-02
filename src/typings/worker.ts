@@ -14,6 +14,11 @@ export class UnifiedWorker {
         this.instance?.addEventListener(event, method);
     }
 
+    removeEventListener(event: keyof WorkerEventMap, method: (data: any) => void) {
+        this.ensureWorker();
+        this.instance?.removeEventListener(event, method);
+    }
+
     postMessage(data: any) {
         this.ensureWorker();
         this.instance?.postMessage(data);

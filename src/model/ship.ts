@@ -1,5 +1,7 @@
+import { BossEffect } from "./boss";
+import { CrewMember } from "./crew";
 import { Icon } from "./game-elements";
-import { CompletionState } from "./player";
+import { CompletionState, PlayerCrew } from "./player";
 
 
 export interface Schematics {
@@ -16,6 +18,39 @@ export interface ShipBonus {
   evasion?: number;
   crit_chance?: number;
   crit_bonus?: number;
+}
+
+
+export interface ShipLevels {
+  "1": ShipLevelStats
+  "2": ShipLevelStats
+  "3": ShipLevelStats
+  "4": ShipLevelStats
+  "5": ShipLevelStats
+  "6": ShipLevelStats
+  "7"?: ShipLevelStats
+  "8"?: ShipLevelStats
+  "9"?: ShipLevelStats
+  "10"?: ShipLevelStats
+}
+
+export interface ShipLevelStats {
+  shields: number
+  hull: number
+  attack: number
+  accuracy: number
+  evasion: number
+  attack_power: number
+  attacks_per_second: number
+  dps: any
+  accuracy_power: number
+  evasion_power: number
+  accuracy_evasion: any
+  shield_regen: number
+  crit_chance: number
+  crit_bonus: number
+  antimatter: number
+  next_schematics: number
 }
 
 /**
@@ -55,14 +90,14 @@ export interface Ship extends ShipBonus {
   index?: { left: number, right: number };
   immortal?: CompletionState | number;
   score?: number;
+  levels?: ShipLevels;
 }
 
 
 export interface BattleStation {
   skill: string;
+  crew?: PlayerCrew | CrewMember;
 }
-
-
 
 export interface ShipAction {
   bonus_amount: number;
@@ -114,4 +149,71 @@ export interface ChargePhase {
 export interface BattleStations {
 	symbol: string;
 	battle_stations: BattleStation[]
+}
+
+export type PvpDivision = 'commander' | 'captain' | 'admiral';
+
+export type BattleMode = 'pvp' | 'skirmish' | 'fbb_0' | 'fbb_1' | 'fbb_2' | 'fbb_3' | 'fbb_4' | 'fbb_5';
+
+
+export interface ShipInUse {
+    battle_mode: BattleMode;  
+    pvp_division?: PvpDivision;
+    ship: Ship;
+    rarity: number;
+}
+
+export interface ShipWorkerConfigBase {
+    crew: CrewMember[],
+    battle_mode: BattleMode,
+    power_depth?: number,
+    max_rarity?: number,
+    min_rarity?: number,
+    opponents?: Ship[],
+    action_types?: number[],
+    ability_types?: number[],
+    max_results?: number
+    defense?: number;
+    offense?: number;
+    get_attacks?: boolean;
+    effects?: BossEffect[];
+    max_duration?: number;
+    ignore_skill?: boolean;
+}
+
+export interface ShipWorkerConfig extends ShipWorkerConfigBase {
+    ship: Ship,
+}
+
+export interface MultiShipWorkerConfig extends ShipWorkerConfigBase {
+    ships: Ship[],
+}
+
+
+export interface AttackInstant {
+  actions: ShipAction[];
+  second: number;
+  attack: number;
+  min_attack: number;
+  max_attack: number;
+  ship: Ship;
+}
+
+
+export interface ShipWorkerItem {
+    ship: Ship,
+    crew: CrewMember[]
+    attack: number;
+    min_attack: number;
+    max_attack: number;
+    battle_time: number;
+    weighted_attack: number;
+    arena_metric: number;
+    activations: number;
+    percentile: number;
+    attacks?: AttackInstant[];
+}
+
+export interface ShipWorkerResults {
+    ships: ShipWorkerItem[]
 }

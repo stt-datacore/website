@@ -7,8 +7,9 @@ import { ShipPickerFilter, mergeShips, filterBy } from "../../utils/shiputils";
 import CONFIG from "../CONFIG";
 import { getIconByKey } from "../item_presenters/shipskill";
 import { ShipSkillRanking } from "../../utils/crewutils";
+import { GlobalContext } from "../../context/globalcontext";
 
-export type AbilityUsesProps = {    
+export type AbilityUsesProps = {
     uses: number[];
     zeroText?: string;
 	selectedUses: number[];
@@ -17,10 +18,10 @@ export type AbilityUsesProps = {
 };
 
 export const AbilityUses = (props: AbilityUsesProps) => {
-
+	const { t } = React.useContext(GlobalContext).localized;
 	const { selectedUses, setSelectedUses } = props;
 
-	const zeroText = props.zeroText ?? "Unlimited";
+	const zeroText = props.zeroText ?? t('ship.unlimited');
     const abilityUsesOptions = props.uses.map((u) => {
         return {
             key: u ? `${u}x` : zeroText,
@@ -28,11 +29,11 @@ export const AbilityUses = (props: AbilityUsesProps) => {
             value: u
         }
     })
-  
+
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder={props.altTitle ?? 'Battle uses'} 
+				placeholder={props.altTitle ?? t('ship.uses_per_battle')}
 				clearable
 				multiple
 				selection
@@ -55,13 +56,14 @@ export type ShipPickerProps = {
 };
 
 export const ShipPicker = (props: ShipPickerProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { selectedShip, setSelectedShip, filter } = props;
 
     const [availableShips, setAvailableShips] = React.useState<Ship[] | undefined>(props.pool);
     const [filteredShips, setFilteredShips] = React.useState<Ship[] | undefined>(props.pool);
-	
+
 	if (!availableShips || availableShips.length === 0) {
-        if (!props.playerData) return <></>;        
+        if (!props.playerData) return <></>;
         let pd = props.playerData;
 
         fetch('/structured/ship_schematics.json')
@@ -72,41 +74,41 @@ export const ShipPicker = (props: ShipPickerProps) => {
             });
     }
 
-	const placeholder = 'Select Ship';
+	const placeholder = t('hints.select_ship');
 
     React.useEffect(() => {
         setShip(selectedShip?.symbol ?? '');
     }, [filteredShips]);
-	
+
     const poolList = filteredShips?.map((c) => (
 		{
 			key: c.symbol,
 			value: c.symbol,
 			image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.icon?.file.slice(1).replace('/', '_')}.png` },
 			text: c.name,
-			title: CONFIG.RARITIES[c.rarity].name + ` Ship / Attack ${c.attack?.toLocaleString()} / Shields ${c.shields?.toLocaleString()} / Hull ${c.hull?.toLocaleString()}`
+			title: CONFIG.RARITIES[c.rarity].name + ` ${t('ship.ship')} / ${t('ship.attack')} ${c.attack?.toLocaleString()} / ${t('ship.shields')} ${c.shields?.toLocaleString()} / ${t('ship.hull')} ${c.hull?.toLocaleString()}`
 		} as DropDownItem
 	));
 
     React.useEffect(() => {
-        if (availableShips && filter) {			
-			setFilteredShips(filterBy(availableShips, filter));			
+        if (availableShips && filter) {
+			setFilteredShips(filterBy(availableShips, filter));
 		}
 		else {
 			setFilteredShips(availableShips);
 		}
     }, [availableShips, filter]);
-	
+
 	return (
 		<React.Fragment>
-			<Dropdown 
-                search 
-                selection 
-                clearable                
+			<Dropdown
+                search
+                selection
+                clearable
                 fluid
 				placeholder={placeholder}
-				options={poolList}                
-				value={selectedShip?.symbol ?? ''}								
+				options={poolList}
+				value={selectedShip?.symbol ?? ''}
 				onChange={(e, { value }) => setShip(value as string)}
 			/>
 		</React.Fragment>
@@ -124,7 +126,7 @@ export const ShipPicker = (props: ShipPickerProps) => {
 		}
         else {
             setSelectedShip(undefined);
-        }		
+        }
 	}
 };
 export type ShipAbilityPickerProps = {
@@ -132,15 +134,18 @@ export type ShipAbilityPickerProps = {
     availableAbilities?: string[];
     selectedAbilities: string[];
     setSelectedAbilities: (ability: string[]) => void | React.Dispatch<React.SetStateAction<string[]>>;
+	ship?: boolean;
+	fluid?: boolean;	
 };
 
 export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
-	const { selectedAbilities, setSelectedAbilities } = props;
-    const availableAbilities = props.availableAbilities && props.availableAbilities.length ? props.availableAbilities : Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).slice(0, 9);
+	const { t } = React.useContext(GlobalContext).localized;
+	const { selectedAbilities, setSelectedAbilities, fluid } = props;
+    const availableAbilities = props.availableAbilities && props.availableAbilities.length ? props.availableAbilities : Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).slice(0, props.ship ? 13 : 9);
 
-	const [ability, setAbility] = React.useState(selectedAbilities);	
+	const [ability, setAbility] = React.useState(selectedAbilities);
 
-	const placeholder = 'Select Ship Abilities';
+	const placeholder = t('hints.select_ship_abilities');
 	const poolList = availableAbilities?.map((c) => (
 		{
 			key: c,
@@ -150,7 +155,7 @@ export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
 					display: "flex",
 					flexDirection: "row",
 					alignItems: "center",
-					
+
 				}}>
 					{getIconByKey(CONFIG.SHIP_BATTLE_ABILITY_ICON[c]) &&
 						<img style={{width: "1.25em", margin: "0.25em"}} src={getIconByKey(CONFIG.SHIP_BATTLE_ABILITY_ICON[c])} />
@@ -169,20 +174,20 @@ export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
 
 	return (
 		<React.Fragment>
-			<Dropdown 
-                search 
-                selection 
-                clearable                
-                fluid
+			<Dropdown
+                search
+                selection
+                clearable
+                fluid={fluid}
                 multiple
 				placeholder={placeholder}
-				options={poolList}                
-				value={selectedAbilities}								
+				options={poolList}
+				value={selectedAbilities}
 				onChange={(e, { value }) => setAbility(value as string[])}
 			/>
 		</React.Fragment>
 	);
-	
+
 };
 
 export type ShipAbilityRankPickerProps = {
@@ -193,19 +198,20 @@ export type ShipAbilityRankPickerProps = {
 };
 
 export const ShipAbilityRankPicker = (props: ShipAbilityRankPickerProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { selectedRankings: selectedAbilities, setSelectedRankings: setSelectedAbilities } = props;
     const availableAbilities = props.availableRankings;
 
 	const [selection, setSelection] = React.useState(selectedAbilities ?? []);
 
-	const placeholder = 'Select Ship Ability Amount';
+	const placeholder = t('hints.select_ship_ability_amount');
 
     React.useEffect(() => {
         setSelectedAbilities(selection);
     }, [selection]);
 
 	const rankToRating = (rank: number): number => {
-		return rank <= 5 ? 6 - rank : 0;	 	
+		return rank <= 5 ? 6 - rank : 0;
 	}
 
 	const poolList = availableAbilities?.map((c) => (
@@ -230,19 +236,19 @@ export const ShipAbilityRankPicker = (props: ShipAbilityRankPickerProps) => {
 
 	return (
 		<React.Fragment>
-			<Dropdown 
-                search 
-                selection 
-                clearable                
+			<Dropdown
+                search
+                selection
+                clearable
                 fluid
                 multiple
 				placeholder={placeholder}
-				options={poolList}                
-				value={selectedAbilities}				
+				options={poolList}
+				value={selectedAbilities}
 				onChange={(e, { value }) => setSelection(value as string[])}
 			/>
 		</React.Fragment>
-	);		
+	);
 };
 
 export type ShipSeatPickerProps = {
@@ -262,7 +268,7 @@ export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
 		let newSeats = [...selectedSeats ?? []];
 		if (newSeats.includes(data.name)) {
 			if (newSeats.length === 1) newSeats = [];
-			else newSeats.splice(newSeats.indexOf(data.name), 1);		
+			else newSeats.splice(newSeats.indexOf(data.name), 1);
 		}
 		else {
 			newSeats.push(data.name);
@@ -272,7 +278,7 @@ export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
 
 	useEffect (() => {
 		let newSeats = [...selectedSeats ?? []];
-		
+
 		for (let sel of selectedSeats) {
 			if (!availableSeats.includes(sel)) {
 				if (newSeats.length === 1) newSeats = [];
@@ -293,7 +299,7 @@ export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
 						as="a"
 						name={c}
 						key={'seatindex_' + key}
-						onClick={handleClick}						
+						onClick={handleClick}
 						active={selectedSeats.includes(c)}
                         title={formatTitle ? formatTitle(c, selectedSeats.includes(c)) : CONFIG.SKILLS[c]}
 					>
@@ -307,7 +313,7 @@ export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
 };
 
 
-export type TriggerPickerProps = {    
+export type TriggerPickerProps = {
     triggers?: string[] | number[];
     zeroText?: string;
 	selectedTriggers?: string[] | number[];
@@ -317,18 +323,18 @@ export type TriggerPickerProps = {
 };
 
 export const TriggerPicker = (props: TriggerPickerProps) => {
-
+	const { t } = React.useContext(GlobalContext).localized;
 	const { grants, selectedTriggers, setSelectedTriggers } = props;
-	
+
 	const [triggers, setTriggers] = React.useState<string[] | number[]>(selectedTriggers ?? []);
-	
+
     const triggerOptions = props.triggers?.map((u) => {
         return {
             key: u,
             text: u,
             value: CONFIG.CREW_SHIP_BATTLE_TRIGGER[u]
         }
-    }) ?? (grants ? 
+    }) ?? (grants ?
 		Object.keys(CONFIG.SHIP_BATTLE_GRANTS).map((dt) => {
 			return {
 				key: dt,
@@ -343,7 +349,7 @@ export const TriggerPicker = (props: TriggerPickerProps) => {
 			text: CONFIG.CREW_SHIP_BATTLE_TRIGGER[dt]
 		}
 	}));
-  
+
 	React.useEffect(() => {
 		setSelectedTriggers(triggers);
 	}, [triggers])
@@ -351,7 +357,7 @@ export const TriggerPicker = (props: TriggerPickerProps) => {
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder={props.altTitle ?? (grants ? 'Grants' : 'Triggers')} 
+				placeholder={props.altTitle ?? (grants ? t('ship.grants') : t('ship.triggers'))}
 				clearable
 				multiple
 				selection
@@ -365,7 +371,7 @@ export const TriggerPicker = (props: TriggerPickerProps) => {
 };
 
 
-export type BonusPickerProps = {    
+export type BonusPickerProps = {
     bonuses?: string[];
     zeroText?: string;
 	selectedBonuses?: number[];
@@ -374,11 +380,11 @@ export type BonusPickerProps = {
 };
 
 export const BonusPicker = (props: BonusPickerProps) => {
-
+	const { t } = React.useContext(GlobalContext).localized;
 	const { selectedBonuses, setSelectedBonuses } = props;
-	
+
 	const [bonsuses, setBonuses] = React.useState(selectedBonuses);
-	
+
     const bonusOptions = props.bonuses?.map((u) => {
         return {
             key: Number.parseInt(u),
@@ -392,7 +398,7 @@ export const BonusPicker = (props: BonusPickerProps) => {
 			text: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[dt]
 		}
 	});
-  
+
 	React.useEffect(() => {
 		setSelectedBonuses(bonsuses);
 	}, [bonsuses])
@@ -400,13 +406,62 @@ export const BonusPicker = (props: BonusPickerProps) => {
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder={props.altTitle ?? 'Bonuses'} 
+				placeholder={props.altTitle ?? t('global.bonuses')}
 				clearable
 				multiple
 				selection
 				options={bonusOptions}
 				value={selectedBonuses ?? []}
 				onChange={(e, { value }) => setBonuses(value as number[])}
+				closeOnChange
+			/>
+		</Form.Field>
+	);
+};
+
+
+export type TraitPickerProps = {
+    trait_list?: string[];
+	ship?: boolean;
+    zeroText?: string;
+	selectedTraits?: string[];
+	setSelectedTraits: (traits: string[] | undefined) => void;
+	altTitle?: string;
+};
+
+export const TraitPicker = (props: TraitPickerProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
+	const globalContext = React.useContext(GlobalContext);
+	const { TRAIT_NAMES, SHIP_TRAIT_NAMES } = globalContext.localized;
+	const { selectedTraits, setSelectedTraits, ship } = props;
+	const [traits, setTraits] = React.useState(selectedTraits);
+
+	const useTraits = props.trait_list ?? (ship ? Object.keys(SHIP_TRAIT_NAMES) : Object.keys(TRAIT_NAMES));
+
+    const traitOptions = useTraits.map((u) => {
+        return {
+            key: u,
+			value: u,
+            text: ship ? SHIP_TRAIT_NAMES[u] : TRAIT_NAMES[u],
+        }
+    });
+
+	traitOptions.sort((a, b) => a.text.localeCompare(b.text));
+
+	React.useEffect(() => {
+		setSelectedTraits(traits);
+	}, [traits])
+
+	return (
+		<Form.Field>
+			<Dropdown
+				placeholder={props.altTitle ?? t('hints.traits')}
+				clearable
+				multiple
+				selection
+				options={traitOptions}
+				value={selectedTraits ?? []}
+				onChange={(e, { value }) => setTraits(value as string[])}
 				closeOnChange
 			/>
 		</Form.Field>

@@ -17,6 +17,7 @@ import { CrewPreparer } from '../item_presenters/crew_preparer';
 
 export const CrewTable = () => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { history } = React.useContext(HistoryContext);
 
 	const [data, setData] = React.useState<ITrackedCrewMember[]>([] as ITrackedCrewMember[]);
@@ -186,7 +187,7 @@ export const CrewTable = () => {
 					<b>{crew.assignments.length}</b>
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					{crew.assignments.length > 0 && formatTime(crew.average_estimate)}
+					{crew.assignments.length > 0 && formatTime(crew.average_estimate, t)}
 				</Table.Cell>
 				<Table.Cell textAlign='center' onClick={() => viewVoyage(crew.last_assignment.tracker_id)} style={{ cursor: 'pointer' }}>
 					{dtLastAssignment?.toLocaleDateString()}

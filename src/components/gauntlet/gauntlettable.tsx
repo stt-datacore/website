@@ -17,6 +17,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
 import { arrayIntersect } from "../../utils/misc";
 import CONFIG from "../CONFIG";
+import { GlobalContext } from "../../context/globalcontext";
 
 type SortDirection = 'ascending' | 'descending' | undefined;
 
@@ -37,6 +38,7 @@ export interface GauntletTableProps {
 
 export const GauntletCrewTable = (props: GauntletTableProps) => {
     const { filter, pageId, gauntlet, gauntlets, data, mode, textFilter, setTextFilter, rankByPair, setRankByPair } = props;
+    const { t } = React.useContext(GlobalContext).localized;
     if (!data) return <></>;
 
     const targetGroup = `${pageId}_gauntletTable`;
@@ -91,16 +93,16 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
     const columns = [
-        { title: "Rank", key: "index" },
-        { title: "Crew", key: "name", width: 3 as SemanticWIDTHS },
-        { title: "Rarity", key: "rarity", reverse: true  },
-        { title: gauntlets?.length ? "45% + 65% Crits" : "Crit Chance", key: "crit", reverse: true },
-        { title: "1st Pair", key: "pair_1", reverse: true  },
-        { title: "2nd Pair", key: "pair_2", reverse: true  },
-        { title: "3rd Pair", key: "pair_3", reverse: true  },
+        { title: t('gauntlet.columns.rank'), key: "index" },
+        { title: t('gauntlet.columns.crew'), key: "name", width: 3 as SemanticWIDTHS },
+        { title: t('gauntlet.columns.rarity'), key: "rarity", reverse: true  },
+        { title: gauntlets?.length ? t('gauntlet.columns.high_crits') : t('gauntlet.columns.crits'), key: "crit", reverse: true },
+        { title: t('gauntlet.columns.first_pair'), key: "pair_1", reverse: true  },
+        { title: t('gauntlet.columns.second_pair'), key: "pair_2", reverse: true  },
+        { title: t('gauntlet.columns.third_pair'), key: "pair_3", reverse: true  },
         // { title: "Owned", key: "have" },
-        { title: "In Portal", key: "in_portal" },
-        { title: "Q-Bits", key: "q_bits" }
+        { title: t('gauntlet.columns.in_portal'), key: "in_portal" },
+        { title: t('gauntlet.columns.qp'), key: "q_bits", reverse: true }
     ];
     const pageSizes = [1, 5, 10, 20, 50, 100].map(size => {
         return {
@@ -120,6 +122,11 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                 if (elcrit) {
                     elev[c.symbol] = elcrit;                    
                 }
+
+                if (elcrit) {
+                    elev[c.symbol] = elcrit;                    
+                }
+
             }
             setElevated(elev);
         }
@@ -309,7 +316,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
         <Input
             style={{ width: isMobile ? '100%' : '50%' }}
             iconPosition="left"
-            placeholder="Search..."
+            placeholder={t('global.search_ellipses')}
             value={textFilter}
             onChange={(e, { value }) => setTextFilter(value)}>
             <input />
@@ -353,8 +360,8 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                     const pairs = crew.pairs ?? getPlayerPairs(crew);
                     const rank = gauntlet.origRanks ? gauntlet.origRanks[crew.symbol] : idx + pageStartIdx + 1;
                     const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol && crew.isSelected);
-                    const obtained = prettyObtained(crew);
-                    const color = printPortalStatus(crew, true, false) === 'Never' ? CONFIG.RARITIES[5].color : undefined;
+                    const obtained = prettyObtained(crew, t);
+                    const color = printPortalStatus(crew, t, true, false) === t('global.never') ? CONFIG.RARITIES[5].color : undefined;
                     const qbslots = qbitsToSlots(crew.q_bits);
                     const trueImmo = isImmortal(crew);
 
@@ -423,8 +430,8 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                                 {crew.have === true ? "Yes" : "No"}
                             </Table.Cell> */}
                             <Table.Cell width={2}>
-                                <span title={printPortalStatus(crew, true, true, true)}>
-                                    {printPortalStatus(crew, true, false)}
+                                <span title={printPortalStatus(crew, t, true, true, true)}>
+                                    {printPortalStatus(crew, t, true, false)}
                                     {!!color && <div style={{color: color}}>{obtained}</div>}
                                 </span>
                             </Table.Cell>
@@ -455,7 +462,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                             onPageChange={(e, data) => setActivePage(data.activePage as number)} 
                             />                
                         <span style={{ paddingLeft: '2em' }}>
-                            Items per page:{' '}
+                            {t('global.rows_per_page')}:{' '}
                             <Dropdown 
                             options={pageSizes} 
                             value={itemsPerPage}

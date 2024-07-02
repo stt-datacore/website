@@ -8,9 +8,11 @@ import { Shuttle, ShuttleSeat, ITableColumn, ITableData } from './model';
 import { ShuttlersContext } from './context';
 import { MissionEditor } from './missioneditor';
 import { MissionsTable, MissionFactionView, SeatSkillView } from './missionstable';
+import { GlobalContext } from '../../context/globalcontext';
 
 export const Missions = () => {
 	const shuttlersContext = React.useContext(ShuttlersContext);
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { helperId, groupId, activeShuttles, shuttlers, setShuttlers } = shuttlersContext;
 
 	const [data, setData] = React.useState<ITableData[]>([]);
@@ -22,30 +24,30 @@ export const Missions = () => {
 			.map(shuttle => {
 				const shuttleData: ITableData = {
 					...shuttle,
-					status: 'Unknown',
+					status: t('shuttle_helper.missions.status.unknown'),
 					is_rental: false,
 					expires_in: 0,
 					chance: 0
 				};
 				if (!shuttle.readonly) {
-					shuttleData.status = 'Manual';
+					shuttleData.status = t('shuttle_helper.missions.status.manual');
 				}
 				else {
 					const adventure: ShuttleAdventure | undefined = activeShuttles.find(adventure => adventure.symbol === shuttle.id);
 					if (adventure) {
 						if (adventure.shuttles[0].is_rental)
-							shuttleData.status = 'Renting';
+							shuttleData.status = t('shuttle_helper.missions.status.renting');
 						else if (adventure.shuttles[0].state > 0)
-							shuttleData.status = 'Running';
+							shuttleData.status = t('shuttle_helper.missions.status.running');
 						else {
 							const expiryHours = Math.floor(adventure.shuttles[0].expires_in/3600);
-							shuttleData.status = `Expires in ${expiryHours === 0 ? '<1' : expiryHours}h`;
+							shuttleData.status = t('shuttle_helper.missions.status.expires_in', { time: t('duration.n_h', { hours: expiryHours === 0 ? '<1' : `${expiryHours}` })}) // `Expires in ${expiryHours === 0 ? '<1' : expiryHours}h`;
 						}
 						shuttleData.is_rental = adventure.shuttles[0].is_rental;
 						shuttleData.expires_in = adventure.shuttles[0].expires_in;
 					}
 					else {
-						shuttleData.status = 'Not Open';
+						shuttleData.status = t('shuttle_helper.missions.status.not_open');
 					}
 				}
 				return shuttleData;
@@ -55,11 +57,11 @@ export const Missions = () => {
 
 	const columns: ITableColumn[] = [
 		{ id: 'checklist', title: <Icon name='check' />, align: 'center', sortField: { id: '_priority' } },
-		{ id: 'name', title: 'Mission', sortField: { id: 'name' } },
-		{ id: 'status', title: 'Status', align: 'center', sortField: { id: 'status' } },
-		{ id: 'faction', title: 'Faction', align: 'center', sortField: { id: 'faction' } },
-		{ id: 'seats', title: 'Seats', align: 'center', sortField: { id: 'seats.length' } },
-		{ id: 'skills', title: 'Skills', align: 'center', span: 5, sortField: { id: '_skills' } }
+		{ id: 'name', title: t('shuttle_helper.missions.columns.mission'), sortField: { id: 'name' } },
+		{ id: 'status', title: t('shuttle_helper.missions.columns.status'), align: 'center', sortField: { id: 'status' } },
+		{ id: 'faction', title: t('shuttle_helper.missions.columns.faction'), align: 'center', sortField: { id: 'faction' } },
+		{ id: 'seats', title: t('shuttle_helper.missions.columns.seats'), align: 'center', sortField: { id: 'seats.length' } },
+		{ id: 'skills', title: t('shuttle_helper.missions.columns.skills'), align: 'center', span: 5, sortField: { id: '_skills' } }
 	];
 
 	const columnCount: number = columns.reduce((prev, curr) => prev + (curr.span ?? 1), 0);
@@ -71,7 +73,7 @@ export const Missions = () => {
 
 	return (
 		<React.Fragment>
-			<p>Select all the missions that you want to run, then tap 'Recommend Crew' to see the best seats for your crew.</p>
+			<p>{t('shuttle_helper.missions.heading')}</p>
 			<GroupToggles selectMissions={selectMissions} />
 			<MissionsTable
 				tableId={`${helperId}/missions`}
@@ -88,8 +90,14 @@ export const Missions = () => {
 				/>
 			)}
 			<Message>
-				<p>If the mission you want isn't listed above, <Button compact content='Create a Mission' onClick={() => createMission()} /> to input the mission parameters manually.</p>
-				<p>Tip: open shuttle missions in-game before uploading your player data to DataCore so that this tool can import the missions automatically.</p>
+				<p>
+				{tfmt('shuttle_helper.missions.message.missing', {
+					link: <Button compact content={t('shuttle_helper.missions.create')} onClick={() => createMission()} />
+				})}
+				</p>
+				<p>
+					{t('shuttle_helper.missions.message.tip')}
+				</p>
 			</Message>
 		</React.Fragment>
 	);
@@ -98,7 +106,8 @@ export const Missions = () => {
 		return (
 			<Table.Row>
 				<Table.HeaderCell colSpan={columnCount}>
-					{missionsSelected} / {data.length} mission{missionsSelected !== 1 ? 's' : ''} selected
+					{missionsSelected === 1 && t('shuttle_helper.missions.select.one_y', { y: `${data.length}` })}
+					{missionsSelected !== 1 && t('shuttle_helper.missions.select.x_y', { x: `${missionsSelected}`, y: `${data.length}` })}
 				</Table.HeaderCell>
 			</Table.Row>
 		);
@@ -203,6 +212,7 @@ type GroupTogglesProps = {
 
 const GroupToggles = (props: GroupTogglesProps) => {
 	const shuttlersContext = React.useContext(ShuttlersContext);
+	const { t } = React.useContext(GlobalContext).localized;
 	const { groupId, activeShuttles, shuttlers } = shuttlersContext;
 
 	const [checkOptions, setCheckOptions] = React.useState<ICheckOption[]>([]);
@@ -221,10 +231,10 @@ const GroupToggles = (props: GroupTogglesProps) => {
 	return (
 		<Form>
 			<Form.Group inline>
-				<Button content={`Select all ${allIds.length}`} onClick={() => props.selectMissions(allIds)} />
-				<Button content='Unselect all' onClick={() => props.selectMissions([])} />
+				<Button content={t('shuttle_helper.missions.select.all_n', { n: `${allIds.length}` })} onClick={() => props.selectMissions(allIds)} />
+				<Button content={t('shuttle_helper.missions.select.unselect')} onClick={() => props.selectMissions([])} />
 				<Dropdown
-					placeholder='Select group'
+					placeholder={t('shuttle_helper.missions.select.group')}
 					button
 				>
 					<Dropdown.Menu>
@@ -253,20 +263,22 @@ const GroupToggles = (props: GroupTogglesProps) => {
 		shuttles.forEach(shuttle => {
 			if (shuttle.faction > 0 && !factions.includes(shuttle.faction)) factions.push(shuttle.faction);
 		});
+		{}
+		{}
 
 		if (threeSeaters.length > 0)
-			checkOptions.push({ key: 'three-seaters', text: `Select only 3-seaters (${threeSeaters.length})`, ids: threeSeaters });
+			checkOptions.push({ key: 'three-seaters', text: t('shuttle_helper.missions.select.groups.only_three', { length: `${threeSeaters.length}` }), ids: threeSeaters });
 		if (fourSeaters.length > 0)
-			checkOptions.push({ key: 'four-seaters', text: `Select only 3- and 4- seaters (${fourSeaters.length})`, ids: fourSeaters });
+			checkOptions.push({ key: 'four-seaters', text: t('shuttle_helper.missions.select.groups.only_three_four', { length: `${fourSeaters.length}` }), ids: fourSeaters });
 
 		if (threeSeaters.length + fourSeaters.length > 0 && (activeShuttles.length > 0 || factions.length > 1))
 			checkOptions.push({ key: 'divider1', text: '-' });
 
 		if (activeShuttles.length > 0) {
 			const runningIds: string[] = activeShuttles.filter(adventure => adventure.shuttles[0].state > 0).map(adventure => adventure.symbol);
-			checkOptions.push({ key: `running-adventures`, text: `Select only running in-game (${runningIds.length})`, ids: runningIds });
+			checkOptions.push({ key: `running-adventures`, text: t('shuttle_helper.missions.select.groups.only_running', { length: `${runningIds.length}` }), ids: runningIds });
 			const activeIds: string[] = activeShuttles.map(adventure => adventure.symbol);
-			checkOptions.push({ key: `open-adventures`, text: `Select only open in-game (${activeIds.length})`, ids: activeIds });
+			checkOptions.push({ key: `open-adventures`, text: t('shuttle_helper.missions.select.groups.only_open', { length: `${activeIds.length}` }), ids: activeIds });
 		}
 
 		if ((threeSeaters.length + fourSeaters.length > 0 || activeShuttles.length > 0) && factions.length > 1)
@@ -276,7 +288,7 @@ const GroupToggles = (props: GroupTogglesProps) => {
 			factions.forEach(factionId => {
 				const ids: string[] = shuttles.filter(shuttle => shuttle.faction === factionId).map(shuttle => shuttle.id);
 				const faction = allFactions.find(af => af.id === factionId);
-				checkOptions.push({ key: `faction-${factionId}`, text: `Select only ${faction?.name} (${ids.length})`, ids });
+				checkOptions.push({ key: `faction-${factionId}`, text: t('shuttle_helper.missions.select.groups.only_faction', { faction: faction?.name ?? '', length: `${ids.length}` }), ids });
 			});
 		}
 

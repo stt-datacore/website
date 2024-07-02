@@ -20,6 +20,7 @@ type BeholdsPageProps = {
 
 const BeholdsPage = (props: BeholdsPageProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const crewList = crewCopy<CrewMember>(globalContext.core.crew)
 		.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -31,8 +32,8 @@ const BeholdsPage = (props: BeholdsPageProps) => {
 
 	return (
 		<DataPageLayout
-			pageTitle='Behold Helper'
-			pageDescription='Compare your Behold choices to help decide who to add to your roster.'
+			pageTitle={t('menu.tools.behold_helper')}
+			pageDescription={t('behold_helper.heading')}
 			playerPromptType='recommend'
 		>
 			<React.Fragment>
@@ -49,6 +50,8 @@ type BeholdHelperProps = {
 
 const BeholdHelper = (props: BeholdHelperProps) => {
 	const { crewList } = props;
+	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 
 	const [selectedCrew, setSelectedCrew] = useStateWithStorage<string[]>('behold/crew', props.initSelection);
 	const [crewView, setCrewView] = useStateWithStorage('behold/view', 'classic'); // Do not use rememberForever on this
@@ -90,29 +93,29 @@ const BeholdHelper = (props: BeholdHelperProps) => {
 						<Step active={crewView === 'classic'} onClick={() => setCrewView('classic')}>
 							<Icon name='block layout' />
 							<Step.Content>
-								<Step.Title>Classic View</Step.Title>
-								<Step.Description>Compare crew side by side</Step.Description>
+								<Step.Title>{t('behold_helper.views.classic.title')}</Step.Title>
+								<Step.Description>{t('behold_helper.views.classic.description')}</Step.Description>
 							</Step.Content>
 						</Step>
 						<Step active={crewView === 'details'} onClick={() => setCrewView('details')}>
 							<Icon name='newspaper' />
 							<Step.Content>
-								<Step.Title>Standard View</Step.Title>
-								<Step.Description>View standard crew presentation</Step.Description>
+								<Step.Title>{t('behold_helper.views.standard.title')}</Step.Title>
+								<Step.Description>{t('behold_helper.views.standard.description')}</Step.Description>
 							</Step.Content>
 						</Step>
 						<Step active={crewView === 'table'} onClick={() => setCrewView('table')}>
 							<Icon name='table' />
 							<Step.Content>
-								<Step.Title>Table View</Step.Title>
-								<Step.Description>Just the numbers, all sortable</Step.Description>
+								<Step.Title>{t('behold_helper.views.table.title')}</Step.Title>
+								<Step.Description>{t('behold_helper.views.table.description')}</Step.Description>
 							</Step.Content>
 						</Step>
 						<Step onClick={() => setSelectedCrew([])}>
 							<Icon name='x' color='red' />
 							<Step.Content>
-								<Step.Title>Dismiss All</Step.Title>
-								<Step.Description>Start a new comparison</Step.Description>
+								<Step.Title>{t('behold_helper.views.dismiss_all.title')}</Step.Title>
+								<Step.Description>{t('behold_helper.views.dismiss_all.description')}</Step.Description>
 							</Step.Content>
 						</Step>
 					</Step.Group>
@@ -131,21 +134,23 @@ const BeholdHelper = (props: BeholdHelperProps) => {
 						<div style={{ marginTop: '2em', textAlign: 'right' }}>
 							<Button size='large' fluid onClick={() => addProspects(selectedCrew)} disabled>
 								<Icon name='add user' color='green' />
-								Preview all in your roster
+								{t('behold_helper.preview_all')}
 							</Button>
 						</div>
 					}
 
 					<Message style={{ marginTop: '2em' }}>
-						<Message.Header>Share This Page</Message.Header>
-						<p>Want advice on these crew? You can share a <Link to={`/behold?${permalink}`}>permalink</Link> to this page for easier sharing on Discord or other forums.</p>
+						<Message.Header>{t('behold_helper.share_page_heading')}</Message.Header>
+						<p>{tfmt('behold_helper.share_help', {
+							permalink: <Link to={`/behold?${permalink}`}>{t('global.permalink')}</Link>
+						})}</p>
 						<Popup
 							content='Copied!'
 							on='click'
 							position='right center'
 							size='tiny'
 							trigger={
-								<Button icon='clipboard' content='Copy permalink to clipboard'
+								<Button icon='clipboard' content={t('global.copy_permalink_clipboard')}
 									onClick={() => navigator.clipboard.writeText(`${process.env.GATSBY_DATACORE_URL}/behold?${permalink}`)}
 								/>
 							}

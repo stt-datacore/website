@@ -1,8 +1,8 @@
 import React from 'react';
-
 import { DataProvider } from './src/context/datacontext';
 import { PlayerProvider } from './src/context/playercontext';
 import { GlobalProvider } from './src/context/globalcontext';
+import { LocalizedProvider } from './src/context/localizedcontext';
 
 export const wrapPageElement = ({ element }) => {
 	return (
@@ -16,9 +16,11 @@ export const wrapRootElement = ({ element }) => {
 	return (
 		<DataProvider>
 			<PlayerProvider>
-				<GlobalProvider>
-					{element}
-				</GlobalProvider>
+				<LocalizedProvider>
+					<GlobalProvider>
+						{element}
+					</GlobalProvider>
+				</LocalizedProvider>
 			</PlayerProvider>
 		</DataProvider>
 	);

@@ -18,7 +18,7 @@ export interface SkillQuipmentScores {
     engineering_skill: number;
     medicine_skill: number;
     science_skill: number;
-    trait_limited: number;    
+    trait_limited: number;
 };
 
 export interface PowerLot {
@@ -42,7 +42,7 @@ export interface QuipmentScores {
     q_best_two_three_lots?: PowerLot;
     q_best_one_three_lots?: PowerLot;
     q_best_three_lots?: PowerLot;
-    
+
 }
 
 /**
@@ -55,8 +55,11 @@ export interface CrewMember extends QuipmentScores {
     id?: number;
     symbol: string;
     name: string;
+	name_english?: string;
     short_name: string;
+	short_name_english?: string;
     flavor: string;
+	flavor_english?: string;
     archetype_id: number;
     max_rarity: number;
     equipment_slots: EquipmentSlot[];
@@ -73,8 +76,9 @@ export interface CrewMember extends QuipmentScores {
     imageUrlPortrait: string;
     imageUrlFullBody: string;
     series?: string;
-    traits_named: string[];
+    traits_named: string[];    
     collections: string[];
+    collection_ids: string[];
     nicknames: Nickname[];
     cab_ov: string;
     cab_ov_rank: number;

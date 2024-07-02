@@ -1,4 +1,4 @@
-import { IDefaultGlobal } from "../context/globalcontext";
+import { Filter } from "./game-elements";
 import { PlayerCollection, PlayerCrew, PlayerData } from "./player";
 
 export interface MapFilterOptions {
@@ -44,7 +44,7 @@ export interface CollectionGroup {
 }
 
 
-export interface CollectionFilterProps {
+export interface CollectionsToolSettings {
     short: boolean;	
     mapFilter: MapFilterOptions;	
     searchFilter: string;
@@ -56,10 +56,12 @@ export interface CollectionFilterProps {
     hardFilter: boolean;
     favorited: boolean;
     showIncomplete: boolean;
+    tierFilter: number;
+    byCost: boolean;
 };
 
 
-export interface CollectionFilterContextProps extends CollectionFilterProps {
+export interface ICollectionsContext extends CollectionsToolSettings {
     hardFilter: boolean;	
     setHardFilter: (value: boolean) => void;
 
@@ -99,15 +101,17 @@ export interface CollectionFilterContextProps extends CollectionFilterProps {
     matchMode: CollectionMatchMode;
     setMatchMode: (value: CollectionMatchMode) => void;
 
-    checkCommonFilter: (filter: CollectionFilterProps, crew: PlayerCrew, exclude?: string[]) => boolean;
+    checkCommonFilter: (filter: CollectionsToolSettings, crew: PlayerCrew, exclude?: string[]) => boolean;
     checkRewardFilter: (collection: PlayerCollection, filters: string[]) => boolean;
+
+    showThisCrew: (crew: PlayerCrew, filters: Filter[], filterType: string | null | undefined) => boolean
 };
 
 export type CollectionMatchMode = 'normal' | 'exact-only' | 'extended' | 'inexact-only';
 
 export interface CollectionWorkerConfig {
     playerData: PlayerData;
-    filterProps: CollectionFilterProps;
+    filterProps: CollectionsToolSettings;
     playerCollections: PlayerCollection[];
 	collectionCrew: PlayerCrew[];
     matchMode: CollectionMatchMode;

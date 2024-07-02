@@ -1,6 +1,6 @@
 import { PlayerCrew, Reward } from './player';
 import { Icon } from './game-elements';
-import { ShipAction } from "./ship";
+import { Ship, ShipAction } from "./ship";
 
 export interface BossBattlesRoot {
 	env: BossConfig
@@ -35,7 +35,7 @@ export interface Status {
 	blocked_by_another_boss?: boolean
 }
 
-export interface BossShip {
+export interface BossShip extends Ship {
 	icon: Icon
 	archetype_id: number
 	symbol: string

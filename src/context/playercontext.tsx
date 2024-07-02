@@ -1,5 +1,5 @@
-import React from 'react';
-import { CompactCrew, GameEvent, PlayerData, Voyage, VoyageDescription } from '../model/player';
+import React, { useState } from 'react';
+import { CompactCrew, GameEvent, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
 import { useStateWithStorage } from '../utils/storage';
 import { DataContext, DataProviderProperties } from './datacontext';
 import { BuffStatTable, calculateBuffConfig, calculateMaxBuffs } from '../utils/voyageutils';
@@ -11,10 +11,17 @@ import { BossBattlesRoot } from '../model/boss';
 import { ShuttleAdventure } from '../model/shuttle';
 import { Archetype20, ArchetypeBase, Archetype17 } from '../model/archetype';
 import { getItemWithBonus } from '../utils/itemutils';
+import { TinyStore } from '../utils/tiny';
 
 export interface PlayerContextData {
 	loaded: boolean;
+	showPlayerGlance: boolean,
+	setShowPlayerGlance: (value: boolean) => void
+	noGradeColors: boolean,
+	setNoGradeColors: (value: boolean) => void
 	setInput?: (value: PlayerData | undefined) => void;
+	setNewCrew: (value: PlayerCrew[] | undefined) => void;
+	newCrew?: PlayerCrew[];
 	reset?: () => void;
 	playerData?: PlayerData;
 	ephemeral?: IEphemeralData;
@@ -51,21 +58,30 @@ const defaultSessionStates = {
 export const defaultPlayer = {
 	loaded: false,
 	setInput: () => {},
+	setNewCrew: () => false,
 	reset: () => {},
 	sessionStates: defaultSessionStates,
-	updateSessionState: () => {}
+	updateSessionState: () => {},
+	showPlayerGlance: true,
+	setShowPlayerGlance: () => false,
+	noGradeColors: true,
+	setNoGradeColors: () => false
 } as PlayerContextData;
 
 export const PlayerContext = React.createContext<PlayerContextData>(defaultPlayer as PlayerContextData);
 
+const tiny = TinyStore.getStore(`global_playerSettings`);
+
 export const PlayerProvider = (props: DataProviderProperties) => {
+
 	const coreData = React.useContext(DataContext);
-	const { crew, ship_schematics, translationLanguage } = coreData;
+	const { crew, ship_schematics } = coreData;
 
 	const { children } = props;
 
 	// Profile can be fully re-constituted on reloads from stripped and ephemeral
 	const [stripped, setStripped] = useStateWithStorage<PlayerData | undefined>('playerData', undefined, { compress: true });
+
 	const [ephemeral, setEphemeral] = useStateWithStorage<IEphemeralData | undefined>('ephemeralPlayerData', undefined, { compress: true });
 
 	const [profile, setProfile] = React.useState<PlayerData | undefined>(undefined);
@@ -73,6 +89,13 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const buffConfig = stripped ? calculateBuffConfig(stripped.player) : undefined;
 	const maxBuffs = stripped ? calculateMaxBuffs(stripped.player?.character?.all_buffs_cap_hash) : (coreData.all_buffs ?? undefined);
 	const [sessionStates, setSessionStates] = useStateWithStorage<ISessionStates | undefined>('sessionStates', defaultSessionStates);
+	const [showPlayerGlance, setShowPlayerGlance] = useStateWithStorage(`${stripped ? stripped.player.dbid : ''}_showPlayerGlance`, true, { rememberForever: true })
+	const [noGradeColors, internalSetNoGradeColors] = React.useState(tiny.getValue<boolean>('noGradeColors') ?? false)
+	const [newCrew, setNewCrew] = useStateWithStorage(`${stripped ? stripped.player.dbid : ''}/newCrew`, undefined as PlayerCrew[] | undefined);
+	const setNoGradeColors = (value: boolean) => {
+		tiny.setValue('noGradeColors', value, true);
+		internalSetNoGradeColors(value);
+	}
 
 	const [input, setInput] = React.useState<PlayerData | undefined>(stripped);
 	const [loaded, setLoaded] = React.useState(false);
@@ -153,7 +176,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 		setSessionStates({...defaultSessionStates});
 		setLoaded(true);
-	}, [input, crew, ship_schematics, translationLanguage]);
+	}, [input, crew, ship_schematics]);
 
 	const reset = (): void => {
 		setStripped(undefined);
@@ -163,6 +186,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		setInput(undefined);
 		setSessionStates(undefined);
 		setLoaded(false);
+		// setGameLanguage('en');
 		sessionStorage.clear();
 	};
 
@@ -178,7 +202,13 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		maxBuffs,
 		dataSource: input?.stripped === true ? 'session' : 'input',
 		sessionStates,
-		updateSessionState
+		updateSessionState,
+		showPlayerGlance,
+		setShowPlayerGlance,
+		noGradeColors,
+		setNoGradeColors,
+		setNewCrew,
+		newCrew
 	} as PlayerContextData;
 
 	return (

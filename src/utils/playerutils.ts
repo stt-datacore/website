@@ -192,7 +192,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     //     battle_stations: ship.battle_stations
     // }));
     
-    p.buyback_well = p.player.character.crew.filter((crew) => !!crew.in_buy_back_state).map(c => c.symbol) ?? [];
+    p.buyback_well = p.player.character.crew.filter((crew) => !!crew.in_buy_back_state) ?? [];
     p.player.character.crew = p.player.character.crew
         .filter((crew) => !crew.in_buy_back_state)
         .map((crew) => ({
@@ -202,7 +202,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
             level: crew.level,
             max_level: crew.max_level,
             rarity: crew.rarity,
-            equipment: crew.equipment.map((eq) => eq[0]),
+            equipment: crew?.equipment?.map((eq) => eq ? eq[0] : 0),
             kwipment: crew.kwipment,
             kwipment_expiration: crew.kwipment_expiration,
             q_bits: crew.q_bits,

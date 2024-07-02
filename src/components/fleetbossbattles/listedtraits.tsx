@@ -1,7 +1,7 @@
 import React from 'react';
 
-import allTraits from '../../../static/structured/translation_en.json';
 import { SolverTrait } from '../../model/boss';
+import { GlobalContext } from '../../context/globalcontext';
 
 type ListedTraitsProps = {
 	traits: string[];
@@ -9,10 +9,12 @@ type ListedTraitsProps = {
 };
 
 export const ListedTraits = (props: ListedTraitsProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { TRAIT_NAMES } = globalContext.localized;
 	const traitSort = (a: string, b: string) => {
 		if (a === '?') return 1;
 		if (b === '?') return -1;
-		return allTraits.trait_names[a].localeCompare(allTraits.trait_names[b]);
+		return TRAIT_NAMES[a].localeCompare(TRAIT_NAMES[b]);
 	};
 	const traits = props.traits.slice().sort((a: string, b: string) => traitSort(a, b)) as string[];
 	if (traits.length > 1) traits.splice(1, 0, '+');
@@ -32,6 +34,8 @@ type NamedTraitProps = {
 };
 
 const NamedTrait = (props: NamedTraitProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { TRAIT_NAMES } = globalContext.localized;
 	const { trait, traitData } = props;
 
 	if (trait === '+' || trait === '?')
@@ -48,7 +52,7 @@ const NamedTrait = (props: NamedTraitProps) => {
 			flexWrap: 'nowrap',
 			alignItems: 'center'
 		}}>
-			<span>{allTraits.trait_names[trait]}</span>
+			<span>{TRAIT_NAMES[trait]}</span>
 			{instances.length > 1 && renderNeeded()}
 		</div>
 	);

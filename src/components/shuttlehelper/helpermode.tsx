@@ -14,6 +14,7 @@ type HelperModeProps = {
 
 export const HelperMode = (props: HelperModeProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { playerData, ephemeral } = globalContext.player;
 
 	const [factionEvents, setFactionEvents] = React.useState<IEventData[] | undefined>(undefined);
@@ -43,7 +44,7 @@ export const HelperMode = (props: HelperModeProps) => {
 		<Message icon>
 			<img src={`${process.env.GATSBY_ASSETS_URL}/atlas/shuttle_icon.png`} style={{ width: '3em', marginRight: '1em' }} />
 			<Message.Content>
-				<p>Select a mission type:</p>
+				<p>{t('shuttle_helper.mode.heading')}:</p>
 				<Form style={{ marginTop: '1em' }}>
 					{renderStandardOption()}
 					{factionEvents.map(ev => renderEventOption(ev))}
@@ -94,9 +95,9 @@ export const HelperMode = (props: HelperModeProps) => {
 	function renderStandardOption(): JSX.Element {
 		let label: string = '';
 		if (activeShuttles.length > 0)
-			label = 'Standard. All shuttle missions that are open in-game will be imported, but missions and recommendations will NOT be saved by the shuttle helper.';
+			label = t('shuttle_helper.mode.standard.active');
 		else
-			label = 'Standard. Shuttle missions and recommendations will NOT be saved by the shuttle helper.';
+			label = t('shuttle_helper.mode.standard.inactive');
 		return (
 			<Form.Field>
 				<Radio
@@ -114,17 +115,17 @@ export const HelperMode = (props: HelperModeProps) => {
 		let label: string = '';
 		if (eventData.seconds_to_start === 0) {
 			if (props.rosterType === 'allCrew')
-				label = `Active Event (${eventData.name}). All event shuttles that are open in-game will be imported, but NOT saved. Bonuses will be applied to event crew.`;
+				label = t('shuttle_helper.mode.active_event.all', { name: eventData.name }); 
 			else if (activeShuttles.length > 0)
-				label = `Active Event (${eventData.name}). All event shuttles that are open in-game will be imported and saved. Bonuses will be applied to event crew.`;
+				label = t('shuttle_helper.mode.active_event.active', { name: eventData.name }); 
 			else
-				label = `Active Event (${eventData.name}). Shuttles will be saved. Bonuses will be applied to event crew.`;
+				label = t('shuttle_helper.mode.active_event.inactive', { name: eventData.name }); 
 		}
 		else {
 			if (activeShuttles.length > 0)
-				label = `Inactive Event (${eventData.name}). No shuttles will be imported or saved. Bonuses will be applied to event crew.`;
+				label = t('shuttle_helper.mode.inactive_event.active', { name: eventData.name }); 
 			else
-				label = `Inactive Event (${eventData.name}). Shuttles will NOT be saved. Bonuses will be applied to event crew.`;
+				label = t('shuttle_helper.mode.inactive_event.inactive', { name: eventData.name }); 
 		}
 		return (
 			<Form.Field key={eventData.symbol}>
