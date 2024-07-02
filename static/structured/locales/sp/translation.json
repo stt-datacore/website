@@ -1217,7 +1217,8 @@
             "generating_permutations_ellipses": "Generando permutaciones...",
             "run_current_line_up": "Ejecutar tripulantes actuales",
             "sorting_finalizing_ellipses": "Ordenar y finalizar resultados...",
-            "show_battle_graph": "Mostrar Gráfico de Batalla"
+            "show_battle_graph": "Mostrar Gráfico de Batalla",
+            "ignore_skill": "Ignora las habilidades"
         },
         "calculated_crew": "Tripulación calculada",
         "charge_phase": {

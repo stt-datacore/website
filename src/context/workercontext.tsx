@@ -16,7 +16,7 @@ export interface WorkerProviderState {
     worker: UnifiedWorker | null,
     callback: null | ((data: any) => void),
     context: IWorkerContext;
-    data: any;
+    config: any;
     workerName: string | null;
 }
 
@@ -30,7 +30,7 @@ const DefaultContextData = {
 export const WorkerContext = React.createContext<IWorkerContext>(DefaultContextData);
 
 export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerProviderState> {
-
+    
     constructor(props: WorkerProviderProps) {
         super(props);
 
@@ -42,9 +42,23 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
                 cancel: () => this.cancel(true),
                 runWorker: this.runWorker
             },
-            data: {},
+            config: null,
             workerName: null
         }
+    }
+
+    private readonly clearState = () => {
+        this.setState({ 
+            ... this.state, 
+            workerName: null, 
+            config: null, 
+            callback: null, 
+            worker: null, 
+            context: { 
+                ... this.state.context, 
+                running: false, 
+                runningWorker: null 
+            }});
     }
 
     private readonly cancel = (clear?: boolean) => {
@@ -52,7 +66,7 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
         worker?.terminate();
         worker?.removeEventListener('message', this.workerMessage);
         if (clear) {
-            this.setState({ ... this.state, workerName: null, data: {}, callback: null, worker: null, context: { ... this.state.context, running: false, runningWorker: null }});
+            this.clearState();
         }
     }
 
@@ -61,7 +75,7 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
             this.state.callback(data);
         }
         if (data.data.inProgress) return;
-        this.setState({ ... this.state, workerName: null, data: {}, callback: null, worker: null, context: { ... this.state.context, running: false, runningWorker: null }});
+        this.cancel(true);
     }
 
     private readonly createWorker = () => {
@@ -73,14 +87,25 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
 
     private readonly runWorker = (workerName: string, config: any, callback: (data: any) => void): void => {
         const worker = this.createWorker();
-        this.setState({ ... this.state, worker, workerName, data: config, callback, context: { ... this.state.context, running: true, runningWorker: workerName }});
+        this.setState({ 
+            ... this.state, 
+            worker, 
+            workerName, 
+            config, 
+            callback, 
+            context: { 
+                ... this.state.context, 
+                running: true, 
+                runningWorker: workerName 
+            }});
     }
 
     componentDidUpdate(prevProps: Readonly<WorkerProviderProps>, prevState: Readonly<WorkerProviderState>, snapshot?: any): void {
-        if (this.state.worker && Object.keys(this.state.data).length) {
-            this.state.worker?.postMessage({
-                worker: this.state.workerName,
-                config: this.state.data
+        const { workerName: name, config, worker } = this.state;
+        if (worker && config) {
+            worker.postMessage({
+                worker: name,
+                config
             });
         }
     }
