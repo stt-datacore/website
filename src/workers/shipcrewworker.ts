@@ -335,7 +335,7 @@ export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: S
        
         for (let action of allactions) {
             let actidx = allactions.findIndex(f => f === action);
-            if (!inited[actidx] && sec > action.initial_cooldown && !current.includes(action)) {
+            if (!inited[actidx] && sec >= action.initial_cooldown && !current.includes(action)) {
                 activate(action, actidx);
             }
             else if (inited[actidx] && current.includes(action)) {

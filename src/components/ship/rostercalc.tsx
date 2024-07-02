@@ -23,6 +23,8 @@ export interface RosterCalcProps {
     setConsiderFrozen: (value: boolean) => void;
     considerUnowned: boolean;
     setConsiderUnowned: (value: boolean) => void;
+    ignoreSkills: boolean;
+    setIgnoreSkills: (value: boolean) => void;
 }
 
 interface BattleConfig {
@@ -39,7 +41,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const { running, runWorker, cancel } = workerContext;
     const { t } = globalContext.localized;
     const [sugWait, setSugWait] = React.useState<number | undefined>();
-    const { ships, crew, crewStations, setCrewStations, pageId, considerFrozen, setConsiderFrozen, considerUnowned, setConsiderUnowned } = props;
+    const { ships, crew, crewStations, setCrewStations, pageId, considerFrozen, ignoreSkills, setIgnoreSkills, setConsiderFrozen, considerUnowned, setConsiderUnowned } = props;
     const shipIdx = props.shipIdx ?? 0;
     const ship = ships[shipIdx];
     const [windowLoaded, setWindowLoaded] = React.useState(false);
@@ -50,7 +52,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [lastBattleMode, setLastBattleMode] = useStateWithStorage<BattleMode | null>(`${pageId}/${ship.symbol}/lastBattleMode`, null, { rememberForever: true });
     const [battleMode, setBattleMode] = useStateWithStorage<BattleMode>(`${pageId}/${ship.symbol}/battleMode`, lastBattleMode ?? 'pvp');
     const [powerDepth, setPowerDepth] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/powerDepth`, 1, { rememberForever: true });
-    const [ignoreSkill, setIgnoreSkill] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/powerDepth`, false, { rememberForever: true });
     const [minRarity, setMinRarity] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/minRarity`, ship.rarity - 1, { rememberForever: true });
     const [progressMsg, setProgressMsg] = React.useState<string>('');
 
@@ -316,8 +317,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         <Checkbox
                                 label={t('ship.calc.ignore_skill')}
                                 value={t('ship.calc.ignore_skill')}
-                                checked={ignoreSkill}
-                                onChange={(e, { checked }) => setIgnoreSkill(checked as boolean)} />
+                                checked={ignoreSkills}
+                                onChange={(e, { checked }) => setIgnoreSkills(checked as boolean)} />
                     </div>
 
                 </div>
@@ -372,7 +373,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 defense: battleConfig.defense,
                 offense: battleConfig.offense,
                 get_attacks: !!current,
-                ignore_skill: ignoreSkill
+                ignore_skill: ignoreSkills
             } as ShipWorkerConfig;
 
             setProgressMsg('');

@@ -241,8 +241,7 @@ export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)
 	if (grants) console.log(grants);
 	if (!grants) grants = [];
 	// now match triggers with grants.
-	if (bscrew) {
-		let bsave = bscrew;
+	if (bscrew) {		
 		bscrew = bscrew.filter(crew => {
 			if ((grants?.length ?? 0) == 0) {
 				return (crew.action.ability?.condition ?? 0) === 0;

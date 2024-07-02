@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { Icon, Message, Button, FormInput, Dropdown, Input } from 'semantic-ui-react';
+import React from 'react';
+import { Icon, Message, Button } from 'semantic-ui-react';
 
 import { findPotentialCrew, mergeShips, setupShip } from '../utils/shiputils';
-import { BattleMode, Ship, ShipWorkerConfig, ShipWorkerItem } from '../model/ship';
+import { Ship } from '../model/ship';
 import { PlayerCrew } from '../model/player';
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
@@ -12,43 +12,13 @@ import { navigate } from 'gatsby';
 import { ModalOption, OptionGroup, OptionsBase, OptionsModal, OptionsModalProps } from '../components/base/optionsmodal_base';
 import { ShipAbilityPicker } from '../components/crewtables/shipoptions';
 import CrewPicker from '../components/crewpicker';
-import { crewCopy, getShipBonus, getSkills } from '../utils/crewutils';
+import { getShipBonus, getSkills } from '../utils/crewutils';
 import { CrewHoverStat, CrewTarget } from '../components/hovering/crewhoverstat';
 import { getActionColor, getShipBonusIcon } from '../components/item_presenters/shipskill';
 import DataPageLayout from '../components/page/datapagelayout';
 import { WorkerProvider } from '../context/workercontext';
-import { UnifiedWorker } from '../typings/worker';
-import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import { ShipRosterCalc } from '../components/ship/rostercalc';
 import { useStateWithStorage } from '../utils/storage';
-
-const isWindow = typeof window !== 'undefined';
-
-type ShipProfileProps = {
-	ship?: string;
-};
-
-type ShipProfileState = {
-	ships?: Ship[];
-	originals: Ship[];
-	activeShip?: Ship | null;
-	inputShip?: Ship | null;
-	currentStationCrew: (PlayerCrew | CrewMember)[];
-	currentStation: number;
-	modalOptions: ShipCrewModalOptions;
-	crewStations: (PlayerCrew | undefined)[];
-	modalOpen: boolean;
-	hoverItem?: PlayerCrew | CrewMember;
-	considerFrozen: boolean;
-	considerUnowned: boolean;
-};
-
-const pagingOptions = [
-	{ key: '0', value: '10', text: '10' },
-	{ key: '1', value: '25', text: '25' },
-	{ key: '2', value: '50', text: '50' },
-	{ key: '3', value: '100', text: '100' }
-];
 
 const ShipInfoPage = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -88,7 +58,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 	const context = React.useContext(GlobalContext);
 	const { t } = context.localized;
 	const { ship: shipKey } = props;
-	const { playerData, playerShips } = context.player;
+	const { playerShips } = context.player;
 	const [ships, setShips] = React.useState<Ship[]>(loadShips());
 	const [inputShip, setInputShip] = React.useState<Ship>();
 	const [ship, setShip] = React.useState<Ship>();
@@ -102,6 +72,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 
 	const [considerFrozen, setConsiderFrozen] = useStateWithStorage('ship_info/considerFrozen', false);
 	const [considerUnowned, setConsiderUnowned] = useStateWithStorage('ship_info/considerFrozen', false);
+    const [ignoreSkills, setIgnoreSkills] = useStateWithStorage<boolean>(`ship_info/ignoreSkills`, false);
 
 	React.useEffect(() => {
 		if (inputShip && crewStations?.length && inputShip.battle_stations?.length === crewStations.length) {
@@ -177,8 +148,10 @@ const ShipViewer = (props: ShipViewerProps) => {
 					setCrewStations={setCrewStations}
 					considerFrozen={considerFrozen}
 					considerUnowned={considerUnowned}
+					ignoreSkills={ignoreSkills}
 					setConsiderFrozen={setConsiderFrozen}
 					setConsiderUnowned={setConsiderUnowned}
+					setIgnoreSkills={setIgnoreSkills}
 				/>
 			</WorkerProvider>
 
@@ -322,8 +295,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 		let stations = [...crewStations];
 		stations[currentStation] = crew as PlayerCrew;
 		setCrewStations(stations);
-		setCurrentStation(-1)
-		setTimeout(() => this.setActiveShip());
+		setCurrentStation(-1);
 	}
 
 	function getCrew() {
@@ -345,7 +317,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 	function clickStation(index: number, skill: string) {
 		const inputShip = ship;
 
-		let newCrew: (PlayerCrew | CrewMember)[] = getCrew().filter((crew) => getSkills(crew).includes(skill)) ?? [];
+		let newCrew: (PlayerCrew | CrewMember)[] = getCrew().filter((crew) => ignoreSkills || getSkills(crew).includes(skill)) ?? [];
 		if (inputShip) newCrew = findPotentialCrew(inputShip, newCrew, false);
 		setModalOpen(true);
 		setCurrentStationCrew(newCrew);
