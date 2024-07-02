@@ -30,6 +30,7 @@
     "@nivo/pie": "^0.85.1",
     "@nivo/radar": "^0.85.1",
     "@nivo/sunburst": "^0.85.1",
+    "@nivo/swarmplot": "^0.87.0",
     "@sentry/gatsby": "^7.109.0",
     "easymde": "^2.18.0",
     "exceljs": "^4.4.0",

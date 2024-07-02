@@ -17,7 +17,7 @@ export interface RosterCalcProps {
     ships: Ship[],
     shipIdx?: number,
     crew: (CrewMember | PlayerCrew)[],
-    crewStations: (PlayerCrew | undefined)[],
+    crewStations: (PlayerCrew | CrewMember | undefined)[],
     setCrewStations: (value: (PlayerCrew | undefined)[]) => void
     considerFrozen: boolean;
     setConsiderFrozen: (value: boolean) => void;
@@ -93,12 +93,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         let ships = getShipsInUse(globalContext.player);
                         const f = ships.find(f => f.ship.symbol === ship.symbol && f.battle_mode === bmode && f.rarity === rarity);
                         if (f) {
+                            setCrewStations(f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew));
                             setTimeout(() => {
-                                setBattleMode(bmode);
-                                let csnew = f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew);
-                                if (!crewStations.every((cs, idx) => csnew[idx].id === cs?.id)) {
-                                    setCrewStations(f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew));
-                                }
+                                setBattleMode(bmode);                                
                             });
                         }
                     }
@@ -111,6 +108,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     });
 
     React.useEffect(() => {
+        if (!activeSuggestion) return;
         setCrewStations(activeSuggestion?.crew as PlayerCrew[] ?? ships[shipIdx].battle_stations?.map(b => undefined));
     }, [activeSuggestion]);
 
