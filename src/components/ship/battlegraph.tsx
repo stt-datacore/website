@@ -268,13 +268,13 @@ export const BattleGraph = (props: BattleGraphProps) => {
             for (let curr of results) {
                 if (attack.actions.some(act => act.crew?.toString() === curr.id || act.symbol === curr.id)) {
                     curr.data.push({
-                        x: `${attack.second + 1}`,
+                        x: `${attack.second}`,
                         y: (i * 2) - 1
                     });
                 }
                 else {
                     curr.data.push({
-                        x: `${attack.second + 1}`,
+                        x: `${attack.second}`,
                         y: (i * 2)
                     });
                 }
@@ -313,13 +313,13 @@ export const BattleGraph = (props: BattleGraphProps) => {
         let id = 0.1;
         attacks?.forEach((attack, idx) => {
             attack.actions.forEach((act) => {
-                let resid = `${act.name}_${attack.second + 1}`;
+                let resid = `${act.name}_${attack.second}`;
                 if (results.some(r => r.id === resid)) return;
                 results.push({
                     id: `${act.name}_${attack.second}`,
                     group: act.name,
                     attack: attack.attack,
-                    second: attack.second + 1,
+                    second: attack.second,
                     group_size: attack.actions.length,
                     crew: act.crew ? battle.crew.find(f => f.id === act.crew) : undefined,
                     ship: battle.ship

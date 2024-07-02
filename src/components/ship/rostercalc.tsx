@@ -304,7 +304,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 <Button color='green' onClick={() => recommend()}>{running ? t('global.cancel') : t('global.recommend_crew')}</Button>
                 {!running && crewStations?.filter(c => !!c).length === ship?.battle_stations?.length &&
                     <Button color='green' onClick={() => recommend(true)}>{t('ship.calc.run_current_line_up')}</Button>}
-                {!running && <Button onClick={() => { setSuggestions([]); setSuggestion(undefined); setActiveSuggestion(undefined); }}>{t('global.clear')}</Button>}
+                {!running && <Button onClick={() => clearAll()}>{t('global.clear')}</Button>}
                 {!running && crewStations?.filter(c => !!c).length === ship?.battle_stations?.length && (!activeSuggestion?.attacks?.length || hideGraph) && 
                     <Button onClick={() => {
                         if (!hideGraph && !activeSuggestion?.attacks?.length) {
@@ -314,6 +314,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             setHideGraph(false);
                         }                        
                     }}>{t('ship.calc.show_battle_graph')}</Button>}
+            </div>
+            <div style={{marginTop:'1em'}}>
+                {t('base.crew')}: {crew.length.toLocaleString()}
             </div>
             {!!activeSuggestion?.attacks?.length && !hideGraph &&
                 <div className={'ui segment'} style={{ width: '100%' }}>
@@ -334,6 +337,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
         if (ships?.length && crew?.length) {
             if (battleMode.startsWith('fbb') && !battleConfig.opponent) return;
+
             const config = {
                 ship: JSON.parse(JSON.stringify(ship)),
                 crew: JSON.parse(JSON.stringify(current ? crewStations : crew)),
@@ -341,7 +345,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 power_depth: powerDepth,
                 min_rarity: minRarity,
                 max_rarity: ship.rarity,
-                max_results: 50,
+                max_results: 100,
                 opponents: battleConfig.opponent ? [battleConfig.opponent] : undefined,
                 defense: battleConfig.defense,
                 offense: battleConfig.offense,
@@ -353,6 +357,13 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setSuggestions([]);
             runWorker('shipworker', config, workerMessage);
         }
+    }
+
+    function clearAll() {
+        setSuggestions([]); 
+        setSuggestion(undefined); 
+        setActiveSuggestion(undefined);
+        //setCrewStations(crewStations.map(c => undefined));
     }
 
     function setSuggestion(idx: number | undefined) {
