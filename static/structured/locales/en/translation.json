@@ -675,7 +675,7 @@
         "never": "Never",
         "new": "New",
         "no": "No",
-        "no_items_found": "No items found",        
+        "no_items_found": "No items found",
         "none": "None",
         "notes": "Notes",
         "obtained": "Obtained",
@@ -706,6 +706,10 @@
             "title": "Work In Progress!"
         },
         "yes": "Yes"
+    },
+    "graph": {
+        "bump": "Bump Graph",
+        "swarm": "Swarm Graph"
     },
     "header": {
         "recommend": {
@@ -1206,10 +1210,10 @@
         "calc": {
             "calculating_pct_ellipses": "Calculating ({{percent}}% complete) ...",
             "generating_permutations_ellipses": "Generating permutations ...",
+            "ignore_skill": "Ignore skills",
             "run_current_line_up": "Run Current Crew",
-            "sorting_finalizing_ellipses": "Sorting and finalizing results ...",
             "show_battle_graph": "Show Battle Graph",
-            "ignore_skill": "Ignore skills"
+            "sorting_finalizing_ellipses": "Sorting and finalizing results ..."
         },
         "calculated_crew": "Calculated Crew",
         "charge_phase": {
@@ -1243,11 +1247,11 @@
             "captain": "Captain Division",
             "commander": "Commander Division"
         },
+        "shields": "Shields",
+        "ship": "Ship",
         "show": {
             "only_in_use": "Show only ships currently in use"
         },
-        "shields": "Shields",
-        "ship": "Ship",
         "skirmish": "{{event_type.skirmish}}",
         "trigger": "Trigger",
         "triggers": "Triggers",

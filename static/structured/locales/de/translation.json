@@ -675,7 +675,7 @@
         "never": "Niemals",
         "new": "Neu",
         "no": "Nein",
-        "no_items_found": "Keine Elemente gefunden",        
+        "no_items_found": "Keine Elemente gefunden",
         "none": "Keine",
         "notes": "Anmerkungen",
         "obtained": "Erhalten von",
@@ -706,6 +706,10 @@
             "title": "In Arbeit!"
         },
         "yes": "Ja"
+    },
+    "graph": {
+        "bump": "Bump-Diagramm",
+        "swarm": "Schwarmgraph"
     },
     "header": {
         "recommend": {
@@ -1205,10 +1209,10 @@
         "calc": {
             "calculating_pct_ellipses": "Berechnung ({{percent}} % abgeschlossen) ...",
             "generating_permutations_ellipses": "Permutationen werden generiert ...",
+            "ignore_skill": "Ignorieren Sie die Fähigkeiten",
             "run_current_line_up": "Aktuelle Crew ausführen",
-            "sorting_finalizing_ellipses": "Ergebnisse sortieren und finalisieren ...",
             "show_battle_graph": "Kampfdiagramm anzeigen",
-            "ignore_skill": "Ignorieren Sie die Fähigkeiten"
+            "sorting_finalizing_ellipses": "Ergebnisse sortieren und finalisieren ..."
         },
         "calculated_crew": "Kalkulierte Crew",
         "charge_phase": {
@@ -1242,11 +1246,11 @@
             "captain": "Captain Division",
             "commander": "Commander Division"
         },
+        "shields": "Schilde",
+        "ship": "Schiff",
         "show": {
             "only_in_use": "Nur aktuell verwendete Schiffe anzeigen"
         },
-        "shields": "Schilde",
-        "ship": "Schiff",
         "skirmish": "{{event_type.skirmish}}",
         "trigger": "Auslöser",
         "triggers": "Auslöseren",
