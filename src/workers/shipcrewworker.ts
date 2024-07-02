@@ -271,13 +271,13 @@ export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: S
         if (action.charge_phases) {
             if (!action.current_phase) {
                 action.current_phase = 1;
-                state_time[actidx] = 1;
+                state_time[actidx] = 0;
                 inited[actidx] = true;
             }
             else if (action.current_phase < action.charge_phases.length) {
                 bumpAction(action, action.current_phase);
                 action.current_phase++;
-                state_time[actidx] = 1;
+                state_time[actidx] = 0;
                 inited[actidx] = true;
             }
             else if (action.current_phase === action.charge_phases.length) {
@@ -318,7 +318,7 @@ export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: S
             current.push(action);
             cloaked = action.status === 2;
             uses[actidx]++;
-            state_time[actidx] = 1;
+            state_time[actidx] = 0;
             inited[actidx] = true;
             active[actidx] = true;
         }
@@ -331,27 +331,27 @@ export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: S
     const deactivate = (action: ShipAction, actidx: number) => {
         let idx = current.findIndex(f => f === action);
         if (idx != -1) current.splice(idx, 1)
-        state_time[actidx] = 1;
+        state_time[actidx] = 0;
         active[actidx] = false;
     }
 
-    for (let sec = 0; sec < time; sec++) {
+    for (let sec = 1; sec <= time; sec++) {
         atm = 1;
        
         for (let action of allactions) {
             let actidx = allactions.findIndex(f => f === action);
-            if (!inited[actidx] && action.initial_cooldown <= sec && !current.includes(action)) {
+            if (!inited[actidx] && sec >= action.initial_cooldown && !current.includes(action)) {
                 activate(action, actidx);
             }
             else if (inited[actidx] && current.includes(action)) {
                 state_time[actidx]++;
-                if (state_time[actidx] > action.duration) {
+                if (state_time[actidx] >= action.duration) {
                     deactivate(action, actidx);
                 }
             }
             else if (inited[actidx] && !current.includes(action) && (!action.limit || uses[actidx] < action.limit)) {
                 state_time[actidx]++;
-                if (state_time[actidx] > action.cooldown) {
+                if (state_time[actidx] >= action.cooldown) {
                     activate(action, actidx);
                 }
             }
