@@ -140,6 +140,7 @@ export function highestLevel(ship: Ship) {
 export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[] {
 	let newShips: Ship[] = [];
 	ship_schematics = JSON.parse(JSON.stringify(ship_schematics));
+	let unowned_id = -1;
 	ship_schematics.forEach((schematic) => {
 		let owned = ships.find((ship) => ship.symbol == schematic.ship.symbol);
 
@@ -181,6 +182,7 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 					schematic.ship.evasion = schematic.ship.levels![`${h}`].evasion_power;
 				}
 			}
+			schematic.ship.id = unowned_id--;
 			schematic.ship.level ??= 0;
 		}
 		
@@ -341,4 +343,33 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 	});
 
 	return results;
+}
+
+export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[]): Ship | false {
+	if (!ship?.battle_stations?.length || !crewStations?.length || crewStations.length !== ship.battle_stations.length) return false;
+	for (let action of ship.actions ?? []) {
+		action.source = ship.name;
+	}
+	let newship = JSON.parse(JSON.stringify(ship)) as Ship;
+	for (let crew of crewStations) {
+		if (crew === undefined) continue;
+		newship.crit_bonus ??= 0;
+		newship.crit_bonus += crew.ship_battle.crit_bonus ?? 0;
+
+		newship.crit_chance ??= 0;
+		newship.crit_chance += crew.ship_battle.crit_chance ?? 0;
+
+		newship.evasion ??= 0;
+		newship.evasion += crew.ship_battle.evasion ?? 0;
+
+		newship.accuracy ??= 0;
+		newship.accuracy += crew.ship_battle.accuracy ?? 0;
+
+		newship.actions ??= [];
+		crew.action.source = crew.name;
+		if (crew.id !== undefined) crew.action.crew = crew.id;
+		newship.actions.push(crew.action);
+	}
+
+	return newship;
 }
