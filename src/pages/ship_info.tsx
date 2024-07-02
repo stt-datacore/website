@@ -333,12 +333,13 @@ const ShipViewer = (props: ShipViewerProps) => {
 		if (considerUnowned && context?.player?.playerData) {
 			results = results.concat(context.player.playerData.player.character.unOwnedCrew ?? []);
 		}
-		return results;
+		return [...results];
 	}
 
 	function loadShips() {
 		if (!context) return [];
-		return context?.player?.playerShips ?? mergeShips(context.core.ship_schematics, []) ?? [];
+		let ships = context?.player?.playerShips ?? mergeShips(context.core.ship_schematics, []) ?? [];
+		return [...ships];
 	}
 
 	function clickStation(index: number, skill: string) {
