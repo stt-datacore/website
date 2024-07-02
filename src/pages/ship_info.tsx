@@ -360,8 +360,6 @@ class ShipProfile extends Component<ShipProfileProps, ShipProfileState> {
                 justifyContent: "center",
 				alignItems: "center"
             }}>
-
-
 				<Message icon warning>
 					<Icon name="exclamation triangle" />
 					<Message.Content>
