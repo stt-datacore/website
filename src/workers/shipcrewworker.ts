@@ -96,7 +96,7 @@ function getCritChance(n: number) {
                 return detail.chance + mm;
             }
         }
-    }    
+    }
     return 0;
 }
 
@@ -107,7 +107,7 @@ function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, offense?:
     let bonus = ship.crit_bonus;
     let crit = ship.crit_chance;
     let sum_attack = base_attack;
-    
+
     let highest_dmg = 0;
     let highest_acc = 0;
     let sum_acc = base_acc;
@@ -118,7 +118,7 @@ function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, offense?:
         }
         else if (action.ability?.type === 5) {
             bonus += action.ability.amount;
-        }        
+        }
         if (action.bonus_type === 0) {
             if (action.ability?.type === 0) {
                 if (highest_dmg < action.bonus_amount + action.ability.amount) {
@@ -135,11 +135,11 @@ function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, offense?:
             }
         }
     });
-    
+
     if (actions.some(a => a.status === 1)) {
         crit += 1000;
     }
-    
+
     if (actions.some(a => a.status === 3)) {
         sum_attack += (ship.attack / 2);
     }
@@ -158,13 +158,13 @@ function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, offense?:
 
     let min_attack = 0;
     let max_attack = 0;
-    
-    max_attack = sum_attack + ((sum_attack * bonus)); 
+
+    max_attack = sum_attack + ((sum_attack * bonus));
     sum_attack += ((sum_attack * bonus) * chance);
     min_attack = sum_attack;
 
     let hc = 0;
-    
+
     if (opponent) {
         hc = hitChance(sum_acc, opponent.evasion);
     }
@@ -177,10 +177,10 @@ function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, offense?:
     max_attack *= hc;
 
     offense ??= 0;
-    
+
     let atk_off = sum_attack * offense;
     sum_attack += atk_off;
-    
+
     atk_off = min_attack * offense;
     min_attack += atk_off;
 
@@ -194,7 +194,7 @@ function hitChance(acc: number, opp_eva: number) {
     return 1 / (1 + Math.exp(-1.9 * (acc / opp_eva - 0.55)));
 }
 
-export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180) {
+export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[]) {
     let ship = setupShip(input_ship, crew, false) || undefined;
     defense ??= 0;
     offense ??= 0;
@@ -205,8 +205,9 @@ export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: S
 
     const attacks = [] as AttackInstant[];
     crew.forEach(c => c.action.crew = c.id!);
-    
-    let allactions = JSON.parse(JSON.stringify([...ship.actions ?? [], ... crew.map(c => c.action) ])) as BonusAction[];
+
+    let allactions = JSON.parse(JSON.stringify([...ship.actions ?? [], ...crew.map(c => c.action)])) as BonusAction[];
+
     allactions.forEach((action, i) => {
         action.comes_from = i >= (ship!.actions?.length ?? 0) ? 'crew' : 'ship';
         if (action.charge_phases?.length) {
@@ -217,15 +218,20 @@ export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: S
                 action.current_phase = 0;
             }
         }
-        
+        if (action.comes_from === 'crew' && activation_offsets?.length && activation_offsets.length === input_ship.battle_stations?.length) {
+            let x = i - (ship!.actions?.length ?? 0);
+            if (activation_offsets[x] && activation_offsets[x] > action.initial_cooldown) {
+                action.initial_cooldown = activation_offsets[x];
+            }            
+        }
     });
 
-    let alen = allactions.length;    
+    let alen = allactions.length;
     let uses = allactions.map(a => 0);
     let state_time = allactions.map(a => 0);
     let inited = allactions.map(a => false);
     let active = allactions.map(a => false);
-    
+
     let atm = 1;
     const current = [] as ShipAction[];
 
@@ -308,7 +314,7 @@ export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: S
                     if (!active[idx] && inited[idx]) {
                         if (!allactions[idx].current_phase || allactions[idx].comes_from === 'ship') state_time[idx] += time;
                     }
-                }       
+                }
             }
             current.push(action);
             cloaked = action.status === 2;
@@ -332,7 +338,7 @@ export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: S
 
     for (let sec = 1; sec <= time; sec++) {
         atm = 1;
-       
+
         for (let action of allactions) {
             let actidx = allactions.findIndex(f => f === action);
             if (!inited[actidx] && sec >= action.initial_cooldown && !current.includes(action)) {
@@ -353,7 +359,7 @@ export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: S
         }
 
         let [maxattack, sumattack, minattack] = sumAttack(ship, current, opponent, offense);
-        
+
         let min = minattack * ship.attacks_per_second;
         let atk = sumattack * ship.attacks_per_second;
         let max = maxattack * ship.attacks_per_second;
@@ -364,10 +370,10 @@ export function iterateBattle(input_ship: Ship, crew: CrewMember[], opponent?: S
             max += maxattack * atm;
         }
 
-        if (!cloaked) {
+        if (fbb_mode || !cloaked) {
             let mul = current.filter(f => f.ability?.type === 11).map(m => m.ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
-            mul = 1 - (mul / 100);        
-            
+            mul = 1 - (mul / 100);
+
             if (!oppoattack) {
                 hull -= (atk - (atk * defense)) * mul;
             }
@@ -401,7 +407,9 @@ function factorial(number: number) {
     return result;
 }
 
-function getPermutations<T, U>(array: T[], size: number, check?: (set: T[]) => U[] | false, max?: number) {
+function getPermutations<T, U>(array: T[], size: number, max?: number, count_only?: boolean, check?: (set: T[]) => U[] | false) {
+    var current_iter = 0;
+
     function p(t: T[], i: number) {
         if (t.length === size) {
             if (!check) {
@@ -409,19 +417,26 @@ function getPermutations<T, U>(array: T[], size: number, check?: (set: T[]) => U
             }
             else {
                 let response = check(t);
-                if (response) result.push(response);
+                if (response) {
+                    if (!count_only) {
+                        result.push(response);
+                    }
+                }
             }
+            current_iter++;
             return;
         }
         if (i + 1 > array.length) {
             return;
         }
-        if (max && result.length >= max) return;
+
+        if (max && current_iter >= max) return;
         p(t.concat(array[i]), i + 1);
         p(t, i + 1);
     }
 
     var result = [] as U[][];
+
     p([], 0);
     return result;
 }
@@ -450,8 +465,8 @@ function canSeatAll(ship: Ship, crew: CrewMember[]): CrewMember[] | false {
         for (let i = 0; i < bl; i++) {
             let j = i;
             let p = 0;
-            let tt = {} as {[key:string]: CrewMember};
-            while(true) {
+            let tt = {} as { [key: string]: CrewMember };
+            while (true) {
                 if (crew[p].skill_order.some(so => ship.battle_stations![j].skill === so) && !tt[j]) {
                     tt[j] = crew[p];
                 }
@@ -462,7 +477,7 @@ function canSeatAll(ship: Ship, crew: CrewMember[]): CrewMember[] | false {
                 if (j === i) break;
             }
             if (Object.keys(tt).length === crew.length) return Object.values(tt);
-        }        
+        }
     }
 
     return false;
@@ -471,9 +486,21 @@ function canSeatAll(ship: Ship, crew: CrewMember[]): CrewMember[] | false {
 const ShipCrewWorker = {
     calc: (options: ShipWorkerConfig, reportProgress: (data: { format: string, options?: any }) => boolean = () => true) => {
         return new Promise<ShipWorkerResults>((resolve, reject) => {
-            const { ship, battle_mode, opponents, action_types, ability_types, defense, offense, ignore_skill } = options;
+            const { 
+                activation_offsets,
+                ship,
+                battle_mode,
+                opponents,
+                action_types,
+                ability_types, 
+                defense, 
+                offense, 
+                ignore_skill, 
+                verbose, 
+                max_iterations } = options;
+
             const opponent = opponents?.length ? opponents[0] : undefined;
-            
+
             let max_results = options.max_results ?? 100;
             let max_rarity = options.max_rarity ?? 5;
             let min_rarity = options.min_rarity ?? 1;
@@ -483,7 +510,7 @@ const ShipCrewWorker = {
             const workCrew = crewCopy(options.crew).filter((crew) => {
                 if (!ignore_skill && !crew.skill_order.some(skill => ship.battle_stations?.some(bs => bs.skill === skill))) return false;
                 if (crew.action.ability?.condition && !ship.actions?.some(act => act.status === crew.action.ability?.condition)) return false;
-                
+
                 if (action_types?.length) {
                     if (!action_types.some(at => crew.action.bonus_type === at)) return false;
                 }
@@ -502,90 +529,90 @@ const ShipCrewWorker = {
                 }
                 else {
                     return false;
-                }                
+                }
             })
-            .filter((crew) => {
-                if (battle_mode.startsWith('fbb') && crew.action.limit) return false;
-                if (crew.action.bonus_amount < (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] - power_depth) && (!battle_mode.startsWith('fbb') || crew.action.ability?.type !== 2)) return false;
-                return true;
-            })
-            // .sort((a, b) => {
-            //     let r = 0;
+                .filter((crew) => {
+                    if (battle_mode.startsWith('fbb') && crew.action.limit) return false;
+                    if (crew.action.bonus_amount < (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] - power_depth) && (!battle_mode.startsWith('fbb') || crew.action.ability?.type !== 2)) return false;
+                    return true;
+                })
+                .sort((a, b) => {
+                    let r = 0;
 
-            //     // check for bonus abilities, first
-            //     if (a.action.ability && b.action.ability) {
-            //         if (battle_mode.startsWith('fbb')) {
-            //             if ([1, 2, 5].includes(a.action.ability.type) && ![1, 2, 5].includes(b.action.ability.type)) return -1;
-            //             if ([1, 2, 5].includes(b.action.ability.type) && ![1, 2, 5].includes(a.action.ability.type)) return 1;
-            //         }
-            //         else {
-            //             if ([1, 5].includes(a.action.ability.type) && ![1, 5].includes(b.action.ability.type)) return -1;
-            //             if ([1, 5].includes(b.action.ability.type) && ![1, 5].includes(a.action.ability.type)) return 1;
-            //         }
-            //         if (a.action.ability.type === b.action.ability.type) {
-            //             r = a.action.ability.amount - b.action.ability.amount;
-            //             if (r) return r;
-            //             r = a.action.ability.condition - b.action.ability.condition;
-            //             if (r) return r;
-            //         }
-            //         else {
-            //             r = a.action.ability.type - b.action.ability.type;
-            //             if (r) return r;
-            //         }
-            //     }
-            //     else {
-            //         if (a.action.ability && !b.action.ability) return -1;
-            //         if (!a.action.ability && b.action.ability) return 1;
-            //     }
+                    // check for bonus abilities, first
+                    if (a.action.ability && b.action.ability) {
+                        if (battle_mode.startsWith('fbb')) {
+                            if ([1, 2, 5].includes(a.action.ability.type) && ![1, 2, 5].includes(b.action.ability.type)) return -1;
+                            if ([1, 2, 5].includes(b.action.ability.type) && ![1, 2, 5].includes(a.action.ability.type)) return 1;
+                        }
+                        else {
+                            if ([1, 5].includes(a.action.ability.type) && ![1, 5].includes(b.action.ability.type)) return -1;
+                            if ([1, 5].includes(b.action.ability.type) && ![1, 5].includes(a.action.ability.type)) return 1;
+                        }
+                        if (a.action.ability.type === b.action.ability.type) {
+                            r = a.action.ability.amount - b.action.ability.amount;
+                            if (r) return r;
+                            r = a.action.ability.condition - b.action.ability.condition;
+                            if (r) return r;
+                        }
+                        else {
+                            r = a.action.ability.type - b.action.ability.type;
+                            if (r) return r;
+                        }
+                    }
+                    else {
+                        if (a.action.ability && !b.action.ability) return -1;
+                        if (!a.action.ability && b.action.ability) return 1;
+                    }
 
-            //     // check the bonus amount/type
-            //     if (a.action.bonus_type === b.action.bonus_type) {
-            //         r = b.action.bonus_amount - a.action.bonus_amount;
-            //         if (r) return r;
-            //     }
-            //     else {
-            //         r = a.action.bonus_type - b.action.bonus_type;
-            //         if (r) return r;
-            //     }
+                    // check the bonus amount/type
+                    if (a.action.bonus_type === b.action.bonus_type) {
+                        r = b.action.bonus_amount - a.action.bonus_amount;
+                        if (r) return r;
+                    }
+                    else {
+                        r = a.action.bonus_type - b.action.bonus_type;
+                        if (r) return r;
+                    }
 
-            //     // check durations
-            //     r = a.action.initial_cooldown - b.action.initial_cooldown;
-            //     if (r) return r;
-            //     r = a.action.duration - b.action.duration;
-            //     if (r) return r;
-            //     r = a.action.cooldown - b.action.cooldown;
-            //     if (r) return r;
-            //     if (a.action.limit && !b.action.limit) return 1;
-            //     if (!a.action.limit && b.action.limit) return -1;
-            //     if (a.action.limit && b.action.limit) {
-            //         r = b.action.limit - a.action.limit;
-            //         if (r) return r;
-            //     }
+                    // check durations
+                    r = a.action.initial_cooldown - b.action.initial_cooldown;
+                    if (r) return r;
+                    r = a.action.duration - b.action.duration;
+                    if (r) return r;
+                    r = a.action.cooldown - b.action.cooldown;
+                    if (r) return r;
+                    if (a.action.limit && !b.action.limit) return 1;
+                    if (!a.action.limit && b.action.limit) return -1;
+                    if (a.action.limit && b.action.limit) {
+                        r = b.action.limit - a.action.limit;
+                        if (r) return r;
+                    }
 
-            //     // check passives
-            //     if (a.ship_battle.crit_bonus && b.ship_battle.crit_bonus) {
-            //         r = b.ship_battle.crit_bonus - a.ship_battle.crit_bonus;
-            //     }
-            //     if (a.ship_battle.crit_chance && b.ship_battle.crit_chance) {
-            //         r = b.ship_battle.crit_chance - a.ship_battle.crit_chance;
-            //     }
-            //     if (a.ship_battle.accuracy && b.ship_battle.accuracy) {
-            //         r = b.ship_battle.accuracy - a.ship_battle.accuracy;
-            //     }
-            //     if (a.ship_battle.evasion && b.ship_battle.evasion) {
-            //         r = b.ship_battle.evasion - a.ship_battle.evasion;
-            //     }
+                    // check passives
+                    if (a.ship_battle.crit_bonus && b.ship_battle.crit_bonus) {
+                        r = b.ship_battle.crit_bonus - a.ship_battle.crit_bonus;
+                    }
+                    if (a.ship_battle.crit_chance && b.ship_battle.crit_chance) {
+                        r = b.ship_battle.crit_chance - a.ship_battle.crit_chance;
+                    }
+                    if (a.ship_battle.accuracy && b.ship_battle.accuracy) {
+                        r = b.ship_battle.accuracy - a.ship_battle.accuracy;
+                    }
+                    if (a.ship_battle.evasion && b.ship_battle.evasion) {
+                        r = b.ship_battle.evasion - a.ship_battle.evasion;
+                    }
 
-            //     // check other stats
-            //     if (!r) {                    
-            //         r = Object.values(a.ranks).filter(t => typeof t === 'number').reduce((p, n) => p + n, 0) - Object.values(b.ranks).filter(t => typeof t === 'number').reduce((p, n) => p + n, 0)
-            //         if (!r) {
-            //             // !!
-            //             console.log(`completely identical stats! ${a.name}, ${b.name}`);
-            //         }
-            //     }
-            //     return r;
-            // })
+                    // check other stats
+                    if (!r) {
+                        r = Object.values(a.ranks).filter(t => typeof t === 'number').reduce((p, n) => p + n, 0) - Object.values(b.ranks).filter(t => typeof t === 'number').reduce((p, n) => p + n, 0)
+                        if (!r) {
+                            // !!
+                            console.log(`completely identical stats! ${a.name}, ${b.name}`);
+                        }
+                    }
+                    return r;
+                });
 
             let seats = ship.battle_stations?.length;
 
@@ -600,11 +627,11 @@ const ShipCrewWorker = {
 
             let wcn = workCrew.length;
             let bsn = seats;
-            let total_combos = factorial(wcn) / (factorial(wcn - bsn) * factorial(bsn));            
+            let total_combos = factorial(wcn) / (factorial(wcn - bsn) * factorial(bsn));
 
             //const crew_combos = getPermutations(workCrew, seats).filter((set) => canSeatAll(ship, set));
 
-            let count = Math.ceil(total_combos); //crew_combos.length;
+            let count = max_iterations || Math.ceil(total_combos); //crew_combos.length;
             let i = 0;
             let progress = -1;
             const results = [] as ShipWorkerItem[];
@@ -628,18 +655,18 @@ const ShipCrewWorker = {
                 const attack = attacks.reduce((p, n) => p + n.attack, 0);
                 const min_attack = attacks.reduce((p, n) => p + n.min_attack, 0);
                 const max_attack = attacks.reduce((p, n) => p + n.max_attack, 0);
-                const battle_time = attacks.length;            
+                const battle_time = attacks.length;
                 const weighted_attack = attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0);
                 let highest_attack = 0;
                 let high_attack_second = 0;
-                
+
                 attacks.forEach((attack) => {
                     if (attack.max_attack > highest_attack) {
                         highest_attack = attack.max_attack;
                         high_attack_second = attack.second + 1;
                     }
                 });
-                
+
                 const arena_metric = (highest_attack / high_attack_second);
 
                 return {
@@ -673,7 +700,7 @@ const ShipCrewWorker = {
                 // });
             }
 
-            const time = options.max_duration || (battle_mode.startsWith('fbb') ? 180 : 10);
+            const time = options.max_duration || (battle_mode.startsWith('fbb') ? 180 : 30);
 
             function compareItems(a: ShipWorkerItem, b: ShipWorkerItem) {
                 if (battle_mode.startsWith('fbb')) {
@@ -719,38 +746,45 @@ const ShipCrewWorker = {
                     r = ba - aa;
                     if (r) return r;
                     return r;
-                }      
+                }
             }
-            
+
             var last_high: ShipWorkerItem | null = null;
             var errors = false;
-            getPermutations(workCrew, seats, (set) => {
+
+            const fbb_mode = battle_mode.startsWith('fbb');
+
+            getPermutations(workCrew, seats, max_iterations, true, (set) => {
+                i++;
                 if (errors) return false;
                 if (!(i % 100)) {
                     let p = Math.round((i / count) * 100);
 
                     if (p !== progress) {
                         progress = p;
-                        reportProgress({ format: 'ship.calc.calculating_pct_ellipses', options: { percent: `${p}` } });
+                        if (!verbose) {
+                            reportProgress({ format: 'ship.calc.calculating_pct_ellipses', options: { percent: `${p}` } });
+                        }
+                        else {
+                            reportProgress({ format: 'ship.calc.calculating_pct_ellipses_verbose', 
+                                options: { 
+                                    percent: `${p}`,
+                                    progress: `${i.toLocaleString()}`,
+                                    count: `${count.toLocaleString()}`,
+                                    accepted: `${results.length.toLocaleString()}`
+                                } 
+                            });
+                        }
                     }
                 }
 
                 if (!canSeatAll(ship, set)) {
-                    i++;
                     return false;
                 }
-                let overlaps = iterateBattle(ship, set, opponent, defense, offense, time);
+                let overlaps = iterateBattle(fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets);
                 let attack = processAttack(overlaps, set);
 
-                                
-                // test block.
-                let test_see = ["tuvok_captain_crew",
-                    "torres_warship_crew",
-                    "kirk_chances_crew",
-                    "agimus_crew"];
-                
                 if (!get_attacks) overlaps.length = 0;
-                i++;
 
                 if (last_high === null) {
                     last_high = attack;
@@ -764,10 +798,10 @@ const ShipCrewWorker = {
                     }
                 }
                 if (attack.battle_mode !== battle_mode) {
-                    reportProgress({ format: `Errors Encountered! Battle Mode ${battle_mode}, but generated ${attack.battle_mode}` });                    
+                    reportProgress({ format: `Errors Encountered! Battle Mode ${battle_mode}, but generated ${attack.battle_mode}` });
                     errors = true;
                 }
-                return false;
+                return overlaps;
             });
 
             // for (let combo of crew_combos) {
@@ -779,7 +813,7 @@ const ShipCrewWorker = {
             //             reportProgress({ format: 'ship.calc.calculating_pct_ellipses', options: { percent: `${p}` } });
             //         }
             //     }
-                
+
             //     let overlaps = iterateBattle(ship, combo, opponent, defense, offense, time);
             //     processAttack(overlaps, combo);
             //     if (!get_attacks) overlaps.length = 0;
@@ -812,7 +846,7 @@ const ShipCrewWorker = {
             //         if (r) return r;
             //         return r;
             //     });
-    
+
             // }
             // else {
             //     results.sort((a, b) => {
@@ -850,7 +884,7 @@ const ShipCrewWorker = {
                     result.percentile = (result.arena_metric / max) * 100;
                 }
             });
-            
+
             resolve({
                 ships: results
             });

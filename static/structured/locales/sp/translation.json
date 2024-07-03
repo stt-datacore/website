@@ -1217,12 +1217,17 @@
         "boosts": "Aumentos",
         "boosts_x_by_y": "Aumenta {{x}} en {{y}}",
         "calc": {
-            "calculating_pct_ellipses": "Calculando ({{percent}}% completado) ...",
+            "calculating_pct_ellipses": "Calculando ... ({{percent}}% completado)",
+            "calculating_pct_ellipses_verbose": "Calculando ... ({{percent}}% completado) ({{progress}} / {{count}}) ({{accepted}} resultados aceptados)",
             "generating_permutations_ellipses": "Generando permutaciones...",
             "ignore_skill": "Ignora las habilidades",
             "run_current_line_up": "Ejecutar tripulantes actuales",
             "show_battle_graph": "Mostrar Gráfico de Batalla",
-            "sorting_finalizing_ellipses": "Ordenar y finalizar resultados..."
+            "sorting_finalizing_ellipses": "Ordenar y finalizar resultados...",
+            "verbose_status_updates": "Actualizaciones de estado detalladas",
+            "exhaustive_mode": "Modo exhaustivo",
+            "max_iterations": "Iteraciones máx.",
+            "icon_activation_offset": "{{icon}} Compensación de activación"
         },
         "calculated_crew": "Tripulación calculada",
         "charge_phase": {

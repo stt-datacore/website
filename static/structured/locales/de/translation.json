@@ -1207,12 +1207,17 @@
         "boosts": "Leistungssteigerung",
         "boosts_x_by_y": "Steigert {{x}} um {{y}}",
         "calc": {
-            "calculating_pct_ellipses": "Berechnung ({{percent}} % abgeschlossen) ...",
+            "calculating_pct_ellipses": "Berechnung ... ({{percent}} % abgeschlossen)",
+            "calculating_pct_ellipses_verbose": "Berechnung ... ({{percent}} % abgeschlossen) ({{progress}} / {{count}}) ({{accepted}} akzeptierte Ergebnisse)",
             "generating_permutations_ellipses": "Permutationen werden generiert ...",
             "ignore_skill": "Ignorieren Sie die Fähigkeiten",
             "run_current_line_up": "Aktuelle Crew ausführen",
             "show_battle_graph": "Kampfdiagramm anzeigen",
-            "sorting_finalizing_ellipses": "Ergebnisse sortieren und finalisieren ..."
+            "sorting_finalizing_ellipses": "Ergebnisse sortieren und finalisieren ...",
+            "verbose_status_updates": "Ausführliche Statusaktualisierungen",
+            "exhaustive_mode": "Vollständiger Modus",
+            "max_iterations": "Max. Iterationen",
+            "icon_activation_offset": "{{icon}} Aktivierungsoffset"
         },
         "calculated_crew": "Kalkulierte Crew",
         "charge_phase": {

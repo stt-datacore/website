@@ -179,6 +179,9 @@ export interface ShipWorkerConfigBase {
     effects?: BossEffect[];
     max_duration?: number;
     ignore_skill?: boolean;
+    verbose?: boolean;
+    max_iterations?: number;
+    activation_offsets?: number[];
 }
 
 export interface ShipWorkerConfig extends ShipWorkerConfigBase {
