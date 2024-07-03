@@ -1218,12 +1218,17 @@
         "boosts": "Augmentations",
         "boosts_x_by_y": "Augmente {{x}} de {{y}}",
         "calc": {
-            "calculating_pct_ellipses": "Calcul ({{percent}} % terminé)...",
+            "calculating_pct_ellipses": "Calcul ... ({{percent}} % terminé)",
+            "calculating_pct_ellipses_verbose": "Calcul ... ({{percent}} % terminé) ({{progress}} / {{count}}) ({{accepted}} résultats acceptés)",
             "generating_permutations_ellipses": "Génération de permutations...",
             "ignore_skill": "Ignorer les compétences",
             "run_current_line_up": "Exécuter les équipiers actuelles",
             "show_battle_graph": "Afficher le graphique de combat",
-            "sorting_finalizing_ellipses": "Tri et finalisation des résultats..."
+            "sorting_finalizing_ellipses": "Tri et finalisation des résultats...",
+            "verbose_status_updates": "Mises à jour de statut détaillées",
+            "exhaustive_mode": "Mode approfondi",
+            "max_iterations": "Itérations max.",
+            "icon_activation_offset": "{{icon}} Décalage d'activation"
         },
         "calculated_crew": "Équipage calculé",
         "charge_phase": {

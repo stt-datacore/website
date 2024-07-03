@@ -1208,12 +1208,17 @@
         "boosts": "Boosts",
         "boosts_x_by_y": "Boosts {{x}} by {{y}}",
         "calc": {
-            "calculating_pct_ellipses": "Calculating ({{percent}}% complete) ...",
+            "calculating_pct_ellipses": "Calculating ... ({{percent}}% complete)",
+            "calculating_pct_ellipses_verbose": "Calculating ... ({{percent}}% complete) ({{progress}} / {{count}}) ({{accepted}} accepted results)",
             "generating_permutations_ellipses": "Generating permutations ...",
             "ignore_skill": "Ignore skills",
             "run_current_line_up": "Run Current Crew",
             "show_battle_graph": "Show Battle Graph",
-            "sorting_finalizing_ellipses": "Sorting and finalizing results ..."
+            "sorting_finalizing_ellipses": "Sorting and finalizing results ...",
+            "verbose_status_updates": "Verbose Status Updates",
+            "exhaustive_mode": "Exhaustive Mode",
+            "max_iterations": "Max iterations",
+            "icon_activation_offset": "{{icon}} Activation Offset"
         },
         "calculated_crew": "Calculated Crew",
         "charge_phase": {

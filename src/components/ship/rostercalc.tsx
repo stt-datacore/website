@@ -1,7 +1,7 @@
 import React from "react";
 import { CrewMember } from "../../model/crew";
 import { AttackInstant, BattleMode, Ship, ShipWorkerConfig, ShipWorkerItem } from "../../model/ship"
-import { Button, Checkbox, Dropdown, DropdownItemProps, Icon, Label, SearchResults } from "semantic-ui-react";
+import { Accordion, Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Label, SearchResults, SemanticICONS } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { WorkerContext } from "../../context/workercontext";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
@@ -39,7 +39,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const { playerShips } = globalContext.player;
     const workerContext = React.useContext(WorkerContext);
     const { running, runWorker, cancel } = workerContext;
-    const { t } = globalContext.localized;
+    const { t, tfmt } = globalContext.localized;
     const [sugWait, setSugWait] = React.useState<number | undefined>();
     const { ships, crew, crewStations, setCrewStations, pageId, considerFrozen, ignoreSkills, setIgnoreSkills, setConsiderFrozen, considerUnowned, setConsiderUnowned } = props;
     const shipIdx = props.shipIdx ?? 0;
@@ -53,12 +53,18 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [battleMode, setBattleMode] = useStateWithStorage<BattleMode>(`${pageId}/${ship.symbol}/battleMode`, lastBattleMode ?? 'pvp');
     const [powerDepth, setPowerDepth] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/powerDepth`, 1, { rememberForever: true });
     const [minRarity, setMinRarity] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/minRarity`, ship.rarity - 1, { rememberForever: true });
+    const [advancedOpen, setAdvancedOpen] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/advancedOpen`, false, { rememberForever: true });
+    const [exhaustiveMode, setExhaustiveMode] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/quickMode`, true, { rememberForever: true });
+    const [verbose, setVerbose] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/verbose`, true, { rememberForever: true });
+    const [maxIter, setMaxIter] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/maxIter`, 3000000, { rememberForever: true });
+    const [activationOffsets, setActivationOffsets] = useStateWithStorage<number[]>(`${pageId}/${ship.symbol}/activationOffsets`, ship.battle_stations!.map(m => 0), { rememberForever: true });
+
     const [progressMsg, setProgressMsg] = React.useState<string>('');
 
     const battleModes = [] as DropdownItemProps[];
     (globalContext.player.playerData ? ['pvp', 'skirmish', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'] : ['pvp', 'skirmish']).forEach((mode) => {
         let rarity = 0;
-        if (mode.startsWith('fbb')) {            
+        if (mode.startsWith('fbb')) {
             let sp = mode.split("_");
             rarity = Number.parseInt(sp[1]);
             if (ship) {
@@ -82,56 +88,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             key: `_sug_${idx}`,
             value: idx,
             text: sug.crew.map(c => c.name).join(", "),
-            content: <div style={{ width: '100%', gap: '0.5em', display: 'flex', flexWrap: 'wrap', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly' }}>
-                <div style={{ display: 'flex', width: '100%', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5em' }}>
-                    {sug.crew.map((crew, idx) => <div style={{ display: 'flex', width: `${98 / ships[shipIdx].battle_stations!.length}%`, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.25em', textAlign: 'center' }}>
-
-                        <img style={{ width: '32px', margin: '0.25em' }} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
-
-                        {crew.name}
-                    </div>)}
-                </div>
-                <hr style={{ width: '100%', opacity: '0.25' }} />
-                <div style={{
-                    display: 'grid',
-                    gridTemplateAreas: "'bonus rating percentile duration' 'weighted min max metric'",
-                    gridTemplateColumns: '20% 20% 20% 20%',
-                    lineHeight: '1.25em',
-                    paddingLeft: '2em',
-                    paddingRight: '2em',
-                    justifyContent: 'center',
-                    width: '100%',
-                    gap: '1em',
-                    alignItems: 'center'
-                }}>
-
-                    <div style={{ gridArea: 'bonus' }}>
-                        {t('ship.crit_bonus')}{': '}<br />{sug.ship.crit_bonus}
-                    </div>
-                    <div style={{ gridArea: 'rating' }}>
-                        {t('ship.crit_rating')}{': '}<br />{sug.ship.crit_chance}
-                    </div>
-                    <div style={{ gridArea: 'percentile' }}>
-                        {t('global.percentile')}{': '}<br />{sug.percentile.toFixed(1)}
-                    </div>
-                    <div style={{ gridArea: 'duration' }}>
-                        {t('ship.duration')}{': '}<br />{sug.battle_time.toFixed()}
-                    </div>
-
-                    <div style={{ gridArea: 'weighted' }}>
-                        {t('ship.weighted_attack')}{': '}<br />{Math.round(sug.weighted_attack).toLocaleString()}
-                    </div>
-                    <div style={{ gridArea: 'min' }}>
-                        {t('ship.min_attack')}{': '}<br />{Math.round(sug.min_attack).toLocaleString()}
-                    </div>
-                    <div style={{ gridArea: 'max' }}>
-                        {battleMode.startsWith("fbb") && <b>*</b>} {t('ship.max_attack')}{': '}<br />{Math.round(sug.max_attack).toLocaleString()}
-                    </div>
-                    <div style={{ gridArea: 'metric' }}>
-                        {!battleMode.startsWith("fbb") && <b>*</b>} {t('ship.arena_metric')}{': '}<br />{Math.round(sug.arena_metric).toLocaleString()}
-                    </div>
-                </div>
-            </div>
+            content: renderBattleResult(sug, idx)
         }
     });
 
@@ -176,8 +133,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
         else {
             newconfig.opponent = undefined;
-        }         
-        setBattleConfig(newconfig);        
+        }
+        setBattleConfig(newconfig);
     }, [battleMode]);
 
     React.useEffect(() => {
@@ -194,7 +151,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         if (f) {
                             setCrewStations(f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew));
                             setTimeout(() => {
-                                setBattleMode(bmode);                         
+                                setBattleMode(bmode);
                             });
                         }
                     }
@@ -290,37 +247,119 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 <div style={{
                     display: 'flex',
                     flexDirection: 'row',
-                    justifyContent: 'center',
+                    justifyContent: 'flex-start',
                     alignItems: 'flex-end',
                     width: '100%',
                     margin: '1em',
                     gap: '1em'
                 }}>
-                    {!!globalContext.player.playerData && <>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
-                            <Checkbox
-                                label={t('consider_crew.consider_frozen')}
-                                value={t('consider_crew.consider_frozen')}
-                                checked={considerFrozen}
-                                onChange={(e, { checked }) => setConsiderFrozen(checked as boolean)} />
-                        </div>
-                    
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
-                            <Checkbox
-                                label={t('consider_crew.consider_unowned')}
-                                checked={considerUnowned}
-                                onChange={(e, { checked }) => setConsiderUnowned(checked as boolean)} />
-                        </div>
-                    </>}
+                    <Accordion style={{ marginTop: '1em' }} fluid>
+                        <Accordion.Title
+                            active={advancedOpen}
+                            onClick={() => setAdvancedOpen(!advancedOpen)}
+                        >
+                            <Icon name={advancedOpen ? 'caret down' : 'caret right' as SemanticICONS} />
+                            {t('global.advanced_settings')}
+                        </Accordion.Title>
+                        <Accordion.Content active={advancedOpen} style={{ textAlign: 'left' }}>
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                margin: '1em',
+                                gap: '1em'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
+                                    <Checkbox
+                                        label={t('ship.calc.ignore_skill')}
+                                        value={t('ship.calc.ignore_skill')}
+                                        checked={ignoreSkills}
+                                        onChange={(e, { checked }) => setIgnoreSkills(checked as boolean)} />
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
-                        <Checkbox
-                                label={t('ship.calc.ignore_skill')}
-                                value={t('ship.calc.ignore_skill')}
-                                checked={ignoreSkills}
-                                onChange={(e, { checked }) => setIgnoreSkills(checked as boolean)} />
-                    </div>
+                                </div>
+                                {!!globalContext.player.playerData && <>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
+                                        <Checkbox
+                                            label={t('consider_crew.consider_frozen')}
+                                            value={t('consider_crew.consider_frozen')}
+                                            checked={considerFrozen}
+                                            onChange={(e, { checked }) => setConsiderFrozen(checked as boolean)} />
+                                    </div>
 
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
+                                        <Checkbox
+                                            label={t('consider_crew.consider_unowned')}
+                                            checked={considerUnowned}
+                                            onChange={(e, { checked }) => setConsiderUnowned(checked as boolean)} />
+                                    </div>
+                                </>}
+
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
+                                    <Checkbox
+                                        label={t('ship.calc.verbose_status_updates')}
+                                        value={t('ship.calc.verbose_status_updates')}
+                                        checked={verbose}
+                                        onChange={(e, { checked }) => setVerbose(checked as boolean)} />
+                                </div>
+                            </div>
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'space-evenly',
+                                alignItems: 'center',
+                                margin: '1em',
+                                marginTop: '2em',
+                                gap: '1em'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
+                                    <Checkbox
+                                        label={t('ship.calc.exhaustive_mode')}
+                                        value={t('ship.calc.exhaustive_mode')}
+                                        checked={exhaustiveMode}
+                                        onChange={(e, { checked }) => setExhaustiveMode(checked as boolean)} />
+
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
+                                    <Input
+                                        disabled={exhaustiveMode}
+                                        label={t('ship.calc.max_iterations')}
+                                        value={maxIter}                                        
+                                        onChange={(e, { value }) => setMaxIter(Number.parseInt(value))} />
+                                </div>
+                            </div>
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'space-evenly',
+                                flexWrap: 'wrap',
+                                alignItems: 'center',
+                                margin: '1em',
+                                marginTop: '2em',
+                                gap: '1em'
+                            }}>
+                                {ship.battle_stations?.map((mp, idx) => {
+                                    const skillName = mp.skill;
+                                    return <div style={{ display: 'flex', alignItems: 'center', gap: '1em', justifyContent: 'center' }}>
+                                        <div style={{height: '32px', display:'flex', alignItems: 'center'}}>
+                                            ({idx+1})&nbsp;{tfmt('ship.calc.icon_activation_offset', {
+                                                icon: <img key={skillName} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillName}.png`} style={{height: '16px', margin: '0.5em'}} />
+                                            })}
+                                        </div>
+                                        <Input
+                                            value={activationOffsets[idx]}
+                                            style={{width: '7em'}}
+                                            onChange={(e, { value }) => {
+                                                activationOffsets[idx] = Number.parseInt(value);
+                                                setActivationOffsets([...activationOffsets]);
+                                            }} />
+                                    </div>
+
+                                })}                               
+                            </div>
+
+                        </Accordion.Content>
+                    </Accordion>
                 </div>
             </div>
             <div>
@@ -328,17 +367,17 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 {!running && crewStations?.filter(c => !!c).length === ship?.battle_stations?.length &&
                     <Button color='green' onClick={() => recommend(true)}>{t('ship.calc.run_current_line_up')}</Button>}
                 {!running && <Button onClick={() => clearAll()}>{t('global.clear')}</Button>}
-                {!running && crewStations?.filter(c => !!c).length === ship?.battle_stations?.length && (!activeSuggestion?.attacks?.length || hideGraph) && 
+                {!running && crewStations?.filter(c => !!c).length === ship?.battle_stations?.length && (!activeSuggestion?.attacks?.length || hideGraph) &&
                     <Button onClick={() => {
                         if (!hideGraph && !activeSuggestion?.attacks?.length) {
-                            recommend(true) 
+                            recommend(true)
                         }
                         else {
                             setHideGraph(false);
-                        }                        
+                        }
                     }}>{t('ship.calc.show_battle_graph')}</Button>}
             </div>
-            <div style={{marginTop:'1em'}}>
+            <div style={{ marginTop: '1em' }}>
                 {t('base.crew')}: {crew.length.toLocaleString()}
             </div>
             {!!activeSuggestion?.attacks?.length && !hideGraph &&
@@ -352,6 +391,59 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 </div>}
         </div>
     </React.Fragment>
+
+    function renderBattleResult(sug: ShipWorkerItem, idx: number) {
+        return <div style={{ width: '100%', gap: '0.5em', display: 'flex', flexWrap: 'wrap', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly' }}>
+            <div style={{ display: 'flex', width: '100%', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5em' }}>
+                {sug.crew.map((crew, idx) => <div style={{ display: 'flex', width: `${98 / ships[shipIdx].battle_stations!.length}%`, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.25em', textAlign: 'center' }}>
+
+                    <img style={{ width: '32px', margin: '0.25em' }} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+
+                    {crew.name}
+                </div>)}
+            </div>
+            <hr style={{ width: '100%', opacity: '0.25' }} />
+            <div style={{
+                display: 'grid',
+                gridTemplateAreas: "'bonus rating percentile duration' 'weighted min max metric'",
+                gridTemplateColumns: '20% 20% 20% 20%',
+                lineHeight: '1.25em',
+                paddingLeft: '2em',
+                paddingRight: '2em',
+                justifyContent: 'center',
+                width: '100%',
+                gap: '1em',
+                alignItems: 'center'
+            }}>
+
+                <div style={{ gridArea: 'bonus' }}>
+                    {t('ship.crit_bonus')}{': '}<br />{sug.ship.crit_bonus}
+                </div>
+                <div style={{ gridArea: 'rating' }}>
+                    {t('ship.crit_rating')}{': '}<br />{sug.ship.crit_chance}
+                </div>
+                <div style={{ gridArea: 'percentile' }}>
+                    {t('global.percentile')}{': '}<br />{sug.percentile.toFixed(1)}
+                </div>
+                <div style={{ gridArea: 'duration' }}>
+                    {t('ship.duration')}{': '}<br />{sug.battle_time.toFixed()}
+                </div>
+
+                <div style={{ gridArea: 'weighted' }}>
+                    {t('ship.weighted_attack')}{': '}<br />{Math.round(sug.weighted_attack).toLocaleString()}
+                </div>
+                <div style={{ gridArea: 'min' }}>
+                    {t('ship.min_attack')}{': '}<br />{Math.round(sug.min_attack).toLocaleString()}
+                </div>
+                <div style={{ gridArea: 'max' }}>
+                    {battleMode.startsWith("fbb") && <b>*</b>} {t('ship.max_attack')}{': '}<br />{Math.round(sug.max_attack).toLocaleString()}
+                </div>
+                <div style={{ gridArea: 'metric' }}>
+                    {!battleMode.startsWith("fbb") && <b>*</b>} {t('ship.arena_metric')}{': '}<br />{Math.round(sug.arena_metric).toLocaleString()}
+                </div>
+            </div>
+        </div>
+    }
 
     function recommend(current?: boolean) {
         if (running) {
@@ -373,7 +465,10 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 defense: battleConfig.defense,
                 offense: battleConfig.offense,
                 get_attacks: !!current,
-                ignore_skill: ignoreSkills
+                ignore_skill: ignoreSkills,
+                verbose,
+                max_iterations: !exhaustiveMode ? maxIter : undefined,
+                activation_offsets: activationOffsets
             } as ShipWorkerConfig;
 
             setProgressMsg('');
@@ -389,8 +484,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     }
 
     function clearAll() {
-        setSuggestions([]); 
-        setSuggestion(undefined); 
+        setSuggestions([]);
+        setSuggestion(undefined);
         setActiveSuggestion(undefined);
         //setCrewStations(crewStations.map(c => undefined));
     }
@@ -419,12 +514,12 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 if (sug !== -1) {
                     suggestions[sug] = r;
                     setSugWait(sug);
-                    setSuggestions([...suggestions]);                    
+                    setSuggestions([...suggestions]);
                     return;
                 }
             }
             setSugWait(0);
-            setSuggestions(result.data.result.ships);            
+            setSuggestions(result.data.result.ships);
         }
         else if (result.data.inProgress && result.data.result.format) {
             setProgressMsg(t(result.data.result.format, result.data.result.options));

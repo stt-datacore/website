@@ -156,7 +156,7 @@ export const BattleGraph = (props: BattleGraphProps) => {
 
         {swarmData?.length && graphType === 'swarm' && <SwarmPlot
             width={300 + (battle.attacks!.length * 60)}
-            height={800}
+            height={500}
             data={swarmData}
             groups={getAllActions().map(act => act.name)}
             value="second"
