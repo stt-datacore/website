@@ -474,6 +474,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setProgressMsg('');
             setActiveSuggestion(undefined);
             setSuggestions([]);
+            setSugWait(undefined);
             runWorker('shipworker', config, workerMessage);
         }
     }
