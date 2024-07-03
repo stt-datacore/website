@@ -3,7 +3,7 @@ name: Ceti Alpha V Khan
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 1
 in_portal: true
 date: 12/07/2023
 published: true

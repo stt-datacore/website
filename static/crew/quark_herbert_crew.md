@@ -3,7 +3,7 @@ name: Herbert Rossoff
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 4
 in_portal: true
 date: 18/07/2018
 published: true
