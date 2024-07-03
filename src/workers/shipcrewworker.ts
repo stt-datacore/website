@@ -748,10 +748,6 @@ const ShipCrewWorker = {
                     "torres_warship_crew",
                     "kirk_chances_crew",
                     "agimus_crew"];
-
-                if (set.every(e => test_see.includes(e.symbol))) {
-                    console.log("Break here!!!");
-                }
                 
                 if (!get_attacks) overlaps.length = 0;
                 i++;
