@@ -379,7 +379,7 @@ export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMem
 
         for (let action of allactions) {
             let actidx = allactions.findIndex(f => f === action);
-            if (!inited[actidx] && sec >= action.initial_cooldown && !current.includes(action)) {
+            if (!inited[actidx] && sec >= action.initial_cooldown + 1 && !current.includes(action)) {
                 activate(action, actidx);
             }
             else if (inited[actidx] && current.includes(action)) {
@@ -390,7 +390,7 @@ export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMem
             }
             else if (inited[actidx] && !current.includes(action) && (!action.limit || uses[actidx] < action.limit)) {
                 state_time[actidx]++;
-                if (state_time[actidx] > action.cooldown) {
+                if (state_time[actidx] > action.cooldown + 1) {
                     activate(action, actidx);
                 }
             }
