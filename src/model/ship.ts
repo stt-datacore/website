@@ -201,6 +201,7 @@ export interface AttackInstant {
 
 
 export interface ShipWorkerItem {
+    battle_mode: BattleMode;
     ship: Ship,
     crew: CrewMember[]
     attack: number;

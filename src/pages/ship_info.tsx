@@ -58,11 +58,12 @@ const ShipViewer = (props: ShipViewerProps) => {
 	const context = React.useContext(GlobalContext);
 	const { t } = context.localized;
 	const { ship: shipKey } = props;
-	const { playerShips } = context.player;
+	const { playerShips, playerData } = context.player;
+	const { crew: coreCrew } = context.core;
 	const [ships, setShips] = React.useState<Ship[]>(loadShips());
 	const [inputShip, setInputShip] = React.useState<Ship>();
 	const [ship, setShip] = React.useState<Ship>();
-
+	const [crew, setCrew] = React.useState<(PlayerCrew | CrewMember)[] | undefined>(undefined);
 	const [crewStations, setCrewStations] = React.useState<(PlayerCrew | CrewMember | undefined)[]>([]);
 
 	const [currentStation, setCurrentStation] = React.useState<number | undefined>(undefined);
@@ -88,6 +89,10 @@ const ShipViewer = (props: ShipViewerProps) => {
 	}, [playerShips]);
 
 	React.useEffect(() => {
+		setCrew(getCrew());
+	}, [playerData, coreCrew])
+
+	React.useEffect(() => {
 		if (ships?.length && shipKey) {
 			let newship = ships.find(f => f.symbol === shipKey);
 			if (!!newship && !!inputShip && newship?.id === inputShip?.id) return;
@@ -100,9 +105,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 		}
 	}, [ships, shipKey]);
 
-	if (!ship) return context.core.spin(t('spinners.default'));
-
-	const crew = getCrew();
+	if (!ship || !crew) return context.core.spin(t('spinners.default'));
 
 	return (<>
 		<div>
@@ -139,11 +142,11 @@ const ShipViewer = (props: ShipViewerProps) => {
 				</Message.Content>
 			</Message>
 
-			<WorkerProvider>
+			{!!inputShip && <WorkerProvider>
 				<ShipRosterCalc
 					pageId={'shipInfo'}
 					crew={crew}
-					ships={[ship]}
+					ships={[inputShip]}
 					crewStations={crewStations}
 					setCrewStations={setCrewStations}
 					considerFrozen={considerFrozen}
@@ -153,7 +156,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 					setConsiderUnowned={setConsiderUnowned}
 					setIgnoreSkills={setIgnoreSkills}
 				/>
-			</WorkerProvider>
+			</WorkerProvider>}
 
 			<h3>{t('ship.battle_stations')}</h3>
 
