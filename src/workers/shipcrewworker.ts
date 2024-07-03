@@ -820,9 +820,13 @@ const ShipCrewWorker = {
                     }
                 }
 
-                if (!canSeatAll(ship, set)) {
+                let newseats = canSeatAll(ship, set);
+                if (!newseats) {
                     return false;
                 }
+                
+                set = newseats;
+
                 let overlaps = iterateBattle(fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets);
                 let attack = processAttack(overlaps, set);
 
