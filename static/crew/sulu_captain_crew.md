@@ -3,7 +3,7 @@ name: Captain Sulu
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 9
 in_portal: true
 date: 13/02/2017
 published: true

@@ -3,7 +3,7 @@ name: Maquis Chakotay
 rarity: 1
 series: voy
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal: true
 date: 02/01/2016
 published: true
