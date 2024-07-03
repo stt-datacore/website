@@ -3,7 +3,7 @@ name: Federation President Archer
 rarity: 5
 series: original
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 2
 in_portal: true
 date: 28/12/2022
 published: true

@@ -3,7 +3,7 @@ name: Hippie O'Brien
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal: true
 date: 20/04/2022
 published: true

@@ -3,7 +3,7 @@ name: Florist Q
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal: true
 date: 09/01/2018
 published: true
