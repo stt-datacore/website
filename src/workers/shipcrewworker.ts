@@ -267,15 +267,7 @@ export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMem
     let oppoattack = 0;
 
     if (opponent) {
-        if (fbb_mode) {
-            oppoattack = (opponent.attack * opponent.attacks_per_second);
-
-        }
-        else {
-            oppoattack = (opponent.attack * opponent.attacks_per_second * hitChance(opponent.accuracy, ship.evasion));
-
-        }
-        //if (fbb_mode) oppoattack += (0.10 * opponent.attack * opponent.attacks_per_second * hitChance(opponent.accuracy, ship.evasion))
+        oppoattack = (opponent.attack * opponent.attacks_per_second * hitChance(opponent.accuracy, ship.evasion));
     }
 
     const resetAction = (action: BonusAction) => {
@@ -671,8 +663,6 @@ const ShipCrewWorker = {
             let bsn = seats;
             let total_combos = factorial(wcn) / (factorial(wcn - bsn) * factorial(bsn));
 
-            //const crew_combos = getPermutations(workCrew, seats).filter((set) => canSeatAll(ship, set));
-
             let count = max_iterations || Math.ceil(total_combos); //crew_combos.length;
             let i = 0;
             let progress = -1;
@@ -725,21 +715,6 @@ const ShipCrewWorker = {
                     arena_metric,
                     attacks: get_attacks ? attacks : undefined
                 } as ShipWorkerItem;
-
-                // results.push({
-                //     battle_mode,
-                //     activations,
-                //     attack,
-                //     min_attack,
-                //     max_attack,
-                //     battle_time,
-                //     crew: result_crew,
-                //     percentile: 0,
-                //     ship: attacks[0].ship,
-                //     weighted_attack,
-                //     arena_metric,
-                //     attacks: get_attacks ? attacks : undefined
-                // });
             }
 
             const time = options.max_duration || (battle_mode.startsWith('fbb') ? 180 : 30);
@@ -832,7 +807,6 @@ const ShipCrewWorker = {
 
                 if (!get_attacks) overlaps.length = 0;
 
-                //results.push(attack);
                 if (last_high === null) {
                     last_high = attack;
                     results.push(attack);
@@ -851,75 +825,8 @@ const ShipCrewWorker = {
                 return overlaps;
             });
 
-            // for (let combo of crew_combos) {
-            //     if (!(i % 10)) {
-            //         let p = Math.round((i / count) * 100);
-
-            //         if (p !== progress) {
-            //             progress = p;
-            //             reportProgress({ format: 'ship.calc.calculating_pct_ellipses', options: { percent: `${p}` } });
-            //         }
-            //     }
-
-            //     let overlaps = iterateBattle(ship, combo, opponent, defense, offense, time);
-            //     processAttack(overlaps, combo);
-            //     if (!get_attacks) overlaps.length = 0;
-            //     i++;
-            // }
-
             reportProgress({ format: 'ship.calc.sorting_finalizing_ellipses' });
             results.sort((a, b) => compareItems(a, b));
-
-            // if (battle_mode.startsWith('fbb')) {
-            //     results.sort((a, b) => {
-            //         let r = 0;
-            //         let aa: number;
-            //         let ba: number;
-            //         aa = a.attack;
-            //         ba = b.attack;
-            //         r = ba - aa;
-            //         if (r) return r;
-            //         aa = a.battle_time;
-            //         ba = b.battle_time;
-            //         r = ba - aa;
-            //         if (r) return r;
-            //         aa = a.weighted_attack;
-            //         ba = b.weighted_attack;
-            //         r = ba - aa;
-            //         if (r) return r;
-            //         aa = a.activations;
-            //         ba = b.activations;
-            //         r = ba - aa;
-            //         if (r) return r;
-            //         return r;
-            //     });
-
-            // }
-            // else {
-            //     results.sort((a, b) => {
-            //         let r = 0;
-            //         let aa: number;
-            //         let ba: number;
-            //         aa = a.arena_metric;
-            //         ba = b.arena_metric;
-            //         r = ba - aa;
-            //         if (r) return r;
-            //         aa = a.weighted_attack;
-            //         ba = b.weighted_attack;
-            //         r = ba - aa;
-            //         if (r) return r;
-            //         aa = a.attack;
-            //         ba = b.attack;
-            //         r = ba - aa;
-            //         if (r) return r;
-            //         aa = a.activations;
-            //         ba = b.activations;
-            //         r = ba - aa;
-            //         if (r) return r;
-            //         return r;
-            //     });
-            // }      
-
             results.splice(max_results);
             results.forEach((result) => {
                 if (battle_mode.startsWith('fbb')) {
