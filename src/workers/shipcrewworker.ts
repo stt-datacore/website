@@ -110,7 +110,9 @@ function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, offense?:
 
     let highest_dmg = 0;
     let highest_acc = 0;
+    let highest_eva = 0;
     let sum_acc = base_acc;
+    let sum_eva = base_eva;
 
     actions.forEach((action) => {
         if (action.ability?.type === 4) {
@@ -129,9 +131,31 @@ function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, offense?:
                 highest_dmg = action.bonus_amount;
             }
         }
-        if (action.bonus_type === 2) {
+        else if (action.bonus_type === 1) {
+            if (highest_eva < action.bonus_amount) {
+                highest_eva = action.bonus_amount;
+            }
+        }
+        else if (action.bonus_type === 2) {
             if (highest_acc < action.bonus_amount) {
                 highest_acc = action.bonus_amount;
+            }
+        }
+    });
+
+    actions.forEach((action) => {
+        if (action.penalty) {
+            if (action.penalty.type === 0) {
+                highest_dmg -= action.penalty.amount;
+                if (highest_dmg <= 0) highest_dmg = 0;
+            }
+            else if (action.penalty.type === 1) {
+                highest_eva -= action.penalty.amount;
+                if (highest_eva <= 0) highest_eva = 0;
+            }
+            else if (action.penalty.type === 2) {
+                highest_acc -= action.penalty.amount;
+                if (highest_acc <= 0) highest_acc = 0;
             }
         }
     });
@@ -148,6 +172,10 @@ function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, offense?:
 
     if (highest_dmg) {
         sum_attack += PowerTable[highest_dmg];
+    }
+
+    if (highest_eva) {
+        sum_eva += PowerTable[highest_eva];
     }
 
     if (highest_acc) {
@@ -169,7 +197,7 @@ function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, offense?:
         hc = hitChance(sum_acc, opponent.evasion);
     }
     else {
-        hc = hitChance(sum_acc, base_eva);
+        hc = hitChance(sum_acc, highest_eva);
     }
 
     min_attack *= hc;
@@ -187,7 +215,7 @@ function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, offense?:
     atk_off = max_attack * offense;
     max_attack += atk_off;
 
-    return [max_attack, sum_attack, min_attack];
+    return [max_attack, sum_attack, min_attack, sum_acc, sum_eva];
 }
 
 function hitChance(acc: number, opp_eva: number) {
@@ -239,7 +267,15 @@ export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMem
     let oppoattack = 0;
 
     if (opponent) {
-        oppoattack = (opponent.attack * opponent.attacks_per_second * hitChance(opponent.accuracy, ship.evasion));
+        if (fbb_mode) {
+            oppoattack = (opponent.attack * opponent.attacks_per_second);
+
+        }
+        else {
+            oppoattack = (opponent.attack * opponent.attacks_per_second * hitChance(opponent.accuracy, ship.evasion));
+
+        }
+        //if (fbb_mode) oppoattack += (0.10 * opponent.attack * opponent.attacks_per_second * hitChance(opponent.accuracy, ship.evasion))
     }
 
     const resetAction = (action: BonusAction) => {
@@ -297,7 +333,7 @@ export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMem
             else if (action.ability?.type === 2) {
                 let pctneed = 1 - (hull / orighull);
                 let pctfix = action.ability.amount / 100;
-                if (pctneed >= pctfix) {
+                if (pctneed >= pctfix || pctneed >= 0.5) {
                     hull += (orighull * pctfix);
                     if (action.charge_phases) {
                         resetAction(action);
@@ -312,7 +348,9 @@ export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMem
                 let time = action.ability.amount;
                 for (let idx = 0; idx < alen; idx++) {
                     if (!active[idx] && inited[idx]) {
-                        if (!allactions[idx].current_phase || allactions[idx].comes_from === 'ship') state_time[idx] += time;
+                        if (!allactions[idx].current_phase || allactions[idx].comes_from === 'ship') {
+                            state_time[idx] += time;
+                        }
                     }
                 }
             }
@@ -358,7 +396,7 @@ export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMem
             }
         }
 
-        let [maxattack, sumattack, minattack] = sumAttack(ship, current, opponent, offense);
+        let [maxattack, sumattack, minattack, acc, eva] = sumAttack(ship, current, opponent, offense);
 
         let min = minattack * ship.attacks_per_second;
         let atk = sumattack * ship.attacks_per_second;
@@ -369,16 +407,20 @@ export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMem
             atk += sumattack * atm;
             max += maxattack * atm;
         }
-
+        
         if (fbb_mode || !cloaked) {
             let mul = current.filter(f => f.ability?.type === 11).map(m => m.ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
             mul = 1 - (mul / 100);
 
+            if (opponent) {
+                oppoattack = (opponent.attack * opponent.attacks_per_second * hitChance(opponent.accuracy, eva));
+            }
+    
             if (!oppoattack) {
-                hull -= (atk - (atk * defense)) * mul;
+                hull -= ((atk - (atk * defense)) * mul);
             }
             else {
-                hull -= (oppoattack - (oppoattack * defense)) * mul;
+                hull -= ((oppoattack - (oppoattack * defense)) * mul);
             }
         }
 
@@ -786,6 +828,7 @@ const ShipCrewWorker = {
 
                 if (!get_attacks) overlaps.length = 0;
 
+                //results.push(attack);
                 if (last_high === null) {
                     last_high = attack;
                     results.push(attack);
