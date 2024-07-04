@@ -502,7 +502,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             actions: [...current],
             damage: lasthull - hull,
             second: sec,
-            attack: max_attack,
+            attack: standard_attack,
             min_attack: base_attack,
             max_attack: max_attack,
             ship
@@ -803,20 +803,24 @@ const ShipCrewWorker = {
             const time = options.max_duration || (battle_mode.startsWith('fbb') ? 180 : 30);
 
             function compareItems(a: ShipWorkerItem, b: ShipWorkerItem) {
-                if (battle_mode.startsWith('fbb')) {
+                if (fbb_mode) {
                     let r = 0;
                     let aa: number;
                     let ba: number;
-                    aa = a.attack;
-                    ba = b.attack;
+                    aa = a.min_attack;
+                    ba = b.min_attack;
                     r = ba - aa;
                     if (r) return r;
                     aa = a.battle_time;
                     ba = b.battle_time;
                     r = ba - aa;
                     if (r) return r;
-                    aa = a.weighted_attack;
-                    ba = b.weighted_attack;
+                    aa = a.attack;
+                    ba = b.attack;
+                    r = ba - aa;
+                    if (r) return r;
+                    aa = a.max_attack;
+                    ba = b.max_attack;
                     r = ba - aa;
                     return r;
                 }
