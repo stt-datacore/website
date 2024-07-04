@@ -166,6 +166,9 @@ export interface ShipInUse {
 export interface ShipWorkerConfigBase {
     crew: CrewMember[],
     battle_mode: BattleMode,
+    rate: number,
+    simulate: boolean,
+    fixed_activation_delay: number,
     power_depth?: number,
     max_rarity?: number,
     min_rarity?: number,
@@ -196,6 +199,7 @@ export interface MultiShipWorkerConfig extends ShipWorkerConfigBase {
 export interface AttackInstant {
   actions: ShipAction[];
   second: number;
+  damage: number;
   attack: number;
   min_attack: number;
   max_attack: number;
@@ -204,6 +208,7 @@ export interface AttackInstant {
 
 
 export interface ShipWorkerItem {
+    rate: number;
     battle_mode: BattleMode;
     ship: Ship,
     crew: CrewMember[]
@@ -213,7 +218,6 @@ export interface ShipWorkerItem {
     battle_time: number;
     weighted_attack: number;
     arena_metric: number;
-    activations: number;
     percentile: number;
     attacks?: AttackInstant[];
 }

@@ -1227,7 +1227,13 @@
             "verbose_status_updates": "Actualizaciones de estado detalladas",
             "exhaustive_mode": "Modo exhaustivo",
             "max_iterations": "Iteraciones máx.",
-            "icon_activation_offset": "{{icon}} Compensación de activación"
+            "icon_activation_offset": "{{icon}} Compensación de activación",
+            "simulate": "Simular",
+            "iterations": "Iteraciones",
+            "fixed_delay": "Retraso fijo",
+            "fixed_delay_msg": "Debe ser un número entre 0,2 y 0,6",
+            "rate": "Tasa",
+            "rate_msg": "Debe ser un número entre 1 y 10"
         },
         "calculated_crew": "Tripulación calculada",
         "charge_phase": {

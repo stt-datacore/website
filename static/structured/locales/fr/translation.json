@@ -1228,7 +1228,13 @@
             "verbose_status_updates": "Mises à jour de statut détaillées",
             "exhaustive_mode": "Mode approfondi",
             "max_iterations": "Itérations max.",
-            "icon_activation_offset": "{{icon}} Décalage d'activation"
+            "icon_activation_offset": "{{icon}} Décalage d'activation",
+            "simulate": "Simuler",
+            "iterations": "Itérations",
+            "fixed_delay": "Délai fixe",
+            "fixed_delay_msg": "Doit être un nombre compris entre 0,2 et 0,6",
+            "rate": "Taux",
+            "rate_msg": "Doit être un nombre compris entre 1 et 10"
         },
         "calculated_crew": "Équipage calculé",
         "charge_phase": {

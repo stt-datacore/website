@@ -83,6 +83,19 @@ const PowerTable = {
     40: 305989
 };
 
+function getShipNumber(raw_value: number) {
+    let final = 0;
+    Object.entries(PowerTable).forEach(([condensed, power]) => {
+        if (raw_value >= power) final = Number.parseInt(condensed);
+    });
+    return final;
+}
+
+function immediateDamage(base: number, current: number, attack: number) {
+    let f = PowerTable[current] - PowerTable[base];
+    return f * attack;
+}
+
 function getCritChance(n: number) {
     if (n >= 10000) return CritTable[10000];
     if (n in CritTable) return CritTable[n];
@@ -215,17 +228,18 @@ function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, offense?:
     atk_off = max_attack * offense;
     max_attack += atk_off;
 
-    return [max_attack, sum_attack, min_attack, sum_acc, sum_eva];
+    return [max_attack, sum_attack, min_attack, sum_acc, sum_eva, highest_dmg, bonus];
 }
 
 function hitChance(acc: number, opp_eva: number) {
     return 1 / (1 + Math.exp(-1.9 * (acc / opp_eva - 0.55)));
 }
 
-export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[]) {
+export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false) {
     let ship = setupShip(input_ship, crew, false) || undefined;
     defense ??= 0;
     offense ??= 0;
+    time *= rate;
     if (!ship) return [];
 
     let hull = ship.hull;
@@ -235,6 +249,15 @@ export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMem
     crew.forEach(c => c.action.crew = c.id!);
 
     let allactions = JSON.parse(JSON.stringify([...ship.actions ?? [], ...crew.map(c => c.action)])) as BonusAction[];
+
+    const delay = () => {
+        if (simulate) {
+            return 0.2 + (Math.random() * 0.4);
+        }
+        else {
+            return fixed_delay;
+        }
+    }
 
     allactions.forEach((action, i) => {
         action.comes_from = i >= (ship!.actions?.length ?? 0) ? 'crew' : 'ship';
@@ -260,15 +283,10 @@ export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMem
     let inited = allactions.map(a => false);
     let active = allactions.map(a => false);
 
-    let atm = 1;
     const current = [] as ShipAction[];
 
     let cloaked = false;
     let oppoattack = 0;
-
-    if (opponent) {
-        oppoattack = (opponent.attack * opponent.attacks_per_second * hitChance(opponent.accuracy, ship.evasion));
-    }
 
     const resetAction = (action: BonusAction) => {
         if (action.orig_ability_amount && action.ability) {
@@ -318,9 +336,10 @@ export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMem
     }
 
     const activate = (action: BonusAction, actidx: number) => {
+        let immediate = 0;
         if (!action.ability?.condition || current.some(act => act.status === action.ability?.condition)) {
             if (action.ability?.type === 1) {
-                atm += (action.ability.amount / 100);
+                immediate = (action.ability.amount / 100);
             }
             else if (action.ability?.type === 2) {
                 let pctneed = 1 - (hull / orighull);
@@ -333,7 +352,7 @@ export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMem
                 }
                 else {
                     processChargePhases(action, actidx);
-                    return;
+                    return 0;
                 }
             }
             else if (action.ability?.type === 10) {
@@ -355,8 +374,9 @@ export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMem
         }
         else {
             processChargePhases(action, actidx);
-            return;
+            return 0;
         }
+        return immediate;
     }
 
     const deactivate = (action: ShipAction, actidx: number) => {
@@ -366,13 +386,15 @@ export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMem
         active[actidx] = false;
     }
 
-    for (let sec = 1; sec <= time; sec++) {
-        atm = 1;
+    let shipnum = getShipNumber(ship.attack + (ship.attack * offense));
 
+    for (let inc = 1; inc <= time; inc++) {
+        let sec = Math.round((inc / rate) * 10) / 10;
+        let immediate = 0;
         for (let action of allactions) {
             let actidx = allactions.findIndex(f => f === action);
-            if (!inited[actidx] && sec >= action.initial_cooldown + 1 && !current.includes(action)) {
-                activate(action, actidx);
+            if (!inited[actidx] && sec >= action.initial_cooldown + delay() && !current.includes(action)) {
+                immediate += activate(action, actidx);
             }
             else if (inited[actidx] && current.includes(action)) {
                 state_time[actidx]++;
@@ -382,50 +404,56 @@ export function iterateBattle(fbb_mode: boolean, input_ship: Ship, crew: CrewMem
             }
             else if (inited[actidx] && !current.includes(action) && (!action.limit || uses[actidx] < action.limit)) {
                 state_time[actidx]++;
-                if (state_time[actidx] > action.cooldown + 1) {
+                if (state_time[actidx] > action.cooldown + delay()) {
                     activate(action, actidx);
                 }
             }
         }
+    
+        let [maxattack, sumattack, minattack, acc, eva, highest_dmg, bonus] = sumAttack(ship, current, opponent, offense);
 
-        let [maxattack, sumattack, minattack, acc, eva] = sumAttack(ship, current, opponent, offense);
+        let min = minattack * (ship.attacks_per_second / rate);
+        let atk = sumattack * (ship.attacks_per_second / rate);
+        let max = maxattack * (ship.attacks_per_second / rate);
 
-        let min = minattack * ship.attacks_per_second;
-        let atk = sumattack * ship.attacks_per_second;
-        let max = maxattack * ship.attacks_per_second;
-
-        if (atm > 1) {
-            min += minattack * atm;
-            atk += sumattack * atm;
-            max += maxattack * atm;
+        if (immediate > 0) {
+            let imm = immediateDamage(shipnum, shipnum + highest_dmg, immediate);
+            imm += (imm * bonus);
+            imm *= hitChance(acc, opponent?.evasion ?? eva);
+            min += imm;
+            max += imm;
+            atk += imm;
         }
         
+        let lasthull = hull;
+
         if (fbb_mode || !cloaked) {
             let mul = current.filter(f => f.ability?.type === 11).map(m => m.ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
             mul = 1 - (mul / 100);
 
             if (opponent) {
-                oppoattack = (opponent.attack * opponent.attacks_per_second * hitChance(opponent.accuracy, eva));
+                oppoattack = (opponent.attack * (opponent.attacks_per_second) * hitChance(opponent.accuracy, eva));
             }
     
             if (!oppoattack) {
-                hull -= ((atk - (atk * defense)) * mul);
+                hull -= Math.ceil(((atk - (atk * defense)) * mul) / rate);
             }
             else {
-                hull -= ((oppoattack - (oppoattack * defense)) * mul);
+                hull -= Math.ceil(((oppoattack - (oppoattack * defense)) * mul) / rate);
             }
-        }
 
+            if (hull <= 0) break;
+        }
+        
         attacks.push({
             actions: [...current],
+            damage: lasthull - hull,
             second: sec,
             attack: max,
             min_attack: min,
             max_attack: max,
             ship
         });
-
-        if (hull <= 0) break;
     }
 
     ship = undefined;
@@ -521,6 +549,7 @@ const ShipCrewWorker = {
     calc: (options: ShipWorkerConfig, reportProgress: (data: { format: string, options?: any }) => boolean = () => true) => {
         return new Promise<ShipWorkerResults>((resolve, reject) => {
             const { 
+                rate,
                 activation_offsets,
                 ship,
                 battle_mode,
@@ -531,7 +560,9 @@ const ShipCrewWorker = {
                 offense, 
                 ignore_skill, 
                 verbose, 
-                max_iterations } = options;
+                max_iterations,
+                simulate,
+                fixed_activation_delay } = options;
 
             const opponent = opponents?.length ? opponents[0] : undefined;
 
@@ -675,35 +706,34 @@ const ShipCrewWorker = {
                 ship.battle_stations?.forEach((bs) => {
                     for (let c of crew_set) {
                         if (!result_crew.includes(c)) {
-                            if (c.skill_order.includes(bs.skill)) {
+                            if (c.skill_order.includes(bs.skill) || ignore_skill) {
                                 result_crew.push(c);
                                 break;
                             }
                         }
                     }
                 });
-
-                const activations = attacks.reduce((p, n) => p + n.actions.length, 0);
+                
                 const attack = attacks.reduce((p, n) => p + n.attack, 0);
                 const min_attack = attacks.reduce((p, n) => p + n.min_attack, 0);
                 const max_attack = attacks.reduce((p, n) => p + n.max_attack, 0);
-                const battle_time = attacks.length;
-                const weighted_attack = attacks.reduce((p, n) => p + (n.attack / (n.second + 1)), 0);
+                const battle_time = attacks.reduce((p, n) => p > n.second ? p : n.second, 0);
+                const weighted_attack = attacks.reduce((p, n) => p + (!n.second ? 0 : (n.attack / (n.second))), 0);
                 let highest_attack = 0;
                 let high_attack_second = 0;
 
                 attacks.forEach((attack) => {
                     if (attack.max_attack > highest_attack) {
                         highest_attack = attack.max_attack;
-                        high_attack_second = attack.second + 1;
+                        high_attack_second = attack.second;
                     }
                 });
 
                 const arena_metric = (highest_attack / high_attack_second);
 
                 return {
+                    rate,
                     battle_mode,
-                    activations,
                     attack,
                     min_attack,
                     max_attack,
@@ -735,11 +765,6 @@ const ShipCrewWorker = {
                     aa = a.weighted_attack;
                     ba = b.weighted_attack;
                     r = ba - aa;
-                    if (r) return r;
-                    aa = a.activations;
-                    ba = b.activations;
-                    r = ba - aa;
-                    if (r) return r;
                     return r;
                 }
                 else {
@@ -756,10 +781,6 @@ const ShipCrewWorker = {
                     if (r) return r;
                     aa = a.attack;
                     ba = b.attack;
-                    r = ba - aa;
-                    if (r) return r;
-                    aa = a.activations;
-                    ba = b.activations;
                     r = ba - aa;
                     if (r) return r;
                     return r;
@@ -802,7 +823,7 @@ const ShipCrewWorker = {
                 
                 set = newseats;
 
-                let overlaps = iterateBattle(fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets);
+                let overlaps = iterateBattle(rate, fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets, fixed_activation_delay, simulate);
                 let attack = processAttack(overlaps, set);
 
                 if (!get_attacks) overlaps.length = 0;
