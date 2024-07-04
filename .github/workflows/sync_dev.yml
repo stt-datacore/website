@@ -1,0 +1,48 @@
+name: sync-dev
+run-name: Keep development branches synced with autosync by merging from beta
+on:
+  pull_request:
+    types: [opened, ready_for_review, reopened, synchronize, labeled]
+  
+  push:
+    branches:
+      - 'beta'
+
+jobs:
+    merge-beta:
+        name: Merge pr or beta branches into the dev branch (frequently changes)
+        runs-on: ubuntu-latest
+        if: |
+          github.ref_name == 'beta' || 
+          (github.event.pull_request.draft == false &&
+          github.event.pull_request.mergeable == true &&
+          github.event.pull_request.head.repo.fork == false &&
+          contains(github.event.pull_request.labels.*.name, 'dev-2.2'))
+
+        steps:
+            - name: merge with development
+              uses: devmasx/merge-branch@master
+              with:
+                type: now
+                target_branch: dev-2.2
+                github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    merge-dev:
+        name: Merge dev into downstream branch (frequently changes)
+        runs-on: ubuntu-latest
+        if: |
+          github.ref_name == 'beta' || 
+          (github.event.pull_request.draft == false &&
+          github.event.pull_request.mergeable == true &&
+          github.event.pull_request.head.repo.fork == false &&
+          contains(github.event.pull_request.labels.*.name, 'dev-2.0-alt-integration'))
+
+        steps:
+            - name: merge with development
+              uses: devmasx/merge-branch@master
+              with:
+                type: now
+                target_branch: dev-2.0-alt-integration
+                github_token: ${{ secrets.GITHUB_TOKEN }}
+
+
