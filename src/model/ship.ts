@@ -226,4 +226,6 @@ export interface ShipWorkerItem {
 
 export interface ShipWorkerResults {
     ships: ShipWorkerItem[]
+    total_iterations: number;
+    run_time: number;
 }
