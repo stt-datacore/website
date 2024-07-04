@@ -370,7 +370,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                         {t('ship.calc.rate')}:&nbsp;
                                     </div>
                                     <div style={{gridArea:'dropdown1'}}>
-                                        <Dropdown                                        
+                                        <Dropdown   
+                                            disabled={running}                                     
                                             fluid
                                             scrolling
                                             selection
@@ -382,7 +383,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                         {t('ship.calc.fixed_delay')}:&nbsp;
                                     </div>
                                     <div style={{gridArea:'dropdown2'}}>
-                                        <Dropdown                                        
+                                        <Dropdown    
+                                            disabled={running}                                    
                                             fluid
                                             scrolling
                                             selection

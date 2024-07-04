@@ -122,9 +122,9 @@ function getShipNumber(raw_value: number) {
     return final;
 }
 
-function immediateDamage(base: number, current: number, attack: number) {
+function immediateDamage(base: number, current: number, damage_number: number) {
     let f = PowerTable[current] - PowerTable[base];
-    return f * attack;
+    return f * damage_number;
 }
 
 function getCritChance(n: number) {
@@ -150,10 +150,10 @@ function hitChance(acc: number, opp_eva: number) {
 
 function getInstantPowerInfo(rate: number, ship: Ship, actions: ShipAction[], opponent?: Ship, offense?: number) {
     offense ??= 0;
-    const output: InstantPowerInfo = {      
+    let output: InstantPowerInfo = {      
         condensed: {
             base: {
-                attack: getShipNumber(ship.attack + (ship.attack * offense)),
+                attack: getShipNumber(ship.attack * (1 + offense)),
                 accuracy: getShipNumber(ship.accuracy),
                 evasion: getShipNumber(ship.evasion)
             },
@@ -177,7 +177,7 @@ function getInstantPowerInfo(rate: number, ship: Ship, actions: ShipAction[], op
         },
         computed: {
             active: {
-                attack: ship.attack,
+                attack: ship.attack * (1 + offense),
                 accuracy: ship.accuracy,
                 evasion: ship.evasion
             },
@@ -220,12 +220,6 @@ function getInstantPowerInfo(rate: number, ship: Ship, actions: ShipAction[], op
                 output.condensed.active.accuracy = action.bonus_amount;
             }
         }
-    });
-    
-    // record these seperately in case needed
-    output.condensed.ability = { ... output.condensed.active };    
-
-    actions.forEach((action) => {
         if (action.penalty) {
             if (action.penalty.type === 0) {
                 if (output.condensed.penalty.attack < action.bonus_amount) {
@@ -244,6 +238,9 @@ function getInstantPowerInfo(rate: number, ship: Ship, actions: ShipAction[], op
             }
         }
     });
+    
+    // record these seperately in case needed
+    output.condensed.ability = { ... output.condensed.active };
 
     output.grants = actions.filter(f => f.status).map(m => m.status!);
 
@@ -256,18 +253,18 @@ function getInstantPowerInfo(rate: number, ship: Ship, actions: ShipAction[], op
     output.condensed.active.evasion -= output.condensed.penalty.evasion;
     output.condensed.active.accuracy -= output.condensed.penalty.accuracy;
 
-    // use the ship's base numbers as reported by the game, and add the power table reference for the active boosts.
-    output.computed.active.attack += PowerTable[output.condensed.active.attack];
-    output.computed.active.evasion += PowerTable[output.condensed.active.evasion];
-    output.computed.active.accuracy += PowerTable[output.condensed.active.accuracy];
-
-    // add the increase damage to boss for attack
-    output.computed.active.attack += (output.computed.active.attack * offense);
-
     // add the condensed boosts to the base condensed boosts to get the active condensed boosts:
     output.condensed.active.attack += output.condensed.base.attack;
     output.condensed.active.evasion += output.condensed.base.evasion;
     output.condensed.active.accuracy += output.condensed.base.accuracy;
+
+    // use the ship's base numbers as reported by the game, and add the power table reference for the active boosts.
+    output.computed.active.attack += (PowerTable[output.condensed.active.attack] - PowerTable[output.condensed.base.attack]);
+    output.computed.active.evasion += (PowerTable[output.condensed.active.evasion] - PowerTable[output.condensed.base.evasion]);
+    output.computed.active.accuracy += (PowerTable[output.condensed.active.accuracy] - PowerTable[output.condensed.base.accuracy]);
+
+    // add the increase damage to boss for attack
+    output.computed.active.attack += (output.computed.active.attack * offense);
 
     output.computed.crit_chance = getCritChance(output.condensed.crit_chance) / 100;
     output.computed.crit_bonus = output.condensed.crit_bonus /= 10000;
@@ -281,8 +278,8 @@ function getInstantPowerInfo(rate: number, ship: Ship, actions: ShipAction[], op
 
     output.computed.attack = {
         base: output.computed.active.attack * output.computed.hit_chance * (ship.attacks_per_second / rate),
-        with_bonus: (output.computed.active.attack + (output.computed.active.attack * output.computed.crit_bonus)) * output.computed.hit_chance * (ship.attacks_per_second / rate),
-        with_bonus_and_chance: (output.computed.active.attack + (output.computed.active.attack * output.computed.crit_bonus * output.computed.crit_chance)) * output.computed.hit_chance * (ship.attacks_per_second / rate)
+        with_bonus: (output.computed.active.attack + (output.computed.active.attack * output.computed.crit_bonus)) * (ship.attacks_per_second / rate),
+        with_bonus_and_chance: (output.computed.active.attack + (output.computed.active.attack * output.computed.crit_bonus * output.computed.crit_chance)) * (ship.attacks_per_second / rate)
     }
 
     return output;
@@ -439,8 +436,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         active[actidx] = false;
     }
 
-    let shipnum = getShipNumber(ship.attack + (ship.attack * offense));
-
     for (let inc = 1; inc <= time; inc++) {
         let sec = Math.round((inc / rate) * 10) / 10;
         let immediate = 0;
@@ -469,13 +464,18 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         let standard_attack = powerInfo.computed.attack.with_bonus_and_chance;
         let max_attack = powerInfo.computed.attack.with_bonus;
 
-        if (immediate > 0) {        
+        if (immediate > 0) {                    
             let imm = immediateDamage(powerInfo.condensed.base.attack, powerInfo.condensed.active.attack, immediate);
-            imm += (imm * powerInfo.computed.crit_bonus);
-            imm *= hitChance(powerInfo.computed.active.accuracy, opponent?.evasion ?? powerInfo.computed.active.evasion);        
-            base_attack += imm;
-            max_attack += imm;
-            standard_attack += imm;
+            let imm_norm = imm * hitChance(powerInfo.computed.active.accuracy, opponent?.evasion ?? powerInfo.computed.active.evasion);        
+
+            // just the immediate
+            base_attack += imm_norm;
+            
+            // immediate with big crit
+            max_attack += imm * (1 + powerInfo.computed.crit_bonus);
+
+            // immediate with crit and chance
+            standard_attack += imm * (1 + (powerInfo.computed.crit_bonus)) * powerInfo.computed.crit_chance;
         }
         
         let lasthull = hull;
