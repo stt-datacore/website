@@ -682,6 +682,7 @@ const ShipCrewWorker = {
                 fixed_activation_delay } = options;
 
             const opponent = opponents?.length ? opponents[0] : undefined;
+            const starttime = new Date();
 
             let max_results = options.max_results ?? 100;
             let max_rarity = options.max_rarity ?? 5;
@@ -927,18 +928,20 @@ const ShipCrewWorker = {
 
                 if (accepted) {
                     reportProgress({ result: attack });
+                    accepted = false;
                 }
 
                 return battle_data;
             });
 
             reportProgress({ format: 'ship.calc.sorting_finalizing_ellipses' });
+
             results.sort((a, b) => compareShipResults(a, b, fbb_mode));
             results.splice(max_results);
             results.forEach((result) => {
                 if (battle_mode.startsWith('fbb')) {
-                    let max = results[0].attack;
-                    result.percentile = (result.attack / max) * 100;
+                    let max = results[0].fbb_metric;
+                    result.percentile = (result.fbb_metric / max) * 100;
                 }
                 else {
                     let max = results[0].arena_metric;
@@ -946,8 +949,14 @@ const ShipCrewWorker = {
                 }
             });
 
+            const endtime = new Date();
+
+            const run_time = (endtime.getTime() - starttime.getTime()) / 1000;
+
             resolve({
-                ships: results
+                ships: results,
+                total_iterations: i,
+                run_time
             });
 
         });
@@ -955,9 +964,11 @@ const ShipCrewWorker = {
     bestFinder: (options: MultiShipWorkerConfig) => {
         return new Promise<ShipWorkerResults>((resolve, reject) => {
 
-            resolve({
-                ships: []
-            })
+            // resolve({
+            //     ships: [],
+            //     total_iterations: i,
+            //     run_time
+            // })
 
         });
     }
