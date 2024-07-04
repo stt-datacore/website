@@ -581,9 +581,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 verbose,
                 max_iterations: !exhaustiveMode ? maxIter : undefined,
                 activation_offsets: activationOffsets,
-                simulate,
-                fixed_activation_delay: fixedActivationDelay,
-                rate
+                simulate: false,
+                fixed_activation_delay: 0.6, //fixedActivationDelay,
+                rate: 1
             } as ShipWorkerConfig;
 
             setProgressMsg('');
