@@ -607,6 +607,10 @@
         }
     },
     "global": {
+        "episode": "Episode",
+        "adventure": "Abenteuer",
+        "quest": "Quest",
+        "challenge": "Herausforderung",
         "n_results": "{{n}} Ergebnisse",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",

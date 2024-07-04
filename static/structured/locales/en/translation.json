@@ -607,6 +607,10 @@
         }
     },
     "global": {
+        "episode": "Episode",
+        "adventure": "Adventure",
+        "quest": "Quest",
+        "challenge": "Challenge",
         "n_results": "{{n}} results",
         "aborted": "Aborted",
         "admiral": "Admiral",

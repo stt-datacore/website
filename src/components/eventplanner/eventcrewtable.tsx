@@ -18,6 +18,7 @@ import { applySkillBuff, crewGender, isQuipped } from '../../utils/crewutils';
 import { IEventData, IRosterCrew, IEventScoredCrew, IEventCombos, IEventSkill, IEventPair, IBestCombos, IBestCombo } from './model';
 import { calculateGalaxyChance, computeEventBest } from '../../utils/events';
 import { navToCrewPage } from '../../utils/nav';
+import { GatherPlanner } from '../gather/gather_planner';
 
 type EventCrewTableProps = {
 	rosterType: string;
@@ -263,6 +264,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 			/>
 			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, rosterCrew, buffConfig)} targetGroup='eventTarget' />
 			{phaseType !== 'skirmish' && (<EventCrewMatrix crew={rosterCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
+			{phaseType === 'gather' && <GatherPlanner />}
 		</React.Fragment>
 	);
 

@@ -612,6 +612,10 @@
         }
     },
     "global": {
+        "episode": "Episodio",
+        "adventure": "Aventura",
+        "quest": "Búsqueda",
+        "challenge": "Desafío",        
         "n_results": "{{n}} resultados",
         "aborted": "Abortado",
         "admiral": "Almirante",
