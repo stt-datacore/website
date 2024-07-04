@@ -3,7 +3,38 @@ import { AttackInstant, MultiShipWorkerConfig, Ship, ShipAction, ShipWorkerConfi
 import { crewCopy } from "../utils/crewutils";
 import { setupShip } from "../utils/shiputils";
 
-interface BonusAction extends ShipAction {
+interface PowerStat {    
+    attack: number;
+    evasion: number;
+    accuracy: number;
+    
+}
+
+interface InstantPowerInfo {
+    condensed: {
+        base: PowerStat;
+        ability: PowerStat;        
+        active: PowerStat;
+        penalty: PowerStat;
+        crit_bonus: number;
+        crit_chance: number;
+    }
+    computed: {
+        active: PowerStat;
+        crit_bonus: number;
+        crit_chance: number;
+        hit_chance: number;
+        attack: {
+            base: number;
+            with_bonus: number;
+            with_bonus_and_chance: number;
+        }
+    }
+    grants: number[]
+}
+
+
+interface ChargeAction extends ShipAction {
     orig_bonus?: number;
     orig_ability_amount?: number;
     orig_cooldown?: number;
@@ -113,126 +144,143 @@ function getCritChance(n: number) {
     return 0;
 }
 
-function sumAttack(ship: Ship, actions: ShipAction[], opponent?: Ship, offense?: number) {
-    let base_attack = ship.attack;
-    let base_acc = ship.accuracy;
-    let base_eva = ship.evasion;
-    let bonus = ship.crit_bonus;
-    let crit = ship.crit_chance;
-    let sum_attack = base_attack;
+function hitChance(acc: number, opp_eva: number) {
+    return 1 / (1 + Math.exp(-1.9 * (acc / opp_eva - 0.55)));
+}
 
-    let highest_dmg = 0;
-    let highest_acc = 0;
-    let highest_eva = 0;
-    let sum_acc = base_acc;
-    let sum_eva = base_eva;
+function getInstantPowerInfo(rate: number, ship: Ship, actions: ShipAction[], opponent?: Ship, offense?: number) {
+    offense ??= 0;
+    const output: InstantPowerInfo = {      
+        condensed: {
+            base: {
+                attack: getShipNumber(ship.attack + (ship.attack * offense)),
+                accuracy: getShipNumber(ship.accuracy),
+                evasion: getShipNumber(ship.evasion)
+            },
+            ability: {
+                attack: 0,
+                accuracy: 0,
+                evasion: 0            
+            },
+            penalty: {
+                attack: 0,
+                accuracy: 0,
+                evasion: 0            
+            },
+            active: {
+                attack: 0,
+                accuracy: 0,
+                evasion: 0            
+            },
+            crit_bonus: ship.crit_bonus,
+            crit_chance: ship.crit_chance,
+        },
+        computed: {
+            active: {
+                attack: 0,
+                accuracy: 0,
+                evasion: 0            
+            },
+            attack: {
+                base: 0,
+                with_bonus: 0,
+                with_bonus_and_chance: 0
+            },
+            hit_chance: 0,
+            crit_bonus: ship.crit_bonus,
+            crit_chance: ship.crit_chance,
+        },
+        grants: []
+    };    
 
     actions.forEach((action) => {
         if (action.ability?.type === 4) {
-            crit += action.ability.amount;
+            output.condensed.crit_chance += action.ability.amount;
         }
         else if (action.ability?.type === 5) {
-            bonus += action.ability.amount;
+            output.condensed.crit_bonus += action.ability.amount;
         }
         if (action.bonus_type === 0) {
             if (action.ability?.type === 0) {
-                if (highest_dmg < action.bonus_amount + action.ability.amount) {
-                    highest_dmg = action.bonus_amount + action.ability.amount;
+                if (output.condensed.active.attack < action.bonus_amount + action.ability.amount) {
+                    output.condensed.active.attack = action.bonus_amount + action.ability.amount;
                 }
             }
-            else if (highest_dmg < action.bonus_amount) {
-                highest_dmg = action.bonus_amount;
+            else if (output.condensed.active.attack < action.bonus_amount) {
+                output.condensed.active.attack = action.bonus_amount;
             }
         }
         else if (action.bonus_type === 1) {
-            if (highest_eva < action.bonus_amount) {
-                highest_eva = action.bonus_amount;
+            if (output.condensed.active.evasion < action.bonus_amount) {
+                output.condensed.active.evasion = action.bonus_amount;
             }
         }
         else if (action.bonus_type === 2) {
-            if (highest_acc < action.bonus_amount) {
-                highest_acc = action.bonus_amount;
+            if (output.condensed.active.accuracy < action.bonus_amount) {
+                output.condensed.active.accuracy = action.bonus_amount;
             }
         }
     });
+    
+    // record these seperately in case needed
+    output.condensed.ability = { ... output.condensed.active };    
 
     actions.forEach((action) => {
         if (action.penalty) {
             if (action.penalty.type === 0) {
-                highest_dmg -= action.penalty.amount;
-                if (highest_dmg <= 0) highest_dmg = 0;
+                if (output.condensed.penalty.attack < action.bonus_amount) {
+                    output.condensed.penalty.attack = action.penalty.amount;
+                }
             }
             else if (action.penalty.type === 1) {
-                highest_eva -= action.penalty.amount;
-                if (highest_eva <= 0) highest_eva = 0;
+                if (output.condensed.penalty.evasion < action.penalty.amount) {
+                    output.condensed.penalty.evasion = action.penalty.amount;
+                }
             }
             else if (action.penalty.type === 2) {
-                highest_acc -= action.penalty.amount;
-                if (highest_acc <= 0) highest_acc = 0;
+                if (output.condensed.penalty.accuracy < action.penalty.amount) {
+                    output.condensed.penalty.accuracy = action.penalty.amount;
+                }
             }
         }
     });
 
-    if (actions.some(a => a.status === 1)) {
-        crit += 1000;
+    output.grants = actions.filter(f => f.status).map(m => m.status!);
+
+    if (output.grants.includes(1)) {
+        output.condensed.crit_chance += 1000;
     }
 
-    if (actions.some(a => a.status === 3)) {
-        sum_attack += (ship.attack / 2);
+    output.condensed.active.attack += output.condensed.base.attack;
+    output.condensed.active.evasion += output.condensed.base.evasion;
+    output.condensed.active.accuracy += output.condensed.base.accuracy;
+
+    output.condensed.active.attack -= output.condensed.penalty.attack;
+    output.condensed.active.evasion -= output.condensed.penalty.evasion;
+    output.condensed.active.accuracy -= output.condensed.penalty.accuracy;
+
+    output.computed.crit_chance = getCritChance(output.condensed.crit_chance) / 100;
+    output.computed.crit_bonus = output.condensed.crit_bonus /= 10000;
+
+    output.computed.active.attack = PowerTable[output.condensed.active.attack];
+    output.computed.active.attack += (output.computed.active.attack * offense);
+
+    output.computed.active.evasion = PowerTable[output.condensed.active.evasion];
+    output.computed.active.accuracy = PowerTable[output.condensed.active.accuracy];
+
+    if (output.grants.includes(4)) {
+        output.computed.active.attack += ((output.computed.active.attack * 0.50) / rate);
     }
 
-    let chance = getCritChance(crit) / 100;
+    output.computed.hit_chance = hitChance(output.computed.active.accuracy, opponent?.evasion ?? output.computed.active.evasion);
 
-    if (highest_dmg) {
-        sum_attack += PowerTable[highest_dmg];
+    output.computed.attack = {
+        base: output.computed.active.attack * output.computed.hit_chance * (ship.attacks_per_second / rate),
+        with_bonus: (output.computed.active.attack + (output.computed.active.attack * output.computed.crit_bonus)) * output.computed.hit_chance * (ship.attacks_per_second / rate),
+        with_bonus_and_chance: (output.computed.active.attack + (output.computed.active.attack * output.computed.crit_bonus * output.computed.crit_chance)) * output.computed.hit_chance * (ship.attacks_per_second / rate)
     }
 
-    if (highest_eva) {
-        sum_eva += PowerTable[highest_eva];
-    }
-
-    if (highest_acc) {
-        sum_acc += PowerTable[highest_acc];
-    }
-
-    bonus /= 10000;
-
-    let min_attack = 0;
-    let max_attack = 0;
-
-    max_attack = sum_attack + ((sum_attack * bonus));
-    sum_attack += ((sum_attack * bonus) * chance);
-    min_attack = sum_attack;
-
-    let hc = 0;
-
-    if (opponent) {
-        hc = hitChance(sum_acc, opponent.evasion);
-    }
-    else {
-        hc = hitChance(sum_acc, highest_eva);
-    }
-
-    min_attack *= hc;
-    sum_attack *= hc;
-    max_attack *= hc;
-
-    offense ??= 0;
-
-    let atk_off = sum_attack * offense;
-    sum_attack += atk_off;
-
-    atk_off = min_attack * offense;
-    min_attack += atk_off;
-
-    atk_off = max_attack * offense;
-    max_attack += atk_off;
-
-    return [max_attack, sum_attack, min_attack, sum_acc, sum_eva, highest_dmg, bonus];
-}
-
-function hitChance(acc: number, opp_eva: number) {
-    return 1 / (1 + Math.exp(-1.9 * (acc / opp_eva - 0.55)));
+    return output;
 }
 
 export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false) {
@@ -248,7 +296,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     const attacks = [] as AttackInstant[];
     crew.forEach(c => c.action.crew = c.id!);
 
-    let allactions = JSON.parse(JSON.stringify([...ship.actions ?? [], ...crew.map(c => c.action)])) as BonusAction[];
+    let allactions = JSON.parse(JSON.stringify([...ship.actions ?? [], ...crew.map(c => c.action)])) as ChargeAction[];
 
     const delay = () => {
         if (simulate) {
@@ -288,7 +336,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     let cloaked = false;
     let oppoattack = 0;
 
-    const resetAction = (action: BonusAction) => {
+    const resetAction = (action: ChargeAction) => {
         if (action.orig_ability_amount && action.ability) {
             action.ability.amount = action.orig_ability_amount;
         }
@@ -301,7 +349,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         action.current_phase = 0;
     }
 
-    const bumpAction = (action: BonusAction, phase: number) => {
+    const bumpAction = (action: ChargeAction, phase: number) => {
         if (action.charge_phases) {
             let cinfo = action.charge_phases[phase - 1];
             action.cooldown = cinfo.charge_time;
@@ -314,7 +362,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         }
     }
 
-    const processChargePhases = (action: BonusAction, actidx: number) => {
+    const processChargePhases = (action: ChargeAction, actidx: number) => {
         if (action.charge_phases) {
             if (!action.current_phase) {
                 action.current_phase = 1;
@@ -335,7 +383,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         }
     }
 
-    const activate = (action: BonusAction, actidx: number) => {
+    const activate = (action: ChargeAction, actidx: number) => {
         let immediate = 0;
         if (!action.ability?.condition || current.some(act => act.status === action.ability?.condition)) {
             if (action.ability?.type === 1) {
@@ -410,19 +458,19 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             }
         }
     
-        let [maxattack, sumattack, minattack, acc, eva, highest_dmg, bonus] = sumAttack(ship, current, opponent, offense);
+        let powerInfo = getInstantPowerInfo(rate, ship, current, opponent, offense);
 
-        let min = minattack * (ship.attacks_per_second / rate);
-        let atk = sumattack * (ship.attacks_per_second / rate);
-        let max = maxattack * (ship.attacks_per_second / rate);
+        let base_attack = powerInfo.computed.attack.base;
+        let standard_attack = powerInfo.computed.attack.with_bonus_and_chance;
+        let max_attack = powerInfo.computed.attack.with_bonus;
 
-        if (immediate > 0) {
-            let imm = immediateDamage(shipnum, shipnum + highest_dmg, immediate);
-            imm += (imm * bonus);
-            imm *= hitChance(acc, opponent?.evasion ?? eva);
-            min += imm;
-            max += imm;
-            atk += imm;
+        if (immediate > 0) {        
+            let imm = immediateDamage(powerInfo.condensed.base.attack, powerInfo.condensed.active.attack, immediate);
+            imm += (imm * powerInfo.computed.crit_bonus);
+            imm *= hitChance(powerInfo.computed.active.accuracy, opponent?.evasion ?? powerInfo.computed.active.evasion);        
+            base_attack += imm;
+            max_attack += imm;
+            standard_attack += imm;
         }
         
         let lasthull = hull;
@@ -432,11 +480,11 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             mul = 1 - (mul / 100);
 
             if (opponent) {
-                oppoattack = (opponent.attack * (opponent.attacks_per_second) * hitChance(opponent.accuracy, eva));
+                oppoattack = (opponent.attack * (opponent.attacks_per_second) * hitChance(opponent.accuracy, powerInfo.computed.active.evasion));
             }
     
             if (!oppoattack) {
-                hull -= Math.ceil(((atk - (atk * defense)) * mul) / rate);
+                hull -= Math.ceil(((standard_attack - (standard_attack * defense)) * mul) / rate);
             }
             else {
                 hull -= Math.ceil(((oppoattack - (oppoattack * defense)) * mul) / rate);
@@ -449,9 +497,9 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             actions: [...current],
             damage: lasthull - hull,
             second: sec,
-            attack: max,
-            min_attack: min,
-            max_attack: max,
+            attack: max_attack,
+            min_attack: base_attack,
+            max_attack: max_attack,
             ship
         });
     }
