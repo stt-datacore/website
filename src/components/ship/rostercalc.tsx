@@ -508,10 +508,10 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     {t('ship.weighted_attack')}{': '}<br />{Math.round(sug.weighted_attack).toLocaleString()}
                 </div>
                 <div style={{ gridArea: 'min' }}>
-                    {t('ship.min_attack')}{': '}<br />{Math.round(sug.min_attack).toLocaleString()}
+                    {battleMode.startsWith("fbb") && <b>*</b>} {t('ship.min_attack')}{': '}<br />{Math.round(sug.min_attack).toLocaleString()}
                 </div>
                 <div style={{ gridArea: 'max' }}>
-                    {battleMode.startsWith("fbb") && <b>*</b>} {t('ship.max_attack')}{': '}<br />{Math.round(sug.max_attack).toLocaleString()}
+                    {t('ship.attack')}{': '}<br />{Math.round(sug.attack).toLocaleString()}
                 </div>
                 <div style={{ gridArea: 'metric' }}>
                     {!battleMode.startsWith("fbb") && <b>*</b>} {t('ship.arena_metric')}{': '}<br />{Math.round(sug.arena_metric).toLocaleString()}
