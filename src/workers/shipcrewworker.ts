@@ -260,6 +260,7 @@ function getInstantPowerInfo(rate: number, ship: Ship, actions: ShipAction[], op
     o_accuracy += (PowerTable[c_a_accuracy] - PowerTable[c_b_accuracy]);
 
     let o_crit_chance = getCritChance(c_crit_chance) / 100;
+    c_crit_bonus = Math.floor(c_crit_bonus / 100) * 100;
     let o_crit_bonus = c_crit_bonus /= 10000;
 
     // boarding
