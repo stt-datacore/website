@@ -287,6 +287,7 @@ export function printLastActive(n: number) {
 
 export function formatRunTime(seconds: number, t: TranslateMethod) {
 	let hours = 0, minutes = 0, days = 0;
+	seconds = Math.floor(seconds * 100) / 100;
 	const two = (x: string | number) => {
 		x = x.toString()
 		if (x.split(".")[0].length === 1) return "0" + x;
@@ -311,5 +312,5 @@ export function formatRunTime(seconds: number, t: TranslateMethod) {
 		}
 		return `${two(hours)}:${two(minutes)}:${two(seconds)}`
 	}
-	return `${two(days)}:${two(hours)}:${two(minutes)}:${two(seconds.toFixed(6))}`
+	return `${two(days)}:${two(hours)}:${two(minutes)}:${two(seconds)}`
 }
