@@ -682,6 +682,7 @@ const ShipCrewWorker = {
                 fixed_activation_delay } = options;
 
             const opponent = opponents?.length ? opponents[0] : undefined;
+            const starttime = new Date();
 
             let max_results = options.max_results ?? 100;
             let max_rarity = options.max_rarity ?? 5;
@@ -906,10 +907,10 @@ const ShipCrewWorker = {
                 
                 set = newseats;
 
-                let overlaps = iterateBattle(rate, fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets, fixed_activation_delay, simulate);
-                let attack = processBattleRun(overlaps, set);
+                let battle_data = iterateBattle(rate, fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets, fixed_activation_delay, simulate);
+                let attack = processBattleRun(battle_data, set);
 
-                if (!get_attacks) overlaps.length = 0;
+                if (!get_attacks) battle_data.length = 0;
                 let accepted = false;
                 if (last_high === null) {
                     last_high = attack;
@@ -918,7 +919,7 @@ const ShipCrewWorker = {
                 }
                 else {
                     let d = compareShipResults(attack, last_high, fbb_mode);
-                    if (d <= 0) {
+                    if (d < 0) {
                         accepted = true;
                         results.push(attack);
                         last_high = attack;
@@ -927,22 +928,20 @@ const ShipCrewWorker = {
 
                 if (accepted) {
                     reportProgress({ result: attack });
+                    accepted = false;
                 }
 
-                if (attack.battle_mode !== battle_mode) {
-                    reportProgress({ format: `Errors Encountered! Battle Mode ${battle_mode}, but generated ${attack.battle_mode}` });
-                    errors = true;
-                }
-                return overlaps;
+                return battle_data;
             });
 
             reportProgress({ format: 'ship.calc.sorting_finalizing_ellipses' });
+
             results.sort((a, b) => compareShipResults(a, b, fbb_mode));
             results.splice(max_results);
             results.forEach((result) => {
                 if (battle_mode.startsWith('fbb')) {
-                    let max = results[0].attack;
-                    result.percentile = (result.attack / max) * 100;
+                    let max = results[0].fbb_metric;
+                    result.percentile = (result.fbb_metric / max) * 100;
                 }
                 else {
                     let max = results[0].arena_metric;
@@ -950,8 +949,14 @@ const ShipCrewWorker = {
                 }
             });
 
+            const endtime = new Date();
+
+            const run_time = (endtime.getTime() - starttime.getTime()) / 1000;
+
             resolve({
-                ships: results
+                ships: results,
+                total_iterations: i,
+                run_time
             });
 
         });
@@ -959,9 +964,11 @@ const ShipCrewWorker = {
     bestFinder: (options: MultiShipWorkerConfig) => {
         return new Promise<ShipWorkerResults>((resolve, reject) => {
 
-            resolve({
-                ships: []
-            })
+            // resolve({
+            //     ships: [],
+            //     total_iterations: i,
+            //     run_time
+            // })
 
         });
     }

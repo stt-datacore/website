@@ -407,7 +407,7 @@ export interface TinyShipSkillProps {
 
 export const TinyShipSkill = (props: TinyShipSkillProps) => {
     let { crew, action } = props;
-    if (!action && crew) action = action;
+    if (!action && crew) action = crew.action;
     if (!action) return <></>
     return (
             <div style={{ ...(props.style ?? {}), display:"flex",flexDirection:"column",justifyContent:"center", alignItems: "center"}}>

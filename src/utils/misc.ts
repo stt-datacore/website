@@ -284,3 +284,32 @@ export function printLastActive(n: number) {
     }
     
 }
+
+export function formatRunTime(seconds: number, t: TranslateMethod) {
+	let hours = 0, minutes = 0, days = 0;
+	const two = (x: string | number) => {
+		x = x.toString()
+		if (x.split(".")[0].length === 1) return "0" + x;
+		return x;
+	}
+
+	if (seconds >= 60) {
+		minutes = Math.floor(seconds / 60);
+		seconds -= (minutes * 60);
+	}
+	if (minutes >= 60) {
+		hours = Math.floor(minutes / 60);
+		minutes -= (hours * 60);
+	}
+	if (hours >= 24) {
+		days = Math.floor(hours / 24);
+		hours -= (days * 24);
+	}
+	if (!days) {
+		if (!hours) {
+			return `${two(minutes)}:${two(seconds)}`
+		}
+		return `${two(hours)}:${two(minutes)}:${two(seconds)}`
+	}
+	return `${two(days)}:${two(hours)}:${two(minutes)}:${two(seconds.toFixed(6))}`
+}
