@@ -9,7 +9,7 @@ import { SwarmPlot, ResponsiveSwarmPlot } from '@nivo/swarmplot';
 
 import { Dropdown } from "semantic-ui-react";
 import { useStateWithStorage } from "../../utils/storage";
-import { ShipSkill } from "../item_presenters/shipskill";
+import { ShipSkill, TinyShipSkill } from "../item_presenters/shipskill";
 
 
 export interface BattleGraphProps {
@@ -65,12 +65,14 @@ export const BattleGraph = (props: BattleGraphProps) => {
             ...style
         }}>
 
-        <Dropdown
-            style={{position: 'absolute', zIndex: '100'}}
-            options={graphOpts}
-            value={graphType}
-            onChange={(e, { value }) => setGraphType(value as 'bump' | 'swarm')}
-        />
+        <div className={'ui label'} style={{position: 'absolute', zIndex: '100', border:'1px solid #111'}}>
+            <Dropdown
+                
+                options={graphOpts}
+                value={graphType}
+                onChange={(e, { value }) => setGraphType(value as 'bump' | 'swarm')}
+            />
+        </div>         
 
         {bumpData?.length && graphType === 'bump' && <Bump
             width={300 + (bumpData[0].data.length * 60)}
@@ -160,7 +162,7 @@ export const BattleGraph = (props: BattleGraphProps) => {
             data={swarmData}
             groups={getAllActions().map(act => act.name)}
             value="second"
-            valueScale={{ nice: true, type: 'linear', min: 1, max: battle.attacks!.length, reverse: false }}
+            valueScale={{ nice: true, type: 'linear', min: 1, max: battle.battle_time, reverse: false }}
             groupBy={'group'}            
             theme={themes.dark}
             //valueFormat="$.2f"
@@ -195,12 +197,13 @@ export const BattleGraph = (props: BattleGraphProps) => {
                 truncateTickAt: 0
             }}
             tooltip={(node) => {
-                return <div className='ui segment'>
+                return <div className='ui segment' style={{zIndex: '1000'}}>
                     <div style={{display: 'flex'}}>
                         <div className='ui label'>{t('ship.attack')}: {Math.round(node.data.attack).toLocaleString()}</div>
                         <div className='ui label'>{t('ship.battle_stations')}: {node.data.group_size}</div>
                     </div>
-                    <ShipSkill context={node.data.crew ?? node.data.ship} />
+                    
+                    <TinyShipSkill crew={node.data.crew ?? node.data.ship} />
                 </div>
             }}    
             colorBy={'group'}
@@ -316,8 +319,9 @@ export const BattleGraph = (props: BattleGraphProps) => {
                 let resid = `${act.name}_${attack.second}`;
                 if (results.some(r => r.id === resid)) return;
                 results.push({
-                    id: `${act.name}_${attack.second}`,
+                    id: resid,
                     group: act.name,
+                    group_data: act,
                     attack: attack.attack,
                     second: attack.second,
                     group_size: attack.actions.length,

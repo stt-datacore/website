@@ -400,30 +400,32 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
 }
 
 export interface TinyShipSkillProps {
-    crew: PlayerCrew | CrewMember;
+    crew?: PlayerCrew | CrewMember;
+    action?: ShipAction;
     style?: React.CSSProperties;
 }
 
 export const TinyShipSkill = (props: TinyShipSkillProps) => {
-    const { crew } = props;
-
+    let { crew, action } = props;
+    if (!action && crew) action = action;
+    if (!action) return <></>
     return (
             <div style={{ ...(props.style ?? {}), display:"flex",flexDirection:"column",justifyContent:"center", alignItems: "center"}}>
-                <div style={{display:"flex", flexDirection: "row", color: getActionColor(crew.action.bonus_type)}}>								
-                    <span>+ {crew.action.bonus_amount}</span>								
+                <div style={{display:"flex", flexDirection: "row", color: getActionColor(action.bonus_type)}}>								
+                    <span>+ {action.bonus_amount}</span>								
                 </div>
 
-                {crew.action.ability && <div style={{ lineHeight: "1.3em"}}> 
-                    {getShipBonus(crew.action)} {!!crew.action.limit && <i style={{fontSize:"0.8em"}}> ({crew.action.limit}x)</i>}
+                {action.ability && <div style={{ lineHeight: "1.3em"}}> 
+                    {getShipBonus(action)} {!!action.limit && <i style={{fontSize:"0.8em"}}> ({action.limit}x)</i>}
                 </div>}
-                {!!crew.action.ability?.condition && <i style={{fontSize:"0.8em"}}>({
+                {!!action.ability?.condition && <i style={{fontSize:"0.8em"}}>({
                                     CONFIG.CREW_SHIP_BATTLE_TRIGGER[
-                                        crew.action.ability.condition
+                                        action.ability.condition
                                     ]
                                 })</i>}
 
-                {!!crew.action.charge_phases?.length && <i style={{fontSize:"0.8em"}}>(+{crew.action.charge_phases.length} charge phases)</i>}
-                <p style={{fontSize:"0.75em"}}>
+                {!!action.charge_phases?.length && <i style={{fontSize:"0.8em"}}>(+{action.charge_phases.length} charge phases)</i>}
+                {!!crew && <p style={{fontSize:"0.75em"}}>
                     {crew.ship_battle.crit_bonus && (
                         <span>
                             <b>CB:</b> +
@@ -452,7 +454,7 @@ export const TinyShipSkill = (props: TinyShipSkillProps) => {
                         {` `}
                         </span>
                     }
-                </p>
+                </p>}
             </div>
     )
 }
