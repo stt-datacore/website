@@ -55,7 +55,11 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [minRarity, setMinRarity] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/minRarity`, ship.rarity - 1, { rememberForever: true });
     const [advancedOpen, setAdvancedOpen] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/advancedOpen`, false, { rememberForever: true });
     const [exhaustiveMode, setExhaustiveMode] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/quickMode`, true, { rememberForever: true });
-    const [verbose, setVerbose] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/verbose`, true, { rememberForever: true });
+    const [verbose, setVerbose] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/verbose`, false, { rememberForever: true });
+    const [simulate, setSimulate] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/simulate`, false, { rememberForever: true });
+    const [iterations, setIterations] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/simulation_iterations`, 100, { rememberForever: true });
+    const [rate, setRate] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/rate`, 1, { rememberForever: true });
+    const [fixedActivationDelay, setFixedActivationDelay] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/fixedActivationDelay`, 0.6, { rememberForever: true });
     const [maxIter, setMaxIter] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/maxIter`, 3000000, { rememberForever: true });
     const [activationOffsets, setActivationOffsets] = useStateWithStorage<number[]>(`${pageId}/${ship.symbol}/activationOffsets`, ship.battle_stations!.map(m => 0), { rememberForever: true });
 
@@ -175,6 +179,36 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
     }, [suggestions, sugWait]);
 
+    const rates = [] as DropdownItemProps[];
+    [1, 2, 5].forEach((rate) => {
+        rates.push({
+            key: `rate_${rate}`,
+            value: rate,
+            text: `${rate}`
+        })
+    });
+
+    const delays = [] as DropdownItemProps[];
+    [0.2, 0.3, 0.4, 0.5, 0.6].forEach((rate) => {
+        delays.push({
+            key: `delay_${rate}`,
+            value: rate,
+            text: `${rate}`
+        })
+    });
+
+
+    const sectionStyle = {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        flexWrap: 'wrap',
+        alignItems: 'flex-start',
+        margin: '1em',
+        marginTop: '2em',
+        gap: '1em'
+    } as React.CSSProperties;
+
     return <React.Fragment>
         <div className={'ui segment'} style={{
             display: 'flex',
@@ -272,6 +306,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
                                     <Checkbox
+                                        disabled={running}
                                         label={t('ship.calc.ignore_skill')}
                                         value={t('ship.calc.ignore_skill')}
                                         checked={ignoreSkills}
@@ -281,6 +316,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                 {!!globalContext.player.playerData && <>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
                                         <Checkbox
+                                            disabled={running}
                                             label={t('consider_crew.consider_frozen')}
                                             value={t('consider_crew.consider_frozen')}
                                             checked={considerFrozen}
@@ -289,6 +325,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
                                         <Checkbox
+                                            disabled={running}
                                             label={t('consider_crew.consider_unowned')}
                                             checked={considerUnowned}
                                             onChange={(e, { checked }) => setConsiderUnowned(checked as boolean)} />
@@ -297,6 +334,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
                                     <Checkbox
+                                        disabled={running}
                                         label={t('ship.calc.verbose_status_updates')}
                                         value={t('ship.calc.verbose_status_updates')}
                                         checked={verbose}
@@ -304,60 +342,95 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                 </div>
                             </div>
                             <div style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'space-evenly',
-                                alignItems: 'center',
-                                margin: '1em',
-                                marginTop: '2em',
-                                gap: '1em'
+                                display: 'grid',
+                                width: "100%",
+                                gridTemplateAreas: `"exhaust rate" "simulate simulate" "battle battle"`,
+                                gridTemplateColumns: "50% 50%"
                             }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
-                                    <Checkbox
-                                        label={t('ship.calc.exhaustive_mode')}
-                                        value={t('ship.calc.exhaustive_mode')}
-                                        checked={exhaustiveMode}
-                                        onChange={(e, { checked }) => setExhaustiveMode(checked as boolean)} />
+                                <div style={{...sectionStyle, gridArea: 'exhaust'}}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1em', height:'3em' }}>
+                                        <Checkbox
+                                            disabled={running}
+                                            label={t('ship.calc.exhaustive_mode')}
+                                            value={t('ship.calc.exhaustive_mode')}
+                                            checked={exhaustiveMode}
+                                            onChange={(e, { checked }) => setExhaustiveMode(checked as boolean)} />
 
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
-                                    <Input
-                                        disabled={exhaustiveMode}
-                                        label={t('ship.calc.max_iterations')}
-                                        value={maxIter}                                        
-                                        onChange={(e, { value }) => setMaxIter(Number.parseInt(value))} />
-                                </div>
-                            </div>
-                            <div style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'space-evenly',
-                                flexWrap: 'wrap',
-                                alignItems: 'center',
-                                margin: '1em',
-                                marginTop: '2em',
-                                gap: '1em'
-                            }}>
-                                {ship.battle_stations?.map((mp, idx) => {
-                                    const skillName = mp.skill;
-                                    return <div style={{ display: 'flex', alignItems: 'center', gap: '1em', justifyContent: 'center' }}>
-                                        <div style={{height: '32px', display:'flex', alignItems: 'center'}}>
-                                            ({idx+1})&nbsp;{tfmt('ship.calc.icon_activation_offset', {
-                                                icon: <img key={skillName} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillName}.png`} style={{height: '16px', margin: '0.5em'}} />
-                                            })}
-                                        </div>
-                                        <Input
-                                            value={activationOffsets[idx]}
-                                            style={{width: '7em'}}
-                                            onChange={(e, { value }) => {
-                                                activationOffsets[idx] = Number.parseInt(value);
-                                                setActivationOffsets([...activationOffsets]);
-                                            }} />
                                     </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1em', height:'3em' }}>
+                                        <Input
+                                            disabled={exhaustiveMode || running}
+                                            label={t('ship.calc.max_iterations')}
+                                            value={maxIter}                                        
+                                            onChange={(e, { value }) => setMaxIter(Number.parseInt(value))} />
+                                    </div>
+                                </div>
+                                <div style={{...sectionStyle, gridArea: 'rate', display: 'grid', alignItems: 'center', gridTemplateAreas: "'label1 dropdown1' 'label2 dropdown2'"}}>
+                                    <div style={{gridArea:'label1'}}>
+                                        {t('ship.calc.rate')}:&nbsp;
+                                    </div>
+                                    <div style={{gridArea:'dropdown1'}}>
+                                        <Dropdown                                        
+                                            fluid
+                                            scrolling
+                                            selection
+                                            value={rate}
+                                            onChange={(e, { value }) => setRate(value as number)}
+                                            options={rates} />
+                                    </div>
+                                    <div style={{gridArea:'label2'}}>
+                                        {t('ship.calc.fixed_delay')}:&nbsp;
+                                    </div>
+                                    <div style={{gridArea:'dropdown2'}}>
+                                        <Dropdown                                        
+                                            fluid
+                                            scrolling
+                                            selection
+                                            value={fixedActivationDelay}
+                                            onChange={(e, { value }) => setFixedActivationDelay(value as number)}
+                                            options={delays} />
+                                    </div>
+                                </div>
+                                {/* <div style={{...sectionStyle, gridArea: 'simulate'}}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1em', height:'3em' }}>
+                                        <Checkbox
+                                            disabled={running}
+                                            label={t('ship.calc.simulate')}
+                                            value={t('ship.calc.simulate')}
+                                            checked={simulate}
+                                            onChange={(e, { checked }) => setSimulate(checked as boolean)} />
 
-                                })}                               
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1em', height:'3em' }}>
+                                        <Input
+                                            disabled={!simulate || running}
+                                            label={t('ship.calc.iterations')}
+                                            value={iterations}                                        
+                                            onChange={(e, { value }) => setIterations(Number.parseInt(value))} />
+                                    </div>
+                                </div> */}
+                                <div style={{...sectionStyle, gridArea: 'battle', flexDirection: 'row', justifyContent: 'space-evenly'}}>
+                                    {ship.battle_stations?.map((mp, idx) => {
+                                        const skillName = mp.skill;
+                                        return <div key={`battle_station_${idx}`} style={{ display: 'flex', alignItems: 'center', gap: '1em', justifyContent: 'center' }}>
+                                            <div style={{height: '32px', display:'flex', alignItems: 'center'}}>
+                                                ({idx+1})&nbsp;{tfmt('ship.calc.icon_activation_offset', {
+                                                    icon: <img key={skillName} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillName}.png`} style={{width: '16px', margin: '0.5em'}} />
+                                                })}
+                                            </div>
+                                            <Input
+                                                disabled={running}
+                                                value={activationOffsets[idx]}
+                                                style={{width: '7em'}}
+                                                onChange={(e, { value }) => {
+                                                    activationOffsets[idx] = Number.parseInt(value);
+                                                    setActivationOffsets([...activationOffsets]);
+                                                }} />
+                                        </div>
+
+                                    })}                               
+                                </div>
                             </div>
-
                         </Accordion.Content>
                     </Accordion>
                 </div>
@@ -468,7 +541,10 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 ignore_skill: ignoreSkills,
                 verbose,
                 max_iterations: !exhaustiveMode ? maxIter : undefined,
-                activation_offsets: activationOffsets
+                activation_offsets: activationOffsets,
+                simulate,
+                fixed_activation_delay: fixedActivationDelay,
+                rate
             } as ShipWorkerConfig;
 
             setProgressMsg('');

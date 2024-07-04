@@ -1217,7 +1217,13 @@
             "verbose_status_updates": "Ausführliche Statusaktualisierungen",
             "exhaustive_mode": "Vollständiger Modus",
             "max_iterations": "Max. Iterationen",
-            "icon_activation_offset": "{{icon}} Aktivierungsoffset"
+            "icon_activation_offset": "{{icon}} Aktivierungsoffset",
+            "simulate": "Simulieren",
+            "iterations": "Iterationen",
+            "fixed_delay": "Feste Verzögerung",
+            "fixed_delay_msg": "Muss eine Zahl zwischen 0,2 und 0,6 sein",
+            "rate": "Rate",
+            "rate_msg": "Muss eine Zahl zwischen 1 und 10 sein"
         },
         "calculated_crew": "Kalkulierte Crew",
         "charge_phase": {
