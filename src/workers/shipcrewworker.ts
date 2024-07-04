@@ -177,9 +177,9 @@ function getInstantPowerInfo(rate: number, ship: Ship, actions: ShipAction[], op
         },
         computed: {
             active: {
-                attack: 0,
-                accuracy: 0,
-                evasion: 0            
+                attack: ship.attack,
+                accuracy: ship.accuracy,
+                evasion: ship.evasion
             },
             attack: {
                 base: 0,
@@ -247,28 +247,33 @@ function getInstantPowerInfo(rate: number, ship: Ship, actions: ShipAction[], op
 
     output.grants = actions.filter(f => f.status).map(m => m.status!);
 
+    // position
     if (output.grants.includes(1)) {
         output.condensed.crit_chance += 1000;
     }
-
-    output.condensed.active.attack += output.condensed.base.attack;
-    output.condensed.active.evasion += output.condensed.base.evasion;
-    output.condensed.active.accuracy += output.condensed.base.accuracy;
 
     output.condensed.active.attack -= output.condensed.penalty.attack;
     output.condensed.active.evasion -= output.condensed.penalty.evasion;
     output.condensed.active.accuracy -= output.condensed.penalty.accuracy;
 
+    // use the ship's base numbers as reported by the game, and add the power table reference for the active boosts.
+    output.computed.active.attack += PowerTable[output.condensed.active.attack];
+    output.computed.active.evasion += PowerTable[output.condensed.active.evasion];
+    output.computed.active.accuracy += PowerTable[output.condensed.active.accuracy];
+
+    // add the increase damage to boss for attack
+    output.computed.active.attack += (output.computed.active.attack * offense);
+
+    // add the condensed boosts to the base condensed boosts to get the active condensed boosts:
+    output.condensed.active.attack += output.condensed.base.attack;
+    output.condensed.active.evasion += output.condensed.base.evasion;
+    output.condensed.active.accuracy += output.condensed.base.accuracy;
+
     output.computed.crit_chance = getCritChance(output.condensed.crit_chance) / 100;
     output.computed.crit_bonus = output.condensed.crit_bonus /= 10000;
 
-    output.computed.active.attack = PowerTable[output.condensed.active.attack];
-    output.computed.active.attack += (output.computed.active.attack * offense);
-
-    output.computed.active.evasion = PowerTable[output.condensed.active.evasion];
-    output.computed.active.accuracy = PowerTable[output.condensed.active.accuracy];
-
-    if (output.grants.includes(4)) {
+    // boarding
+    if (output.grants.includes(4)) {        
         output.computed.active.attack += ((output.computed.active.attack * 0.50) / rate);
     }
 
