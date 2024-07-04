@@ -9,7 +9,7 @@ import { PlayerCrew } from "../../model/player";
 import { useStateWithStorage } from "../../utils/storage";
 import { BossShip } from "../../model/boss";
 import { CrewTarget } from "../hovering/crewhoverstat";
-import { getShipsInUse } from "../../utils/shiputils";
+import { compareShipResults, getShipsInUse } from "../../utils/shiputils";
 import { BattleGraph } from "./battlegraph";
 
 export interface RosterCalcProps {
@@ -64,6 +64,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [activationOffsets, setActivationOffsets] = useStateWithStorage<number[]>(`${pageId}/${ship.symbol}/activationOffsets`, ship.battle_stations!.map(m => 0), { rememberForever: true });
 
     const [progressMsg, setProgressMsg] = React.useState<string>('');
+    
+    const resultCache = [] as ShipWorkerItem[];
 
     const battleModes = [] as DropdownItemProps[];
     (globalContext.player.playerData ? ['pvp', 'skirmish', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'] : ['pvp', 'skirmish']).forEach((mode) => {
@@ -480,7 +482,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             <hr style={{ width: '100%', opacity: '0.25' }} />
             <div style={{
                 display: 'grid',
-                gridTemplateAreas: "'bonus rating percentile duration' 'weighted min max metric'",
+                gridTemplateAreas: "'bonus rating percentile duration' 'weighted min max metric' 'a standard standard b'",
                 gridTemplateColumns: '20% 20% 20% 20%',
                 lineHeight: '1.25em',
                 paddingLeft: '2em',
@@ -508,13 +510,25 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     {t('ship.weighted_attack')}{': '}<br />{Math.round(sug.weighted_attack).toLocaleString()}
                 </div>
                 <div style={{ gridArea: 'min' }}>
-                    {battleMode.startsWith("fbb") && <b>*</b>} {t('ship.min_attack')}{': '}<br />{Math.round(sug.min_attack).toLocaleString()}
+                    {t('ship.min_attack')}{': '}<br />{Math.round(sug.min_attack).toLocaleString()}
                 </div>
                 <div style={{ gridArea: 'max' }}>
-                    {t('ship.attack')}{': '}<br />{Math.round(sug.attack).toLocaleString()}
+                    {t('ship.max_attack')}{': '}<br />{Math.round(sug.max_attack).toLocaleString()}
                 </div>
                 <div style={{ gridArea: 'metric' }}>
-                    {!battleMode.startsWith("fbb") && <b>*</b>} {t('ship.arena_metric')}{': '}<br />{Math.round(sug.arena_metric).toLocaleString()}
+                    {t('ship.attack')}{': '}<br />{Math.round(sug.attack).toLocaleString()}
+                </div>
+                <div style={{gridArea: 'standard', display: 'flex', justifyContent: 'center'}}>
+                    {battleMode.startsWith("fbb") && 
+                        <>
+                            <b>*</b> {t('ship.fbb_metric')}{': '}<br />{Math.round(sug.fbb_metric).toLocaleString()}
+                        </>
+                    }
+                    {!battleMode.startsWith("fbb") && 
+                        <>
+                            <b>*</b> {t('ship.arena_metric')}{': '}<br />{Math.round(sug.arena_metric).toLocaleString()}
+                        </>
+                    }
                 </div>
             </div>
         </div>
@@ -523,11 +537,16 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     function recommend(current?: boolean) {
         if (running) {
             cancel();
+            if (resultCache.length) {
+                setSuggestions([...resultCache]);
+                resultCache.length = 0;
+                setSugWait(0);
+            }
             return;
         }
         if (ships?.length && crew?.length) {
             if (battleMode.startsWith('fbb') && !battleConfig.opponent) return;
-
+            resultCache.length = 0;
             const config = {
                 ship: JSON.parse(JSON.stringify(ship)),
                 crew: JSON.parse(JSON.stringify(current ? crewStations : crew)),
@@ -585,7 +604,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         return idx;
     }
 
-    function workerMessage(result: { data: { result: { ships?: ShipWorkerItem[], format?: string, options?: any }, inProgress: boolean } }) {
+    function workerMessage(result: { data: { result: { ships?: ShipWorkerItem[], format?: string, options?: any, result?: ShipWorkerItem }, inProgress: boolean } }) {
         if (!result.data.inProgress && result.data.result.ships?.length) {
             if (result.data.result.ships.length === 1 && suggestions?.length && suggestions.length > 1) {
                 let r = result.data.result.ships[0];
@@ -602,6 +621,19 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
         else if (result.data.inProgress && result.data.result.format) {
             setProgressMsg(t(result.data.result.format, result.data.result.options));
+        }
+        else if (result.data.inProgress && result.data.result.result) {
+            resultCache.push(result.data.result.result);
+            if (resultCache.length > 1) resultCache.sort((a, b) => compareShipResults(a,b, !['skirmish', 'arena'].includes(battleMode)));
+            if (!activeSuggestion || activeSuggestion.id !== resultCache[0].id) {
+                setSuggestions([...resultCache]);
+                setTimeout(() => {
+                    setSugWait(undefined);
+                    setTimeout(() => {
+                        setSugWait(0);
+                    });
+                });
+            }            
         }
     }
 }

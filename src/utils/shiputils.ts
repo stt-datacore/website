@@ -1,6 +1,6 @@
 import { BaseSkillFields, BaseSkills, CrewMember, Skill } from "../model/crew";
 import { PlayerCrew, Setup } from "../model/player";
-import { BattleMode, PvpDivision, ShipAction, ShipInUse } from "../model/ship";
+import { BattleMode, PvpDivision, ShipAction, ShipInUse, ShipWorkerItem } from "../model/ship";
 import { Schematics, Ship } from "../model/ship";
 import { simplejson2csv, ExportField } from './misc';
 import { StatsSorter } from "./statssorter";
@@ -377,4 +377,58 @@ export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | u
 	}
 
 	return newship;
+}
+
+
+export function compareShipResults(a: ShipWorkerItem, b: ShipWorkerItem, fbb_mode: boolean) {
+	if (fbb_mode) {
+		let r = 0;
+		let aa: number;
+		let ba: number;
+		aa = a.fbb_metric;
+		ba = b.fbb_metric;
+		r = ba - aa;
+		if (r) return r;
+		aa = a.attack;
+		ba = b.attack;
+		r = ba - aa;
+		if (r) return r;
+		aa = a.battle_time;
+		ba = b.battle_time;
+		r = ba - aa;
+		if (r) return r;
+		aa = a.max_attack;
+		ba = b.max_attack;
+		r = ba - aa;
+		if (r) return r;
+		aa = a.min_attack;
+		ba = b.min_attack;
+		r = ba - aa;
+		return r;
+	}
+	else {
+		let r = 0;
+		let aa: number;
+		let ba: number;
+		aa = a.arena_metric;
+		ba = b.arena_metric;
+		r = ba - aa;
+		if (r) return r;
+		aa = a.weighted_attack;
+		ba = b.weighted_attack;
+		r = ba - aa;
+		if (r) return r;
+		aa = a.attack;
+		ba = b.attack;
+		r = ba - aa;
+		if (r) return r;
+		aa = a.max_attack;
+		ba = b.max_attack;
+		r = ba - aa;
+		if (r) return r;
+		aa = a.min_attack;
+		ba = b.min_attack;
+		r = ba - aa;
+		return r;
+	}
 }

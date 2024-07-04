@@ -1209,6 +1209,7 @@
         "amount": "Montant",
         "antimatter": "Antimatière",
         "arena_metric": "Métrique de l'arène",
+        "fbb_metric": "Métrique de boss de flotte",
         "attack": "Attaque",
         "attack_speed": "Vitesse d'Attaque",
         "battle_mode": "Mode de combat",

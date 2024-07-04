@@ -208,6 +208,7 @@ export interface AttackInstant {
 
 
 export interface ShipWorkerItem {
+    id: number;
     rate: number;
     battle_mode: BattleMode;
     ship: Ship,
@@ -218,6 +219,7 @@ export interface ShipWorkerItem {
     battle_time: number;
     weighted_attack: number;
     arena_metric: number;
+    fbb_metric: number;
     percentile: number;
     attacks?: AttackInstant[];
 }
