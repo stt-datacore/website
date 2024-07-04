@@ -63,11 +63,15 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [maxIter, setMaxIter] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/maxIter`, 3000000, { rememberForever: true });
     const [activationOffsets, setActivationOffsets] = useStateWithStorage<number[]>(`${pageId}/${ship.symbol}/activationOffsets`, ship.battle_stations!.map(m => 0), { rememberForever: true });
 
+    const [resultCache, setResultCache] = React.useState([] as ShipWorkerItem[]);
     const [progressMsg, setProgressMsg] = React.useState<string>('');
     
-    const resultCache = [] as ShipWorkerItem[];
+    
 
     const battleModes = [] as DropdownItemProps[];
+    
+    const fbb_mode = !['skirmish', 'arena'].includes(battleMode);
+
     (globalContext.player.playerData ? ['pvp', 'skirmish', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'] : ['pvp', 'skirmish']).forEach((mode) => {
         let rarity = 0;
         if (mode.startsWith('fbb')) {
@@ -179,6 +183,17 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setSuggestion(sugWait ?? 0);
             setSugWait(undefined);
         }
+        // else if (activeSuggestion) {
+        //     let currSuggestion = getSuggestion();
+        //     if (suggestions?.length && currSuggestion !== undefined && (suggestions.length <= currSuggestion || suggestions[currSuggestion] !== activeSuggestion)) {
+        //         if (suggestions.length <= currSuggestion) {
+        //             setSuggestion(0);
+        //         }
+        //         else if (currSuggestion !== undefined) {
+        //             setSuggestion(currSuggestion);
+        //         }                
+        //     }
+        // }
     }, [suggestions, sugWait]);
 
     const rates = [] as DropdownItemProps[];
@@ -368,7 +383,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                     </div>
                                 </div>
                                 <div style={{...sectionStyle, gridArea: 'rate', display: 'grid', alignItems: 'center', gridTemplateAreas: "'label1 dropdown1' 'label2 dropdown2'"}}>
-                                    <div style={{gridArea:'label1'}}>
+                                    {/* <div style={{gridArea:'label1'}}>
                                         {t('ship.calc.rate')}:&nbsp;
                                     </div>
                                     <div style={{gridArea:'dropdown1'}}>
@@ -380,11 +395,11 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                             value={rate}
                                             onChange={(e, { value }) => setRate(value as number)}
                                             options={rates} />
-                                    </div>
-                                    <div style={{gridArea:'label2'}}>
+                                    </div> */}
+                                    <div style={{gridArea:'label1'}}>
                                         {t('ship.calc.fixed_delay')}:&nbsp;
                                     </div>
-                                    <div style={{gridArea:'dropdown2'}}>
+                                    <div style={{gridArea:'dropdown1'}}>
                                         <Dropdown    
                                             disabled={running}                                    
                                             fluid
@@ -623,16 +638,12 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setProgressMsg(t(result.data.result.format, result.data.result.options));
         }
         else if (result.data.inProgress && result.data.result.result) {
-            resultCache.push(result.data.result.result);
-            if (resultCache.length > 1) resultCache.sort((a, b) => compareShipResults(a,b, !['skirmish', 'arena'].includes(battleMode)));
-            if (!activeSuggestion || activeSuggestion.id !== resultCache[0].id) {
-                setSuggestions([...resultCache]);
-                setTimeout(() => {
-                    setSugWait(undefined);
-                    setTimeout(() => {
-                        setSugWait(0);
-                    });
-                });
+            let new_cache = [...resultCache, result.data.result.result];            
+            if (new_cache.length > 1) new_cache.sort((a, b) => compareShipResults(a, b, fbb_mode));
+            if (!activeSuggestion || activeSuggestion.id > new_cache[0].id) {
+                setSugWait(0);
+                setSuggestions(new_cache);
+                setResultCache(new_cache);
             }            
         }
     }

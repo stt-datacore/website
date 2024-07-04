@@ -1,5 +1,5 @@
 import React from "react"
-import { ShipWorkerItem } from "../../model/ship"
+import { Ship, ShipAction, ShipWorkerItem } from "../../model/ship"
 import { GlobalContext } from "../../context/globalcontext"
 import { BumpDatum, BumpSerie, BumpSerieExtraProps } from "@nivo/bump";
 
@@ -10,7 +10,20 @@ import { SwarmPlot, ResponsiveSwarmPlot } from '@nivo/swarmplot';
 import { Dropdown } from "semantic-ui-react";
 import { useStateWithStorage } from "../../utils/storage";
 import { ShipSkill, TinyShipSkill } from "../item_presenters/shipskill";
+import { CrewMember } from "../../model/crew";
+import { PlayerCrew } from "../../model/player";
 
+
+interface SwarmData {
+    id: string,
+    group: string,
+    group_data: ShipAction,
+    attack: number,
+    second: number,
+    group_size: number,
+    crew?: CrewMember | PlayerCrew,
+    ship: Ship
+}
 
 export interface BattleGraphProps {
     battle?: ShipWorkerItem;
@@ -25,7 +38,7 @@ export const BattleGraph = (props: BattleGraphProps) => {
     const { battle, style, className } = props;
 
     const [bumpData, setBumpData] = React.useState<BumpSerie<BumpDatum, BumpSerieExtraProps>[] | undefined>(undefined);
-    const [swarmData, setSwarmData] = React.useState<any[] | undefined>(undefined);
+    const [swarmData, setSwarmData] = React.useState<SwarmData[] | undefined>(undefined);
     const [graphType, setGraphType] = useStateWithStorage<'bump' | 'swarm'>('battleGraph_type', 'bump', { rememberForever: true });
 
     React.useEffect(() => {
@@ -203,7 +216,7 @@ export const BattleGraph = (props: BattleGraphProps) => {
                         <div className='ui label'>{t('ship.battle_stations')}: {node.data.group_size}</div>
                     </div>
                     
-                    <TinyShipSkill crew={node.data.crew ?? node.data.ship} />
+                    <TinyShipSkill action={node.data.group_data} />
                 </div>
             }}    
             colorBy={'group'}
@@ -312,7 +325,7 @@ export const BattleGraph = (props: BattleGraphProps) => {
         if (!battle?.attacks?.length) return [];
 
         let attacks = battle.attacks;
-        const results = [] as any[];
+        const results = [] as SwarmData[];
         let id = 0.1;
         attacks?.forEach((attack, idx) => {
             attack.actions.forEach((act) => {

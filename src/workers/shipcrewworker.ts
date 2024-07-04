@@ -906,10 +906,10 @@ const ShipCrewWorker = {
                 
                 set = newseats;
 
-                let overlaps = iterateBattle(rate, fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets, fixed_activation_delay, simulate);
-                let attack = processBattleRun(overlaps, set);
+                let battle_data = iterateBattle(rate, fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets, fixed_activation_delay, simulate);
+                let attack = processBattleRun(battle_data, set);
 
-                if (!get_attacks) overlaps.length = 0;
+                if (!get_attacks) battle_data.length = 0;
                 let accepted = false;
                 if (last_high === null) {
                     last_high = attack;
@@ -918,7 +918,7 @@ const ShipCrewWorker = {
                 }
                 else {
                     let d = compareShipResults(attack, last_high, fbb_mode);
-                    if (d <= 0) {
+                    if (d < 0) {
                         accepted = true;
                         results.push(attack);
                         last_high = attack;
@@ -929,11 +929,7 @@ const ShipCrewWorker = {
                     reportProgress({ result: attack });
                 }
 
-                if (attack.battle_mode !== battle_mode) {
-                    reportProgress({ format: `Errors Encountered! Battle Mode ${battle_mode}, but generated ${attack.battle_mode}` });
-                    errors = true;
-                }
-                return overlaps;
+                return battle_data;
             });
 
             reportProgress({ format: 'ship.calc.sorting_finalizing_ellipses' });
