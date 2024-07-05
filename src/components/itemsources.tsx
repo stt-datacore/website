@@ -6,6 +6,7 @@ import { Link } from 'gatsby';
 import CONFIG from './CONFIG';
 import { TinyStore } from '../utils/tiny';
 import { GlobalContext } from '../context/globalcontext';
+import { Quest } from '../model/missions';
 
 type ItemSourcesProps = {
 	item_sources: EquipmentItemSource[];
@@ -76,9 +77,18 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 
 		if (this.context.core.episodes) {
 			this.context.core.episodes.forEach(e => {
-				e.quests.forEach(q => {
-					let t = `${e.episode_title ?? e.name}`; 
-					let n = q.name;
+				let prefilter = e.quests.filter(f => f.challenges?.length || f.action === 'Enter Space Battle');
+				let questidx = [] as { quest: Quest, index: number }[]
+
+				questidx = prefilter.map((item, idx) => ({ quest: item, index: idx + 1}));
+
+				if (e.symbol.startsWith("dispute_")) {
+					questidx[questidx.length - 1].index--;
+				}
+
+				questidx.forEach(({ quest: q, index: idx}) => {					
+					let t = `${e.episode > 0 ? "(" + e.episode + ") " : ''}${e.episode_title ?? e.name}`; 
+					let n = `(${idx}) ${q.name}`;
 					eps[q.symbol] = t + ": " + n;
 				});
 			});
