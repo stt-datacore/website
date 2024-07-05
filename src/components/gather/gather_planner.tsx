@@ -66,8 +66,8 @@ const GatherTable = (props: GatherTableProps) => {
             }
         
             newadv.sort((a, b) => compareAdventure(a, b));
-            setAdventures(newadv);
             if (obj && changed) {
+                setAdventures(newadv);
                 obj.adventures = newadv.concat();
                 setCachedItems([...cachedItems]);
             }
