@@ -40,8 +40,8 @@ export interface IEphemeralData {
 	fleetBossBattlesRoot: BossBattlesRoot;
 	shuttleAdventures: ShuttleAdventure[];
 	voyage: Voyage[],
-	voyageDescriptions: VoyageDescription[];
-	archetype_cache: ArchetypeRoot20
+	voyageDescriptions: VoyageDescription[],
+	archetype_cache: ArchetypeRoot20;
 };
 
 export interface ISessionStates {
@@ -84,7 +84,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const [stripped, setStripped] = useStateWithStorage<PlayerData | undefined>('playerData', undefined, { compress: true });
 
 	const [ephemeral, setEphemeral] = useStateWithStorage<IEphemeralData | undefined>('ephemeralPlayerData', undefined, { compress: true });
-
+	const [itemArchetypeCache, setItemArchetypeCache] = useStateWithStorage<ArchetypeRoot20>('itemArchetypeCache', {} as ArchetypeRoot20, { rememberForever: true });
 	const [profile, setProfile] = React.useState<PlayerData | undefined>(undefined);
 	const [playerShips, setPlayerShips] = React.useState<Ship[] | undefined>(undefined);
 	const buffConfig = stripped ? calculateBuffConfig(stripped.player) : undefined;
@@ -150,8 +150,9 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				shuttleAdventures: [...input.player.character.shuttle_adventures ?? []],
 				voyage: [...input.player.character.voyage ?? []],
 				voyageDescriptions: [...input.player.character.voyage_descriptions ?? []],
-				archetype_cache: input.archetype_cache ?? {} as ArchetypeRoot20
+				archetype_cache: {} as ArchetypeRoot20
 			});
+			setItemArchetypeCache(input.archetype_cache ?? {} as ArchetypeRoot20);
 		}
 
 		const dtImported = (typeof input.calc?.lastImported === 'string') ? new Date(input.calc?.lastImported) : new Date();
@@ -188,6 +189,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		setInput(undefined);
 		setSessionStates(undefined);
 		setLoaded(false);
+		setItemArchetypeCache({} as ArchetypeRoot20);
 		// setGameLanguage('en');
 		sessionStorage.clear();
 	};
@@ -197,7 +199,10 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		setInput,
 		reset,
 		playerData: profile,
-		ephemeral,
+		ephemeral: { 
+			...ephemeral,
+			archetype_cache: itemArchetypeCache
+		},
 		strippedPlayerData: stripped,
 		playerShips,
 		buffConfig,

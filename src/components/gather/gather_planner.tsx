@@ -6,6 +6,7 @@ import { ItemHoverStat, ItemTarget } from "../hovering/itemhoverstat";
 import { Table } from "semantic-ui-react";
 import { EquipmentIngredient, EquipmentItem } from "../../model/equipment";
 import { calcItemDemands } from "../../utils/equipment";
+import { useStateWithStorage } from "../../utils/storage";
 
 export const GatherPlanner = () => {
     const globalContext = React.useContext(GlobalContext);
@@ -19,34 +20,68 @@ export const GatherPlanner = () => {
 
     return (<>
     
-        <GatherTable pool={pools[0]} />
+        <GatherTable eventId={ephemeral.events[0].id} pool={pools[0]} />
     </>)
 }
 
 interface GatherTableProps {
     pool: GatherPool;
+    eventId: number;
+}
+
+interface GatherItemCache {
+    eventId: number,
+    items: EquipmentItem[],
+    adventures: Adventure[]
 }
 
 const GatherTable = (props: GatherTableProps) => {
 
-    const { pool } = props;
+    const { pool, eventId } = props;
     
     const globalContext = React.useContext(GlobalContext);
     const playerData = globalContext.player.playerData!;
     const ephemeral = globalContext.player.ephemeral!;
     const { t } = globalContext.localized;
     const { items } = globalContext.core;
-    
+
+    const [adventures, setAdventures] = React.useState<Adventure[]>(pool.adventures);
+    const [cachedItems, setCachedItems] = useStateWithStorage<GatherItemCache[]>(`events/gather_planner/item_cache`, [], { rememberForever: true })
+
     const hover_target = "gather_planner";
 
-    return (<div>
+    React.useEffect(() => {
+        if (pool && ephemeral?.archetype_cache && playerData && items?.length) {
+            let obj = getEventCache(true);
+            let newadv = adventures.concat();
+            let changed = false;
+            if (obj) {
+                for (let adv of obj.adventures) {
+                    let f = newadv.find(fa => fa.id === adv.id);
+                    if (!f) {
+                        newadv.push(adv);
+                        changed = true;
+                    }
+                }
+            }
+        
+            newadv.sort((a, b) => compareAdventure(a, b));
+            setAdventures(newadv);
+            if (obj && changed) {
+                obj.adventures = newadv.concat();
+                setCachedItems([...cachedItems]);
+            }
+        }
+    }, [pool, ephemeral, playerData, items, cachedItems])
+
+    return (<div style={{marginTop: "1em"}}>
 
         <Table striped>
             <Table.Header>
                 {renderRowHeaders()}
             </Table.Header>
             <Table.Body>
-                {pool.adventures.map((adv) => renderTableRow(adv))}
+                {adventures.map((adv) => renderTableRow(adv))}
             </Table.Body>
 
 
@@ -89,7 +124,8 @@ const GatherTable = (props: GatherTableProps) => {
                     let item = items.find(f => f.id?.toString() === demand.archetype_id.toString());
                     if (!item) return <div key={`empty_${idx}_event_demand`}></div>
                     item = JSON.parse(JSON.stringify(item)) as EquipmentItem;
-                    makeRecipe(item);                
+                    makeRecipe(item);
+                    item = mergeCache(item);       
                     return <div 
                             key={item.symbol + "_event_demand"}
                             style={{display: 'flex', 
@@ -97,6 +133,7 @@ const GatherTable = (props: GatherTableProps) => {
                             alignItems: 'center', 
                             justifyContent: 'center', 
                             gap: '0.5em', 
+                            textAlign: 'center',
                             width: '10em',
                             fontSize: '0.8em', 
                             fontStyle: 'italic'}}>
@@ -139,5 +176,46 @@ const GatherTable = (props: GatherTableProps) => {
         }
         item.demands = calcItemDemands(item, globalContext.core.items, playerData.player.character.items);
     } 
+
+    function getEventCache(create = false) {
+        let obj = cachedItems.find(f => f.eventId === eventId);
+        if (!obj && create) {
+            obj = {
+                eventId,
+                items: [],
+                adventures: pool.adventures
+            }
+            setCachedItems([...cachedItems, obj]);            
+        }        
+        return obj;
+    }
+
+    function addItemToCache(item: EquipmentItem) {
+        let obj = getEventCache()?.items;
+        if (obj) {
+            obj.push(item);
+            setCachedItems([...cachedItems]);
+        }
+    }
+
+    function findEventItem(symbol: string) {
+        return getEventCache()?.items.find(f => f.symbol === symbol);
+    }
+
+    function mergeCache(item: EquipmentItem) {
+        if (!item.demands) return item;
+        let eitem = findEventItem(item.symbol);
+        if (eitem) {
+            if (eitem.demands?.every(d => item.demands?.some(d2 => d2.symbol === d.symbol))) {
+                return { ...eitem, ... item }
+            }
+        }
+        addItemToCache(item);
+        return item;
+    }
+
+    function compareAdventure(a: Adventure, b: Adventure) {    
+        return a.id - b.id;
+    }
 
 }
