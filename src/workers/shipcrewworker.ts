@@ -274,7 +274,7 @@ function getInstantPowerInfo(rate: number, ship: Ship, actions: ShipAction[], op
     let o_o_attack = {
         base: o_attack * o_hit_chance * ship_mul,
         with_bonus: (o_attack + (o_attack * o_crit_bonus)) * ship_mul,
-        with_bonus_and_chance: (o_attack + (o_attack * o_crit_bonus * o_crit_chance)) * ship_mul
+        with_bonus_and_chance: (o_attack + (o_attack * o_crit_bonus * o_crit_chance)) * ship_mul * o_hit_chance
     }
 
     return {
@@ -484,12 +484,12 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             if (immediate) { 
                 powerInfo = getInstantPowerInfo(rate, ship, current, opponent, offense);
                 let imm = immediateDamage(powerInfo.condensed.base.attack, powerInfo.condensed.active.attack, immediate);
-                let imm_norm = imm * hitChance(powerInfo.computed.active.accuracy, opponent?.evasion ?? powerInfo.computed.active.evasion);
+                let imm_norm = imm * powerInfo.computed.hit_chance;
                 
                 immediates.push({
                     base: imm_norm,
                     max: imm * (1 + powerInfo.computed.crit_bonus),
-                    standard: imm * (1 + (powerInfo.computed.crit_bonus)) * powerInfo.computed.crit_chance
+                    standard: imm_norm * (1 + (powerInfo.computed.crit_bonus)) * powerInfo.computed.crit_chance
                 });
                 immediate = 0;
             }
