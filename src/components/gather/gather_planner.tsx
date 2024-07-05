@@ -8,19 +8,23 @@ import { EquipmentIngredient, EquipmentItem } from "../../model/equipment";
 import { calcItemDemands } from "../../utils/equipment";
 import { useStateWithStorage } from "../../utils/storage";
 
-export const GatherPlanner = () => {
+export interface GatherPlannerProps {
+    eventSymbol: string;
+}
+
+export const GatherPlanner = (props: GatherPlannerProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { playerData, ephemeral } = globalContext.player;
+    const { eventSymbol: eventId } = props;
     
     const { t } = globalContext.localized;
-    
-    if (!ephemeral?.events?.length || !ephemeral?.events[0].content.gather_pools) return (<></>);
+    const event = ephemeral?.events?.find(f => f.symbol === eventId)
 
-    const pools = ephemeral.events[0].content.gather_pools
+    if (!ephemeral?.events?.length || !event?.content.gather_pools) return (<></>);
 
     return (<>
     
-        <GatherTable eventId={ephemeral.events[0].id} pool={pools[0]} />
+        <GatherTable eventId={ephemeral.events[0].id} pool={event.content.gather_pools[0]} />
     </>)
 }
 
