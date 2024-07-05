@@ -4,15 +4,18 @@ import { Adventure, GatherPool } from "../../model/player";
 import ItemDisplay from '../itemdisplay';
 import { ItemHoverStat, ItemTarget } from "../hovering/itemhoverstat";
 import { Table } from "semantic-ui-react";
+import { EquipmentIngredient, EquipmentItem } from "../../model/equipment";
+import { calcItemDemands } from "../../utils/equipment";
 
 export const GatherPlanner = () => {
     const globalContext = React.useContext(GlobalContext);
-    const { playerData } = globalContext.player;
+    const { playerData, ephemeral } = globalContext.player;
+    
     const { t } = globalContext.localized;
+    
+    if (!ephemeral?.events?.length || !ephemeral?.events[0].content.gather_pools) return (<></>);
 
-    if (!playerData?.player.character.events?.length || !playerData.player.character.events[0].content.gather_pools) return (<></>);
-
-    const pools = playerData.player.character.events[0].content.gather_pools
+    const pools = ephemeral.events[0].content.gather_pools
 
     return (<>
     
@@ -24,11 +27,13 @@ interface GatherTableProps {
     pool: GatherPool;
 }
 
-export const GatherTable = (props: GatherTableProps) => {
+const GatherTable = (props: GatherTableProps) => {
 
     const { pool } = props;
     
     const globalContext = React.useContext(GlobalContext);
+    const playerData = globalContext.player.playerData!;
+    const ephemeral = globalContext.player.ephemeral!;
     const { t } = globalContext.localized;
     const { items } = globalContext.core;
     
@@ -36,7 +41,7 @@ export const GatherTable = (props: GatherTableProps) => {
 
     return (<div>
 
-        <Table>
+        <Table striped>
             <Table.Header>
                 {renderRowHeaders()}
             </Table.Header>
@@ -46,7 +51,7 @@ export const GatherTable = (props: GatherTableProps) => {
 
 
         </Table>
-        <ItemHoverStat targetGroup={hover_target} />
+        <ItemHoverStat targetGroup={hover_target} compact={false} />
     </div>)
 
     function renderRowHeaders() {
@@ -65,8 +70,8 @@ export const GatherTable = (props: GatherTableProps) => {
 
         return <Table.Row key={row.name + row.id.toString()}>
             <Table.Cell>
-                <h4>{row.name}</h4>
-                <div style={{fontSize:'0.8em'}}>
+                <h3>{row.name}</h3>
+                <div style={{fontSize:'1em'}}>
                     <i>{row.description}</i>
                 </div>
             </Table.Cell>
@@ -76,23 +81,36 @@ export const GatherTable = (props: GatherTableProps) => {
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'center',
-                    justifyContent: 'space-evenly',
+                    justifyContent: 'space-between',
                     gap: '1em',
 
                 }}>
-                {row.demands.map((demand) => {
-                    const item = items.find(f => f.archetype_id === demand.archetype_id);
-
-                    return <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.5em', fontSize: '0.8em', fontStyle: 'italic'}}>
+                {row.demands.map((demand, idx) => {
+                    let item = items.find(f => f.id?.toString() === demand.archetype_id.toString());
+                    if (!item) return <div key={`empty_${idx}_event_demand`}></div>
+                    item = JSON.parse(JSON.stringify(item)) as EquipmentItem;
+                    makeRecipe(item);                
+                    return <div 
+                            key={item.symbol + "_event_demand"}
+                            style={{display: 'flex', 
+                            flexDirection: 'column', 
+                            alignItems: 'center', 
+                            justifyContent: 'center', 
+                            gap: '0.5em', 
+                            width: '10em',
+                            fontSize: '0.8em', 
+                            fontStyle: 'italic'}}>
+                                <ItemTarget inputItem={item} targetGroup={hover_target}>
                                 <ItemDisplay
                                     src={`${process.env.GATSBY_ASSETS_URL}${item?.imageUrl}`}
-                                    size={24}
-                                    targetGroup={hover_target}
-                                    allItems={items}
+                                    size={48}                                    
+                                    allItems={items}                      
                                     itemSymbol={item!.symbol}
                                     rarity={item!.rarity}
                                     maxRarity={item!.rarity}
                                 />
+                                </ItemTarget>
+                                {item!.name}
                         </div>
                 })}
                 </div>
@@ -102,5 +120,24 @@ export const GatherTable = (props: GatherTableProps) => {
 
     }
 
+    function makeRecipe(item: EquipmentItem) {
+        let aitem = ephemeral.archetype_cache?.archetypes.find(f => f.id.toString() === item.id?.toString());
+        if (!aitem?.recipe) return;
+        item.recipe = { 
+            incomplete: false,
+            craftCost: 0,
+            list: []
+        }
+        let recipe_items = globalContext.core.items.filter(f => aitem.recipe?.demands?.some(d => d.archetype_id?.toString() === f.id?.toString()))
+        if (recipe_items?.length) {
+            let newrecipe = recipe_items.map((m, idx) => ({
+                count: aitem.recipe?.demands[idx].count,
+                factionOnly: false,
+                symbol: m.symbol
+            } as EquipmentIngredient));
+            item.recipe.list = item.recipe.list.concat(newrecipe);
+        }
+        item.demands = calcItemDemands(item, globalContext.core.items, playerData.player.character.items);
+    } 
 
 }

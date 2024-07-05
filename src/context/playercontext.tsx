@@ -9,7 +9,7 @@ import { mergeShips } from '../utils/shiputils';
 import { stripPlayerData } from '../utils/playerutils';
 import { BossBattlesRoot } from '../model/boss';
 import { ShuttleAdventure } from '../model/shuttle';
-import { Archetype20, ArchetypeBase, Archetype17 } from '../model/archetype';
+import { Archetype20, ArchetypeBase, Archetype17, ArchetypeRoot20 } from '../model/archetype';
 import { getItemWithBonus } from '../utils/itemutils';
 import { TinyStore } from '../utils/tiny';
 
@@ -41,6 +41,7 @@ export interface IEphemeralData {
 	shuttleAdventures: ShuttleAdventure[];
 	voyage: Voyage[],
 	voyageDescriptions: VoyageDescription[];
+	archetype_cache: ArchetypeRoot20
 };
 
 export interface ISessionStates {
@@ -148,7 +149,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				fleetBossBattlesRoot: input.fleet_boss_battles_root ?? {} as BossBattlesRoot,
 				shuttleAdventures: [...input.player.character.shuttle_adventures ?? []],
 				voyage: [...input.player.character.voyage ?? []],
-				voyageDescriptions: [...input.player.character.voyage_descriptions ?? []]
+				voyageDescriptions: [...input.player.character.voyage_descriptions ?? []],
+				archetype_cache: input.archetype_cache ?? {} as ArchetypeRoot20
 			});
 		}
 

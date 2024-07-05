@@ -37,7 +37,7 @@ export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: strin
         alignItems: "left"
     }}>
         {Object.values(skills).map(((skill, idx) => {
-            
+
             const atext = CONFIG.SKILLS[skill.skill!];
             return (
                 <div
@@ -51,11 +51,11 @@ export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: strin
                         alignContent: "center"
                     }}
                 >
-                    <div style={{width: maxWidth ?? "2em", marginRight: "0.5em"}}>
-                    <img style={{ maxHeight: "2em", maxWidth: maxWidth ?? "2em", margin: margin ?? "0.5em", marginLeft: "0"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.skill}.png`} />
+                    <div style={{ width: maxWidth ?? "2em", marginRight: "0.5em" }}>
+                        <img style={{ maxHeight: "2em", maxWidth: maxWidth ?? "2em", margin: margin ?? "0.5em", marginLeft: "0" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.skill}.png`} />
                     </div>
-                    <h4 style={{ margin: margin ?? "0.5em"}} >+{skill.core ?? 0} +({skill.range_min ?? 0}-{skill.range_max ?? 0})</h4>
-                    <h4 style={{ margin: margin ?? "0.5em"}} >{atext}</h4>
+                    <h4 style={{ margin: margin ?? "0.5em" }} >+{skill.core ?? 0} +({skill.range_min ?? 0}-{skill.range_max ?? 0})</h4>
+                    <h4 style={{ margin: margin ?? "0.5em" }} >{atext}</h4>
                 </div>)
         }))}
     </div>)
@@ -82,19 +82,19 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
     tiny: TinyStore;
 
     constructor(props: ItemPresenterProps) {
-        super(props);        
+        super(props);
         this.state = {
             ... this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         }
 
         this.tiny = TinyStore.getStore(props.storeName)
-    }    
-    
+    }
+
     public get demandMode(): DemandMode {
         return this.tiny.getValue<DemandMode>("demandMode", "all") ?? "all"
     }
-    
+
     public set demandMode(value: DemandMode) {
         if (this.demandMode === value) return;
         this.tiny.setValue("demandMode", value);
@@ -107,13 +107,13 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         const { playerData } = this.context.player;
         const { items } = this.context.core;
         const { mobileWidth } = this.state;
-        const compact = this.props.hover || this.props.compact;
+        const compact = this.props.compact ?? this.props.hover;
         const roster = playerData?.player?.character?.crew ?? [];
         const mode = this.demandMode;
 
         if (!item) {
             return <></>
-        } 
+        }
         item.item_sources?.sort((a, b) => {
             let r = (a.avg_cost ?? 0) - (b.avg_cost ?? 0);
             if (!r) r = a.name.localeCompare(b.name);
@@ -121,7 +121,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         });
         const frozenStyle: React.CSSProperties = {
             background: 'transparent',
-            color: 'white',            
+            color: 'white',
             cursor: "default",
             marginRight: "0px"
         }
@@ -132,7 +132,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         }
 
         var me = this;
-    
+
         const demandOpts = [{
             key: "all",
             value: "all",
@@ -151,48 +151,49 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                 this.props.openItem(altItem);
             }
         }
-        
+
         let mt = true;
         const dcrew = item.demandCrew?.map(sym => {
             const crew = roster.find(f => {
-                    if (f.symbol !== sym || (f.level === 100 && f.equipment?.length === 4)) return false;
-                    // if (mode === 'immediate') {
-                    //     let startlevel = Math.floor(f.level / 10) * 4;
-                    //     if (f.level % 10 == 0 && f.equipment.length >= 1) startlevel = startlevel - 4;
+                if (f.symbol !== sym || (f.level === 100 && f.equipment?.length === 4)) return false;
+                // if (mode === 'immediate') {
+                //     let startlevel = Math.floor(f.level / 10) * 4;
+                //     if (f.level % 10 == 0 && f.equipment.length >= 1) startlevel = startlevel - 4;
 
-                    //     for (let bd of Object.values(f.equipment)) {
-                    //         let eqnum = startlevel + (bd as number);
-                    //         f.equipment_slots[eqnum].symbol
-                    //     }
+                //     for (let bd of Object.values(f.equipment)) {
+                //         let eqnum = startlevel + (bd as number);
+                //         f.equipment_slots[eqnum].symbol
+                //     }
 
-                    // }
-                    return f;
-                });
+                // }
+                return f;
+            });
             if (crew) mt = false;
             return (<>
-                {crew && <div 
-                    onClick={(e) => navigate("/crew/"+crew.symbol)}
+                {crew && <div
+                    onClick={(e) => navigate("/crew/" + crew.symbol)}
                     style={{
-                        cursor: "pointer", 
-                        textAlign:"center",
-                        display:"flex", 
-                        width:"96px", 
-                        margin: "1em", 
-                        flexDirection: "column", 
-                        justifyContent: "center", 
-                        alignItems: "center"}}>
-                        <ItemDisplay
-                            targetGroup={this.props.crewTargetGroup}
-                            playerData={playerData}
-                            allCrew={this.context.core.crew}
-                            itemSymbol={sym}
-                            rarity={crew.rarity}
-                            maxRarity={crew.max_rarity}
-                            size={64}
-                            src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
-                        />
-                        <i>{crew?.name}</i>
-                    </div> || <></>}
+                        cursor: "pointer",
+                        textAlign: "center",
+                        display: "flex",
+                        width: "96px",
+                        margin: "1em",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center"
+                    }}>
+                    <ItemDisplay
+                        targetGroup={this.props.crewTargetGroup}
+                        playerData={playerData}
+                        allCrew={this.context.core.crew}
+                        itemSymbol={sym}
+                        rarity={crew.rarity}
+                        maxRarity={crew.max_rarity}
+                        size={64}
+                        src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+                    />
+                    <i>{crew?.name}</i>
+                </div> || <></>}
             </>)
         });
 
@@ -200,190 +201,201 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
 
         if (!item) return <></>;
         const { bonuses, bonusText } = getItemBonuses(item);
-		const ltMargin = 0;
+        const ltMargin = 0;
         const traits = this.context.localized.TRAIT_NAMES;
 
-        return (<div style={{ 
-                        fontSize: "12pt", 
-                        display: "flex", 
-                        textAlign: 'left',
-                        flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
-                        //width: window.innerWidth < mobileWidth ? "calc(100vw - 16px)" : undefined
-                        
-                        }}>
-                            <div style={{display: "flex", flexDirection:"row", justifyContent:"flex-start"}}>
-                        {touched && <>
-                            <i className='close icon' style={{cursor: "pointer"}} onClick={(e) => this.props.close ? this.props.close() : undefined} />
-                        </>}    
-                    </div> 
-                <div style={{ display: "flex", flexDirection: "column"}}>                    
-                    <div style={{flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection:"row"}}>
-                        <ItemDisplay
-                            src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
-                            size={compact ? 128 : 128}
-                            rarity={item.rarity}
-                            maxRarity={item.rarity}
-                            style={{ maxWidth: "calc(100vw - 32px)", marginRight: "8px"}}
-                        />
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"8px"}}>
-                        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", fontStyle: "italic", fontSize: "0.8em" }}>
-                            {!!item.quantity && !!item.needed && <div>{t("items.n_owned", { n: `${item.quantity}`})}, {t("items.n_needed", { n: `${item.needed}`})}</div>}
-                            {!!item.quantity && !item.needed && !!item.isReward && <div>{t("items.n_rewarded", { n: `${item.quantity}`})}</div>}
-                            {!!item.quantity && !item.needed && !item.isReward && <div>{t("items.n_owned", { n: `${item.quantity}`})}</div>}
-                            {!item.quantity && !!item.needed && <div>{t("items.n_needed", { n: `${item.needed}`})}</div>}                                                    
-                        </div>
+        return (<div style={{
+            fontSize: "12pt",
+            display: "flex",
+            textAlign: 'left',
+            flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
+            //width: window.innerWidth < mobileWidth ? "calc(100vw - 16px)" : undefined
+
+        }}>
+            <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
+                {touched && <>
+                    <i className='close icon' style={{ cursor: "pointer" }} onClick={(e) => this.props.close ? this.props.close() : undefined} />
+                </>}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+                <div style={{ flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "row" }}>
+                    <ItemDisplay
+                        src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
+                        size={compact ? 128 : 128}
+                        rarity={item.rarity}
+                        maxRarity={item.rarity}
+                        style={{ maxWidth: "calc(100vw - 32px)", marginRight: "8px" }}
+                    />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom: "8px" }}>
+                    <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", fontStyle: "italic", fontSize: "0.8em" }}>
+                        {!!item.quantity && !!item.needed && <div>{t("items.n_owned", { n: `${item.quantity}` })}, {t("items.n_needed", { n: `${item.needed}` })}</div>}
+                        {!!item.quantity && !item.needed && !!item.isReward && <div>{t("items.n_rewarded", { n: `${item.quantity}` })}</div>}
+                        {!!item.quantity && !item.needed && !item.isReward && <div>{t("items.n_owned", { n: `${item.quantity}` })}</div>}
+                        {!item.quantity && !!item.needed && <div>{t("items.n_needed", { n: `${item.needed}` })}</div>}
                     </div>
                 </div>
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        minHeight: !empty ? "8em" : "5em",
-                        justifyContent: "space-between",                        
-                        maxWidth: window.innerWidth < mobileWidth ? "15em" : ( !empty ? "34em" : "24em"),
-                        minWidth: "15m",
-                    }}
-                >
-                    <div style={{display: "flex", flexDirection: 'column', justifyContent: "flex-start"}}>
-                        <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>
-                            <a onClick={(e) => navClick(e)} style={{cursor: "pointer"}} title={item.name}>
-                                {item.name}
-                            </a>
-                        </h3>
-                        <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>
-                            <Rating
-                                icon='star' 
-                                rating={item.rarity} 
-                                maxRating={item.rarity} 
-                                size='large' 
-                                disabled />
-                        </div>
-                        <div
-                            style={{
-                                textAlign: "left",
-                                fontStyle: "italic",
-                                fontSize: "0.85em",
-                                marginTop: "2px",
-                                marginBottom: "4px",
-                            }}
-                        >
+            </div>
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    minHeight: !empty ? "8em" : "5em",
+                    justifyContent: "space-between",
+                    maxWidth: window.innerWidth < mobileWidth ? "15em" : (!empty ? "34em" : "24em"),
+                    minWidth: "15m",
+                }}
+            >
+                <div style={{ display: "flex", flexDirection: 'column', justifyContent: "flex-start" }}>
+                    <h3 style={{ margin: "2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px" }}>
+                        <a onClick={(e) => navClick(e)} style={{ cursor: "pointer" }} title={item.name}>
+                            {item.name}
+                        </a>
+                    </h3>
+                    <div style={{ margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center" }}>
+                        <Rating
+                            icon='star'
+                            rating={item.rarity}
+                            maxRating={item.rarity}
+                            size='large'
+                            disabled />
+                    </div>
+                    <div
+                        style={{
+                            textAlign: "left",
+                            fontStyle: "italic",
+                            fontSize: "0.85em",
+                            marginTop: "2px",
+                            marginBottom: "4px",
+                        }}
+                    >
                         <i>{item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '')}</i>
+                    </div>
+
+                    {!!bonusText.length && renderBonuses(bonuses, "1em", "0.25em")}
+                </div>
+                {!!item.duration &&
+                    <div
+                        style={{
+                            textAlign: "left",
+                            //fontStyle: "italic",
+                            fontSize: "0.75em",
+                            marginTop: "2px",
+                            marginBottom: "4px",
+                            marginLeft: ltMargin
+                        }}
+                    >
+                        <div><b>{t('ship.duration')}:</b>&nbsp;
+                            <i>{formatDuration(item.duration, t)}</i></div>
+                    </div>}
+                {!!item.max_rarity_requirement &&
+                    <div style={{
+                        textAlign: "left",
+                        //fontStyle: "italic",
+                        fontSize: "0.75em",
+                        marginTop: "2px",
+                        marginBottom: "4px",
+                        marginLeft: ltMargin
+                    }}>
+                        {tfmt('items.equippable_by_rarity', {
+                            rarity: <span style={{
+                                color: CONFIG.RARITIES[item.max_rarity_requirement].color,
+                                fontWeight: 'bold'
+                            }}>{CONFIG.RARITIES[item.max_rarity_requirement].name}
+                            </span>
+                        })}
+                    </div>}
+                {!!item.kwipment && !!item.traits_requirement?.length &&
+                    <div
+                        style={{
+                            textAlign: "left",
+                            //fontStyle: "italic",
+                            fontSize: "0.75em",
+                            marginTop: "2px",
+                            marginBottom: "4px",
+                            marginLeft: ltMargin
+                        }}
+                    >
+                        <div><b>
+                            {tfmt('items.required_traits', { traits: <i>{printRequiredTraits(item, traits, t)}</i> })}
+                        </b>
                         </div>
+                    </div>}
+                <div>
+                    {!!((item.item_sources?.length ?? 0) > 0) && (
+                        <div style={{ fontSize: "8pt", marginRight: "1em", marginTop: "0.5em" }}>
+                            <Header as="h3">{t('items.item_sources')}:</Header>
+                            <ItemSources refItem={item.symbol} brief={true} item_sources={item.item_sources} />
+                            <br />
+                        </div>
+                    )}
+                </div>
 
-                        {!!bonusText.length && renderBonuses(bonuses, "1em", "0.25em")}
-                    </div>
-                    {!!item.duration && 
-							<div
-								style={{
-									textAlign: "left",
-									//fontStyle: "italic",
-									fontSize: "0.75em",
-									marginTop: "2px",
-									marginBottom: "4px",
-									marginLeft: ltMargin
-								}}
-								>
-								<div><b>{t('ship.duration')}:</b>&nbsp;
-								<i>{formatDuration(item.duration, t)}</i></div>
-							</div>}
-							{!!item.max_rarity_requirement && 
-								<div style={{
-									textAlign: "left",
-									//fontStyle: "italic",
-									fontSize: "0.75em",
-									marginTop: "2px",
-									marginBottom: "4px",
-									marginLeft: ltMargin
-								}}>
-                                {tfmt('items.equippable_by_rarity', {
-                                    rarity: <span style={{
-                                        color: CONFIG.RARITIES[item.max_rarity_requirement].color,
-                                        fontWeight: 'bold'
-                                        }}>{CONFIG.RARITIES[item.max_rarity_requirement].name}
-                                    </span>
-                                })}
-							</div>}
-							{!!item.kwipment && !!item.traits_requirement?.length &&
-								<div
-									style={{
-										textAlign: "left",
-										//fontStyle: "italic",
-										fontSize: "0.75em",
-										marginTop: "2px",
-										marginBottom: "4px",
-										marginLeft: ltMargin
-									}}
-									>
-									<div><b>
-                                        {tfmt('items.required_traits', { traits: <i>{printRequiredTraits(item, traits, t)}</i> })}
-                                        </b>
-                                    </div>
-								</div>}             
-                            <div>
-                            {!!((item.item_sources?.length ?? 0) > 0) && (
-                            <div style={{fontSize: "8pt",marginRight: "1em", marginTop : "0.5em"}}>
-                                <Header as="h3">{t('items.item_sources')}:</Header>
-                                <ItemSources refItem={item.symbol} brief={true} item_sources={item.item_sources} />
-                                <br />
-                            </div>
-                        )}
-                    </div>
-
-                    <div style={{display: "flex", flexDirection: "column", marginBottom:"1em"}}>
+                <div style={{ display: "flex", flexDirection: "column", marginBottom: "1em" }}>
                     {!!(item.recipe?.list?.length) && !compact && (
-                            <div style={{fontSize: "8pt"}}>
-                                <Header as="h3">{t('items.recipe')}:</Header>
-                                <div style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "top",
-                                    textAlign: "center",
-                                    justifyContent: "flex-start",
-                                    flexWrap: "wrap",
-                                    overflow: "auto",
-                                    maxHeight: "320px"
-                                }}>
+                        <div style={{ fontSize: "8pt" }}>
+                            <Header as="h3">{t('items.recipe')}:</Header>
+                            <div style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "top",
+                                textAlign: "center",
+                                justifyContent: "flex-start",
+                                flexWrap: "wrap",
+                                overflow: "auto",
+                                maxHeight: "320px"
+                            }}>
                                 {item.recipe.list.map((ing, idx) => {
-                                    const ingitem = items?.find(f=>f.symbol === ing.symbol);
+                                    let ingitem = items?.find(f => f.symbol === ing.symbol);
+                                    const demand = item.demands?.find(f => f.symbol === ing.symbol);
+                                    if (ingitem && demand) {
+                                        ingitem = { ...ingitem, quantity: demand.have, needed: demand.count };
+                                    }
                                     if (!ingitem) return <></>
                                     return (
-                                    <div key={"recipe_component_hover_"+ing.symbol+item.symbol+idx}
-                                        style={{
-                                            width:"96px",
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            alignItems: "center",
-                                            justifyContent: "flex-start",
-                                            textAlign: "center",
-                                            margin: "1em",
-                                            padding: 0                                 
-                                        }}>
-                                        <a onClick={(e) => navClick(e, ingitem)} style={{cursor: "pointer"}} title={ingitem.name}>
-                                        <ItemDisplay 
-                                            src={`${process.env.GATSBY_ASSETS_URL}${ingitem.imageUrl}`}
-                                            rarity={ingitem.rarity}
-                                            maxRarity={ingitem.rarity}
-                                            size={48}
-                                            />
+                                        <div key={"recipe_component_hover_" + ing.symbol + item.symbol + idx}
+                                            style={{
+                                                width: "96px",
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                alignItems: "center",
+                                                justifyContent: "flex-start",
+                                                textAlign: "center",
+                                                margin: "1em",
+                                                padding: 0
+                                            }}>
+                                            <a onClick={(e) => navClick(e, ingitem)} style={{ cursor: "pointer" }} title={ingitem.name}>
+                                                <ItemDisplay
+                                                    src={`${process.env.GATSBY_ASSETS_URL}${ingitem.imageUrl}`}
+                                                    rarity={ingitem.rarity}
+                                                    maxRarity={ingitem.rarity}
+                                                    size={48}
+                                                />
                                             </a>
-                                        <i>{ingitem.name}&nbsp;({ing.count})</i>
-                                    </div>)
+                                            <i>{ingitem.name}&nbsp;({ing.count})</i>
+                                            <div>
+                                            {tfmt('items.n_owned', 
+                                                { 
+                                                    n: <span style={{color: ingitem.quantity && ingitem.quantity >= ing.count ? undefined : 'tomato' }}>{ingitem.quantity}</span>
+                                                }
+                                            )}
+                                            </div>
+                                        </div>)
                                 })}
-                                </div>
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
+                </div>
 
-                    <div style={{display: "flex", flexDirection: "column", marginBottom:"1em"}}>
-                    {!empty && 
+                <div style={{ display: "flex", flexDirection: "column", marginBottom: "1em" }}>
+                    {!empty &&
                         (<div>
                             <div style={{
                                 display: "flex",
                                 flexDirection: "row",
                                 justifyContent: "space-between"
                             }}>
-                            <Header as="h3">{t('items.current_demands')}:</Header>
+                                <Header as="h3">{t('items.current_demands')}:</Header>
                                 {/* <div style={{fontSize: "0.8em"}}>
                                 <Dropdown 
                                     options={demandOpts} 
@@ -393,21 +405,22 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                                 </div> */}
                             </div>
                             <div style={{
-                                display: "flex", 
-                                flexDirection: "row", 
-                                justifyContent: "flex-start", 
-                                alignItems: "flex-start", 
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "flex-start",
+                                alignItems: "flex-start",
                                 maxHeight: "252px",
                                 overflow: "auto",
-                                flexWrap: "wrap"}}>
+                                flexWrap: "wrap"
+                            }}>
 
-                                {dcrew}                                
+                                {dcrew}
                             </div>
                         </div>)}
-                    </div>
                 </div>
-            </div>) 
-        
+            </div>
+        </div>)
+
     }
-    
+
 }
