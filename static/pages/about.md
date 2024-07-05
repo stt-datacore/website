@@ -36,6 +36,6 @@ Additional Contributors:
 TygraDax for the Grade and Star Grade equations in the collection planner.
 Bernard for the equation for Bernard's Number in the gauntlet tool.
 
-Some crew notes are imported from [The Big Book of Behold Advice](https://www.bigbook.app/), created by [u/Automaton_2000](https://reddit.com/user/Automaton_2000). Some nicknames are imported from a curated sheet maintained by DCPilot. [STT Power Ratings](https://sttpowerratings.com/) are maintained by A Traveling Man & Cymru Am Byth. Content used with their permission.
+Some crew notes are imported from [The Big Book of Behold Advice](https://www.bigbook.app/), created by [u/Automaton_2000](https://reddit.com/user/Automaton_2000). Some nicknames are imported from a curated sheet maintained by DCPilot. [STT Power Ratings](https://cabtools.app/) are maintained by A Traveling Man & Cymru Am Byth. Content used with their permission.
 
 This project is licensed under MIT, and if you choose to contribute code or other media you agree that your contributions will be licensed under its [MIT license](https://github.com/stt-datacore/website/blob/master/LICENSE).
