@@ -3,7 +3,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import { Adventure, GatherPool } from "../../model/player";
 import ItemDisplay from '../itemdisplay';
 import { ItemHoverStat, ItemTarget } from "../hovering/itemhoverstat";
-import { Table } from "semantic-ui-react";
+import { Button, Table } from "semantic-ui-react";
 import { EquipmentIngredient, EquipmentItem } from "../../model/equipment";
 import { calcItemDemands } from "../../utils/equipment";
 import { useStateWithStorage } from "../../utils/storage";
@@ -24,8 +24,11 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
     if (!ephemeral?.events?.length || !event?.content.gather_pools) return (<></>);
 
     return (<>
-    
-        <GatherTable phaseIndex={phaseIndex} eventId={ephemeral.events[0].id} pool={event.content.gather_pools[0]} />
+    {event.content.gather_pools.map((pool, idx) => {
+
+        return <GatherTable key={`pool_${idx}`} phaseIndex={phaseIndex} eventId={ephemeral.events[0].id} pool={pool} />
+    })}
+        
     </>)
 }
 
@@ -47,14 +50,14 @@ const GatherTable = (props: GatherTableProps) => {
     const { pool, eventId, phaseIndex } = props;
     
     const globalContext = React.useContext(GlobalContext);
-    const playerData = globalContext.player.playerData!;
+    const { playerData } = globalContext.player;
     const ephemeral = globalContext.player.ephemeral!;
     const { t } = globalContext.localized;
     const { items } = globalContext.core;
 
     const [adventures, setAdventures] = React.useState<Adventure[]>(pool.adventures);
     const [cachedItems, setCachedItems] = useStateWithStorage<GatherItemCache[]>(`events/gather_planner/item_cache`, [], { rememberForever: true })
-
+    const [reset, setReset] = React.useState(false);
     const hover_target = "gather_planner";
 
     React.useEffect(() => {
@@ -79,9 +82,14 @@ const GatherTable = (props: GatherTableProps) => {
                 setCachedItems([...cachedItems]);
             }
         }
-    }, [pool, ephemeral, playerData, items, cachedItems])
+    }, [pool, ephemeral, playerData, items, cachedItems, reset])
 
+    if (!playerData) return <></>
     return (<div style={{marginTop: "1em"}}>
+
+        <div className="ui segment">
+            <Button onClick={() => resetCache()}>{t('global.clear_cache')}</Button>
+        </div>
 
         <Table striped>
             <Table.Header>
@@ -181,7 +189,7 @@ const GatherTable = (props: GatherTableProps) => {
             } as EquipmentIngredient));
             item.recipe.list = item.recipe.list.concat(newrecipe);
         }
-        item.demands = calcItemDemands(item, globalContext.core.items, playerData.player.character.items);
+        item.demands = calcItemDemands(item, globalContext.core.items, playerData!.player.character.items);
     } 
 
     function getEventCache(create = false) {
@@ -224,6 +232,11 @@ const GatherTable = (props: GatherTableProps) => {
 
     function compareAdventure(a: Adventure, b: Adventure) {    
         return a.id - b.id;
+    }
+
+    function resetCache() {
+        setCachedItems([]);
+        setReset(!reset);
     }
 
 }

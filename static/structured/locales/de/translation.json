@@ -624,6 +624,7 @@
         "cancel": "Abbrechen",
         "clear": "Löschen",
         "clear_all": "Alles löschen",
+        "clear_cache": "Löschen des Cache",
         "close": "Schließen",
         "completed": "Abgeschlossen",
         "copy_permalink_clipboard": "Permalink in die Zwischenablage kopieren",

@@ -613,10 +613,10 @@
         }
     },
     "global": {
-     "episode": "Épisode",
- "adventure": "Aventure",
- "quest": "Quête",
- "challenge": "Défi",
+        "episode": "Épisode",
+        "adventure": "Aventure",
+        "quest": "Quête",
+        "challenge": "Défi",
         "n_results": "{{n}} résultats",
         "aborted": "Terminé",
         "admiral": "Avorté",
@@ -630,6 +630,7 @@
         "cancel": "Annuler",
         "clear": "Effacer",
         "clear_all": "Tout effacer",
+        "clear_cache": "Supprimer le cache",
         "close": "Fermer",
         "completed": "Completed",
         "copy_permalink_clipboard": "Copier le lien permanent dans le presse-papiers",
