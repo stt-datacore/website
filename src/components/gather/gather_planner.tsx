@@ -10,12 +10,13 @@ import { useStateWithStorage } from "../../utils/storage";
 
 export interface GatherPlannerProps {
     eventSymbol: string;
+    phaseIndex: number;
 }
 
 export const GatherPlanner = (props: GatherPlannerProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { playerData, ephemeral } = globalContext.player;
-    const { eventSymbol: eventId } = props;
+    const { eventSymbol: eventId, phaseIndex } = props;
     
     const { t } = globalContext.localized;
     const event = ephemeral?.events?.find(f => f.symbol === eventId)
@@ -24,24 +25,26 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
 
     return (<>
     
-        <GatherTable eventId={ephemeral.events[0].id} pool={event.content.gather_pools[0]} />
+        <GatherTable phaseIndex={phaseIndex} eventId={ephemeral.events[0].id} pool={event.content.gather_pools[0]} />
     </>)
 }
 
 interface GatherTableProps {
     pool: GatherPool;
     eventId: number;
+    phaseIndex: number;
 }
 
 interface GatherItemCache {
     eventId: number,
+    phase: number,
     items: EquipmentItem[],
     adventures: Adventure[]
 }
 
 const GatherTable = (props: GatherTableProps) => {
 
-    const { pool, eventId } = props;
+    const { pool, eventId, phaseIndex } = props;
     
     const globalContext = React.useContext(GlobalContext);
     const playerData = globalContext.player.playerData!;
@@ -182,12 +185,13 @@ const GatherTable = (props: GatherTableProps) => {
     } 
 
     function getEventCache(create = false) {
-        let obj = cachedItems.find(f => f.eventId === eventId);
+        let obj = cachedItems.find(f => f.eventId === eventId && f.phase === phaseIndex);
         if (!obj && create) {
             obj = {
                 eventId,
                 items: [],
-                adventures: pool.adventures
+                adventures: pool.adventures,
+                phase: phaseIndex
             }
             setCachedItems([...cachedItems, obj]);            
         }        

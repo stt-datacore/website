@@ -264,7 +264,6 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 			/>
 			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, rosterCrew, buffConfig)} targetGroup='eventTarget' />
 			{phaseType !== 'skirmish' && (<EventCrewMatrix crew={rosterCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
-			{phaseType === 'gather' && <GatherPlanner eventSymbol={eventData.symbol} />}
 		</React.Fragment>
 	);
 

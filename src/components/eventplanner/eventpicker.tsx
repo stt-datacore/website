@@ -16,6 +16,7 @@ import { useStateWithStorage } from '../../utils/storage';
 import { applySkillBuff } from '../../utils/crewutils';
 
 import { IEventData, IRosterCrew } from './model';
+import { GatherPlanner } from '../gather/gather_planner';
 
 interface ISelectOptions {
 	key: string;
@@ -149,8 +150,11 @@ export const EventPicker = (props: EventPickerProps) => {
 				<React.Fragment>
 					{rosterType === 'myCrew' && <EventProspects pool={bonusCrew} prospects={prospects} setProspects={setProspects} />}
 					{eventData.content_types[phaseIndex] === 'shuttles' && (<EventShuttles crew={rosterCrew} eventData={eventData} />)}
+					{eventData.content_types[phaseIndex] === 'gather' && <GatherPlanner phaseIndex={phaseIndex} eventSymbol={eventData.symbol} />}
 				</React.Fragment>
 			)}
+			
+
 		</React.Fragment>
 	);
 };

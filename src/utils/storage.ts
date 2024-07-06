@@ -25,7 +25,7 @@ interface StorageOptions {
 };
 
 /**
- * Create a React state based on localStorage or sessionStorage
+ * Create a React state based on localForage (indexDB) or sessionStorage
  * @param itemKey The item's storage key
  * @param itemDefault The item's default value
  * @param options StorageOptions
