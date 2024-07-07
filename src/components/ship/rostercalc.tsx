@@ -89,7 +89,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         battleModes.push({
             key: mode,
             value: mode,
-            text: t(`ship.${mode.startsWith('fbb') ? 'fbb' : mode}`) + (mode.startsWith('fbb') ? ` ${rarity}*` : '')
+            text: t(`ship.${mode.startsWith('fbb') ? 'fbb' : mode}`) + (mode.startsWith('fbb') ? ` ${rarity + 1}*` : '')
         });
     });
 
