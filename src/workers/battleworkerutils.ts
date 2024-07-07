@@ -517,9 +517,9 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 
                 if (activation !== true) {
                     immediates.push({
-                        base: powerInfo.computed.attack.base * activation,
-                        max: powerInfo.computed.attack.with_bonus * activation,
-                        standard: powerInfo.computed.attack.with_bonus_and_chance * activation
+                        base: (powerInfo.computed.attack.base * activation) / (ship.attacks_per_second / rate),
+                        max: (powerInfo.computed.attack.with_bonus * activation) / (ship.attacks_per_second / rate),
+                        standard: (powerInfo.computed.attack.with_bonus_and_chance * activation) / (ship.attacks_per_second / rate)
                     });
                 }
 
