@@ -5,63 +5,58 @@ import ItemDisplay from '../itemdisplay';
 import { ItemHoverStat, ItemTarget } from "../hovering/itemhoverstat";
 import { Button, Table } from "semantic-ui-react";
 import { EquipmentIngredient, EquipmentItem } from "../../model/equipment";
-import { calcItemDemands } from "../../utils/equipment";
+import { calcItemDemands, makeRecipeFromArchetypeCache } from "../../utils/equipment";
 import { useStateWithStorage } from "../../utils/storage";
+import { ArchetypeRoot20 } from "../../model/archetype";
+import ProfileItems from "../profile_items";
 
 export interface GatherPlannerProps {
     eventSymbol: string;
     phaseIndex: number;
 }
 
-export const GatherPlanner = (props: GatherPlannerProps) => {
-    const globalContext = React.useContext(GlobalContext);
-    const { playerData, ephemeral } = globalContext.player;
-    const { eventSymbol: eventId, phaseIndex } = props;
-    
-    const { t } = globalContext.localized;
-    const event = ephemeral?.events?.find(f => f.symbol === eventId)
-
-    if (!ephemeral?.events?.length || !event?.content.gather_pools) return (<></>);
-
-    return (<>
-    {event.content.gather_pools.map((pool, idx) => {
-
-        return <GatherTable key={`pool_${idx}`} phaseIndex={phaseIndex} eventId={ephemeral.events[0].id} pool={pool} />
-    })}
-        
-    </>)
-}
-
-interface GatherTableProps {
-    pool: GatherPool;
-    eventId: number;
-    phaseIndex: number;
-}
-
 interface GatherItemCache {
-    eventId: number,
+    eventSymbol: string,
     phase: number,
-    items: EquipmentItem[],
+    items: string[],
     adventures: Adventure[]
 }
 
-const GatherTable = (props: GatherTableProps) => {
 
-    const { pool, eventId, phaseIndex } = props;
-    
+export const GatherPlanner = (props: GatherPlannerProps) => {
     const globalContext = React.useContext(GlobalContext);
-    const { playerData } = globalContext.player;
-    const ephemeral = globalContext.player.ephemeral!;
-    const { t } = globalContext.localized;
+    const { playerData, ephemeral } = globalContext.player;
+    const { eventSymbol, phaseIndex } = props;
     const { items } = globalContext.core;
 
-    const [adventures, setAdventures] = React.useState<Adventure[]>(pool.adventures);
+    const { t } = globalContext.localized;
+    const event = ephemeral?.events?.find(f => f.symbol === eventSymbol)
+
+    const [adventures, setAdventures] = React.useState<Adventure[]>([]);
     const [cachedItems, setCachedItems] = useStateWithStorage<GatherItemCache[]>(`events/gather_planner/item_cache`, [], { rememberForever: true })
+    const [eventItems, setEventItems] = React.useState<EquipmentItem[]>([]);
     const [reset, setReset] = React.useState(false);
-    const hover_target = "gather_planner";
 
     React.useEffect(() => {
-        if (pool && ephemeral?.archetype_cache && playerData && items?.length) {
+        if (!ephemeral?.events?.length || !event?.content.gather_pools) return;
+        let adv = event.content.gather_pools.map(p => p.adventures).flat();
+        let newadv = [...adventures];
+        adv.forEach((adv) => {
+            if (!newadv.some(ad => ad.id === adv.id)) newadv.push(adv);
+        });
+        newadv = newadv.filter((f, idx) => newadv.findIndex(fi => fi.id === f.id) === idx)
+        setAdventures(newadv);
+    }, [ephemeral, cachedItems]);
+
+    React.useEffect(() => {
+        if (reset) {
+            setCachedItems([]);
+            setReset(false);
+        }        
+    }, [reset]);
+
+    React.useEffect(() => {
+        if (adventures?.length && ephemeral?.archetype_cache && playerData && items?.length) {
             let obj = getEventCache(true);
             let newadv = adventures.concat();
             let changed = false;
@@ -74,21 +69,111 @@ const GatherTable = (props: GatherTableProps) => {
                     }
                 }
             }
-        
+
             newadv.sort((a, b) => compareAdventure(a, b));
+            
             if (obj && changed) {
                 setAdventures(newadv);
                 obj.adventures = newadv.concat();
                 setCachedItems([...cachedItems]);
+                return;
             }
+
+            let foundItems = adventures.map(ad => ad.demands.map(demand => {
+                let item = items.find(f => f.id?.toString() === demand.archetype_id.toString());
+                item = JSON.parse(JSON.stringify(item)) as EquipmentItem;
+                item = mergeCache(item);
+
+                makeRecipeFromArchetypeCache(
+                    item,
+                    globalContext.core.items,
+                    playerData!.player.character.items,
+                    ephemeral.archetype_cache);
+                return item;
+            })).flat();
+            setEventItems(foundItems);
         }
-    }, [pool, ephemeral, playerData, items, cachedItems, reset])
+    }, [adventures, playerData, items]);
+
+    if (!ephemeral?.events?.length || !event?.content.gather_pools) return (<></>);
+
+    const allDemands = eventItems.map(me => me.demands?.map(de => ({...de.equipment!, needed: de.count, quantity: de.count })) ?? []).flat();
+
+    return (<>
+        <GatherTable phaseIndex={phaseIndex} setReset={() => performReset()} eventSymbol={eventSymbol} adventures={adventures} items={eventItems} />
+
+        <ProfileItems noWorker={true} itemTargetGroup="gather_planner" data={allDemands} />
+    </>)
+
+    function performReset() {
+        setReset(true);
+    }
+
+    function getEventCache(create = false) {
+        let obj = cachedItems.find(f => f.eventSymbol === eventSymbol && f.phase === phaseIndex);
+        if (!obj && create) {
+            obj = {
+                eventSymbol,
+                items: [],
+                adventures,
+                phase: phaseIndex
+            }
+            setCachedItems([...cachedItems, obj]);
+        }
+        return obj;
+    }
+
+    function addItemToCache(item: EquipmentItem) {
+        let obj = getEventCache()?.items;
+        if (obj) {
+
+            obj.push(item.symbol);
+            setCachedItems([...cachedItems]);
+        }
+    }
+
+    function findEventItem(symbol: string) {
+        return getEventCache()?.items.find(f => f === symbol);
+    }
+
+    function mergeCache(item: EquipmentItem) {
+        let eitem = findEventItem(item.symbol);
+        if (!eitem) addItemToCache(item);
+        else item = items.find(i => i.symbol === eitem)!;
+        return item;
+    }
+
+    function compareAdventure(a: Adventure, b: Adventure) {
+        return a.id - b.id;
+    }
+
+
+}
+
+interface GatherTableProps {
+    adventures: Adventure[];
+    items: EquipmentItem[];
+    eventSymbol: string,
+    phaseIndex: number;
+    setReset: () => void
+}
+
+const GatherTable = (props: GatherTableProps) => {
+
+    const { adventures, items, setReset } = props;
+
+    const globalContext = React.useContext(GlobalContext);
+    const { playerData } = globalContext.player;
+    const { t } = globalContext.localized;
+
+    const hover_target = "gather_planner";
 
     if (!playerData) return <></>
-    return (<div style={{marginTop: "1em"}}>
+
+    return (<div style={{ marginTop: "1em" }}>
 
         <div className="ui segment">
-            <Button onClick={() => resetCache()}>{t('global.clear_cache')}</Button>
+            <Button onClick={() => setReset()}>{t('global.clear_cache')}</Button>
         </div>
 
         <Table striped>
@@ -121,12 +206,11 @@ const GatherTable = (props: GatherTableProps) => {
         return <Table.Row key={row.name + row.id.toString()}>
             <Table.Cell>
                 <h3>{row.name}</h3>
-                <div style={{fontSize:'1em'}}>
+                <div style={{ fontSize: '1em' }}>
                     <i>{row.description}</i>
                 </div>
             </Table.Cell>
             <Table.Cell>
-
                 <div style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -135,108 +219,41 @@ const GatherTable = (props: GatherTableProps) => {
                     gap: '1em',
 
                 }}>
-                {row.demands.map((demand, idx) => {
-                    let item = items.find(f => f.id?.toString() === demand.archetype_id.toString());
-                    if (!item) return <div key={`empty_${idx}_event_demand`}></div>
-                    item = JSON.parse(JSON.stringify(item)) as EquipmentItem;
-                    makeRecipe(item);
-                    item = mergeCache(item);       
-                    return <div 
+                    {row.demands.map((demand, idx) => {
+                        let item = items.find(f => f.id?.toString() === demand.archetype_id.toString());
+                        if (!item) return <div key={`empty_${idx}_event_demand`}></div>
+
+                        return <div
                             key={item.symbol + "_event_demand"}
-                            style={{display: 'flex', 
-                            flexDirection: 'column', 
-                            alignItems: 'center', 
-                            justifyContent: 'center', 
-                            gap: '0.5em', 
-                            textAlign: 'center',
-                            width: '10em',
-                            fontSize: '0.8em', 
-                            fontStyle: 'italic'}}>
-                                <ItemTarget inputItem={item} targetGroup={hover_target}>
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.5em',
+                                textAlign: 'center',
+                                width: '10em',
+                                fontSize: '0.8em',
+                                fontStyle: 'italic'
+                            }}>
+                            <ItemTarget inputItem={item} targetGroup={hover_target}>
                                 <ItemDisplay
                                     src={`${process.env.GATSBY_ASSETS_URL}${item?.imageUrl}`}
-                                    size={48}                                    
-                                    allItems={items}                      
+                                    size={48}
+                                    allItems={items}
                                     itemSymbol={item!.symbol}
                                     rarity={item!.rarity}
                                     maxRarity={item!.rarity}
                                 />
-                                </ItemTarget>
-                                {item!.name}
+                            </ItemTarget>
+                            {item!.name}
                         </div>
-                })}
+                    })}
                 </div>
 
             </Table.Cell>
         </Table.Row>
 
-    }
-
-    function makeRecipe(item: EquipmentItem) {
-        let aitem = ephemeral.archetype_cache?.archetypes.find(f => f.id.toString() === item.id?.toString());
-        if (!aitem?.recipe) return;
-        item.recipe = { 
-            incomplete: false,
-            craftCost: 0,
-            list: []
-        }
-        let recipe_items = globalContext.core.items.filter(f => aitem.recipe?.demands?.some(d => d.archetype_id?.toString() === f.id?.toString()))
-        if (recipe_items?.length) {
-            let newrecipe = recipe_items.map((m, idx) => ({
-                count: aitem.recipe?.demands[idx].count,
-                factionOnly: false,
-                symbol: m.symbol
-            } as EquipmentIngredient));
-            item.recipe.list = item.recipe.list.concat(newrecipe);
-        }
-        item.demands = calcItemDemands(item, globalContext.core.items, playerData!.player.character.items);
-    } 
-
-    function getEventCache(create = false) {
-        let obj = cachedItems.find(f => f.eventId === eventId && f.phase === phaseIndex);
-        if (!obj && create) {
-            obj = {
-                eventId,
-                items: [],
-                adventures: pool.adventures,
-                phase: phaseIndex
-            }
-            setCachedItems([...cachedItems, obj]);            
-        }        
-        return obj;
-    }
-
-    function addItemToCache(item: EquipmentItem) {
-        let obj = getEventCache()?.items;
-        if (obj) {
-            obj.push(item);
-            setCachedItems([...cachedItems]);
-        }
-    }
-
-    function findEventItem(symbol: string) {
-        return getEventCache()?.items.find(f => f.symbol === symbol);
-    }
-
-    function mergeCache(item: EquipmentItem) {
-        if (!item.demands) return item;
-        let eitem = findEventItem(item.symbol);
-        if (eitem) {
-            if (eitem.demands?.every(d => item.demands?.some(d2 => d2.symbol === d.symbol))) {
-                return { ...eitem, ... item }
-            }
-        }
-        addItemToCache(item);
-        return item;
-    }
-
-    function compareAdventure(a: Adventure, b: Adventure) {    
-        return a.id - b.id;
-    }
-
-    function resetCache() {
-        setCachedItems([]);
-        setReset(!reset);
     }
 
 }

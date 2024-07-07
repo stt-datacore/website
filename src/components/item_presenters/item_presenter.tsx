@@ -376,7 +376,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                                             <div>
                                             {tfmt('items.n_owned', 
                                                 { 
-                                                    n: <span style={{color: ingitem.quantity && ingitem.quantity >= ing.count ? undefined : 'tomato' }}>{ingitem.quantity}</span>
+                                                    n: <span style={{color: ingitem.quantity && ingitem.quantity >= ing.count ? undefined : 'tomato' }}>{ingitem.quantity || '0'}</span>
                                                 }
                                             )}
                                             </div>

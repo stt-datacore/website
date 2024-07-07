@@ -1,6 +1,7 @@
 import CONFIG from '../components/CONFIG';
+import { ArchetypeRoot20 } from '../model/archetype';
 import { ComputedSkill, CrewMember, EquipmentSlot, PowerLot, Skill } from '../model/crew';
-import { EquipmentItem, ICrewDemands, IDemand } from '../model/equipment';
+import { EquipmentIngredient, EquipmentItem, ICrewDemands, IDemand } from '../model/equipment';
 import { BuffBase, PlayerCrew, PlayerEquipmentItem } from '../model/player';
 import { applySkillBuff, numberToGrade, powerSum, qbitsToSlots, skillSum } from './crewutils';
 import { ItemWithBonus, getItemBonuses, isQuipmentMatch } from './itemutils';
@@ -283,6 +284,29 @@ export function calcItemDemands(item: EquipmentItem, coreItems: EquipmentItem[],
 	item.demands = demands;
 	return demands;
 }
+
+
+
+export function makeRecipeFromArchetypeCache(item: EquipmentItem, globalItems: EquipmentItem[], playerItems: PlayerEquipmentItem[], archetype_cache: ArchetypeRoot20) {
+	let aitem = archetype_cache?.archetypes.find(f => f.id.toString() === item.id?.toString());
+	if (!aitem?.recipe) return;
+	item.recipe = { 
+		incomplete: false,
+		craftCost: 0,
+		list: []
+	}
+	let recipe_items = globalItems.filter(f => aitem.recipe?.demands?.some(d => d.archetype_id?.toString() === f.id?.toString()))
+	if (recipe_items?.length) {
+		let newrecipe = recipe_items.map((m, idx) => ({
+			count: aitem.recipe?.demands[idx].count,
+			factionOnly: false,
+			symbol: m.symbol
+		} as EquipmentIngredient));
+		item.recipe.list = item.recipe.list.concat(newrecipe);
+	}
+	item.demands = calcItemDemands(item, globalItems, playerItems);
+} 
+
 
 export function canBuildItem(item: EquipmentItem, ignoreNonQuipment?: boolean) {
 	if (!item.demands) return false;
