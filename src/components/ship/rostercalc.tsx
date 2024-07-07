@@ -13,6 +13,7 @@ import { compareShipResults, getShipsInUse } from "../../utils/shiputils";
 import { BattleGraph } from "./battlegraph";
 import { formatDuration } from "../../utils/itemutils";
 import { formatRunTime } from "../../utils/misc";
+import { crewCopy } from "../../utils/crewutils";
 
 export interface RosterCalcProps {
     pageId: string;
@@ -565,14 +566,19 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         if (ships?.length && crew?.length) {
             if (battleMode.startsWith('fbb') && !battleConfig.opponent) return;
             resultCache.length = 0;
+            
+            const pfcrew = current ? [] as PlayerCrew[] : prefilterCrew();
+            
             const config = {
                 ship: JSON.parse(JSON.stringify(ship)),
-                crew: JSON.parse(JSON.stringify(current ? crewStations : crew)),
+                crew: JSON.parse(JSON.stringify(current ? crewStations : pfcrew)),
                 battle_mode: battleMode,
                 power_depth: powerDepth,
                 min_rarity: minRarity,
                 max_rarity: ship.rarity,
                 max_results: 100,
+                // start_at: 0,
+                // end_at: 40000,
                 opponents: battleConfig.opponent ? [battleConfig.opponent] : undefined,
                 defense: battleConfig.defense,
                 offense: battleConfig.offense,
@@ -659,5 +665,120 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 setSuggestions(new_cache);
             });
         }
+    }
+
+    function prefilterCrew() {
+        const max_rarity = ship.rarity ?? 5;
+        const min_rarity = minRarity ?? 1;
+        const maxvalues = [0, 0, 0, 0, 0].map(o => [0, 0, 0, 0]);
+        const power_depth = powerDepth ?? 2;
+        const results = crew.filter((crew) => {
+            if (!ignoreSkills && !crew.skill_order.some(skill => ship.battle_stations?.some(bs => bs.skill === skill))) return false;
+            if (crew.action.ability?.condition && !ship.actions?.some(act => act.status === crew.action.ability?.condition)) return false;
+
+            // if (action_types?.length) {
+            //     if (!action_types.some(at => crew.action.bonus_type === at)) return false;
+            // }
+            // if (ability_types?.length) {
+            //     if (!ability_types.some(at => crew.action.ability?.type === at)) return false;
+            // }
+
+            if (crew.action.ability) {
+                let pass = crew.max_rarity <= max_rarity && crew.max_rarity >= min_rarity;
+                if (pass) {
+                    if (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] < crew.action.bonus_amount) {
+                        maxvalues[crew.max_rarity - 1][crew.action.bonus_type] = crew.action.bonus_amount;
+                    }
+                }
+                return pass;
+            }
+            else {
+                return false;
+            }
+        })
+        .filter((crew) => {
+            if (fbb_mode && crew.action.limit) return false;
+            if (crew.action.bonus_amount < (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] - power_depth) && (!fbb_mode || crew.action.ability?.type !== 2)) return false;
+            return true;
+        })
+        .sort((a, b) => {
+            let r = 0;
+
+            // check for bonus abilities, first
+            if (a.action.ability && b.action.ability) {
+                if (fbb_mode) {
+                    if ([1, 2, 5].includes(a.action.ability.type) && ![1, 2, 5].includes(b.action.ability.type)) return -1;
+                    if ([1, 2, 5].includes(b.action.ability.type) && ![1, 2, 5].includes(a.action.ability.type)) return 1;
+                }
+                else {
+                    if ([1, 5].includes(a.action.ability.type) && ![1, 5].includes(b.action.ability.type)) return -1;
+                    if ([1, 5].includes(b.action.ability.type) && ![1, 5].includes(a.action.ability.type)) return 1;
+                }
+                if (a.action.ability.type === b.action.ability.type) {
+                    r = a.action.ability.amount - b.action.ability.amount;
+                    if (r) return r;
+                    r = a.action.ability.condition - b.action.ability.condition;
+                    if (r) return r;
+                }
+                else {
+                    r = a.action.ability.type - b.action.ability.type;
+                    if (r) return r;
+                }
+            }
+            else {
+                if (a.action.ability && !b.action.ability) return -1;
+                if (!a.action.ability && b.action.ability) return 1;
+            }
+
+            // check the bonus amount/type
+            if (a.action.bonus_type === b.action.bonus_type) {
+                r = b.action.bonus_amount - a.action.bonus_amount;
+                if (r) return r;
+            }
+            else {
+                r = a.action.bonus_type - b.action.bonus_type;
+                if (r) return r;
+            }
+
+            // check durations
+            r = a.action.initial_cooldown - b.action.initial_cooldown;
+            if (r) return r;
+            r = a.action.duration - b.action.duration;
+            if (r) return r;
+            r = a.action.cooldown - b.action.cooldown;
+            if (r) return r;
+            if (a.action.limit && !b.action.limit) return 1;
+            if (!a.action.limit && b.action.limit) return -1;
+            if (a.action.limit && b.action.limit) {
+                r = b.action.limit - a.action.limit;
+                if (r) return r;
+            }
+
+            // check passives
+            if (a.ship_battle.crit_bonus && b.ship_battle.crit_bonus) {
+                r = b.ship_battle.crit_bonus - a.ship_battle.crit_bonus;
+            }
+            if (a.ship_battle.crit_chance && b.ship_battle.crit_chance) {
+                r = b.ship_battle.crit_chance - a.ship_battle.crit_chance;
+            }
+            if (a.ship_battle.accuracy && b.ship_battle.accuracy) {
+                r = b.ship_battle.accuracy - a.ship_battle.accuracy;
+            }
+            if (a.ship_battle.evasion && b.ship_battle.evasion) {
+                r = b.ship_battle.evasion - a.ship_battle.evasion;
+            }
+
+            // check other stats
+            if (!r) {
+                r = Object.values(a.ranks).filter(t => typeof t === 'number').reduce((p, n) => p + n, 0) - Object.values(b.ranks).filter(t => typeof t === 'number').reduce((p, n) => p + n, 0)
+                if (!r) {
+                    // !!
+                    console.log(`completely identical stats! ${a.name}, ${b.name}`);
+                }
+            }
+            return r;
+        });
+
+        return results;
     }
 }

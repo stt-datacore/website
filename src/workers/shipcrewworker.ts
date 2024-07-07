@@ -1,6 +1,5 @@
 import { CrewMember } from "../model/crew";
 import { AttackInstant, MultiShipWorkerConfig, ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults } from "../model/ship";
-import { crewCopy } from "../utils/crewutils";
 import { compareShipResults } from "../utils/shiputils";
 import { canSeatAll, iterateBattle } from "./battleworkerutils";
 
@@ -12,19 +11,21 @@ function factorial(number: number) {
     return result;
 }
 
-function getPermutations<T, U>(array: T[], size: number, max?: number, count_only?: boolean, check?: (set: T[]) => U[] | false) {
+function getPermutations<T, U>(array: T[], size: number, max?: number, count_only?: boolean, min?: number, check?: (set: T[]) => U[] | false) {
     var current_iter = 0;
-
+    const mmin = min ?? 0;
     function p(t: T[], i: number) {
         if (t.length === size) {
-            if (!check) {
-                result.push(t as any);
-            }
-            else {
-                let response = check(t);
-                if (response) {
-                    if (!count_only) {
-                        result.push(response);
+            if (current_iter >= mmin) {
+                if (!check) {
+                    result.push(t as any);
+                }
+                else {
+                    let response = check(t);
+                    if (response) {
+                        if (!count_only) {
+                            result.push(response);
+                        }
                     }
                 }
             }
@@ -95,118 +96,9 @@ const ShipCrewWorker = {
             const starttime = new Date();
 
             let max_results = options.max_results ?? 100;
-            let max_rarity = options.max_rarity ?? 5;
-            let min_rarity = options.min_rarity ?? 1;
-            let maxvalues = [0, 0, 0, 0, 0].map(o => [0, 0, 0, 0]);
-            let power_depth = options.power_depth ?? 2;
             let current_id = 1;
 
-            const workCrew = crewCopy(options.crew).filter((crew) => {
-                if (!ignore_skill && !crew.skill_order.some(skill => ship.battle_stations?.some(bs => bs.skill === skill))) return false;
-                if (crew.action.ability?.condition && !ship.actions?.some(act => act.status === crew.action.ability?.condition)) return false;
-
-                if (action_types?.length) {
-                    if (!action_types.some(at => crew.action.bonus_type === at)) return false;
-                }
-                if (ability_types?.length) {
-                    if (!ability_types.some(at => crew.action.ability?.type === at)) return false;
-                }
-
-                if (crew.action.ability) {
-                    let pass = crew.max_rarity <= max_rarity && crew.max_rarity >= min_rarity;
-                    if (pass) {
-                        if (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] < crew.action.bonus_amount) {
-                            maxvalues[crew.max_rarity - 1][crew.action.bonus_type] = crew.action.bonus_amount;
-                        }
-                    }
-                    return pass;
-                }
-                else {
-                    return false;
-                }
-            })
-                .filter((crew) => {
-                    if (battle_mode.startsWith('fbb') && crew.action.limit) return false;
-                    if (crew.action.bonus_amount < (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] - power_depth) && (!battle_mode.startsWith('fbb') || crew.action.ability?.type !== 2)) return false;
-                    return true;
-                })
-                .sort((a, b) => {
-                    let r = 0;
-
-                    // check for bonus abilities, first
-                    if (a.action.ability && b.action.ability) {
-                        if (battle_mode.startsWith('fbb')) {
-                            if ([1, 2, 5].includes(a.action.ability.type) && ![1, 2, 5].includes(b.action.ability.type)) return -1;
-                            if ([1, 2, 5].includes(b.action.ability.type) && ![1, 2, 5].includes(a.action.ability.type)) return 1;
-                        }
-                        else {
-                            if ([1, 5].includes(a.action.ability.type) && ![1, 5].includes(b.action.ability.type)) return -1;
-                            if ([1, 5].includes(b.action.ability.type) && ![1, 5].includes(a.action.ability.type)) return 1;
-                        }
-                        if (a.action.ability.type === b.action.ability.type) {
-                            r = a.action.ability.amount - b.action.ability.amount;
-                            if (r) return r;
-                            r = a.action.ability.condition - b.action.ability.condition;
-                            if (r) return r;
-                        }
-                        else {
-                            r = a.action.ability.type - b.action.ability.type;
-                            if (r) return r;
-                        }
-                    }
-                    else {
-                        if (a.action.ability && !b.action.ability) return -1;
-                        if (!a.action.ability && b.action.ability) return 1;
-                    }
-
-                    // check the bonus amount/type
-                    if (a.action.bonus_type === b.action.bonus_type) {
-                        r = b.action.bonus_amount - a.action.bonus_amount;
-                        if (r) return r;
-                    }
-                    else {
-                        r = a.action.bonus_type - b.action.bonus_type;
-                        if (r) return r;
-                    }
-
-                    // check durations
-                    r = a.action.initial_cooldown - b.action.initial_cooldown;
-                    if (r) return r;
-                    r = a.action.duration - b.action.duration;
-                    if (r) return r;
-                    r = a.action.cooldown - b.action.cooldown;
-                    if (r) return r;
-                    if (a.action.limit && !b.action.limit) return 1;
-                    if (!a.action.limit && b.action.limit) return -1;
-                    if (a.action.limit && b.action.limit) {
-                        r = b.action.limit - a.action.limit;
-                        if (r) return r;
-                    }
-
-                    // check passives
-                    if (a.ship_battle.crit_bonus && b.ship_battle.crit_bonus) {
-                        r = b.ship_battle.crit_bonus - a.ship_battle.crit_bonus;
-                    }
-                    if (a.ship_battle.crit_chance && b.ship_battle.crit_chance) {
-                        r = b.ship_battle.crit_chance - a.ship_battle.crit_chance;
-                    }
-                    if (a.ship_battle.accuracy && b.ship_battle.accuracy) {
-                        r = b.ship_battle.accuracy - a.ship_battle.accuracy;
-                    }
-                    if (a.ship_battle.evasion && b.ship_battle.evasion) {
-                        r = b.ship_battle.evasion - a.ship_battle.evasion;
-                    }
-
-                    // check other stats
-                    if (!r) {
-                        r = Object.values(a.ranks).filter(t => typeof t === 'number').reduce((p, n) => p + n, 0) - Object.values(b.ranks).filter(t => typeof t === 'number').reduce((p, n) => p + n, 0)
-                        if (!r) {
-                            // !!
-                            console.log(`completely identical stats! ${a.name}, ${b.name}`);
-                        }
-                    }
-                    return r;
-                });
+            const workCrew = options.crew;
 
             let seats = ship.battle_stations?.length;
 
@@ -224,7 +116,9 @@ const ShipCrewWorker = {
             let total_combos = factorial(wcn) / (factorial(wcn - bsn) * factorial(bsn));
 
             let count = max_iterations || Math.ceil(total_combos); //crew_combos.length;
-            let i = 0;
+            let end_at = options.end_at ?? (Number.isNaN(total_combos) ? undefined : total_combos - 1);
+            let start_at = options.start_at ?? 0;
+            let i = start_at;
             let progress = -1;
             const results = [] as ShipWorkerItem[];
 
@@ -286,7 +180,7 @@ const ShipCrewWorker = {
 
             const fbb_mode = battle_mode.startsWith('fbb');
 
-            getPermutations(workCrew, seats, max_iterations, true, (set) => {
+            getPermutations(workCrew, seats, end_at, true, start_at, (set) => {
                 i++;
                 if (errors) return false;
                 if (!(i % 100)) {
@@ -343,79 +237,6 @@ const ShipCrewWorker = {
 
                 return battle_data;
             });
-
-            // const worksets = [] as CrewMember[][];
-            
-            // await processPermutationsAsync(workCrew, seats, 10, async (sets) => {
-            //     i+=sets.length;
-            //     if (errors) return;
-            //     if (!(i % 100)) {
-            //         let p = Math.round((i / count) * 100);
-
-            //         if (p !== progress) {
-            //             progress = p;
-            //             if (!verbose) {
-            //                 reportProgress({ format: 'ship.calc.calculating_pct_ellipses', options: { percent: `${p}` } });
-            //             }
-            //             else {
-            //                 reportProgress({ format: 'ship.calc.calculating_pct_ellipses_verbose', 
-            //                     options: { 
-            //                         percent: `${p}`,
-            //                         progress: `${i.toLocaleString()}`,
-            //                         count: `${count.toLocaleString()}`,
-            //                         accepted: `${results.length.toLocaleString()}`
-            //                     } 
-            //                 });
-            //             }
-            //         }
-            //     }
-
-            //     sets.forEach((set) => {
-            //         let newseats = canSeatAll(ship, set, !!ignore_skill);
-            //         if (!newseats) {
-            //             return false;
-            //         }
-                    
-            //         set = newseats;
-            //         worksets.push(set);
-            //     });
-
-            //     let battle_results = [] as ShipWorkerItem[];
-              
-            //     const battleConfig = { rate, fbb_mode, input_ship: ship, crew: [], opponent, defense, offense, time, activation_offsets, fixed_delay: fixed_activation_delay, simulate } as IterateBattleConfig;
-
-            //     let battle_res = await iterateBattleBatch(battleConfig, worksets);
-            //     let x = 0;
-            //     for (let battle_data of battle_res) {
-            //         let set = worksets[x++];
-            //         let attack = processBattleRun(battle_data, set);
-
-            //         if (!get_attacks) battle_data.length = 0;
-            //         let accepted = false;
-            //         if (last_high === null) {
-            //             last_high = attack;
-            //             accepted = true;
-            //             results.push(attack);
-            //             battle_results.push(attack);
-            //         }
-            //         else {
-            //             let d = compareShipResults(attack, last_high, fbb_mode);
-            //             if (d < 0) {
-            //                 accepted = true;
-            //                 results.push(attack);
-            //                 battle_results.push(attack);
-            //                 last_high = attack;
-            //             }
-            //         }
-    
-            //         if (accepted) {
-            //             reportProgress({ result: attack });
-            //             accepted = false;
-            //         }        
-            //     }
-            //     worksets.length = 0;                
-            // }, max_iterations);
-
 
             reportProgress({ format: 'ship.calc.sorting_finalizing_ellipses' });
 
