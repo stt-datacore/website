@@ -492,8 +492,11 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         for (actidx = 0; actidx < act_cnt; actidx++) {
             action = allactions[actidx];
 
-            if (!activated && !inited[actidx] && sec >= action.initial_cooldown + delay() && !currents[actidx]) {
-                activation = activate(action, actidx);                
+            if (!inited[actidx]) {
+                state_time[actidx] += r_inc;
+                if (!activated && state_time[actidx] > action.initial_cooldown + (delay())) {
+                    activation = activate(action, actidx);
+                }
             }
             else if (inited[actidx] && currents[actidx]) {
                 state_time[actidx] += r_inc;
@@ -501,9 +504,9 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                     deactivate(action, actidx);
                 }
             }
-            else if (!activated && inited[actidx] && !currents[actidx] && (!action.limit || uses[actidx] < action.limit)) {
+            else if (inited[actidx] && !currents[actidx] && (!action.limit || uses[actidx] < action.limit)) {
                 state_time[actidx] += r_inc;
-                if (state_time[actidx] > action.cooldown + (delay())) {
+                if (!activated && state_time[actidx] > action.cooldown + (delay())) {
                     activation = activate(action, actidx);
                 }
             }
