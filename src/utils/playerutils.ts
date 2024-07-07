@@ -44,12 +44,12 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     delete p.player.character.voyage_summaries;
     delete p.player.character.boost_windows;
     delete p.player.character.cadet_schedule;
-    delete p.player.character.cadet_tickets;
+    //delete p.player.character.cadet_tickets;
     delete p.player.character.daily_rewards_state;
     delete p.player.character.location;
     delete p.player.character.destination;
     delete p.player.character.video_ad_chroniton_boost_reward;
-    delete p.player.character.pvp_tickets;
+    //delete p.player.character.pvp_tickets;
     delete p.player.character.event_tickets;
     //delete p.player.character.pvp_divisions;
     delete p.player.character.pvp_timer;

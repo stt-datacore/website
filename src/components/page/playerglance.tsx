@@ -38,7 +38,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const { isMobile } = globalContext;
     const { playerData } = globalContext.player;
 
-    if (!playerData) return <></>;
+    if (!playerData?.player) return <></>;
     
     const { money, premium_purchasable, honor, premium_earnable, shuttle_rental_tokens } = playerData.player;
     const ism = playerData?.forte_root.items.find(f => f.id === ISM_ID)?.quantity ?? 0;
@@ -47,7 +47,6 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const ownedCites = getOwnedCites(playerData?.player.character.items ?? [], false);
     const cadet = playerData?.player.character.cadet_tickets?.current ?? 0;
     const pvp = playerData?.player.character.pvp_tickets?.current ?? 0;
-    const shuttle = playerData?.player.shuttle_rental_tokens ?? 0;
     
     let revival = playerData.player.character.items.find(f => f.symbol === 'voyage_revival');
     let coreRevival = globalContext.core.items.find(f => f.symbol === 'voyage_revival')!;
