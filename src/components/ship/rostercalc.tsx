@@ -385,7 +385,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                     </div>
                                 </div>
                                 <div style={{...sectionStyle, gridArea: 'rate', display: 'grid', alignItems: 'center', gridTemplateAreas: "'label1 dropdown1' 'label2 dropdown2'"}}>
-                                    {/* <div style={{gridArea:'label1'}}>
+                                    <div style={{gridArea:'label1'}}>
                                         {t('ship.calc.rate')}:&nbsp;
                                     </div>
                                     <div style={{gridArea:'dropdown1'}}>
@@ -397,20 +397,20 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                             value={rate}
                                             onChange={(e, { value }) => setRate(value as number)}
                                             options={rates} />
-                                    </div> */}
-                                    {/* <div style={{gridArea:'label2'}}>
+                                    </div>
+                                    <div style={{gridArea:'label2'}}>
                                         {t('ship.calc.fixed_delay')}:&nbsp;
                                     </div>
                                     <div style={{gridArea:'dropdown2'}}>
                                         <Dropdown    
-                                            disabled={running}                                    
+                                            disabled={running}                             
                                             fluid
                                             scrolling
                                             selection
                                             value={fixedActivationDelay}
                                             onChange={(e, { value }) => setFixedActivationDelay(value as number)}
                                             options={delays} />
-                                    </div> */}
+                                    </div>
                                 </div>
                                 {/* <div style={{...sectionStyle, gridArea: 'simulate'}}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '1em', height:'3em' }}>
@@ -582,8 +582,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 max_iterations: !exhaustiveMode ? maxIter : undefined,
                 activation_offsets: activationOffsets,
                 simulate: false,
-                fixed_activation_delay: 0.6, //fixedActivationDelay,
-                rate: 1
+                fixed_activation_delay: fixedActivationDelay,
+                rate
             } as ShipWorkerConfig;
 
             setProgressMsg('');
