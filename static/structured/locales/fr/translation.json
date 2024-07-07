@@ -643,6 +643,7 @@
         "hide": "Masquer",
         "idle": "Inactif",
         "item_types": {
+            "chronotons": "Chronotons",
             "arena": "Arène",
             "arena_tickets": "Billets pour arène",
             "buff": "Effet",

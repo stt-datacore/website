@@ -637,6 +637,7 @@
         "hide": "Verstecken",
         "idle": "Leerlauf",
         "item_types": {
+            "chronotons": "Chronotons",
             "arena": "Arena",
             "arena_tickets": "Arena Eintrittskarte",
             "buff": "Buff",
