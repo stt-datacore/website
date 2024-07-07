@@ -259,7 +259,7 @@ const ShipCrewWorker = {
                 });
 
                 const arena_metric = (highest_attack / high_attack_second);
-                const fbb_metric = (min_attack + max_attack) / 2;
+                const fbb_metric = attack; // (attack + max_attack + min_attack) / 3;
 
                 return {
                     id: current_id++,
