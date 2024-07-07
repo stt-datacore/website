@@ -508,7 +508,13 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 }
             }
 
-            if (activation) {                 
+            if (activation) {
+
+                // hold back other activations since one was activated
+                for (let idx = 0; idx < act_cnt; idx++) {
+                    if (!currents[idx] && idx !== actidx) state_time[idx] -= r_inc;
+                }
+                
                 powerInfo = getInstantPowerInfo(rate, ship, currents, opponent, offense);
                 
                 if (typeof activation === 'number') {
