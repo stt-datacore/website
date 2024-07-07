@@ -185,6 +185,8 @@ export interface ShipWorkerConfigBase {
     verbose?: boolean;
     max_iterations?: number;
     activation_offsets?: number[];
+    start_at?: number;
+    end_at?: number;
 }
 
 export interface ShipWorkerConfig extends ShipWorkerConfigBase {
