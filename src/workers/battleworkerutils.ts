@@ -367,7 +367,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     let inited = allactions.map(a => false);
     let active = allactions.map(a => false);
 
-    const currents = allactions.map(m => false as false | ShipAction)
+    const currents = allactions.map(m => false as false | ShipAction);
 
     let cloaked = false;
     let oppoattack = 0;
@@ -443,7 +443,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 let time = action.ability.amount;
                 for (let idx = 0; idx < alen; idx++) {
                     if (!active[idx] && inited[idx]) {
-                        if (!allactions[idx].current_phase || allactions[idx].comes_from === 'ship') {
+                        if (!allactions[idx].current_phase && allactions[idx].comes_from === 'crew') {
                             state_time[idx] += time;
                         }
                     }
@@ -462,6 +462,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             processChargePhases(action, actidx);
             return false;
         }
+
         return immediate;
     }
 
@@ -485,8 +486,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     for (let inc = 1; inc <= time; inc++) {
         sec = Math.round((inc / rate) * 10) / 10;
         
-        ca = 0;
-        powerInfo = null;
+        ca = 0;        
         activated = false;
 
         for (actidx = 0; actidx < act_cnt; actidx++) {
@@ -502,6 +502,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 state_time[actidx] += r_inc;
                 if (state_time[actidx] > action.duration) {
                     deactivate(action, actidx);
+                    powerInfo = null;
                 }
             }
             else if (inited[actidx] && !currents[actidx] && (!action.limit || uses[actidx] < action.limit)) {
@@ -512,15 +513,9 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             }
 
             if (activation) {
-
-                // hold back other activations since one was activated
-                // for (let idx = 0; idx < act_cnt; idx++) {
-                //     if (!currents[idx] && idx !== actidx) state_time[idx] -= r_inc;
-                // }
-                
                 powerInfo = getInstantPowerInfo(rate, ship, currents, opponent, offense);
                 
-                if (typeof activation === 'number') {
+                if (activation !== true) {
                     immediates.push({
                         base: powerInfo.computed.attack.base * activation,
                         max: powerInfo.computed.attack.with_bonus * activation,
@@ -533,10 +528,10 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             }
         }
         
-        if (!powerInfo) {            
+        if (!powerInfo) {
             powerInfo = getInstantPowerInfo(rate, ship, currents, opponent, offense);
         }
-        
+
         let base_attack = powerInfo.computed.attack.base;
         let standard_attack = powerInfo.computed.attack.with_bonus_and_chance;
         let max_attack = powerInfo.computed.attack.with_bonus;
