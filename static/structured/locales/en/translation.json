@@ -606,7 +606,13 @@
             "title": "View Mode"
         }
     },
+    "demands": {
+        "demands": "Demands",
+        "items": "{{global.items}}"
+    },
     "global": {
+        "items": "Items",
+        "group_by": "Group by",
         "episode": "Episode",
         "adventure": "Adventure",
         "quest": "Quest",

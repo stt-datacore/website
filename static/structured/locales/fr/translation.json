@@ -612,7 +612,13 @@
             "title": "Mode d'affichage"
         }
     },
+    "demands": {
+        "demands": "Demandes",
+        "items": "{{global.items}}"
+    },
     "global": {
+        "items": "Articles",
+        "group_by": "Par groupe",
         "episode": "Épisode",
         "adventure": "Aventure",
         "quest": "Quête",

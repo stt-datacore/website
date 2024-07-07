@@ -611,7 +611,13 @@
             "title": "Modo de vista"
         }
     },
+    "demands": {
+        "demands": "Demandas",
+        "items": "{{global.items}}"
+    },
     "global": {
+        "items": "Artículos",
+        "group_by": "Agrupar por",
         "episode": "Episodio",
         "adventure": "Aventura",
         "quest": "Búsqueda",

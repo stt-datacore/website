@@ -606,7 +606,13 @@
             "title": "Ansichtsmodus"
         }
     },
+    "demands": {
+        "demands": "Anforderungen",
+        "items": "{{global.items}}"
+    },
     "global": {
+        "items": "Artikele",
+        "group_by": "Gruppiere nach",
         "episode": "Episode",
         "adventure": "Abenteuer",
         "quest": "Quest",
