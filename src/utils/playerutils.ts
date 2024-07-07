@@ -58,8 +58,8 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     delete p.player.character.using_default_name;
     //delete p.player.character.max_level;
     delete p.player.character.can_purchase_shuttle_bay;
-    delete p.player.character.replay_energy_rate;
-    delete p.player.character.seconds_from_replay_energy_basis;
+    //delete p.player.character.replay_energy_rate;
+    //delete p.player.character.seconds_from_replay_energy_basis;
     delete p.player.character.seconds_from_last_boost_claim;
     // delete p.player.character.crew_borrows;
     // delete p.player.character.crew_shares;
