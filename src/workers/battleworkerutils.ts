@@ -344,8 +344,8 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     let hull = ship.hull;
     let orighull = ship.hull;
 
-    let shield = ship.shields;
-    let origshield = shield;
+    let shields = ship.shields;
+    let origshield = shields;
     let shield_regen = ship.shield_regen / rate;
     let orig_regen = shield_regen;
 
@@ -460,10 +460,10 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 }
             }
             else if (action.ability?.type === 3) {
-                let pctneed = 1 - (shield / origshield);
+                let pctneed = 1 - (shields / origshield);
                 let pctfix = action.ability.amount / 100;
                 if (pctneed >= pctfix || pctneed >= 0.3) {
-                    shield += (origshield * pctfix);
+                    shields += (origshield * pctfix);
                     if (action.charge_phases) {
                         resetAction(action);
                     }
@@ -522,6 +522,11 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     let activated = false;
     let sec = 0;
     let action = null as null | ChargeAction;
+
+    let attack_inc = 0;
+
+    let at_second = 0;
+
 
     for (let inc = 1; inc <= time; inc++) {
         sec = Math.round((inc / rate) * 10) / 10;
@@ -593,51 +598,67 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         
         let lasthull = hull;
 
-        if (fbb_mode || !cloaked) {
-            let mul = currents.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
-            mul = 1 - (mul / 100);
-
-            if (opponent) {
-                oppoattack = (opponent.attack * (opponent.attacks_per_second / rate) * hitChance(opponent.accuracy, powerInfo.computed.active.evasion));
-            }
-            
-            let incoming_damage = 0;
-
-            if (!oppoattack) {
-                incoming_damage = (((standard_attack - (standard_attack * (fbb_mode ? defense : 1))) * mul) / rate);
-            }
-            else {
-                incoming_damage = (((oppoattack - (oppoattack * (fbb_mode ? defense : 1))) * mul));
-            }
-
-            if (shield > 0) {
-                shield -= incoming_damage;
-                if (shield < 0) {
-                    hull += shield;
-                    shield = 0;
-                }
-            }
-            else {
-                hull -= incoming_damage;
-            }
-
-            if (hull <= 0) break;
-        }
-
-        if (shield < origshield && shield > 0) {
-            shield += shield_regen;
-            if (shield > origshield) shield = origshield;
+        if (shields < origshield && shields > 0) {
+            shields += shield_regen;
+            if (shields > origshield) shields = origshield;
         } 
         
+        if (inc % rate === 0) {
+            if (opponent) {
+                attack_inc += (opponent.attacks_per_second * 100);
+            }
+            else {
+                attack_inc += (powerInfo.computed.attacks_per_second * rate) * 100;
+            }
+
+            if (attack_inc >= 100) {                
+                if (fbb_mode || !cloaked) {
+                    let mul = currents.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
+                    mul = 1 - (mul / 100);
+                    
+                    if (opponent) {
+                        oppoattack = (opponent.attack * (attack_inc / 100) * hitChance(opponent.accuracy, powerInfo.computed.active.evasion));
+                    }
+                    
+                    let incoming_damage = 0;
+        
+                    if (!oppoattack) {
+                        let actual_attack = standard_attack * rate;
+                        incoming_damage = (attack_inc / 100) * (((actual_attack - (actual_attack * (fbb_mode ? defense : 0))) * mul));
+                    }
+                    else {
+                        incoming_damage = (attack_inc / 100) * (((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul));
+                    }
+        
+                    if (shields > 0) {
+                        shields -= incoming_damage;
+                        if (shields < 0) {
+                            hull += shields;
+                            shields = 0;
+                        }
+                    }
+                    else {
+                        hull -= incoming_damage;
+                    }
+        
+                }
+                attack_inc = 0;
+            }
+        }
+
         attacks.push({
             actions: currents.filter(f => f !== false),
-            damage: lasthull - hull,
+            hull,
+            shields,
             second: sec,
             attack: standard_attack,
             min_attack: base_attack,
             max_attack: max_attack,
             ship
         });
+
+        if (hull <= 0) break;
+
     }
 
     ship = undefined;
