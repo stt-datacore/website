@@ -81,7 +81,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		if (usages?.length) {			
 			for (let usage of usages) {
 				if (usage.battle_mode.startsWith('fbb')) {					
-					texts.push(<a onClick={() => navigate(`/ship_info?ship=${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer'}}>{`${t(`ship.fbb`)} ${usage.rarity}*`}</a>);
+					texts.push(<a onClick={() => navigate(`/ship_info?ship=${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer'}}>{`${t(`ship.fbb`)} ${usage.rarity + 1}*`}</a>);
 				}
 				else if (usage.battle_mode === 'pvp') {					
 					texts.push(<a onClick={() => navigate(`/ship_info?ship=${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer'}}>{`${t('ship.pvp')}: ${t(`ship.pvp_divisions.${usage.pvp_division}`)}`}</a>);
