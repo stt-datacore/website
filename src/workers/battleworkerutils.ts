@@ -269,7 +269,7 @@ export function getInstantPowerInfo(rate: number, ship: Ship, actions: (ShipActi
 
     // boarding
     if (grants.includes(4)) {
-        o_attack += (o_attack * 0.50);
+        o_attack += (ship.attack * 0.50);
     }
 
     let o_hit_chance = hitChance(o_accuracy, opponent?.evasion ?? o_evasion);
