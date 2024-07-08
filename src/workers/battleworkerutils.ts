@@ -23,6 +23,7 @@ export interface InstantPowerInfo {
         crit_bonus: number;
         crit_chance: number;
         hit_chance: number;
+        attacks_per_second: number;
         attack: {
             base: number;
             with_bonus: number;
@@ -151,8 +152,13 @@ export function getInstantPowerInfo(rate: number, ship: Ship, actions: (ShipActi
     offense ??= 0;     
 
     let o_attack = ship.attack * (1 + offense);
+    let o_b_attack = o_attack;
     let o_evasion = ship.evasion;
     let o_accuracy = ship.accuracy;
+    let board_damage = 0;
+
+    let o_speed = ship.attacks_per_second;
+    let c_speed = o_speed;
 
     let c_crit_chance = ship.crit_chance;
     let c_crit_bonus = ship.crit_bonus;
@@ -202,6 +208,14 @@ export function getInstantPowerInfo(rate: number, ship: Ship, actions: (ShipActi
             if (c_a_accuracy < action.bonus_amount) {
                 c_a_accuracy = action.bonus_amount;
             }
+        }
+        
+        if (action.ability?.type === 7) {
+            c_speed += (o_speed * (action.ability.amount / 100));
+        }
+
+        if (action.ability?.type === 8) {
+            board_damage += (action.ability.amount / 100);
         }
         if (action.penalty) {
             if (action.penalty.type === 0) {
@@ -269,11 +283,11 @@ export function getInstantPowerInfo(rate: number, ship: Ship, actions: (ShipActi
 
     // boarding
     if (grants.includes(4)) {
-        o_attack += (ship.attack * 0.50);
+        o_attack += (o_b_attack * 0.50) + (o_b_attack * 0.50 * board_damage);
     }
 
     let o_hit_chance = hitChance(o_accuracy, opponent?.evasion ?? o_evasion);
-    let ship_mul = (ship.attacks_per_second / rate);
+    let ship_mul = (c_speed / rate);
 
     let o_o_attack = {
         base: o_attack * o_hit_chance * ship_mul,
@@ -300,6 +314,7 @@ export function getInstantPowerInfo(rate: number, ship: Ship, actions: (ShipActi
             hit_chance: o_hit_chance,
             crit_bonus: o_crit_bonus,
             crit_chance: o_crit_chance,
+            attacks_per_second: c_speed
         },
         grants
     };   
@@ -328,6 +343,11 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
     let hull = ship.hull;
     let orighull = ship.hull;
+
+    let shield = ship.shields;
+    let origshield = shield;
+    let shield_regen = ship.shield_regen / rate;
+    let orig_regen = shield_regen;
 
     const attacks = [] as AttackInstant[];
     crew.forEach(c => c.action.crew = c.id!);
@@ -439,6 +459,20 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                     return false;
                 }
             }
+            else if (action.ability?.type === 3) {
+                let pctneed = 1 - (shield / origshield);
+                let pctfix = action.ability.amount / 100;
+                if (pctneed >= pctfix || pctneed >= 0.3) {
+                    shield += (origshield * pctfix);
+                    if (action.charge_phases) {
+                        resetAction(action);
+                    }
+                }
+                else {
+                    processChargePhases(action, actidx);
+                    return false;
+                }
+            }
             else if (action.ability?.type === 10) {
                 let time = action.ability.amount;
                 for (let idx = 0; idx < alen; idx++) {
@@ -449,7 +483,10 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                     }
                 }
             }
-
+            else if (action.ability?.type === 6) {
+                shield_regen += (orig_regen * (action.ability.amount / 100))
+            }
+    
             if (immediate === false) immediate = true;
             currents[actidx] = action;
             cloaked = action.status === 2;
@@ -467,6 +504,9 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     }
 
     const deactivate = (action: ShipAction, actidx: number) => {
+        if (action.ability?.type === 6) {
+            shield_regen -= (orig_regen * (action.ability.amount / 100))
+        }
         state_time[actidx] = 1;
         active[actidx] = false;
         currents[actidx] = false;
@@ -517,9 +557,9 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 
                 if (activation !== true) {
                     immediates.push({
-                        base: (powerInfo.computed.attack.base * activation) / (ship.attacks_per_second / rate),
-                        max: (powerInfo.computed.attack.with_bonus * activation) / (ship.attacks_per_second / rate),
-                        standard: (powerInfo.computed.attack.with_bonus_and_chance * activation) / (ship.attacks_per_second / rate)
+                        base: (powerInfo.computed.attack.base * activation) / (powerInfo.computed.attacks_per_second / rate),
+                        max: (powerInfo.computed.attack.with_bonus * activation) / (powerInfo.computed.attacks_per_second / rate),
+                        standard: (powerInfo.computed.attack.with_bonus_and_chance * activation) / (powerInfo.computed.attacks_per_second / rate)
                     });
                 }
 
@@ -560,16 +600,34 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             if (opponent) {
                 oppoattack = (opponent.attack * (opponent.attacks_per_second / rate) * hitChance(opponent.accuracy, powerInfo.computed.active.evasion));
             }
-    
+            
+            let incoming_damage = 0;
+
             if (!oppoattack) {
-                hull -= (((standard_attack - (standard_attack * (fbb_mode ? defense : 1))) * mul) / rate);
+                incoming_damage = (((standard_attack - (standard_attack * (fbb_mode ? defense : 1))) * mul) / rate);
             }
             else {
-                hull -= (((oppoattack - (oppoattack * (fbb_mode ? defense : 1))) * mul));
+                incoming_damage = (((oppoattack - (oppoattack * (fbb_mode ? defense : 1))) * mul));
+            }
+
+            if (shield > 0) {
+                shield -= incoming_damage;
+                if (shield < 0) {
+                    hull += shield;
+                    shield = 0;
+                }
+            }
+            else {
+                hull -= incoming_damage;
             }
 
             if (hull <= 0) break;
         }
+
+        if (shield < origshield) {
+            shield += shield_regen;
+            if (shield > origshield) shield = origshield;
+        } 
         
         attacks.push({
             actions: currents.filter(f => f !== false),
