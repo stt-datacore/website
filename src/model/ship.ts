@@ -200,7 +200,8 @@ export interface MultiShipWorkerConfig extends ShipWorkerConfigBase {
 export interface AttackInstant {
   actions: ShipAction[];
   second: number;
-  damage: number;
+  hull: number;
+  shields: number;
   attack: number;
   min_attack: number;
   max_attack: number;
