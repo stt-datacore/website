@@ -624,7 +624,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             if (hull <= 0) break;
         }
 
-        if (shield < origshield) {
+        if (shield < origshield && shield > 0) {
             shield += shield_regen;
             if (shield > origshield) shield = origshield;
         } 
