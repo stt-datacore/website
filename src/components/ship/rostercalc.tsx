@@ -773,23 +773,24 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 if (!a.action.ability && b.action.ability) return 1;
             }
 
-            // check durations
-            r = a.action.cycle_time - b.action.cycle_time;
-            if (r) return r;
-
-            r = a.action.initial_cooldown - b.action.initial_cooldown;
-            if (r) return r;
-            r = a.action.duration - b.action.duration;
-            if (r) return r;
-            r = a.action.cooldown - b.action.cooldown;
-            if (r) return r;
+            // check durations 
+            if (fbb_mode) {
+                r = a.action.cycle_time - b.action.cycle_time;
+                if (r) return r;
+            }
+            else {
+                r = a.action.initial_cooldown - b.action.initial_cooldown;
+                if (r) return r;
+            }
 
             // check limits
-            if (a.action.limit && !b.action.limit) return 1;
-            if (!a.action.limit && b.action.limit) return -1;
-            if (a.action.limit && b.action.limit) {
-                r = b.action.limit - a.action.limit;
-                if (r) return r;
+            if (fbb_mode) {
+                if (a.action.limit && !b.action.limit) return 1;
+                if (!a.action.limit && b.action.limit) return -1;
+                if (a.action.limit && b.action.limit) {
+                    r = b.action.limit - a.action.limit;
+                    if (r) return r;
+                }
             }
             
             // check the bonus amount/type
