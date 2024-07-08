@@ -537,12 +537,12 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     {t('ship.attack')}{': '}<br />{Math.round(sug.attack).toLocaleString()}
                 </div>
                 <div style={{gridArea: 'standard', display: 'flex', justifyContent: 'center'}}>
-                    {battleMode.startsWith("fbb") && 
+                    {fbb_mode && 
                         <>
                             <b>*</b> {t('ship.fbb_metric')}{': '}<br />{Math.round(sug.fbb_metric).toLocaleString()}
                         </>
                     }
-                    {!battleMode.startsWith("fbb") && 
+                    {!fbb_mode && 
                         <>
                             <b>*</b> {t('ship.arena_metric')}{': '}<br />{Math.round(sug.arena_metric).toLocaleString()}
                         </>

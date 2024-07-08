@@ -11,9 +11,9 @@ function factorial(number: number) {
     return result;
 }
 
-function getPermutations<T, U>(array: T[], size: number, max?: number, count_only?: boolean, min?: number, check?: (set: T[]) => U[] | false) {
+function getPermutations<T, U>(array: T[], size: number, count?: number, count_only?: boolean, start_idx?: number, check?: (set: T[]) => U[] | false) {
     var current_iter = 0;
-    const mmin = min ?? 0;
+    const mmin = start_idx ?? 0;
     function p(t: T[], i: number) {
         if (t.length === size) {
             if (current_iter >= mmin) {
@@ -36,7 +36,7 @@ function getPermutations<T, U>(array: T[], size: number, max?: number, count_onl
             return;
         }
 
-        if (max && current_iter >= max) return;
+        if (count && current_iter >= count) return;
         p(t.concat(array[i]), i + 1);
         p(t, i + 1);
     }
@@ -115,10 +115,9 @@ const ShipCrewWorker = {
             let bsn = seats;
             let total_combos = factorial(wcn) / (factorial(wcn - bsn) * factorial(bsn));
 
-            let count = max_iterations || Math.ceil(total_combos); //crew_combos.length;
-            let end_at = options.end_at ?? (Number.isNaN(total_combos) ? undefined : total_combos - 1);
-            let start_at = options.start_at ?? 0;
-            let i = start_at;
+            let count = max_iterations || Math.ceil(total_combos); //crew_combos.length;            
+            let start_index = max_iterations ? 0 : (options.start_index ?? 0);
+            let i = start_index;
             let progress = -1;
             const results = [] as ShipWorkerItem[];
 
@@ -180,7 +179,7 @@ const ShipCrewWorker = {
 
             const fbb_mode = battle_mode.startsWith('fbb');
 
-            getPermutations(workCrew, seats, end_at, true, start_at, (set) => {
+            getPermutations(workCrew, seats, count, true, start_index, (set) => {
                 i++;
                 if (errors) return false;
                 if (!(i % 100)) {
