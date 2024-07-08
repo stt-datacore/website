@@ -607,7 +607,6 @@
         }
     },
     "global": {
-        "n_results": "{{n}} results",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
@@ -637,14 +636,14 @@
         "hide": "Hide",
         "idle": "Idle",
         "item_types": {
-            "chronotons": "Chronotons",
             "arena": "Arena",
             "arena_tickets": "Arena tickets",
             "buff": "Buff",
             "cadet": "Cadet",
             "cadet_challenge": "Cadet challenge",
             "cadet_challenge_tickets": "Cadet challenge tickets",
-            "cadet_challenges": "Cadet challenges",            
+            "cadet_challenges": "Cadet challenges",
+            "chronotons": "Chronotons",
             "component": "Component",
             "continuum_qbit": "Continuum Q-Bit",
             "continuum_quipment": "Continuum Quipment",
@@ -676,6 +675,7 @@
         "max_rarity": "Max. rarity",
         "member": "Member",
         "min_rarity": "Min. rarity",
+        "n_results": "{{n}} results",
         "name": "Name",
         "never": "Never",
         "new": "New",
@@ -1094,6 +1094,13 @@
         "quipment_score": "Quipment Score",
         "voyage_rank": "Voyage Rank"
     },
+    "ranking_method": {
+        "delta_t": "Delta T",
+        "guaranteed_minimum": "Guaranteed minimum",
+        "moonshot": "Moonshot",
+        "potential_maximum": "Potential maximum",
+        "standard": "Standard"
+    },
     "roster_summary": {
         "by_rarity": "By Rarity",
         "by_skill": "By Skill",
@@ -1225,6 +1232,7 @@
             "ignore_skill": "Ignore skills",
             "iterations": "Iterations",
             "max_iterations": "Max iterations",
+            "ranking_method": "Ranking Method",
             "rate": "Rate",
             "rate_msg": "Must be a number between 1 and 10",
             "run_current_line_up": "Run Current Crew",

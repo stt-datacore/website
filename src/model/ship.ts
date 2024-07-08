@@ -163,7 +163,10 @@ export interface ShipInUse {
     rarity: number;
 }
 
+export type ShipRankingMethod = 'standard' | 'min' | 'max' | 'delta';
+
 export interface ShipWorkerConfigBase {
+    ranking_method: ShipRankingMethod,
     crew: CrewMember[],
     battle_mode: BattleMode,
     rate: number,

@@ -1,19 +1,16 @@
 import React from "react";
 import { CrewMember } from "../../model/crew";
-import { AttackInstant, BattleMode, Ship, ShipWorkerConfig, ShipWorkerItem } from "../../model/ship"
-import { Accordion, Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Label, SearchResults, SemanticICONS } from "semantic-ui-react";
+import { BattleMode, Ship, ShipRankingMethod, ShipWorkerConfig, ShipWorkerItem } from "../../model/ship";
+import { Accordion, Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Label, SemanticICONS } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { WorkerContext } from "../../context/workercontext";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { PlayerCrew } from "../../model/player";
 import { useStateWithStorage } from "../../utils/storage";
 import { BossShip } from "../../model/boss";
-import { CrewTarget } from "../hovering/crewhoverstat";
 import { compareShipResults, getShipsInUse } from "../../utils/shiputils";
 import { BattleGraph } from "./battlegraph";
-import { formatDuration } from "../../utils/itemutils";
 import { formatRunTime } from "../../utils/misc";
-import { crewCopy } from "../../utils/crewutils";
 
 export interface RosterCalcProps {
     pageId: string;
@@ -71,6 +68,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
     const battleModes = [] as DropdownItemProps[];
     const fbb_mode = !['skirmish', 'pvp'].includes(battleMode);
+    
+    const [rankingMethod, setRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/short`, 'delta', { rememberForever: true });
+    const [fbbRankingMethod, setFBBRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/long`, 'standard', { rememberForever: true });
 
     (globalContext.player.playerData ? ['pvp', 'skirmish', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'] : ['pvp', 'skirmish']).forEach((mode) => {
         let rarity = 0;
@@ -216,6 +216,33 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             text: `${rate}`
         })
     });
+
+    // "delta_t": "Delta T",
+    // "guaranteed_minimum": "Guaranteed minimum",
+    // "moonshot": "Moonshot",
+    // "potential_maximum": "Potential maximum",
+    // "standard": "Standard"
+
+    const ranking_methods = [{
+        key: `ranking_standard`,
+        value: 'standard',
+        text: t('ranking_method.standard')
+    },
+    {
+        key: `ranking_min`,
+        value: 'min',
+        text: t('ranking_method.guaranteed_minimum')
+    },
+    {
+        key: `ranking_max`,
+        value: 'max',
+        text: t('ranking_method.moonshot')
+    },
+    {
+        key: `ranking_delta`,
+        value: 'delta',
+        text: t('ranking_method.delta_t')
+    }] as DropdownItemProps[]
 
 
     const sectionStyle = {
@@ -413,8 +440,23 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                             options={delays} />
                                     </div>
                                 </div>
-                                {/* <div style={{...sectionStyle, gridArea: 'simulate'}}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1em', height:'3em' }}>
+                                <div style={{...sectionStyle, gridArea: 'simulate', display: 'grid', alignItems:'center', gridTemplateAreas: "'label1 dropdown1' 'label2 dropdown2'"}}>
+
+                                    <div style={{gridArea:'label1'}}>
+                                        {t('ship.calc.ranking_method')}:&nbsp;
+                                    </div>
+                                    <div style={{gridArea:'dropdown1'}}>
+                                        <Dropdown   
+                                            disabled={running}
+                                            fluid
+                                            scrolling
+                                            selection
+                                            value={fbb_mode ? fbbRankingMethod : rankingMethod}
+                                            onChange={(e, { value }) => fbb_mode ? setFBBRankingMethod(value as ShipRankingMethod) : setRankingMethod(value as ShipRankingMethod)}
+                                            options={ranking_methods} />
+                                    </div>
+
+                                    {/* <div style={{ display: 'flex', alignItems: 'center', gap: '1em', height:'3em' }}>
                                         <Checkbox
                                             disabled={running}
                                             label={t('ship.calc.simulate')}
@@ -429,8 +471,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                             label={t('ship.calc.iterations')}
                                             value={iterations}                                        
                                             onChange={(e, { value }) => setIterations(Number.parseInt(value))} />
-                                    </div>
-                                </div> */}
+                                    </div> */}
+                                </div>
                                 <div style={{...sectionStyle, gridArea: 'battle', flexDirection: 'row', justifyContent: 'space-evenly'}}>
                                     {ship.battle_stations?.map((mp, idx) => {
                                         const skillName = mp.skill;
@@ -570,6 +612,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             const pfcrew = current ? [] as PlayerCrew[] : prefilterCrew();
             
             const config = {
+                ranking_method: fbb_mode ? fbbRankingMethod : rankingMethod,
                 ship: JSON.parse(JSON.stringify(ship)),
                 crew: JSON.parse(JSON.stringify(current ? crewStations : pfcrew)),
                 battle_mode: battleMode,
@@ -730,6 +773,25 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 if (!a.action.ability && b.action.ability) return 1;
             }
 
+            // check durations
+            r = a.action.cycle_time - b.action.cycle_time;
+            if (r) return r;
+
+            r = a.action.initial_cooldown - b.action.initial_cooldown;
+            if (r) return r;
+            r = a.action.duration - b.action.duration;
+            if (r) return r;
+            r = a.action.cooldown - b.action.cooldown;
+            if (r) return r;
+
+            // check limits
+            if (a.action.limit && !b.action.limit) return 1;
+            if (!a.action.limit && b.action.limit) return -1;
+            if (a.action.limit && b.action.limit) {
+                r = b.action.limit - a.action.limit;
+                if (r) return r;
+            }
+            
             // check the bonus amount/type
             if (a.action.bonus_type === b.action.bonus_type) {
                 r = b.action.bonus_amount - a.action.bonus_amount;
@@ -737,20 +799,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             }
             else {
                 r = a.action.bonus_type - b.action.bonus_type;
-                if (r) return r;
-            }
-
-            // check durations
-            r = a.action.initial_cooldown - b.action.initial_cooldown;
-            if (r) return r;
-            r = a.action.duration - b.action.duration;
-            if (r) return r;
-            r = a.action.cooldown - b.action.cooldown;
-            if (r) return r;
-            if (a.action.limit && !b.action.limit) return 1;
-            if (!a.action.limit && b.action.limit) return -1;
-            if (a.action.limit && b.action.limit) {
-                r = b.action.limit - a.action.limit;
                 if (r) return r;
             }
 
