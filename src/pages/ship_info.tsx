@@ -90,7 +90,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 
 	React.useEffect(() => {
 		setCrew(getCrew());
-	}, [playerData, coreCrew])
+	}, [playerData, coreCrew, considerFrozen, considerUnowned])
 
 	React.useEffect(() => {
 		if (ships?.length && shipKey) {
