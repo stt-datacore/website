@@ -90,6 +90,7 @@ const ShipCrewWorker = {
                 verbose, 
                 max_iterations,
                 simulate,
+                ranking_method,
                 fixed_activation_delay } = options;
 
             const opponent = opponents?.length ? opponents[0] : undefined;
@@ -151,8 +152,19 @@ const ShipCrewWorker = {
                     }
                 });
 
-                const arena_metric = (highest_attack / high_attack_second);
-                const fbb_metric = attack; // (attack + max_attack + min_attack) / 3;
+                let arena_metric = (highest_attack / high_attack_second);
+                let fbb_metric = attack;
+
+                if (fbb_mode) {
+                    if (ranking_method === 'min') fbb_metric = min_attack;
+                    else if (ranking_method === 'max') fbb_metric = max_attack;
+                    else if (ranking_method === 'delta') fbb_metric = arena_metric;                    
+                }
+                else {
+                    if (ranking_method === 'min') arena_metric = min_attack;
+                    else if (ranking_method === 'max') arena_metric = max_attack;
+                    else if (ranking_method === 'standard') arena_metric = attack;                    
+                }
 
                 return {
                     id: current_id++,

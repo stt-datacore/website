@@ -613,7 +613,6 @@
         }
     },
     "global": {
-        "n_results": "{{n}} résultats",
         "aborted": "Terminé",
         "admiral": "Avorté",
         "advanced_settings": "Réglages Avancés",
@@ -643,7 +642,6 @@
         "hide": "Masquer",
         "idle": "Inactif",
         "item_types": {
-            "chronotons": "Chronotons",
             "arena": "Arène",
             "arena_tickets": "Billets pour arène",
             "buff": "Effet",
@@ -651,6 +649,7 @@
             "cadet_challenge": "Défi pour cadets",
             "cadet_challenge_tickets": "Billets pour le défi des cadets",
             "cadet_challenges": "Défis pour cadets",
+            "chronotons": "Chronotons",
             "component": "Composant",
             "continuum_qbit": "Q-Bits de continuum",
             "continuum_quipment": "Quipement de continuum",
@@ -682,6 +681,7 @@
         "max_rarity": "Rareté max.",
         "member": "Membre",
         "min_rarity": "Rareté min.",
+        "n_results": "{{n}} résultats",
         "name": "Nom",
         "never": "Jamais",
         "new": "Nouveau",
@@ -1103,6 +1103,13 @@
         "quipment_score": "Rang de Quipement",
         "voyage_rank": "Rang Voyage"
     },
+    "ranking_method": {
+        "delta_t": "Delta T",
+        "guaranteed_minimum": "Minimum garanti",
+        "moonshot": "Shot de Lune",
+        "potential_maximum": "Potentiel maximum",
+        "standard": "Standard"
+    },
     "roster_summary": {
         "by_rarity": "Par rareté",
         "by_skill": "Par compétence",
@@ -1235,6 +1242,7 @@
             "ignore_skill": "Ignorer les compétences",
             "iterations": "Itérations",
             "max_iterations": "Itérations max.",
+            "ranking_method": "Méthode de classement",
             "rate": "Taux",
             "rate_msg": "Doit être un nombre compris entre 1 et 10",
             "run_current_line_up": "Exécuter les équipiers actuelles",

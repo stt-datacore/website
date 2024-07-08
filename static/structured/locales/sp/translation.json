@@ -612,7 +612,6 @@
         }
     },
     "global": {
-        "n_results": "{{n}} resultados",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
@@ -642,7 +641,6 @@
         "hide": "Ocultar",
         "idle": "Inactivo",
         "item_types": {
-            "chronotons": "Chronotons",
             "arena": "Arena",
             "arena_tickets": "Boletos de arena",
             "buff": "Efecto",
@@ -650,6 +648,7 @@
             "cadet_challenge": "Desafío de cadete",
             "cadet_challenge_tickets": "Boletos de desafío cadete",
             "cadet_challenges": "Desafíos de cadete",
+            "chronotons": "Chronotons",
             "component": "Componente",
             "continuum_qbit": "Q-Bits de Continuo",
             "continuum_quipment": "Quipo de Continuo",
@@ -681,6 +680,7 @@
         "max_rarity": "Rareza máx.",
         "member": "Miembro",
         "min_rarity": "Rareza mín.",
+        "n_results": "{{n}} resultados",
         "name": "Nombre",
         "never": "Nunca",
         "new": "Nuevo",
@@ -1102,6 +1102,13 @@
         "quipment_score": "Puntuación del Quipo",
         "voyage_rank": "Rango de Viaje"
     },
+    "ranking_method": {
+        "delta_t": "Delta T",
+        "guaranteed_minimum": "Mínimo garantizado",
+        "moonshot": "Disparo a la Luna",
+        "potential_maximum": "Máximo potencial",
+        "standard": "Estándar"
+    },
     "roster_summary": {
         "by_rarity": "Por rareza",
         "by_skill": "Por habilidad",
@@ -1234,6 +1241,7 @@
             "ignore_skill": "Ignora las habilidades",
             "iterations": "Iteraciones",
             "max_iterations": "Iteraciones máx.",
+            "ranking_method": "Método de clasificación",
             "rate": "Tasa",
             "rate_msg": "Debe ser un número entre 1 y 10",
             "run_current_line_up": "Ejecutar tripulantes actuales",

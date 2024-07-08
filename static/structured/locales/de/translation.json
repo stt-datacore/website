@@ -607,7 +607,6 @@
         }
     },
     "global": {
-        "n_results": "{{n}} Ergebnisse",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
@@ -637,7 +636,6 @@
         "hide": "Verstecken",
         "idle": "Leerlauf",
         "item_types": {
-            "chronotons": "Chronotons",
             "arena": "Arena",
             "arena_tickets": "Arena Eintrittskarte",
             "buff": "Buff",
@@ -645,6 +643,7 @@
             "cadet_challenge": "Kadettenherausforderung",
             "cadet_challenge_tickets": "Kadettenherausforderung Eintrittskarte",
             "cadet_challenges": "Kadettenherausforderungen",
+            "chronotons": "Chronotons",
             "component": "Komponente",
             "continuum_qbit": "Kontinuum R-Bit",
             "continuum_quipment": "Kontinuum Rüstzeug",
@@ -676,6 +675,7 @@
         "max_rarity": "Max. Seltenheit",
         "member": "Mitglied",
         "min_rarity": "Min. Seltenheit",
+        "n_results": "{{n}} Ergebnisse",
         "name": "Name",
         "never": "Niemals",
         "new": "Neu",
@@ -1093,6 +1093,13 @@
         "quipment_score": "Rüstzeug Werte",
         "voyage_rank": "Reiserang"
     },
+    "ranking_method": {
+        "delta_t": "Delta T",
+        "guaranteed_minimum": "Garantiertes Minimum",
+        "moonshot": "Mondschuss",
+        "potential_maximum": "Potenzielles Maximum",
+        "standard": "Standard"
+    },
     "roster_summary": {
         "by_rarity": "Nach Seltenheit",
         "by_skill": "Nach Fähigkeit",
@@ -1224,6 +1231,7 @@
             "ignore_skill": "Ignorieren Sie die Fähigkeiten",
             "iterations": "Iterationen",
             "max_iterations": "Max. Iterationen",
+            "ranking_method": "Rangfolgemethode",
             "rate": "Rate",
             "rate_msg": "Muss eine Zahl zwischen 1 und 10 sein",
             "run_current_line_up": "Aktuelle Crew ausführen",
