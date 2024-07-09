@@ -3,7 +3,7 @@ name: Klingon Torres
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal: true
 date: 24/07/2017
 published: true
