@@ -3,7 +3,7 @@ name: Dr. 'Bones' McCoy
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 in_portal: true
 date: 14/01/2020
 published: true

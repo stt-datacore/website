@@ -3,7 +3,7 @@ name: Reclamation Narissa
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 in_portal: true
 date: 03/09/2020
 published: true
