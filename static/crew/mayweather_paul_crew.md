@@ -3,7 +3,7 @@ name: Paul Mayweather
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal: true
 date: 22/06/2022
 published: true
