@@ -5,12 +5,14 @@ import { Accordion, Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, 
 import { GlobalContext } from "../../context/globalcontext";
 import { WorkerContext } from "../../context/workercontext";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { PlayerCrew } from "../../model/player";
+import { GameEvent, PlayerCrew } from "../../model/player";
 import { useStateWithStorage } from "../../utils/storage";
 import { BossShip } from "../../model/boss";
 import { compareShipResults, getShipsInUse } from "../../utils/shiputils";
 import { BattleGraph } from "./battlegraph";
 import { formatRunTime } from "../../utils/misc";
+import { getEventData } from "../../utils/events";
+import { IEventData } from "../eventplanner/model";
 
 export interface RosterCalcProps {
     pageId: string;
@@ -72,7 +74,25 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [rankingMethod, setRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/short`, 'delta', { rememberForever: true });
     const [fbbRankingMethod, setFBBRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/long`, 'standard', { rememberForever: true });
 
-    (globalContext.player.playerData ? ['pvp', 'skirmish', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'] : ['pvp', 'skirmish']).forEach((mode) => {
+    const [gameEvents, setGameEvents] = React.useState<IEventData[]>([]);
+    const [currentEvent, setCurrentEvent] = React.useState<IEventData | undefined>(undefined);
+
+    const selectEvent = (symbol: string) => {
+        let f = gameEvents.find(f => f.symbol === symbol);
+        if (f) setCurrentEvent(f);
+    }
+
+
+    const eventList = gameEvents?.map((ev) => {
+        return {
+            key: `${ev.symbol}_event`,
+            value: `${ev.symbol}`,
+            text: ev.name
+        }
+    });
+
+    (globalContext.player.playerData ? ['pvp', 'skirmish', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'] : ['pvp']).forEach((mode) => {
+        //if (mode === 'skirmish' && !gameEvents.length) return;
         let rarity = 0;
         if (mode.startsWith('fbb')) {
             let sp = mode.split("_");
@@ -145,6 +165,26 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             newconfig.opponent = undefined;
         }
         setBattleConfig(newconfig);
+
+        if (battleMode === 'skirmish') {
+            if (globalContext.player.playerData && globalContext.core.crew?.length && !gameEvents.length) {
+                const gev = [] as IEventData[];
+                
+                globalContext.player.ephemeral?.events?.forEach((ev) => {
+                    if (ev.content_types.includes('skirmish')) {
+                        let eventData = getEventData(ev, globalContext.core.crew);
+                        if (eventData) {
+                            gev.push(eventData);
+                        }
+                    }
+                });
+                if (gev.length) {
+                    setGameEvents(gev);
+                    if (!currentEvent || !gev.some(ev => ev.symbol === currentEvent?.symbol)) setCurrentEvent(gev[0]);
+                }
+            }
+        }
+
     }, [battleMode]);
 
     React.useEffect(() => {
@@ -325,6 +365,29 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         />
                     </div>
                 </div>
+                {battleMode === 'skirmish' &&
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-end',
+                    width: '100%',
+                    gap: '1em',
+                    marginTop: '1em'
+                }}>
+                    
+                    <div style={{ display: 'inline', width: '30%' }}>
+                        <h4>{t('menu.game_info.events')}</h4>
+                        <Dropdown
+                            fluid
+                            scrolling
+                            selection
+                            value={currentEvent?.symbol}
+                            onChange={(e, { value }) => selectEvent(value as string)}
+                            options={eventList}
+                        />
+                    </div>
+                </div>}
                 <div style={{
                     display: 'flex',
                     flexDirection: 'row',
