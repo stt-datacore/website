@@ -3,7 +3,7 @@ name: Mutinous Trip Tucker
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal: true
 date: 19/07/2023
 published: true
