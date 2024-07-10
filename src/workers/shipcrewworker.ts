@@ -14,11 +14,11 @@ function factorial(number: bigint) {
 }
 
 function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[]) => U[] | false) {
-    var current_iter = 0;
-    const mmin = start_idx ?? 0;
+    var current_iter = 0n;
+    const mmin = start_idx ?? 0n;
     function p(t: T[], i: number) {
         if (t.length === size) {
-            if (current_iter >= mmin) {
+            if (current_iter >= mmin && (!count || current_iter <= count + mmin)) {
                 if (!check) {
                     result.push(t as any);
                 }
@@ -38,7 +38,8 @@ function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_o
             return;
         }
 
-        if (count && current_iter >= count) return;
+        if (count && mmin && current_iter > count + mmin) return;
+        else if (count && current_iter > count) return;
         p(t.concat(array[i]), i + 1);
         p(t, i + 1);
     }
