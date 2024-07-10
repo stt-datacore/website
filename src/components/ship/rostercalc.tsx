@@ -15,6 +15,7 @@ import { getEventData } from "../../utils/events";
 import { IEventData } from "../eventplanner/model";
 import { getHighest, prepareOne } from "../../utils/crewutils";
 import { CrewDropDown } from "../base/crewdropdown";
+import { MultiWorkerContext, ShipMultiWorkerStatus } from "./shipmultiworker";
 
 export interface RosterCalcProps {
     pageId: string;
@@ -42,7 +43,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { playerShips } = globalContext.player;
     const workerContext = React.useContext(WorkerContext);
-    const { running, runWorker, cancel } = workerContext;
+    const multiWorker = React.useContext(MultiWorkerContext);
+    const { running, runWorker, cancel } = multiWorker;
+    //const { running, runWorker, cancel } = workerContext;
     const { t, tfmt } = globalContext.localized;
     const [sugWait, setSugWait] = React.useState<number | undefined>();
     const { ships, crew, crewStations, setCrewStations, pageId, considerFrozen, ignoreSkills, setIgnoreSkills, setConsiderFrozen, considerUnowned, setConsiderUnowned } = props;
@@ -755,7 +758,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setActiveSuggestion(undefined);
             setSuggestions([]);
             setSugWait(undefined);
-            runWorker('shipworker', config, workerMessage);
+
+            // runWorker('shipworker', config, workerMessage);
+            runWorker({ config, callback: workerMessage });
         }
     }
 
@@ -790,7 +795,10 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         return idx;
     }
 
-    function workerMessage(result: { data: { result: { ships?: ShipWorkerItem[], run_time?: number, total_iterations?: number, format?: string, options?: any, result?: ShipWorkerItem }, inProgress: boolean } }) {
+    function workerMessage(
+        //result: { data: { result: { ships?: ShipWorkerItem[], run_time?: number, total_iterations?: number, format?: string, options?: any, result?: ShipWorkerItem }, inProgress: boolean } }
+        result: ShipMultiWorkerStatus
+    ) {
         if (!result.data.inProgress && result.data.result.ships?.length) {
             setProgressMsg(t('ship.calc.calc_summary', {
                 message: t('global.completed'),
@@ -814,6 +822,18 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
         else if (result.data.inProgress && result.data.result.format) {
             setProgressMsg(t(result.data.result.format, result.data.result.options));
+        }
+        else if (result.data.inProgress && result.data.result.count) {
+            setProgressMsg(                
+                t(verbose ? 'ship.calc.calculating_pct_ellipses_verbose' : 'ship.calc.calculating_pct_ellipses',
+                    {
+                        percent: `${result.data.result.percent?.toLocaleString()}`,
+                        count: `${result.data.result.count?.toLocaleString()}`,
+                        progress: `${result.data.result.progress?.toLocaleString()}`,
+                        accepted: `${result.data.result.accepted?.toLocaleString()}`
+                    }
+                )                
+            )
         }
         else if (result.data.inProgress && result.data.result.result) {
             resultCache.push(result.data.result.result);

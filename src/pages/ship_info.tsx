@@ -19,6 +19,7 @@ import DataPageLayout from '../components/page/datapagelayout';
 import { WorkerProvider } from '../context/workercontext';
 import { ShipRosterCalc } from '../components/ship/rostercalc';
 import { useStateWithStorage } from '../utils/storage';
+import { ShipMultiWorker } from '../components/ship/shipmultiworker';
 
 const ShipInfoPage = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -143,19 +144,21 @@ const ShipViewer = (props: ShipViewerProps) => {
 			</Message>
 
 			{!!inputShip && <WorkerProvider>
-				<ShipRosterCalc
-					pageId={'shipInfo'}
-					crew={crew}
-					ships={[inputShip]}
-					crewStations={crewStations}
-					setCrewStations={setCrewStations}
-					considerFrozen={considerFrozen}
-					considerUnowned={considerUnowned}
-					ignoreSkills={ignoreSkills}
-					setConsiderFrozen={setConsiderFrozen}
-					setConsiderUnowned={setConsiderUnowned}
-					setIgnoreSkills={setIgnoreSkills}
-				/>
+				<ShipMultiWorker>
+					<ShipRosterCalc
+						pageId={'shipInfo'}
+						crew={crew}
+						ships={[inputShip]}
+						crewStations={crewStations}
+						setCrewStations={setCrewStations}
+						considerFrozen={considerFrozen}
+						considerUnowned={considerUnowned}
+						ignoreSkills={ignoreSkills}
+						setConsiderFrozen={setConsiderFrozen}
+						setConsiderUnowned={setConsiderUnowned}
+						setIgnoreSkills={setIgnoreSkills}
+					/>
+				</ShipMultiWorker>
 			</WorkerProvider>}
 
 			<h3>{t('ship.battle_stations')}</h3>

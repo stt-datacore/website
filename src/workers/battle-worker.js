@@ -4,7 +4,7 @@ import ShipCrewWorker from './shipcrewworker.ts';
 
 // eslint-disable-next-line no-restricted-globals
 self.onmessage = (message) => {
-    const id = message.data.workerId;
+    const id = message.data.id;
     const postResult = (result, inProgress) => {
         postMessage({ result, inProgress, id });
         if (!inProgress) self.close();

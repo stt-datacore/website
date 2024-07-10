@@ -1,0 +1,296 @@
+import { v4 } from "uuid";
+import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults } from "../../model/ship";
+import React from "react";
+
+export interface ShipMultiWorkerProps {
+    children: JSX.Element;
+}
+
+export interface ShipMultiWorkerStatus { 
+    data: { 
+        result: { 
+            ships?: ShipWorkerItem[], 
+            run_time?: number, 
+            total_iterations?: bigint, 
+            format?: string, 
+            options?: any, 
+            result?: ShipWorkerItem,
+            percent?: number;
+            progress?: bigint;
+            count?: bigint;
+            accepted?: bigint;
+        }, 
+        id: string,
+        inProgress: boolean 
+    } 
+}
+
+export interface IMultiWorkerContext {
+    runWorker: (options: ShipMultiWorkerConfig) => void;
+    cancel: () => void;
+    workers: number;
+    count: bigint;
+    progress: bigint;
+    percent: number;
+    cancelled: boolean;
+    running: boolean;
+    startTime: Date,
+    endTime?: Date
+    run_time: number;
+}
+
+const DefaultMultiWorkerContextData = {
+    runWorker: () => false,
+    cancel: () => false,
+    workers: 0,
+    count: 0n,
+    progress: 0n,
+    percent: 0,
+    cancelled: false,
+    running: false,
+    startTime: new Date(),
+    run_time: 0
+} as IMultiWorkerContext;
+
+
+export interface ShipMultiWorkerState {
+    context: IMultiWorkerContext;    
+}
+
+
+export interface ShipMultiWorkerConfig {
+    config: ShipWorkerConfig;
+    callback: (progress: ShipMultiWorkerStatus) => void;
+}
+
+export const MultiWorkerContext = React.createContext(DefaultMultiWorkerContextData);
+
+export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipMultiWorkerState> {
+    callback: (progress: ShipMultiWorkerStatus) => void;
+    config: ShipWorkerConfig;
+
+    private workers: Worker[] = [];
+    private ids: string[] = [];
+    private running: boolean[] = [];
+    private percent: number = 0;
+    private count: bigint = 0n;
+    private progress: bigint = 0n;
+    private accepted: bigint = 0n;
+    
+    private progresses = {} as { [key: string]: { count: bigint, time: number, progress: bigint, accepted: bigint }};
+    private allResults: ShipWorkerItem[] = [];
+
+    constructor(props: ShipMultiWorkerProps) {
+        super(props);
+
+        this.state = {
+            context: {
+                ...DefaultMultiWorkerContextData,
+                cancel: () => this.cancel(true),
+                runWorker: (options) => this.runWorker(options)
+            }
+        }
+    }
+
+    private readonly cancel = (set_canceled: boolean) => {
+        this.workers.forEach((worker) => {
+            worker.removeEventListener('message', this.workerMessage);
+            worker.terminate();
+        });
+
+        this.workers = [];
+        this.ids = [];
+        this.running = [];
+        this.progresses = {};
+        
+        if (set_canceled) {
+            this.setState({ 
+                context: {
+                    ...this.state.context,
+                    cancelled: true,
+                    running: false
+                }
+            })        
+        }
+        else {
+            this.initialize();
+        }
+    }
+
+    private readonly runWorker = (options: ShipMultiWorkerConfig) => {
+        this.callback = options.callback;
+        this.config = options.config;
+                
+        this.cancel(false);
+
+        let wcn = BigInt(options.config.crew.length);
+        let bsn = BigInt(options.config.ship.battle_stations!.length);
+        let total = this.factorial(wcn) / (this.factorial(wcn - bsn) * this.factorial(bsn));
+        let wl = BigInt(this.workers.length);
+        let perworker = total / wl;
+        let leftover = total - (perworker * wl);
+        if (leftover < 0) leftover = 0n;
+
+        this.workers.forEach((worker, idx) => {
+            let start = BigInt(idx) * perworker;
+            let length = perworker;
+            if (idx === this.workers.length - 1 || (start + length > total)) {
+                length += leftover;
+            }
+            this.running[idx] = true;
+            worker.postMessage({
+                id: this.ids[idx],
+                config: {
+                    ...options.config,                    
+                    start_index: start,
+                    max_iterations: length,
+                    status_data_only: true
+                } as ShipWorkerConfig
+            });
+        });
+
+        this.setState({ 
+            context: {
+                ...this.state.context,
+                cancelled: false,
+                running: true,
+                workers: this.workers.length,
+                startTime: new Date()
+            }
+        });
+    }
+
+    private factorial(number: bigint) {
+        let result = 1n;
+        
+        for (let i = 1n; i <= number; i++) {
+            result *= i;
+        }
+        return result;
+    }
+
+    private readonly initialize = () => {
+        let cores = navigator?.hardwareConcurrency ?? 1;
+        const newworkers = [] as Worker[];
+        this.ids=[];
+        this.running=[];
+        for (let i = 0; i < cores; i++) {
+            let worker = new Worker(new URL('../../workers/battle-worker.js', import.meta.url));
+            worker.addEventListener('message', this.workerMessage);
+            newworkers.push(worker);
+            this.ids.push(v4());
+            this.running.push(false);
+        }
+        this.workers = newworkers;
+        this.progresses = {};     
+        this.allResults = [];   
+    }
+
+    private readonly updateBigCounts = () => {
+        let bigcount = Object.values(this.progresses).map(m => m.count).reduce((p, n) => p + n, 0n);
+        let bigprogress = Object.values(this.progresses).map(m => m.progress).reduce((p, n) => p + n, 0n);
+        let bigaccepted = Object.values(this.progresses).map(m => BigInt(m.accepted)).reduce((p, n) => p + n, 0n);
+        this.count = bigcount;
+        this.progress = bigprogress;
+        this.accepted = bigaccepted;
+        this.percent = Number(((bigprogress * 100n) / bigcount).toString());        
+    }
+
+    private readonly workerMessage = (message: any): void => {
+        let msg = message as ShipMultiWorkerStatus;
+        let idx = this.ids.findIndex(fi => fi === msg.data.id);
+        if (idx === -1) return;
+        if (msg?.data?.inProgress && msg?.data?.id && msg?.data?.result?.progress !== undefined && msg.data?.result?.count) {
+            this.progresses[msg.data.id] = {
+                progress: msg.data.result.progress,
+                count: msg.data.result.count,
+                accepted: msg.data.result.accepted ?? 0n,
+                time: 0
+            }
+            this.updateBigCounts();
+            this.callback({
+                data: {
+                    id: msg.data.id,
+                    inProgress: msg.data.inProgress,
+                    result: {
+                        count: this.count,
+                        progress: this.progress,
+                        percent: this.percent,
+                        accepted: this.accepted
+                    }
+                }
+            });
+        
+            this.setState({ context: {
+                ...this.state.context,
+                count: this.count,
+                progress: this.progress,
+                percent: this.percent
+            }});
+        }
+        else if (msg?.data?.inProgress && msg?.data?.id && msg?.data?.result?.result) {
+            this.callback({
+                data: {
+                    id: msg.data.id,
+                    inProgress: msg.data.inProgress,
+                    result: {
+                        result: msg.data.result.result
+                    }
+                }
+            });
+        }
+        else if (msg?.data?.inProgress === false) {
+            this.running[idx] = false;
+            this.progresses[msg.data.id] = {
+                ...this.progresses[msg.data.id],
+                count: msg.data.result.total_iterations!,
+                time: msg.data.result.run_time!,
+                accepted: msg.data.result.accepted ?? 0n
+            }
+            try {
+                this.updateBigCounts();
+            }
+            catch (e) {
+                console.log(e);
+            }
+            
+
+            if (this.running.every(e => !e)) {
+                const endTime = new Date();
+                const run_time = (endTime.getTime() - this.state.context.startTime.getTime()) / 1000;
+                this.callback({
+                    data: {
+                        id: msg.data.id,
+                        inProgress: false,
+                        result: {
+                            total_iterations: this.count,
+                            run_time,
+                            accepted: this.accepted!,
+                            ships: msg.data.result.ships
+                        }
+                    }
+                });
+                this.setState({ 
+                    context: {
+                        ...this.state.context,
+                        running: false,
+                        run_time,
+                        count: this.count,
+                        progress: this.count,
+                        percent: 100
+                    }
+                })
+            }
+        }
+    }
+
+    render() {
+        const { context } = this.state;
+        const { children } = this.props;
+
+        return <MultiWorkerContext.Provider value={context}>
+            {children}
+        </MultiWorkerContext.Provider>
+
+    }
+}
