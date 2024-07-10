@@ -19,7 +19,7 @@ function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_o
     function p(t: T[], i: number) {
         if (t.length === size) {
             if (current_iter >= mmin) {
-                if (!check) {                    
+                if (!check) {
                     result.push(t as any);
                 }
                 else {

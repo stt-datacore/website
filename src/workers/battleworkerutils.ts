@@ -477,7 +477,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 let time = action.ability.amount;
                 for (let idx = 0; idx < alen; idx++) {
                     if (!active[idx]) {
-                        if (!allactions[idx].current_phase && allactions[idx].comes_from === 'crew') {
+                        if (!allactions[idx].current_phase) {
                             state_time[idx] += time;
                         }
                     }
