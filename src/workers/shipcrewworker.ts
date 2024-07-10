@@ -3,15 +3,17 @@ import { AttackInstant, MultiShipWorkerConfig, ShipWorkerConfig, ShipWorkerItem,
 import { compareShipResults } from "../utils/shiputils";
 import { canSeatAll, iterateBattle } from "./battleworkerutils";
 
-function factorial(number: number) {
-    let result = 1;
-    for (let i = 1; i <= number; i++) {
+ 
+function factorial(number: bigint) {
+    let result = 1n;
+    
+    for (let i = 1n; i <= number; i++) {
         result *= i;
     }
     return result;
 }
 
-function getPermutations<T, U>(array: T[], size: number, count?: number, count_only?: boolean, start_idx?: number, check?: (set: T[]) => U[] | false) {
+function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[]) => U[] | false) {
     var current_iter = 0;
     const mmin = start_idx ?? 0;
     function p(t: T[], i: number) {
@@ -48,7 +50,7 @@ function getPermutations<T, U>(array: T[], size: number, count?: number, count_o
 }
 
 const ShipCrewWorker = {
-    calc: (options: ShipWorkerConfig, reportProgress: (data: { format?: string, options?: any, result?: ShipWorkerItem }) => boolean = () => true) => {
+    calc: (options: ShipWorkerConfig, reportProgress: (data: { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: ShipWorkerItem }) => boolean = () => true) => {
         return new Promise<ShipWorkerResults>(async (resolve, reject) => {
             const { 
                 event_crew,
@@ -66,6 +68,7 @@ const ShipCrewWorker = {
                 max_iterations,
                 simulate,
                 ranking_method,
+                status_data_only,
                 fixed_activation_delay } = options;
 
             const opponent = opponents?.length ? opponents[0] : undefined;
@@ -85,16 +88,14 @@ const ShipCrewWorker = {
 
             const get_attacks = options.get_attacks && workCrew.length === seats;
 
-            reportProgress({ format: 'ship.calc.generating_permutations_ellipses' });
-
-            let wcn = workCrew.length;
-            let bsn = seats;
+            let wcn = BigInt(workCrew.length);
+            let bsn = BigInt(seats);
             let total_combos = factorial(wcn) / (factorial(wcn - bsn) * factorial(bsn));
 
-            let count = max_iterations || Math.ceil(total_combos); //crew_combos.length;            
-            let start_index = max_iterations ? 0 : (options.start_index ?? 0);
+            let count = max_iterations || total_combos; //crew_combos.length;            
+            let start_index = max_iterations ? 0n : (options.start_index ?? 0n);
             let i = start_index;
-            let progress = -1;
+            let progress = -1n;
             const results = [] as ShipWorkerItem[];
 
             const processBattleRun = (attacks: AttackInstant[], crew_set: CrewMember[]) => {
@@ -179,23 +180,34 @@ const ShipCrewWorker = {
                 i++;
                 if (errors) return false;
 
-                if (!(i % 100)) {
-                    let p = Math.round((i / count) * 100);
+                if (!(i % 100n)) {
+                    let p = ((i * 100n) / count);
 
                     if (p !== progress) {
                         progress = p;
-                        if (!verbose) {
-                            reportProgress({ format: 'ship.calc.calculating_pct_ellipses', options: { percent: `${p}` } });
+
+                        if (status_data_only) {
+                            reportProgress({ 
+                                    percent: Number(p.toString()),
+                                    progress: i,
+                                    count,
+                                    accepted: BigInt(results.length)
+                                });
                         }
                         else {
-                            reportProgress({ format: 'ship.calc.calculating_pct_ellipses_verbose', 
-                                options: { 
-                                    percent: `${p}`,
-                                    progress: `${i.toLocaleString()}`,
-                                    count: `${count.toLocaleString()}`,
-                                    accepted: `${results.length.toLocaleString()}`
-                                } 
-                            });
+                            if (!verbose) {
+                                reportProgress({ format: 'ship.calc.calculating_pct_ellipses', options: { percent: `${p}` } });
+                            }
+                            else {
+                                reportProgress({ format: 'ship.calc.calculating_pct_ellipses_verbose', 
+                                    options: { 
+                                        percent: `${p}`,
+                                        progress: `${i.toLocaleString()}`,
+                                        count: `${count.toLocaleString()}`,
+                                        accepted: `${results.length.toLocaleString()}`
+                                    } 
+                                });
+                            }                            
                         }
                     }
                 }
@@ -236,8 +248,10 @@ const ShipCrewWorker = {
                 return battle_data;
             });
 
-            reportProgress({ format: 'ship.calc.sorting_finalizing_ellipses' });
-
+            if (!status_data_only) {
+                reportProgress({ format: 'ship.calc.sorting_finalizing_ellipses' });
+            }
+            
             results.sort((a, b) => compareShipResults(a, b, fbb_mode));
             results.splice(max_results);
             results.forEach((result) => {
