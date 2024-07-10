@@ -5,12 +5,16 @@ import { Accordion, Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, 
 import { GlobalContext } from "../../context/globalcontext";
 import { WorkerContext } from "../../context/workercontext";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { PlayerCrew } from "../../model/player";
+import { GameEvent, PlayerCrew } from "../../model/player";
 import { useStateWithStorage } from "../../utils/storage";
 import { BossShip } from "../../model/boss";
 import { compareShipResults, getShipsInUse } from "../../utils/shiputils";
 import { BattleGraph } from "./battlegraph";
 import { formatRunTime } from "../../utils/misc";
+import { getEventData } from "../../utils/events";
+import { IEventData } from "../eventplanner/model";
+import { getHighest, prepareOne } from "../../utils/crewutils";
+import { CrewDropDown } from "../base/crewdropdown";
 
 export interface RosterCalcProps {
     pageId: string;
@@ -72,7 +76,34 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [rankingMethod, setRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/short`, 'delta', { rememberForever: true });
     const [fbbRankingMethod, setFBBRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/long`, 'standard', { rememberForever: true });
 
-    (globalContext.player.playerData ? ['pvp', 'skirmish', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'] : ['pvp', 'skirmish']).forEach((mode) => {
+    const [gameEvents, setGameEvents] = React.useState<IEventData[]>([]);
+    const [currentEvent, setCurrentEvent] = React.useState<IEventData | undefined>(undefined);
+    const [eventCrew, setEventCrew] = React.useState<(PlayerCrew | CrewMember)[] | undefined>(undefined);
+    const [chosenCrew, setChosenCrew] = React.useState<number[] | undefined>(undefined);
+
+    const selectEvent = (symbol: string) => {
+        let f = gameEvents.find(f => f.symbol === symbol);
+        if (f) setCurrentEvent(f);
+    }
+
+    const eventList = gameEvents?.map((ev) => {
+        return {
+            key: `${ev.symbol}_event`,
+            value: `${ev.symbol}`,
+            text: ev.name
+        }
+    });
+
+    const eventcrewOpts = eventCrew?.map((crew) => {
+        return {
+            key: `event_crew_${crew.symbol}`,
+            value: crew.symbol,
+            text: crew.name
+        }
+    });
+
+    (globalContext.player.playerData ? ['pvp', 'skirmish', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'] : ['pvp']).forEach((mode) => {
+        if (mode === 'skirmish' && !gameEvents.length) return;
         let rarity = 0;
         if (mode.startsWith('fbb')) {
             let sp = mode.split("_");
@@ -145,7 +176,53 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             newconfig.opponent = undefined;
         }
         setBattleConfig(newconfig);
+
+        if (battleMode === 'skirmish') {
+            if (globalContext.player.playerData && globalContext.core.crew?.length && !gameEvents.length) {
+                const gev = [] as IEventData[];
+                
+                globalContext.player.ephemeral?.events?.forEach((ev) => {
+                    if (ev.content_types.includes('skirmish')) {
+                        let eventData = getEventData(ev, globalContext.core.crew);
+                        if (eventData) {
+                            gev.push(eventData);
+                        }
+                    }
+                });
+                if (gev.length) {
+                    setGameEvents(gev);
+                    if (!currentEvent || !gev.some(ev => ev.symbol === currentEvent?.symbol)) setCurrentEvent(gev[0]);
+                }
+            }
+        }
+
     }, [battleMode]);
+
+    React.useEffect(() => {
+        if (currentEvent) {
+            const { crew: playerCrew } = globalContext.player.playerData!.player.character;
+            const { unOwnedCrew: coreCrew } = globalContext.player.playerData!.player.character;
+
+            const newcrew = [] as (PlayerCrew | CrewMember)[];
+            if (currentEvent.featured.length || currentEvent.bonus.length) {
+                for (let symbol of [ ...currentEvent.featured, ...currentEvent.bonus]) {
+                    if (newcrew.some(c => c.symbol === symbol)) continue;
+                    let search = playerCrew.filter(f => f.symbol === symbol);
+                    if (search.length) {
+                        let best = getHighest(search)!;
+                        if (ignoreSkills || ship.battle_stations?.some(bs => best.skill_order.includes(bs.skill))) {
+                            newcrew.push(best);
+                        }                        
+                    }
+                    else {
+                        let bsearch = coreCrew!.find(f => f.symbol === symbol);
+                        if (bsearch && (ignoreSkills || ship.battle_stations?.some(bs => bsearch.skill_order.includes(bs.skill)))) newcrew.push(prepareOne(bsearch, globalContext.player.playerData, globalContext.player.buffConfig)[0]);
+                    }
+                }
+            }
+            setEventCrew(newcrew);
+        }
+    }, [currentEvent, ignoreSkills])
 
     React.useEffect(() => {
         if (typeof window !== 'undefined' && playerShips && !windowLoaded && ship) {
@@ -322,9 +399,49 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             value={minRarity}
                             onChange={(e, { value }) => setMinRarity(value as number)}
                             options={rarities}
+
                         />
                     </div>
                 </div>
+                {battleMode === 'skirmish' && !!eventCrew &&
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-end',
+                    width: '100%',
+                    gap: '1em',
+                    marginTop: '1em'
+                }}>
+                    
+                    <div style={{ display: 'inline', width: '30%' }}>
+                        <h4>{t('menu.game_info.events')}</h4>
+                        <Dropdown
+                            fluid
+                            scrolling
+                            selection
+                            value={currentEvent?.symbol}
+                            onChange={(e, { value }) => selectEvent(value as string)}
+                            options={eventList}
+                        />
+                    </div>
+                    <div style={{ display: 'inline', width: '30%' }}>
+                        <h4>{t('base.crew')}</h4>
+                        <CrewDropDown 
+                            showRarity={true}
+                            fluid
+                            selection={chosenCrew}
+                            setSelection={setChosenCrew}
+                            pool={eventCrew}
+                            custom={(c) => {
+                                if (currentEvent!.featured.includes(c.symbol)) return <>2x</>
+                                else return <>1.5x</>
+                            }}
+                            />
+                    </div>
+                    <div style={{ display: 'inline', width: '30%' }}>
+                    </div>
+                </div>}
                 <div style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -584,9 +701,14 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             <b>*</b> {t('ship.fbb_metric')}{': '}<br />{Math.round(sug.fbb_metric).toLocaleString()}
                         </>
                     }
-                    {!fbb_mode && 
+                    {!fbb_mode && battleMode === 'pvp' &&
                         <>
                             <b>*</b> {t('ship.arena_metric')}{': '}<br />{Math.round(sug.arena_metric).toLocaleString()}
+                        </>
+                    }
+                    {!fbb_mode && battleMode === 'skirmish' &&
+                        <>
+                            <b>*</b> {t('ship.skirmish_metric')}{': '}<br />{Math.round(sug.skirmish_metric).toLocaleString()}
                         </>
                     }
                 </div>
@@ -608,10 +730,18 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         if (ships?.length && crew?.length) {
             if (battleMode.startsWith('fbb') && !battleConfig.opponent) return;
             resultCache.length = 0;
-            
+            let ccrew = undefined as PlayerCrew | CrewMember | undefined;
             const pfcrew = current ? [] as PlayerCrew[] : prefilterCrew();
-            
+            if (!current && battleMode === 'skirmish' && chosenCrew?.length) {
+                if (!pfcrew.some(c => c.id === chosenCrew[0])) {
+                    ccrew = eventCrew?.find(f => f.id === chosenCrew[0]);
+                    if (ccrew) {
+                        pfcrew.unshift(ccrew);
+                    }
+                }
+            }
             const config = {
+                event_crew: ccrew ? JSON.parse(JSON.stringify(ccrew)) : undefined,
                 ranking_method: fbb_mode ? fbbRankingMethod : rankingMethod,
                 ship: JSON.parse(JSON.stringify(ship)),
                 crew: JSON.parse(JSON.stringify(current ? crewStations : pfcrew)),
