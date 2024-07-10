@@ -760,7 +760,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setSugWait(undefined);
 
             // runWorker('shipworker', config, workerMessage);
-            runWorker({ config, callback: workerMessage });
+            runWorker({ config, callback: workerMessage, fbb_mode });
         }
     }
 

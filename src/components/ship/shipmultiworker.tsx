@@ -1,6 +1,7 @@
 import { v4 } from "uuid";
 import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults } from "../../model/ship";
 import React from "react";
+import { compareShipResults } from "../../utils/shiputils";
 
 export interface ShipMultiWorkerProps {
     children: JSX.Element;
@@ -54,11 +55,13 @@ const DefaultMultiWorkerContextData = {
 
 
 export interface ShipMultiWorkerState {
-    context: IMultiWorkerContext;    
+    context: IMultiWorkerContext;
+    fbb_mode: boolean;    
 }
 
 
 export interface ShipMultiWorkerConfig {
+    fbb_mode: boolean;
     config: ShipWorkerConfig;
     callback: (progress: ShipMultiWorkerStatus) => void;
 }
@@ -84,6 +87,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
         super(props);
 
         this.state = {
+            fbb_mode: false,
             context: {
                 ...DefaultMultiWorkerContextData,
                 cancel: () => this.cancel(true),
@@ -120,7 +124,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
     private readonly runWorker = (options: ShipMultiWorkerConfig) => {
         this.callback = options.callback;
         this.config = options.config;
-                
+        let fbb_mode = options.fbb_mode;
         this.cancel(false);
 
         let wcn = BigInt(options.config.crew.length);
@@ -150,6 +154,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
         });
 
         this.setState({ 
+            fbb_mode,
             context: {
                 ...this.state.context,
                 cancelled: false,
@@ -196,7 +201,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
         this.percent = Number(((bigprogress * 100n) / bigcount).toString());        
     }
 
-    private readonly workerMessage = (message: any): void => {
+    private readonly workerMessage = (message: any): void => {        
         let msg = message as ShipMultiWorkerStatus;
         let idx = this.ids.findIndex(fi => fi === msg.data.id);
         if (idx === -1) return;
@@ -254,10 +259,15 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
                 console.log(e);
             }
             
+            if (msg.data.result.ships) {
+                this.allResults = this.allResults.concat(msg.data.result.ships);                
+            }
+            
 
             if (this.running.every(e => !e)) {
+                this.allResults.sort((a, b) => compareShipResults(a, b, this.state.fbb_mode));
                 const endTime = new Date();
-                const run_time = (endTime.getTime() - this.state.context.startTime.getTime()) / 1000;
+                const run_time = (endTime.getTime() - this.state.context.startTime.getTime()) / 1000;                
                 this.callback({
                     data: {
                         id: msg.data.id,
@@ -266,7 +276,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
                             total_iterations: this.count,
                             run_time,
                             accepted: this.accepted!,
-                            ships: msg.data.result.ships
+                            ships: this.allResults
                         }
                     }
                 });
