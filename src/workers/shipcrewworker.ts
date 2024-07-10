@@ -17,7 +17,7 @@ function getPermutations<T, U>(array: T[], size: number, count?: number, count_o
     function p(t: T[], i: number) {
         if (t.length === size) {
             if (current_iter >= mmin) {
-                if (!check) {
+                if (!check) {                    
                     result.push(t as any);
                 }
                 else {
@@ -47,36 +47,11 @@ function getPermutations<T, U>(array: T[], size: number, count?: number, count_o
     return result;
 }
 
-
-async function processPermutationsAsync<T, U>(array: T[], size: number, batch_size: number, process: (set: T[][]) => Promise<void>, max?: number) {
-    var current_iter = 0;
-    var batch = [] as T[][];
-
-    async function p(t: T[], i: number) {
-        if (t.length === size) {
-            batch.push(t);
-            if (batch.length >= batch_size) {
-                await process(batch);
-                batch.length = 0;
-                current_iter++;
-            }                            
-            return;
-        }
-        if (i + 1 > array.length) {
-            return;
-        }
-
-        if (max && current_iter >= max) return;
-        p(t.concat(array[i]), i + 1);
-        p(t, i + 1);
-    }
-    await p([], 0);
-}
-
 const ShipCrewWorker = {
     calc: (options: ShipWorkerConfig, reportProgress: (data: { format?: string, options?: any, result?: ShipWorkerItem }) => boolean = () => true) => {
         return new Promise<ShipWorkerResults>(async (resolve, reject) => {
             const { 
+                event_crew,
                 rate,
                 activation_offsets,
                 ship,
@@ -140,8 +115,15 @@ const ShipCrewWorker = {
                 const attack = attacks.reduce((p, n) => p + n.attack, 0);
                 const min_attack = attacks.reduce((p, n) => p + n.min_attack, 0);
                 const max_attack = attacks.reduce((p, n) => p + n.max_attack, 0);
-                const battle_time = attacks.reduce((p, n) => p > n.second ? p : n.second, 0);
-                const weighted_attack = attacks.reduce((p, n) => p + (!n.second ? 0 : (n.attack / (n.second))), 0);
+                const battle_time = attacks.reduce((p, n) => p > n.second ? p : n.second, 0);                
+                let weighted_attack = 0;
+                if (battle_mode === 'skirmish') {
+                    weighted_attack = attacks.reduce((p, n) => (p + (!n.second ? 0 : (n.attack / (n.second * 4)))), 0);
+                }
+                else {
+                    weighted_attack = attacks.reduce((p, n) => (p + (!n.second ? 0 : (n.attack / n.second))), 0);
+                }
+
                 let highest_attack = 0;
                 let high_attack_second = 0;
 
@@ -153,6 +135,7 @@ const ShipCrewWorker = {
                 });
 
                 let arena_metric = (highest_attack / high_attack_second);
+                let skirmish_metric = weighted_attack;
                 let fbb_metric = attack;
 
                 if (fbb_mode) {
@@ -178,6 +161,7 @@ const ShipCrewWorker = {
                     percentile: 0,
                     ship: attacks[0].ship,
                     weighted_attack,
+                    skirmish_metric,
                     arena_metric,
                     fbb_metric,
                     attacks: get_attacks ? attacks : undefined
@@ -191,9 +175,10 @@ const ShipCrewWorker = {
 
             const fbb_mode = battle_mode.startsWith('fbb');
 
-            getPermutations(workCrew, seats, count, true, start_index, (set) => {
+            getPermutations(workCrew, seats, count, true, start_index, (set) => {                
                 i++;
                 if (errors) return false;
+
                 if (!(i % 100)) {
                     let p = Math.round((i / count) * 100);
 
@@ -214,6 +199,8 @@ const ShipCrewWorker = {
                         }
                     }
                 }
+
+                if (event_crew && !set.find(f => f.id === event_crew.id)) return false;
 
                 let newseats = canSeatAll(ship, set, !!ignore_skill);
                 if (!newseats) {

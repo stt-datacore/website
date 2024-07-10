@@ -1213,6 +1213,7 @@
         "amount": "Amount",
         "antimatter": "Antimatter",
         "arena_metric": "Arena Metric",
+        "skirmish_metric": "Skirmish Metric",
         "attack": "Attack",
         "attack_speed": "Attack Speed",
         "battle_mode": "Battle mode",

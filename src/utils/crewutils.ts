@@ -591,6 +591,23 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	playerData.player.character.unOwnedCrew = unOwnedCrew;
 }
 
+export function getHighest<T extends PlayerCrew>(crew: T[]) {
+	if (!crew?.length) return undefined;
+	if (crew.length === 1) return crew[0];
+	let pcrew = crew[0];
+	for (let test of crew) {
+		if (test === pcrew) continue;
+		if (test.rarity > pcrew.rarity) pcrew = test;
+		else if (test.level > pcrew.level) pcrew = test;
+		else {
+			let e1 = pcrew.equipment.filter(f => typeof f === 'number' ? !!f : !!f[1]);
+			let e2 = test.equipment.filter(f => typeof f === 'number' ? !!f : !!f[1]);
+			if (e2.length > e1.length) pcrew = test;
+		}
+	}
+	return pcrew;
+}
+
 /**
  * Make a deep copy of an array of any crew type, while also ensuring Date objects for date_added.
  * @param crew The crew array to copy

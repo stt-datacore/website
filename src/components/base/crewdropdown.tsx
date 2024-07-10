@@ -14,10 +14,12 @@ export interface CrewPickerProperties {
     maxSelection?: number;
     fluid?: boolean;
     plain?: boolean;
+    showRarity?: boolean;
+    custom?: (crew: PlayerCrew | CrewMember) => JSX.Element;
 }
 
 export const CrewDropDown = (props: CrewPickerProperties) => {
-    const { pool, multiple, setSelection, style, placeholder, maxSelection, fluid, plain } = props;
+    const { showRarity, custom, pool, multiple, setSelection, style, placeholder, maxSelection, fluid, plain } = props;
     const [crewChoices, setCrewChoices] = React.useState([] as DropdownItemProps[]);
 
     const selection = !!props.selection && typeof props.selection !== 'number' && !props.multiple ? props.selection[0] : props.selection;
@@ -27,6 +29,11 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
         
         pool.forEach((c) => {
             const crewKey = c.symbol + "_" + (c.id?.toString() ?? '_');
+            let rarity = c.max_rarity;
+            if (showRarity) {
+                if ("immortal" in c && c.immortal < -1) rarity = 0;
+                else if ("rarity" in c) rarity = c.rarity;
+            }
             newChoices.push({
                 key: crewKey,
                 value: c.id,
@@ -67,14 +74,15 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
                                 <Rating
                                     icon={"star"}
                                     maxRating={c.max_rarity}
-                                    rating={c.max_rarity}
+                                    rating={rarity}
+                                    disabled
                                     size={"tiny"}
                                 />
-                                {!plain && 
+                                {!plain && !custom &&
                                 <div style={{alignSelf: 'right'}}>
                                     {c.q_bits} ({qbitsToSlots(c.q_bits)})
                                 </div>}
-                                
+                                {!plain && custom && custom(c)}                                
                             </div>
                             
                         </div>

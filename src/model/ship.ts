@@ -167,6 +167,7 @@ export type ShipRankingMethod = 'standard' | 'min' | 'max' | 'delta';
 
 export interface ShipWorkerConfigBase {
     ranking_method: ShipRankingMethod,
+    event_crew?: CrewMember,
     crew: CrewMember[],
     battle_mode: BattleMode,
     rate: number,
@@ -225,6 +226,7 @@ export interface ShipWorkerItem {
     weighted_attack: number;
     arena_metric: number;
     fbb_metric: number;
+    skirmish_metric: number;
     percentile: number;
     attacks?: AttackInstant[];
 }
