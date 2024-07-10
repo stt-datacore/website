@@ -103,7 +103,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     });
 
     (globalContext.player.playerData ? ['pvp', 'skirmish', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'] : ['pvp']).forEach((mode) => {
-        if (mode === 'skirmish' && !gameEvents.length) return;
+        if (mode === 'skirmish' && !globalContext.player.ephemeral?.events?.length) return;
         let rarity = 0;
         if (mode.startsWith('fbb')) {
             let sp = mode.split("_");
@@ -248,7 +248,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 }
             }
         }
-    });
+    }, []);
 
     React.useEffect(() => {
         if (!activeSuggestion) return;
@@ -260,21 +260,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setSuggestion(sugWait ?? 0);
             setSugWait(undefined);
         }
-        else if (suggestions?.length && running) {
-            setSugWait(0);
-        }
-        // else if (activeSuggestion) {
-        //     let currSuggestion = getSuggestion();
-        //     if (suggestions?.length && currSuggestion !== undefined && (suggestions.length <= currSuggestion || suggestions[currSuggestion] !== activeSuggestion)) {
-        //         if (suggestions.length <= currSuggestion) {
-        //             setSuggestion(0);
-        //         }
-        //         else if (currSuggestion !== undefined) {
-        //             setSuggestion(currSuggestion);
-        //         }                
-        //     }
-        // }
-    }, [suggestions, sugWait]);
+    }, [sugWait, suggestions]);
 
     const rates = [] as DropdownItemProps[];
     [1, 2, 5].forEach((rate) => {
@@ -836,6 +822,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setTimeout(() => {
                 setResultCache(new_cache);
                 setSuggestions(new_cache);
+                setSugWait(0);
             });
         }
     }

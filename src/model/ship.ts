@@ -187,9 +187,10 @@ export interface ShipWorkerConfigBase {
     max_duration?: number;
     ignore_skill?: boolean;
     verbose?: boolean;
-    max_iterations?: number;
+    max_iterations?: bigint;
     activation_offsets?: number[];
-    start_index?: number;
+    start_index?: bigint;
+    status_data_only?: boolean;    
 }
 
 export interface ShipWorkerConfig extends ShipWorkerConfigBase {
@@ -233,6 +234,6 @@ export interface ShipWorkerItem {
 
 export interface ShipWorkerResults {
     ships: ShipWorkerItem[]
-    total_iterations: number;
+    total_iterations: bigint;
     run_time: number;
 }
