@@ -484,7 +484,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 }
             }
             else if (action.ability?.type === 6) {
-                shield_regen += action.ability.amount;
+                shield_regen += (action.ability.amount / rate);
             }
     
             if (immediate === false) immediate = true;
@@ -505,7 +505,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
     const deactivate = (action: ShipAction, actidx: number) => {
         if (action.ability?.type === 6) {
-            shield_regen -= action.ability.amount;
+            shield_regen -= (action.ability.amount / rate);
         }
         state_time[actidx] = 1;
         active[actidx] = false;
