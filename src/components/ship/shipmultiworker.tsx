@@ -63,6 +63,7 @@ export interface ShipMultiWorkerState {
 export interface ShipMultiWorkerConfig {
     fbb_mode: boolean;
     config: ShipWorkerConfig;
+    max_workers?: number;
     callback: (progress: ShipMultiWorkerStatus) => void;
 }
 
@@ -96,6 +97,24 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
         }
     }
 
+    private readonly initialize = (max_workers?: number) => {
+        let cores = navigator?.hardwareConcurrency ?? 1;
+        if (max_workers && max_workers < cores) cores = max_workers;
+
+        const newworkers = [] as Worker[];
+        this.ids=[];
+        this.running=[];
+        for (let i = 0; i < cores; i++) {
+            let worker = new Worker(new URL('../../workers/battle-worker.js', import.meta.url));
+            worker.addEventListener('message', this.workerMessage);
+            newworkers.push(worker);
+            this.ids.push(v4());
+            this.running.push(false);
+        }
+        this.workers = newworkers;
+        this.progresses = {};     
+        this.allResults = [];   
+    }
     private readonly cancel = (set_canceled: boolean) => {
         this.workers.forEach((worker) => {
             worker.removeEventListener('message', this.workerMessage);
@@ -135,7 +154,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
         let leftover = total - (perworker * wl);
         if (leftover < 0) leftover = 0n;
 
-        this.workers.forEach((worker, idx) => {
+        this.workers.forEach((worker, idx) => {            
             let start = BigInt(idx) * perworker;
             let length = perworker;
             if (idx === this.workers.length - 1 || (start + length > total)) {
@@ -145,7 +164,9 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
             worker.postMessage({
                 id: this.ids[idx],
                 config: {
-                    ...options.config,                    
+                    ...options.config,   
+                    ship: JSON.parse(JSON.stringify(options.config.ship)),
+                    crew: JSON.parse(JSON.stringify(options.config.crew)),
                     start_index: start,
                     max_iterations: length,
                     status_data_only: true
@@ -174,26 +195,9 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
         return result;
     }
 
-    private readonly initialize = () => {
-        let cores = navigator?.hardwareConcurrency ?? 1;
-        const newworkers = [] as Worker[];
-        this.ids=[];
-        this.running=[];
-        for (let i = 0; i < cores; i++) {
-            let worker = new Worker(new URL('../../workers/battle-worker.js', import.meta.url));
-            worker.addEventListener('message', this.workerMessage);
-            newworkers.push(worker);
-            this.ids.push(v4());
-            this.running.push(false);
-        }
-        this.workers = newworkers;
-        this.progresses = {};     
-        this.allResults = [];   
-    }
-
     private readonly updateBigCounts = () => {
         let bigcount = Object.values(this.progresses).map(m => m.count).reduce((p, n) => p + n, 0n);
-        let bigprogress = Object.values(this.progresses).map(m => m.progress).reduce((p, n) => p + n, 0n);
+        let bigprogress = Object.values(this.progresses).map(m => BigInt(m.progress ?? 0n)).reduce((p, n) => p + n, 0n);
         let bigaccepted = Object.values(this.progresses).map(m => BigInt(m.accepted)).reduce((p, n) => p + n, 0n);
         this.count = bigcount;
         this.progress = bigprogress;
@@ -202,6 +206,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
     }
 
     private readonly workerMessage = (message: any): void => {        
+        const { fbb_mode, context } = this.state;
         let msg = message as ShipMultiWorkerStatus;
         let idx = this.ids.findIndex(fi => fi === msg.data.id);
         if (idx === -1) return;
@@ -265,9 +270,9 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
             
 
             if (this.running.every(e => !e)) {
-                this.allResults.sort((a, b) => compareShipResults(a, b, this.state.fbb_mode));
+                this.allResults.sort((a, b) => compareShipResults(a, b, fbb_mode));
                 const endTime = new Date();
-                const run_time = (endTime.getTime() - this.state.context.startTime.getTime()) / 1000;                
+                const run_time = (endTime.getTime() - context.startTime.getTime()) / 1000;                
                 this.callback({
                     data: {
                         id: msg.data.id,
@@ -282,7 +287,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
                 });
                 this.setState({ 
                     context: {
-                        ...this.state.context,
+                        ...context,
                         running: false,
                         run_time,
                         count: this.count,
