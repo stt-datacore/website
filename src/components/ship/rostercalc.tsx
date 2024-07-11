@@ -758,8 +758,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             let ccrew = undefined as PlayerCrew | CrewMember | undefined;
             const pfcrew = current ? [] as PlayerCrew[] : prefilterCrew();
             if (!current && battleMode === 'skirmish' && chosenCrew?.length) {
+                ccrew = eventCrew?.find(f => f.id === chosenCrew[0]);
                 if (!pfcrew.some(c => c.id === chosenCrew[0])) {
-                    ccrew = eventCrew?.find(f => f.id === chosenCrew[0]);
                     if (ccrew) {
                         pfcrew.unshift(ccrew);
                     }
