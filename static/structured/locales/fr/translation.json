@@ -1232,6 +1232,7 @@
         "boosts": "Augmentations",
         "boosts_x_by_y": "Augmente {{x}} de {{y}}",
         "calc": {
+            "max_workers": "Max. ouvriers",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} résultats acceptés) ({{time}})",
             "calculating_pct_ellipses": "Calcul ... ({{percent}} % terminé)",
             "calculating_pct_ellipses_verbose": "Calcul ... ({{percent}} % terminé) ({{progress}} / {{count}}) ({{accepted}} résultats acceptés)",
