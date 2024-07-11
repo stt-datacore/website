@@ -115,7 +115,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
         this.progresses = {};     
         this.allResults = [];   
     }
-    private readonly cancel = (set_canceled: boolean) => {
+    private readonly cancel = (set_canceled: boolean, max_workers?: number) => {
         this.workers.forEach((worker) => {
             worker.removeEventListener('message', this.workerMessage);
             worker.terminate();
@@ -136,7 +136,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
             })        
         }
         else {
-            this.initialize();
+            this.initialize(max_workers);
         }
     }
 
@@ -144,7 +144,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
         this.callback = options.callback;
         this.config = options.config;
         let fbb_mode = options.fbb_mode;
-        this.cancel(false);
+        this.cancel(false, options.max_workers);
 
         let wcn = BigInt(options.config.crew.length);
         let bsn = BigInt(options.config.ship.battle_stations!.length);

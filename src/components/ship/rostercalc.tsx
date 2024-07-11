@@ -83,6 +83,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [currentEvent, setCurrentEvent] = React.useState<IEventData | undefined>(undefined);
     const [eventCrew, setEventCrew] = React.useState<(PlayerCrew | CrewMember)[] | undefined>(undefined);
     const [chosenCrew, setChosenCrew] = React.useState<number[] | undefined>(undefined);
+    const [numWorkers, setNumWorkers] = useStateWithStorage<number>(`${pageId}/max_workers`, navigator?.hardwareConcurrency ?? 1, { rememberForever: true });
 
     const selectEvent = (symbol: string) => {
         let f = gameEvents.find(f => f.symbol === symbol);
@@ -264,7 +265,14 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setSugWait(undefined);
         }
     }, [sugWait, suggestions]);
-
+    const worker_sel = [] as DropdownItemProps[];
+    for (let i = 0; i < navigator?.hardwareConcurrency ?? 1; i++) {
+        worker_sel.push({
+            key: `workers_${i+1}`,
+            value: i + 1,
+            text: `${i+1}`
+        })
+    }
     const rates = [] as DropdownItemProps[];
     [1, 2, 5].forEach((rate) => {
         rates.push({
@@ -497,7 +505,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             <div style={{
                                 display: 'grid',
                                 width: "100%",
-                                gridTemplateAreas: `"exhaust rate" "simulate simulate" "battle battle"`,
+                                gridTemplateAreas: `"exhaust rate" "simulate workers" "battle battle"`,
                                 gridTemplateColumns: "50% 50%"
                             }}>
                                 <div style={{...sectionStyle, gridArea: 'exhaust'}}>
@@ -561,7 +569,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                             onChange={(e, { value }) => fbb_mode ? setFBBRankingMethod(value as ShipRankingMethod) : setRankingMethod(value as ShipRankingMethod)}
                                             options={ranking_methods} />
                                     </div>
-
                                     {/* <div style={{ display: 'flex', alignItems: 'center', gap: '1em', height:'3em' }}>
                                         <Checkbox
                                             disabled={running}
@@ -578,6 +585,22 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                             value={iterations}                                        
                                             onChange={(e, { value }) => setIterations(Number.parseInt(value))} />
                                     </div> */}
+                                </div>
+                                <div style={{...sectionStyle, gridArea: 'workers', display: 'grid', alignItems:'center', gridTemplateAreas: "'label1 dropdown1' 'label2 dropdown2'"}}>
+
+                                    <div style={{gridArea:'label1'}}>
+                                        {t('ship.calc.max_workers')}:&nbsp;
+                                    </div>
+                                    <div style={{gridArea:'dropdown1'}}>
+                                        <Dropdown    
+                                            disabled={running}
+                                            fluid
+                                            scrolling
+                                            selection
+                                            value={numWorkers}
+                                            onChange={(e, { value }) => setNumWorkers(value as number)}
+                                            options={worker_sel} />
+                                    </div>
                                 </div>
                                 <div style={{...sectionStyle, gridArea: 'battle', flexDirection: 'row', justifyContent: 'space-evenly'}}>
                                     {ship.battle_stations?.map((mp, idx) => {
@@ -760,7 +783,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setSugWait(undefined);
 
             // runWorker('shipworker', config, workerMessage);
-            runWorker({ config, callback: workerMessage, fbb_mode });
+            runWorker({ config, callback: workerMessage, fbb_mode, max_workers: numWorkers });
         }
     }
 
