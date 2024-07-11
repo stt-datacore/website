@@ -39,14 +39,14 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
     tiny: TinyStore;
 
     constructor(props: ShipPresenterProps) {
-        super(props);        
+        super(props);
         this.state = {
             ... this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         }
 
         this.tiny = TinyStore.getStore(props.storeName)
-    }    
+    }
 
     protected get showPlayerBuffs(): boolean {
         return this.tiny.getValue<boolean>('buff', true) ?? false;
@@ -63,7 +63,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
     protected set showImmortalized(value: boolean) {
         this.tiny.setValue<boolean>('immo', value, true);
     }
-    
+
     protected get showShipAbility(): boolean {
         return this.tiny.getValue<boolean>('ship', true) ?? false;
     }
@@ -75,18 +75,18 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
     render(): JSX.Element {
         const { ship: ship, touched, tabs, showIcon } = this.props;
         const { mobileWidth } = this.state;
-        
-        const compact = this.props.hover;    
+
+        const compact = this.props.hover;
 
         if (!ship) {
             return <></>
-        } 
-       
+        }
+
         const { t } = this.context.localized;
 
         const frozenStyle: React.CSSProperties = {
             background: 'transparent',
-            color: 'white',            
+            color: 'white',
             cursor: "default",
             marginRight: "0px"
         }
@@ -103,18 +103,18 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
             }
             me.showImmortalized = !me.showImmortalized;
         }
-        
+
         const navClick = (e) => {
             if (!ship) return;
             if (this.props.openShip) {
                 this.props.openShip(ship);
             }
         }
-        
+
         let keys = [ "attack", "accuracy", "evasion", "shields", "hull", "antimatter"]
         let icons = [ "attack-color.png", "accuracy-color.png", "evasion-color.png", "shield-color.png", "hull-color.png", "antimatter-icon.png"]
         let names = [ t('ship.attack'), t('ship.accuracy'), t('ship.evasion'), t('ship.shields'), t('ship.hull'), t('ship.antimatter')]
-        
+
         let stats1: { name: string, value: number, icon: string }[]=[];
         let stats2: { name: string, value: number, icon: string }[]=[];
 
@@ -131,26 +131,26 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                 else {
                     stats2.push(stat);
                 }
-                
-            }            
+
+            }
         }
 
         const stats = [stats1, stats2];
 
-        return ship ? (<div style={{ 
-                        fontSize: "12pt", 
-                        display: "flex", 
+        return ship ? (<div style={{
+                        fontSize: "12pt",
+                        display: "flex",
                         textAlign: 'left',
                         flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
                         //width: window.innerWidth < mobileWidth ? "calc(100vw - 16px)" : undefined
-                        
+
                         }}>
                             <div style={{display: "flex", flexDirection:"row", justifyContent:"flex-start"}}>
                         {touched && <>
                             <i className='close icon' style={{cursor: "pointer"}} onClick={(e) => this.props.close ? this.props.close() : undefined} />
-                        </>}    
-                    </div> 
-                <div style={{ display: "flex", flexDirection: "column"}}>                    
+                        </>}
+                    </div>
+                <div style={{ display: "flex", flexDirection: "column"}}>
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection:"row"}}>
                         <img
                             src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
@@ -159,22 +159,22 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"8px"}}>
                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
-                            
+
                             {/* {(!this.props.disableBuffs) &&
                             <i className="arrow alternate circle up icon" title="Toggle Personal Buffs" style={this.showPlayerBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />
-                            || 
+                            ||
                             <i className="arrow alternate circle up icon" title="Buffs not Available" style={disableStyle} />
                             }
 
-                            {("immortal" in ship && (ship.immortal === CompletionState.DisplayAsImmortalUnowned || ship.immortal === CompletionState.DisplayAsImmortalStatic) && 
-                            <i className="lock icon" 
-                                title={printImmoText(ship.immortal, "Ship", "Max Level")} 
-                                style={frozenStyle} 
+                            {("immortal" in ship && (ship.immortal === CompletionState.DisplayAsImmortalUnowned || ship.immortal === CompletionState.DisplayAsImmortalStatic) &&
+                            <i className="lock icon"
+                                title={printImmoText(ship.immortal, "Ship", "Max Level")}
+                                style={frozenStyle}
                                 />)
                             ||
-                            <i className="star icon" 
-                                title={("immortal" in ship && ship.immortal) ? printImmoText(ship.immortal, "Ship", "Max Level") : (this.showImmortalized ? "Show Owned Rank" : "Show Immortalized")} 
-                                style={("immortal" in ship && ship.immortal != 0 && (ship.immortal ?? 0) > -2) ? completeStyle : this.showImmortalized ? activeStyle : dormantStyle} 
+                            <i className="star icon"
+                                title={("immortal" in ship && ship.immortal) ? printImmoText(ship.immortal, "Ship", "Max Level") : (this.showImmortalized ? "Show Owned Rank" : "Show Immortalized")}
+                                style={("immortal" in ship && ship.immortal != 0 && (ship.immortal ?? 0) > -2) ? completeStyle : this.showImmortalized ? activeStyle : dormantStyle}
                                 onClick={(e) => immoToggle(e)} />
                             } */}
                         </div>
@@ -199,24 +199,24 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                             <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in ship ? printImmoText(ship.immortal ?? CompletionState.DisplayAsImmortalStatic, t('ship.ship'), t('ship.max_level'), t) : t('item_state.item_is_shown', { item: 'base.crew', level: 'crew_state.immortalized'})}>
                                 {
                                     "immortal" in ship && (
-                                        ((ship.immortal === 0)) ? 
-                                        (<b>{ship.level}/{ship.max_level}</b>) : 
-                                        (((ship.immortal ?? 0) > 0)) ? 
-                                        (<i className="snowflake icon" style={frozenStyle} />) : 
-                                        (<i className="check icon" style={checkedStyle} />) 
+                                        ((ship.immortal === 0)) ?
+                                        (<b>{ship.level}/{ship.max_level}</b>) :
+                                        (((ship.immortal ?? 0) > 0)) ?
+                                        (<i className="snowflake icon" style={frozenStyle} />) :
+                                        (<i className="check icon" style={checkedStyle} />)
                                     ) || (<i className="check icon" style={checkedStyle} />)
                                 }
                             </h4>
                             <Rating
                                 onClick={(e) => immoToggle(e)}
-                                icon='star' 
-                                rating={ship.rarity} 
-                                maxRating={ship.rarity} 
-                                size='large' 
+                                icon='star'
+                                rating={ship.rarity}
+                                maxRating={ship.rarity}
+                                size='large'
                                 disabled />
                         </div>
                     </div>
-                    {stats.map((statline, index) => 
+                    {stats.map((statline, index) =>
                         <div
                             key={index}
                             style={{
@@ -229,15 +229,15 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                                 marginBottom: "2px",
                             }}
                         >
-                            {statline.map((stat, index) =>                             
-                                <div key={index} style={{ 
+                            {statline.map((stat, index) =>
+                                <div key={index} style={{
                                         width: window.innerWidth < mobileWidth ? "30vw" : "9em", display: "flex", flexDirection: "row", alignItems: "center" }}>
                                     <img src={"/media/ship/" + stat.icon} style={{height: "1.5em", marginRight: "6px"}} />
                                     <div style={{ display: "flex", flexDirection: "column" }}>
                                         <div>{stat.name}</div>
                                         <div>{stat.value.toLocaleString()}</div>
-                                    </div>                            
-                                </div>                        
+                                    </div>
+                                </div>
                             )}
                         </div>
                         )}
@@ -253,15 +253,15 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                         {ship.traits_named?.join(", ")}
                     </div>
                     <div>
-                        {ship.actions && <ShipSkill 
+                        {ship.actions && <ShipSkill
                                 withActionIcons={showIcon}
                                 grouped={tabs}
-                                context={ship} 
+                                context={ship}
                                 fontSize="0.8em" />}
                     </div>
                 </div>
             </div>) : <></>
-        
+
     }
-    
+
 }

@@ -22,7 +22,7 @@ export interface FleetResponse {
     squads: Squad[]
     leaderboard: Leaderboard[]
   }
-  
+
   export interface Member {
     dbid: number
     display_name: string
@@ -43,7 +43,7 @@ export interface FleetResponse {
     event_rank: number
     squadron_event_rank?: number;
   }
-  
+
   export interface Squad {
     id: number
     name: string
@@ -51,10 +51,9 @@ export interface FleetResponse {
     event_rank: number
     leader: number
   }
-  
+
   export interface Leaderboard {
     fleet_rank: number
     index: number
     event_name: string
   }
-  

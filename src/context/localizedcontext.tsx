@@ -269,7 +269,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		if (newFallbackMap) {
 			setFallbackMap(makeWebstringMap(newFallbackMap));
 		}
-		
+
 		setWebStringMap(makeWebstringMap(webStringsJson));
 		setGameStrings({...translatedGameStrings});
 

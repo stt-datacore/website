@@ -3,10 +3,10 @@ import { AttackInstant, MultiShipWorkerConfig, ShipWorkerConfig, ShipWorkerItem,
 import { compareShipResults } from "../utils/shiputils";
 import { canSeatAll, iterateBattle } from "./battleworkerutils";
 
- 
+
 function factorial(number: bigint) {
     let result = 1n;
-    
+
     for (let i = 1n; i <= number; i++) {
         result *= i;
     }
@@ -53,7 +53,7 @@ function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_o
 const ShipCrewWorker = {
     calc: (options: ShipWorkerConfig, reportProgress: (data: { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: ShipWorkerItem }) => boolean = () => true) => {
         return new Promise<ShipWorkerResults>(async (resolve, reject) => {
-            const { 
+            const {
                 event_crew,
                 rate,
                 activation_offsets,
@@ -61,11 +61,11 @@ const ShipCrewWorker = {
                 battle_mode,
                 opponents,
                 action_types,
-                ability_types, 
-                defense, 
-                offense, 
-                ignore_skill, 
-                verbose, 
+                ability_types,
+                defense,
+                offense,
+                ignore_skill,
+                verbose,
                 max_iterations,
                 simulate,
                 ranking_method,
@@ -113,11 +113,11 @@ const ShipCrewWorker = {
                         }
                     }
                 });
-                
+
                 const attack = attacks.reduce((p, n) => p + n.attack, 0);
                 const min_attack = attacks.reduce((p, n) => p + n.min_attack, 0);
                 const max_attack = attacks.reduce((p, n) => p + n.max_attack, 0);
-                const battle_time = attacks.reduce((p, n) => p > n.second ? p : n.second, 0);                
+                const battle_time = attacks.reduce((p, n) => p > n.second ? p : n.second, 0);
                 let weighted_attack = 0;
                 if (battle_mode === 'skirmish') {
                     weighted_attack = attacks.reduce((p, n) => (p + (!n.second ? 0 : (n.attack / (n.second * 4)))), 0);
@@ -143,12 +143,12 @@ const ShipCrewWorker = {
                 if (fbb_mode) {
                     if (ranking_method === 'min') fbb_metric = min_attack;
                     else if (ranking_method === 'max') fbb_metric = max_attack;
-                    else if (ranking_method === 'delta') fbb_metric = arena_metric;                    
+                    else if (ranking_method === 'delta') fbb_metric = arena_metric;
                 }
                 else {
                     if (ranking_method === 'min') arena_metric = min_attack;
                     else if (ranking_method === 'max') arena_metric = max_attack;
-                    else if (ranking_method === 'standard') arena_metric = attack;                    
+                    else if (ranking_method === 'standard') arena_metric = attack;
                 }
 
                 return {
@@ -177,7 +177,7 @@ const ShipCrewWorker = {
 
             const fbb_mode = battle_mode.startsWith('fbb');
 
-            getPermutations(workCrew, seats, count, true, start_index, (set) => {                
+            getPermutations(workCrew, seats, count, true, start_index, (set) => {
                 i++;
                 if (errors) return false;
                 let test = ['torres_caretaker_crew', 'kirk_chances_crew', 'crusher_j_vox_crew', 'tucker_desert_crew'];
@@ -191,7 +191,7 @@ const ShipCrewWorker = {
                         progress = p;
 
                         if (status_data_only) {
-                            reportProgress({ 
+                            reportProgress({
                                     percent: Number(p.toString()),
                                     progress: i,
                                     count,
@@ -203,15 +203,15 @@ const ShipCrewWorker = {
                                 reportProgress({ format: 'ship.calc.calculating_pct_ellipses', options: { percent: `${p}` } });
                             }
                             else {
-                                reportProgress({ format: 'ship.calc.calculating_pct_ellipses_verbose', 
-                                    options: { 
+                                reportProgress({ format: 'ship.calc.calculating_pct_ellipses_verbose',
+                                    options: {
                                         percent: `${p}`,
                                         progress: `${i.toLocaleString()}`,
                                         count: `${count.toLocaleString()}`,
                                         accepted: `${results.length.toLocaleString()}`
-                                    } 
+                                    }
                                 });
-                            }                            
+                            }
                         }
                     }
                 }
@@ -222,13 +222,16 @@ const ShipCrewWorker = {
                 if (!newseats) {
                     return false;
                 }
-                
+
                 set = newseats;
 
                 let battle_data = iterateBattle(rate, fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets, fixed_activation_delay, simulate);
                 let attack = processBattleRun(battle_data, set);
 
-                if (!get_attacks) battle_data.length = 0;
+                if (!get_attacks) {
+                    battle_data.length = 0;
+                }
+
                 let accepted = false;
                 if (last_high === null) {
                     last_high = attack;
@@ -255,11 +258,11 @@ const ShipCrewWorker = {
             if (!status_data_only) {
                 reportProgress({ format: 'ship.calc.sorting_finalizing_ellipses' });
             }
-            
+
             results.sort((a, b) => compareShipResults(a, b, fbb_mode));
             results.splice(max_results);
             results.forEach((result) => {
-                if (battle_mode.startsWith('fbb')) {
+                if (fbb_mode) {
                     let max = results[0].fbb_metric;
                     result.percentile = (result.fbb_metric / max) * 100;
                 }
@@ -270,7 +273,6 @@ const ShipCrewWorker = {
             });
 
             const endtime = new Date();
-
             const run_time = Math.round((endtime.getTime() - starttime.getTime()) / 1000);
 
             resolve({

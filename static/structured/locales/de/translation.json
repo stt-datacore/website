@@ -1212,7 +1212,6 @@
         "amount": "Menge",
         "antimatter": "Antimaterie",
         "arena_metric": "Arena Metrisch",
-        "skirmish_metric": "Scharmützel Metrisch",
         "attack": "Angriffs",
         "attack_speed": "Angriffsgeschwindigkeit",
         "battle_mode": "Kampfmodus",
@@ -1221,7 +1220,6 @@
         "boosts": "Leistungssteigerung",
         "boosts_x_by_y": "Steigert {{x}} um {{y}}",
         "calc": {
-            "max_workers": "Max. Anzahl Arbeiter",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} akzeptierte Ergebnisse) ({{time}})",
             "calculating_pct_ellipses": "Berechnung ... ({{percent}} % abgeschlossen)",
             "calculating_pct_ellipses_verbose": "Berechnung ... ({{percent}} % abgeschlossen) ({{progress}} / {{count}}) ({{accepted}} akzeptierte Ergebnisse)",
@@ -1233,6 +1231,7 @@
             "ignore_skill": "Ignorieren Sie die Fähigkeiten",
             "iterations": "Iterationen",
             "max_iterations": "Max. Iterationen",
+            "max_workers": "Max. Anzahl Arbeiter",
             "ranking_method": "Rangfolgemethode",
             "rate": "Rate",
             "rate_msg": "Muss eine Zahl zwischen 1 und 10 sein",
@@ -1281,6 +1280,7 @@
             "only_in_use": "Nur aktuell verwendete Schiffe anzeigen"
         },
         "skirmish": "{{event_type.skirmish}}",
+        "skirmish_metric": "Scharmützel Metrisch",
         "trigger": "Auslöser",
         "triggers": "Auslöseren",
         "unlimited": "Unbegrenzt",

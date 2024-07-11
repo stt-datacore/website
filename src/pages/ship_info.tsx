@@ -98,7 +98,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 			let newship = ships.find(f => f.symbol === shipKey);
 			if (!!newship && !!inputShip && newship?.id === inputShip?.id) return;
 			if (newship) {
-				setInputShip(newship);				
+				setInputShip(newship);
 			}
 			else {
 				navigate("/ships");

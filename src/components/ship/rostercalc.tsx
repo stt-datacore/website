@@ -71,11 +71,11 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [activationOffsets, setActivationOffsets] = useStateWithStorage<number[]>(`${pageId}/${ship.symbol}/activationOffsets`, ship.battle_stations!.map(m => 0), { rememberForever: true });
 
     const [resultCache, setResultCache] = React.useState([] as ShipWorkerItem[]);
-    const [progressMsg, setProgressMsg] = React.useState<string>('');    
+    const [progressMsg, setProgressMsg] = React.useState<string>('');
 
     const battleModes = [] as DropdownItemProps[];
     const fbb_mode = !['skirmish', 'pvp'].includes(battleMode);
-    
+
     const [rankingMethod, setRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/short`, 'delta', { rememberForever: true });
     const [fbbRankingMethod, setFBBRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/long`, 'standard', { rememberForever: true });
 
@@ -184,7 +184,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         if (battleMode === 'skirmish') {
             if (globalContext.player.playerData && globalContext.core.crew?.length && !gameEvents.length) {
                 const gev = [] as IEventData[];
-                
+
                 globalContext.player.ephemeral?.events?.forEach((ev) => {
                     if (ev.content_types.includes('skirmish')) {
                         let eventData = getEventData(ev, globalContext.core.crew);
@@ -216,7 +216,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         let best = getHighest(search)!;
                         if (ignoreSkills || ship.battle_stations?.some(bs => best.skill_order.includes(bs.skill))) {
                             newcrew.push(best);
-                        }                        
+                        }
                     }
                     else {
                         let bsearch = coreCrew!.find(f => f.symbol === symbol);
@@ -410,7 +410,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     gap: '1em',
                     marginTop: '1em'
                 }}>
-                    
+
                     <div style={{ display: 'inline', width: '30%' }}>
                         <h4>{t('menu.game_info.events')}</h4>
                         <Dropdown
@@ -424,7 +424,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     </div>
                     <div style={{ display: 'inline', width: '30%' }}>
                         <h4>{t('base.crew')}</h4>
-                        <CrewDropDown 
+                        <CrewDropDown
                             showRarity={true}
                             fluid
                             selection={chosenCrew}
@@ -522,7 +522,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                         <Input
                                             disabled={exhaustiveMode || running}
                                             label={t('ship.calc.max_iterations')}
-                                            value={maxIter}                                        
+                                            value={maxIter}
                                             onChange={(e, { value }) => setMaxIter(Number.parseInt(value))} />
                                     </div>
                                 </div>
@@ -531,8 +531,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                         {t('ship.calc.rate')}:&nbsp;
                                     </div>
                                     <div style={{gridArea:'dropdown1'}}>
-                                        <Dropdown   
-                                            disabled={running}                                     
+                                        <Dropdown
+                                            disabled={running}
                                             fluid
                                             scrolling
                                             selection
@@ -544,8 +544,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                         {t('ship.calc.fixed_delay')}:&nbsp;
                                     </div>
                                     <div style={{gridArea:'dropdown2'}}>
-                                        <Dropdown    
-                                            disabled={running}                             
+                                        <Dropdown
+                                            disabled={running}
                                             fluid
                                             scrolling
                                             selection
@@ -560,7 +560,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                         {t('ship.calc.ranking_method')}:&nbsp;
                                     </div>
                                     <div style={{gridArea:'dropdown1'}}>
-                                        <Dropdown   
+                                        <Dropdown
                                             disabled={running}
                                             fluid
                                             scrolling
@@ -582,7 +582,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                         <Input
                                             disabled={!simulate || running}
                                             label={t('ship.calc.iterations')}
-                                            value={iterations}                                        
+                                            value={iterations}
                                             onChange={(e, { value }) => setIterations(Number.parseInt(value))} />
                                     </div> */}
                                 </div>
@@ -592,7 +592,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                         {t('ship.calc.max_workers')}:&nbsp;
                                     </div>
                                     <div style={{gridArea:'dropdown1'}}>
-                                        <Dropdown    
+                                        <Dropdown
                                             disabled={running}
                                             fluid
                                             scrolling
@@ -621,7 +621,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                                 }} />
                                         </div>
 
-                                    })}                               
+                                    })}
                                 </div>
                             </div>
                         </Accordion.Content>
@@ -708,7 +708,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     {t('ship.attack')}{': '}<br />{Math.round(sug.attack).toLocaleString()}
                 </div>
                 <div style={{gridArea: 'standard', display: 'flex', justifyContent: 'center'}}>
-                    {fbb_mode && 
+                    {fbb_mode &&
                         <>
                             <b>*</b> {t('ship.fbb_metric')}{': '}<br />{Math.round(sug.fbb_metric).toLocaleString()}
                         </>
@@ -828,7 +828,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 count: `${result.data.result.total_iterations?.toLocaleString()}`,
                 time: formatRunTime(Math.round(result.data.result.run_time ?? 0), t),
                 accepted: `${result.data.result.ships?.length.toLocaleString()}`
-            })); 
+            }));
 
             if (result.data.result.ships.length === 1 && suggestions?.length && suggestions.length > 1) {
                 let r = result.data.result.ships[0];
@@ -847,7 +847,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setProgressMsg(t(result.data.result.format, result.data.result.options));
         }
         else if (result.data.inProgress && result.data.result.count) {
-            setProgressMsg(                
+            setProgressMsg(
                 t(verbose ? 'ship.calc.calculating_pct_ellipses_verbose' : 'ship.calc.calculating_pct_ellipses',
                     {
                         percent: `${result.data.result.percent?.toLocaleString()}`,
@@ -855,12 +855,12 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         progress: `${result.data.result.progress?.toLocaleString()}`,
                         accepted: `${result.data.result.accepted?.toLocaleString()}`
                     }
-                )                
+                )
             )
         }
         else if (result.data.inProgress && result.data.result.result) {
             resultCache.push(result.data.result.result);
-            let new_cache = resultCache.concat().sort((a, b) => compareShipResults(a, b, fbb_mode));            
+            let new_cache = resultCache.concat().sort((a, b) => compareShipResults(a, b, fbb_mode));
             setSuggestion(undefined);
             setTimeout(() => {
                 setResultCache(new_cache);
@@ -933,7 +933,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 if (!a.action.ability && b.action.ability) return 1;
             }
 
-            // check durations 
+            // check durations
             if (fbb_mode) {
                 r = a.action.cycle_time - b.action.cycle_time;
                 if (r) return r;
@@ -952,7 +952,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     if (r) return r;
                 }
             }
-            
+
             // check the bonus amount/type
             if (a.action.bonus_type === b.action.bonus_type) {
                 r = b.action.bonus_amount - a.action.bonus_amount;

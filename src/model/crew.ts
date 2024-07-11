@@ -76,7 +76,7 @@ export interface CrewMember extends QuipmentScores {
     imageUrlPortrait: string;
     imageUrlFullBody: string;
     series?: string;
-    traits_named: string[];    
+    traits_named: string[];
     collections: string[];
     collection_ids: string[];
     nicknames: Nickname[];

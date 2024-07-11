@@ -1221,7 +1221,6 @@
         "amount": "Cantidad",
         "antimatter": "Antimateria",
         "arena_metric": "Métrica de Arena",
-        "skirmish_metric": "Métrica de Escaramuza",
         "attack": "Ataque",
         "attack_speed": "Velocidad de ataque",
         "battle_mode": "Modo de batalla",
@@ -1231,7 +1230,6 @@
         "boosts": "Aumentos",
         "boosts_x_by_y": "Aumenta {{x}} en {{y}}",
         "calc": {
-            "max_workers": "Máx. trabajadores",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} resultados aceptados) ({{time}})",
             "calculating_pct_ellipses": "Calculando ... ({{percent}}% completado)",
             "calculating_pct_ellipses_verbose": "Calculando ... ({{percent}}% completado) ({{progress}} / {{count}}) ({{accepted}} resultados aceptados)",
@@ -1243,6 +1241,7 @@
             "ignore_skill": "Ignora las habilidades",
             "iterations": "Iteraciones",
             "max_iterations": "Iteraciones máx.",
+            "max_workers": "Máx. trabajadores",
             "ranking_method": "Método de clasificación",
             "rate": "Tasa",
             "rate_msg": "Debe ser un número entre 1 y 10",
@@ -1291,6 +1290,7 @@
             "only_in_use": "Mostrar sólo los buques actualmente en uso"
         },
         "skirmish": "{{event_type.skirmish}}",
+        "skirmish_metric": "Métrica de Escaramuza",
         "trigger": "Activación",
         "triggers": "Activadores",
         "unlimited": "Ilimitado",
