@@ -134,10 +134,17 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	const [language, setLanguage] = useStateWithStorage<SupportedLanguage | undefined>('localized/language', undefined);
 
 	// Localized strings sent to UI
-	const [webStringMap, setWebStringMap] = useStateWithStorage<{[key: string]: string}>('localized/webstrings', {});
-	const [fallbackMap, setFallbackMap] = useStateWithStorage<{[key: string]: string}>('localized/fallback', {});
+	const [webStringMap, setWebStringMap] = React.useState<{[key: string]: string}>({});
+	const [fallbackMap, setFallbackMap] = React.useState<{[key: string]: string}>({});
 
-	const [gameStrings, setGameStrings] = useStateWithStorage<IGameStrings>('localized/gamestrings', defaultGameStrings);
+	const [gameStrings, setGameStrings] = React.useState<IGameStrings>(defaultGameStrings);
+
+	// // Localized strings sent to UI
+	// const [webStringMap, setWebStringMap] = useStateWithStorage<{[key: string]: string}>('localized/webstrings', {});
+	// const [fallbackMap, setFallbackMap] = useStateWithStorage<{[key: string]: string}>('localized/fallback', {});
+
+	// const [gameStrings, setGameStrings] = useStateWithStorage<IGameStrings>('localized/gamestrings', defaultGameStrings);
+
 
 	// Update language on user preference change
 	React.useEffect(() => {
@@ -186,7 +193,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		// TODO: Rework CONFIG translations
 		CONFIG.setLanguage(newLanguage);
 
-		if (language === newLanguage)
+		if (language === newLanguage && Object.keys(webStringMap).length)
 			return;
 
 		const webStringsResponse: Response =
@@ -200,16 +207,16 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 		let newFallbackMap = null as any;
 
-		if (!Object.keys(fallbackMap).length) {
-			if (newLanguage !== 'en') {
-				const fallbackResponse: Response = await fetch(`/structured/locales/en/translation.json`);
-				const fallbackJson: TranslationSet = await fallbackResponse.json();
-				newFallbackMap = fallbackJson;
-			}
-			else {
-				newFallbackMap = webStringsJson;
-			}
-		}
+		// if (!Object.keys(fallbackMap).length) {
+		// 	if (newLanguage !== 'en') {
+		// 		const fallbackResponse: Response = await fetch(`/structured/locales/en/translation.json`);
+		// 		const fallbackJson: TranslationSet = await fallbackResponse.json();
+		// 		newFallbackMap = fallbackJson;
+		// 	}
+		// 	else {
+		// 		newFallbackMap = webStringsJson;
+		// 	}
+		// }
 
 		// Only process game strings for non-English locales
 		//	Remember to fall back to default values when directly accessing archetypes
