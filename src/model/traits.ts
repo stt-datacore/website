@@ -12,7 +12,7 @@ export interface TranslationSet {
     ship_archetypes: ShipArchetype[]
     collections: CollectionArchetypes[];
   }
-  
+
   export interface TraitNames {
     [key: string]: string
     artist: string
@@ -276,7 +276,7 @@ export interface TranslationSet {
     cool: string
     handsome: string
   }
-  
+
   export interface ShipTraitNames {
     [key: string]: string
     hirogen: string
@@ -316,7 +316,7 @@ export interface TranslationSet {
     hologram: string
     raider: string
   }
-  
+
   export interface CrewArchetype {
     symbol: string
     name: string
@@ -326,19 +326,19 @@ export interface TranslationSet {
       name: string
     }
   }
-  
+
   export interface ShipArchetype {
     symbol: string
     name: string
     flavor: string
     actions: Action[]
   }
-  
+
   export interface Action {
     symbol: string
     name: string
   }
-  
+
   export interface CollectionArchetypes {
     id: number;
     name: string;

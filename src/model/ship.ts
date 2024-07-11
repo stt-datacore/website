@@ -106,7 +106,7 @@ export interface ShipAction {
   cooldown: number;
   initial_cooldown: number;
   duration: number;
-  
+
   /** Used internally. Not part of source data. */
   cycle_time: number;
 
@@ -157,7 +157,7 @@ export type BattleMode = 'pvp' | 'skirmish' | 'fbb_0' | 'fbb_1' | 'fbb_2' | 'fbb
 
 
 export interface ShipInUse {
-    battle_mode: BattleMode;  
+    battle_mode: BattleMode;
     pvp_division?: PvpDivision;
     ship: Ship;
     rarity: number;
@@ -190,7 +190,7 @@ export interface ShipWorkerConfigBase {
     max_iterations?: bigint;
     activation_offsets?: number[];
     start_index?: bigint;
-    status_data_only?: boolean;    
+    status_data_only?: boolean;
 }
 
 export interface ShipWorkerConfig extends ShipWorkerConfigBase {

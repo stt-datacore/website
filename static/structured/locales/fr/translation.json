@@ -1222,7 +1222,6 @@
         "amount": "Montant",
         "antimatter": "Antimatière",
         "arena_metric": "Métrique de l'arène",
-        "skirmish_metric": "Métrique d'escarmouche",
         "attack": "Attaque",
         "attack_speed": "Vitesse d'Attaque",
         "battle_mode": "Mode de combat",
@@ -1232,7 +1231,6 @@
         "boosts": "Augmentations",
         "boosts_x_by_y": "Augmente {{x}} de {{y}}",
         "calc": {
-            "max_workers": "Max. ouvriers",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} résultats acceptés) ({{time}})",
             "calculating_pct_ellipses": "Calcul ... ({{percent}} % terminé)",
             "calculating_pct_ellipses_verbose": "Calcul ... ({{percent}} % terminé) ({{progress}} / {{count}}) ({{accepted}} résultats acceptés)",
@@ -1244,6 +1242,7 @@
             "ignore_skill": "Ignorer les compétences",
             "iterations": "Itérations",
             "max_iterations": "Itérations max.",
+            "max_workers": "Max. ouvriers",
             "ranking_method": "Méthode de classement",
             "rate": "Taux",
             "rate_msg": "Doit être un nombre compris entre 1 et 10",
@@ -1292,6 +1291,7 @@
             "only_in_use": "Afficher uniquement les vaisseaux actuellement utilisés"
         },
         "skirmish": "{{event_type.skirmish}}",
+        "skirmish_metric": "Métrique d'escarmouche",
         "trigger": "Déclencheur",
         "triggers": "Déclencheurs",
         "unlimited": "Illimité",

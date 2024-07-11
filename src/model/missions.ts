@@ -5,9 +5,9 @@ import { Icon } from "./game-elements"
 export interface QuestFilterConfig {
   traits?: MissionTraitBonus[];
   quest?: Quest;
-  challenges?: MissionChallenge[];    
+  challenges?: MissionChallenge[];
   ignoreChallenges?: number[];
-  paths?: number[][];    
+  paths?: number[][];
   mastery: number;
   idleOnly?: boolean;
   considerFrozen?: boolean;
@@ -130,7 +130,7 @@ export interface MissionReward extends BuffBase {
   item_type?: number
 }
 
-export interface Bonuses {    
+export interface Bonuses {
     [key: number]: number;
 }
 
