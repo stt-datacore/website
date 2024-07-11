@@ -228,7 +228,10 @@ const ShipCrewWorker = {
                 let battle_data = iterateBattle(rate, fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets, fixed_activation_delay, simulate);
                 let attack = processBattleRun(battle_data, set);
 
-                if (!get_attacks) battle_data.length = 0;
+                if (!get_attacks) {
+                    battle_data.length = 0;
+                }
+
                 let accepted = false;
                 if (last_high === null) {
                     last_high = attack;
@@ -259,7 +262,7 @@ const ShipCrewWorker = {
             results.sort((a, b) => compareShipResults(a, b, fbb_mode));
             results.splice(max_results);
             results.forEach((result) => {
-                if (battle_mode.startsWith('fbb')) {
+                if (fbb_mode) {
                     let max = results[0].fbb_metric;
                     result.percentile = (result.fbb_metric / max) * 100;
                 }
@@ -270,7 +273,6 @@ const ShipCrewWorker = {
             });
 
             const endtime = new Date();
-
             const run_time = Math.round((endtime.getTime() - starttime.getTime()) / 1000);
 
             resolve({

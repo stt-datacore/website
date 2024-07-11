@@ -166,8 +166,8 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
                 id: this.ids[idx],
                 config: {
                     ...options.config,
-                    ship: JSON.parse(JSON.stringify(options.config.ship)),
-                    crew: JSON.parse(JSON.stringify(options.config.crew)),
+                    // ship: JSON.parse(JSON.stringify(options.config.ship)),
+                    // crew: JSON.parse(JSON.stringify(options.config.crew)),
                     start_index: start,
                     max_iterations: length,
                     status_data_only: true
