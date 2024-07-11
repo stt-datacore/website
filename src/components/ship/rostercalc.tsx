@@ -83,7 +83,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [currentEvent, setCurrentEvent] = React.useState<IEventData | undefined>(undefined);
     const [eventCrew, setEventCrew] = React.useState<(PlayerCrew | CrewMember)[] | undefined>(undefined);
     const [chosenCrew, setChosenCrew] = React.useState<number[] | undefined>(undefined);
-    const [numWorkers, setNumWorkers] = useStateWithStorage<number>(`${pageId}/max_workers`, navigator?.hardwareConcurrency ?? 1, { rememberForever: true });
+    const [numWorkers, setNumWorkers] = useStateWithStorage<number>(`${pageId}/max_workers`, navigator?.hardwareConcurrency ? navigator?.hardwareConcurrency / 2 : 1, { rememberForever: true });
 
     const selectEvent = (symbol: string) => {
         let f = gameEvents.find(f => f.symbol === symbol);
@@ -95,14 +95,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             key: `${ev.symbol}_event`,
             value: `${ev.symbol}`,
             text: ev.name
-        }
-    });
-
-    const eventcrewOpts = eventCrew?.map((crew) => {
-        return {
-            key: `event_crew_${crew.symbol}`,
-            value: crew.symbol,
-            text: crew.name
         }
     });
 
@@ -144,7 +136,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     }));
 
     const rarities = [] as DropdownItemProps[];
-
     for (let r = 1; r <= ship.rarity; r++) {
         rarities.push({
             key: `rare_${r}`,
@@ -152,6 +143,92 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             text: `${r}*`
         })
     }
+
+    const worker_sel = [] as DropdownItemProps[];
+    let work_total = navigator?.hardwareConcurrency ?? 1;
+    for (let i = 1; i <= work_total; i++) {
+        let bgcolor = '';
+        let fgcolor = '';
+        if (i <= work_total / 2) {
+            bgcolor = 'darkgreen';
+            fgcolor = 'white';
+        }
+        else if (i <= (work_total * 0.75)) {
+            bgcolor = 'goldenrod';
+            fgcolor = 'black';
+        }
+        else {
+            bgcolor = 'tomato';
+            fgcolor = 'white';
+        }
+
+        worker_sel.push({
+            key: `workers_${i}`,
+            value: i,
+            text: `${i}`,
+            content: <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'stretch',
+                margin: 0,
+                padding: '0.5em 1em',
+                backgroundColor: bgcolor,
+                color: fgcolor
+            }}>
+                {i}
+            </div>
+        })
+    }
+
+    const rates = [] as DropdownItemProps[];
+    [1, 2, 5].forEach((rate) => {
+        rates.push({
+            key: `rate_${rate}`,
+            value: rate,
+            text: `${rate}`
+        })
+    });
+
+    const delays = [] as DropdownItemProps[];
+    [0.2, 0.3, 0.4, 0.5, 0.6].forEach((rate) => {
+        delays.push({
+            key: `delay_${rate}`,
+            value: rate,
+            text: `${rate}`
+        })
+    });
+
+    const ranking_methods = [{
+        key: `ranking_standard`,
+        value: 'standard',
+        text: t('ranking_method.standard')
+    },
+    {
+        key: `ranking_min`,
+        value: 'min',
+        text: t('ranking_method.guaranteed_minimum')
+    },
+    {
+        key: `ranking_max`,
+        value: 'max',
+        text: t('ranking_method.moonshot')
+    },
+    {
+        key: `ranking_delta`,
+        value: 'delta',
+        text: t('ranking_method.delta_t')
+    }] as DropdownItemProps[]
+
+    const sectionStyle = {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        flexWrap: 'wrap',
+        alignItems: 'flex-start',
+        margin: '1em',
+        marginTop: '2em',
+        gap: '1em'
+    } as React.CSSProperties;
 
     React.useEffect(() => {
         if (!hideGraph) {
@@ -265,70 +342,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setSugWait(undefined);
         }
     }, [sugWait, suggestions]);
-    const worker_sel = [] as DropdownItemProps[];
-    for (let i = 0; i < navigator?.hardwareConcurrency ?? 1; i++) {
-        worker_sel.push({
-            key: `workers_${i+1}`,
-            value: i + 1,
-            text: `${i+1}`
-        })
-    }
-    const rates = [] as DropdownItemProps[];
-    [1, 2, 5].forEach((rate) => {
-        rates.push({
-            key: `rate_${rate}`,
-            value: rate,
-            text: `${rate}`
-        })
-    });
-
-    const delays = [] as DropdownItemProps[];
-    [0.2, 0.3, 0.4, 0.5, 0.6].forEach((rate) => {
-        delays.push({
-            key: `delay_${rate}`,
-            value: rate,
-            text: `${rate}`
-        })
-    });
-
-    // "delta_t": "Delta T",
-    // "guaranteed_minimum": "Guaranteed minimum",
-    // "moonshot": "Moonshot",
-    // "potential_maximum": "Potential maximum",
-    // "standard": "Standard"
-
-    const ranking_methods = [{
-        key: `ranking_standard`,
-        value: 'standard',
-        text: t('ranking_method.standard')
-    },
-    {
-        key: `ranking_min`,
-        value: 'min',
-        text: t('ranking_method.guaranteed_minimum')
-    },
-    {
-        key: `ranking_max`,
-        value: 'max',
-        text: t('ranking_method.moonshot')
-    },
-    {
-        key: `ranking_delta`,
-        value: 'delta',
-        text: t('ranking_method.delta_t')
-    }] as DropdownItemProps[]
-
-
-    const sectionStyle = {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        flexWrap: 'wrap',
-        alignItems: 'flex-start',
-        margin: '1em',
-        marginTop: '2em',
-        gap: '1em'
-    } as React.CSSProperties;
 
     return <React.Fragment>
         <div className={'ui segment'} style={{

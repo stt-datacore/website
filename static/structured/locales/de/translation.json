@@ -1264,6 +1264,7 @@
         "handicap": "Handicap",
         "hull": "Hülle",
         "initialize": "Initialisierungszeit",
+        "level": "{{base.level}}",
         "max_attack": "Max. Angriffs",
         "max_level": "Höchstlevel",
         "min_attack": "Min. Angriffs",

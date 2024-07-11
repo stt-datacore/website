@@ -1274,6 +1274,7 @@
         "handicap": "Handicap",
         "hull": "Casco",
         "initialize": "Iniciar",
+        "level": "{{base.level}}",
         "max_attack": "Ataque mín.",
         "max_level": "Nivel máximo",
         "min_attack": "Ataque máx.",
