@@ -80,7 +80,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
     private count: bigint = 0n;
     private progress: bigint = 0n;
     private accepted: bigint = 0n;
-
+    private lastResult: ShipWorkerItem | null = null;
     private progresses = {} as { [key: string]: { count: bigint, time: number, progress: bigint, accepted: bigint }};
     private allResults: ShipWorkerItem[] = [];
 
@@ -115,6 +115,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
         this.progresses = {};
         this.allResults = [];
     }
+
     private readonly reset = (set_canceled: boolean, max_workers?: number, no_init?: boolean) => {
         this.workers.forEach((worker) => {
             worker.removeEventListener('message', this.workerMessage);
@@ -126,6 +127,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
         this.running = [];
         this.progresses = {};
         this.allResults = [];
+        this.lastResult = null;
 
         if (set_canceled) {
             this.setState({
@@ -240,6 +242,12 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
             }});
         }
         else if (msg?.data?.inProgress && msg?.data?.id && msg?.data?.result?.result) {
+            if (!this.lastResult) {
+                this.lastResult = msg.data.result.result;
+            }
+            else {
+                if (compareShipResults(msg.data.result.result, this.lastResult, fbb_mode) > 0) return;
+            }
             this.callback({
                 data: {
                     id: msg.data.id,
@@ -269,9 +277,22 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
                 this.allResults = this.allResults.concat(msg.data.result.ships);
             }
 
-
             if (this.running.every(e => !e)) {
                 this.allResults.sort((a, b) => compareShipResults(a, b, fbb_mode));
+                let top = 0;
+
+                if (fbb_mode) top = this.allResults[0].fbb_metric;
+                else top = this.allResults[0].arena_metric;
+
+                this.allResults.forEach((result) => {
+                    if (fbb_mode) {
+                        result.percentile = Math.round(1000 * (result.fbb_metric / top)) / 10;
+                    }
+                    else {
+                        result.percentile = Math.round(1000 * (result.arena_metric / top)) / 10;
+                    }
+                });
+
                 const endTime = new Date();
                 const run_time = (endTime.getTime() - context.startTime.getTime()) / 1000;
                 this.callback({

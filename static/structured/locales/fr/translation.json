@@ -1275,6 +1275,7 @@
         "handicap": "Handicap",
         "hull": "Coque",
         "initialize": "Initialise",
+        "level": "{{base.level}}",
         "max_attack": "Attaque max.",
         "max_level": "Niveau maximum",
         "min_attack": "Attaque min.",
