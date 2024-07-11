@@ -16,9 +16,10 @@ function factorial(number: bigint) {
 function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[]) => U[] | false) {
     var current_iter = 0n;
     const mmin = start_idx ?? 0n;
+    const mmax = (count ?? 0n) + mmin;
     function p(t: T[], i: number) {
         if (t.length === size) {
-            if (current_iter >= mmin && (!count || current_iter < count + mmin)) {
+            if (current_iter >= mmin && (!mmax || current_iter < mmax)) {
                 if (!check) {
                     result.push(t as any);
                 }
@@ -38,8 +39,7 @@ function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_o
             return;
         }
 
-        if (count && mmin && current_iter >= count + mmin) return;
-        else if (count && current_iter >= count) return;
+        if (mmax !== 0n && current_iter >= mmax) return;
         p(t.concat(array[i]), i + 1);
         p(t, i + 1);
     }
@@ -93,9 +93,9 @@ const ShipCrewWorker = {
             let bsn = BigInt(seats);
             let total_combos = factorial(wcn) / (factorial(wcn - bsn) * factorial(bsn));
 
-            let count = max_iterations || total_combos; //crew_combos.length;            
-            let start_index = max_iterations ? 0n : (options.start_index ?? 0n);
-            let i = start_index;
+            let count = max_iterations || total_combos; //crew_combos.length;
+            let start_index = (options.start_index ?? 0n);
+            let i = 0n;
             let progress = -1n;
             const results = [] as ShipWorkerItem[];
 
@@ -180,7 +180,10 @@ const ShipCrewWorker = {
             getPermutations(workCrew, seats, count, true, start_index, (set) => {                
                 i++;
                 if (errors) return false;
-
+                let test = ['torres_caretaker_crew', 'kirk_chances_crew', 'crusher_j_vox_crew', 'tucker_desert_crew'];
+                if (set.every(s => test.includes(s.symbol))) {
+                    console.log("Inspect");
+                }
                 if (!(i % 100n)) {
                     let p = ((i * 100n) / count);
 

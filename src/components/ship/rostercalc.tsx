@@ -803,7 +803,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setProgressMsg(t('ship.calc.calc_summary', {
                 message: t('global.completed'),
                 count: `${result.data.result.total_iterations?.toLocaleString()}`,
-                time: formatRunTime(result.data.result.run_time ?? 0, t),
+                time: formatRunTime(Math.round(result.data.result.run_time ?? 0), t),
                 accepted: `${result.data.result.ships?.length.toLocaleString()}`
             })); 
 
