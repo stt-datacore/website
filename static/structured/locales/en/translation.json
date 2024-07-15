@@ -1053,6 +1053,7 @@
         "x_y_crew": "{{x}} / {{y}} crew"
     },
     "profile": {
+        "switch_to_english": "Spreadsheets are downloaded using the current language. You may need to switch to English to download spreadsheets that are compatible with other community tools.",
         "charts_and_stats": "Charts & Stats",
         "crew": "{{menu.roster.crew}}",
         "crew_mobile": "{{menu.roster.crew}} (Mobile)",

@@ -1052,6 +1052,7 @@
         "x_y_crew": "{{x}} / {{y}} Crew"
     },
     "profile": {
+        "switch_to_english": "Tabellen werden in der aktuellen Sprache heruntergeladen. Möglicherweise müssen Sie auf Englisch wechseln, um Tabellen herunterzuladen, die mit anderen Community-Tools kompatibel sind.",
         "charts_and_stats": "Diagramme und Statistiken",
         "crew": "{{menu.roster.crew}}",
         "crew_mobile": "{{menu.roster.crew}} (Handy)",

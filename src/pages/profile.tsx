@@ -243,6 +243,8 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 						</Dropdown.Menu>
 					</Dropdown>
 				</Menu>
+				<br/>
+				<div style={{margin: '0.5em 1em', fontStyle: 'italic'}}>({t('profile.switch_to_english')})</div>
 				<Tab menu={{ secondary: true, pointing: true }} panes={panes} />
 			</>
 		)) || <></>;
