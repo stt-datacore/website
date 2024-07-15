@@ -1061,6 +1061,7 @@
         "x_y_crew": "{{x}} / {{y}} equipo"
     },
     "profile": {
+        "switch_to_english": "Las hojas de cálculo se descargan utilizando el idioma actual. Es posible que tengas que cambiar al inglés para descargar hojas de cálculo que sean compatibles con otras herramientas comunitarias.",
         "charts_and_stats": "Gráficos y Estadísticas",
         "crew": "{{menu.roster.crew}}",
         "crew_mobile": "{{menu.roster.crew}} (Móvil)",

@@ -1062,6 +1062,7 @@
         "x_y_crew": "{{x}} / {{y}} équipiers"
     },
     "profile": {
+        "switch_to_english": "Les feuilles de calcul sont téléchargées dans la langue actuelle. Vous devrez peut-être passer à l'anglais pour télécharger des feuilles de calcul compatibles avec d'autres outils communautaires.",
         "charts_and_stats": "Graphiques et Statistiques",
         "crew": "{{menu.roster.crew}}",
         "crew_mobile": "{{menu.roster.crew}} (Mobile)",
