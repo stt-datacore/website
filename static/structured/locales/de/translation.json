@@ -1,4 +1,18 @@
 {
+    "profile": {
+        "crew": "{{menu.roster.crew}}",
+        "crew_mobile": "{{menu.roster.crew}} (Handy)",
+        "ships": "{{menu.roster.ships}}",
+        "items": "{{menu.roster.items}}",
+        "other": "Andere",
+        "charts_and_stats": "Diagramme und Statistiken",
+        "download": {
+            "crew_table": "Crew-Tabelle",
+            "ship_table": "Schiffstabelle",
+            "item_table": "Artikeltabelle",
+            "complete_spreadsheet": "Komplette Tabelle"
+        }
+    },
     "base": {
         "all_crew": "Die gesamte Crew anzeigen",
         "bigbook_tier": "Stufe",
@@ -607,6 +621,8 @@
         }
     },
     "global": {
+        "last_updated_colon": "Zuletzt aktualisiert:",
+        "download": "Herunterladen",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
@@ -1263,6 +1279,11 @@
         "grants": "Verleihungen",
         "handicap": "Handicap",
         "hull": "Hülle",
+        "increase_boost": {
+            "accuracy": "Erhöht den Genauigkeitsschub auf +{{val}}",
+            "attack": "Erhöht den Angriffsschub auf +{{val}}",
+            "evasion": "Erhöht den Ausweichschub auf +{{val}}"
+        },
         "initialize": "Initialisierungszeit",
         "level": "{{base.level}}",
         "max_attack": "Max. Angriffs",

@@ -1,4 +1,18 @@
 {
+    "profile": {
+        "crew": "{{menu.roster.crew}}",
+        "crew_mobile": "{{menu.roster.crew}} (Móvil)",
+        "ships": "{{menu.roster.ships}}",
+        "items": "{{menu.roster.items}}",
+        "other": "Otra",
+        "charts_and_stats": "Gráficos y Estadísticas",
+        "download": {
+            "crew_table": "Tabla de tripulación",
+            "ship_table": "Tabla de buques",
+            "item_table": "Tabla de elementos",
+            "complete_spreadsheet": "Hoja de cálculo completa"
+        }
+    },
     "base": {
         "all_crew": "Mostrar toda las tripulantes",
         "bigbook_tier": "Piso",
@@ -612,6 +626,8 @@
         }
     },
     "global": {
+        "last_updated_colon": "Última actualización:",
+        "download": "Descargar",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
@@ -1273,6 +1289,11 @@
         "grants": "Concesiones",
         "handicap": "Handicap",
         "hull": "Casco",
+        "increase_boost": {
+            "accuracy": "Aumenta el aumento de precisión a +{{val}}",
+            "attack": "Aumenta el impulso de ataque a +{{val}}",
+            "evasion": "Aumenta el aumento de evasión a +{{val}}"
+        },
         "initialize": "Iniciar",
         "level": "{{base.level}}",
         "max_attack": "Ataque mín.",

@@ -1,4 +1,18 @@
 {
+    "profile": {
+        "crew": "{{menu.roster.crew}}",
+        "crew_mobile": "{{menu.roster.crew}} (Mobile)",
+        "ships": "{{menu.roster.ships}}",
+        "items": "{{menu.roster.items}}",
+        "other": "Autre",
+        "charts_and_stats": "Graphiques et Statistiques",
+        "download": {
+          "crew_table": "Tableau de l'équipage",
+            "ship_table": "Tableau des vaisseaux",
+            "item_table": "Tableau des éléments",
+            "complete_spreadsheet": "Feuille de calcul complète"
+        }
+    },
     "base": {
         "all_crew": "Afficher tous l'équipiers",
         "bigbook_tier": "Étage",
@@ -613,6 +627,8 @@
         }
     },
     "global": {
+        "last_updated_colon": "Dernière mise à jour :",
+        "download": "Télécharger",
         "aborted": "Terminé",
         "admiral": "Avorté",
         "advanced_settings": "Réglages Avancés",
@@ -1274,6 +1290,11 @@
         "grants": "Octrois",
         "handicap": "Handicap",
         "hull": "Coque",
+        "increase_boost": {
+            "accuracy": "Augmente la précision à +{{val}}",
+            "attack": "Augmente le boost d'attaque à +{{val}}",
+            "evasion": "Augmente le boost d'évasion à +{{val}}"
+        },
         "initialize": "Initialise",
         "level": "{{base.level}}",
         "max_attack": "Attaque max.",

@@ -1,4 +1,18 @@
 {
+    "profile": {
+        "crew": "{{menu.roster.crew}}",
+        "crew_mobile": "{{menu.roster.crew}} (Mobile)",
+        "ships": "{{menu.roster.ships}}",
+        "items": "{{menu.roster.items}}",
+        "other": "Other",
+        "charts_and_stats": "Charts & Stats",
+        "download": {
+            "crew_table": "Crew table",
+            "ship_table": "Ship table",
+            "item_table": "Item table",
+            "complete_spreadsheet": "Complete spreadsheet"
+        }
+    },
     "base": {
         "all_crew": "Show all crew",
         "bigbook_tier": "Tier",
@@ -607,6 +621,8 @@
         }
     },
     "global": {
+        "last_updated_colon": "Last Updated:",
+        "download": "Download",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
@@ -1264,6 +1280,11 @@
         "grants": "Grants",
         "handicap": "Handicap",
         "hull": "Hull",
+        "increase_boost": {
+            "accuracy": "Increases accuracy boost to +{{val}}",
+            "attack": "Increases attack boost to +{{val}}",
+            "evasion": "Increases evasion boost to +{{val}}"
+        },
         "initialize": "Initialize",
         "level": "{{base.level}}",
         "max_attack": "Max. Attack",
