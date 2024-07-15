@@ -1,18 +1,4 @@
 {
-    "profile": {
-        "crew": "{{menu.roster.crew}}",
-        "crew_mobile": "{{menu.roster.crew}} (Móvil)",
-        "ships": "{{menu.roster.ships}}",
-        "items": "{{menu.roster.items}}",
-        "other": "Otra",
-        "charts_and_stats": "Gráficos y Estadísticas",
-        "download": {
-            "crew_table": "Tabla de tripulación",
-            "ship_table": "Tabla de buques",
-            "item_table": "Tabla de elementos",
-            "complete_spreadsheet": "Hoja de cálculo completa"
-        }
-    },
     "base": {
         "all_crew": "Mostrar toda las tripulantes",
         "bigbook_tier": "Piso",
@@ -626,8 +612,6 @@
         }
     },
     "global": {
-        "last_updated_colon": "Última actualización:",
-        "download": "Descargar",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
@@ -647,6 +631,7 @@
         "disable": "Desactivar",
         "disabled": "Desactivado",
         "dismiss": "Descartar",
+        "download": "Descargar",
         "edit": "Editar",
         "enable": "Habilitar",
         "enabled": "Habilitado",
@@ -689,6 +674,7 @@
             "valor": "Valor",
             "voyage_consumable": "Fichas de avivamiento del viaje"
         },
+        "last_updated_colon": "Última actualización:",
         "load_default_settings": "Cargar configuración predeterminada",
         "load_defaults": "Cargar predeterminadas",
         "loading_ellipses": "Cargando ...",
@@ -1073,6 +1059,20 @@
         "n_shuttles": "{{n}} lanzaderas",
         "starbase_level": "Nivel de base estelar",
         "x_y_crew": "{{x}} / {{y}} equipo"
+    },
+    "profile": {
+        "charts_and_stats": "Gráficos y Estadísticas",
+        "crew": "{{menu.roster.crew}}",
+        "crew_mobile": "{{menu.roster.crew}} (Móvil)",
+        "download": {
+            "complete_spreadsheet": "Hoja de cálculo completa",
+            "crew_table": "Tabla de tripulación",
+            "item_table": "Tabla de elementos",
+            "ship_table": "Tabla de buques"
+        },
+        "items": "{{menu.roster.items}}",
+        "other": "Otra",
+        "ships": "{{menu.roster.ships}}"
     },
     "prospect_picker": {
         "add_crew": "Agregar tripulante",

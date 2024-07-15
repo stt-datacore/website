@@ -1,18 +1,4 @@
 {
-    "profile": {
-        "crew": "{{menu.roster.crew}}",
-        "crew_mobile": "{{menu.roster.crew}} (Mobile)",
-        "ships": "{{menu.roster.ships}}",
-        "items": "{{menu.roster.items}}",
-        "other": "Autre",
-        "charts_and_stats": "Graphiques et Statistiques",
-        "download": {
-          "crew_table": "Tableau de l'équipage",
-            "ship_table": "Tableau des vaisseaux",
-            "item_table": "Tableau des éléments",
-            "complete_spreadsheet": "Feuille de calcul complète"
-        }
-    },
     "base": {
         "all_crew": "Afficher tous l'équipiers",
         "bigbook_tier": "Étage",
@@ -627,8 +613,6 @@
         }
     },
     "global": {
-        "last_updated_colon": "Dernière mise à jour :",
-        "download": "Télécharger",
         "aborted": "Terminé",
         "admiral": "Avorté",
         "advanced_settings": "Réglages Avancés",
@@ -648,6 +632,7 @@
         "disable": "Désactiver",
         "disabled": "Désactivé",
         "dismiss": "Rejeter",
+        "download": "Télécharger",
         "edit": "Modifier",
         "enable": "Activer",
         "enabled": "Activé",
@@ -690,6 +675,7 @@
             "valor": "Valeur",
             "voyage_consumable": "Jetons de renaissance du voyage"
         },
+        "last_updated_colon": "Dernière mise à jour :",
         "load_default_settings": "Charger les paramètres par défaut",
         "load_defaults": "Charger les défauts",
         "loading_ellipses": "Chargement ...",
@@ -1074,6 +1060,20 @@
         "n_shuttles": "{{n}} navettes",
         "starbase_level": "Niveau de base stellaire",
         "x_y_crew": "{{x}} / {{y}} équipiers"
+    },
+    "profile": {
+        "charts_and_stats": "Graphiques et Statistiques",
+        "crew": "{{menu.roster.crew}}",
+        "crew_mobile": "{{menu.roster.crew}} (Mobile)",
+        "download": {
+            "complete_spreadsheet": "Feuille de calcul complète",
+            "crew_table": "Tableau de l'équipage",
+            "item_table": "Tableau des éléments",
+            "ship_table": "Tableau des vaisseaux"
+        },
+        "items": "{{menu.roster.items}}",
+        "other": "Autre",
+        "ships": "{{menu.roster.ships}}"
     },
     "prospect_picker": {
         "add_crew": "Ajouter Équipage",

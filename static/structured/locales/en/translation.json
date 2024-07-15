@@ -1,18 +1,4 @@
 {
-    "profile": {
-        "crew": "{{menu.roster.crew}}",
-        "crew_mobile": "{{menu.roster.crew}} (Mobile)",
-        "ships": "{{menu.roster.ships}}",
-        "items": "{{menu.roster.items}}",
-        "other": "Other",
-        "charts_and_stats": "Charts & Stats",
-        "download": {
-            "crew_table": "Crew table",
-            "ship_table": "Ship table",
-            "item_table": "Item table",
-            "complete_spreadsheet": "Complete spreadsheet"
-        }
-    },
     "base": {
         "all_crew": "Show all crew",
         "bigbook_tier": "Tier",
@@ -621,8 +607,6 @@
         }
     },
     "global": {
-        "last_updated_colon": "Last Updated:",
-        "download": "Download",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
@@ -642,6 +626,7 @@
         "disable": "Disable",
         "disabled": "Disabled",
         "dismiss": "Dismiss",
+        "download": "Download",
         "edit": "Edit",
         "enable": "Enable",
         "enabled": "Enabled",
@@ -684,6 +669,7 @@
             "valor": "Valor",
             "voyage_consumable": "Voyage Revival Tokens"
         },
+        "last_updated_colon": "Last Updated:",
         "load_default_settings": "Load Default Settings",
         "load_defaults": "Load Defaults",
         "loading_ellipses": "Loading ...",
@@ -1065,6 +1051,20 @@
         "n_shuttles": "{{n}} shuttles",
         "starbase_level": "Starbase level",
         "x_y_crew": "{{x}} / {{y}} crew"
+    },
+    "profile": {
+        "charts_and_stats": "Charts & Stats",
+        "crew": "{{menu.roster.crew}}",
+        "crew_mobile": "{{menu.roster.crew}} (Mobile)",
+        "download": {
+            "complete_spreadsheet": "Complete spreadsheet",
+            "crew_table": "Crew table",
+            "item_table": "Item table",
+            "ship_table": "Ship table"
+        },
+        "items": "{{menu.roster.items}}",
+        "other": "Other",
+        "ships": "{{menu.roster.ships}}"
     },
     "prospect_picker": {
         "add_crew": "Add Crew",

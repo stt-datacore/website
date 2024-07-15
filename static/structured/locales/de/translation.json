@@ -1,18 +1,4 @@
 {
-    "profile": {
-        "crew": "{{menu.roster.crew}}",
-        "crew_mobile": "{{menu.roster.crew}} (Handy)",
-        "ships": "{{menu.roster.ships}}",
-        "items": "{{menu.roster.items}}",
-        "other": "Andere",
-        "charts_and_stats": "Diagramme und Statistiken",
-        "download": {
-            "crew_table": "Crew-Tabelle",
-            "ship_table": "Schiffstabelle",
-            "item_table": "Artikeltabelle",
-            "complete_spreadsheet": "Komplette Tabelle"
-        }
-    },
     "base": {
         "all_crew": "Die gesamte Crew anzeigen",
         "bigbook_tier": "Stufe",
@@ -621,8 +607,6 @@
         }
     },
     "global": {
-        "last_updated_colon": "Zuletzt aktualisiert:",
-        "download": "Herunterladen",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
@@ -642,6 +626,7 @@
         "disable": "Deaktivieren",
         "disabled": "Deaktiviert",
         "dismiss": "Abweisen",
+        "download": "Herunterladen",
         "edit": "Bearbeiten",
         "enable": "Aktivieren",
         "enabled": "Aktiviert",
@@ -684,6 +669,7 @@
             "valor": "Tapferkeit",
             "voyage_consumable": "Reise-Wiederbelebungs-Token"
         },
+        "last_updated_colon": "Zuletzt aktualisiert:",
         "load_default_settings": "Standardeinstellungen laden",
         "load_defaults": "Standards laden",
         "loading_ellipses": "Wird geladen ...",
@@ -1064,6 +1050,20 @@
         "n_shuttles": "{{n}} Shuttles",
         "starbase_level": "Sternenbasis-Level",
         "x_y_crew": "{{x}} / {{y}} Crew"
+    },
+    "profile": {
+        "charts_and_stats": "Diagramme und Statistiken",
+        "crew": "{{menu.roster.crew}}",
+        "crew_mobile": "{{menu.roster.crew}} (Handy)",
+        "download": {
+            "complete_spreadsheet": "Komplette Tabelle",
+            "crew_table": "Crew-Tabelle",
+            "item_table": "Artikeltabelle",
+            "ship_table": "Schiffstabelle"
+        },
+        "items": "{{menu.roster.items}}",
+        "other": "Andere",
+        "ships": "{{menu.roster.ships}}"
     },
     "prospect_picker": {
         "add_crew": "Crew Hinzufügen",
