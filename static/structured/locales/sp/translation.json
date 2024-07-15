@@ -631,6 +631,7 @@
         "disable": "Desactivar",
         "disabled": "Desactivado",
         "dismiss": "Descartar",
+        "download": "Descargar",
         "edit": "Editar",
         "enable": "Habilitar",
         "enabled": "Habilitado",
@@ -673,6 +674,7 @@
             "valor": "Valor",
             "voyage_consumable": "Fichas de avivamiento del viaje"
         },
+        "last_updated_colon": "Última actualización:",
         "load_default_settings": "Cargar configuración predeterminada",
         "load_defaults": "Cargar predeterminadas",
         "loading_ellipses": "Cargando ...",
@@ -1058,6 +1060,20 @@
         "starbase_level": "Nivel de base estelar",
         "x_y_crew": "{{x}} / {{y}} equipo"
     },
+    "profile": {
+        "charts_and_stats": "Gráficos y Estadísticas",
+        "crew": "{{menu.roster.crew}}",
+        "crew_mobile": "{{menu.roster.crew}} (Móvil)",
+        "download": {
+            "complete_spreadsheet": "Hoja de cálculo completa",
+            "crew_table": "Tabla de tripulación",
+            "item_table": "Tabla de elementos",
+            "ship_table": "Tabla de buques"
+        },
+        "items": "{{menu.roster.items}}",
+        "other": "Otra",
+        "ships": "{{menu.roster.ships}}"
+    },
     "prospect_picker": {
         "add_crew": "Agregar tripulante",
         "select_crew": "Seleccionar tripulante"
@@ -1273,6 +1289,11 @@
         "grants": "Concesiones",
         "handicap": "Handicap",
         "hull": "Casco",
+        "increase_boost": {
+            "accuracy": "Aumenta el aumento de precisión a +{{val}}",
+            "attack": "Aumenta el impulso de ataque a +{{val}}",
+            "evasion": "Aumenta el aumento de evasión a +{{val}}"
+        },
         "initialize": "Iniciar",
         "level": "{{base.level}}",
         "max_attack": "Ataque mín.",

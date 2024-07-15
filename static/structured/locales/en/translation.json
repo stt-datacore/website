@@ -626,6 +626,7 @@
         "disable": "Disable",
         "disabled": "Disabled",
         "dismiss": "Dismiss",
+        "download": "Download",
         "edit": "Edit",
         "enable": "Enable",
         "enabled": "Enabled",
@@ -668,6 +669,7 @@
             "valor": "Valor",
             "voyage_consumable": "Voyage Revival Tokens"
         },
+        "last_updated_colon": "Last Updated:",
         "load_default_settings": "Load Default Settings",
         "load_defaults": "Load Defaults",
         "loading_ellipses": "Loading ...",
@@ -1050,6 +1052,20 @@
         "starbase_level": "Starbase level",
         "x_y_crew": "{{x}} / {{y}} crew"
     },
+    "profile": {
+        "charts_and_stats": "Charts & Stats",
+        "crew": "{{menu.roster.crew}}",
+        "crew_mobile": "{{menu.roster.crew}} (Mobile)",
+        "download": {
+            "complete_spreadsheet": "Complete spreadsheet",
+            "crew_table": "Crew table",
+            "item_table": "Item table",
+            "ship_table": "Ship table"
+        },
+        "items": "{{menu.roster.items}}",
+        "other": "Other",
+        "ships": "{{menu.roster.ships}}"
+    },
     "prospect_picker": {
         "add_crew": "Add Crew",
         "select_crew": "Select Crew"
@@ -1264,6 +1280,11 @@
         "grants": "Grants",
         "handicap": "Handicap",
         "hull": "Hull",
+        "increase_boost": {
+            "accuracy": "Increases accuracy boost to +{{val}}",
+            "attack": "Increases attack boost to +{{val}}",
+            "evasion": "Increases evasion boost to +{{val}}"
+        },
         "initialize": "Initialize",
         "level": "{{base.level}}",
         "max_attack": "Max. Attack",
