@@ -4,7 +4,7 @@ rarity: 4
 series: ds9
 memory_alpha:
 bigbook_tier: 4
-in_portal:
+in_portal: true
 date: 18/10/2023
 published: true
 ---
