@@ -4,7 +4,7 @@ rarity: 4
 series: voy
 memory_alpha:
 bigbook_tier: 5
-in_portal:
+in_portal: true
 date: 03/10/2023
 published: true
 ---

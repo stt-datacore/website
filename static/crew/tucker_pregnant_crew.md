@@ -4,7 +4,7 @@ rarity: 5
 series: ent
 memory_alpha:
 bigbook_tier: 6
-in_portal:
+in_portal: true
 date: 25/10/2023
 published: true
 ---
