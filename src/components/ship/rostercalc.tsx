@@ -753,10 +753,14 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             return;
         }
         if (ships?.length && crew?.length) {
+
+            let max_rarity = ship.rarity;
+            if (battleMode === 'fbb_4') max_rarity = 5;
+
             if (battleMode.startsWith('fbb') && !battleConfig.opponent) return;
             resultCache.length = 0;
             let ccrew = undefined as PlayerCrew | CrewMember | undefined;
-            const pfcrew = current ? [] as PlayerCrew[] : prefilterCrew();
+            const pfcrew = current ? [] as PlayerCrew[] : prefilterCrew(max_rarity);
             if (!current && battleMode === 'skirmish' && chosenCrew?.length) {
                 ccrew = eventCrew?.find(f => f.id === chosenCrew[0]);
                 if (!pfcrew.some(c => c.id === chosenCrew[0])) {
@@ -765,6 +769,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     }
                 }
             }
+
             const config = {
                 event_crew: ccrew ? JSON.parse(JSON.stringify(ccrew)) : undefined,
                 ranking_method: fbb_mode ? fbbRankingMethod : rankingMethod,
@@ -773,7 +778,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 battle_mode: battleMode,
                 power_depth: powerDepth,
                 min_rarity: minRarity,
-                max_rarity: ship.rarity,
+                max_rarity,
                 max_results: 100,
                 // start_at: 0,
                 // end_at: 40000,
@@ -883,8 +888,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
     }
 
-    function prefilterCrew() {
-        const max_rarity = ship.rarity ?? 5;
+    function prefilterCrew(max_rarity?: number) {
+        max_rarity ??= ship.rarity ?? 5;
         const min_rarity = minRarity ?? 1;
         const maxvalues = [0, 0, 0, 0, 0].map(o => [0, 0, 0, 0]);
         const power_depth = powerDepth ?? 2;

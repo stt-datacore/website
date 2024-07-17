@@ -665,98 +665,124 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     return attacks;
 }
 
-// export function iterateBattleBatch(config: IterateBattleConfig, sets: CrewMember[][]): Promise<AttackInstant[][]> {
-//     return new Promise<AttackInstant[][]>((resolve, reject) => {
-//         const workerset = [] as Worker[];
-//         const results = [] as AttackInstant[][];
-
-//         const c = sets.length;
-//         let replyCount = 0;
-
-//         const workerReply = (response) => {
-//             replyCount++;
-//             results.push(response.data as AttackInstant[]);
-
-//             if (replyCount >= c) {
-//                 workerset.forEach((worker) => worker.removeEventListener('message', workerReply));
-//                 resolve(results);
-//             }
-//         }
-
-//         for (let i = 0; i < c; i++) {
-//             let newwork = new Worker(new URL('./battleworker.js', import.meta.url));
-//             newwork.addEventListener('message', workerReply);
-//             workerset.push(newwork);
-//             newwork.postMessage({ data: { ...config, set: sets[i] } });
-//         }
-
-//         while (replyCount < c) {
-//             let z = 0;
-//         }
-//         workerset.forEach((worker) => worker.removeEventListener('message', workerReply));
-//     });
-// }
-
-
-export function canSeatAll(ship: Ship, crew: CrewMember[], ignore_skill: boolean): CrewMember[] | false {
-    if (!ship.battle_stations?.length || ship.battle_stations.length !== crew.length) return false;
-    if (!crew.every(c => c.skill_order.some(so => ship.battle_stations?.some(bs => bs.skill === so)))) return false;
-
-    let bl = ship.battle_stations.length;
-    let bat = ship.battle_stations.map(sta => sta.skill);
-
-    crew.sort((a, b) => {
-        let ac = bat.filter(skill => a.skill_order.includes(skill)).length;
-        let bc = bat.filter(skill => b.skill_order.includes(skill)).length;
-        let r = ac - bc;
-        if (r) return r;
-        ac = bat.findIndex(skill => a.skill_order.includes(skill));
-        bc = bat.findIndex(skill => b.skill_order.includes(skill));
-        r = ac - bc;
-        if (r) return r;
-        return a.name.localeCompare(b.name);
-    });
-
-    for (let a = 0; a < 2; a++) {
-        if (a) crew = [...crew].reverse();
-        for (let i = 0; i < bl; i++) {
-            let j = i;
-            let p = 0;
-            let tt = {} as { [key: string]: CrewMember };
-            while (true) {
-                if (ignore_skill || (crew[p].skill_order.some(so => ship.battle_stations![j].skill === so) && !tt[j])) {
-                    tt[j] = crew[p];
+function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[]) => U[] | false) {
+    var current_iter = 0n;
+    const mmin = start_idx ?? 0n;
+    const mmax = (count ?? 0n) + mmin;
+    function p(t: T[], i: number) {
+        if (t.length === size) {
+            if (current_iter >= mmin && (!mmax || current_iter < mmax)) {
+                if (!check) {
+                    result.push(t as any);
                 }
-                p++;
-                if (p >= crew.length) break;
-                j++;
-                if (j >= bl) j = 0;
-                if (j === i) break;
-            }
-
-            if (Object.keys(tt).length === crew.length) {
-                let sorted = Object.values(tt);
-                const swapgood = (a: number, b: number) => {
-                    if (ignore_skill || (sorted[a].skill_order.includes(bat[b]) && sorted[b].skill_order.includes(bat[a]))) {
-                        let c = sorted[a];
-                        sorted[a] = sorted[b];
-                        sorted[b] = c;
-                    }
-                }
-                for (let i = 0; i < bl; i++) {
-                    for (let j = 0; j < bl; j++) {
-                        if (i === j) continue;
-                        let a = i < j ? i : j;
-                        let b = j > i ? j : i;
-                        if (sorted[a].action.ability?.type === 1 && sorted[b].action.ability?.type === 5) {
-                            swapgood(a, b);
+                else {
+                    let response = check(t);
+                    if (response) {
+                        if (!count_only) {
+                            result.push(response);
                         }
                     }
                 }
-                return sorted;
+            }
+            current_iter++;
+            return;
+        }
+        if (i + 1 > array.length) {
+            return;
+        }
+
+        if (mmax !== 0n && current_iter >= mmax) return;
+        p([...t, array[i]], i + 1);
+        p(t, i + 1);
+    }
+
+    var result = [] as U[][];
+
+    p([], 0);
+    return result;
+}
+
+export function canSeatAll(precombined: number[][], ship: Ship, crew: CrewMember[], ignore_skill: boolean): CrewMember[][] | false {
+    if (!ship.battle_stations?.length || ship.battle_stations.length !== crew.length) return false;
+    if (!crew.every(c => c.skill_order.some(so => ship.battle_stations?.some(bs => bs.skill === so)))) return false;
+
+    let c = crew.length;
+    let possibles = getPermutations(precombined, c, undefined, false, 0n, (set) => {
+        let mpn = {} as { [key: string]: CrewMember };
+        let mpc = {} as { [key: string]: boolean };
+        let yseen = {};
+        let z = 0;
+        for (let [x, y] of set) {
+            if (yseen[y] || mpn[x] || mpc[crew[y].id!]) continue;
+            if ((ignore_skill || crew[y].skill_order.includes(ship.battle_stations![x].skill))) {
+                yseen[y] = true;
+                mpn[x] = crew[y];
+                mpc[crew[y].id!] = true;
+                z++;
             }
         }
+        if (z === c) return Object.values(mpn);
+        else return false;
+    });
+
+    if (possibles?.length) {
+        return possibles;
     }
+    // let bl = ship.battle_stations.length;
+    // let bat = ship.battle_stations.map(sta => sta.skill);
+
+    // crew.sort((a, b) => {
+    //     let ac = bat.filter(skill => a.skill_order.includes(skill)).length;
+    //     let bc = bat.filter(skill => b.skill_order.includes(skill)).length;
+    //     let r = ac - bc;
+    //     if (r) return r;
+    //     ac = bat.findIndex(skill => a.skill_order.includes(skill));
+    //     bc = bat.findIndex(skill => b.skill_order.includes(skill));
+    //     r = ac - bc;
+    //     if (r) return r;
+    //     return a.name.localeCompare(b.name);
+    // });
+
+    // for (let a = 0; a < 2; a++) {
+    //     if (a) crew = [...crew].reverse();
+    //     for (let i = 0; i < bl; i++) {
+    //         let j = i;
+    //         let p = 0;
+    //         let tt = {} as { [key: string]: CrewMember };
+    //         while (true) {
+    //             if (!tt[j] && (ignore_skill || (crew[p].skill_order.some(so => ship.battle_stations![j].skill === so)))) {
+    //                 tt[j] = crew[p];
+    //             }
+    //             p++;
+    //             if (p >= crew.length) break;
+    //             j++;
+    //             if (j >= bl) j = 0;
+    //             if (j === i) break;
+    //         }
+
+    //         if (Object.keys(tt).length === crew.length) {
+    //             let sorted = Object.values(tt);
+    //             const swapgood = (a: number, b: number) => {
+    //                 if (ignore_skill || (sorted[a].skill_order.includes(bat[b]) && sorted[b].skill_order.includes(bat[a]))) {
+    //                     let c = sorted[a];
+    //                     sorted[a] = sorted[b];
+    //                     sorted[b] = c;
+    //                 }
+    //             }
+    //             for (let i = 0; i < bl; i++) {
+    //                 for (let j = 0; j < bl; j++) {
+    //                     if (i === j) continue;
+    //                     let a = i < j ? i : j;
+    //                     let b = j > i ? j : i;
+    //                     if (sorted[a].action.ability?.type === 1 && [0, 5].includes(sorted[b].action.ability?.type ?? -1)) {
+    //                         swapgood(a, b);
+    //                     }
+    //                 }
+    //             }
+    //             return sorted;
+    //         }
+    //     }
+    // }
 
     return false;
 }
