@@ -171,7 +171,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 						display: 'flex',
 						flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
 						marginTop: "0.5em",
-						gap: "0.25em",						
+						gap: "0.25em",
 						alignItems: 'center'}}>
 						<Button
 								onClick={() => exportCrewTool()}
@@ -191,7 +191,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 								size='large'
 							/>
 							}
-						/>						
+						/>
 						<Popup content={t('clipboard.copied_exclaim')}
 							openOnTriggerClick={false}
 							openOnTriggerMouseEnter={false}
@@ -204,7 +204,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 								size='large'
 							/>
 							}
-						/>						
+						/>
 					</div>
 				</Card.Content>
 			</Card>
@@ -216,12 +216,12 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 	}
 
 	function exportCrewTool(): void {
-		let text = globalContext.player.playerData?.player.character.unOwnedCrew ? exportCrew(globalContext.player.playerData.player.character.crew.concat(globalContext.player.playerData.player.character.unOwnedCrew)) : "";
+		let text = globalContext.player.playerData?.player.character.unOwnedCrew ? exportCrew(t, globalContext.player.playerData.player.character.crew.concat(globalContext.player.playerData.player.character.unOwnedCrew)) : "";
 		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'crew.csv');
 	}
 
 	function exportCrewToClipboard(): void {
-		let text = globalContext.player.playerData?.player.character.unOwnedCrew ? exportCrew(globalContext.player.playerData.player.character.crew.concat(globalContext.player.playerData.player.character.unOwnedCrew), '\t') : "";
+		let text = globalContext.player.playerData?.player.character.unOwnedCrew ? exportCrew(t, globalContext.player.playerData!.player.character.crew.concat(globalContext.player.playerData.player.character.unOwnedCrew), '\t') : "";
 		navigator.clipboard.writeText(text);
 		setCopied(true);
 		setTimeout(() => setCopied(false), 3500);
@@ -251,7 +251,7 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 
 	const [showResponse, setShowResponse] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
-	
+
 	const { setNewCrew } = globalContext.player;
 
 	React.useEffect(() => {
@@ -303,7 +303,7 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 		</div>
 	);
 
-	
+
 	function uploadProfile(): void {
 		let dbid = strippedPlayerData?.player.dbid;
 		if (dbid) {
@@ -336,7 +336,7 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 				'Content-Type': 'application/json'
 			},
 			body: jsonBody
-		}).then(() => {			
+		}).then(() => {
 			// if (uploadState === ProfileUploadState.ManualUpdate)
 			// 	if (typeof window !== 'undefined') window.open(profileLink, '_blank');
 			if (updateSessionState) updateSessionState('profileUpload', ProfileUploadState.Success);
