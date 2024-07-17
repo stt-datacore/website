@@ -177,6 +177,20 @@ const ShipCrewWorker = {
 
             const fbb_mode = battle_mode.startsWith('fbb');
 
+            let c = ship.battle_stations!.length;
+            let cbs = [] as number[][];
+            for (let i = 0; i < c; i++) {
+                for (let j = 0; j < c; j++) {
+                    cbs.push([i, j]);
+                }
+            }    // let cbs = [] as string[];
+            // for (let i = 0; i < c; i++) {
+            //     for (let j = 0; j < c; j++) {
+            //         cbs.push(`${i}_${j}`);
+            //     }
+            // }
+
+
             getPermutations(workCrew, seats, count, true, start_index, (set) => {
                 i++;
                 if (errors) return false;
@@ -218,41 +232,43 @@ const ShipCrewWorker = {
 
                 if (event_crew && !set.find(f => f.id === event_crew.id)) return false;
 
-                let newseats = canSeatAll(ship, set, !!ignore_skill);
+                let newseats = canSeatAll(cbs, ship, set, !!ignore_skill);
                 if (!newseats) {
                     return false;
                 }
 
-                set = newseats;
+                let res = newseats.map((set) => {
+                    let battle_data = iterateBattle(rate, fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets, fixed_activation_delay, simulate);
+                    let attack = processBattleRun(battle_data, set);
 
-                let battle_data = iterateBattle(rate, fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets, fixed_activation_delay, simulate);
-                let attack = processBattleRun(battle_data, set);
+                    if (!get_attacks) {
+                        battle_data.length = 0;
+                    }
 
-                if (!get_attacks) {
-                    battle_data.length = 0;
-                }
-
-                let accepted = false;
-                if (last_high === null) {
-                    last_high = attack;
-                    accepted = true;
-                    results.push(attack);
-                }
-                else {
-                    let d = compareShipResults(attack, last_high, fbb_mode);
-                    if (d < 0) {
+                    let accepted = false;
+                    if (last_high === null) {
+                        last_high = attack;
                         accepted = true;
                         results.push(attack);
-                        last_high = attack;
                     }
-                }
+                    else {
+                        let d = compareShipResults(attack, last_high, fbb_mode);
+                        if (d < 0) {
+                            accepted = true;
+                            results.push(attack);
+                            last_high = attack;
+                        }
+                    }
 
-                if (accepted) {
-                    reportProgress({ result: attack });
-                    accepted = false;
-                }
+                    if (accepted) {
+                        reportProgress({ result: attack });
+                        accepted = false;
+                    }
 
-                return battle_data;
+                    return battle_data;
+                });
+
+                return res;
             });
 
             if (!status_data_only) {
