@@ -8,11 +8,11 @@ export const formatTime = (time: number, t?: TranslateMethod): string => {
 	let hours = Math.floor(time);
 	let minutes = Math.floor((time-hours)*60);
 	if (t) {
-		return `${t('duration.n_h', { hours: `${hours}` })} ${t('duration.n_m', { minutes: `${minutes}` })}`;
+		return `${t('duration.n_h_compact', { hours: `${hours}` })} ${t('duration.n_m_compact', { minutes: `${minutes}` })}`;
 	}
 	else {
 		return hours+"h " +minutes+"m";
-	}	
+	}
 };
 
 export const flattenEstimate = (estimate: Estimate): any => {
