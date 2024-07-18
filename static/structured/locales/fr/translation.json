@@ -281,11 +281,14 @@
     },
     "duration": {
         "n_d": "{{days}} j",
+        "n_d_compact": "{{days}}d",
         "n_days": "{{days}} jours",
         "n_h": "{{hours}} h",
+        "n_h_compact": "{{hours}}h",
         "n_hour_class": "{{hours}}-heure",
         "n_hours": "{{hours}} heures",
         "n_m": "{{minutes}} m",
+        "n_m_compact": "{{minutes}}m",
         "n_minute_class": "{{minutes}}-minute",
         "n_minutes": "{{minutes}} minutes",
         "title": "Durée: {{duration}}"
@@ -1062,7 +1065,6 @@
         "x_y_crew": "{{x}} / {{y}} équipiers"
     },
     "profile": {
-        "switch_to_english": "Les feuilles de calcul sont téléchargées dans la langue actuelle. Vous devrez peut-être passer à l'anglais pour télécharger des feuilles de calcul compatibles avec d'autres outils communautaires.",
         "charts_and_stats": "Graphiques et Statistiques",
         "crew": "{{menu.roster.crew}}",
         "crew_mobile": "{{menu.roster.crew}} (Mobile)",
@@ -1074,7 +1076,8 @@
         },
         "items": "{{menu.roster.items}}",
         "other": "Autre",
-        "ships": "{{menu.roster.ships}}"
+        "ships": "{{menu.roster.ships}}",
+        "switch_to_english": "Les feuilles de calcul sont téléchargées dans la langue actuelle. Vous devrez peut-être passer à l'anglais pour télécharger des feuilles de calcul compatibles avec d'autres outils communautaires."
     },
     "prospect_picker": {
         "add_crew": "Ajouter Équipage",
@@ -1428,6 +1431,38 @@
         "owned_crew": {
             "description": "Considérez uniquement vos équipiers",
             "title": "Équipage Possédé"
+        }
+    },
+    "voyage": {
+        "active": {
+            "active_voyage_colon": "Voyage actif :"
+        },
+        "calc": {
+            "msg_type": {
+                "completed": "{{voyage.calc.msg_type.ran_for}}",
+                "failed": "Votre voyage a échoué à {{time}}.",
+                "ran_for": "Votre voyage a duré {{time}}.",
+                "recalled": "{{voyage.calc.msg_type.ran_for}}",
+                "started": "Votre voyage dure depuis {{time}}."
+            },
+            "other_msg": {
+                "initial_estimate": "Votre estimation initiale était de {{time}}."
+            }
+        },
+        "estimate": {
+            "dilemma_chance": "Chance d'un dilemme dans {{time}} : {{chance}}",
+            "estimate_time": "Estimation : {{time}}",
+            "n_refills": "{{n}} Recharges",
+            "refill": "1 Recharge"
+        },
+        "tracking": {
+            "not_tracking": "Vous ne suivez pas ce voyage.",
+            "start_tracking": "Commencer le suivi"
+        },
+        "view": {
+            "active_voyage": "Afficher le voyage actif",
+            "crew_calculator": "Afficher le calculateur d'équipage",
+            "voyage_history": "Afficher l'historique des voyages"
         }
     }
 }
