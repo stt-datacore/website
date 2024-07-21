@@ -1260,7 +1260,11 @@
             "show_battle_graph": "Kampfdiagramm anzeigen",
             "simulate": "Simulieren",
             "sorting_finalizing_ellipses": "Ergebnisse sortieren und finalisieren ...",
-            "verbose_status_updates": "Ausführliche Statusaktualisierungen"
+            "verbose_status_updates": "Ausführliche Statusaktualisierungen",
+            "advanced": {
+                "power_depth": "Erweiterte Leistungstiefe",
+                "crew_filter": "Erweiterter Crew-Filter"
+            }
         },
         "calculated_crew": "Kalkulierte Crew",
         "charge_phase": {

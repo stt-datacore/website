@@ -1271,7 +1271,11 @@
             "show_battle_graph": "Afficher le graphique de combat",
             "simulate": "Simuler",
             "sorting_finalizing_ellipses": "Tri et finalisation des résultats...",
-            "verbose_status_updates": "Mises à jour de statut détaillées"
+            "verbose_status_updates": "Mises à jour de statut détaillées",
+            "advanced": {
+                "power_degree": "Profondeur de puissance avancée",
+                "crew_filter": "Filtre d'équipage avancé"
+            }
         },
         "calculated_crew": "Équipage calculé",
         "charge_phase": {

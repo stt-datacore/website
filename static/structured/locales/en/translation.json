@@ -1261,7 +1261,11 @@
             "show_battle_graph": "Show Battle Graph",
             "simulate": "Simulate",
             "sorting_finalizing_ellipses": "Sorting and finalizing results ...",
-            "verbose_status_updates": "Verbose Status Updates"
+            "verbose_status_updates": "Verbose Status Updates",
+            "advanced": {
+                "power_depth": "Advanced Power Depth",
+                "crew_filter": "Advanced Crew Filter"
+            }
         },
         "calculated_crew": "Calculated Crew",
         "charge_phase": {
