@@ -1124,6 +1124,7 @@
     },
     "ranking_method": {
         "delta_t": "Delta T",
+        "early_boom": "Máximo Más Temprano",
         "guaranteed_minimum": "Mínimo garantizado",
         "moonshot": "Disparo a la Luna",
         "potential_maximum": "Máximo potencial",

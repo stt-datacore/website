@@ -76,7 +76,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const battleModes = [] as DropdownItemProps[];
     const fbb_mode = !['skirmish', 'pvp'].includes(battleMode);
 
-    const [rankingMethod, setRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/short`, 'delta', { rememberForever: true });
+    const [rankingMethod, setRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/short`, 'early_boom', { rememberForever: true });
     const [fbbRankingMethod, setFBBRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/long`, 'standard', { rememberForever: true });
 
     const [gameEvents, setGameEvents] = React.useState<IEventData[]>([]);
@@ -215,8 +215,13 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     },
     {
         key: `ranking_delta`,
-        value: 'delta',
+        value: 'delta_t',
         text: t('ranking_method.delta_t')
+    },
+    {
+        key: `early_boom`,
+        value: 'early_boom',
+        text: t('ranking_method.early_boom')
     }] as DropdownItemProps[]
 
     const sectionStyle = {
@@ -889,6 +894,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     }
 
     function prefilterCrew(max_rarity?: number) {
+        const pref_order = fbb_mode ? [1, 2, 5, 0, 3, 4, 6, 7, 8, 9, 10] : [1, 5, 0, 2, 3, 4, 6, 7, 8, 9, 10];
+        const bonus_pref = [0, 2, 1, 3];
+
         max_rarity ??= ship.rarity ?? 5;
         const min_rarity = minRarity ?? 1;
         const maxvalues = [0, 0, 0, 0, 0].map(o => [0, 0, 0, 0]);
@@ -924,33 +932,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         })
         .sort((a, b) => {
             let r = 0;
-
-            // check for bonus abilities, first
-            if (a.action.ability && b.action.ability) {
-                if (fbb_mode) {
-                    if ([1, 2, 5].includes(a.action.ability.type) && ![1, 2, 5].includes(b.action.ability.type)) return -1;
-                    if ([1, 2, 5].includes(b.action.ability.type) && ![1, 2, 5].includes(a.action.ability.type)) return 1;
-                }
-                else {
-                    if ([1, 5].includes(a.action.ability.type) && ![1, 5].includes(b.action.ability.type)) return -1;
-                    if ([1, 5].includes(b.action.ability.type) && ![1, 5].includes(a.action.ability.type)) return 1;
-                }
-                if (a.action.ability.type === b.action.ability.type) {
-                    r = a.action.ability.amount - b.action.ability.amount;
-                    if (r) return r;
-                    r = a.action.ability.condition - b.action.ability.condition;
-                    if (r) return r;
-                }
-                else {
-                    r = a.action.ability.type - b.action.ability.type;
-                    if (r) return r;
-                }
-            }
-            else {
-                if (a.action.ability && !b.action.ability) return -1;
-                if (!a.action.ability && b.action.ability) return 1;
-            }
-
             // check durations
             if (fbb_mode) {
                 r = a.action.cycle_time - b.action.cycle_time;
@@ -961,6 +942,53 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 if (r) return r;
             }
 
+            // check for bonus abilities, first
+            if (a.action.ability && b.action.ability) {
+                if (fbb_mode) {
+                    if ([1, 2, 5].includes(a.action.ability.type) && ![1, 2, 5].includes(b.action.ability.type)) return -1;
+                    if ([1, 2, 5].includes(b.action.ability.type) && ![1, 2, 5].includes(a.action.ability.type)) return 1;
+                }
+                else {
+                    if ([0, 1, 5].includes(a.action.ability.type) && ![0, 1, 5].includes(b.action.ability.type)) return -1;
+                    if ([0, 1, 5].includes(b.action.ability.type) && ![0, 1, 5].includes(a.action.ability.type)) return 1;
+                }
+
+                if (a.action.ability.type === b.action.ability.type) {
+                    let aamt = a.action.ability.amount;
+                    let bamt = b.action.ability.amount;
+                    
+                    if (a.action.ability.type === 0) {
+                        aamt += a.action.bonus_amount;
+                        bamt += b.action.bonus_amount;
+                    }
+
+                    r = bamt - aamt;
+                    if (r) return r;
+
+                    r = a.action.ability.condition - b.action.ability.condition;
+                    if (r) return r;
+                }
+                else {
+                    r = pref_order.indexOf(a.action.ability.type) - pref_order.indexOf(b.action.ability.type);
+                    //r = a.action.ability.type - b.action.ability.type;
+                    if (r) return r;                    
+                }
+            }
+            else {
+                if (a.action.ability && !b.action.ability) return -1;
+                if (!a.action.ability && b.action.ability) return 1;
+            }
+
+            // check the bonus amount/type
+            if (a.action.bonus_type === b.action.bonus_type) {
+                r = b.action.bonus_amount - a.action.bonus_amount;
+                if (r) return r;
+            }
+            else {                
+                r = bonus_pref.indexOf(a.action.bonus_type) - bonus_pref.indexOf(b.action.bonus_type);
+                if (r) return r;
+            }
+           
             // check limits
             if (fbb_mode) {
                 if (a.action.limit && !b.action.limit) return 1;
@@ -970,17 +998,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     if (r) return r;
                 }
             }
-
-            // check the bonus amount/type
-            if (a.action.bonus_type === b.action.bonus_type) {
-                r = b.action.bonus_amount - a.action.bonus_amount;
-                if (r) return r;
-            }
-            else {
-                r = a.action.bonus_type - b.action.bonus_type;
-                if (r) return r;
-            }
-
+           
             // check passives
             if (a.ship_battle.crit_bonus && b.ship_battle.crit_bonus) {
                 r = b.ship_battle.crit_bonus - a.ship_battle.crit_bonus;
