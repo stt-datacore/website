@@ -247,7 +247,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 						src={getShipBonusIcon(crew.action)}
 					/>
 					<span style={{ lineHeight: "1.3em" }}>
-						{getShipBonus(crew.action, undefined, true)}
+						{getShipBonus(t, crew.action, undefined, true)}
 					</span>
 				</div>
 			</div>)
