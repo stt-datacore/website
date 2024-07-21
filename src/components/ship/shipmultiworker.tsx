@@ -151,13 +151,26 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
 
         let wcn = BigInt(options.config.crew.length);
         let bsn = BigInt(options.config.ship.battle_stations!.length);
-        let total = this.factorial(wcn) / (this.factorial(wcn - bsn) * this.factorial(bsn));
+        let total = (this.factorial(wcn) / (this.factorial(wcn - bsn) * this.factorial(bsn)));
+        if (options.config.max_iterations && options.config.max_iterations < total) {
+            total = options.config.max_iterations;
+        }
         let wl = BigInt(this.workers.length);
+        
         let perworker = total / wl;
         let leftover = total - (perworker * wl);
-        if (leftover < 0) leftover = 0n;
 
-        this.workers.forEach((worker, idx) => {
+        if (leftover < 0n) leftover = 0n;
+        
+        let use_workers = [ ... this.workers ];
+
+        if (total <= 100n) {
+            perworker = total;
+            leftover = 0n;
+            use_workers = [ use_workers[0] ];
+        }
+
+        use_workers.forEach((worker, idx) => {
             let start = BigInt(idx) * perworker;
             let length = perworker;
             if (idx === this.workers.length - 1 || (start + length > total)) {
