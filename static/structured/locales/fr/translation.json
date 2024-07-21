@@ -1306,6 +1306,8 @@
         "max_level": "Niveau maximum",
         "min_attack": "Attaque min.",
         "power_depth": "Profondeur du niveau de puissance",
+        "depth_hr_warn":"* Par défaut, la profondeur du niveau de puissance ne s'applique pas à les équipiers de réparation de coque.",
+        "offset_adds_warn": "* Les compensations d'activation s'ajoutent au temps de recharge initial de l'équipier actuel.",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {
             "admiral": "Division Amiral",

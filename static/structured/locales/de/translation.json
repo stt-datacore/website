@@ -1295,6 +1295,8 @@
         "max_level": "Höchstlevel",
         "min_attack": "Min. Angriffs",
         "power_depth": "Tiefe des Leistungsniveaus",
+        "depth_hr_warn":"* Standardmäßig gilt die Leistungstiefe nicht für die Hüllereparatur-Crew.",
+        "offset_adds_warn": "* Aktivierungs-Offsets werden zur anfänglichen Abkühlungszeit der aktuellen Crew hinzugefügt.",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {
             "admiral": "Admiral Division",

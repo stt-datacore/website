@@ -1305,6 +1305,8 @@
         "max_level": "Nivel máximo",
         "min_attack": "Ataque máx.",
         "power_depth": "Profundidad del nivel de potencia",
+        "depth_hr_warn":"* De forma predeterminada, la profundidad del nivel de potencia no se aplica a las tripulantes de reparación de casco.",
+        "offset_adds_warn": "* Las compensaciones de activación se suman al tiempo de carga inicial de la tripulante actual.",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {
             "admiral": "División de almirante",

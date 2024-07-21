@@ -1296,6 +1296,8 @@
         "max_level": "Max Level",
         "min_attack": "Min. Attack",
         "power_depth": "Power level depth",
+        "depth_hr_warn":"* By default, power level depth does not apply to hull-repair crew.",
+        "offset_adds_warn": "* Activation offsets add to the current crew's initial cooldown time.",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {
             "admiral": "Admiral Division",

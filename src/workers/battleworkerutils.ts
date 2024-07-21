@@ -376,7 +376,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         if (action.comes_from === 'crew' && activation_offsets?.length && activation_offsets.length === input_ship.battle_stations?.length) {
             let x = i - (ship!.actions?.length ?? 0);
             if (activation_offsets[x] && activation_offsets[x] > action.initial_cooldown) {
-                action.initial_cooldown = activation_offsets[x];
+                action.initial_cooldown += activation_offsets[x];
             }
         }
     });
@@ -647,7 +647,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         }
 
         attacks.push({
-            actions: currents.filter(f => f !== false),
+            actions: currents.filter(f => f !== false) as ShipAction[],
             hull,
             shields,
             second: sec,
