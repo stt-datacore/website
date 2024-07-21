@@ -1115,6 +1115,7 @@
     },
     "ranking_method": {
         "delta_t": "Delta T",
+        "early_boom": "Frühestes Größtes",
         "guaranteed_minimum": "Garantiertes Minimum",
         "moonshot": "Mondschuss",
         "potential_maximum": "Potenzielles Maximum",

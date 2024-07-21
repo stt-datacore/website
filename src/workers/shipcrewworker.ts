@@ -120,7 +120,7 @@ const ShipCrewWorker = {
                 const battle_time = attacks.reduce((p, n) => p > n.second ? p : n.second, 0);
                 let weighted_attack = 0;
                 if (battle_mode === 'skirmish') {
-                    weighted_attack = attacks.reduce((p, n) => (p + (!n.second ? 0 : (n.attack / (n.second * 4)))), 0);
+                    weighted_attack = attacks.reduce((p, n) => (p + (!n.second ? 0 : (n.attack / (n.second * 2)))), 0);
                 }
                 else {
                     weighted_attack = attacks.reduce((p, n) => (p + (!n.second ? 0 : (n.attack / n.second))), 0);
@@ -143,12 +143,14 @@ const ShipCrewWorker = {
                 if (fbb_mode) {
                     if (ranking_method === 'min') fbb_metric = min_attack;
                     else if (ranking_method === 'max') fbb_metric = max_attack;
-                    else if (ranking_method === 'delta') fbb_metric = arena_metric;
+                    else if (ranking_method === 'delta_t') fbb_metric = arena_metric;
+                    else if (ranking_method === 'early_boom') fbb_metric = weighted_attack;
                 }
                 else {
                     if (ranking_method === 'min') arena_metric = min_attack;
                     else if (ranking_method === 'max') arena_metric = max_attack;
                     else if (ranking_method === 'standard') arena_metric = attack;
+                    else if (ranking_method === 'early_boom') arena_metric = weighted_attack;
                 }
 
                 return {
