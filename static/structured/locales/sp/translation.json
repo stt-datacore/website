@@ -1270,7 +1270,11 @@
             "show_battle_graph": "Mostrar Gráfico de Batalla",
             "simulate": "Simular",
             "sorting_finalizing_ellipses": "Ordenar y finalizar resultados...",
-            "verbose_status_updates": "Actualizaciones de estado detalladas"
+            "verbose_status_updates": "Actualizaciones de estado detalladas",
+            "advanced": {
+                "power_ Depth": "Profundidad de potencia avanzada",
+                "crew_filter": "Filtro de tripulación avanzado"
+            }
         },
         "calculated_crew": "Tripulación calculada",
         "charge_phase": {

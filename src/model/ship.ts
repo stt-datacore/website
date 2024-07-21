@@ -165,6 +165,24 @@ export interface ShipInUse {
 
 export type ShipRankingMethod = 'standard' | 'min' | 'max' | 'delta_t' | 'early_boom';
 
+export interface AdvancedCrewPower {
+  attack_depth: number | null;
+  evasion_depth: number | null;
+  accuracy_depth: number | null;
+}
+
+export const DefaultAdvancedCrewPower = {
+  attack_depth: null,
+  evasion_depth: null,
+  accuracy_depth: null
+} as AdvancedCrewPower;
+
+export interface AdvancedCrewPowerConfig {
+    defaultOptions: AdvancedCrewPower;
+    current: AdvancedCrewPower;
+    setCurrent: (value: AdvancedCrewPower) => void;
+}
+
 export interface ShipWorkerConfigBase {
     ranking_method: ShipRankingMethod,
     event_crew?: CrewMember,
