@@ -418,6 +418,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         />
                     </div>
                 </div>
+                <div style={{margin: '1em 2em', fontStyle: 'italic', textAlign: 'center'}}>
+                    {t('ship.depth_hr_warn')}
+                </div>
                 {battleMode === 'skirmish' && !!eventCrew &&
                 <div style={{
                     display: 'flex',
@@ -640,6 +643,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                         </div>
 
                                     })}
+                                    <div style={{margin: '1em 2em', fontStyle: 'italic', textAlign: 'center'}}>
+                                        {t('ship.offset_adds_warn')}
+                                    </div>
                                 </div>
                             </div>
                         </Accordion.Content>
@@ -956,7 +962,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 if (a.action.ability.type === b.action.ability.type) {
                     let aamt = a.action.ability.amount;
                     let bamt = b.action.ability.amount;
-                    
+
                     if (a.action.ability.type === 0) {
                         aamt += a.action.bonus_amount;
                         bamt += b.action.bonus_amount;
@@ -971,7 +977,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 else {
                     r = pref_order.indexOf(a.action.ability.type) - pref_order.indexOf(b.action.ability.type);
                     //r = a.action.ability.type - b.action.ability.type;
-                    if (r) return r;                    
+                    if (r) return r;
                 }
             }
             else {
@@ -984,11 +990,11 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 r = b.action.bonus_amount - a.action.bonus_amount;
                 if (r) return r;
             }
-            else {                
+            else {
                 r = bonus_pref.indexOf(a.action.bonus_type) - bonus_pref.indexOf(b.action.bonus_type);
                 if (r) return r;
             }
-           
+
             // check limits
             if (fbb_mode) {
                 if (a.action.limit && !b.action.limit) return 1;
@@ -998,7 +1004,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     if (r) return r;
                 }
             }
-           
+
             // check passives
             if (a.ship_battle.crit_bonus && b.ship_battle.crit_bonus) {
                 r = b.ship_battle.crit_bonus - a.ship_battle.crit_bonus;
