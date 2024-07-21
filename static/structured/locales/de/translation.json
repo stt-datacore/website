@@ -275,11 +275,14 @@
     },
     "duration": {
         "n_d": "{{days}} T",
+        "n_d_compact": "{{days}}T",
         "n_days": "{{days}} Tage",
         "n_h": "{{hours}} Std",
+        "n_h_compact": "{{hours}}Std",
         "n_hour_class": "{{hours}}-Stunden",
         "n_hours": "{{hours}} Stunden",
         "n_m": "{{minutes}} M",
+        "n_m_compact": "{{minutes}}M",
         "n_minute_class": "{{minutes}}-minute",
         "n_minutes": "{{minutes}} minuten",
         "title": "Dauer: {{duration}}"
@@ -1052,7 +1055,6 @@
         "x_y_crew": "{{x}} / {{y}} Crew"
     },
     "profile": {
-        "switch_to_english": "Tabellen werden in der aktuellen Sprache heruntergeladen. Möglicherweise müssen Sie auf Englisch wechseln, um Tabellen herunterzuladen, die mit anderen Community-Tools kompatibel sind.",
         "charts_and_stats": "Diagramme und Statistiken",
         "crew": "{{menu.roster.crew}}",
         "crew_mobile": "{{menu.roster.crew}} (Handy)",
@@ -1064,7 +1066,8 @@
         },
         "items": "{{menu.roster.items}}",
         "other": "Andere",
-        "ships": "{{menu.roster.ships}}"
+        "ships": "{{menu.roster.ships}}",
+        "switch_to_english": "Tabellen werden in der aktuellen Sprache heruntergeladen. Möglicherweise müssen Sie auf Englisch wechseln, um Tabellen herunterzuladen, die mit anderen Community-Tools kompatibel sind."
     },
     "prospect_picker": {
         "add_crew": "Crew Hinzufügen",
@@ -1112,6 +1115,7 @@
     },
     "ranking_method": {
         "delta_t": "Delta T",
+        "early_boom": "Frühestes Größtes",
         "guaranteed_minimum": "Garantiertes Minimum",
         "moonshot": "Mondschuss",
         "potential_maximum": "Potenzielles Maximum",
@@ -1417,6 +1421,38 @@
         "owned_crew": {
             "description": "Berücksichtigen Sie nur Ihre eigene Crew",
             "title": "Eigene Crew"
+        }
+    },
+    "voyage": {
+        "active": {
+            "active_voyage_colon": "Aktive Reise:"
+        },
+        "calc": {
+            "msg_type": {
+                "completed": "{{voyage.calc.msg_type.ran_for}}",
+                "failed": "Ihre Reise ist um {{time}} fehlgeschlagen.",
+                "ran_for": "Ihre Reise dauerte seit {{time}}.",
+                "recalled": "{{voyage.calc.msg_type.ran_for}}",
+                "started": "Ihre Reise dauert seit {{time}}."
+            },
+            "other_msg": {
+                "initial_estimate": "Ihre anfängliche Schätzung war {{time}}."
+            }
+        },
+        "estimate": {
+            "dilemma_chance": "Chance auf {{time}}-Dilemma: {{chance}}",
+            "estimate_time": "Schätzung: {{time}}",
+            "n_refills": "{{n}} Nachfüllungen",
+            "refill": "1 Nachfüllung"
+        },
+        "tracking": {
+            "not_tracking": "Sie verfolgen diese Reise nicht.",
+            "start_tracking": "Verfolgung starten"
+        },
+        "view": {
+            "active_voyage": "Aktive Reise anzeigen",
+            "crew_calculator": "Crew-Rechner anzeigen",
+            "voyage_history": "Reiseverlauf anzeigen"
         }
     }
 }

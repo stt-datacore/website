@@ -163,7 +163,7 @@ export interface ShipInUse {
     rarity: number;
 }
 
-export type ShipRankingMethod = 'standard' | 'min' | 'max' | 'delta';
+export type ShipRankingMethod = 'standard' | 'min' | 'max' | 'delta_t' | 'early_boom';
 
 export interface ShipWorkerConfigBase {
     ranking_method: ShipRankingMethod,

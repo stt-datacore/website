@@ -275,11 +275,14 @@
     },
     "duration": {
         "n_d": "{{days}} d",
+        "n_d_compact": "{{days}}d",
         "n_days": "{{days}} days",
         "n_h": "{{hours}} h",
+        "n_h_compact": "{{hours}}h",
         "n_hour_class": "{{hours}}-hour",
         "n_hours": "{{hours}} hours",
         "n_m": "{{minutes}} m",
+        "n_m_compact": "{{minutes}}m",
         "n_minute_class": "{{minutes}}-minute",
         "n_minutes": "{{minutes}} minutes",
         "title": "Duration: {{duration}}"
@@ -1053,7 +1056,6 @@
         "x_y_crew": "{{x}} / {{y}} crew"
     },
     "profile": {
-        "switch_to_english": "Spreadsheets are downloaded using the current language. You may need to switch to English to download spreadsheets that are compatible with other community tools.",
         "charts_and_stats": "Charts & Stats",
         "crew": "{{menu.roster.crew}}",
         "crew_mobile": "{{menu.roster.crew}} (Mobile)",
@@ -1065,7 +1067,8 @@
         },
         "items": "{{menu.roster.items}}",
         "other": "Other",
-        "ships": "{{menu.roster.ships}}"
+        "ships": "{{menu.roster.ships}}",
+        "switch_to_english": "Spreadsheets are downloaded using the current language. You may need to switch to English to download spreadsheets that are compatible with other community tools."
     },
     "prospect_picker": {
         "add_crew": "Add Crew",
@@ -1113,6 +1116,7 @@
     },
     "ranking_method": {
         "delta_t": "Delta T",
+        "early_boom": "Earliest Greatest",
         "guaranteed_minimum": "Guaranteed minimum",
         "moonshot": "Moonshot",
         "potential_maximum": "Potential maximum",
@@ -1418,6 +1422,38 @@
         "owned_crew": {
             "description": "Only consider your owned crew",
             "title": "Owned Crew"
+        }
+    },
+    "voyage": {
+        "active": {
+            "active_voyage_colon": "Active Voyage:"
+        },
+        "calc": {
+            "msg_type": {
+                "completed": "{{voyage.calc.msg_type.ran_for}}",
+                "failed": "Your voyage failed at {{time}}.",
+                "ran_for": "Your voyage ran for {{time}}.",
+                "recalled": "{{voyage.calc.msg_type.ran_for}}",
+                "started": "Your voyage has been running for {{time}}."
+            },
+            "other_msg": {
+                "initial_estimate": "Your initial estimate was {{time}}."
+            }
+        },
+        "estimate": {
+            "dilemma_chance": "Chance of {{time}} dilemma: {{chance}}",
+            "estimate_time": "Estimate: {{time}}",
+            "n_refills": "{{n}} Refills",
+            "refill": "1 Refill"
+        },
+        "tracking": {
+            "not_tracking": "You are not tracking this voyage.",
+            "start_tracking": "Start tracking"
+        },
+        "view": {
+            "active_voyage": "View Active Voyage",
+            "crew_calculator": "View Crew Calculator",
+            "voyage_history": "View Voyage History"
         }
     }
 }
