@@ -391,11 +391,13 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     }, [sugWait, suggestions]);
 
     React.useEffect(() => {
-        let crewcount = prefilterCrew().length;
-        setCrewEstimate(crewcount);
+        if (crew?.length && ship.battle_stations?.length) {
+            let max_rarity = ship.rarity;
+            if (battleMode === 'fbb_4') max_rarity = 5;
+            let crewcount = prefilterCrew(max_rarity).length;
+            setCrewEstimate(crewcount);
+        }
     }, [ship, crew, battleMode, minRarity, powerDepth, advancedPowerSettings]);
-
-
 
     return <React.Fragment>
         <div className={'ui segment'} style={{

@@ -1242,6 +1242,11 @@
         "boosts": "Boosts",
         "boosts_x_by_y": "Boosts {{x}} by {{y}}",
         "calc": {
+            "advanced": {
+                "crew_filter": "Advanced Crew Filter",
+                "exclude_ability": "Exclude crew with this ability",
+                "power_depth": "Advanced Power Depth"
+            },
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} accepted results) ({{time}})",
             "calculating_pct_ellipses": "Calculating ... ({{percent}}% complete)",
             "calculating_pct_ellipses_verbose": "Calculating ... ({{percent}}% complete) ({{progress}} / {{count}}) ({{accepted}} accepted results)",
@@ -1261,12 +1266,7 @@
             "show_battle_graph": "Show Battle Graph",
             "simulate": "Simulate",
             "sorting_finalizing_ellipses": "Sorting and finalizing results ...",
-            "verbose_status_updates": "Verbose Status Updates",
-            "advanced": {
-                "power_depth": "Advanced Power Depth",
-                "crew_filter": "Advanced Crew Filter",
-                "exclude_ability": "Exclude crew with this ability"
-            }
+            "verbose_status_updates": "Verbose Status Updates"
         },
         "calculated_crew": "Calculated Crew",
         "charge_phase": {
@@ -1282,6 +1282,7 @@
         "crit_bonus": "Crit Bonus",
         "crit_rating": "Crit Rating",
         "cycle_time": "Cycle Time",
+        "depth_hr_warn": "* By default, power level depth does not apply to hull-repair crew.",
         "duration": "Duration",
         "equipment_bonus": "Equipment Bonus",
         "evasion": "Evasion",
@@ -1300,9 +1301,8 @@
         "max_attack": "Max. Attack",
         "max_level": "Max Level",
         "min_attack": "Min. Attack",
-        "power_depth": "Power level depth",
-        "depth_hr_warn":"* By default, power level depth does not apply to hull-repair crew.",
         "offset_adds_warn": "* Activation offsets add to the current crew's initial cooldown time.",
+        "power_depth": "Power level depth",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {
             "admiral": "Admiral Division",
