@@ -169,12 +169,16 @@ export interface AdvancedCrewPower {
   attack_depth: number | null;
   evasion_depth: number | null;
   accuracy_depth: number | null;
+  ability_depths: (number | null)[];
+  ability_exclusions: boolean[];
 }
 
 export const DefaultAdvancedCrewPower = {
   attack_depth: null,
   evasion_depth: null,
-  accuracy_depth: null
+  accuracy_depth: null,
+  ability_depths: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+  ability_exclusions: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
 } as AdvancedCrewPower;
 
 export interface AdvancedCrewPowerConfig {

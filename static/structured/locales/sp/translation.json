@@ -1272,8 +1272,9 @@
             "sorting_finalizing_ellipses": "Ordenar y finalizar resultados...",
             "verbose_status_updates": "Actualizaciones de estado detalladas",
             "advanced": {
-                "power_ Depth": "Profundidad de potencia avanzada",
-                "crew_filter": "Filtro de tripulación avanzado"
+                "power_depth": "Profundidad de potencia avanzada",
+                "crew_filter": "Filtro de tripulación avanzado",
+                "exclude_ability": "Excluir las tripulantes con esta habilidad"
             }
         },
         "calculated_crew": "Tripulación calculada",
