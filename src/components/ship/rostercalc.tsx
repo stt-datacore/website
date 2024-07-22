@@ -1026,8 +1026,13 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
             if (crew.action.ability && typeof advanced_power.ability_depths[crew.action.ability.type] === 'number') {
                 let atype = maxabilityvalues[crew.max_rarity - 1][crew.action.ability.type] - advanced_power.ability_depths[crew.action.ability.type]!;
-                if (crew.action.ability.type === 0) atype += crew.action.ability.amount;
-                if (crew.action.bonus_amount < atype) return false;
+                if (crew.action.ability.type === 0) {
+                    atype += crew.action.ability.amount;
+                    if (crew.action.bonus_amount + crew.action.ability.amount < atype) return false;
+                }
+                else {
+                    if (crew.action.bonus_amount < atype) return false;
+                }
             }
 
             if (crew.action.bonus_type === 0 && advanced_power.attack_depth !== null) {
