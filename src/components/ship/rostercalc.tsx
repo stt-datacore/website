@@ -79,7 +79,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const battleModes = [] as DropdownItemProps[];
     const fbb_mode = !['skirmish', 'pvp'].includes(battleMode);
 
-    const [rankingMethod, setRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/short`, 'early_boom', { rememberForever: true });
+    const [rankingMethod, setRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/short`, 'delta_t', { rememberForever: true });
     const [fbbRankingMethod, setFBBRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/long`, 'standard', { rememberForever: true });
 
     const [gameEvents, setGameEvents] = React.useState<IEventData[]>([]);
