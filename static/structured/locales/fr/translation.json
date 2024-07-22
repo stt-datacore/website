@@ -1252,6 +1252,11 @@
         "boosts": "Augmentations",
         "boosts_x_by_y": "Augmente {{x}} de {{y}}",
         "calc": {
+            "advanced": {
+                "crew_filter": "Filtre d'équipage avancé",
+                "exclude_ability": "Exclure les équipiers avec cette compétence",
+                "power_depth": "Profondeur de puissance avancée"
+            },
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} résultats acceptés) ({{time}})",
             "calculating_pct_ellipses": "Calcul ... ({{percent}} % terminé)",
             "calculating_pct_ellipses_verbose": "Calcul ... ({{percent}} % terminé) ({{progress}} / {{count}}) ({{accepted}} résultats acceptés)",
@@ -1271,12 +1276,7 @@
             "show_battle_graph": "Afficher le graphique de combat",
             "simulate": "Simuler",
             "sorting_finalizing_ellipses": "Tri et finalisation des résultats...",
-            "verbose_status_updates": "Mises à jour de statut détaillées",
-            "advanced": {
-                "power_depth": "Profondeur de puissance avancée",
-                "crew_filter": "Filtre d'équipage avancé",
-                "exclude_ability": "Exclure les équipiers avec cette compétence"
-            }
+            "verbose_status_updates": "Mises à jour de statut détaillées"
         },
         "calculated_crew": "Équipage calculé",
         "charge_phase": {
@@ -1292,6 +1292,7 @@
         "crit_bonus": "Bonus Crit",
         "crit_rating": "Chance du Crit",
         "cycle_time": "Un cycle",
+        "depth_hr_warn": "* Par défaut, la profondeur du niveau de puissance ne s'applique pas à les équipiers de réparation de coque.",
         "duration": "Durée",
         "equipment_bonus": "Bonus d'équipement",
         "evasion": "Évasion",
@@ -1310,9 +1311,8 @@
         "max_attack": "Attaque max.",
         "max_level": "Niveau maximum",
         "min_attack": "Attaque min.",
-        "power_depth": "Profondeur du niveau de puissance",
-        "depth_hr_warn":"* Par défaut, la profondeur du niveau de puissance ne s'applique pas à les équipiers de réparation de coque.",
         "offset_adds_warn": "* Les compensations d'activation s'ajoutent au temps de recharge initial de l'équipier actuel.",
+        "power_depth": "Profondeur du niveau de puissance",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {
             "admiral": "Division Amiral",

@@ -1251,6 +1251,11 @@
         "boosts": "Aumentos",
         "boosts_x_by_y": "Aumenta {{x}} en {{y}}",
         "calc": {
+            "advanced": {
+                "crew_filter": "Filtro de tripulación avanzado",
+                "exclude_ability": "Excluir las tripulantes con esta habilidad",
+                "power_depth": "Profundidad de potencia avanzada"
+            },
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} resultados aceptados) ({{time}})",
             "calculating_pct_ellipses": "Calculando ... ({{percent}}% completado)",
             "calculating_pct_ellipses_verbose": "Calculando ... ({{percent}}% completado) ({{progress}} / {{count}}) ({{accepted}} resultados aceptados)",
@@ -1270,12 +1275,7 @@
             "show_battle_graph": "Mostrar Gráfico de Batalla",
             "simulate": "Simular",
             "sorting_finalizing_ellipses": "Ordenar y finalizar resultados...",
-            "verbose_status_updates": "Actualizaciones de estado detalladas",
-            "advanced": {
-                "power_depth": "Profundidad de potencia avanzada",
-                "crew_filter": "Filtro de tripulación avanzado",
-                "exclude_ability": "Excluir las tripulantes con esta habilidad"
-            }
+            "verbose_status_updates": "Actualizaciones de estado detalladas"
         },
         "calculated_crew": "Tripulación calculada",
         "charge_phase": {
@@ -1291,6 +1291,7 @@
         "crit_bonus": "Bonificación de Crít",
         "crit_rating": "Frecuencia de Crít",
         "cycle_time": "Uno ciclo",
+        "depth_hr_warn": "* De forma predeterminada, la profundidad del nivel de potencia no se aplica a las tripulantes de reparación de casco.",
         "duration": "Duración",
         "equipment_bonus": "Bonificación de equipo",
         "evasion": "Evasión",
@@ -1309,9 +1310,8 @@
         "max_attack": "Ataque mín.",
         "max_level": "Nivel máximo",
         "min_attack": "Ataque máx.",
-        "power_depth": "Profundidad del nivel de potencia",
-        "depth_hr_warn":"* De forma predeterminada, la profundidad del nivel de potencia no se aplica a las tripulantes de reparación de casco.",
         "offset_adds_warn": "* Las compensaciones de activación se suman al tiempo de carga inicial de la tripulante actual.",
+        "power_depth": "Profundidad del nivel de potencia",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {
             "admiral": "División de almirante",
