@@ -383,7 +383,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
     let alen = allactions.length;
     let uses = allactions.map(a => 0);
-    let state_time = allactions.map(a => 0);
+    let state_time = allactions.map(a => -1 * delay());
     let inited = allactions.map(a => false);
     let active = allactions.map(a => false);
 
@@ -494,6 +494,11 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             state_time[actidx] = 1;
             inited[actidx] = true;
             active[actidx] = true;
+            let c = allactions.length;
+            for (let i = 0; i < c; i++) {
+                if (i === actidx || active[i]) continue;
+                state_time[i] -= delay();
+            }
         }
         else {
             processChargePhases(action, actidx);
@@ -524,9 +529,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     let action = null as null | ChargeAction;
 
     let attack_inc = 0;
-
     let at_second = 0;
-
 
     for (let inc = 1; inc <= time; inc++) {
         sec = Math.round((inc / rate) * 10) / 10;
@@ -539,7 +542,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
             if (!inited[actidx]) {
                 state_time[actidx] += r_inc;
-                if (!activated && state_time[actidx] > action.initial_cooldown + (delay())) {
+                if (!activated && state_time[actidx] > action.initial_cooldown) {
                     activation = activate(action, actidx);
                 }
             }
@@ -552,7 +555,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             }
             else if (inited[actidx] && !currents[actidx] && (!action.limit || uses[actidx] < action.limit)) {
                 state_time[actidx] += r_inc;
-                if (!activated && state_time[actidx] > action.cooldown + (delay())) {
+                if (!activated && state_time[actidx] > action.cooldown) {
                     activation = activate(action, actidx);
                 }
             }
@@ -702,28 +705,43 @@ function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_o
     return result;
 }
 
-export function canSeatAll(precombined: number[][], ship: Ship, crew: CrewMember[], ignore_skill: boolean): CrewMember[][] | false {
+export function canSeatAll(precombined: number[][][], ship: Ship, crew: CrewMember[], ignore_skill: boolean): CrewMember[][] | false {
     if (!ship.battle_stations?.length || ship.battle_stations.length !== crew.length) return false;
     if (!crew.every(c => c.skill_order.some(so => ship.battle_stations?.some(bs => bs.skill === so)))) return false;
 
     let c = crew.length;
-    let possibles = getPermutations(precombined, c, undefined, false, 0n, (set) => {
-        let mpn = {} as { [key: string]: CrewMember };
-        let mpc = {} as { [key: string]: boolean };
-        let yseen = {};
-        let z = 0;
+    let possibles = precombined.map((set) => {
+        let mpn = {} as { [key: string]: CrewMember | undefined };
         for (let [x, y] of set) {
-            if (yseen[y] || mpn[x] || mpc[crew[y].id!]) continue;
             if ((ignore_skill || crew[y].skill_order.includes(ship.battle_stations![x].skill))) {
-                yseen[y] = true;
                 mpn[x] = crew[y];
-                mpc[crew[y].id!] = true;
-                z++;
+            }
+            else {
+                mpn[x] = undefined;
             }
         }
-        if (z === c) return Object.values(mpn);
-        else return false;
-    });
+        let result = Object.values(mpn);
+        if (result.every(v => !!v)) return result;
+        return false;
+    }).filter(f => !!f);
+
+    // let possibles = getPermutations(precombined, c, undefined, false, 0n, (set) => {
+    //     let mpn = {} as { [key: string]: CrewMember };
+    //     let mpc = {} as { [key: string]: boolean };
+    //     let yseen = {};
+    //     let z = 0;
+    //     for (let [x, y] of set) {
+    //         if (yseen[y] || mpn[x] || mpc[crew[y].id!]) continue;
+    //         if ((ignore_skill || crew[y].skill_order.includes(ship.battle_stations![x].skill))) {
+    //             yseen[y] = true;
+    //             mpn[x] = crew[y];
+    //             mpc[crew[y].id!] = true;
+    //             z++;
+    //         }
+    //     }
+    //     if (z === c) return Object.values(mpn);
+    //     else return false;
+    // }).filter(f => !!f);
 
     if (possibles?.length) {
         return possibles;

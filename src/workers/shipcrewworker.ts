@@ -40,7 +40,7 @@ function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_o
         }
 
         if (mmax !== 0n && current_iter >= mmax) return;
-        p(t.concat(array[i]), i + 1);
+        p([ ...t, array[i] ], i + 1);
         p(t, i + 1);
     }
 
@@ -185,7 +185,19 @@ const ShipCrewWorker = {
                 for (let j = 0; j < c; j++) {
                     cbs.push([i, j]);
                 }
-            }    // let cbs = [] as string[];
+            }
+
+            const allseat = getPermutations<number[], number[]>(cbs, c).filter((f) => {
+                let xseen = ship.battle_stations!.map(x => false);
+                let yseen = ship.battle_stations!.map(x => false);
+                for (let [x, y] of f) {
+                    xseen[x] = true;
+                    yseen[y] = true;
+                }
+                return (xseen.every(x => x) && yseen.every(y => y));
+            });
+
+            // let cbs = [] as string[];
             // for (let i = 0; i < c; i++) {
             //     for (let j = 0; j < c; j++) {
             //         cbs.push(`${i}_${j}`);
@@ -234,7 +246,7 @@ const ShipCrewWorker = {
 
                 if (event_crew && !set.find(f => f.id === event_crew.id)) return false;
 
-                let newseats = canSeatAll(cbs, ship, set, !!ignore_skill);
+                let newseats = canSeatAll(allseat, ship, set, !!ignore_skill);
                 if (!newseats) {
                     return false;
                 }
