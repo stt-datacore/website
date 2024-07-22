@@ -1264,7 +1264,8 @@
             "verbose_status_updates": "Verbose Status Updates",
             "advanced": {
                 "power_depth": "Advanced Power Depth",
-                "crew_filter": "Advanced Crew Filter"
+                "crew_filter": "Advanced Crew Filter",
+                "exclude_ability": "Exclude crew with this ability"
             }
         },
         "calculated_crew": "Calculated Crew",
