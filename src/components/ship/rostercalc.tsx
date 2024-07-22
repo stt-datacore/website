@@ -79,7 +79,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const battleModes = [] as DropdownItemProps[];
     const fbb_mode = !['skirmish', 'pvp'].includes(battleMode);
 
-    const [rankingMethod, setRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/short`, 'early_boom', { rememberForever: true });
+    const [rankingMethod, setRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/short`, 'delta_t', { rememberForever: true });
     const [fbbRankingMethod, setFBBRankingMethod] = useStateWithStorage<ShipRankingMethod>(`${pageId}/${ship.symbol}/rankingMethod/long`, 'standard', { rememberForever: true });
 
     const [gameEvents, setGameEvents] = React.useState<IEventData[]>([]);
@@ -1026,8 +1026,12 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
             if (crew.action.ability && typeof advanced_power.ability_depths[crew.action.ability.type] === 'number') {
                 let atype = maxabilityvalues[crew.max_rarity - 1][crew.action.ability.type] - advanced_power.ability_depths[crew.action.ability.type]!;
-                if (crew.action.ability.type === 0) atype += crew.action.ability.amount;
-                if (crew.action.bonus_amount < atype) return false;
+                if (crew.action.ability.type === 0) {
+                    if (crew.action.bonus_amount + crew.action.ability.amount < atype) return false;
+                }
+                else {
+                    if (crew.action.bonus_amount < atype) return false;
+                }
             }
 
             if (crew.action.bonus_type === 0 && advanced_power.attack_depth !== null) {

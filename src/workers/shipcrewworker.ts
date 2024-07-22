@@ -208,10 +208,10 @@ const ShipCrewWorker = {
             getPermutations(workCrew, seats, count, true, start_index, (set) => {
                 i++;
                 if (errors) return false;
-                let test = ['torres_caretaker_crew', 'kirk_chances_crew', 'crusher_j_vox_crew', 'tucker_desert_crew'];
-                if (set.every(s => test.includes(s.symbol))) {
-                    console.log("Inspect");
-                }
+                // let test = ['torres_caretaker_crew', 'kirk_chances_crew', 'crusher_j_vox_crew', 'tucker_desert_crew'];
+                // if (set.every(s => test.includes(s.symbol))) {
+                //     console.log("Inspect");
+                // }
                 if (!(i % 100n)) {
                     let p = ((i * 100n) / count);
 

@@ -156,12 +156,12 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
             total = options.config.max_iterations;
         }
         let wl = BigInt(this.workers.length);
-        
+
         let perworker = total / wl;
         let leftover = total - (perworker * wl);
 
         if (leftover < 0n) leftover = 0n;
-        
+
         let use_workers = [ ... this.workers ];
 
         if (total <= 100n) {
@@ -169,6 +169,8 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
             leftover = 0n;
             use_workers = [ use_workers[0] ];
         }
+
+        this.running = use_workers.map(m => false);
 
         use_workers.forEach((worker, idx) => {
             let start = BigInt(idx) * perworker;
@@ -184,7 +186,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
                     // ship: JSON.parse(JSON.stringify(options.config.ship)),
                     // crew: JSON.parse(JSON.stringify(options.config.crew)),
                     start_index: start,
-                    max_iterations: length,
+                    max_iterations: total <= 100n ? undefined : length,
                     status_data_only: true
                 } as ShipWorkerConfig
             });
@@ -196,7 +198,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
                 ...this.state.context,
                 cancelled: false,
                 running: true,
-                workers: this.workers.length,
+                workers: use_workers.length,
                 startTime: new Date()
             }
         });
