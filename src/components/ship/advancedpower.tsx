@@ -2,12 +2,9 @@ import React from 'react';
 import { Modal, Input, Button, Dropdown, Checkbox } from 'semantic-ui-react';
 import { GlobalContext } from '../../context/globalcontext';
 import { OptionsBase } from '../base/optionsmodal_base';
-import { GauntletSettingsProps, InternalSettings, defaultSettings, GauntletSettings } from '../../utils/gauntlet';
-import { AdvancedCrewPower, AdvancedCrewPowerConfig, DefaultAdvancedCrewPower } from '../../model/ship';
+import { AdvancedCrewPower, AdvancedCrewPowerConfig } from '../../model/ship';
 import CONFIG from '../CONFIG';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
-
-
 
 export interface AdvancedCrewPowerProps {
     isOpen: boolean;
@@ -16,8 +13,6 @@ export interface AdvancedCrewPowerProps {
     config: AdvancedCrewPowerConfig;
     disabled?: boolean;
 }
-
-
 
 const AdvancedCrewPowerPopup = <T extends OptionsBase>(props: AdvancedCrewPowerProps) => {
     const globalContext = React.useContext(GlobalContext);
