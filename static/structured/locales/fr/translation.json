@@ -1273,8 +1273,9 @@
             "sorting_finalizing_ellipses": "Tri et finalisation des résultats...",
             "verbose_status_updates": "Mises à jour de statut détaillées",
             "advanced": {
-                "power_degree": "Profondeur de puissance avancée",
-                "crew_filter": "Filtre d'équipage avancé"
+                "power_depth": "Profondeur de puissance avancée",
+                "crew_filter": "Filtre d'équipage avancé",
+                "exclude_ability": "Exclure les équipiers avec cette compétence"
             }
         },
         "calculated_crew": "Équipage calculé",

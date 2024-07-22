@@ -13,10 +13,11 @@ import { BattleGraph } from "./battlegraph";
 import { formatRunTime } from "../../utils/misc";
 import { getEventData } from "../../utils/events";
 import { IEventData } from "../eventplanner/model";
-import { getHighest, prepareOne } from "../../utils/crewutils";
+import { crewCopy, getHighest, prepareOne } from "../../utils/crewutils";
 import { CrewDropDown } from "../base/crewdropdown";
 import { MultiWorkerContext, ShipMultiWorkerStatus } from "./shipmultiworker";
 import AdvancedCrewPowerPopup from "./advancedpower";
+import CONFIG from "../CONFIG";
 
 export interface RosterCalcProps {
     pageId: string;
@@ -86,6 +87,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [eventCrew, setEventCrew] = React.useState<(PlayerCrew | CrewMember)[] | undefined>(undefined);
     const [chosenCrew, setChosenCrew] = React.useState<number[] | undefined>(undefined);
     const [numWorkers, setNumWorkers] = useStateWithStorage<number>(`${pageId}/max_workers`, navigator?.hardwareConcurrency ? navigator?.hardwareConcurrency / 2 : 1, { rememberForever: true });
+    const [crewEstimate, setCrewEstimate] = React.useState<number>(0);
 
     const selectEvent = (symbol: string) => {
         let f = gameEvents.find(f => f.symbol === symbol);
@@ -98,15 +100,21 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
         else {
             internalSetPowerDepth(value);
+            if (!advancedPowerSettings.ability_exclusions?.length) {
+                advancedPowerSettings.ability_exclusions = Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).map(m => false);
+            }
             setAdvancedPowerSettings({
                 accuracy_depth: value,
                 evasion_depth: value,
-                attack_depth: value
+                attack_depth: value,
+                ability_depths: Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).map(m => m === '2' ? null : value),
+                ability_exclusions: [...advancedPowerSettings.ability_exclusions]
             });
         }
     }
 
     const getPowerDepth = () => {
+        if (!advancedPowerSettings.ability_depths.every(e => e === null || e === powerDepth)) return 'advanced';
         if (advancedPowerSettings.attack_depth === powerDepth &&
             advancedPowerSettings.evasion_depth === powerDepth &&
             advancedPowerSettings.accuracy_depth === powerDepth
@@ -273,6 +281,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
     }, [hideGraph]);
 
+
+
     React.useEffect(() => {
         const newconfig = { ...battleConfig };
         if (globalContext.player.playerData) {
@@ -380,6 +390,13 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
     }, [sugWait, suggestions]);
 
+    React.useEffect(() => {
+        let crewcount = prefilterCrew().length;
+        setCrewEstimate(crewcount);
+    }, [ship, crew, battleMode, minRarity, powerDepth, advancedPowerSettings]);
+
+
+
     return <React.Fragment>
         <div className={'ui segment'} style={{
             display: 'flex',
@@ -453,6 +470,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 <div style={{margin: '1em 2em', fontStyle: 'italic', textAlign: 'center', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column'}}>
                         <div style={{width: '30%', margin: '0.5em'}}>
                             <AdvancedCrewPowerPopup
+                                disabled={running}
                                 isOpen={advancedPowerOpen}
                                 setIsOpen={setAdvancedPowerOpen}
                                 config={{
@@ -461,7 +479,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                     defaultOptions: {
                                         accuracy_depth: powerDepth,
                                         evasion_depth: powerDepth,
-                                        attack_depth: powerDepth
+                                        attack_depth: powerDepth,
+                                        ability_depths: Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).map(m => m === '2' ? null : powerDepth),
+                                        ability_exclusions: Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).map(m => false)
                                     }
                                 }}
                                 />
@@ -715,7 +735,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     }}>{t('ship.calc.show_battle_graph')}</Button>}
             </div>
             <div style={{ marginTop: '1em' }}>
-                {t('base.crew')}: {crew.length.toLocaleString()}
+                {t('base.crew')}: {crewEstimate.toLocaleString()}
             </div>
             {!!activeSuggestion?.attacks?.length && !hideGraph &&
                 <div className={'ui segment'} style={{ width: '100%' }}>
@@ -953,8 +973,14 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         max_rarity ??= ship.rarity ?? 5;
         const min_rarity = minRarity ?? 1;
         const maxvalues = [0, 0, 0, 0, 0].map(o => [0, 0, 0, 0]);
+        const maxabilityvalues = [0, 0, 0, 0, 0].map(o => Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).slice(0, 9).map(m => 0));
         const power_depth = powerDepth ?? 2;
         const advanced_power = advancedPowerSettings;
+        advanced_power.ability_depths.forEach((a, i) => {
+            if (advanced_power.ability_depths[i] === -1) {
+                advanced_power.ability_depths[i] = null;
+            }
+        });
 
         const results = crew.filter((crew) => {
             if (!ignoreSkills && !crew.skill_order.some(skill => ship.battle_stations?.some(bs => bs.skill === skill))) return false;
@@ -973,6 +999,18 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     if (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] < crew.action.bonus_amount) {
                         maxvalues[crew.max_rarity - 1][crew.action.bonus_type] = crew.action.bonus_amount;
                     }
+                    if (crew.action.ability.type !== 0) {
+                        if (maxabilityvalues[crew.max_rarity - 1][crew.action.ability.type] < crew.action.bonus_amount) {
+                            maxabilityvalues[crew.max_rarity - 1][crew.action.ability.type] = crew.action.bonus_amount;
+                        }
+                    }
+                    else {
+                        let total = crew.action.bonus_amount + crew.action.ability.amount;
+                        if (maxabilityvalues[crew.max_rarity - 1][crew.action.ability.type] < total) {
+                            maxabilityvalues[crew.max_rarity - 1][crew.action.ability.type] = total;
+                        }
+                    }
+
                 }
                 return pass;
             }
@@ -981,7 +1019,15 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             }
         })
         .filter((crew) => {
+            if (crew.action.ability && advanced_power.ability_exclusions[crew.action.ability.type]) return false;
             if (fbb_mode && crew.action.limit) return false;
+
+            if (crew.action.ability && typeof advanced_power.ability_depths[crew.action.ability.type] === 'number') {
+                let atype = maxabilityvalues[crew.max_rarity - 1][crew.action.ability.type] - advanced_power.ability_depths[crew.action.ability.type]!;
+                if (crew.action.ability.type === 0) atype += crew.action.ability.amount;
+                if (crew.action.bonus_amount < atype) return false;
+            }
+
             if (crew.action.bonus_type === 0 && advanced_power.attack_depth !== null) {
                 if (crew.action.bonus_amount < (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] - advanced_power.attack_depth) && (!fbb_mode || crew.action.ability?.type !== 2)) return false;
             }
@@ -994,6 +1040,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             else {
                 if (crew.action.bonus_amount < (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] - power_depth) && (!fbb_mode || crew.action.ability?.type !== 2)) return false;
             }
+
             return true;
         })
         .sort((a, b) => {

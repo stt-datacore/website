@@ -1263,7 +1263,8 @@
             "verbose_status_updates": "Ausführliche Statusaktualisierungen",
             "advanced": {
                 "power_depth": "Erweiterte Leistungstiefe",
-                "crew_filter": "Erweiterter Crew-Filter"
+                "crew_filter": "Erweiterter Crew-Filter",
+                "exclude_ability": "Crew mit dieser Fähigkeit ausschließen"
             }
         },
         "calculated_crew": "Kalkulierte Crew",
