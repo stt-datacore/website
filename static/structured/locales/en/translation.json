@@ -1437,10 +1437,10 @@
         },
         "calc": {
             "msg_type": {
-                "completed": "{{voyage.calc.msg_type.ran_for}}",
+                "completed": "Your voyage ran for {{time}}.",
                 "failed": "Your voyage failed at {{time}}.",
                 "ran_for": "Your voyage ran for {{time}}.",
-                "recalled": "{{voyage.calc.msg_type.ran_for}}",
+                "recalled": "Your voyage ran for {{time}}.",
                 "started": "Your voyage has been running for {{time}}."
             },
             "other_msg": {

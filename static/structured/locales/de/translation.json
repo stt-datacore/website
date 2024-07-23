@@ -1436,10 +1436,10 @@
         },
         "calc": {
             "msg_type": {
-                "completed": "{{voyage.calc.msg_type.ran_for}}",
+                "completed": "Ihre Reise dauerte seit {{time}}.",
                 "failed": "Ihre Reise ist um {{time}} fehlgeschlagen.",
                 "ran_for": "Ihre Reise dauerte seit {{time}}.",
-                "recalled": "{{voyage.calc.msg_type.ran_for}}",
+                "recalled": "Ihre Reise dauerte seit {{time}}.",
                 "started": "Ihre Reise dauert seit {{time}}."
             },
             "other_msg": {
