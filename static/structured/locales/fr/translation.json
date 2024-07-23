@@ -1447,10 +1447,10 @@
         },
         "calc": {
             "msg_type": {
-                "completed": "{{voyage.calc.msg_type.ran_for}}",
+                "completed": "Votre voyage a duré {{time}}.",
                 "failed": "Votre voyage a échoué à {{time}}.",
                 "ran_for": "Votre voyage a duré {{time}}.",
-                "recalled": "{{voyage.calc.msg_type.ran_for}}",
+                "recalled": "Votre voyage a duré {{time}}.",
                 "started": "Votre voyage dure depuis {{time}}."
             },
             "other_msg": {
