@@ -723,7 +723,7 @@ export function canSeatAll(precombined: number[][][], ship: Ship, crew: CrewMemb
         let result = Object.values(mpn);
         if (result.every(v => !!v)) return result;
         return false;
-    }).filter(f => !!f);
+    }).filter(f => !!f) as CrewMember[][];
 
     // let possibles = getPermutations(precombined, c, undefined, false, 0n, (set) => {
     //     let mpn = {} as { [key: string]: CrewMember };
