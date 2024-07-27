@@ -386,8 +386,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				// What scenarios would coalesce to unknown names here?
 				crew.traits_named = crew.traits.map(t => translation.TRAIT_NAMES[t] ?? `Unknown trait name ${t}`);
 				crew.events ??= 0;
-				crew.collections = crew.collection_ids.map(id => translation.COLLECTIONS[`cc-${id}`]?.name ?? `Unknown collection name ${id}`);
-
+				if (crew.collection_ids.every(id => !!translation.COLLECTIONS[`cc-${id}`])) {
+					crew.collections = crew.collection_ids.map(id => translation.COLLECTIONS[`cc-${id}`]?.name ?? `Unknown collection name ${id}`);
+				}
 				return crew;
 			});
 		}
