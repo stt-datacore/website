@@ -259,3 +259,8 @@ export interface ShipWorkerResults {
     total_iterations: bigint;
     run_time: number;
 }
+
+export interface SelectedShipConfig {
+  ship: Ship;
+  crewStations: (PlayerCrew | CrewMember | undefined)[];
+}

@@ -686,6 +686,7 @@
         "new": "New",
         "no": "No",
         "no_items_found": "No items found",
+        "no_data": "No data",
         "none": "None",
         "notes": "Notes",
         "obtained": "Obtained",
@@ -708,6 +709,7 @@
         "search_items": "Search items",
         "search_items_ellipses": "Search items...",
         "show": "Show",
+        "show_calculator": "Show Calculator",
         "show_less": "Show less",
         "show_n_more_ellipses": "Show {{n}} more ...",
         "shown": "Shown",
@@ -1281,6 +1283,7 @@
         "crew_with_trigger_check": "Only show crew with matching trigger",
         "crit_bonus": "Crit Bonus",
         "crit_rating": "Crit Rating",
+        "current_ship": "Current Ship",
         "cycle_time": "Cycle Time",
         "depth_hr_warn": "* By default, power level depth does not apply to hull-repair crew.",
         "duration": "Duration",
@@ -1302,6 +1305,7 @@
         "max_level": "Max Level",
         "min_attack": "Min. Attack",
         "offset_adds_warn": "* Activation offsets add to the current crew's initial cooldown time.",
+        "opponent_ship": "Opponent Ship",
         "power_depth": "Power level depth",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {
@@ -1314,6 +1318,8 @@
         "show": {
             "only_in_use": "Show only ships currently in use"
         },
+        "show_battle_calculator": "Show Battle Calculator",
+        "show_ship_info": "Show Ship Info",
         "skirmish": "{{event_type.skirmish}}",
         "skirmish_metric": "Skirmish Metric",
         "trigger": "Trigger",
