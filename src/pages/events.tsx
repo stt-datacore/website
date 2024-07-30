@@ -1,18 +1,9 @@
 import React from 'react';
 import { Container, Header, Message, Segment, Label, Grid, Modal } from 'semantic-ui-react';
 
-import Layout from '../components/layout';
 import LazyImage from '../components/lazyimage';
 import EventInfoModal from '../components/event_info_modal';
 import { EventLeaderboard } from '../model/events';
-import { DataContext } from '../context/datacontext';
-import { GlobalContext } from '../context/globalcontext';
-import { PlayerContext } from '../context/playercontext';
-import { PlayerData } from '../model/player';
-import { prepareProfileData } from '../utils/crewutils';
-import { BuffStatTable } from '../utils/voyageutils';
-import { CrewHoverStat } from '../components/hovering/crewhoverstat';
-import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import DataPageLayout from '../components/page/datapagelayout';
 
 type EventInstance = {
@@ -24,7 +15,7 @@ type EventInstance = {
 	instance_id: number,
 }
 
- 
+
 const EventsPage = () => {
 
 	return (
@@ -66,7 +57,7 @@ function EventsPageComponent() {
 	return (
 			<Container style={{ paddingTop: '4em', paddingBottom: '2em' }}>
 				<Header as='h2'>Events</Header>
-				
+
 				{loadingError && (
 					<Message negative>
 						<Message.Header>Unable to load event information</Message.Header>
@@ -112,8 +103,8 @@ function EventsPageComponent() {
 						</Modal.Content>
 					</Modal>
 				)}
-			</Container>			
-		
+			</Container>
+
 	);
 }
 
