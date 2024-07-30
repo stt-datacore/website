@@ -222,7 +222,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     }
 
     const rates = [] as DropdownItemProps[];
-    [1, 2, 5].forEach((rate) => {
+    [1, 2, 5, 10, 50, 100].forEach((rate) => {
         rates.push({
             key: `rate_${rate}`,
             value: rate,
@@ -504,7 +504,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     {t('ship.depth_hr_warn')}
                 </div>
 
-                {['skirmish', 'pvp'].includes(battleMode) && !!eventCrew &&
+                {['skirmish', 'pvp'].includes(battleMode) &&
                 <div style={{
                     display: 'flex',
                     flexDirection: 'row',
