@@ -25,26 +25,10 @@ import { ShipViewer } from '../components/ship/ship_viewer';
 const ShipInfoPage = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	const { playerShips, playerData } = globalContext.player;
-	const coreCrew = globalContext.core.crew;
 
-	const [considerFrozen, setConsiderFrozen] = useStateWithStorage('ship_info/considerFrozen', false);
-	const [considerUnowned, setConsiderUnowned] = useStateWithStorage('ship_info/considerFrozen', false);
-	const [ignoreSkills, setIgnoreSkills] = useStateWithStorage<boolean>(`ship_info/ignoreSkills`, false);
-	const [showCalculator, setShowCalculator] = useStateWithStorage('ship_info/show_calc', false);
-	const [showOpponent, setShowOpponent] = useStateWithStorage('ship_info/show_opponent', false);
-
-	const [ships, setShips] = React.useState<Ship[]>(loadShips());
-	const [crew, setCrew] = React.useState<(PlayerCrew | CrewMember)[] | undefined>(undefined);
 	const [shipKey, setShipKey] = React.useState<string | undefined>();
 
-	const [inputShip, setInputShip] = React.useState<Ship | undefined>(undefined);
-	const [opponentShip, setOpponentShip] = React.useState<Ship | undefined>(undefined);
-
-	const [shipConfig, setShipConfig] = React.useState<SelectedShipConfig | undefined>(undefined);
-	const [opponentConfig, setOpponentConfig] = React.useState<SelectedShipConfig | undefined>(undefined);
-
-	React.useEffect(() => {
+	(() => {
 		let ship_key: string | undefined = undefined;
 		const urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.has('ship')) {
@@ -57,7 +41,41 @@ const ShipInfoPage = () => {
 		if (shipKey !== ship_key) {
 			setShipKey(ship_key);
 		}
-	}, []);
+	})();
+
+	if (!shipKey) return globalContext.core.spin(t('spinners.default'));
+
+	return <DataPageLayout pageTitle={t('pages.ship_info')} demands={['ship_schematics', 'battle_stations']}>
+		<ShipSelector shipKey={shipKey} />
+	</DataPageLayout>
+}
+
+interface ShipSelectorProps {
+	shipKey: string;
+}
+
+const ShipSelector = (props: ShipSelectorProps) => {
+	const { shipKey } = props;
+
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
+	const { playerShips, playerData } = globalContext.player;
+	const coreCrew = globalContext.core.crew;
+
+	const [considerFrozen, setConsiderFrozen] = useStateWithStorage('ship_info/considerFrozen', false);
+	const [considerUnowned, setConsiderUnowned] = useStateWithStorage('ship_info/considerFrozen', false);
+	const [ignoreSkills, setIgnoreSkills] = useStateWithStorage<boolean>(`ship_info/ignoreSkills`, false);
+	const [showCalculator, setShowCalculator] = useStateWithStorage('ship_info/show_calc', false);
+	const [showOpponent, setShowOpponent] = useStateWithStorage('ship_info/show_opponent', false);
+
+	const [ships, setShips] = React.useState<Ship[]>(loadShips());
+	const [crew, setCrew] = React.useState<(PlayerCrew | CrewMember)[] | undefined>(undefined);
+
+	const [inputShip, setInputShip] = React.useState<Ship | undefined>(undefined);
+	const [opponentShip, setOpponentShip] = React.useState<Ship | undefined>(undefined);
+
+	const [shipConfig, setShipConfig] = React.useState<SelectedShipConfig | undefined>(undefined);
+	const [opponentConfig, setOpponentConfig] = React.useState<SelectedShipConfig | undefined>(undefined);
 
 	React.useEffect(() => {
 		setCrew(getCrew());
@@ -87,9 +105,9 @@ const ShipInfoPage = () => {
 		}
 	}, [inputShip]);
 
-	if (!shipKey) return globalContext.core.spin(t('spinners.default'));
-	return <DataPageLayout pageTitle={t('pages.ship_info')} demands={['ship_schematics', 'battle_stations']}>
-		<div>
+	if (!shipKey) return <>{globalContext.core.spin(t('spinners.default'))}</>;
+
+	return <div>
 			<CrewHoverStat targetGroup='ship_profile' />
 			<Button
 				style={{ marginBottom: '1em' }}
@@ -99,86 +117,82 @@ const ShipInfoPage = () => {
 			/>
 
 			<div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-				{!!shipKey && <>
-					{!!inputShip && showCalculator && !!crew && <WorkerProvider>
-						<ShipMultiWorker>
-							<ShipRosterCalc
-								pageId={'shipInfo'}
-								crew={crew}
-								ships={[inputShip]}
-								crewStations={getCrewStations()}
-								setCrewStations={setCrewStations}
-								considerFrozen={considerFrozen}
-								considerUnowned={considerUnowned}
-								ignoreSkills={ignoreSkills}
-								setConsiderFrozen={setConsiderFrozen}
-								setConsiderUnowned={setConsiderUnowned}
-								setIgnoreSkills={setIgnoreSkills}
-							/>
-						</ShipMultiWorker>
+				{!!inputShip && showCalculator && !!crew &&
+					<ShipMultiWorker>
+						<ShipRosterCalc
+							pageId={'shipInfo'}
+							crew={crew}
+							ships={[inputShip]}
+							crewStations={getCrewStations()}
+							setCrewStations={setCrewStations}
+							considerFrozen={considerFrozen}
+							considerUnowned={considerUnowned}
+							ignoreSkills={ignoreSkills}
+							setConsiderFrozen={setConsiderFrozen}
+							setConsiderUnowned={setConsiderUnowned}
+							setIgnoreSkills={setIgnoreSkills}
+						/>
+					</ShipMultiWorker>
+					}
 
-					</WorkerProvider>}
+				{showCalculator && <div style={{
+					display: 'flex',
+					flexDirection: 'row',
+					justifyContent: 'stretch',
+					alignItems: 'center',
+					margin: '1em 0',
+					width: '70%'
+				}}>
+					<Step.Group fluid>
+						<Step active={!showOpponent} onClick={() => setShowOpponent(false)}>
+							<Step.Content>
+								<Step.Title>{t('ship.current_ship')}</Step.Title>
+								<Step.Content>{t('ship.current_ship')}</Step.Content>
+							</Step.Content>
+						</Step>
+						<Step active={showOpponent} onClick={() => setShowOpponent(true)}>
+							<Step.Content>
+								<Step.Title>{t('ship.opponent_ship')}</Step.Title>
+								<Step.Content>{t('ship.opponent_ship')}</Step.Content>
+							</Step.Content>
+						</Step>
+					</Step.Group>
+				</div>}
 
-					{showCalculator && <div style={{
-						display: 'flex',
-						flexDirection: 'row',
-						justifyContent: 'stretch',
-						alignItems: 'center',
-						margin: '1em 0',
-						width: '70%'
-					}}>
-						<Step.Group fluid>
-							<Step active={!showOpponent} onClick={() => setShowOpponent(false)}>
-								<Step.Content>
-									<Step.Title>{t('ship.current_ship')}</Step.Title>
-									<Step.Content>{t('ship.current_ship')}</Step.Content>
-								</Step.Content>
-							</Step>
-							<Step active={showOpponent} onClick={() => setShowOpponent(true)}>
-								<Step.Content>
-									<Step.Title>{t('ship.opponent_ship')}</Step.Title>
-									<Step.Content>{t('ship.opponent_ship')}</Step.Content>
-								</Step.Content>
-							</Step>
-						</Step.Group>
-					</div>}
+				<div style={{width: '70%', display: showOpponent && showCalculator ? 'none' : undefined}}>
+					{!!inputShip && <ShipViewer
+						crewTargetGroup='ship_profile'
+						considerFrozen={considerFrozen}
+						considerUnowned={considerUnowned}
+						ignoreSkills={ignoreSkills}
+						inputShip={inputShip}
+						shipConfig={shipConfig}
+						setShipConfig={setShipConfig}
+					/>}
+				</div>
 
-					{<div style={{width: '70%', display: showOpponent && showCalculator ? 'none' : undefined}}>
-						{!!inputShip && <ShipViewer
+				<div style={{width: '70%', display: !showOpponent || !showCalculator ? 'none' : undefined}}>
+					<div className='ui segment' style={{width: '100%', gap: '0.5em', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+						{t('hints.select_ship')}
+						<ShipPicker
+							selectedShip={opponentShip}
+							playerData={globalContext.player.playerData}
+							setSelectedShip={setOpponentShip} />
+					</div>
+					{opponentShip &&
+						<ShipViewer
 							crewTargetGroup='ship_profile'
 							considerFrozen={considerFrozen}
 							considerUnowned={considerUnowned}
 							ignoreSkills={ignoreSkills}
-							inputShip={inputShip}
-							shipConfig={shipConfig}
-							setShipConfig={setShipConfig}
+							inputShip={opponentShip}
+							shipConfig={opponentConfig}
+							setShipConfig={setOpponentConfig}
 						/>}
-					</div>}
-
-					{<div style={{width: '70%', display: !showOpponent || !showCalculator ? 'none' : undefined}}>
-						<div className='ui segment' style={{width: '100%', gap: '0.5em', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-							{t('hints.select_ship')}
-							<ShipPicker
-								selectedShip={opponentShip}
-								playerData={globalContext.player.playerData}
-								setSelectedShip={setOpponentShip} />
-						</div>
-						{opponentShip &&
-							<ShipViewer
-								crewTargetGroup='ship_profile'
-								considerFrozen={considerFrozen}
-								considerUnowned={considerUnowned}
-								ignoreSkills={ignoreSkills}
-								inputShip={opponentShip}
-								shipConfig={opponentConfig}
-								setShipConfig={setOpponentConfig}
-							/>}
-					</div>}
-				</>}
+				</div>
 			</div>
-			{/* <ShipProfile /> */}
 		</div>
-	</DataPageLayout>
+
 
 	function loadShips() {
 		if (!globalContext) return [];
@@ -220,7 +234,9 @@ const ShipInfoPage = () => {
 		}
 	}
 
+
 }
+
 
 export default ShipInfoPage;
 
