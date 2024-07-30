@@ -321,6 +321,9 @@
         },
         "warn_no_info": "Les informations sur le prochain événement ne sont pas encore disponibles à partir des données des joueurs. Veuillez réessayer plus tard."
     },
+    "events_common": {
+        "skirmish_guess_warning": "Cet événement contient un composant d'escarmouche, et une liste complète des équipages en vedette pourrait ne pas être disponible avant le début de cet événement."
+    },
     "event_type": {
         "gather": "Galaxie",
         "shuttles": "Faction",
