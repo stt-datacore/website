@@ -532,7 +532,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     let at_second = 0;
 
     for (let inc = 1; inc <= time; inc++) {
-        sec = Math.round((inc / rate) * 10) / 10;
+        sec = Math.round((inc / rate) * 100) / 100;
 
         ca = 0;
         activated = false;
