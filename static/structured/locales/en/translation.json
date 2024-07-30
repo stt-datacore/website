@@ -315,6 +315,9 @@
         },
         "warn_no_info": "Information about the next event is not yet available from player data. Please try again at a later time."
     },
+    "events_common": {
+        "skirmish_guess_warning": "This event contains a skirmish component, and a complete list of featured crew may not be available until after this event begins."
+    },
     "event_type": {
         "gather": "Galaxy",
         "shuttles": "Faction",

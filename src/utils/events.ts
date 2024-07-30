@@ -189,7 +189,8 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus:
 	for (let threshold of activeEvent.threshold_rewards) {
 		for (let reward of threshold.rewards) {
 			if (allCrew.some(c => c.symbol === reward.symbol && c.max_rarity === 5)) {
-				featured.push(reward.symbol!);
+				if (!featured.includes(reward.symbol!))
+					featured.push(reward.symbol!);
 			}
 		}
 	}
@@ -211,7 +212,9 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus:
 			const testName = trait.trim();
 			const perfectName = allCrew.find(crew => (crew.name_english ?? crew.name) === testName);
 			if (perfectName) {
-				featured.push(perfectName.symbol);
+				if (!featured.includes(perfectName.symbol))
+					featured.push(perfectName.symbol);
+
 				if (!bonus.includes(perfectName.symbol))
 					bonus.push(perfectName.symbol);
 			}
@@ -235,11 +238,32 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus:
 								bonus.push(crew.symbol);
 						});
 					}
+					// Plural of trait
+					else if (testTrait.endsWith('s')) {
+						const imperfectTrait = testTrait.slice(0, testTrait.length - 1);
+						const imperfectTraits = allCrew.filter(crew => crew.traits.includes(imperfectTrait) || crew.traits_hidden.includes(imperfectTrait));
+						imperfectTraits.forEach(crew => {
+							if (!bonus.includes(crew.symbol))
+								bonus.push(crew.symbol);
+						});
+					}
+					// Timelines originals
+					else if (testTrait === 'stt originals') {
+						const imperfectTrait = 'original';
+						const imperfectTraits = allCrew.filter(crew => crew.traits.includes(imperfectTrait) || crew.traits_hidden.includes(imperfectTrait));
+						imperfectTraits.forEach(crew => {
+							if (!bonus.includes(crew.symbol))
+								bonus.push(crew.symbol);
+						});
+					}
 				}
 			}
 			// Identify featured from matching featured_crew
 			//	These usually include the event's legendary ranked reward, so check against the bonus crew we identified above
 			activeEvent.featured_crew.forEach(crew => {
+				// the ranked reward may contain the 'small bonus' featured trait. skip it.
+				if (activeEvent.ranked_brackets.some(s => s.rewards.some(rs => rs.symbol === crew.symbol))) return;
+
 				if (bonus.includes(crew.symbol)) {
 					if (!featured.includes(crew.symbol))
 						featured.push(crew.symbol);
@@ -248,7 +272,7 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus:
 		});
 	}
 
-	return { bonus, featured };
+	return { bonus: [ ... new Set(bonus)], featured: [...new Set(featured)] };
 }
 
 // Formula based on PADD's EventHelperGalaxy, assuming craft_config is constant
