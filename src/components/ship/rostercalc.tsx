@@ -69,6 +69,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [iterations, setIterations] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/simulation_iterations`, 100, { rememberForever: true });
     const [rate, setRate] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/rate`, 1, { rememberForever: true });
     const [fixedActivationDelay, setFixedActivationDelay] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/fixedActivationDelay`, 0.6, { rememberForever: true });
+    const [maxInitTime, setMaxInitTime] = useStateWithStorage<number | undefined>(`${pageId}/${ship.symbol}/maxInitTime`, undefined, { rememberForever: true });
     const [maxIter, setMaxIter] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/maxIter`, 3000000, { rememberForever: true });
     const [activationOffsets, setActivationOffsets] = useStateWithStorage<number[]>(`${pageId}/${ship.symbol}/activationOffsets`, ship.battle_stations!.map(m => 0), { rememberForever: true });
     const [advancedPowerOpen, setAdvancedPowerOpen] = React.useState<boolean>(false);
@@ -237,7 +238,19 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             text: `${rate}`
         })
     });
-
+    const max_init_times = [] as DropdownItemProps[];
+    max_init_times.push({
+        key: `none`,
+        value: 'none',
+        text: t('global.none')
+    });
+    for (let i = 0; i < 11; i++) {
+        max_init_times.push({
+            key: `init_${i}`,
+            value: i,
+            text: `${i}`
+        });
+    }
     const ranking_methods = [{
         key: `ranking_standard`,
         value: 'standard',
@@ -397,7 +410,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             let crewcount = prefilterCrew(max_rarity).length;
             setCrewEstimate(crewcount);
         }
-    }, [ship, crew, battleMode, minRarity, powerDepth, advancedPowerSettings]);
+    }, [ship, crew, battleMode, minRarity, powerDepth, advancedPowerSettings, maxInitTime]);
 
     return <React.Fragment>
         <div className={'ui segment'} style={{
@@ -490,7 +503,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         </div>
                     {t('ship.depth_hr_warn')}
                 </div>
-                {battleMode === 'skirmish' && !!eventCrew &&
+
+                {['skirmish', 'pvp'].includes(battleMode) && !!eventCrew &&
                 <div style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -500,7 +514,19 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     gap: '1em',
                     marginTop: '1em'
                 }}>
+                    <div style={{ display: 'inline', width: '30%' }}>
+                        <h4>{t('ship.calc.max_init')}</h4>
+                        <Dropdown
+                            fluid
+                            scrolling
+                            selection
+                            value={maxInitTime ?? 'none'}
+                            onChange={(e, { value }) => setMaxInitTime(value === 'none' ? undefined : value as number)}
+                            options={max_init_times}
+                        />
+                    </div>
 
+                    {battleMode === 'skirmish' && !!eventCrew && <>
                     <div style={{ display: 'inline', width: '30%' }}>
                         <h4>{t('menu.game_info.events')}</h4>
                         <Dropdown
@@ -526,8 +552,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             }}
                             />
                     </div>
-                    <div style={{ display: 'inline', width: '30%' }}>
-                    </div>
+                    </>}
                 </div>}
                 <div style={{
                     display: 'flex',
@@ -985,6 +1010,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         });
 
         const results = crew.filter((crew) => {
+            if (maxInitTime !== undefined) {
+                if (crew.action.initial_cooldown > maxInitTime) return false;
+            }
             if (!ignoreSkills && !crew.skill_order.some(skill => ship.battle_stations?.some(bs => bs.skill === skill))) return false;
             if (crew.action.ability?.condition && !ship.actions?.some(act => act.status === crew.action.ability?.condition)) return false;
 

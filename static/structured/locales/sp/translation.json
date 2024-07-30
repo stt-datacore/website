@@ -1259,6 +1259,7 @@
                 "exclude_ability": "Excluir las tripulantes con esta habilidad",
                 "power_depth": "Profundidad de potencia avanzada"
             },
+            "max_init": "Tiempo máximo de inicio",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} resultados aceptados) ({{time}})",
             "calculating_pct_ellipses": "Calculando ... ({{percent}}% completado)",
             "calculating_pct_ellipses_verbose": "Calculando ... ({{percent}}% completado) ({{progress}} / {{count}}) ({{accepted}} resultados aceptados)",
