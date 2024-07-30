@@ -362,7 +362,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				description: 'Exclude crew that have run at least one continuum mission, but have fewer than four quipment slots unlocked',
 				keywords: ['quipment'],
 				category: 'Quipment',
-				filter: (crew: IVoyageCrew) => !crew.immortal || !(crew.q_bits > 0 && crew.q_bits < 1300)
+				filter: (crew: IVoyageCrew) => !crew.immortal || (crew.q_bits > 0 && crew.q_bits < 1300)
 			},
 			{
 				key: 'quipnotmax',
@@ -467,7 +467,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			if (notes) theme.notes = notes;
 			themes.push(theme);
 		});
-		
+
 		const categories = [ ... new Set(themes.map(c => c.category)) ].sort().map(name => {
 			return {
 				name,
@@ -576,7 +576,7 @@ const ThemesTable = (props: ThemesTableProps) => {
 	});
 	const { data, column, direction } = state;
 	const { categories } = props;
-	
+
 	const [query, setQuery] = React.useState('');
 	const [highlightedTheme, setHighlightedTheme] = React.useState<IThemeOption | undefined>(undefined);
 	const [themeFilter, setThemeFilter] = React.useState<string>('ineligible');
@@ -676,7 +676,7 @@ const ThemesTable = (props: ThemesTableProps) => {
 						<Table.Body>
 							{cat.themes.map(row => renderTableRow(row))}
 						</Table.Body>
-					</Table>	
+					</Table>
 				</div>
 			))}
 
