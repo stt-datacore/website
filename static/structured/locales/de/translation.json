@@ -315,6 +315,9 @@
         },
         "warn_no_info": "Aus den Spielerdaten sind noch keine Informationen zum nächsten Ereignis verfügbar. Bitte versuche es zu einem späteren Zeitpunkt erneut."
     },
+    "events_common": {
+        "skirmish_guess_warning": "Dieses Event enthält eine Scharmützelkomponente und eine vollständige Liste der beteiligten Crewmitglieder ist möglicherweise erst nach Beginn des Events verfügbar."
+    },
     "event_type": {
         "gather": "Galaxie",
         "shuttles": "Fraktion",
