@@ -2,7 +2,7 @@ import React from 'react';
 
 import { CrewMember } from '../../model/crew';
 import { PlayerCrew } from '../../model/player';
-import { Ship } from '../../model/ship';
+import { Ship, SelectedShipConfig } from '../../model/ship';
 import { navigate } from 'gatsby';
 import { Button } from 'semantic-ui-react';
 import { GlobalContext } from '../../context/globalcontext';
@@ -16,15 +16,9 @@ import { ShipPresenter } from '../item_presenters/ship_presenter';
 import { getActionColor, getShipBonusIcon } from '../item_presenters/shipskill';
 import { DEFAULT_SHIP_OPTIONS, ShipCrewOptionsModal } from './ship_crew_modal';
 
-export interface SelectedShipConfig {
-    ship: Ship;
-    crewStations: (PlayerCrew | CrewMember)[];
-}
-
 export interface ShipViewerProps {
     crewTargetGroup?: string;
-    shipKey?: string;
-    customShip?: Ship;
+    inputShip: Ship;
     considerFrozen: boolean;
     considerUnowned: boolean;
     ignoreSkills: boolean;
@@ -35,11 +29,11 @@ export interface ShipViewerProps {
 export const ShipViewer = (props: ShipViewerProps) => {
     const context = React.useContext(GlobalContext);
 	const { t } = context.localized;
-	const { shipKey, customShip, considerFrozen, considerUnowned, ignoreSkills, setShipConfig, shipConfig } = props;
+	const { inputShip, considerFrozen, considerUnowned, ignoreSkills, setShipConfig, shipConfig } = props;
 	const { playerShips, playerData } = context.player;
 	const { crew: coreCrew } = context.core;
 	const [ships, setShips] = React.useState<Ship[]>(loadShips());
-	const [inputShip, setInputShip] = React.useState<Ship>();
+
 	const [ship, setShip] = React.useState<Ship>();
 	const [crew, setCrew] = React.useState<(PlayerCrew | CrewMember)[] | undefined>(undefined);
 	const [crewStations, setCrewStations] = React.useState<(PlayerCrew | CrewMember | undefined)[]>([]);
@@ -80,27 +74,7 @@ export const ShipViewer = (props: ShipViewerProps) => {
 		setCrew(getCrew());
 	}, [playerData, coreCrew, considerFrozen, considerUnowned])
 
-	React.useEffect(() => {
-        if (ships?.length) {
-            if (customShip) {
-                setInputShip(customShip);
-                return;
-            }
-            else if (shipKey) {
-                let newship = ships.find(f => f.symbol === shipKey);
-                if (!!newship && !!inputShip && newship?.id === inputShip?.id) return;
-                if (newship) {
-                    setInputShip(newship);
-                    return;
-                }
-            }
-            else {
-                navigate("/ships");
-            }
-        }
-	}, [ships, shipKey, customShip]);
-
-	if (!ship || !crew) return context.core.spin(t('spinners.default'));
+	if (!ship || !crew) return <>{t('global.no_data')}</>;
 
 	return (<>
 		<div>

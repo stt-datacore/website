@@ -619,6 +619,7 @@
         }
     },
     "global": {
+        "no_data": "Pas de données",
         "aborted": "Terminé",
         "admiral": "Avorté",
         "advanced_settings": "Réglages Avancés",
@@ -719,6 +720,7 @@
         "search_items": "Rechercher par article",
         "search_items_ellipses": "Rechercher par article...",
         "show": "Montre",
+        "show_calculator": "Afficher le calculateur",
         "show_less": "Montrer moins",
         "show_n_more_ellipses": "Afficher {{n}} de plus...",
         "shown": "Affiché",
@@ -1295,6 +1297,7 @@
         "crew_with_trigger_check": "Afficher uniquement les équipiers avec le déclencheur correspondant",
         "crit_bonus": "Bonus Crit",
         "crit_rating": "Chance du Crit",
+        "current_ship": "Vaisseau actuel",
         "cycle_time": "Un cycle",
         "depth_hr_warn": "* Par défaut, la profondeur du niveau de puissance ne s'applique pas à les équipiers de réparation de coque.",
         "duration": "Durée",
@@ -1316,6 +1319,7 @@
         "max_level": "Niveau maximum",
         "min_attack": "Attaque min.",
         "offset_adds_warn": "* Les compensations d'activation s'ajoutent au temps de recharge initial de l'équipier actuel.",
+        "opponent_ship": "Vaisseau adversaire",
         "power_depth": "Profondeur du niveau de puissance",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {
@@ -1328,6 +1332,8 @@
         "show": {
             "only_in_use": "Afficher uniquement les vaisseaux actuellement utilisés"
         },
+        "show_battle_calculator": "Afficher le calculateur de bataille",
+        "show_ship_info": "Afficher les informations sur le vaisseau",
         "skirmish": "{{event_type.skirmish}}",
         "skirmish_metric": "Métrique d'escarmouche",
         "trigger": "Déclencheur",

@@ -52,6 +52,7 @@ export type ShipPickerProps = {
     playerData?: PlayerData;
 	pool?: Ship[];
     selectedShip?: Ship;
+	fluid?: boolean;
     setSelectedShip: (ship: Ship | undefined) => void | React.Dispatch<React.SetStateAction<Ship | undefined>>;
 };
 
@@ -105,7 +106,7 @@ export const ShipPicker = (props: ShipPickerProps) => {
                 search
                 selection
                 clearable
-                fluid
+                fluid={props.fluid ?? true}
 				placeholder={placeholder}
 				options={poolList}
 				value={selectedShip?.symbol ?? ''}
@@ -135,7 +136,7 @@ export type ShipAbilityPickerProps = {
     selectedAbilities: string[];
     setSelectedAbilities: (ability: string[]) => void | React.Dispatch<React.SetStateAction<string[]>>;
 	ship?: boolean;
-	fluid?: boolean;	
+	fluid?: boolean;
 };
 
 export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {

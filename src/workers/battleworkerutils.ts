@@ -334,6 +334,18 @@ export interface IterateBattleConfig {
     simulate?: boolean;
 }
 
+function getAllActions(ship: Ship, crew?: CrewMember[]) {
+    if (crew) {
+        return JSON.parse(JSON.stringify([...ship.actions ?? [], ...crew.map(c => c.action)])) as ChargeAction[];
+    }
+    else if (ship.battle_stations?.every(bs => bs.crew)) {
+        return JSON.parse(JSON.stringify([...ship.actions ?? [], ...ship.battle_stations.map(m => m.crew!.action)])) as ChargeAction[];
+    }
+    else {
+        return JSON.parse(JSON.stringify([...ship.actions ?? []])) as ChargeAction[];
+    }
+}
+
 export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false) {
     let ship = setupShip(input_ship, crew, false) || undefined;
     defense ??= 0;
@@ -352,7 +364,8 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     const attacks = [] as AttackInstant[];
     crew.forEach(c => c.action.crew = c.id!);
 
-    let allactions = JSON.parse(JSON.stringify([...ship.actions ?? [], ...crew.map(c => c.action)])) as ChargeAction[];
+    let allactions = getAllActions(ship, crew);
+    let oppactions = opponent ? getAllActions(opponent) : null;
 
     const delay = () => {
         if (simulate) {
@@ -361,6 +374,15 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         else {
             return fixed_delay;
         }
+    }
+
+    let oppostart = allactions.length;
+
+    const currents = allactions.map(m => false as false | ShipAction);
+    const oppocurrents = oppactions?.map(m => false as false | ShipAction);
+
+    if (oppactions) {
+        allactions = allactions.concat(oppactions);
     }
 
     allactions.forEach((action, i) => {
@@ -387,8 +409,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     let inited = allactions.map(a => false);
     let active = allactions.map(a => false);
 
-    const currents = allactions.map(m => false as false | ShipAction);
-
+    // TODO: Comb out opponent actions and apply to powers
     let cloaked = false;
     let oppoattack = 0;
 
@@ -488,7 +509,12 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             }
 
             if (immediate === false) immediate = true;
-            currents[actidx] = action;
+            if (oppocurrents && actidx >= oppostart) {
+                oppocurrents[actidx - oppostart] = action;
+            }
+            else {
+                currents[actidx] = action;
+            }
             cloaked = action.status === 2;
             uses[actidx]++;
             state_time[actidx] = 1;
@@ -514,7 +540,12 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         }
         state_time[actidx] = 1;
         active[actidx] = false;
-        currents[actidx] = false;
+        if (oppocurrents && actidx >= oppostart) {
+            oppocurrents[actidx - oppostart] = false;
+        }
+        else {
+            currents[actidx] = false;
+        }
     }
 
     let immediates = [] as { base: number, max: number, standard: number }[];

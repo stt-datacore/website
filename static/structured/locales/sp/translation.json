@@ -618,6 +618,7 @@
         }
     },
     "global": {
+        "no_data": "Sin datos",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
@@ -718,6 +719,7 @@
         "search_items": "Buscar por artículo",
         "search_items_ellipses": "Buscar por artículo...",
         "show": "Reloj",
+        "show_calculator": "Ver calculadora",
         "show_less": "Muestra menos",
         "show_n_more_ellipses": "Mostrar {{n}} más ...",
         "shown": "Mostrado",
@@ -1294,6 +1296,7 @@
         "crew_with_trigger_check": "Mostrar solo las tripulantes con el activador coincidente",
         "crit_bonus": "Bonificación de Crít",
         "crit_rating": "Frecuencia de Crít",
+        "current_ship": "Buque actual",
         "cycle_time": "Uno ciclo",
         "depth_hr_warn": "* De forma predeterminada, la profundidad del nivel de potencia no se aplica a las tripulantes de reparación de casco.",
         "duration": "Duración",
@@ -1315,6 +1318,7 @@
         "max_level": "Nivel máximo",
         "min_attack": "Ataque máx.",
         "offset_adds_warn": "* Las compensaciones de activación se suman al tiempo de carga inicial de la tripulante actual.",
+        "opponent_ship": "Buque oponente",
         "power_depth": "Profundidad del nivel de potencia",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {
@@ -1327,6 +1331,8 @@
         "show": {
             "only_in_use": "Mostrar sólo los buques actualmente en uso"
         },
+        "show_battle_calculator": "Mostrar Calculadora de Batalla",
+        "show_ship_info": "Mostrar información del buque",
         "skirmish": "{{event_type.skirmish}}",
         "skirmish_metric": "Métrica de Escaramuza",
         "trigger": "Activación",

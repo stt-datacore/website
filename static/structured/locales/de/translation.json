@@ -613,6 +613,7 @@
         }
     },
     "global": {
+        "no_data": "Keine Daten",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
@@ -711,6 +712,7 @@
         "search_items": "Suche nach Artikel",
         "search_items_ellipses": "Suche nach Artikel...",
         "show": "Zeigen",
+        "show_calculator": "Rechner anzeigen",
         "show_less": "Zeige weniger",
         "show_n_more_ellipses": "Zeige {{n}} weitere ...",
         "shown": "Gezeigt",
@@ -1284,6 +1286,7 @@
         "crew_with_trigger_check": "Nur Crew mit passendem Auslöser anzeigen",
         "crit_bonus": "Krit Bonus",
         "crit_rating": "Krit Treffer",
+        "current_ship": "Aktuelles Schiff",
         "cycle_time": "Zykluszeit",
         "depth_hr_warn": "* Standardmäßig gilt die Leistungstiefe nicht für die Hüllereparatur-Crew.",
         "duration": "Dauer",
@@ -1305,6 +1308,7 @@
         "max_level": "Höchstlevel",
         "min_attack": "Min. Angriffs",
         "offset_adds_warn": "* Aktivierungs-Offsets werden zur anfänglichen Abkühlungszeit der aktuellen Crew hinzugefügt.",
+        "opponent_ship": "Gegnerisches Schiff",
         "power_depth": "Tiefe des Leistungsniveaus",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {
@@ -1317,6 +1321,8 @@
         "show": {
             "only_in_use": "Nur aktuell verwendete Schiffe anzeigen"
         },
+        "show_battle_calculator": "Kampfrechner anzeigen",
+        "show_ship_info": "Schiffsinformationen anzeigen",
         "skirmish": "{{event_type.skirmish}}",
         "skirmish_metric": "Scharmützel Metrisch",
         "trigger": "Auslöser",
