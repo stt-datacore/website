@@ -3,7 +3,7 @@ name: First Flight Archer
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 1
+bigbook_tier: 2
 in_portal:
 date: 24/01/2023
 published: true

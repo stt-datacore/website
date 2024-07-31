@@ -443,13 +443,13 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         if (action.charge_phases) {
             if (!action.current_phase) {
                 action.current_phase = 1;
-                state_time[actidx] = 1;
+                state_time[actidx] = 0;
                 inited[actidx] = true;
             }
             else if (action.current_phase < action.charge_phases.length) {
                 bumpAction(action, action.current_phase);
                 action.current_phase++;
-                state_time[actidx] = 1;
+                state_time[actidx] = 0;
                 inited[actidx] = true;
             }
             else if (action.current_phase === action.charge_phases.length) {
@@ -517,7 +517,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             }
             cloaked = action.status === 2;
             uses[actidx]++;
-            state_time[actidx] = 1;
+            state_time[actidx] = 0;
             inited[actidx] = true;
             active[actidx] = true;
             let c = allactions.length;
@@ -538,7 +538,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         if (action.ability?.type === 6) {
             shield_regen -= (action.ability.amount / rate);
         }
-        state_time[actidx] = 1;
+        state_time[actidx] = 0;
         active[actidx] = false;
         if (oppocurrents && actidx >= oppostart) {
             oppocurrents[actidx - oppostart] = false;
@@ -570,23 +570,21 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
         for (actidx = 0; actidx < act_cnt; actidx++) {
             action = allactions[actidx];
+            state_time[actidx] += r_inc;
 
             if (!inited[actidx]) {
-                state_time[actidx] += r_inc;
-                if (!activated && state_time[actidx] > action.initial_cooldown) {
+                if (!activated && state_time[actidx] >= action.initial_cooldown - 0.01) {
                     activation = activate(action, actidx);
                 }
             }
             else if (inited[actidx] && currents[actidx]) {
-                state_time[actidx] += r_inc;
-                if (state_time[actidx] > action.duration) {
+                if (state_time[actidx] >= action.duration - 0.01) {
                     deactivate(action, actidx);
                     powerInfo = null;
                 }
             }
             else if (inited[actidx] && !currents[actidx] && (!action.limit || uses[actidx] < action.limit)) {
-                state_time[actidx] += r_inc;
-                if (!activated && state_time[actidx] > action.cooldown) {
+                if (!activated && state_time[actidx] >= action.cooldown - 0.01) {
                     activation = activate(action, actidx);
                 }
             }

@@ -3,9 +3,9 @@ name: Water Polo Archer
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 3
 in_portal:
-date:
+date: 30/07/2024
 published: true
 ---
 
