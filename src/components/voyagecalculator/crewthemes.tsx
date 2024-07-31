@@ -362,7 +362,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				description: 'Exclude crew that have run at least one continuum mission, but have fewer than four quipment slots unlocked',
 				keywords: ['quipment'],
 				category: 'Quipment',
-				filter: (crew: IVoyageCrew) => !crew.immortal || (crew.q_bits > 0 && crew.q_bits < 1300)
+				filter: (crew: IVoyageCrew) => !crew.immortal || !(crew.q_bits > 0 && crew.q_bits < 1300)
 			},
 			{
 				key: 'quipnotmax',
