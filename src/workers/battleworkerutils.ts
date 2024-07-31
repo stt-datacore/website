@@ -334,15 +334,98 @@ export interface IterateBattleConfig {
     simulate?: boolean;
 }
 
-function getAllActions(ship: Ship, crew?: CrewMember[]) {
-    if (crew) {
-        return JSON.parse(JSON.stringify([...ship.actions ?? [], ...crew.map(c => c.action)])) as ChargeAction[];
+class BattleShip {
+
+    private rate: number;
+    private fbb_mode: boolean;
+
+    private ship: Ship;
+    private allactions: ChargeAction[];
+
+    private hull: number;
+    private orig_hull: number;
+    private shields: number;
+    private origshield: number;
+    private shield_regen: number;
+
+    private fixed_delay: number;
+    private simulate: boolean;
+    private offense: number = 0;
+    private defense: number = 0;
+
+    private actions_count: number;
+    private uses: number[];
+    private state_time: number[];
+    private inited: boolean[];
+    private active: boolean[];
+
+    private delay = () => {
+        if (this.simulate) {
+            return 0.2 + (Math.random() * 0.4);
+        }
+        else {
+            return this.fixed_delay;
+        }
     }
-    else if (ship.battle_stations?.every(bs => bs.crew)) {
-        return JSON.parse(JSON.stringify([...ship.actions ?? [], ...ship.battle_stations.map(m => m.crew!.action)])) as ChargeAction[];
-    }
-    else {
-        return JSON.parse(JSON.stringify([...ship.actions ?? []])) as ChargeAction[];
+
+    constructor(input_ship: Ship, rate: number, crew?: CrewMember[], fbb_mode?: boolean, offense?: number, defense?: number, simulate?: boolean, fixed_delay?: number, activation_offsets?: number[]) {
+        this.fixed_delay = fixed_delay ?? 0.4;
+        this.simulate = !!simulate;
+
+        this.fbb_mode = !!fbb_mode;
+        this.rate = rate;
+        this.offense = offense ?? 0;
+        this.defense = defense ?? 0;
+
+        if (!input_ship.battle_stations?.length) throw new Error("Missing Battlestations");
+
+        if (crew && crew.length === input_ship.battle_stations.length) {
+            input_ship.battle_stations!.forEach((bs, i) => {
+                bs.crew = crew![i];
+            });
+        }
+
+        crew = input_ship.battle_stations.map(bs => bs.crew!);
+        if (!crew.every(e => !!e)) throw new Error("Crew missing or unslotted");
+
+        let ship = setupShip(input_ship, crew, false) || undefined;
+        if (!ship) throw new Error ("Unable to setup ship");
+
+        crew.forEach(c => c.action.crew = c.id!);
+
+        this.allactions = JSON.parse(JSON.stringify([...ship.actions ?? [], ...crew.map(c => c.action)])) as ChargeAction[];
+        this.ship = ship;
+
+        this.hull = ship.hull;
+        this.orig_hull = ship.hull;
+
+        this.shields = ship.shields;
+        this.origshield = this.shields;
+        this.shield_regen = ship.shield_regen / this.rate;
+
+        this.allactions.forEach((action, i) => {
+            action.comes_from = i >= (ship!.actions?.length ?? 0) ? 'crew' : 'ship';
+            if (action.charge_phases?.length) {
+                if (action.ability) {
+                    action.orig_ability_amount = action.ability?.amount;
+                    action.orig_bonus = action.bonus_amount;
+                    action.orig_cooldown = action.cooldown;
+                    action.current_phase = 0;
+                }
+            }
+            if (action.comes_from === 'crew' && activation_offsets?.length && activation_offsets.length === input_ship.battle_stations?.length) {
+                let x = i - (ship!.actions?.length ?? 0);
+                if (activation_offsets[x] && activation_offsets[x] > action.initial_cooldown) {
+                    action.initial_cooldown += activation_offsets[x];
+                }
+            }
+        });
+
+        this.actions_count = this.allactions.length;
+        this.uses = this.allactions.map(a => 0);
+        this.state_time = this.allactions.map(a => -1 * this.delay());
+        this.inited = this.allactions.map(a => false);
+        this.active = this.allactions.map(a => false);
     }
 }
 
@@ -364,8 +447,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     const attacks = [] as AttackInstant[];
     crew.forEach(c => c.action.crew = c.id!);
 
-    let allactions = getAllActions(ship, crew);
-    let oppactions = opponent ? getAllActions(opponent) : null;
+    let allactions = JSON.parse(JSON.stringify([...ship.actions ?? [], ...crew.map(c => c.action)])) as ChargeAction[];
 
     const delay = () => {
         if (simulate) {
@@ -374,15 +456,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         else {
             return fixed_delay;
         }
-    }
-
-    let oppostart = allactions.length;
-
-    const currents = allactions.map(m => false as false | ShipAction);
-    const oppocurrents = oppactions?.map(m => false as false | ShipAction);
-
-    if (oppactions) {
-        allactions = allactions.concat(oppactions);
     }
 
     allactions.forEach((action, i) => {
@@ -409,7 +482,8 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     let inited = allactions.map(a => false);
     let active = allactions.map(a => false);
 
-    // TODO: Comb out opponent actions and apply to powers
+    const currents = allactions.map(m => false as false | ShipAction);
+
     let cloaked = false;
     let oppoattack = 0;
 
@@ -509,12 +583,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             }
 
             if (immediate === false) immediate = true;
-            if (oppocurrents && actidx >= oppostart) {
-                oppocurrents[actidx - oppostart] = action;
-            }
-            else {
-                currents[actidx] = action;
-            }
+            currents[actidx] = action;
             cloaked = action.status === 2;
             uses[actidx]++;
             state_time[actidx] = 0;
@@ -540,12 +609,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         }
         state_time[actidx] = 0;
         active[actidx] = false;
-        if (oppocurrents && actidx >= oppostart) {
-            oppocurrents[actidx - oppostart] = false;
-        }
-        else {
-            currents[actidx] = false;
-        }
+        currents[actidx] = false;
     }
 
     let immediates = [] as { base: number, max: number, standard: number }[];
