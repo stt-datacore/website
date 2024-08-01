@@ -315,13 +315,13 @@
         },
         "warn_no_info": "Information about the next event is not yet available from player data. Please try again at a later time."
     },
-    "events_common": {
-        "skirmish_guess_warning": "This event contains a skirmish component, and a complete list of featured crew may not be available until after this event begins."
-    },
     "event_type": {
         "gather": "Galaxy",
         "shuttles": "Faction",
         "skirmish": "Skirmish"
+    },
+    "events_common": {
+        "skirmish_guess_warning": "This event contains a skirmish component, and a complete list of featured crew may not be available until after this event begins."
     },
     "fbb": {
         "alert_no_solution": "No possible solutions found for this node. You may need to change your filters, double-check your solved traits, or reset the list of attempted crew.",
@@ -1121,6 +1121,9 @@
         "delta_t": "Delta T",
         "early_boom": "Earliest Greatest",
         "guaranteed_minimum": "Guaranteed minimum",
+        "lean_in": "Medium High",
+        "lean_out": "Medium Low",
+        "lean_over": "Medium",
         "moonshot": "Moonshot",
         "potential_maximum": "Potential maximum",
         "standard": "Standard"
@@ -1250,7 +1253,6 @@
                 "exclude_ability": "Exclude crew with this ability",
                 "power_depth": "Advanced Power Depth"
             },
-            "max_init": "Max init time",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} accepted results) ({{time}})",
             "calculating_pct_ellipses": "Calculating ... ({{percent}}% complete)",
             "calculating_pct_ellipses_verbose": "Calculating ... ({{percent}}% complete) ({{progress}} / {{count}}) ({{accepted}} accepted results)",
@@ -1261,6 +1263,7 @@
             "icon_activation_offset": "{{icon}} Activation Offset",
             "ignore_skill": "Ignore skills",
             "iterations": "Iterations",
+            "max_init": "Max init time",
             "max_iterations": "Max iterations",
             "max_workers": "Max workers",
             "ranking_method": "Ranking Method",

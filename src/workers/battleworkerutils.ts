@@ -375,7 +375,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         }
         if (action.comes_from === 'crew' && activation_offsets?.length && activation_offsets.length === input_ship.battle_stations?.length) {
             let x = i - (ship!.actions?.length ?? 0);
-            if (activation_offsets[x] && activation_offsets[x] > action.initial_cooldown) {
+            if (activation_offsets[x]) {
                 action.initial_cooldown += activation_offsets[x];
             }
         }
@@ -494,11 +494,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             state_time[actidx] = 0;
             inited[actidx] = true;
             active[actidx] = true;
-            let c = allactions.length;
-            for (let i = 0; i < c; i++) {
-                if (i === actidx || active[i]) continue;
-                state_time[i] -= delay();
-            }
         }
         else {
             processChargePhases(action, actidx);
@@ -543,7 +538,9 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
             if (!inited[actidx]) {
                 if (!activated && state_time[actidx] >= action.initial_cooldown - 0.01) {
-                    activation = activate(action, actidx);
+                    if (sec - at_second >= delay()) {
+                        activation = activate(action, actidx);
+                    }
                 }
             }
             else if (inited[actidx] && currents[actidx]) {
@@ -554,11 +551,14 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             }
             else if (inited[actidx] && !currents[actidx] && (!action.limit || uses[actidx] < action.limit)) {
                 if (!activated && state_time[actidx] >= action.cooldown - 0.01) {
-                    activation = activate(action, actidx);
+                    if (sec - at_second >= delay()) {
+                        activation = activate(action, actidx);
+                    }
                 }
             }
 
             if (activation) {
+                at_second = sec;
                 powerInfo = getInstantPowerInfo(rate, ship, currents, opponent, offense);
 
                 if (activation !== true) {

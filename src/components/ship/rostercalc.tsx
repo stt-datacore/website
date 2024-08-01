@@ -267,6 +267,21 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         text: t('ranking_method.moonshot')
     },
     {
+        key: `ranking_lean_in`,
+        value: 'lean_in',
+        text: t('ranking_method.lean_in')
+    },
+    {
+        key: `ranking_lean_over`,
+        value: 'lean_over',
+        text: t('ranking_method.lean_over')
+    },
+    {
+        key: `ranking_lean_out`,
+        value: 'lean_out',
+        text: t('ranking_method.lean_out')
+    },
+    {
         key: `ranking_delta`,
         value: 'delta_t',
         text: t('ranking_method.delta_t')
