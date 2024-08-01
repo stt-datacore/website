@@ -321,13 +321,13 @@
         },
         "warn_no_info": "Les informations sur le prochain événement ne sont pas encore disponibles à partir des données des joueurs. Veuillez réessayer plus tard."
     },
-    "events_common": {
-        "skirmish_guess_warning": "Cet événement contient un composant d'escarmouche, et une liste complète des équipages en vedette pourrait ne pas être disponible avant le début de cet événement."
-    },
     "event_type": {
         "gather": "Galaxie",
         "shuttles": "Faction",
         "skirmish": "Escarmouche"
+    },
+    "events_common": {
+        "skirmish_guess_warning": "Cet événement contient un composant d'escarmouche, et une liste complète des équipages en vedette pourrait ne pas être disponible avant le début de cet événement."
     },
     "fbb": {
         "alert_no_solution": "Aucune solution possible trouvée pour ce nodule. Vous devrez peut-être modifier vos filtres, revérifier vos traits résolus ou réinitialiser la liste des tentatives d'équipiers.",
@@ -1130,6 +1130,9 @@
         "delta_t": "Delta T",
         "early_boom": "Plus Tôt Plus Grand",
         "guaranteed_minimum": "Minimum garanti",
+        "lean_in": "Moyen-élevé",
+        "lean_out": "Moyen faible",
+        "lean_over": "Moyen",
         "moonshot": "Shot de Lune",
         "potential_maximum": "Potentiel maximum",
         "standard": "Standard"
@@ -1260,7 +1263,6 @@
                 "exclude_ability": "Exclure les équipiers avec cette compétence",
                 "power_depth": "Profondeur de puissance avancée"
             },
-            "max_init": "Temps d'initialisation maximum",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} résultats acceptés) ({{time}})",
             "calculating_pct_ellipses": "Calcul ... ({{percent}} % terminé)",
             "calculating_pct_ellipses_verbose": "Calcul ... ({{percent}} % terminé) ({{progress}} / {{count}}) ({{accepted}} résultats acceptés)",
@@ -1271,6 +1273,7 @@
             "icon_activation_offset": "{{icon}} Décalage d'activation",
             "ignore_skill": "Ignorer les compétences",
             "iterations": "Itérations",
+            "max_init": "Temps d'initialisation maximum",
             "max_iterations": "Itérations max.",
             "max_workers": "Max. ouvriers",
             "ranking_method": "Méthode de classement",

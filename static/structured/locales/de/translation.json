@@ -315,13 +315,13 @@
         },
         "warn_no_info": "Aus den Spielerdaten sind noch keine Informationen zum nächsten Ereignis verfügbar. Bitte versuche es zu einem späteren Zeitpunkt erneut."
     },
-    "events_common": {
-        "skirmish_guess_warning": "Dieses Event enthält eine Scharmützelkomponente und eine vollständige Liste der beteiligten Crewmitglieder ist möglicherweise erst nach Beginn des Events verfügbar."
-    },
     "event_type": {
         "gather": "Galaxie",
         "shuttles": "Fraktion",
         "skirmish": "Scharmützel"
+    },
+    "events_common": {
+        "skirmish_guess_warning": "Dieses Event enthält eine Scharmützelkomponente und eine vollständige Liste der beteiligten Crewmitglieder ist möglicherweise erst nach Beginn des Events verfügbar."
     },
     "fbb": {
         "alert_no_solution": "Für diesen Knoten wurden keine möglichen Lösungen gefunden. Möglicherweise müssen Sie Ihre Filter ändern, Ihre gelösten Merkmale noch einmal überprüfen oder die Liste der versuchten Crew zurücksetzen.",
@@ -1120,6 +1120,9 @@
         "delta_t": "Delta T",
         "early_boom": "Frühestes Größtes",
         "guaranteed_minimum": "Garantiertes Minimum",
+        "lean_in": "Mittelhoch",
+        "lean_out": "Mittelniedrig",
+        "lean_over": "Mittel",
         "moonshot": "Mondschuss",
         "potential_maximum": "Potenzielles Maximum",
         "standard": "Standard"
@@ -1249,7 +1252,6 @@
                 "exclude_ability": "Crew mit dieser Fähigkeit ausschließen",
                 "power_depth": "Erweiterte Leistungstiefe"
             },
-            "max_init": "Maximale Initialisierungszeit",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} akzeptierte Ergebnisse) ({{time}})",
             "calculating_pct_ellipses": "Berechnung ... ({{percent}} % abgeschlossen)",
             "calculating_pct_ellipses_verbose": "Berechnung ... ({{percent}} % abgeschlossen) ({{progress}} / {{count}}) ({{accepted}} akzeptierte Ergebnisse)",
@@ -1260,6 +1262,7 @@
             "icon_activation_offset": "{{icon}} Aktivierungsoffset",
             "ignore_skill": "Ignorieren Sie die Fähigkeiten",
             "iterations": "Iterationen",
+            "max_init": "Maximale Initialisierungszeit",
             "max_iterations": "Max. Iterationen",
             "max_workers": "Max. Anzahl Arbeiter",
             "ranking_method": "Rangfolgemethode",

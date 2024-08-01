@@ -145,12 +145,18 @@ const ShipCrewWorker = {
                     else if (ranking_method === 'max') fbb_metric = max_attack;
                     else if (ranking_method === 'delta_t') fbb_metric = arena_metric;
                     else if (ranking_method === 'early_boom') fbb_metric = weighted_attack;
+                    else if (ranking_method === 'lean_in') fbb_metric = (max_attack + attack) / 2;
+                    else if (ranking_method === 'lean_over') fbb_metric = (max_attack + min_attack) / 2;
+                    else if (ranking_method === 'lean_out') fbb_metric = (attack + min_attack) / 2;
                 }
                 else {
                     if (ranking_method === 'min') arena_metric = min_attack;
                     else if (ranking_method === 'max') arena_metric = max_attack;
                     else if (ranking_method === 'standard') arena_metric = attack;
                     else if (ranking_method === 'early_boom') arena_metric = weighted_attack;
+                    else if (ranking_method === 'lean_in') arena_metric = (max_attack + attack) / 2;
+                    else if (ranking_method === 'lean_over') arena_metric = (max_attack + min_attack) / 2;
+                    else if (ranking_method === 'lean_out') arena_metric = (attack + min_attack) / 2;
                 }
 
                 return {

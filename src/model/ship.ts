@@ -163,7 +163,7 @@ export interface ShipInUse {
     rarity: number;
 }
 
-export type ShipRankingMethod = 'standard' | 'min' | 'max' | 'delta_t' | 'early_boom';
+export type ShipRankingMethod = 'standard' | 'min' | 'max' | 'delta_t' | 'early_boom' | 'lean_in' | 'lean_over' | 'lean_out';
 
 export interface AdvancedCrewPower {
   attack_depth: number | null;

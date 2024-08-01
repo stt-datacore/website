@@ -319,13 +319,13 @@
         },
         "warn_no_info": "La información sobre el próximo evento aún no está disponible en los datos de los jugadores. Porfavor intente más tarde."
     },
-    "events_common": {
-        "skirmish_guess_warning": "Este evento contiene un componente de escaramuza y es posible que una lista completa del equipo destacado no esté disponible hasta después de que comience este evento"
-    },
     "event_type": {
         "gather": "Galaxia",
         "shuttles": "Facción",
         "skirmish": "Escaramuza"
+    },
+    "events_common": {
+        "skirmish_guess_warning": "Este evento contiene un componente de escaramuza y es posible que una lista completa del equipo destacado no esté disponible hasta después de que comience este evento"
     },
     "fbb": {
         "alert_no_solution": "No se encontraron soluciones posibles para este nódulo. Es posible que necesites cambiar tus filtros, volver a verificar tus rasgos resueltos o restablecer la lista de tripulantes intentados.",
@@ -1129,6 +1129,9 @@
         "delta_t": "Delta T",
         "early_boom": "Máximo Más Temprano",
         "guaranteed_minimum": "Mínimo garantizado",
+        "lean_in": "Medio Bajo",
+        "lean_out": "Medio Bajo",
+        "lean_over": "Medio",
         "moonshot": "Disparo a la Luna",
         "potential_maximum": "Máximo potencial",
         "standard": "Estándar"
@@ -1259,7 +1262,6 @@
                 "exclude_ability": "Excluir las tripulantes con esta habilidad",
                 "power_depth": "Profundidad de potencia avanzada"
             },
-            "max_init": "Tiempo máximo de inicio",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} resultados aceptados) ({{time}})",
             "calculating_pct_ellipses": "Calculando ... ({{percent}}% completado)",
             "calculating_pct_ellipses_verbose": "Calculando ... ({{percent}}% completado) ({{progress}} / {{count}}) ({{accepted}} resultados aceptados)",
@@ -1270,6 +1272,7 @@
             "icon_activation_offset": "{{icon}} Compensación de activación",
             "ignore_skill": "Ignora las habilidades",
             "iterations": "Iteraciones",
+            "max_init": "Tiempo máximo de inicio",
             "max_iterations": "Iteraciones máx.",
             "max_workers": "Máx. trabajadores",
             "ranking_method": "Método de clasificación",
