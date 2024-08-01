@@ -383,7 +383,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
     let alen = allactions.length;
     let uses = allactions.map(a => 0);
-    let state_time = allactions.map(a => -1 * delay());
+    let state_time = allactions.map(a => 0);
     let inited = allactions.map(a => false);
     let active = allactions.map(a => false);
 
@@ -537,7 +537,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             state_time[actidx] += r_inc;
 
             if (!inited[actidx]) {
-                if (!activated && state_time[actidx] >= action.initial_cooldown - 0.01) {
+                if (!activated && state_time[actidx] >= (action.initial_cooldown - 0.01) + delay()) {
                     if (sec - at_second >= delay()) {
                         activation = activate(action, actidx);
                     }
