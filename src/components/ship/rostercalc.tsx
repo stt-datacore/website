@@ -1025,7 +1025,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         });
 
         const results = crew.filter((crew) => {
-            if (maxInitTime !== undefined) {
+            if (!fbb_mode && maxInitTime !== undefined) {
                 if (crew.action.initial_cooldown > maxInitTime) return false;
             }
             if (!ignoreSkills && !crew.skill_order.some(skill => ship.battle_stations?.some(bs => bs.skill === skill))) return false;
