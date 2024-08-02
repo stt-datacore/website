@@ -22,17 +22,18 @@ export interface CrewPickerProps<T extends OptionsBase> {
 
 	hoverBoundingClient?: boolean;
 	renderCrewCaption?: (crew: PlayerCrew | CrewMember) => JSX.Element | string;
+	contextData?: any;
 };
 
 const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
-	const { handleSelect } = props;
+	const { handleSelect, isOpen, contextData, setIsOpen } = props;
 
 	const context = React.useContext(GlobalContext);
 	const { t } = context.localized;
 	const { options, setOptions } = props;
 
 	const [crewList, setCrewList] = React.useState<(PlayerCrew | CrewMember)[]>([]);
-	const [modalIsOpen, setModalIsOpen] = React.useState(false);
+	const [modalIsOpen, setModalIsOpen] = React.useState(isOpen);
 	const [searchFilter, setSearchFilter] = React.useState('');
 	const [paginationPage, setPaginationPage] = React.useState(1);
 	const [selectedCrew, setSelectedCrew] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);
@@ -48,14 +49,17 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 	}, [props.crewList]);
 
 	React.useEffect(() => {
-		if (modalIsOpen) inputRef.current?.focus();
+		if (modalIsOpen) {
+			setSearchFilter('');
+			inputRef.current?.focus();
+		}
 	}, [modalIsOpen]);
 
 	React.useEffect(() => {
-		if (props.isOpen !== undefined && props.isOpen) {
+		if (isOpen !== undefined && isOpen) {
 			setModalIsOpen(true);
 		}
-	}, [props.isOpen]);
+	}, [isOpen, contextData]);
 
 	React.useEffect(() => {
 		setPaginationPage(1);
@@ -107,7 +111,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 	);
 
 	function closeModal(): void {
-		if (props.setIsOpen) props.setIsOpen(false);
+		if (setIsOpen) setIsOpen(false);
 		setModalIsOpen(false);
 	}
 
@@ -146,9 +150,9 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 							onDoubleClick={() => confirmSelection(crew)}
 							color={(selectedCrew?.pickerId === crew.pickerId ? 'blue' : null) as SemanticCOLORS}
 						>
-						
+
 								<img width={60} height={60} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
-						
+
 							<div>{renderCrewCaption ? renderCrewCaption(crew) : crew.name}</div>
 							<div><Rating defaultRating={"rarity"in crew ? crew.rarity : crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='small' disabled /></div>
 						</Grid.Column>

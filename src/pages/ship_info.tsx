@@ -325,9 +325,10 @@ const ShipViewer = (props: ShipViewerProps) => {
 
 		let newCrew: (PlayerCrew | CrewMember)[] = getCrew().filter((crew) => ignoreSkills || getSkills(crew).includes(skill)) ?? [];
 		if (inputShip) newCrew = findPotentialCrew(inputShip, newCrew, false);
-		setModalOpen(true);
-		setCurrentStationCrew(newCrew);
+
 		setCurrentStation(index);
+		setCurrentStationCrew(newCrew);
+		setModalOpen(true);
 	}
 
 	function clearStation(index?: number) {
