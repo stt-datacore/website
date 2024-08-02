@@ -342,7 +342,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     if (!ship) return [];
 
     let hull = ship.hull;
-    let orighull = ship.hull;
+    let orighull = hull;
 
     let shields = ship.shields;
     let origshield = shields;
@@ -625,10 +625,10 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
                     if (!oppoattack) {
                         let actual_attack = standard_attack * rate;
-                        incoming_damage = (attack_inc / 100) * (((actual_attack - (actual_attack * (fbb_mode ? defense : 0))) * mul));
+                        incoming_damage = (attack_inc / 95) * (((actual_attack - (actual_attack * (fbb_mode ? defense : 0))) * mul));
                     }
                     else {
-                        incoming_damage = (attack_inc / 100) * (((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul));
+                        incoming_damage = (attack_inc / 95) * (((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul));
                     }
 
                     if (shields > 0) {
@@ -647,6 +647,8 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             }
         }
 
+        if (hull <= 0) break;
+
         attacks.push({
             actions: currents.filter(f => f !== false) as ShipAction[],
             hull,
@@ -657,9 +659,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             max_attack: max_attack,
             ship
         });
-
-        if (hull <= 0) break;
-
     }
 
     ship = undefined;
