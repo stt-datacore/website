@@ -613,7 +613,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 attack_inc += (powerInfo.computed.attacks_per_second * rate) * 100;
             }
 
-            if (attack_inc >= attack_time_check) {
+            if (attack_inc >= 100) {
                 if (fbb_mode || !cloaked) {
                     let mul = currents.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
                     mul = 1 - (mul / 100);
@@ -626,10 +626,10 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
                     if (!oppoattack) {
                         let actual_attack = standard_attack * rate;
-                        incoming_damage = (attack_inc / 100) * (((actual_attack - (actual_attack * (fbb_mode ? defense : 0))) * mul));
+                        incoming_damage = (attack_inc / attack_time_check) * (((actual_attack - (actual_attack * (fbb_mode ? defense : 0))) * mul));
                     }
                     else {
-                        incoming_damage = (attack_inc / 100) * (((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul));
+                        incoming_damage = (attack_inc / attack_time_check) * (((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul));
                     }
 
                     if (shields > 0) {
