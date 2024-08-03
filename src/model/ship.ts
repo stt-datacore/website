@@ -213,6 +213,7 @@ export interface ShipWorkerConfigBase {
     activation_offsets?: number[];
     start_index?: bigint;
     status_data_only?: boolean;
+    opponent_variance?: number;
 }
 
 export interface ShipWorkerConfig extends ShipWorkerConfigBase {
