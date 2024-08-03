@@ -73,6 +73,8 @@ const ShipCrewWorker = {
                 fixed_activation_delay } = options;
 
             const opponent = opponents?.length ? opponents[0] : undefined;
+            const opponent_variance = options.opponent_variance ?? 5;
+
             const starttime = new Date();
 
             let max_results = options.max_results ?? 100;
@@ -258,7 +260,7 @@ const ShipCrewWorker = {
                 }
 
                 let res = newseats.map((set) => {
-                    let battle_data = iterateBattle(rate, fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets, fixed_activation_delay, simulate);
+                    let battle_data = iterateBattle(rate, fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets, fixed_activation_delay, simulate, opponent_variance);
                     let attack = processBattleRun(battle_data, set);
 
                     if (!get_attacks) {

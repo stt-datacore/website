@@ -334,7 +334,7 @@ export interface IterateBattleConfig {
     simulate?: boolean;
 }
 
-export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false) {
+export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false, opponent_variance = 5) {
     let ship = setupShip(input_ship, crew, false) || undefined;
     defense ??= 0;
     offense ??= 0;
@@ -525,6 +525,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
     let attack_inc = 0;
     let at_second = 0;
+    let attack_time_check = 100 - (opponent_variance ?? 0);
 
     for (let inc = 1; inc <= time; inc++) {
         sec = Math.round((inc / rate) * 100) / 100;
@@ -612,7 +613,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 attack_inc += (powerInfo.computed.attacks_per_second * rate) * 100;
             }
 
-            if (attack_inc >= 100) {
+            if (attack_inc >= attack_time_check) {
                 if (fbb_mode || !cloaked) {
                     let mul = currents.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
                     mul = 1 - (mul / 100);
@@ -625,10 +626,10 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
                     if (!oppoattack) {
                         let actual_attack = standard_attack * rate;
-                        incoming_damage = (attack_inc / 95) * (((actual_attack - (actual_attack * (fbb_mode ? defense : 0))) * mul));
+                        incoming_damage = (attack_inc / 100) * (((actual_attack - (actual_attack * (fbb_mode ? defense : 0))) * mul));
                     }
                     else {
-                        incoming_damage = (attack_inc / 95) * (((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul));
+                        incoming_damage = (attack_inc / 100) * (((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul));
                     }
 
                     if (shields > 0) {
