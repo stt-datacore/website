@@ -14,20 +14,21 @@ export interface QuipmentScoreProps {
     top: QuipmentScores;
     excludeSkills: boolean;
     excludeSpecialty?: boolean;
+    excludeGrade?: boolean;
     excludeQBits?: boolean;
 }
 
 export const getQuipmentTableConfig = (t: TranslateMethod, excludeQBits?: boolean, excludeSpecialty?: boolean) => {
-    const config = [] as ITableConfigRow[];    
+    const config = [] as ITableConfigRow[];
     config.push({ width: 1, column: 'quipment_score', title: t('quipment_ranks.overall'), reverse: true });
     if (!excludeSpecialty) config.push({ width: 1, column: 'quipment_scores.trait_limited', title: t('quipment_ranks.specialty'), reverse: true });
 
     CONFIG.SKILLS_SHORT.map(p => p.name).forEach((skill) => {
-        config.push({ 
+        config.push({
             width: 1,
             column: `quipment_scores.${skill}`,
             reverse: true,
-            title: 
+            title:
             <div style={{display: 'inline-block'}}>
             <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                 <img
@@ -36,22 +37,22 @@ export const getQuipmentTableConfig = (t: TranslateMethod, excludeQBits?: boolea
                     />
                 <span>
                 &nbsp;{skillToShort(skill)}
-                </span>                
+                </span>
             </div>
             </div>
         })
-    })    
+    })
 
     if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: t('base.qp'), reverse: true });
     return config;
 }
 
 export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
-    const { excludeSpecialty, excludeQBits, excludeSkills, crew, top } = props;
+    const { excludeGrade, excludeSpecialty, excludeQBits, excludeSkills, crew, top } = props;
 
     const quipment_score = crew.quipment_score ?? 0;
     const top_quipment = top.quipment_score ?? 1;
-    
+
     const trait_score = crew.quipment_scores?.trait_limited ?? 0;
     const top_trait = top.quipment_scores?.trait_limited ?? 1;
 
@@ -60,28 +61,28 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
     const qbslots = crew.q_bits === undefined ? 4 : qbitsToSlots(crew.q_bits);
 
     return <React.Fragment>
-        <Table.Cell>
+        {!excludeGrade && <Table.Cell>
             <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: "0.5em"}}>
                 <div style={{color: gradeToColor(q_grade, true) ?? undefined }}>
                     {numberToGrade(q_grade, "None")}
                 </div>
                 <sub>
                     {quipment_score.toLocaleString() ?? "0"}
-                </sub>       
-            </div>     
-        </Table.Cell>
-        {!excludeSpecialty && <Table.Cell>
+                </sub>
+            </div>
+        </Table.Cell>}
+        {!excludeSpecialty && !excludeGrade && <Table.Cell>
             <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: "0.5em"}}>
                 <div style={{color: gradeToColor(tr_grade, true) ?? undefined }}>
                     {numberToGrade(tr_grade, "None")}
                 </div>
                 <sub>
                     {trait_score.toLocaleString() ?? "0"}
-                </sub>       
-            </div>     
+                </sub>
+            </div>
         </Table.Cell>}
         {!excludeSkills && CONFIG.SKILLS_SHORT.map(p => {
-            
+
             const top_skill = top.quipment_scores ? top.quipment_scores[p.name] : 1;
             const skill_score = crew.quipment_scores ? crew.quipment_scores[p.name] : 0;
             const sk_grade = skill_score / top_skill;
@@ -93,8 +94,8 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
                     </div>
                     <sub>
                         {skill_score.toLocaleString() ?? "0"}
-                    </sub>       
-                </div>     
+                    </sub>
+                </div>
             </Table.Cell>
         })}
         {!excludeQBits && <Table.Cell>
