@@ -158,6 +158,7 @@
         "consider_shared": "Considerar las tripulantes compartidas",
         "consider_unowned": "Considere las tripulantes sin propietario",
         "exclude_quipped": "Excluir las tripulantes con quipo activo",
+        "only_immortal": "Sólo tripulación inmortal",
         "shared_crew_popup": "Los números de habilidades del equipo compartido se basan en las ventajas de tu jugador y pueden no coincidir con la puntuación real"
     },
     "cool_stats": {

@@ -160,6 +160,7 @@
         "consider_shared": "Consider shared crew",
         "consider_unowned": "Consider unowned crew",
         "exclude_quipped": "Exclude quipped crew",
+        "only_immortal": "Only immortal crew",
         "shared_crew_popup": "Skill numbers of shared crew are based on your player buffs and may not match actual score"
     },
     "cool_stats": {
