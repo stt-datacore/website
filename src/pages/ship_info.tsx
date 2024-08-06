@@ -75,6 +75,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 	const [considerFrozen, setConsiderFrozen] = useStateWithStorage('ship_info/considerFrozen', false);
 	const [considerUnowned, setConsiderUnowned] = useStateWithStorage('ship_info/considerFrozen', false);
     const [ignoreSkills, setIgnoreSkills] = useStateWithStorage<boolean>(`ship_info/ignoreSkills`, false);
+    const [onlyImmortal, setOnlyImmortal] = useStateWithStorage<boolean>(`ship_info/onlyImmortal`, false);
 
 	React.useEffect(() => {
 		if (inputShip && crewStations?.length && inputShip.battle_stations?.length === crewStations.length) {
@@ -148,6 +149,8 @@ const ShipViewer = (props: ShipViewerProps) => {
 					<ShipRosterCalc
 						pageId={'shipInfo'}
 						crew={crew}
+						onlyImmortal={onlyImmortal}
+						setOnlyImmortal={setOnlyImmortal}
 						ships={[inputShip]}
 						crewStations={crewStations}
 						setCrewStations={setCrewStations}
@@ -310,6 +313,9 @@ const ShipViewer = (props: ShipViewerProps) => {
 		let results = context.player.playerData?.player.character.crew.filter(crew => frozen || crew.immortal <= 0) ?? context.core.crew;
 		if (considerUnowned && context?.player?.playerData) {
 			results = results.concat(context.player.playerData.player.character.unOwnedCrew ?? []);
+		}
+		if (onlyImmortal) {
+			results = results.filter(f => !("immortal" in f) || !!f.immortal);
 		}
 		return [...results];
 	}

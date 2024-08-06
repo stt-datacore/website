@@ -160,6 +160,7 @@
         "consider_shared": "Gemeinsame Crew berücksichtigen",
         "consider_unowned": "Unbesessene Crew berücksichtigen",
         "exclude_quipped": "Crew mit aktiven Rüstzeugen ausschließen",
+        "only_immortal": "Nur unsterbliche Crew",
         "shared_crew_popup": "Die Skill-Zahlen der gemeinsamen Crew basieren auf den Buffs Ihres Spielers und stimmen möglicherweise nicht mit dem tatsächlichen Punktestand überein"
     },
     "cool_stats": {

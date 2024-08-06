@@ -28,6 +28,8 @@ export interface RosterCalcProps {
     setCrewStations: (value: (PlayerCrew | undefined)[]) => void
     considerFrozen: boolean;
     setConsiderFrozen: (value: boolean) => void;
+    onlyImmortal: boolean;
+    setOnlyImmortal: (value: boolean) => void;
     considerUnowned: boolean;
     setConsiderUnowned: (value: boolean) => void;
     ignoreSkills: boolean;
@@ -50,7 +52,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     //const { running, runWorker, cancel } = workerContext;
     const { t, tfmt } = globalContext.localized;
     const [sugWait, setSugWait] = React.useState<number | undefined>();
-    const { ships, crew, crewStations, setCrewStations, pageId, considerFrozen, ignoreSkills, setIgnoreSkills, setConsiderFrozen, considerUnowned, setConsiderUnowned } = props;
+    const { ships, crew, crewStations, setCrewStations, pageId, considerFrozen, ignoreSkills, setIgnoreSkills, setConsiderFrozen, considerUnowned, setConsiderUnowned, onlyImmortal, setOnlyImmortal } = props;
     const shipIdx = props.shipIdx ?? 0;
     const ship = ships[shipIdx];
     const [windowLoaded, setWindowLoaded] = React.useState(false);
@@ -425,7 +427,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             let crewcount = prefilterCrew(max_rarity).length;
             setCrewEstimate(crewcount);
         }
-    }, [ship, crew, battleMode, minRarity, powerDepth, advancedPowerSettings, maxInitTime]);
+    }, [ship, crew, battleMode, minRarity, powerDepth, advancedPowerSettings, maxInitTime, onlyImmortal]);
 
     return <React.Fragment>
         <div className={'ui segment'} style={{
@@ -590,6 +592,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             <div style={{
                                 display: 'flex',
                                 flexDirection: 'row',
+                                flexWrap: 'wrap',
                                 justifyContent: 'space-between',
                                 alignItems: 'center',
                                 margin: '1em',
@@ -620,6 +623,14 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                             label={t('consider_crew.consider_unowned')}
                                             checked={considerUnowned}
                                             onChange={(e, { checked }) => setConsiderUnowned(checked as boolean)} />
+                                    </div>
+
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
+                                        <Checkbox
+                                            disabled={running}
+                                            label={t('consider_crew.only_immortal')}
+                                            checked={onlyImmortal}
+                                            onChange={(e, { checked }) => setOnlyImmortal(checked as boolean)} />
                                     </div>
                                 </>}
 
@@ -1025,6 +1036,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         });
 
         const results = crew.filter((crew) => {
+            if (onlyImmortal && ("immortal" in crew && !crew.immortal)) return false;
             if (!fbb_mode && maxInitTime !== undefined) {
                 if (crew.action.initial_cooldown > maxInitTime) return false;
             }

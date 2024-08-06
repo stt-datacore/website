@@ -158,6 +158,7 @@
         "consider_shared": "Envisagez l'équipier partagé",
         "consider_unowned": "Considérez les équipiers sans propriétaire",
         "exclude_quipped": "Exclure les équipiers quipés",
+        "only_immortal": "Seul l'équipage immortel",
         "shared_crew_popup": "Les nombres de compétences de l'équipier partagé sont basés sur les buffs de vos joueurs et peuvent ne pas correspondre au score réel"
     },
     "cool_stats": {
