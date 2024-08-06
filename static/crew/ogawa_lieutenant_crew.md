@@ -3,7 +3,7 @@ name: Lieutenant Ogawa
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal: true
 date: 05/01/2022
 published: true
