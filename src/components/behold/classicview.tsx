@@ -43,6 +43,7 @@ type CardCrewProps = {
 
 const CardCrew = (props: CardCrewProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { crew, index } = props;
 
@@ -95,18 +96,18 @@ const CardCrew = (props: CardCrewProps) => {
 						{!!crew.markdownContent && <div dangerouslySetInnerHTML={{ __html: marked.parse(crew.markdownContent) }} />}
 						<div style={{ marginTop: '1em', textAlign: 'right' }}>
 							<a href={`https://www.bigbook.app/crew/${crew.symbol}`} target='_blank'>
-								View {crew.name} on Big Book
+								{t('crew_views.view_big_book', { crew: crew.name })}
 							</a>
 						</div>
 					</div>
 					<div style={{ marginTop: '2em', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
 						{false && <Button onClick={() => addProspects([crew.symbol])}>
 							<Icon name='add user' color='green' />
-							Preview {crew.short_name} in your roster
+							{t('crew_views.preview', { crew: crew.short_name })}
 						</Button>}
 						<Button onClick={() => { props.handleDismiss(index); }}>
 							<Icon name='x' color='red' />
-							Dismiss {crew.short_name}
+							{t('crew_views.dismiss', { crew: crew.short_name })}
 						</Button>
 					</div>
 				</Card.Content>

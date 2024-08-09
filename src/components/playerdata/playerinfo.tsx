@@ -29,7 +29,7 @@ export const PlayerInfo = (props: PlayerInfoProps) => {
 	return (
 		<Card fluid>
 			<Card.Content>
-				<Label as='a' corner='right' onClick={requestDismiss}>
+				<Label title={'Close player info panel'} as='a' corner='right' onClick={requestDismiss}>
 					<Icon name='delete' />
 				</Label>
 				<Item.Group>

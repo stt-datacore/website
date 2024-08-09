@@ -20,7 +20,7 @@ import { CrewMaintenanceFilter } from './filters/crewmaintenance';
 import { CrewOwnershipFilter } from './filters/crewownership';
 import { CrewPortalFilter } from './filters/crewportal';
 import { getBaseTableConfig, CrewBaseCells } from './views/base';
-import { ShipAbilitiesFilter, shipTableConfig, CrewShipCells } from './views/shipabilities';
+import { ShipAbilitiesFilter, getShipTableConfig, CrewShipCells } from './views/shipabilities';
 import { getRanksTableConfig, CrewRankCells } from './views/ranks';
 import { CrewUtilityForm, getCrewUtilityTableConfig, CrewUtilityCells } from './views/crewutility';
 
@@ -57,6 +57,7 @@ type RosterTableProps = {
 
 export const RosterTable = (props: RosterTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData, buffConfig: playerBuffs } = globalContext.player;
 	const { initHighlight, buffMode, setBuffMode } = props;
 
@@ -132,7 +133,7 @@ export const RosterTable = (props: RosterTableProps) => {
 			{props.rosterType === 'myCrew' && playerData && playerBuffs &&
 				<React.Fragment>
 					<RosterProspects prospects={prospects} setProspects={setProspects} />
-					<Header as='h3'>Advanced Analysis</Header>
+					<Header as='h3'>{t('crew_views.advanced_analysis')}</Header>
 					<RosterSummary myCrew={props.rosterCrew} allCrew={globalContext.core.crew} buffConfig={playerBuffs} />
 				</React.Fragment>
 			}
@@ -148,13 +149,14 @@ type RosterProspectsProps = {
 const RosterProspects = (props: RosterProspectsProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { prospects, setProspects } = props;
+	const { t } = globalContext.localized;
 
 	const pool = globalContext.core.crew.sort((a, b) => a.name.localeCompare(b.name));
 
 	return (
 		<React.Fragment>
-			<Header as='h4'>Prospective Crew</Header>
-			<p>Add prospective crew to see how they fit into your existing roster.</p>
+			<Header as='h4'>{t('crew_views.prospect.title')}</Header>
+			<p>{t('crew_views.prospect.description')}</p>
 			<ProspectPicker pool={pool} prospects={prospects} setProspects={setProspects} />
 		</React.Fragment>
 	);
@@ -199,8 +201,9 @@ interface IDataPrepared {
 	appliedFilters: string[];
 };
 
-const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profileCrew' | 'buyBack' }) => {
+const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { playerData, playerShips } = globalContext.player;
 	const { topQuipmentScores: top } = globalContext.core;
 	const tableContext = React.useContext(RosterTableContext);
@@ -246,7 +249,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 		{
 			id: 'ship',
 			available: true,
-			optionText: 'Show ship abilities',
+			optionText: t('crew_views.ship'),
 			form:
 				<ShipAbilitiesFilter
 					key='ship'
@@ -257,29 +260,33 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					crewFilters={crewFilters}
 					setCrewFilters={setCrewFilters}					
 				/>,
-			tableConfig: shipTableConfig,
+			tableConfig: getShipTableConfig(t),
 			renderTableCells: (crew: IRosterCrew) => <CrewShipCells crew={crew} />
 		},
 		{
 			id: 'g_ranks',
 			available: true,
-			optionText: 'Show gauntlet ranks',
-			form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult <Link to='/gauntlets'>Gauntlets</Link>.</p>,
+			optionText: t('crew_views.gauntlet'),
+			form: <p>{tfmt('crew_page.notes.gauntlet_determination', {
+				link: <Link to='/gauntlets'>{t('menu.tools.gauntlet')}</Link>
+			})}</p>,
 			tableConfig: getRanksTableConfig('gauntlet'),
 			renderTableCells: (crew: IRosterCrew) => <CrewRankCells crew={crew} prefix='G_' />
 		},
 		{
 			id: 'v_ranks',
 			available: true,
-			optionText: 'Show voyage ranks',
-			form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
+			optionText: t('crew_views.voyage'),
+			form: <p>{tfmt('crew_page.notes.voyage_determination', {
+				link: <Link to='/gauntlets'>{t('menu.tools.voyage_calculator')}</Link>
+			})}</p>,
 			tableConfig: getRanksTableConfig('voyage'),
 			renderTableCells: (crew: IRosterCrew) => <CrewRankCells crew={crew} prefix='V_' />
 		},
 		{
 			id: 'qp_score',
 			available: true,
-			optionText: 'Show quipment scores',
+			optionText: t('crew_views.quipment'),
 			// form: <QuipmentToolsFilter 
 			// 		maxxed={rosterType === 'allCrew' || rosterType === 'buyBack'}
 			// 		quipment={quipment}
@@ -296,11 +303,11 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			// 		setCrewFilters={setCrewFilters}	
 			// 	/>,
 			// //form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getQuipmentTableConfig(rosterType === 'allCrew' || rosterType === 'buyBack'),			
+			tableConfig: getQuipmentTableConfig(t, ['allCrew', 'offers', 'buyBack'].includes(rosterType)),
 			renderTableCells: 
 				(crew: IRosterCrew) => 
 					<QuipmentScoreCells 
-						excludeQBits={rosterType === 'allCrew' || rosterType === 'buyBack'}
+						excludeQBits={['allCrew', 'offers', 'buyBack'].includes(rosterType)}
 						excludeSkills={false} 
 						top={top[crew.max_rarity - 1]} 
 						crew={crew} />
@@ -308,8 +315,8 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 		{
 			id: 'qp_best',
 			available: true,
-			optionText: 'Show max quipment',
-			spinText: 'Calculating quipment...',
+			optionText: t('crew_views.max_quipment'),
+			spinText: t('spinners.quipment'),
 			worker: (crew: IRosterCrew[]) => {				
 				return new Promise((resolve, reject) => {
 
@@ -328,7 +335,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 							crew,
 							quipment,
 							buffs: getActiveBuffs(),
-							max_qbits: rosterType === 'allCrew' || rosterType === 'buyBack',
+							max_qbits: ['allCrew', 'offers', 'buyBack'].includes(rosterType),
 							slots,
 							mode: powerMode
 						}
@@ -339,7 +346,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			},
 			form: <QuipmentToolsFilter 
 					immortalOnly={true}
-					maxxed={rosterType === 'allCrew' || rosterType === 'buyBack'}
+					maxxed={['allCrew', 'offers', 'buyBack'].includes(rosterType)}
 					quipment={quipment}
 					pstMode={pstMode}
 					setPstMode={setPstMode}
@@ -353,7 +360,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					setCrewFilters={setCrewFilters}	
 				/>,
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getTopQuipmentTableConfig(pstMode, rosterType === 'allCrew' || rosterType === 'buyBack', powerMode, getActiveBuffs()),
+			tableConfig: getTopQuipmentTableConfig(t, pstMode, ['allCrew', 'offers', 'buyBack'].includes(rosterType), powerMode, getActiveBuffs()),
 			renderTableCells: 
 				(crew: IRosterCrew) => 
 					<TopQuipmentScoreCells 
@@ -361,16 +368,16 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 						slots={slots}
 						buffConfig={getActiveBuffs()}
 						quipment={quipment}
-						excludeQBits={rosterType === 'allCrew' || rosterType === 'buyBack'}
+						excludeQBits={['allCrew', 'offers', 'buyBack'].includes(rosterType)}
 						targetGroup={`${pageId}/targetClassItem`} 
-						allslots={rosterType === 'allCrew' || rosterType === 'buyBack'}
+						allslots={['allCrew', 'offers', 'buyBack'].includes(rosterType)}
 						top={top[crew.max_rarity - 1]} 
 						crew={crew} />
 		},
 		{
 			id: 'crew_utility',
 			available: playerData && rosterType === 'myCrew',
-			optionText: 'Show crew utility',
+			optionText: t('crew_views.crew_utility'),
 			form:
 				<CrewUtilityForm
 					pageId={pageId}
@@ -382,7 +389,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					showBase={showBase}
 					setShowBase={setShowBase}
 				/>,
-			tableConfig: getCrewUtilityTableConfig(showBase),
+			tableConfig: getCrewUtilityTableConfig(t, showBase),
 			renderTableCells: (crew: IRosterCrew) => <CrewUtilityCells pageId={pageId} showBase={showBase} crew={crew} />
 		},
 	] as ITableView[];
@@ -413,7 +420,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 		},
 		{
 			id: 'ownership',
-			available: playerData && (rosterType === 'allCrew' || rosterType === 'buyBack'),
+			available: playerData && (['offers', 'allCrew', 'buyBack'].includes(rosterType)),
 			form:
 				<CrewOwnershipFilter
 					key='filter_allcrew_ownership'
@@ -425,7 +432,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 	] as IToggleableFilter[];
 
 	const tableViewOptions = [
-		{ key: 'base', value: '' as TableView, text: 'Show base skills' },
+		{ key: 'base', value: '' as TableView, text: t('crew_views.base') },
 	] as ITableViewOption[];
 
 	tableViews.forEach(view => {
@@ -523,7 +530,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 			<Form>
 				<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: '1em' }}>
 					<Form.Field
-						placeholder='Show base skills'
+						placeholder={t('crew_views.base')}
 						control={Dropdown}
 						selection
 						clearable
@@ -548,7 +555,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 						crewFilters={crewFilters}
 						setCrewFilters={setCrewFilters}
 					/>
-					{(rosterType === 'allCrew' || rosterType === 'buyBack') && 
+					{(['allCrew', 'offers', 'buyBack'].includes(rosterType)) && 
 					<CrewBuffModes
 						buffMode={buffMode}
 						setBuffMode={setBuffMode}
@@ -568,7 +575,7 @@ const CrewConfigTableMaker = (props: { tableType: 'allCrew' | 'myCrew' | 'profil
 					initOptions={initOptions}
 					rosterCrew={preparedCrew}
 					crewFilters={crewFilters}
-					tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType)}
+					tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t)}
 					renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells tableType={props.tableType} crew={crew} pageId={pageId} />}
 					lockableCrew={lockableCrew}
 					loading={isPreparing}

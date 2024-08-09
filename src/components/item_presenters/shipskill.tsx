@@ -6,6 +6,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { PresenterPluginProps, PresenterPlugin, PresenterPluginState } from "./presenter_plugin";
 import { CrewMember } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
+import { GlobalContext } from "../../context/globalcontext";
 
 const imageMap = new Map<string, string>();
 
@@ -18,7 +19,7 @@ if (isWindow) window.setTimeout(() => {
     imgs = imgs.concat(Object.values(CONFIG.SHIP_BATTLE_ABILITY_ICON));
     imgs = imgs.concat(Object.values(CONFIG.SHIP_BATTLE_TRIGGER_ICON));
     imgs = imgs.concat(["attack-icon.png", "accuracy-icon.png", "evasion-icon.png", "usage-bullet.png"]);
-    
+
     for (let img of imgs) {
         if (img === '') continue;
         toDataURL("/media/ship/" + img, (data) => {
@@ -44,7 +45,7 @@ export const getActionIcon = (action: number) => {
     // if (action === 0) return "/media/ship/attack-icon.png";
     // if (action === 2) return "/media/ship/accuracy-icon.png";
     // if (action === 1) return "/media/ship/evasion-icon.png";
-    
+
     if (action === 0) return imageMap.get("attack-icon.png");
     if (action === 2) return imageMap.get("accuracy-icon.png");
     if (action === 1) return imageMap.get("evasion-icon.png");
@@ -66,7 +67,7 @@ export const getShipBonusIcon = (item?: ShipAction | Ship, index?: number): stri
     if (!action || !action.ability) return undefined;
     if (action.ability.type !== 0)
         return imageMap.get(CONFIG.SHIP_BATTLE_ABILITY_ICON[action.ability.type]);
-    else 
+    else
         return imageMap.get(CONFIG.CREW_SHIP_BATTLE_BONUS_ICON[action.bonus_type]);
 }
 
@@ -83,19 +84,24 @@ export const getIconByKey = (key: string): string | undefined => {
 export interface ShipSkillProps extends PresenterPluginProps<Ship | PlayerCrew | CrewMember> {
     withActionBorder?: boolean;
     withActionIcons?: boolean;
-    grouped?: boolean;    
+    grouped?: boolean;
 }
 
 export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, ShipSkillProps, PresenterPluginState> {
+    static contextType = GlobalContext;
+    context!: React.ContextType<typeof GlobalContext>;
+
     static title = "Ship Ability";
-    
+
     constructor(props: ShipSkillProps) {
         super(props);
-    
+
     }
 
     render() {
         if (!this.props.context) return <></>
+        const { t, tfmt } = this.context.localized;
+
         const isShip = ("hull" in this.props.context);
         const ship_battle = ("hull" in this.props.context ? this.props.context : this.props.context.ship_battle)
         const actions = ("hull" in this.props.context ? this.props.context.actions ?? [] : [this.props.context.action]);
@@ -118,7 +124,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
 
         return (
             <div style={{ marginBottom: "8px", fontSize: this.props.fontSize ?? "1em" }}>
-                {actions.length && actions.map((action, index) => 
+                {actions.length && actions.map((action, index) =>
                     <div key={index}
                          style={{
                             display: "flex",
@@ -126,14 +132,14 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                             justifyContent: "stretch"
                          }}
                         >
-                        <div 
+                        <div
                             style={{
                                 flexGrow: 1,
-                                marginTop: "4px", 
-                                border: withActionBorder ? "1px solid " + getActionColor(action.bonus_type) : "none", 
+                                marginTop: "4px",
+                                border: withActionBorder ? "1px solid " + getActionColor(action.bonus_type) : "none",
                                 padding: withActionBorder ? "2px" : "0px"}}>
                             <div
-                                style={{                                
+                                style={{
                                     display: "flex",
                                     flexDirection: "row",
                                     justifyContent: "space-between",
@@ -198,48 +204,35 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                 }}
                             >
                                 <li>
-                                    Boosts{" "}
-                                    {
-                                        CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[
-                                            action.bonus_type
-                                        ]
-                                    }{" "}
-                                    by {action.bonus_amount}
+                                    {t("ship_action.boost_by", {
+                                        type: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type],
+                                        amount: action.bonus_amount?.toString() ?? ''
+                                    })}
                                 </li>
                                 {"status" in action && ((action.status ?? 0) > 0) && (
                                     <li>
-                                        Grants<b>{" "}
-                                        {
-                                            CONFIG.SHIP_BATTLE_GRANTS[
-                                                action.status ?? 0
-                                            ]
-                                        }{" "}</b>status:<br />
-                                        {
-                                            CONFIG.SHIP_BATTLE_GRANT_DESC[
-                                                action.status ?? 0
-                                            ]
-                                        }
+                                        {t("ship_action.grant", {
+                                            grant: CONFIG.SHIP_BATTLE_GRANTS[action.status ?? 0],
+                                            grant_description: CONFIG.SHIP_BATTLE_GRANT_DESC[action.status ?? 0]
+                                        })}
                                     </li>
                                 )}
                                 {action.penalty && (
                                     <div style={{color: getActionColor(0)}}>
-                                        Decrease{" "}
-                                        {
-                                            CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[
-                                                action.penalty.type
-                                            ]
-                                        }{" "}
-                                        by {action.penalty.amount}
+                                        {t("ship_action.handicap", {
+                                            type: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.penalty.type],
+                                            amount: action.penalty.amount.toString()
+                                        })}
                                     </div>
                                 )}
                                 <li style={{ color: "white" }}>
-                                    <b>Initialize</b>: {action.initial_cooldown}s,{" "}
-                                    <b>Cooldown</b>: {action.cooldown}s,{" "}
-                                    <b>Duration</b>: {action.duration}s
+                                    <b>{t('ship.initialize')}</b>: {action.initial_cooldown}s,{" "}
+                                    <b>{t('ship.cooldown')}</b>: {action.cooldown}s,{" "}
+                                    <b>{t('ship.duration')}</b>: {action.duration}s
                                 </li>
                                 {action.limit && (
                                     <li style={{ color: "white" }}>
-                                        <b>Uses Per Battle</b>: {action.limit}{" "}
+                                        <b>{t('ship.uses_per_battle')}</b>: {action.limit}{" "}
                                         {drawBullets(action.limit)}
                                     </li>
                                 )}
@@ -269,7 +262,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                         }}
                                     >
                                         <div style={{ marginTop: "0px" }}>
-                                            Bonus Ability
+                                            {t('ship.bonus_ability')}
                                         </div>
                                         {action.ability.condition > 0 && (
                                             <div style={{
@@ -278,7 +271,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                                 justifyContent: "flex-end",
                                                 alignItems: "center"
                                             }}>
-                                                <b>Trigger</b>:{" "}
+                                                <b>{t('ship.trigger')}</b>:{" "}
                                                 <img style={{margin: "0.25em", height: "1em"}}  src={getTriggerIcon(action.ability.condition)} />
                                                 {
                                                     CONFIG.CREW_SHIP_BATTLE_TRIGGER[
@@ -303,18 +296,18 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                             justifyContent: "flex-start",
                                             alignItems: "center"
                                         }}>
-                                        
+
                                         <img style={{
-                                                margin: "0.25em 0.5em 0.25em 0.25em", 
-                                                maxWidth: "2em", 
+                                                margin: "0.25em 0.5em 0.25em 0.25em",
+                                                maxWidth: "2em",
                                                 maxHeight: "1.5em"
-                                            }} 
+                                            }}
                                             src={getShipBonusIcon(action)} />
 
-                                        <div style={{ lineHeight: "1.3em"}}> 
-                                            {getShipBonus(action)}
+                                        <div style={{ lineHeight: "1.3em"}}>
+                                            {getShipBonus(t, action)}
                                         </div>
-                                        
+
                                         </div>
                                     </div>
                                 </div>
@@ -323,7 +316,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                             {action.charge_phases && action.charge_phases.length && (
                                 <div>
                                     <div style={{ marginBottom: ".25em" }}>
-                                        Charge Phases
+                                        {t('ship.charge_phases')}
                                     </div>
                                     <ol
                                         style={{
@@ -332,15 +325,15 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                             paddingLeft: "0",
                                         }}
                                     >
-                                        {getShipChargePhases(action).map((phase, idx) => (
+                                        {getShipChargePhases(action, undefined, t).map((phase, idx) => (
                                             <li key={idx}>{phase}</li>
                                         ))}
                                     </ol>
                                 </div>
                             )}
                         </div>
-                        {withActionIcons && 
-                            <div                                 
+                        {withActionIcons &&
+                            <div
                                 style={{
                                 width:"72px",
                                 display: "flex",
@@ -348,53 +341,53 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                 justifyContent: "center",
                                 alignItems: "center"
                             }}>
-                                <div className="ui segment" 
+                                <div className="ui segment"
                                     style={{
                                         marginLeft: "0.5em",
-                                        padding: 0, 
-                                        display: "flex", 
-                                        flexDirection: "row", 
+                                        padding: 0,
+                                        display: "flex",
+                                        flexDirection: "row",
                                         justifyContent: "center"}}>
                                     <img style={{
-                                            width: "64px", 
-                                            padding: 0, 
-                                            margin: "0"}} 
+                                            width: "64px",
+                                            padding: 0,
+                                            margin: "0"}}
                                             title={action.source}
-                                        src={`${process.env.GATSBY_ASSETS_URL}${action.icon?.file?.slice(1).replace(/\//g, "_")}.png`} 
+                                        src={`${process.env.GATSBY_ASSETS_URL}${action.icon?.file?.slice(1).replace(/\//g, "_")}.png`}
                                         />
                                 </div>
                             </div>
                         }
                     </div>)
                     }
-                    
+
                 <div>
-                    <div style={{ marginBottom: ".25em", marginTop: "0.25em" }}>{!isShip && "Equipment Bonus"}</div>
+                    <div style={{ marginBottom: ".25em", marginTop: "0.25em" }}>{!isShip && t('ship.equipment_bonus')}</div>
                     <p>
                         {!!ship_battle.crit_bonus && (
                             <span>
-                                <b>Crit Bonus:</b> +
+                                <b>{t('ship.crit_bonus')}:</b> +
                                 {ship_battle.crit_bonus}
                                 {` `}
                             </span>
                         )}
                         {!!ship_battle.crit_chance && (
                             <span>
-                                <b>Crit Rating:</b> +
+                                <b>{t('ship.crit_rating')}:</b> +
                                 {ship_battle.crit_chance}
                                 {` `}
                             </span>
                         )}
                         {!isShip && !!ship_battle.accuracy &&
                             <span>
-                            <b>Accuracy:</b> +
+                            <b>{t('ship.accuracy')}:</b> +
                             {ship_battle.accuracy}
                             {` `}
                             </span>
                         }
                         {!isShip && !!ship_battle.evasion &&
                             <span>
-                            <b>Evasion:</b> +
+                            <b>{t('ship.evasion')}:</b> +
                             {ship_battle.evasion}
                             {` `}
                             </span>
@@ -407,30 +400,33 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
 }
 
 export interface TinyShipSkillProps {
-    crew: PlayerCrew | CrewMember;
+    crew?: PlayerCrew | CrewMember;
+    action?: ShipAction;
     style?: React.CSSProperties;
 }
 
 export const TinyShipSkill = (props: TinyShipSkillProps) => {
-    const { crew } = props;
-
+    const { t } = React.useContext(GlobalContext).localized;
+    let { crew, action } = props;
+    if (!action && crew) action = crew.action;
+    if (!action) return <></>
     return (
             <div style={{ ...(props.style ?? {}), display:"flex",flexDirection:"column",justifyContent:"center", alignItems: "center"}}>
-                <div style={{display:"flex", flexDirection: "row", color: getActionColor(crew.action.bonus_type)}}>								
-                    <span>+ {crew.action.bonus_amount}</span>								
+                <div style={{display:"flex", flexDirection: "row", color: getActionColor(action.bonus_type)}}>
+                    <span>+ {action.bonus_amount}</span>
                 </div>
 
-                {crew.action.ability && <div style={{ lineHeight: "1.3em"}}> 
-                    {getShipBonus(crew.action)} {!!crew.action.limit && <i style={{fontSize:"0.8em"}}> ({crew.action.limit}x)</i>}
+                {action.ability && <div style={{ lineHeight: "1.3em"}}>
+                    {getShipBonus(t, action)} {!!action.limit && <i style={{fontSize:"0.8em"}}> ({action.limit}x)</i>}
                 </div>}
-                {!!crew.action.ability?.condition && <i style={{fontSize:"0.8em"}}>({
+                {!!action.ability?.condition && <i style={{fontSize:"0.8em"}}>({
                                     CONFIG.CREW_SHIP_BATTLE_TRIGGER[
-                                        crew.action.ability.condition
+                                        action.ability.condition
                                     ]
                                 })</i>}
 
-                {!!crew.action.charge_phases?.length && <i style={{fontSize:"0.8em"}}>(+{crew.action.charge_phases.length} charge phases)</i>}
-                <p style={{fontSize:"0.75em"}}>
+                {!!action.charge_phases?.length && <i style={{fontSize:"0.8em"}}>(+{action.charge_phases.length} charge phases)</i>}
+                {!!crew && <p style={{fontSize:"0.75em"}}>
                     {crew.ship_battle.crit_bonus && (
                         <span>
                             <b>CB:</b> +
@@ -459,7 +455,7 @@ export const TinyShipSkill = (props: TinyShipSkillProps) => {
                         {` `}
                         </span>
                     }
-                </p>
+                </p>}
             </div>
     )
 }

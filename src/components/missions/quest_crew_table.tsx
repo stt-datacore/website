@@ -10,6 +10,7 @@ import PowerExplanation, { GradeSwatch, gradeCrew } from '../explanations/powere
 import { CrewConfigTable } from '../crewtables/crewconfigtable';
 import { MissionChallenge, Quest, QuestFilterConfig } from '../../model/missions';
 import { pathToChallenges, pathToNames } from '../../utils/episodes';
+import { GlobalContext } from '../../context/globalcontext';
 
 export interface QuestCrewTableProps {
     solverResults?: QuestSolverResult;
@@ -20,6 +21,7 @@ export interface QuestCrewTableProps {
 }
 
 export const QuestCrewTable = (props: QuestCrewTableProps) => {
+    const { localized } = React.useContext(GlobalContext);
 
     const { quest, config, solverResults, pageId } = props;
     const { mastery, showAllSkills } = config;
@@ -78,7 +80,7 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                                                 />
                                                 {challenge.challenge.skill === skill.skill && !!challenge.trait_bonuses?.length &&
                                                     <div style={{ color: 'lightgreen', textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic', fontSize: "0.75em" }}>
-                                                        +&nbsp;{challenge.trait_bonuses?.map(ct => ct.bonuses[mastery]).reduce((p, n) => p + n, 0)}&nbsp;({challenge.trait_bonuses?.map(ct => <>{appelate(ct.trait)}</>).reduce((p, n) => p ? <>{p}, {n}</> : n)})
+                                                        +&nbsp;{challenge.trait_bonuses?.map(ct => ct.bonuses[mastery]).reduce((p, n) => p + n, 0)}&nbsp;({challenge.trait_bonuses?.map(ct => <>{localized.TRAIT_NAMES[ct.trait]}</>).reduce((p, n) => p ? <>{p}, {n}</> : n)})
                                                     </div>}
 
                                             </div>
@@ -139,7 +141,7 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                                         <div style={{ gridArea: 'traits' }}>
                                             {ctraits?.length ?
                                                 <i style={{ color: "lightgreen", fontWeight: "bold" }}>
-                                                    ({ctraits.map(t => appelate(t)).join(", ")})
+                                                    ({ctraits.map(t => localized.TRAIT_NAMES[t]).join(", ")})
                                                 </i>
                                                 : <></>}
                                         </div>
@@ -158,7 +160,7 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                 column: 'score',
                 direction: 'ascending',
                 rows: 5
-            }}                    
+            }}
             tableConfig={crewTableCells}
             renderTableCells={renderTableCells}
             rosterCrew={solverResults?.crew ?? []}

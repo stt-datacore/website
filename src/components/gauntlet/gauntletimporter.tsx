@@ -17,7 +17,8 @@ export const GauntletImportComponent = (props: GauntletImporterProps) => {
 
     const { currentHasRemote, gauntlet, setGauntlet, setError, clearGauntlet } = props;
     const context = React.useContext(GlobalContext);
-    const { playerData} = context.player;
+    const { playerData } = context.player;
+    const { t } = context.localized;
 	
 	const [collapsed, setCollapsed] = React.useState<boolean | undefined>(undefined);
 
@@ -36,21 +37,21 @@ export const GauntletImportComponent = (props: GauntletImporterProps) => {
 
 	function renderCopyPaste(): JSX.Element {
 
-        const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=20&only_read_state=true';
+        const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=23&only_read_state=true';
 
         return (
 			<React.Fragment>
                 {!currentHasRemote && <Notification
                     color={'blue'}
-                    header={`Live Gauntlet Data`}
+                    header={t('gauntlet.import.title')}
                     content={
                         <div style={{cursor: 'pointer'}} onClick={(e) => setCollapsed(false)}>
-						<p>You can access your live gauntlet matches in a similar way to how you access your player data, currently.</p>
+						<p>{t('gauntlet.import.heading')}</p>
 						<p>
-							Click here to upload your data.
+                        {t('gauntlet.import.click_here')}
 						</p>
                         <p>
-                            <b><a onClick={() => setCollapsed(false)} target='_blank' href={PLAYERLINK}>Live Gauntlet Data</a></b>
+                            <b><a onClick={() => setCollapsed(false)} target='_blank' href={PLAYERLINK}>{t('gauntlet.live.title')}</a></b>
                         </p>
                         </div>
                     }
@@ -86,7 +87,7 @@ export const GauntletImportComponent = (props: GauntletImporterProps) => {
 					config={{
                         pasteInMobile: true,
 						dataUrl: PLAYERLINK,
-						dataName: 'Gauntlet',
+						dataName: t('json_types.gauntlet_data'),
 						jsonHint: '{"action":"update","character":',
 						androidFileHint: 'status.json',
 						iOSFileHint: 'status?id'

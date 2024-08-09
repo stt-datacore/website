@@ -37,6 +37,7 @@ export function crewMatchesSearchFilter(crew: PlayerCrew | CrewMember, filters: 
 				} else if (condition.keyword === 'trait') {
 					conditionResult =
 						crew.traits_named.some(t => matchesFilter(t, condition.value)) ||
+						crew.traits.some(t => matchesFilter(t, condition.value)) ||
 						crew.traits_hidden.some(t => matchesFilter(t, condition.value));
 				} else if (condition.keyword === 'rarity') {
 					if (!condition.negated) {

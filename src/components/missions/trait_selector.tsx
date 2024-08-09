@@ -1,5 +1,6 @@
 import React from "react";
 import { appelate } from "../../utils/misc";
+import { GlobalContext } from "../../context/globalcontext";
 
 export interface TraitSelection {
     trait: string;
@@ -20,6 +21,7 @@ export interface TraitSelectorProps {
 
 
 export const TraitSelectorComponent = (props: TraitSelectorProps) => {
+    const { localized } = React.useContext(GlobalContext);
     const { questId, style, traits, preformatted, selectedTraits, setSelectedTraits } = props;
     const joinString = props.joinString ?? ", ";
 
@@ -52,13 +54,13 @@ export const TraitSelectorComponent = (props: TraitSelectorProps) => {
         ... style ?? {},
     }}>
         {traits.map((trait) => {
-            let tf = preformatted ? trait : appelate(trait);
+            let tf = preformatted ? trait : localized.TRAIT_NAMES[trait];
             if (selectedTraits?.some(t => t.trait === trait && t.questId === questId && t.selected)) {
                 return <div className={'ui label'} style={selStyle} onClick={(e) => clickTrait(trait)}>{tf}</div>
             }
             else {
                 return <div className={'ui label'} style={traitStyle} onClick={(e) => clickTrait(trait)}>{tf}</div>
-            }            
+            }
         }).reduce((p, n) => p ? <>{p}{joinString}{n}</> : n)}
     </div>
 

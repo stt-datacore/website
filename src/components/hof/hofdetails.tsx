@@ -39,12 +39,7 @@ export interface HofDetailsProps {
 }
 
 interface Seats {
-    CMD?: number;
-    DIP?: number;
-    SEC?: number;
-    ENG?: number;
-    SCI?: number;
-    MED?: number;
+    [key: string]: number;    
 }
 
 export const HofDetails = (props: HofDetailsProps) => {
@@ -86,7 +81,7 @@ export const HofDetails = (props: HofDetailsProps) => {
     });
 
     const addSeat = (x: number, crew: string) => {
-        let key = CONFIG.VOYAGE_CREW_SLOTS[x] + "," + crew;
+        let key = CONFIG.VOYAGE_CREW_SLOTS[x] + "," + crew;        
         seatMap[key] ??= 0;
         seatMap[key]++;
     };
@@ -187,10 +182,12 @@ export const HofDetails = (props: HofDetailsProps) => {
         <React.Fragment>
             {!!crewSymbol?.length &&
                 (!rawVoyages || featuredList?.length !== crewSymbol?.length) &&
-                context.core.spin(
+                <div style={{height: "50%"}}>
+                {context.core.spin(
                     `Loading details for '${featuredList?.map((f) => f.name)?.join(", ") ?? crewSymbol
                     }' ...`
-                )}
+                )}</div>}
+                
             {!!crewSymbol && !!rawVoyages?.length && !!featuredList && (
                 <>
                     <div

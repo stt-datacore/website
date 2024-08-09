@@ -45,7 +45,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     const context = React.useContext(GlobalContext);
     if (!context.player.playerData) return <></>
-
+    const { t } = context.localized;
     const { continuum_missions } = context.core;
 
     const mostRecentDate = new Date(
@@ -515,11 +515,10 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         <>        
             <div>
                 <Notification
-                    header="Work In Progress"
+                    header={t('global.work_in_progress.title')}
                     content={
                         <p>
-                            This page is a work in progress. Some functions and features may
-                            be non-functional, incomplete, or missing.
+                            {t('global.work_in_progress.heading')}
                         </p>
                     }
                     icon="bitbucket"

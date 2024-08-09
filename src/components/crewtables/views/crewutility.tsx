@@ -3,7 +3,7 @@ import { Link } from 'gatsby';
 import { Button, Form, Checkbox, Table, Segment, Modal, Header, Rating, Statistic, Divider } from 'semantic-ui-react';
 
 import { Skill } from '../../../model/crew';
-import { PlayerUtilityRanks } from '../../../model/player';
+import { PlayerUtilityRanks, TranslateMethod } from '../../../model/player';
 import { GlobalContext } from '../../../context/globalcontext';
 import CONFIG from '../../../components/CONFIG';
 import { ITableConfigRow } from '../../../components/searchabletable';
@@ -50,6 +50,7 @@ type CrewUtilityFormProps = {
 
 export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { rosterCrew, crewMarkups, setCrewMarkups, crewFilters, setCrewFilters, showBase, setShowBase } = props;
 
@@ -124,12 +125,16 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 	return (
 		<div style={{ marginBottom: '1em' }}>
 			<p>
-				Crew utility identifies the number of potentially useful skill sets each crew has, relative to others on your roster with similar skill sets. For specific advice on crew to use, consult the <Link to='/eventplanner'>Event Planner</Link>, <Link to='/gauntlets'>Gauntlets</Link>, or <Link to='/voyage'>Voyage Calculator</Link>.
+				{tfmt('crew_utility.header', {
+					event_planner: <Link to='/eventplanner'>{t('menu.tools.event_planner')}</Link>,
+					gauntlets: <Link to='/gauntlets'>{t('menu.tools.gauntlet')}</Link>,
+					voyage_calculator: <Link to='/voyage'>{t('menu.tools.voyage_calculator')}</Link>,
+				})}				
 			</p>
-			<Button content='Customize utility scoring...' onClick={() => setShowPane(!showPane)} />
+			<Button content={t('crew_utility.customize_button')} onClick={() => setShowPane(!showPane)} />
 			{showPane &&
 				<div style={{ margin: '1em 0' }}>
-					<p>You can measure utility for different areas of the game. A higher number will consider more crew as useful in that area of gameplay.</p>
+					<p>{t('crew_utility.customize_header')}</p>
 					{renderThresholdForm()}
 				</div>
 			}
@@ -142,7 +147,7 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 				<Table collapsing style={{ margin: '0 auto' }}>
 					<Table.Body>
 						<Table.Row>
-							<Table.Cell>Core:</Table.Cell>
+							<Table.Cell>{t('crew_utility.custom.core')}:</Table.Cell>
 							<Table.Cell>
 								<Button.Group size='tiny'>
 									{[0, 1, 2, 3, 4, 5, 10, 20].map(t =>
@@ -154,7 +159,7 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 							</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Shuttle Pairs:</Table.Cell>
+							<Table.Cell>{t('crew_utility.custom.shuttle_pairs')}:</Table.Cell>
 							<Table.Cell>
 								<Button.Group size='tiny'>
 									{[0, 1, 2, 3, 4, 5, 10, 20].map(t =>
@@ -166,7 +171,7 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 							</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Voyage:</Table.Cell>
+							<Table.Cell>{t('crew_utility.custom.voyage')}:</Table.Cell>
 							<Table.Cell>
 								<Button.Group size='tiny'>
 									{[0, 1, 2, 3, 4, 5, 10, 20].map(t =>
@@ -178,7 +183,7 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 							</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Gauntlet:</Table.Cell>
+							<Table.Cell>{t('crew_utility.custom.gauntlet')}:</Table.Cell>
 							<Table.Cell>
 								<Button.Group size='tiny'>
 									{[0, 1, 2, 3, 4, 5, 10, 20].map(t =>
@@ -194,7 +199,7 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 				<div style={{ marginTop: '1em' }}>
 					<Form.Field
 						control={Checkbox}
-						label={<label>Only consider 3-skill crew for voyages and gauntlet</label>}
+						label={<label>{t('crew_utility.consider_three_skill_check')}</label>}
 						checked={userPrefs.prefer_versatile ?? defaultPrefs.prefer_versatile}
 						onChange={(e, { checked }) => setUserPrefs({...userPrefs, prefer_versatile: checked})}
 					/>
@@ -202,7 +207,7 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 				<div style={{ marginTop: '1em' }}>
 					<Form.Field
 						control={Checkbox}
-						label={<label>Include base ranks in crew utility table</label>}
+						label={<label>{t('crew_utility.include_base_ranks_check')}</label>}
 						checked={userPrefs.include_base ?? defaultPrefs.include_base}
 						onChange={(e, { checked }) => setUserPrefs({...userPrefs, include_base: checked})}
 					/>
@@ -292,21 +297,21 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 	}
 };
 
-export const getCrewUtilityTableConfig = (include_base: boolean) => {
+export const getCrewUtilityTableConfig = (t: TranslateMethod, include_base: boolean) => {
 	const tableConfig = [] as ITableConfigRow[];	
 
 	if (include_base) {
-		let base = getBaseTableConfig('profileCrew');
+		let base = getBaseTableConfig('profileCrew', t);
 		for (let column of base) {
 			tableConfig.push(column);
 		}
 	}
 
 	tableConfig.push(
-		{ width: 1, column: 'markup.crew_utility.thresholds.length', title: include_base ? 'U' : 'Utility', reverse: true, tiebreakers: ['max_rarity'] },
-		{ width: 1, column: 'markup.crew_utility.counts.shuttle', title: include_base ? 'S' : 'Shuttle Ranks', reverse: true, tiebreakers: ['max_rarity'] },
-		{ width: 1, column: 'markup.crew_utility.counts.gauntlet', title: include_base ? 'G' : 'Gauntlet Ranks', reverse: true, tiebreakers: ['max_rarity'] },
-		{ width: 1, column: 'markup.crew_utility.counts.voyage', title: include_base ? 'V' : 'Voyage Ranks', reverse: true, tiebreakers: ['max_rarity'] },
+		{ width: 1, column: 'markup.crew_utility.thresholds.length', title: include_base ? t('crew_utility.columns.u') : t('crew_utility.columns.utility'), reverse: true, tiebreakers: ['max_rarity'] },
+		{ width: 1, column: 'markup.crew_utility.counts.shuttle', title: include_base ? t('crew_utility.columns.s') : t('crew_utility.columns.shuttle_ranks'), reverse: true, tiebreakers: ['max_rarity'] },
+		{ width: 1, column: 'markup.crew_utility.counts.gauntlet', title: include_base ? t('crew_utility.columns.g') : t('crew_utility.columns.gauntlet_ranks'), reverse: true, tiebreakers: ['max_rarity'] },
+		{ width: 1, column: 'markup.crew_utility.counts.voyage', title: include_base ? t('crew_utility.columns.v') : t('crew_utility.columns.voyage_ranks'), reverse: true, tiebreakers: ['max_rarity'] },
 	)
 	return tableConfig;
 };
@@ -379,6 +384,7 @@ type RanksModalProps = {
 };
 
 const RanksModal = (props: RanksModalProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { crew } = props;
 
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
@@ -423,7 +429,7 @@ const RanksModal = (props: RanksModalProps) => {
 				{modalIsOpen && renderRanks()}
 			</Modal.Content>
 			<Modal.Actions>
-				<Button content='Close' onClick={() => setModalIsOpen(false)} />
+				<Button content={t('global.close')} onClick={() => setModalIsOpen(false)} />
 			</Modal.Actions>
 		</Modal>
 	);

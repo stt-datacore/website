@@ -7,6 +7,7 @@ import { ShuttlersContext } from './context';
 import { MissionsTable, MissionFactionView, SeatSkillView, SeatCrewView } from './missionstable';
 import { SeatAssignmentPicker } from './seatassignmentpicker';
 import { EventProjection } from './eventprojection';
+import { GlobalContext } from '../../context/globalcontext';
 
 interface IActiveEdit {
 	shuttleId: string;
@@ -20,6 +21,7 @@ type AssignmentsProps = {
 
 export const Assignments = (props: AssignmentsProps) => {
 	const shuttlersContext = React.useContext(ShuttlersContext);
+	const { t } = React.useContext(GlobalContext).localized;
 	const { helperId, groupId, rosterCrew, eventData, shuttlers, setShuttlers, assigned, setAssigned } = shuttlersContext;
 	const { crewScores, updateCrewScores } = props;
 
@@ -64,10 +66,10 @@ export const Assignments = (props: AssignmentsProps) => {
 
 	const columns: ITableColumn[] = [
 		{ id: 'priority', title: <Icon name='check' />, align: 'center', sortField: { id: '_priority' }},
-		{ id: 'name', title: 'Mission', sortField: { id: 'name' } },
-		{ id: 'faction', title: 'Faction', align: 'center', sortField: { id: 'faction' } },
-		{ id: 'assignments', title: 'Seat Assignments', align: 'center', sortField: { id: 'seats.length' } },
-		{ id: 'chance', title: 'Success Chance', align: 'center', sortField: { id: 'chance', firstSort: 'descending' } },
+		{ id: 'name', title: t('shuttle_helper.missions.columns.name'), sortField: { id: 'name' } },
+		{ id: 'faction', title: t('shuttle_helper.missions.columns.faction'), align: 'center', sortField: { id: 'faction' } },
+		{ id: 'assignments', title: t('shuttle_helper.missions.columns.seat_assignments'), align: 'center', sortField: { id: 'seats.length' } },
+		{ id: 'chance', title: t('shuttle_helper.missions.columns.success_chance'), align: 'center', sortField: { id: 'chance', firstSort: 'descending' } },
 		{ id: 'actions', title: '' }
 	];
 
@@ -77,7 +79,7 @@ export const Assignments = (props: AssignmentsProps) => {
 	return (
 		<React.Fragment>
 			{eventData && <EventProjection eventData={eventData} shuttleScores={shuttleScores} />}
-			<p>You can rearrange crew to balance shuttle chances as you see fit. Tap a seat assignment to change the crew assigned to the seat. Lock an assignment to keep that crew in that seat when requesting new recommendations.</p>
+			<p>{t('shuttle_helper.calculator.you_can_rearrange')}</p>
 			<MissionsTable
 				tableId={`${helperId}/assignments`}
 				tableProps={{ celled: true, striped: true, sortable: true, unstackable: true }}
@@ -104,7 +106,8 @@ export const Assignments = (props: AssignmentsProps) => {
 		return (
 			<Table.Row>
 				<Table.HeaderCell colSpan={columnCount}>
-					{missionsSelected} mission{missionsSelected !== 1 ? 's' : ''} selected
+					{missionsSelected === 1 && t('shuttle_helper.calculator.mission_selected')}
+					{missionsSelected !== 1 && t('shuttle_helper.calculator.missions_selected', { n: `${missionsSelected}`})}
 				</Table.HeaderCell>
 			</Table.Row>
 		);
@@ -133,7 +136,7 @@ export const Assignments = (props: AssignmentsProps) => {
 					{datum.chance > 0 && <b>{Math.floor(datum.chance*100)}%</b>}
 				</Table.Cell>
 				<Table.Cell textAlign='right'>
-					<Button compact icon='ban' content='Dismiss' onClick={() => dismissShuttle(datum.id)} />
+					<Button compact icon='ban' content={t('global.dismiss')} onClick={() => dismissShuttle(datum.id)} />
 				</Table.Cell>
 			</Table.Row>
 		);
@@ -158,7 +161,7 @@ export const Assignments = (props: AssignmentsProps) => {
 				</Table.Cell>
 				<Table.Cell textAlign={assignedCrew ? 'left' : 'center'}>
 					{assignedCrew && <SeatCrewView crew={assignedCrew} />}
-					{!assignedCrew && <span style={{ color: 'gray' }}>(Open seat)</span>}
+					{!assignedCrew && <span style={{ color: 'gray' }}>({t('shuttle_helper.missions.status.open_seat')})</span>}
 				</Table.Cell>
 				<Table.Cell>
 					{assignedCrew && (

@@ -1,18 +1,22 @@
 
 
 import { Ship } from "./ship";
-import { BossBattlesRoot } from "./boss";
+import { BossBattlesRoot, Energy } from "./boss";
 import { CaptainsBridgeRoot } from "./bridge";
-import { BaseSkills, ComputedSkill, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, Skill } from "./crew"
+import { BaseSkills, ComputedSkill, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, Skill } from "./crew";
 import { ShipAction, ShipBonus } from "./ship";
-import { EquipmentCommon, EquipmentItem } from "./equipment";
-import { Collection, Icon } from "./game-elements"
+import { EquipmentItem } from "./equipment";
+import { Collection, Icon } from "./game-elements";
 import { ShuttleAdventure } from "./shuttle";
-import { Archetype17, ArchetypeRoot17, ArchetypeRoot20 } from "./archetype";
+import { ArchetypeRoot17, ArchetypeRoot20 } from "./archetype";
+
+export const ISM_ID = 14152;
+
+export type TranslateMethod = (key: string, options?: { [key: string]: string }) => string;
 
 export type PlayerBuffMode = 'none' | 'player' | 'max' | 'quipment';
 
-export type PlayerImmortalMode = 'owned' | 'min' | 2 | 3 | 4 | 'full' | 'frozen'
+export type PlayerImmortalMode = 'owned' | 'min' | 2 | 3 | 4 | 'full' | 'frozen' | 'shown_full';
 
 export interface AtlasIcon extends Icon {
     atlas_info: string
@@ -53,7 +57,8 @@ export interface PlayerData {
     stripped?: boolean;
     citeMode?: CiteMode;
     calculatedDemands?: EquipmentItem[];
-    buyback_well: string[];
+    buyback_well: PlayerCrew[];
+    crew_crafting_root?: CrewCraftingRoot;
 }
 
 export interface Player {
@@ -523,11 +528,6 @@ export interface Player {
      */
     immortal: CompletionState | number;
 
-    /**
-     * Return the ID numbers of all the collections the crew is a member of
-     */
-    collectionIds?: number[];
-
     /** Used internally. Not part of source data.  */
     unmaxedIds?: number[];
 
@@ -625,6 +625,8 @@ export interface Player {
     engineering_skill?: ComputedSkill;
 
     data: any;
+
+    is_new?: boolean;
   }
 
   export interface GauntletPairScore {
@@ -852,7 +854,7 @@ export interface Player {
     gather_pools?: GatherPool[]
     craft_bonus?: number
     refresh_cost?: RefreshCost
-    supports_boosts?: boolean
+    supports_buffs?: boolean
     shuttles?: Shuttle[]
     bonus_crew?: string[]
     bonus_traits?: string[]
@@ -1680,3 +1682,50 @@ export interface FillRate {
   quantity: number;
   time_unit: string;
 }
+
+
+export interface CrewCraftingRoot {
+  id: number
+  config: CraftingConfig
+  env: CraftingEnvironment
+  energy: CraftingEnergy
+}
+
+export interface CraftingConfig {
+  cost_discount_by_pool_size: CostDiscountByPoolSize
+  cost_by_rarity: CostByRarity
+  ism_subcoin_cost_to_open_crate: number
+}
+
+export interface CostDiscountByPoolSize {
+  [key: string]: number;
+}
+
+export interface CostByRarity {
+  [key: string]: CraftCost;
+}
+
+export interface CraftCost {
+  credits: number
+  energy: number
+}
+
+export interface CraftingEnvironment {
+  crew_source_stores: string[]
+  enabled: string
+}
+
+export interface CraftingEnergy extends Energy {
+  id: number
+  quantity: number
+  regeneration: CraftingRegeneration
+  regenerated_at: number
+  coupons: number
+}
+
+export interface CraftingRegeneration {
+  increment: number
+  seconds: number
+  amount: number
+}
+

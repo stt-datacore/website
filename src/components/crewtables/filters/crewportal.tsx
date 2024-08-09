@@ -3,6 +3,7 @@ import { Form, Dropdown } from 'semantic-ui-react';
 
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
 import { printPortalStatus } from '../../../utils/crewutils';
+import { GlobalContext } from '../../../context/globalcontext';
 
 type CrewPortalFilterProps = {
 	pageId: string;
@@ -12,17 +13,18 @@ type CrewPortalFilterProps = {
 };
 
 export const CrewPortalFilter = (props: CrewPortalFilterProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { crewFilters, setCrewFilters } = props;
 
 	const [portalFilter, setPortalFilter] = React.useState<string>('');
 
 	const portalFilterOptions = [
-		{ key: 'none', value: '', text: 'Show all crew' },
-		{ key: 'inportal', value: 'inportal', text: 'In portal' },
-		{ key: 'unique', value: 'unique', text: 'Uniquely Retrievable' },
-		{ key: 'notunique', value: 'notunique', text: 'Not Uniquely Retrievable' },
-		{ key: 'noninportal', value: 'notinportal', text: 'Not in portal' },
-		{ key: 'neverportal', value: 'neverportal', text: 'Never in portal' },
+		{ key: 'none', value: '', text: t('base.all_crew') },
+		{ key: 'inportal', value: 'inportal', text: t('base.in_portal') },
+		{ key: 'unique', value: 'unique', text: t('base.uniquely_retrievable') },
+		{ key: 'notunique', value: 'notunique', text: t('base.not_uniquely_retrievable') },
+		{ key: 'noninportal', value: 'notinportal', text: t('base.not_in_portal') },
+		{ key: 'neverportal', value: 'neverportal', text: t('base.never_in_portal') },
 	];
 
 	const filterByPortal = (crew: IRosterCrew) => {
@@ -31,7 +33,7 @@ export const CrewPortalFilter = (props: CrewPortalFilterProps) => {
 		if (portalFilter === 'notunique' && !!crew.unique_polestar_combos?.length) return false;
 		if (portalFilter === 'notinportal' && crew.in_portal) return false;
 		if (portalFilter === 'neverportal') {
-			if (!printPortalStatus(crew, true, false, false, false).includes("Never")) return false;
+			if (!printPortalStatus(crew, t, true, false, false, false).includes(t('global.never'))) return false;
 		}
 		return true;
 	};
@@ -48,7 +50,7 @@ export const CrewPortalFilter = (props: CrewPortalFilterProps) => {
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder={props.altTitle ?? 'Filter by portal status'}
+				placeholder={props.altTitle ?? t('hints.filter_by_portal_status')}
 				clearable
 				selection
 				multiple={false}

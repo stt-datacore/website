@@ -15,6 +15,7 @@ export interface ItemHoverStatProps extends HoverStatProps {
     disableBuffs?: boolean;
     navigate?: (symbol: string) => void;
     crewTargetGroup?: string;
+    compact?: boolean;
 }
 
 export interface ItemHoverStatState extends HoverStatState<EquipmentItem> {
@@ -154,9 +155,10 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
             this.deactivate();
         }
 
-        return displayItem ? (<ItemPresenter 
+        return displayItem ? (<ItemPresenter
+            compact={this.props.compact}
             crewTargetGroup={crewTargetGroup}
-            mobileWidth={mobileWidth}
+            mobileWidth={mobileWidth}            
             close={() => onClose()} 
             openItem={(item) => navClick(item)} 
             hover={true} 

@@ -83,12 +83,6 @@ export interface SearchableViewProps<T> {
 
 export type FilterType = '' | 'Exact' | 'Whole word' | 'Any match';
 
-const filterTypeOptions = [
-    { key : '0', value : 'Exact', text : 'Exact match only' },
-    { key : '1', value : 'Whole word', text : 'Whole word only' },
-    { key : '2', value : 'Any match', text : 'Match any text' }
-];
-
 const pagingOptions = [
 	{ key: '0', value: '10', text: '10' },
 	{ key: '1', value: '25', text: '25' },

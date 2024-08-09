@@ -10,8 +10,8 @@ import { SearchableTable, ITableConfigRow } from '../../components/searchabletab
 
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 
-import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, Solver, Optimizer, TraitRarities, ViableCombo } from '../../model/boss';
+import { GlobalContext } from '../../context/globalcontext';
 import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
 import { TinyShipSkill } from '../item_presenters/shipskill';
 
@@ -23,24 +23,27 @@ type CrewTableProps = {
 };
 
 const CrewTable = (props: CrewTableProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
+	const { TRAIT_NAMES } = globalContext.localized;
 	const { solver, optimizer } = props;
 
 	const tableConfig: ITableConfigRow[] = [
-		{ width: 3, column: 'name', title: 'Crew' },
+		{ width: 3, column: 'name', title: t('base.crew') },
 	];
 
-	tableConfig.push({ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['highest_owned_rarity'] });
+	tableConfig.push({ width: 1, column: 'max_rarity', title: t('base.rarity'), reverse: true, tiebreakers: ['highest_owned_rarity'] });
 	if (props.optimizer.prefs.solo.shipAbility === 'show') {
-		tableConfig.push({ width: 1, title: 'Ship Ability' });
+		tableConfig.push({ width: 1, title: t('fbb.columns.ship_ability') });
 	}
-	tableConfig.push({ width: 1, column: 'nodes_rarity', title: 'Coverage', reverse: true });
+	tableConfig.push({ width: 1, column: 'nodes_rarity', title: t('fbb.columns.coverage'), reverse: true });
 
 	const openNodes = solver.nodes.filter(node => isNodeOpen(node));
 	openNodes.forEach(node => {
 		const renderTitle = (node) => {
 			const formattedOpen = node.traitsKnown.map((trait, idx) => (
 				<span key={idx}>
-					{idx > 0 ? <><br />+ </> : <></>}{allTraits.trait_names[trait]}
+					{idx > 0 ? <><br />+ </> : <></>}{TRAIT_NAMES[trait]}
 				</span>
 			)).reduce((prev, curr) => <>{prev} {curr}</>, <></>);
 			const hidden = Array(node.hiddenLeft).fill('?').join(' + ');
@@ -61,7 +64,7 @@ const CrewTable = (props: CrewTableProps) => {
 		tableConfig.push(tableCol);
 	});
 
-	tableConfig.push({ width: 1, title: 'Trial' });
+	tableConfig.push({ width: 1, title: t('fbb.columns.trial') });
 
 	return (
 		<>
@@ -136,9 +139,9 @@ const CrewTable = (props: CrewTableProps) => {
 	function descriptionLabel(crew: BossCrew): JSX.Element {
 		return (
 			<div>
-				{optimizer.prefs.spotter.onehand === 'flag' && crew.onehand_rule.compliant === 0 && <Label style={{ background: '#ddd', color: '#333' }}>One hand exception</Label>}
-				{optimizer.prefs.spotter.alpha === 'flag' && crew.alpha_rule.compliant === 0 && <Label color='orange'>Alpha exception</Label>}
-				{optimizer.prefs.spotter.nonoptimal === 'flag' && !isCrewOptimal(crew, optimizer.optimalCombos) && <Label color='grey'>Non-optimal</Label>}
+				{optimizer.prefs.spotter.onehand === 'flag' && crew.onehand_rule.compliant === 0 && <Label style={{ background: '#ddd', color: '#333' }}>{t('fbb.crew_lists.customize.options.one_hand_exception')}</Label>}
+				{optimizer.prefs.spotter.alpha === 'flag' && crew.alpha_rule.compliant === 0 && <Label color='orange'>{t('fbb.crew_lists.customize.options.alpha_exception')}</Label>}
+				{optimizer.prefs.spotter.nonoptimal === 'flag' && !isCrewOptimal(crew, optimizer.optimalCombos) && <Label color='grey'>{t('fbb.crew_lists.customize.options.non_optimal')}</Label>}
 				{crew.only_frozen && <Icon name='snowflake' />}
 				{crew.only_expiring && <Icon name='warning sign' />}
 			</div>
@@ -185,7 +188,7 @@ const CrewTable = (props: CrewTableProps) => {
 
 		return (
 			<React.Fragment>
-				{nodeMatches.traits.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map((trait, idx) => (
+				{nodeMatches.traits.sort((a, b) => TRAIT_NAMES[a].localeCompare(TRAIT_NAMES[b])).map((trait, idx) => (
 					<Label key={idx} style={colorize(trait)}>
 						<ListedTraits traits={[trait]} traitData={solver.traits} />
 					</Label>

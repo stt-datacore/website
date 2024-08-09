@@ -2,8 +2,8 @@ import React from 'react';
 import { InView } from 'react-intersection-observer';
 import { Button, Message, Table, Label, Icon, Grid, SemanticWIDTHS } from 'semantic-ui-react';
 
-import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, FilteredGroup, Optimizer, SolveStatus, Solver, SolverNode } from '../../model/boss';
+import { GlobalContext } from '../../context/globalcontext';
 
 import { UserContext } from './context';
 import { CrewNodeExporter } from './crewexporter';
@@ -34,6 +34,9 @@ type NodeGroupsProps = {
 };
 
 const NodeGroups = (props: NodeGroupsProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
+	const { TRAIT_NAMES } = globalContext.localized;
 	const { spotterPrefs } = React.useContext(UserContext);
 	const groupsContext = React.useContext(CrewGroupsContext);
 	const { node } = props;
@@ -56,15 +59,22 @@ const NodeGroups = (props: NodeGroupsProps) => {
 					<div>
 						<Message.Header>{renderTraits()}</Message.Header>
 						<p>
-							Node {node.index+1}
 							{(unconfirmedSolve || partialSolve) && (
 								<span>
-									{` `}{partialSolve && <>partially{` `}</>}solved{unconfirmedSolve && <>, pending confirmation</>}
+									{(unconfirmedSolve && partialSolve) && 
+									<>{tfmt('fbb.solves.partially_solved', { n: `${node.index+1}`})}{', '}{tfmt('fbb.solves.pending')}</>
+									}
+									{(unconfirmedSolve && !partialSolve) && 
+										<>{tfmt('fbb.solves.solved', { n: `${node.index+1}`})}{', '}{tfmt('fbb.solves.pending')}</>
+									}
+									{(!unconfirmedSolve && partialSolve) && 
+										<>{tfmt('fbb.solves.partially_solved', { n: `${node.index+1}`})}</>
+									}
 									<span style={{ paddingLeft: '1em' }}>
-										<Button compact icon='undo' content='Undo solve' onClick={() => groupsContext.solveNode(node.index, [])} />
+										<Button compact icon='undo' content={t('fbb.undo_solve')} onClick={() => groupsContext.solveNode(node.index, [])} />
 									</span>
 								</span>
-							)}
+							) || <>{tfmt('fbb.node_n', { n: `${node.index+1}`})}</>}
 						</p>
 					</div>
 					<div>
@@ -74,7 +84,7 @@ const NodeGroups = (props: NodeGroupsProps) => {
 			</Message>
 			{nodeGroups.length === 0 && (
 				<Message>
-					No possible solutions found for this node. You may need to change your filters, double-check your solved traits, or reset the list of attempted crew.
+					{t('fbb.alert_no_solution')}					
 				</Message>
 			)}
 			{nodeGroups.length > 0 && <GroupTable node={node} data={nodeGroups} />}
@@ -85,7 +95,7 @@ const NodeGroups = (props: NodeGroupsProps) => {
 		const traits: string[ ] = node.traitsKnown.concat(Array(node.hiddenLeft).fill('?'));
 		const formattedTraits = traits.map((trait, idx) => (
 			<span key={idx}>
-				{idx > 0 ? <> + </> : <></>}{trait !== '?' ? allTraits.trait_names[trait] : '?'}
+				{idx > 0 ? <> + </> : <></>}{trait !== '?' ? TRAIT_NAMES[trait] : '?'}
 			</span>
 		)).reduce((prev, curr) => <>{prev} {curr}</>, <></>);
 		return (
@@ -103,6 +113,7 @@ type GroupTableProps = {
 
 const GroupTable = (props: GroupTableProps) => {
 	const groupsContext = React.useContext(CrewGroupsContext);
+	const { t } = React.useContext(GlobalContext).localized;
 	const { node } = props;
 
 	const [state, dispatch] = React.useReducer(reducer, {
@@ -119,9 +130,9 @@ const GroupTable = (props: GroupTableProps) => {
 	const hasNotes = data.filter(row => Object.values(row.notes).filter(note => !!note).length > 0).length > 0;
 
 	const tableConfig = [
-		{ column: 'traits', title: 'Traits', width: hasNotes ? 6 : 8, center: true, reverse: true },
-		{ column: 'notes', title: 'Notes', width: 2, center: true, reverse: true },
-		{ column: 'crew', title: 'Crew', width: 8, center: true, reverse: true }
+		{ column: 'traits', title: t('hints.traits'), width: hasNotes ? 6 : 8, center: true, reverse: true },
+		{ column: 'notes', title: t('global.notes'), width: 2, center: true, reverse: true },
+		{ column: 'crew', title: t('fbb.columns.crew'), width: 8, center: true, reverse: true }
 	];
 	if (!hasNotes) tableConfig.splice(1, 1);
 
@@ -148,11 +159,11 @@ const GroupTable = (props: GroupTableProps) => {
 						</Table.Cell>
 						{hasNotes &&
 							<Table.Cell textAlign='center'>
-								{row.notes.oneHandException && <Label style={{ background: '#ddd', color: '#333' }}>One hand exception</Label>}
-								{row.notes.alphaException && <Label color='orange'>Alpha exception</Label>}
-								{row.notes.uniqueCrew && <Label style={{ background: '#fdd26a', color: 'black' }}>Unique</Label>}
-								{row.notes.nonPortal && <Label style={{ background: '#000000', color: '#fdd26a' }}>Non-portal</Label>}
-								{row.notes.nonOptimal && <Label color='grey'>Non-optimal</Label>}
+								{row.notes.oneHandException && <Label style={{ background: '#ddd', color: '#333' }}>{t('fbb.crew_lists.customize.options.one_hand_exception')}</Label>}
+								{row.notes.alphaException && <Label color='orange'>{t('fbb.crew_lists.customize.options.alpha_exception')}</Label>}
+								{row.notes.uniqueCrew && <Label style={{ background: '#fdd26a', color: 'black' }}>{t('fbb.crew_lists.customize.options.unique')}</Label>}
+								{row.notes.nonPortal && <Label style={{ background: '#000000', color: '#fdd26a' }}>{t('fbb.crew_lists.customize.options.non_portal')}</Label>}
+								{row.notes.nonOptimal && <Label color='grey'>{t('fbb.crew_lists.customize.options.non_optimal')}</Label>}
 							</Table.Cell>
 						}
 						<Table.Cell>

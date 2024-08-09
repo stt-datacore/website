@@ -4,7 +4,7 @@ import { Modal, Button, Form, Input, Dropdown, Table, Message, Icon } from 'sema
 import { IVoyageCrew } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
 import { appelate } from '../../utils/misc';
-import { crewCopy, getVariantTraits } from '../../utils/crewutils';
+import { countQuippedSlots, crewCopy, getVariantTraits } from '../../utils/crewutils';
 
 interface IThemeOption {
 	key: string;
@@ -365,39 +365,57 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				filter: (crew: IVoyageCrew) => !crew.immortal || !(crew.q_bits > 0 && crew.q_bits < 1300)
 			},
 			{
+				key: 'quipstrikeforce',
+				name: 'No Distractions',
+				description: 'Exclude crew that are currently fully quipped',
+				keywords: ['quipment'],
+				category: 'Quipment',
+				filter: (crew: IVoyageCrew) => !crew.immortal || countQuippedSlots(crew) !== 4
+			},
+			{
+				key: 'quipnotmax',
+				name: 'Prior Commitments',
+				description: 'Exclude crew that can be fully quipped',
+				keywords: ['quipment'],
+				category: 'Quipment',
+				filter: (crew: IVoyageCrew) => !crew.immortal || !(crew.q_bits >= 1300)
+			},
+			{
 				key: 'lightside',
 				name: 'Luminous and Noble',
-				description: 'Crew with the following traits: Caregiver, Counselor, Cultural Figure, Hero, Innovator, Inspiring, Nurse, Physician, Prodigy',
+				description: 'Crew with the following traits: Caregiver, Counselor, Cultural Figure, Hero, Innovator, Inspiring, Nurse, Physician, Prodigy, Playful',
 				keywords: ['traits'],
 				category: 'Traits',
 				filter: (crew: IVoyageCrew) => {
-					return crew.traits_named.some(t => ["Caregiver",
-						"Counselor",
-						"Cultural Figure",
-						"Hero",
-						"Innovator",
-						"Inspiring",
-						"Nurse",
-						"Physician",
-						"Prodigy"].includes(t))
+					return crew.traits.some(t => ["caregiver",
+						"counselor",
+						"cultural_figure",
+						"hero",
+						"innovator",
+						"inspiring",
+						"nurse",
+						"doctor",
+						"prodigy",
+						"playful"].includes(t))
 				}
 			},
 			{
 				key: 'darkside',
 				name: 'Dark and Edgy',
-				description: 'Crew with the following traits: Brutal, Crafty, Criminal, Maverick, Saboteur, Scoundrel, Smuggler, Thief, Villain',
+				description: 'Crew with the following traits: Brutal, Crafty, Criminal, Maverick, Saboteur, Scoundrel, Smuggler, Thief, Villain, Vengeful',
 				keywords: ['traits'],
 				category: 'Traits',
 				filter: (crew: IVoyageCrew) => {
-					return crew.traits_named.some(t => ["Brutal",
-						"Crafty",
-						"Criminal",
-						"Maverick",
-						"Saboteur",
-						"Scoundrel",
-						"Smuggler",
-						"Thief",
-						"Villain"].includes(t))
+					return crew.traits.some(t => ["Brutal",
+						"crafty",
+						"criminal",
+						"maverick",
+						"saboteur",
+						"scoundrel",
+						"smuggler",
+						"thief",
+						"villain",
+						"vengeful"].includes(t))
 				}
 			}
 		] as ICustomTheme[];
@@ -457,7 +475,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			if (notes) theme.notes = notes;
 			themes.push(theme);
 		});
-		
+
 		const categories = [ ... new Set(themes.map(c => c.category)) ].sort().map(name => {
 			return {
 				name,
@@ -566,7 +584,7 @@ const ThemesTable = (props: ThemesTableProps) => {
 	});
 	const { data, column, direction } = state;
 	const { categories } = props;
-	
+
 	const [query, setQuery] = React.useState('');
 	const [highlightedTheme, setHighlightedTheme] = React.useState<IThemeOption | undefined>(undefined);
 	const [themeFilter, setThemeFilter] = React.useState<string>('ineligible');
@@ -666,7 +684,7 @@ const ThemesTable = (props: ThemesTableProps) => {
 						<Table.Body>
 							{cat.themes.map(row => renderTableRow(row))}
 						</Table.Body>
-					</Table>	
+					</Table>
 				</div>
 			))}
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Modal, Message, Checkbox, Button } from 'semantic-ui-react';
 
-import allTraits from '../../../static/structured/translation_en.json';
 import { PlayerCrew, VoyageCrewSlot } from '../../model/player';
 import { IVoyageCalcConfig, ITrackedVoyage } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
@@ -19,6 +18,8 @@ type VoyageModalProps = {
 
 export const VoyageModal = (props: VoyageModalProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { SHIP_TRAIT_NAMES } = globalContext.localized;
+
 	const { history, setHistory } = React.useContext(HistoryContext);
 	const { voyage } = props;
 
@@ -32,10 +33,10 @@ export const VoyageModal = (props: VoyageModalProps) => {
 			closeIcon
 		>
 			<Modal.Header>
-				{CONFIG.SKILLS[voyage.skills.primary_skill]} / {CONFIG.SKILLS[voyage.skills.secondary_skill]} / {allTraits.ship_trait_names[voyage.ship_trait]} <span style={{ marginLeft: '2em' }}>({dtCreated.toLocaleDateString()})</span>
+				{CONFIG.SKILLS[voyage.skills.primary_skill]} / {CONFIG.SKILLS[voyage.skills.secondary_skill]} / {SHIP_TRAIT_NAMES[voyage.ship_trait] ?? voyage.ship_trait} <span style={{ marginLeft: '2em' }}>({dtCreated.toLocaleDateString()})</span>
 			</Modal.Header>
 			<Modal.Content scrolling>
-				<CrewHoverStat targetGroup='voyageLineup' modalPositioning={true} />	
+				<CrewHoverStat targetGroup='voyageLineup' modalPositioning={true} />
 
 				{renderLineup()}
 				{props.onRemove && (

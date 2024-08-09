@@ -1,12 +1,18 @@
 import CONFIG from '../components/CONFIG';
 import { CrewMember, BaseSkills, Skill } from '../model/crew';
-import { AllBuffsCapHash, Player, PlayerCrew } from '../model/player';
+import { AllBuffsCapHash, Player, PlayerCrew, TranslateMethod } from '../model/player';
 import { Estimate } from '../model/worker';
 
-export const formatTime = (time: number): string => {
+export const formatTime = (time: number, t?: TranslateMethod): string => {
+
 	let hours = Math.floor(time);
 	let minutes = Math.floor((time-hours)*60);
-	return hours+"h " +minutes+"m";
+	if (t) {
+		return `${t('duration.n_h_compact', { hours: `${hours}` })} ${t('duration.n_m_compact', { minutes: `${minutes}` })}`;
+	}
+	else {
+		return hours+"h " +minutes+"m";
+	}
 };
 
 export const flattenEstimate = (estimate: Estimate): any => {

@@ -2,7 +2,6 @@ import React from 'react';
 import { Label, Message, Rating, Table } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
-import { rarityLabels } from '../../model/game-elements';
 import { GlobalContext } from '../../context/globalcontext';
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 import { CrewHoverStat, CrewTarget } from '../../components/hovering/crewhoverstat';
@@ -15,6 +14,7 @@ import { gradeToColor, numberToGrade } from "../../utils/crewutils";
 
 import { IRosterCrew, RetrievableState } from './model';
 import { CombosModal } from './combos';
+import CONFIG from '../CONFIG';
 
 type RetrievalCrewTableProps = {
  	filteredCrew: IRosterCrew[];
@@ -22,6 +22,7 @@ type RetrievalCrewTableProps = {
 
 export const RetrievalCrewTable = (props: RetrievalCrewTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { buffConfig } = globalContext.player;
 	const { filteredCrew } = props;
 
@@ -61,10 +62,13 @@ type CrewRowProps = {
 
 const CrewRow = (props: CrewRowProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { crew, topQuipmentScore } = props;
 
 	const [detailedView, setDetailedView] = React.useState<string>('');
+
+	const rarityLabels = CONFIG.RARITIES.map(r => r.name);
 
 	return (
 		<Table.Row key={crew.symbol}>
@@ -85,7 +89,7 @@ const CrewRow = (props: CrewRowProps) => {
 					<div style={{ gridArea: 'stats' }}>
 						<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 					</div>
-					<div style={{ gridArea: 'description' }}>{getCoolStats(crew, false, false)}</div>
+					<div style={{ gridArea: 'description' }}>{getCoolStats(t, crew, false, false)}</div>
 				</div>
 			</Table.Cell>
 			<Table.Cell>
@@ -111,7 +115,7 @@ const CrewRow = (props: CrewRowProps) => {
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<b>#{crew.ranks.voyRank}</b>
-					<br />{crew.ranks.voyTriplet && <small>Triplet #{crew.ranks.voyTriplet.rank}</small>}
+					<br />{crew.ranks.voyTriplet && <small>{CONFIG.TRIPLET_TEXT} #{crew.ranks.voyTriplet.rank}</small>}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<b>#{crew.ranks.gauntletRank}</b>
@@ -149,9 +153,9 @@ const CrewRow = (props: CrewRowProps) => {
 		if (crew.retrievable === RetrievableState.Never)
 			return <Label color='red'>{crew.alt_source}</Label>;
 		else if (crew.retrievable === RetrievableState.InFuture)
-			return <Label color='red'>Not yet in portal</Label>;
+			return <Label color='red'>{t('base.not_yet_in_portal')}</Label>;
 		else if (crew.retrievable === RetrievableState.NonUnique)
-			return <Label color='red'>Not uniquely retrievable</Label>;
+			return <Label color='red'>{t('base.not_uniquely_retrievable')}</Label>;
 
 		return <CombosModal crew={crew} />;
 	}

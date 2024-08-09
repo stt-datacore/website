@@ -1,5 +1,5 @@
 import { RewardsGridNeed } from "../model/crew";
-import { MapFilterOptions, CollectionMap, CollectionGroup, CollectionFilterProps, ComboCostMap } from "../model/collectionfilter";
+import { MapFilterOptions, CollectionMap, CollectionGroup, CollectionsToolSettings, ComboCostMap } from "../model/collectionfilter";
 import { BuffBase, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward } from "../model/player";
 import { getCollectionRewards } from "./itemutils";
 import { EquipmentItem } from "../model/equipment";
@@ -170,7 +170,7 @@ export function neededStars(crew: PlayerCrew[], limit?: number) {
 	return costs;
 }
    
-export const checkCommonFilter = (filters: CollectionFilterProps, crew: PlayerCrew, exclude?: string[]) => {    
+export const checkCommonFilter = (filters: CollectionsToolSettings, crew: PlayerCrew, exclude?: string[]) => {    
     const { ownedFilter, fuseFilter, rarityFilter } = filters;
 
     if (!exclude?.includes('unowned') && ownedFilter === 'unowned' && (crew.highest_owned_rarity ?? 0) > 0) return false;

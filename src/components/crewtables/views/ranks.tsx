@@ -49,7 +49,7 @@ const getRankKeysList = () => {
 	const rankKeys = [] as string[];
 	for (let i = 0; i < 6; i++) {
 		for (let j = i + 1; j < 6; j++) {
-			rankKeys.push(`${CONFIG.SKILLS_SHORT[i].short}_${CONFIG.SKILLS_SHORT[j].short}`);
+			rankKeys.push(`${CONFIG.SKILLS_SHORT_ENGLISH[i].short}_${CONFIG.SKILLS_SHORT_ENGLISH[j].short}`);
 		}
 	}
 	return rankKeys;

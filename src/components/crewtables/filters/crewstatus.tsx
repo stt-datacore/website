@@ -2,6 +2,7 @@ import React from 'react';
 import { Form, Dropdown } from 'semantic-ui-react';
 
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
+import { GlobalContext } from '../../../context/globalcontext';
 
 type CrewStatusFilterProps = {
 	pageId: string;
@@ -10,17 +11,18 @@ type CrewStatusFilterProps = {
 };
 
 export const CrewStatusFilter = (props: CrewStatusFilterProps) => {
+	const { t } = React.useContext(GlobalContext).localized;	
 	const { crewFilters, setCrewFilters } = props;
 
 	const [statusFilter, setStatusFilter] = React.useState('');
 
 	const statusOptions = [
-		{ key: 'none', value: '', text: 'Show all crew' },
-		{ key: 'thawed', value: 'thawed', text: 'Only show unfrozen crew' },
-		{ key: 'frozen', value: 'frozen', text: 'Only show frozen crew' },
-		{ key: 'frozen_dupes', value: 'frozen_dupes', text: 'Only show frozen duplicate crew' },
-		{ key: 'favorites', value: 'favorites', text: 'Only show favorite crew' },
-		{ key: 'idle', value: 'idle', text: 'Only show idle crew' }
+		{ key: 'none', value: '', text: t('options.crew_status.none') },
+		{ key: 'thawed', value: 'thawed', text: t('options.crew_status.thawed') },
+		{ key: 'frozen', value: 'frozen', text: t('options.crew_status.frozen') },
+		{ key: 'frozen_dupes', value: 'frozen_dupes', text: t('options.crew_status.frozen_dupes') },
+		{ key: 'favorites', value: 'favorites', text: t('options.crew_status.favorites') },
+		{ key: 'idle', value: 'idle', text: t('options.crew_status.idle') },
 	];
 
 	const filterByStatus = (crew: IRosterCrew) => {
@@ -44,7 +46,7 @@ export const CrewStatusFilter = (props: CrewStatusFilterProps) => {
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder='Filter by status'
+				placeholder={t('hints.filter_by_status')}
 				clearable
 				selection
 				options={statusOptions}

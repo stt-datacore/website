@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Dropdown, Segment, Message, Button, Label, Image, Icon, DropdownItemProps } from 'semantic-ui-react';
 
 import { IVoyageCrew } from '../../model/voyage';
-import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps } from '../../components/base/optionsmodal_base';
+import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps, ModalOption } from '../../components/base/optionsmodal_base';
 
 import { CalculatorContext } from './context';
 import CrewPicker from '../../components/crewpicker';
@@ -10,6 +10,7 @@ import { IEventScoredCrew } from '../eventplanner/model';
 import { computeEventBest, guessCurrentEventId } from '../../utils/events';
 import { GlobalContext } from '../../context/globalcontext';
 import { crewCopy, oneCrewCopy } from '../../utils/crewutils';
+import CONFIG from '../CONFIG';
 
 interface ISelectOption {
 	key: string;
@@ -313,16 +314,19 @@ class ExcluderOptionsModal extends OptionsModal<IExcluderModalOptions> {
 		return DEFAULT_EXCLUDER_OPTIONS;
 	}
 
-	static readonly rarityOptions = [
-		{ key: '1*', value: 1, text: '1* Common' },
-		{ key: '2*', value: 2, text: '2* Uncommon' },
-		{ key: '3*', value: 3, text: '3* Rare' },
-		{ key: '4*', value: 4, text: '4* Super Rare' },
-		{ key: '5*', value: 5, text: '5* Legendary' }
-	];
+	static readonly rarityOptions = [] as ModalOption[];
 
 	constructor(props: OptionsModalProps<IExcluderModalOptions>) {
 		super(props);
+
+		CONFIG.RARITIES.forEach((r, i) => {
+			if (i === 0) return;
+			ExcluderOptionsModal.rarityOptions.length = 0;
+			ExcluderOptionsModal.rarityOptions.push(
+				{ key: `${i}*`, value: i, text: `${i}* ${r.name}` }
+			)
+		});
+	
 
 		this.state = {
 			isDefault: false,

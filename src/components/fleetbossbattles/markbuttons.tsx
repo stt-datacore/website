@@ -6,8 +6,8 @@ import { getStyleByRarity, suppressDuplicateTraits } from './fbbutils';
 
 import ItemDisplay from '../itemdisplay';
 
-import allTraits from '../../../static/structured/translation_en.json';
 import { BossCrew, NodeMatch, NodeRarity, Optimizer, PossibleCombo, RarityStyle, SolveStatus, Solver, SolverNode, SolverTrait, TraitRarities } from '../../model/boss';
+import { GlobalContext } from '../../context/globalcontext';
 import { TinyShipSkill } from '../item_presenters/shipskill';
 
 interface ISolveOption {
@@ -25,6 +25,8 @@ type MarkGroupProps = {
 };
 
 export const MarkGroup = (props: MarkGroupProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t, TRAIT_NAMES } = globalContext.localized;
 	const { node, traits } = props;
 
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
@@ -78,19 +80,20 @@ export const MarkGroup = (props: MarkGroupProps) => {
 				size='tiny'
 			>
 				<Modal.Header>
+					{t('fbb.identify_solve_n', { n: `${node.index+1}`})}
 					Identify the traits used to solve Node {node.index+1}
 				</Modal.Header>
 				<Modal.Content scrolling style={{ textAlign: 'center' }}>
 					<Header as='h4'>
 						{node.traitsKnown.map((trait, traitIndex) => (
 							<span key={traitIndex}>
-								{traitIndex > 0 ? ' + ': ''}{allTraits.trait_names[trait]}
+								{traitIndex > 0 ? ' + ': ''}{TRAIT_NAMES[trait]}
 							</span>
 						)).reduce((prev, curr) => <>{prev} {curr}</>, <></>)}
 					</Header>
 					<GroupSolveOptions />
 					<div style={{ marginTop: '2em' }}>
-						<Header as='h4'>Partial Solve</Header>
+						<Header as='h4'>{t('fbb.partial_solve')}</Header>
 						<SolveButton node={node}
 							traits={[firstTrait, '?']} rarity={traitRarity[firstTrait]} onehand={false}
 							traitData={props.solver.traits} solveNode={handleSolveClick}
@@ -100,7 +103,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 				<Modal.Actions>
 					<TipsPopup />
 					<Button onClick={() => setModalIsOpen(false)}>
-						Close
+						{t('global.close')}
 					</Button>
 				</Modal.Actions>
 			</Modal>
@@ -113,7 +116,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 
 	return (
 		<React.Fragment>
-			{(traits.sort((a, b) => allTraits.trait_names[a].localeCompare(allTraits.trait_names[b])).map(trait => (
+			{(traits.sort((a, b) => TRAIT_NAMES[a].localeCompare(TRAIT_NAMES[b])).map(trait => (
 				<SolveButton key={trait} node={node}
 					traits={[trait]} rarity={traitRarity[trait]} onehand={false}
 					traitData={props.solver.traits} solveNode={handleSingleTrait}
@@ -155,6 +158,7 @@ type MarkCrewProps = {
 
 export const MarkCrew = (props: MarkCrewProps) => {
 	const { crew, trigger } = props;
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 
 	const [showPicker, setShowPicker] = React.useState<boolean>(false);
 
@@ -205,7 +209,7 @@ export const MarkCrew = (props: MarkCrewProps) => {
 		return (
 			<Button.Group>
 				<Popup
-					content={`${crew.name} solved a node!`}
+					content={t('fbb.popup.crew_solved', { crew: `${crew.name}`})}
 					mouseEnterDelay={500}
 					hideOnScroll
 					trigger={
@@ -215,7 +219,7 @@ export const MarkCrew = (props: MarkCrewProps) => {
 					}
 				/>
 				<Popup
-					content={`Mark as tried`}
+					content={t('fbb.popup.mark_as_tried')}
 					mouseEnterDelay={500}
 					hideOnScroll
 					trigger={
@@ -260,6 +264,8 @@ type SolvePickerProps = {
 };
 
 const SolvePicker = (props: SolvePickerProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { TRAIT_NAMES } = globalContext.localized;
 	const { crew, setModalIsOpen } = props;
 
 	const nodeMatches = Object.values(crew.node_matches);
@@ -317,7 +323,7 @@ const SolvePicker = (props: SolvePickerProps) => {
 							<Header as='h4' style={{ marginBottom: '0' }}>
 								{node.traitsKnown.map((trait, traitIndex) => (
 									<span key={traitIndex}>
-										{traitIndex > 0 ? ' + ': ''}{allTraits.trait_names[trait]}
+										{traitIndex > 0 ? ' + ': ''}{TRAIT_NAMES[trait]}
 									</span>
 								)).reduce((prev, curr) => <>{prev} {curr}</>, <></>)}
 							</Header>
