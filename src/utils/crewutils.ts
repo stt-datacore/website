@@ -809,6 +809,25 @@ export function qbitsToSlots(q_bits: number | undefined) {
 	return 4;
 }
 
+export function countQuippedSlots(crew: PlayerCrew) {
+	if (crew.kwipment) {
+		let quips = crew.kwipment.map((q : number | number[] | undefined) => {
+			if (typeof q === 'number') {
+				return q;
+			}
+			else if (q) {
+				return q[1] as number;
+			}
+			else {
+				return 0;
+			}
+		}).filter(f => f);
+		return quips.length;
+	}
+
+	return 0;
+}
+
 export function getCrewQuipment(crew: PlayerCrew, items: EquipmentItem[]): EquipmentItem[] {
 
 	if (crew.kwipment) {
