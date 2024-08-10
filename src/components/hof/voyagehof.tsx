@@ -18,7 +18,7 @@ import { HofDetails, formatNumber } from "./hofdetails";
 import { CrewDropDown } from "../base/crewdropdown";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { VoyageStatsForPeriod } from "./periodstats";
- 
+
 
 class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
     static contextType = GlobalContext;
@@ -48,12 +48,12 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         else {
             navigate(`/hall_of_fame`);
         }
-        
+
         if (!crew?.length) {
             this.setState({ ...this.state, crewSymbol: crew, rawVoyages: undefined, viewMode: 'rankings' });
         }
         else {
-            this.setState({ ...this.state, crewSymbol: crew, rawVoyages: undefined });    
+            this.setState({ ...this.state, crewSymbol: crew, rawVoyages: undefined });
         }
     }
 
@@ -78,7 +78,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
     }
 
     readonly clickCrew = (crew?: string) => {
-        let current = [ ... this.state.crewSymbol ?? [] ];        
+        let current = [ ... this.state.crewSymbol ?? [] ];
         if (crew) {
             if (!current.includes(crew)) {
                 current.push(crew);
@@ -96,7 +96,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
             navigate(`/hall_of_fame?crew=${current?.join(",")}`);
             this.setState({ ... this.state, crewSymbol: current, viewMode: 'details' })
         }
-        
+
     }
 
     private getFilteredCrew() {
@@ -104,7 +104,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         const { crew: allCrew } = this.context.core;
 
         if (!allCrew || !voyageStats) return [];
-        
+
         let pcn = [ ... new Set(Object.values(voyageStats).map(v => v.map(q => q.crewSymbol)).flat()) ];
         return allCrew
                     .filter(f => pcn.includes(f.symbol))
@@ -114,7 +114,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
     }
 
     readonly loadCrew = (crew: string[]) => {
-        
+
         if (!crew?.length) {
             this.setState({ ... this.state, rawVoyages: undefined, viewMode: 'rankings' });
             return;
@@ -154,11 +154,11 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                 const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
                 let rows = [] as { stats: VoyageStatEntry[], key: VoyageHOFPeriod }[][];
                 let stats = Object.keys(niceNamesForPeriod)?.filter(p => !!p?.length);
-        
-                while (stats.length) {            
+
+                while (stats.length) {
                     rows.push(stats.splice(0, isMobile ? 1 : 2).map(p => { return { stats: (voyageStats as Object)[p] as VoyageStatEntry[], key: p as VoyageHOFPeriod } } ))
                 }
-        
+
                 this.setState({ ...this.state, voyageStats, rows });
 
                 setTimeout(() => {
@@ -181,6 +181,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
     render() {
         const { crewSymbol, rawVoyages, rankBy, voyageStats, glanceDays, viewMode, rows } = this.state;
         const { crew: allCrew } = this.context.core;
+        const { t } = this.context.localized;
 
         if (!this.state.voyageStats || !allCrew) {
             return (
@@ -192,7 +193,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         allCrew.forEach(c => {
             if (!c.id) c.id = c.archetype_id;
         })
-       
+
         const filteredCrew = this.getFilteredCrew();
         const selection = filteredCrew?.filter(s => crewSymbol?.includes(s.symbol)).map(m => m?.id ?? 0);
         const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
@@ -251,7 +252,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                     Voyage Hall of Fame
                 </Header>
 
-                
+
                 <Step.Group fluid>
                     <Step active={viewMode === 'rankings'} onClick={() => this.setViewMode('rankings')}>
                         <Step.Content>
@@ -276,14 +277,14 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                         alignItems: "center",
                         margin: "0.5em"
                     }}>
-                        <CrewDropDown 
+                        <CrewDropDown
                             placeholder={"Select crew to see detailed stats..."}
                             plain
                             fluid
                             multiple={true}
-                            pool={filteredCrew} 
-                            selection={selection} 
-                            setSelection={this.setSelection}  
+                            pool={filteredCrew}
+                            selection={selection}
+                            setSelection={this.setSelection}
                             />
                         <div style={{margin: "0.5em"}}>
                             <h4>Details Time Frame:</h4>
@@ -301,10 +302,10 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
 
                     <HofDetails crewClick={this.clickCrew} hofState={this.state} />
 
-                    {!!crewSymbol?.length && !!rawVoyages && 
+                    {!!crewSymbol?.length && !!rawVoyages &&
                     <Button style={{margin: "0.5em"}} onClick={(e) => this.setGlance()}>{"Clear Details View"}</Button>
                     }
-                    
+
                 </div>}
 
                 {<div style={{display: viewMode === 'rankings' ? undefined : 'none'}}>
@@ -318,23 +319,33 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                         gap: "0.5em"
                     }}
                 >
-                    <span>Rank By: </span>
+                    <span>{t('hof.rank_by.rank_by_colon')}&nbsp;</span>
                     <Dropdown
                         options={[
                             {
                                 key: "voyages",
                                 value: "voyages",
-                                text: "Number of Voyages",
+                                text: t('hof.rank_by.voyages'),
                             },
                             {
                                 key: "duration",
                                 value: "duration",
-                                text: "Average Duration",
+                                text: t('hof.rank_by.duration'),
+                            },
+                            {
+                                key: "maxdur",
+                                value: "maxdur",
+                                text: t('hof.rank_by.maxdur'),
                             },
                             {
                                 key: "voydur",
                                 value: "voydur",
-                                text: "Voyages * Duration",
+                                text: t('hof.rank_by.voydur'),
+                            },
+                            {
+                                key: "voymaxdur",
+                                value: "voymaxdur",
+                                text: t('hof.rank_by.voymaxdur'),
                             },
                         ]}
                         value={rankBy}
@@ -369,7 +380,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                         )
                     })}
                 </Grid>
-                    
+
                 </div>}
             </div>
         );
