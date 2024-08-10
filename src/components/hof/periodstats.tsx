@@ -25,16 +25,16 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
     const context = React.useContext(GlobalContext);
     const quipment = context.core.items.filter(i => i.type === 14);
     const myCrew = context.player.playerData?.player.character.crew ?? [];
-    
+
     const [rankedCrew, setRankedCrew] = React.useState<(PlayerCrew & VoyageStatEntry)[]>([]);
 
     const [totalPages, setTotalPages] = React.useState(0);
     const [activePage, setActivePage] = React.useState(-1);
-    const [innerRankBy, setInnerRankBy] = React.useState('');
+    const [innerRankBy, setInnerRankBy] = React.useState<RankMode | ''>('');
 
     React.useEffect(() => {
         if (innerRankBy === '' || !stats?.length) return;
-        
+
         const newRank = innerRankBy;
         const newCrew = stats
             ?.map((s) => {
@@ -58,7 +58,7 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                         }
                     });
                 }
-                
+
                 newQuip.sort((a, b) => b.count - a.count);
 
                 return {
@@ -85,6 +85,9 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                 a.averageDuration ??= 1;
                 b.averageDuration ??= 1;
 
+                a.maxDuration ??= 1;
+                b.maxDuration ??= 1;
+
                 a.crewCount ??= 0;
                 b.crewCount ??= 0;
 
@@ -93,6 +96,14 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                 }
                 else if (newRank === 'duration') {
                     return b.averageDuration - a.averageDuration;
+                }
+                else if (newRank === 'maxdur') {
+                    return b.maxDuration - a.maxDuration;
+                }
+                else if (newRank === 'voymaxdur') {
+                    let ac = a.crewCount * a.maxDuration;
+                    let bc = b.crewCount * b.maxDuration;
+                    return bc - ac;
                 }
                 else {
                     let ac = a.crewCount * a.averageDuration;
@@ -207,6 +218,12 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                                                     <Header as="h4" style={{ marginTop: "10px" }}>
                                                         Average Duration:{" "}
                                                         {formatNumber(crew.averageDuration, maxDuration, 1 / 3600, "h")}
+                                                    </Header>
+                                                )}
+                                                {crew?.maxDuration && (
+                                                    <Header as="h4" style={{ marginTop: "10px" }}>
+                                                        Max Duration:{" "}
+                                                        {formatNumber(crew.maxDuration, maxDuration, 1 / 3600, "h")}
                                                     </Header>
                                                 )}
                                                 {crew?.have && <OwnedLabel statsPopup crew={crew as IRosterCrew} />}

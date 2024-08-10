@@ -1,4 +1,14 @@
 {
+    "hof": {
+        "rank_by": {
+            "rank_by_colon": "Rangfolge nach:",
+            "voyages": "Anzahl der Reisen",
+            "duration": "Durchschnittliche Dauer",
+            "voydur": "Anzahl der Reisen * Durchschnittliche Dauer",
+            "maxdur": "Maximale Dauer",
+            "voymaxdur": "Anzahl der Reisen * Maximale Dauer"
+        }
+    },
     "base": {
         "all_crew": "Die gesamte Crew anzeigen",
         "bigbook_tier": "Stufe",

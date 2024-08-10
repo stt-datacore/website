@@ -4,7 +4,7 @@ import { AvatarIcon } from '../model/game-elements';
 import { PlayerCrew, TranslateMethod } from '../model/player';
 import { shortToSkill, skillToShort } from './crewutils';
 
-export type RankMode = "voyages" | "duration" | "voydur";
+export type RankMode = "voyages" | "duration" | "voydur" | "maxdur" | "voymaxdur";
 
 export interface DropDownItem {
 	key: string;
@@ -99,7 +99,7 @@ export function simplejson2csv<T>(data: T[], fields: ExportField[], delimeter = 
 /**
  * Creates a formatted title (appelation) from the given text.
  * @param text The text to convert into a title
- * @returns 
+ * @returns
  */
 export function appelate(text: string) {
 	let curr: string = "";
@@ -161,7 +161,7 @@ export function makeAllCombos<T>(source: T[], maxResults?: number, current?: T[]
 	current ??= [];
 	index ??= 0;
 	maxResults ??= 5000;
-	
+
 	let i = 0;
 	let c = current.length;
 	let newc = [...current];
@@ -223,7 +223,7 @@ export function arraysUnion<T>(arr: T[][]) {
 
 export function printShortDistance(d?: Date, n?: number, nothousand?: boolean) {
     let now = new Date();
-	
+
 	if (d) {
 		n ??= d.getTime() - now.getTime();
 	}
@@ -252,7 +252,7 @@ export function printShortDistance(d?: Date, n?: number, nothousand?: boolean) {
             return `${min} m`;
         }
     }
-    
+
 }
 
 
@@ -282,7 +282,7 @@ export function printLastActive(n: number) {
             return `${min} m`;
         }
     }
-    
+
 }
 
 export function formatRunTime(seconds: number, t: TranslateMethod) {
