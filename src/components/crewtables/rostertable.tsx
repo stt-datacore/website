@@ -304,16 +304,18 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			worker: (crew: IRosterCrew[]) => {
 				return new Promise((resolve, reject) => {
 
+					// immortalize the stats for quipment
 					let c = crew.length;
 					for (let i = 0; i < c; i++) {
-						const work_crew = JSON.parse(JSON.stringify(crew[i]));
-						const ref_crew = globalContext.core.crew.find(f => f.symbol === work_crew.symbol);
-						if (ref_crew) {
-							work_crew.base_skills = JSON.parse(JSON.stringify(ref_crew.base_skills));
+						if (!crew[i].immortal) {
+							const work_crew = JSON.parse(JSON.stringify(crew[i]));
+							const ref_crew = globalContext.core.crew.find(f => f.symbol === work_crew.symbol);
+							if (ref_crew) {
+								work_crew.base_skills = JSON.parse(JSON.stringify(ref_crew.base_skills));
+							}
+							crew[i] = work_crew;
 						}
-						crew[i] = work_crew;
 					}
-
 
 					if (currentWorker) {
 						currentWorker.terminate();
