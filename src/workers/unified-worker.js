@@ -96,7 +96,7 @@ self.onmessage = (message) => {
             const { crew, quipment, buffs, max_qbits, slots, mode } = message.data.config;
             crew.forEach((crew) => {
                 calcQLots(crew, quipment, buffs, max_qbits, slots, mode);
-            });            
+            });
             postResult(crew, false);
         },
         'shipworker': () => ShipCrewWorker.calc(message.data.config, progress => postResult(progress, true)).then(data => postResult(data, false)),
