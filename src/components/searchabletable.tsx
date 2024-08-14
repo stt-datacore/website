@@ -48,6 +48,7 @@ export interface ITableConfigRow {
 	pseudocolumns?: string[];
 	reverse?: boolean;
 	tiebreakers?: string[];
+	tiebreakers_reverse?: boolean[];
 	customCompare?: (a: any, b: any) => number;
 }
 
@@ -227,9 +228,9 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		const columnConfig = props.config.find(col => col.column === sortColumn);
 		sortDirection = columnConfig?.reverse ? 'descending' : 'ascending';
 	}
-	
+
 	const columnConfig = props.config.find(col => col.column === sortColumn);
-	
+
 	const sortConfig: IConfigSortData = {
 		field: sortColumn,
 		direction: sortDirection,
@@ -240,10 +241,15 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	// Define tiebreaker rules with names in alphabetical order as default
 	//	Hack here to sort rarity in the same direction as max_rarity
 	let subsort = [] as SortConfig[];
-	
+
 	if (columnConfig && columnConfig.tiebreakers) {
-		subsort = columnConfig.tiebreakers.map(subfield => {
-			const subdirection = subfield.slice(subfield.length-6) === 'rarity' ? sortDirection : 'ascending';
+		subsort = columnConfig.tiebreakers.map((subfield, idx) => {
+
+			let subdirection = subfield.slice(subfield.length-6) === 'rarity' ? sortDirection : 'ascending';
+			if (columnConfig.tiebreakers_reverse && columnConfig.tiebreakers_reverse.length > idx) {
+				subdirection = columnConfig.tiebreakers_reverse[idx] ? 'descending' : 'ascending';
+			}
+
 			return { field: subfield, direction: subdirection };
 		});
 	}
@@ -331,7 +337,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 				justifyContent: "flex-end",
 				alignItems: "center"
 			}}>
-			
+
 
 				{caption && props.dropDownChoices?.length && (
 					<div style={{
