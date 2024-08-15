@@ -309,6 +309,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
                 quipment={true} />
             {typeof skill === 'string' &&
             <CrewStat
+                vertical={!pstMode}
                 quipmentMode={true}
                 style={{fontSize: "0.8em"}}
                 skill_name={skill}
