@@ -127,7 +127,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		});
 
 		// Add shared crew to roster
-		const store = TinyStore.getStore('eventData');
+		const store = TinyStore.getStore(`eventData/${playerData.player.dbid}`);
 
 		if (playerData.player.squad.rank !== 'LEADER' && !playerData.player.character.crew_borrows?.length) {
 			if (ephemeral?.events?.length) {
