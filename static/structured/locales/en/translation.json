@@ -1,14 +1,4 @@
 {
-    "hof": {
-        "rank_by": {
-            "rank_by_colon": "Rank By:",
-            "voyages": "Number of Voyages",
-            "duration": "Average Duration",
-            "voydur": "Number of Voyages * Average Duration",
-            "maxdur": "Maximum Duration",
-            "voymaxdur": "Number of Voyages * Maximum Duration"
-        }
-    },
     "base": {
         "all_crew": "Show all crew",
         "bigbook_tier": "Tier",
@@ -283,6 +273,10 @@
         "ship": "Show ship abilities",
         "view_big_book": "View {{crew}} on Big Book",
         "voyage": "Show voyage ranks"
+    },
+    "demands": {
+        "demands": "Demands",
+        "items": "{{global.items}}"
     },
     "duration": {
         "n_d": "{{days}} d",
@@ -623,20 +617,11 @@
             "title": "View Mode"
         }
     },
-    "demands": {
-        "demands": "Demands",
-        "items": "{{global.items}}"
-    },
     "global": {
-        "items": "Items",
-        "group_by": "Group by",
-        "episode": "Episode",
-        "adventure": "Adventure",
-        "quest": "Quest",
-        "challenge": "Challenge",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
+        "adventure": "Adventure",
         "and": "and",
         "any": "Any",
         "apply_filters": "Apply Filters",
@@ -644,6 +629,7 @@
         "bonus": "Bonus",
         "bonuses": "Bonuses",
         "cancel": "Cancel",
+        "challenge": "Challenge",
         "clear": "Clear",
         "clear_all": "Clear All",
         "clear_cache": "Clear cache",
@@ -658,9 +644,11 @@
         "edit": "Edit",
         "enable": "Enable",
         "enabled": "Enabled",
+        "episode": "Episode",
         "experimental": "Experimental",
         "filters": "Filters",
         "fleet": "Fleet",
+        "group_by": "Group by",
         "hidden": "Hidden",
         "hide": "Hide",
         "idle": "Idle",
@@ -697,6 +685,7 @@
             "valor": "Valor",
             "voyage_consumable": "Voyage Revival Tokens"
         },
+        "items": "Items",
         "last_updated_colon": "Last Updated:",
         "load_default_settings": "Load Default Settings",
         "load_defaults": "Load Defaults",
@@ -720,6 +709,7 @@
         "percentile": "Percentile",
         "permalink": "permalink",
         "portal": "Portal",
+        "quest": "Quest",
         "recommend_crew": "Recommend Crew",
         "reset": "Reset",
         "rows_per_page": "Rows per page",
@@ -784,6 +774,16 @@
         "select_ship_ability_amount": "Select Ship Ability Amount",
         "trait": "Trait",
         "traits": "Traits"
+    },
+    "hof": {
+        "rank_by": {
+            "duration": "Average Duration",
+            "maxdur": "Maximum Duration",
+            "rank_by_colon": "Rank By:",
+            "voyages": "Number of Voyages",
+            "voydur": "Number of Voyages * Average Duration",
+            "voymaxdur": "Number of Voyages * Maximum Duration"
+        }
     },
     "item_picker": {
         "all_items": {

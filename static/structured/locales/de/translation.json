@@ -1,14 +1,4 @@
 {
-    "hof": {
-        "rank_by": {
-            "rank_by_colon": "Rangfolge nach:",
-            "voyages": "Anzahl der Reisen",
-            "duration": "Durchschnittliche Dauer",
-            "voydur": "Anzahl der Reisen * Durchschnittliche Dauer",
-            "maxdur": "Maximale Dauer",
-            "voymaxdur": "Anzahl der Reisen * Maximale Dauer"
-        }
-    },
     "base": {
         "all_crew": "Die gesamte Crew anzeigen",
         "bigbook_tier": "Stufe",
@@ -283,6 +273,10 @@
         "ship": "Schiffsfähigkeiten anzeigen",
         "view_big_book": "{{crew}} im Big Book anzeigen",
         "voyage": "Reiseränge anzeigen"
+    },
+    "demands": {
+        "demands": "Anforderungen",
+        "items": "{{global.items}}"
     },
     "duration": {
         "n_d": "{{days}} T",
@@ -623,20 +617,11 @@
             "title": "Ansichtsmodus"
         }
     },
-    "demands": {
-        "demands": "Anforderungen",
-        "items": "{{global.items}}"
-    },
     "global": {
-        "items": "Artikele",
-        "group_by": "Gruppiere nach",
-        "episode": "Episode",
-        "adventure": "Abenteuer",
-        "quest": "Quest",
-        "challenge": "Herausforderung",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
+        "adventure": "Abenteuer",
         "and": "und",
         "any": "Beliebig",
         "apply_filters": "Filter anwenden",
@@ -644,6 +629,7 @@
         "bonus": "Bonifikation",
         "bonuses": "Boni",
         "cancel": "Abbrechen",
+        "challenge": "Herausforderung",
         "clear": "Löschen",
         "clear_all": "Alles löschen",
         "clear_cache": "Löschen des Cache",
@@ -658,9 +644,11 @@
         "edit": "Bearbeiten",
         "enable": "Aktivieren",
         "enabled": "Aktiviert",
+        "episode": "Episode",
         "experimental": "Experimentell",
         "filters": "Filter",
         "fleet": "Flotte",
+        "group_by": "Gruppiere nach",
         "hidden": "Versteckt",
         "hide": "Verstecken",
         "idle": "Leerlauf",
@@ -697,6 +685,7 @@
             "valor": "Tapferkeit",
             "voyage_consumable": "Reise-Wiederbelebungs-Token"
         },
+        "items": "Artikele",
         "last_updated_colon": "Zuletzt aktualisiert:",
         "load_default_settings": "Standardeinstellungen laden",
         "load_defaults": "Standards laden",
@@ -720,6 +709,7 @@
         "percentile": "Perzentil",
         "permalink": "Permalink",
         "portal": "Zeitportal",
+        "quest": "Quest",
         "recommend_crew": "Crew empfehlen",
         "reset": "Zurücksetzen",
         "rows_per_page": "Zeilen pro Seite",
@@ -784,6 +774,16 @@
         "select_ship_ability_amount": "Schiffsfähigkeitenbetrag auswählen",
         "trait": "Merkmal",
         "traits": "Merkmalen"
+    },
+    "hof": {
+        "rank_by": {
+            "duration": "Durchschnittliche Dauer",
+            "maxdur": "Maximale Dauer",
+            "rank_by_colon": "Rangfolge nach:",
+            "voyages": "Anzahl der Reisen",
+            "voydur": "Anzahl der Reisen * Durchschnittliche Dauer",
+            "voymaxdur": "Anzahl der Reisen * Maximale Dauer"
+        }
     },
     "item_picker": {
         "all_items": {

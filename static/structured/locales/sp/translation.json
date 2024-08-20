@@ -1,14 +1,4 @@
 {
-    "hof": {
-        "rank_by": {
-            "rank_by_colon": "Clasificar por:",
-            "voyages": "Número de viajes",
-            "duration": "Duración promedio",
-            "voydur": "Número de viajes * Duración media",
-            "maxdur": "Duración máxima",
-            "voymaxdur": "Número de viajes * Duración máxima"
-        }
-    },
     "base": {
         "all_crew": "Mostrar toda las tripulantes",
         "bigbook_tier": "Piso",
@@ -287,6 +277,10 @@
         "ship": "Mostrar habilidades del buque",
         "view_big_book": "Ver {{crew}} en Big Book",
         "voyage": "Mostrar rangos de viaje"
+    },
+    "demands": {
+        "demands": "Demandas",
+        "items": "{{global.items}}"
     },
     "duration": {
         "n_d": "{{days}} d",
@@ -628,20 +622,11 @@
             "title": "Modo de vista"
         }
     },
-    "demands": {
-        "demands": "Demandas",
-        "items": "{{global.items}}"
-    },
     "global": {
-        "items": "Artículos",
-        "group_by": "Agrupar por",
-        "episode": "Episodio",
-        "adventure": "Aventura",
-        "quest": "Búsqueda",
-        "challenge": "Desafío",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
+        "adventure": "Aventura",
         "and": "y",
         "any": "Cualquier",
         "apply_filters": "Aplicar filtros",
@@ -649,6 +634,7 @@
         "bonus": "Bonificacion",
         "bonuses": "Bonificaciones",
         "cancel": "Cancelar",
+        "challenge": "Desafío",
         "clear": "Borrar",
         "clear_all": "Borrar todo",
         "clear_cache": "Limpiar cache",
@@ -663,9 +649,11 @@
         "edit": "Editar",
         "enable": "Habilitar",
         "enabled": "Habilitado",
+        "episode": "Episodio",
         "experimental": "Experimental",
         "filters": "Filtros",
         "fleet": "Flota",
+        "group_by": "Agrupar por",
         "hidden": "Oculto",
         "hide": "Ocultar",
         "idle": "Inactivo",
@@ -702,6 +690,7 @@
             "valor": "Valor",
             "voyage_consumable": "Fichas de avivamiento del viaje"
         },
+        "items": "Artículos",
         "last_updated_colon": "Última actualización:",
         "load_default_settings": "Cargar configuración predeterminada",
         "load_defaults": "Cargar predeterminadas",
@@ -727,6 +716,7 @@
         "percentile": "Percentil",
         "permalink": "enlace permanente",
         "portal": "Portal",
+        "quest": "Búsqueda",
         "recommend_crew": "Recomendar tripulantes",
         "reset": "Restablecer",
         "rows_per_page": "Filas por página",
@@ -791,6 +781,16 @@
         "select_ship_ability_amount": "Seleccione la cantidad de capacidad del buque",
         "trait": "Rasgo",
         "traits": "Rasgos"
+    },
+    "hof": {
+        "rank_by": {
+            "duration": "Duración promedio",
+            "maxdur": "Duración máxima",
+            "rank_by_colon": "Clasificar por:",
+            "voyages": "Número de viajes",
+            "voydur": "Número de viajes * Duración media",
+            "voymaxdur": "Número de viajes * Duración máxima"
+        }
     },
     "item_picker": {
         "all_items": {

@@ -1,14 +1,4 @@
 {
-    "hof": {
-        "rank_by": {
-            "rank_by_colon": "Classer par :",
-            "voyages": "Nombre de voyages",
-            "duration": "Durée moyenne",
-            "voydur": "Nombre de voyages * Durée moyenne",
-            "maxdur": "Durée maximale",
-            "voymaxdur": "Nombre de voyages * Durée maximale"
-        }
-    },
     "base": {
         "all_crew": "Afficher tous l'équipiers",
         "bigbook_tier": "Étage",
@@ -289,6 +279,10 @@
         "ship": "Afficher les capacités du vaisseau",
         "view_big_book": "Voir {{crew}} sur Big Book",
         "voyage": "Afficher les rangs des voyages"
+    },
+    "demands": {
+        "demands": "Demandes",
+        "items": "{{global.items}}"
     },
     "duration": {
         "n_d": "{{days}} j",
@@ -629,20 +623,11 @@
             "title": "Mode d'affichage"
         }
     },
-    "demands": {
-        "demands": "Demandes",
-        "items": "{{global.items}}"
-    },
     "global": {
-        "items": "Articles",
-        "group_by": "Par groupe",
-        "episode": "Épisode",
-        "adventure": "Aventure",
-        "quest": "Quête",
-        "challenge": "Défi",
         "aborted": "Terminé",
         "admiral": "Avorté",
         "advanced_settings": "Réglages Avancés",
+        "adventure": "Aventure",
         "and": "et",
         "any": "Quelconque",
         "apply_filters": "Appliquer des filtres",
@@ -650,6 +635,7 @@
         "bonus": "Prime",
         "bonuses": "Bonus",
         "cancel": "Annuler",
+        "challenge": "Défi",
         "clear": "Effacer",
         "clear_all": "Tout effacer",
         "clear_cache": "Supprimer le cache",
@@ -664,9 +650,11 @@
         "edit": "Modifier",
         "enable": "Activer",
         "enabled": "Activé",
+        "episode": "Épisode",
         "experimental": "Expérimental",
         "filters": "Filtres",
         "fleet": "Flotte",
+        "group_by": "Par groupe",
         "hidden": "Caché",
         "hide": "Masquer",
         "idle": "Inactif",
@@ -703,6 +691,7 @@
             "valor": "Valeur",
             "voyage_consumable": "Jetons de renaissance du voyage"
         },
+        "items": "Articles",
         "last_updated_colon": "Dernière mise à jour :",
         "load_default_settings": "Charger les paramètres par défaut",
         "load_defaults": "Charger les défauts",
@@ -728,6 +717,7 @@
         "percentile": "Centile",
         "permalink": "lien permanent",
         "portal": "Portail",
+        "quest": "Quête",
         "recommend_crew": "Recommander des équipiers",
         "reset": "Réinitialiser",
         "rows_per_page": "Lignes par page",
@@ -792,6 +782,16 @@
         "select_ship_ability_amount": "Sélectionnez le montant de la capacité du vaisseau",
         "trait": "Trait",
         "traits": "Traits"
+    },
+    "hof": {
+        "rank_by": {
+            "duration": "Durée moyenne",
+            "maxdur": "Durée maximale",
+            "rank_by_colon": "Classer par :",
+            "voyages": "Nombre de voyages",
+            "voydur": "Nombre de voyages * Durée moyenne",
+            "voymaxdur": "Nombre de voyages * Durée maximale"
+        }
     },
     "item_picker": {
         "all_items": {
