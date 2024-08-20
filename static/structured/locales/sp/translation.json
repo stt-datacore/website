@@ -1,14 +1,4 @@
 {
-    "hof": {
-        "rank_by": {
-            "rank_by_colon": "Clasificar por:",
-            "voyages": "Número de viajes",
-            "duration": "Duración promedio",
-            "voydur": "Número de viajes * Duración media",
-            "maxdur": "Duración máxima",
-            "voymaxdur": "Número de viajes * Duración máxima"
-        }
-    },
     "base": {
         "all_crew": "Mostrar toda las tripulantes",
         "bigbook_tier": "Piso",
@@ -780,6 +770,16 @@
         "select_ship_ability_amount": "Seleccione la cantidad de capacidad del buque",
         "trait": "Rasgo",
         "traits": "Rasgos"
+    },
+    "hof": {
+        "rank_by": {
+            "duration": "Duración promedio",
+            "maxdur": "Duración máxima",
+            "rank_by_colon": "Clasificar por:",
+            "voyages": "Número de viajes",
+            "voydur": "Número de viajes * Duración media",
+            "voymaxdur": "Número de viajes * Duración máxima"
+        }
     },
     "item_picker": {
         "all_items": {

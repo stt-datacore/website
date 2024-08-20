@@ -1,14 +1,4 @@
 {
-    "hof": {
-        "rank_by": {
-            "rank_by_colon": "Classer par :",
-            "voyages": "Nombre de voyages",
-            "duration": "Durée moyenne",
-            "voydur": "Nombre de voyages * Durée moyenne",
-            "maxdur": "Durée maximale",
-            "voymaxdur": "Nombre de voyages * Durée maximale"
-        }
-    },
     "base": {
         "all_crew": "Afficher tous l'équipiers",
         "bigbook_tier": "Étage",
@@ -781,6 +771,16 @@
         "select_ship_ability_amount": "Sélectionnez le montant de la capacité du vaisseau",
         "trait": "Trait",
         "traits": "Traits"
+    },
+    "hof": {
+        "rank_by": {
+            "duration": "Durée moyenne",
+            "maxdur": "Durée maximale",
+            "rank_by_colon": "Classer par :",
+            "voyages": "Nombre de voyages",
+            "voydur": "Nombre de voyages * Durée moyenne",
+            "voymaxdur": "Nombre de voyages * Durée maximale"
+        }
     },
     "item_picker": {
         "all_items": {

@@ -1,14 +1,4 @@
 {
-    "hof": {
-        "rank_by": {
-            "rank_by_colon": "Rangfolge nach:",
-            "voyages": "Anzahl der Reisen",
-            "duration": "Durchschnittliche Dauer",
-            "voydur": "Anzahl der Reisen * Durchschnittliche Dauer",
-            "maxdur": "Maximale Dauer",
-            "voymaxdur": "Anzahl der Reisen * Maximale Dauer"
-        }
-    },
     "base": {
         "all_crew": "Die gesamte Crew anzeigen",
         "bigbook_tier": "Stufe",
@@ -773,6 +763,16 @@
         "select_ship_ability_amount": "Schiffsfähigkeitenbetrag auswählen",
         "trait": "Merkmal",
         "traits": "Merkmalen"
+    },
+    "hof": {
+        "rank_by": {
+            "duration": "Durchschnittliche Dauer",
+            "maxdur": "Maximale Dauer",
+            "rank_by_colon": "Rangfolge nach:",
+            "voyages": "Anzahl der Reisen",
+            "voydur": "Anzahl der Reisen * Durchschnittliche Dauer",
+            "voymaxdur": "Anzahl der Reisen * Maximale Dauer"
+        }
     },
     "item_picker": {
         "all_items": {
