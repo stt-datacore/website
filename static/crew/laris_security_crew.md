@@ -3,7 +3,7 @@ name: Security Laris
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 02/02/2022
 published: true

@@ -45,8 +45,9 @@ type CrewCellProps = {
 
 export const CrewShipCells = (props: CrewCellProps) => {
 	const { crew } = props;
+	const { t } = React.useContext(GlobalContext).localized;
 	if (crew.action.ability !== undefined && crew.action.ability_text === undefined) {
-		crew.action.ability_text = crew.action.ability ? getShipBonus(crew) : '';
+		crew.action.ability_text = crew.action.ability ? getShipBonus(t, crew) : '';
 	}
 	return (
 		<React.Fragment>

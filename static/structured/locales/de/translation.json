@@ -1,4 +1,14 @@
 {
+    "hof": {
+        "rank_by": {
+            "rank_by_colon": "Rangfolge nach:",
+            "voyages": "Anzahl der Reisen",
+            "duration": "Durchschnittliche Dauer",
+            "voydur": "Anzahl der Reisen * Durchschnittliche Dauer",
+            "maxdur": "Maximale Dauer",
+            "voymaxdur": "Anzahl der Reisen * Maximale Dauer"
+        }
+    },
     "base": {
         "all_crew": "Die gesamte Crew anzeigen",
         "bigbook_tier": "Stufe",
@@ -160,6 +170,7 @@
         "consider_shared": "Gemeinsame Crew berücksichtigen",
         "consider_unowned": "Unbesessene Crew berücksichtigen",
         "exclude_quipped": "Crew mit aktiven Rüstzeugen ausschließen",
+        "only_immortal": "Nur unsterbliche Crew",
         "shared_crew_popup": "Die Skill-Zahlen der gemeinsamen Crew basieren auf den Buffs Ihres Spielers und stimmen möglicherweise nicht mit dem tatsächlichen Punktestand überein"
     },
     "cool_stats": {
@@ -275,11 +286,14 @@
     },
     "duration": {
         "n_d": "{{days}} T",
+        "n_d_compact": "{{days}}T",
         "n_days": "{{days}} Tage",
         "n_h": "{{hours}} Std",
+        "n_h_compact": "{{hours}}Std",
         "n_hour_class": "{{hours}}-Stunden",
         "n_hours": "{{hours}} Stunden",
         "n_m": "{{minutes}} M",
+        "n_m_compact": "{{minutes}}M",
         "n_minute_class": "{{minutes}}-minute",
         "n_minutes": "{{minutes}} minuten",
         "title": "Dauer: {{duration}}"
@@ -316,6 +330,9 @@
         "gather": "Galaxie",
         "shuttles": "Fraktion",
         "skirmish": "Scharmützel"
+    },
+    "events_common": {
+        "skirmish_guess_warning": "Dieses Event enthält eine Scharmützelkomponente und eine vollständige Liste der beteiligten Crewmitglieder ist möglicherweise erst nach Beginn des Events verfügbar."
     },
     "fbb": {
         "alert_no_solution": "Für diesen Knoten wurden keine möglichen Lösungen gefunden. Möglicherweise müssen Sie Ihre Filter ändern, Ihre gelösten Merkmale noch einmal überprüfen oder die Liste der versuchten Crew zurücksetzen.",
@@ -617,7 +634,6 @@
         "adventure": "Abenteuer",
         "quest": "Quest",
         "challenge": "Herausforderung",
-        "n_results": "{{n}} Ergebnisse",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
@@ -638,6 +654,7 @@
         "disable": "Deaktivieren",
         "disabled": "Deaktiviert",
         "dismiss": "Abweisen",
+        "download": "Herunterladen",
         "edit": "Bearbeiten",
         "enable": "Aktivieren",
         "enabled": "Aktiviert",
@@ -655,6 +672,7 @@
             "cadet_challenge": "Kadettenherausforderung",
             "cadet_challenge_tickets": "Kadettenherausforderung Eintrittskarte",
             "cadet_challenges": "Kadettenherausforderungen",
+            "chronotons": "Chronotons",
             "component": "Komponente",
             "continuum_qbit": "Kontinuum R-Bit",
             "continuum_quipment": "Kontinuum Rüstzeug",
@@ -679,6 +697,7 @@
             "valor": "Tapferkeit",
             "voyage_consumable": "Reise-Wiederbelebungs-Token"
         },
+        "last_updated_colon": "Zuletzt aktualisiert:",
         "load_default_settings": "Standardeinstellungen laden",
         "load_defaults": "Standards laden",
         "loading_ellipses": "Wird geladen ...",
@@ -686,6 +705,7 @@
         "max_rarity": "Max. Seltenheit",
         "member": "Mitglied",
         "min_rarity": "Min. Seltenheit",
+        "n_results": "{{n}} Ergebnisse",
         "name": "Name",
         "never": "Niemals",
         "new": "Neu",
@@ -1059,6 +1079,21 @@
         "starbase_level": "Sternenbasis-Level",
         "x_y_crew": "{{x}} / {{y}} Crew"
     },
+    "profile": {
+        "charts_and_stats": "Diagramme und Statistiken",
+        "crew": "{{menu.roster.crew}}",
+        "crew_mobile": "{{menu.roster.crew}} (Handy)",
+        "download": {
+            "complete_spreadsheet": "Komplette Tabelle",
+            "crew_table": "Crew-Tabelle",
+            "item_table": "Artikeltabelle",
+            "ship_table": "Schiffstabelle"
+        },
+        "items": "{{menu.roster.items}}",
+        "other": "Andere",
+        "ships": "{{menu.roster.ships}}",
+        "switch_to_english": "Tabellen werden in der aktuellen Sprache heruntergeladen. Möglicherweise müssen Sie auf Englisch wechseln, um Tabellen herunterzuladen, die mit anderen Community-Tools kompatibel sind."
+    },
     "prospect_picker": {
         "add_crew": "Crew Hinzufügen",
         "select_crew": "Crew Auswählen"
@@ -1102,6 +1137,17 @@
         "gauntlet_rank": "Herausforderungsrang",
         "quipment_score": "Rüstzeug Werte",
         "voyage_rank": "Reiserang"
+    },
+    "ranking_method": {
+        "delta_t": "Delta T",
+        "early_boom": "Frühestes Größtes",
+        "guaranteed_minimum": "Garantiertes Minimum",
+        "lean_in": "Mittelhoch",
+        "lean_out": "Mittelniedrig",
+        "lean_over": "Mittel",
+        "moonshot": "Mondschuss",
+        "potential_maximum": "Potenzielles Maximum",
+        "standard": "Standard"
     },
     "roster_summary": {
         "by_rarity": "Nach Seltenheit",
@@ -1214,7 +1260,7 @@
         "accuracy": "Genauigkeit",
         "amount": "Menge",
         "antimatter": "Antimaterie",
-        "arena_metric": "Arena-Messmetrik",
+        "arena_metric": "Arena Metrisch",
         "attack": "Angriffs",
         "attack_speed": "Angriffsgeschwindigkeit",
         "battle_mode": "Kampfmodus",
@@ -1223,6 +1269,11 @@
         "boosts": "Leistungssteigerung",
         "boosts_x_by_y": "Steigert {{x}} um {{y}}",
         "calc": {
+            "advanced": {
+                "crew_filter": "Erweiterter Crew-Filter",
+                "exclude_ability": "Crew mit dieser Fähigkeit ausschließen",
+                "power_depth": "Erweiterte Leistungstiefe"
+            },
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} akzeptierte Ergebnisse) ({{time}})",
             "calculating_pct_ellipses": "Berechnung ... ({{percent}} % abgeschlossen)",
             "calculating_pct_ellipses_verbose": "Berechnung ... ({{percent}} % abgeschlossen) ({{progress}} / {{count}}) ({{accepted}} akzeptierte Ergebnisse)",
@@ -1233,7 +1284,10 @@
             "icon_activation_offset": "{{icon}} Aktivierungsoffset",
             "ignore_skill": "Ignorieren Sie die Fähigkeiten",
             "iterations": "Iterationen",
+            "max_init": "Maximale Initialisierungszeit",
             "max_iterations": "Max. Iterationen",
+            "max_workers": "Max. Anzahl Arbeiter",
+            "ranking_method": "Rangfolgemethode",
             "rate": "Rate",
             "rate_msg": "Muss eine Zahl zwischen 1 und 10 sein",
             "run_current_line_up": "Aktuelle Crew ausführen",
@@ -1256,6 +1310,7 @@
         "crit_bonus": "Krit Bonus",
         "crit_rating": "Krit Treffer",
         "cycle_time": "Zykluszeit",
+        "depth_hr_warn": "* Standardmäßig gilt die Leistungstiefe nicht für die Hüllereparatur-Crew.",
         "duration": "Dauer",
         "equipment_bonus": "Ausrüstungsbonus",
         "evasion": "Ausweichen",
@@ -1264,10 +1319,17 @@
         "grants": "Verleihungen",
         "handicap": "Handicap",
         "hull": "Hülle",
+        "increase_boost": {
+            "accuracy": "Erhöht den Genauigkeitsschub auf +{{val}}",
+            "attack": "Erhöht den Angriffsschub auf +{{val}}",
+            "evasion": "Erhöht den Ausweichschub auf +{{val}}"
+        },
         "initialize": "Initialisierungszeit",
+        "level": "{{base.level}}",
         "max_attack": "Max. Angriffs",
         "max_level": "Höchstlevel",
         "min_attack": "Min. Angriffs",
+        "offset_adds_warn": "* Aktivierungs-Offsets werden zur anfänglichen Abkühlungszeit der aktuellen Crew hinzugefügt.",
         "power_depth": "Tiefe des Leistungsniveaus",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {
@@ -1281,6 +1343,7 @@
             "only_in_use": "Nur aktuell verwendete Schiffe anzeigen"
         },
         "skirmish": "{{event_type.skirmish}}",
+        "skirmish_metric": "Scharmützel Metrisch",
         "trigger": "Auslöser",
         "triggers": "Auslöseren",
         "unlimited": "Unbegrenzt",
@@ -1394,6 +1457,38 @@
         "owned_crew": {
             "description": "Berücksichtigen Sie nur Ihre eigene Crew",
             "title": "Eigene Crew"
+        }
+    },
+    "voyage": {
+        "active": {
+            "active_voyage_colon": "Aktive Reise:"
+        },
+        "calc": {
+            "msg_type": {
+                "completed": "Ihre Reise dauerte seit {{time}}.",
+                "failed": "Ihre Reise ist um {{time}} fehlgeschlagen.",
+                "ran_for": "Ihre Reise dauerte seit {{time}}.",
+                "recalled": "Ihre Reise dauerte seit {{time}}.",
+                "started": "Ihre Reise dauert seit {{time}}."
+            },
+            "other_msg": {
+                "initial_estimate": "Ihre anfängliche Schätzung war {{time}}."
+            }
+        },
+        "estimate": {
+            "dilemma_chance": "Chance auf {{time}}-Dilemma: {{chance}}",
+            "estimate_time": "Schätzung: {{time}}",
+            "n_refills": "{{n}} Nachfüllungen",
+            "refill": "1 Nachfüllung"
+        },
+        "tracking": {
+            "not_tracking": "Sie verfolgen diese Reise nicht.",
+            "start_tracking": "Verfolgung starten"
+        },
+        "view": {
+            "active_voyage": "Aktive Reise anzeigen",
+            "crew_calculator": "Crew-Rechner anzeigen",
+            "voyage_history": "Reiseverlauf anzeigen"
         }
     }
 }

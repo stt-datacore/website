@@ -1,4 +1,14 @@
 {
+    "hof": {
+        "rank_by": {
+            "rank_by_colon": "Clasificar por:",
+            "voyages": "Número de viajes",
+            "duration": "Duración promedio",
+            "voydur": "Número de viajes * Duración media",
+            "maxdur": "Duración máxima",
+            "voymaxdur": "Número de viajes * Duración máxima"
+        }
+    },
     "base": {
         "all_crew": "Mostrar toda las tripulantes",
         "bigbook_tier": "Piso",
@@ -158,6 +168,7 @@
         "consider_shared": "Considerar las tripulantes compartidas",
         "consider_unowned": "Considere las tripulantes sin propietario",
         "exclude_quipped": "Excluir las tripulantes con quipo activo",
+        "only_immortal": "Sólo tripulación inmortal",
         "shared_crew_popup": "Los números de habilidades del equipo compartido se basan en las ventajas de tu jugador y pueden no coincidir con la puntuación real"
     },
     "cool_stats": {
@@ -279,11 +290,14 @@
     },
     "duration": {
         "n_d": "{{days}} d",
+        "n_d_compact": "{{days}}d",
         "n_days": "{{days}} días",
         "n_h": "{{hours}} h",
+        "n_h_compact": "{{hours}}h",
         "n_hour_class": "{{hours}}-hora",
         "n_hours": "{{hours}} horas",
         "n_m": "{{minutes}} m",
+        "n_m_compact": "{{minutes}}m",
         "n_minute_class": "{{minutes}}-minuto",
         "n_minutes": "{{minutes}} minutos",
         "title": "Duración: {{duration}}"
@@ -320,6 +334,9 @@
         "gather": "Galaxia",
         "shuttles": "Facción",
         "skirmish": "Escaramuza"
+    },
+    "events_common": {
+        "skirmish_guess_warning": "Este evento contiene un componente de escaramuza y es posible que una lista completa del equipo destacado no esté disponible hasta después de que comience este evento"
     },
     "fbb": {
         "alert_no_solution": "No se encontraron soluciones posibles para este nódulo. Es posible que necesites cambiar tus filtros, volver a verificar tus rasgos resueltos o restablecer la lista de tripulantes intentados.",
@@ -621,8 +638,7 @@
         "episode": "Episodio",
         "adventure": "Aventura",
         "quest": "Búsqueda",
-        "challenge": "Desafío",        
-        "n_results": "{{n}} resultados",
+        "challenge": "Desafío",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
@@ -643,6 +659,7 @@
         "disable": "Desactivar",
         "disabled": "Desactivado",
         "dismiss": "Descartar",
+        "download": "Descargar",
         "edit": "Editar",
         "enable": "Habilitar",
         "enabled": "Habilitado",
@@ -660,6 +677,7 @@
             "cadet_challenge": "Desafío de cadete",
             "cadet_challenge_tickets": "Boletos de desafío cadete",
             "cadet_challenges": "Desafíos de cadete",
+            "chronotons": "Chronotons",
             "component": "Componente",
             "continuum_qbit": "Q-Bits de Continuo",
             "continuum_quipment": "Quipo de Continuo",
@@ -684,6 +702,7 @@
             "valor": "Valor",
             "voyage_consumable": "Fichas de avivamiento del viaje"
         },
+        "last_updated_colon": "Última actualización:",
         "load_default_settings": "Cargar configuración predeterminada",
         "load_defaults": "Cargar predeterminadas",
         "loading_ellipses": "Cargando ...",
@@ -691,6 +710,7 @@
         "max_rarity": "Rareza máx.",
         "member": "Miembro",
         "min_rarity": "Rareza mín.",
+        "n_results": "{{n}} resultados",
         "name": "Nombre",
         "never": "Nunca",
         "new": "Nuevo",
@@ -1068,6 +1088,21 @@
         "starbase_level": "Nivel de base estelar",
         "x_y_crew": "{{x}} / {{y}} equipo"
     },
+    "profile": {
+        "charts_and_stats": "Gráficos y Estadísticas",
+        "crew": "{{menu.roster.crew}}",
+        "crew_mobile": "{{menu.roster.crew}} (Móvil)",
+        "download": {
+            "complete_spreadsheet": "Hoja de cálculo completa",
+            "crew_table": "Tabla de tripulación",
+            "item_table": "Tabla de elementos",
+            "ship_table": "Tabla de buques"
+        },
+        "items": "{{menu.roster.items}}",
+        "other": "Otra",
+        "ships": "{{menu.roster.ships}}",
+        "switch_to_english": "Las hojas de cálculo se descargan utilizando el idioma actual. Es posible que tengas que cambiar al inglés para descargar hojas de cálculo que sean compatibles con otras herramientas comunitarias."
+    },
     "prospect_picker": {
         "add_crew": "Agregar tripulante",
         "select_crew": "Seleccionar tripulante"
@@ -1111,6 +1146,17 @@
         "gauntlet_rank": "Rango de Reto",
         "quipment_score": "Puntuación del Quipo",
         "voyage_rank": "Rango de Viaje"
+    },
+    "ranking_method": {
+        "delta_t": "Delta T",
+        "early_boom": "Máximo Más Temprano",
+        "guaranteed_minimum": "Mínimo garantizado",
+        "lean_in": "Medio Bajo",
+        "lean_out": "Medio Bajo",
+        "lean_over": "Medio",
+        "moonshot": "Disparo a la Luna",
+        "potential_maximum": "Máximo potencial",
+        "standard": "Estándar"
     },
     "roster_summary": {
         "by_rarity": "Por rareza",
@@ -1223,7 +1269,7 @@
         "accuracy": "Precisión",
         "amount": "Cantidad",
         "antimatter": "Antimateria",
-        "arena_metric": "Métrica de arena",
+        "arena_metric": "Métrica de Arena",
         "attack": "Ataque",
         "attack_speed": "Velocidad de ataque",
         "battle_mode": "Modo de batalla",
@@ -1233,6 +1279,11 @@
         "boosts": "Aumentos",
         "boosts_x_by_y": "Aumenta {{x}} en {{y}}",
         "calc": {
+            "advanced": {
+                "crew_filter": "Filtro de tripulación avanzado",
+                "exclude_ability": "Excluir las tripulantes con esta habilidad",
+                "power_depth": "Profundidad de potencia avanzada"
+            },
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} resultados aceptados) ({{time}})",
             "calculating_pct_ellipses": "Calculando ... ({{percent}}% completado)",
             "calculating_pct_ellipses_verbose": "Calculando ... ({{percent}}% completado) ({{progress}} / {{count}}) ({{accepted}} resultados aceptados)",
@@ -1243,7 +1294,10 @@
             "icon_activation_offset": "{{icon}} Compensación de activación",
             "ignore_skill": "Ignora las habilidades",
             "iterations": "Iteraciones",
+            "max_init": "Tiempo máximo de inicio",
             "max_iterations": "Iteraciones máx.",
+            "max_workers": "Máx. trabajadores",
+            "ranking_method": "Método de clasificación",
             "rate": "Tasa",
             "rate_msg": "Debe ser un número entre 1 y 10",
             "run_current_line_up": "Ejecutar tripulantes actuales",
@@ -1266,6 +1320,7 @@
         "crit_bonus": "Bonificación de Crít",
         "crit_rating": "Frecuencia de Crít",
         "cycle_time": "Uno ciclo",
+        "depth_hr_warn": "* De forma predeterminada, la profundidad del nivel de potencia no se aplica a las tripulantes de reparación de casco.",
         "duration": "Duración",
         "equipment_bonus": "Bonificación de equipo",
         "evasion": "Evasión",
@@ -1274,10 +1329,17 @@
         "grants": "Concesiones",
         "handicap": "Handicap",
         "hull": "Casco",
+        "increase_boost": {
+            "accuracy": "Aumenta el aumento de precisión a +{{val}}",
+            "attack": "Aumenta el impulso de ataque a +{{val}}",
+            "evasion": "Aumenta el aumento de evasión a +{{val}}"
+        },
         "initialize": "Iniciar",
+        "level": "{{base.level}}",
         "max_attack": "Ataque mín.",
         "max_level": "Nivel máximo",
         "min_attack": "Ataque máx.",
+        "offset_adds_warn": "* Las compensaciones de activación se suman al tiempo de carga inicial de la tripulante actual.",
         "power_depth": "Profundidad del nivel de potencia",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {
@@ -1291,6 +1353,7 @@
             "only_in_use": "Mostrar sólo los buques actualmente en uso"
         },
         "skirmish": "{{event_type.skirmish}}",
+        "skirmish_metric": "Métrica de Escaramuza",
         "trigger": "Activación",
         "triggers": "Activadores",
         "unlimited": "Ilimitado",
@@ -1404,6 +1467,38 @@
         "owned_crew": {
             "description": "Considere solo a su propia tripulantes",
             "title": "Tripulación Propia"
+        }
+    },
+    "voyage": {
+        "active": {
+            "active_voyage_colon": "Viaje activo:"
+        },
+        "calc": {
+            "msg_type": {
+                "completed": "Tu viaje duró {{time}}.",
+                "failed": "Tu viaje falló a las {{time}}.",
+                "ran_for": "Tu viaje duró {{time}}.",
+                "recalled": "Tu viaje duró {{time}}.",
+                "started": "Tu viaje ha durado {{time}}."
+            },
+            "other_msg": {
+                "initial_estimate": "Su estimación inicial fue {{time}}."
+            }
+        },
+        "estimate": {
+            "dilemma_chance": "Probabilidad de dilema de {{time}}: {{chance}}",
+            "estimate_time": "Estimado: {{time}}",
+            "n_refills": "{{n}} Recargas",
+            "recarga": "1 Recarga"
+        },
+        "tracking": {
+            "not_tracking": "No estás rastreando este viaje.",
+            "start_tracking": "Comenzar a rastrear"
+        },
+        "view": {
+            "active_voyage": "Ver viaje activo",
+            "crew_calculator": "Ver calculadora de tripulación",
+            "voyage_history": "Ver historial de viaje"
         }
     }
 }

@@ -134,10 +134,17 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	const [language, setLanguage] = useStateWithStorage<SupportedLanguage | undefined>('localized/language', undefined);
 
 	// Localized strings sent to UI
-	const [webStringMap, setWebStringMap] = useStateWithStorage<{[key: string]: string}>('localized/webstrings', {});
-	const [fallbackMap, setFallbackMap] = useStateWithStorage<{[key: string]: string}>('localized/fallback', {});
+	const [webStringMap, setWebStringMap] = React.useState<{[key: string]: string}>({});
+	const [fallbackMap, setFallbackMap] = React.useState<{[key: string]: string}>({});
 
-	const [gameStrings, setGameStrings] = useStateWithStorage<IGameStrings>('localized/gamestrings', defaultGameStrings);
+	const [gameStrings, setGameStrings] = React.useState<IGameStrings>(defaultGameStrings);
+
+	// // Localized strings sent to UI
+	// const [webStringMap, setWebStringMap] = useStateWithStorage<{[key: string]: string}>('localized/webstrings', {});
+	// const [fallbackMap, setFallbackMap] = useStateWithStorage<{[key: string]: string}>('localized/fallback', {});
+
+	// const [gameStrings, setGameStrings] = useStateWithStorage<IGameStrings>('localized/gamestrings', defaultGameStrings);
+
 
 	// Update language on user preference change
 	React.useEffect(() => {
@@ -186,7 +193,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		// TODO: Rework CONFIG translations
 		CONFIG.setLanguage(newLanguage);
 
-		if (language === newLanguage)
+		if (language === newLanguage && Object.keys(webStringMap).length)
 			return;
 
 		const webStringsResponse: Response =
@@ -200,16 +207,16 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 		let newFallbackMap = null as any;
 
-		if (!Object.keys(fallbackMap).length) {
-			if (newLanguage !== 'en') {
-				const fallbackResponse: Response = await fetch(`/structured/locales/en/translation.json`);
-				const fallbackJson: TranslationSet = await fallbackResponse.json();
-				newFallbackMap = fallbackJson;
-			}
-			else {
-				newFallbackMap = webStringsJson;
-			}
-		}
+		// if (!Object.keys(fallbackMap).length) {
+		// 	if (newLanguage !== 'en') {
+		// 		const fallbackResponse: Response = await fetch(`/structured/locales/en/translation.json`);
+		// 		const fallbackJson: TranslationSet = await fallbackResponse.json();
+		// 		newFallbackMap = fallbackJson;
+		// 	}
+		// 	else {
+		// 		newFallbackMap = webStringsJson;
+		// 	}
+		// }
 
 		// Only process game strings for non-English locales
 		//	Remember to fall back to default values when directly accessing archetypes
@@ -262,7 +269,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		if (newFallbackMap) {
 			setFallbackMap(makeWebstringMap(newFallbackMap));
 		}
-		
+
 		setWebStringMap(makeWebstringMap(webStringsJson));
 		setGameStrings({...translatedGameStrings});
 
@@ -379,8 +386,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				// What scenarios would coalesce to unknown names here?
 				crew.traits_named = crew.traits.map(t => translation.TRAIT_NAMES[t] ?? `Unknown trait name ${t}`);
 				crew.events ??= 0;
-				crew.collections = crew.collection_ids.map(id => translation.COLLECTIONS[`cc-${id}`]?.name ?? `Unknown collection name ${id}`);
-
+				if (crew.collection_ids.every(id => !!translation.COLLECTIONS[`cc-${id}`])) {
+					crew.collections = crew.collection_ids.map(id => translation.COLLECTIONS[`cc-${id}`]?.name ?? `Unknown collection name ${id}`);
+				}
 				return crew;
 			});
 		}

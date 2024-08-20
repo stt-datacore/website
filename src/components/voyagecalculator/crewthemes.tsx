@@ -4,7 +4,7 @@ import { Modal, Button, Form, Input, Dropdown, Table, Message, Icon } from 'sema
 import { IVoyageCrew } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
 import { appelate } from '../../utils/misc';
-import { crewCopy, getVariantTraits } from '../../utils/crewutils';
+import { countQuippedSlots, crewCopy, getVariantTraits } from '../../utils/crewutils';
 
 interface IThemeOption {
 	key: string;
@@ -365,6 +365,14 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				filter: (crew: IVoyageCrew) => !crew.immortal || !(crew.q_bits > 0 && crew.q_bits < 1300)
 			},
 			{
+				key: 'quipstrikeforce',
+				name: 'No Distractions',
+				description: 'Exclude crew that are currently fully quipped',
+				keywords: ['quipment'],
+				category: 'Quipment',
+				filter: (crew: IVoyageCrew) => !crew.immortal || countQuippedSlots(crew) !== 4
+			},
+			{
 				key: 'quipnotmax',
 				name: 'Prior Commitments',
 				description: 'Exclude crew that can be fully quipped',
@@ -467,7 +475,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			if (notes) theme.notes = notes;
 			themes.push(theme);
 		});
-		
+
 		const categories = [ ... new Set(themes.map(c => c.category)) ].sort().map(name => {
 			return {
 				name,
@@ -576,7 +584,7 @@ const ThemesTable = (props: ThemesTableProps) => {
 	});
 	const { data, column, direction } = state;
 	const { categories } = props;
-	
+
 	const [query, setQuery] = React.useState('');
 	const [highlightedTheme, setHighlightedTheme] = React.useState<IThemeOption | undefined>(undefined);
 	const [themeFilter, setThemeFilter] = React.useState<string>('ineligible');
@@ -676,7 +684,7 @@ const ThemesTable = (props: ThemesTableProps) => {
 						<Table.Body>
 							{cat.themes.map(row => renderTableRow(row))}
 						</Table.Body>
-					</Table>	
+					</Table>
 				</div>
 			))}
 

@@ -19,8 +19,12 @@ tiny.subscribe((key) => {
 	}
 });
 
-export function exportCrewFields(): ExportField[] {
-	return [
+export function exportCrewFields(t: TranslateMethod, force_english = true): ExportField[] {
+	let oldlang = CONFIG.language;
+
+	if (force_english) CONFIG.setLanguage('en');
+
+	let result = [
 		{
 			label: 'Name',
 			value: (row: PlayerCrew) => row.name
@@ -176,7 +180,7 @@ export function exportCrewFields(): ExportField[] {
 		{
 			label: 'Bonus Ability',
 			value: (row: PlayerCrew) =>
-				(row.action.ability ? getShipBonus(row) : '')
+				(row.action.ability ? getShipBonus(t, row, undefined, undefined, force_english) : '')
 		},
 		{
 			label: 'Trigger',
@@ -220,10 +224,14 @@ export function exportCrewFields(): ExportField[] {
 			value: (row: PlayerCrew) => row.symbol
 		}
 	];
+
+	if (force_english) CONFIG.setLanguage(oldlang);
+
+	return result;
 }
 
-export function exportCrew(crew: (CrewMember | PlayerCrew)[], delimeter = ','): string {
-	return simplejson2csv(crew, exportCrewFields(), delimeter);
+export function exportCrew(t: TranslateMethod, crew: (CrewMember | PlayerCrew)[], delimeter = ','): string {
+	return simplejson2csv(crew, exportCrewFields(t), delimeter);
 }
 
 export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable, nowrite?: boolean, itemBonuses?: ItemBonusInfo[]) {
@@ -416,7 +424,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 			crew = JSON.parse(JSON.stringify(templateCrew));
 		}
 		let workitem: PlayerCrew = owned;
-		
+
 		crew.is_new = owned.is_new;
 		crew.id = owned.id;
 		crew.expires_in = owned.expires_in;
@@ -589,6 +597,23 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	playerData.stripped = false;
 	playerData.player.character.crew = ownedCrew;
 	playerData.player.character.unOwnedCrew = unOwnedCrew;
+}
+
+export function getHighest<T extends PlayerCrew>(crew: T[]) {
+	if (!crew?.length) return undefined;
+	if (crew.length === 1) return crew[0];
+	let pcrew = crew[0];
+	for (let test of crew) {
+		if (test === pcrew) continue;
+		if (test.rarity > pcrew.rarity) pcrew = test;
+		else if (test.level > pcrew.level) pcrew = test;
+		else {
+			let e1 = pcrew.equipment.filter(f => typeof f === 'number' ? !!f : !!f[1]);
+			let e2 = test.equipment.filter(f => typeof f === 'number' ? !!f : !!f[1]);
+			if (e2.length > e1.length) pcrew = test;
+		}
+	}
+	return pcrew;
 }
 
 /**
@@ -784,6 +809,25 @@ export function qbitsToSlots(q_bits: number | undefined) {
 	return 4;
 }
 
+export function countQuippedSlots(crew: PlayerCrew) {
+	if (crew.kwipment) {
+		let quips = crew.kwipment.map((q : number | number[] | undefined) => {
+			if (typeof q === 'number') {
+				return q;
+			}
+			else if (q) {
+				return q[1] as number;
+			}
+			else {
+				return 0;
+			}
+		}).filter(f => f);
+		return quips.length;
+	}
+
+	return 0;
+}
+
 export function getCrewQuipment(crew: PlayerCrew, items: EquipmentItem[]): EquipmentItem[] {
 
 	if (crew.kwipment) {
@@ -841,13 +885,17 @@ export function getActionFromItem(item?: PlayerCrew | CrewMember | ShipAction | 
 	return actionIn;
 }
 
-export function getShipBonus(item?: PlayerCrew | CrewMember | ShipAction | Ship, index?: number, short?: boolean): string {
+export function getShipBonus(t: TranslateMethod, item?: PlayerCrew | CrewMember | ShipAction | Ship, index?: number, short?: boolean, force_english?: boolean): string {
 	if (!item) return "";
 	let actionIn = getActionFromItem(item, index);
 	if (!actionIn) return "";
 	const action = actionIn;
 	if (!action || !action.ability) return "";
 	let bonusText: string;
+
+	let oldlang = CONFIG.language;
+	if (force_english)
+		CONFIG.setLanguage('en');
 
 	if (short) {
 		bonusText = CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[action.ability.type];
@@ -856,13 +904,24 @@ export function getShipBonus(item?: PlayerCrew | CrewMember | ShipAction | Ship,
 		bonusText = CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type];
 	}
 
-
-	if (action.ability.type === 0)
-		bonusText = bonusText.replace('bonus boost by', `${CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type]} boost to`);
-	const bonusVal = action.ability.type === 0
-		? action.bonus_amount + action.ability.amount
-		: action.ability.amount;
-	bonusText = bonusText?.replace('%VAL%', `${bonusVal}`);
+	if (action.ability.type === 0) {
+		let bt = ['Attack', 'Evasion', 'Accuracy'][action.bonus_type];
+		let booststr = `${action.bonus_amount + action.ability.amount}`;
+		if (force_english) {
+			bonusText = bonusText.replace('bonus boost', `${bt} boost`).replace("%VAL%", booststr);
+		}
+		else {
+			bonusText = t(`ship.increase_boost.${bt.toLowerCase()}`, {
+				val: booststr
+			});
+		}
+	}
+	else {
+		const bonusVal = action.ability.amount;
+		bonusText = bonusText?.replace('%VAL%', `${bonusVal}`);
+	}
+	if (force_english)
+		CONFIG.setLanguage(oldlang);
 	return bonusText;
 }
 
@@ -891,12 +950,12 @@ export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction 
 				phaseDescription += ", " + t('ship.charge_phase.bonus', {
 					amount: `${cp.bonus_amount}`,
 					ability: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type]
-				});				
+				});
 			}
 			if (cp.duration) {
 				phaseDescription += `, ` + t('ship.charge_phase.duration', {
 					time: `${cp.duration - action.duration}`
-				});				
+				});
 			}
 			if (cp.cooldown) {
 				phaseDescription += `, ` + t('ship.charge_phase.cooldown', {
@@ -1108,8 +1167,8 @@ export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): s
 /**
  * Get the crew gender as m or f for use with translation strings.
  * Required for other languages.
- * @param crew 
- * @returns 
+ * @param crew
+ * @returns
  */
 export function crewGender<T extends CrewMember>(crew: T) {
 	if (crew.traits_hidden.includes('female')) return 'f';
@@ -1118,7 +1177,7 @@ export function crewGender<T extends CrewMember>(crew: T) {
 }
 
 export function printImmoText(immo: number | CompletionState, item?: string, immoText?: string, t?: (value: string, opts?: { [key: string]: string }) => string, gender?: 'm' | 'f' | '') {
-	gender ??= '';	
+	gender ??= '';
 	if (t) {
 		item ??= t(`base.crew`, { __gender: gender });
 		immoText ??= t(`crew_state.immortalized`, { __gender: gender });
@@ -1133,14 +1192,14 @@ export function printImmoText(immo: number | CompletionState, item?: string, imm
 			}
 			else {
 				return(t('item_state.item_is_frozen_many', { copes: `${immo}`}));
-			}			
+			}
 		}
 		else return `${item} Is Not ${immoText}`;
 	}
 	else {
 		item ??= "Crew";
 		immoText ??= "Immortalized";
-	
+
 		if (immo === -1) return `${item} Is ${immoText}`;
 		else if (immo === -5) return `${item} Is Shown ${immoText} (No Player Data)`;
 		else if (immo === -3) return `${item} Is Shown ${immoText} (Unowned)`;
@@ -1585,7 +1644,7 @@ export function skillSum(skills: Skill | ComputedSkill | (Skill | ComputedSkill)
 	}
 	else {
 		return (mode !== 'proficiency' ? skills.core : 0) + (mode !== 'core' ? ((skills.max + skills.min) * 0.5) : 0);
-	}		
+	}
 }
 
 export function powerSum(skills: Skill[]): { [key: string]: Skill } {
@@ -1607,7 +1666,7 @@ export function likeSum(skills: Skill[]): { [key: string]: number } {
 	skills.forEach((skill) => {
 		if (!skill.skill) return;
 		output[skill.skill] ??= 0;
-		output[skill.skill] += skillSum(skill);		
+		output[skill.skill] += skillSum(skill);
 	})
 	return output;
 }

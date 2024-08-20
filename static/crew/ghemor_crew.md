@@ -3,7 +3,7 @@ name: Tekeny Ghemor
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal: true
 date: 23/01/2023
 published: true

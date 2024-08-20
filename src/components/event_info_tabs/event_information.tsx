@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Card, Label, Image } from 'semantic-ui-react';
+import { Header, Card, Label, Image, Message } from 'semantic-ui-react';
 import { GameEvent } from '../../model/player';
 import { getIconPath, getRarityColor } from '../../utils/assets';
 import { getEventData } from '../../utils/events';
@@ -45,6 +45,7 @@ function sortCrew(crewArray: PlayerCrew[]) {
 function EventInformationTab(props: { eventData: GameEvent }) {
 	const { eventData } = props;
 	const context = React.useContext(GlobalContext);
+	const { t } = context.localized;
 
 	const { crew: allCrew } = context.core;
 
@@ -96,6 +97,8 @@ function EventInformationTab(props: { eventData: GameEvent }) {
 				</Card.Content>
 				<Card.Content extra>
 					<p>{bonus_text}</p>
+					{content_types.includes('skirmish') && currEvent?.bonusGuessed &&
+						<Message warning>{t('events_common.skirmish_guess_warning')}</Message>}
 				</Card.Content>
 			</Card>
 			<Header as="h3">Featured Crew</Header>

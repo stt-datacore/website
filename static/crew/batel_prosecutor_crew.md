@@ -3,8 +3,8 @@ name: Judge Advocate Prosecutor Batel
 rarity: 4
 series: snw
 memory_alpha:
-bigbook_tier: 4
-in_portal:
+bigbook_tier: 5
+in_portal: true
 date: 19/12/2023
 published: true
 ---

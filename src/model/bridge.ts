@@ -10,7 +10,7 @@ export interface CaptainsBridgeRoot {
     claimed_rewards_positions: number[]
     rewards_per_level: RewardsPerLevel
   }
-  
+
   export interface BridgeBuff {
     symbol: string
     id: number
@@ -21,25 +21,25 @@ export interface CaptainsBridgeRoot {
     max_level: number
     levels: Level[]
   }
-  
+
   export interface Level {
     buffs: BridgeBuff[]
     cost: Cost[]
   }
- 
+
   export interface Cost {
     archetype_id: number
     count: number
   }
-  
+
   export interface RewardsPerLevel {
     [key: string]: LevelReward;
   }
-  
+
   export interface LevelReward {
     rewards: Reward[]
   }
-  
+
   export interface Reward {
     type: number
     id: number
@@ -58,7 +58,7 @@ export interface CaptainsBridgeRoot {
     traits?: string[]
     action?: ShipAction
   }
- 
+
   export interface ShipReward extends Ship {
     type: number
     id: number
@@ -75,4 +75,4 @@ export interface CaptainsBridgeRoot {
     quantity: number
     rarity: number
   }
-  
+

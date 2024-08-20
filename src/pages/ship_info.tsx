@@ -19,6 +19,7 @@ import DataPageLayout from '../components/page/datapagelayout';
 import { WorkerProvider } from '../context/workercontext';
 import { ShipRosterCalc } from '../components/ship/rostercalc';
 import { useStateWithStorage } from '../utils/storage';
+import { ShipMultiWorker } from '../components/ship/shipmultiworker';
 
 const ShipInfoPage = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -74,6 +75,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 	const [considerFrozen, setConsiderFrozen] = useStateWithStorage('ship_info/considerFrozen', false);
 	const [considerUnowned, setConsiderUnowned] = useStateWithStorage('ship_info/considerFrozen', false);
     const [ignoreSkills, setIgnoreSkills] = useStateWithStorage<boolean>(`ship_info/ignoreSkills`, false);
+    const [onlyImmortal, setOnlyImmortal] = useStateWithStorage<boolean>(`ship_info/onlyImmortal`, false);
 
 	React.useEffect(() => {
 		if (inputShip && crewStations?.length && inputShip.battle_stations?.length === crewStations.length) {
@@ -90,14 +92,14 @@ const ShipViewer = (props: ShipViewerProps) => {
 
 	React.useEffect(() => {
 		setCrew(getCrew());
-	}, [playerData, coreCrew])
+	}, [playerData, coreCrew, considerFrozen, considerUnowned])
 
 	React.useEffect(() => {
 		if (ships?.length && shipKey) {
 			let newship = ships.find(f => f.symbol === shipKey);
 			if (!!newship && !!inputShip && newship?.id === inputShip?.id) return;
 			if (newship) {
-				setInputShip(newship);				
+				setInputShip(newship);
 			}
 			else {
 				navigate("/ships");
@@ -143,19 +145,23 @@ const ShipViewer = (props: ShipViewerProps) => {
 			</Message>
 
 			{!!inputShip && <WorkerProvider>
-				<ShipRosterCalc
-					pageId={'shipInfo'}
-					crew={crew}
-					ships={[inputShip]}
-					crewStations={crewStations}
-					setCrewStations={setCrewStations}
-					considerFrozen={considerFrozen}
-					considerUnowned={considerUnowned}
-					ignoreSkills={ignoreSkills}
-					setConsiderFrozen={setConsiderFrozen}
-					setConsiderUnowned={setConsiderUnowned}
-					setIgnoreSkills={setIgnoreSkills}
-				/>
+				<ShipMultiWorker>
+					<ShipRosterCalc
+						pageId={'shipInfo'}
+						crew={crew}
+						onlyImmortal={onlyImmortal}
+						setOnlyImmortal={setOnlyImmortal}
+						ships={[inputShip]}
+						crewStations={crewStations}
+						setCrewStations={setCrewStations}
+						considerFrozen={considerFrozen}
+						considerUnowned={considerUnowned}
+						ignoreSkills={ignoreSkills}
+						setConsiderFrozen={setConsiderFrozen}
+						setConsiderUnowned={setConsiderUnowned}
+						setIgnoreSkills={setIgnoreSkills}
+					/>
+				</ShipMultiWorker>
 			</WorkerProvider>}
 
 			<h3>{t('ship.battle_stations')}</h3>
@@ -244,7 +250,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 						src={getShipBonusIcon(crew.action)}
 					/>
 					<span style={{ lineHeight: "1.3em" }}>
-						{getShipBonus(crew.action, undefined, true)}
+						{getShipBonus(t, crew.action, undefined, true)}
 					</span>
 				</div>
 			</div>)
@@ -308,6 +314,9 @@ const ShipViewer = (props: ShipViewerProps) => {
 		if (considerUnowned && context?.player?.playerData) {
 			results = results.concat(context.player.playerData.player.character.unOwnedCrew ?? []);
 		}
+		if (onlyImmortal) {
+			results = results.filter(f => !("immortal" in f) || !!f.immortal);
+		}
 		return [...results];
 	}
 
@@ -322,9 +331,10 @@ const ShipViewer = (props: ShipViewerProps) => {
 
 		let newCrew: (PlayerCrew | CrewMember)[] = getCrew().filter((crew) => ignoreSkills || getSkills(crew).includes(skill)) ?? [];
 		if (inputShip) newCrew = findPotentialCrew(inputShip, newCrew, false);
-		setModalOpen(true);
-		setCurrentStationCrew(newCrew);
+
 		setCurrentStation(index);
+		setCurrentStationCrew(newCrew);
+		setModalOpen(true);
 	}
 
 	function clearStation(index?: number) {

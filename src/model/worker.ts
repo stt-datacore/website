@@ -274,7 +274,7 @@ export interface PathGroup {
 
 export interface QuestSolverResult {
     status: boolean;
-    crew: IQuestCrew[];    
+    crew: IQuestCrew[];
     error?: string;
     fulfilled: boolean;
     failed?: number[];
@@ -284,7 +284,7 @@ export interface QuestSolverResult {
 
 export interface QuestSolverCacheItem {
     key: string;
-    result: QuestSolverResult;    
+    result: QuestSolverResult;
 }
 
 export const EMPTY_SKILL = {

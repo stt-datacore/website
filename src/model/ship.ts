@@ -106,7 +106,7 @@ export interface ShipAction {
   cooldown: number;
   initial_cooldown: number;
   duration: number;
-  
+
   /** Used internally. Not part of source data. */
   cycle_time: number;
 
@@ -157,13 +157,39 @@ export type BattleMode = 'pvp' | 'skirmish' | 'fbb_0' | 'fbb_1' | 'fbb_2' | 'fbb
 
 
 export interface ShipInUse {
-    battle_mode: BattleMode;  
+    battle_mode: BattleMode;
     pvp_division?: PvpDivision;
     ship: Ship;
     rarity: number;
 }
 
+export type ShipRankingMethod = 'standard' | 'min' | 'max' | 'delta_t' | 'early_boom' | 'lean_in' | 'lean_over' | 'lean_out';
+
+export interface AdvancedCrewPower {
+  attack_depth: number | null;
+  evasion_depth: number | null;
+  accuracy_depth: number | null;
+  ability_depths: (number | null)[];
+  ability_exclusions: boolean[];
+}
+
+export const DefaultAdvancedCrewPower = {
+  attack_depth: null,
+  evasion_depth: null,
+  accuracy_depth: null,
+  ability_depths: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+  ability_exclusions: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
+} as AdvancedCrewPower;
+
+export interface AdvancedCrewPowerConfig {
+    defaultOptions: AdvancedCrewPower;
+    current: AdvancedCrewPower;
+    setCurrent: (value: AdvancedCrewPower) => void;
+}
+
 export interface ShipWorkerConfigBase {
+    ranking_method: ShipRankingMethod,
+    event_crew?: CrewMember,
     crew: CrewMember[],
     battle_mode: BattleMode,
     rate: number,
@@ -183,8 +209,11 @@ export interface ShipWorkerConfigBase {
     max_duration?: number;
     ignore_skill?: boolean;
     verbose?: boolean;
-    max_iterations?: number;
+    max_iterations?: bigint;
     activation_offsets?: number[];
+    start_index?: bigint;
+    status_data_only?: boolean;
+    opponent_variance?: number;
 }
 
 export interface ShipWorkerConfig extends ShipWorkerConfigBase {
@@ -199,7 +228,8 @@ export interface MultiShipWorkerConfig extends ShipWorkerConfigBase {
 export interface AttackInstant {
   actions: ShipAction[];
   second: number;
-  damage: number;
+  hull: number;
+  shields: number;
   attack: number;
   min_attack: number;
   max_attack: number;
@@ -220,12 +250,13 @@ export interface ShipWorkerItem {
     weighted_attack: number;
     arena_metric: number;
     fbb_metric: number;
+    skirmish_metric: number;
     percentile: number;
     attacks?: AttackInstant[];
 }
 
 export interface ShipWorkerResults {
     ships: ShipWorkerItem[]
-    total_iterations: number;
+    total_iterations: bigint;
     run_time: number;
 }

@@ -1,4 +1,14 @@
 {
+    "hof": {
+        "rank_by": {
+            "rank_by_colon": "Rank By:",
+            "voyages": "Number of Voyages",
+            "duration": "Average Duration",
+            "voydur": "Number of Voyages * Average Duration",
+            "maxdur": "Maximum Duration",
+            "voymaxdur": "Number of Voyages * Maximum Duration"
+        }
+    },
     "base": {
         "all_crew": "Show all crew",
         "bigbook_tier": "Tier",
@@ -160,6 +170,7 @@
         "consider_shared": "Consider shared crew",
         "consider_unowned": "Consider unowned crew",
         "exclude_quipped": "Exclude quipped crew",
+        "only_immortal": "Only immortal crew",
         "shared_crew_popup": "Skill numbers of shared crew are based on your player buffs and may not match actual score"
     },
     "cool_stats": {
@@ -275,11 +286,14 @@
     },
     "duration": {
         "n_d": "{{days}} d",
+        "n_d_compact": "{{days}}d",
         "n_days": "{{days}} days",
         "n_h": "{{hours}} h",
+        "n_h_compact": "{{hours}}h",
         "n_hour_class": "{{hours}}-hour",
         "n_hours": "{{hours}} hours",
         "n_m": "{{minutes}} m",
+        "n_m_compact": "{{minutes}}m",
         "n_minute_class": "{{minutes}}-minute",
         "n_minutes": "{{minutes}} minutes",
         "title": "Duration: {{duration}}"
@@ -316,6 +330,9 @@
         "gather": "Galaxy",
         "shuttles": "Faction",
         "skirmish": "Skirmish"
+    },
+    "events_common": {
+        "skirmish_guess_warning": "This event contains a skirmish component, and a complete list of featured crew may not be available until after this event begins."
     },
     "fbb": {
         "alert_no_solution": "No possible solutions found for this node. You may need to change your filters, double-check your solved traits, or reset the list of attempted crew.",
@@ -617,7 +634,6 @@
         "adventure": "Adventure",
         "quest": "Quest",
         "challenge": "Challenge",
-        "n_results": "{{n}} results",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
@@ -638,6 +654,7 @@
         "disable": "Disable",
         "disabled": "Disabled",
         "dismiss": "Dismiss",
+        "download": "Download",
         "edit": "Edit",
         "enable": "Enable",
         "enabled": "Enabled",
@@ -655,6 +672,7 @@
             "cadet_challenge": "Cadet challenge",
             "cadet_challenge_tickets": "Cadet challenge tickets",
             "cadet_challenges": "Cadet challenges",
+            "chronotons": "Chronotons",
             "component": "Component",
             "continuum_qbit": "Continuum Q-Bit",
             "continuum_quipment": "Continuum Quipment",
@@ -679,6 +697,7 @@
             "valor": "Valor",
             "voyage_consumable": "Voyage Revival Tokens"
         },
+        "last_updated_colon": "Last Updated:",
         "load_default_settings": "Load Default Settings",
         "load_defaults": "Load Defaults",
         "loading_ellipses": "Loading ...",
@@ -686,6 +705,7 @@
         "max_rarity": "Max. rarity",
         "member": "Member",
         "min_rarity": "Min. rarity",
+        "n_results": "{{n}} results",
         "name": "Name",
         "never": "Never",
         "new": "New",
@@ -1060,6 +1080,21 @@
         "starbase_level": "Starbase level",
         "x_y_crew": "{{x}} / {{y}} crew"
     },
+    "profile": {
+        "charts_and_stats": "Charts & Stats",
+        "crew": "{{menu.roster.crew}}",
+        "crew_mobile": "{{menu.roster.crew}} (Mobile)",
+        "download": {
+            "complete_spreadsheet": "Complete spreadsheet",
+            "crew_table": "Crew table",
+            "item_table": "Item table",
+            "ship_table": "Ship table"
+        },
+        "items": "{{menu.roster.items}}",
+        "other": "Other",
+        "ships": "{{menu.roster.ships}}",
+        "switch_to_english": "Spreadsheets are downloaded using the current language. You may need to switch to English to download spreadsheets that are compatible with other community tools."
+    },
     "prospect_picker": {
         "add_crew": "Add Crew",
         "select_crew": "Select Crew"
@@ -1103,6 +1138,17 @@
         "gauntlet_rank": "Gauntlet Rank",
         "quipment_score": "Quipment Score",
         "voyage_rank": "Voyage Rank"
+    },
+    "ranking_method": {
+        "delta_t": "Delta T",
+        "early_boom": "Earliest Greatest",
+        "guaranteed_minimum": "Guaranteed minimum",
+        "lean_in": "Medium High",
+        "lean_out": "Medium Low",
+        "lean_over": "Medium",
+        "moonshot": "Moonshot",
+        "potential_maximum": "Potential maximum",
+        "standard": "Standard"
     },
     "roster_summary": {
         "by_rarity": "By Rarity",
@@ -1224,6 +1270,11 @@
         "boosts": "Boosts",
         "boosts_x_by_y": "Boosts {{x}} by {{y}}",
         "calc": {
+            "advanced": {
+                "crew_filter": "Advanced Crew Filter",
+                "exclude_ability": "Exclude crew with this ability",
+                "power_depth": "Advanced Power Depth"
+            },
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} accepted results) ({{time}})",
             "calculating_pct_ellipses": "Calculating ... ({{percent}}% complete)",
             "calculating_pct_ellipses_verbose": "Calculating ... ({{percent}}% complete) ({{progress}} / {{count}}) ({{accepted}} accepted results)",
@@ -1234,7 +1285,10 @@
             "icon_activation_offset": "{{icon}} Activation Offset",
             "ignore_skill": "Ignore skills",
             "iterations": "Iterations",
+            "max_init": "Max init time",
             "max_iterations": "Max iterations",
+            "max_workers": "Max workers",
+            "ranking_method": "Ranking Method",
             "rate": "Rate",
             "rate_msg": "Must be a number between 1 and 10",
             "run_current_line_up": "Run Current Crew",
@@ -1257,6 +1311,7 @@
         "crit_bonus": "Crit Bonus",
         "crit_rating": "Crit Rating",
         "cycle_time": "Cycle Time",
+        "depth_hr_warn": "* By default, power level depth does not apply to hull-repair crew.",
         "duration": "Duration",
         "equipment_bonus": "Equipment Bonus",
         "evasion": "Evasion",
@@ -1265,10 +1320,17 @@
         "grants": "Grants",
         "handicap": "Handicap",
         "hull": "Hull",
+        "increase_boost": {
+            "accuracy": "Increases accuracy boost to +{{val}}",
+            "attack": "Increases attack boost to +{{val}}",
+            "evasion": "Increases evasion boost to +{{val}}"
+        },
         "initialize": "Initialize",
+        "level": "{{base.level}}",
         "max_attack": "Max. Attack",
         "max_level": "Max Level",
         "min_attack": "Min. Attack",
+        "offset_adds_warn": "* Activation offsets add to the current crew's initial cooldown time.",
         "power_depth": "Power level depth",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {
@@ -1282,6 +1344,7 @@
             "only_in_use": "Show only ships currently in use"
         },
         "skirmish": "{{event_type.skirmish}}",
+        "skirmish_metric": "Skirmish Metric",
         "trigger": "Trigger",
         "triggers": "Triggers",
         "unlimited": "Unlimited",
@@ -1395,6 +1458,38 @@
         "owned_crew": {
             "description": "Only consider your owned crew",
             "title": "Owned Crew"
+        }
+    },
+    "voyage": {
+        "active": {
+            "active_voyage_colon": "Active Voyage:"
+        },
+        "calc": {
+            "msg_type": {
+                "completed": "Your voyage ran for {{time}}.",
+                "failed": "Your voyage failed at {{time}}.",
+                "ran_for": "Your voyage ran for {{time}}.",
+                "recalled": "Your voyage ran for {{time}}.",
+                "started": "Your voyage has been running for {{time}}."
+            },
+            "other_msg": {
+                "initial_estimate": "Your initial estimate was {{time}}."
+            }
+        },
+        "estimate": {
+            "dilemma_chance": "Chance of {{time}} dilemma: {{chance}}",
+            "estimate_time": "Estimate: {{time}}",
+            "n_refills": "{{n}} Refills",
+            "refill": "1 Refill"
+        },
+        "tracking": {
+            "not_tracking": "You are not tracking this voyage.",
+            "start_tracking": "Start tracking"
+        },
+        "view": {
+            "active_voyage": "View Active Voyage",
+            "crew_calculator": "View Crew Calculator",
+            "voyage_history": "View Voyage History"
         }
     }
 }

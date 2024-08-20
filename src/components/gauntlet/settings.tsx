@@ -20,7 +20,6 @@ const GauntletSettingsPopup = <T extends OptionsBase>(props: GauntletSettingsPro
         let parm = new URLSearchParams();
         if (parm.get("pmc")?.length) {
             let value = parm.get("pmc");
-
         }
     }
 

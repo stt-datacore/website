@@ -38,16 +38,25 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const { isMobile } = globalContext;
     const { playerData } = globalContext.player;
 
-    if (!playerData) return <></>;
+    if (!playerData?.player) return <></>;
     
     const { money, premium_purchasable, honor, premium_earnable, shuttle_rental_tokens } = playerData.player;
+
+    let ch = 0;
+    if (playerData.player.character.replay_energy_rate && playerData.player.character.seconds_from_replay_energy_basis) {
+        ch = Math.floor(playerData.player.character.seconds_from_replay_energy_basis / playerData.player.character.replay_energy_rate);
+    }
+    if (ch <= 0) {
+        ch = playerData.player.character.replay_energy_max + playerData.player.character.replay_energy_overflow;
+    }
+
+    const chrons = ch;
     const ism = playerData?.forte_root.items.find(f => f.id === ISM_ID)?.quantity ?? 0;
     const quantum = playerData?.crew_crafting_root?.energy?.quantity;
     const valor = globalContext.player.ephemeral?.fleetBossBattlesRoot?.fleet_boss_battles_energy?.quantity;
     const ownedCites = getOwnedCites(playerData?.player.character.items ?? [], false);
     const cadet = playerData?.player.character.cadet_tickets?.current ?? 0;
     const pvp = playerData?.player.character.pvp_tickets?.current ?? 0;
-    const shuttle = playerData?.player.shuttle_rental_tokens ?? 0;
     
     let revival = playerData.player.character.items.find(f => f.symbol === 'voyage_revival');
     let coreRevival = globalContext.core.items.find(f => f.symbol === 'voyage_revival')!;
@@ -63,6 +72,11 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const resources = [] as PlayerResource[];
 
     resources.push({
+        name: t('global.item_types.chronotons'),
+        quantity: chrons,
+        imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`
+    },
+    {
         name: t('global.item_types.credits'),
         quantity: money,
         imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/soft_currency_icon.png`
