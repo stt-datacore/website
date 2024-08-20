@@ -12,7 +12,7 @@ export interface QuestImporterProps {
     setError: (value: string) => void;
 	clearQuest: () => void;
 	currentHasRemote?: boolean;
-	
+
 }
 
 export const QuestImportComponent = (props: QuestImporterProps) => {
@@ -21,19 +21,19 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
     const context = React.useContext(GlobalContext);
     const { playerData} = context.player;
 	const { t } = context.localized;
-    
+
 	const [collapsed, setCollapsed] = React.useState<boolean | undefined>(undefined);
 
     const hasPlayer = !!playerData;
-    
+
     React.useEffect(() => {
         if (collapsed === undefined) setCollapsed(true);
     }, [currentHasRemote]);
 
 	const validateMission = (json: Quest) => {
         if (!json) {
-            return ("No data");                        
-        }		
+            return ("No data");
+        }
 		return true;
 	}
 
@@ -53,11 +53,11 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
                             You can paste your data using the box, below.
                         </p>
                         <p>
-                            Current Quest Data: <b><a target='_blank' href={`https://app.startrektimelines.com/quest/conflict_info?id=${quest?.id}&client_api=23&continuum=true`}>{quest?.name}</a></b>
+                            Current Quest Data: <b><a target='_blank' href={`https://app.startrektimelines.com/quest/conflict_info?id=${quest?.id}&client_api=24&continuum=true`}>{quest?.name}</a></b>
                         </p>
                         </>
                     }
-                    icon="database"                    
+                    icon="database"
                 />}
 
                 {currentHasRemote && <Notification
@@ -72,7 +72,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 							Click here to update your data if you wish to refresh your claimed rewards, or use data from another account.
 						</p>
                         <p>
-                            Current Quest Data: <b><a onClick={() => setCollapsed(false)} target='_blank' href={`https://app.startrektimelines.com/quest/conflict_info?id=${quest?.id}&client_api=23&continuum=true`}>{quest?.name}</a></b>
+                            Current Quest Data: <b><a onClick={() => setCollapsed(false)} target='_blank' href={`https://app.startrektimelines.com/quest/conflict_info?id=${quest?.id}&client_api=24&continuum=true`}>{quest?.name}</a></b>
                         </p>
                         <p style={{textAlign: "right"}}>
 							<b style={{fontSize:"0.8em"}}>(To clear all quest data, <a title={'Clear All Quest Data'} onClick={() => clearQuest()}>Click Here</a>)</b>
@@ -80,15 +80,15 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 
                         </div>
                     }
-                    icon="database"                    
+                    icon="database"
                 />}
 
 				{hasPlayer && questId !== undefined && (!collapsed || !currentHasRemote) &&
-				
+
 				<JsonInputForm
 					requestDismiss={() => setCollapsed(!collapsed && !!currentHasRemote)}
 					config={{
-						dataUrl: `https://app.startrektimelines.com/quest/conflict_info?id=${questId}&client_api=23&continuum=true`,
+						dataUrl: `https://app.startrektimelines.com/quest/conflict_info?id=${questId}&client_api=24&continuum=true`,
                         dataName: t('json_types.quest_data'),
 					    jsonHint: '{"id":',
 						androidFileHint: 'conflict_info.json',
@@ -100,16 +100,16 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 						if (quest) setCollapsed(true);
 						setQuest(quest);
 					}}
-					
+
 				/>}
 			</React.Fragment>
 		);
 	}
 
     return <>
-    
-    <div className='ui segment'>        
-        {renderCopyPaste()}       
+
+    <div className='ui segment'>
+        {renderCopyPaste()}
     </div>
 
     </>
