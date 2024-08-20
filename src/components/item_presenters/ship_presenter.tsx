@@ -75,6 +75,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
     render(): JSX.Element {
         const { ship: ship, touched, tabs, showIcon } = this.props;
         const { mobileWidth } = this.state;
+        const { SHIP_TRAIT_NAMES } = this.context.localized;
 
         const compact = this.props.hover;
 
@@ -250,8 +251,20 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                             marginBottom: "4px",
                         }}
                     >
-                        {ship.traits_named?.join(", ")}
+                        {ship.traits?.map(t => SHIP_TRAIT_NAMES[t]).join(", ")}
                     </div>
+                    {!!ship.traits_hidden?.length && <div
+                        style={{
+                            textAlign: "left",
+                            fontStyle: "italic",
+                            fontSize: "0.85em",
+                            marginTop: "2px",
+                            opacity: 0.50,
+                            marginBottom: "4px",
+                        }}
+                    >
+                        {ship.traits_hidden?.join(", ")}
+                    </div>}
                     <div>
                         {ship.actions && <ShipSkill
                                 withActionIcons={showIcon}

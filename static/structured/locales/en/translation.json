@@ -1,14 +1,4 @@
 {
-    "hof": {
-        "rank_by": {
-            "rank_by_colon": "Rank By:",
-            "voyages": "Number of Voyages",
-            "duration": "Average Duration",
-            "voydur": "Number of Voyages * Average Duration",
-            "maxdur": "Maximum Duration",
-            "voymaxdur": "Number of Voyages * Maximum Duration"
-        }
-    },
     "base": {
         "all_crew": "Show all crew",
         "bigbook_tier": "Tier",
@@ -773,6 +763,16 @@
         "select_ship_ability_amount": "Select Ship Ability Amount",
         "trait": "Trait",
         "traits": "Traits"
+    },
+    "hof": {
+        "rank_by": {
+            "duration": "Average Duration",
+            "maxdur": "Maximum Duration",
+            "rank_by_colon": "Rank By:",
+            "voyages": "Number of Voyages",
+            "voydur": "Number of Voyages * Average Duration",
+            "voymaxdur": "Number of Voyages * Maximum Duration"
+        }
     },
     "item_picker": {
         "all_items": {

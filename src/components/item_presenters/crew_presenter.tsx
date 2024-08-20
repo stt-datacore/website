@@ -92,7 +92,7 @@ export class StatLabel extends React.Component<StatLabelProps> {
 
     render() {
         const { title, value } = this.props;
-        
+
         let sizeDefault = '12.75em';
         let sizeMobile = '12.5em';
         if (this.context.localized.language === 'de') {
@@ -117,17 +117,17 @@ export class StatLabel extends React.Component<StatLabelProps> {
         } as React.CSSProperties;
 
         return (<>
-            {!!title && 
+            {!!title &&
             <Label
                 size={window.innerWidth < DEFAULT_MOBILE_WIDTH ? "small" : "medium"}
                 style={style}
-            >              
-                {title}  
+            >
+                {title}
                 <Label.Detail>{value}</Label.Detail>
             </Label>
             }
-            {!title && 
-            <div className='ui label' style={{...style, justifyContent: 'center'}}>{value}</div>            
+            {!title &&
+            <div className='ui label' style={{...style, justifyContent: 'center'}}>{value}</div>
             }
         </>);
     }
@@ -307,13 +307,13 @@ function drawImmo(
         icon = 'star icon'
         style = { ...dormantStyle, fontSize: "0.8em", marginRight: "0.5em" };
     }
-    
+
     if (prospect) {
         imname = t(ProspectImmortalNames[data], { __gender: gender ?? '', stars: data.toString() });
     }
     else {
         imname = t(ImmortalNames[data], { __gender: gender ?? '', stars: data.toString() });
-    }    
+    }
 
     const immoName = imname;
     const immoIcon = icon;
@@ -437,7 +437,7 @@ export class CrewPresenter extends React.Component<
             selectedPlugin: 0,
         };
 
-        this.tiny = TinyStore.getStore(props.storeName);       
+        this.tiny = TinyStore.getStore(props.storeName);
     }
 
     private setSelectedPlugin = (index: number) => {
@@ -462,7 +462,7 @@ export class CrewPresenter extends React.Component<
         return result;
     }
 
-    protected set playerBuffMode(value: PlayerBuffMode) {        
+    protected set playerBuffMode(value: PlayerBuffMode) {
         let key = "buffmode";
         if (this.context.player.playerData) key += "_player";
         this.tiny.setValue<PlayerBuffMode>(key, value, true);
@@ -558,8 +558,8 @@ export class CrewPresenter extends React.Component<
             compact,
             hideStats,
         } = this.props;
-        
-        const { t, language } = this.context.localized;
+
+        const { t, language, TRAIT_NAMES } = this.context.localized;
         const { mobileWidth, pluginsUsed, selectedPlugin } = this.state;
 
         if (!inputCrew) {
@@ -697,7 +697,7 @@ export class CrewPresenter extends React.Component<
         let npt: string | undefined = undefined;
 
         /**
-         * 
+         *
          */
         if (
             "immortal" in crew &&
@@ -705,13 +705,13 @@ export class CrewPresenter extends React.Component<
         ) {
             if (crew.prospect) {
                 pt = t('crew_state.prospective_crew_portal');
-                npt = t('crew_state.prospective_crew_no_portal');                
+                npt = t('crew_state.prospective_crew_no_portal');
             }
             else {
                 pt = t('crew_state.unowned_portal');
                 npt = t('crew_state.unowned_no_portal');
             }
-        } 
+        }
         else if (
             !("immortal" in crew) ||
             ("immortal" in crew &&
@@ -819,9 +819,9 @@ export class CrewPresenter extends React.Component<
                     </div>
                     {!compact && (
                         <div style={{ marginBottom: "0.13em", marginRight: "0.5em", fontSize: "9pt", fontWeight: 'normal' }}>
-                            {crew.immortal === -1 && this.validImmortalModes[0] !== 'frozen' && !!crew.kwipment?.length && 
+                            {crew.immortal === -1 && this.validImmortalModes[0] !== 'frozen' && !!crew.kwipment?.length &&
                                 <CrewItemsView crew={crew} quipment={true} />}
-                            
+
                             <CrewItemsView crew={crew} />
                         </div>
                     )}
@@ -998,7 +998,7 @@ export class CrewPresenter extends React.Component<
                     >
                         {Object.entries(skillData.base_skills).sort(([akey, askill], [bkey, bskill]) => {
                             return (bskill as Skill).core - (askill as Skill).core;
-                            
+
                         }).map(([key, skill]) => {
 
                             return <CrewStat
@@ -1029,7 +1029,19 @@ export class CrewPresenter extends React.Component<
                             marginBottom: "4px",
                         }}
                     >
-                        {crew.traits_named.join(", ")}
+                        {crew.traits.map(t => TRAIT_NAMES[t]).join(", ")}
+                    </div>
+                    <div
+                        style={{
+                            textAlign: "left",
+                            fontStyle: "italic",
+                            fontSize: "0.85em",
+                            marginTop: "2px",
+                            opacity: 0.50,
+                            marginBottom: "4px",
+                        }}
+                    >
+                        {crew.traits_hidden.join(", ")}
                     </div>
                     <div>
                         <CollectionDisplay crew={crew} style={{fontSize: "0.8em", fontStyle: "italic"}} />
@@ -1087,7 +1099,7 @@ export class CrewPresenter extends React.Component<
                         </div>
                     )}
                     {!hideStats && (
-                        <div>                            
+                        <div>
                             <div
                                 style={{
                                     textAlign: "center",
@@ -1155,29 +1167,29 @@ export class CrewPresenter extends React.Component<
                                     value={"" + crew.ranks.gauntletRank}
                                 />
 
-                                {!isNever && 
+                                {!isNever &&
                                 <>
-                                {(crew.in_portal && !!crew.unique_polestar_combos?.length) && 
-                                    <span title={printPortalStatus(crew, t, true, true, true, true)}>                                    
+                                {(crew.in_portal && !!crew.unique_polestar_combos?.length) &&
+                                    <span title={printPortalStatus(crew, t, true, true, true, true)}>
                                     <StatLabel
                                         title=""
                                         value={<span style={{color:"lightgreen", fontWeight:"bold"}}>{t('base.uniquely_retrievable')}</span>}
                                     />
-                                    </span> 
+                                    </span>
                                     ||
                                     <span title={printPortalStatus(crew, t, true, true, true, true)}>
-                                    <StatLabel                                        
+                                    <StatLabel
                                         title={t('base.in_portal')}
                                         value={crew.in_portal ? <span style={{color:"lightgreen", fontWeight:"bold"}}>{t('global.yes')}</span> : printPortalStatus(crew, t, true) }
                                     />
                                    </span>
                                 }
                                 </>}
-                                {isNever && 
-                                    <span title={printPortalStatus(crew, t, true, true, true, true)}>                                  
+                                {isNever &&
+                                    <span title={printPortalStatus(crew, t, true, true, true, true)}>
                                     <StatLabel
                                         title={t('global.obtained')}
-                                        value={<span style={{ padding:0, color: CONFIG.RARITIES[5].color, fontWeight:"bold"}}>{prettyObtained(crew, t)}</span>}                                        
+                                        value={<span style={{ padding:0, color: CONFIG.RARITIES[5].color, fontWeight:"bold"}}>{prettyObtained(crew, t)}</span>}
                                     />
                                 </span>}
                             </div>
