@@ -987,6 +987,11 @@
         },
         "tools_title": "Outils"
     },
+    "mission_type": {
+        "type_0": "Quête de conflit",
+        "type_2": "Bataille de navires",
+        "type_4": "Défi des cadets"
+    },
     "obtained": {
         "long": {
             "BossBattle": "Pont du Capitaine",

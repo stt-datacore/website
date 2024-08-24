@@ -14,6 +14,7 @@ type ItemSourcesProps = {
 	refItem?: string;
 	pageId?: string;
 	briefLength?: number;
+	noHeading?: boolean;
 };
 
 interface ItemSourcesState {
@@ -53,7 +54,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 		window.setTimeout(() => {
 			this.setState({ ... newstate });
 		})
-		
+
 	}
 
 	private readonly getBrief = (name: 'dispute' | 'battle' | 'faction' | 'cadet') => {
@@ -66,7 +67,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 		let shipBattles = this.props.item_sources.filter(e => e.type === 2);
 		let factions = this.props.item_sources.filter(e => e.type === 1);
 		let cadets = this.props.item_sources.filter(e => e.type === 4);
-		const { brief, refItem } = this.props;
+		const { brief, refItem, noHeading } = this.props;
 		const briefLen = this.props.briefLength ?? 2;
 		const briefSep = <>, </>;
 		const briefSepInit = <>&nbsp;</>;
@@ -86,10 +87,10 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 					questidx[questidx.length - 1].index--;
 				}
 
-				questidx.forEach(({ quest: q, index: idx}) => {					
-					let t = `${e.episode > 0 ? "(" + e.episode + ") " : ''}${e.episode_title ?? e.name}`; 
+				questidx.forEach(({ quest: q, index: idx}) => {
+					let t = `${e.episode > 0 ? "(" + e.episode + ") " : ''}${e.episode_title ?? e.name}`;
 					let n = `(${idx}) ${q.name}`;
-					eps[q.symbol] = t + ": " + n;
+					eps[q.symbol] = <>{t}: {noHeading && <br />}{n}</>;
 				});
 			});
 		}
@@ -106,7 +107,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 
 			res.push(
 				<p key={'disputeMissions'}>
-					<b style={{textDecoration: brief ? textDec : undefined}}>{t('item_source.missions')}: </b>{brief && <>{briefSepInit}</>}
+					{!noHeading && <b style={{textDecoration: brief ? textDec : undefined}}>{t('item_source.missions')}: </b>}{brief && <>{briefSepInit}</>}
 					{disputeMissions
 						.slice(0, (brief && isBriefed) ? briefLen : undefined)
 						.map((entry, idx) => (
@@ -121,7 +122,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 							/>
 						))
 						.reduce((prev, curr) => <>{prev}{brief && <>{briefSep}</> || <>{', '}</>}{curr}</>)}
-					{refItem && brief && isBriefed && disputeMissions.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('dispute', false)}>({t('global.show_n_more_ellipses', { n: `${disputeMissions.length - briefLen}` })})</a></>}	
+					{refItem && brief && isBriefed && disputeMissions.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('dispute', false)}>({t('global.show_n_more_ellipses', { n: `${disputeMissions.length - briefLen}` })})</a></>}
 					{refItem && brief && !isBriefed && disputeMissions.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('dispute', true)}>({t('global.show_less')})</a></>}
 				</p>
 			);
@@ -132,7 +133,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 
 			res.push(
 				<p key={'shipBattles'}>
-					<b style={{textDecoration: brief ? textDec : undefined}}>{t('item_source.ship_battles')}: </b>{brief && <>{briefSepInit}</>}
+					{!noHeading && <b style={{textDecoration: brief ? textDec : undefined}}>{t('item_source.ship_battles')}: </b>}{brief && <>{briefSepInit}</>}
 					{shipBattles
 						.slice(0, (brief && isBriefed) ? briefLen : undefined)
 						.map((entry, idx) => (
@@ -147,8 +148,8 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 							/>
 						))
 						.reduce((prev, curr) => <>{prev}{brief && <>{briefSep}</> || <>{', '}</>}{curr}</>)}
-					{refItem && brief && isBriefed && shipBattles.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('battle', false)}>({t('global.show_n_more_ellipses', { n: `${shipBattles.length - briefLen}` })})</a></>}	
-					{refItem && brief && !isBriefed && shipBattles.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('battle', true)}>({t('global.show_less')})</a></>}	
+					{refItem && brief && isBriefed && shipBattles.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('battle', false)}>({t('global.show_n_more_ellipses', { n: `${shipBattles.length - briefLen}` })})</a></>}
+					{refItem && brief && !isBriefed && shipBattles.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('battle', true)}>({t('global.show_less')})</a></>}
 				</p>
 			);
 		}
@@ -158,13 +159,13 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 
 			res.push(
 				<p key={'factions'}>
-					<b style={{textDecoration: brief ? textDec : undefined}}>{t('item_source.faction_missions')}: </b>{brief && <>{briefSepInit}</>}
+					{!noHeading && <b style={{textDecoration: brief ? textDec : undefined}}>{t('item_source.faction_missions')}: </b>}{brief && <>{briefSepInit}</>}
 					{factions
 						.slice(0, (brief && isBriefed) ? briefLen : undefined)
 						.map((entry, idx) => <>{`${entry.name} (${entry.chance_grade}/5)`}</>)
 						.reduce((prev, curr) => <>{prev}{brief && <>{briefSep}</> || <>{', '}</>}{curr}</>)}
-					{refItem && brief && isBriefed && factions.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('faction', false)}>({t('global.show_n_more_ellipses', { n: `${factions.length - briefLen}` })})</a></>}	
-					{refItem && brief && !isBriefed && factions.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('faction', true)}>({t('global.show_less')})</a></>}	
+					{refItem && brief && isBriefed && factions.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('faction', false)}>({t('global.show_n_more_ellipses', { n: `${factions.length - briefLen}` })})</a></>}
+					{refItem && brief && !isBriefed && factions.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('faction', true)}>({t('global.show_less')})</a></>}
 				</p>
 			);
 		}
@@ -174,7 +175,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 			cadets.sort((a, b) => (a.avg_cost ?? 0) - (b.avg_cost ?? 0));
 			res.push(
 				<p key={'disputeMissions'}>
-					<b style={{textDecoration: brief ? textDec : undefined}}>{t('item_source.cadet_missions')}: </b>{brief && <>{briefSepInit}</>}
+					{!noHeading && <b style={{textDecoration: brief ? textDec : undefined}}>{t('item_source.cadet_missions')}: </b>}{brief && <>{briefSepInit}</>}
 					{cadets
 						.slice(0, (brief && isBriefed) ? briefLen : undefined)
 						.map((entry, idx) => (
@@ -190,12 +191,12 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 							/>
 						))
 						.reduce((prev, curr) => <>{prev}{brief && <>{briefSep}</> || <>{', '}</>}{curr}</>)}
-					{refItem && brief && isBriefed && cadets.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('cadet', false)}>({t('global.show_n_more_ellipses', { n: `${cadets.length - briefLen}` })})</a></>}	
-					{refItem && brief && !isBriefed && cadets.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('cadet', true)}>({t('global.show_less')})</a></>}	
+					{refItem && brief && isBriefed && cadets.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('cadet', false)}>({t('global.show_n_more_ellipses', { n: `${cadets.length - briefLen}` })})</a></>}
+					{refItem && brief && !isBriefed && cadets.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('cadet', true)}>({t('global.show_less')})</a></>}
 				</p>
 			);
 		}
-		
+
 
 		return res;
 	}

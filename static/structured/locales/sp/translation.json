@@ -986,6 +986,11 @@
         },
         "tools_title": "Herramientas"
     },
+    "mission_type": {
+        "type_0": "Misión de conflicto",
+        "type_2": "Batalla de barcos",
+        "type_4": "Desafío cadete"
+    },
     "obtained": {
         "long": {
             "BossBattle": "Puente del Capitán",
