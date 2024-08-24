@@ -798,6 +798,13 @@ export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: numbe
 	return undefined;
 }
 
+export function qbProgressToNext(q_bits: number): [number, number] {
+	if (q_bits < 100) return [100 - q_bits, 100];
+	if (q_bits < 200) return [200 - q_bits, 200];
+	if (q_bits < 500) return [500 - q_bits, 500];
+	if (q_bits < 1300) return [1300 - q_bits, 1300];
+	return [q_bits, 0];
+}
 
 export function qbitsToSlots(q_bits: number | undefined) {
 	// 100/250/500/1300
