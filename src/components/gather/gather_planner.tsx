@@ -43,6 +43,8 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
     const [cachedItems, setCachedItems] = useStateWithStorage<GatherItemCache[]>(`events/gather_planner/item_cache`, [], { rememberForever: true })
     const [eventItems, setEventItems] = React.useState<EquipmentItem[]>([]);
     const [reset, setReset] = React.useState(false);
+    const [allDemands, setAllDemands] = React.useState<EquipmentItem[]>([]);
+    const [sources, setSources] = React.useState<CollectiveSource[]>([]);
 
     React.useEffect(() => {
         if (!ephemeral?.events?.length || !event?.content.gather_pools) return;
@@ -102,36 +104,39 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
         }
     }, [adventures, playerData, items]);
 
-    if (!ephemeral?.events?.length || !event?.content.gather_pools) return (<></>);
+    React.useEffect(() => {
+        const newDemands = eventItems.map(me => me.demands?.map(de => ({...de.equipment!, needed: de.count, quantity: de.have }) as EquipmentItem) ?? []).flat();
+        const newsources = [] as CollectiveSource[];
 
-    const allDemands = eventItems.map(me => me.demands?.map(de => ({...de.equipment!, needed: de.count, quantity: de.have }) as EquipmentItem) ?? []).flat();
-
-    const sources = [] as CollectiveSource[];
-
-    allDemands.forEach((demand) => {
-        if (demand.item_sources?.length) {
-            demand.item_sources.forEach((source) => {
-                if (source.type === 1) return;
-                let csource = sources.find(f => f.source.name === source.name);
-                if (csource) {
-                    const fitem = csource.items.find(f => f.symbol === demand.symbol);
-                    if (fitem) {
-                        fitem.needed ??= 0;
-                        fitem.needed += demand.needed ?? 0;
+        newDemands.forEach((demand) => {
+            if (demand.item_sources?.length) {
+                demand.item_sources.forEach((source) => {
+                    if (source.type === 1) return;
+                    let csource = newsources.find(f => f.source.name === source.name);
+                    if (csource) {
+                        const fitem = csource.items.find(f => f.symbol === demand.symbol);
+                        if (fitem) {
+                            fitem.needed ??= 0;
+                            fitem.needed += demand.needed ?? 0;
+                        }
+                        else {
+                            csource.items.push(JSON.parse(JSON.stringify(demand)));
+                        }
                     }
                     else {
-                        csource.items.push(JSON.parse(JSON.stringify(demand)));
+                        newsources.push({
+                            source,
+                            items: [JSON.parse(JSON.stringify(demand))]
+                        });
                     }
-                }
-                else {
-                    sources.push({
-                        source,
-                        items: [JSON.parse(JSON.stringify(demand))]
-                    });
-                }
-            });
-        }
-    })
+                });
+            }
+        })
+        setAllDemands(newDemands);
+        setSources(newsources);
+    }, [eventItems]);
+
+    if (!ephemeral?.events?.length || !event?.content.gather_pools) return (<></>);
 
     return (<>
         <GatherTable phaseIndex={phaseIndex} setReset={() => performReset()} eventSymbol={eventSymbol} adventures={adventures} items={eventItems} />
@@ -303,9 +308,11 @@ const SourceTable = (props: SourceTableProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { playerData } = globalContext.player;
     const { t } = globalContext.localized;
-    const [sortColumn, setSortColumn] = React.useState('source' as 'source' | 'demands');
+
+    const [sortColumn, setSortColumn] = useStateWithStorage<'source' | 'demands'>('gather_planner/sort_column', 'demands', { rememberForever: true });
+    const [sortDirection, setSortDirection] = useStateWithStorage<'ascending' | 'descending'>('gather_planner/sort_direction', 'descending', { rememberForever: true });
+
     const [sortedSources, setSortedSources] = React.useState(sources);
-    const [sortDirection, setSortDirection] = React.useState('ascending' as 'ascending' | 'descending');
 
     React.useEffect(() => {
 
@@ -316,7 +323,7 @@ const SourceTable = (props: SourceTableProps) => {
             newList.sort((a, b) => {
                 let acount = a.items.reduce((p, n) => p + n.needed!, 0);
                 let bcount = b.items.reduce((p, n) => p + n.needed!, 0);
-                return mul *  (bcount - acount);
+                return mul *  (acount - bcount);
             })
         }
         else if (sortColumn === 'source') {
@@ -326,8 +333,7 @@ const SourceTable = (props: SourceTableProps) => {
         }
 
         setSortedSources(newList)
-
-    }, [sortColumn, sortDirection]);
+    }, [sources, sortColumn, sortDirection]);
 
     const columnClick = (name: 'source' | 'demands') => {
         if (name === sortColumn) {
