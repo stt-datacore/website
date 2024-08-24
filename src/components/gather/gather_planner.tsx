@@ -1,13 +1,12 @@
-import React from "react"
+import React from "react";
 import { GlobalContext } from '../../context/globalcontext';
-import { Adventure, GatherPool } from "../../model/player";
+import { Adventure } from "../../model/player";
 import ItemDisplay from '../itemdisplay';
 import { ItemHoverStat, ItemTarget } from "../hovering/itemhoverstat";
 import { Button, Table } from "semantic-ui-react";
-import { EquipmentIngredient, EquipmentItem, EquipmentItemSource } from "../../model/equipment";
-import { calcItemDemands, makeRecipeFromArchetypeCache } from "../../utils/equipment";
+import { EquipmentItem, EquipmentItemSource } from "../../model/equipment";
+import { makeRecipeFromArchetypeCache } from "../../utils/equipment";
 import { useStateWithStorage } from "../../utils/storage";
-import { ArchetypeRoot20 } from "../../model/archetype";
 import ProfileItems from "../profile_items";
 import ItemSources from "../itemsources";
 
