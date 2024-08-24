@@ -283,6 +283,10 @@
         "view_big_book": "Voir {{crew}} sur Big Book",
         "voyage": "Afficher les rangs des voyages"
     },
+    "demands": {
+        "demands": "Demandes",
+        "items": "{{global.items}}"
+    },
     "duration": {
         "n_d": "{{days}} j",
         "n_d_compact": "{{days}}d",
@@ -626,6 +630,7 @@
         "aborted": "Terminé",
         "admiral": "Avorté",
         "advanced_settings": "Réglages Avancés",
+        "adventure": "Aventure",
         "and": "et",
         "any": "Quelconque",
         "apply_filters": "Appliquer des filtres",
@@ -633,8 +638,10 @@
         "bonus": "Prime",
         "bonuses": "Bonus",
         "cancel": "Annuler",
+        "challenge": "Défi",
         "clear": "Effacer",
         "clear_all": "Tout effacer",
+        "clear_cache": "Supprimer le cache",
         "close": "Fermer",
         "completed": "Completed",
         "copy_permalink_clipboard": "Copier le lien permanent dans le presse-papiers",
@@ -646,9 +653,11 @@
         "edit": "Modifier",
         "enable": "Activer",
         "enabled": "Activé",
+        "episode": "Épisode",
         "experimental": "Expérimental",
         "filters": "Filtres",
         "fleet": "Flotte",
+        "group_by": "Par groupe",
         "hidden": "Caché",
         "hide": "Masquer",
         "idle": "Inactif",
@@ -685,6 +694,7 @@
             "valor": "Valeur",
             "voyage_consumable": "Jetons de renaissance du voyage"
         },
+        "items": "Articles",
         "last_updated_colon": "Dernière mise à jour :",
         "load_default_settings": "Charger les paramètres par défaut",
         "load_defaults": "Charger les défauts",
@@ -710,6 +720,7 @@
         "percentile": "Centile",
         "permalink": "lien permanent",
         "portal": "Portail",
+        "quest": "Quête",
         "recommend_crew": "Recommander des équipiers",
         "reset": "Réinitialiser",
         "rows_per_page": "Lignes par page",
@@ -975,6 +986,11 @@
             "voyage_history": "Histoire des voyages"
         },
         "tools_title": "Outils"
+    },
+    "mission_type": {
+        "type_0": "Quête de conflit",
+        "type_2": "Bataille de navires",
+        "type_4": "Défi des cadets"
     },
     "obtained": {
         "long": {

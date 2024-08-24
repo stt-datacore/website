@@ -277,6 +277,10 @@
         "view_big_book": "{{crew}} im Big Book anzeigen",
         "voyage": "Reiseränge anzeigen"
     },
+    "demands": {
+        "demands": "Anforderungen",
+        "items": "{{global.items}}"
+    },
     "duration": {
         "n_d": "{{days}} T",
         "n_d_compact": "{{days}}T",
@@ -483,16 +487,16 @@
         "tips": {
             "alpha_exceptions_a": "Alpha-Ausnahmen",
             "alpha_exceptions_b": "sind Crewmitglieder, die aufgrund einer inoffiziellen Regel ausgeschlossen werden könnten, die einige ihrer Eigenschaften namentlich ausschließt. Sie sollten Alpha-Ausnahmen nur ausprobieren, wenn Sie alle anderen aufgelisteten Optionen ausgeschöpft haben.",
-            "coverage": "Abdeckung",
+            "coverage_a": "Abdeckung",
             "coverage_b": "identifiziert Crewmitglieder, die Lösungen für mehrere Knoten sein könnten. In der Gruppenansicht werden Crewmitglieder mit Abdeckung kursiv dargestellt; wenn Sie Crewmitglieder priorisieren, bei der Abdeckung werden einige Crewmitglieder ausgeblendet, während andere als mögliche Lösungen für weitere Knoten ausprobiert werden können. In der Crew-Ansicht wird die Anzahl der potenziellen Knoten aufgelistet.",
             "non_optimals_a": "Nicht-Optimale",
             "non_optimals_b": "sind Crewmitglieder, deren einzige übereinstimmende Eigenschaften eine Teilmenge von Eigenschaften einer anderen möglichen Lösung für diesen Knoten sind. Sie sollten nicht-optimale Crewmitglieder nur ausprobieren, wenn Sie keine optimale Crew besitzen.",
             "one_hand_exception_a": "Einhand-Ausnahmen",
             "one_hand_exception_b": "sind Crewmitglieder, die aufgrund einer inoffiziellen Regel ausgeschlossen werden könnten, die Lösungen auf Eigenschaften mit nicht mehr als einer Handvoll übereinstimmender Crewmitglieder beschränkt.",
             "title": "Tippe",
-            "trait_colors": "Merkmalsfarben",
+            "trait_colors_a": "Merkmalsfarben",
             "trait_colors_b": "helfen, die Seltenheit jedes Merkmals pro Knoten zu visualisieren, z. B. bedeutet ein goldenes Merkmal, dass seine Crew die einzig mögliche Crew mit diesem Merkmal in diesem Knoten ist, ein violettes Merkmal ist ein Merkmal, das von 2 möglichen Crewmitgliedern in diesem Knoten geteilt wird, ein blaues Merkmal wird von 3 möglichen Crewmitgliedern geteilt usw. Beachten Sie, dass potenzielle Alpha-Ausnahmen unabhängig von der Seltenheit immer orange sind.",
-            "trait_numbers": "Merkmalsnummern",
+            "trait_numbers_a": "Merkmalsnummern",
             "trait_numbers_b": "identifizieren, für wie viele verbleibende Knoten dieses Merkmal wahrscheinlich eine Lösung ist, basierend auf einer inoffiziellen Regel, dass doppelte Merkmale im Pool immer eine Lösung sind."
         },
         "undo_solve": "Lösen rückgängig machen",
@@ -620,6 +624,7 @@
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
+        "adventure": "Abenteuer",
         "and": "und",
         "any": "Beliebig",
         "apply_filters": "Filter anwenden",
@@ -627,8 +632,10 @@
         "bonus": "Bonifikation",
         "bonuses": "Boni",
         "cancel": "Abbrechen",
+        "challenge": "Herausforderung",
         "clear": "Löschen",
         "clear_all": "Alles löschen",
+        "clear_cache": "Löschen des Cache",
         "close": "Schließen",
         "completed": "Abgeschlossen",
         "copy_permalink_clipboard": "Permalink in die Zwischenablage kopieren",
@@ -640,9 +647,11 @@
         "edit": "Bearbeiten",
         "enable": "Aktivieren",
         "enabled": "Aktiviert",
+        "episode": "Episode",
         "experimental": "Experimentell",
         "filters": "Filter",
         "fleet": "Flotte",
+        "group_by": "Gruppiere nach",
         "hidden": "Versteckt",
         "hide": "Verstecken",
         "idle": "Leerlauf",
@@ -679,6 +688,7 @@
             "valor": "Tapferkeit",
             "voyage_consumable": "Reise-Wiederbelebungs-Token"
         },
+        "items": "Artikele",
         "last_updated_colon": "Zuletzt aktualisiert:",
         "load_default_settings": "Standardeinstellungen laden",
         "load_defaults": "Standards laden",
@@ -702,6 +712,7 @@
         "percentile": "Perzentil",
         "permalink": "Permalink",
         "portal": "Zeitportal",
+        "quest": "Quest",
         "recommend_crew": "Crew empfehlen",
         "reset": "Zurücksetzen",
         "rows_per_page": "Zeilen pro Seite",
@@ -965,6 +976,11 @@
             "voyage_history": "Reiseverlauf"
         },
         "tools_title": "Werkzeuge"
+    },
+    "mission_type": {
+        "type_0": "Konfliktquest",
+        "type_2": "Schiffsschlacht",
+        "type_4": "Kadettenherausforderung"
     },
     "obtained": {
         "long": {

@@ -281,6 +281,10 @@
         "view_big_book": "Ver {{crew}} en Big Book",
         "voyage": "Mostrar rangos de viaje"
     },
+    "demands": {
+        "demands": "Demandas",
+        "items": "{{global.items}}"
+    },
     "duration": {
         "n_d": "{{days}} d",
         "n_d_compact": "{{days}}d",
@@ -625,6 +629,7 @@
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
+        "adventure": "Aventura",
         "and": "y",
         "any": "Cualquier",
         "apply_filters": "Aplicar filtros",
@@ -632,8 +637,10 @@
         "bonus": "Bonificacion",
         "bonuses": "Bonificaciones",
         "cancel": "Cancelar",
+        "challenge": "Desafío",
         "clear": "Borrar",
         "clear_all": "Borrar todo",
+        "clear_cache": "Limpiar cache",
         "close": "Cerca",
         "completed": "Completado",
         "copy_permalink_clipboard": "Copiar enlace permanente al portapapeles",
@@ -645,9 +652,11 @@
         "edit": "Editar",
         "enable": "Habilitar",
         "enabled": "Habilitado",
+        "episode": "Episodio",
         "experimental": "Experimental",
         "filters": "Filtros",
         "fleet": "Flota",
+        "group_by": "Agrupar por",
         "hidden": "Oculto",
         "hide": "Ocultar",
         "idle": "Inactivo",
@@ -684,6 +693,7 @@
             "valor": "Valor",
             "voyage_consumable": "Fichas de avivamiento del viaje"
         },
+        "items": "Artículos",
         "last_updated_colon": "Última actualización:",
         "load_default_settings": "Cargar configuración predeterminada",
         "load_defaults": "Cargar predeterminadas",
@@ -709,6 +719,7 @@
         "percentile": "Percentil",
         "permalink": "enlace permanente",
         "portal": "Portal",
+        "quest": "Búsqueda",
         "recommend_crew": "Recomendar tripulantes",
         "reset": "Restablecer",
         "rows_per_page": "Filas por página",
@@ -974,6 +985,11 @@
             "voyage_history": "Historia del viaje"
         },
         "tools_title": "Herramientas"
+    },
+    "mission_type": {
+        "type_0": "Misión de conflicto",
+        "type_2": "Batalla de barcos",
+        "type_4": "Desafío cadete"
     },
     "obtained": {
         "long": {

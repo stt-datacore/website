@@ -1,4 +1,9 @@
 {
+    "mission_type": {
+        "type_0": "Conflict Quest",
+        "type_2": "Ship Battle",
+        "type_4": "Cadet Challenge"
+    },
     "base": {
         "all_crew": "Show all crew",
         "bigbook_tier": "Tier",
@@ -276,6 +281,10 @@
         "ship": "Show ship abilities",
         "view_big_book": "View {{crew}} on Big Book",
         "voyage": "Show voyage ranks"
+    },
+    "demands": {
+        "demands": "Demands",
+        "items": "{{global.items}}"
     },
     "duration": {
         "n_d": "{{days}} d",
@@ -620,6 +629,7 @@
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
+        "adventure": "Adventure",
         "and": "and",
         "any": "Any",
         "apply_filters": "Apply Filters",
@@ -627,8 +637,10 @@
         "bonus": "Bonus",
         "bonuses": "Bonuses",
         "cancel": "Cancel",
+        "challenge": "Challenge",
         "clear": "Clear",
         "clear_all": "Clear All",
+        "clear_cache": "Clear cache",
         "close": "Close",
         "completed": "Completed",
         "copy_permalink_clipboard": "Copy permalink to clipboard",
@@ -640,9 +652,11 @@
         "edit": "Edit",
         "enable": "Enable",
         "enabled": "Enabled",
+        "episode": "Episode",
         "experimental": "Experimental",
         "filters": "Filters",
         "fleet": "Fleet",
+        "group_by": "Group by",
         "hidden": "Hidden",
         "hide": "Hide",
         "idle": "Idle",
@@ -679,6 +693,7 @@
             "valor": "Valor",
             "voyage_consumable": "Voyage Revival Tokens"
         },
+        "items": "Items",
         "last_updated_colon": "Last Updated:",
         "load_default_settings": "Load Default Settings",
         "load_defaults": "Load Defaults",
@@ -702,6 +717,7 @@
         "percentile": "Percentile",
         "permalink": "permalink",
         "portal": "Portal",
+        "quest": "Quest",
         "recommend_crew": "Recommend Crew",
         "reset": "Reset",
         "rows_per_page": "Rows per page",
