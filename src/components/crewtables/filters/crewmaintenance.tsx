@@ -38,7 +38,7 @@ export const CrewMaintenanceFilter = (props: CrewMaintenanceFilterProps) => {
 	const filterByMaintenance = (crew: IRosterCrew) => {
 		if (maintenanceFilter === 'quipped' && !isQuipped(crew)) return false;
 		if (maintenanceFilter === 'quippable' && (!crew.q_bits || crew.q_bits < 100)) return false;
-		if (maintenanceFilter === 'advanceable' && (crew.q_bits >= 1300 || crew.immortal !== -1)) return false;
+		if (maintenanceFilter === 'advanceable' && ((crew.q_bits !== undefined && crew.q_bits >= 1300) || !crew.immortal)) return false;
 		if (maintenanceFilter === 'freezable' && crew.immortal !== CompletionState.Immortalized) return false;
 		if (maintenanceFilter === 'mortal' && crew.immortal !== CompletionState.NotComplete) return false;
 		if (maintenanceFilter === 'priority' && (crew.immortal === CompletionState.Immortalized || crew.immortal >= CompletionState.Frozen || crew.max_rarity !== crew.rarity)) return false;
@@ -49,7 +49,7 @@ export const CrewMaintenanceFilter = (props: CrewMaintenanceFilterProps) => {
 		if (maintenanceFilter === 'buyback') {
 			if (!globalContext.player.playerData?.buyback_well?.length) return false;
 			if (crew.rarity === crew.max_rarity) return false;
-			if (!globalContext.player.playerData.buyback_well.some(c => c.symbol === crew.symbol)) return false;	
+			if (!globalContext.player.playerData.buyback_well.some(c => c.symbol === crew.symbol)) return false;
 		}
 		return true;
 	};
