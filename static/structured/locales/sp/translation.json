@@ -330,7 +330,8 @@
     "event_type": {
         "gather": "Galaxia",
         "shuttles": "Facción",
-        "skirmish": "Escaramuza"
+        "skirmish": "Escaramuza",
+        "voyage": "Viaje"
     },
     "events_common": {
         "skirmish_guess_warning": "Este evento contiene un componente de escaramuza y es posible que una lista completa del equipo destacado no esté disponible hasta después de que comience este evento"

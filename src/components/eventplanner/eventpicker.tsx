@@ -107,7 +107,8 @@ export const EventPicker = (props: EventPickerProps) => {
 	const EVENT_TYPES = {
 		'shuttles': t('event_type.shuttles'),
 		'gather': t('event_type.gather'),
-		'skirmish': t('event_type.skirmish')
+		'skirmish': t('event_type.skirmish'),
+		'voyage': t('event_type.voyage')
 	};
 
 	const phaseList = [] as ISelectOptions[];
@@ -153,7 +154,7 @@ export const EventPicker = (props: EventPickerProps) => {
 					{eventData.content_types[phaseIndex] === 'gather' && <GatherPlanner phaseIndex={phaseIndex} eventSymbol={eventData.symbol} />}
 				</React.Fragment>
 			)}
-			
+
 
 		</React.Fragment>
 	);
@@ -166,7 +167,7 @@ type EventProspectsProps = {
 };
 
 const EventProspects = (props: EventProspectsProps) => {
-	const { t } = React.useContext(GlobalContext).localized; 
+	const { t } = React.useContext(GlobalContext).localized;
 	const { pool, prospects, setProspects } = props;
 	if (pool.length === 0) return (<></>);
 
