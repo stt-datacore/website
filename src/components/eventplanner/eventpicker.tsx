@@ -148,6 +148,15 @@ export const EventPicker = (props: EventPickerProps) => {
 				</div>
 			)}
 			<EventCrewTable rosterType={rosterType} rosterCrew={rosterCrew} eventData={eventData} phaseIndex={phaseIndex} lockable={lockable} />
+
+			{playerData && (
+				<React.Fragment>
+					{rosterType === 'myCrew' && <EventProspects pool={bonusCrew} prospects={prospects} setProspects={setProspects} />}
+					{eventData.content_types[phaseIndex] === 'shuttles' && (<EventShuttles crew={rosterCrew} eventData={eventData} />)}
+					{eventData.content_types[phaseIndex] === 'gather' && <GatherPlanner phaseIndex={phaseIndex} eventSymbol={eventData.symbol} />}
+				</React.Fragment>
+			)}
+
 			{playerData && eventData.content_types[phaseIndex] === 'voyage' && !!eventData.bonus_ship?.length &&
 				<div style={{marginTop: "0.5em"}}>
 					<div style={{margin: "0.5em 0"}}>
@@ -159,14 +168,6 @@ export const EventPicker = (props: EventPickerProps) => {
 						/>
 				</div>
 			}
-			{playerData && (
-				<React.Fragment>
-					{rosterType === 'myCrew' && <EventProspects pool={bonusCrew} prospects={prospects} setProspects={setProspects} />}
-					{eventData.content_types[phaseIndex] === 'shuttles' && (<EventShuttles crew={rosterCrew} eventData={eventData} />)}
-					{eventData.content_types[phaseIndex] === 'gather' && <GatherPlanner phaseIndex={phaseIndex} eventSymbol={eventData.symbol} />}
-				</React.Fragment>
-			)}
-
 
 		</React.Fragment>
 	);

@@ -17,6 +17,8 @@ export interface IEventData {
 	bonus_ship?: string[];
 	featured_ship?: string[];
 	bonus_ship_traits?: string[];
+	primary_skill?: string;
+	secondary_skill?: string;
 };
 
 export interface IRosterCrew extends PlayerCrew {
