@@ -372,7 +372,7 @@ export function computeEventBest(
 				if (phaseType === 'gather') crew.bonus = getBonus(crew, eventData, 5, 10);
 				else if (phaseType === 'shuttles') crew.bonus = getBonus(crew, eventData, 2, 3);
 				else if (phaseType === 'skirmish') crew.bonus = getBonus(crew, eventData, 1.5, 2);
-				else if (phaseType === 'voyage') crew.bonus = getBonus(crew, eventData, 150, 50);
+				else if (phaseType === 'voyage') crew.bonus = getBonus(crew, eventData, 50, 150);
 			}
 			if (crew.bonus > 1 || showPotential) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
