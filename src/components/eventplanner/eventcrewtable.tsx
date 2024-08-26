@@ -296,7 +296,8 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 					</div>
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					{crew.bonus > 1 ? `x${crew.bonus}` : ''}
+					{phaseType !== 'voyage' && crew.bonus > 1 ? `x${crew.bonus}` : ''}
+					{phaseType === 'voyage' && crew.bonus > 1 ? `${crew.bonus} AM` : ''}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<b>{scoreLabel(crew.bestSkill.score)}</b>
