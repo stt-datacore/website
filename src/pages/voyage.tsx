@@ -136,7 +136,7 @@ const VoyageSetup = () => {
 		}
 		// Otherwise guess event from autosynced events
 		else {
-			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances).then(recentEvents => {
+			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.ship_schematics.map(m => m.ship)).then(recentEvents => {
 				setActiveEvents([...recentEvents]);
 			});
 		}

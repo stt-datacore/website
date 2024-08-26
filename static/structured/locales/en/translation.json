@@ -5,6 +5,9 @@
         "type_4": "Cadet Challenge"
     },
     "base": {
+        "event_ships": "Event Ships",
+        "featured_traits": "Featured Traits",
+        "featured_ships": "Featured Ships",
         "all_crew": "Show all crew",
         "bigbook_tier": "Tier",
         "cab_power": "CAB",

@@ -7,8 +7,9 @@ import CONFIG from '../components/CONFIG';
 import { applySkillBuff } from './crewutils';
 import { BuffStatTable } from './voyageutils';
 import { IDefaultGlobal } from '../context/globalcontext';
+import { Ship } from '../model/ship';
 
-export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[]): IEventData | undefined {
+export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allShips?: Ship[]): IEventData | undefined {
 	const result = {} as IEventData;
 	result.symbol = activeEvent.symbol;
 	result.name = activeEvent.name;
@@ -91,6 +92,31 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[]): IEv
 				});
 			});
 		}
+		if (allShips?.length) {
+			result.bonus_ship ??= [];
+			result.featured_ship ??= [];
+			if (activePhase.featured_ships) {
+				for (let i = 0; i < activePhase.featured_ships.length; i++) {
+					let symbol = activePhase.featured_ships[i];
+					if (!result.bonus_ship.includes(symbol)) {
+						result.bonus_ship.push(symbol);
+						result.featured_ship.push(symbol);
+					}
+				}
+			}
+			// Voyages uses activePhase.antimatter_bonus_crew_traits to identify smaller bonus event crew
+			if (activePhase.antimatter_bonus_ship_traits) {
+				result.bonus_ship_traits = [...activePhase.antimatter_bonus_ship_traits];
+				activePhase.antimatter_bonus_ship_traits.forEach(trait => {
+					const perfectTraits = allShips.filter(ship => ship.traits?.includes(trait) || ship.traits_hidden?.includes(trait));
+					perfectTraits.forEach(crew => {
+						if (!result.bonus_ship?.includes(crew.symbol)) {
+							result.bonus_ship?.push(crew.symbol);
+						}
+					});
+				});
+			}
+		}
 	}
 
 	// Guess featured crew when not explicitly listed in event data (e.g. pre-start skirmish or hybrid w/ phase 1 skirmish)
@@ -105,13 +131,13 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[]): IEv
 }
 
 // guessCurrentEvent to be deprecated; use getRecentEvents instead
-export async function guessCurrentEvent(allCrew: CrewMember[], allEvents: EventInstance[]): Promise<IEventData> {
+export async function guessCurrentEvent(allCrew: CrewMember[], allEvents: EventInstance[], allShips?: Ship[]): Promise<IEventData> {
 	const { start, end } = getCurrentStartEndTimes();
 	const eventId = guessCurrentEventId(allEvents);
 	return new Promise((resolve, reject) => {
 		fetch('/structured/events/'+eventId+'.json').then(response =>
 			response.json().then(json => {
-				const activeEvent = getEventData(json, allCrew) as IEventData;
+				const activeEvent = getEventData(json, allCrew, allShips) as IEventData;
 				activeEvent.seconds_to_start = start;
 				activeEvent.seconds_to_end = end;
 				resolve(activeEvent);
@@ -176,7 +202,7 @@ function getCurrentStartEndTimes(): { start: number, end: number, startTime: Dat
 	return { start, end, startTime, endTime };
 }
 
-export async function getRecentEvents(allCrew: CrewMember[], allEvents: EventInstance[]): Promise<IEventData[]> {
+export async function getRecentEvents(allCrew: CrewMember[], allEvents: EventInstance[], allShips?: Ship[]): Promise<IEventData[]> {
 	const recentEvents = [] as IEventData[];
 
 	const { start, end } = getCurrentStartEndTimes();
@@ -187,7 +213,7 @@ export async function getRecentEvents(allCrew: CrewMember[], allEvents: EventIns
 		const eventId = allEvents[allEvents.length-index].instance_id;
 		const response = await fetch('/structured/events/'+eventId+'.json');
 		const json = await response.json();
-		const eventData = getEventData(json, allCrew) as IEventData;
+		const eventData = getEventData(json, allCrew, allShips) as IEventData;
 		if (eventId === currentEventId) {
 			eventData.seconds_to_start = start;
 			eventData.seconds_to_end = end;
@@ -442,7 +468,7 @@ export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventDa
 
 	// Get event data from recently uploaded playerData
 	if (ephemeral?.events) {
-		const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew))
+		const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew, globalContext.core.ship_schematics.map(m => m.ship)))
 			.filter(ev => ev !== undefined).map(ev => ev as IEventData)
 			.filter(ev => ev.seconds_to_end > 0)
 			.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);

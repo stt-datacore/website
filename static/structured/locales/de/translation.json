@@ -1,5 +1,8 @@
 {
     "base": {
+        "event_ships": "Ereignis Schiffe",
+    "featured_traits": "Ausgewählte Eigenschaften",
+"featured_ships": "Ausgewählte Schiffe",
         "all_crew": "Die gesamte Crew anzeigen",
         "bigbook_tier": "Stufe",
         "cab_power": "CAB",

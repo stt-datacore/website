@@ -50,6 +50,8 @@ function EventInformationTab(props: { eventData: GameEvent }) {
 
 	const { crew: allCrew } = context.core;
 
+	const allShips = context.core.ship_schematics.map(m => m.ship);
+
 	const crewData = allCrew; // crewJson.edges.map(edge => edge.node) as PlayerCrew[];
 	const crewMap: { [key: string]: PlayerCrew } = {};
 	crewData.forEach(crew => {
@@ -63,7 +65,7 @@ function EventInformationTab(props: { eventData: GameEvent }) {
 		content_types,
 	} = eventData;
 
-	const currEvent = getEventData(eventData, crewData);
+	const currEvent = getEventData(eventData, crewData, allShips);
 
 	const bonus = currEvent?.bonus;
 	const featured = currEvent?.featured;
