@@ -331,7 +331,8 @@
     "event_type": {
         "gather": "Galaxy",
         "shuttles": "Faction",
-        "skirmish": "Skirmish"
+        "skirmish": "Skirmish",
+        "voyage": "Voyage"
     },
     "events_common": {
         "skirmish_guess_warning": "This event contains a skirmish component, and a complete list of featured crew may not be available until after this event begins."

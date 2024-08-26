@@ -13,6 +13,7 @@ const contentTypeMap = {
 	shuttles: 'Faction',
 	skirmish: 'Skirmish',
 	expedition: 'Expedition',
+	voyage: 'Voyage'
 };
 
 function getEventType(contentTypes: string[]) {

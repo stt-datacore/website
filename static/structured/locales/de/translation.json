@@ -326,7 +326,8 @@
     "event_type": {
         "gather": "Galaxie",
         "shuttles": "Fraktion",
-        "skirmish": "Scharmützel"
+        "skirmish": "Scharmützel",
+        "voyage": "Reise"
     },
     "events_common": {
         "skirmish_guess_warning": "Dieses Event enthält eine Scharmützelkomponente und eine vollständige Liste der beteiligten Crewmitglieder ist möglicherweise erst nach Beginn des Events verfügbar."

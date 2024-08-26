@@ -70,6 +70,28 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[]): IEv
 			});
 		}
 	}
+	else if (activePhase.content_type === 'voyage') {
+		if (activePhase.featured_crews) {
+			for (let i = 0; i < activePhase.featured_crews.length; i++) {
+				let symbol = activePhase.featured_crews[i];
+				if (!result.bonus.includes(symbol)) {
+					result.bonus.push(symbol);
+					result.featured.push(symbol);
+				}
+			}
+		}
+		// Voyages uses activePhase.antimatter_bonus_crew_traits to identify smaller bonus event crew
+		if (activePhase.antimatter_bonus_crew_traits) {
+			activePhase.antimatter_bonus_crew_traits.forEach(trait => {
+				const perfectTraits = allCrew.filter(crew => crew.traits.includes(trait) || crew.traits_hidden.includes(trait));
+				perfectTraits.forEach(crew => {
+					if (!result.bonus.includes(crew.symbol)) {
+						result.bonus.push(crew.symbol);
+					}
+				});
+			});
+		}
+	}
 
 	// Guess featured crew when not explicitly listed in event data (e.g. pre-start skirmish or hybrid w/ phase 1 skirmish)
 	if (result.bonus.length === 0) {
@@ -206,7 +228,7 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus:
 	// Guess bonus crew from bonus_text
 	//	bonus_text seems to be reliably available, but might be inconsistently written
 	if (activeEvent.bonus_text !== '') {
-		const words = activeEvent.bonus_text.replace('Crew Bonus: ', '').replace(' crew', '').replace(/\sor\s/, ',').split(',').filter(word => word !== '');
+		const words = activeEvent.bonus_text.replace('Crew Bonus: ', '').replace('Bonus: ', '').replace(' crew', '').replace(/\sor\s/, ',').split(',').filter(word => word !== '');
 		words.forEach(trait => {
 			// Search for exact name first
 			const testName = trait.trim();
@@ -350,6 +372,7 @@ export function computeEventBest(
 				if (phaseType === 'gather') crew.bonus = getBonus(crew, eventData, 5, 10);
 				else if (phaseType === 'shuttles') crew.bonus = getBonus(crew, eventData, 2, 3);
 				else if (phaseType === 'skirmish') crew.bonus = getBonus(crew, eventData, 1.5, 2);
+				else if (phaseType === 'voyage') crew.bonus = getBonus(crew, eventData, 150, 50);
 			}
 			if (crew.bonus > 1 || showPotential) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
