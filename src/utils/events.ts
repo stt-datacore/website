@@ -228,7 +228,7 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus:
 	// Guess bonus crew from bonus_text
 	//	bonus_text seems to be reliably available, but might be inconsistently written
 	if (activeEvent.bonus_text !== '') {
-		const words = activeEvent.bonus_text.replace('Crew Bonus: ', '').replace('Bonus: ', '').replace(' crew', '').replace(/\sor\s/, ',').split(',').filter(word => word !== '');
+		const words = activeEvent.bonus_text.replace('Crew Bonus: ', '').replace('Bonus: ', '').replace(' crew', '').replace('(Ship/Crew)', '').replace('(Ship)', '').replace('(Crew)', '').replace(/\sor\s/, ',').split(',').filter(word => word !== '');
 		words.forEach(trait => {
 			// Search for exact name first
 			const testName = trait.trim();
@@ -381,7 +381,13 @@ export function computeEventBest(
 							crew[skill.name].current = crew[skill.name].core*crew.bonus;
 							if (buffConfig) crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.skill_data[crew.rarity-1].base_skills[skill.name]);
 						}
-						crew[skill.name].core = crew[skill.name].core*crew.bonus;
+						if (phaseType !== 'voyage') {
+							crew[skill.name].core = crew[skill.name].core*crew.bonus;
+						}
+						else {
+							crew[skill.name].core = crew[skill.name].core;
+						}
+
 					}
 				});
 			}
