@@ -14,6 +14,9 @@ export interface IEventData {
 	bonus: string[];	/* ALL bonus crew by symbol */
 	featured: string[];	/* ONLY featured crew by symbol */
 	bonusGuessed?: boolean;
+	bonus_ship?: string[];
+	featured_ship?: string[];
+	bonus_ship_traits?: string[];
 };
 
 export interface IRosterCrew extends PlayerCrew {

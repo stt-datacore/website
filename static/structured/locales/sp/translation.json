@@ -1,5 +1,8 @@
 {
     "base": {
+        "event_ships": "Buques de eventos",
+    "featured_traits": "Características destacadas",
+"featured_ships": "Buques destacados",
         "all_crew": "Mostrar toda las tripulantes",
         "bigbook_tier": "Piso",
         "cab_power": "CAB",
@@ -989,7 +992,7 @@
     },
     "mission_type": {
         "type_0": "Misión de conflicto",
-        "type_2": "Batalla de barcos",
+        "type_2": "Batalla de buque",
         "type_4": "Desafío cadete"
     },
     "obtained": {

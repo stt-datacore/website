@@ -17,6 +17,7 @@ import { applySkillBuff } from '../../utils/crewutils';
 
 import { IEventData, IRosterCrew } from './model';
 import { GatherPlanner } from '../gather/gather_planner';
+import ProfileShips from '../profile_ships';
 
 interface ISelectOptions {
 	key: string;
@@ -147,6 +148,17 @@ export const EventPicker = (props: EventPickerProps) => {
 				</div>
 			)}
 			<EventCrewTable rosterType={rosterType} rosterCrew={rosterCrew} eventData={eventData} phaseIndex={phaseIndex} lockable={lockable} />
+			{playerData && eventData.content_types[phaseIndex] === 'voyage' && !!eventData.bonus_ship?.length &&
+				<div style={{marginTop: "0.5em"}}>
+					<div style={{margin: "0.5em 0"}}>
+						<h4>{t('base.event_ships')}</h4>
+					</div>
+					<ProfileShips event_ships={eventData.bonus_ship}
+						high_bonus={eventData.featured_ship}
+						event_ship_traits={eventData.bonus_ship_traits}
+						/>
+				</div>
+			}
 			{playerData && (
 				<React.Fragment>
 					{rosterType === 'myCrew' && <EventProspects pool={bonusCrew} prospects={prospects} setProspects={setProspects} />}

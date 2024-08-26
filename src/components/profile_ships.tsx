@@ -14,6 +14,9 @@ import CONFIG from './CONFIG';
 import { TinyStore } from '../utils/tiny';
 
 type ProfileShipsProps = {
+	event_ships?: string[];
+	high_bonus?: string[];
+	event_ship_traits?: string[];
 };
 
 type ProfileShipsState = {
@@ -53,8 +56,8 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 
 		this.state = {
 			onlyUsed: this.tiny.getValue<boolean>('only_used'),
-			column: null,
-			direction: null,
+			column: this.props.event_ships ? 'antimatter' : null,
+			direction: this.props.event_ships ? 'descending' : null,
 			searchFilter: '',
 			pagination_rows: 10,
 			pagination_page: 1,
@@ -99,16 +102,37 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 			this.hasPlayer = hp;
 		}
 		if (this.inited) return;
+		const { event_ships } = this.props;
 
 		this.inited = true;
 		if (this.context.player.playerShips?.length) {
 			let shipsInUse = getShipsInUse(this.context.player);
-			this.setState({ ... this.state, data: this.context.player.playerShips, shipsInUse });
+			this.setState({
+				... this.state,
+				data: this.context.player.playerShips?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => this.transmogrify(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0),
+				shipsInUse
+			});
 		}
 		else {
-			this.setState({ ... this.state, data: this.context.core.ships });
+			this.setState({
+				... this.state,
+				data: this.context.core.ships?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => this.transmogrify(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0)
+			});
 		}
 
+	}
+
+	transmogrify(ship: Ship) {
+		if (!this.props.event_ships) return ship;
+		ship = JSON.parse(JSON.stringify(ship));
+		if (this.props.high_bonus?.includes(ship.symbol)) {
+			ship.antimatter += 500;
+		}
+		else {
+			let traits = ship.traits?.filter(f => this.props.event_ship_traits?.includes(f))?.length ?? 0;
+			ship.antimatter += (100 * traits);
+		}
+		return ship;
 	}
 
 	_onChangePage(activePage) {
@@ -199,7 +223,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 
 	render() {
 		const { localized } = this.context;
-		const { t } = localized;
+		const { t, SHIP_TRAIT_NAMES } = localized;
 		const trait_names = localized.SHIP_TRAIT_NAMES;
 		const { textFilter, grantFilter, traitFilter, abilityFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
 
@@ -239,7 +263,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 
 		return (<div>
-			<div style={{
+			{!this.props.event_ships?.length && <div style={{
 				display: "flex",
 				flexDirection: "row",
 				gap: "0.5em"
@@ -266,10 +290,21 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 
 				<ShipAbilityPicker ship={true} selectedAbilities={this.state.abilityFilter} setSelectedAbilities={(value) => this.setAbilityFilter(value as string[])} />
 				<TraitPicker ship={true} selectedTraits={this.state.traitFilter} setSelectedTraits={(value) => this.setTraitFilter(value as string[])} />
-			</div>
+			</div>}
+			{!this.props.event_ships?.length &&
 			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1em', margin: '1em'}}>
 				<Checkbox label={t('ship.show.only_in_use')} checked={this.state.onlyUsed ?? false} onChange={(e, { checked }) => this.setOnlyUsed(checked as boolean)} />
-			</div>
+			</div>}
+			{!!this.props.event_ships?.length &&
+				<div>
+					<div style={{margin: '0.25em 0'}}>
+						<b>{t('base.featured_ships')}: </b>&nbsp;{this.props.high_bonus?.map(sym => this.state.data.find(f => f.symbol === sym)?.name || '').join(", ")}
+					</div>
+					<div style={{margin: '0.25em 0'}}>
+						<b>{t('base.featured_traits')}: </b>&nbsp;{this.props.event_ship_traits?.map(sym => SHIP_TRAIT_NAMES[sym]).join(", ")}
+					</div>
+				</div>
+			}
 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
@@ -385,7 +420,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 								onPageChange={(event, { activePage }) => this._onChangePage(activePage)}
 							/>
 							<span style={{ paddingLeft: '2em' }}>
-							 	{t('global.row_per_page')}:{' '}
+							 	{t('global.rows_per_page')}:{' '}
 								<Dropdown
 									inline
 									options={pagingOptions}

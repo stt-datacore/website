@@ -1,5 +1,8 @@
 {
     "base": {
+        "event_ships": "Vaisseaux événementiels",
+     "featured_traits": "Caractéristiques en vedette",
+"featured_ships": "Vaisseaux en vedette",
         "all_crew": "Afficher tous l'équipiers",
         "bigbook_tier": "Étage",
         "cab_power": "CAB",
