@@ -866,6 +866,8 @@ export interface Player {
     featured_ships?: string[];
     antimatter_bonus_per_ship_trait?: number;
     antimatter_bonus_for_featured_ship?: number;
+    primary_skill?: string;
+    secondary_skill?: string;
   }
 
   export interface CrewBonuses {

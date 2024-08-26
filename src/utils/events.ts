@@ -116,6 +116,9 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 					});
 				});
 			}
+
+			result.primary_skill = activePhase.primary_skill;
+			result.secondary_skill = activePhase.secondary_skill;
 		}
 	}
 
