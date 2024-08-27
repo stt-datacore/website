@@ -163,8 +163,11 @@ const VoyageSetup = (props: VoySetupProps) => {
 					}
 					newVoyageConfig.ship_trait = fvoy.content.antimatter_bonus_ship_traits![0];
 					newVoyageConfig.crew_slots.forEach((slot) => {
-						slot.trait ??= '';
-					})
+						slot.trait ??= (fvoy.content.antimatter_bonus_crew_traits?.length ? fvoy.content.antimatter_bonus_crew_traits[0] : '');
+					});
+
+					newVoyageConfig.high_bonus = fvoy.content.featured_crews;
+					newVoyageConfig.low_bonus = fvoy.content.antimatter_bonus_crew_traits?.slice(1);
 				}
 			}
 		}
