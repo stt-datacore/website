@@ -1,6 +1,6 @@
 import React from 'react';
 import { navigate } from 'gatsby';
-import { Button } from 'semantic-ui-react';
+import { Button, Dropdown, DropdownItemProps } from 'semantic-ui-react';
 
 import { IEventData } from '../model/events';
 import { Ship } from '../model/ship';
@@ -21,6 +21,23 @@ import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 const VOYAGE_DEBUGGING: boolean = true;
 
 const VoyagePage = () => {
+	const globalContext = React.useContext(GlobalContext);
+	const { playerData, ephemeral } = globalContext.player;
+
+	const [voyIndex, setVoyIndex] = React.useState(0);
+
+	const voyCount = ephemeral?.voyageDescriptions?.length ?? 0;
+
+	const voyOptions = [] as DropdownItemProps[];
+
+	for (let i = 0; i < voyCount; i++) {
+		voyOptions.push({
+			key: `idx_${i}`,
+			value: i,
+			text: `${i+1}`
+		});
+	}
+
 	return (
 		<DataPageLayout
 			pageTitle='Voyage Calculator'
@@ -29,15 +46,30 @@ const VoyagePage = () => {
 			demands={['collections', 'event_instances']}
 		>
 			<React.Fragment>
-				<VoyageSetup />
+
+				<div>
+					Voyage Index:&nbsp;
+					<Dropdown
+						options={voyOptions}
+						value={voyIndex}
+						onChange={(e, { value }) => setVoyIndex(value as number)}
+						/>
+				</div>
+
+				<VoyageSetup voyIndex={voyIndex} />
 			</React.Fragment>
 		</DataPageLayout>
 	);
 };
 
-const VoyageSetup = () => {
+interface VoySetupProps {
+	voyIndex: number;
+}
+
+const VoyageSetup = (props: VoySetupProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, ephemeral } = globalContext.player;
+	const { voyIndex } = props;
 
 	const [initialConfig, setInitialConfig] = React.useState<IVoyageInputConfig | undefined>(undefined);
 	const [activeVoyageId, setActiveVoyageId] = React.useState<number>(0);
@@ -48,7 +80,7 @@ const VoyageSetup = () => {
 	React.useEffect(() => {
 		getInitialConfig();
 		getEvents();
-	}, [playerData]);
+	}, [playerData, voyIndex]);
 
 	React.useEffect(() => {
 		setShowCalculator(activeVoyageId === 0);
@@ -61,6 +93,7 @@ const VoyageSetup = () => {
 		<React.Fragment>
 			{playerData && (
 				<ActiveVoyageSetup
+					voyIndex={voyIndex}
 					key={`${playerData.player.dbid}`}
 					dbid={`${playerData.player.dbid}`}
 					activeVoyageId={activeVoyageId}
@@ -70,6 +103,7 @@ const VoyageSetup = () => {
 			)}
 			{showCalculator && (
 				<CalculatorSetup
+					voyIndex={voyIndex}
 					initialConfig={initialConfig}
 					activeVoyageId={activeVoyageId}
 					activeEvents={activeEvents}
@@ -101,19 +135,38 @@ const VoyageSetup = () => {
 
 		const { voyage, voyageDescriptions } = ephemeral;
 
-		const newActiveVoyageId: number = ephemeral.voyage.length > 0 ? ephemeral.voyage[0].id : 0;
+		const newActiveVoyageId: number = ephemeral.voyage.length > voyIndex ? ephemeral.voyage[voyIndex].id : 0;
 
 		let newVoyageConfig: IVoyageInputConfig | undefined;
 		// Voyage started, config will be full voyage data
-		if (voyage.length > 0) {
+		if (voyage.length > 0 && voyage.length > voyIndex) {
 			debug.push('Voyage started. Initial config will be full voyage data.');
 			debug.push(`Active voyage id: ${newActiveVoyageId}`);
-			newVoyageConfig = voyage[0];
+			newVoyageConfig = voyage[voyIndex];
 		}
 		// Voyage awaiting input, config will be input parameters only
 		else if (voyageDescriptions.length > 0) {
 			debug.push('Voyage awaiting input. Initial config will be input parameters only.');
-			newVoyageConfig = voyageDescriptions[0];
+
+			if (voyageDescriptions.length > voyIndex) {
+				newVoyageConfig = voyageDescriptions[voyIndex];
+			}
+			else {
+				newVoyageConfig = voyageDescriptions[0];
+			}
+			if (newVoyageConfig.voyage_type === 'encounter' && ephemeral.events?.length) {
+				let fvoy = ephemeral.events.find(f => f.content_types.includes('voyage'));
+				if (fvoy) {
+					newVoyageConfig.skills = {
+						primary_skill: fvoy.content.primary_skill!,
+						secondary_skill: fvoy.content.secondary_skill!,
+					}
+					newVoyageConfig.ship_trait = fvoy.content.antimatter_bonus_ship_traits![0];
+					newVoyageConfig.crew_slots.forEach((slot) => {
+						slot.trait ??= '';
+					})
+				}
+			}
 		}
 
 		if (newVoyageConfig)
@@ -147,6 +200,7 @@ type ActiveVoyageSetupProps = {
 	dbid: string;
 	activeVoyageId: number;
 	showCalculator: boolean;
+	voyIndex: number;
 	setShowCalculator: (showCalculator: boolean) => void;
 };
 
@@ -180,6 +234,7 @@ const ActiveVoyageSetup = (props: ActiveVoyageSetupProps) => {
 				<ActiveVoyage
 					setTelemetryOptIn={setTelemetryOptIn}
 					telemetryOptIn={telemetryOptIn}
+					voyIndex={props.voyIndex}
 					history={historyReady ? history : undefined}
 					setHistory={setHistory}
 					showDetails={!props.showCalculator}
@@ -194,12 +249,13 @@ type CalculatorSetupProps = {
 	initialConfig: IVoyageInputConfig | undefined;
 	activeVoyageId: number;
 	activeEvents: IEventData[];
+	voyIndex: number;
 };
 
 const CalculatorSetup = (props: CalculatorSetupProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
-	const { initialConfig, activeVoyageId, activeEvents } = props;
+	const { initialConfig, activeVoyageId, activeEvents, voyIndex } = props;
 
 	const [rosterType, setRosterType] = React.useState<'myCrew' | 'allCrew'>(playerData ? 'myCrew' : 'allCrew');
 	const [rosterCrew, setRosterCrew] = React.useState<IVoyageCrew[]>([]);
@@ -210,13 +266,15 @@ const CalculatorSetup = (props: CalculatorSetupProps) => {
 		crew: rosterCrew,
 		ships: rosterShips,
 		events: activeEvents,
-		activeVoyageId
+		activeVoyageId,
+		voyIndex
 	};
 
 	return (
 		<React.Fragment>
 			<CrewHoverStat targetGroup='voyageLineup' />
 			<RosterPicker
+				voyIndex={voyIndex}
 				rosterType={rosterType} setRosterType={setRosterType}
 				setRosterCrew={setRosterCrew}
 				setRosterShips={setRosterShips}

@@ -10,6 +10,7 @@ export interface ICalculatorContext {
 	ships: Ship[];
 	events: IEventData[];
 	activeVoyageId: number;
+	voyIndex: number;
 };
 
 export const CalculatorContext = React.createContext<ICalculatorContext>({} as ICalculatorContext);
