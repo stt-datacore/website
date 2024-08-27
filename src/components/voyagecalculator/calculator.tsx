@@ -103,7 +103,7 @@ const NonPlayerCalculator = (props: CalculatorProps) => {
 const CalculatorForm = (props: CalculatorProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t, tfmt } = globalContext.localized;
-	const { playerData } = globalContext.player;
+	const { playerData, ephemeral } = globalContext.player;
 	const calculatorContext = React.useContext(CalculatorContext);
 	const { rosterType } = calculatorContext;
 	const userPrefs = React.useContext(UserPrefsContext);
@@ -126,6 +126,18 @@ const CalculatorForm = (props: CalculatorProps) => {
 				bestIndex: Math.min(ship.index?.left ?? 0, ship.index?.right ?? 0),
 				archetype_id: ship.archetype_id
 			} as VoyageConsideration;
+			if (voyageConfig.voyage_type === 'encounter') {
+				let f = ephemeral?.events?.find(f => f.content_types.includes('voyage'));
+				if (f) {
+					if (f.content.featured_ships?.includes(ship.symbol)) {
+						entry.score = ship.antimatter + 500;
+					}
+					else {
+						let ftrait = f.content.antimatter_bonus_ship_traits?.filter(bs => ship.traits?.includes(bs))?.length ?? 0;
+						entry.score = ship.antimatter + (ftrait * 100);
+					}
+				}
+			}
 			consideredShips.push(entry);
 		});
 		consideredShips.sort((a, b) => {

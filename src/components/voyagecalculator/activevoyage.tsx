@@ -47,7 +47,7 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 	if (!playerData || !ephemeral || ephemeral.voyage.length === 0)
 		return (<></>);
 
-	const voyageConfig = ephemeral.voyage[voyIndex];
+	const voyageConfig = ephemeral.voyage[voyIndex] ? ephemeral.voyage[voyIndex] : ephemeral.voyage[0];
 
 	const ship = playerData.player.character.ships.find(s => s.id === voyageConfig.ship_id);
 	const shipIcon = ship?.icon ? `${ship.icon.file.slice(1).replace('/', '_')}.png` : '';
