@@ -1,8 +1,5 @@
 {
     "base": {
-        "event_ships": "Buques de eventos",
-    "featured_traits": "Características destacadas",
-"featured_ships": "Buques destacados",
         "all_crew": "Mostrar toda las tripulantes",
         "bigbook_tier": "Piso",
         "cab_power": "CAB",
@@ -11,6 +8,9 @@
         "collections": "Colecciones",
         "collections_fmt": "{{count}} colecciones",
         "crew": "Tripulación",
+        "event_ships": "Buques de eventos",
+        "featured_ships": "Buques destacados",
+        "featured_traits": "Características destacadas",
         "gauntlet": "Reto",
         "in_portal": "En Portal",
         "less_than_100_retrieval": "< 100% de Recuperación",
@@ -1506,6 +1506,10 @@
         "tracking": {
             "not_tracking": "No estás rastreando este viaje.",
             "start_tracking": "Comenzar a rastrear"
+        },
+        "type_names": {
+            "encounter_voyage": "Viaje de evento",
+            "test_voyage_1": "Viaje estándar"
         },
         "view": {
             "active_voyage": "Ver viaje activo",

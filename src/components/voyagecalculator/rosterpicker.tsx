@@ -26,13 +26,6 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
 	const [myShips, setMyShips] = React.useState<Ship[] | undefined>(undefined);
 
-	if (ephemeral?.voyage?.length) {
-		let f = [ ...new Set(ephemeral.voyage.filter((f, idx) => f.name !== voySymbol).map(m => m.crew_slots.map(m => m.crew.id)).flat()) ];
-		if (f?.length) {
-
-		}
-	}
-
 	React.useEffect(() => {
 		const rosterType = playerData ? 'myCrew' : 'allCrew';
 		initializeRoster(rosterType, true);
