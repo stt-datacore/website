@@ -948,7 +948,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			let crew = flavor
 				.replace("Equippable by: ", "")
 				.split(", ")
-				?.map((s) => this.context.core.crew.find((c) => c.symbol === s))
+				?.map((s) => this.context.core.crew.find((c) => c.name === s || c.symbol === s))
 				.filter((s) => !!s) as CrewMember[];
 			if (crew?.length)
 				output.push(
@@ -967,6 +967,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					</div>
 				);
 		}
+		if (output.length) flavor = '';
+
 		const crew = this.context.core.crew;
 
 		if (
@@ -1092,6 +1094,9 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					});
 				}
 			}
+		}
+		else if (flavor) {
+			output.push(<>{flavor}</>)
 		}
 		return output;
 	}
@@ -1302,7 +1307,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 								{!!crewMode && (<div
 									style={{
 										display: "flex", width: "100%",
-										height: "3em",										
+										height: "3em",
 										flexDirection: isMobile ? "column" : "row",
 										justifyContent: "flex-start",
 										alignItems: "center",
