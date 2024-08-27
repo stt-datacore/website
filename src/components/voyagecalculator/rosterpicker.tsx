@@ -13,17 +13,25 @@ type RosterPickerProps = {
 	setRosterType: (rosterType: 'allCrew' | 'myCrew') => void;
 	setRosterCrew: (rosterCrew: PlayerCrew[]) => void;
 	setRosterShips: (rosterShips: Ship[]) => void;
+	voyIndex: number;
 };
 
 export const RosterPicker = (props: RosterPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, playerShips, ephemeral } = globalContext.player;
-	const { rosterType, setRosterType, setRosterCrew, setRosterShips } = props;
+	const { rosterType, setRosterType, setRosterCrew, setRosterShips, voyIndex } = props;
 
 	const [allCrew, setAllCrew] = React.useState<IVoyageCrew[] | undefined>(undefined);
 	const [myCrew, setMyCrew] = React.useState<IVoyageCrew[] | undefined>(undefined);
 	const [allShips, setAllShips] = React.useState<Ship[] | undefined>(undefined);
 	const [myShips, setMyShips] = React.useState<Ship[] | undefined>(undefined);
+
+	if (ephemeral?.voyage?.length && ephemeral.voyage.length > voyIndex) {
+		let f = [ ...new Set(ephemeral.voyage.filter((f, idx) => idx !== voyIndex).map(m => m.crew_slots.map(m => m.crew.id)).flat()) ];
+		if (f?.length) {
+
+		}
+	}
 
 	React.useEffect(() => {
 		const rosterType = playerData ? 'myCrew' : 'allCrew';

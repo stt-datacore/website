@@ -21,6 +21,7 @@ type ActiveVoyageProps = {
 	setHistory: (history: IVoyageHistory) => void;
 	showDetails: boolean;
 	actionButtons: JSX.Element[];
+	voyIndex: number;
 };
 
 export const ActiveVoyage = (props: ActiveVoyageProps) => {
@@ -29,7 +30,7 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 	const { SHIP_TRAIT_NAMES } = globalContext.localized;
 
 	const { playerData, ephemeral } = globalContext.player;
-	const { showDetails, actionButtons } = props;
+	const { showDetails, actionButtons, voyIndex } = props;
 
 	const [myCrew, setMyCrew] = React.useState<IVoyageCrew[] | undefined>(undefined);
 
@@ -42,7 +43,7 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 	if (!playerData || !ephemeral || ephemeral.voyage.length === 0)
 		return (<></>);
 
-	const voyageConfig = ephemeral.voyage[0];
+	const voyageConfig = ephemeral.voyage[voyIndex];
 
 	const ship = playerData.player.character.ships.find(s => s.id === voyageConfig.ship_id);
 	const shipIcon = ship?.icon ? `${ship.icon.file.slice(1).replace('/', '_')}.png` : '';

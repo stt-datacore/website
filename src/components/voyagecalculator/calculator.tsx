@@ -418,7 +418,9 @@ type CrewOptionsProps = {
 
 const CrewOptions = (props: CrewOptionsProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
-	const { rosterType } = calculatorContext;
+	const globalContext = React.useContext(GlobalContext);
+	const { ephemeral } = globalContext.player;
+	const { rosterType, voyIndex } = calculatorContext;
 
 	const [preConsideredCrew, setPreConsideredCrew] = React.useState<IVoyageCrew[]>(calculatorContext.crew);
 	const [considerActive, setConsiderActive] = React.useState(false);
@@ -464,12 +466,14 @@ const CrewOptions = (props: CrewOptionsProps) => {
 							<Form.Group grouped style={{ marginBottom: '1em' }}>
 								<React.Fragment>
 									{activeCount > 0 && (
+										<>
 										<Form.Field
 											control={Checkbox}
-											label='Consider crew on active shuttles'
+											label='Consider crew on active shuttles or other voyages'
 											checked={considerActive}
 											onChange={(e, { checked }) => setConsiderActive(checked)}
 										/>
+										</>
 									)}
 									<Form.Field
 										control={Checkbox}
@@ -504,9 +508,17 @@ const CrewOptions = (props: CrewOptionsProps) => {
 	);
 
 	function preExcludeCrew(preConsideredCrew: IVoyageCrew[]): IVoyageCrew[] {
+
+		if (!considerActive && ephemeral?.voyage?.length) {
+			let list = [...new Set(ephemeral.voyage.filter((f, idx) => idx !== voyIndex).map(m => m.crew_slots.map(m2 => m2.crew.id)).flat()) ]
+			preConsideredCrew = preConsideredCrew.filter(f => !list.includes(f.id));
+		}
+
 		return preConsideredCrew.filter(crewman => {
 			if (!considerActive && crewman.active_status === 2)
 				return false;
+
+
 
 			if (!considerFrozen && crewman.immortal > 0)
 				return false;

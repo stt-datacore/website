@@ -1051,6 +1051,7 @@ export interface Player {
 
   export interface VoyageDescription {
     id: number
+    voyage_type: 'dilemma' | 'encounter';
     symbol: string
     name: string
     description: string
@@ -1076,7 +1077,7 @@ export interface Player {
   export interface Voyage {
     id: number
     name: string
-    voyage_type?: 'dilemma' | 'encounter';
+    voyage_type: 'dilemma' | 'encounter';
     description: string
     icon: string
     skills: VoyageSkills

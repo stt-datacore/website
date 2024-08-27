@@ -31,8 +31,8 @@ type SelectedBonusType = '' | 'all' | 'featured' | 'matrix';
 export const CrewExcluder = (props: CrewExcluderProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
 	const globalContext = React.useContext(GlobalContext);
-
-	const { events } = calculatorContext;
+	const { events, voyIndex } = calculatorContext;
+	const { ephemeral } = globalContext.player;
 	const { excludedCrewIds, updateExclusions, considerFrozen } = props;
 
 	const [selectedEvent, setSelectedEvent] = React.useState<string>('');
@@ -85,18 +85,24 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		if (selectedEvent) {
 			const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 			if (activeEvent) {
-				const crewIds = props.rosterCrew.filter(c =>
-					(selectedBonus === 'all' && activeEvent.bonus.includes(c.symbol))
-					|| (selectedBonus === 'featured' && activeEvent.featured.includes(c.symbol))
-					|| (selectedBonus === 'matrix' && bestCombos.includes(c.id))
-				).sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
-				updateExclusions([...new Set([...crewIds])]);
+				if (ephemeral?.voyageDescriptions?.length && ephemeral.voyageDescriptions.length > voyIndex &&
+					ephemeral.voyageDescriptions[voyIndex].voyage_type === 'encounter' && activeEvent.content_types.includes('voyage')) {
+						updateExclusions([]);
+				}
+				else {
+					const crewIds = props.rosterCrew.filter(c =>
+						(selectedBonus === 'all' && activeEvent.bonus.includes(c.symbol))
+						|| (selectedBonus === 'featured' && activeEvent.featured.includes(c.symbol))
+						|| (selectedBonus === 'matrix' && bestCombos.includes(c.id))
+					).sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
+					updateExclusions([...new Set([...crewIds])]);
+				}
 			}
 		}
 		else {
 			updateExclusions([]);
 		}
-	}, [selectedEvent, selectedBonus, bestCombos]);
+	}, [selectedEvent, selectedBonus, bestCombos, voyIndex]);
 
 	React.useEffect(() => {
 		if (selectedEvent && phase) {
