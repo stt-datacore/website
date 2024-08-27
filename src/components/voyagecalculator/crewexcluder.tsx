@@ -31,7 +31,7 @@ type SelectedBonusType = '' | 'all' | 'featured' | 'matrix';
 export const CrewExcluder = (props: CrewExcluderProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
 	const globalContext = React.useContext(GlobalContext);
-	const { events, voyIndex } = calculatorContext;
+	const { events, voySymbol } = calculatorContext;
 	const { ephemeral } = globalContext.player;
 	const { excludedCrewIds, updateExclusions, considerFrozen } = props;
 
@@ -85,8 +85,8 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		if (selectedEvent) {
 			const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 			if (activeEvent) {
-				if (ephemeral?.voyageDescriptions?.length && ephemeral.voyageDescriptions.length > voyIndex &&
-					ephemeral.voyageDescriptions[voyIndex].voyage_type === 'encounter' && activeEvent.content_types.includes('voyage')) {
+				if (ephemeral?.voyageDescriptions?.length && ephemeral.voyageDescriptions.some(vd => vd.name === voySymbol && vd.voyage_type === 'encounter') &&
+					activeEvent.content_types.includes('voyage')) {
 						updateExclusions([]);
 				}
 				else {
@@ -102,7 +102,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		else {
 			updateExclusions([]);
 		}
-	}, [selectedEvent, selectedBonus, bestCombos, voyIndex]);
+	}, [selectedEvent, selectedBonus, bestCombos, voySymbol]);
 
 	React.useEffect(() => {
 		if (selectedEvent && phase) {

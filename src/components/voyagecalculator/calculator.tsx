@@ -432,7 +432,7 @@ const CrewOptions = (props: CrewOptionsProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
 	const globalContext = React.useContext(GlobalContext);
 	const { ephemeral } = globalContext.player;
-	const { rosterType, voyIndex } = calculatorContext;
+	const { rosterType, voySymbol } = calculatorContext;
 
 	const [preConsideredCrew, setPreConsideredCrew] = React.useState<IVoyageCrew[]>(calculatorContext.crew);
 	const [considerActive, setConsiderActive] = React.useState(false);
@@ -522,7 +522,7 @@ const CrewOptions = (props: CrewOptionsProps) => {
 	function preExcludeCrew(preConsideredCrew: IVoyageCrew[]): IVoyageCrew[] {
 
 		if (!considerActive && ephemeral?.voyage?.length) {
-			let list = [...new Set(ephemeral.voyage.filter((f, idx) => idx !== voyIndex).map(m => m.crew_slots.map(m2 => m2.crew.id)).flat()) ]
+			let list = [...new Set(ephemeral.voyage.filter((f, idx) => f.name !== voySymbol).map(m => m.crew_slots.map(m2 => m2.crew.id)).flat()) ]
 			preConsideredCrew = preConsideredCrew.filter(f => !list.includes(f.id));
 		}
 
