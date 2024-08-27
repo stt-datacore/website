@@ -65,7 +65,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		if (!voyageData)
 			return;
 
-		this.ship = ships.length == 1 ? ships[0] : ships.find(s => s.id == voyageData.ship_id);
+		this.ship = ships.length == 1 ? ships[0] : ships.find(s => s.id == voyageData?.ship_id);
 
 		if (!estimate || force) {
 			const duration = voyageData.voyage_duration ?? 0;
