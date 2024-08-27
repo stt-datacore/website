@@ -72,6 +72,7 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 		}
 	}
 	else if (activePhase.content_type === 'voyage') {
+		result.high_bonus = [];
 		if (activePhase.featured_crews) {
 			for (let i = 0; i < activePhase.featured_crews.length; i++) {
 				let symbol = activePhase.featured_crews[i];
@@ -83,9 +84,15 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 		}
 		// Voyages uses activePhase.antimatter_bonus_crew_traits to identify smaller bonus event crew
 		if (activePhase.antimatter_bonus_crew_traits) {
-			activePhase.antimatter_bonus_crew_traits.forEach(trait => {
+			activePhase.antimatter_bonus_crew_traits.forEach((trait, idx) => {
 				const perfectTraits = allCrew.filter(crew => crew.traits.includes(trait) || crew.traits_hidden.includes(trait));
 				perfectTraits.forEach(crew => {
+					if (idx) {
+						if (!result.high_bonus?.includes(crew.symbol)) {
+							result.high_bonus?.push(crew.symbol);
+						}
+					}
+
 					if (!result.bonus.includes(crew.symbol)) {
 						result.bonus.push(crew.symbol);
 					}
@@ -351,15 +358,31 @@ export function calculateGalaxyChance(skillValue: number) : number {
 	return Math.round(Math.min(val / 100, craft_config.specialist_maximum_success_chance)*100);
 }
 
-function getBonus(crew: IEventScoredCrew, eventData: IEventData, low: number, high: number) {
-	if (eventData.featured.includes(crew.symbol) || (eventData.bonus.includes(crew.symbol) && eventData.bonusGuessed && (new Date()).getTime() - (new Date(crew.date_added)).getTime() < (14 * 24 * 60 * 60 * 1000))) {
-		return high;
-	}
-	else if (eventData.bonus.includes(crew.symbol)) {
-		return low;
+function getBonus(crew: IEventScoredCrew, eventData: IEventData, low: number, high: number, highest?: number) {
+	if (highest) {
+		if (eventData.featured.includes(crew.symbol) || (eventData.bonus.includes(crew.symbol) && eventData.bonusGuessed && (new Date()).getTime() - (new Date(crew.date_added)).getTime() < (14 * 24 * 60 * 60 * 1000))) {
+			return highest;
+		}
+		else if (eventData.high_bonus?.includes(crew.symbol)) {
+			return high;
+		}
+		else if (eventData.bonus.includes(crew.symbol)) {
+			return low;
+		}
+		else {
+			return 1;
+		}
 	}
 	else {
-		return 1;
+		if (eventData.featured.includes(crew.symbol) || (eventData.bonus.includes(crew.symbol) && eventData.bonusGuessed && (new Date()).getTime() - (new Date(crew.date_added)).getTime() < (14 * 24 * 60 * 60 * 1000))) {
+			return high;
+		}
+		else if (eventData.bonus.includes(crew.symbol)) {
+			return low;
+		}
+		else {
+			return 1;
+		}
 	}
 }
 
@@ -401,7 +424,7 @@ export function computeEventBest(
 				if (phaseType === 'gather') crew.bonus = getBonus(crew, eventData, 5, 10);
 				else if (phaseType === 'shuttles') crew.bonus = getBonus(crew, eventData, 2, 3);
 				else if (phaseType === 'skirmish') crew.bonus = getBonus(crew, eventData, 1.5, 2);
-				else if (phaseType === 'voyage') crew.bonus = getBonus(crew, eventData, 50, 150);
+				else if (phaseType === 'voyage') crew.bonus = getBonus(crew, eventData, 50, 100, 150);
 			}
 			if (crew.bonus > 1 || showPotential) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {

@@ -12,6 +12,7 @@ export interface IEventData {
 	seconds_to_end: number;
 	image: string;
 	bonus: string[];	/* ALL bonus crew by symbol */
+	high_bonus?: string[];	/* High bonus crew by symbol (voyage events only) */
 	featured: string[];	/* ONLY featured crew by symbol */
 	bonusGuessed?: boolean;
 	bonus_ship?: string[];
