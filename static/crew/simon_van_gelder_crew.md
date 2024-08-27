@@ -3,7 +3,7 @@ name: Dr. Simon van Gelder
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 in_portal:
 date: 12/03/2024
 published: true

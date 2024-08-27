@@ -3,7 +3,7 @@ name: Kahless the Unforgettable
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal:
 date: 27/04/2017
 published: true

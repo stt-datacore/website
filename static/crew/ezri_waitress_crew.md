@@ -3,7 +3,7 @@ name: Waitress Ezri
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal: true
 date: 05/10/2016
 published: true
