@@ -3,7 +3,7 @@ name: Assimilated Bashir
 rarity: 5
 series: original
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal: true
 date: 19/04/2023
 published: true
