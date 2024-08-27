@@ -1,13 +1,5 @@
 {
-    "mission_type": {
-        "type_0": "Conflict Quest",
-        "type_2": "Ship Battle",
-        "type_4": "Cadet Challenge"
-    },
     "base": {
-        "event_ships": "Event Ships",
-        "featured_traits": "Featured Traits",
-        "featured_ships": "Featured Ships",
         "all_crew": "Show all crew",
         "bigbook_tier": "Tier",
         "cab_power": "CAB",
@@ -16,6 +8,9 @@
         "collections": "Collections",
         "collections_fmt": "{{count}} collections",
         "crew": "Crew",
+        "event_ships": "Event Ships",
+        "featured_ships": "Featured Ships",
+        "featured_traits": "Featured Traits",
         "gauntlet": "Gauntlet",
         "in_portal": "In Portal",
         "less_than_100_retrieval": "< 100% Retrieval",
@@ -987,6 +982,11 @@
         },
         "tools_title": "Tools"
     },
+    "mission_type": {
+        "type_0": "Conflict Quest",
+        "type_2": "Ship Battle",
+        "type_4": "Cadet Challenge"
+    },
     "obtained": {
         "long": {
             "BossBattle": "Captain's Bridge",
@@ -1497,6 +1497,10 @@
         "tracking": {
             "not_tracking": "You are not tracking this voyage.",
             "start_tracking": "Start tracking"
+        },
+        "type_names": {
+            "encounter_voyage": "Event Voyage",
+            "test_voyage_1": "Standard Voyage"
         },
         "view": {
             "active_voyage": "View Active Voyage",

@@ -23,6 +23,7 @@ const VOYAGE_DEBUGGING: boolean = true;
 const VoyagePage = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, ephemeral } = globalContext.player;
+	const { t } = globalContext.localized;
 
 	const [voySymbol, setVoySymbol] = React.useState(ephemeral?.voyage?.length ? ephemeral?.voyage[0].name : '');
 
@@ -34,7 +35,7 @@ const VoyagePage = () => {
 		voyOptions.push({
 			key: `idx_${i}`,
 			value: ephemeral?.voyageDescriptions[i].name,
-			text: ephemeral?.voyageDescriptions[i].name
+			text: t(`voyage.type_names.${ephemeral?.voyageDescriptions[i].name}`)
 		});
 	}
 
@@ -48,7 +49,7 @@ const VoyagePage = () => {
 			<React.Fragment>
 
 				<div>
-					Voyage Index:&nbsp;
+					{t('base.voyage')}:&nbsp;&nbsp;&nbsp;
 					<Dropdown
 						options={voyOptions}
 						value={voySymbol}

@@ -1,8 +1,5 @@
 {
     "base": {
-        "event_ships": "Ereignis Schiffe",
-    "featured_traits": "Ausgewählte Eigenschaften",
-"featured_ships": "Ausgewählte Schiffe",
         "all_crew": "Die gesamte Crew anzeigen",
         "bigbook_tier": "Stufe",
         "cab_power": "CAB",
@@ -11,6 +8,9 @@
         "collections": "Sammlungen",
         "collections_fmt": "{{count}} Sammlungen",
         "crew": "Crew",
+        "event_ships": "Ereignis Schiffe",
+        "featured_ships": "Ausgewählte Schiffe",
+        "featured_traits": "Ausgewählte Eigenschaften",
         "gauntlet": "Herausforderung",
         "in_portal": "Im Zeitportal",
         "less_than_100_retrieval": "< 100 % Abrufbar",
@@ -1496,6 +1496,10 @@
         "tracking": {
             "not_tracking": "Sie verfolgen diese Reise nicht.",
             "start_tracking": "Verfolgung starten"
+        },
+        "type_names": {
+            "encounter_voyage": "Ereignisreise",
+            "test_voyage_1": "Standardreise"
         },
         "view": {
             "active_voyage": "Aktive Reise anzeigen",

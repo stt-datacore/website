@@ -1,8 +1,5 @@
 {
     "base": {
-        "event_ships": "Vaisseaux événementiels",
-     "featured_traits": "Caractéristiques en vedette",
-"featured_ships": "Vaisseaux en vedette",
         "all_crew": "Afficher tous l'équipiers",
         "bigbook_tier": "Étage",
         "cab_power": "CAB",
@@ -11,6 +8,9 @@
         "collections": "Collections",
         "collections_fmt": "{{count}} collections",
         "crew": "Équipage",
+        "event_ships": "Vaisseaux événementiels",
+        "featured_ships": "Vaisseaux en vedette",
+        "featured_traits": "Caractéristiques en vedette",
         "gauntlet": "Gantelet",
         "in_portal": "Dans le Portail",
         "less_than_100_retrieval": "< 100 % de Récupération",
@@ -1507,6 +1507,10 @@
         "tracking": {
             "not_tracking": "Vous ne suivez pas ce voyage.",
             "start_tracking": "Commencer le suivi"
+        },
+        "type_names": {
+            "encounter_voyage": "Voyage événementiel",
+            "test_voyage_1": "Voyage standard"
         },
         "view": {
             "active_voyage": "Afficher le voyage actif",
