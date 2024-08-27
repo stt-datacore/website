@@ -1,6 +1,10 @@
 import { SemanticICONS } from 'semantic-ui-react';
 import { PlayerCrew } from '../../model/player';
 
+export interface BonusDetail {
+	symbol: string;
+	amount: number;
+}
 // Stripped down version of GameData extended for use in Event Planner and Shuttle Helper
 export interface IEventData {
 	symbol: string;
@@ -12,7 +16,7 @@ export interface IEventData {
 	seconds_to_end: number;
 	image: string;
 	bonus: string[];	/* ALL bonus crew by symbol */
-	high_bonus?: string[];	/* High bonus crew by symbol (voyage events only) */
+	bonus_detail?: BonusDetail[];	/* High bonus crew by symbol (voyage events only) */
 	featured: string[];	/* ONLY featured crew by symbol */
 	bonusGuessed?: boolean;
 	bonus_ship?: string[];
