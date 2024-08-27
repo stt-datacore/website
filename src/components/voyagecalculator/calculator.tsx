@@ -461,7 +461,8 @@ const CrewOptions = (props: CrewOptionsProps) => {
 		props.updateConsideredCrew(consideredCrew);
 	}, [preConsideredCrew, considerActive, considerFrozen, excludedCrewIds]);
 
-	const activeCount = calculatorContext.crew.filter(crew => crew.active_status === 2).length;
+	const otherVoyages = ephemeral?.voyage?.filter(f => f.name !== voySymbol);
+	const activeCount = calculatorContext.crew.filter(crew => crew.active_status === 2 || otherVoyages?.some(voy => voy.crew_slots?.some(cs => cs.crew.id === crew.id))).length;
 
 	return (
 		<Grid stackable columns={2} style={{ marginBottom: '1em' }}>
