@@ -7,16 +7,19 @@ const COMPRESSION_SUFFIX = "___Lz";
 const windowGlobal = typeof window !== 'undefined' && window;
 
 interface StorageOptions {
-	
+
 	/** We always store in session; we can also store in local storage if told to remember forever */
-	rememberForever?: boolean;	
-	
+	rememberForever?: boolean;
+
+	/** Avoid session storage. Must be used in conjuction with rememberForever */
+	avoidSessionStorage?: boolean;
+
 	/** Set to true to use default value as initial value instead of any stored value */
 	useDefault?: boolean;
-	
+
 	/** Set to true to use default and store it immediately to avoid render loops */
 	useAndStoreDefault?: boolean;
-	
+
 	/** Callback after value is initialized */
 	onInitialize?: (itemKey: string, itemValue: any) => void;
 
@@ -38,7 +41,7 @@ export function useStateWithStorage<T>(itemKey: string, itemDefault: T, options?
 	const [value, setValue] = React.useState<T>(() => {
 		// Use default value if requested
 		if (options?.useAndStoreDefault) {
-			storeItem(itemKey, itemDefault, options?.rememberForever, options?.compress);
+			storeItem(itemKey, itemDefault, options?.rememberForever, options?.compress, options?.avoidSessionStorage);
 			return itemDefault;
 		}
 		if (options?.useDefault) return itemDefault;
@@ -90,8 +93,8 @@ export function useStateWithStorage<T>(itemKey: string, itemDefault: T, options?
 };
 
 // Use JSON.stringify and JSON.parse to preserve item types when storing, getting
-const storeItem = (itemKey: string, itemValue: any, useLocalStorage: boolean = false, compress: boolean = false) => {
-	if (windowGlobal && windowGlobal.sessionStorage) {
+const storeItem = (itemKey: string, itemValue: any, useLocalStorage: boolean = false, compress: boolean = false, avoidSessionStorage = false) => {
+	if (windowGlobal && windowGlobal.sessionStorage && (!avoidSessionStorage && useLocalStorage)) {
 		if (compress) {
 			windowGlobal.sessionStorage.setItem(itemKey + COMPRESSION_SUFFIX, lz.compressToBase64(JSON.stringify(itemValue)));
 		}
