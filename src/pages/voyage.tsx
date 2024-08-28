@@ -146,13 +146,13 @@ const VoyageSetup = (props: VoySetupProps) => {
 			newVoyageConfig = voyage.find(f => f.name === voySymbol);
 		}
 		// Voyage awaiting input, config will be input parameters only
-		else if (voyageDescriptions.length > 0) {
+		if (voyageDescriptions.length > 0 && !newVoyageConfig) {
 			debug.push('Voyage awaiting input. Initial config will be input parameters only.');
 			newVoyageConfig = voyageDescriptions.find(f => f.name === voySymbol);
 			if (newVoyageConfig?.voyage_type === 'encounter' && ephemeral.events?.length) {
 				let fvoy = ephemeral.events.find(f => f.content_types.includes('voyage'));
 				if (fvoy) {
-					newVoyageConfig.skills = {
+					newVoyageConfig.skills ??= {
 						primary_skill: fvoy.content.primary_skill!,
 						secondary_skill: fvoy.content.secondary_skill!,
 					}
