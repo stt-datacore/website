@@ -32,11 +32,19 @@ const VoyagePage = () => {
 	const voyOptions = [] as DropdownItemProps[];
 
 	for (let i = 0; i < voyCount; i++) {
+		if (ephemeral?.voyageDescriptions[i].name === 'encounter_voyage') {
+			let fvoy = ephemeral.events.find(f => f.content_types.includes('voyage'));
+			if (!fvoy) continue;
+		}
 		voyOptions.push({
 			key: `idx_${i}`,
 			value: ephemeral?.voyageDescriptions[i].name,
 			text: t(`voyage.type_names.${ephemeral?.voyageDescriptions[i].name}`)
 		});
+	}
+
+	if (!voyOptions.some(vo => vo.value === voySymbol)) {
+		setVoySymbol(voyOptions[0].value as string);
 	}
 
 	return (
@@ -48,14 +56,14 @@ const VoyagePage = () => {
 		>
 			<React.Fragment>
 
-				<div>
+				{voyOptions.length > 1 && <div>
 					{t('base.voyage')}:&nbsp;&nbsp;&nbsp;
 					<Dropdown
 						options={voyOptions}
 						value={voySymbol}
 						onChange={(e, { value }) => setVoySymbol(value as string)}
 						/>
-				</div>
+				</div>}
 
 				<VoyageSetup voySymbol={voySymbol} />
 			</React.Fragment>
@@ -163,6 +171,9 @@ const VoyageSetup = (props: VoySetupProps) => {
 
 					newVoyageConfig.high_bonus = fvoy.content.featured_crews;
 					newVoyageConfig.low_bonus = fvoy.content.antimatter_bonus_crew_traits?.slice(1);
+				}
+				else {
+					newVoyageConfig = undefined;
 				}
 			}
 		}
