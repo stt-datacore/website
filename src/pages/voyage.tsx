@@ -26,26 +26,50 @@ const VoyagePage = () => {
 	const { t } = globalContext.localized;
 
 	const [voySymbol, setVoySymbol] = React.useState(ephemeral?.voyage?.length ? ephemeral?.voyage[0].name : '');
-
 	const voyCount = ephemeral?.voyageDescriptions?.length ?? 0;
 
-	const voyOptions = [] as DropdownItemProps[];
+	// const voyOptions = [] as DropdownItemProps[];
 
-	for (let i = 0; i < voyCount; i++) {
-		if (ephemeral?.voyageDescriptions[i].name === 'encounter_voyage') {
-			let fvoy = ephemeral.events.find(f => f.content_types.includes('voyage'));
-			if (!fvoy) continue;
+	// for (let i = 0; i < voyCount; i++) {
+	// 	if (ephemeral?.voyageDescriptions[i].name === 'encounter_voyage') {
+	// 		let fvoy = ephemeral.events.find(f => f.content_types.includes('voyage'));
+	// 		if (!fvoy) continue;
+	// 	}
+	// 	voyOptions.push({
+	// 		key: `idx_${i}`,
+	// 		value: ephemeral?.voyageDescriptions[i].name,
+	// 		text: t(`voyage.type_names.${ephemeral?.voyageDescriptions[i].name}`)
+	// 	});
+	// }
+
+	// if (voyOptions?.length && !voyOptions.some(vo => vo.value === voySymbol)) {
+	// 	setVoySymbol(voyOptions[0].value as string);
+	// }
+
+	const [voyOptions, setVoyOptions] = React.useState<DropdownItemProps[]>([]);
+
+	React.useEffect(() => {
+		const newOptions = [] as DropdownItemProps[];
+		for (let i = 0; i < voyCount; i++) {
+			if (ephemeral?.voyageDescriptions[i].name === 'encounter_voyage') {
+				let fvoy = ephemeral.events.find(f => f.content_types.includes('voyage'));
+				if (!fvoy) continue;
+			}
+			newOptions.push({
+				key: `idx_${i}`,
+				value: ephemeral?.voyageDescriptions[i].name,
+				text: t(`voyage.type_names.${ephemeral?.voyageDescriptions[i].name}`)
+			});
 		}
-		voyOptions.push({
-			key: `idx_${i}`,
-			value: ephemeral?.voyageDescriptions[i].name,
-			text: t(`voyage.type_names.${ephemeral?.voyageDescriptions[i].name}`)
-		});
-	}
 
-	if (!voyOptions.some(vo => vo.value === voySymbol)) {
-		setVoySymbol(voyOptions[0].value as string);
-	}
+		setVoyOptions(newOptions);
+	}, [ephemeral]);
+
+	React.useEffect(() => {
+		if (voyOptions?.length && !voyOptions.some(vo => vo.value === voySymbol)) {
+			setVoySymbol(voyOptions[0].value as string);
+		}
+	}, [voyOptions, voySymbol]);
 
 	return (
 		<DataPageLayout
