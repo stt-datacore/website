@@ -85,7 +85,7 @@ export function useStateWithStorage<T>(itemKey: string, itemDefault: T, options?
 			if (initialized) removeStoredItem(itemKey);
 		}
 		else {
-			storeItem(itemKey, value, options?.rememberForever, options?.compress);
+			storeItem(itemKey, value, options?.rememberForever, options?.compress, options?.avoidSessionStorage);
 		}
 	}, [value]);
 
@@ -94,7 +94,7 @@ export function useStateWithStorage<T>(itemKey: string, itemDefault: T, options?
 
 // Use JSON.stringify and JSON.parse to preserve item types when storing, getting
 const storeItem = (itemKey: string, itemValue: any, useLocalStorage: boolean = false, compress: boolean = false, avoidSessionStorage = false) => {
-	if (windowGlobal && windowGlobal.sessionStorage && (!avoidSessionStorage && useLocalStorage)) {
+	if (windowGlobal && windowGlobal.sessionStorage && (!avoidSessionStorage && !!useLocalStorage)) {
 		if (compress) {
 			windowGlobal.sessionStorage.setItem(itemKey + COMPRESSION_SUFFIX, lz.compressToBase64(JSON.stringify(itemValue)));
 		}
