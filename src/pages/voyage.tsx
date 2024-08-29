@@ -22,13 +22,31 @@ const VOYAGE_DEBUGGING: boolean = true;
 
 const VoyagePage = () => {
 	const globalContext = React.useContext(GlobalContext);
-	const { ephemeral } = globalContext.player;
+	const { playerData, ephemeral } = globalContext.player;
 	const { t } = globalContext.localized;
 
 	const [voySymbol, setVoySymbol] = React.useState(ephemeral?.voyage?.length ? ephemeral?.voyage[0].name : '');
-	const [voyOptions, setVoyOptions] = React.useState<DropdownItemProps[]>([]);
-
 	const voyCount = ephemeral?.voyageDescriptions?.length ?? 0;
+
+	// const voyOptions = [] as DropdownItemProps[];
+
+	// for (let i = 0; i < voyCount; i++) {
+	// 	if (ephemeral?.voyageDescriptions[i].name === 'encounter_voyage') {
+	// 		let fvoy = ephemeral.events.find(f => f.content_types.includes('voyage'));
+	// 		if (!fvoy) continue;
+	// 	}
+	// 	voyOptions.push({
+	// 		key: `idx_${i}`,
+	// 		value: ephemeral?.voyageDescriptions[i].name,
+	// 		text: t(`voyage.type_names.${ephemeral?.voyageDescriptions[i].name}`)
+	// 	});
+	// }
+
+	// if (voyOptions?.length && !voyOptions.some(vo => vo.value === voySymbol)) {
+	// 	setVoySymbol(voyOptions[0].value as string);
+	// }
+
+	const [voyOptions, setVoyOptions] = React.useState<DropdownItemProps[]>([]);
 
 	React.useEffect(() => {
 		const newOptions = [] as DropdownItemProps[];
@@ -44,11 +62,14 @@ const VoyagePage = () => {
 			});
 		}
 
-		if (newOptions?.length && !newOptions.some(vo => vo.value === voySymbol)) {
-			setVoySymbol(newOptions[0].value as string);
-		}
 		setVoyOptions(newOptions);
-	}, [ephemeral, voySymbol]);
+	}, [ephemeral]);
+
+	React.useEffect(() => {
+		if (voyOptions?.length && !voyOptions.some(vo => vo.value === voySymbol)) {
+			setVoySymbol(voyOptions[0].value as string);
+		}
+	}, [voyOptions, voySymbol]);
 
 	return (
 		<DataPageLayout
