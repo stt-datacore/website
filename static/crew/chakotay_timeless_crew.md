@@ -3,7 +3,7 @@ name: Timeless Chakotay
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 2
+bigbook_tier: 3
 in_portal:
 date: 15/11/2023
 published: true

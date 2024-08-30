@@ -3,7 +3,7 @@ name: T'Pring as Spock
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal: true
 date: 08/08/2023
 published: true
