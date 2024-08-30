@@ -3,7 +3,7 @@ name: Kiley Pike
 rarity: 4
 series: snw
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 05/10/2022
 published: true
