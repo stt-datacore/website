@@ -3,7 +3,7 @@ name: Commodore Robert April
 rarity: 5
 series: tas
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 07/11/2018
 published: true

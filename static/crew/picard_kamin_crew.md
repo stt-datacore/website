@@ -3,7 +3,7 @@ name: Kamin Picard
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 08/07/2020
 published: true

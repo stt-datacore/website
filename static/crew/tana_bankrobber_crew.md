@@ -3,7 +3,7 @@ name: Bankrobber T'Ana
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 in_portal: true
 date: 30/08/2023
 published: true
