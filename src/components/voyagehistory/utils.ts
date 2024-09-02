@@ -4,10 +4,13 @@ import { Estimate } from '../../model/worker';
 import CONFIG from '../CONFIG';
 import { flattenEstimate } from '../../utils/voyageutils';
 import { UnifiedWorker } from '../../typings/worker';
-export const defaultHistory = {
+
+export const NEW_VOYAGE_ID = 0;
+
+export const defaultHistory: IVoyageHistory = {
 	voyages: [],
 	crew: {}
-} as IVoyageHistory;
+};
 
 export function addVoyageToHistory(history: IVoyageHistory, voyageConfig: IVoyageCalcConfig | Voyage, shipSymbol: string, estimate: Estimate): number {
 	// Get next unused id to track this voyage
@@ -16,7 +19,7 @@ export function addVoyageToHistory(history: IVoyageHistory, voyageConfig: IVoyag
 	const flatEstimate = flattenEstimate(estimate);
 	const voyage = {
 		tracker_id: trackerId,
-		voyage_id: 0,	// *
+		voyage_id: NEW_VOYAGE_ID,	// *
 		skills: voyageConfig.skills,
 		ship: shipSymbol,	// *
 		ship_trait: voyageConfig.ship_trait,

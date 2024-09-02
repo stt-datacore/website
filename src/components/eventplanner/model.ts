@@ -19,11 +19,6 @@ export interface IEventData {
 	bonus_detail?: BonusDetail[];	/* High bonus crew by symbol (voyage events only) */
 	featured: string[];	/* ONLY featured crew by symbol */
 	bonusGuessed?: boolean;
-	bonus_ship?: string[];
-	featured_ship?: string[];
-	bonus_ship_traits?: string[];
-	primary_skill?: string;
-	secondary_skill?: string;
 };
 
 export interface IRosterCrew extends PlayerCrew {

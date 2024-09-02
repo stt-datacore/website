@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Form, Button, Dropdown, Table, Message } from 'semantic-ui-react';
+import { Modal, Form, Button, Dropdown, Table } from 'semantic-ui-react';
 
 import { VoyageSkills } from '../../model/player';
 import { IVoyageInputConfig } from '../../model/voyage';
@@ -33,14 +33,15 @@ const defaultSlots = [
 	{ symbol: 'medical_officer', name: 'Ship\'s Counselor', skill: 'medicine_skill', trait: '' }
 ];
 
-const defaultConfig = {
+const defaultConfig: IVoyageInputConfig = {
+	voyage_type: 'dilemma',
 	skills: {
 		primary_skill: '',
 		secondary_skill: ''
 	},
 	ship_trait: '',
-	crew_slots: defaultSlots
-} as IVoyageInputConfig;
+	crew_slots: defaultSlots,
+};
 
 type ConfigEditorProps = {
 	voyageConfig: IVoyageInputConfig | undefined;
@@ -52,22 +53,12 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 	const { TRAIT_NAMES, SHIP_TRAIT_NAMES } = globalContext.localized;
 	const { updateConfig } = props;
 
-	const [voyageConfig, setVoyageConfig] = React.useState(props.voyageConfig ?? defaultConfig);
+	const [voyageConfig, setVoyageConfig] = React.useState<IVoyageInputConfig>(props.voyageConfig ?? defaultConfig);
 
-	const [modalIsOpen, setModalIsOpen] = React.useState(false);
-	const [updateOnClose, setUpdateOnClose] = React.useState(false);
+	const [modalIsOpen, setModalIsOpen] = React.useState<boolean>(false);
 	const [options, setOptions] = React.useState<IEditOptions | undefined>(undefined);
 
-	React.useEffect(() => {
-		if (!modalIsOpen && updateOnClose) {
-			if (voyageConfig) updateConfig(voyageConfig);
-			setUpdateOnClose(false);
-		}
-	}, [modalIsOpen]);
-
 	voyageConfig.crew_slots.sort((s1, s2) => CONFIG.VOYAGE_CREW_SLOTS.indexOf(s1.symbol) - CONFIG.VOYAGE_CREW_SLOTS.indexOf(s2.symbol));
-
-	const hasMinimumConfig = voyageConfig && voyageConfig.skills.primary_skill !== '' && voyageConfig.skills.secondary_skill !== '';
 
 	return (
 		<Modal
@@ -77,46 +68,50 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 			onOpen={() => setModalIsOpen(true)}
 			trigger={renderTrigger()}
 		>
-			<Modal.Header>Voyage Editor</Modal.Header>
+			<Modal.Header>Custom Voyage Editor</Modal.Header>
 			<Modal.Content scrolling>
-				{modalIsOpen && (
-					<React.Fragment>
-						{props.voyageConfig && <Message>Editing this voyage will reset all existing recommendations and estimates.</Message>}
-						{renderEditor()}
-					</React.Fragment>
-				)}
+				{modalIsOpen && renderEditor()}
 			</Modal.Content>
 			<Modal.Actions>
-				<Button onClick={() => setModalIsOpen(false)}>
-					Close
+				<Button onClick={() => setVoyageConfig({...defaultConfig})}>
+					Reset
+				</Button>
+				<Button onClick={() => closeAndApply()}>
+					Create
 				</Button>
 			</Modal.Actions>
 		</Modal>
 	);
 
+	function closeAndApply(): void {
+		setModalIsOpen(false);
+		updateConfig(voyageConfig);
+	}
+
 	function renderTrigger(): JSX.Element {
-		if (hasMinimumConfig) {
-			return <Button icon='edit' content='Edit' />;
-		}
-		return <Button fluid color='blue' size='large' icon='pencil' content='Create Voyage' />;
+		return <Button color='blue' size='large' icon='pencil' content='Create custom voyage' />;
 	}
 
 	function renderEditor(): JSX.Element {
 		if (!options) {
 			// Renders a lot faster by using known voyage traits rather than calculate list from all possible traits
-			const knownShipTraits = ['andorian','battle_cruiser','borg','breen','cardassian','cloaking_device',
+			const knownShipTraits: string[] = [
+				'andorian','battle_cruiser','borg','breen','cardassian','cloaking_device',
 				'dominion','emp','explorer','federation','ferengi','fighter','freighter','historic','hologram',
 				'klingon','malon','maquis','orion_syndicate','pioneer','reman','romulan','ruthless',
-				'scout','sikarian','spore_drive','terran','tholian','transwarp','vulcan','warship','war_veteran','xindi'];
-			const knownCrewTraits = ['android','astrophysicist','bajoran','borg','brutal',
+				'scout','sikarian','spore_drive','terran','tholian','transwarp','vulcan','warship','war_veteran','xindi'
+			];
+			const knownCrewTraits: string[] = [
+				'android','astrophysicist','bajoran','borg','brutal',
 				'cardassian','caregiver','civilian','communicator','costumed','crafty','cultural_figure','cyberneticist',
 				'desperate','diplomat','doctor','duelist','exobiology','explorer','federation','ferengi',
 				'gambler','hero','hologram','human','hunter','innovator','inspiring','jury_rigger','klingon',
 				'marksman','maverick','mirror_universe','nurse','pilot','prodigy','resourceful','romantic','romulan',
 				'saboteur','scoundrel','starfleet','survivalist','tactician','telepath','undercover_operative',
-				'veteran','villain','vulcan'];
+				'veteran','villain','vulcan'
+			];
 
-			const skillsList = [] as ISelectOption[];
+			const skillsList: ISelectOption[] = [];
 			for (let skill in CONFIG.SKILLS) {
 				skillsList.push({
 					key: skill,
@@ -125,32 +120,42 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 				});
 			}
 
-			const shipTraitsList = knownShipTraits.map(trait => {
+			const shipTraitsList: ISelectOption[] = knownShipTraits.map(trait => {
 				return {
 					key: trait,
 					value: trait,
 					text: SHIP_TRAIT_NAMES[trait] ?? trait
 				};
-			}) as ISelectOption[];
+			});
+			shipTraitsList.push({
+				key: 'none',
+				value: '',
+				text: '(Ship trait)'
+			});
 			shipTraitsList.sort((a, b) => a.text.localeCompare(b.text));
 
-			const crewTraitsList = knownCrewTraits.map(trait => {
+			const crewTraitsList: ISelectOption[] = knownCrewTraits.map(trait => {
 				return {
 					key: trait,
 					value: trait,
 					text: TRAIT_NAMES[trait]
 				};
-			}) as ISelectOption[];
+			});
+			crewTraitsList.push({
+				key: 'none',
+				value: '',
+				text: '(Trait)'
+			});
 			crewTraitsList.sort((a, b) => a.text.localeCompare(b.text));
 
-			const editOptions = {
+			const editOptions: IEditOptions = {
 				skills: skillsList,
 				ships: shipTraitsList,
 				traits: crewTraitsList
-			} as IEditOptions;
+			};
 
 			setOptions(editOptions);
-			return (<></>);
+			return <></>;
 		}
 
 		return (
@@ -160,7 +165,7 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 						<Form.Select
 							label='Primary skill'
 							options={options.skills}
-							value={voyageConfig?.skills.primary_skill ?? 'command_skill'}
+							value={voyageConfig.skills.primary_skill}
 							onChange={(e, { value }) => setSkill('primary_skill', value as string)}
 							placeholder='Primary'
 							required
@@ -168,7 +173,7 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 						<Form.Select
 							label='Secondary skill'
 							options={options.skills}
-							value={voyageConfig?.skills.secondary_skill ?? 'science_skill'}
+							value={voyageConfig.skills.secondary_skill}
 							onChange={(e, { value }) => setSkill('secondary_skill', value as string)}
 							placeholder='Secondary'
 							required
@@ -177,7 +182,7 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 							search clearable
 							label='Ship trait'
 							options={options.ships}
-							value={voyageConfig?.ship_trait}
+							value={voyageConfig.ship_trait}
 							onChange={(e, { value }) => setShipTrait(value as string)}
 							placeholder='Ship trait'
 						/>
@@ -228,12 +233,10 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 			skills.primary_skill = skills.secondary_skill;
 		skills[prime] = value;
 		setVoyageConfig({...voyageConfig, skills});
-		setUpdateOnClose(true);
 	}
 
 	function setShipTrait(value: string): void {
 		setVoyageConfig({...voyageConfig, ship_trait: value});
-		setUpdateOnClose(true);
 	}
 
 	function setSeatTrait(seat: string, value: string): void {
@@ -241,6 +244,5 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 		const crew_slot = crew_slots.find(s => s.symbol === seat);
 		if (crew_slot) crew_slot.trait = value;
 		setVoyageConfig({...voyageConfig, crew_slots});
-		setUpdateOnClose(true);
 	}
 };

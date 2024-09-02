@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Form, Dropdown, Pagination, Message } from 'semantic-ui-react';
+import { Table, Form, Dropdown, Pagination, Message, Header } from 'semantic-ui-react';
 
 import { ITrackedVoyage, ITrackedCheckpoint } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
@@ -11,7 +11,7 @@ import { VoyageModal } from './voyagemodal';
 import { removeVoyageFromHistory } from './utils';
 
 type VoyagesTableProps = {
-	activeVoyageId: number;
+
 };
 
 export const VoyagesTable = (props: VoyagesTableProps) => {
@@ -19,7 +19,6 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 	const { t } = globalContext.localized;
 	const { SHIP_TRAIT_NAMES } = globalContext.localized;
 	const { history, setHistory } = React.useContext(HistoryContext);
-	const { activeVoyageId } = props;
 
 	const [activeVoyage, setActiveVoyage] = React.useState<ITrackedVoyage | undefined>(undefined);
 	const [state, dispatch] = React.useReducer(reducer, {
@@ -91,6 +90,8 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 
 	return (
 		<React.Fragment>
+			<Header as='h3'>Voyage History</Header>
+			<p>Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.</p>
 			<Form>
 				<Form.Group inline>
 					<Form.Field
@@ -166,7 +167,7 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 			<Table.Row key={row.tracker_id} onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 				<Table.Cell>
 					{dtCreated.toLocaleDateString()}
-					{activeVoyageId > 0 && row.voyage_id === activeVoyageId && <><br/>Active Voyage</>}
+					{/* {activeVoyageId > 0 && row.voyage_id === activeVoyageId && <><br/>Active Voyage</>} */}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					{CONFIG.SKILLS[row.skills.primary_skill]}

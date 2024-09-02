@@ -858,16 +858,17 @@ export interface Player {
     shuttles?: Shuttle[]
     bonus_crew?: string[]
     bonus_traits?: string[]
-    featured_crews?: string[];
-    antimatter_bonus_for_featured_crew?: number;
-    antimatter_bonus_crew_traits?: string[];
-    antimatter_bonus_per_crew_trait?: number;
-    antimatter_bonus_ship_traits?: string[];
-    featured_ships?: string[];
-    antimatter_bonus_per_ship_trait?: number;
-    antimatter_bonus_for_featured_ship?: number;
+    voyage_symbol?: 'string';	// encounter_voyage
     primary_skill?: string;
     secondary_skill?: string;
+    antimatter_bonus_per_crew_trait?: number;
+    antimatter_bonus_crew_traits?: string[];
+    antimatter_bonus_for_featured_crew?: number;
+    featured_crews?: string[];
+    antimatter_bonus_per_ship_trait?: number;
+    antimatter_bonus_ship_traits?: string[];
+    antimatter_bonus_for_featured_ship?: number;
+    featured_ships?: string[];
   }
 
   export interface CrewBonuses {

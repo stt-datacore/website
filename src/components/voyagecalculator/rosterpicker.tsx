@@ -1,7 +1,7 @@
 import React from 'react';
 import { Step, Icon } from 'semantic-ui-react';
 
-import { CompactCrew, PlayerCrew } from '../../model/player';
+import { CompactCrew, PlayerCrew, Voyage } from '../../model/player';
 import { Ship } from '../../model/ship';
 import { IVoyageCrew } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
@@ -9,17 +9,17 @@ import CONFIG from '../../components/CONFIG';
 import { applyCrewBuffs } from '../../utils/crewutils';
 
 type RosterPickerProps = {
+	configSource: 'player' | 'custom';
 	rosterType: 'allCrew' | 'myCrew';
 	setRosterType: (rosterType: 'allCrew' | 'myCrew') => void;
 	setRosterCrew: (rosterCrew: PlayerCrew[]) => void;
 	setRosterShips: (rosterShips: Ship[]) => void;
-	voySymbol: string;
 };
 
 export const RosterPicker = (props: RosterPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, playerShips, ephemeral } = globalContext.player;
-	const { rosterType, setRosterType, setRosterCrew, setRosterShips, voySymbol } = props;
+	const { configSource, rosterType, setRosterType, setRosterCrew, setRosterShips } = props;
 
 	const [allCrew, setAllCrew] = React.useState<IVoyageCrew[] | undefined>(undefined);
 	const [myCrew, setMyCrew] = React.useState<IVoyageCrew[] | undefined>(undefined);
@@ -36,7 +36,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		initializeRoster(rosterType);
 	}, [rosterType]);
 
-	if (!playerData)
+	if (!playerData || configSource === 'player')
 		return (<></>);
 
 	return (
@@ -59,8 +59,8 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	);
 
 	function initializeRoster(rosterType: string, forceReload: boolean = false): void {
-		let rosterCrew = [] as IVoyageCrew[];
-		let rosterShips = [] as Ship[];
+		let rosterCrew: IVoyageCrew[] = [];
+		let rosterShips: Ship[] = [];
 
 		if (rosterType === 'myCrew' && playerData) {
 			if (myCrew && myShips && !forceReload) {
@@ -68,7 +68,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				setRosterShips([...myShips]);
 				return;
 			}
-			rosterCrew = rosterizeMyCrew(playerData.player.character.crew, ephemeral?.activeCrew ?? []);
+			rosterCrew = rosterizeMyCrew(playerData.player.character.crew, ephemeral?.activeCrew ?? [], ephemeral?.voyage ?? []);
 			setMyCrew([...rosterCrew]);
 			setRosterCrew([...rosterCrew]);
 
@@ -82,9 +82,8 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				setRosterShips([...allShips]);
 				return;
 			}
-			let crewmanId = 1;
 			globalContext.core.crew.forEach(crew => {
-				const crewman = JSON.parse(JSON.stringify(crew)) as IVoyageCrew;
+				const crewman: IVoyageCrew = JSON.parse(JSON.stringify(crew)) as IVoyageCrew;
 				crewman.id = crewman.archetype_id;
 
 				const buffedSkills = globalContext.maxBuffs ? applyCrewBuffs(crewman, globalContext.maxBuffs) : undefined;
@@ -136,21 +135,11 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	}
 };
 
-export function rosterizeMyCrew(myCrew: PlayerCrew[], activeCrew: CompactCrew[]): IVoyageCrew[] {
-	const rosterCrew = [] as IVoyageCrew[];
+export function rosterizeMyCrew(myCrew: PlayerCrew[], activeCrew: CompactCrew[], activeVoyages: Voyage[]): IVoyageCrew[] {
+	const rosterCrew: IVoyageCrew[] = [];
 
-	// Create fake ids for active crew based on rarity, level, and equipped status
-	const activeCrewIds = activeCrew.map(ac => {
-		return {
-			id: ac.id,
-			active_status: ac.active_status
-		};
-	});
-
-	let crewmanId = 1;
 	myCrew.forEach(crew => {
-		const crewman = JSON.parse(JSON.stringify(crew)) as IVoyageCrew;
-		//crewman.id = crewmanId++;
+		const crewman: IVoyageCrew = JSON.parse(JSON.stringify(crew)) as IVoyageCrew;
 
 		// Voyage calculator looks for skills, range_min, range_max properties
 		crewman.skills = {};
@@ -164,14 +153,15 @@ export function rosterizeMyCrew(myCrew: PlayerCrew[], activeCrew: CompactCrew[])
 			}
 		});
 
-		// Re-attach active_status property
+		// Re-attach active properties
 		crewman.active_status = 0;
 		if (crew.immortal <= 0) {
-			const activeCrewId = crew.id;
-			const active = activeCrewIds.find(ac => ac.id === activeCrewId);
+			const active: CompactCrew | undefined = activeCrew.find(ac => ac.id === crewman.id);
 			if (active) {
 				crewman.active_status = active.active_status ?? 0;
-				active.id = 0;	// Clear this id so that dupes are counted properly
+				crewman.active_id = active.active_id;
+				const voyage: Voyage | undefined = activeVoyages.find(av => av.id === active.active_id);
+				if (voyage) crewman.active_voyage_type = voyage.voyage_type;
 			}
 		}
 
