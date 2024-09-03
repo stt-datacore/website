@@ -17,6 +17,7 @@ import { checkReward, mergeItems } from '../../utils/itemutils';
 import { GlobalContext } from '../../context/globalcontext';
 
 type VoyageStatsProps = {
+	configSource?: 'player' | 'custom';
 	voyageData: Voyage;	// Note: non-active voyage being passed here as IVoyageCalcConfig
 	numSims?: number;
 	ships: Ship[];
@@ -60,7 +61,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	};
 
 	updateAndRun(force?: boolean) {
-		const { estimate, numSims, ships, voyageData } = this.props;
+		const { estimate, numSims, ships, configSource, voyageData } = this.props;
 
 		if (!voyageData)
 			return;
@@ -257,9 +258,9 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	}
 
 	_renderCrew() {
-		const { voyageData, roster, rosterType } = this.props;
+		const { configSource, voyageData, roster, rosterType } = this.props;
 		if (!this.ship || !roster) return <></>;
-		return <LineupViewer voyageConfig={voyageData} ship={this.ship} roster={roster} rosterType={rosterType} />;
+		return <LineupViewer configSource={configSource} voyageConfig={voyageData} ship={this.ship} roster={roster} rosterType={rosterType} />;
 	}
 
 	_renderEstimateTitle(needsRevive: boolean = false) {

@@ -858,7 +858,7 @@ export interface Player {
     shuttles?: Shuttle[]
     bonus_crew?: string[]
     bonus_traits?: string[]
-    voyage_symbol?: 'string';	// encounter_voyage
+    voyage_symbol?: string;	// encounter_voyage
     primary_skill?: string;
     secondary_skill?: string;
     antimatter_bonus_per_crew_trait?: number;

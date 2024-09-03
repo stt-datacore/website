@@ -6,22 +6,25 @@ import { PlayerCrew, Voyage, VoyageCrewSlot } from '../../model/player';
 import { Ship } from '../../model/ship';
 import { IVoyageCalcConfig } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
-import { CrewHoverStat } from '../hovering/crewhoverstat';
 import ItemDisplay from '../itemdisplay';
 import CONFIG from '../CONFIG';
 import { useStateWithStorage } from '../../utils/storage';
-import { renderBonuses, renderKwipmentBonus } from '../item_presenters/item_presenter';
+import { renderKwipmentBonus } from '../item_presenters/item_presenter';
 import { isQuipped } from '../../utils/crewutils';
 
 interface IAssignment {
 	crew: PlayerCrew;
 	name: string;
 	trait: string;
-	bestRank: IBestRank | undefined;
+	bestRank: ISkillsRank | undefined;
 };
 
-interface IBestRank {
-	skill: string;
+interface ISkillCombos {
+	[key: string]: PlayerCrew[];
+};
+
+interface ISkillsRank {
+	skills: string[];
 	rank: number;
 };
 
@@ -45,9 +48,14 @@ const ViewContext = React.createContext<IViewContext>({} as IViewContext);
 const SHOW_SHIP_FINDER = false;
 const POPUP_DELAY = 500;
 
-const voyScore = (v: Skill) => v.core + (v.range_min + v.range_max)/2;
+const voySkillScore = (sk: Skill) => sk.core + (sk.range_min + sk.range_max)/2;
+const crewVoySkillsScore = (c: PlayerCrew, skills: string[]) => skills.reduce((prev, curr) => prev + voySkillScore((c.skills[curr] as Skill)), 0);
+
+const profSkillScore = (sk: Skill) => sk.range_max;
+const crewProfSkillsScore = (c: PlayerCrew, skills: string[]) => skills.reduce((prev, curr) => prev + profSkillScore((c.skills[curr] as Skill)), 0);
 
 type LineupViewerProps = {
+	configSource?: 'player' | 'custom';
 	voyageConfig: IVoyageCalcConfig | Voyage;
 	ship?: Ship;
 	roster?: PlayerCrew[];
@@ -57,82 +65,30 @@ type LineupViewerProps = {
 export const LineupViewer = (props: LineupViewerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
-	const { voyageConfig, ship, roster, rosterType } = props;
+	const { configSource, voyageConfig, ship, roster, rosterType } = props;
 
-	const getBestRank = (crew: PlayerCrew | CrewMember, seatSkill: string) => {
-		const best = {
-			skill: 'None',
-			rank: 1000
-		} as IBestRank;
-		if ('skills' in crew) {
-			Object.keys(crew.skills).forEach(crewSkill => {
-				const skr = skillRankings.find(sr => sr.skill === crewSkill);
-				if (skr) {
-					const rank = skr.roster.filter(c => Object.keys(c.skills)
-						.includes(seatSkill) && !usedCrew.includes(c.id))
-						.map(c => c.id).indexOf(crew.id) + 1;
+	const showCrewFinder: boolean = configSource === 'player';
 
-					// Prefer seat skill if no scrolling is necessary
-					const stayWithSeat = best.skill === seatSkill && best.rank <= 3;
-					const switchToSeat = crewSkill === seatSkill && (rank <= 3 || rank === best.rank);
-					if ((rank < best.rank && !stayWithSeat) || switchToSeat) {
-						best.skill = crewSkill;
-						best.rank = rank;
-					}
-				}
-			});
-		}
-		return best;
-	};
+	const skillCombos: ISkillCombos = initSkillCombos();
 
-	const skillRankings = Object.keys(CONFIG.SKILLS).map(skill => ({
-		skill,
-		roster: (roster ?? [] as PlayerCrew[]).filter(c => Object.keys(c.skills).includes(skill))
-			.filter(c => c.skills[skill].core > 0)
-			.sort((c1, c2) => {
-				// Sort by skill voyage score descending
-				//	Voyage scores are floored before sorting
-				const vs1 = Math.floor(voyScore(c1.skills[skill]));
-				const vs2 = Math.floor(voyScore(c2.skills[skill]));
-				// Break ties by sum of all core skills descending
-				if (vs1 === vs2) {
-					const coreScore = c => Object.keys(c.skills).reduce((prev, curr) => prev + c.skills[curr].core, 0);
-					const cs1 = coreScore(c1);
-					const cs2 = coreScore(c2);
-					// Break ties by max rarity descending (unconfirmed but likely)
-					if (cs1 === cs2) {
-						// Break ties by rarity descending
-						if (c1.max_rarity === c2.max_rarity) {
-							// Break ties by symbol descending
-							if (c1.rarity === c2.rarity) return c2.symbol.localeCompare(c1.symbol);
-							return c2.rarity - c1.rarity;
-						}
-						return c2.max_rarity - c1.max_rarity;
-					}
-					return cs2 - cs1;
-				}
-				return vs2 - vs1;
-			})
-	}));
-
-	const usedCrew = [] as number[];
-	const assignments = Object.values(CONFIG.VOYAGE_CREW_SLOTS).map(entry => {
+	const usedCrew: number[] = [];
+	const assignments: IAssignment[] = Object.values(CONFIG.VOYAGE_CREW_SLOTS).map(entry => {
 		const { crew, name, trait, skill } = (Object.values(voyageConfig.crew_slots).find(slot => slot.symbol === entry) as VoyageCrewSlot);
-		const bestRank = rosterType === 'myCrew' && voyageConfig.state === 'pending' ? getBestRank(crew, skill) : undefined;
+		const bestRank: ISkillsRank | undefined = showCrewFinder ? getBestRank(crew, skill, usedCrew) : undefined;
 		if (!crew.imageUrlPortrait)
 			crew.imageUrlPortrait = `${crew.portrait.file.slice(1).replace('/', '_')}.png`;
 		usedCrew.push(crew.id);
 		return {
 			crew, name, trait, bestRank
-		} as IAssignment;
-	}) as IAssignment[];
+		};
+	});
 
-	const shipData = {
+	const shipData: IShipData = {
 		direction: 'right',
 		index: -1,
 		shipBonus: 0,
 		crewBonus: 0
-	} as IShipData;
+	};
 
 	if (ship) {
 		if (!ship.index) ship.index = { left: 0, right: 0 };
@@ -142,13 +98,13 @@ export const LineupViewer = (props: LineupViewerProps) => {
 		shipData.crewBonus = voyageConfig.max_hp - ship.antimatter - shipData.shipBonus;
 	}
 
-	const viewContext = {
+	const viewContext: IViewContext = {
 		voyageConfig,
 		rosterType,
 		ship,
 		shipData,
 		assignments
-	} as IViewContext;
+	};
 
 	return (
 		<ViewContext.Provider value={viewContext}>
@@ -158,6 +114,114 @@ export const LineupViewer = (props: LineupViewerProps) => {
 			</React.Fragment>
 		</ViewContext.Provider>
 	);
+
+	function initSkillCombos(): ISkillCombos {
+		const skillCombos: ISkillCombos = {};
+		if (!showCrewFinder) return skillCombos;
+
+		[1, 2, 3].forEach(i => {
+			souzaCombinations(Object.keys(CONFIG.SKILLS), i).forEach(skills => {
+				skillCombos[skills.join(',')] = [];
+			});
+		});
+
+		if (roster) {
+			roster.forEach(crew => {
+				const crewSkills: string[] = Object.keys(crew.skills);
+				for (let i = 1; i <= crewSkills.length; i++) {
+					souzaCombinations(crewSkills, i).forEach(skills => {
+						skillCombos[skills.join(',')].push(crew);
+					});
+				}
+			});
+			Object.keys(skillCombos).forEach(skills => {
+				skillCombos[skills] = skillCombos[skills].sort((c1: PlayerCrew, c2: PlayerCrew) => {
+					if (voyageConfig.voyage_type === 'encounter')
+						return encounterSort(c1, c2, skills.split(','));
+					return dilemmaSort(c1, c2, skills.split(','));
+				});
+			});
+		}
+
+		return skillCombos;
+	}
+
+	// Match in-game order for dilemma voyage crew selection
+	function dilemmaSort(c1: PlayerCrew, c2: PlayerCrew, skills: string[]): number {
+		const v1: number = crewVoySkillsScore(c1, skills);
+		const v2: number = crewVoySkillsScore(c2, skills);
+		if (v1 === v2) return c1.name.localeCompare(c2.name);	// Probably?
+		return v2 - v1;
+	}
+
+	// Match in-game order for encounter voyage crew selection
+	function encounterSort(c1: PlayerCrew, c2: PlayerCrew, skills: string[]): number {
+		const p1: number = crewProfSkillsScore(c1, skills);
+		const p2: number = crewProfSkillsScore(c2, skills);
+		if (p1 === p2) return c1.name.localeCompare(c2.name);	// Probably?
+		return p2 - p1;
+	}
+
+	function getBestRank(crew: PlayerCrew, seatSkill: string, usedCrew: number[]): ISkillsRank {
+		let bestRank: ISkillsRank = {
+			skills: [],
+			rank: 1000
+		};
+		const crewSkills: string[] = Object.keys(crew.skills);
+		for (let i = 1; i <= crewSkills.length; i++) {
+			souzaCombinations(crewSkills, i).forEach(skills => {
+				if (skills.includes(seatSkill)) {
+					const rank: number = skillCombos[skills.join(',')]
+						.filter(c => !usedCrew.includes(c.id))
+						.findIndex(c => c.id === crew.id) + 1;
+					if (rank < bestRank.rank) bestRank = { skills, rank };
+				}
+			});
+			if (bestRank.rank <= 3) break;
+		}
+		bestRank.skills = sortSkills(bestRank.skills, seatSkill);
+		return bestRank;
+	}
+
+	// Filter out seat skill and match in-game left-to-right order of skill filter buttons
+	function sortSkills(skills: string[], seatSkill: string): string[] {
+		const filterSkills: string[] = [
+			'command_skill', 'diplomacy_skill', 'engineering_skill',
+			'security_skill', 'medicine_skill', 'science_skill'
+		];
+		const sorted: string[] = [];
+		filterSkills.forEach(skill => {
+			if (skills.includes(skill) && seatSkill !== skill) sorted.push(skill);
+		});
+		return sorted;
+	}
+
+	// https://blog.lublot.dev/combinations-in-typescript
+	function souzaCombinations<T>(items: T[], size: number = items.length): T[][] {
+		const combinations: T[][] = [];
+		const stack: number[] = [];
+		let i = 0;
+
+		size = Math.min(items.length, size);
+
+		while (true) {
+			if (stack.length === size) {
+				combinations.push(stack.map((index) => items[index]));
+				i = stack.pop()! + 1;
+			}
+
+			if (i >= items.length) {
+				if (stack.length === 0) {
+					break;
+				}
+				i = stack.pop()! + 1;
+			} else {
+				stack.push(i++);
+			}
+		}
+
+		return combinations;
+	}
 };
 
 const PlayerViewPicker = (props: { dbid: string }) => {
@@ -516,7 +580,7 @@ const Aggregates = (props: ViewProps) => {
 								</Table.Row>
 							);
 						} else {
-							const score = Math.floor(voyScore(agg));
+							const score = Math.floor(voySkillScore(agg));
 							return (
 								<Table.Row key={idx}>
 									<Table.Cell>{CONFIG.SKILLS[entry]}</Table.Cell>
@@ -621,7 +685,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 				{Object.keys(crew.skills).map(skill =>
 					<Label key={skill}>
 						{CONFIG.SKILLS_SHORT.find(c => c.name === skill)?.short}{` `}
-						{Math.floor(voyScore(crew.skills[skill]))}
+						{Math.floor(voySkillScore(crew.skills[skill]))}
 					</Label>
 				)}
 			</React.Fragment>
@@ -631,36 +695,32 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 
 type CrewFinderProps = {
 	crew: PlayerCrew;
-	bestRank: IBestRank | undefined;
+	bestRank: ISkillsRank | undefined;
 };
 
 const CrewFinder = (props: CrewFinderProps) => {
 	const { crew, bestRank } = props;
 
-	if (!bestRank) return (<></>);
+	if (!bestRank) return <></>;
 
-	const POSITION_POSTFIX = [
-		'th',
-		'st',
-		'nd',
-		'rd',
-		'th',
-		'th',
-		'th',
-		'th',
-		'th',
-		'th'
-	];
+	let content: string = '';
+	if (bestRank.skills.length === 0)
+		content = `Select the ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from the top'} for this seat`;
+	else {
+		content = `Filter by these skills, then select the ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from the top'}`;
+	}
 
-	const addPostfix = pos => pos > 3 && pos < 21 ? pos + 'th' : pos + POSITION_POSTFIX[pos%10];
 	let popup = {
-		content: `Select ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from top'} in ${CONFIG.SKILLS[bestRank.skill]}`,
+		content,
 		trigger:
 			<span style={{ whiteSpace: 'nowrap' }}>
-				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bestRank.skill}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
+				{bestRank.skills.map(skill => (
+					<img key={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
+				))}
 				{` `}<span style={{ verticalAlign: 'middle' }}>{bestRank.rank}</span>
 			</span>
 	};
+
 	if (crew.immortal > 0) {
 		popup = {
 			content: 'Unfreeze crew',
@@ -673,6 +733,13 @@ const CrewFinder = (props: CrewFinderProps) => {
 			trigger: <div style={{textAlign: 'center' }}><Icon name='space shuttle' /></div>
 		};
 	}
+	else if (crew.active_status === 3) {
+		popup = {
+			content: 'On voyage',
+			trigger: <div style={{textAlign: 'center' }}><Icon name='rocket' /></div>
+		};
+
+	}
 	return (
 		<Popup content={popup.content} mouseEnterDelay={POPUP_DELAY} trigger={
 			<span style={{ cursor: 'help' }}>
@@ -680,4 +747,12 @@ const CrewFinder = (props: CrewFinderProps) => {
 			</span>
 		} />
 	);
+
+	function addPostfix(pos: number): string {
+		const POSITION_POSTFIX: string[] = [
+			'th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'
+		];
+		if (pos > 3 && pos < 21) return `${pos}th`;
+		return `${pos}${POSITION_POSTFIX[pos%10]}`;
+	}
 };

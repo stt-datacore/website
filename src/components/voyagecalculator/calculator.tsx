@@ -891,6 +891,7 @@ const ResultPane = (props: ResultPaneProps) => {
 			)}
 			<Tab.Pane>
 				<VoyageStats
+					configSource={configSource}
 					voyageData={data as Voyage}
 					estimate={result.estimate}
 					ships={[request.bestShip.ship]}

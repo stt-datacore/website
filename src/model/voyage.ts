@@ -20,7 +20,7 @@ export interface IVoyageInputConfig {
 
 // Support for event voyage info
 export interface IVoyageEventContent {
-	voyage_symbol: 'string';	// encounter_voyage
+	voyage_symbol: string;	// encounter_voyage
 	primary_skill: string;
 	secondary_skill: string;
 	antimatter_bonus_per_crew_trait: number;
