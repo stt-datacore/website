@@ -3,7 +3,7 @@ name: Skorr Tchar
 rarity: 4
 series: tas
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 in_portal: true
 date: 23/12/2021
 published: true
