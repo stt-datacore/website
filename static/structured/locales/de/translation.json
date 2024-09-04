@@ -1498,8 +1498,8 @@
             "start_tracking": "Verfolgung starten"
         },
         "type_names": {
-            "encounter_voyage": "Ereignisreise",
-            "test_voyage_1": "Standardreise"
+            "encounter_voyage": "Begegnungsreise",
+            "test_voyage_1": "Dilemma-Reise"
         },
         "view": {
             "active_voyage": "Aktive Reise anzeigen",

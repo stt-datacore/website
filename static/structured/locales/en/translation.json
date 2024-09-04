@@ -1499,8 +1499,8 @@
             "start_tracking": "Start tracking"
         },
         "type_names": {
-            "encounter_voyage": "Event Voyage",
-            "test_voyage_1": "Standard Voyage"
+            "encounter_voyage": "Encounter Voyage",
+            "test_voyage_1": "Dilemma Voyage"
         },
         "view": {
             "active_voyage": "View Active Voyage",

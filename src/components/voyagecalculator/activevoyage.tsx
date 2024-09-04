@@ -23,7 +23,7 @@ type ActiveVoyageProps = {
 	actionButtons: JSX.Element[];
 	telemetryOptIn: boolean;
 	setTelemetryOptIn: (value: boolean) => void;
-	voySymbol: string;
+	voySymbol?: string;
 };
 
 export const ActiveVoyage = (props: ActiveVoyageProps) => {
@@ -34,7 +34,9 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 	const { playerData, ephemeral } = globalContext.player;
 	const { telemetryOptIn, setTelemetryOptIn } = props;
 	const dbid = playerData?.player.dbid;
-	const { showDetails, actionButtons, voySymbol } = props;
+	const { showDetails, actionButtons } = props;
+
+	const voySymbol = props.voySymbol ?? 'test_voyage_1';
 
 	const [myCrew, setMyCrew] = React.useState<IVoyageCrew[] | undefined>(undefined);
 

@@ -1509,8 +1509,8 @@
             "start_tracking": "Commencer le suivi"
         },
         "type_names": {
-            "encounter_voyage": "Voyage événementiel",
-            "test_voyage_1": "Voyage standard"
+            "encounter_voyage": "Voyage de rencontre",
+            "test_voyage_1": "Voyage de dilemme"
         },
         "view": {
             "active_voyage": "Afficher le voyage actif",
