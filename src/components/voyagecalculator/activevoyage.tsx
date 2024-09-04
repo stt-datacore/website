@@ -21,8 +21,6 @@ type ActiveVoyageProps = {
 	setHistory: (history: IVoyageHistory) => void;
 	showDetails: boolean;
 	actionButtons: JSX.Element[];
-	telemetryOptIn: boolean;
-	setTelemetryOptIn: (value: boolean) => void;
 	voySymbol?: string;
 };
 
@@ -32,7 +30,6 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 	const { SHIP_TRAIT_NAMES } = globalContext.localized;
 
 	const { playerData, ephemeral } = globalContext.player;
-	const { telemetryOptIn, setTelemetryOptIn } = props;
 	const dbid = playerData?.player.dbid;
 	const { showDetails, actionButtons } = props;
 
@@ -104,8 +101,6 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 								{/* Your voyage {msgTypes[voyageConfig.state]} <b><span style={{ whiteSpace: 'nowrap' }}>{voyageDuration}</span></b>. */}
 								{props.history && ship &&
 									<ActiveVoyageTracker
-										setTelemetryOptIn={setTelemetryOptIn}
-										telemetryOptIn={telemetryOptIn}
 										history={props.history} setHistory={props.setHistory}
 										voyageConfig={voyageConfig} shipSymbol={ship.symbol}
 									/>
@@ -145,14 +140,12 @@ type ActiveVoyageTrackerProps = {
 	setHistory: (history: IVoyageHistory) => void;
 	voyageConfig: Voyage;
 	shipSymbol: string;
-	telemetryOptIn: boolean;
-	setTelemetryOptIn: (value: boolean) => void;
 };
 
 export const ActiveVoyageTracker = (props: ActiveVoyageTrackerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
-	const { history, setHistory, voyageConfig, shipSymbol, telemetryOptIn, setTelemetryOptIn } = props;
+	const { history, setHistory, voyageConfig, shipSymbol } = props;
 
 	const dbid = playerData?.player.dbid;
 	const { t, tfmt } = globalContext.localized;
@@ -230,8 +223,8 @@ export const ActiveVoyageTracker = (props: ActiveVoyageTrackerProps) => {
 	function initializeTracking(): void {
 		// Add to history with both initial and checkpoint estimates
 		estimateTrackedVoyage(voyageConfig, 0, voyageConfig.max_hp).then((initial: Estimate) => {
-			createCheckpoint(voyageConfig).then((checkpoint: ITrackedCheckpoint) => {
-				const newTrackerId = addVoyageToHistory(history, voyageConfig, shipSymbol, initial, true, dbid);
+			createCheckpoint(voyageConfig).then(async (checkpoint: ITrackedCheckpoint) => {
+				const newTrackerId = await addVoyageToHistory(history, voyageConfig, shipSymbol, initial, true, dbid);
 				addCrewToHistory(history, newTrackerId, voyageConfig, true, dbid);
 				const trackedVoyage = history.voyages.find(voyage => voyage.tracker_id === newTrackerId);
 				if (trackedVoyage) {
@@ -240,7 +233,6 @@ export const ActiveVoyageTracker = (props: ActiveVoyageTrackerProps) => {
 					trackedVoyage.checkpoint = checkpoint;
 					setHistory({...history});
 				}
-				setTelemetryOptIn(true);
 			}).catch(e => console.log('initializeTracking', e));
 		});
 	}

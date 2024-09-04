@@ -239,7 +239,6 @@ type ActiveVoyageSetupProps = {
 
 const ActiveVoyageSetup = (props: ActiveVoyageSetupProps) => {
 	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(props.dbid+'/voyage/history', defaultHistory, { rememberForever: true, compress: true, onInitialize: () => setHistoryReady(true) } );
-	const [telemetryOptIn, setTelemetryOptIn] = useStateWithStorage(props.dbid+'/voyage/telemetryOptIn', false, { rememberForever: true });
 	const [historyReady, setHistoryReady] = React.useState<boolean>(false);
 
 	const actionButtons: JSX.Element[] = [
@@ -265,8 +264,6 @@ const ActiveVoyageSetup = (props: ActiveVoyageSetupProps) => {
 		<React.Fragment>
 			{props.activeVoyageId > 0 &&
 				<ActiveVoyage
-					setTelemetryOptIn={setTelemetryOptIn}
-					telemetryOptIn={telemetryOptIn}
 					voySymbol={props.voySymbol}
 					history={historyReady ? history : undefined}
 					setHistory={setHistory}

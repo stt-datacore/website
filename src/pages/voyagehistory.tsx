@@ -10,7 +10,7 @@ import { useStateWithStorage } from '../utils/storage';
 import { IHistoryContext, HistoryContext } from '../components/voyagehistory/context';
 import { VoyagesTable } from '../components/voyagehistory/voyagestable';
 import { CrewTable } from '../components/voyagehistory/crewtable';
-import { defaultHistory, getRemoteHistory } from '../components/voyagehistory/utils';
+import { defaultHistory, getRemoteHistory, reconcileHistories } from '../components/voyagehistory/utils';
 
 import { ActiveVoyage } from '../components/voyagecalculator/activevoyage';
 
@@ -50,15 +50,18 @@ const PlayerVoyageHistory = (props: PlayerVoyageHistoryProps) => {
 		const activeVoyageId = ephemeral?.voyage?.length ? ephemeral.voyage[0].id : 0;
 		setActiveVoyageId(activeVoyageId);
 		if (telemetryOptIn && playerData?.player.dbid) {
-			getRemoteHistory(undefined, playerData.player.dbid).then((history) => {
-				if (!!history) setHistory(history);
+			getRemoteHistory(undefined, playerData.player.dbid).then(async (newHist) => {
+				if (!!newHist) {
+					newHist = await reconcileHistories(playerData.player.dbid, history, newHist);
+					setHistory(newHist);
+				}
 			});
 		}
 	}, [playerData]);
-	
+
 	const historyContext = {
-		history, 
-		setHistory, 
+		history,
+		setHistory,
 		activeVoyageId,
 		dbid: props.dbid ? Number.parseInt(props.dbid) : undefined,
 		telemetryOptIn
@@ -78,8 +81,6 @@ const PlayerVoyageHistory = (props: PlayerVoyageHistoryProps) => {
 			<React.Fragment>
 				{activeVoyageId > 0 &&
 					<ActiveVoyage
-						telemetryOptIn={telemetryOptIn}
-						setTelemetryOptIn={setTelemetryOptIn}
 						history={historyReady ? history : undefined}
 						setHistory={setHistory}
 						showDetails={false}

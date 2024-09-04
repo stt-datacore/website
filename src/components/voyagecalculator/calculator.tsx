@@ -550,7 +550,7 @@ type ResultsGroupProps = {
 const ResultsGroup = (props: ResultsGroupProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
-	
+
 	const dbid = playerData?.player.dbid;
 
 	const { t } = globalContext.localized;
@@ -722,12 +722,12 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 		}
 	}
 
-	function trackResult(resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate): void {
+	async function trackResult(resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate): Promise<void> {
 		// Remove previous tracked voyage and associated crew assignments
 		//	(in case user tracks a different recommendation from same request)
 		if (trackerId > 0) removeVoyageFromHistory(userPrefs.history, trackerId);
-		
-		const newTrackerId = addVoyageToHistory(userPrefs.history, voyageConfig, shipSymbol, estimate, userPrefs.telemetryOptIn, dbid);
+
+		const newTrackerId = await addVoyageToHistory(userPrefs.history, voyageConfig, shipSymbol, estimate, userPrefs.telemetryOptIn, dbid);
 		addCrewToHistory(userPrefs.history, newTrackerId, voyageConfig, userPrefs.telemetryOptIn, dbid);
 		userPrefs.setHistory({...userPrefs.history});
 		setTrackerId(newTrackerId);
@@ -790,7 +790,7 @@ type ResultPaneProps = {
 	analysis: string;
 	trackState: number;
 	confidenceState: number;
-	trackResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate) => void;
+	trackResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate) => Promise<void>;
 	estimateResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, numSums: number) => void;
 	dismissResult: (resultIndex: number) => void;
 	roster: IVoyageCrew[];
@@ -878,7 +878,7 @@ const ResultPane = (props: ResultPaneProps) => {
 									<Popup position='top center'
 										content={<>Track this recommendation</>}
 										trigger={
-											<Button icon onClick={() => trackResult(resultIndex, data, request.bestShip.ship.symbol, result.estimate)}>
+											<Button icon onClick={async () => await trackResult(resultIndex, data, request.bestShip.ship.symbol, result.estimate)}>
 												<Icon name={iconTrack[trackState]} color={trackState === 1 ? 'green' : undefined} />
 											</Button>
 										}
