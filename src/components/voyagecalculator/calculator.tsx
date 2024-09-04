@@ -727,7 +727,7 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 		//	(in case user tracks a different recommendation from same request)
 		if (trackerId > 0) removeVoyageFromHistory(userPrefs.history, trackerId);
 
-		const newTrackerId = await addVoyageToHistory(userPrefs.history, voyageConfig, shipSymbol, estimate, userPrefs.telemetryOptIn, dbid);
+		const newTrackerId = await addVoyageToHistory(userPrefs.history, voyageConfig, shipSymbol, estimate, true, dbid);
 		addCrewToHistory(userPrefs.history, newTrackerId, voyageConfig, userPrefs.telemetryOptIn, dbid);
 		userPrefs.setHistory({...userPrefs.history});
 		setTrackerId(newTrackerId);
