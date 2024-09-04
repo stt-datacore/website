@@ -1508,8 +1508,8 @@
             "start_tracking": "Comenzar a rastrear"
         },
         "type_names": {
-            "encounter_voyage": "Viaje de evento",
-            "test_voyage_1": "Viaje estándar"
+            "encounter_voyage": "Viaje de encuentro",
+            "test_voyage_1": "Viaje de dilema"
         },
         "view": {
             "active_voyage": "Ver viaje activo",

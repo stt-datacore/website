@@ -21,7 +21,7 @@ type ActiveVoyageProps = {
 	setHistory: (history: IVoyageHistory) => void;
 	showDetails: boolean;
 	actionButtons: JSX.Element[];
-	voySymbol: string;
+	voySymbol?: string;
 };
 
 export const ActiveVoyage = (props: ActiveVoyageProps) => {
@@ -30,7 +30,9 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 	const { SHIP_TRAIT_NAMES } = globalContext.localized;
 
 	const { playerData, ephemeral } = globalContext.player;
-	const { showDetails, actionButtons, voySymbol } = props;
+	const { showDetails, actionButtons } = props;
+
+	const voySymbol = props.voySymbol ?? 'test_voyage_1';
 
 	const [myCrew, setMyCrew] = React.useState<IVoyageCrew[] | undefined>(undefined);
 
