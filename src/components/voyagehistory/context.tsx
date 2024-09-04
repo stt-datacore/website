@@ -7,7 +7,6 @@ export interface IHistoryContext {
 	setHistory: (history: IVoyageHistory) => void;
 	activeVoyageId: number;
 	dbid?: number;
-	telemetryOptIn: boolean;
 };
 
 export const HistoryContext = React.createContext<IHistoryContext>({} as IHistoryContext);

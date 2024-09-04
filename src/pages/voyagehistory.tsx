@@ -44,12 +44,10 @@ const PlayerVoyageHistory = (props: PlayerVoyageHistoryProps) => {
 	const [historyReady, setHistoryReady] = React.useState(false);
 	const [activeVoyageId, setActiveVoyageId] = React.useState(0);
 
-	const [telemetryOptIn, setTelemetryOptIn] = useStateWithStorage(props.dbid+'/voyage/telemetryOptIn', false, { rememberForever: true });
-
 	React.useEffect(() => {
 		const activeVoyageId = ephemeral?.voyage?.length ? ephemeral.voyage[0].id : 0;
 		setActiveVoyageId(activeVoyageId);
-		if (telemetryOptIn && playerData?.player.dbid) {
+		if (playerData?.player.dbid) {
 			getRemoteHistory(undefined, playerData.player.dbid).then(async (newHist) => {
 				if (!!newHist) {
 					newHist = await reconcileHistories(playerData.player.dbid, history, newHist);
@@ -63,8 +61,7 @@ const PlayerVoyageHistory = (props: PlayerVoyageHistoryProps) => {
 		history,
 		setHistory,
 		activeVoyageId,
-		dbid: props.dbid ? Number.parseInt(props.dbid) : undefined,
-		telemetryOptIn
+		dbid: props.dbid ? Number.parseInt(props.dbid) : undefined
 	} as IHistoryContext;
 
 	const actionButtons = [
