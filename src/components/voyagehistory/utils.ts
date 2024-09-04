@@ -99,7 +99,7 @@ export function compareTrackedVoyages(v1: ITrackedVoyage, v2: ITrackedVoyage) {
 export async function reconcileHistories(dbid: number, local: IVoyageHistory, remote: IVoyageHistory): Promise<IVoyageHistory> {
 	let c = local.voyages.length;
 	let d = remote.voyages.length;
-	let safeId = remote.voyages.map(m => m.tracker_id).reduce((p, n) => p > n ? n : p, 0) + 1;
+	let safeId = remote.voyages.map(m => m.tracker_id).reduce((p, n) => p > n ? p : n, 0) + 1;
 	let goodLocals = [] as number[];
 
 	for (let i = 0; i < c; i++) {
