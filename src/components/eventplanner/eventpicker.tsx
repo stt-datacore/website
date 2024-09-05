@@ -17,7 +17,7 @@ import { applySkillBuff } from '../../utils/crewutils';
 
 import { IEventData, IRosterCrew } from './model';
 import { GatherPlanner } from '../gather/gather_planner';
-import ProfileShips from '../profile_ships';
+import ShipTable from '../ship/shiptable';
 
 interface ISelectOptions {
 	key: string;
@@ -162,7 +162,7 @@ export const EventPicker = (props: EventPickerProps) => {
 					<div style={{margin: "0.5em 0"}}>
 						<h4>{t('base.event_ships')}</h4>
 					</div>
-					<ProfileShips event_ships={eventData.bonus_ship}
+					<ShipTable event_ships={eventData.bonus_ship}
 						high_bonus={eventData.featured_ship}
 						event_ship_traits={eventData.bonus_ship_traits}
 						/>

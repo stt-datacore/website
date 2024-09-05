@@ -2,7 +2,7 @@ import React from 'react';
 import { Step } from 'semantic-ui-react';
 
 import DataPageLayout from '../components/page/datapagelayout';
-import ProfileItems, { CustomFieldDef } from '../components/profile_items';
+import ItemsTable, { CustomFieldDef } from '../components/items/itemstable';
 import { GlobalContext } from '../context/globalcontext';
 import { EquipmentItem } from '../model/equipment';
 import { binaryLocate, formatDuration, getItemWithBonus, getPossibleQuipment } from '../utils/itemutils';
@@ -13,8 +13,8 @@ import { getCrewQuipment, oneCrewCopy } from '../utils/crewutils';
 export interface ItemsPageProps {}
 
 const ItemsPage = (props: ItemsPageProps) => {
-	
-	const [activeTabIndex, setActiveTabIndex] = useStateWithStorage<number>('items/mode', 0, { rememberForever: true });	
+
+	const [activeTabIndex, setActiveTabIndex] = useStateWithStorage<number>('items/mode', 0, { rememberForever: true });
 	const globalContext = React.useContext(GlobalContext);
 	const { t, tfmt } = globalContext.localized;
 	const hasPlayer = !!globalContext.player.playerData;
@@ -97,7 +97,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 		<DataPageLayout playerPromptType='recommend' pageTitle={t('menu.roster.items')} demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet']}>
 			<React.Fragment>
-			
+
 			<Step.Group fluid>
 				<Step active={activeTabIndex === 0} onClick={() => setActiveTabIndex(0)}>
 					<Step.Content>
@@ -111,7 +111,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 						<Step.Title>{t('item_picker.owned_items.title')}</Step.Title>
 						<Step.Description>{tfmt('item_picker.owned_items.description')}</Step.Description>
 					</Step.Content>
-					
+
 				</Step>}
 
 				<Step active={activeTabIndex === 2} onClick={() => setActiveTabIndex(2)}>
@@ -121,35 +121,35 @@ const ItemsPage = (props: ItemsPageProps) => {
 					</Step.Content>
 				</Step>
 			</Step.Group>
-			
 
-			{/* We want both of these to load, even if they are not displayed, 
+
+			{/* We want both of these to load, even if they are not displayed,
 				because there's work that that must be done every time they are loaded.
 				Re-rendering the page for switching views would cause work to run unnecessarily. */}
 
-			<ProfileItems 
+			<ItemsTable
 				pageName={"core"}
 				noRender={activeTabIndex !== 0}
-				data={coreItems}				
-				hideOwnedInfo={true}				
+				data={coreItems}
+				hideOwnedInfo={true}
 				noWorker={true}
 				flavor={true} />
 
-			{hasPlayer && <ProfileItems
+			{hasPlayer && <ItemsTable
 				pageName={"roster"}
 				noRender={activeTabIndex !== 1 || !hasPlayer} />}
 
-			<ProfileItems
+			<ItemsTable
 				pageName={"roster"}
 				types={[14]}
 				buffs={true}
 				crewMode={true}
 				noWorker={true}
 				noRender={activeTabIndex !== 2}
-				data={coreItems}				
-				hideOwnedInfo={true}				
-				flavor={false}			
-				customFields={quipCust}	
+				data={coreItems}
+				hideOwnedInfo={true}
+				flavor={false}
+				customFields={quipCust}
 				/>
 				<br />
 				<br />

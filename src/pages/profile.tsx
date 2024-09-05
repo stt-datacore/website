@@ -9,8 +9,8 @@ import 'moment/locale/de';
 
 import ProfileCrew from '../components/profile_crew';
 import ProfileCrewMobile from '../components/profile_crew2';
-import ProfileShips from '../components/profile_ships';
-import ProfileItems from '../components/profile_items';
+import ShipTable from '../components/ship/shiptable';
+import ItemsTable from '../components/items/itemstable';
 import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
 
@@ -207,11 +207,11 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 			},
 			{
 				menuItem: t('profile.ships'),
-				render: () => playerData && <ProfileShips /> || <></>
+				render: () => playerData && <ShipTable /> || <></>
 			},
 			{
 				menuItem: t('profile.items'),
-				render: () => <ProfileItems />
+				render: () => <ItemsTable />
 			},
 			{
 				menuItem: t('profile.other'),

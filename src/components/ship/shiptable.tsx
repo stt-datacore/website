@@ -1,25 +1,25 @@
 import React, { Component } from 'react';
 import { Table, Icon, Pagination, Dropdown, Button, Input, Checkbox } from 'semantic-ui-react';
 
-import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
-import { Ship, ShipInUse } from '../model/ship';
-import { ShipHoverStat, ShipTarget } from './hovering/shiphoverstat';
-import { GlobalContext } from '../context/globalcontext';
+import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../../utils/datasort';
+import { Ship, ShipInUse } from '../../model/ship';
+import { ShipHoverStat, ShipTarget } from '../hovering/shiphoverstat';
+import { GlobalContext } from '../../context/globalcontext';
 import { navigate } from 'gatsby';
-import { RarityFilter } from './crewtables/commonoptions';
-import { ShipAbilityPicker, TraitPicker, TriggerPicker } from './crewtables/shipoptions';
+import { RarityFilter } from '../crewtables/commonoptions';
+import { ShipAbilityPicker, TraitPicker, TriggerPicker } from '../crewtables/shipoptions';
 import { isMobile } from 'react-device-detect';
-import { getShipsInUse } from '../utils/shiputils';
-import CONFIG from './CONFIG';
-import { TinyStore } from '../utils/tiny';
+import { getShipsInUse } from '../../utils/shiputils';
+import CONFIG from '../CONFIG';
+import { TinyStore } from '../../utils/tiny';
 
-type ProfileShipsProps = {
+type ShipTableProps = {
 	event_ships?: string[];
 	high_bonus?: string[];
 	event_ship_traits?: string[];
 };
 
-type ProfileShipsState = {
+type ShipTableState = {
 	column: string | null;
 	direction: 'descending' | 'ascending' | null;
 	searchFilter: string;
@@ -45,13 +45,13 @@ const pagingOptions = [
 ];
 
 
-class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
+class ShipTable extends Component<ShipTableProps, ShipTableState> {
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
 	inited: boolean;
 	hasPlayer: boolean;
 	private readonly tiny = TinyStore.getStore('profile_ships');
-	constructor(props: ProfileShipsProps) {
+	constructor(props: ShipTableProps) {
 		super(props);
 
 		this.state = {
@@ -72,7 +72,7 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 		this.initData();
 	}
 
-	componentDidUpdate(prevProps: Readonly<ProfileShipsProps>, prevState: Readonly<ProfileShipsState>, snapshot?: any): void {
+	componentDidUpdate(prevProps: Readonly<ShipTableProps>, prevState: Readonly<ShipTableState>, snapshot?: any): void {
 		this.initData();
 	}
 
@@ -441,4 +441,4 @@ class ProfileShips extends Component<ProfileShipsProps, ProfileShipsState> {
 
 
 
-export default ProfileShips;
+export default ShipTable;
