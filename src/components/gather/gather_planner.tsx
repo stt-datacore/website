@@ -3,7 +3,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import { Adventure } from "../../model/player";
 import ItemDisplay from '../itemdisplay';
 import { ItemHoverStat, ItemTarget } from "../hovering/itemhoverstat";
-import { Button, Table } from "semantic-ui-react";
+import { Button, Dropdown, FormInput, Input, Pagination, Table } from "semantic-ui-react";
 import { EquipmentItem, EquipmentItemSource } from "../../model/equipment";
 import { makeRecipeFromArchetypeCache } from "../../utils/equipment";
 import { useStateWithStorage } from "../../utils/storage";
@@ -308,6 +308,11 @@ const SourceTable = (props: SourceTableProps) => {
     const { playerData } = globalContext.player;
     const { t } = globalContext.localized;
 
+    const [searchText, setSearchText] = useStateWithStorage('gather_planner/search', '');
+
+    const [currentPage, setCurrentPage] = React.useState<number>(1);
+    const [itemsPerPage, setItemsPerPage] = React.useState(10);
+
     const [sortColumn, setSortColumn] = useStateWithStorage<'source' | 'demands'>('gather_planner/sort_column', 'demands', { rememberForever: true });
     const [sortDirection, setSortDirection] = useStateWithStorage<'ascending' | 'descending'>('gather_planner/sort_direction', 'descending', { rememberForever: true });
 
@@ -343,17 +348,57 @@ const SourceTable = (props: SourceTableProps) => {
         }
     }
 
+    const pagingOptions = [
+        { key: "0", value: 10, text: "10" },
+        { key: "1", value: 25, text: "25" },
+        { key: "2", value: 50, text: "50" },
+        { key: "3", value: 100, text: "100" },
+    ];
+
+    const totalPages = Math.ceil(sortedSources.length / itemsPerPage);
+
     if (!playerData) return <></>
 
     return (<div style={{ marginTop: "1em" }}>
+        <h2>{t('items.item_sources')}</h2>
 
+
+        <div style={{display: 'flex', alignItems: 'center'}}>
+            {t('global.search')}
+            <FormInput value={searchText} onChange={(e, { value }) => setSearchText(value)} />
+        </div>
         <Table striped sortable>
             <Table.Header>
                 {renderRowHeaders()}
             </Table.Header>
             <Table.Body>
-                {sortedSources.map((source) => renderTableRow(source))}
+                {sortedSources.slice((currentPage - 1) * itemsPerPage, ((currentPage - 1) * itemsPerPage) + itemsPerPage).map((source) => renderTableRow(source))}
             </Table.Body>
+            <Table.Footer>
+                <Table.Row>
+                    <Table.HeaderCell colSpan="8">
+                        <Pagination
+                            totalPages={totalPages}
+                            activePage={currentPage}
+                            onPageChange={(event, { activePage }) =>
+                                setCurrentPage(activePage as number)
+                            }
+                        />
+                        <span style={{ paddingLeft: "2em" }}>
+                            {t("global.rows_per_page")}:{" "}
+                            <Dropdown
+                                inline
+                                options={pagingOptions}
+                                value={itemsPerPage}
+                                onChange={(event, { value }) =>
+                                    setItemsPerPage(value as number)
+                                }
+                            />
+                        </span>
+                    </Table.HeaderCell>
+                </Table.Row>
+            </Table.Footer>
+
         </Table>
     </div>)
 
