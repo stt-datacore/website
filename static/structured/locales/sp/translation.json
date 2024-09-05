@@ -1047,11 +1047,13 @@
             "advanceable": "Solo mostrar tripulación con espacios no reclamados para quipo",
             "buyback": "Muestra tripulación con fusibles en pozo de recompra",
             "dupes": "Mostrar sólo tripulación duplicada",
+            "fe": "Mostrar solo a los no inmortales completamente equipados",
             "fodder": "Mostrar sólo tripulación no fusionado",
             "freezable": "Mostrar sólo tripulación congelable",
             "impact": "Solo muestra al tripulación que necesita 1 fusible",
             "mortal": "Mostrar sólo a los no inmortales",
             "none": "Mostrar toda la tripulación",
+            "nonfe": "Mostrar solo a los no inmortales poco equipados",
             "priority": "Mostrar sólo no inmortales completamente fusionados",
             "quippable": "Solo mostrar tripulación equipable",
             "quipped": "Mostrar sólo al tripulación quipada",
@@ -1508,8 +1510,8 @@
             "start_tracking": "Comenzar a rastrear"
         },
         "type_names": {
-            "encounter_voyage": "Viaje de evento",
-            "test_voyage_1": "Viaje estándar"
+            "encounter_voyage": "Viaje de encuentro",
+            "test_voyage_1": "Viaje de dilema"
         },
         "view": {
             "active_voyage": "Ver viaje activo",

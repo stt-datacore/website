@@ -1048,11 +1048,13 @@
             "advanceable": "Afficher uniquement les équipiers disposant d'emplacements du quipement non réclamés",
             "buyback": "Afficher les équipiers avec les fusibles dans le puits de rachat",
             "dupes": "Afficher uniquement les équipiers en doubles",
+            "fe": "Afficher uniquement les non-immortels entièrement équipés",
             "fodder": "Afficher uniquement les équipiers non fusionnés",
             "freezable": "Afficher uniquement les équipiers congelables",
             "impact": "Afficher uniquement les équipiers ayant besoin d'un fusible",
             "mortal": "Afficher uniquement les non-immortels",
             "none": "Afficher tous les équipiers",
+            "nonfe": "Afficher uniquement les non-immortels sous-équipés",
             "priority": "Afficher uniquement les non-immortels entièrement fusionnés",
             "quippable": "Afficher uniquement les équipiers quipable",
             "quipped": "Afficher uniquement les équipiers quipé",
@@ -1509,8 +1511,8 @@
             "start_tracking": "Commencer le suivi"
         },
         "type_names": {
-            "encounter_voyage": "Voyage événementiel",
-            "test_voyage_1": "Voyage standard"
+            "encounter_voyage": "Voyage de rencontre",
+            "test_voyage_1": "Voyage de dilemme"
         },
         "view": {
             "active_voyage": "Afficher le voyage actif",
