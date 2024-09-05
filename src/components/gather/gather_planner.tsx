@@ -7,7 +7,7 @@ import { Button, Table } from "semantic-ui-react";
 import { EquipmentItem, EquipmentItemSource } from "../../model/equipment";
 import { makeRecipeFromArchetypeCache } from "../../utils/equipment";
 import { useStateWithStorage } from "../../utils/storage";
-import ProfileItems from "../profile_items";
+import ItemsTable from "../items/itemstable";
 import ItemSources from "../itemsources";
 
 const hover_target = "gather_planner";
@@ -140,7 +140,7 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
     return (<>
         <GatherTable phaseIndex={phaseIndex} setReset={() => performReset()} eventSymbol={eventSymbol} adventures={adventures} items={eventItems} />
 
-        <ProfileItems noWorker={true} itemTargetGroup={hover_target} data={allDemands} />
+        <ItemsTable noWorker={true} itemTargetGroup={hover_target} data={allDemands} />
 
         <SourceTable sources={sources} />
     </>)

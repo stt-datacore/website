@@ -14,7 +14,7 @@ import { Skill } from "../../model/crew";
 import { appelate } from "../../utils/misc";
 import CONFIG from "../CONFIG";
 import { ItemBonusInfo, combineBonuses, formatDuration, getItemBonuses } from "../../utils/itemutils";
-import { printRequiredTraits } from "../profile_items";
+import { printRequiredTraits } from "../items/itemstable";
 
 
 export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[]) {
@@ -374,8 +374,8 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                                             </a>
                                             <i>{ingitem.name}&nbsp;({ing.count})</i>
                                             <div>
-                                            {tfmt('items.n_owned', 
-                                                { 
+                                            {tfmt('items.n_owned',
+                                                {
                                                     n: <span style={{color: ingitem.quantity && ingitem.quantity >= ing.count ? undefined : 'tomato' }}>{ingitem.quantity || '0'}</span>
                                                 }
                                             )}
@@ -397,9 +397,9 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                             }}>
                                 <Header as="h3">{t('items.current_demands')}:</Header>
                                 {/* <div style={{fontSize: "0.8em"}}>
-                                <Dropdown 
-                                    options={demandOpts} 
-                                    value={this.demandMode} 
+                                <Dropdown
+                                    options={demandOpts}
+                                    value={this.demandMode}
                                     onChange={(e, { value }) => this.demandMode = value as DemandMode}
                                     />
                                 </div> */}

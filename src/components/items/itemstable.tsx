@@ -12,24 +12,24 @@ import {
 	Table,
 } from "semantic-ui-react";
 
-import { UnifiedWorker } from "../typings/worker";
+import { UnifiedWorker } from "../../typings/worker";
 import {
 	IConfigSortData,
 	IResultSortDataBy,
 	sortDataBy,
-} from "../utils/datasort";
+} from "../../utils/datasort";
 import {
 	exportItemsAlt,
 	getItemBonuses,
 	isQuipmentMatch,
-} from "../utils/itemutils";
+} from "../../utils/itemutils";
 
-import CONFIG from "../components/CONFIG";
-import { GlobalContext } from "../context/globalcontext";
-import { CrewMember } from "../model/crew";
-import { EquipmentCommon, EquipmentItem } from "../model/equipment";
-import { PlayerCrew, TranslateMethod } from "../model/player";
-import { EquipmentWorkerConfig, EquipmentWorkerResults } from "../model/worker";
+import CONFIG from "../CONFIG";
+import { GlobalContext } from "../../context/globalcontext";
+import { CrewMember } from "../../model/crew";
+import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
+import { PlayerCrew, TranslateMethod } from "../../model/player";
+import { EquipmentWorkerConfig, EquipmentWorkerResults } from "../../model/worker";
 import {
 	downloadData,
 	getCrewQuipment,
@@ -37,17 +37,17 @@ import {
 	qbitsToSlots,
 	shortToSkill,
 	skillToShort,
-} from "../utils/crewutils";
-import { calcItemDemands, canBuildItem } from "../utils/equipment";
-import { TinyStore } from "../utils/tiny";
-import { CrewHoverStat } from "./hovering/crewhoverstat";
-import { ItemHoverStat } from "./hovering/itemhoverstat";
-import { CrewItemsView } from "./item_presenters/crew_items";
-import { CrewPreparer } from "./item_presenters/crew_preparer";
-import { CrewPresenter } from "./item_presenters/crew_presenter";
-import { renderBonuses } from "./item_presenters/item_presenter";
-import ItemDisplay from "./itemdisplay";
-import { DEFAULT_MOBILE_WIDTH } from "./hovering/hoverstat";
+} from "../../utils/crewutils";
+import { calcItemDemands, canBuildItem } from "../../utils/equipment";
+import { TinyStore } from "../../utils/tiny";
+import { CrewHoverStat } from "../hovering/crewhoverstat";
+import { ItemHoverStat } from "../hovering/itemhoverstat";
+import { CrewItemsView } from "../item_presenters/crew_items";
+import { CrewPreparer } from "../item_presenters/crew_preparer";
+import { CrewPresenter } from "../item_presenters/crew_presenter";
+import { renderBonuses } from "../item_presenters/item_presenter";
+import ItemDisplay from "../itemdisplay";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
 export interface CustomFieldDef {
 	field: string;
@@ -56,7 +56,7 @@ export interface CustomFieldDef {
 	width?: SemanticWIDTHS;
 }
 
-type ProfileItemsProps = {
+type ItemsTableProps = {
 	/** List of equipment items */
 	data?: EquipmentCommon[] | EquipmentItem[];
 
@@ -114,7 +114,7 @@ interface CrewKwipTrial {
 
 type OwnedType = "all" | "owned" | "buildable" | "both";
 
-type ProfileItemsState = {
+type ItemsTableState = {
 	column: any;
 	direction: "descending" | "ascending" | null;
 	data?: (EquipmentCommon | EquipmentItem)[];
@@ -199,13 +199,13 @@ const pagingOptions = [
 	{ key: "3", value: 100, text: "100" },
 ];
 
-class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
+class ItemsTable extends Component<ItemsTableProps, ItemsTableState> {
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
 	readonly tiny: TinyStore;
 	private lastData: (EquipmentCommon | EquipmentItem)[] | undefined;
 
-	constructor(props: ProfileItemsProps) {
+	constructor(props: ItemsTableProps) {
 		super(props);
 		this.tiny = TinyStore.getStore(
 			(props.pageName ? props.pageName + "_" : "") + "profile_items"
@@ -429,8 +429,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 
 	componentDidUpdate(
-		prevProps: Readonly<ProfileItemsProps>,
-		prevState: Readonly<ProfileItemsState>,
+		prevProps: Readonly<ItemsTableProps>,
+		prevState: Readonly<ItemsTableState>,
 		snapshot?: any
 	): void {
 		if (this.props.data && this.props.data !== this.state.data) {
@@ -1860,4 +1860,4 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 }
 
-export default ProfileItems;
+export default ItemsTable;
