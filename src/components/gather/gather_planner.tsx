@@ -349,7 +349,7 @@ const SourceTable = (props: SourceTableProps) => {
     const [itemFilter, setItemFilter] = useStateWithStorage('gather_planner/item_filter', '', { rememberForever: true });
 
     const [currentPage, setCurrentPage] = React.useState<number>(1);
-    const [itemsPerPage, setItemsPerPage] = React.useState(10);
+    const [itemsPerPage, setItemsPerPage] = useStateWithStorage('gather_planner/items_per_page', 10, { rememberForever: true });
 
     const [sortColumn, setSortColumn] = useStateWithStorage<'source' | 'demands'>('gather_planner/sort_column', 'demands', { rememberForever: true });
     const [sortDirection, setSortDirection] = useStateWithStorage<'ascending' | 'descending'>('gather_planner/sort_direction', 'descending', { rememberForever: true });
