@@ -64,7 +64,7 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
 
     const baseRow = (paginationPage - 1) * rowsPerPage;
     const totalPages = Math.ceil(data.length / rowsPerPage);
-    
+
     const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
         console.log("imageClick");
         // if (matchMedia('(hover: hover)').matches) {
@@ -248,7 +248,8 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
                                         <Popup trigger={<b>{row.amTraits?.length}</b>} content={row.amTraits?.map(tr => globalContext.localized.TRAIT_NAMES[tr]).join(', ')} />
                                     </Table.Cell>
                                     <Table.Cell>
-                                        <Popup trigger={<b>{row.collectionsIncreased?.length}</b>} content={row.collectionsIncreased?.join(' / ')} />
+                                        {row.collectionsIncreased === undefined ? "N/A" :
+                                            <Popup trigger={<b>{row.collectionsIncreased?.length}</b>} content={row.collectionsIncreased?.join(' / ')} />}
                                     </Table.Cell>
                                     <Table.Cell width={2}>
                                         <div style={{
