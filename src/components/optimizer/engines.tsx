@@ -42,12 +42,12 @@ export const EngineRunner = (props: EngineRunnerProps) => {
     const { appliedProspects } = citeContext;
 
     const { showEV } = citeConfig;
-    
+
     const [settingsOpen, setSettingsOpen] = React.useState(false);
     const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>();
 
     const builtIn = createBuiltInPresets();
-    const playerData = globalContext.player.playerData ? JSON.parse(JSON.stringify(globalContext.player.playerData)) as PlayerData : undefined;		
+    const playerData = globalContext.player.playerData ? JSON.parse(JSON.stringify(globalContext.player.playerData)) as PlayerData : undefined;
 
     if (playerData) {
         playerData.citeMode = citeConfig;
@@ -78,7 +78,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
             currentWorker.removeEventListener('message', workerResponse);
             currentWorker.terminate();
         }
-        setResults(undefined);        
+        setResults(undefined);
         runWorker();
     }, [currentConfig, engine, citeConfig.rarities, appliedProspects]);
 
@@ -104,7 +104,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
                     value={engine}
                     onChange={(e, { value }) => {
                         setResults(undefined);
-                        setTimeout(() => setEngine(value as CiteEngine));                        
+                        setTimeout(() => setEngine(value as CiteEngine));
                     }}
                 />
 
@@ -117,7 +117,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
                                 current: currentConfig,
                                 setCurrent: (value) => {
                                     setResults(undefined);
-                                    setTimeout(() => setCurrentConfig(value));                                    
+                                    setTimeout(() => setCurrentConfig(value));
                                 },
                                 defaultOptions: DefaultBetaTachyonSettings,
                             }}
@@ -153,12 +153,12 @@ export const EngineRunner = (props: EngineRunnerProps) => {
             },
         ];
     }
-    
+
     function workerResponse(message: { data: { result: any; }; }) {
         const result = message.data.result as CiteData;
 
         if (engine === 'beta_tachyon_pulse') {
-            let skmap = {} as { [key: string]: SkillOrderRarity };		
+            let skmap = {} as { [key: string]: SkillOrderRarity };
             result.skillOrderRarities.forEach(sko => skmap[sko.skillorder] = sko);
             let retrievable = result.crewToRetrieve.filter(f => playerData?.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length))
             result.crewToRetrieve = retrievable.map((r, i) => ({ ...r, pickerId: i + 1 }));
@@ -169,6 +169,13 @@ export const EngineRunner = (props: EngineRunnerProps) => {
             result.crewToRetrieve = retrievable.map((r, i) => ({ ...JSON.parse(JSON.stringify(r)), pickerId: i + 1 }));
             setResults({ citeData: result, skoMap: undefined });
         }
+    }
+
+    function getImmortalSymbols() {
+        if (!globalContext.player.playerData) return [];
+        const { crew } = globalContext.player.playerData.player.character;
+        let m = crew.filter(c => !!c.immortal).map(m => m.symbol);
+        return [ ... new Set(m) ];
     }
 
 	function runWorker() {
@@ -198,13 +205,14 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 					playerData,
 					inputCrew: allCrew,
 					collections,
+                    immortalizedSymbols: getImmortalSymbols(),
 					buffs: buffConfig,
 					settings: currentConfig,
 					coreItems: globalContext.core.items
 				} as BetaTachyonRunnerConfig
-			});	
+			});
 		}
-        
+
         setCurrentWorker(worker);
 	}
 };
