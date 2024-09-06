@@ -3,12 +3,13 @@ import { GlobalContext } from '../../context/globalcontext';
 import { Adventure } from "../../model/player";
 import ItemDisplay from '../itemdisplay';
 import { ItemHoverStat, ItemTarget } from "../hovering/itemhoverstat";
-import { Button, Dropdown, FormInput, Input, Pagination, Table } from "semantic-ui-react";
+import { Button, Dropdown, Form, FormInput, Input, Pagination, Table } from "semantic-ui-react";
 import { EquipmentItem, EquipmentItemSource } from "../../model/equipment";
 import { makeRecipeFromArchetypeCache } from "../../utils/equipment";
 import { useStateWithStorage } from "../../utils/storage";
 import ItemsTable from "../items/itemstable";
 import ItemSources from "../itemsources";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
 const hover_target = "gather_planner";
 
@@ -296,11 +297,47 @@ const GatherTable = (props: GatherTableProps) => {
 
 }
 
+
+type GatherItemFilterProps = {
+	itemFilter?: string;
+	setItemFilter: (value: string) => void;
+	altTitle?: string;
+};
+
+export const GatherItemFilter = (props: GatherItemFilterProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
+	const gatherFitlerOptions = [
+		{ key: 'all_items', value: '', text: t('gather.item_filter.all_items')},
+		{ key: 'single_source_items', value: 'single_source_items', text: t('gather.item_filter.single_source_items')},
+		{ key: 'multi_source_items', value: 'multi_source_items', text: t('gather.item_filter.multi_source_items')},
+		{ key: 'needed', value: 'needed', text: t('gather.item_filter.needed')},
+		{ key: 'needed_mission', value: 'needed_mission', text: t('gather.item_filter.needed_mission')},
+		{ key: 'single_source_mission', value: 'single_source_mission', text: t('gather.item_filter.single_source_mission')},
+	];
+
+	return (
+		<Form.Field>
+			<Dropdown
+				placeholder={props.altTitle ?? t('gather.item_filter.all_items')}
+				clearable
+				selection
+				multiple={false}
+				options={gatherFitlerOptions}
+				value={props.itemFilter}
+				onChange={(e, { value }) => props.setItemFilter(value as string)}
+				closeOnChange
+			/>
+		</Form.Field>
+	);
+};
+
 interface SourceTableProps {
     sources: CollectiveSource[];
 }
 
 const SourceTable = (props: SourceTableProps) => {
+    // const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
     const { sources } = props;
     let allItems = [ ...new Set(sources.map(m => m.items).flat())];
     allItems = allItems.filter((f, i) => allItems.findIndex(f2 => f2.symbol === f.symbol) === i);
@@ -308,7 +345,8 @@ const SourceTable = (props: SourceTableProps) => {
     const { playerData } = globalContext.player;
     const { t } = globalContext.localized;
 
-    const [searchText, setSearchText] = useStateWithStorage('gather_planner/search', '');
+    const [searchText, setSearchText] = useStateWithStorage('gather_planner/search', '', { rememberForever: true });
+    const [itemFilter, setItemFilter] = useStateWithStorage('gather_planner/item_filter', '', { rememberForever: true });
 
     const [currentPage, setCurrentPage] = React.useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = React.useState(10);
@@ -320,7 +358,44 @@ const SourceTable = (props: SourceTableProps) => {
 
     React.useEffect(() => {
 
-        const newList = [...sources];
+        const newList = (JSON.parse(JSON.stringify(sources)) as CollectiveSource[]).filter(item => {
+            item.items = item.items.filter(fitem => {
+                if (itemFilter === 'single_source_items') {
+                    return (fitem.item_sources.length === 1);
+                }
+                else if (itemFilter === 'multi_source_items') {
+                    return (fitem.item_sources.length > 1);
+                }
+                else if (itemFilter === 'needed' && fitem.quantity !== undefined && fitem.needed !== undefined) {
+                    return fitem.quantity < fitem.needed;
+                }
+                return true;
+            });
+
+            if (itemFilter === 'single_source_mission') {
+                if (!item.items.some(item => item.item_sources.length === 1)) return false;
+            }
+            else if (itemFilter === 'needed_mission') {
+                if (!item.items.some(item => (item.needed ?? 0) > (item.quantity ?? 0))) return false;
+            }
+
+            if (!item.items.length) return false;
+
+            let phrase = searchText.toLowerCase();
+            if (!phrase || item.source.name.toLowerCase().includes(phrase)) return true;
+
+            item.items = item.items.filter(fitem => {
+                if (fitem.name.toLowerCase().includes(phrase)) return true;
+                if (fitem.flavor.toLowerCase().includes(phrase)) return true;
+                if (fitem.name_english?.toLowerCase().includes(phrase)) return true;
+
+                return false;
+            });
+
+            if (!item.items.length) return false;
+            return true;
+        });
+
         const mul = sortDirection === 'descending' ? -1 : 1;
 
         if (sortColumn === 'demands') {
@@ -337,7 +412,7 @@ const SourceTable = (props: SourceTableProps) => {
         }
 
         setSortedSources(newList)
-    }, [sources, sortColumn, sortDirection]);
+    }, [sources, sortColumn, sortDirection, searchText, itemFilter]);
 
     const columnClick = (name: 'source' | 'demands') => {
         if (name === sortColumn) {
@@ -359,13 +434,23 @@ const SourceTable = (props: SourceTableProps) => {
 
     if (!playerData) return <></>
 
-    return (<div style={{ marginTop: "1em" }}>
+    return (<div style={{ marginTop: "1em"}}>
         <h2>{t('items.item_sources')}</h2>
+        <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                margin: '0.25em',
+            }}>
 
-
-        <div style={{display: 'flex', alignItems: 'center'}}>
-            {t('global.search')}
-            <FormInput value={searchText} onChange={(e, { value }) => setSearchText(value)} />
+            {t('global.search')}{": "}
+            <FormInput
+                style={{margin:'0.25em', width: '20em'}}
+                value={searchText}
+                onChange={(e, { value }) => setSearchText(value)}
+                />
+            <Button style={{marginRight: '0.5em'}} icon='close' onClick={(e) => setSearchText('')} />
+            <GatherItemFilter itemFilter={itemFilter} setItemFilter={setItemFilter} />
         </div>
         <Table striped sortable>
             <Table.Header>
@@ -462,8 +547,12 @@ const SourceTable = (props: SourceTableProps) => {
                                 />
                             </ItemTarget>
                             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center'}}>
-                            <span>{item!.name}</span>
-                            <span>{t('items.n_needed', { n: item.needed?.toString() ?? '' })}</span>
+                                <span>{item!.name}</span>
+                                <span
+                                    style={{
+                                        color: (item.needed ?? 0) > (item.quantity ?? 0) ? 'orange' : undefined
+                                    }}
+                                    >{t('items.n_needed', { n: item.needed?.toString() ?? '' })}</span>
                             </div>
                         </div>
                     })}
