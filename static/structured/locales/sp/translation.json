@@ -1,4 +1,14 @@
 {
+    "gather": {
+        "item_filter": {
+            "all_items": "Mostrar todos los artículos",
+            "single_source_items": "Mostrar solo artículos de una sola fuente",
+            "multi_source_items": "Mostrar solo artículos de múltiples fuentes",
+            "needed": "Mostrar solo artículos necesarios",
+            "needed_mission": "Mostrar solo misiones con artículos necesarios",
+            "single_source_mission": "Mostrar solo misiones con artículos de una sola fuente"
+        }
+    },
     "base": {
         "all_crew": "Mostrar toda las tripulantes",
         "bigbook_tier": "Piso",

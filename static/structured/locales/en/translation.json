@@ -1,4 +1,14 @@
 {
+    "gather": {
+        "item_filter": {
+            "all_items": "Show all items",
+            "single_source_items": "Only show single-source items",
+            "multi_source_items": "Only show multi-source items",
+            "needed": "Only show needed items",
+            "needed_mission": "Only show missions with needed items",
+            "single_source_mission": "Only show missions with single-source items"
+        }
+    },
     "base": {
         "all_crew": "Show all crew",
         "bigbook_tier": "Tier",

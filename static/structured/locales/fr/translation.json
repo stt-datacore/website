@@ -1,4 +1,14 @@
 {
+    "gather": {
+        "item_filter": {
+            "all_items": "Afficher tous les articles",
+            "single_source_items": "Afficher uniquement les articles à source unique",
+            "multi_source_items": "Afficher uniquement les articles à sources multiples",
+            "needed": "Afficher uniquement les articles nécessaires",
+            "needed_mission": "Afficher uniquement les missions avec des articles nécessaires",
+            "single_source_mission": "Afficher uniquement les missions avec des articles à source unique"
+        }
+    },
     "base": {
         "all_crew": "Afficher tous l'équipiers",
         "bigbook_tier": "Étage",
