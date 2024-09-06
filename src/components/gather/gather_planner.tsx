@@ -381,7 +381,7 @@ const SourceTable = (props: SourceTableProps) => {
 
             if (!item.items.length) return false;
 
-            let phrase = searchText.toLowerCase();
+            let phrase = searchText.toLowerCase().trim();
             if (!phrase || item.source.name.toLowerCase().includes(phrase)) return true;
 
             item.items = item.items.filter(fitem => {
