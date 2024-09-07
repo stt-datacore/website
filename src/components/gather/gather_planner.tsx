@@ -384,15 +384,18 @@ const SourceTable = (props: SourceTableProps) => {
             let phrase = searchText.toLowerCase().trim();
             if (!phrase || item.source.name.toLowerCase().includes(phrase)) return true;
 
-            item.items = item.items.filter(fitem => {
-                if (fitem.name.toLowerCase().includes(phrase)) return true;
-                if (fitem.flavor.toLowerCase().includes(phrase)) return true;
-                if (fitem.name_english?.toLowerCase().includes(phrase)) return true;
+            let phrases = phrase.split(",").map(p => p.trim());
+            for (let phrase of phrases) {
+                let test = item.items.filter(fitem => {
+                    if (fitem.name.toLowerCase().includes(phrase)) return true;
+                    if (fitem.flavor.toLowerCase().includes(phrase)) return true;
+                    if (fitem.name_english?.toLowerCase().includes(phrase)) return true;
 
-                return false;
-            });
+                    return false;
+                });
+                if (!test.length) return false;
+            }
 
-            if (!item.items.length) return false;
             return true;
         });
 
@@ -431,6 +434,8 @@ const SourceTable = (props: SourceTableProps) => {
     ];
 
     const totalPages = Math.ceil(sortedSources.length / itemsPerPage);
+    let phrase = searchText.toLowerCase().trim();
+    let phrases = phrase ? phrase.split(",").map(p => p.trim()) : [];
 
     if (!playerData) return <></>
 
@@ -457,7 +462,9 @@ const SourceTable = (props: SourceTableProps) => {
                 {renderRowHeaders()}
             </Table.Header>
             <Table.Body>
-                {sortedSources.slice((currentPage - 1) * itemsPerPage, ((currentPage - 1) * itemsPerPage) + itemsPerPage).map((source) => renderTableRow(source))}
+                {sortedSources
+                    .slice((currentPage - 1) * itemsPerPage, ((currentPage - 1) * itemsPerPage) + itemsPerPage)
+                    .map((source) => renderTableRow(source, phrases))}
             </Table.Body>
             <Table.Footer>
                 <Table.Row>
@@ -499,7 +506,7 @@ const SourceTable = (props: SourceTableProps) => {
         </Table.Row>
     }
 
-    function renderTableRow(row: CollectiveSource) {
+    function renderTableRow(row: CollectiveSource, phrases: string[]) {
 
         return <Table.Row key={row.source.name + '_row'}>
             <Table.Cell width={4}>
@@ -522,7 +529,7 @@ const SourceTable = (props: SourceTableProps) => {
                 }}>
                     {row.items.map((item, idx) => {
                         if (!item) return <div key={`empty_${idx}_event_demand`}></div>
-
+                        const itemHi = phrases.some(p => item!.name.toLowerCase().includes(p));
                         return <div
                             key={item.symbol + "_event_demand_mapping" + idx.toString()}
                             style={{
@@ -546,13 +553,39 @@ const SourceTable = (props: SourceTableProps) => {
                                     maxRarity={item!.rarity}
                                 />
                             </ItemTarget>
-                            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center'}}>
-                                <span>{item!.name}</span>
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                textAlign: 'center'}}>
+
+                                <span
+                                    onClick={() => {
+                                        if (!phrases.some(p => item!.name.toLowerCase() === p)) {
+                                            if (!searchText) {
+                                                setSearchText(item!.name);
+                                            }
+                                            else {
+                                                setSearchText(`${searchText},${item!.name}`)
+                                            }
+                                        }
+                                        else {
+                                            setSearchText(searchText.split(",").filter(f => f !== item!.name).join(","))
+                                        }
+                                    }}
+                                    style={{
+                                        cursor: 'pointer',
+                                        color: itemHi ? 'lightgreen' : undefined,
+                                        fontWeight: itemHi ? 'bold' : undefined
+                                    }}
+                                >{item!.name}</span>
                                 <span
                                     style={{
                                         color: (item.needed ?? 0) > (item.quantity ?? 0) ? 'orange' : undefined
                                     }}
-                                    >{t('items.n_needed', { n: item.needed?.toString() ?? '' })}</span>
+                                    >{t('items.n_needed', { n: item.needed?.toString() ?? '' })}
+                                </span>
                             </div>
                         </div>
                     })}
