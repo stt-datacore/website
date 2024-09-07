@@ -1,14 +1,4 @@
 {
-    "gather": {
-        "item_filter": {
-            "all_items": "Mostrar todos los artículos",
-            "single_source_items": "Mostrar solo artículos de una sola fuente",
-            "multi_source_items": "Mostrar solo artículos de múltiples fuentes",
-            "needed": "Mostrar solo artículos necesarios",
-            "needed_mission": "Mostrar solo misiones con artículos necesarios",
-            "single_source_mission": "Mostrar solo misiones con artículos de una sola fuente"
-        }
-    },
     "base": {
         "all_crew": "Mostrar toda las tripulantes",
         "bigbook_tier": "Piso",
@@ -521,6 +511,16 @@
         "x_y_confirmed_solved": "{{x}}/{{y}} confirmado resuelto",
         "x_y_solved": "{{x}}/{{y}} resuelto"
     },
+    "gather": {
+        "item_filter": {
+            "all_items": "Mostrar todos los artículos",
+            "multi_source_items": "Mostrar solo artículos de múltiples fuentes",
+            "needed": "Mostrar solo artículos necesarios",
+            "needed_mission": "Mostrar solo misiones con artículos necesarios",
+            "single_source_items": "Mostrar solo artículos de una sola fuente",
+            "single_source_mission": "Mostrar solo misiones con artículos de una sola fuente"
+        }
+    },
     "gauntlet": {
         "advanced": {
             "crit_multiplier": "{{p}}% multiplicador de críticos",
@@ -792,6 +792,7 @@
         "filter_ship_grants": "Filtrar subvenciones para buques",
         "filter_ship_rarity": "Filtrar la rareza del buque",
         "roster_maintenance": "Mantenimiento de la lista",
+        "select_items": "Seleccionar artículos",
         "select_ship": "Seleccionar buque",
         "select_ship_abilities": "Seleccionar habilidades del buque",
         "select_ship_ability": "Seleccionar capacidad del buque",

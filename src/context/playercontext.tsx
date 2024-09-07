@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CompactCrew, GameEvent, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
+import { CompactCrew, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
 import { useStateWithStorage } from '../utils/storage';
 import { DataContext, DataProviderProperties } from './datacontext';
 import { BuffStatTable, calculateBuffConfig, calculateMaxBuffs } from '../utils/voyageutils';
@@ -42,6 +42,7 @@ export interface IEphemeralData {
 	voyage: Voyage[],
 	voyageDescriptions: VoyageDescription[],
 	archetype_cache: ArchetypeRoot20;
+	objectiveEventRoot: ObjectiveEventRoot;
 };
 
 export interface ISessionStates {
@@ -150,9 +151,17 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				shuttleAdventures: [...input.player.character.shuttle_adventures ?? []],
 				voyage: [...input.player.character.voyage ?? []],
 				voyageDescriptions: [...input.player.character.voyage_descriptions ?? []],
-				archetype_cache: {} as ArchetypeRoot20
+				archetype_cache: {} as ArchetypeRoot20,
+				objectiveEventRoot: input.objective_event_root ?? {} as ObjectiveEventRoot
 			});
-			setItemArchetypeCache(input.archetype_cache ?? {} as ArchetypeRoot20);
+
+			if (!!input.archetype_cache?.archetypes?.length) {
+				setItemArchetypeCache(input.archetype_cache);
+			}
+			// else if (!itemArchetypeCache?.archetypes?.length) {
+			// 	setItemArchetypeCache({} as ArchetypeRoot20);
+			// }
+
 		}
 
 		const dtImported = (typeof input.calc?.lastImported === 'string') ? new Date(input.calc?.lastImported) : new Date();

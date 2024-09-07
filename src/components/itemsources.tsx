@@ -14,7 +14,7 @@ type ItemSourcesProps = {
 	refItem?: string;
 	pageId?: string;
 	briefLength?: number;
-	noHeading?: boolean;
+	farmFormat?: boolean;
 };
 
 interface ItemSourcesState {
@@ -67,7 +67,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 		let shipBattles = this.props.item_sources.filter(e => e.type === 2);
 		let factions = this.props.item_sources.filter(e => e.type === 1);
 		let cadets = this.props.item_sources.filter(e => e.type === 4);
-		const { brief, refItem, noHeading } = this.props;
+		const { brief, refItem, farmFormat: noHeading } = this.props;
 		const briefLen = this.props.briefLength ?? 2;
 		const briefSep = <>, </>;
 		const briefSepInit = <>&nbsp;</>;
@@ -113,6 +113,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 						.map((entry, idx) => (
 							<MissionCost
 								key={idx}
+								hideCost={noHeading}
 								mission_symbol={entry.mission_symbol}
 								cost={entry.cost ?? 0}
 								avg_cost={entry.avg_cost}
@@ -139,6 +140,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 						.map((entry, idx) => (
 							<MissionCost
 								key={idx}
+								hideCost={noHeading}
 								mission_symbol={entry.mission_symbol}
 								cost={entry.cost ?? 0}
 								avg_cost={entry.avg_cost}
@@ -181,6 +183,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 						.map((entry, idx) => (
 							<MissionCost
 								cadet={true}
+								hideCost={noHeading}
 								key={idx}
 								mission_symbol={entry.mission_symbol}
 								cost={entry.cost ?? 0}

@@ -1,14 +1,4 @@
 {
-    "gather": {
-        "item_filter": {
-            "all_items": "Alle Artikel anzeigen",
-            "single_source_items": "Nur Artikel aus einer Quelle anzeigen",
-            "multi_source_items": "Nur Artikel aus mehreren Quellen anzeigen",
-            "needed": "Nur benötigte Artikel anzeigen",
-            "needed_mission": "Nur Missionen mit benötigten Gegenständen anzeigen",
-            "single_source_mission": "Nur Missionen mit Gegenständen aus einer einzigen Quelle anzeigen"
-        }
-    },
     "base": {
         "all_crew": "Die gesamte Crew anzeigen",
         "bigbook_tier": "Stufe",
@@ -517,6 +507,16 @@
         "x_y_confirmed_solved": "{{x}}/{{y}} als gelöst bestätigt",
         "x_y_solved": "{{x}}/{{y}} als gelöst"
     },
+    "gather": {
+        "item_filter": {
+            "all_items": "Alle Artikel anzeigen",
+            "multi_source_items": "Nur Artikel aus mehreren Quellen anzeigen",
+            "needed": "Nur benötigte Artikel anzeigen",
+            "needed_mission": "Nur Missionen mit benötigten Gegenständen anzeigen",
+            "single_source_items": "Nur Artikel aus einer Quelle anzeigen",
+            "single_source_mission": "Nur Missionen mit Gegenständen aus einer einzigen Quelle anzeigen"
+        }
+    },
     "gauntlet": {
         "advanced": {
             "crit_multiplier": "{{p}} % Krit-Multiplikator",
@@ -785,6 +785,7 @@
         "filter_ship_grants": "Schiffszuschüsse filtern",
         "filter_ship_rarity": "Schiffsrarität filtern",
         "roster_maintenance": "Dienstplanpflege",
+        "select_items": "Artikel auswählen",
         "select_ship": "Schiff Auswählen",
         "select_ship_abilities": "Schiffsfähigkeiten auswählen",
         "select_ship_ability": "Schiffsfähigkeit auswählen",
