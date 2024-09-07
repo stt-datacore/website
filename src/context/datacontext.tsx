@@ -15,6 +15,7 @@ import { EventInstance } from '../model/events';
 import { StaticFaction } from '../model/shuttle';
 import { getSkillOrder } from '../utils/crewutils';
 import { highestLevel } from '../utils/shiputils';
+import { ObjectiveEvent } from '../model/player';
 
 const DC_DEBUGGING: boolean = false;
 
@@ -36,6 +37,7 @@ export type ValidDemands =
 	'misc_stats' |
 	'missions' |
 	'missionsfull' |
+	'objective_events' |
 	'quests' |
 	'ship_schematics' |
 	'skill_bufs';
@@ -92,6 +94,7 @@ const defaultData = {
 	continuum_missions: [] as ContinuumMission[],
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
+	objective_events: [] as ObjectiveEvent[],
 	topQuipmentScores: [] as QuipmentScores[],
 } as ICoreData;
 
@@ -151,6 +154,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'misc_stats',
 			'missions',
 			'missionsfull',
+			'objective_events',
 			'quests',
 			'ship_schematics',
 			'skill_bufs',
@@ -387,7 +391,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 					if (ship.max_level && n === ship.max_level + 1 && ship.levels[`${n}`].hull) {
 						scsave[i] = { ...ship, ...ship.levels[`${n}`] };
 					}
-				}				
+				}
 			}
 			data.ships = scsave;
 		}
