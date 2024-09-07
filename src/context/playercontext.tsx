@@ -154,7 +154,14 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				archetype_cache: {} as ArchetypeRoot20,
 				objectiveEventRoot: input.objective_event_root ?? {} as ObjectiveEventRoot
 			});
-			setItemArchetypeCache(input.archetype_cache ?? {} as ArchetypeRoot20);
+
+			if (!!input.archetype_cache?.archetypes?.length) {
+				setItemArchetypeCache(input.archetype_cache);
+			}
+			// else if (!itemArchetypeCache?.archetypes?.length) {
+			// 	setItemArchetypeCache({} as ArchetypeRoot20);
+			// }
+
 		}
 
 		const dtImported = (typeof input.calc?.lastImported === 'string') ? new Date(input.calc?.lastImported) : new Date();

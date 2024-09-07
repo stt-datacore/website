@@ -153,7 +153,7 @@ export const EventPicker = (props: EventPickerProps) => {
 				<React.Fragment>
 					{rosterType === 'myCrew' && <EventProspects pool={bonusCrew} prospects={prospects} setProspects={setProspects} />}
 					{eventData.content_types[phaseIndex] === 'shuttles' && (<EventShuttles crew={rosterCrew} eventData={eventData} />)}
-					{eventData.content_types[phaseIndex] === 'gather' && <GatherPlanner phaseIndex={phaseIndex} eventSymbol={eventData.symbol} />}
+					{eventData.content_types[phaseIndex] === 'gather' && <GatherPlanner eventSymbol={eventData.symbol} />}
 				</React.Fragment>
 			)}
 

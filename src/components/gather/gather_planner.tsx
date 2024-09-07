@@ -3,19 +3,17 @@ import { GlobalContext } from '../../context/globalcontext';
 import { Adventure } from "../../model/player";
 import ItemDisplay from '../itemdisplay';
 import { ItemHoverStat, ItemTarget } from "../hovering/itemhoverstat";
-import { Button, Dropdown, Form, FormInput, Input, Pagination, Table } from "semantic-ui-react";
-import { EquipmentItem, EquipmentItemSource } from "../../model/equipment";
+import { Button, Dropdown, Form, Table } from "semantic-ui-react";
+import { EquipmentItem } from "../../model/equipment";
 import { makeRecipeFromArchetypeCache } from "../../utils/equipment";
 import { useStateWithStorage } from "../../utils/storage";
 import ItemsTable from "../items/itemstable";
-import ItemSources from "../itemsources";
-import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { FarmSources, FarmTable } from "../items/farmtable";
 
 const hover_target = "gather_planner";
 
 export interface GatherPlannerProps {
     eventSymbol: string;
-    phaseIndex: number;
 }
 
 interface GatherItemCache {
@@ -25,16 +23,19 @@ interface GatherItemCache {
     adventures: Adventure[]
 }
 
-interface CollectiveSource {
-    source: EquipmentItemSource,
-    items: EquipmentItem[]
-}
-
 export const GatherPlanner = (props: GatherPlannerProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { playerData, ephemeral } = globalContext.player;
-    const { eventSymbol, phaseIndex } = props;
+    const { eventSymbol } = props;
     const { items } = globalContext.core;
+
+    const easternTime = new Date((new Date()).toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    let phaseChk = 0;
+    if ((easternTime.getDay() === 6 && easternTime.getHours() >= 12) || easternTime.getDay() < 2) {
+        phaseChk = 1;
+    }
+
+    const phaseIndex = phaseChk;
 
     const { t } = globalContext.localized;
     const event = ephemeral?.events?.find(f => f.symbol === eventSymbol)
@@ -44,7 +45,7 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
     const [eventItems, setEventItems] = React.useState<EquipmentItem[]>([]);
     const [reset, setReset] = React.useState(false);
     const [allDemands, setAllDemands] = React.useState<EquipmentItem[]>([]);
-    const [sources, setSources] = React.useState<CollectiveSource[]>([]);
+    const [sources, setSources] = React.useState<FarmSources[]>([]);
 
     React.useEffect(() => {
         if (!ephemeral?.events?.length || !event?.content.gather_pools) return;
@@ -65,7 +66,7 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
     }, [reset]);
 
     React.useEffect(() => {
-        if (adventures?.length && ephemeral?.archetype_cache && playerData && items?.length) {
+        if (adventures?.length && ephemeral?.archetype_cache?.archetypes?.length && playerData && items?.length) {
             let obj = getEventCache(true);
             let newadv = adventures.concat();
             let changed = false;
@@ -106,7 +107,7 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
 
     React.useEffect(() => {
         const newDemands = eventItems.map(me => me.demands?.map(de => ({...de.equipment!, needed: de.count, quantity: de.have }) as EquipmentItem) ?? []).flat();
-        const newsources = [] as CollectiveSource[];
+        const newsources = [] as FarmSources[];
 
         newDemands.forEach((demand) => {
             if (demand.item_sources?.length) {
@@ -143,7 +144,9 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
 
         <ItemsTable noWorker={true} itemTargetGroup={hover_target} data={allDemands} />
 
-        <SourceTable sources={sources} />
+        <FarmTable
+            pageId="gather_planner"
+            hover_target={hover_target} sources={sources} />
     </>)
 
     function performReset() {
@@ -159,7 +162,7 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
                 adventures,
                 phase: phaseIndex
             }
-            setCachedItems([...cachedItems, obj]);
+            setCachedItems([...cachedItems.filter(f => f.phase === phaseIndex), obj]);
         }
         return obj;
     }
@@ -202,7 +205,7 @@ interface GatherTableProps {
 
 const GatherTable = (props: GatherTableProps) => {
 
-    const { adventures, items, setReset } = props;
+    const { adventures, items, setReset, phaseIndex } = props;
 
     const globalContext = React.useContext(GlobalContext);
     const { playerData } = globalContext.player;
@@ -331,269 +334,3 @@ export const GatherItemFilter = (props: GatherItemFilterProps) => {
 	);
 };
 
-interface SourceTableProps {
-    sources: CollectiveSource[];
-}
-
-const SourceTable = (props: SourceTableProps) => {
-    // const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
-
-    const { sources } = props;
-    let allItems = [ ...new Set(sources.map(m => m.items).flat())];
-    allItems = allItems.filter((f, i) => allItems.findIndex(f2 => f2.symbol === f.symbol) === i);
-    const globalContext = React.useContext(GlobalContext);
-    const { playerData } = globalContext.player;
-    const { t } = globalContext.localized;
-
-    const [searchText, setSearchText] = useStateWithStorage('gather_planner/search', '', { rememberForever: true });
-    const [itemFilter, setItemFilter] = useStateWithStorage('gather_planner/item_filter', '', { rememberForever: true });
-
-    const [currentPage, setCurrentPage] = React.useState<number>(1);
-    const [itemsPerPage, setItemsPerPage] = useStateWithStorage('gather_planner/items_per_page', 10, { rememberForever: true });
-
-    const [sortColumn, setSortColumn] = useStateWithStorage<'source' | 'demands'>('gather_planner/sort_column', 'demands', { rememberForever: true });
-    const [sortDirection, setSortDirection] = useStateWithStorage<'ascending' | 'descending'>('gather_planner/sort_direction', 'descending', { rememberForever: true });
-
-    const [sortedSources, setSortedSources] = React.useState(sources);
-
-    React.useEffect(() => {
-
-        const newList = (JSON.parse(JSON.stringify(sources)) as CollectiveSource[]).filter(item => {
-            item.items = item.items.filter(fitem => {
-                if (itemFilter === 'single_source_items') {
-                    return (fitem.item_sources.length === 1);
-                }
-                else if (itemFilter === 'multi_source_items') {
-                    return (fitem.item_sources.length > 1);
-                }
-                else if (itemFilter === 'needed' && fitem.quantity !== undefined && fitem.needed !== undefined) {
-                    return fitem.quantity < fitem.needed;
-                }
-                return true;
-            });
-
-            if (itemFilter === 'single_source_mission') {
-                if (!item.items.some(item => item.item_sources.length === 1)) return false;
-            }
-            else if (itemFilter === 'needed_mission') {
-                if (!item.items.some(item => (item.needed ?? 0) > (item.quantity ?? 0))) return false;
-            }
-
-            if (!item.items.length) return false;
-
-            let phrase = searchText.toLowerCase().trim();
-            if (!phrase || item.source.name.toLowerCase().includes(phrase)) return true;
-
-            let phrases = phrase.split(",").map(p => p.trim());
-            for (let phrase of phrases) {
-                let test = item.items.filter(fitem => {
-                    if (fitem.name.toLowerCase().includes(phrase)) return true;
-                    if (fitem.flavor.toLowerCase().includes(phrase)) return true;
-                    if (fitem.name_english?.toLowerCase().includes(phrase)) return true;
-
-                    return false;
-                });
-                if (!test.length) return false;
-            }
-
-            return true;
-        });
-
-        const mul = sortDirection === 'descending' ? -1 : 1;
-
-        if (sortColumn === 'demands') {
-            newList.sort((a, b) => {
-                let acount = a.items.reduce((p, n) => p + n.needed!, 0);
-                let bcount = b.items.reduce((p, n) => p + n.needed!, 0);
-                return mul *  (acount - bcount);
-            })
-        }
-        else if (sortColumn === 'source') {
-            newList.sort((a, b) => {
-                return mul * a.source.name.localeCompare(b.source.name);
-            });
-        }
-
-        setSortedSources(newList)
-    }, [sources, sortColumn, sortDirection, searchText, itemFilter]);
-
-    const columnClick = (name: 'source' | 'demands') => {
-        if (name === sortColumn) {
-            setSortDirection(sortDirection === 'ascending' ? 'descending' : 'ascending');
-        }
-        else {
-            setSortColumn(name);
-        }
-    }
-
-    const pagingOptions = [
-        { key: "0", value: 10, text: "10" },
-        { key: "1", value: 25, text: "25" },
-        { key: "2", value: 50, text: "50" },
-        { key: "3", value: 100, text: "100" },
-    ];
-
-    const totalPages = Math.ceil(sortedSources.length / itemsPerPage);
-    let phrase = searchText.toLowerCase().trim();
-    let phrases = phrase ? phrase.split(",").map(p => p.trim()) : [];
-
-    if (!playerData) return <></>
-
-    return (<div style={{ marginTop: "1em"}}>
-        <h2>{t('items.item_sources')}</h2>
-        <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                margin: '0.25em',
-            }}>
-
-            {t('global.search')}{": "}
-            <FormInput
-                style={{margin:'0.25em', width: '20em'}}
-                value={searchText}
-                onChange={(e, { value }) => setSearchText(value)}
-                />
-            <Button style={{marginRight: '0.5em'}} icon='close' onClick={(e) => setSearchText('')} />
-            <GatherItemFilter itemFilter={itemFilter} setItemFilter={setItemFilter} />
-        </div>
-        <Table striped sortable>
-            <Table.Header>
-                {renderRowHeaders()}
-            </Table.Header>
-            <Table.Body>
-                {sortedSources
-                    .slice((currentPage - 1) * itemsPerPage, ((currentPage - 1) * itemsPerPage) + itemsPerPage)
-                    .map((source) => renderTableRow(source, phrases))}
-            </Table.Body>
-            <Table.Footer>
-                <Table.Row>
-                    <Table.HeaderCell colSpan="8">
-                        <Pagination
-                            totalPages={totalPages}
-                            activePage={currentPage}
-                            onPageChange={(event, { activePage }) =>
-                                setCurrentPage(activePage as number)
-                            }
-                        />
-                        <span style={{ paddingLeft: "2em" }}>
-                            {t("global.rows_per_page")}:{" "}
-                            <Dropdown
-                                inline
-                                options={pagingOptions}
-                                value={itemsPerPage}
-                                onChange={(event, { value }) =>
-                                    setItemsPerPage(value as number)
-                                }
-                            />
-                        </span>
-                    </Table.HeaderCell>
-                </Table.Row>
-            </Table.Footer>
-
-        </Table>
-    </div>)
-
-    function renderRowHeaders() {
-
-        return <Table.Row>
-            <Table.HeaderCell sorted={sortColumn === 'source' ? sortDirection : undefined} onClick={() => columnClick('source')}>
-                {t('shuttle_helper.missions.columns.mission')}
-            </Table.HeaderCell>
-            <Table.HeaderCell sorted={sortColumn === 'demands' ? sortDirection : undefined} onClick={() => columnClick('demands')}>
-                {t('demands.items')}
-            </Table.HeaderCell>
-        </Table.Row>
-    }
-
-    function renderTableRow(row: CollectiveSource, phrases: string[]) {
-
-        return <Table.Row key={row.source.name + '_row'}>
-            <Table.Cell width={4}>
-                <h3>{row.source.name}</h3>
-                <div style={{ fontSize: '1em' }}>
-                    <i>{t(`mission_type.type_${row.source.type}`)}</i>
-                </div>
-                <div>
-                    <ItemSources noHeading={true} item_sources={[row.source]} />
-                </div>
-            </Table.Cell>
-            <Table.Cell>
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '1em',
-                    flexWrap: 'wrap'
-                }}>
-                    {row.items.map((item, idx) => {
-                        if (!item) return <div key={`empty_${idx}_event_demand`}></div>
-                        const itemHi = phrases.some(p => item!.name.toLowerCase().includes(p));
-                        return <div
-                            key={item.symbol + "_event_demand_mapping" + idx.toString()}
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '0.5em',
-                                textAlign: 'center',
-                                width: '10em',
-                                fontSize: '0.8em',
-                                fontStyle: 'italic'
-                            }}>
-                            <ItemTarget inputItem={item} targetGroup={hover_target}>
-                                <ItemDisplay
-                                    src={`${process.env.GATSBY_ASSETS_URL}${item?.imageUrl}`}
-                                    size={48}
-                                    allItems={allItems}
-                                    itemSymbol={item!.symbol}
-                                    rarity={item!.rarity}
-                                    maxRarity={item!.rarity}
-                                />
-                            </ItemTarget>
-                            <div style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                textAlign: 'center'}}>
-
-                                <span
-                                    onClick={() => {
-                                        if (!phrases.some(p => item!.name.toLowerCase() === p)) {
-                                            if (!searchText) {
-                                                setSearchText(item!.name);
-                                            }
-                                            else {
-                                                setSearchText(`${searchText},${item!.name}`)
-                                            }
-                                        }
-                                        else {
-                                            setSearchText(searchText.split(",").filter(f => f !== item!.name).join(","))
-                                        }
-                                    }}
-                                    style={{
-                                        cursor: 'pointer',
-                                        color: itemHi ? 'lightgreen' : undefined,
-                                        fontWeight: itemHi ? 'bold' : undefined
-                                    }}
-                                >{item!.name}</span>
-                                <span
-                                    style={{
-                                        color: (item.needed ?? 0) > (item.quantity ?? 0) ? 'orange' : undefined
-                                    }}
-                                    >{t('items.n_needed', { n: item.needed?.toString() ?? '' })}
-                                </span>
-                            </div>
-                        </div>
-                    })}
-                </div>
-
-            </Table.Cell>
-        </Table.Row>
-
-    }
-
-}
