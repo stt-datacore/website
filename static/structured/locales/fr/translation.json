@@ -513,6 +513,16 @@
         "x_y_confirmed_solved": "{{x}}/{{y}} confirmé résolu",
         "x_y_solved": "{{x}}/{{y}} résolu"
     },
+    "gather": {
+        "item_filter": {
+            "all_items": "Afficher tous les articles",
+            "multi_source_items": "Afficher uniquement les articles à sources multiples",
+            "needed": "Afficher uniquement les articles nécessaires",
+            "needed_mission": "Afficher uniquement les missions avec des articles nécessaires",
+            "single_source_items": "Afficher uniquement les articles à source unique",
+            "single_source_mission": "Afficher uniquement les missions avec des articles à source unique"
+        }
+    },
     "gauntlet": {
         "advanced": {
             "crit_multiplier": "Multiplicateur de critiques de {{p}} %",
@@ -783,6 +793,7 @@
         "filter_ship_grants": "Filtrer les subventions d'expédition",
         "filter_ship_rarity": "Filtrer la rareté des vaisseaux",
         "roster_maintenance": "Entretien de la liste",
+        "select_items": "Sélectionner des articles",
         "select_ship": "Sélectionnez Vaisseau",
         "select_ship_abilities": "Sélectionner les capacités du vaisseau",
         "select_ship_ability": "Sélectionner la capacité du vaisseau",

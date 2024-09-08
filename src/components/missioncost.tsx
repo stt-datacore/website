@@ -10,6 +10,7 @@ type MissionCostProps = {
 	chance_grade: number;
 	name: string;
 	cadet?: boolean;
+	hideCost?: boolean;
 };
 
 class MissionCost extends PureComponent<MissionCostProps> {
@@ -25,13 +26,14 @@ class MissionCost extends PureComponent<MissionCostProps> {
 				<span style={{ display: 'inline-block' }}>
 					<img title={CONFIG.MASTERY_LEVELS[this.props.mastery].name} src={`${process.env.GATSBY_ASSETS_URL}atlas/${CONFIG.MASTERY_LEVELS[this.props.mastery].imageUrl}.png`} height={14} />
 				</span>
-				{is_known && (
+				{is_known && !this.props.hideCost && (
 					<span>
 						{' ('}
-						<span style={{ display: 'inline-block' }}>							
+						<span style={{ display: 'inline-block' }}>
 							{!cadet && <img title={"Chronotons"} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />}
 							{cadet && <img title={"Cadet challenge ticket"} src={`${process.env.GATSBY_ASSETS_URL}atlas/cadet_icon.png`} height={14} />}
 						</span>
+
 						{` ${this.props.cost}${has_avg ? `; avg. ${this.props.avg_cost?.toFixed(2)}` : ''})`}
 					</span>
 				)}

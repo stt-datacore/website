@@ -507,6 +507,16 @@
         "x_y_confirmed_solved": "{{x}}/{{y}} confirmed solved",
         "x_y_solved": "{{x}}/{{y}} solved"
     },
+    "gather": {
+        "item_filter": {
+            "all_items": "Show all items",
+            "multi_source_items": "Only show multi-source items",
+            "needed": "Only show needed items",
+            "needed_mission": "Only show missions with needed items",
+            "single_source_items": "Only show single-source items",
+            "single_source_mission": "Only show missions with single-source items"
+        }
+    },
     "gauntlet": {
         "advanced": {
             "crit_multiplier": "{{p}}% crit multiplier",
@@ -775,6 +785,7 @@
         "filter_ship_grants": "Filter ship grants",
         "filter_ship_rarity": "Filter ship rarity",
         "roster_maintenance": "Roster maintenance",
+        "select_items": "Select items",
         "select_ship": "Select Ship",
         "select_ship_abilities": "Select Ship Abilities",
         "select_ship_ability": "Select ship ability",

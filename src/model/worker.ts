@@ -204,6 +204,7 @@ export interface BetaTachyonRunnerConfig {
     prospects: PlayerCrew[];
     collections: Collection[];
     inputCrew: CrewMember[];
+    immortalizedSymbols: string[];
     buffs: BuffStatTable;
     settings: BetaTachyonSettings;
     coreItems: EquipmentItem[];

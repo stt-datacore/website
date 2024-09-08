@@ -3,18 +3,17 @@ import { GlobalContext } from '../../context/globalcontext';
 import { Adventure } from "../../model/player";
 import ItemDisplay from '../itemdisplay';
 import { ItemHoverStat, ItemTarget } from "../hovering/itemhoverstat";
-import { Button, Table } from "semantic-ui-react";
-import { EquipmentItem, EquipmentItemSource } from "../../model/equipment";
+import { Button, Dropdown, Form, Table } from "semantic-ui-react";
+import { EquipmentItem } from "../../model/equipment";
 import { makeRecipeFromArchetypeCache } from "../../utils/equipment";
 import { useStateWithStorage } from "../../utils/storage";
-import ProfileItems from "../profile_items";
-import ItemSources from "../itemsources";
+import ItemsTable from "../items/itemstable";
+import { FarmSources, FarmTable } from "../items/farmtable";
 
 const hover_target = "gather_planner";
 
 export interface GatherPlannerProps {
     eventSymbol: string;
-    phaseIndex: number;
 }
 
 interface GatherItemCache {
@@ -24,16 +23,19 @@ interface GatherItemCache {
     adventures: Adventure[]
 }
 
-interface CollectiveSource {
-    source: EquipmentItemSource,
-    items: EquipmentItem[]
-}
-
 export const GatherPlanner = (props: GatherPlannerProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { playerData, ephemeral } = globalContext.player;
-    const { eventSymbol, phaseIndex } = props;
+    const { eventSymbol } = props;
     const { items } = globalContext.core;
+
+    const easternTime = new Date((new Date()).toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    let phaseChk = 0;
+    if ((easternTime.getDay() === 6 && easternTime.getHours() >= 12) || easternTime.getDay() < 2) {
+        phaseChk = 1;
+    }
+
+    const phaseIndex = phaseChk;
 
     const { t } = globalContext.localized;
     const event = ephemeral?.events?.find(f => f.symbol === eventSymbol)
@@ -43,7 +45,7 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
     const [eventItems, setEventItems] = React.useState<EquipmentItem[]>([]);
     const [reset, setReset] = React.useState(false);
     const [allDemands, setAllDemands] = React.useState<EquipmentItem[]>([]);
-    const [sources, setSources] = React.useState<CollectiveSource[]>([]);
+    const [sources, setSources] = React.useState<FarmSources[]>([]);
 
     React.useEffect(() => {
         if (!ephemeral?.events?.length || !event?.content.gather_pools) return;
@@ -64,7 +66,7 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
     }, [reset]);
 
     React.useEffect(() => {
-        if (adventures?.length && ephemeral?.archetype_cache && playerData && items?.length) {
+        if (adventures?.length && ephemeral?.archetype_cache?.archetypes?.length && playerData && items?.length) {
             let obj = getEventCache(true);
             let newadv = adventures.concat();
             let changed = false;
@@ -105,7 +107,7 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
 
     React.useEffect(() => {
         const newDemands = eventItems.map(me => me.demands?.map(de => ({...de.equipment!, needed: de.count, quantity: de.have }) as EquipmentItem) ?? []).flat();
-        const newsources = [] as CollectiveSource[];
+        const newsources = [] as FarmSources[];
 
         newDemands.forEach((demand) => {
             if (demand.item_sources?.length) {
@@ -140,9 +142,11 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
     return (<>
         <GatherTable phaseIndex={phaseIndex} setReset={() => performReset()} eventSymbol={eventSymbol} adventures={adventures} items={eventItems} />
 
-        <ProfileItems noWorker={true} itemTargetGroup={hover_target} data={allDemands} />
+        <ItemsTable noWorker={true} itemTargetGroup={hover_target} data={allDemands} />
 
-        <SourceTable sources={sources} />
+        <FarmTable
+            pageId="gather_planner"
+            hover_target={hover_target} sources={sources} />
     </>)
 
     function performReset() {
@@ -158,7 +162,7 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
                 adventures,
                 phase: phaseIndex
             }
-            setCachedItems([...cachedItems, obj]);
+            setCachedItems([...cachedItems.filter(f => f.phase === phaseIndex), obj]);
         }
         return obj;
     }
@@ -201,7 +205,7 @@ interface GatherTableProps {
 
 const GatherTable = (props: GatherTableProps) => {
 
-    const { adventures, items, setReset } = props;
+    const { adventures, items, setReset, phaseIndex } = props;
 
     const globalContext = React.useContext(GlobalContext);
     const { playerData } = globalContext.player;
@@ -296,137 +300,37 @@ const GatherTable = (props: GatherTableProps) => {
 
 }
 
-interface SourceTableProps {
-    sources: CollectiveSource[];
-}
 
-const SourceTable = (props: SourceTableProps) => {
-    const { sources } = props;
-    let allItems = [ ...new Set(sources.map(m => m.items).flat())];
-    allItems = allItems.filter((f, i) => allItems.findIndex(f2 => f2.symbol === f.symbol) === i);
-    const globalContext = React.useContext(GlobalContext);
-    const { playerData } = globalContext.player;
-    const { t } = globalContext.localized;
+type GatherItemFilterProps = {
+	itemFilter?: string;
+	setItemFilter: (value: string) => void;
+	altTitle?: string;
+};
 
-    const [sortColumn, setSortColumn] = useStateWithStorage<'source' | 'demands'>('gather_planner/sort_column', 'demands', { rememberForever: true });
-    const [sortDirection, setSortDirection] = useStateWithStorage<'ascending' | 'descending'>('gather_planner/sort_direction', 'descending', { rememberForever: true });
+export const GatherItemFilter = (props: GatherItemFilterProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
+	const gatherFitlerOptions = [
+		{ key: 'all_items', value: '', text: t('gather.item_filter.all_items')},
+		{ key: 'single_source_items', value: 'single_source_items', text: t('gather.item_filter.single_source_items')},
+		{ key: 'multi_source_items', value: 'multi_source_items', text: t('gather.item_filter.multi_source_items')},
+		{ key: 'needed', value: 'needed', text: t('gather.item_filter.needed')},
+		{ key: 'needed_mission', value: 'needed_mission', text: t('gather.item_filter.needed_mission')},
+		{ key: 'single_source_mission', value: 'single_source_mission', text: t('gather.item_filter.single_source_mission')},
+	];
 
-    const [sortedSources, setSortedSources] = React.useState(sources);
+	return (
+		<Form.Field>
+			<Dropdown
+				placeholder={props.altTitle ?? t('gather.item_filter.all_items')}
+				clearable
+				selection
+				multiple={false}
+				options={gatherFitlerOptions}
+				value={props.itemFilter}
+				onChange={(e, { value }) => props.setItemFilter(value as string)}
+				closeOnChange
+			/>
+		</Form.Field>
+	);
+};
 
-    React.useEffect(() => {
-
-        const newList = [...sources];
-        const mul = sortDirection === 'descending' ? -1 : 1;
-
-        if (sortColumn === 'demands') {
-            newList.sort((a, b) => {
-                let acount = a.items.reduce((p, n) => p + n.needed!, 0);
-                let bcount = b.items.reduce((p, n) => p + n.needed!, 0);
-                return mul *  (acount - bcount);
-            })
-        }
-        else if (sortColumn === 'source') {
-            newList.sort((a, b) => {
-                return mul * a.source.name.localeCompare(b.source.name);
-            });
-        }
-
-        setSortedSources(newList)
-    }, [sources, sortColumn, sortDirection]);
-
-    const columnClick = (name: 'source' | 'demands') => {
-        if (name === sortColumn) {
-            setSortDirection(sortDirection === 'ascending' ? 'descending' : 'ascending');
-        }
-        else {
-            setSortColumn(name);
-        }
-    }
-
-    if (!playerData) return <></>
-
-    return (<div style={{ marginTop: "1em" }}>
-
-        <Table striped sortable>
-            <Table.Header>
-                {renderRowHeaders()}
-            </Table.Header>
-            <Table.Body>
-                {sortedSources.map((source) => renderTableRow(source))}
-            </Table.Body>
-        </Table>
-    </div>)
-
-    function renderRowHeaders() {
-
-        return <Table.Row>
-            <Table.HeaderCell sorted={sortColumn === 'source' ? sortDirection : undefined} onClick={() => columnClick('source')}>
-                {t('shuttle_helper.missions.columns.mission')}
-            </Table.HeaderCell>
-            <Table.HeaderCell sorted={sortColumn === 'demands' ? sortDirection : undefined} onClick={() => columnClick('demands')}>
-                {t('demands.items')}
-            </Table.HeaderCell>
-        </Table.Row>
-    }
-
-    function renderTableRow(row: CollectiveSource) {
-
-        return <Table.Row key={row.source.name + '_row'}>
-            <Table.Cell width={4}>
-                <h3>{row.source.name}</h3>
-                <div style={{ fontSize: '1em' }}>
-                    <i>{t(`mission_type.type_${row.source.type}`)}</i>
-                </div>
-                <div>
-                    <ItemSources noHeading={true} item_sources={[row.source]} />
-                </div>
-            </Table.Cell>
-            <Table.Cell>
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '1em',
-                    flexWrap: 'wrap'
-                }}>
-                    {row.items.map((item, idx) => {
-                        if (!item) return <div key={`empty_${idx}_event_demand`}></div>
-
-                        return <div
-                            key={item.symbol + "_event_demand_mapping" + idx.toString()}
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '0.5em',
-                                textAlign: 'center',
-                                width: '10em',
-                                fontSize: '0.8em',
-                                fontStyle: 'italic'
-                            }}>
-                            <ItemTarget inputItem={item} targetGroup={hover_target}>
-                                <ItemDisplay
-                                    src={`${process.env.GATSBY_ASSETS_URL}${item?.imageUrl}`}
-                                    size={48}
-                                    allItems={allItems}
-                                    itemSymbol={item!.symbol}
-                                    rarity={item!.rarity}
-                                    maxRarity={item!.rarity}
-                                />
-                            </ItemTarget>
-                            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center'}}>
-                            <span>{item!.name}</span>
-                            <span>{t('items.n_needed', { n: item.needed?.toString() ?? '' })}</span>
-                            </div>
-                        </div>
-                    })}
-                </div>
-
-            </Table.Cell>
-        </Table.Row>
-
-    }
-
-}

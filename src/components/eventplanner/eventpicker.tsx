@@ -17,7 +17,7 @@ import { applySkillBuff } from '../../utils/crewutils';
 
 import { IEventData, IRosterCrew } from './model';
 import { GatherPlanner } from '../gather/gather_planner';
-import ProfileShips from '../profile_ships';
+import ShipTable from '../ship/shiptable';
 
 interface ISelectOptions {
 	key: string;
@@ -153,7 +153,7 @@ export const EventPicker = (props: EventPickerProps) => {
 				<React.Fragment>
 					{rosterType === 'myCrew' && <EventProspects pool={bonusCrew} prospects={prospects} setProspects={setProspects} />}
 					{eventData.content_types[phaseIndex] === 'shuttles' && (<EventShuttles crew={rosterCrew} eventData={eventData} />)}
-					{eventData.content_types[phaseIndex] === 'gather' && <GatherPlanner phaseIndex={phaseIndex} eventSymbol={eventData.symbol} />}
+					{eventData.content_types[phaseIndex] === 'gather' && <GatherPlanner eventSymbol={eventData.symbol} />}
 				</React.Fragment>
 			)}
 
@@ -162,7 +162,7 @@ export const EventPicker = (props: EventPickerProps) => {
 					<div style={{margin: "0.5em 0"}}>
 						<h4>{t('base.event_ships')}</h4>
 					</div>
-					<ProfileShips event_ships={eventData.bonus_ships}
+					<ShipTable event_ships={eventData.bonus_ships}
 						high_bonus={eventData.featured_ships}
 						event_ship_traits={eventData.activeContent?.antimatter_bonus_ship_traits}
 					/>
