@@ -1,11 +1,6 @@
 import { SemanticICONS } from 'semantic-ui-react';
 import { Content, PlayerCrew } from '../../model/player';
 
-export interface BonusDetail {
-	symbol: string;
-	amount: number;
-}
-
 // Stripped down version of GameData, extended and standardized for DataCore tools
 //	Baseline props are event type agnostic, containing only common event props and standardized event crew/ship lists
 //	activeContent holds details about the active phase of a started event or the first phase of an unstarted event

@@ -3,8 +3,8 @@ import { Estimate } from '../../model/worker';
 
 export interface IAssemblerOptions {
 	strategy?: string;
+	proficiency?: number;
 	customBoosts?: IBoosts;
-	luckFactor?: number;
 	favorSpecialists?: boolean;
 	progressCallback?: (message: string) => void;
 	debugCallback?: (message: string) => void;
@@ -25,6 +25,8 @@ export interface IPrimedCrew {
 	other_score: number;
 	viable_slots: number[];
 	trait_slots: number[];
+	trait_values: number[];
+	ideal_trait_value: number;
 };
 
 export interface ISlottableCrew extends IPrimedCrew {

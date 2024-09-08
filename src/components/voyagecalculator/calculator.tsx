@@ -3,7 +3,7 @@ import { Icon, Form, Button, Grid, Message, Segment, Checkbox, Select, Header, I
 import { Link } from 'gatsby';
 
 import { Voyage } from '../../model/player';
-import { IVoyageInputConfig, IVoyageCalcConfig, IVoyageCrew, IVoyageEventContent } from '../../model/voyage';
+import { IVoyageInputConfig, IVoyageCalcConfig, IVoyageCrew } from '../../model/voyage';
 import { CalcResult, Calculation, Estimate, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
 import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
@@ -20,6 +20,7 @@ import { CIVASMessage } from './civas';
 import { HistoryContext } from '../voyagehistory/context';
 import { addVoyageToHistory, addCrewToHistory, removeVoyageFromHistory } from '../voyagehistory/utils';
 import CONFIG from '../CONFIG';
+import { getShipTraitBonus } from './utils';
 
 // These preferences are per-user, so they need separate handlers when there's no player data
 interface IUserPrefsContext {
@@ -94,7 +95,7 @@ const CalculatorForm = () => {
 	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const calculatorContext = React.useContext(CalculatorContext);
-	const { configSource, rosterType, voyageConfig } = calculatorContext;
+	const { configSource, voyageConfig } = calculatorContext;
 	const userPrefs = React.useContext(UserPrefsContext);
 
 	const [bestShip, setBestShip] = React.useState<VoyageConsideration | undefined>(undefined);
@@ -106,24 +107,14 @@ const CalculatorForm = () => {
 	React.useEffect(() => {
 		const consideredShips: VoyageConsideration[] = [];
 		calculatorContext.ships.filter(ship => ship.owned).forEach(ship => {
-			const traited: boolean = (ship.traits ?? []).includes(voyageConfig.ship_trait);
+			const shipBonus: number = getShipTraitBonus(voyageConfig, ship);
 			const entry: VoyageConsideration = {
 				ship: ship,
-				score: ship.antimatter + (traited ? 150 : 0),
-				traited: traited,
+				score: ship.antimatter + shipBonus,
+				traited: shipBonus > 0,
 				bestIndex: Math.min(ship.index?.left ?? 0, ship.index?.right ?? 0),
 				archetype_id: ship.archetype_id ?? 0
 			};
-			if (voyageConfig.voyage_type === 'encounter') {
-				const content: IVoyageEventContent = voyageConfig.event_content!;
-				if (content.featured_ships.includes(ship.symbol)) {
-					entry.score = ship.antimatter + content.antimatter_bonus_for_featured_ship;
-				}
-				else {
-					const ftrait: number = content.antimatter_bonus_ship_traits.filter(bs => ship.traits?.includes(bs)).length ?? 0;
-					entry.score = ship.antimatter + (ftrait * content.antimatter_bonus_per_ship_trait);
-				}
-			}
 			consideredShips.push(entry);
 		});
 		consideredShips.sort((a, b) => {
@@ -299,7 +290,8 @@ const CalculatorForm = () => {
 		const request = requests.find(r => r.id === requestId);
 		if (!request) return;
 
-		if (rosterType !== 'myCrew') return;
+		if (configSource !== 'player') return;
+		if (voyageConfig.voyage_type !== 'dilemma') return;
 		if (request.calcOptions.strategy === 'peak-antimatter') return;
 
 		const estimatedDuration = result.estimate.refills[0].result*60*60;
@@ -416,7 +408,7 @@ type CrewOptionsProps = {
 
 const CrewOptions = (props: CrewOptionsProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
-	const { voyageConfig, rosterType } = calculatorContext;
+	const { rosterType } = calculatorContext;
 
 	const [preConsideredCrew, setPreConsideredCrew] = React.useState<IVoyageCrew[]>(calculatorContext.crew);
 	const [considerVoyagers, setConsiderVoyagers] = React.useState<boolean>(false);
@@ -785,7 +777,7 @@ type ResultPaneProps = {
 const ResultPane = (props: ResultPaneProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
 	const { t } = React.useContext(GlobalContext).localized;
-	const { configSource, rosterType } = calculatorContext;
+	const { configSource, voyageConfig, rosterType } = calculatorContext;
 	const {
 		result, resultIndex,
 		requests, requestId,
@@ -860,7 +852,7 @@ const ResultPane = (props: ResultPaneProps) => {
 						</div>
 						<div>
 							<Button.Group>
-								{configSource === 'player' && rosterType === 'myCrew' &&
+								{configSource === 'player' && voyageConfig.voyage_type === 'dilemma' &&
 									<Popup position='top center'
 										content={<>Track this recommendation</>}
 										trigger={

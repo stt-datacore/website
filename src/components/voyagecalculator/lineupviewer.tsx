@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, Button, Table, Popup, Icon, Card, Label, SemanticICONS } from 'semantic-ui-react';
 
-import { CrewMember, Skill } from '../../model/crew';
+import { Skill } from '../../model/crew';
 import { PlayerCrew, Voyage, VoyageCrewSlot } from '../../model/player';
 import { Ship } from '../../model/ship';
 import { IVoyageCalcConfig } from '../../model/voyage';
@@ -11,6 +11,7 @@ import CONFIG from '../CONFIG';
 import { useStateWithStorage } from '../../utils/storage';
 import { renderKwipmentBonus } from '../item_presenters/item_presenter';
 import { isQuipped } from '../../utils/crewutils';
+import { getCrewTraitBonus, getShipTraitBonus } from './utils';
 
 interface IAssignment {
 	crew: PlayerCrew;
@@ -94,7 +95,7 @@ export const LineupViewer = (props: LineupViewerProps) => {
 		if (!ship.index) ship.index = { left: 0, right: 0 };
 		shipData.direction = ship.index.right < ship.index.left ? 'right' : 'left';
 		shipData.index = ship.index[shipData.direction] ?? 0;
-		shipData.shipBonus = ship.traits?.includes(voyageConfig.ship_trait) ? 150 : 0;
+		shipData.shipBonus = getShipTraitBonus(voyageConfig, ship);
 		shipData.crewBonus = voyageConfig.max_hp - ship.antimatter - shipData.shipBonus;
 	}
 
@@ -379,13 +380,7 @@ const TableView = (props: ViewProps) => {
 												</span>
 											} />
 										</>}
-										{crew.traits.includes(trait.toLowerCase()) &&
-											<Popup content={`${TRAIT_NAMES[trait]} +25 AM`} mouseEnterDelay={POPUP_DELAY} trigger={
-												<span style={{ cursor: 'help' }}>
-													<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
-												</span>
-											} />
-										}
+										{renderTraitBonus(crew, trait)}
 									</div>
 								</Table.Cell>
 							</Table.Row>
@@ -393,6 +388,23 @@ const TableView = (props: ViewProps) => {
 					})}
 				</Table.Body>
 			</Table>
+		);
+	}
+
+	function renderTraitBonus(crew: PlayerCrew, trait: string): JSX.Element {
+		const traitBonus: number = getCrewTraitBonus(voyageConfig, crew, trait);
+		if (traitBonus === 0) return <></>;
+		let bonusText: string = '';
+		if (traitBonus === 25)
+			bonusText = `${TRAIT_NAMES[trait]} +25 AM`;
+		else
+			bonusText = `+${traitBonus} AM`;
+		return (
+			<Popup content={bonusText} mouseEnterDelay={POPUP_DELAY} trigger={
+				<span style={{ cursor: 'help' }}>
+					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+				</span>
+			} />
 		);
 	}
 };
@@ -412,7 +424,7 @@ const GridView = (props: ViewProps) => {
 				</div>
 			}
 			{layout === 'grid-icons' &&
-				<Grid doubling centered textAlign='center'>
+				<Grid doubling centered>
 					{renderIcons()}
 				</Grid>
 			}
@@ -445,9 +457,9 @@ const GridView = (props: ViewProps) => {
 							}
 						</Table.Cell>
 						<Table.Cell width={1} className='iconic'>
-							{ship.traits?.includes(voyageConfig.ship_trait) &&
+							{shipData.shipBonus > 0 &&
 								<span style={{ cursor: 'help' }}>
-									<Popup content='+150 AM' mouseEnterDelay={POPUP_DELAY} trigger={<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />} />
+									<Popup content={`+${shipData.shipBonus} AM`} mouseEnterDelay={POPUP_DELAY} trigger={<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />} />
 								</span>
 							}
 						</Table.Cell>
@@ -617,6 +629,7 @@ type AssignmentCardProps = {
 const AssignmentCard = (props: AssignmentCardProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { TRAIT_NAMES } = globalContext.localized;
+	const { voyageConfig } = React.useContext(ViewContext);
 	const { assignment: { crew, name, trait, bestRank }, showFinder, showSkills } = props;
 
 	return (
@@ -643,7 +656,10 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 				<div style={{ fontSize: '1.1em', fontWeight: 'bolder' }}>
 					<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help' }}>{crew.name}</span>}>
 						<Popup.Content>
-							{renderSkills()}
+							<CrewVoyageSkills
+								crew={crew}
+								showProficiency={voyageConfig.voyage_type === 'encounter'}
+							/>
 						</Popup.Content>
 					</Popup>
 				</div>
@@ -661,16 +677,14 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 							/>
 						</div>
 					)}
-					{crew.traits.includes(trait.toLowerCase()) &&
-						<React.Fragment>
-							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
-							<span style={{ marginLeft: '.5em', verticalAlign: 'middle' }}>{TRAIT_NAMES[trait]}</span>
-						</React.Fragment>
-					}
+					{renderTraitBonus()}
 				</div>
-				{showSkills &&
-					<div>{renderSkills()}</div>
-				}
+				{showSkills && (
+					<CrewVoyageSkills
+						crew={crew}
+						showProficiency={voyageConfig.voyage_type === 'encounter'}
+					/>
+				)}
 			</div>
 			<Label attached='bottom' style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
 				{name}
@@ -678,19 +692,42 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 		</Card>
 	);
 
-	function renderSkills(): JSX.Element {
-		if (!('skills' in crew)) return (<></>);
+	function renderTraitBonus(): JSX.Element {
+		const traitBonus: number = getCrewTraitBonus(voyageConfig, crew, trait);
+		if (traitBonus === 0) return <></>;
 		return (
 			<React.Fragment>
-				{Object.keys(crew.skills).map(skill =>
-					<Label key={skill}>
-						{CONFIG.SKILLS_SHORT.find(c => c.name === skill)?.short}{` `}
-						{Math.floor(voySkillScore(crew.skills[skill]))}
-					</Label>
-				)}
+				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+				{traitBonus === 25 && <span style={{ marginLeft: '.5em', verticalAlign: 'middle' }}>{TRAIT_NAMES[trait]}</span>}
+				{traitBonus !== 25 && <span style={{ marginLeft: '.5em', verticalAlign: 'middle' }}>+ {traitBonus}</span>}
 			</React.Fragment>
 		);
 	}
+};
+
+type CrewVoyageSkillsProps = {
+	crew: PlayerCrew;
+	showProficiency: boolean;
+};
+
+const CrewVoyageSkills = (props: CrewVoyageSkillsProps) => {
+	const { crew, showProficiency } = props;
+	if (!('skills' in crew)) return <></>;
+	return (
+		<React.Fragment>
+			{Object.keys(crew.skills).map(skill =>
+				<Label key={skill}>
+					{CONFIG.SKILLS_SHORT.find(c => c.name === skill)?.short}{` `}
+					<b>{Math.floor(voySkillScore(crew.skills[skill]))}</b>
+					{showProficiency && (
+						<React.Fragment>
+							{` `}({crew.skills[skill].range_min}-{crew.skills[skill].range_max})
+						</React.Fragment>
+					)}
+				</Label>
+			)}
+		</React.Fragment>
+	);
 };
 
 type CrewFinderProps = {
