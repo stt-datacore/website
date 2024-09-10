@@ -52,7 +52,7 @@ export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
 
     drops.forEach((drop) => {
         if (seconds >= drop.end) {
-            total += (dropvp * drop.drops * drop.actual) + drop.encounter;
+            total += (dropvp * drop.drops * drop.actual) + (drop.encounter * drop.opponents);
             vpdetails.total_drops += drop.drops;
             vpdetails.total_encounters++;
             vpdetails.total_opponents += drop.opponents;
