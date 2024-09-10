@@ -19,7 +19,7 @@ const DropMap = [
     { start: 570, end: 690, shown: 7, actual: 9, drops: 51, encounter: 3500, opponents: 5 },
     { start: 690, end: 810, shown: 8, actual: 10, drops: 52, encounter: 4400, opponents: 5 },
     { start: 810, end: 930, shown: 9, actual: 11, drops: 51, encounter: 5400, opponents: 6 },
-    // { start: 930, end: 1050, shown: 10, actual: 12, drops: 52, encounter: 6400, opponents: 6 },
+    { start: 930, end: 1050, shown: 10, actual: 12, drops: 52, encounter: 6500, opponents: 6 },
    ] as DropMapEntry[];
 
 export interface VPDetails {
