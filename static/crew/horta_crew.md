@@ -3,7 +3,7 @@ name: Mother Horta
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal: true
 date: 25/10/2018
 published: true
