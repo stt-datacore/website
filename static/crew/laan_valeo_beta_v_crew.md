@@ -3,7 +3,7 @@ name: Valeo Beta V La'an
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal: true
 date: 04/10/2023
 published: true

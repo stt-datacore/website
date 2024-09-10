@@ -3,7 +3,7 @@ name: Data and Spot
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal:
 date: 02/08/2022
 published: true

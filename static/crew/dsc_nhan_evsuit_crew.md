@@ -3,7 +3,7 @@ name: EV Suit Nhan
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 in_portal: true
 date: 02/04/2020
 published: true
