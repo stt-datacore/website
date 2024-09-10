@@ -3,7 +3,7 @@ name: Assimilated Rooney
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 in_portal: true
 date: 05/04/2023
 published: true

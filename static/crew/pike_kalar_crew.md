@@ -3,7 +3,7 @@ name: Kalar Pike
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal: true
 date: 05/12/2023
 published: true
