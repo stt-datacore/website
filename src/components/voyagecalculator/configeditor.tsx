@@ -130,7 +130,7 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 			shipTraitsList.push({
 				key: 'none',
 				value: '',
-				text: '(Ship trait)'
+				text: '(No trait)'
 			});
 			shipTraitsList.sort((a, b) => a.text.localeCompare(b.text));
 
@@ -144,7 +144,7 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 			crewTraitsList.push({
 				key: 'none',
 				value: '',
-				text: '(Trait)'
+				text: '(No trait)'
 			});
 			crewTraitsList.sort((a, b) => a.text.localeCompare(b.text));
 

@@ -1,5 +1,5 @@
 import { Voyage } from '../../model/player';
-import { IVoyageCalcConfig, IVoyageHistory, ITrackedVoyage, ITrackedAssignment, ITrackedCheckpoint } from '../../model/voyage';
+import { IVoyageCalcConfig, IVoyageHistory, ITrackedVoyage, ITrackedAssignment, ITrackedCheckpoint, ITrackedAssignmentsByCrew } from '../../model/voyage';
 import { Estimate } from '../../model/worker';
 import CONFIG from '../CONFIG';
 import { flattenEstimate } from '../../utils/voyageutils';
@@ -129,4 +129,62 @@ export function getRuntime(voyageConfig: Voyage): number {
 	}
 
 	return runtime;
+}
+
+export function mergeHistories(h1: IVoyageHistory, h2: IVoyageHistory): IVoyageHistory {
+	// Start with blank history
+	const newVoyages: ITrackedVoyage[] = [];
+	const newAssignments: ITrackedAssignmentsByCrew = {};
+
+	let lastId: number = 0;
+
+	// Add h1 voyages to new history, with new validated ids for each voyage
+	h1.voyages.forEach(v1 => {
+		const oldId: number = v1.tracker_id;
+		const newId: number = ++lastId;
+		const newVoyage: ITrackedVoyage = {
+			...v1,
+			tracker_id: newId
+		};
+		newVoyages.push(newVoyage);
+		Object.keys(h1.crew).forEach(crewSymbol => {
+			const oldAssignment: ITrackedAssignment | undefined = h1.crew[crewSymbol].find(a => a.tracker_id === oldId);
+			if (oldAssignment) {
+				if (!!!newAssignments[crewSymbol]) newAssignments[crewSymbol] = [];
+				newAssignments[crewSymbol].push({
+					...oldAssignment,
+					tracker_id: newId
+				})
+			}
+		});
+	});
+
+	console.log(newVoyages, newAssignments);
+
+	return {
+		voyages: newVoyages,
+		crew: newAssignments
+	};
+}
+
+export function compareTrackedVoyages(v1: ITrackedVoyage, v2: ITrackedVoyage): boolean {
+	if (v1.voyage_id === v2.voyage_id) return true;
+
+	const obj1 = {
+		skills: v1.skills,
+		ship: v1.ship,
+		ship_trait: v1.ship_trait,
+		max_hp: v1.max_hp,
+		skill_aggregates: v1.skill_aggregates
+	};
+
+	const obj2 = {
+		skills: v2.skills,
+		ship: v2.ship,
+		ship_trait: v2.ship_trait,
+		max_hp: v2.max_hp,
+		skill_aggregates: v2.skill_aggregates
+	};
+
+	return JSON.stringify(obj1) === JSON.stringify(obj2);
 }

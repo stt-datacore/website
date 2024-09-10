@@ -25,6 +25,7 @@ import { VoyageStats } from './voyagestats';
 import { HistoryContext, IHistoryContext } from '../voyagehistory/context';
 import { CrewTable } from '../voyagehistory/crewtable';
 import { VoyagesTable } from '../voyagehistory/voyagestable';
+import { DataManagement } from '../voyagehistory/manage';
 import { createCheckpoint, defaultHistory, NEW_VOYAGE_ID } from '../voyagehistory/utils';
 
 export const VoyageHome = () => {
@@ -128,7 +129,6 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		}
 	);
 	const [historyReady, setHistoryReady] = React.useState<boolean>(false);
-	const [voyagesReconciled, setVoyagesReconciled] = React.useState<boolean>(false);
 	const [eventData, setEventData] = React.useState<IEventData[]>([]);
 	const [playerConfigs, setPlayerConfigs] = React.useState<IVoyageInputConfig[]>([]);
 	const [customConfig, setCustomConfig] = React.useState<IVoyageInputConfig | undefined>(undefined);
@@ -140,7 +140,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		getPlayerConfigs();
 	}, [playerData]);
 
-	if (!historyReady || !voyagesReconciled)
+	if (!historyReady)
 		return <></>;
 
 	const historyContext: IHistoryContext = {
@@ -216,7 +216,6 @@ const PlayerHome = (props: PlayerHomeProps) => {
 
 		// Reconcile running voyages with tracked voyages
 		runningVoyageIds.forEach(voyageId => reconcileVoyage(voyageId));
-		setVoyagesReconciled(true);
 
 		// Bypass home if only 1 pending voyage
 		setActiveView(playerConfigs.length === 1 && runningVoyageIds.length === 0 ?
@@ -256,10 +255,15 @@ const PlayerHome = (props: PlayerHomeProps) => {
 
 		const trackedVoyage: ITrackedVoyage | undefined = history.voyages.find(voyage => voyage.voyage_id === running.id);
 		if (trackedVoyage) {
+			const trackedId: number = trackedVoyage.tracker_id;
 			createCheckpoint(running).then(checkpoint => {
-				trackedVoyage.checkpoint = checkpoint;
-				setHistory({...history});
-			}).catch(e => console.log('reconcileExisting', e));
+				setHistory(history => {
+					const trackedVoyage: ITrackedVoyage | undefined = history.voyages.find(voyage => voyage.tracker_id === trackedId);
+					if (trackedVoyage) trackedVoyage.checkpoint = checkpoint;
+					return history;
+				});
+			})
+			.catch(e => console.log('reconcileExisting', e))
 		}
 		else {
 			// Voyages don't get a proper voyageId until started in-game, so try to reconcile history
@@ -272,15 +276,24 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				|| lastTracked.ship_trait !== running.ship_trait) {
 				return;
 			}
+			const trackedId: number = lastTracked.tracker_id;
 			createCheckpoint(running).then(checkpoint => {
-				lastTracked.voyage_id = running.id;
-				lastTracked.created_at = Date.parse(running.created_at);
-				lastTracked.ship = globalContext.core.ships.find(s => s.id === running.ship_id)?.symbol ?? lastTracked.ship;
-				// If the lineup sent out doesn't match the tracked recommendation, maybe reconcile crew and max_hp here or show a warning?
-				lastTracked.checkpoint = checkpoint;
-				setHistory({...history});
-			}).catch(e => console.log('reconcileNew', e));
+				setHistory(history => {
+					const trackedVoyage: ITrackedVoyage | undefined = history.voyages.find(voyage => voyage.tracker_id === trackedId);
+					if (trackedVoyage) {
+						trackedVoyage.voyage_id = running.id;
+						trackedVoyage.created_at = Date.parse(running.created_at);
+						trackedVoyage.ship = globalContext.core.ships.find(s => s.id === running.ship_id)?.symbol ?? lastTracked.ship;
+						// If the lineup sent out doesn't match the tracked recommendation, maybe reconcile crew and max_hp here or show a warning?
+						trackedVoyage.checkpoint = checkpoint;
+					}
+					return history;
+				});
+			})
+			.catch(e => console.log('reconcileNew', e))
 		}
+
+		return;
 	}
 
 	function renderVoyagePicker(): JSX.Element {
@@ -304,6 +317,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 					<React.Fragment>
 						<VoyagesTable />
 						<CrewTable />
+						<DataManagement />
 					</React.Fragment>
 				)}
 			</React.Fragment>
