@@ -3,7 +3,7 @@ name: Cristóbal Rios
 rarity: 4
 series: pic
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal: true
 date: 30/04/2020
 published: true
