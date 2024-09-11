@@ -92,7 +92,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	if (typeof sessionStorage !== 'undefined') {
 		let __kludge = sessionStorage.getItem('__kludge');
 		if (!__kludge) {
-			if (DEBUG_MODE) console.log("KLUDGE!!!");
+			console.log("KLUDGE!!!");
 			sessionStorage.setItem('__kludge', "__kludge")
 			setTimeout(() => {
 				location.reload();
