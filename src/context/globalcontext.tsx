@@ -6,7 +6,7 @@ import { DefaultLocalizedData, LocalizedContext, ILocalizedData, TranslatedCore 
 import { BuffStatTable } from "../utils/voyageutils";
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 
-const DEBUG_MODE = true;
+const DEBUG_MODE = false;
 
 interface GlobalProviderProperties {
 	children: JSX.Element;
