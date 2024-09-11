@@ -105,6 +105,7 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 				const bonuses: number[] = [];
 				lineup.crew.forEach(crew => bonuses.push(crew.event_score));
 				estimate.vpDetails = calcVoyageVP(seconds, bonuses);
+				console.log(lineup.key, seconds, bonuses, estimate.vpDetails);
 			}
 			resolve({ estimate, key: lineup.key });
 		});
