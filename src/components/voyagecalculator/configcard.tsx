@@ -9,7 +9,7 @@ import {
 import { CrewMember } from '../../model/crew';
 import { Voyage } from '../../model/player';
 import { Ship } from '../../model/ship';
-import { ITrackedCheckpoint, ITrackedVoyage, IVoyageHistory, IVoyageInputConfig } from '../../model/voyage';
+import { ITrackedCheckpoint, ITrackedVoyage, IVoyageInputConfig } from '../../model/voyage';
 import { Estimate } from '../../model/worker';
 import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';

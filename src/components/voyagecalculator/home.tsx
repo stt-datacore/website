@@ -324,7 +324,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 								key={voyageConfig.voyage_type}
 								configSource='custom'
 								voyageConfig={voyageConfig}
-								renderToggle={() => renderViewButton(voyageConfig)}
+								renderToggle={() => renderViewButton(voyageConfig, 'custom')}
 							/>
 						))}
 					</React.Fragment>
@@ -356,7 +356,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		}
 	}
 
-	function renderViewButton(voyageConfig: IVoyageInputConfig): JSX.Element {
+	function renderViewButton(voyageConfig: IVoyageInputConfig, configSource: 'player' | 'custom' = 'player'): JSX.Element {
 		const running: Voyage | undefined = ephemeral?.voyage?.find(voyage => voyage.voyage_type === voyageConfig.voyage_type);
 		return (
 			<Button
@@ -364,7 +364,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				color='blue'
 				icon={running ? 'rocket' : 'users'}
 				content={running ? 'View running voyage' : 'View crew calculator'}
-				onClick={() => setActiveView({ source: 'player', config: voyageConfig })}
+				onClick={() => setActiveView({ source: configSource, config: voyageConfig })}
 			/>
 		);
 	}
