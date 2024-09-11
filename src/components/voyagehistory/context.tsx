@@ -6,6 +6,7 @@ export interface IHistoryContext {
 	history: IVoyageHistory;
 	setHistory: (history: IVoyageHistory) => void;
 	activeVoyageId: number;
+	dbid?: number;
 };
 
 export const HistoryContext = React.createContext<IHistoryContext>({} as IHistoryContext);

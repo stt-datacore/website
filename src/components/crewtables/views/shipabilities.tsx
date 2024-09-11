@@ -45,8 +45,9 @@ type CrewCellProps = {
 
 export const CrewShipCells = (props: CrewCellProps) => {
 	const { crew } = props;
+	const { t } = React.useContext(GlobalContext).localized;
 	if (crew.action.ability !== undefined && crew.action.ability_text === undefined) {
-		crew.action.ability_text = crew.action.ability ? getShipBonus(crew) : '';
+		crew.action.ability_text = crew.action.ability ? getShipBonus(t, crew) : '';
 	}
 	return (
 		<React.Fragment>
@@ -372,7 +373,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 					{!isCheckDisabled() &&
 					<div style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
 						<Checkbox checked={triggerOnly} onChange={(e, { checked }) => setShipFilters({ ... shipFilters, triggerOnly: checked as boolean })} />
-						<div style={{ margin: "8px" }}>Show Only Crew With Matching Trigger {selectedShip?.actions?.some(ab => ab.status && ab.status != 16) && "(" + printTriggers(selectedShip) + ")"}</div>
+						<div style={{ margin: "8px" }}>{t('ship.crew_with_trigger_check')} {selectedShip?.actions?.some(ab => ab.status && ab.status != 16) && "(" + printTriggers(selectedShip) + ")"}</div>
 					</div>}
 					{!selectedShip &&
 					<div style={{display: "flex", flexDirection:"row", alignItems: "center", margin: 0}}>

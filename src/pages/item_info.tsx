@@ -11,7 +11,7 @@ import { EquipmentItem } from '../model/equipment';
 import { GlobalContext } from '../context/globalcontext';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
-import ProfileItems, { printRequiredTraits } from '../components/profile_items';
+import ItemsTable, { printRequiredTraits } from '../components/items/itemstable';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import DataPageLayout from '../components/page/datapagelayout';
@@ -153,7 +153,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 						.map(crew => {
 							if (this.context.player.playerData) {
 								let owned = this.context.player.playerData?.player.character.crew.find(fcrew => fcrew.symbol === crew.symbol);
-								if (owned) {								
+								if (owned) {
 									return {
 										crew: { ...crew as PlayerCrew, ...owned, rarity: owned?.rarity ?? 0 },
 										level: 100,
@@ -186,7 +186,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 		for (let cl of crew_levels) {
 			if (owned && !cl.owned) continue;
-			
+
 			crews[cl.crew.symbol] ??= [];
 			crews[cl.crew.symbol].push(cl.level);
 		}
@@ -365,7 +365,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 									marginLeft: ltMargin
 								}}
 							>
-								<div><b>{tfmt('items.required_traits', { 
+								<div><b>{tfmt('items.required_traits', {
 									traits: <i>
 										{printRequiredTraits(item_data.item, traits, t)}
 										</i>
@@ -465,7 +465,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 							tableConfig={crewTableCells}
 							renderTableCells={this.renderTableCells}
 							crewFilters={[]}
-							pageId='item_info'							
+							pageId='item_info'
 							rosterCrew={this.makeCrewFlavors(item_data.crew_levels)}
 							rosterType='allCrew'
 						/>
@@ -476,7 +476,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				{!!builds && builds.length > 0 && (
 					<div>
 						<Header as="h3">{t('items.is_used_to_build')}:</Header>
-						<ProfileItems pageName='item_info' noWorker={true} hideOwnedInfo={true} data={builds} navigate={(symbol) => this.changeComponent(symbol)} />
+						<ItemsTable pageName='item_info' noWorker={true} hideOwnedInfo={true} data={builds} navigate={(symbol) => this.changeComponent(symbol)} />
 					</div>
 				)}
 			</div>

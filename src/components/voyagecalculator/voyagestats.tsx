@@ -61,11 +61,11 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	updateAndRun(force?: boolean) {
 		const { estimate, numSims, ships, voyageData } = this.props;
-		
+
 		if (!voyageData)
 			return;
 
-		this.ship = ships.length == 1 ? ships[0] : ships.find(s => s.id == voyageData.ship_id);
+		this.ship = ships.length == 1 ? ships[0] : ships.find(s => s.id == voyageData?.ship_id);
 
 		if (!estimate || force) {
 			const duration = voyageData.voyage_duration ?? 0;
@@ -132,7 +132,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			let nextHour = Math.ceil(this.config.elapsedSeconds / 3600);
 			if (nextHour % 2) nextHour++;
 
-			if (nextHour >= 18 && (this.config?.selectedTime === undefined || this.config.selectedTime <= nextHour)) {				
+			if (nextHour >= 18 && (this.config?.selectedTime === undefined || this.config.selectedTime <= nextHour)) {
 				this.config.selectedTime = nextHour + 4;
 			}
 
@@ -143,9 +143,9 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				this.worker?.postMessage({ worker: 'voyageEstimateExtended', config: this.config });
 				return;
 			}
-		}		
-		
-		this.worker?.postMessage({ worker: 'voyageEstimate', config: this.config });		
+		}
+
+		this.worker?.postMessage({ worker: 'voyageEstimate', config: this.config });
 	}
 
 	componentWillUnmount() {
@@ -289,7 +289,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 						<img style={{height:"24px", margin:"0.5em"}} src={`${process.env.GATSBY_ASSETS_URL}${revivals.imageUrl}`} />
 						</div>
 						<span>{idx} / {revivals.quantity} Voyage Revivals</span>
-					</div>				
+					</div>
 				}
 			}
 			else {
@@ -303,9 +303,9 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					<img style={{height:"24px", margin:"0.5em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} />
 					</div>
 					<span>{cost} Dilithium</span>
-				</div>				
+				</div>
 			}
-		}	
+		}
 
 
 		return <>{cost == 0 || 'Costing ' + cost + ' dilithium'}</>
@@ -339,7 +339,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				<div>
 					The voyage will end at {this._formatTime(estimate['refills'][0].result)}.
 					Subsequent refills will extend it by {this._formatTime(extendTime)}.
-					{/* 
+					{/*
 					For a {this.config?.selectedTime ?? 20} hour voyage you need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.) */}
 										<Table style={{marginTop:"0.5em"}}><tbody>
 						{!needsRevive && renderEst("Estimate", refill++, 0)}
@@ -484,7 +484,22 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			item => '',
 			item => '',
 			item => '',
-			itemsOwned	/* ship schematics */
+			itemsOwned,	/* ship schematics */
+			item => '',
+			item => '',
+			item => '',
+			item => '',
+			item => '',
+			item => '',
+			item => '',
+			item => '',
+			item => '',
+			item => '',
+			item => '',
+			item => '',
+			item => '',
+			item => '',
+			item => '',
 		];
 
 		var me = this;
@@ -515,7 +530,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 									/>
 								}
 								content={reward.name}
-								subheader={`Got ${reward.quantity?.toLocaleString()} ${ownedFuncs[reward.type](reward)}`}
+								subheader={`Got ${reward.quantity?.toLocaleString()} ${ownedFuncs[reward.type] ? ownedFuncs[reward.type](reward) : reward.type}`}
 							/>
 						</Grid.Column>
 					)}

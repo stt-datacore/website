@@ -19,43 +19,43 @@ export const GauntletImportComponent = (props: GauntletImporterProps) => {
     const context = React.useContext(GlobalContext);
     const { playerData } = context.player;
     const { t } = context.localized;
-	
+
 	const [collapsed, setCollapsed] = React.useState<boolean | undefined>(undefined);
 
     const hasPlayer = !!playerData;
-    
+
     React.useEffect(() => {
         if (collapsed === undefined) setCollapsed(true);
     }, [currentHasRemote]);
 
 	const validateGauntlet = (json: GauntletRoot) => {
         if (!json) {
-            return ("No data");                        
-        }		
+            return ("No data");
+        }
 		return true;
 	}
 
 	function renderCopyPaste(): JSX.Element {
 
-        const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=23&only_read_state=true';
+        const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=24&only_read_state=true';
 
         return (
 			<React.Fragment>
                 {!currentHasRemote && <Notification
                     color={'blue'}
-                    header={`Live Gauntlet Data`}
+                    header={t('gauntlet.import.title')}
                     content={
                         <div style={{cursor: 'pointer'}} onClick={(e) => setCollapsed(false)}>
-						<p>You can access your live gauntlet matches in a similar way to how you access your player data, currently.</p>
+						<p>{t('gauntlet.import.heading')}</p>
 						<p>
-							Click here to upload your data.
+                        {t('gauntlet.import.click_here')}
 						</p>
                         <p>
-                            <b><a onClick={() => setCollapsed(false)} target='_blank' href={PLAYERLINK}>Live Gauntlet Data</a></b>
+                            <b><a onClick={() => setCollapsed(false)} target='_blank' href={PLAYERLINK}>{t('gauntlet.live.title')}</a></b>
                         </p>
                         </div>
                     }
-                    icon="database"                    
+                    icon="database"
                 />}
 
                 {currentHasRemote && <Notification
@@ -77,11 +77,11 @@ export const GauntletImportComponent = (props: GauntletImporterProps) => {
                         </p>
                         </div>
                     }
-                    icon="database"                    
+                    icon="database"
                 />}
 
 				{hasPlayer && (!collapsed) &&
-				
+
 				<JsonInputForm
 					requestDismiss={() => setCollapsed(!collapsed)}
 					config={{
@@ -98,16 +98,16 @@ export const GauntletImportComponent = (props: GauntletImporterProps) => {
 						if (gauntlet) setCollapsed(true);
 						setGauntlet(gauntlet);
 					}}
-					
+
 				/>}
 			</React.Fragment>
 		);
 	}
 
     return <>
-    
-    <div className='ui segment'>        
-        {renderCopyPaste()}       
+
+    <div className='ui segment'>
+        {renderCopyPaste()}
     </div>
 
     </>

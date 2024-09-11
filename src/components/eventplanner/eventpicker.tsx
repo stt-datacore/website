@@ -16,6 +16,8 @@ import { useStateWithStorage } from '../../utils/storage';
 import { applySkillBuff } from '../../utils/crewutils';
 
 import { IEventData, IRosterCrew } from './model';
+import { GatherPlanner } from '../gather/gather_planner';
+import ShipTable from '../ship/shiptable';
 
 interface ISelectOptions {
 	key: string;
@@ -106,7 +108,8 @@ export const EventPicker = (props: EventPickerProps) => {
 	const EVENT_TYPES = {
 		'shuttles': t('event_type.shuttles'),
 		'gather': t('event_type.gather'),
-		'skirmish': t('event_type.skirmish')
+		'skirmish': t('event_type.skirmish'),
+		'voyage': t('event_type.voyage')
 	};
 
 	const phaseList = [] as ISelectOptions[];
@@ -145,12 +148,27 @@ export const EventPicker = (props: EventPickerProps) => {
 				</div>
 			)}
 			<EventCrewTable rosterType={rosterType} rosterCrew={rosterCrew} eventData={eventData} phaseIndex={phaseIndex} lockable={lockable} />
+
 			{playerData && (
 				<React.Fragment>
 					{rosterType === 'myCrew' && <EventProspects pool={bonusCrew} prospects={prospects} setProspects={setProspects} />}
 					{eventData.content_types[phaseIndex] === 'shuttles' && (<EventShuttles crew={rosterCrew} eventData={eventData} />)}
+					{eventData.content_types[phaseIndex] === 'gather' && <GatherPlanner eventSymbol={eventData.symbol} />}
 				</React.Fragment>
 			)}
+
+			{playerData && eventData.content_types[phaseIndex] === 'voyage' && !!eventData.bonus_ship?.length &&
+				<div style={{marginTop: "0.5em"}}>
+					<div style={{margin: "0.5em 0"}}>
+						<h4>{t('base.event_ships')}</h4>
+					</div>
+					<ShipTable event_ships={eventData.bonus_ship}
+						high_bonus={eventData.featured_ship}
+						event_ship_traits={eventData.bonus_ship_traits}
+						/>
+				</div>
+			}
+
 		</React.Fragment>
 	);
 };
@@ -162,7 +180,7 @@ type EventProspectsProps = {
 };
 
 const EventProspects = (props: EventProspectsProps) => {
-	const { t } = React.useContext(GlobalContext).localized; 
+	const { t } = React.useContext(GlobalContext).localized;
 	const { pool, prospects, setProspects } = props;
 	if (pool.length === 0) return (<></>);
 

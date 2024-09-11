@@ -3,7 +3,7 @@ name: Desert Trip Tucker
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal:
 date: 19/03/2024
 published: true

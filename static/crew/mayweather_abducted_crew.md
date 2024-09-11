@@ -3,8 +3,8 @@ name: Abducted Travis
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 4
-in_portal:
+bigbook_tier: 5
+in_portal: true
 date: 25/10/2023
 published: true
 ---

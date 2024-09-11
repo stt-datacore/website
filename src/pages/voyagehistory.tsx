@@ -10,7 +10,7 @@ import { useStateWithStorage } from '../utils/storage';
 import { IHistoryContext, HistoryContext } from '../components/voyagehistory/context';
 import { VoyagesTable } from '../components/voyagehistory/voyagestable';
 import { CrewTable } from '../components/voyagehistory/crewtable';
-import { defaultHistory } from '../components/voyagehistory/utils';
+import { defaultHistory, getRemoteHistory, reconcileHistories } from '../components/voyagehistory/utils';
 
 import { ActiveVoyage } from '../components/voyagecalculator/activevoyage';
 
@@ -36,6 +36,7 @@ type PlayerVoyageHistoryProps = {
 };
 
 const PlayerVoyageHistory = (props: PlayerVoyageHistoryProps) => {
+
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, ephemeral } = globalContext.player;
 
@@ -46,10 +47,21 @@ const PlayerVoyageHistory = (props: PlayerVoyageHistoryProps) => {
 	React.useEffect(() => {
 		const activeVoyageId = ephemeral?.voyage?.length ? ephemeral.voyage[0].id : 0;
 		setActiveVoyageId(activeVoyageId);
+		if (playerData?.player.dbid) {
+			getRemoteHistory(undefined, playerData.player.dbid).then(async (newHist) => {
+				if (!!newHist) {
+					newHist = await reconcileHistories(playerData.player.dbid, history, newHist);
+					setHistory(newHist);
+				}
+			});
+		}
 	}, [playerData]);
 
 	const historyContext = {
-		history, setHistory, activeVoyageId
+		history,
+		setHistory,
+		activeVoyageId,
+		dbid: props.dbid ? Number.parseInt(props.dbid) : undefined
 	} as IHistoryContext;
 
 	const actionButtons = [

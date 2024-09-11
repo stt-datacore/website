@@ -4,7 +4,7 @@ rarity: 5
 series: tng
 memory_alpha:
 bigbook_tier: 5
-in_portal:
+in_portal: true
 date: 02/10/2023
 published: true
 ---

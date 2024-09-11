@@ -15,7 +15,7 @@ function rgbToHex(r: number, g: number, b: number): string {
 }
 
 export default class CONFIG {
-	
+	static language: SupportedLanguage = 'en';
 	static TRIPLET_TEXT = 'Triplet';
 
 	static readonly RARITIES: Rarity[] = [
@@ -256,11 +256,12 @@ export default class CONFIG {
 		'dsc', 'pic', 'low', 'snw', 'vst',
 		'original'
 	];
-	
+
 	static setLanguage(l: SupportedLanguage) {
-		
+		this.language = l;
+
 		// ENGLISH
-		if (l === 'en') {			
+		if (l === 'en') {
 			this.TRIPLET_TEXT = 'Triplet';
 
 			this.RARITIES.length = 0;
@@ -277,9 +278,9 @@ export default class CONFIG {
 			this.MASTERY_LEVELS.push(
 				{ name: 'Normal', imageUrl: 'mastery_lowest_icon' },
 				{ name: 'Elite', imageUrl: 'mastery_medium_icon' },
-				{ name: 'Epic', imageUrl: 'mastery_highest_icon' }		
+				{ name: 'Epic', imageUrl: 'mastery_highest_icon' }
 			)
-			
+
 			this.SKILLS.command_skill = 'Command';
 			this.SKILLS.science_skill = 'Science';
 			this.SKILLS.security_skill = 'Security';
@@ -301,7 +302,7 @@ export default class CONFIG {
 			this.REWARDS_ITEM_TYPE[1] = 'Crew';
 			this.REWARDS_ITEM_TYPE[2] = 'Equipment';
 			this.REWARDS_ITEM_TYPE[3] = 'Component';
-			this.REWARDS_ITEM_TYPE[4] = 'Shuttle consumable';
+			this.REWARDS_ITEM_TYPE[4] = 'Shuttle boosts';
 			this.REWARDS_ITEM_TYPE[5] = 'Ship part';
 			this.REWARDS_ITEM_TYPE[6] = 'Shuttle token';
 			this.REWARDS_ITEM_TYPE[7] = 'Crew experience training';
@@ -318,7 +319,7 @@ export default class CONFIG {
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[1] = 'Evasion';
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[2] = 'Accuracy';
 			// These are only for penalty
-			this.CREW_SHIP_BATTLE_BONUS_TYPE[3] = 'Shield Regeneration';			
+			this.CREW_SHIP_BATTLE_BONUS_TYPE[3] = 'Shield Regeneration';
 
 			this.CREW_SHIP_BATTLE_TRIGGER[0] = 'None';
 			this.CREW_SHIP_BATTLE_TRIGGER[1] = 'Position';
@@ -412,9 +413,9 @@ export default class CONFIG {
 			this.MASTERY_LEVELS.push(
 				{ name: 'Normal', imageUrl: 'mastery_lowest_icon' },
 				{ name: 'Élite', imageUrl: 'mastery_medium_icon' },
-				{ name: 'Épique', imageUrl: 'mastery_highest_icon' }		
+				{ name: 'Épique', imageUrl: 'mastery_highest_icon' }
 			)
-			
+
 			this.SKILLS.command_skill = 'Commandement';
 			this.SKILLS.science_skill = 'Science';
 			this.SKILLS.security_skill = 'Sécurité';
@@ -453,7 +454,7 @@ export default class CONFIG {
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[1] = 'Évasion';
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[2] = 'Précision';
 			// These are only for penalty
-			this.CREW_SHIP_BATTLE_BONUS_TYPE[3] = 'Régénération Bouclier';			
+			this.CREW_SHIP_BATTLE_BONUS_TYPE[3] = 'Régénération Bouclier';
 
 			this.CREW_SHIP_BATTLE_TRIGGER[0] = 'Aucun';
 			this.CREW_SHIP_BATTLE_TRIGGER[1] = 'Position';
@@ -472,7 +473,7 @@ export default class CONFIG {
 			this.SHIP_BATTLE_GRANT_DESC[4] = 'Inflige des dégâts sur la durée à la coque ennemie';
 			this.SHIP_BATTLE_GRANT_DESC[16] = 'Les boucliers ennemis deviennent temporairement inopérants';
 
-			this.CREW_SHIP_BATTLE_ABILITY_TYPE[0] = 'Boost augmenté de +%VAL%';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[0] = 'Augmente bonus boost de +%VAL%';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE[1] = 'Inflige immédiatement %VAL% % de dégâts';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE[2] = 'Repare immédiatement %VAL% % de la coque';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE[3] = 'Repare immédiatement %VAL% % des boucliers';
@@ -486,7 +487,7 @@ export default class CONFIG {
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE[11] = 'Réduit les dégâts de coque subis de %VAL% %';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE[12] = '%VAL% % des dégâts subis sont aussi infligés à l\'attaquant';
 
-			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[0] = 'Boost augmenté de +%VAL%';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[0] = 'bonus boost de +%VAL%';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[1] = '%VAL%% dégâts';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[2] = '%VAL%% repare de la coque';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[3] = '%VAL%% repare des boucliers';
@@ -500,7 +501,7 @@ export default class CONFIG {
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[11] = '-%VAL%% dégâts du coque';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[12] = '%VAL%% dégâts réflexion';
 
-			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[0] = 'Boost augmenté';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[0] = 'Augmente le bonus';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[1] = 'Dégâts immédiatements';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[2] = 'Repare immédiatements de la coque';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[3] = 'Repare immédiatements des boucliers';
@@ -547,9 +548,9 @@ export default class CONFIG {
 			this.MASTERY_LEVELS.push(
 				{ name: 'Normal', imageUrl: 'mastery_lowest_icon' },
 				{ name: 'Elite', imageUrl: 'mastery_medium_icon' },
-				{ name: 'Episch', imageUrl: 'mastery_highest_icon' }		
+				{ name: 'Episch', imageUrl: 'mastery_highest_icon' }
 			)
-			
+
 			this.SKILLS.command_skill = 'Befehl';
 			this.SKILLS.science_skill = 'Wissenschaft';
 			this.SKILLS.security_skill = 'Sicherheit';
@@ -588,7 +589,7 @@ export default class CONFIG {
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[1] = 'Ausweichen';
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[2] = 'Genauigkeit';
 			// These are only for penalty
-			this.CREW_SHIP_BATTLE_BONUS_TYPE[3] = 'Schildregeneration';			
+			this.CREW_SHIP_BATTLE_BONUS_TYPE[3] = 'Schildregeneration';
 
 			this.CREW_SHIP_BATTLE_TRIGGER[0] = 'Keine';
 			this.CREW_SHIP_BATTLE_TRIGGER[1] = 'Position';
@@ -607,7 +608,7 @@ export default class CONFIG {
 			this.SHIP_BATTLE_GRANT_DESC[4] = 'Verursacht DoT-Schaden an der Hülle des Feindes';
 			this.SHIP_BATTLE_GRANT_DESC[16] = 'Schilde sind für einen bestimmten Zeitraum inaktiv';
 
-			this.CREW_SHIP_BATTLE_ABILITY_TYPE[0] = 'Erhöht Treffsicherheit-Bonus auf +%VAL%';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[0] = 'Erhöht den bonus boost um +%VAL%';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE[1] = 'Verursacht sofort %VAL% % Schaden';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE[2] = 'Repariert die Hülle sofort um %VAL% %';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE[3] = 'Repariert die Schilde sofort um %VAL% %';
@@ -621,7 +622,7 @@ export default class CONFIG {
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE[11] = 'Reduziert den erlittenen Hüllenschaden um %VAL% %';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE[12] = 'Verursacht beim Angreifer %VAL% % des erlittenen Schadens';
 
-			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[0] = '+%VAL% Treffsicherheit-Bonus';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[0] = 'bonus boost um +%VAL%';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[1] = '%VAL%% Schaden';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[2] = '%VAL%% Hülle-Reparatur';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[3] = '%VAL%% Schilde-Reparatur';
@@ -635,7 +636,7 @@ export default class CONFIG {
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[11] = '-%VAL%% Hüllenschaden';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[12] = '%VAL%% Reflexionsschäden';
 
-			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[0] = 'Erhöht Treffsicherheit-Bonus';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[0] = 'Erhöht den Bonus-Boost';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[1] = 'Sofort Schaden';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[2] = 'Repariert die Hülle sofort';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[3] = 'Repariert die Schilde sofort';
@@ -682,9 +683,9 @@ export default class CONFIG {
 			this.MASTERY_LEVELS.push(
 				{ name: 'Normal', imageUrl: 'mastery_lowest_icon' },
 				{ name: 'Élite', imageUrl: 'mastery_medium_icon' },
-				{ name: 'Épico', imageUrl: 'mastery_highest_icon' }		
+				{ name: 'Épico', imageUrl: 'mastery_highest_icon' }
 			)
-			
+
 			this.SKILLS.command_skill = 'Mando';
 			this.SKILLS.science_skill = 'Ciencia';
 			this.SKILLS.security_skill = 'Seguridad';
@@ -723,7 +724,7 @@ export default class CONFIG {
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[1] = 'Evasión';
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[2] = 'Precisión';
 			// These are only for penalty
-			this.CREW_SHIP_BATTLE_BONUS_TYPE[3] = 'Regeneración de escudo';			
+			this.CREW_SHIP_BATTLE_BONUS_TYPE[3] = 'Regeneración de escudo';
 
 			this.CREW_SHIP_BATTLE_TRIGGER[0] = 'Ninguna';
 			this.CREW_SHIP_BATTLE_TRIGGER[1] = 'Posición';
@@ -742,7 +743,7 @@ export default class CONFIG {
 			this.SHIP_BATTLE_GRANT_DESC[4] = 'Inflige daño continuado al casco del enemigo';
 			this.SHIP_BATTLE_GRANT_DESC[16] = 'Los escudos enemigas quedan inoperativos durante un tiempo';
 
-			this.CREW_SHIP_BATTLE_ABILITY_TYPE[0] = 'Aumento de Ataque +%VAL%';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE[0] = 'Aumenta bonus boost en +%VAL%';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE[1] = 'Inflige un %VAL% % de daño de forma inmediata';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE[2] = 'Repara el casco en un %VAL% % de forma inmediata';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE[3] = 'Repara los escudos en un %VAL% % de forma inmediata';
@@ -756,7 +757,7 @@ export default class CONFIG {
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE[11] = 'Reduce los daños del casco recibidos en un %VAL% %';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE[12] = 'Un %VAL% % del daño recibido también se le inflige al atacante';
 
-			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[0] = 'Aumento de Ataque +%VAL%';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[0] = 'bonus boost en +%VAL%';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[1] = '%VAL%% daño';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[2] = 'Repara el casco +%VAL% %';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[3] = 'Repera los escudos +%VAL% %';
@@ -770,7 +771,7 @@ export default class CONFIG {
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[11] = '-%VAL%% daños del casco';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT_FORMAT[12] = '%VAL%% daños de reflexión';
 
-			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[0] = 'Aumento de Ataque';
+			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[0] = 'Impulso de bonificación';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[1] = 'Daños inmediata';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[2] = 'Repara le casco inmediata';
 			this.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[3] = 'Repara los escudos inmediata';

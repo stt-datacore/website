@@ -3,7 +3,7 @@ name: Delta Flyer Kim
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 14/05/2020
 published: true

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CompactCrew, GameEvent, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
+import { CompactCrew, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
 import { useStateWithStorage } from '../utils/storage';
 import { DataContext, DataProviderProperties } from './datacontext';
 import { BuffStatTable, calculateBuffConfig, calculateMaxBuffs } from '../utils/voyageutils';
@@ -9,7 +9,7 @@ import { mergeShips } from '../utils/shiputils';
 import { stripPlayerData } from '../utils/playerutils';
 import { BossBattlesRoot } from '../model/boss';
 import { ShuttleAdventure } from '../model/shuttle';
-import { Archetype20, ArchetypeBase, Archetype17 } from '../model/archetype';
+import { Archetype20, ArchetypeBase, Archetype17, ArchetypeRoot20 } from '../model/archetype';
 import { getItemWithBonus } from '../utils/itemutils';
 import { TinyStore } from '../utils/tiny';
 
@@ -40,7 +40,9 @@ export interface IEphemeralData {
 	fleetBossBattlesRoot: BossBattlesRoot;
 	shuttleAdventures: ShuttleAdventure[];
 	voyage: Voyage[],
-	voyageDescriptions: VoyageDescription[];
+	voyageDescriptions: VoyageDescription[],
+	archetype_cache: ArchetypeRoot20;
+	objectiveEventRoot: ObjectiveEventRoot;
 };
 
 export interface ISessionStates {
@@ -83,7 +85,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const [stripped, setStripped] = useStateWithStorage<PlayerData | undefined>('playerData', undefined, { compress: true });
 
 	const [ephemeral, setEphemeral] = useStateWithStorage<IEphemeralData | undefined>('ephemeralPlayerData', undefined, { compress: true });
-
+	const [itemArchetypeCache, setItemArchetypeCache] = useStateWithStorage<ArchetypeRoot20>('itemArchetypeCache', {} as ArchetypeRoot20, { rememberForever: true, avoidSessionStorage: true });
 	const [profile, setProfile] = React.useState<PlayerData | undefined>(undefined);
 	const [playerShips, setPlayerShips] = React.useState<Ship[] | undefined>(undefined);
 	const buffConfig = stripped ? calculateBuffConfig(stripped.player) : undefined;
@@ -148,8 +150,18 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				fleetBossBattlesRoot: input.fleet_boss_battles_root ?? {} as BossBattlesRoot,
 				shuttleAdventures: [...input.player.character.shuttle_adventures ?? []],
 				voyage: [...input.player.character.voyage ?? []],
-				voyageDescriptions: [...input.player.character.voyage_descriptions ?? []]
+				voyageDescriptions: [...input.player.character.voyage_descriptions ?? []],
+				archetype_cache: {} as ArchetypeRoot20,
+				objectiveEventRoot: input.objective_event_root ?? {} as ObjectiveEventRoot
 			});
+
+			if (!!input.archetype_cache?.archetypes?.length) {
+				setItemArchetypeCache(input.archetype_cache);
+			}
+			// else if (!itemArchetypeCache?.archetypes?.length) {
+			// 	setItemArchetypeCache({} as ArchetypeRoot20);
+			// }
+
 		}
 
 		const dtImported = (typeof input.calc?.lastImported === 'string') ? new Date(input.calc?.lastImported) : new Date();
@@ -186,6 +198,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		setInput(undefined);
 		setSessionStates(undefined);
 		setLoaded(false);
+		setItemArchetypeCache({} as ArchetypeRoot20);
 		// setGameLanguage('en');
 		sessionStorage.clear();
 	};
@@ -195,7 +208,10 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		setInput,
 		reset,
 		playerData: profile,
-		ephemeral,
+		ephemeral: {
+			...ephemeral,
+			archetype_cache: itemArchetypeCache
+		},
 		strippedPlayerData: stripped,
 		playerShips,
 		buffConfig,

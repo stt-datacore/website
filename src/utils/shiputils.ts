@@ -1,11 +1,12 @@
 import { BaseSkillFields, BaseSkills, CrewMember, Skill } from "../model/crew";
-import { PlayerCrew } from "../model/player";
-import { ShipAction } from "../model/ship";
+import { PlayerCrew, Setup } from "../model/player";
+import { BattleMode, PvpDivision, ShipAction, ShipInUse, ShipWorkerItem } from "../model/ship";
 import { Schematics, Ship } from "../model/ship";
 import { simplejson2csv, ExportField } from './misc';
 import { StatsSorter } from "./statssorter";
 import { shipStatSortConfig  } from "../utils/crewutils";
 import CONFIG from "../components/CONFIG";
+import { PlayerContextData } from "../context/playercontext";
 
 export function exportShipFields(): ExportField[] {
 	return [
@@ -139,12 +140,14 @@ export function highestLevel(ship: Ship) {
 export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[] {
 	let newShips: Ship[] = [];
 	ship_schematics = JSON.parse(JSON.stringify(ship_schematics));
+	let unowned_id = -1;
 	ship_schematics.forEach((schematic) => {
 		let owned = ships.find((ship) => ship.symbol == schematic.ship.symbol);
 
 		let traits_named = schematic.ship.traits_named;
 
 		if (owned) {
+			schematic.ship.id = owned.id;
 			schematic.ship.name = owned.name;
 			schematic.ship.flavor = owned.flavor;			
 			schematic.ship.accuracy = owned.accuracy;
@@ -174,8 +177,12 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 				let h = highestLevel(schematic.ship);
 				if (schematic.ship.max_level && h === schematic.ship.max_level + 1 && schematic.ship.levels[`${h}`].hull) {
 					schematic.ship = { ... schematic.ship, ...schematic.ship.levels[`${h}`] };
+					schematic.ship.attack = schematic.ship.levels![`${h}`].attack_power;
+					schematic.ship.accuracy = schematic.ship.levels![`${h}`].accuracy_power;
+					schematic.ship.evasion = schematic.ship.levels![`${h}`].evasion_power;
 				}
 			}
+			schematic.ship.id = unowned_id--;
 			schematic.ship.level ??= 0;
 		}
 		
@@ -234,8 +241,7 @@ export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)
 	if (grants) console.log(grants);
 	if (!grants) grants = [];
 	// now match triggers with grants.
-	if (bscrew) {
-		let bsave = bscrew;
+	if (bscrew) {		
 		bscrew = bscrew.filter(crew => {
 			if ((grants?.length ?? 0) == 0) {
 				return (crew.action.ability?.condition ?? 0) === 0;
@@ -267,15 +273,162 @@ export function printTriggers(ship: Ship): string {
 	return s;
 }
 
-export interface TierRank {
-	type?: number;
-	ability?: number;
-	value: number;
-	tier: number;
+export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
+	const results = [] as ShipInUse[];
+	if (!playerContext.playerData || !playerContext.ephemeral || !playerContext.playerShips) return [];
+
+	function setupToSlots(setup: Setup, ship: Ship) {
+		let slots = setup.slots.map(id => playerContext.playerData?.player.character.crew.find(cf => cf.id === id));
+		if (slots?.length === ship.battle_stations?.length && slots?.every(e => !!e)) {
+			ship.battle_stations?.forEach((station, idx) => {
+				station.crew = slots[idx];
+			});
+			return true;
+		}
+		return false;
+	}
+
+	playerContext.playerData.player.character.pvp_divisions?.forEach((division) => {
+		let id = division.setup.ship_id;
+		let ship = playerContext.playerShips?.find(f => f.id === id);
+		if (ship) {
+			let pvp_division: PvpDivision | undefined = undefined;
+			let rarity = 0;
+			switch (division.tier) {
+				case 0:
+					pvp_division = 'commander';
+					rarity = 3;
+					break;
+				case 1:
+					pvp_division = 'captain';
+					rarity = 4;
+					break;
+				case 2:
+					pvp_division = 'admiral';
+					rarity = 5;
+					break;
+				default: 
+					break;
+			}
+			if (!pvp_division) return;
+			ship = JSON.parse(JSON.stringify(ship)) as Ship;
+			if (setupToSlots(division.setup, ship)) {
+				results.push({
+					ship,
+					battle_mode: 'pvp',
+					pvp_division,
+					rarity
+				});
+			}
+		}
+	});
+
+	playerContext.playerData.player.character.fbb_difficulties?.forEach((fbb) => {
+		if (!fbb.setup) return;
+		let id = fbb.setup.ship_id;
+		let ship = playerContext.playerShips?.find(f => f.id === id);
+		if (ship) {
+			let battle_mode = `fbb_${fbb.id - 1}` as BattleMode;
+			if (!battle_mode) return;
+			ship = JSON.parse(JSON.stringify(ship)) as Ship;
+			if (setupToSlots(fbb.setup, ship)) {
+				results.push({
+					ship,
+					battle_mode,
+					rarity: fbb.id - 1
+				});
+			}
+		}
+	});
+
+	return results;
 }
 
-export function calculateBattleTiers(allCrew: (CrewMember | PlayerCrew)[]) {
+export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true): Ship | false {
+	if (!ship?.battle_stations?.length || !crewStations?.length || crewStations.length !== ship.battle_stations.length) return false;
+
+	let newship = JSON.parse(JSON.stringify(ship)) as Ship;
+	let x = 0;
+
+	for (let action of newship.actions ?? []) {
+		action.source = newship.name;
+	}
+
+	for (let crew of crewStations) {
+		if (crew === undefined) continue;
+
+		newship.crit_bonus ??= 0;
+		newship.crit_chance ??= 0;
+		newship.evasion ??= 0;
+		newship.accuracy ??= 0;
+
+		if (crew.skill_order.includes(ship.battle_stations[x].skill)) {
+			newship.crit_bonus += crew.ship_battle.crit_bonus ?? 0;
+			newship.crit_chance += crew.ship_battle.crit_chance ?? 0;
+			newship.evasion += crew.ship_battle.evasion ?? 0;
+			newship.accuracy += crew.ship_battle.accuracy ?? 0;
+		}
+
+		newship.actions ??= [];
+		crew.action.source = crew.name;
+		if (crew.id !== undefined) crew.action.crew = crew.id;
+		if (pushAction) newship.actions.push(crew.action);
+		x++;
+	}
+
+	return newship;
+}
 
 
-
+export function compareShipResults(a: ShipWorkerItem, b: ShipWorkerItem, fbb_mode: boolean) {
+	if (fbb_mode) {
+		let r = 0;
+		let aa: number;
+		let ba: number;
+		aa = a.fbb_metric;
+		ba = b.fbb_metric;
+		r = ba - aa;
+		if (r) return r;
+		aa = a.attack;
+		ba = b.attack;
+		r = ba - aa;
+		if (r) return r;
+		aa = a.battle_time;
+		ba = b.battle_time;
+		r = ba - aa;
+		if (r) return r;
+		aa = a.max_attack;
+		ba = b.max_attack;
+		r = ba - aa;
+		if (r) return r;
+		aa = a.min_attack;
+		ba = b.min_attack;
+		r = ba - aa;
+		return r;
+	}
+	else {
+		let r = 0;
+		let aa: number;
+		let ba: number;
+		aa = a.arena_metric;
+		ba = b.arena_metric;
+		r = ba - aa;
+		if (r) return r;
+		aa = a.weighted_attack;
+		ba = b.weighted_attack;
+		r = ba - aa;
+		if (r) return r;
+		aa = a.attack;
+		ba = b.attack;
+		r = ba - aa;
+		if (r) return r;
+		aa = a.max_attack;
+		ba = b.max_attack;
+		r = ba - aa;
+		if (r) return r;
+		aa = a.min_attack;
+		ba = b.min_attack;
+		r = ba - aa;
+		return r;
+	}
 }

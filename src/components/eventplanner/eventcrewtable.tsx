@@ -18,6 +18,7 @@ import { applySkillBuff, crewGender, isQuipped } from '../../utils/crewutils';
 import { IEventData, IRosterCrew, IEventScoredCrew, IEventCombos, IEventSkill, IEventPair, IBestCombos, IBestCombo } from './model';
 import { calculateGalaxyChance, computeEventBest } from '../../utils/events';
 import { navToCrewPage } from '../../utils/nav';
+import { GatherPlanner } from '../gather/gather_planner';
 
 type EventCrewTableProps = {
 	rosterType: string;
@@ -60,11 +61,29 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		{ width: 1, column: 'bestSkill.score', title: t('event_planner.table.columns.best'), reverse: true },
 		{ width: 1, column: 'bestPair.score', title: t('event_planner.table.columns.pair'), reverse: true }
 	];
+
+	const priText = t('quipment_ranks.primary');
+	const secText = t('quipment_ranks.secondary');
+
 	CONFIG.SKILLS_SHORT.forEach((skill) => {
+		const title = eventData.primary_skill === skill.name ? priText : (eventData.secondary_skill === skill.name ? secText : '')
 		tableConfig.push({
 			width: 1,
 			column: `${skill.name}.core`,
-			title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
+			title:
+				<div
+					title={title}
+					style={{
+						display: 'flex',
+						flexDirection: 'row',
+						alignItems: 'center',
+						justifyContent: 'center',
+						gap: '0.5em'
+					}}>
+					{eventData.primary_skill === skill.name && <Icon color='yellow' name= 'star'/>}
+					{eventData.secondary_skill === skill.name && <Icon color='grey' name= 'star'/>}
+					<img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />
+				</div>,
 			reverse: true
 		});
 	});
@@ -262,7 +281,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 				lockable={props.lockable}
 			/>
 			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, rosterCrew, buffConfig)} targetGroup='eventTarget' />
-			{phaseType !== 'skirmish' && (<EventCrewMatrix crew={rosterCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
+			{phaseType !== 'skirmish' && phaseType !== 'voyage' && (<EventCrewMatrix crew={rosterCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
 		</React.Fragment>
 	);
 
@@ -295,7 +314,8 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 					</div>
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					{crew.bonus > 1 ? `x${crew.bonus}` : ''}
+					{phaseType !== 'voyage' && crew.bonus > 1 ? `x${crew.bonus}` : ''}
+					{phaseType === 'voyage' && crew.bonus > 1 ? `${crew.bonus} AM` : ''}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<b>{scoreLabel(crew.bestSkill.score)}</b>

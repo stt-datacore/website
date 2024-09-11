@@ -3,7 +3,7 @@ name: Varani
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 in_portal: true
 date: 06/07/2023
 published: true

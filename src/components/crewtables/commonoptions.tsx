@@ -132,6 +132,8 @@ export function descriptionLabel(t: TranslateMethod, crew: IRosterCrew,  showOwn
 				{crew.favorite && <Icon name='heart' />}
 				{crew.prospect && <Icon name='add user' />}
 				{crew.active_status > 0 && <Icon name='space shuttle' />}
+				{crew.active_status === 2 && <>&nbsp;{t('base.shuttle')}<br /></>}
+				{crew.active_status === 3 && <>&nbsp;{t('base.voyage')}<br /></>}
 			</React.Fragment>
 			{crew.immortal >= CompletionState.Immortalized &&
 				<React.Fragment>

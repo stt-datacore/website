@@ -12,41 +12,42 @@ import {
 	Table,
 } from "semantic-ui-react";
 
-import { UnifiedWorker } from "../typings/worker";
+import { UnifiedWorker } from "../../typings/worker";
 import {
 	IConfigSortData,
 	IResultSortDataBy,
 	sortDataBy,
-} from "../utils/datasort";
+} from "../../utils/datasort";
 import {
 	exportItemsAlt,
 	getItemBonuses,
 	isQuipmentMatch,
-} from "../utils/itemutils";
+} from "../../utils/itemutils";
 
-import CONFIG from "../components/CONFIG";
-import { GlobalContext } from "../context/globalcontext";
-import { CrewMember } from "../model/crew";
-import { EquipmentCommon, EquipmentItem } from "../model/equipment";
-import { PlayerCrew, TranslateMethod } from "../model/player";
-import { EquipmentWorkerConfig, EquipmentWorkerResults } from "../model/worker";
+import CONFIG from "../CONFIG";
+import { GlobalContext } from "../../context/globalcontext";
+import { CrewMember } from "../../model/crew";
+import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
+import { PlayerCrew, TranslateMethod } from "../../model/player";
+import { EquipmentWorkerConfig, EquipmentWorkerResults } from "../../model/worker";
 import {
 	downloadData,
+	getCrewQuipment,
 	oneCrewCopy,
 	qbitsToSlots,
 	shortToSkill,
 	skillToShort,
-} from "../utils/crewutils";
-import { calcItemDemands, canBuildItem } from "../utils/equipment";
-import { TinyStore } from "../utils/tiny";
-import { CrewHoverStat } from "./hovering/crewhoverstat";
-import { ItemHoverStat } from "./hovering/itemhoverstat";
-import { CrewItemsView } from "./item_presenters/crew_items";
-import { CrewPreparer } from "./item_presenters/crew_preparer";
-import { CrewPresenter } from "./item_presenters/crew_presenter";
-import { renderBonuses } from "./item_presenters/item_presenter";
-import ItemDisplay from "./itemdisplay";
-import { DEFAULT_MOBILE_WIDTH } from "./hovering/hoverstat";
+} from "../../utils/crewutils";
+import { calcItemDemands, canBuildItem } from "../../utils/equipment";
+import { TinyStore } from "../../utils/tiny";
+import { CrewHoverStat } from "../hovering/crewhoverstat";
+import { ItemHoverStat } from "../hovering/itemhoverstat";
+import { CrewItemsView } from "../item_presenters/crew_items";
+import { CrewPreparer } from "../item_presenters/crew_preparer";
+import { CrewPresenter } from "../item_presenters/crew_presenter";
+import { renderBonuses } from "../item_presenters/item_presenter";
+import ItemDisplay from "../itemdisplay";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
 export interface CustomFieldDef {
 	field: string;
@@ -55,7 +56,7 @@ export interface CustomFieldDef {
 	width?: SemanticWIDTHS;
 }
 
-type ProfileItemsProps = {
+type ItemsTableProps = {
 	/** List of equipment items */
 	data?: EquipmentCommon[] | EquipmentItem[];
 
@@ -113,7 +114,7 @@ interface CrewKwipTrial {
 
 type OwnedType = "all" | "owned" | "buildable" | "both";
 
-type ProfileItemsState = {
+type ItemsTableState = {
 	column: any;
 	direction: "descending" | "ascending" | null;
 	data?: (EquipmentCommon | EquipmentItem)[];
@@ -198,13 +199,13 @@ const pagingOptions = [
 	{ key: "3", value: 100, text: "100" },
 ];
 
-class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
+class ItemsTable extends Component<ItemsTableProps, ItemsTableState> {
 	static contextType = GlobalContext;
 	context!: React.ContextType<typeof GlobalContext>;
 	readonly tiny: TinyStore;
 	private lastData: (EquipmentCommon | EquipmentItem)[] | undefined;
 
-	constructor(props: ProfileItemsProps) {
+	constructor(props: ItemsTableProps) {
 		super(props);
 		this.tiny = TinyStore.getStore(
 			(props.pageName ? props.pageName + "_" : "") + "profile_items"
@@ -428,8 +429,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 
 	componentDidUpdate(
-		prevProps: Readonly<ProfileItemsProps>,
-		prevState: Readonly<ProfileItemsState>,
+		prevProps: Readonly<ItemsTableProps>,
+		prevState: Readonly<ItemsTableState>,
 		snapshot?: any
 	): void {
 		if (this.props.data && this.props.data !== this.state.data) {
@@ -472,7 +473,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 
 	private makeTrialCrew = (crew: PlayerCrew) => {
-		if (!crew) return undefined;
+		if (!crew || !this.context.core.crew?.length) return undefined;
 
 		crew = oneCrewCopy({
 			...(this.context.core.crew.find(
@@ -947,7 +948,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 			let crew = flavor
 				.replace("Equippable by: ", "")
 				.split(", ")
-				?.map((s) => this.context.core.crew.find((c) => c.symbol === s))
+				?.map((s) => this.context.core.crew.find((c) => c.name === s || c.symbol === s))
 				.filter((s) => !!s) as CrewMember[];
 			if (crew?.length)
 				output.push(
@@ -966,6 +967,8 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					</div>
 				);
 		}
+		if (output.length) flavor = '';
+
 		const crew = this.context.core.crew;
 
 		if (
@@ -1091,6 +1094,9 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 					});
 				}
 			}
+		}
+		else if (flavor) {
+			output.push(<>{flavor}</>)
 		}
 		return output;
 	}
@@ -1301,7 +1307,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 								{!!crewMode && (<div
 									style={{
 										display: "flex", width: "100%",
-										height: "3em",										
+										height: "3em",
 										flexDirection: isMobile ? "column" : "row",
 										justifyContent: "flex-start",
 										alignItems: "center",
@@ -1373,7 +1379,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 												clearable
 												scrolling
 												options={rewardFilterOpts}
-												value={itemType}
+												value={itemType || []}
 												onChange={(e, { value }) =>
 													this._handleItemType(value as number[] | undefined)
 												}
@@ -1387,7 +1393,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 												multiple
 												clearable
 												options={rarities}
-												value={rarity}
+												value={rarity || []}
 												onChange={(e, { value }) =>
 													this._handleRarity(value as number[] | undefined)
 												}
@@ -1402,7 +1408,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 												clearable
 												scrolling
 												options={traitFilterOpts}
-												value={traits}
+												value={traits || []}
 												onChange={(e, { value }) =>
 													this._handleTraits(value as string[] | undefined)
 												}
@@ -1417,7 +1423,7 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 												clearable
 												scrolling
 												options={skillmap}
-												value={skills}
+												value={skills || []}
 												onChange={(e, { value }) =>
 													this._handleSkills(value as string[] | undefined)
 												}
@@ -1854,4 +1860,4 @@ class ProfileItems extends Component<ProfileItemsProps, ProfileItemsState> {
 	}
 }
 
-export default ProfileItems;
+export default ItemsTable;

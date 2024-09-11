@@ -13,6 +13,9 @@ export interface IVoyageInputConfig {
 	skills: VoyageSkills;
 	ship_trait: string;
 	crew_slots: CrewSlot[];
+	voyage_type: 'dilemma' | 'encounter';
+	high_bonus?: string[];
+	low_bonus?: string[];
 };
 
 // Extends IVoyageInputConfig to include calculation result
@@ -68,6 +71,7 @@ export interface ITrackedAssignment {
 	tracker_id: number;
 	slot: number;	// Slot index where crew is seated
 	trait: string;	// Matched trait or empty string if no match
+	kwipment?: number[][];
 };
 
 export interface ITrackedAssignmentsBySkill {
@@ -86,3 +90,23 @@ export interface ITrackedCrewMember extends PlayerCrew {
 		created_at: number
 	};
 };
+
+export interface ITrackedVoyageRecord {
+    dbid: number;
+    trackerId: number;
+    voyage: ITrackedVoyage;
+    timeStamp: Date;
+}
+
+export interface ITrackedCrewRecord {
+    dbid: number;
+    crew: string;
+    trackerId: number;
+    assignment: ITrackedAssignment;
+    timeStamp: Date;
+}
+
+export interface ITrackedDataRecord {
+    voyages: ITrackedVoyageRecord[];
+    assignments: ITrackedCrewRecord[];
+}

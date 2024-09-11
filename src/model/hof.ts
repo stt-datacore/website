@@ -44,6 +44,7 @@ export interface VoyageStatEntry {
     crewCount: number;
     estimatedDuration?: number;
     averageDuration?: number;
+    maxDuration?: number;
     startDate?: Date;
     endDate?: Date;
     seats: VoyageStatSeat[];

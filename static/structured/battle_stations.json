@@ -1613,5 +1613,39 @@
                 "skill": "engineering_skill"
             }
         ]
+    },
+    {
+        "symbol": "tsunkatse_vessel_ship",
+        "battle_stations": [
+            {
+                "skill": "security_skill"
+            },
+            {
+                "skill": "security_skill"
+            },
+            {
+                "skill": "diplomacy_skill"
+            },
+            {
+                "skill": "engineering_skill"
+            }
+        ]
+    },
+    {
+        "symbol": "ter_buran_iss_ship",
+        "battle_stations": [
+            {
+                "skill": "command_skill"
+            },
+            {
+                "skill": "security_skill"
+            },
+            {
+                "skill": "security_skill"
+            },
+            {
+                "skill": "engineering_skill"
+            }
+        ]
     }
 ]

@@ -3,7 +3,7 @@ name: Ensign Mayweather
 rarity: 1
 series: ent
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 in_portal: true
 date: 03/01/2016
 published: true

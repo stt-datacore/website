@@ -76,7 +76,7 @@ export const VoyageModal = (props: VoyageModalProps) => {
 			chief_medical_officer: { name: 'Chief Medical Officer', skill: 'medicine_skill' },
 			medical_officer: { name: 'Ship\'s Counselor', skill: 'medicine_skill' }
 		};
-
+		if (!history.crew) return <></>;
 		// Reconstruct voyageCrewSlots for this tracked voyage
 		const voyageCrewSlots = [] as VoyageCrewSlot[];
 		Object.entries(history.crew).forEach(([crewSymbol, assignments]) => {
@@ -96,6 +96,8 @@ export const VoyageModal = (props: VoyageModalProps) => {
 				voyageCrewSlots.push(voyageCrewSlot);
 			}
 		});
+		
+		if (!voyageCrewSlots.length) return <></>;
 
 		const voyageConfig = {
 			crew_slots: voyageCrewSlots,

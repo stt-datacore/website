@@ -140,6 +140,15 @@ const TraitPicker = (props: TraitPickerProps) => {
 			} as TraitOption;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 
+	// Add ? as an option for unsolved nodes
+	if (traitOptions.length > 1) {
+		traitOptions.unshift({
+			key: '?',
+			value: '?',
+			text: '?'
+		});
+	}
+
 	return (
 		<Form.Field>
 			<Dropdown

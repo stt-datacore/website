@@ -1,4 +1,3 @@
-import { IDefaultGlobal } from "../context/globalcontext";
 import { Filter } from "./game-elements";
 import { PlayerCollection, PlayerCrew, PlayerData } from "./player";
 
@@ -17,13 +16,13 @@ export interface CollectionMap {
 export interface ColComboMap {
     names: string[];
     count: number;
-    crew: string[]; 
+    crew: string[];
     exact: boolean;
 }
 
-export interface ComboCostMap { 
-    collection: string; 
-    combo: ColComboMap; 
+export interface ComboCostMap {
+    collection: string;
+    combo: ColComboMap;
     cost: number;
     crew: PlayerCrew[];
     exact: boolean;
@@ -46,8 +45,8 @@ export interface CollectionGroup {
 
 
 export interface CollectionsToolSettings {
-    short: boolean;	
-    mapFilter: MapFilterOptions;	
+    short: boolean;
+    mapFilter: MapFilterOptions;
     searchFilter: string;
     rarityFilter: number[];
     fuseFilter: string;
@@ -63,15 +62,15 @@ export interface CollectionsToolSettings {
 
 
 export interface ICollectionsContext extends CollectionsToolSettings {
-    hardFilter: boolean;	
+    hardFilter: boolean;
     setHardFilter: (value: boolean) => void;
 
-    short: boolean;	
+    short: boolean;
     setShort: (value: boolean) => void;
 
-    mapFilter: MapFilterOptions;	
+    mapFilter: MapFilterOptions;
     setMapFilter: (options: MapFilterOptions) => void;
-    
+
     searchFilter: string;
     setSearchFilter: (value?: string) => void;
 

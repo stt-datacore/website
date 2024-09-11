@@ -3,7 +3,7 @@ name: Ensign Jennifer Sh'reyan
 rarity: 4
 series: low
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 in_portal: true
 date: 12/10/2022
 published: true

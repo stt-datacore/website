@@ -6,7 +6,7 @@ import CONFIG from '../../../components/CONFIG';
 import { IRosterCrew, RosterType } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
 import CABExplanation from '../../explanations/cabexplanation';
-import { formatTierLabel, gradeToColor, printPortalStatus, qbitsToSlots, skillToShort } from '../../../utils/crewutils';
+import { formatTierLabel, gradeToColor, printPortalStatus, qbitsToSlots, qbProgressToNext, skillToShort } from '../../../utils/crewutils';
 import { TinyStore } from '../../../utils/tiny';
 import VoyageExplanation from '../../explanations/voyexplanation';
 import { PlayerCrew } from '../../../model/player';
@@ -17,9 +17,9 @@ import { TranslateMethod } from '../../../model/player';
 export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) => {
 	const tableConfig = [] as ITableConfigRow[];
 	tableConfig.push(
-		{ width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier') },
+		{ width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier'), tiebreakers: ['cab_ov_rank'], tiebreakers_reverse: [false] },
 		{ width: 1, column: 'cab_ov', title: <span>{t('base.cab_power')} <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
-		
+
 	);
 	if (tableType !== 'offers') {
 		tableConfig.push({ width: 1, column: 'ranks.voyRank', title: <span>{t('base.voyage')} <VoyageExplanation /></span> })
@@ -39,11 +39,11 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 	});
 	if (tableType !== 'offers') {
 		tableConfig.push(
-			{ 
-				width: 1, 
-				column: 'in_portal', 
+			{
+				width: 1,
+				column: 'in_portal',
 				title: t('base.in_portal'),
-				customCompare: (a: PlayerCrew | CrewMember, b: PlayerCrew | CrewMember) => {				
+				customCompare: (a: PlayerCrew | CrewMember, b: PlayerCrew | CrewMember) => {
 					return printPortalStatus(a, t, true, true, false, true).localeCompare(printPortalStatus(b, t, true, true, false, true));
 				}
 			},
@@ -53,11 +53,11 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 		tableConfig.push(
 			{ width: 1, column: 'date_added', title: t('base.release_date'), reverse: true },
 		);
-	
+
 	}
 	else {
 		tableConfig.push(
-			{ width: 1, column: 'q_bits', title: t('base.qp'), reverse: true },
+			{ width: 2, column: 'q_bits', title: t('base.qp'), reverse: true },
 		);
 	}
 	return tableConfig;
@@ -74,7 +74,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const rarityLabels = CONFIG.RARITIES.map(m => m.name);
 	const tiny = TinyStore.getStore("index");
-	
+
 	const navToSearch = (crew: IRosterCrew) => {
 		let sko = crew.skill_order.map(sk => skillToShort(sk)).join("/").toUpperCase();
 		tiny.setRapid("search", "skill_order:" + sko);
@@ -91,18 +91,18 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<b style={{color:gradeColor}}>{crew.cab_ov}</b><br />
 				<small><span  style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>{rarityLabels[crew.max_rarity]}</span><br />#{crew.cab_ov_rank}</small>
 			</Table.Cell>
-			{tableType !== 'offers' && 
+			{tableType !== 'offers' &&
 			<Table.Cell textAlign='center'>
 				<div style={{cursor:"pointer"}} onClick={(e) => navToSearch(crew)} title={crew.skill_order.map(sk => skillToShort(sk)).reduce((p, n) => p ? `${p}/${n}` : n)}>
 					<b>#{crew.ranks.voyRank}</b><br />
 					{crew.ranks.voyTriplet && <small>{CONFIG.TRIPLET_TEXT} #{crew.ranks.voyTriplet.rank}</small>}
 				</div>
 			</Table.Cell>}
-			{tableType === 'offers' && 
+			{tableType === 'offers' &&
 			<Table.Cell textAlign='center' width={1}>
 				<b>{crew.cost_text}</b>
 			</Table.Cell>}
-			{tableType === 'offers' && 
+			{tableType === 'offers' &&
 			<Table.Cell textAlign='center' width={3}>
 				<b>{crew.offer}</b>
 			</Table.Cell>}
@@ -131,8 +131,12 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 							{crew.immortal !== -1 ? 'N/A' : crew.q_bits}
 						</div>
 						{crew.immortal === -1 &&
-						<div style={{fontSize:"0.8em"}}>
-							({qbitsToSlots(crew.q_bits)} Slot{qbslots != 1 ? 's' : ''})
+						<div style={{fontSize:"0.8em", minWidth: '4em'}}>
+							({qbslots === 1 && t('base.one_slot')}{qbslots !== 1 && t('base.n_slots', { n: qbitsToSlots(crew.q_bits).toString() })})
+						</div>}
+						{crew.immortal === -1 && qbslots < 4 &&
+						<div style={{fontSize:"0.8em", minWidth: '6em'}}>
+							({t('base.n_to_next', { n: qbProgressToNext(crew.q_bits)[0].toString() })})
 						</div>}
 					</div>}
 			</Table.Cell>

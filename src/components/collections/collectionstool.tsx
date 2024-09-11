@@ -7,14 +7,15 @@ import { TinyStore } from '../../utils/tiny';
 import CollectionsOverviewComponent from './overview';
 import { CollectionsContext, CollectionFilterProvider } from './context';
 import { CollectionsViews } from './collectionsviews';
-import { rewardsFilterPassFail } from '../../utils/collectionutils';
+import { checkCommonFilter, rewardsFilterPassFail } from '../../utils/collectionutils';
+import { WorkerProvider } from '../../context/workercontext';
 
 const CollectionsTool = () => {
-	const context = React.useContext(GlobalContext);	
+	const context = React.useContext(GlobalContext);
 	const { playerData } = context.player;
 	const { crew, collections: allCollections } = context.core;
 
-	if (!context.core.collections?.length) {	
+	if (!context.core.collections?.length) {
 		return context.core.spin ? context.core.spin() : <></>;
 	}
 
@@ -144,7 +145,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 		}
 	});
 
-	
+
 	if (mapFilter.collectionsFilter?.length === 1) {
 		let idx = playerCollections.findIndex(fc => fc.id === (!!mapFilter.collectionsFilter ? mapFilter.collectionsFilter[0] : null));
 		if (idx >= 0) {
@@ -156,29 +157,37 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 			}
 		}
 	}
-	
-	const [topCrewScore, topStarScore] = computeGrades(playerCollections, collectionCrew);
+
+	const displayCrew = directFilterCrew(collectionCrew);
+
+	const [topCrewScore, topStarScore] = computeGrades(playerCollections, displayCrew);
 
 	return (
 		<React.Fragment>
 			<div ref={crewAnchor} />
-				<CollectionsViews 
+			<WorkerProvider>
+				<CollectionsViews
 					topCrewScore={topCrewScore}
 					topStarScore={topStarScore}
 					filterCrewByCollection={filterCrewByCollection}
-					allCrew={allCrew} 
-					playerCollections={playerCollections} 
-					collectionCrew={collectionCrew} />
+					allCrew={allCrew}
+					playerCollections={playerCollections}
+					collectionCrew={displayCrew} />
+			</WorkerProvider>
 		</React.Fragment>
 	);
 
+	function directFilterCrew(crew: PlayerCrew[]): PlayerCrew[] {
+		return crew.filter(c => checkCommonFilter(colContext, c))
+	}
+
 	function filterCrewByCollection(collectionId: number): void {
-		setSearchFilter(''); 
+		setSearchFilter('');
 		setMapFilter({ ...mapFilter ?? {}, collectionsFilter: [collectionId]});
 	}
 
 	function computeGrades(cols: PlayerCollection[], colcrew: PlayerCrew[]) {
-			
+
 		const costs = [0, 0, 500, 4500, 18000, costMode === 'sale' ? 40000 : 50000];
 
 		let tscore = 0;
@@ -188,7 +197,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 		colcrew.forEach((crew) => {
 			crew.collectionScore = 0;
 			crew.collectionScoreN = 0;
-			
+
 			if (!showThisCrew(crew, [], 'Exact')) return;
 			let colids = crew.collection_ids.filter(c => cols.some(col => col.id.toString() === c));
 			let crare = crew.rarity;
@@ -196,7 +205,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 			if (crare === undefined) {
 				crare = 1;
 			}
-			
+
 			let pfilter = cols.filter((col) => colids.some(nid => nid === col.id.toString()) && !!col.needed);
 			if (!pfilter.length) {
 				return;
@@ -208,7 +217,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 
 				ascores.push(1 / col.needed);
 			})
-			
+
 			let cscore = ascores.reduce((p, n) => p + n, 0);
 			crew.collectionScore = Math.round(cscore * 10000);
 
@@ -217,7 +226,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 			}
 
 			if (max_rare !== crare) {
-				
+
 				if (tstars[max_rare] < crare) {
 					tstars[max_rare] = crare;
 				}
@@ -230,14 +239,14 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 			else {
 				crew.collectionScoreN = -1;
 			}
-			
+
 		});
 
 		return [tscore, tscoren];
 	}
 
 	function checkAnchor(crewAnchor: React.RefObject<HTMLDivElement>) {
-		const tinyCol = TinyStore.getStore('collections');   
+		const tinyCol = TinyStore.getStore('collections');
 		const offsel = tinyCol.getValue<string | undefined>("collectionsTool/selectedCollection");
 		tinyCol.removeValue("collectionsTool/selectedCollection");
 		const selColId = tempcol.find(f => f.name === offsel)?.id;
@@ -247,9 +256,9 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 				setTimeout(() => {
 					crewAnchor?.current?.scrollIntoView({
 						behavior: 'smooth',
-					});	
+					});
 				});
-	
+
 				return true;
 			}
 		}
@@ -257,19 +266,19 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 		return false;
 	}
 
-	
+
     function mergeTiers(col: PlayerCollection, startTier: number, endTier: number): PlayerCollection {
         let result = JSON.parse(JSON.stringify(col)) as PlayerCollection;
-        
-    
+
+
         let mergedRewards = {} as { [key: number]: Reward };
         let mergedBuffs = {} as { [key: number]: MilestoneBuff };
         let mergedCount = 0;
-    
+
         result.milestones?.forEach((m, idx) => {
             if (idx >= startTier && idx <= endTier) {
                 mergedCount = m.goal;
-    
+
                 m.rewards.forEach((reward) => {
                     if (!(reward.id in mergedRewards)) {
                         mergedRewards[reward.id] = JSON.parse(JSON.stringify(reward));
@@ -278,11 +287,11 @@ const CollectionsUI = (props: CollectionsUIProps) => {
                         mergedRewards[reward.id].quantity += reward.quantity;
                     }
                 });
-    
+
                 m.buffs.forEach((buff) => {
                     if (!(buff.id in mergedBuffs)) {
                         mergedBuffs[buff.id] = JSON.parse(JSON.stringify(buff));
-                    }	
+                    }
                     else {
                         mergedBuffs[buff.id].quantity ??= 1;
                         (mergedBuffs[buff.id].quantity as number) += buff.quantity ?? 1;
@@ -290,22 +299,22 @@ const CollectionsUI = (props: CollectionsUIProps) => {
                 })
             }
         });
-    
-        result.milestone = { 
+
+        result.milestone = {
             ... result.milestone,
             goal: mergedCount,
             buffs: Object.values(mergedBuffs),
             rewards: Object.values(mergedRewards)
         };
-        
+
         if (result.milestone.goal != 'n/a' && result.progress != 'n/a') {
             result.progressPct = result.milestone.goal > 0 ? result.progress / result.milestone.goal : 1;
-            result.neededPct = 1 - result.progressPct;		
+            result.neededPct = 1 - result.progressPct;
             result.needed = result.milestone.goal > 0 ? Math.max(result.milestone.goal - result.progress, 0) : 0;
         }
-    
+
         result.totalRewards = (result.milestone.buffs?.length ?? 0) + (result.milestone.rewards?.length ?? 0);
-    
+
         return result;
     }
 };

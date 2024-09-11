@@ -103,7 +103,7 @@ const NonPlayerCalculator = (props: CalculatorProps) => {
 const CalculatorForm = (props: CalculatorProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t, tfmt } = globalContext.localized;
-	const { playerData } = globalContext.player;
+	const { playerData, ephemeral } = globalContext.player;
 	const calculatorContext = React.useContext(CalculatorContext);
 	const { rosterType } = calculatorContext;
 	const userPrefs = React.useContext(UserPrefsContext);
@@ -126,6 +126,18 @@ const CalculatorForm = (props: CalculatorProps) => {
 				bestIndex: Math.min(ship.index?.left ?? 0, ship.index?.right ?? 0),
 				archetype_id: ship.archetype_id
 			} as VoyageConsideration;
+			if (voyageConfig.voyage_type === 'encounter') {
+				let f = ephemeral?.events?.find(f => f.content_types.includes('voyage'));
+				if (f) {
+					if (f.content.featured_ships?.includes(ship.symbol)) {
+						entry.score = ship.antimatter + 500;
+					}
+					else {
+						let ftrait = f.content.antimatter_bonus_ship_traits?.filter(bs => ship.traits?.includes(bs))?.length ?? 0;
+						entry.score = ship.antimatter + (ftrait * 100);
+					}
+				}
+			}
 			consideredShips.push(entry);
 		});
 		consideredShips.sort((a, b) => {
@@ -258,7 +270,7 @@ const CalculatorForm = (props: CalculatorProps) => {
 					const result = prevResults.find(r => r.id === requestId);
 					if (result) {
 						if (calcState === CalculatorState.Done) {
-							result.name = formatTime(reqResult.estimate.refills[0].result);
+							result.name = formatTime(reqResult.estimate.refills[0].result, t);
 							result.calcState = CalculatorState.Done;
 						}
 						result.result = reqResult;
@@ -274,7 +286,7 @@ const CalculatorForm = (props: CalculatorProps) => {
 				setResults(prevResults => [...prevResults, {
 					id: requestId+'-'+idx,
 					requestId,
-					name: formatTime(reqResult.estimate.refills[0].result),
+					name: formatTime(reqResult.estimate.refills[0].result, t),
 					calcState: CalculatorState.Done,
 					result: reqResult
 				}]);
@@ -418,7 +430,9 @@ type CrewOptionsProps = {
 
 const CrewOptions = (props: CrewOptionsProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
-	const { rosterType } = calculatorContext;
+	const globalContext = React.useContext(GlobalContext);
+	const { ephemeral } = globalContext.player;
+	const { rosterType, voySymbol } = calculatorContext;
 
 	const [preConsideredCrew, setPreConsideredCrew] = React.useState<IVoyageCrew[]>(calculatorContext.crew);
 	const [considerActive, setConsiderActive] = React.useState(false);
@@ -447,7 +461,8 @@ const CrewOptions = (props: CrewOptionsProps) => {
 		props.updateConsideredCrew(consideredCrew);
 	}, [preConsideredCrew, considerActive, considerFrozen, excludedCrewIds]);
 
-	const activeCount = calculatorContext.crew.filter(crew => crew.active_status === 2).length;
+	const otherVoyages = ephemeral?.voyage?.filter(f => f.name !== voySymbol);
+	const activeCount = calculatorContext.crew.filter(crew => crew.active_status === 2 || otherVoyages?.some(voy => voy.crew_slots?.some(cs => cs.crew.id === crew.id))).length;
 
 	return (
 		<Grid stackable columns={2} style={{ marginBottom: '1em' }}>
@@ -464,12 +479,14 @@ const CrewOptions = (props: CrewOptionsProps) => {
 							<Form.Group grouped style={{ marginBottom: '1em' }}>
 								<React.Fragment>
 									{activeCount > 0 && (
+										<>
 										<Form.Field
 											control={Checkbox}
-											label='Consider crew on active shuttles'
+											label='Consider crew on active shuttles or other voyages'
 											checked={considerActive}
 											onChange={(e, { checked }) => setConsiderActive(checked)}
 										/>
+										</>
 									)}
 									<Form.Field
 										control={Checkbox}
@@ -504,9 +521,17 @@ const CrewOptions = (props: CrewOptionsProps) => {
 	);
 
 	function preExcludeCrew(preConsideredCrew: IVoyageCrew[]): IVoyageCrew[] {
+
+		if (!considerActive && ephemeral?.voyage?.length) {
+			let list = [...new Set(ephemeral.voyage.filter((f, idx) => f.name !== voySymbol).map(m => m.crew_slots.map(m2 => m2.crew.id)).flat()) ]
+			preConsideredCrew = preConsideredCrew.filter(f => !list.includes(f.id));
+		}
+
 		return preConsideredCrew.filter(crewman => {
 			if (!considerActive && crewman.active_status === 2)
 				return false;
+
+
 
 			if (!considerFrozen && crewman.immortal > 0)
 				return false;
@@ -524,7 +549,11 @@ type ResultsGroupProps = {
 
 const ResultsGroup = (props: ResultsGroupProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { playerData } = globalContext.player;
 
+	const dbid = playerData?.player.dbid;
+
+	const { t } = globalContext.localized;
 	const calculatorContext = React.useContext(CalculatorContext);
 	const userPrefs = React.useContext(UserPrefsContext);
 
@@ -653,15 +682,15 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 		switch (method) {
 			case 'median':
 				sortName = 'estimated runtime';
-				sortValue = formatTime(bestValues.median);
+				sortValue = formatTime(bestValues.median, t);
 				break;
 			case 'minimum':
 				sortName = 'guaranteed minimum';
-				sortValue = formatTime(bestValues.minimum);
+				sortValue = formatTime(bestValues.minimum, t);
 				break;
 			case 'moonshot':
 				sortName = 'moonshot';
-				sortValue = formatTime(bestValues.moonshot);
+				sortValue = formatTime(bestValues.moonshot, t);
 				break;
 			case 'dilemma':
 				sortName = 'dilemma chance';
@@ -682,7 +711,7 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 			request.abort();
 			const result = results.find(prev => prev.id === requestId);
 			if (result && result.result) {
-				result.name = formatTime(result.result.estimate.refills[0].result);
+				result.name = formatTime(result.result.estimate.refills[0].result, t);
 				result.calcState = CalculatorState.Done;
 			}
 			else {
@@ -693,13 +722,13 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 		}
 	}
 
-	function trackResult(resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate): void {
+	async function trackResult(resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate): Promise<void> {
 		// Remove previous tracked voyage and associated crew assignments
 		//	(in case user tracks a different recommendation from same request)
 		if (trackerId > 0) removeVoyageFromHistory(userPrefs.history, trackerId);
 
-		const newTrackerId = addVoyageToHistory(userPrefs.history, voyageConfig, shipSymbol, estimate);
-		addCrewToHistory(userPrefs.history, newTrackerId, voyageConfig);
+		const newTrackerId = await addVoyageToHistory(userPrefs.history, voyageConfig, shipSymbol, estimate, true, dbid);
+		addCrewToHistory(userPrefs.history, newTrackerId, voyageConfig, userPrefs.telemetryOptIn, dbid);
 		userPrefs.setHistory({...userPrefs.history});
 		setTrackerId(newTrackerId);
 		results.forEach((result, idx) => {
@@ -725,7 +754,7 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 			if (!message.data.inProgress) {
 				const estimate = message.data.result;
 				const result = results[resultIndex];
-				result.name = formatTime(estimate.refills[0].result);
+				result.name = formatTime(estimate.refills[0].result, t);
 				if (result.result) result.result.estimate = estimate;
 				result.confidenceState = 2;
 				setResults([...results]);
@@ -761,7 +790,7 @@ type ResultPaneProps = {
 	analysis: string;
 	trackState: number;
 	confidenceState: number;
-	trackResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate) => void;
+	trackResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate) => Promise<void>;
 	estimateResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, numSums: number) => void;
 	dismissResult: (resultIndex: number) => void;
 	roster: IVoyageCrew[];
@@ -769,6 +798,7 @@ type ResultPaneProps = {
 
 const ResultPane = (props: ResultPaneProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
+	const { t } = React.useContext(GlobalContext).localized;
 	const { rosterType, activeVoyageId } = calculatorContext;
 	const {
 		result, resultIndex,
@@ -837,9 +867,9 @@ const ResultPane = (props: ResultPaneProps) => {
 				<Message attached>
 					<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', rowGap: '1em' }}>
 						<div>
-							Estimate: <b>{formatTime(result.estimate.refills[0].result)}</b>{` `}
-							(expected range: {formatTime(result.estimate.refills[0].saferResult)} to{` `}
-								{formatTime(result.estimate.refills[0].moonshotResult)})
+							Estimate: <b>{formatTime(result.estimate.refills[0].result, t)}</b>{` `}
+							(expected range: {formatTime(result.estimate.refills[0].saferResult, t)} to{` `}
+								{formatTime(result.estimate.refills[0].moonshotResult, t)})
 							{analysis !== '' && (<div style={{ marginTop: '1em' }}>{analysis}</div>)}
 						</div>
 						<div>
@@ -848,7 +878,7 @@ const ResultPane = (props: ResultPaneProps) => {
 									<Popup position='top center'
 										content={<>Track this recommendation</>}
 										trigger={
-											<Button icon onClick={() => trackResult(resultIndex, data, request.bestShip.ship.symbol, result.estimate)}>
+											<Button icon onClick={async () => await trackResult(resultIndex, data, request.bestShip.ship.symbol, result.estimate)}>
 												<Icon name={iconTrack[trackState]} color={trackState === 1 ? 'green' : undefined} />
 											</Button>
 										}

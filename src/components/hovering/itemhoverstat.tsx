@@ -63,7 +63,12 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
                 dataOut = { ... ci, ... mergeItems([fi],[ci])[0] as EquipmentItem };
             }
             else if (ci) {
-                dataOut = ci;
+                if (dataOut) {
+                    dataOut = { ...dataOut, ... mergeItems([dataOut], [ci])[0] as EquipmentItem };
+                }
+                else {
+                    dataOut = ci;
+                }                
             }
 
             if (dataIn && dataOut && !dataOut?.demandCrew?.length && !!dataIn?.demandCrew?.length) {
@@ -129,7 +134,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
         const { crewTargetGroup, targetGroup } = this.props;
         const { mobileWidth, displayItem, touchToggled } = this.state;
 
-        const compact = true;    
+        const compact = this.props.compact ?? true;
 
         if (!displayItem) {
             // console.log("Deactivating empty popover");
@@ -156,7 +161,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
         }
 
         return displayItem ? (<ItemPresenter
-            compact={this.props.compact}
+            compact={compact}
             crewTargetGroup={crewTargetGroup}
             mobileWidth={mobileWidth}            
             close={() => onClose()} 

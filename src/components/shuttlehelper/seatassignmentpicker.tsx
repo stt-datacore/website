@@ -7,6 +7,7 @@ import { Shuttle, ShuttleSeat, CrewScores, ICrewScore, IShuttleScores, IAssignab
 import { ShuttlersContext } from './context';
 import { SeatSkillView, SeatCrewView } from './missionstable';
 import { getSkillSetId } from './utils';
+import { GlobalContext } from '../../context/globalcontext';
 
 interface IActiveEdit {
 	shuttleId: string;
@@ -23,6 +24,7 @@ type SeatAssignmentPickerProps = {
 };
 
 export const SeatAssignmentPicker = (props: SeatAssignmentPickerProps) => {
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const shuttlersContext = React.useContext(ShuttlersContext);
 	const { rosterCrew, shuttlers, assigned } = shuttlersContext;
 	const { activeEdit, setActiveEdit, updateAssignment, crewScores, updateCrewScores, shuttleScores } = props;
@@ -55,18 +57,18 @@ export const SeatAssignmentPicker = (props: SeatAssignmentPickerProps) => {
 				{shuttle.name}
 				{shuttleScores[shuttleId] ?
 					<span style={{ fontSize: '.95em', fontWeight: 'normal', paddingLeft: '1em' }}>
-						({(shuttleScores[shuttleId].chance*100).toFixed(1)}% Chance)
+						({t('shuttle_helper.missions.n_percent_chance', { n: (shuttleScores[shuttleId].chance*100).toFixed(1) })})
 					</span>
 					: ''}
 			</Modal.Header>
 			<Modal.Content scrolling>
-				{!scores && <>Loading...</>}
+				{!scores && <>{t('global.loading_ellipses')}</>}
 				{scores && renderTable()}
 			</Modal.Content>
 			<Modal.Actions>
-				{shuttle.seats.length > 1 && <Button icon='forward' content='Next Seat' onClick={() => cycleShuttleSeat()} />}
+				{shuttle.seats.length > 1 && <Button icon='forward' content={t('shuttle_helper.missions.next_seat')} onClick={() => cycleShuttleSeat()} />}
 				<Button onClick={() => setActiveEdit(undefined)}>
-					Close
+					{t('global.close')}
 				</Button>
 			</Modal.Actions>
 		</Modal>
@@ -93,10 +95,10 @@ export const SeatAssignmentPicker = (props: SeatAssignmentPickerProps) => {
 					<Table.Header>
 						<Table.Row>
 							<Table.HeaderCell />
-							<Table.HeaderCell colSpan={2}>Best <span style={{ padding: '0 .5em' }}><SeatSkillView seat={seat} /></span> Crew</Table.HeaderCell>
-							<Table.HeaderCell textAlign='center'>Here<Popup trigger={<Icon name='help' />} content='Using this crew here will result in this net change to the success chance of this shuttle' /></Table.HeaderCell>
-							<Table.HeaderCell>Current Assignment</Table.HeaderCell>
-							<Table.HeaderCell textAlign='center'>There<Popup trigger={<Icon name='help' />} content='Removing this crew from their current assignment will leave an open seat on that shuttle, resulting in this success chance' /></Table.HeaderCell>
+							<Table.HeaderCell colSpan={2}>{t('shuttle_helper.missions.columns.best')} <span style={{ padding: '0 .5em' }}><SeatSkillView seat={seat} /></span> {t('base.crew')}</Table.HeaderCell>
+							<Table.HeaderCell textAlign='center'>{t('shuttle_helper.missions.columns.here')}<Popup trigger={<Icon name='help' />} content='Using this crew here will result in this net change to the success chance of this shuttle' /></Table.HeaderCell>
+							<Table.HeaderCell>{t('shuttle_helper.missions.columns.current_assignment')}</Table.HeaderCell>
+							<Table.HeaderCell textAlign='center'>{t('shuttle_helper.missions.columns.there')}<Popup trigger={<Icon name='help' />} content='Removing this crew from their current assignment will leave an open seat on that shuttle, resulting in this success chance' /></Table.HeaderCell>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
