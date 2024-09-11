@@ -3,7 +3,7 @@ title: "About"
 hide_in_other: true
 ---
 
-> **NOTE** This project is a work in progress, still in the early stages. All feedback is welcome!
+## DataCore v2.2
 
 DataCore is a companion resource to Tilting Point's [Star Trek Timelines](https://www.tiltingpoint.com/games/star-trek-timelines/) game. It's designed as a compendium of data, statistics and assets, both extracted from the game as well as user generated.
 
@@ -31,7 +31,7 @@ Most of the code for the website, the bot and accompanying services was original
 
 The codebase is currently maintained by \[UFP\] U.S.S John Jay and \[IPA\] ironyWrit (c) 2023 - 2024 and released under the MIT license.
 
-Additional Contributors: 
+Additional Contributors:
 
 TygraDax for the Grade and Star Grade equations in the collection planner.
 Bernard for the equation for Bernard's Number in the gauntlet tool.
