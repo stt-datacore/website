@@ -25,7 +25,7 @@ const Dashboard = (props: DashboardProps) => {
 
 	return (
 		<React.Fragment>
-			{/* <Announcement /> */}
+			<Announcement />
 
 			{!!playerData && showPlayerGlance && (!isMobile || mobileHideOverride) &&
 				<PlayerGlance
