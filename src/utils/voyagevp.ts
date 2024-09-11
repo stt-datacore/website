@@ -59,11 +59,11 @@ export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
         }
         else {
             vpdetails.is_overflow = false;
-            let f = seconds - drop.start;
-            let pd = (drop.end - drop.start) / drop.drops;
-            f *= pd;
-            vpdetails.total_drops += Math.floor(f);
-            total += (dropvp * drop.actual * Math.floor(f));
+            let remainder = seconds - drop.start;
+            let dps = drop.drops / (drop.end - drop.start);
+            remainder *= dps;
+            vpdetails.total_drops += Math.floor(remainder);
+            total += (dropvp * drop.actual * Math.floor(remainder));
         }
     });
 
