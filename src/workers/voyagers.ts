@@ -9,6 +9,8 @@ DataCore(<VoyageTool>): input from UI =>
 import { IVoyageCrew, IVoyageInputConfig } from '../model/voyage';
 import { Estimate, JohnJayBest, Refill } from '../model/worker';
 
+import { calcVoyageVP } from '../utils/voyagevp';
+
 import { ILineupEstimate, ISkillAggregate } from './voyagers/model';
 import { VoyagersLineup } from './voyagers/lineup';
 import { voyagersAssemble } from './voyagers/assembler';
@@ -97,6 +99,13 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 			const estimate: Estimate = chewable(chewableConfig, () => false);
 			// Add antimatter prop here to allow for post-sorting by AM
 			estimate.antimatter = input.bestShip.score + lineup.antimatter;
+			// Add eventVP prop here to allow for post-sorting by VP details
+			if (voyage_description.voyage_type === 'encounter') {
+				const seconds: number = estimate.refills[0].result*60*60;
+				const bonuses: number[] = [];
+				lineup.crew.forEach(crew => bonuses.push(crew.event_score));
+				estimate.vpDetails = calcVoyageVP(seconds, bonuses);
+			}
 			resolve({ estimate, key: lineup.key });
 		});
 	}

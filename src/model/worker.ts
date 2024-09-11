@@ -8,6 +8,7 @@ import { Collection } from "./game-elements";
 import { ICoreData } from "../context/datacontext";
 import { MissionChallenge, MissionTraitBonus, QuestFilterConfig } from "./missions";
 import { IEphemeralData } from "../context/playercontext";
+import { VPDetails } from "../utils/voyagevp";
 
 export interface GameWorkerOptionsList {
     key: number;
@@ -83,6 +84,7 @@ export interface Estimate {
     final: boolean;
     deterministic?: boolean;
     antimatter?: number;
+	vpDetails?: VPDetails;
 }
 
 export interface Refill {

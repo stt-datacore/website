@@ -27,6 +27,7 @@ export interface IPrimedCrew {
 	trait_slots: number[];
 	trait_values: number[];
 	ideal_trait_value: number;
+	event_score: number;
 };
 
 export interface ISlottableCrew extends IPrimedCrew {

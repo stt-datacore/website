@@ -11,7 +11,7 @@ import CONFIG from '../CONFIG';
 import { useStateWithStorage } from '../../utils/storage';
 import { renderKwipmentBonus } from '../item_presenters/item_presenter';
 import { isQuipped } from '../../utils/crewutils';
-import { getCrewTraitBonus, getShipTraitBonus } from './utils';
+import { getCrewTraitBonus, getCrewVP, getShipTraitBonus } from './utils';
 
 interface IAssignment {
 	crew: PlayerCrew;
@@ -518,7 +518,7 @@ const GridView = (props: ViewProps) => {
 };
 
 const Aggregates = (props: ViewProps) => {
-	const { voyageConfig, ship, shipData } = React.useContext(ViewContext);
+	const { voyageConfig, ship, shipData, assignments } = React.useContext(ViewContext);
 	const { layout } = props;
 
 	const landscape = layout === 'grid-cards' || layout === 'grid-icons';
@@ -528,7 +528,7 @@ const Aggregates = (props: ViewProps) => {
 			{!landscape &&
 				<React.Fragment>
 					<div style={{ marginBottom: '1em' }}>
-						{renderAntimatter()}
+						{renderCrewBonusesTable()}
 					</div>
 					{renderAggregateTable(['command_skill', 'diplomacy_skill', 'engineering_skill', 'security_skill', 'medicine_skill', 'science_skill'])}
 				</React.Fragment>
@@ -536,7 +536,9 @@ const Aggregates = (props: ViewProps) => {
 			{landscape &&
 				<div style={{ textAlign: 'center' }}>
 					<div style={{ display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2em' }}>
-						<div>{renderAntimatter()}</div>
+						<div>
+							{renderCrewBonusesTable()}
+						</div>
 						{renderAggregateTable(['command_skill', 'diplomacy_skill', 'engineering_skill'])}
 						{renderAggregateTable(['security_skill', 'medicine_skill', 'science_skill'])}
 					</div>
@@ -545,30 +547,53 @@ const Aggregates = (props: ViewProps) => {
 		</React.Fragment>
 	);
 
-	function renderAntimatter(): JSX.Element {
+	function renderCrewBonusesTable(): JSX.Element {
 		return (
 			<Table collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto' }}>
 				<Table.Body>
-					<Table.Row>
-						<Table.Cell>Antimatter</Table.Cell>
-						<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
-							{ship && (
-								<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{voyageConfig.max_hp}</span>}>
-									<Popup.Content>
-										{ship.antimatter} (Level {ship.level} Ship)
-										<br />+{shipData.shipBonus} (Ship Trait Bonus)
-										<br />+{shipData.crewBonus} (Crew Trait Bonuses)
-									</Popup.Content>
-								</Popup>
-							)}
-							{!ship && <span>{voyageConfig.max_hp}</span>}
-						</Table.Cell>
-						<Table.Cell className='iconic'>
-							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
-						</Table.Cell>
-					</Table.Row>
+					{renderVPRow()}
+					{renderAntimatterRow()}
 				</Table.Body>
 			</Table>
+		);
+	}
+
+	function renderVPRow(): JSX.Element {
+		if (voyageConfig.voyage_type !== 'encounter') return <></>;
+		const totalVP: number = assignments.reduce((prev, curr) => prev + getCrewVP(voyageConfig, curr.crew), 50);
+		return (
+			<Table.Row>
+				<Table.Cell>Base Event VP</Table.Cell>
+				<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
+					<b>{totalVP}</b>
+				</Table.Cell>
+				<Table.Cell className='iconic' textAlign='center'>
+					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1em' }} className='invertibleIcon' />
+				</Table.Cell>
+			</Table.Row>
+		);
+	}
+
+	function renderAntimatterRow(): JSX.Element {
+		return (
+			<Table.Row>
+				<Table.Cell>Antimatter</Table.Cell>
+				<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
+					{ship && (
+						<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{voyageConfig.max_hp}</span>}>
+							<Popup.Content>
+								{ship.antimatter} (Level {ship.level} Ship)
+								<br />+{shipData.shipBonus} (Ship Trait Bonus)
+								<br />+{shipData.crewBonus} (Crew Trait Bonuses)
+							</Popup.Content>
+						</Popup>
+					)}
+					{!ship && <span>{voyageConfig.max_hp}</span>}
+				</Table.Cell>
+				<Table.Cell className='iconic' textAlign='center'>
+					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
+				</Table.Cell>
+			</Table.Row>
 		);
 	}
 
@@ -663,7 +688,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 						</Popup.Content>
 					</Popup>
 				</div>
-				<div style={{display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: 'center'}}>
+				<div style={{display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: 'center', gap: '1em'}}>
 					{isQuipped(crew) && (
 						<div>
 							<Popup wide
@@ -677,6 +702,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 							/>
 						</div>
 					)}
+					{renderCrewVP()}
 					{renderTraitBonus()}
 				</div>
 				{showSkills && (
@@ -692,15 +718,33 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 		</Card>
 	);
 
+	function renderCrewVP(): JSX.Element {
+		const crewVP: number = getCrewVP(voyageConfig, crew);
+		if (crewVP === 0) return <></>;
+		return (
+			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '3px' }}>
+				<span>+{crewVP}</span>
+				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1em' }} className='invertibleIcon' />
+			</div>
+		);
+	}
+
 	function renderTraitBonus(): JSX.Element {
 		const traitBonus: number = getCrewTraitBonus(voyageConfig, crew, trait);
 		if (traitBonus === 0) return <></>;
+		if (traitBonus === 25) {
+			return (
+				<div>
+					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
+					<span style={{ marginLeft: '.5em', verticalAlign: 'middle' }}>{TRAIT_NAMES[trait]}</span>
+				</div>
+			);
+		}
 		return (
-			<React.Fragment>
-				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
-				{traitBonus === 25 && <span style={{ marginLeft: '.5em', verticalAlign: 'middle' }}>{TRAIT_NAMES[trait]}</span>}
-				{traitBonus !== 25 && <span style={{ marginLeft: '.5em', verticalAlign: 'middle' }}>+ {traitBonus}</span>}
-			</React.Fragment>
+			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '3px' }}>
+				<span>+{traitBonus}</span>
+				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
+			</div>
 		);
 	}
 };

@@ -44,3 +44,23 @@ export function getCrewTraitBonus(voyageConfig: IVoyageInputConfig, crew: Player
 	}
 	return traitBonus;
 }
+
+export function getCrewVP(voyageConfig: IVoyageInputConfig, crew: PlayerCrew): number {
+	let crewVP: number = 0;
+	if (voyageConfig.voyage_type === 'encounter') {
+		const content: IVoyageEventContent | undefined = voyageConfig.event_content;
+		if (content) {
+			if (content.featured_crews.includes(crew.symbol)) {
+				crewVP = 25;
+			}
+			else {
+				if (content.antimatter_bonus_crew_traits.some(bonusTrait => {
+					return crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait);
+				})) {
+					crewVP = 10;
+				}
+			}
+		}
+	}
+	return crewVP;
+}

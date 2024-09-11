@@ -110,11 +110,11 @@ export const MultiVectorAssault = (
 			const crewId: number = crew[i].id ?? i;
 			const crewSkills: BaseSkills = crew[i].skills ? JSON.parse(JSON.stringify(crew[i].skills)) : {};
 
-			let eventTraitBonus: number = 0, eventCrewFactor: number = 1;
+			let eventTraitBonus: number = 0, eventCrewVP: number = 0, eventCrewFactor: number = 1;
 			if (voyage.voyage_type === 'encounter' && voyage.event_content) {
 				eventTraitBonus = getEncounterTraitBonus(crew[i], voyage.event_content);
-				if (voyage.event_content.featured_crews.includes(crew[i].symbol))
-					eventCrewFactor = 2;
+				eventCrewVP = getEncounterCrewVP(crew[i], voyage.event_content);
+				eventCrewFactor = (eventCrewVP/5)+1;	// 6 for featured, 3 for small bonus, 1 for non-event crew
 			}
 
 			let bGeneralist: boolean = true;
@@ -144,8 +144,8 @@ export const MultiVectorAssault = (
 					traitSlots[(iSkill*2)+1] = eventTraitBonus;
 				}
 				else {
-					traitSlots[iSkill*2] = getDilemmaTraitBonus(crew[i], dilemmaTraits[iSkill*2]);
-					traitSlots[(iSkill*2)+1] = getDilemmaTraitBonus(crew[i], dilemmaTraits[(iSkill*2)+1]);
+					traitSlots[iSkill*2] = crew[i].traits.includes(dilemmaTraits[iSkill*2]) ? 25 : 0;
+					traitSlots[(iSkill*2)+1] = crew[i].traits.includes(dilemmaTraits[(iSkill*2)+1]) ? 25 : 0;
 				}
 
 				if (skillId === 'engineering_skill' || skillId === 'science_skill' || skillId === 'medicine_skill')
@@ -179,15 +179,12 @@ export const MultiVectorAssault = (
 				viable_slots: viableSlots,
 				trait_slots: traitSlots,
 				trait_values: traitValues,
-				ideal_trait_value: idealTraitValue
+				ideal_trait_value: idealTraitValue,
+				event_score: eventCrewVP
 			};
 			primedRoster.push(crewman);
 		}
 		return primedRoster;
-	}
-
-	function getDilemmaTraitBonus(crew: IVoyageCrew, trait: string): number {
-		return crew.traits.includes(trait) ? 25 : 0;
 	}
 
 	function getEncounterTraitBonus(crew: IVoyageCrew, content: IVoyageEventContent): number {
@@ -202,6 +199,21 @@ export const MultiVectorAssault = (
 			});
 		}
 		return bonus;
+	}
+
+	function getEncounterCrewVP(crew: IVoyageCrew, content: IVoyageEventContent): number {
+		let crewVP: number = 0;
+		if (content.featured_crews.includes(crew.symbol)) {
+			crewVP = 25;
+		}
+		else {
+			if (content.antimatter_bonus_crew_traits.some(bonusTrait => {
+				return crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait);
+			})) {
+				crewVP = 10;
+			}
+		}
+		return crewVP;
 	}
 
 	// These base target values were determined from simulations using Joshurtree's revised Chewable
