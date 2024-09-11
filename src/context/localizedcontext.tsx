@@ -148,25 +148,29 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	// Update language on user preference change
 	React.useEffect(() => {
-		if (preferredLanguage) {
-			fetchStrings(preferredLanguage);
-		}
-		else if (preferenceLoaded) {
-			fetchStrings(getBrowserLanguage());
-		}
+		setTimeout(() => {
+			if (preferredLanguage) {
+				fetchStrings(preferredLanguage);
+			}
+			else if (preferenceLoaded) {
+				fetchStrings(getBrowserLanguage());
+			}
+		});
 	}, [preferredLanguage]);
 
 	// Update language on player data import (or revert to browser language on player data clear)
 	React.useEffect(() => {
-		if (!preferenceLoaded) return;
-		if (!preferredLanguage) {
-			if (player.playerData) {
-				fetchStrings(player.playerData.player.lang as SupportedLanguage);
+		setTimeout(() => {
+			if (!preferenceLoaded) return;
+			if (!preferredLanguage) {
+				if (player.playerData) {
+					fetchStrings(player.playerData.player.lang as SupportedLanguage);
+				}
+				else {
+					fetchStrings(getBrowserLanguage());
+				}
 			}
-			else {
-				fetchStrings(getBrowserLanguage());
-			}
-		}
+		});
 	}, [player]);
 
 	// Don't render any text while localizations are still loading
