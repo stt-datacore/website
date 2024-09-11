@@ -74,7 +74,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 				demands.push(required);
 		});
 		// Fetch core data AND localize it before datapage can access it
-		globalContext.readyLocalizedCore(demands, () => setIsReady(true));
+		globalContext.readyLocalizedCore(demands, () => setTimeout(()=>setIsReady(true)));
 	}, []);
 
 	// topAnchor div styled to scroll properly with a fixed header
