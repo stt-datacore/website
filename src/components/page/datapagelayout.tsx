@@ -84,18 +84,21 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 		globalContext.readyLocalizedCore(demands, () => {
 			if (DEBUG_MODE) console.log("setIsReady(true)");
 
-			// TODO: Why the hell do we have to do this?
-			if (typeof window !== 'undefined') {
-				let __kludge = sessionStorage.getItem('__kludge');
-				if (!__kludge) {
-					if (DEBUG_MODE) console.log("KLUDGE!!!");
-					sessionStorage.setItem('__kludge', "__kludge")
-					window.location.reload();
-				}
-			}
 			setIsReady(true);
 		});
 	}, []);
+
+	// TODO: Why the hell do we have to do this?
+	if (typeof sessionStorage !== 'undefined') {
+		let __kludge = sessionStorage.getItem('__kludge');
+		if (!__kludge) {
+			if (DEBUG_MODE) console.log("KLUDGE!!!");
+			sessionStorage.setItem('__kludge', "__kludge")
+			setTimeout(() => {
+				location.reload();
+			});
+		}
+	}
 
 	// topAnchor div styled to scroll properly with a fixed header
 	const topAnchor = React.useRef<HTMLDivElement>(null);
