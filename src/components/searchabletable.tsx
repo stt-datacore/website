@@ -183,9 +183,9 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		let permalink = window.location.protocol + '//' + window.location.host + window.location.pathname;
 		if (params.toString() != '') permalink += '?' + params.toString();
 		return (
-			<Link to={permalink}>
+			<a href={permalink}>
 				<Icon name='linkify' /> Permalink
-			</Link>
+			</a>
 		);
 	}
 

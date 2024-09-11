@@ -17,7 +17,7 @@ type DashboardProps = {
 const Dashboard = (props: DashboardProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const isMobile = globalContext.isMobile;
-	const { playerData, showPlayerGlance, setShowPlayerGlance } = globalContext.player;	
+	const { playerData, showPlayerGlance, setShowPlayerGlance } = globalContext.player;
 	const { t } = globalContext.localized;
 	const { activePanel, setActivePanel, narrow } = props;
 	const [mobileHideOverride, setMobileHideOverride] = React.useState(false);
@@ -27,12 +27,13 @@ const Dashboard = (props: DashboardProps) => {
 		<React.Fragment>
 			<Announcement />
 
-			{playerData && showPlayerGlance && (!isMobile || mobileHideOverride) &&
-				<PlayerGlance 
+			{!!playerData && showPlayerGlance && (!isMobile || mobileHideOverride) &&
+				<PlayerGlance
 					t={t}
 					narrow={narrow}
-					requestDismiss={() => { setShowPlayerGlance(false) }} />} 
-			{playerData && showPlayerGlance && (isMobile && !mobileHideOverride) && !hideOverrideHidden &&
+					requestDismiss={() => { setShowPlayerGlance(false) }} />}
+
+			{!!playerData && showPlayerGlance && (isMobile && !mobileHideOverride) && !hideOverrideHidden &&
 			<Notification
 				header='Player info hidden on mobile'
 				content={

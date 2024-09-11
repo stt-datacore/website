@@ -29,9 +29,9 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 			</div>
 		);
 	}
-	
+
 	const isNever = printPortalStatus(crew, t) === t("global.never");
-	
+
 	return (
 		<React.Fragment>
 			<div style={{
@@ -95,11 +95,11 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 						title={t('rank_names.cab_rank')}
 						value={crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : '?'}
 						/>
-				<StatLabel title={t('rank_names.cab_rating')} value={crew.cab_ov ?? '?'} />
-				
+				<StatLabel title={t('rank_names.cab_rating')} value={crew.cab_ov || '?'} />
+
 				{!isNever && <>
-					{crew.in_portal && !!crew.unique_polestar_combos?.length && 
-						<StatLabel 
+					{crew.in_portal && !!crew.unique_polestar_combos?.length &&
+						<StatLabel
 							title={<>
 								<div style={{ width:"100%", textAlign:"center",display:'flex', flexDirection: 'column', justifyContent: 'center', color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
 									{t('base.uniquely_retrievable')}
@@ -107,16 +107,16 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 							</>}
 						value="" />
 							||
-						<StatLabel 
+						<StatLabel
 							title={t('global.portal')}
 							value={<>
 								<div style={{ color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
 									{printPortalStatus(crew, t, true, false)}
 								</div>
-							</>} 
+							</>}
 					/>}
 				</>}
-				{isNever && <StatLabel 
+				{isNever && <StatLabel
 							title={<>
 								<div style={{ width:"100%", color: CONFIG.RARITIES[5].color, textAlign:"center",display:'flex', flexDirection: 'column', justifyContent: 'center', fontWeight: 'bold'}}>
 									{prettyObtained(crew, t, true)}
