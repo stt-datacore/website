@@ -74,7 +74,6 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const [playerPanel, setPlayerPanel] = React.useState<string | undefined>(undefined);
 
 	React.useEffect(() => {
-
 		const demands: ValidDemands[] = props.demands ?? [];
 		(['crew', 'collections', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
 			if (!demands.includes(required))
@@ -84,6 +83,14 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 		// Fetch core data AND localize it before datapage can access it
 		globalContext.readyLocalizedCore(demands, () => {
 			if (DEBUG_MODE) console.log("setIsReady(true)");
+			if (typeof window !== 'undefined') {
+				let __kludge = sessionStorage.getItem('__kludge');
+				if (!__kludge) {
+					if (DEBUG_MODE) console.log("KLUDGE!!!");
+					sessionStorage.setItem('__kludge', "__kludge")
+					window.location.reload();
+				}
+			}
 			setIsReady(true);
 		});
 	}, []);

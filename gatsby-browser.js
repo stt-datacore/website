@@ -13,13 +13,6 @@ export const wrapPageElement = ({ element }) => {
 };
 
 export const wrapRootElement = ({ element }) => {
-	if (typeof window !== 'undefined') {
-		let __kludge = sessionStorage.getItem('__kludge');
-		if (!__kludge) {
-			sessionStorage.setItem('__kludge', "__kludge")
-			window.location = window.location;
-		}
-	}
 	return (
 		<DataProvider>
 			<PlayerProvider>
