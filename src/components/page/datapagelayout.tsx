@@ -10,7 +10,7 @@ import { Navigation } from './navigation';
 import Dashboard from './dashboard';
 import PlayerHeader from '../../components/playerdata/playerheader';
 
-const DEBUG_MODE = true;
+const DEBUG_MODE = false;
 
 export interface DataPageLayoutProps {
 	children: JSX.Element;
@@ -83,6 +83,8 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 		// Fetch core data AND localize it before datapage can access it
 		globalContext.readyLocalizedCore(demands, () => {
 			if (DEBUG_MODE) console.log("setIsReady(true)");
+
+			// TODO: Why the hell do we have to do this?
 			if (typeof window !== 'undefined') {
 				let __kludge = sessionStorage.getItem('__kludge');
 				if (!__kludge) {
