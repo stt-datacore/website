@@ -131,6 +131,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	const [historyReady, setHistoryReady] = React.useState<boolean>(false);
 	const [eventData, setEventData] = React.useState<IEventData[]>([]);
 	const [playerConfigs, setPlayerConfigs] = React.useState<IVoyageInputConfig[]>([]);
+	const [upcomingConfigs, setUpcomingConfigs] = React.useState<IVoyageInputConfig[]>([]);
 	const [customConfig, setCustomConfig] = React.useState<IVoyageInputConfig | undefined>(undefined);
 	const [activeView, setActiveView] = React.useState<IVoyageView | undefined>(undefined);
 
@@ -176,6 +177,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 
 	function getPlayerConfigs(): void {
 		const playerConfigs: IVoyageInputConfig[] = [];
+		const upcomingConfigs: IVoyageInputConfig[] = [];
 		const runningVoyageIds: number[] = [];
 
 		// Always include dilemma voyage
@@ -189,14 +191,10 @@ const PlayerHome = (props: PlayerHomeProps) => {
 			setCustomConfig(customConfig);
 		}
 
-		// Only include event voyage config when voyage event phase is ongoing
-		const voyagePhase: GameEvent | undefined = ephemeral?.events?.find(ev =>
-			ev.content.content_type === 'voyage'
-				&& ev.seconds_to_start === 0
-				&& ev.seconds_to_end > 0
-		);
-		if (voyagePhase) {
-			const voyageEventContent: IVoyageEventContent = voyagePhase.content as IVoyageEventContent;
+		// Look for voyage events
+		const voyageEvents: GameEvent[] = ephemeral?.events?.filter(ev => ev.content.content_type === 'voyage') ?? [];
+		voyageEvents.forEach(voyageEvent => {
+			const voyageEventContent: IVoyageEventContent = voyageEvent.content as IVoyageEventContent;
 			// Use voyage_symbol to match voyage and event, in case voyage events expand in the future
 			const eventConfig: Voyage | VoyageDescription | undefined = getPlayerConfigByType(voyageEventContent.voyage_symbol.replace('_voyage', ''));
 			if (eventConfig) {
@@ -207,18 +205,27 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				};
 				eventConfig.ship_trait = '';
 				eventConfig.crew_slots.forEach(slot => { slot.trait = ''; });
-				playerConfigs.push({...eventConfig, event_content: voyageEventContent} as IVoyageInputConfig);
-				if (eventConfig.id > NEW_VOYAGE_ID) runningVoyageIds.push(eventConfig.id);
+
+				// Include as a player config when voyage event phase is ongoing
+				if (voyageEvent.seconds_to_start === 0 && voyageEvent.seconds_to_end > 0) {
+					playerConfigs.push({...eventConfig, event_content: voyageEventContent} as IVoyageInputConfig);
+					if (eventConfig.id > NEW_VOYAGE_ID) runningVoyageIds.push(eventConfig.id);
+				}
+				// Otherwise include as an upcoming (custom) config
+				else {
+					upcomingConfigs.push({...eventConfig, event_content: voyageEventContent} as IVoyageInputConfig);
+				}
 			}
-		}
+		});
 
 		setPlayerConfigs([...playerConfigs]);
+		setUpcomingConfigs([...upcomingConfigs]);
 
 		// Reconcile running voyages with tracked voyages
 		runningVoyageIds.forEach(voyageId => reconcileVoyage(voyageId));
 
-		// Bypass home if only 1 pending voyage
-		setActiveView(playerConfigs.length === 1 && runningVoyageIds.length === 0 ?
+		// Bypass home if only 1 voyage
+		setActiveView(playerConfigs.length === 1 ?
 			{ source: 'player', config: playerConfigs[0] } : undefined
 		);
 	}
@@ -308,6 +315,20 @@ const PlayerHome = (props: PlayerHomeProps) => {
 						renderToggle={() => renderViewButton(voyageConfig)}
 					/>
 				))}
+
+				{upcomingConfigs.length > 0 && (
+					<React.Fragment>
+						<Header as='h3'>Upcoming Voyages</Header>
+						{upcomingConfigs.map(voyageConfig => (
+							<ConfigCard
+								key={voyageConfig.voyage_type}
+								configSource='custom'
+								voyageConfig={voyageConfig}
+								renderToggle={() => renderViewButton(voyageConfig)}
+							/>
+						))}
+					</React.Fragment>
+				)}
 
 				<Header as='h3'>Custom Voyage</Header>
 				<p>You can manually create a voyage and view the best crew in the game for any possible configuration.</p>

@@ -722,7 +722,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 		const crewVP: number = getCrewVP(voyageConfig, crew);
 		if (crewVP === 0) return <></>;
 		return (
-			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '3px' }}>
+			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '.3em' }}>
 				<span>+{crewVP}</span>
 				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1em' }} className='invertibleIcon' />
 			</div>
@@ -734,14 +734,14 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 		if (traitBonus === 0) return <></>;
 		if (traitBonus === 25) {
 			return (
-				<div>
+				<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '.5em' }}>
 					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
-					<span style={{ marginLeft: '.5em', verticalAlign: 'middle' }}>{TRAIT_NAMES[trait]}</span>
+					<span>{TRAIT_NAMES[trait]}</span>
 				</div>
 			);
 		}
 		return (
-			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '3px' }}>
+			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '.3em' }}>
 				<span>+{traitBonus}</span>
 				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
 			</div>

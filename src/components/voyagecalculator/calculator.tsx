@@ -21,6 +21,7 @@ import { HistoryContext } from '../voyagehistory/context';
 import { addVoyageToHistory, addCrewToHistory, removeVoyageFromHistory } from '../voyagehistory/utils';
 import CONFIG from '../CONFIG';
 import { getShipTraitBonus } from './utils';
+import { VPGraphAccordion } from './vpgraph';
 
 // These preferences are per-user, so they need separate handlers when there's no player data
 interface IUserPrefsContext {
@@ -777,7 +778,7 @@ type ResultPaneProps = {
 const ResultPane = (props: ResultPaneProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
 	const { t } = React.useContext(GlobalContext).localized;
-	const { configSource, voyageConfig, rosterType } = calculatorContext;
+	const { configSource, rosterType } = calculatorContext;
 	const {
 		result, resultIndex,
 		requests, requestId,
@@ -803,39 +804,47 @@ const ResultPane = (props: ResultPaneProps) => {
 		);
 	}
 
-	const iconTrack = ['flag outline', 'flag'] as SemanticICONS[];
-	const iconConfidence = ['hourglass outline', 'hourglass half', 'hourglass end'] as SemanticICONS[];
+	const iconTrack: SemanticICONS[] = ['flag outline', 'flag'];
+	const iconConfidence: SemanticICONS[] = ['hourglass outline', 'hourglass half', 'hourglass end'];
 
-	// resultToVoyageData
-	let data = {...request.voyageConfig} as IVoyageCalcConfig;
+	// Create new voyageConfig based on input and calc results
+	const voyageConfig: IVoyageCalcConfig = {
+		...request.voyageConfig,
+		state: 'pending',
+		max_hp: result.startAM,
+		skill_aggregates: result.aggregates,
+		crew_slots: request.voyageConfig.crew_slots.map(slot => {
+			return ({
+				...slot,
+				crew: {} as IVoyageCrew
+			});
+		})
+	};
 	if (result.entries) {
-		result.entries.forEach((entry, idx) => {
-			let acrew = request.consideredCrew.find(c => c.id === entry.choice.id);
-			data.crew_slots[entry.slotId].crew = acrew ?? {} as IVoyageCrew;
+		result.entries.forEach(entry => {
+			const crew: IVoyageCrew | undefined = request.consideredCrew.find(c => c.id === entry.choice.id);
+			if (crew) voyageConfig.crew_slots[entry.slotId].crew = crew;
 		});
 	}
-	data.skill_aggregates = result.aggregates;
-	data.max_hp = result.startAM;
-	data.state = 'pending';
 
 	const renderCalculatorMessage = () => {
 		if (calcState !== CalculatorState.Done) {
 			return (
-				<>
+				<React.Fragment>
 					<Image inline size='mini' src='/media/voyage-wait-icon.gif' />
 					Calculation in progress. Please wait...{` `}
 					<Button compact style={{ marginLeft: '1em' }}
 						content='Abort' onClick={() => abortCalculation(request.id)} />
-				</>
+				</React.Fragment>
 			);
 		}
-		const inputs = Object.entries(request.calcOptions).map(entry => entry[0]+': '+entry[1]);
+		const inputs: string[] = Object.entries(request.calcOptions).map(entry => entry[0]+': '+entry[1]);
 		inputs.unshift('considered crew: '+request.consideredCrew.length);
 		return (
-			<>
+			<React.Fragment>
 				Calculated by <b>{request.calcName}</b> calculator ({inputs.join(', ')}){` `}
 				in {((request.perf.end-request.perf.start)/1000).toFixed(2)} seconds!
-			</>
+			</React.Fragment>
 		);
 	};
 
@@ -856,7 +865,7 @@ const ResultPane = (props: ResultPaneProps) => {
 									<Popup position='top center'
 										content={<>Track this recommendation</>}
 										trigger={
-											<Button icon onClick={() => trackResult(resultIndex, data, request.bestShip.ship.symbol, result.estimate)}>
+											<Button icon onClick={() => trackResult(resultIndex, voyageConfig, request.bestShip.ship.symbol, result.estimate)}>
 												<Icon name={iconTrack[trackState]} color={trackState === 1 ? 'green' : undefined} />
 											</Button>
 										}
@@ -865,7 +874,7 @@ const ResultPane = (props: ResultPaneProps) => {
 								<Popup position='top center'
 									content={<>Get more confident estimate</>}
 									trigger={
-										<Button icon onClick={() => { if (confidenceState !== 1) estimateResult(resultIndex, data, 30000); }}>
+										<Button icon onClick={() => { if (confidenceState !== 1) estimateResult(resultIndex, voyageConfig, 30000); }}>
 											<Icon name={iconConfidence[confidenceState]} color={confidenceState === 2 ? 'green' : undefined} />
 										</Button>
 									}
@@ -882,9 +891,12 @@ const ResultPane = (props: ResultPaneProps) => {
 				</Message>
 			)}
 			<Tab.Pane>
+				{result.estimate.vpDetails && (
+					<VPGraphAccordion voyageConfig={voyageConfig} estimate={result.estimate} />
+				)}
 				<VoyageStats
 					configSource={configSource}
-					voyageData={data as Voyage}
+					voyageData={voyageConfig as Voyage}
 					estimate={result.estimate}
 					ships={[request.bestShip.ship]}
 					roster={roster}
@@ -895,7 +907,7 @@ const ResultPane = (props: ResultPaneProps) => {
 					{renderCalculatorMessage()}
 				</div>
 				{calcState === CalculatorState.Done && (
-					<CIVASMessage voyageConfig={data} estimate={result.estimate} />
+					<CIVASMessage voyageConfig={voyageConfig} estimate={result.estimate} />
 				)}
 			</Tab.Pane>
 		</React.Fragment>
