@@ -96,7 +96,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 			sessionStorage.setItem('__kludge', "__kludge")
 			setTimeout(() => {
 				location.reload();
-			});
+			}, 100);
 		}
 	}
 
