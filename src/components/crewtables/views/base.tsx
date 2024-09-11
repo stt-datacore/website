@@ -89,7 +89,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
 				<b style={{color:gradeColor}}>{crew.cab_ov}</b><br />
-				<small><span  style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>{rarityLabels[crew.max_rarity]}</span><br />#{crew.cab_ov_rank}</small>
+				<small><span  style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>{rarityLabels[crew.max_rarity]}</span><br />{crew.cab_ov_rank ? "#" + crew.cab_ov_rank : "?" }</small>
 			</Table.Cell>
 			{tableType !== 'offers' &&
 			<Table.Cell textAlign='center'>
