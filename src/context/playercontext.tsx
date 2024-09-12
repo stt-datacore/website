@@ -9,7 +9,7 @@ import { mergeShips } from '../utils/shiputils';
 import { stripPlayerData } from '../utils/playerutils';
 import { BossBattlesRoot } from '../model/boss';
 import { ShuttleAdventure } from '../model/shuttle';
-import { Archetype20, ArchetypeBase, Archetype17, ArchetypeRoot20 } from '../model/archetype';
+import { ArchetypeRoot20 } from '../model/archetype';
 import { getItemWithBonus } from '../utils/itemutils';
 import { TinyStore } from '../utils/tiny';
 
