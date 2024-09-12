@@ -85,7 +85,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const [stripped, setStripped] = useStateWithStorage<PlayerData | undefined>('playerData', undefined, { compress: true });
 
 	const [ephemeral, setEphemeral] = useStateWithStorage<IEphemeralData | undefined>('ephemeralPlayerData', undefined, { compress: true });
-	const [itemArchetypeCache, setItemArchetypeCache] = useStateWithStorage<ArchetypeRoot20>('itemArchetypeCache', {} as ArchetypeRoot20, { rememberForever: true, avoidSessionStorage: true });
+	//const [itemArchetypeCache, setItemArchetypeCache] = useStateWithStorage<ArchetypeRoot20>('itemArchetypeCache', {} as ArchetypeRoot20, { rememberForever: true, avoidSessionStorage: true });
 	const [profile, setProfile] = React.useState<PlayerData | undefined>(undefined);
 	const [playerShips, setPlayerShips] = React.useState<Ship[] | undefined>(undefined);
 	const buffConfig = stripped ? calculateBuffConfig(stripped.player) : undefined;
@@ -104,7 +104,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 	React.useEffect(() => {
 		if (!input || !ship_schematics.length || !crew.length) return;
-		if (!input.item_archetype_cache?.archetypes?.length && !itemArchetypeCache?.archetypes?.length) return;
+		//if (!input.item_archetype_cache?.archetypes?.length && !itemArchetypeCache?.archetypes?.length) return;
 		// ephemeral data (e.g. active crew, active shuttles, voyage data, and event data)
 		//	can be misleading when outdated, so keep a copy for the current session only
 		const activeCrew = [] as CompactCrew[];
@@ -142,9 +142,9 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		});
 
 		if (input.stripped !== true) {
-			if (!!input.archetype_cache?.archetypes?.length) {
-				setItemArchetypeCache(input.archetype_cache);
-			}
+			// if (!!input.archetype_cache?.archetypes?.length) {
+			// 	setItemArchetypeCache(input.archetype_cache);
+			// }
 
 			setEphemeral({
 				activeCrew,
@@ -195,7 +195,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		setInput(undefined);
 		setSessionStates(undefined);
 		setLoaded(false);
-		setItemArchetypeCache({} as ArchetypeRoot20);
+		//setItemArchetypeCache({} as ArchetypeRoot20);
 		// setGameLanguage('en');
 		sessionStorage.clear();
 	};
@@ -207,7 +207,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		playerData: profile,
 		ephemeral: {
 			...ephemeral,
-			archetype_cache: itemArchetypeCache
+			// archetype_cache: itemArchetypeCache
 		},
 		strippedPlayerData: stripped,
 		playerShips,
