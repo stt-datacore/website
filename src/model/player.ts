@@ -50,7 +50,6 @@ export interface PlayerData {
   captains_bridge_root?: CaptainsBridgeRoot;
   calc?: { lastImported?: string, lastModified?: Date; numImmortals?: number; };
   archetype_cache?: ArchetypeRoot20;
-  item_archetype_cache?: ArchetypeRoot17;
   [key: string]: any;
   forte_root: ForteRoot;
   version?: 17 | 20;
