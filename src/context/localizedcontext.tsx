@@ -148,33 +148,30 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	// Update language on user preference change
 	React.useEffect(() => {
-		setTimeout(() => {
-			if (preferredLanguage) {
-				fetchStrings(preferredLanguage);
-			}
-			else if (preferenceLoaded) {
-				fetchStrings(getBrowserLanguage());
-			}
-		});
+		if (preferredLanguage) {
+			fetchStrings(preferredLanguage);
+		}
+		else if (preferenceLoaded) {
+			fetchStrings(getBrowserLanguage());
+		}
 	}, [preferredLanguage]);
 
 	// Update language on player data import (or revert to browser language on player data clear)
 	React.useEffect(() => {
-		setTimeout(() => {
-			if (!preferenceLoaded) return;
-			if (!preferredLanguage) {
-				if (player.playerData) {
-					fetchStrings(player.playerData.player.lang as SupportedLanguage);
-				}
-				else {
-					fetchStrings(getBrowserLanguage());
-				}
+		if (!preferenceLoaded) return;
+		if (!preferredLanguage) {
+			if (player.playerData) {
+				fetchStrings(player.playerData.player.lang as SupportedLanguage);
 			}
-		});
+			else {
+				fetchStrings(getBrowserLanguage());
+			}
+		}
 	}, [player]);
 
 	// Don't render any text while localizations are still loading
-	if (!language) return <></>;
+	//if (!language) return <span><Icon loading name='spinner' /> Loading translations...</span>;
+	if (!language) return <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>&nbsp;<Icon name='500px' /></div>;
 
 	const localizedData: ILocalizedData = {
 		...gameStrings,

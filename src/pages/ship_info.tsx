@@ -136,13 +136,13 @@ const ShipViewer = (props: ShipViewerProps) => {
 			justifyContent: "center",
 			alignItems: "center"
 		}}>
-			<Message icon warning>
+			{/* <Message icon warning>
 				<Icon name="exclamation triangle" />
 				<Message.Content>
 					<Message.Header>{t('global.work_in_progress.title')}</Message.Header>
 					{t('global.work_in_progress.heading')}
 				</Message.Content>
-			</Message>
+			</Message> */}
 
 			{!!inputShip && <WorkerProvider>
 				<ShipMultiWorker>

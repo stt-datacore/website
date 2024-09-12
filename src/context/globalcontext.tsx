@@ -6,6 +6,8 @@ import { DefaultLocalizedData, LocalizedContext, ILocalizedData, TranslatedCore 
 import { BuffStatTable } from "../utils/voyageutils";
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 
+const DEBUG_MODE = false;
+
 interface GlobalProviderProperties {
 	children: JSX.Element;
 };
@@ -51,10 +53,12 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 		if (!localizationTrigger) return;
 		const translatedCore: TranslatedCore = localized.translateCore();
 		setLocalizedCore({ ...core, ...translatedCore });
+		if (DEBUG_MODE) console.log("localizationTrigger.onReady()");
 		localizationTrigger.onReady();
 	}, [localizationTrigger]);
 
 	React.useEffect(() => {
+		if (DEBUG_MODE) console.log("Effect for: localizedCore or player updated.");
 		const translatedPlayer: PlayerContextData = localized.translatePlayer();
 		setLocalizedPlayer(translatedPlayer);
 	}, [localizedCore, player]);
@@ -92,7 +96,10 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 	);
 
 	function readyLocalizedCore(demands: ValidDemands[], onReady: () => void): void {
+		if (DEBUG_MODE) console.log("enter readyLocalizedCore");
+
 		core.ready(demands, () => {
+			if (DEBUG_MODE) console.log("setLocalizationTrigger");
 			setLocalizationTrigger({
 				triggered: true,
 				onReady
