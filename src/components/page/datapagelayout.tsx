@@ -83,17 +83,6 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 		// Fetch core data AND localize it before datapage can access it
 		globalContext.readyLocalizedCore(demands, () => {
 			if (DEBUG_MODE) console.log("setIsReady(true)");
-			// TODO: Why the hell do we have to do this?
-			// if (typeof sessionStorage !== 'undefined') {
-			// 	let __kludge = sessionStorage.getItem('__kludge');
-			// 	if (!__kludge) {
-			// 		console.log("KLUDGE!!!");
-			// 		sessionStorage.setItem('__kludge', "__kludge")
-			// 		setTimeout(() => {
-			// 			location.reload();
-			// 		}, 100);
-			// 	}
-			// }
 			setIsReady(true);
 		});
 	}, []);
