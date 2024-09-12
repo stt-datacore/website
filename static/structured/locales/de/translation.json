@@ -990,6 +990,9 @@
             "voyage_calculator": "Reiserechner",
             "voyage_history": "Reiseverlauf"
         },
+        "descriptions": {
+            "voyage_calculator": "Finden Sie die beste Crew für Ihre Reisen und erhalten Sie Schätzungen zur Dauer der Reisen."
+        },
         "tools_title": "Werkzeuge"
     },
     "mission_type": {
