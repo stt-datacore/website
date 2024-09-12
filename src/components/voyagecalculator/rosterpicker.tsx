@@ -138,6 +138,8 @@ export const RosterPicker = (props: RosterPickerProps) => {
 export function rosterizeMyCrew(myCrew: PlayerCrew[], activeCrew: CompactCrew[], activeVoyages: Voyage[]): IVoyageCrew[] {
 	const rosterCrew: IVoyageCrew[] = [];
 
+	let fakeDupeId: number = myCrew.reduce((prev, curr) => Math.min(prev, curr.id), 0) - 1;
+
 	myCrew.forEach(crew => {
 		const crewman: IVoyageCrew = JSON.parse(JSON.stringify(crew)) as IVoyageCrew;
 
@@ -165,7 +167,21 @@ export function rosterizeMyCrew(myCrew: PlayerCrew[], activeCrew: CompactCrew[],
 			}
 		}
 
-		rosterCrew.push(crewman);
+		// Add each frozen dupe as its own entry in roster
+		if (crew.immortal > 1) {
+			const dupeCrew: IVoyageCrew = JSON.parse(JSON.stringify(crewman)) as IVoyageCrew;
+			const frozenDupes: number = crew.immortal;
+			for (let i = 0; i < frozenDupes; i++) {
+				rosterCrew.push({
+					...dupeCrew,
+					id: i === 0 ? crew.id : fakeDupeId--,
+					immortal: 1
+				})
+			}
+		}
+		else {
+			rosterCrew.push(crewman);
+		}
 	});
 
 	return rosterCrew;
