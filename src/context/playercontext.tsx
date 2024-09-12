@@ -9,7 +9,7 @@ import { mergeShips } from '../utils/shiputils';
 import { stripPlayerData } from '../utils/playerutils';
 import { BossBattlesRoot } from '../model/boss';
 import { ShuttleAdventure } from '../model/shuttle';
-import { Archetype20, ArchetypeBase, Archetype17, ArchetypeRoot20 } from '../model/archetype';
+import { ArchetypeRoot20 } from '../model/archetype';
 import { getItemWithBonus } from '../utils/itemutils';
 import { TinyStore } from '../utils/tiny';
 
@@ -108,24 +108,6 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		// ephemeral data (e.g. active crew, active shuttles, voyage data, and event data)
 		//	can be misleading when outdated, so keep a copy for the current session only
 		const activeCrew = [] as CompactCrew[];
-
-		// if (input.stripped !== true) {
-		// 	if (input.item_archetype_cache) {
-		// 		input.version = 17;
-		// 	}
-		// 	else if (input.archetype_cache) {
-		// 		input.version = 20;
-		// 		input.item_archetype_cache = {
-		// 			archetypes: input.archetype_cache.archetypes.map((a: Archetype20) => {
-		// 				return {
-		// 					...a as ArchetypeBase,
-		// 					type: a.item_type,
-		// 				} as Archetype17;
-		// 			})
-		// 		}
-		// 	}
-		// }
-
 		input.player.character.crew.forEach(crew => {
 			if (crew.active_status > 0) {
 				activeCrew.push({
@@ -142,6 +124,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		});
 
 		if (input.stripped !== true) {
+
 			if (!!input.archetype_cache?.archetypes?.length) {
 				setItemArchetypeCache(input.archetype_cache);
 			}
