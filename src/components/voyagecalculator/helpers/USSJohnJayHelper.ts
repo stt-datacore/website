@@ -1,7 +1,7 @@
 import '../../../typings/worker';
 import { UnifiedWorker } from '../../../typings/worker';
 import { IVoyageCrew } from '../../../model/voyage';
-import { CalcResult, JohnJayBest } from '../../../model/worker';
+import { CalcResult, GameWorkerOptions, JohnJayBest } from '../../../model/worker';
 import { CalculatorState } from './calchelpers';
 import { HelperProps, Helper } from "./Helper";
 
@@ -9,7 +9,7 @@ export class USSJohnJayHelper extends Helper {
 	readonly id: string;
 	readonly calculator: string;
 	readonly calcName: string;
-	readonly calcOptions: any;
+	readonly calcOptions: GameWorkerOptions;
 
 	constructor(props: HelperProps, calculator: string = 'mvam') {
 		super(props);
@@ -17,7 +17,8 @@ export class USSJohnJayHelper extends Helper {
 		this.calculator = calculator;
 		this.calcName = calculator === 'idic' ? 'Infinite Diversity' : 'Multi-vector Assault';
 		this.calcOptions = {
-			strategy: props.calcOptions?.strategy ?? 'estimate'
+			strategy: props.calcOptions?.strategy ?? 'estimate',
+			proficiency: props.calcOptions?.proficiency ?? 1
 		};
 	}
 

@@ -3,7 +3,6 @@ import { Header, Table, Icon, Rating, Form, Checkbox, Message, Popup } from 'sem
 import { Link } from 'gatsby';
 
 import { InitialOptions, LockedProspect } from '../../model/game-elements';
-import { CompletionState } from '../../model/player';
 
 import { GlobalContext } from '../../context/globalcontext';
 
@@ -13,12 +12,11 @@ import CONFIG from '../../components/CONFIG';
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import { useStateWithStorage } from '../../utils/storage';
-import { applySkillBuff, crewGender, isQuipped } from '../../utils/crewutils';
+import { crewGender, isQuipped } from '../../utils/crewutils';
 
-import { IEventData, IRosterCrew, IEventScoredCrew, IEventCombos, IEventSkill, IEventPair, IBestCombos, IBestCombo } from './model';
+import { IEventData, IRosterCrew, IEventScoredCrew, IEventCombos, IBestCombos, IBestCombo } from './model';
 import { calculateGalaxyChance, computeEventBest } from '../../utils/events';
 import { navToCrewPage } from '../../utils/nav';
-import { GatherPlanner } from '../gather/gather_planner';
 
 type EventCrewTableProps = {
 	rosterType: string;
@@ -66,7 +64,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	const secText = t('quipment_ranks.secondary');
 
 	CONFIG.SKILLS_SHORT.forEach((skill) => {
-		const title = eventData.primary_skill === skill.name ? priText : (eventData.secondary_skill === skill.name ? secText : '')
+		const title: string = eventData.activeContent?.primary_skill === skill.name ? priText : (eventData.activeContent?.secondary_skill === skill.name ? secText : '')
 		tableConfig.push({
 			width: 1,
 			column: `${skill.name}.core`,
@@ -80,8 +78,8 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 						justifyContent: 'center',
 						gap: '0.5em'
 					}}>
-					{eventData.primary_skill === skill.name && <Icon color='yellow' name= 'star'/>}
-					{eventData.secondary_skill === skill.name && <Icon color='grey' name= 'star'/>}
+					{eventData.activeContent?.primary_skill === skill.name && <Icon color='yellow' name= 'star'/>}
+					{eventData.activeContent?.secondary_skill === skill.name && <Icon color='grey' name= 'star'/>}
 					<img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />
 				</div>,
 			reverse: true
@@ -139,80 +137,6 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		applyBonus,
 		showPotential
 	);
-
-	// const getPairScore = (crew: IRosterCrew, primary: string, secondary: string) => {
-	// 	if (phaseType === 'shuttles') {
-	// 		if (secondary) return crew[primary].core+(crew[secondary].core/4);
-	// 		return crew[primary].core;
-	// 	}
-	// 	if (secondary) return (crew[primary].core+crew[secondary].core)/2;
-	// 	return crew[primary].core/2;
-	// };
-
-	// rosterCrew.forEach(crew => {
-	// 	// First adjust skill scores as necessary
-	// 	if (applyBonus || showPotential) {
-	// 		crew.bonus = 1;
-	// 		if (applyBonus && eventData.featured.indexOf(crew.symbol) >= 0) {
-	// 			if (phaseType === 'gather') crew.bonus = 10;
-	// 			else if (phaseType === 'shuttles') crew.bonus = 3;
-	// 		}
-	// 		else if (applyBonus && eventData.bonus.indexOf(crew.symbol) >= 0) {
-	// 			if (phaseType === 'gather') crew.bonus = 5;
-	// 			else if (phaseType === 'shuttles') crew.bonus = 2;
-	// 		}
-	// 		if (crew.bonus > 1 || showPotential) {
-	// 			CONFIG.SKILLS_SHORT.forEach(skill => {
-	// 				if (crew[skill.name].core > 0) {
-	// 					if (showPotential && crew.immortal === CompletionState.NotComplete && !crew.prospect) {
-	// 						crew[skill.name].current = crew[skill.name].core*crew.bonus;
-	// 						if (buffConfig) crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.skill_data[crew.rarity-1].base_skills[skill.name]);
-	// 					}
-	// 					crew[skill.name].core = crew[skill.name].core*crew.bonus;
-	// 				}
-	// 			});
-	// 		}
-	// 	}
-
-	// 	// Then calculate skill combination scores
-	// 	let combos: IEventCombos = {...zeroCombos};
-	// 	let bestPair: IEventPair = { score: 0, skillA: '', skillB: '' };
-	// 	let bestSkill: IEventSkill = { score: 0, skill: '' };
-	// 	for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
-	// 		const firstSkill = CONFIG.SKILLS_SHORT[first];
-	// 		const single = {
-	// 			score: crew[firstSkill.name].core,
-	// 			skillA: firstSkill.name
-	// 		};
-	// 		combos[firstSkill.name] = single.score;
-	// 		if (!bestCombos[firstSkill.name] || single.score > bestCombos[firstSkill.name].score)
-	// 			bestCombos[firstSkill.name] = { id: crew.id, score: single.score };
-	// 		if (single.score > bestSkill.score) bestSkill = { score: single.score, skill: single.skillA };
-	// 		for (let second = first+1; second < CONFIG.SKILLS_SHORT.length; second++) {
-	// 			const secondSkill = CONFIG.SKILLS_SHORT[second];
-	// 			let pair = {
-	// 				score: getPairScore(crew, firstSkill.name, secondSkill.name),
-	// 				skillA: firstSkill.name,
-	// 				skillB: secondSkill.name
-	// 			}
-	// 			if (crew[secondSkill.name].core > crew[firstSkill.name].core) {
-	// 				pair = {
-	// 					score: getPairScore(crew, secondSkill.name, firstSkill.name),
-	// 					skillA: secondSkill.name,
-	// 					skillB: firstSkill.name
-	// 				}
-	// 			}
-	// 			combos[firstSkill.name+','+secondSkill.name] = pair.score;
-	// 			if (pair.score > bestPair.score) bestPair = pair;
-	// 			const pairId = firstSkill.name+secondSkill.name;
-	// 			if (!bestCombos[pairId] || pair.score > bestCombos[pairId].score)
-	// 				bestCombos[pairId] = { id: crew.id, score: pair.score };
-	// 		}
-	// 	}
-	// 	crew.combos = combos;
-	// 	crew.bestPair = bestPair;
-	// 	crew.bestSkill = bestSkill;
-	// });
 
 	return (
 		<React.Fragment>

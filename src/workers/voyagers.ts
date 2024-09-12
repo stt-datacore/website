@@ -9,6 +9,8 @@ DataCore(<VoyageTool>): input from UI =>
 import { IVoyageCrew, IVoyageInputConfig } from '../model/voyage';
 import { Estimate, JohnJayBest, Refill } from '../model/worker';
 
+import { calcVoyageVP } from '../utils/voyagevp';
+
 import { ILineupEstimate, ISkillAggregate } from './voyagers/model';
 import { VoyagersLineup } from './voyagers/lineup';
 import { voyagersAssemble } from './voyagers/assembler';
@@ -26,20 +28,19 @@ type InputType = {
 	options: {
 		assembler: string;
 		strategy: string;
-		scanDepth: number;
-		maxYield: number;
+		proficiency: number;
 	};
 };
 type OutputType = (result: (JohnJayBest[] | { error: string }), inProgress?: boolean) => void;
 type ChewableType = (config: any, reportProgress?: () => boolean) => Estimate;
 
 const VoyagersWorker = (input: InputType, output: OutputType, chewable: ChewableType) => {
-	const { voyage_description, roster, bestShip, options: { assembler, strategy } } = input;
+	const { voyage_description, roster, bestShip, options: { assembler, strategy, proficiency } } = input;
 
 	const debugCallback: ((message: string) => void) | undefined = DEBUGGING ? (message: string) => console.log(message) : undefined;
 
 	// Generate lots of unique lineups of potential voyagers
-	voyagersAssemble(assembler, voyage_description, roster, { strategy, debugCallback })
+	voyagersAssemble(assembler, voyage_description, roster, { strategy, proficiency, debugCallback })
 		.then(lineups => {
 			// Estimate only as many lineups as necessary
 			const scanDepth: number = assembler === 'idic' ? 30 : 5;
@@ -53,8 +54,6 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 						methods = ['minimum'];
 					else if (strategy === 'moonshot')
 						methods = ['moonshot'];
-					// Either get 1 best lineup for each method, or the 3 best lineups for a single method
-					const limit: number = strategy === 'any' ? 1 : 3;
 					sortLineups(datacoreSorter, lineups, estimates, methods)
 						.then(sorted => {
 							output(JSON.parse(JSON.stringify(sorted)), false);
@@ -100,6 +99,14 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 			const estimate: Estimate = chewable(chewableConfig, () => false);
 			// Add antimatter prop here to allow for post-sorting by AM
 			estimate.antimatter = input.bestShip.score + lineup.antimatter;
+			// Add eventVP prop here to allow for post-sorting by VP details
+			if (voyage_description.voyage_type === 'encounter') {
+				const seconds: number = estimate.refills[0].result*60*60;
+				const bonuses: number[] = [];
+				lineup.crew.forEach(crew => bonuses.push(crew.event_score));
+				estimate.vpDetails = calcVoyageVP(seconds, bonuses);
+				console.log(lineup.key, seconds, bonuses, estimate.vpDetails);
+			}
 			resolve({ estimate, key: lineup.key });
 		});
 	}
