@@ -72,7 +72,11 @@ export const ConfigCard = (props: ConfigCardProps) => {
 								<RunningTracker voyage={running} ship={runningShip!} />
 							</p>
 						)}
-						{!running && <p style={{ marginTop: '1em' }}>This voyage is awaiting crew assignments.</p>}
+						{!running && configSource === 'player' && (
+							<p style={{ marginTop: '1em' }}>
+								This voyage is awaiting crew assignments.
+							</p>
+						)}
 					</div>
 					<div>
 						{renderToggle()}
