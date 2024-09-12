@@ -35,6 +35,8 @@ Additional Contributors:
 
 TygraDax for the Grade and Star Grade equations in the collection planner.
 Bernard for the equation for Bernard's Number in the gauntlet tool.
+JimBerlin and dmscramjet for equations related to the ship battle calculator.
+Dangevin for equations related to the voyage event VP calculator.
 
 Some crew notes are imported from [The Big Book of Behold Advice](https://www.bigbook.app/), created by [u/Automaton_2000](https://reddit.com/user/Automaton_2000). Some nicknames are imported from a curated sheet maintained by DCPilot. [STT Power Ratings](https://cabtools.app/) are maintained by A Traveling Man & Cymru Am Byth. Content used with their permission.
 
