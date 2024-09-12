@@ -17,7 +17,7 @@ import { getSkillOrder } from '../utils/crewutils';
 import { highestLevel } from '../utils/shiputils';
 import { ObjectiveEvent } from '../model/player';
 
-const DC_DEBUGGING: boolean = true;
+const DC_DEBUGGING: boolean = false;
 
 export type ValidDemands =
 	'all_buffs' |
