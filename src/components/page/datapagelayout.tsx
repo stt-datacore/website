@@ -10,7 +10,7 @@ import { Navigation } from './navigation';
 import Dashboard from './dashboard';
 import PlayerHeader from '../../components/playerdata/playerheader';
 
-const DEBUG_MODE = false;
+const DEBUG_MODE = true;
 
 export interface DataPageLayoutProps {
 	children: JSX.Element;

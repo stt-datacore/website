@@ -15,9 +15,9 @@ import { EventInstance } from '../model/events';
 import { StaticFaction } from '../model/shuttle';
 import { getSkillOrder } from '../utils/crewutils';
 import { highestLevel } from '../utils/shiputils';
-// import { ObjectiveEvent } from '../model/player';
+import { ObjectiveEvent } from '../model/player';
 
-const DC_DEBUGGING: boolean = false;
+const DC_DEBUGGING: boolean = true;
 
 export type ValidDemands =
 	'all_buffs' |
@@ -37,7 +37,7 @@ export type ValidDemands =
 	'misc_stats' |
 	'missions' |
 	'missionsfull' |
-	// 'objective_events' |
+	'objective_events' |
 	'quests' |
 	'ship_schematics' |
 	'skill_bufs';
@@ -60,7 +60,7 @@ export interface ICoreData {
 	keystones: (KeystoneBase | Polestar | Constellation)[];
 	missions: Mission[];
 	missionsfull: Mission[];
-	// objective_events: ObjectiveEvent[];
+	objective_events: ObjectiveEvent[];
 	continuum_missions: ContinuumMission[];
 	ship_schematics: Schematics[];
 	ships: Ship[];
@@ -95,7 +95,7 @@ const defaultData = {
 	continuum_missions: [] as ContinuumMission[],
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
-	// objective_events: [] as ObjectiveEvent[],
+	objective_events: [] as ObjectiveEvent[],
 	topQuipmentScores: [] as QuipmentScores[],
 } as ICoreData;
 
