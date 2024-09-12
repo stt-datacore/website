@@ -1,11 +1,10 @@
 import { SemanticICONS } from 'semantic-ui-react';
-import { PlayerCrew } from '../../model/player';
+import { Content, PlayerCrew } from '../../model/player';
 
-export interface BonusDetail {
-	symbol: string;
-	amount: number;
-}
-// Stripped down version of GameData extended for use in Event Planner and Shuttle Helper
+// Stripped down version of GameData, extended and standardized for DataCore tools
+//	Baseline props are event type agnostic, containing only common event props and standardized event crew/ship lists
+//	activeContent holds details about the active phase of a started event or the first phase of an unstarted event
+//	Be careful when using activeContent, especially when trying to access details about an unstarted phase 2 of a hybrid event
 export interface IEventData {
 	symbol: string;
 	name: string;
@@ -16,14 +15,11 @@ export interface IEventData {
 	seconds_to_end: number;
 	image: string;
 	bonus: string[];	/* ALL bonus crew by symbol */
-	bonus_detail?: BonusDetail[];	/* High bonus crew by symbol (voyage events only) */
 	featured: string[];	/* ONLY featured crew by symbol */
+	bonus_ships: string[];	/* ALL bonus ships by symbol */
+	featured_ships: string[];	/* ONLY featured ships by symbol */
 	bonusGuessed?: boolean;
-	bonus_ship?: string[];
-	featured_ship?: string[];
-	bonus_ship_traits?: string[];
-	primary_skill?: string;
-	secondary_skill?: string;
+	activeContent?: Content;
 };
 
 export interface IRosterCrew extends PlayerCrew {

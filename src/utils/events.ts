@@ -10,29 +10,48 @@ import { IDefaultGlobal } from '../context/globalcontext';
 import { Ship } from '../model/ship';
 
 export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allShips?: Ship[]): IEventData | undefined {
-	const result = {} as IEventData;
-	result.symbol = activeEvent.symbol;
-	result.name = activeEvent.name;
-	result.description = activeEvent.description;
-	result.bonus_text = activeEvent.bonus_text;
-	result.content_types = activeEvent.content_types;
-	result.seconds_to_start = activeEvent.seconds_to_start;
-	result.seconds_to_end = activeEvent.seconds_to_end;
+	const result: IEventData = {
+		symbol: activeEvent.symbol,
+		name: activeEvent.name,
+		description: activeEvent.description,
+		bonus_text: activeEvent.bonus_text,
+		content_types: activeEvent.content_types,
+		seconds_to_start: activeEvent.seconds_to_start,
+		seconds_to_end: activeEvent.seconds_to_end,
 
-	// We can get event image more definitively by fetching from events/instance_id.json rather than player data
-	result.image = activeEvent.phases[0].splash_image.file.slice(1).replace(/\//g, '_') + '.png';
+		// We can get event image more definitively by fetching from events/instance_id.json rather than player data
+		image: activeEvent.phases[0].splash_image.file.slice(1).replace(/\//g, '_') + '.png',
 
-	result.featured = [];
-	result.bonus = [];
+		// Bonus crew by symbol
+		featured: [],
+		bonus: [],
 
-	// Content is active phase of started event or first phase of unstarted event
+		// Bonus ships by symbol
+		featured_ships: [],
+		bonus_ships: [],
+	};
+
+	// activeContent holds details about the active phase of a started event or the first phase of an unstarted event
+	let activeContent: Content | undefined = undefined;
+
+	// Content from autosynced events is an array of activeContents, taken at various sync times
+	//	Assume the last content here is the most recent content
+	if (Array.isArray(activeEvent.content)) {
+		if (activeEvent.content.length > 0)
+			activeContent = activeEvent.content[activeEvent.content.length - 1];
+	}
+	else {
+		activeContent = activeEvent.content;
+	}
+
+	if (!activeContent) return result;
+
+	result.activeContent = activeContent;
+
+	// Standardize lists of bonus crew and ships
 	//	This may not catch all bonus crew in hybrids, e.g. "dirty" shuttles while in phase 2 skirmish
-	const activePhase = (Array.isArray(activeEvent.content) ? activeEvent.content[activeEvent.content.length-1] : activeEvent.content) as Content;
-
-	if (!activePhase) return result;
-
-	if (activePhase.content_type === 'shuttles' && activePhase.shuttles) {
-		activePhase.shuttles.forEach((shuttle: Shuttle) => {
+	if (activeContent.content_type === 'shuttles' && activeContent.shuttles) {
+		activeContent.shuttles.forEach((shuttle: Shuttle) => {
 			for (let symbol in shuttle.crew_bonuses) {
 				if (!result.bonus.includes(symbol)) {
 					result.bonus.push(symbol);
@@ -41,27 +60,27 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 			}
 		});
 	}
-	else if (activePhase.content_type === 'gather' && activePhase.crew_bonuses) {
-		for (let symbol in activePhase.crew_bonuses) {
+	else if (activeContent.content_type === 'gather' && activeContent.crew_bonuses) {
+		for (let symbol in activeContent.crew_bonuses) {
 			if (!result.bonus.includes(symbol)) {
 				result.bonus.push(symbol);
-				if (activePhase.crew_bonuses[symbol] === 10) result.featured.push(symbol);
+				if (activeContent.crew_bonuses[symbol] === 10) result.featured.push(symbol);
 			}
 		}
 	}
-	else if (activePhase.content_type === 'skirmish') {
-		if (activePhase.bonus_crew) {
-			for (let i = 0; i < activePhase.bonus_crew.length; i++) {
-				let symbol = activePhase.bonus_crew[i];
+	else if (activeContent.content_type === 'skirmish') {
+		if (activeContent.bonus_crew) {
+			for (let i = 0; i < activeContent.bonus_crew.length; i++) {
+				let symbol = activeContent.bonus_crew[i];
 				if (!result.bonus.includes(symbol)) {
 					result.bonus.push(symbol);
 					result.featured.push(symbol);
 				}
 			}
 		}
-		// Skirmish uses activePhase.bonus_traits to identify smaller bonus event crew
-		if (activePhase.bonus_traits) {
-			activePhase.bonus_traits.forEach(trait => {
+		// Skirmish uses content.bonus_traits to identify smaller bonus event crew
+		if (activeContent.bonus_traits) {
+			activeContent.bonus_traits.forEach(trait => {
 				const perfectTraits = allCrew.filter(crew => crew.traits.includes(trait) || crew.traits_hidden.includes(trait));
 				perfectTraits.forEach(crew => {
 					if (!result.bonus.includes(crew.symbol)) {
@@ -71,81 +90,31 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 			});
 		}
 	}
-	else if (activePhase.content_type === 'voyage') {
+	else if (activeContent.content_type === 'voyage') {
+		result.bonus = activeContent.featured_crews?.slice () ?? [];
+		result.featured = activeContent.featured_crews?.slice () ?? [];
 
-		result.bonus_detail = [];
-
-		if (activePhase.featured_crews) {
-			for (let i = 0; i < activePhase.featured_crews.length; i++) {
-				let symbol = activePhase.featured_crews[i];
-				if (!result.bonus.includes(symbol)) {
-					result.bonus.push(symbol);
-					result.featured.push(symbol);
-				}
-			}
-		}
-		// Voyages uses activePhase.antimatter_bonus_crew_traits to identify smaller bonus event crew
-		if (activePhase.antimatter_bonus_crew_traits) {
-			activePhase.antimatter_bonus_crew_traits.forEach((trait, idx) => {
-				const perfectTraits = allCrew.filter(crew => crew.traits.includes(trait) || crew.traits_hidden.includes(trait));
-				perfectTraits.forEach(crew => {
-					if (!result.bonus.includes(crew.symbol)) {
-						result.bonus.push(crew.symbol);
-					}
-					let detail = result.bonus_detail?.find(f => f.symbol === crew.symbol);
-					if (detail) {
-						detail.amount += activePhase.antimatter_bonus_per_crew_trait!;
-					}
-					else {
-						result.bonus_detail?.push({
-							symbol: crew.symbol,
-							amount: activePhase.antimatter_bonus_per_crew_trait!
-						});
-					}
-				});
+		// Voyages use content.antimatter_bonus_crew_traits to identify smaller bonus event crew
+		activeContent.antimatter_bonus_crew_traits?.forEach(bonusTrait => {
+			allCrew.filter(crew =>
+				crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait)
+			).forEach(crew => {
+				if (!result.bonus.includes(crew.symbol))
+					result.bonus.push(crew.symbol);
 			});
-		}
-
-		result.featured.forEach((symbol) => {
-			let detail = result.bonus_detail?.find(f => f.symbol === symbol);
-			if (detail) {
-				detail.amount = activePhase.antimatter_bonus_for_featured_crew!
-			}
-			else {
-				result.bonus_detail?.push({
-					symbol,
-					amount: activePhase.antimatter_bonus_for_featured_crew!
-				});
-			}
-		})
+		});
 
 		if (allShips?.length) {
-			result.bonus_ship ??= [];
-			result.featured_ship ??= [];
-			if (activePhase.featured_ships) {
-				for (let i = 0; i < activePhase.featured_ships.length; i++) {
-					let symbol = activePhase.featured_ships[i];
-					if (!result.bonus_ship.includes(symbol)) {
-						result.bonus_ship.push(symbol);
-						result.featured_ship.push(symbol);
-					}
-				}
-			}
-			// Voyages uses activePhase.antimatter_bonus_crew_traits to identify smaller bonus event crew
-			if (activePhase.antimatter_bonus_ship_traits) {
-				result.bonus_ship_traits = [...activePhase.antimatter_bonus_ship_traits];
-				activePhase.antimatter_bonus_ship_traits.forEach(trait => {
-					const perfectTraits = allShips.filter(ship => ship.traits?.includes(trait) || ship.traits_hidden?.includes(trait));
-					perfectTraits.forEach(crew => {
-						if (!result.bonus_ship?.includes(crew.symbol)) {
-							result.bonus_ship?.push(crew.symbol);
-						}
-					});
+			result.bonus_ships = activeContent.featured_ships?.slice() ?? [];
+			result.featured_ships = activeContent.featured_ships?.slice() ?? [];
+			activeContent.antimatter_bonus_ship_traits?.forEach(bonusTrait => {
+				allShips.filter(ship =>
+					ship.traits?.includes(bonusTrait) || ship.traits_hidden?.includes(bonusTrait)
+				).forEach(ship => {
+					if (!result.bonus_ships.includes(ship.symbol))
+						result.bonus_ships.push(ship.symbol);
 				});
-			}
-
-			result.primary_skill = activePhase.primary_skill;
-			result.secondary_skill = activePhase.secondary_skill;
+			});
 		}
 	}
 
@@ -379,10 +348,30 @@ export function calculateGalaxyChance(skillValue: number) : number {
 }
 
 function getBonus(crew: IEventScoredCrew, eventData: IEventData, low: number, high: number, detail?: boolean) {
-	if (detail && eventData.bonus_detail) {
-		let detail = eventData.bonus_detail.find(f => f.symbol === crew.symbol);
-		if (detail) return detail.amount;
+	if (detail) {
+		let amount: number = 0;
+		const activeContent: Content | undefined = eventData.activeContent;
+		if (activeContent) {
+			if (activeContent.featured_crews?.includes(crew.symbol)) {
+				amount = activeContent.antimatter_bonus_for_featured_crew ?? high;
+			}
+			else {
+				activeContent.antimatter_bonus_crew_traits?.forEach(trait => {
+					if (crew.traits.includes(trait) || crew.traits_hidden.includes(trait)) {
+						amount += (activeContent.antimatter_bonus_per_crew_trait ?? low);
+					}
+				});
+			}
+		}
+		else {
+			if (eventData.featured.includes(crew.symbol))
+				amount = high;
+			else if (eventData.bonus.includes(crew.symbol))
+				amount = low;
+		}
+		return amount;
 	}
+
 	if (eventData.featured.includes(crew.symbol) || (eventData.bonus.includes(crew.symbol) && eventData.bonusGuessed && (new Date()).getTime() - (new Date(crew.date_added)).getTime() < (14 * 24 * 60 * 60 * 1000))) {
 		return high;
 	}
@@ -432,7 +421,7 @@ export function computeEventBest(
 				if (phaseType === 'gather') crew.bonus = getBonus(crew, eventData, 5, 10);
 				else if (phaseType === 'shuttles') crew.bonus = getBonus(crew, eventData, 2, 3);
 				else if (phaseType === 'skirmish') crew.bonus = getBonus(crew, eventData, 1.5, 2);
-				else if (phaseType === 'voyage') crew.bonus = getBonus(crew, eventData, 50, 100, true);
+				else if (phaseType === 'voyage') crew.bonus = getBonus(crew, eventData, 50, 150, true);
 			}
 			if (crew.bonus > 1 || showPotential) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {

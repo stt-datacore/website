@@ -210,8 +210,8 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			}
 		}
 
-		let traits = [ ... new Set(globalContext.core.crew.map(c => c.traits_named).flat()) ].sort();
-		console.log(traits);
+		// let traits = [ ... new Set(globalContext.core.crew.map(c => c.traits_named).flat()) ].sort();
+		// console.log(traits);
 
 
 		const customThemes = [
