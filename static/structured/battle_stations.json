@@ -1647,5 +1647,22 @@
                 "skill": "engineering_skill"
             }
         ]
+    },
+    {
+        "symbol": "monaveen_ship",
+        "battle_stations": [
+            {
+                "skill": "command_skill"
+            },
+            {
+                "skill": "diplomacy_skill"
+            },
+            {
+                "skill": "security_skill"
+            },
+            {
+                "skill": "science_skill"
+            }
+        ]
     }
 ]
