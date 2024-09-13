@@ -991,6 +991,9 @@
             "voyage_calculator": "Voyage Calculator",
             "voyage_history": "Voyage History"
         },
+        "descriptions": {
+            "voyage_calculator": "Find the best crew for your voyages and get estimates on how long they will run."
+        },
         "tools_title": "Tools"
     },
     "mission_type": {

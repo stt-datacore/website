@@ -999,6 +999,9 @@
             "voyage_calculator": "Calculadora de viaje",
             "voyage_history": "Historia del viaje"
         },
+        "descriptions": {
+            "voyage_calculator": "Encuentre las mejores tripulantes para sus viajes y obtenga estimaciones de su duración."
+        },
         "tools_title": "Herramientas"
     },
     "mission_type": {

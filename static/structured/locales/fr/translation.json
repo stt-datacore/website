@@ -1000,6 +1000,9 @@
             "voyage_calculator": "Calculateur de voyage",
             "voyage_history": "Histoire des voyages"
         },
+        "descriptions": {
+            "voyage_calculator": "Trouvez les meilleurs équipiers pour vos voyages et obtenez des estimations sur leur durée."
+        },
         "tools_title": "Outils"
     },
     "mission_type": {

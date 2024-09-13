@@ -2,12 +2,14 @@ import React from 'react';
 
 import DataPageLayout from '../components/page/datapagelayout';
 import { VoyageHome } from '../components/voyagecalculator/home';
+import { GlobalContext } from '../context/globalcontext';
 
 const VoyagePage = () => {
+	const { t } = React.useContext(GlobalContext).localized;
 	return (
 		<DataPageLayout
-			pageTitle='Voyage Calculator'
-			pageDescription='Find the best crew for your voyages and get estimates on how long they will run.'
+			pageTitle={t('menu.tools.voyage_calculator')}
+			pageDescription={t('menu.descriptions.voyage_calculator')}
 			playerPromptType='recommend'
 			demands={['collections', 'event_instances']}
 		>

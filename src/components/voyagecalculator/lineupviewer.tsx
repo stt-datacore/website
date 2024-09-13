@@ -68,14 +68,14 @@ export const LineupViewer = (props: LineupViewerProps) => {
 	const { playerData } = globalContext.player;
 	const { configSource, voyageConfig, ship, roster, rosterType } = props;
 
-	const showCrewFinder: boolean = configSource === 'player';
+	const findBestRank: boolean = configSource === 'player';
 
 	const skillCombos: ISkillCombos = initSkillCombos();
 
 	const usedCrew: number[] = [];
 	const assignments: IAssignment[] = Object.values(CONFIG.VOYAGE_CREW_SLOTS).map(entry => {
 		const { crew, name, trait, skill } = (Object.values(voyageConfig.crew_slots).find(slot => slot.symbol === entry) as VoyageCrewSlot);
-		const bestRank: ISkillsRank | undefined = showCrewFinder ? getBestRank(crew, skill, usedCrew) : undefined;
+		const bestRank: ISkillsRank | undefined = findBestRank ? getBestRank(crew, skill, usedCrew) : undefined;
 		if (!crew.imageUrlPortrait)
 			crew.imageUrlPortrait = `${crew.portrait.file.slice(1).replace('/', '_')}.png`;
 		usedCrew.push(crew.id);
@@ -118,7 +118,7 @@ export const LineupViewer = (props: LineupViewerProps) => {
 
 	function initSkillCombos(): ISkillCombos {
 		const skillCombos: ISkillCombos = {};
-		if (!showCrewFinder) return skillCombos;
+		if (!findBestRank) return skillCombos;
 
 		[1, 2, 3].forEach(i => {
 			souzaCombinations(Object.keys(CONFIG.SKILLS), i).forEach(skills => {
@@ -363,12 +363,12 @@ const TableView = (props: ViewProps) => {
 										</div>
 									}>
 										<Popup.Content>
-											<AssignmentCard assignment={assignment} showFinder={!!bestRank} showSkills={true} />
+											<AssignmentCard assignment={assignment} showSkills={true} />
 										</Popup.Content>
 									</Popup>
 								</Table.Cell>
 								<Table.Cell width={2} className='iconic' style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
-									{bestRank && <CrewFinder crew={crew} bestRank={bestRank} />}
+									<CrewFinder crew={crew} bestRank={bestRank} />
 								</Table.Cell>
 								<Table.Cell width={1} className='iconic' style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
 									<div style={{display:'flex', flexDirection:'row', gap: "0.5em", alignItems: "center", justifyContent: "right", marginRight: "0.5em"}}>
@@ -475,7 +475,7 @@ const GridView = (props: ViewProps) => {
 				{assignments.map((assignment, idx) => {
 					return (
 						<Grid.Column key={idx}>
-							<AssignmentCard assignment={assignment} showFinder={!!assignment.bestRank} showSkills={false} />
+							<AssignmentCard assignment={assignment} showSkills={false} />
 						</Grid.Column>
 					);
 				})}
@@ -501,14 +501,12 @@ const GridView = (props: ViewProps) => {
 								</div>
 							}>
 								<Popup.Content>
-									<AssignmentCard assignment={assignment} showFinder={!!bestRank} showSkills={true} />
+									<AssignmentCard assignment={assignment} showSkills={true} />
 								</Popup.Content>
 							</Popup>
-							{bestRank &&
-								<div style={{ marginTop: '.3em', textAlign: 'center', fontSize: '1.1em' }}>
-									<CrewFinder crew={crew} bestRank={bestRank} />
-								</div>
-							}
+							<div style={{ marginTop: '.3em', textAlign: 'center', fontSize: '1.1em' }}>
+								<CrewFinder crew={crew} bestRank={bestRank} />
+							</div>
 						</Grid.Column>
 					);
 				})}
@@ -647,7 +645,6 @@ const Aggregates = (props: ViewProps) => {
 
 type AssignmentCardProps = {
 	assignment: IAssignment;
-	showFinder: boolean;
 	showSkills: boolean;
 };
 
@@ -655,11 +652,11 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { TRAIT_NAMES } = globalContext.localized;
 	const { voyageConfig } = React.useContext(ViewContext);
-	const { assignment: { crew, name, trait, bestRank }, showFinder, showSkills } = props;
+	const { assignment: { crew, name, trait, bestRank }, showSkills } = props;
 
 	return (
 		<Card style={{ padding: '.5em', textAlign: 'center', height: '100%' }}>
-			{showFinder &&
+			{(bestRank || crew.immortal > 0 || crew.active_status > 0) &&
 				<Label corner='right' style={{ fontSize: '1.1em', textAlign: 'right', padding: '.4em .4em 0 0' }}>
 					<CrewFinder crew={crew} bestRank={bestRank} />
 				</Label>
@@ -667,14 +664,14 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 			<div style={{ margin: '0 auto' }}>
 				<ItemDisplay
 					crewBackground='rich'
-						allCrew={globalContext.core.crew}
-						playerData={globalContext.player.playerData}
-						targetGroup='voyageLineup'
-						itemSymbol={crew.symbol}
-						src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
-						size={96}
-						maxRarity={crew.max_rarity}
-						rarity={crew.rarity}
+					allCrew={globalContext.core.crew}
+					playerData={globalContext.player.playerData}
+					targetGroup='voyageLineup'
+					itemSymbol={crew.symbol}
+					src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+					size={96}
+					maxRarity={crew.max_rarity}
+					rarity={crew.rarity}
 				/>
 			</div>
 			<div style={{ marginBottom: '2em' }}>
@@ -782,27 +779,27 @@ type CrewFinderProps = {
 const CrewFinder = (props: CrewFinderProps) => {
 	const { crew, bestRank } = props;
 
-	if (!bestRank) return <></>;
+	let popup = { content: '', trigger: <></> };
 
-	let content: string = '';
-	if (bestRank.skills.length === 0)
-		content = `Select the ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from the top'} for this seat`;
-	else {
-		content = `Filter by these skills, then select the ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from the top'}`;
+	if (bestRank) {
+		let content: string = '';
+		if (bestRank.skills.length === 0)
+			content = `Select the ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from the top'} for this seat`;
+		else {
+			content = `Filter by these skills, then select the ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from the top'}`;
+		}
+		popup = {
+			content,
+			trigger:
+				<span style={{ whiteSpace: 'nowrap' }}>
+					{bestRank.skills.map(skill => (
+						<img key={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
+					))}
+					{` `}<span style={{ verticalAlign: 'middle' }}>{bestRank.rank}</span>
+				</span>
+		};
 	}
-
-	let popup = {
-		content,
-		trigger:
-			<span style={{ whiteSpace: 'nowrap' }}>
-				{bestRank.skills.map(skill => (
-					<img key={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
-				))}
-				{` `}<span style={{ verticalAlign: 'middle' }}>{bestRank.rank}</span>
-			</span>
-	};
-
-	if (crew.immortal > 0) {
+	else if (crew.immortal > 0) {
 		popup = {
 			content: 'Unfreeze crew',
 			trigger: <div style={{textAlign: 'center' }}><Icon name='snowflake' /></div>
@@ -819,8 +816,8 @@ const CrewFinder = (props: CrewFinderProps) => {
 			content: 'On voyage',
 			trigger: <div style={{textAlign: 'center' }}><Icon name='rocket' /></div>
 		};
-
 	}
+
 	return (
 		<Popup content={popup.content} mouseEnterDelay={POPUP_DELAY} trigger={
 			<span style={{ cursor: 'help' }}>
