@@ -9,10 +9,8 @@ date: 04/09/2024
 published: true
 ---
 
-Never thought there’d be a Beryozka reference in the Big Book, but doesn’t it kinda look like it? As Hemmer was gliding into our hearts throughout season one (and back out again), this may have been the peak of his endearment to the fans. As such, and because future seasons won’t be providing too many more variants, a bit more playable stats would have been appreciated.
+Never thought there’d be a Beryozka reference in the Big Book, but doesn’t it kinda look like it? As Hemmer was gliding into our hearts throughout season one (and back out again), this may have been the peak of his endearment to the fans. As such, TP’s post-release stat buff is much appreciated.
 
-His rank five debut SCI base is the headliner here, but that doesn’t matter much for daily shuttles (which also don’t matter much) and his traits have yet to consistently translate into event bonuses, leaving him with spotty non-bonus work if he can find it. 
+Hemmer’s shiny new proficiencies catapult him into relevance in a few different areas. In the Gauntlet, he becomes a nice B+ player behind the long-smothering Red Angel who shares his skill set and he’s a top ten option in a handful of different gauntlets. Despite not owning giant 65% crit sets like exclusive options, his plus skill set and strong proficiencies will do the heavy lifting to grind out dice rolling wins.
 
-Hemmer’s voyage power is more of a concern, coming in at the thirteen spot in his skill set on debut. With many of those top names being added in the past year, it’s clear that TP has the skill set in mind and Hemmer may tumble down the ranks faster than in years past.
-
-With several recent crew also snagging a charging crit bonus ability, he’s sadly not unique there either and seems destined to end up as a future retrieval project for players who grabbed a copy or two in his event and (rightfully) let him eat a crew slot for quite a while.
+Those same positive attributes grant him intriguing Goyage (and Voyage) potential. Despite TP loading up that skill set in recent times, his power level is certainly adequate and his proficiency power laps the field among top shelf voyage names. With an acceptable collection portfolio and niche shipboard ability, there’s plenty to like about Hemmer’s shining moment.

@@ -104,7 +104,6 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 	React.useEffect(() => {
 		if (!input || !ship_schematics.length || !crew.length) return;
-		if (!input.item_archetype_cache?.archetypes?.length && !itemArchetypeCache?.archetypes?.length) return;
 		// ephemeral data (e.g. active crew, active shuttles, voyage data, and event data)
 		//	can be misleading when outdated, so keep a copy for the current session only
 		const activeCrew = [] as CompactCrew[];
