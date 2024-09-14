@@ -41,10 +41,10 @@ export const CrewTable = () => {
 
 		const crewData = [] as ITrackedCrewMember[];
 		if (history.crew) Object.keys(history.crew).forEach(crewSymbol => {
-			
+
 			let crewIn = globalContext.player.playerData?.player.character.crew.find(crew => crew.symbol === crewSymbol) ?? globalContext.core.crew.find(crew => crew.symbol === crewSymbol);
 			const crew = CrewPreparer.prepareCrewMember(crewIn as PlayerCrew, 'quipment', 'owned', globalContext)[0] as PlayerCrew;
-			
+
 			if (crew) {
 				const assignments = history.crew[crewSymbol].filter(assignment => {
 					const trackedVoyage = voyages.find(voyage => voyage.tracker_id === assignment.tracker_id);
@@ -90,6 +90,8 @@ export const CrewTable = () => {
 		});
 		setData([...crewData]);
 	}, [history, reportDays, primaryOnly]);
+
+	if (history.voyages.length === 0) return <></>;
 
 	const reportDayOptions = [
 		{ key: 'all', value: undefined, text: 'Show all voyages' },

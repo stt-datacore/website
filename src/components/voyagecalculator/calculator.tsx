@@ -3,7 +3,7 @@ import { Icon, Form, Button, Grid, Message, Segment, Checkbox, Select, Header, I
 import { Link } from 'gatsby';
 
 import { Voyage } from '../../model/player';
-import { IVoyageInputConfig, IVoyageCalcConfig, IVoyageCrew } from '../../model/voyage';
+import { IVoyageInputConfig, IVoyageCalcConfig, IVoyageCrew, ITrackedVoyage, ITrackedAssignmentsByCrew } from '../../model/voyage';
 import { CalcResult, Calculation, Estimate, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
 import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
@@ -18,7 +18,7 @@ import { VoyageStats } from './voyagestats';
 import { CIVASMessage } from './civas';
 
 import { HistoryContext } from '../voyagehistory/context';
-import { addVoyageToHistory, addCrewToHistory, removeVoyageFromHistory } from '../voyagehistory/utils';
+import { addVoyageToHistory, addCrewToHistory, removeVoyageFromHistory, SyncState, deleteRemoteVoyage, createTrackableVoyage, postRemoteVoyage, createTrackableAssignments, postRemoteCrew } from '../voyagehistory/utils';
 import CONFIG from '../CONFIG';
 import { getShipTraitBonus } from './utils';
 import { VPGraphAccordion } from './vpgraph';
@@ -533,7 +533,7 @@ type ResultsGroupProps = {
 const ResultsGroup = (props: ResultsGroupProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	const { history, setHistory } = React.useContext(HistoryContext);
+	const { dbid, history, setHistory, syncState, setMessageId } = React.useContext(HistoryContext);
 	const calculatorContext = React.useContext(CalculatorContext);
 
 	const { requests, results, setResults } = props;
@@ -702,18 +702,60 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 	}
 
 	function trackResult(resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate): void {
-		// Remove previous tracked voyage and associated crew assignments
+		// First remove previous tracked voyage and associated crew assignments
 		//	(in case user tracks a different recommendation from same request)
-		if (trackerId > 0) removeVoyageFromHistory(history, trackerId);
+		let newTrackerId: number = history.voyages.reduce((prev, curr) => Math.max(prev, curr.tracker_id), 0) + 1;
+		const trackableRunningVoyage: ITrackedVoyage = createTrackableVoyage(
+			newTrackerId, voyageConfig, shipSymbol, estimate
+		);
+		if (syncState === SyncState.RemoteReady) {
+			deleteRemoteVoyage(dbid, trackerId).then((success: boolean) => {
+				if (success) {
+					removeVoyageFromHistory(history, trackerId);
+					postRemoteVoyage(dbid, trackableRunningVoyage).then(result => {
+						if (result.status < 300 && result.trackerId && result.inputId === newTrackerId) {
+							const postedId: number = result.trackerId;
+							trackableRunningVoyage.tracker_id = postedId;	// Ensure local history uses same tracker id as remote
+							addVoyageToHistory(history, trackableRunningVoyage);
+							const trackableAssignments: ITrackedAssignmentsByCrew = createTrackableAssignments(postedId, voyageConfig);
+							postRemoteCrew(dbid, trackableAssignments).then(() => {
+								addCrewToHistory(history, trackableAssignments);
+								setHistory({...history});
+								updateTrackedResults(resultIndex, postedId);
+							});
+						}
+						else {
+							throw('Failed trackResult -> postRemoteVoyage');
+						}
+					})
+				}
+				else {
+					throw('Failed trackResult -> deleteRemoteVoyage');
+				}
+			}).catch(e => {
+				setMessageId('voyage.history_msg.failed_to_track');
+				console.log(e);
+			});
+		}
+		else if (syncState === SyncState.LocalOnly) {
+			removeVoyageFromHistory(history, trackerId);
+			addVoyageToHistory(history, trackableRunningVoyage);
+			addCrewToHistory(history, createTrackableAssignments(newTrackerId, voyageConfig));
+			setHistory({...history});
+			updateTrackedResults(resultIndex, newTrackerId);
+		}
+		else {
+			setMessageId('voyage.history_msg.invalid_sync_state');
+			console.log(`Failed trackResult (invalid syncState: ${syncState})`);
+		}
+	}
 
-		const newTrackerId = addVoyageToHistory(history, voyageConfig, shipSymbol, estimate);
-		addCrewToHistory(history, newTrackerId, voyageConfig);
-		setHistory({...history});
-		setTrackerId(newTrackerId);
+	function updateTrackedResults(resultIndex: number, trackerId: number): void {
 		results.forEach((result, idx) => {
 			result.trackState = idx === resultIndex ? 1 : 0;
 		});
 		setResults([...results]);
+		setTrackerId(trackerId);
 	}
 
 	function estimateResult(resultIndex: number, voyageConfig: IVoyageCalcConfig, numSims: number): void {
@@ -776,8 +818,9 @@ type ResultPaneProps = {
 };
 
 const ResultPane = (props: ResultPaneProps) => {
-	const calculatorContext = React.useContext(CalculatorContext);
 	const { t } = React.useContext(GlobalContext).localized;
+	const { syncState } = React.useContext(HistoryContext);
+	const calculatorContext = React.useContext(CalculatorContext);
 	const { configSource, rosterType } = calculatorContext;
 	const {
 		result, resultIndex,
@@ -865,7 +908,7 @@ const ResultPane = (props: ResultPaneProps) => {
 									<Popup position='top center'
 										content={<>Track this recommendation</>}
 										trigger={
-											<Button icon onClick={() => trackResult(resultIndex, voyageConfig, request.bestShip.ship.symbol, result.estimate)}>
+											<Button icon onClick={() => trackResult(resultIndex, voyageConfig, request.bestShip.ship.symbol, result.estimate)} disabled={syncState === SyncState.ReadOnly}>
 												<Icon name={iconTrack[trackState]} color={trackState === 1 ? 'green' : undefined} />
 											</Button>
 										}

@@ -86,7 +86,7 @@ export interface ITrackedAssignment {
 	tracker_id: number;
 	slot: number;	// Slot index where crew is seated
 	trait: string;	// Matched trait or empty string if no match
-	kwipment?: number[][];
+	kwipment?: number[] | number[][];
 };
 
 export interface ITrackedAssignmentsBySkill {

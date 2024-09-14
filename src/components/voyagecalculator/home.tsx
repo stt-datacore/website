@@ -25,8 +25,9 @@ import { VoyageStats } from './voyagestats';
 import { HistoryContext, IHistoryContext } from '../voyagehistory/context';
 import { CrewTable } from '../voyagehistory/crewtable';
 import { VoyagesTable } from '../voyagehistory/voyagestable';
-import { DataManagement } from '../voyagehistory/manage';
-import { createCheckpoint, defaultHistory, NEW_VOYAGE_ID } from '../voyagehistory/utils';
+import { DataManagement, DataManagementPlaceholder } from '../voyagehistory/manage';
+import { HistoryMessage } from '../voyagehistory/message';
+import { createCheckpoint, defaultHistory, getRemoteHistory, InitState, NEW_VOYAGE_ID, putRemoteVoyage, SyncState, updateVoyageInHistory } from '../voyagehistory/utils';
 
 export const VoyageHome = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -54,10 +55,13 @@ const NonPlayerHome = () => {
 		// Calculator requires prime skills
 		if (voyageConfig.skills.primary_skill !== '' && voyageConfig.skills.secondary_skill !== '') {
 			const historyContext: IHistoryContext = {
+				dbid: '',
 				history: defaultHistory,
-				setHistory: () => {}
+				setHistory: () => {},
+				syncState: SyncState.ReadOnly,
+				messageId: '',
+				setMessageId: () => {}
 			};
-
 			return (
 				<HistoryContext.Provider value={historyContext}>
 					<React.Fragment>
@@ -118,41 +122,91 @@ type PlayerHomeProps = {
 const PlayerHome = (props: PlayerHomeProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, ephemeral } = globalContext.player;
+	const { dbid } = props;
 
 	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(
-		props.dbid+'/voyage/history',
+		dbid+'/voyage/history',
 		defaultHistory,
 		{
 			rememberForever: true,
 			compress: true,
-			onInitialize: () => setHistoryReady(true)
+			onInitialize: () => setHistoryInitState(prev => prev + 1)
 		}
 	);
-	const [historyReady, setHistoryReady] = React.useState<boolean>(false);
+	const [postRemote, setPostRemote] = useStateWithStorage<boolean>(
+		dbid+'/voyage/postRemote',
+		false,
+		{
+			rememberForever: true,
+			onInitialize: () => setHistoryInitState(prev => prev + 1)
+		}
+	);
+	const [historyInitState, setHistoryInitState] = React.useState<InitState>(InitState.Initializing);
+	const [historySyncState, setHistorySyncState] = React.useState<SyncState>(SyncState.ReadOnly);
+	const [historyMessageId, setHistoryMessageId] = React.useState<string>('');
+
 	const [eventData, setEventData] = React.useState<IEventData[]>([]);
 	const [playerConfigs, setPlayerConfigs] = React.useState<IVoyageInputConfig[]>([]);
 	const [upcomingConfigs, setUpcomingConfigs] = React.useState<IVoyageInputConfig[]>([]);
 	const [customConfig, setCustomConfig] = React.useState<IVoyageInputConfig | undefined>(undefined);
+	const [runningVoyageIds, setRunningVoyageIds] = React.useState<number[]>([]);
+
 	const [activeView, setActiveView] = React.useState<IVoyageView | undefined>(undefined);
 
 	React.useEffect(() => {
 		if (!playerData) return;
 		getEvents();
 		getPlayerConfigs();
+		// Queue history for re-sync, if history already initialized
+		if (historyInitState === InitState.Initialized)
+			setHistoryInitState(InitState.VarsLoaded);
 	}, [playerData]);
 
-	if (!historyReady)
+	React.useEffect(() => {
+		if (historyInitState === InitState.VarsLoaded) {
+			if (postRemote) {
+				getRemoteHistory(dbid).then(async (remoteHistory) => {
+					if (!!remoteHistory) setHistory(remoteHistory);
+					setHistorySyncState(SyncState.RemoteReady);
+				}).catch(e => {
+					setHistorySyncState(SyncState.ReadOnly);
+					setHistoryMessageId('voyage.history_msg.read_only');
+					console.log(e);
+				}).finally(() => {
+					setHistoryInitState(InitState.HistoryLoaded);
+				});
+			}
+			else {
+				setHistorySyncState(SyncState.LocalOnly);
+				setHistoryInitState(InitState.HistoryLoaded);
+			}
+		}
+		else if (historyInitState === InitState.HistoryLoaded) {
+			// Reconcile running voyages with tracked voyages
+			runningVoyageIds.forEach(voyageId => {
+				reconcileVoyage(voyageId);
+			});
+			setHistoryInitState(InitState.Initialized);
+		}
+	}, [historyInitState]);
+
+	if (historyInitState < InitState.Initialized)
 		return <></>;
 
 	const historyContext: IHistoryContext = {
+		dbid,
 		history,
-		setHistory
+		setHistory,
+		syncState: historySyncState,
+		messageId: historyMessageId,
+		setMessageId: setHistoryMessageId
 	};
 
 	return (
 		<HistoryContext.Provider value={historyContext}>
 			<React.Fragment>
 				<CrewHoverStat targetGroup='voyageLineupHover' />
+				<HistoryMessage />
 				{!activeView && renderVoyagePicker()}
 				{activeView && renderActiveView()}
 			</React.Fragment>
@@ -222,8 +276,8 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		setPlayerConfigs([...playerConfigs]);
 		setUpcomingConfigs([...upcomingConfigs]);
 
-		// Reconcile running voyages with tracked voyages
-		runningVoyageIds.forEach(voyageId => reconcileVoyage(voyageId));
+		// Queue running voyages for reconciliation with tracked voyages
+		setRunningVoyageIds([...runningVoyageIds]);
 
 		// Bypass home if only 1 voyage
 		setActiveView(playerConfigs.length === 1 ?
@@ -261,17 +315,37 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		const running: Voyage | undefined = ephemeral.voyage.find(voyage => voyage.id === voyageId);
 		if (!running) return;
 
-		const trackedVoyage: ITrackedVoyage | undefined = history.voyages.find(voyage => voyage.voyage_id === running.id);
-		if (trackedVoyage) {
-			const trackedId: number = trackedVoyage.tracker_id;
+		// Found running voyage in history; add new checkpoint to history
+		const trackedRunningVoyage: ITrackedVoyage | undefined = history.voyages.find(voyage => voyage.voyage_id === running.id);
+		if (trackedRunningVoyage) {
+			const updatedVoyage: ITrackedVoyage = JSON.parse(JSON.stringify(trackedRunningVoyage));
 			createCheckpoint(running).then(checkpoint => {
-				setHistory(history => {
-					const trackedVoyage: ITrackedVoyage | undefined = history.voyages.find(voyage => voyage.tracker_id === trackedId);
-					if (trackedVoyage) trackedVoyage.checkpoint = checkpoint;
-					return history;
-				});
-			})
-			.catch(e => console.log('reconcileExisting', e))
+				if (historySyncState === SyncState.RemoteReady) {
+					putRemoteVoyage(dbid, updatedVoyage.tracker_id, {...updatedVoyage, checkpoint}).then((success: boolean) => {
+						if (success) {
+							setHistory(history => {
+								updateVoyageInHistory(history, updatedVoyage.tracker_id, {...updatedVoyage, checkpoint});
+								return history;
+							});
+						}
+						else {
+							throw('Failed reconciling running voyage -> putRemoteVoyage');
+						}
+					});
+				}
+				else if (historySyncState === SyncState.LocalOnly) {
+					setHistory(history => {
+						updateVoyageInHistory(history, updatedVoyage.tracker_id, {...updatedVoyage, checkpoint});
+						return history;
+					});
+				}
+				else {
+					throw(`Failed reconciling running voyage (invalid syncState: ${historySyncState})`);
+				}
+			}).catch(e => {
+				setHistoryMessageId('voyage.history_msg.failed_to_update');
+				console.log(e);
+			});
 		}
 		else {
 			// Voyages don't get a proper voyageId until started in-game, so try to reconcile history
@@ -284,24 +358,39 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				|| lastTracked.ship_trait !== running.ship_trait) {
 				return;
 			}
-			const trackedId: number = lastTracked.tracker_id;
 			createCheckpoint(running).then(checkpoint => {
-				setHistory(history => {
-					const trackedVoyage: ITrackedVoyage | undefined = history.voyages.find(voyage => voyage.tracker_id === trackedId);
-					if (trackedVoyage) {
-						trackedVoyage.voyage_id = running.id;
-						trackedVoyage.created_at = Date.parse(running.created_at);
-						trackedVoyage.ship = globalContext.core.ships.find(s => s.id === running.ship_id)?.symbol ?? lastTracked.ship;
-						// If the lineup sent out doesn't match the tracked recommendation, maybe reconcile crew and max_hp here or show a warning?
-						trackedVoyage.checkpoint = checkpoint;
-					}
-					return history;
-				});
-			})
-			.catch(e => console.log('reconcileNew', e))
+				const updatedVoyage: ITrackedVoyage = JSON.parse(JSON.stringify(lastTracked));
+				updatedVoyage.voyage_id = running.id;
+				updatedVoyage.created_at = Date.parse(running.created_at);
+				updatedVoyage.ship = globalContext.core.ships.find(s => s.id === running.ship_id)?.symbol ?? lastTracked.ship;
+				// If the lineup sent out doesn't match the tracked recommendation, maybe reconcile crew and max_hp here or show a warning?
+				if (historySyncState === SyncState.RemoteReady) {
+					putRemoteVoyage(dbid, updatedVoyage.tracker_id, {...updatedVoyage, checkpoint}).then((success: boolean) => {
+						if (success) {
+							setHistory(history => {
+								updateVoyageInHistory(history, updatedVoyage.tracker_id, {...updatedVoyage, checkpoint});
+								return history;
+							});
+						}
+						else {
+							throw('Failed reconciling last tracked voyage -> putRemoteVoyage');
+						}
+					});
+				}
+				else if (historySyncState === SyncState.LocalOnly) {
+					setHistory(history => {
+						updateVoyageInHistory(history, updatedVoyage.tracker_id, {...updatedVoyage, checkpoint});
+						return history;
+					});
+				}
+				else {
+					throw(`Failed reconciling last tracked voyage (invalid syncState: ${historySyncState})`);
+				}
+			}).catch(e => {
+				setHistoryMessageId('voyage.history_msg.failed_to_update');
+				console.log(e);
+			});
 		}
-
-		return;
 	}
 
 	function renderVoyagePicker(): JSX.Element {
@@ -335,13 +424,13 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				<p>You can manually create a voyage and view the best crew in the game for any possible configuration.</p>
 				<ConfigEditor voyageConfig={customConfig} updateConfig={loadCustomConfig} />
 
-				{history.voyages.length > 0 && (
-					<React.Fragment>
-						<VoyagesTable />
-						<CrewTable />
-						<DataManagement />
-					</React.Fragment>
-				)}
+				<VoyagesTable />
+				<CrewTable />
+				<DataManagementPlaceholder
+					postRemote={postRemote}
+					setPostRemote={setPostRemote}
+					setSyncState={setHistorySyncState}
+				/>
 			</React.Fragment>
 		);
 	}

@@ -8,7 +8,7 @@ import { formatTime } from '../../utils/voyageutils';
 
 import { HistoryContext } from './context';
 import { VoyageModal } from './voyagemodal';
-import { removeVoyageFromHistory } from './utils';
+import { deleteRemoteVoyage, removeVoyageFromHistory, SyncState } from './utils';
 
 interface ITableState {
 	data: ITrackedVoyage[];
@@ -35,7 +35,7 @@ export const VoyagesTable = () => {
 	const { ephemeral } = globalContext.player;
 	const { t } = globalContext.localized;
 	const { SHIP_TRAIT_NAMES } = globalContext.localized;
-	const { history, setHistory } = React.useContext(HistoryContext);
+	const { dbid, history, setHistory, syncState, setMessageId } = React.useContext(HistoryContext);
 
 	const [activeVoyage, setActiveVoyage] = React.useState<ITrackedVoyage | undefined>(undefined);
 	const [state, dispatch] = React.useReducer(reducer, {
@@ -52,6 +52,8 @@ export const VoyagesTable = () => {
 	React.useEffect(() => {
 		dispatch({ type: 'UPDATE_DATA', data: history.voyages });
 	}, [history]);
+
+	if (history.voyages.length === 0) return <></>;
 
 	const skillOptions: DropdownItemProps[] = [
 		{ key: 'all', value: '', text: 'Show all voyages' },
@@ -211,9 +213,30 @@ export const VoyagesTable = () => {
 	}
 
 	function removeTrackedVoyage(trackerId: number): void {
-		removeVoyageFromHistory(history, trackerId);
-		setHistory({...history});
-		setActiveVoyage(undefined);
+		if (syncState === SyncState.RemoteReady) {
+			deleteRemoteVoyage(dbid, trackerId).then((success: boolean) => {
+				if (success) {
+					removeVoyageFromHistory(history, trackerId);
+					setHistory({...history});
+					setActiveVoyage(undefined);
+				}
+				else {
+					throw('Failed removeTrackedVoyage -> deleteRemoteVoyage');
+				}
+			}).catch(e => {
+				setMessageId('voyage.history_msg.failed_to_delete');
+				console.log('removeTrackedVoyage', e);
+			});
+		}
+		else if (syncState === SyncState.LocalOnly) {
+			removeVoyageFromHistory(history, trackerId);
+			setHistory({...history});
+			setActiveVoyage(undefined);
+		}
+		else {
+			setMessageId('voyage.history_msg.invalid_sync_state');
+			console.log(`Failed removeTrackedVoyage (invalid syncState: ${syncState})`);
+		}
 	}
 
 	function reducer(state: ITableState, action: ITableAction): ITableState {

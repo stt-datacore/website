@@ -9,14 +9,14 @@ import {
 import { CrewMember } from '../../model/crew';
 import { Voyage } from '../../model/player';
 import { Ship } from '../../model/ship';
-import { ITrackedCheckpoint, ITrackedVoyage, IVoyageInputConfig } from '../../model/voyage';
+import { ITrackedAssignmentsByCrew, ITrackedCheckpoint, ITrackedVoyage, IVoyageCalcConfig, IVoyageInputConfig } from '../../model/voyage';
 import { Estimate } from '../../model/worker';
 import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';
 import { formatTime } from '../../utils/voyageutils';
 
 import { HistoryContext } from '../voyagehistory/context';
-import { addCrewToHistory, addVoyageToHistory, createCheckpoint, estimateTrackedVoyage, getRuntime } from '../voyagehistory/utils';
+import { addCrewToHistory, addVoyageToHistory, createCheckpoint, createTrackableAssignments, createTrackableVoyage, estimateTrackedVoyage, getRuntime, postRemoteCrew, postRemoteVoyage, SyncState } from '../voyagehistory/utils';
 
 type ConfigCardProps = {
 	configSource: 'player' | 'custom';
@@ -230,7 +230,7 @@ type RunningTrackerProps = {
 const RunningTracker = (props: RunningTrackerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t, tfmt } = globalContext.localized;
-	const { history, setHistory } = React.useContext(HistoryContext);
+	const { dbid, history, setHistory, syncState, setMessageId } = React.useContext(HistoryContext);
 	const { voyage, ship } = props;
 
 	React.useEffect(() => {
@@ -256,7 +256,7 @@ const RunningTracker = (props: RunningTrackerProps) => {
 	return (
 		<span>
 			{` `}{t('voyage.tracking.not_tracking')}
-			{` `}<Button compact content={t('voyage.tracking.start_tracking')} onClick={() => initializeTracking()} />
+			{` `}<Button compact content={t('voyage.tracking.start_tracking')} onClick={() => initializeTracking()} disabled={syncState === SyncState.ReadOnly} />
 		</span>
 	);
 
@@ -264,16 +264,39 @@ const RunningTracker = (props: RunningTrackerProps) => {
 		// Add to history with both initial and checkpoint estimates
 		estimateTrackedVoyage(voyage, 0, voyage.max_hp).then((initial: Estimate) => {
 			createCheckpoint(voyage).then((checkpoint: ITrackedCheckpoint) => {
-				const newTrackerId: number = addVoyageToHistory(history, voyage, ship.symbol, initial);
-				addCrewToHistory(history, newTrackerId, voyage);
-				const trackedVoyage: ITrackedVoyage | undefined = history.voyages.find(voyage => voyage.tracker_id === newTrackerId);
-				if (trackedVoyage) {
-					trackedVoyage.voyage_id = voyage.id;
-					trackedVoyage.created_at = Date.parse(voyage.created_at);
-					trackedVoyage.checkpoint = checkpoint;
+				let newTrackerId: number = history.voyages.reduce((prev, curr) => Math.max(prev, curr.tracker_id), 0) + 1;
+				const trackableRunningVoyage: ITrackedVoyage = createTrackableVoyage(
+					newTrackerId, voyage as IVoyageCalcConfig, ship.symbol, initial, voyage, checkpoint
+				);
+				if (syncState === SyncState.RemoteReady) {
+					postRemoteVoyage(dbid, trackableRunningVoyage).then(result => {
+						if (result.status < 300 && result.trackerId && result.inputId === newTrackerId) {
+							const postedId: number = result.trackerId;
+							trackableRunningVoyage.tracker_id = postedId;	// Ensure local history uses same tracker id as remote
+							addVoyageToHistory(history, trackableRunningVoyage);
+							const trackableAssignments: ITrackedAssignmentsByCrew = createTrackableAssignments(postedId, voyage);
+							postRemoteCrew(dbid, trackableAssignments).then(() => {
+								addCrewToHistory(history, trackableAssignments);
+								setHistory({...history});
+							});
+						}
+						else {
+							throw('Failed initializeTracking -> postRemoteVoyage');
+						}
+					});
+				}
+				else if (syncState === SyncState.LocalOnly) {
+					addVoyageToHistory(history, trackableRunningVoyage);
+					addCrewToHistory(history, createTrackableAssignments(newTrackerId, voyage));
 					setHistory({...history});
 				}
-			}).catch(e => console.log('initializeTracking', e));
+				else {
+					throw(`Failed initializeTracking (invalid syncState: ${syncState})`);
+				}
+			});
+		}).catch(e => {
+			setMessageId('voyage.history_msg.failed_to_track');
+			console.log(e);
 		});
 	}
 };
