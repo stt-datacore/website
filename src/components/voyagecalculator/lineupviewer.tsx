@@ -345,7 +345,7 @@ const TableView = (props: ViewProps) => {
 						return (
 							<Table.Row key={idx}>
 								<Table.Cell width={5}>{name}</Table.Cell>
-								<Table.Cell width={8}>
+								<Table.Cell width={7}>
 									<Popup mouseEnterDelay={POPUP_DELAY} trigger={
 										<div style={{ cursor: 'help', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 											{!compact &&
