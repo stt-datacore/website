@@ -576,6 +576,7 @@ const Aggregates = (props: ViewProps) => {
 		return (
 			<Table.Row>
 				<Table.Cell>Base Event VP</Table.Cell>
+				<Table.Cell className='iconic' style={{width: '2.2em'}}>&nbsp;</Table.Cell>
 				<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
 					<b>{totalVP}</b>
 				</Table.Cell>
@@ -590,6 +591,7 @@ const Aggregates = (props: ViewProps) => {
 		return (
 			<Table.Row>
 				<Table.Cell>Antimatter</Table.Cell>
+				<Table.Cell className='iconic' style={{width: '2.2em'}}>&nbsp;</Table.Cell>
 				<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
 					{ship && (
 						<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{voyageConfig.max_hp}</span>}>
