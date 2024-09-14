@@ -380,6 +380,7 @@ const TableView = (props: ViewProps) => {
 												</span>
 											} />
 										</>}
+										{renderVPBonus(crew)}
 										{renderTraitBonus(crew, trait)}
 									</div>
 								</Table.Cell>
@@ -403,6 +404,19 @@ const TableView = (props: ViewProps) => {
 			<Popup content={bonusText} mouseEnterDelay={POPUP_DELAY} trigger={
 				<span style={{ cursor: 'help' }}>
 					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+				</span>
+			} />
+		);
+	}
+
+	function renderVPBonus(crew: PlayerCrew): JSX.Element {
+		if (voyageConfig.voyage_type !== 'encounter') return <></>;
+		const crewVP: number = getCrewVP(voyageConfig, crew);
+		let bonusText = `+${crewVP} VP`;
+		return (
+			<Popup content={bonusText} mouseEnterDelay={POPUP_DELAY} trigger={
+				<span style={{ cursor: 'help' }}>
+					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 				</span>
 			} />
 		);
@@ -687,7 +701,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 				</div>
 				<div style={{display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: 'center', gap: '1em'}}>
 					{isQuipped(crew) && (
-						<div>
+						<div style={{paddingBottom: "0.1em"}}>
 							<Popup wide
 								content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => typeof q === 'number' ? q : q[1]), globalContext.core.items)}
 								mouseEnterDelay={POPUP_DELAY}
