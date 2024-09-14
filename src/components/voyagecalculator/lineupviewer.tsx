@@ -567,7 +567,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 					crewBackground='rich'
 						allCrew={globalContext.core.crew}
 						playerData={globalContext.player.playerData}
-						targetGroup='voyageLineup'
+						targetGroup='voyageLineupHover'
 						itemSymbol={crew.symbol}
 						src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 						size={96}

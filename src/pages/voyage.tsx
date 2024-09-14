@@ -124,6 +124,7 @@ const VoyageSetup = (props: VoySetupProps) => {
 
 	return (
 		<React.Fragment>
+			<CrewHoverStat targetGroup='voyageLineupHover' />
 			{playerData && (
 				<ActiveVoyageSetup
 					voySymbol={voySymbol}
@@ -302,7 +303,6 @@ const CalculatorSetup = (props: CalculatorSetupProps) => {
 
 	return (
 		<React.Fragment>
-			<CrewHoverStat targetGroup='voyageLineup' />
 			<RosterPicker
 				voySymbol={voySymbol}
 				rosterType={rosterType} setRosterType={setRosterType}
