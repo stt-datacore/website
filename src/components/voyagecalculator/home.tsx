@@ -152,6 +152,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	return (
 		<HistoryContext.Provider value={historyContext}>
 			<React.Fragment>
+				<CrewHoverStat targetGroup='voyageLineupHover' />
 				{!activeView && renderVoyagePicker()}
 				{activeView && renderActiveView()}
 			</React.Fragment>
@@ -485,7 +486,6 @@ const CalculatorSetup = (props: CalculatorSetupProps) => {
 
 	return (
 		<React.Fragment>
-			<CrewHoverStat targetGroup='voyageLineup' />
 			<RosterPicker
 				configSource={configSource}
 				rosterType={rosterType} setRosterType={setRosterType}

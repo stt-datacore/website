@@ -36,7 +36,7 @@ export const VoyageModal = (props: VoyageModalProps) => {
 				{CONFIG.SKILLS[voyage.skills.primary_skill]} / {CONFIG.SKILLS[voyage.skills.secondary_skill]} / {SHIP_TRAIT_NAMES[voyage.ship_trait] ?? voyage.ship_trait} <span style={{ marginLeft: '2em' }}>({dtCreated.toLocaleDateString()})</span>
 			</Modal.Header>
 			<Modal.Content scrolling>
-				<CrewHoverStat targetGroup='voyageLineup' modalPositioning={true} />
+				<CrewHoverStat targetGroup='voyageLineupHover' modalPositioning={true} />
 
 				{renderLineup()}
 				{props.onRemove && (
@@ -96,7 +96,7 @@ export const VoyageModal = (props: VoyageModalProps) => {
 				voyageCrewSlots.push(voyageCrewSlot);
 			}
 		});
-		
+
 		if (!voyageCrewSlots.length) return <></>;
 
 		const voyageConfig = {
