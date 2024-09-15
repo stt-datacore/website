@@ -87,7 +87,7 @@ const NonPlayerHome = () => {
 				No Voyage Configuration Available
 			</Header>
 			<p>Import your player data to help tailor this tool to your current voyage and roster. Otherwise, you can manually create a voyage and view the best crew in the game for any possible configuration.</p>
-			<ConfigEditor voyageConfig={voyageConfig} updateConfig={setVoyageConfig} />
+			<ConfigEditor presetConfigs={[]} updateConfig={setVoyageConfig} />
 		</React.Fragment>
 	);
 
@@ -422,7 +422,10 @@ const PlayerHome = (props: PlayerHomeProps) => {
 
 				<Header as='h3'>Custom Voyage</Header>
 				<p>You can manually create a voyage and view the best crew in the game for any possible configuration.</p>
-				<ConfigEditor voyageConfig={customConfig} updateConfig={loadCustomConfig} />
+				<ConfigEditor
+					presetConfigs={playerConfigs.concat(upcomingConfigs)}
+					updateConfig={loadCustomConfig}
+				/>
 
 				<VoyagesTable />
 				<CrewTable />
