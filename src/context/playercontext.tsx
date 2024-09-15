@@ -156,7 +156,6 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 		const quipment = coreData.items.filter(i => i.type === 14).map(i => getItemWithBonus(i));
 		prepareProfileData('PLAYER_CONTEXT', coreData.crew, preparedProfileData, dtImported, quipment);
-
 		setProfile(preparedProfileData);
 
 		if (preparedProfileData) {
