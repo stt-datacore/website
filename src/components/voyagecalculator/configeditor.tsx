@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Form, Button, Dropdown, Table } from 'semantic-ui-react';
+import { Modal, Form, Button, Dropdown, Table, DropdownItemProps } from 'semantic-ui-react';
 
 import { VoyageSkills } from '../../model/player';
 import { IVoyageInputConfig } from '../../model/voyage';
@@ -44,21 +44,39 @@ const defaultConfig: IVoyageInputConfig = {
 };
 
 type ConfigEditorProps = {
-	voyageConfig: IVoyageInputConfig | undefined;
+	presetConfigs: IVoyageInputConfig[];
 	updateConfig: (newVoyageConfig: IVoyageInputConfig) => void;
 };
 
 export const ConfigEditor = (props: ConfigEditorProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { TRAIT_NAMES, SHIP_TRAIT_NAMES } = globalContext.localized;
-	const { updateConfig } = props;
+	const { presetConfigs, updateConfig } = props;
 
-	const [voyageConfig, setVoyageConfig] = React.useState<IVoyageInputConfig>(props.voyageConfig ?? defaultConfig);
+	const [voyageConfig, setVoyageConfig] = React.useState<IVoyageInputConfig>(defaultConfig);
 
 	const [modalIsOpen, setModalIsOpen] = React.useState<boolean>(false);
 	const [options, setOptions] = React.useState<IEditOptions | undefined>(undefined);
 
+	React.useEffect(() => {
+		if (presetConfigs.length === 0) return;
+		setVoyageConfig({...presetConfigs[0]});
+	}, [presetConfigs]);
+
 	voyageConfig.crew_slots.sort((s1, s2) => CONFIG.VOYAGE_CREW_SLOTS.indexOf(s1.symbol) - CONFIG.VOYAGE_CREW_SLOTS.indexOf(s2.symbol));
+
+	const presetOptions: DropdownItemProps[] = presetConfigs.map(config => {
+		return ({
+			key: config.voyage_type,
+			text: config.voyage_type === 'encounter' ? 'Current Encounter Voyage' : 'Current Dilemma Voyage',
+			value: config.voyage_type
+		});
+	});
+	presetOptions.push({
+		key: 'default',
+		text: 'Reset',
+		value: 'default'
+	});
 
 	return (
 		<Modal
@@ -73,15 +91,27 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 				{modalIsOpen && renderEditor()}
 			</Modal.Content>
 			<Modal.Actions>
-				<Button onClick={() => setVoyageConfig({...defaultConfig})}>
-					Reset
-				</Button>
+				<Dropdown button
+					text='Presets'
+					options={presetOptions}
+					onChange={(e, data) => loadPreset(data.value as string)}
+				/>
 				<Button onClick={() => closeAndApply()}>
 					Create
 				</Button>
 			</Modal.Actions>
 		</Modal>
 	);
+
+	function loadPreset(voyageType: string): void {
+		if (voyageType === 'default') {
+			setVoyageConfig({...defaultConfig});
+			return;
+		}
+		const config: IVoyageInputConfig | undefined = presetConfigs.find(preset => preset.voyage_type === voyageType);
+		if (!config) return;
+		setVoyageConfig({...config});
+	}
 
 	function closeAndApply(): void {
 		setModalIsOpen(false);
