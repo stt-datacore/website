@@ -273,7 +273,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 				<EquipmentBuilds crew={crew} />
 				<Polestars crew={crew} />
 				<CrewQuipment crew={crew} />
-				<CrewVariants traits_hidden={crew.traits_hidden} />
+				<CrewVariants traits_hidden={crew.traits_hidden} short_name={crew.short_name} />
 			</>
 		);
 	}
