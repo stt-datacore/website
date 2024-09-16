@@ -8,7 +8,7 @@ import { formatTime } from '../../utils/voyageutils';
 
 import { HistoryContext } from './context';
 import { VoyageModal } from './voyagemodal';
-import { deleteRemoteVoyage, removeVoyageFromHistory, SyncState } from './utils';
+import { deleteTrackedData, removeVoyageFromHistory, SyncState } from './utils';
 
 interface ITableState {
 	data: ITrackedVoyage[];
@@ -214,18 +214,18 @@ export const VoyagesTable = () => {
 
 	function removeTrackedVoyage(trackerId: number): void {
 		if (syncState === SyncState.RemoteReady) {
-			deleteRemoteVoyage(dbid, trackerId).then((success: boolean) => {
+			deleteTrackedData(dbid, trackerId).then((success: boolean) => {
 				if (success) {
 					removeVoyageFromHistory(history, trackerId);
 					setHistory({...history});
 					setActiveVoyage(undefined);
 				}
 				else {
-					throw('Failed removeTrackedVoyage -> deleteRemoteVoyage');
+					throw('Failed removeTrackedVoyage -> deleteTrackedData');
 				}
 			}).catch(e => {
 				setMessageId('voyage.history_msg.failed_to_delete');
-				console.log('removeTrackedVoyage', e);
+				console.log(e);
 			});
 		}
 		else if (syncState === SyncState.LocalOnly) {

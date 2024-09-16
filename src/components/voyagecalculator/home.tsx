@@ -1,7 +1,8 @@
 import React from 'react';
 import {
 	Button,
-	Header
+	Header,
+	Icon
 } from 'semantic-ui-react';
 
 import { GameEvent, Voyage, VoyageDescription } from '../../model/player';
@@ -27,7 +28,7 @@ import { CrewTable } from '../voyagehistory/crewtable';
 import { VoyagesTable } from '../voyagehistory/voyagestable';
 import { DataManagement, DataManagementPlaceholder } from '../voyagehistory/manage';
 import { HistoryMessage } from '../voyagehistory/message';
-import { createCheckpoint, defaultHistory, getRemoteHistory, InitState, NEW_VOYAGE_ID, putRemoteVoyage, SyncState, updateVoyageInHistory } from '../voyagehistory/utils';
+import { createCheckpoint, defaultHistory, getTrackedData, InitState, NEW_VOYAGE_ID, postVoyage, SyncState, updateVoyageInHistory } from '../voyagehistory/utils';
 
 export const VoyageHome = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -148,7 +149,6 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	const [eventData, setEventData] = React.useState<IEventData[]>([]);
 	const [playerConfigs, setPlayerConfigs] = React.useState<IVoyageInputConfig[]>([]);
 	const [upcomingConfigs, setUpcomingConfigs] = React.useState<IVoyageInputConfig[]>([]);
-	const [customConfig, setCustomConfig] = React.useState<IVoyageInputConfig | undefined>(undefined);
 	const [runningVoyageIds, setRunningVoyageIds] = React.useState<number[]>([]);
 
 	const [activeView, setActiveView] = React.useState<IVoyageView | undefined>(undefined);
@@ -165,15 +165,15 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	React.useEffect(() => {
 		if (historyInitState === InitState.VarsLoaded) {
 			if (postRemote) {
-				getRemoteHistory(dbid).then(async (remoteHistory) => {
+				getTrackedData(dbid).then(async (remoteHistory) => {
 					if (!!remoteHistory) setHistory(remoteHistory);
 					setHistorySyncState(SyncState.RemoteReady);
+					setHistoryInitState(InitState.HistoryLoaded);
 				}).catch(e => {
 					setHistorySyncState(SyncState.ReadOnly);
+					setHistoryInitState(InitState.Initialized);
 					setHistoryMessageId('voyage.history_msg.read_only');
 					console.log(e);
-				}).finally(() => {
-					setHistoryInitState(InitState.HistoryLoaded);
 				});
 			}
 			else {
@@ -182,16 +182,17 @@ const PlayerHome = (props: PlayerHomeProps) => {
 			}
 		}
 		else if (historyInitState === InitState.HistoryLoaded) {
-			// Reconcile running voyages with tracked voyages
-			runningVoyageIds.forEach(voyageId => {
-				reconcileVoyage(voyageId);
+			setHistoryInitState(InitState.Reconciling);
+			Promise.all(
+				runningVoyageIds.map(voyageId => reconcileVoyage(voyageId))
+			).finally(() => {
+				setHistoryInitState(InitState.Initialized);
 			});
-			setHistoryInitState(InitState.Initialized);
 		}
 	}, [historyInitState]);
 
 	if (historyInitState < InitState.Initialized)
-		return <></>;
+		return (<div style={{ marginTop: '1em' }}><Icon	loading name='spinner' /> Loading...</div>);
 
 	const historyContext: IHistoryContext = {
 		dbid,
@@ -240,10 +241,6 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		if (dilemmaConfig) {
 			playerConfigs.push(dilemmaConfig as IVoyageInputConfig);
 			if (dilemmaConfig.id > NEW_VOYAGE_ID) runningVoyageIds.push(dilemmaConfig.id);
-
-			// Make a copy of dilemma config to use as default custom config
-			const customConfig: IVoyageInputConfig = JSON.parse(JSON.stringify(dilemmaConfig));
-			setCustomConfig(customConfig);
 		}
 
 		// Look for voyage events
@@ -306,38 +303,38 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		return undefined;
 	}
 
-	function reconcileVoyage(voyageId: number): void {
-		if (!history || history.voyages.length === 0)
-			return;
+	async function reconcileVoyage(voyageId: number): Promise<boolean> {
+		if (history.voyages.length === 0)
+			return true;
 
-		if (!ephemeral) return;
-
-		const running: Voyage | undefined = ephemeral.voyage.find(voyage => voyage.id === voyageId);
-		if (!running) return;
+		const running: Voyage | undefined = ephemeral?.voyage.find(voyage => voyage.id === voyageId);
+		if (!running) return true;
 
 		// Found running voyage in history; add new checkpoint to history
 		const trackedRunningVoyage: ITrackedVoyage | undefined = history.voyages.find(voyage => voyage.voyage_id === running.id);
 		if (trackedRunningVoyage) {
 			const updatedVoyage: ITrackedVoyage = JSON.parse(JSON.stringify(trackedRunningVoyage));
-			createCheckpoint(running).then(checkpoint => {
+			return createCheckpoint(running).then(checkpoint => {
 				if (historySyncState === SyncState.RemoteReady) {
-					putRemoteVoyage(dbid, updatedVoyage.tracker_id, {...updatedVoyage, checkpoint}).then((success: boolean) => {
-						if (success) {
+					return postVoyage(dbid, {...updatedVoyage, checkpoint}).then(result => {
+						if (result.status < 300 && result.trackerId && result.inputId === updatedVoyage.tracker_id) {
 							setHistory(history => {
-								updateVoyageInHistory(history, updatedVoyage.tracker_id, {...updatedVoyage, checkpoint});
+								updateVoyageInHistory(history, {...updatedVoyage, checkpoint});
 								return history;
 							});
+							return true;
 						}
 						else {
-							throw('Failed reconciling running voyage -> putRemoteVoyage');
+							throw('Failed reconciling running voyage -> postRemoteVoyage');
 						}
 					});
 				}
 				else if (historySyncState === SyncState.LocalOnly) {
 					setHistory(history => {
-						updateVoyageInHistory(history, updatedVoyage.tracker_id, {...updatedVoyage, checkpoint});
+						updateVoyageInHistory(history, {...updatedVoyage, checkpoint});
 						return history;
 					});
+					return true;
 				}
 				else {
 					throw(`Failed reconciling running voyage (invalid syncState: ${historySyncState})`);
@@ -345,6 +342,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 			}).catch(e => {
 				setHistoryMessageId('voyage.history_msg.failed_to_update');
 				console.log(e);
+				return false;
 			});
 		}
 		else {
@@ -356,32 +354,34 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				|| lastTracked.skills.primary_skill !== running.skills.primary_skill
 				|| lastTracked.skills.secondary_skill !== running.skills.secondary_skill
 				|| lastTracked.ship_trait !== running.ship_trait) {
-				return;
+				return true;
 			}
-			createCheckpoint(running).then(checkpoint => {
+			return createCheckpoint(running).then(checkpoint => {
 				const updatedVoyage: ITrackedVoyage = JSON.parse(JSON.stringify(lastTracked));
 				updatedVoyage.voyage_id = running.id;
 				updatedVoyage.created_at = Date.parse(running.created_at);
 				updatedVoyage.ship = globalContext.core.ships.find(s => s.id === running.ship_id)?.symbol ?? lastTracked.ship;
 				// If the lineup sent out doesn't match the tracked recommendation, maybe reconcile crew and max_hp here or show a warning?
 				if (historySyncState === SyncState.RemoteReady) {
-					putRemoteVoyage(dbid, updatedVoyage.tracker_id, {...updatedVoyage, checkpoint}).then((success: boolean) => {
-						if (success) {
+					return postVoyage(dbid, {...updatedVoyage, checkpoint}).then(result => {
+						if (result.status < 300 && result.trackerId && result.inputId === updatedVoyage.tracker_id) {
 							setHistory(history => {
-								updateVoyageInHistory(history, updatedVoyage.tracker_id, {...updatedVoyage, checkpoint});
+								updateVoyageInHistory(history, {...updatedVoyage, checkpoint});
 								return history;
 							});
+							return true;
 						}
 						else {
-							throw('Failed reconciling last tracked voyage -> putRemoteVoyage');
+							throw('Failed reconciling last tracked voyage -> postRemoteVoyage');
 						}
 					});
 				}
 				else if (historySyncState === SyncState.LocalOnly) {
 					setHistory(history => {
-						updateVoyageInHistory(history, updatedVoyage.tracker_id, {...updatedVoyage, checkpoint});
+						updateVoyageInHistory(history, {...updatedVoyage, checkpoint});
 						return history;
 					});
+					return true;
 				}
 				else {
 					throw(`Failed reconciling last tracked voyage (invalid syncState: ${historySyncState})`);
@@ -389,6 +389,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 			}).catch(e => {
 				setHistoryMessageId('voyage.history_msg.failed_to_update');
 				console.log(e);
+				return false;
 			});
 		}
 	}
@@ -439,7 +440,6 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	}
 
 	function loadCustomConfig(voyageConfig: IVoyageInputConfig): void {
-		setCustomConfig({...voyageConfig});
 		// Calculator requires prime skills
 		if (voyageConfig.skills.primary_skill !== '' && voyageConfig.skills.secondary_skill !== '') {
 			setActiveView({

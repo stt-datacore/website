@@ -125,3 +125,14 @@ export interface ITrackedDataRecord {
     voyages: ITrackedVoyageRecord[];
     assignments: ITrackedCrewRecord[];
 }
+
+export interface IFullPayloadAssignment extends ITrackedAssignment {
+	crew: string;
+	kwipment?: number[] | number[][];
+};
+
+export interface ITrackedPayload {
+	dbid: number;
+	voyage: ITrackedVoyage;
+	assignments: IFullPayloadAssignment[];
+};

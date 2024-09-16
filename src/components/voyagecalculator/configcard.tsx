@@ -9,14 +9,14 @@ import {
 import { CrewMember } from '../../model/crew';
 import { Voyage } from '../../model/player';
 import { Ship } from '../../model/ship';
-import { ITrackedAssignmentsByCrew, ITrackedCheckpoint, ITrackedVoyage, IVoyageCalcConfig, IVoyageInputConfig } from '../../model/voyage';
+import { IFullPayloadAssignment, ITrackedCheckpoint, ITrackedVoyage, IVoyageCalcConfig, IVoyageInputConfig } from '../../model/voyage';
 import { Estimate } from '../../model/worker';
 import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';
 import { formatTime } from '../../utils/voyageutils';
 
 import { HistoryContext } from '../voyagehistory/context';
-import { addCrewToHistory, addVoyageToHistory, createCheckpoint, createTrackableAssignments, createTrackableVoyage, estimateTrackedVoyage, getRuntime, postRemoteCrew, postRemoteVoyage, SyncState } from '../voyagehistory/utils';
+import { addCrewToHistory, addVoyageToHistory, createTrackableCrew, createCheckpoint, createTrackableVoyage, estimateTrackedVoyage, getRuntime, NEW_TRACKER_ID, SyncState, postTrackedData } from '../voyagehistory/utils';
 
 type ConfigCardProps = {
 	configSource: 'player' | 'custom';
@@ -264,30 +264,27 @@ const RunningTracker = (props: RunningTrackerProps) => {
 		// Add to history with both initial and checkpoint estimates
 		estimateTrackedVoyage(voyage, 0, voyage.max_hp).then((initial: Estimate) => {
 			createCheckpoint(voyage).then((checkpoint: ITrackedCheckpoint) => {
-				let newTrackerId: number = history.voyages.reduce((prev, curr) => Math.max(prev, curr.tracker_id), 0) + 1;
-				const trackableRunningVoyage: ITrackedVoyage = createTrackableVoyage(
-					newTrackerId, voyage as IVoyageCalcConfig, ship.symbol, initial, voyage, checkpoint
+				const trackableVoyage: ITrackedVoyage = createTrackableVoyage(
+					voyage as IVoyageCalcConfig, ship.symbol, initial, NEW_TRACKER_ID, voyage, checkpoint
 				);
+				const trackableCrew: IFullPayloadAssignment[] = createTrackableCrew(voyage, NEW_TRACKER_ID);
 				if (syncState === SyncState.RemoteReady) {
-					postRemoteVoyage(dbid, trackableRunningVoyage).then(result => {
-						if (result.status < 300 && result.trackerId && result.inputId === newTrackerId) {
-							const postedId: number = result.trackerId;
-							trackableRunningVoyage.tracker_id = postedId;	// Ensure local history uses same tracker id as remote
-							addVoyageToHistory(history, trackableRunningVoyage);
-							const trackableAssignments: ITrackedAssignmentsByCrew = createTrackableAssignments(postedId, voyage);
-							postRemoteCrew(dbid, trackableAssignments).then(() => {
-								addCrewToHistory(history, trackableAssignments);
-								setHistory({...history});
-							});
+					postTrackedData(dbid, trackableVoyage, trackableCrew).then(result => {
+						if (result.status < 300 && result.trackerId && result.inputId === NEW_TRACKER_ID) {
+							const newRemoteId: number = result.trackerId;
+							addVoyageToHistory(history, newRemoteId, trackableVoyage);
+							addCrewToHistory(history, newRemoteId, trackableCrew);
+							setHistory({...history});
 						}
 						else {
-							throw('Failed initializeTracking -> postRemoteVoyage');
+							throw('Failed initializeTracking -> postTrackedData');
 						}
 					});
 				}
 				else if (syncState === SyncState.LocalOnly) {
-					addVoyageToHistory(history, trackableRunningVoyage);
-					addCrewToHistory(history, createTrackableAssignments(newTrackerId, voyage));
+					const newLocalId: number = history.voyages.reduce((prev, curr) => Math.max(prev, curr.tracker_id), 0) + 1;
+					addVoyageToHistory(history, newLocalId, trackableVoyage);
+					addCrewToHistory(history, newLocalId, trackableCrew);
 					setHistory({...history});
 				}
 				else {

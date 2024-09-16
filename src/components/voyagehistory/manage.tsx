@@ -10,8 +10,8 @@ import {
 import { downloadData } from '../../utils/crewutils';
 
 import { HistoryContext } from './context';
-import { getRemoteHistory, SyncState } from './utils';
-import { ITrackedVoyage, IVoyageHistory } from '../../model/voyage';
+import { getTrackedData, NEW_TRACKER_ID, postTrackedData, SyncState } from './utils';
+import { IFullPayloadAssignment, ITrackedAssignment, ITrackedVoyage } from '../../model/voyage';
 
 type ManageRemoteSyncProps = {
 	postRemote: boolean;
@@ -76,7 +76,7 @@ export const DataManagement = (props: ManageRemoteSyncProps) => {
 };
 
 const ManageRemoteSync = (props: ManageRemoteSyncProps) => {
-	const { dbid, history, syncState, setMessageId } = React.useContext(HistoryContext);
+	const { dbid, history, setHistory, syncState, setMessageId } = React.useContext(HistoryContext);
 	const { postRemote, setPostRemote, setSyncState } = props;
 
 	return (
@@ -100,31 +100,69 @@ const ManageRemoteSync = (props: ManageRemoteSyncProps) => {
 
 	function toggleRemoteSync(requestEnable: boolean): void {
 		if (requestEnable) {
-			tryEnableSync().then((success: boolean) => {
-				if (success) {
-					setPostRemote(true);
-					setSyncState(SyncState.RemoteReady);
-				}
-			});
+			tryEnableSync();
 		}
 		else {
-			// Delete all from remote
+			// TODO: Delete all from remote?
+			setSyncState(SyncState.LocalOnly);
 			setPostRemote(false);
 		}
 	}
 
-	async function tryEnableSync(): Promise<boolean> {
-		return getRemoteHistory(dbid).then(async (remoteHistory) => {
+	function tryEnableSync(): void {
+		getTrackedData(dbid).then(async (remoteHistory) => {
 			if (remoteHistory) {
-				const newHistory: IVoyageHistory = JSON.parse(JSON.stringify(remoteHistory));
-				const voyagesToAdd: ITrackedVoyage[] = discoverVoyages(newHistory.voyages, history.voyages);
-				// TODO
+				const voyagesToPost: ITrackedVoyage[] = discoverVoyages(remoteHistory.voyages, history.voyages);
+				if (voyagesToPost.length > 0) {
+					let voyagesPosted: number = 0;
+					Promise.all(
+						voyagesToPost.map(voyageToSync => tryPostVoyage(voyageToSync))
+					).then(postedIds => {
+						voyagesPosted = postedIds.length;
+					});
+					if (voyagesPosted === 0)
+						throw('Failed tryEnableSync -> 0 voyages posted to remote sync!');
+					if (voyagesToPost.length > voyagesPosted)
+						console.warn('Warning: not all voyages posted to remote sync!');
+				}
+				getTrackedData(dbid).then(async (remoteHistory) => {
+					if (!!remoteHistory) setHistory(remoteHistory);
+					setSyncState(SyncState.RemoteReady);
+					setPostRemote(true);
+				});
 			}
-			throw('Failed tryEnableSync');
+			else {
+				throw('Failed tryEnableSync -> getTrackedData');
+			}
 		}).catch(e => {
-			setMessageId('voyage.history_msg.failed_to_connect');
+			setMessageId('voyage.history_msg.failed_transition');
 			console.log(e);
-			return false;
+		});
+	}
+
+	async function tryPostVoyage(trackableVoyage: ITrackedVoyage): Promise<number> {
+		const oldTrackerId: number = trackableVoyage.tracker_id;
+		trackableVoyage.tracker_id = NEW_TRACKER_ID;
+		const trackableCrew: IFullPayloadAssignment[] = [];
+		Object.keys(history.crew).forEach(crewSymbol => {
+			const assignment: ITrackedAssignment | undefined = history.crew[crewSymbol].find(assignment =>
+				assignment.tracker_id === oldTrackerId
+			);
+			if (assignment) {
+				trackableCrew.push({
+					...assignment,
+					crew: crewSymbol,
+					tracker_id: NEW_TRACKER_ID
+				});
+			}
+		});
+		return postTrackedData(dbid, trackableVoyage, trackableCrew).then(result => {
+			if (result.status < 300 && result.trackerId && result.inputId === NEW_TRACKER_ID) {
+				return result.trackerId;
+			}
+			else {
+				throw('Failed tryPostVoyage -> postTrackedData');
+			}
 		});
 	}
 
@@ -142,61 +180,6 @@ const ManageRemoteSync = (props: ManageRemoteSyncProps) => {
 		});
 		return newVoyages;
 	}
-
-	// async function mergeLocalRemote(dbid: string, local: IVoyageHistory, remote: IVoyageHistory): Promise<IVoyageHistory> {
-	// 	let c = local.voyages.length;
-	// 	let d = remote.voyages.length;
-	// 	let safeId = remote.voyages.map(m => m.tracker_id).reduce((p, n) => p > n ? p : n, 0) + 1;
-	// 	let goodLocals = [] as number[];
-
-	// 	for (let i = 0; i < c; i++) {
-	// 		let pass = true;
-	// 		for (let j = 0; j < d; j++) {
-	// 			if (compareTrackedVoyages(local.voyages[i], remote.voyages[j])) {
-	// 				pass = false;
-	// 				break;
-	// 			}
-	// 			else if (local.voyages[i].tracker_id === remote.voyages[i].tracker_id) {
-	// 				let oldId = local.voyages[i].tracker_id;
-	// 				let newId = safeId++;
-
-	// 				local.voyages[i].tracker_id = newId;
-
-	// 				Object.keys(local.crew).forEach((symbol) => {
-	// 					for (let assignment of local.crew[symbol]) {
-	// 						if (assignment.tracker_id === oldId) {
-	// 							assignment.tracker_id = newId;
-	// 						}
-	// 					}
-	// 				});
-	// 			}
-	// 		}
-
-	// 		if (pass) {
-	// 			goodLocals.push(local.voyages[i].tracker_id);
-	// 		}
-	// 	}
-
-	// 	for (let trackerId of goodLocals) {
-	// 		let voyage = local.voyages.find(f => f.tracker_id === trackerId)!;
-	// 		let result = await postRemoteVoyage(dbid, voyage);
-	// 		if (result?.trackerId) {
-	// 			const crewForPost = {} as { [key: string]: ITrackedAssignment[] };
-	// 			voyage.tracker_id = result.trackerId;
-	// 			for (let symbol in local.crew) {
-	// 				let crewTrack = local.crew[symbol].find(f => f.tracker_id === trackerId);
-	// 				if (crewTrack) {
-	// 					crewTrack.tracker_id = voyage.tracker_id;
-	// 					crewForPost[symbol] ??= [];
-	// 					crewForPost[symbol].push(crewTrack);
-	// 				}
-	// 			}
-	// 			await postRemoteCrew(dbid, crewForPost);
-	// 		}
-	// 	}
-
-	// 	return (await getRemoteHistory(dbid))!
-	// }
 
 	function compareTrackedVoyages(v1: ITrackedVoyage, v2: ITrackedVoyage): boolean {
 		if (v1.voyage_id === v2.voyage_id) return true;
@@ -236,14 +219,14 @@ const ManageAdvanced = () => {
 		{
 			key: 'voyage.tracking.export',
 			icon: 'download',
-			content: 'Save history to device',
+			content: 'Save history to device',	// Save history to device
 			show: history.voyages.length > 0,
 			onClick: () => exportHistory()
 		},
 		{
 			key: 'voyage.tracking.import',
 			icon: 'upload',
-			content: 'Import history',
+			content: 'Import history',	// Import history
 			show: syncState === SyncState.LocalOnly,
 			disabled: true || syncState === SyncState.ReadOnly,	// Non-functional
 			onClick: () => importHistory()
@@ -251,7 +234,7 @@ const ManageAdvanced = () => {
 		{
 			key: 'voyage.tracking.delete_all',
 			icon: 'trash',
-			content: 'Delete all history',
+			content: 'Delete all history',	// Delete all history
 			show: history.voyages.length > 0 && syncState === SyncState.LocalOnly,
 			disabled: true || syncState === SyncState.ReadOnly,	// Non-functional
 			onClick: () => deleteHistory()

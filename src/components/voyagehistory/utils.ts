@@ -1,17 +1,19 @@
 import { Voyage, VoyageCrewSlot } from '../../model/player';
-import { IVoyageCalcConfig, IVoyageHistory, ITrackedVoyage, ITrackedAssignment, ITrackedCheckpoint, ITrackedAssignmentsByCrew, ITrackedDataRecord } from '../../model/voyage';
+import { IVoyageCalcConfig, IVoyageHistory, ITrackedVoyage, ITrackedCheckpoint, ITrackedAssignmentsByCrew, ITrackedDataRecord, IFullPayloadAssignment } from '../../model/voyage';
 import { Estimate } from '../../model/worker';
 import CONFIG from '../CONFIG';
 import { flattenEstimate } from '../../utils/voyageutils';
 import { UnifiedWorker } from '../../typings/worker';
 
 export const NEW_VOYAGE_ID = 0;
+export const NEW_TRACKER_ID = 0;
 
 export enum InitState {
 	Initializing,
 	VarsLoading,
 	VarsLoaded,
 	HistoryLoaded,
+	Reconciling,
 	Initialized
 };
 
@@ -33,10 +35,10 @@ export const defaultHistory: IVoyageHistory = {
 };
 
 export function createTrackableVoyage(
-	localTrackerId: number,
 	voyageConfig: IVoyageCalcConfig,
 	shipSymbol: string,
 	estimate: Estimate,
+	trackerId?: number,
 	runningVoyage?: Voyage,
 	runningCheckpoint?: ITrackedCheckpoint
 ): ITrackedVoyage {
@@ -50,7 +52,7 @@ export function createTrackableVoyage(
 		checked_at: currentTime
 	};
 	return {
-		tracker_id: localTrackerId,
+		tracker_id: trackerId ?? NEW_TRACKER_ID,
 		voyage_id: runningVoyage ? runningVoyage.id : NEW_VOYAGE_ID,
 		skills: voyageConfig.skills,
 		ship: shipSymbol,
@@ -64,46 +66,43 @@ export function createTrackableVoyage(
 	};
 }
 
-export function createTrackableAssignments(
-	trackerId: number,
-	voyageConfig: IVoyageCalcConfig
-): ITrackedAssignmentsByCrew {
-	const crewAssignments: ITrackedAssignmentsByCrew = {};
+export function createTrackableCrew(
+	voyageConfig: IVoyageCalcConfig,
+	trackerId?: number
+): IFullPayloadAssignment[] {
+	const trackableCrew: IFullPayloadAssignment[] = [];
 	CONFIG.VOYAGE_CREW_SLOTS.forEach((slotSymbol, slotIndex) => {
 		const voyageSlot: VoyageCrewSlot | undefined = voyageConfig.crew_slots.find(slot => slot.symbol === slotSymbol);
 		if (voyageSlot) {
-			const crewSymbol: string = voyageSlot.crew.symbol;
-			const assignment: ITrackedAssignment = {
-				tracker_id: trackerId,
+			trackableCrew.push({
+				tracker_id: trackerId ?? NEW_TRACKER_ID,
+				crew: voyageSlot.crew.symbol,
 				slot: slotIndex,
 				trait: voyageSlot.crew.traits.includes(voyageSlot.trait) ? voyageSlot.trait : '',
 				kwipment: voyageSlot.crew.kwipment
-			};
-			crewAssignments[crewSymbol] ??= [];
- 			crewAssignments[crewSymbol].push(assignment);
+			});
 		}
 	});
-	return crewAssignments;
+	return trackableCrew;
 }
 
-export function addVoyageToHistory(history: IVoyageHistory, trackedVoyage: ITrackedVoyage): void {
-	history.voyages.push(trackedVoyage);
+export function addVoyageToHistory(history: IVoyageHistory, trackerId: number, trackableVoyage: ITrackedVoyage): void {
+	history.voyages.push({...trackableVoyage, tracker_id: trackerId});
 }
 
-export function addCrewToHistory(history: IVoyageHistory, crewAssignments: ITrackedAssignmentsByCrew): void {
-	Object.keys(crewAssignments).forEach(crewSymbol => {
+export function addCrewToHistory(history: IVoyageHistory, trackerId: number, trackableCrew: IFullPayloadAssignment[]): void {
+	trackableCrew.forEach(assignment => {
+		const crewSymbol: string = assignment.crew;
 		history.crew[crewSymbol] ??= [];
-		crewAssignments[crewSymbol].forEach(assignment => {
-			if (!history.crew[crewSymbol].find(existing => existing.tracker_id === assignment.tracker_id)) {
-				history.crew[crewSymbol].push(assignment);
-			}
-		});
+		if (!history.crew[crewSymbol].find(existing => existing.tracker_id === trackerId)) {
+			history.crew[crewSymbol].push({...assignment, tracker_id: trackerId});
+		}
 	});
 }
 
-export function updateVoyageInHistory(history: IVoyageHistory, trackerId: number, updatedVoyage: ITrackedVoyage): void {
-	const trackerIndex: number = history.voyages.findIndex(voyage => voyage.tracker_id === trackerId);
-	if (trackerIndex >= 0) history.voyages[trackerIndex] = updatedVoyage;
+export function updateVoyageInHistory(history: IVoyageHistory, trackedVoyage: ITrackedVoyage): void {
+	const trackerIndex: number = history.voyages.findIndex(voyage => voyage.tracker_id === trackedVoyage.tracker_id);
+	if (trackerIndex >= 0) history.voyages[trackerIndex] = trackedVoyage;
 }
 
 // Remove tracked voyage and associated crew assignments
@@ -178,7 +177,7 @@ export function getRuntime(voyageConfig: Voyage): number {
 	return runtime;
 }
 
-export async function getRemoteHistory(dbid: string, trackerId?: string): Promise<IVoyageHistory | undefined> {
+export async function getTrackedData(dbid: string, trackerId?: string): Promise<IVoyageHistory | undefined> {
 	let url = `${process.env.GATSBY_DATACORE_URL}api/getTrackedData?`;
 	if (trackerId) {
 		url += `dbid=${dbid}&trackerId=${trackerId}`;
@@ -218,7 +217,22 @@ export async function getRemoteHistory(dbid: string, trackerId?: string): Promis
 	}
 }
 
-export async function postRemoteVoyage(dbid: string, voyage: ITrackedVoyage): Promise<TrackerPostResult> {
+export async function postTrackedData(dbid: string, voyage: ITrackedVoyage, assignments: IFullPayloadAssignment[]): Promise<TrackerPostResult> {
+	let route = `${process.env.GATSBY_DATACORE_URL}api/postTrackedData`
+	return await fetch(route, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			dbid,
+			voyage,
+			assignments
+		})
+	})
+	.then((response: Response) => response.json())
+	.catch((error) => { throw(error); });
+}
+
+export async function postVoyage(dbid: string, voyage: ITrackedVoyage): Promise<TrackerPostResult> {
 	let route = `${process.env.GATSBY_DATACORE_URL}api/postVoyage`
 	return await fetch(route, {
 		method: 'POST',
@@ -232,56 +246,15 @@ export async function postRemoteVoyage(dbid: string, voyage: ITrackedVoyage): Pr
 	.catch((error) => { throw(error); });
 }
 
-export async function postRemoteCrew(dbid: string, assignments: ITrackedAssignmentsByCrew): Promise<boolean> {
-	let route = `${process.env.GATSBY_DATACORE_URL}api/postAssignments`
-	return await fetch(route, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({
-			dbid,
-			assignments
-		})
-	})
-	.then((response: Response) => !!response)
-	.catch((error) => { throw(error); });
-}
-
-export async function putRemoteVoyage(dbid: string, trackerId: number, voyage: ITrackedVoyage): Promise<boolean> {
-	return new Promise<boolean>((resolve, reject) => {
-		reject('No API to update voyage');
-	});
-	// TODO: Send request to update voyage in remote history, similar to the following code:
-	let route = `${process.env.GATSBY_DATACORE_URL}api/putVoyage`
-	return await fetch(route, {
-		method: 'PUT',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({
-			dbid,
-			trackerId,
-			voyage
-		})
-	})
-	.then((response: Response) => !!response)
-	.catch((error) => { throw(error); });
-};
-
-export async function deleteRemoteVoyage(dbid: string, trackerId: number): Promise<boolean> {
-	// Can ignore delete request when tracker_id not set
-	if (trackerId === 0) return true;
-	return new Promise<boolean>((resolve, reject) => {
-		reject('No API to delete remote voyage');
-	});
-	// TODO: Send request to delete voyage from remote history, similar to the following code:
-	//	Need to also disassociate crew from deleted voyage, either here or remotely
-	let route = `${process.env.GATSBY_DATACORE_URL}api/deleteVoyage`
-	return await fetch(route, {
-		method: 'DELETE',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({
-			dbid,
-			trackerId
-		})
-	})
-	.then((response: Response) => !!response)
-	.catch((error) => { throw(error); });
+export async function deleteTrackedData(dbid: string, trackerId?: number): Promise<boolean> {
+	let url = `${process.env.GATSBY_DATACORE_URL}api/deleteTrackedData?`;
+	if (trackerId) {
+		url += `dbid=${dbid}&trackerId=${trackerId}`;
+	}
+	else {
+		url += `dbid=${dbid}`;	// NOT FUNCTIONAL
+	}
+	return await fetch(url, { method: 'DELETE' })
+		.then((response: Response) => !!response)
+		.catch((error) => { throw(error); });
 }

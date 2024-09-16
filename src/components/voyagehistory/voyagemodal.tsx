@@ -9,7 +9,7 @@ import { LineupViewer } from '../../components/voyagecalculator/lineupviewer';
 
 import { HistoryContext } from './context';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
-import { putRemoteVoyage, SyncState, updateVoyageInHistory } from './utils';
+import { postVoyage, SyncState, updateVoyageInHistory } from './utils';
 
 type VoyageModalProps = {
 	voyage: ITrackedVoyage;
@@ -45,14 +45,23 @@ export const VoyageModal = (props: VoyageModalProps) => {
 					<div style={{ marginTop: '3em' }}>
 						<Message>
 							<p>DataCore cannot automatically track when a voyage has been revived, but you can manually note the revival here.</p>
-							<Checkbox label='This voyage was revived.' checked={isRevived} onChange={(e, data) => noteRevival(data.checked as boolean)} />
+							<Checkbox	/* This voyage was revived. */
+								label='This voyage was revived.'
+								checked={isRevived}
+								onChange={(e, data) => noteRevival(data.checked as boolean)}
+								disabled={syncState === SyncState.ReadOnly}
+							/>
 						</Message>
-						{syncState === SyncState.LocalOnly && (
-							<Message style={{ marginTop: '1em' }}>
-								<Button color='red' icon='trash' content='Delete voyage from history' onClick={removeVoyage} />
-								{` `}Warning: this action cannot be undone.
-							</Message>
-						)}
+						<Message style={{ marginTop: '1em' }}>
+							<Button /* Delete voyage from history */
+								content='Delete voyage from history'
+								color='red'
+								icon='trash'
+								onClick={removeVoyage}
+								disabled={syncState === SyncState.ReadOnly}
+							/>
+							{` `}Warning: this action cannot be undone.
+						</Message>
 					</div>
 				)}
 			</Modal.Content>
@@ -123,14 +132,14 @@ export const VoyageModal = (props: VoyageModalProps) => {
 		const updatedVoyage: ITrackedVoyage = JSON.parse(JSON.stringify(voyage));
 		updatedVoyage.revivals = isRevived ? 1 : 0;
 		if (syncState === SyncState.RemoteReady) {
-			putRemoteVoyage(dbid, voyage.tracker_id, updatedVoyage).then((success: boolean) => {
-				if (success) {
-					updateVoyageInHistory(history, voyage.tracker_id, updatedVoyage);
+			postVoyage(dbid, updatedVoyage).then(result => {
+				if (result.status < 300 && result.trackerId && result.inputId === updatedVoyage.tracker_id) {
+					updateVoyageInHistory(history, updatedVoyage);
 					setHistory({...history});
 					setIsRevived(isRevived);
 				}
 				else {
-					throw('Failed noteRevival -> putRemoteVoyage');
+					throw('Failed noteRevival -> postVoyage');
 				}
 			}).catch(e => {
 				setMessageId('voyage.history_msg.failed_to_update');
@@ -138,7 +147,7 @@ export const VoyageModal = (props: VoyageModalProps) => {
 			});
 		}
 		else if (syncState === SyncState.LocalOnly) {
-			updateVoyageInHistory(history, voyage.tracker_id, updatedVoyage);
+			updateVoyageInHistory(history, updatedVoyage);
 			setHistory({...history});
 			setIsRevived(isRevived);
 		}
