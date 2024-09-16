@@ -28,6 +28,11 @@ export const HistoryMessage = () => {
 		icon: 'warning sign',
 		content: `Warning! Unable to sychronize remote voyage history. You can view tracked voyages from the most recent sync, but you will not be able to track any new voyages. Please reload this page to try synchronizing again.`
 	};
+	messages['voyage.history_msg.failed_transition'] = {
+		icon: 'warning sign',
+		negative: true,
+		content: `Error! Unable to enable remote sync. ${retryMessage}`
+	};
 	messages['voyage.history_msg.failed_to_connect'] = {
 		icon: 'warning sign',
 		negative: true,
@@ -41,12 +46,12 @@ export const HistoryMessage = () => {
 	messages['voyage.history_msg.failed_to_update'] = {
 		icon: 'warning sign',
 		negative: true,
-		content: `Error! Unable to update voyage history. ${unsupportedMessage}`
+		content: `Error! Unable to update voyage history. ${retryMessage}`
 	};
 	messages['voyage.history_msg.failed_to_delete'] = {
 		icon: 'warning sign',
 		negative: true,
-		content: `Error! Unable to delete voyage history. ${unsupportedMessage}`
+		content: `Error! Unable to delete voyage history. ${retryMessage}`
 	};
 	messages['voyage.history_msg.invalid_sync_state'] = {
 		icon: 'warning sign',
@@ -61,10 +66,11 @@ export const HistoryMessage = () => {
 
 	const message: IHistoryMessage = messages[messageId] ?? messages['_default'];
 	return (
-		<Message onDismiss={() => setMessageId('')}
-			negative={message.negative}
+		<Message
 			icon={message.icon}
+			negative={message.negative}
 			content={message.content}
+			onDismiss={() => setMessageId('')}
 		/>
 	);
 };
