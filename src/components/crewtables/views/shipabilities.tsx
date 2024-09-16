@@ -14,26 +14,30 @@ import { DEFAULT_MOBILE_WIDTH } from '../../../components/hovering/hoverstat';
 
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
+import { TranslateMethod } from '../../../model/player';
+import { GlobalContext } from '../../../context/globalcontext';
 
 const isWindow = typeof window !== 'undefined';
 
-export const shipTableConfig = [
-	{ width: 1, column: 'action.bonus_type', title: 'Boosts' },
-	{ width: 1, column: 'action.bonus_amount', title: 'Amount', reverse: true, tiebreakers: ['action.bonus_type'] },
-	{ width: 1, column: 'action.penalty.type', title: 'Handicap', tiebreakers: ['action.penalty.amount'] },
-	{ width: 1, column: 'action.initial_cooldown', title: 'Initialize' },
-	{ width: 1, column: 'action.cycle_time', title: 'Cycle Time' },
-	{ width: 1, column: 'action.cooldown', title: 'Cooldown' },
-	{ width: 1, column: 'action.duration', title: 'Duration', reverse: true },
-	{ width: 1, column: 'action.limit', title: 'Uses' },
-	{ width: 1, column: 'action.ability.amount', title: 'Bonus Ability', tiebreakers: ['action.ability.type'] },
-	{ width: 1, column: 'action.ability.condition', title: 'Trigger', tiebreakers: ['action.ability.type', 'action.ability.amount'] },
-	{ width: 1, column: 'action.charge_text', title: 'Charge Phases' },
-	{ width: 1, column: 'ship_battle.accuracy', title: 'Accuracy', reverse: true },
-	{ width: 1, column: 'ship_battle.crit_bonus', title: 'Crit Bonus', reverse: true },
-	{ width: 1, column: 'ship_battle.crit_chance', title: 'Crit Rating', reverse: true },
-	{ width: 1, column: 'ship_battle.evasion', title: 'Evasion', reverse: true }
-] as ITableConfigRow[];
+export function getShipTableConfig(t: TranslateMethod) {
+	return [
+		{ width: 1, column: 'action.bonus_type', title: t('ship.boosts') },
+		{ width: 1, column: 'action.bonus_amount', title: t('ship.amount'), reverse: true, tiebreakers: ['action.bonus_type'] },
+		{ width: 1, column: 'action.penalty.type', title: t('ship.handicap'), tiebreakers: ['action.penalty.amount'] },
+		{ width: 1, column: 'action.initial_cooldown', title: t('ship.initialize') },
+		{ width: 1, column: 'action.cycle_time', title: t('ship.cycle_time') },
+		{ width: 1, column: 'action.cooldown', title: t('ship.cooldown') },
+		{ width: 1, column: 'action.duration', title: t('ship.duration'), reverse: true },
+		{ width: 1, column: 'action.limit', title: t('ship.uses') },
+		{ width: 1, column: 'action.ability.amount', title: t('ship.bonus_ability'), tiebreakers: ['action.ability.type'] },
+		{ width: 1, column: 'action.ability.condition', title: t('ship.trigger'), tiebreakers: ['action.ability.type', 'action.ability.amount'] },
+		{ width: 1, column: 'action.charge_text', title: t('ship.charge_phases') },
+		{ width: 1, column: 'ship_battle.accuracy', title: t('ship.accuracy'), reverse: true },
+		{ width: 1, column: 'ship_battle.crit_bonus', title: t('ship.crit_bonus'), reverse: true },
+		{ width: 1, column: 'ship_battle.crit_chance', title: t('ship.crit_rating'), reverse: true },
+		{ width: 1, column: 'ship_battle.evasion', title: t('ship.evasion'), reverse: true }
+	] as ITableConfigRow[];
+}
 
 type CrewCellProps = {
 	crew: IRosterCrew;
@@ -41,8 +45,9 @@ type CrewCellProps = {
 
 export const CrewShipCells = (props: CrewCellProps) => {
 	const { crew } = props;
+	const { t } = React.useContext(GlobalContext).localized;
 	if (crew.action.ability !== undefined && crew.action.ability_text === undefined) {
-		crew.action.ability_text = crew.action.ability ? getShipBonus(crew) : '';
+		crew.action.ability_text = crew.action.ability ? getShipBonus(t, crew) : '';
 	}
 	return (
 		<React.Fragment>
@@ -116,6 +121,7 @@ type ShipAbilitiesFilterProps = {
 };
 
 export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { rosterCrew, crewFilters, setCrewFilters } = props;
 
 	const [shipRarityFilter, setShipRarityFilter] = React.useState([] as number[]);
@@ -309,7 +315,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 				}}>
 					<div style={{marginRight: "1em"}}>
 						<RarityFilter
-								altTitle='Filter ship rarity'
+								altTitle={t('hints.filter_ship_rarity')}
 								rarityFilter={shipRarityFilter}
 								setRarityFilter={setShipRarityFilter}
 							/>
@@ -367,7 +373,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 					{!isCheckDisabled() &&
 					<div style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
 						<Checkbox checked={triggerOnly} onChange={(e, { checked }) => setShipFilters({ ... shipFilters, triggerOnly: checked as boolean })} />
-						<div style={{ margin: "8px" }}>Show Only Crew With Matching Trigger {selectedShip?.actions?.some(ab => ab.status && ab.status != 16) && "(" + printTriggers(selectedShip) + ")"}</div>
+						<div style={{ margin: "8px" }}>{t('ship.crew_with_trigger_check')} {selectedShip?.actions?.some(ab => ab.status && ab.status != 16) && "(" + printTriggers(selectedShip) + ")"}</div>
 					</div>}
 					{!selectedShip &&
 					<div style={{display: "flex", flexDirection:"row", alignItems: "center", margin: 0}}>
@@ -384,6 +390,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 				}}>
 					<div style={{marginRight: "1em", width: window.innerWidth < 725 ? "auto" : "25em"}}>
 						<ShipAbilityPicker
+								fluid
 								selectedAbilities={selectedAbilities ?? []}
 								setSelectedAbilities={(item) => setShipFilters({ ... shipFilters, selectedAbilities: item })}
 								availableAbilities={availableAbilities}

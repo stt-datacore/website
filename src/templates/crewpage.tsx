@@ -137,7 +137,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 		// }
 
 		const { comments } = this.state;
-		const { translation } = this.context.core;
+		const { TRAIT_NAMES, CREW_ARCHETYPES } = this.context.localized;
 		let hasBigBookEntry = markdownRemark && markdownRemark.frontmatter && markdownRemark.frontmatter.published;
 
 		const userName = this._getCurrentUsername();
@@ -150,10 +150,9 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 		//crew.obtained = crewFind?.obtained ?? "Unknown";
 		crew.immortal = CompletionState.DisplayAsImmortalStatic;
 
-		let arch = translation.crew_archetypes.find(f => f.symbol === crew.symbol);
-		crew.traits_named = crew.traits.map(t => translation.trait_names[t]);
-		crew.name = arch?.name ?? crew.name;
-		crew.short_name = arch?.short_name ?? crew.short_name;
+		crew.traits_named = crew.traits.map(t => TRAIT_NAMES[t]);
+		crew.name = CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name;
+		crew.short_name = CREW_ARCHETYPES[crew.symbol]?.short_name ?? crew.short_name;
 
 		if (this.ownedCrew) {
 			let discovered = this.ownedCrew.find(item => item.symbol === crew.symbol);
@@ -274,7 +273,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 				<EquipmentBuilds crew={crew} />
 				<Polestars crew={crew} />
 				<CrewQuipment crew={crew} />
-				<CrewVariants traits_hidden={crew.traits_hidden} />
+				<CrewVariants traits_hidden={crew.traits_hidden} short_name={crew.short_name} />
 			</>
 		);
 	}

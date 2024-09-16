@@ -108,6 +108,7 @@ type OptimalPolestarsProps = {
 };
 
 const OptimalPolestars = (props: OptimalPolestarsProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { constellation, optimalPolestars } = props;
 
 	const [paginationPage, setPaginationPage] = React.useState(1);
@@ -183,7 +184,7 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 								onPageChange={(event, { activePage }) => setPaginationPage(activePage as number)}
 							/>
 							<span style={{ paddingLeft: '2em' }}>
-								Rows per page:{' '}
+								{t('global.rows_per_page')}:{' '}
 								<Dropdown
 									inline
 									options={pagingOptions}

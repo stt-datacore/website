@@ -27,28 +27,31 @@ type CrewConfigTableProps = {
 
 export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
+	const { CREW_ARCHETYPES } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { pageId, rosterType, initOptions, rosterCrew, crewFilters, lockableCrew } = props;
 
 	const [focusedCrew, setFocusedCrew] = React.useState<IRosterCrew | undefined | null>(undefined);
 
-	const showOwned = (rosterType === 'allCrew' || rosterType === 'buyBack') && !!playerData;
+	const showOwned = (['allCrew', 'offers', 'buyBack'].includes(rosterType)) && !!playerData;
 	const showTraitMatches = !!crewFilters.find(crewFilter => crewFilter.id === 'traits_matched');
 
 	const pseudos = ['name'];
-	if (rosterType === 'myCrew') pseudos.push('level', 'q_bits');
-	if ((rosterType === 'allCrew' || rosterType === 'buyBack') && playerData) pseudos.push('highest_owned_rarity');
+	if (rosterType === 'myCrew') pseudos.push('level', 'q_bits', 'is_new');	
+	if ((['allCrew', 'offers', 'buyBack'].includes(rosterType)) && playerData) pseudos.push('highest_owned_rarity');
 	pseudos.push('quipment_score');
 	pseudos.push('collections.length');
 	pseudos.push('date_added');
+	
 
 	const tableConfig: ITableConfigRow[] = [
-		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: pseudos },
-		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['rarity'] },
+		{ width: 3, column: 'name', title: t('base.crew'), pseudocolumns: pseudos },
+		{ width: 1, column: 'max_rarity', title: t('base.rarity'), reverse: true, tiebreakers: ['rarity'] },
 	];
 	if (showTraitMatches) {
 		tableConfig.push(
-			{ width: 1, column: 'traits_matched.length', title: 'Matches', reverse: true, tiebreakers: ['max_rarity', 'rarity'] }
+			{ width: 1, column: 'traits_matched.length', title: t('options.trait_match.matches'), reverse: true, tiebreakers: ['max_rarity', 'rarity'] }
 		);
 	}
 	(props.tableConfig ?? []).forEach(column => tableConfig.push(column));
@@ -73,7 +76,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 				}
 				overflowX='auto'
 				showFilterOptions={true}
-				showPermalink={rosterType === 'allCrew' || rosterType === 'buyBack'}
+				showPermalink={rosterType === 'allCrew'}
 				initOptions={initOptions}
 				lockable={lockableCrew}
 			/>
@@ -83,7 +86,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	);
 
 	function showThisCrew(crew: IRosterCrew, filters: [], filterType: string): boolean {
-		// Apply filters		
+		// Apply filters
 		let showCrew = true;
 		for (let i = 0; i < crewFilters.length; i++) {
 			if (!crewFilters[i].filterTest(crew)) {
@@ -119,9 +122,9 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
+							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name}</Link></span>
 						</div>
-						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew, showOwned)}</div>
+						<div style={{ gridArea: 'description' }}>{descriptionLabel(t, crew, showOwned)}</div>
 					</div>
 				</Table.Cell>
 				<Table.Cell>

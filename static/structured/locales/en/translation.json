@@ -1,0 +1,1525 @@
+{
+    "base": {
+        "all_crew": "Show all crew",
+        "bigbook_tier": "Tier",
+        "cab_power": "CAB",
+        "collection": "Collection",
+        "collection_fmt": "1 collection",
+        "collections": "Collections",
+        "collections_fmt": "{{count}} collections",
+        "crew": "Crew",
+        "event_ships": "Event Ships",
+        "featured_ships": "Featured Ships",
+        "featured_traits": "Featured Traits",
+        "gauntlet": "Gauntlet",
+        "in_portal": "In Portal",
+        "less_than_100_retrieval": "< 100% Retrieval",
+        "level": "Level",
+        "n_slots": "{{n}} slots",
+        "n_to_next": "{{n}} to next",
+        "never_in_portal": "Never In Portal",
+        "not_in_portal": "Not In Portal",
+        "not_uniquely_retrievable": "Not Uniquely Retrievable",
+        "not_yet_in_portal": "Not yet in portal",
+        "offer_cost": "Offer Cost",
+        "offers": "Offer(s)",
+        "on_shuttle": "On shuttle",
+        "on_voyage": "On voyage",
+        "one_slot": "1 slot",
+        "qp": "QP",
+        "rarity": "Rarity",
+        "release_date": "Release Date",
+        "shuttle": "Shuttle",
+        "shuttles": "Shuttles",
+        "uniquely_retrievable": "Uniquely Retrievable",
+        "voyage": "Voyage",
+        "voyages": "Voyages"
+    },
+    "behold_helper": {
+        "columns": {
+            "build_cost": "Build Cost",
+            "faction_items": "Faction Items",
+            "unique_retrievals": "Unique\nRetrievals"
+        },
+        "heading": "Compare your Behold choices to help decide who to add to your roster.",
+        "preview_all": "Preview all in your roster",
+        "search_for_crew": "Search for crew",
+        "share_help": "Want advice on these crew? You can share a {{permalink}} to this page for easier sharing on Discord or other forums.",
+        "share_page_heading": "Share This Page",
+        "views": {
+            "classic": {
+                "description": "Compare crew side by side",
+                "title": "Classic View"
+            },
+            "dismiss_all": {
+                "description": "Start a new comparison",
+                "title": "Dismiss All"
+            },
+            "standard": {
+                "description": "View standard crew presentation",
+                "title": "Standard View"
+            },
+            "table": {
+                "description": "Just the numbers, all sortable",
+                "title": "Table View"
+            }
+        }
+    },
+    "buffs": {
+        "max_buffs": "Max buffs",
+        "no_buffs": "No buffs",
+        "player_buffs": "Player buffs",
+        "quipment_buffs": "Quipment Buffs"
+    },
+    "cite_opt": {
+        "btp": {
+            "name": "Beta Tachyon Pulse",
+            "settings": {
+                "antimatter": "Antimatter Traits",
+                "citeEffort": "Effort To Max",
+                "collections": "Stat-Boosting Collections Increased",
+                "groupSparsity": "Voyage Group Sparsity",
+                "improved": "Voyages Improved",
+                "magic": "Magic number",
+                "never": "Never In Portal",
+                "portal": "Not In Portal",
+                "power": "Base Power Score",
+                "quipment": "Quipment Score",
+                "retrieval": "Retrieval Odds",
+                "score": "Overall Roster Power Rank",
+                "skillRare": "Skill-Order Rarity",
+                "triplet": "Power Rank Within Skill Order"
+            },
+            "settings_picker": {
+                "button_text": "Select a preset...",
+                "change_button_text": "Change selected preset...",
+                "heading": "Use this tool to select or manage presets for the \"{{cite_opt.btp.name}}\" engine.",
+                "title": "{{cite_opt.btp.name}} Settings Picker"
+            },
+            "settings_tweaker": {
+                "heading": "The number indicates the weight applied to each characteristic",
+                "title": "\"{{cite_opt.btp.name}}\" Settings Tweaker"
+            }
+        },
+        "calc_specific_rarity": "Calculate specific rarity",
+        "columns": {
+            "antimatter_traits": "Antimatter\nTraits",
+            "compare": "Compare",
+            "crew": "{{base.crew}}",
+            "ev_per_cite": "EV Per\nCitation",
+            "final_ev": "Final EV",
+            "group_sparsity": "Voyage\nGroup\nSparsity",
+            "in_portal": "{{base.in_portal}}",
+            "quipment_score": "{{rank_names.quipment_score}}",
+            "rank": "Rank",
+            "rarity": "{{base.rarity}}",
+            "remaining_ev": "Remaining EV",
+            "skill_order": "Skill\nOrder",
+            "stat_boosting": "Stat-\nBoosting\nCollections",
+            "voyages_groups": "Voyage\nGroups"
+        },
+        "config": {
+            "clear": "Clear Searches and Comparison Marks"
+        },
+        "engine": "Engine",
+        "ev": "EV",
+        "ev_explainer": {
+            "para_1": "A crew's Expected Value (EV) is the average you can expect a crew to contribute to all voyages. EV Final accounts for the crew fully fused. EV Left, while less important, calculates the difference in contribution between fully fused and their current rank. Voyages Improved is how many of the voyage combinations the crew contributes to. Primary and secondary are taken into account, because CMD/DIP voyage will yield different results than DIP/CMD.",
+            "para_2": "A crew's EV for a voyage is found by finding the crew's average for the skill \"Base + (Min + Max) / 2\", multiplying that by 0.35 if the skill is the primary for the voyage, 0.25 if it is secondary, and 0.1 otherwise. To find how much the crew contributes to the total voyage, we find the best crew for the voyage that are fully leveled and equipped.",
+            "para_3": "\"Training\" is considered simply leveling and equipping the considered crew at their current rarity. This is done by comparing the current total EV of all voyages with those as if the considered crew were fully leveled and equiped at current rarity.",
+            "para_4": "\"Citing\" considered fully fusing, leveling and equipping the considered crew. This is done by comparing the current total EV of all voyages with those as if the considered crew were fully leveled and equiped and fused.",
+            "title": "EV Explainer - Original Engine Only (Click to expand)"
+        },
+        "ev_show": "Show EV columns",
+        "expected_value": "Expected Value",
+        "original_engine": "Original Algorithm",
+        "prospect": {
+            "apply": "Apply Prospect State",
+            "apply_notice": "State will only reflect in list once button is tapped"
+        },
+        "tabs": {
+            "cite": {
+                "title": "Crew to Cite",
+                "title_short": "Cite"
+            },
+            "groups": {
+                "short_title": "Groups",
+                "title": "Voyage Groups"
+            },
+            "retrievable": {
+                "title": "Retrievable Only",
+                "title_short": "Retrievable"
+            },
+            "train": {
+                "title": "Crew to Train",
+                "title_short": "Train"
+            }
+        }
+    },
+    "clipboard": {
+        "copied_exclaim": "Copied!"
+    },
+    "consider_crew": {
+        "active_shuttles": "Consider crew on active shuttles",
+        "active_voyage": "Consider crew on active voyage",
+        "consider_frozen": "Consider frozen crew",
+        "consider_shared": "Consider shared crew",
+        "consider_unowned": "Consider unowned crew",
+        "exclude_quipped": "Exclude quipped crew",
+        "only_immortal": "Only immortal crew",
+        "shared_crew_popup": "Skill numbers of shared crew are based on your player buffs and may not match actual score"
+    },
+    "cool_stats": {
+        "all_ranks": "All Ranks",
+        "base_ranks": "Base ranks",
+        "base_roster": "#{{rank}} {{skill}} base in your roster",
+        "gauntlet_pair_ranks": "Gauntlet pair ranks",
+        "gauntlet_pair_roster": "#{{rank}} {{skill}} gauntlet pair in your roster",
+        "more_stats_ellipses": "more stats...",
+        "rank_skill_roster": "#{{rank}} {{skill}} on your roster",
+        "ranks_on_your_roster": "Ranks on your roster",
+        "show_detailed_ellipses": "Show detailed ranks and stats...",
+        "voyage_gauntlet_pair_roster": "#{{rank}} {{skill}} voyage/gauntlet pair in your roster",
+        "voyage_pair_roster": "#{{rank}} {{skill}} voyage pair in your roster",
+        "voyage_skill_ranks": "Voyage skill ranks"
+    },
+    "crew_ownership": {
+        "immortal": "Only show immortalized crew",
+        "mortal": "Only show owned non-immortals",
+        "none": "Show all crew",
+        "owned": "Only show owned crew",
+        "unowned": "Only show unowned crew"
+    },
+    "crew_page": {
+        "aka_colon": "Also known as:",
+        "all_fuse_skill_fffe_colon": "Skills at all fuses when fully leveled and fully equipped:",
+        "all_fuses_ellipses": "All fuses...",
+        "can_cross_fuse_with": "Can cross-fuse with {{crew}}",
+        "coined_by": "coined by {{name}}",
+        "max_buffs_applied": "Max buffs applied",
+        "no_buffs_applied": "No buffs applied",
+        "notes": {
+            "gauntlet_determination": "Rankings determined by precalculation. For specific advice on crew to use, consult {{link}}.",
+            "voyage_determination": "Rankings determined by precalculation. For specific advice on crew to use, consult the {{link}}."
+        },
+        "player_buffs_applied": "Player buffs applied",
+        "variants": "Variants of {{crew}}"
+    },
+    "crew_picker": {
+        "close": "{{global.close}}",
+        "filter": "{{global.filters}}",
+        "no_results": "0 results found. Please try different search options.",
+        "optional_filters": "Optional Filters",
+        "search_by_name": "Search for crew by name",
+        "select_crew": "Select {{crew}}",
+        "tip": {
+            "double_tap": "Tip: Double-tap to select a crew more quickly."
+        }
+    },
+    "crew_state": {
+        "expires_in": "Crew expires in {{time}}",
+        "frozen": "Frozen",
+        "immortalized": "Immortalized",
+        "not_in_portal": "Not in Portal",
+        "owned": "Owned",
+        "owned_rarity": "Owned Rarity",
+        "portal_available": "Available in Portal",
+        "prospect_rarity": "Prospect Rarity",
+        "prospective_crew_no_portal": "Prospective Crew (Not in Portal)",
+        "prospective_crew_portal": "Prospective Crew (In Portal)",
+        "shown_immortalized": "Shown Immortalized",
+        "stars": "{{stars}} Stars",
+        "unfused": "Unfused",
+        "unowned": "Unowned",
+        "unowned_no_portal": "Unowned Crew (Not in Portal)",
+        "unowned_portal": "Unowned Crew (In Portal)"
+    },
+    "crew_utility": {
+        "columns": {
+            "g": "G",
+            "gauntlet_ranks": "Gauntlet Ranks",
+            "s": "S",
+            "shuttle_ranks": "Shuttle Ranks",
+            "u": "U",
+            "utility": "Utility",
+            "v": "V",
+            "voyage_ranks": "Voyage Ranks"
+        },
+        "consider_three_skill_check": "Only consider 3-skill crew for voyages and gauntlet",
+        "custom": {
+            "core": "Core",
+            "gauntlet": "Gauntlet",
+            "shuttle_pairs": "Shuttle Pairs",
+            "voyage": "Voyage"
+        },
+        "customize_button": "Customize utility scoring...",
+        "customize_header": "You can measure utility for different areas of the game. A higher number will consider more crew as useful in that area of gameplay.",
+        "header": "Crew utility identifies the number of potentially useful skill sets each crew has, relative to others on your roster with similar skill sets. For specific advice on crew to use, consult the {{event_planner}}, {{gauntlets}}, or {{voyage_calculator}}.",
+        "include_base_ranks_check": "Include base ranks in crew utility table",
+        "roster": {
+            "base_shuttle": "Core / shuttle pair ranks on your roster",
+            "gauntlet": "Gauntlet ranks on your roster",
+            "voyage": "Voyage ranks on your roster"
+        }
+    },
+    "crew_views": {
+        "advanced_analysis": "Advanced Analysis",
+        "base": "Show base skills",
+        "crew_utility": "Show crew utility",
+        "dismiss": "Dismiss {{crew}}",
+        "faction_items": "{{n}} faction items",
+        "gauntlet": "Show gauntlet ranks",
+        "max_quipment": "Show max quipment",
+        "preview": "Preview {{crew}} in your roster",
+        "prospect": {
+            "description": "Add prospective crew to see how they fit into your existing roster.",
+            "title": "Prospective Crew"
+        },
+        "quipment": "Show quipment scores",
+        "ship": "Show ship abilities",
+        "view_big_book": "View {{crew}} on Big Book",
+        "voyage": "Show voyage ranks"
+    },
+    "demands": {
+        "demands": "Demands",
+        "items": "{{global.items}}"
+    },
+    "duration": {
+        "n_d": "{{days}} d",
+        "n_d_compact": "{{days}}d",
+        "n_days": "{{days}} days",
+        "n_h": "{{hours}} h",
+        "n_h_compact": "{{hours}}h",
+        "n_hour_class": "{{hours}}-hour",
+        "n_hours": "{{hours}} hours",
+        "n_m": "{{minutes}} m",
+        "n_m_compact": "{{minutes}}m",
+        "n_minute_class": "{{minutes}}-minute",
+        "n_minutes": "{{minutes}} minutes",
+        "title": "Duration: {{duration}}"
+    },
+    "event_planner": {
+        "heading": "Find the best crew to use during an event.",
+        "hide_duplicate_pairs": "Remove duplicate pairs",
+        "prospect_description": "Add prospective crew (or potential shared crew) to see how they fit into your existing roster for this event.",
+        "select_phase": "Select a phase",
+        "skill_matrix": "Skill Matrix",
+        "skill_matrix_heading": "This matrix shows your best crew for each possible skill combination. Use this matrix to identify your best crew for this event. Tap a cell to view other crew with that skill combination.",
+        "table": {
+            "columns": {
+                "best": "Best",
+                "bonus": "Bonus",
+                "crew": "Crew",
+                "pair": "Pair"
+            },
+            "crew_guessed": "The full list of bonus crew for this event is not yet available from player data. As a result, DataCore may not identify all of your possible event crew.",
+            "featured_crew_not_identified": "Featured crew not yet identified for this event.",
+            "options": {
+                "apply_event_bonus": "Apply event bonus to skills",
+                "event_crew": "Only show event crew ({{list}})",
+                "exclude_quipped": "Exclude quipped crew",
+                "potential_skills": "Show potential skills of unleveled crew",
+                "share_crew": "Show share crew",
+                "share_crew_help": "Skill numbers of shared crew are based on your player buffs and may not match actual score",
+                "show_frozen": "Show frozen crew"
+            }
+        },
+        "warn_no_info": "Information about the next event is not yet available from player data. Please try again at a later time."
+    },
+    "event_type": {
+        "gather": "Galaxy",
+        "shuttles": "Faction",
+        "skirmish": "Skirmish",
+        "voyage": "Voyage"
+    },
+    "events_common": {
+        "skirmish_guess_warning": "This event contains a skirmish component, and a complete list of featured crew may not be available until after this event begins."
+    },
+    "fbb": {
+        "alert_no_solution": "No possible solutions found for this node. You may need to change your filters, double-check your solved traits, or reset the list of attempted crew.",
+        "attempted": {
+            "clipboard": "Copy attempted crew to clipboard",
+            "title": "Keep track of crew who have been tried for this combo chain."
+        },
+        "cab": {
+            "header": "The {{link}} is another tool that can help you and your fleet coordinate attacks in a Fleet Boss Battle. Click the button below to copy the known traits and the list of possible traits for use with this Google Sheet (currently v3.02).",
+            "name": "FBB Combo Chain Helper",
+            "title": "CAB's FBB Combo Chain Helper"
+        },
+        "chain_n": "Chain #{{n}}",
+        "columns": {
+            "coverage": "Coverage",
+            "crew": "{{base.crew}}",
+            "given_traits": "Given Traits",
+            "mystery_traits": "Mystery Traits",
+            "rarity": "{{base.rarity}}",
+            "trial": "Trial"
+        },
+        "crew_lists": {
+            "clipboard": "Copy possible crew to clipboard",
+            "customize": {
+                "heading": "You can customize the appearance of the export. The following preferences will be remembered on all subsequent exports.",
+                "options": {
+                    "alpha_exception": "Alpha exception",
+                    "bullet": "Bullet",
+                    "compact": "Compact",
+                    "coverage_potential": "Coverage potential",
+                    "crew_delimiter": "Crew delimiter",
+                    "defaults": "Defaults",
+                    "dropdowns": {
+                        "bullet": {
+                            "full": "Node and number",
+                            "none": "None",
+                            "number": "Number",
+                            "simple": "Dash"
+                        },
+                        "delimiter": {
+                            "comma": "Comma",
+                            "semicolon": "Semicolon"
+                        },
+                        "duplicates": {
+                            "ignore": "Do not number",
+                            "number": "Show number needed"
+                        },
+                        "format": {
+                            "bold": "Bold (**)",
+                            "bolditalic": "Bold italic (***)",
+                            "bolditalicunderline": "Bold italic underline (***__)",
+                            "boldunderline": "Bold underline (**__)",
+                            "italic": "Italic (*)",
+                            "italicunderline": "Italic underline (*__)",
+                            "none": "No formatting",
+                            "underline": "Underline (__)"
+                        },
+                        "header": {
+                            "always": "Always show boss chain",
+                            "hide": "Do not show",
+                            "initial": "Show on new chains only"
+                        },
+                        "show": {
+                            "hide": "Do not show",
+                            "show": "Show"
+                        },
+                        "solve": {
+                            "always": "Always show solutions",
+                            "hide": "Do not show",
+                            "spot": "Show unconfirmed solutions only"
+                        }
+                    },
+                    "duplicate_traits": "Duplicate traits",
+                    "export_header": "Export header",
+                    "formatting": "Formatting",
+                    "full_exports_only": "Full exports only",
+                    "load_preset_values": "Load preset values",
+                    "node_header": "Node header",
+                    "non_optimal": "Non-optimal",
+                    "non_portal": "Non Portal",
+                    "one_hand_exception": "One hand exception",
+                    "possible_solutions": "Possible solutions",
+                    "solved_nodes": "Solved nodes",
+                    "traits": "Traits",
+                    "unique": "Unique"
+                },
+                "title": "Customize Export"
+            },
+            "heading": "Copy the lists of possible crew, grouped by nodes and traits, for easier sharing on Discord or other forums.",
+            "title": "Export Crew Lists"
+        },
+        "current_solutions": {
+            "heading": "This table shows the progress of the current combo chain. Update the mystery traits when a node is solved.",
+            "title": "Current Solutions"
+        },
+        "heading": "Use this tool to help activate combo chain bonuses in a fleet boss battle.",
+        "identify_solve_n": "Identify the traits used to solve Node {{n}}",
+        "node_n": "Node {{n}}",
+        "partial_solve": "Partial Solve",
+        "popup": {
+            "crew_solved": "{{crew}} solved a node!",
+            "mark_as_tried": "Mark as tried"
+        },
+        "possible_solutions": {
+            "heading": "Here are the crew who satisfy the conditions of the remaining unsolved nodes.",
+            "tap_approve_decline": "Tap the {{approve}} {{decline}} buttons to mark crew as tried.",
+            "tap_trait_solve": "Tap a trait if it solves a node. Tap a crew to mark as tried.",
+            "title": "Possible Solutions"
+        },
+        "possible_traits": {
+            "clipboard": "Copy possible traits to clipboard",
+            "heading": "This table should match the list of possible traits in-game.",
+            "hint": "Search for traits",
+            "manual_exclusion": "You can manually exclude traits from consideration.",
+            "title": "Possible Traits"
+        },
+        "sections": {
+            "crew": {
+                "description": "Search for individual crew",
+                "title": "Crew"
+            },
+            "groups": {
+                "description": "View solutions grouped by traits",
+                "title": "Groups"
+            },
+            "traits": {
+                "description": "View current combo chain",
+                "title": "Traits"
+            }
+        },
+        "select": "Select a boss battle",
+        "settings": {
+            "optimizations": {
+                "hide_non_optimal": "Hide non-optimal crew",
+                "prioritize_coverage": "Prioritize crew with coverage",
+                "title": "Optimizations"
+            },
+            "unofficial": {
+                "hide_alpha": "Hide alpha exceptions",
+                "hide_one_hand": "Hide one hand exceptions",
+                "title": "Unofficial Rules"
+            },
+            "user_prefs": {
+                "confirm_solves": "Confirm trait solves",
+                "show_ship_ability": "Show ship ability",
+                "title": "User Preferences"
+            },
+            "warn": "Correct solutions may not be listed with the current settings."
+        },
+        "solves": {
+            "partially_solved": "Node {{n}} partially solved",
+            "pending": "pending confirmation",
+            "solved": "Node {{n}} solved"
+        },
+        "tips": {
+            "alpha_exceptions_a": "Alpha exceptions",
+            "alpha_exceptions_b": "are crew who might be ruled out based on an unofficial rule that eliminates some of their traits by name. You should only try alpha exceptions if you've exhausted all other listed options.",
+            "coverage_a": "Coverage",
+            "coverage_b": "identifies crew who might be solutions to multiple nodes. In groups view, crew with coverage are italicized; if you prioritize crew with coverage, some crew will be hidden when others can be tried as possible solutions for more nodes. In crew view, the number of potential nodes is listed.",
+            "non_optimals_a": "Non-optimals",
+            "non_optimals_b": "are crew whose only matching traits are a subset of traits of another possible solution for that node. You should only try non-optimal crew if you don't own any optimal crew.",
+            "one_hand_exception_a": "One hand exceptions",
+            "one_hand_exception_b": "are crew who might be ruled out based on an unofficial rule that limits solutions to traits with no more than a handful of matching crew.",
+            "title": "Tips",
+            "trait_colors_a": "Trait colors",
+            "trait_colors_b": "help visualize the rarity of each trait per node, e.g. a gold trait means its crew is the only possible crew with that trait in that node, a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc. Note that potential alpha exceptions are always orange, regardless of rarity.",
+            "trait_numbers_a": "Trait numbers",
+            "trait_numbers_b": "identify how many remaining nodes that trait is likely a solution for, based on an unofficial rule that duplicate traits in the pool are always a solution."
+        },
+        "undo_solve": "Undo Solve",
+        "x_y_confirmed_solved": "{{x}}/{{y}} confirmed solved",
+        "x_y_solved": "{{x}}/{{y}} solved"
+    },
+    "gather": {
+        "item_filter": {
+            "all_items": "Show all items",
+            "multi_source_items": "Only show multi-source items",
+            "needed": "Only show needed items",
+            "needed_mission": "Only show missions with needed items",
+            "single_source_items": "Only show single-source items",
+            "single_source_mission": "Only show missions with single-source items"
+        }
+    },
+    "gauntlet": {
+        "advanced": {
+            "crit_multiplier": "{{p}}% crit multiplier",
+            "incidence": "{{name}} linear skill incidence weight",
+            "index": "{{name}} linear skill index weight",
+            "max_multiplier": "Maximum proficiency multiplier",
+            "min_multiplier": "Minimum proficiency multiplier",
+            "primary": "{{quipment_ranks.primary}}",
+            "secondary": "{{quipment_ranks.secondary}}",
+            "tertiary": "{{quipment_ranks.tertiary}}"
+        },
+        "apply_buffs": "Apply buffs to stats",
+        "base_power": "Base Power",
+        "browse_gauntlet_exclusives": "Browse Gauntlet Exclusive Crew (Click Here)",
+        "columns": {
+            "crew": "{{base.crew}}",
+            "crits": "{{ship.crit_rating}}",
+            "first_pair": "{{quipment_ranks.first_pair}}",
+            "high_crits": "45% + 65% Crits",
+            "in_portal": "{{base.in_portal}}",
+            "qp": "{{base.qp}}",
+            "rank": "{{cite_opt.columns.rank}}",
+            "rarity": "{{base.rarity}}",
+            "second_pair": "{{quipment_ranks.second_pair}}",
+            "third_pair": "{{quipment_ranks.third_pair}}"
+        },
+        "gauntlet": "Gauntlet",
+        "gauntlets": "Gauntlets",
+        "hide_opponents": "Hide opponents",
+        "import": {
+            "click_here": "Click here to upload your data",
+            "heading": "You can access your live gauntlet matches in a similar way to how you access your player data, currently.",
+            "title": "Live gauntlet data"
+        },
+        "jackpot_crew": "Jackpot Crew",
+        "jackpot_crew_for_date": "Jackpot Crew for {{date}}",
+        "max_results_per_table": "Max results per table",
+        "min_max_proficiency": "Minimum max-proficiency",
+        "no_limit": "No limit",
+        "note_live_crew_highlight_msg": "Note: Your selected gauntlet crew will appear highlighted in green, while opponents will appear highlighted in red.",
+        "note_opponent_stats_no_calc_msg": "Note: Opponent stats are not recomputed",
+        "note_owned_crew_power_calc_msg": "Note: If owned crew are detected, then their current level in your roster may be used to compute their rank, depending on filter settings.",
+        "note_unleveled_crew_max_highlight_pair_msg": "Note: Unleveled, owned crew that are shown maxed have proficiencies that are underlined and highlighted in green.",
+        "note_unleveled_crew_max_highlight_table_msg": "Note: Unleveled, owned crew that are shown maxed are highlighted in green.",
+        "only_highlight_active_round": "Only highlight active round",
+        "owned_status": {
+            "any": "All Crew",
+            "fe": "Owned, Fully Equipped Crew",
+            "gauntlet": "Unowned, Gauntlet Exclusive Crew",
+            "maxall": "All Crew as Maxed",
+            "nofe": "Owned, Not Fully Equipped Crew",
+            "nofemax": "Owned, Not Fully Equipped Crew as Maxed",
+            "nonportal": "Unowned, Non-Portal Crew",
+            "owned": "Owned Crew",
+            "ownedmax": "Owned Crew as Maxed",
+            "portal": "Unowned, Portal-Available Crew",
+            "unfrozen": "Owned, Unfrozen Crew",
+            "unowned": "Unowned Crew"
+        },
+        "owned_status_heading": "Owned Status",
+        "pages": {
+            "browse_gauntlets": {
+                "heading": "Browse through all known gauntlets",
+                "short": "Browse",
+                "title": "Browse Gauntlets"
+            },
+            "live_gauntlet": {
+                "heading": "Live gauntlet round",
+                "short": "Live",
+                "title": "Live Gauntlet"
+            },
+            "previous_gauntlets": {
+                "heading": "View previous gauntlets by date",
+                "short": "Previous",
+                "title": "Previous Gauntlets"
+            },
+            "today_gauntlet": {
+                "heading": "{{gauntlet.pages.today_gauntlet.title}}",
+                "short": "Today",
+                "title": "Today's Gauntlet"
+            },
+            "yesterday_gauntlet": {
+                "heading": "{{gauntlet.pages.yesterday_gauntlet.title}}",
+                "short": "Yesterday",
+                "title": "Yesterday's Gauntlet"
+            }
+        },
+        "show_buffs_heading": "Show Buffs",
+        "show_top_crew": "Show top crew",
+        "skills_and_pairs": "Skills & Pairs",
+        "top_n": "Top {{n}}",
+        "unowned_status": {
+            "any": "All Crew",
+            "gauntlet": "Gauntlet Exclusive Crew",
+            "nonportal": "Non-Portal Crew",
+            "portal": "Portal-Available Crew"
+        },
+        "view_modes": {
+            "big": {
+                "heading": "See crew in large presentations",
+                "title": "Large Presentation"
+            },
+            "pair_cards": {
+                "heading": "See crew grouped into pair tables",
+                "title": "Pair tables"
+            },
+            "small": {
+                "heading": "See crew in small presentations",
+                "title": "Small Presentation"
+            },
+            "table": {
+                "heading": "See crew ranked linearly",
+                "title": "Table"
+            },
+            "title": "View Mode"
+        }
+    },
+    "global": {
+        "aborted": "Aborted",
+        "admiral": "Admiral",
+        "advanced_settings": "Advanced Settings",
+        "adventure": "Adventure",
+        "and": "and",
+        "any": "Any",
+        "apply_filters": "Apply Filters",
+        "base": "Base",
+        "bonus": "Bonus",
+        "bonuses": "Bonuses",
+        "cancel": "Cancel",
+        "challenge": "Challenge",
+        "clear": "Clear",
+        "clear_all": "Clear All",
+        "clear_cache": "Clear cache",
+        "close": "Close",
+        "completed": "Completed",
+        "copy_permalink_clipboard": "Copy permalink to clipboard",
+        "default": "Default",
+        "disable": "Disable",
+        "disabled": "Disabled",
+        "dismiss": "Dismiss",
+        "download": "Download",
+        "edit": "Edit",
+        "enable": "Enable",
+        "enabled": "Enabled",
+        "episode": "Episode",
+        "experimental": "Experimental",
+        "filters": "Filters",
+        "fleet": "Fleet",
+        "group_by": "Group by",
+        "hidden": "Hidden",
+        "hide": "Hide",
+        "idle": "Idle",
+        "item_types": {
+            "arena": "Arena",
+            "arena_tickets": "Arena tickets",
+            "buff": "Buff",
+            "cadet": "Cadet",
+            "cadet_challenge": "Cadet challenge",
+            "cadet_challenge_tickets": "Cadet challenge tickets",
+            "cadet_challenges": "Cadet challenges",
+            "chronotons": "Chronotons",
+            "component": "Component",
+            "continuum_qbit": "Continuum Q-Bit",
+            "continuum_quipment": "Continuum Quipment",
+            "credits": "Credits",
+            "crew_experience_training": "Crew experience training",
+            "dilithium": "Dilithium",
+            "equipment": "Equipment",
+            "honor": "Honor",
+            "honorable_citation": "Honorable citation",
+            "interstellar_medium": "Interstellar Medium",
+            "ism": "ISM",
+            "merits": "Merits",
+            "potential_cites": "Potential honorable citations",
+            "potential_cites_honor_sale": "Potential honorable citations (honor sale)",
+            "quantum": "Quantum energy",
+            "replicator_ration": "Replicator ration",
+            "ship_part": "Ship part",
+            "ship_schematic": "Ship schematic",
+            "shuttle_boosts": "Shuttle boosts",
+            "shuttle_token": "Shuttle token",
+            "starbase_component": "Starbase component",
+            "valor": "Valor",
+            "voyage_consumable": "Voyage Revival Tokens"
+        },
+        "items": "Items",
+        "last_updated_colon": "Last Updated:",
+        "load_default_settings": "Load Default Settings",
+        "load_defaults": "Load Defaults",
+        "loading_ellipses": "Loading ...",
+        "loading_please_wait_ellipses": "Loading. Please wait...",
+        "max_rarity": "Max. rarity",
+        "member": "Member",
+        "min_rarity": "Min. rarity",
+        "n_results": "{{n}} results",
+        "name": "Name",
+        "never": "Never",
+        "new": "New",
+        "no": "No",
+        "no_items_found": "No items found",
+        "none": "None",
+        "notes": "Notes",
+        "obtained": "Obtained",
+        "officer": "Officer",
+        "optional": "Optional",
+        "or": "or",
+        "percentile": "Percentile",
+        "permalink": "permalink",
+        "portal": "Portal",
+        "quest": "Quest",
+        "recommend_crew": "Recommend Crew",
+        "reset": "Reset",
+        "rows_per_page": "Rows per page",
+        "running": "Running",
+        "save": "Save",
+        "search": "Search",
+        "search_by_name_or_trait_ellipses": "Search by name or trait...",
+        "search_crew": "Search crew",
+        "search_crew_ellipses": "Search crew...",
+        "search_ellipses": "Search...",
+        "search_items": "Search items",
+        "search_items_ellipses": "Search items...",
+        "show": "Show",
+        "show_less": "Show less",
+        "show_n_more_ellipses": "Show {{n}} more ...",
+        "shown": "Shown",
+        "sort_by": "Sort by",
+        "squadron_leader": "Squadron Leader",
+        "work_in_progress": {
+            "heading": " This page is a work in progress. Some functions and features may be non-functional, broken, missing, incomplete, or change at any time.",
+            "title": "Work In Progress!"
+        },
+        "yes": "Yes"
+    },
+    "graph": {
+        "bump": "Bump Graph",
+        "swarm": "Swarm Graph"
+    },
+    "header": {
+        "recommend": {
+            "description": "This page is better with player data.",
+            "tap_here": "Tap here to import your player data now.",
+            "title": "Player Data Recommended"
+        },
+        "require": {
+            "description": "This page requires player data. Follow the instructions below to import your player data.",
+            "title": "Player Data Required"
+        }
+    },
+    "hints": {
+        "apply_buffs": "Apply stat buffs",
+        "display_buffs": "Display Buffs",
+        "filter_by_availability": "Filter by availability",
+        "filter_by_item_type": "Filter by item type",
+        "filter_by_owned_status": "Filter by owned status",
+        "filter_by_portal_status": "Filter by portal status",
+        "filter_by_primary_skill": "Filter by primary skill",
+        "filter_by_progress": "Filter by progress",
+        "filter_by_rarity": "Filter by rarity",
+        "filter_by_secondary_skill": "Filter by secondary skill",
+        "filter_by_series": "Filter by series",
+        "filter_by_ship_ability": "Filter by ship ability",
+        "filter_by_skill": "Filter by skill",
+        "filter_by_status": "Filter by status",
+        "filter_by_trait": "Filter by trait",
+        "filter_by_voyage_seating": "Filter by voyage seating",
+        "filter_ship_grants": "Filter ship grants",
+        "filter_ship_rarity": "Filter ship rarity",
+        "roster_maintenance": "Roster maintenance",
+        "select_items": "Select items",
+        "select_ship": "Select Ship",
+        "select_ship_abilities": "Select Ship Abilities",
+        "select_ship_ability": "Select ship ability",
+        "select_ship_ability_amount": "Select Ship Ability Amount",
+        "trait": "Trait",
+        "traits": "Traits"
+    },
+    "hof": {
+        "rank_by": {
+            "duration": "Average Duration",
+            "maxdur": "Maximum Duration",
+            "rank_by_colon": "Rank By:",
+            "voyages": "Number of Voyages",
+            "voydur": "Number of Voyages * Average Duration",
+            "voymaxdur": "Number of Voyages * Maximum Duration"
+        }
+    },
+    "item_picker": {
+        "all_items": {
+            "description": "Overview of all items in the game.",
+            "title": "All Items"
+        },
+        "owned_items": {
+            "description": "Overview of all items owned\n(and also needed) by the player.",
+            "title": "Owned Items"
+        },
+        "quipment_browser": {
+            "description": "Browse quipment and place\npotential quipment on crew.",
+            "title": "Quipment Browser"
+        }
+    },
+    "item_source": {
+        "cadet_missions": "Cadet missions",
+        "faction_missions": "Faction missions",
+        "missions": "Missions",
+        "ship_battles": "Ship battles"
+    },
+    "item_state": {
+        "item_is_frozen_many": "{{item}} is Frozen ({{copies}} Copies)",
+        "item_is_frozen_one": "{{item}} is Frozen (1 Copy)",
+        "item_is_level": "{{item}} is {{level}}",
+        "item_is_shown": "{{item}} is shown {{level}}",
+        "item_is_shown_immortalized": "{{item}} is shown Immortalized",
+        "item_is_shown_no_player": "{{item}} is shown {{level}} (No Player Data)",
+        "item_is_shown_owned": "{{item}} is shown {{level}} (Owned)",
+        "item_is_shown_unowned": "{{item}} is shown {{level}} (Unowned)"
+    },
+    "items": {
+        "any_non_trait_limited": "Any non-trait-limited quipment",
+        "any_trait_limited": "Any trait-limited quipment",
+        "columns": {
+            "duration": "{{ship.duration}}",
+            "flavor": "Flavor",
+            "item": "Item",
+            "item_buffs": "Item buffs",
+            "item_demand_levels": "Item demand levels",
+            "item_type": "Item type",
+            "needed": "Needed",
+            "owned": "{{crew_state.owned}}",
+            "quantity": "Quantity",
+            "rarity": "{{base.rarity}}"
+        },
+        "craft_for_chrons": "Craft it for {{cost}} using this recipe",
+        "current_demands": "Current demands",
+        "equippable_by": "Equippable by: {{crew}}",
+        "equippable_by_rarity": "Equippable by up to {{rarity}} crew.",
+        "equippable_by_rarity_traits": "Equippable by up to {{rarity}} crew with the following traits: {{traits}}",
+        "equippable_by_traits": "Equippable by crew with the following traits: {{traits}}",
+        "faction_only": "Faction Only",
+        "is_used_to_build": "Is used to build these",
+        "item_sources": "Item sources",
+        "n_needed": "{{n}} needed",
+        "n_owned": "{{n}} owned",
+        "n_rewarded": "{{n}} rewarded",
+        "options": {
+            "all_quipment": "Show all quipment",
+            "only_buildable": "Show buildable quipment",
+            "only_owned": "Show owned quipment",
+            "owned_or_buildable": "Show owned or buildable quipment"
+        },
+        "post_immortalization_advancement": "Post-immortalization advancement",
+        "recipe": "Recipe",
+        "required_traits": "Required Traits: {{traits}}",
+        "show_unowned_needed": "Show unowned needed items",
+        "this_will_require_items": "This will require {{items}}"
+    },
+    "items_unneeded": {
+        "description": "Use this tool to help identify items you can safely discard to free up space in your inventory.",
+        "dispose_candidate": "The following equipment items are good candidates to discard as they are {{reason}}. Note: some items listed here might be useful as building blocks of other needed equipment. Tap an item name to consult the wiki for more information about the equipment.",
+        "dispose_candidate_reason": "no longer needed by any crew on your current roster",
+        "limit_warning": {
+            "description": "When your inventory reaches {{n}} items, the game will start randomly losing items. Go and replicate away some of the items suggested below.",
+            "title": "Inventory Limit Warning"
+        },
+        "options": {
+            "hide_generic": "Hide equipment that is useful for unowned crew",
+            "inefficient": "Only show the most inefficient uses of inventory slots",
+            "single_use": "Only show single-use equipment"
+        },
+        "ships_maxed": "ships you have already maxed",
+        "ships_maxed_info": "The following ship schematics are safe to discard as they are used to upgrade {{max_text}}",
+        "summary": "You have {{n}} items in your inventory. Note: continuum components do not count toward your inventory limit.",
+        "title": "{{menu.roster.unneeded_items}}"
+    },
+    "json": {
+        "copy_and_paste": {
+            "description_1": "Copy the contents of your {{data}},",
+            "description_2": "then paste everything into the text box below.",
+            "detailed_instructions": {
+                "footer": "If you have multiple accounts, we recommend using your browser in incognito mode (Chrome) or in private mode (Edge / Firefox) to avoid caching your account credentials, making it easier to switch accounts.",
+                "header": "DataCore cannot make direct requests to the game's servers, so you must follow these steps to import your {{data}}:",
+                "instructions": {
+                    "line_1": "Open this page in your browser: {{link}}",
+                    "line_2": "Sign in if asked, then wait for the page to finish loading. It should start with: {{jsonHint}} ...",
+                    "line_3": "Select everything in the page (Ctrl+A) and copy to clipboard (Ctrl+C).",
+                    "line_4": "Paste (Ctrl+V) in the text box above. Note that DataCore will intentionally display less data here to speed up the process."
+                },
+                "title": "Detailed Instructions..."
+            },
+            "paste_here_placeholder": "Paste your {{data}} here",
+            "title": "Copy and Paste"
+        },
+        "or": "OR",
+        "upload_file": {
+            "browse_ellipses": "Browse for {{data}} file to upload...",
+            "description_1": "Save your {{data}} to your device,",
+            "description_2": "then upload the file. Recommended for mobile users.",
+            "detailed_instructions": {
+                "android": {
+                    "instructions": {
+                        "line_1": "Open this page on your device: {{link}}",
+                        "line_2": "Sign in if asked, then wait for the page to finish loading. It should start with: {{jsonHint}} ...",
+                        "line_3": "Tap the menu (three dots) icon while viewing the page.",
+                        "line_4": "Tap the download button, choose a location, and save.",
+                        "line_5": "Come back to this DataCore page.",
+                        "line_6": "Tap the \"Browse for {{data}} file to upload...\" button.",
+                        "line_7": "Choose the file starting with \"{{hint}}...\" from where you saved it."
+                    }
+                },
+                "header": "DataCore cannot make direct requests to the game's servers, so you must follow these steps to import your {{data}}:",
+                "ios": {
+                    "instructions": {
+                        "line_1": "Open this page on your device: {{link}}",
+                        "line_2": "Sign in if asked, then wait for the page to finish loading. It should start with: {{jsonHint}} ...",
+                        "line_3": "Tap the share icon while viewing the page.",
+                        "line_4": "Tap \"options\" and choose \"Web Archive\", tap \"save to files\", choose a location, and save.",
+                        "line_5": "Come back to this DataCore page.",
+                        "line_6": "Tap the \"Browse for player data file to upload...\" button.",
+                        "line_7": "Choose the file starting with \"{{hint}}...\" from where you saved it."
+                    }
+                },
+                "title": "Detailed Instructions..."
+            },
+            "title": "Upload File"
+        }
+    },
+    "json_types": {
+        "gauntlet_data": "gauntlet data",
+        "player_data": "player data",
+        "quest_data": "quest data"
+    },
+    "menu": {
+        "about_title": "About",
+        "game_info": {
+            "bridge_crew_tool": "Bridge Crew Tool",
+            "episodes": "Episodes",
+            "events": "Events",
+            "misc_game_stats": "Misc Game Stats",
+            "voyage_hof": "Voyage Hall of Fame"
+        },
+        "game_info_title": "Game Info",
+        "player": {
+            "clear_data": "Clear Player Data",
+            "import_player_data": "Import Player Data",
+            "import_player_data_ellipses": "Import Player Data ...",
+            "menu_settings": "Menu Settings",
+            "my_achievements": "My Achievements",
+            "my_charts_and_stats": "My Charts and Stats",
+            "share_profile": "Share Profile",
+            "toggle_coloring": "Toggle grade coloring",
+            "toggle_glance": "Toggle At-A-Glance Panel",
+            "update_player_data": "Update Player Data"
+        },
+        "roster": {
+            "crew": "Crew",
+            "items": "Items",
+            "ships": "Ships",
+            "unneeded_items": "Unneeded Items"
+        },
+        "roster_title": "Roster",
+        "site_beta_switch": "Switch between production and beta",
+        "tools": {
+            "behold_helper": "Behold Helper",
+            "citation_optimizer": "Citation Optimizer",
+            "collection_planner": "Collection Planner",
+            "continuum_helper": "Continuum Helper",
+            "crew_retrieval": "Crew Retrieval",
+            "event_planner": "Event Planner",
+            "factions": "Factions",
+            "fleet_boss_battles": "Fleet Boss Battles",
+            "gauntlet": "Gauntlet",
+            "shuttle_helper": "Shuttle Helper",
+            "voyage_calculator": "Voyage Calculator",
+            "voyage_history": "Voyage History"
+        },
+        "tools_title": "Tools"
+    },
+    "mission_type": {
+        "type_0": "Conflict Quest",
+        "type_2": "Ship Battle",
+        "type_4": "Cadet Challenge"
+    },
+    "obtained": {
+        "long": {
+            "BossBattle": "Captain's Bridge",
+            "Collection": "Collection Milestone",
+            "Event": "Event",
+            "Event/Pack/Giveaway": "Event/Pack/Giveaway",
+            "Faction": "Faction Store",
+            "Fuse": "Exclusive Fusion",
+            "Gauntlet": "Gauntlet Exclusive",
+            "Honor Hall": "Honor Hall",
+            "Mega": "Recurring Mega",
+            "Missions": "Main Board Mission",
+            "Pack/Giveaway": "Pack/Giveaway",
+            "Voyage": "Voyage Exclusive",
+            "WebStore": "Web Store"
+        },
+        "short": {
+            "BossBattle": "Bridge",
+            "Collection": "Collection",
+            "Event": "Event",
+            "Event/Pack/Giveaway": "Event/Pack/Giveaway",
+            "Faction": "Faction",
+            "Fuse": "Fusion",
+            "Gauntlet": "Gauntlet",
+            "Honor Hall": "Honor Hall",
+            "Mega": "Mega",
+            "Missions": "Missions",
+            "Pack/Giveaway": "Pack/Giveaway",
+            "Voyage": "Voyage",
+            "WebStore": "Web Store"
+        }
+    },
+    "options": {
+        "crew_status": {
+            "favorites": "Only show favorite crew",
+            "frozen": "Only show frozen crew",
+            "frozen_dupes": "Only show frozen duplicate crew",
+            "idle": "Only show idle crew",
+            "none": "Show all crew",
+            "thawed": "Only show unfrozen crew"
+        },
+        "portal_status": {
+            "none": "{{options.roster_maintenance.none}}",
+            "not_retrievable": "Only show non-retrievable crew",
+            "not_uniquely_retrievable": "Only show not uniquely-retrievable crew",
+            "retrievable": "Only show retrievable crew",
+            "uniquely_retrievable": "Only show uniquely-retrievable crew"
+        },
+        "roster_maintenance": {
+            "advanceable": "Only show crew with unclaimed quipment slots",
+            "buyback": "Show crew with fuses in buy-back well",
+            "dupes": "Only show duplicate crew",
+            "fe": "Only show fully equipped non-immortals",
+            "fodder": "Only show unfused crew",
+            "freezable": "Only show freezable crew",
+            "impact": "Only show crew needing 1 fuse",
+            "mortal": "Only show non-immortals",
+            "none": "Show all crew",
+            "nonfe": "Only show under-equipped non-immortals",
+            "priority": "Only show fully-fused non-immortals",
+            "quippable": "Only show quippable crew",
+            "quipped": "Only show quipped crew",
+            "threshold": "Only show crew needing 2 fuses"
+        },
+        "text_match": {
+            "any": "Match any text",
+            "exact": "Exact match only",
+            "whole_word": "Whole word only"
+        },
+        "trait_match": {
+            "any": "Match any trait",
+            "match": "Match",
+            "match_all": "Match all traits",
+            "match_two_plus": "Match 2+ traits",
+            "matches": "Matches",
+            "trait": "Trait"
+        }
+    },
+    "pages": {
+        "crew_stats": "Crew Stats",
+        "crew_view_modes": {
+            "buyback_well": {
+                "description": "View crew in the buy-back well",
+                "name": "Buy-Back Well"
+            },
+            "current_offers": {
+                "description": "Show crew in current offers",
+                "name": "Current Offers"
+            },
+            "game_roster": {
+                "description": "Overview of all crew in the game",
+                "name": "Game Roster"
+            },
+            "owned_crew": {
+                "description": "View only your owned crew",
+                "name": "Owned Crew"
+            }
+        },
+        "ship_info": "Ship Info",
+        "ships": "Ships"
+    },
+    "player_badge": {
+        "n_immortals": "{{n}} immortals",
+        "n_shuttles": "{{n}} shuttles",
+        "starbase_level": "Starbase level",
+        "x_y_crew": "{{x}} / {{y}} crew"
+    },
+    "profile": {
+        "charts_and_stats": "Charts & Stats",
+        "crew": "{{menu.roster.crew}}",
+        "crew_mobile": "{{menu.roster.crew}} (Mobile)",
+        "download": {
+            "complete_spreadsheet": "Complete spreadsheet",
+            "crew_table": "Crew table",
+            "item_table": "Item table",
+            "ship_table": "Ship table"
+        },
+        "items": "{{menu.roster.items}}",
+        "other": "Other",
+        "ships": "{{menu.roster.ships}}",
+        "switch_to_english": "Spreadsheets are downloaded using the current language. You may need to switch to English to download spreadsheets that are compatible with other community tools."
+    },
+    "prospect_picker": {
+        "add_crew": "Add Crew",
+        "select_crew": "Select Crew"
+    },
+    "quipment_dropdowns": {
+        "calc_mode": {
+            "core": "Core Skill",
+            "core_and_proficiencies": "Core and Proficiency Ranges",
+            "proficiencies": "Proficiency Ranges"
+        },
+        "calc_mode_label": "Calculation Mode",
+        "mode": {
+            "individual_skills": "Individual Skills",
+            "skill_combos": "Skill Combos",
+            "skill_order": "Skill Order"
+        },
+        "mode_label": "Skill mode",
+        "slot_label": "Slot mode",
+        "slots": {
+            "n_slots": "Quip {{slots}} slots",
+            "natural": "Quip natural slots",
+            "one_slot": "Quip 1 slot"
+        }
+    },
+    "quipment_ranks": {
+        "first_pair": "First Pair",
+        "overall": "Overall",
+        "primary": "Primary",
+        "second_pair": "Second Pair",
+        "secondary": "Secondary",
+        "specialty": "Specialty",
+        "tertiary": "Tertiary",
+        "third_pair": "Third Pair",
+        "three_skills": "Three Skills"
+    },
+    "rank_names": {
+        "bigbook_tier": "Big Book Tier",
+        "cab_grade": "CAB Grade",
+        "cab_rank": "CAB Rank",
+        "cab_rating": "CAB Rating",
+        "gauntlet_rank": "Gauntlet Rank",
+        "quipment_score": "Quipment Score",
+        "voyage_rank": "Voyage Rank"
+    },
+    "ranking_method": {
+        "delta_t": "Delta T",
+        "early_boom": "Earliest Greatest",
+        "guaranteed_minimum": "Guaranteed minimum",
+        "lean_in": "Medium High",
+        "lean_out": "Medium Low",
+        "lean_over": "Medium",
+        "moonshot": "Moonshot",
+        "potential_maximum": "Potential maximum",
+        "standard": "Standard"
+    },
+    "roster_summary": {
+        "by_rarity": "By Rarity",
+        "by_skill": "By Skill",
+        "rarity": {
+            "columns": {
+                "dupes": "Duplicate",
+                "frozen": "Frozen",
+                "immortal": "Immortal+",
+                "owned": "Owned",
+                "ownedPct": "% Owned",
+                "portalPct": "% Portal",
+                "progress": "Immortal",
+                "progressPct": "% Immortal",
+                "rarity": "Rarity",
+                "unfrozen": "Unfrozen"
+            },
+            "footer_text": "The Owned, % Owned, % Portal, Immortal, and % Immortal columns consider unique crew only. All other columns consider your duplicates.",
+            "header_text": "This table breaks down your roster by rarity and shows your progress toward immortalizing all crew in the game.",
+            "immortal_cell_help": "Your achievements in-game may incorrectly report this number as {number}"
+        },
+        "skills": {
+            "columns": {
+                "average": "Average",
+                "best": "Best",
+                "maxPct": {
+                    "description": "How your ten best crew compare to all crew in the game with this skill",
+                    "title": "% of Max"
+                },
+                "owned": "Owned",
+                "ownedPct": "% Owned",
+                "skills": "Skill",
+                "tenAverage": {
+                    "description": "The average score of your ten best crew at this skill",
+                    "title": "Ten Best"
+                }
+            },
+            "combos": {
+                "all": "All skill combos",
+                "pairs": "Pairs only",
+                "singles": "Single skills only",
+                "skill_only": "{{skill}} only",
+                "triplets": "Triplets only"
+            },
+            "combos_title": "Filter skills",
+            "footer_text": "The Owned and % Owned columns consider unique crew only. All other columns consider your duplicates.",
+            "header_text": "This table shows the depth and strength of your roster at various areas of the game for every relevant skill combination.",
+            "score": {
+                "core": "Core",
+                "gauntlet": "Gauntlet",
+                "shuttles": "Shuttles",
+                "voyage": "Voyage"
+            },
+            "score_title": "Score",
+            "three_skill_check": "Only consider 3-skill crew"
+        },
+        "title": "Roster Summary"
+    },
+    "series": {
+        "ds9": "Deep Space Nine",
+        "dsc": "Discovery",
+        "ent": "Enterprise",
+        "low": "Lower Decks",
+        "original": "Timelines Originals",
+        "pic": "Picard",
+        "snw": "Strange New Worlds",
+        "tas": "The Animated Series",
+        "tng": "The Next Generation",
+        "tos": "The Original Series",
+        "voy": "Voyager",
+        "vst": "Very Short Treks"
+    },
+    "share_profile": {
+        "export": {
+            "copy_dbid": "Copy DBID",
+            "export_clipboard": "Copy to Clipboard",
+            "export_csv": "Export CSV",
+            "exported_clipboard": "Profile copied to clipboard!"
+        },
+        "share": {
+            "check_auto_share": "Automatically post profile when importing player data",
+            "error": {
+                "error_header": "Failed to share player profile!",
+                "error_panel_not_share": "Tap here to try again.",
+                "error_panel_share": "Follow the instructions below to try again.",
+                "error_title": "Your profile failed to upload, with the error: {{errorMessage}}"
+            },
+            "header": "{{share_profile.share.share_text}}. Once shared, your public profile will be accessible by anyone with this link:",
+            "info_list": "DBID, captain name, level, vip level, fleet name and role, achievements, completed missions, your crew, items and ships",
+            "instructions": {
+                "line_1": "Click the link, above, to access data exports for spreadsheets including Take My Chrons and Do Not Airlock.",
+                "line_2": "Some pages on DataCore, notably fleet pages and event pages, may also link to your public profile.",
+                "line_3": "Information being shared is limited to: {{list}}. No private information is included in your public profile."
+            },
+            "nag": {
+                "nag_panel_not_share": "{{share_profile.share.share_text}} Tap here to learn more.",
+                "nag_panel_share": "Follow the instructions below to post your player profile to the DataCore server.",
+                "title": "Share Your Player Profile"
+            },
+            "post_profile": "Post Profile",
+            "share_text": "You can post your profile to the DataCore server to utilize personalized features of the discord bot, and let other users see your crew, ships, and items.",
+            "title": "Post Profile to DataCore"
+        },
+        "shared": {
+            "description": "Your profile was uploaded successfully! Tap here to view your public profile.",
+            "title": "Player Profile Shared!"
+        }
+    },
+    "ship": {
+        "accuracy": "Accuracy",
+        "amount": "Amount",
+        "antimatter": "Antimatter",
+        "arena_metric": "Arena Metric",
+        "attack": "Attack",
+        "attack_speed": "Attack Speed",
+        "battle_mode": "Battle mode",
+        "battle_stations": "Battle Stations",
+        "bonus_ability": "Bonus Ability",
+        "boosts": "Boosts",
+        "boosts_x_by_y": "Boosts {{x}} by {{y}}",
+        "calc": {
+            "advanced": {
+                "crew_filter": "Advanced Crew Filter",
+                "exclude_ability": "Exclude crew with this ability",
+                "power_depth": "Advanced Power Depth"
+            },
+            "calc_summary": "{{message}} ({{count}}) ({{accepted}} accepted results) ({{time}})",
+            "calculating_pct_ellipses": "Calculating ... ({{percent}}% complete)",
+            "calculating_pct_ellipses_verbose": "Calculating ... ({{percent}}% complete) ({{progress}} / {{count}}) ({{accepted}} accepted results)",
+            "exhaustive_mode": "Exhaustive Mode",
+            "fixed_delay": "Fixed Delay",
+            "fixed_delay_msg": "Must be a number between 0.2 and 0.6",
+            "generating_permutations_ellipses": "Generating permutations ...",
+            "icon_activation_offset": "{{icon}} Activation Offset",
+            "ignore_skill": "Ignore skills",
+            "iterations": "Iterations",
+            "max_init": "Max init time",
+            "max_iterations": "Max iterations",
+            "max_workers": "Max workers",
+            "ranking_method": "Ranking Method",
+            "rate": "Rate",
+            "rate_msg": "Must be a number between 1 and 10",
+            "run_current_line_up": "Run Current Crew",
+            "show_battle_graph": "Show Battle Graph",
+            "simulate": "Simulate",
+            "sorting_finalizing_ellipses": "Sorting and finalizing results ...",
+            "verbose_status_updates": "Verbose Status Updates"
+        },
+        "calculated_crew": "Calculated Crew",
+        "charge_phase": {
+            "after_seconds": "After {{seconds}}s ",
+            "bonus": "+{{amount}} to {{ability}}",
+            "cooldown": "{{time}}s cooldown",
+            "duration": "{{time}}s duration"
+        },
+        "charge_phases": "Charge Phases",
+        "clear_station": "Clear Station",
+        "cooldown": "Cooldown",
+        "crew_with_trigger_check": "Only show crew with matching trigger",
+        "crit_bonus": "Crit Bonus",
+        "crit_rating": "Crit Rating",
+        "cycle_time": "Cycle Time",
+        "depth_hr_warn": "* By default, power level depth does not apply to hull-repair crew.",
+        "duration": "Duration",
+        "equipment_bonus": "Equipment Bonus",
+        "evasion": "Evasion",
+        "fbb": "{{menu.tools.fleet_boss_battles}}",
+        "fbb_metric": "Fleet Boss Metric",
+        "grants": "Grants",
+        "handicap": "Handicap",
+        "hull": "Hull",
+        "increase_boost": {
+            "accuracy": "Increases accuracy boost to +{{val}}",
+            "attack": "Increases attack boost to +{{val}}",
+            "evasion": "Increases evasion boost to +{{val}}"
+        },
+        "initialize": "Initialize",
+        "level": "{{base.level}}",
+        "max_attack": "Max. Attack",
+        "max_level": "Max Level",
+        "min_attack": "Min. Attack",
+        "offset_adds_warn": "* Activation offsets add to the current crew's initial cooldown time.",
+        "power_depth": "Power level depth",
+        "pvp": "{{global.item_types.arena}}",
+        "pvp_divisions": {
+            "admiral": "Admiral Division",
+            "captain": "Captain Division",
+            "commander": "Commander Division"
+        },
+        "shields": "Shields",
+        "ship": "Ship",
+        "show": {
+            "only_in_use": "Show only ships currently in use"
+        },
+        "skirmish": "{{event_type.skirmish}}",
+        "skirmish_metric": "Skirmish Metric",
+        "trigger": "Trigger",
+        "triggers": "Triggers",
+        "unlimited": "Unlimited",
+        "uses": "Uses",
+        "uses_per_battle": "Uses per battle",
+        "weighted_attack": "Weighted Attack"
+    },
+    "ship_action": {
+        "boost_by": "Boosts {{type}} by {{amount}}",
+        "grant": "Grants {{grant}} status: {{grant_description}}",
+        "handicap": "Decrease {{type}} by {{amount}}"
+    },
+    "shuttle_helper": {
+        "calculator": {
+            "change_missions": "Change Missions",
+            "mission_selected": "1 mission selected",
+            "missions_selected": "{{n}} missions selected",
+            "view_running": "View Running Assignments",
+            "warn_replace": "Warning: this will replace any existing recommendations.",
+            "you_can_rearrange": "You can rearrange crew to balance shuttle chances as you see fit. Tap a seat assignment to change the crew assigned to the seat. Lock an assignment to keep that crew in that seat when requesting new recommendations.",
+            "you_can_view_running": "You can {{link}}.",
+            "you_have_n_running": "You have {{n}} shuttle missions running in-game.",
+            "you_have_one_running": "You have 1 shuttle mission running in-game."
+        },
+        "event": {
+            "current_vp": "Current VP: {{vp}}",
+            "finish_event_with_colon": "You will finish the event with:",
+            "finish_phase_with_colon": "You will finish the faction phase with:",
+            "runner": "Run {{count}} x {{duration}} shuttles every {{rate}}",
+            "victory_points": "Victory Points",
+            "vp": "VP"
+        },
+        "heading": "Use this tool to help plan your shuttles.",
+        "missions": {
+            "columns": {
+                "best": "{{event_planner.table.columns.best}}",
+                "current_assignment": "Current Assignment",
+                "faction": "Faction",
+                "here": "Here",
+                "mission": "Mission",
+                "name": "{{global.name}}",
+                "seat": "Seat",
+                "seat_assignments": "Seat Assignments",
+                "skills": "Skills",
+                "status": "Status",
+                "success_chance": "Success Chance",
+                "there": "There"
+            },
+            "create": "Create a Mission",
+            "heading": "Select all the missions that you want to run, then tap '{{global.recommend_crew}}' to see the best seats for your crew.",
+            "message": {
+                "missing": "If the mission you want isn't listed above, {{link}} to input the mission parameters manually.",
+                "tip": "Tip: open shuttle missions in-game before uploading your player data to DataCore so that this tool can import the missions automatically."
+            },
+            "n_percent_chance": "{{n}}% Chance",
+            "next_seat": "Next Seat",
+            "schedule_other": "Schedule other shuttles",
+            "select": {
+                "all_n": "Select all {{n}}",
+                "group": "Select group",
+                "groups": {
+                    "only_faction": "Select only {{faction}} ({{length}})",
+                    "only_open": "Select only open in-game ({{length}})",
+                    "only_running": "Select only running in-game ({{length}})",
+                    "only_three": "Select only 3- seaters ({{length}})",
+                    "only_three_four": "Select only 3- and 4- seaters ({{length}})"
+                },
+                "one_y": "1 / {{y}} missions selected",
+                "unselect": "Unselect all",
+                "x_y": "{{x}} / {{y}} missions selected"
+            },
+            "status": {
+                "expires_in": "Expires in {{time}}",
+                "manual": "Manual",
+                "no_missions": "No missions available.",
+                "not_open": "Not Open",
+                "open_seat": "Open Seat",
+                "renting": "Renting",
+                "running": "Running",
+                "unknown": "Unknown"
+            }
+        },
+        "mode": {
+            "active_event": {
+                "active": "Active Event ({{name}}). All event shuttles that are open in-game will be imported and saved. Bonuses will be applied to event crew.",
+                "all": "Active Event ({{name}}). All event shuttles that are open in-game will be imported, but NOT saved. Bonuses will be applied to event crew.",
+                "inactive": "Active Event ({{name}}). Shuttles will be saved. Bonuses will be applied to event crew."
+            },
+            "heading": "Select a mission type",
+            "inactive_event": {
+                "active": "Inactive Event ({{name}}). No shuttles will be imported or saved. Bonuses will be applied to event crew.",
+                "inactive": "Inactive Event ({{name}}). Shuttles will NOT be saved. Bonuses will be applied to event crew."
+            },
+            "standard": {
+                "active": "Standard. All shuttle missions that are open in-game will be imported, but missions and recommendations will NOT be saved by the shuttle helper.",
+                "inactive": "Standard. Shuttle missions and recommendations will NOT be saved by the shuttle helper."
+            }
+        }
+    },
+    "spinners": {
+        "cite_opt": "Loading citation optimizer...",
+        "default": "Loading data...",
+        "demands": "Calculating crew demands...",
+        "quipment": "Calculating quipment..."
+    },
+    "tool_roster_picker": {
+        "all_crew": {
+            "description": "Consider all crew in the game",
+            "title": "Best Possible Crew"
+        },
+        "owned_crew": {
+            "description": "Only consider your owned crew",
+            "title": "Owned Crew"
+        }
+    },
+    "voyage": {
+        "active": {
+            "active_voyage_colon": "Active Voyage:"
+        },
+        "calc": {
+            "msg_type": {
+                "completed": "Your voyage ran for {{time}}.",
+                "failed": "Your voyage failed at {{time}}.",
+                "ran_for": "Your voyage ran for {{time}}.",
+                "recalled": "Your voyage ran for {{time}}.",
+                "started": "Your voyage has been running for {{time}}."
+            },
+            "other_msg": {
+                "initial_estimate": "Your initial estimate was {{time}}."
+            }
+        },
+        "estimate": {
+            "dilemma_chance": "Chance of {{time}} dilemma: {{chance}}",
+            "estimate_time": "Estimate: {{time}}",
+            "n_refills": "{{n}} Refills",
+            "refill": "1 Refill"
+        },
+        "tracking": {
+            "not_tracking": "You are not tracking this voyage.",
+            "start_tracking": "Start tracking"
+        },
+        "type_names": {
+            "encounter_voyage": "Encounter Voyage",
+            "test_voyage_1": "Dilemma Voyage"
+        },
+        "view": {
+            "active_voyage": "View Active Voyage",
+            "crew_calculator": "View Crew Calculator",
+            "voyage_history": "View Voyage History"
+        }
+    }
+}

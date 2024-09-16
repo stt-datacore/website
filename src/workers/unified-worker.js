@@ -10,6 +10,7 @@ import CollectionOptimizer from './collectionworker.ts';
 import ItemsWorker from './itemsworker.ts';
 import QuestSolver from './questsolver.ts';
 import { calcQLots } from '../utils/equipment.ts';
+import ShipCrewWorker from './shipcrewworker.ts';
 
 // This worker can estimate a single lineup from input config
 const voyageEstimate = (config, progress) => {
@@ -95,9 +96,11 @@ self.onmessage = (message) => {
             const { crew, quipment, buffs, max_qbits, slots, mode } = message.data.config;
             crew.forEach((crew) => {
                 calcQLots(crew, quipment, buffs, max_qbits, slots, mode);
-            });            
+            });
             postResult(crew, false);
-        }
+        },
+        'shipworker': () => ShipCrewWorker.calc(message.data.config, progress => postResult(progress, true)).then(data => postResult(data, false)),
+        'bestshipworker': () => ShipCrewWorker.bestFinder(message.data.config).then(data => postResult(data, false)),
     };
 
     //console.log(message.data.worker);

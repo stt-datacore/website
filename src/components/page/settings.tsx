@@ -1,14 +1,7 @@
 import React from 'react';
-import { InView } from 'react-intersection-observer';
-import { Modal, Input, Button, Icon, Grid, Rating, Message, Dropdown, SemanticCOLORS, Menu, Checkbox } from 'semantic-ui-react';
-import { PlayerCrew } from '../../model/player';
-import { CrewMember } from '../../model/crew';
-import { DataContext } from '../../context/datacontext';
-import { PlayerContext } from '../../context/playercontext';
+import { Modal, Input, Button, Icon, Grid, Checkbox } from 'semantic-ui-react';
 import { GlobalContext } from '../../context/globalcontext';
-import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
-import { OptionsModal, OptionsModalProps, OptionsModalState, OptionGroup, OptionsBase } from '../base/optionsmodal_base';
-import { v4 } from 'uuid';
+import { OptionsBase } from '../base/optionsmodal_base';
 import { NavItem, getAllOptions, settingsToPermalink } from './util';
 
 export interface NavigationSettingsConfig {

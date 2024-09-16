@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, Grid, Divider, Header, Button, Form, TextArea, Message, Accordion, Label, Icon, Dimmer, Loader, SemanticICONS } from 'semantic-ui-react';
 import { iOS, mobileCheck } from '../../utils/misc';
+import { GlobalContext } from '../../context/globalcontext';
 
 export interface JsonImportConfig {    
     dataUrl: string;
@@ -20,6 +21,9 @@ export interface JsonInputFormProps<T> {
 };
 
 export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
+
 	const { setValidInput, requestDismiss } = props;
     
     const { pasteInMobile, dataUrl: DATALINK, dataName: caption, jsonHint, androidFileHint: androidHint, iOSFileHint: iosHint } = props.config;
@@ -52,7 +56,7 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 					<Loader content='Loading...' />
 				</Dimmer>
 				{requestDismiss &&
-					<Label as='a' corner='right' onClick={requestDismiss}>
+					<Label title={`Close ${caption} data upload panel`} as='a' corner='right' onClick={requestDismiss}>
 						<Icon name='delete' style={{ cursor: 'pointer' }}/>
 					</Label>
 				}
@@ -65,7 +69,7 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
                                     {renderCopyPaste()}
                                 </Grid.Column>
                                 <Grid.Column width={1} stretched style={{ position: 'relative' }}>
-                                    <Divider vertical>Or</Divider>
+                                    <Divider vertical>{t('json.or')}</Divider>
                                 </Grid.Column>
                                 <Grid.Column width={7}>
                                     {renderUpload()}
@@ -117,18 +121,19 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 			<React.Fragment>
 				<Header icon>
 					<Icon name='paste' />
-					Copy and Paste
+					{t('json.copy_and_paste.title')}
 				</Header>
 				<p>
-					Copy the contents of
-					{` `}<a href={DATALINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
-						your {caption} data
-					</a>,
-					<br />then paste everything into the text box below.
+					{tfmt('json.copy_and_paste.description_1', { 
+						'data': <a href={DATALINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
+									{caption}
+								</a>
+					})}					
+					<br />{t('json.copy_and_paste.description_2')}
 				</p>
 				<Form>
 					<TextArea
-						placeholder={`Paste your ${caption} data here`}
+						placeholder={t(`json.copy_and_paste.paste_here_placeholder`, { data: caption })}
 						value={displayedInput}
 						onChange={(e, { value }) => setDisplayedInput(value as string)}
 						onPaste={(e) => { return onInputPaste(e) }}
@@ -141,27 +146,29 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 						onClick={() => setDetails(details !== 'copypaste' ? 'copypaste' : undefined)}
 					>
 						<Icon name={details === 'copypaste' ? 'caret down' : 'caret right' as SemanticICONS} />
-						Detailed instructions...
+						{t('json.copy_and_paste.detailed_instructions.title')}
 					</Accordion.Title>
 					<Accordion.Content active={details === 'copypaste'} style={{ textAlign: 'left' }}>
 						<p>
-							DataCore cannot make direct requests to the game's servers, so you must follow these steps to import your {caption} data:
+						{t('json.copy_and_paste.detailed_instructions.header', { data: caption })}
 						</p>
 						<ol>
 							<li>
-								Open this page in your browser:{' '}
-								<a href={DATALINK} target='_blank'>
-									{DATALINK}
-								</a>.
+								{tfmt('json.copy_and_paste.detailed_instructions.instructions.line_1', {
+									link: <a href={DATALINK} target='_blank'>
+										{DATALINK}
+										</a>
+								})}
 							</li>
 							<li>
-								Sign in if asked, then wait for the page to finish loading. It should start with:{' '}
-								<span style={{ fontFamily: 'monospace' }}>{jsonHint}</span> ...
+								{tfmt('json.copy_and_paste.detailed_instructions.instructions.line_2', {
+									jsonHint: <span style={{ fontFamily: 'monospace' }}>{jsonHint}</span>
+								})}								
 							</li>
-							<li>Select everything in the page (Ctrl+A) and copy to clipboard (Ctrl+C).</li>
-							<li>Paste (Ctrl+V) in the text box above. Note that DataCore will intentionally display less data here to speed up the process.</li>
+							<li>{t('json.copy_and_paste.detailed_instructions.instructions.line_3')}</li>
+							<li>{t('json.copy_and_paste.detailed_instructions.instructions.line_4')}</li>
 						</ol>
-						<p>If you have multiple accounts, we recommend using your browser in incognito mode (Chrome) or in private mode (Edge / Firefox) to avoid caching your account credentials, making it easier to switch accounts.</p>
+						<p>{t('json.copy_and_paste.detailed_instructions.footer')}</p>
 					</Accordion.Content>
 				</Accordion>
 			</React.Fragment>
@@ -173,19 +180,19 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 			<React.Fragment>
 				<Header icon>
 					<Icon name='upload' />
-					Upload File
+					{t('json.upload_file.title')}
 				</Header>
 				<p>
-					Save
-					{` `}<a href={DATALINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
-						your {caption} data
-					</a>
-					{` `}to your device,
-					<br />then upload the file. Recommended for mobile users.
+					{tfmt('json.upload_file.description_1', {
+						data: <a href={DATALINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
+							{caption}
+						</a>
+					})}
+					<br />{t('json.upload_file.description_2')}
 				</p>
 				<Button
 					onClick={() => inputUploadFile?.click()}
-					content={`Browse for ${caption} data file to upload...`}
+					content={t('json.upload_file.browse_ellipses', { data: caption })}
 					icon='file text'
 					size='large'
 					color='blue'
@@ -203,11 +210,11 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 						onClick={() => setDetails((details !== 'ios' && details !== 'android') ? 'ios' : undefined)}
 					>
 						<Icon name={(details === 'ios' || details === 'android') ? 'caret down' : 'caret right' as SemanticICONS} />
-						Detailed instructions...
+						{t('json.upload_file.detailed_instructions.title')}
 					</Accordion.Title>
 					<Accordion.Content active={details === 'ios' || details === 'android'} style={{ textAlign: 'left' }}>
 						<p>
-							DataCore cannot make direct requests to the game's servers, so you must follow these steps to import your {caption} data:
+						{t('json.upload_file.detailed_instructions.header')}
 						</p>
 						<div style={{ margin: '1em 0' }}>
 							<Button.Group fluid compact>
@@ -220,33 +227,25 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 									onClick={() => setDetails('android')}
 								/>
 							</Button.Group>
-						</div>
+						</div>						
 						<ol>
 							<li>
-								Open this page on your device:{' '}
-								<a href={DATALINK} target='_blank'>
-									{DATALINK}
-								</a>.
+								{tfmt(`json.upload_file.detailed_instructions.${details}.instructions.line_1`, {
+									link: <a href={DATALINK} target='_blank'>
+										{DATALINK}
+									</a>
+								})}
 							</li>
 							<li>
-								Sign in if asked, then wait for the page to finish loading. It should start with:{' '}
-								<span style={{ fontFamily: 'monospace' }}>{jsonHint}</span> ...
+								{tfmt(`json.upload_file.detailed_instructions.${details}.instructions.line_2`, {
+									jsonHint: <span style={{ fontFamily: 'monospace' }}>{jsonHint}</span>
+								})}
 							</li>
-							{details === 'ios' &&
-								<React.Fragment>
-									<li>Tap the share icon while viewing the page.</li>
-									<li>Tap "options" and choose "Web Archive", tap "save to files", choose a location, and save.</li>
-								</React.Fragment>
-							}
-							{details === 'android' &&
-								<React.Fragment>
-									<li>Tap the menu (three dots) icon while viewing the page.</li>
-									<li>Tap the download button, choose a location, and save.</li>
-								</React.Fragment>
-							}
-							<li>Come back to this DataCore page.</li>
-							<li>Tap the "Browse for player data file to upload..." button.</li>
-							<li>Choose the file starting with "{details === 'ios' ? iosHint : androidHint}..." from where you saved it.</li>
+							<li>{t(`json.upload_file.detailed_instructions.${details}.instructions.line_3`)}</li>
+							<li>{t(`json.upload_file.detailed_instructions.${details}.instructions.line_4`)}</li>
+							<li>{t(`json.upload_file.detailed_instructions.${details}.instructions.line_5`)}</li>
+							<li>{t(`json.upload_file.detailed_instructions.${details}.instructions.line_6`, { data: caption })}</li>
+							<li>{t(`json.upload_file.detailed_instructions.${details}.instructions.line_7`, { hint: details === 'ios' ? iosHint : androidHint })}</li>
 						</ol>
 					</Accordion.Content>
 				</Accordion>

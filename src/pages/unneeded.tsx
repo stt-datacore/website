@@ -3,12 +3,14 @@ import React from 'react';
 import DataPageLayout from '../components/page/datapagelayout';
 
 import { UnneededItems } from '../components/unneededitems';
+import { GlobalContext } from '../context/globalcontext';
 
 const UnneededItemsPage = () => {
+	const { t } = React.useContext(GlobalContext).localized;
 	return (
 		<DataPageLayout
-			pageTitle='Unneeded Items'
-			pageDescription='Use this tool to help identify items you can safely discard to free up space in your inventory.'
+			pageTitle={t("items_unneeded.title")}
+			pageDescription={t("items_unneeded.description")}
 			playerPromptType='require'
 			demands={['episodes']}
 		>

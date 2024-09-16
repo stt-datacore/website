@@ -6,8 +6,9 @@ import { CrewMember } from '../../model/crew';
 import { PlayerCrew } from '../../model/player';
 import CONFIG from '../../components/CONFIG';
 import { StatLabel } from '../../components/statlabel';
-import { getCoolStats } from '../../utils/misc';
+import { getCoolStats, translateSkills } from '../../utils/misc';
 import { formatTierLabel, gradeToColor, numberToGrade, prettyObtained, printPortalStatus } from '../../utils/crewutils';
+import { GlobalContext } from '../../context/globalcontext';
 
 type CrewRankHighlightsProps = {
 	crew: CrewMember;
@@ -17,20 +18,20 @@ type CrewRankHighlightsProps = {
 
 export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 	const { crew, markdownRemark, compact } = props;
-
+	const { t } = React.useContext(GlobalContext).localized;
 	if (compact) {
 		return (
 			<div style={{ textAlign: 'center' }}>
-				<StatLabel title="Voyage rank" value={crew.ranks.voyRank} />
-				<StatLabel title="Gauntlet rank" value={crew.ranks.gauntletRank} />
-				<StatLabel title="Big book tier" value={formatTierLabel(crew)} />
-				{crew.quipment_grade && <StatLabel title="Quipment Score" value={<span style={{color: gradeToColor(crew.quipment_grade) ?? undefined}}>{numberToGrade(crew.quipment_grade)}</span>} />}
+				<StatLabel title={t('rank_names.voyage_rank')} value={crew.ranks.voyRank} />
+				<StatLabel title={t('rank_names.gauntlet_rank')} value={crew.ranks.gauntletRank} />
+				<StatLabel title={t('rank_names.bigbook_tier')} value={formatTierLabel(crew)} />
+				{crew.quipment_grade && <StatLabel title={t('rank_names.quipment_score')} value={<span style={{color: gradeToColor(crew.quipment_grade) ?? undefined}}>{numberToGrade(crew.quipment_grade)}</span>} />}
 			</div>
 		);
 	}
-	
-	const isNever = printPortalStatus(crew) === 'Never';
-	
+
+	const isNever = printPortalStatus(crew, t) === t("global.never");
+
 	return (
 		<React.Fragment>
 			<div style={{
@@ -44,7 +45,7 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 				marginLeft: 0,
 				flexWrap: "wrap"}}>
 				<StatLabel
-					title="Big Book Tier"
+					title={t('rank_names.bigbook_tier')}
 					size='jumbo'
 					value={<div
 						style={{
@@ -58,7 +59,7 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 					</div>}
 				/>
 				<StatLabel
-					title="CAB Grade"
+					title={t('rank_names.cab_grade')}
 					size='jumbo'
 					value={
 						<div
@@ -73,9 +74,9 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 						</div>
 					}
 				/>
-				<StatLabel title="Voyage Rank"
+				<StatLabel title={t('rank_names.voyage_rank')}
 					value={rankLinker(false, crew.ranks.voyRank, crew.symbol, 'ranks.voyRank')}/>
-				<StatLabel title="Gauntlet Rank"
+				<StatLabel title={t('rank_names.gauntlet_rank')}
 					value={rankLinker(false, crew.ranks.gauntletRank, crew.symbol, 'ranks.gauntletRank')}/>
 			</div>
 
@@ -91,43 +92,44 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 				flexWrap: "wrap"}}>
 
 				<StatLabel
-						title="CAB Rank"
+						title={t('rank_names.cab_rank')}
 						value={crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : '?'}
 						/>
-				<StatLabel title="CAB Rating" value={crew.cab_ov ?? '?'} />
-				
+				<StatLabel title={t('rank_names.cab_rating')} value={crew.cab_ov || '?'} />
+
 				{!isNever && <>
-					{crew.in_portal && !!crew.unique_polestar_combos?.length && 
-						<StatLabel 
+					{crew.in_portal && !!crew.unique_polestar_combos?.length &&
+						<StatLabel
 							title={<>
 								<div style={{ width:"100%", textAlign:"center",display:'flex', flexDirection: 'column', justifyContent: 'center', color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
-									Uniquely Retrievable
+									{t('base.uniquely_retrievable')}
 								</div>
 							</>}
 						value="" />
 							||
-						<StatLabel 
-							title="Portal"
+						<StatLabel
+							title={t('global.portal')}
 							value={<>
 								<div style={{ color: crew.in_portal ? 'lightgreen': undefined, fontWeight: crew.in_portal ? 'bold' : undefined}}>
-									{printPortalStatus(crew, true, false)}
+									{printPortalStatus(crew, t, true, false)}
 								</div>
-							</>} 
+							</>}
 					/>}
 				</>}
-				{isNever && <StatLabel 
+				{isNever && <StatLabel
 							title={<>
 								<div style={{ width:"100%", color: CONFIG.RARITIES[5].color, textAlign:"center",display:'flex', flexDirection: 'column', justifyContent: 'center', fontWeight: 'bold'}}>
-									{prettyObtained(crew, true)}
+									{prettyObtained(crew, t, true)}
 								</div>
 							</>}
 						value="" />
 
 
 				}
-				{crew.quipment_grade && <StatLabel title="Quipment Score" value={<span style={{color: gradeToColor(crew.quipment_grade) ?? undefined}}>{numberToGrade(crew.quipment_grade)}</span>} />}				{markdownRemark.frontmatter.events !== null && (
+				{crew.quipment_grade && <StatLabel title={t('rank_names.quipment_score')} value={<span style={{color: gradeToColor(crew.quipment_grade) ?? undefined}}>{numberToGrade(crew.quipment_grade)}</span>} />}
+				{/* {markdownRemark.frontmatter.events !== null && (
 				<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
-				)}
+				)} */}
 			</div>
 		</React.Fragment>
 	);
@@ -140,8 +142,9 @@ type CrewRanksProps = {
 
 export const CrewRanks = (props: CrewRanksProps) => {
 	const { crew, myCrew } = props;
+	const { t } = React.useContext(GlobalContext).localized;
 	const [showPane, setShowPane] = React.useState(false);
-	const title = !!myCrew ? getMyCrewTitle(crew, myCrew) : getCoolStats(crew, false);
+	const title = !!myCrew ? getMyCrewTitle(crew, myCrew) : getCoolStats(t, crew, false);
 	return (
 		<Accordion style={{ }}>
 			<Accordion.Title
@@ -152,7 +155,7 @@ export const CrewRanks = (props: CrewRanksProps) => {
 				{!showPane && <>{title}</>}
 				{showPane && (
 					<React.Fragment>
-						{!!myCrew ? 'Ranks on your roster' : 'All ranks'}:
+						{!!myCrew ? t('cool_stats.ranks_on_your_roster') : t('cool_stats.all_ranks')}:
 					</React.Fragment>
 				)}
 			</Accordion.Title>
@@ -172,7 +175,7 @@ export const CrewRanks = (props: CrewRanksProps) => {
 		let b = [] as JSX.Element[];
 
 		const skillName = (shortName: string) => {
-			let ns = CONFIG?.SKILLS_SHORT?.find(c => c.short === shortName)?.name;
+			let ns = CONFIG?.SKILLS_SHORT_ENGLISH?.find(c => c.short === shortName)?.name;
 			if (ns) return CONFIG.SKILLS[ns];
 			else return null;
 		}
@@ -198,14 +201,14 @@ export const CrewRanks = (props: CrewRanksProps) => {
 			if (rank.startsWith('V_')) {
 				v.push(
 					<Statistic key={rank}>
-						<Statistic.Label>{rank.slice(2).replace('_', ' / ')}</Statistic.Label>
+						<Statistic.Label>{translateSkills(rank.slice(2).replace('_', ' / '), ' / ')}</Statistic.Label>
 						<Statistic.Value>{crew.ranks[rank] && rankLinker(!!myCrew, rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('G_')) {
 				g.push(
 					<Statistic key={rank}>
-						<Statistic.Label>{rank.slice(2).replace('_', ' / ')}</Statistic.Label>
+						<Statistic.Label>{translateSkills(rank.slice(2).replace('_', ' / '), ' / ')}</Statistic.Label>
 						<Statistic.Value>{crew.ranks[rank] && rankLinker(!!myCrew, rankHandler(rank), crew.symbol, 'ranks.'+rank)}</Statistic.Value>
 					</Statistic>
 				);
@@ -222,18 +225,18 @@ export const CrewRanks = (props: CrewRanksProps) => {
 		return (
 			<React.Fragment>
 				<Segment>
-					<Header as="h5">Base ranks</Header>
+					<Header as="h5">{t('cool_stats.base_ranks')}</Header>
 					<Statistic.Group widths="three" size={'mini'} style={{ paddingBottom: '0.5em' }}>
 						{b}
 					</Statistic.Group>
 				</Segment>
 				<Segment>
-					<Header as="h5">Voyage skill ranks</Header>
+					<Header as="h5">{t('cool_stats.voyage_skill_ranks')}</Header>
 					{crew.ranks.voyTriplet && (
 						<React.Fragment>
 							<Statistic.Group widths="one" size={'mini'}>
 								<Statistic>
-									<Statistic.Label>{crew.ranks.voyTriplet.name}</Statistic.Label>
+									<Statistic.Label>{translateSkills(crew.ranks.voyTriplet.name, ' / ')}</Statistic.Label>
 									<Statistic.Value>{rankLinker(!!myCrew, tripletHandler('voyTriplet'), crew.symbol, 'ranks.voyRank', 'ascending', tripletFilter)}</Statistic.Value>
 								</Statistic>
 							</Statistic.Group>
@@ -245,7 +248,7 @@ export const CrewRanks = (props: CrewRanksProps) => {
 					</Statistic.Group>
 				</Segment>
 				<Segment>
-					<Header as="h5">Gauntlet pair ranks</Header>
+					<Header as="h5">{t('cool_stats.gauntlet_pair_ranks')}</Header>
 					<Statistic.Group widths="three" size={'mini'} style={{ paddingBottom: '0.5em' }}>
 						{g}
 					</Statistic.Group>
@@ -262,7 +265,7 @@ export const CrewRanks = (props: CrewRanksProps) => {
 				.map(([k, v]) => [k, roster.filter((c) => c.ranks[k] < crew.ranks[k]).length + 1])
 				.sort(([k1, v1], [k2, v2]) => (v1 as number) - (v2 as number))[0];
 			return [
-				(name as string).slice(2).replace('_', '/'),
+				translateSkills((name as string).slice(2).replace('_', '/')),
 				rank
 			];
 		}
@@ -273,20 +276,21 @@ export const CrewRanks = (props: CrewRanksProps) => {
 				c.ranks.voyTriplet.name == crew.ranks.voyTriplet?.name &&
 				crew.ranks.voyTriplet.rank > c.ranks.voyTriplet.rank).length + 1
 
-			return `#${rank} ${crew.ranks.voyTriplet?.name} on your roster`;
+			return t('cool_stats.rank_skill_roster', { rank: `${rank}`, skill: translateSkills(crew.ranks.voyTriplet!.name, " / ") } );
 		} else if (skillCount == 2) {
 			let [voyRankName, voyRank] = rankHandler('V');
 			let [gauntRankName, gauntRank] = rankHandler('G');
 
 			if (voyRank < gauntRank)
-				return `#${voyRank} ${voyRankName} voyage pair in your roster`;
+				return t('cool_stats.voyage_pair_roster', { rank: `${voyRank}`, skill: `${voyRankName}` })
+				//return `#${voyRank} ${voyRankName} voyage pair in your roster`;
 			else if (voyRank > gauntRank)
-				return `#${gauntRank} ${gauntRankName} gauntlet pair in your roster`;
+				return t('cool_stats.gauntlet_pair_roster', { rank: `${gauntRank}`, skill: `${gauntRankName}` });
 			else
-				return `#${voyRank} ${voyRankName} voyage/gauntlet pair in your roster`;
+				return t('cool_stats.voyage_gauntlet_pair_roster', { rank: `${voyRank}`, skill: `${voyRankName}` })
 		} else {
 			let [baseName, baseRank] = rankHandler('B');
-			return `#${baseRank} ${baseName} base in your roster`;
+			return t('cool_stats.base_roster', { rank: `${baseRank}`, skill: `${baseName}` });
 		}
 	}
 };

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card, Image, Button } from 'semantic-ui-react';
 
-import allTraits from '../../../static/structured/translation_en.json';
 import { Voyage } from '../../model/player';
 import { IVoyageCrew, IVoyageHistory, ITrackedCheckpoint } from '../../model/voyage';
 import { Estimate } from '../../model/worker';
@@ -22,12 +21,18 @@ type ActiveVoyageProps = {
 	setHistory: (history: IVoyageHistory) => void;
 	showDetails: boolean;
 	actionButtons: JSX.Element[];
+	voySymbol?: string;
 };
 
 export const ActiveVoyage = (props: ActiveVoyageProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
+	const { SHIP_TRAIT_NAMES } = globalContext.localized;
+
 	const { playerData, ephemeral } = globalContext.player;
 	const { showDetails, actionButtons } = props;
+
+	const voySymbol = props.voySymbol ?? 'test_voyage_1';
 
 	const [myCrew, setMyCrew] = React.useState<IVoyageCrew[] | undefined>(undefined);
 
@@ -40,7 +45,7 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 	if (!playerData || !ephemeral || ephemeral.voyage.length === 0)
 		return (<></>);
 
-	const voyageConfig = ephemeral.voyage[0];
+	const voyageConfig = ephemeral.voyage.find(f => f.name === voySymbol) ?? ephemeral.voyage[0];
 
 	const ship = playerData.player.character.ships.find(s => s.id === voyageConfig.ship_id);
 	const shipIcon = ship?.icon ? `${ship.icon.file.slice(1).replace('/', '_')}.png` : '';
@@ -51,11 +56,19 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 	else if (ship?.name) header = ship.name;
 
 	const msgTypes = {
-		started: 'has been running for',
-		failed: 'failed at',
-		recalled: 'ran for',
-		completed: 'ran for'
+		started: 'voyage.calc.msg_type.started',
+		failed: 'voyage.calc.msg_type.failed',
+		recalled: 'voyage.calc.msg_type.recalled', // voyage.calc.msg_type.ran_for
+		completed: 'voyage.calc.msg_type.completed' // voyage.calc.msg_type.ran_for
 	};
+
+	// const msgTypes = {
+	// 	started: 'has been running for',
+	// 	failed: 'failed at',
+	// 	recalled: 'ran for',
+	// 	completed: 'ran for'
+	// };
+
 	const voyageDuration = formatTime(getRuntime(voyageConfig));
 
 	// Active details to pass independently to CIVAS
@@ -78,10 +91,13 @@ export const ActiveVoyage = (props: ActiveVoyageProps) => {
 					<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', rowGap: '1em' }}>
 						<div>
 							<p>
-								Active voyage: <b>{CONFIG.SKILLS[voyageConfig.skills.primary_skill]}</b> / <b>{CONFIG.SKILLS[voyageConfig.skills.secondary_skill]}</b> / <b>{allTraits.ship_trait_names[voyageConfig.ship_trait] ?? voyageConfig.ship_trait}</b>
+								{t('voyage.active.active_voyage_colon')}&nbsp;<b>{CONFIG.SKILLS[voyageConfig.skills.primary_skill]}</b> / <b>{CONFIG.SKILLS[voyageConfig.skills.secondary_skill]}</b> / <b>{SHIP_TRAIT_NAMES[voyageConfig.ship_trait] ?? voyageConfig.ship_trait}</b>
 							</p>
 							<p style={{ marginTop: '.5em' }}>
-								Your voyage {msgTypes[voyageConfig.state]} <b><span style={{ whiteSpace: 'nowrap' }}>{voyageDuration}</span></b>.
+								{tfmt(msgTypes[voyageConfig.state], {
+									time: <b><span style={{ whiteSpace: 'nowrap' }}>{voyageDuration}</span></b>
+								})}
+								{/* Your voyage {msgTypes[voyageConfig.state]} <b><span style={{ whiteSpace: 'nowrap' }}>{voyageDuration}</span></b>. */}
 								{props.history && ship &&
 									<ActiveVoyageTracker
 										history={props.history} setHistory={props.setHistory}
@@ -127,6 +143,7 @@ type ActiveVoyageTrackerProps = {
 
 export const ActiveVoyageTracker = (props: ActiveVoyageTrackerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { history, setHistory, voyageConfig, shipSymbol } = props;
 
 	const [voyageReconciled, setVoyageReconciled] = React.useState(false);
@@ -142,13 +159,17 @@ export const ActiveVoyageTracker = (props: ActiveVoyageTrackerProps) => {
 		const tracked = history.voyages.find(voyage => voyage.voyage_id === voyageConfig.id);
 		if (!tracked) return (
 			<span>
-				{` `}You are not tracking this voyage.
-				{` `}<Button compact content='Start tracking' onClick={initializeTracking} />
+				{` `}{t('voyage.tracking.not_tracking')}
+				{` `}<Button compact content={t('voyage.tracking.start_tracking')} onClick={initializeTracking} />
 			</span>
 		);
 		return (
 			<span>
-				{` `}Your initial estimate was <b><span style={{ whiteSpace: 'nowrap' }}>{formatTime(tracked.estimate.median)}</span></b>.
+				{` `}
+				{tfmt('voyage.other_msg.initial_estimate', {
+					time: <b><span style={{ whiteSpace: 'nowrap' }}>{formatTime(tracked.estimate.median)}</span></b>
+				})}
+				{/* Your initial estimate was <b><span style={{ whiteSpace: 'nowrap' }}>{formatTime(tracked.estimate.median)}</span></b>. */}
 			</span>
 		);
 	}

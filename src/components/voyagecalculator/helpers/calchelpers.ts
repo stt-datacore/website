@@ -31,7 +31,7 @@ export const CALCULATORS = {
 	helpers: [
 		{ id: 'iampicard', name: 'Original', helper: (props: HelperProps) => new IAmPicardHelper(props) },
 		{ id: 'ussjohnjay-mvam', name: 'Multi-vector Assault', helper: (props: HelperProps) => new USSJohnJayHelper(props, 'mvam') },
-		{ id: 'ussjohnjay-idic', name: 'Infinite Diversity', helper: (props: HelperProps) => new USSJohnJayHelper(props, 'idic') }
+		// { id: 'ussjohnjay-idic', name: 'Infinite Diversity', helper: (props: HelperProps) => new USSJohnJayHelper(props, 'idic') }
 	] as CalculatorHelper[],
 	fields: [
 		{

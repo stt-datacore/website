@@ -10,6 +10,8 @@ import { Navigation } from './navigation';
 import Dashboard from './dashboard';
 import PlayerHeader from '../../components/playerdata/playerheader';
 
+const DEBUG_MODE = false;
+
 export interface DataPageLayoutProps {
 	children: JSX.Element;
 
@@ -40,57 +42,56 @@ export interface DataPageLayoutProps {
 	playerPromptType?: 'require' | 'recommend' | 'none';
 };
 
-const MainContent = ({ children, narrowLayout }) =>
-	narrowLayout ? (
+const MainContent = ({ children, narrowLayout }) => {
+	if (DEBUG_MODE) console.log("MainContent component render");
+
+	return narrowLayout ? (
 		<Container text style={{ marginTop: '4em', paddingBottom: '2em', marginBottom: '2em' }}>{children}</Container>
 	) : (
 		<Container style={{ marginTop: '4em', marginBottom: '2em' }}>{children}</Container>
 	);
-
-const getNavigatorLanguage = () => {
-	let lang = 'en';
-	if (typeof navigator !== 'undefined') {
-		lang = navigator.language.slice(0, 2).toLowerCase();
-		if (lang === 'es') lang = 'sp';
-	}
-	return 'en';
-	// if (!['sp', 'en', 'fr', 'de'].includes(lang)) lang = 'en';
-	// return lang;
 }
+
+
+// const getNavigatorLanguage = () => {
+// 	let lang = 'en';
+// 	if (typeof navigator !== 'undefined') {
+// 		lang = navigator.language.slice(0, 2).toLowerCase();
+// 		if (lang === 'es') lang = 'sp';
+// 	}
+// 	return 'en';
+// 	// if (!['sp', 'en', 'fr', 'de'].includes(lang)) lang = 'en';
+// 	// return lang;
+// }
 
 const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const globalContext = React.useContext(GlobalContext);
-	const [currentLanguage, setCurrentLanguage] = React.useState('en');
-	
+
 	const { children, pageId, pageTitle, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
 
 	const [isReady, setIsReady] = React.useState(false);
 	const [dashboardPanel, setDashboardPanel] = React.useState<string | undefined>(undefined);
 	const [playerPanel, setPlayerPanel] = React.useState<string | undefined>(undefined);
 
-	const demands = props.demands ?? [] as ValidDemands[];
-	const i18nDemand = 'translation_' + currentLanguage;
-
-	// React.useEffect(() => {
-	// 	if (!!globalContext.player?.playerData?.player?.lang && currentLanguage !== globalContext.player?.playerData?.player?.lang) {
-	// 		setCurrentLanguage(globalContext.player?.playerData?.player?.lang);
-	// 	}
-	// }, [globalContext.player]);
-
 	React.useEffect(() => {
-		([i18nDemand, 'crew', 'collections', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
+		const demands: ValidDemands[] = props.demands ?? [];
+		(['crew', 'collections', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
 			if (!demands.includes(required))
 				demands.push(required);
 		});
-	
-		setTimeout(() => {
-			setIsReady(!!globalContext.core.ready && !!globalContext.core.ready(demands));
-		})
-	}, [currentLanguage, globalContext.core]);
+		if (DEBUG_MODE) console.log("Invoke readyLocalizedCore");
+		// Fetch core data AND localize it before datapage can access it
+		globalContext.readyLocalizedCore(demands, () => {
+			if (DEBUG_MODE) console.log("setIsReady(true)");
+			setIsReady(true);
+		});
+	}, []);
 
 	// topAnchor div styled to scroll properly with a fixed header
 	const topAnchor = React.useRef<HTMLDivElement>(null);
 	const contentAnchor = React.useRef<HTMLDivElement>(null);
+
+	if (DEBUG_MODE) console.log("DataPageLayout component render");
 
 	return (
 		<div ref={topAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
@@ -113,6 +114,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 			>
 				<MainContent narrowLayout={narrowLayout}>
 					<Dashboard
+						narrow={narrowLayout ?? false}
 						activePanel={dashboardPanel}
 						setActivePanel={setDashboardPanel}
 					/>
@@ -136,6 +138,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	);
 
 	function renderContents(): JSX.Element {
+		if (DEBUG_MODE) console.log("renderContents()");
 		return (
 			<React.Fragment>
 				{!isReady &&
@@ -166,7 +169,6 @@ type DataPageHelmetProps = {
 
 const DataPageHelmet = (props: DataPageHelmetProps) => {
 	const { title, description } = props;
-
 	const data = useStaticQuery(graphql`
 		query {
 			site {
@@ -179,6 +181,8 @@ const DataPageHelmet = (props: DataPageHelmetProps) => {
 			}
 		}
 	`);
+
+	if (DEBUG_MODE) console.log("Helmet component render");
 
 	return (
 		<Helmet titleTemplate={data.site.siteMetadata.titleTemplate} defaultTitle={data.site.siteMetadata.defaultTitle}>

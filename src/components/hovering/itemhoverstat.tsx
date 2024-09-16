@@ -15,6 +15,7 @@ export interface ItemHoverStatProps extends HoverStatProps {
     disableBuffs?: boolean;
     navigate?: (symbol: string) => void;
     crewTargetGroup?: string;
+    compact?: boolean;
 }
 
 export interface ItemHoverStatState extends HoverStatState<EquipmentItem> {
@@ -62,7 +63,12 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
                 dataOut = { ... ci, ... mergeItems([fi],[ci])[0] as EquipmentItem };
             }
             else if (ci) {
-                dataOut = ci;
+                if (dataOut) {
+                    dataOut = { ...dataOut, ... mergeItems([dataOut], [ci])[0] as EquipmentItem };
+                }
+                else {
+                    dataOut = ci;
+                }                
             }
 
             if (dataIn && dataOut && !dataOut?.demandCrew?.length && !!dataIn?.demandCrew?.length) {
@@ -128,7 +134,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
         const { crewTargetGroup, targetGroup } = this.props;
         const { mobileWidth, displayItem, touchToggled } = this.state;
 
-        const compact = true;    
+        const compact = this.props.compact ?? true;
 
         if (!displayItem) {
             // console.log("Deactivating empty popover");
@@ -154,9 +160,10 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
             this.deactivate();
         }
 
-        return displayItem ? (<ItemPresenter 
+        return displayItem ? (<ItemPresenter
+            compact={compact}
             crewTargetGroup={crewTargetGroup}
-            mobileWidth={mobileWidth}
+            mobileWidth={mobileWidth}            
             close={() => onClose()} 
             openItem={(item) => navClick(item)} 
             hover={true} 

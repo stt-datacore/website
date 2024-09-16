@@ -1,11 +1,10 @@
 import CONFIG from "../components/CONFIG";
 import { BaseSkills, ComputedSkill, CrewMember, Skill } from "../model/crew";
-import { EquipmentItem } from "../model/equipment";
 import { Collection, PolestarCombo } from "../model/game-elements";
-import { PlayerCrew, PlayerData } from "../model/player";
-import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity } from "../model/worker";
-import { calcItemDemands, calcQuipmentScore } from "../utils/equipment";
-import { ItemWithBonus, getItemWithBonus, isQuipmentMatch } from "../utils/itemutils";
+import { PlayerCrew } from "../model/player";
+import { BetaTachyonRunnerConfig, CiteData, SkillOrderRarity } from "../model/worker";
+import { calcItemDemands } from "../utils/equipment";
+import { ItemWithBonus, getItemWithBonus } from "../utils/itemutils";
 import { findPolestars } from "../utils/retrieval";
 import { BuffStatTable } from "../utils/voyageutils";
 
@@ -33,7 +32,7 @@ export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffSt
                 core: core,
                 min: min,
                 max: max
-            };	
+            };
         }
         bs[skill] = {
             core: core,
@@ -49,93 +48,438 @@ export interface CrewSkill {
     skills: ComputedSkill[];
 }
 
-const amSkillOrder = ["command_skill", "science_skill", "security_skill", "engineering_skill", "diplomacy_skill", "medicine_skill"];
-const amMap = [
-    "Astrophysicist 	x 	x 		x 	x 	",
-    "Bajoran 	x 		x 		x 	",
-    "Borg 		x 	x 	x 		",
-    "Brutal 	x 	x 	x 	x 	x 	",
-    "Cardassian 	x 		x 		x 	",
-    "Caregiver 					x  	x",
-    "Civilian 	x 	x 	x 	x 	x 	x",
-    "Communicator 	x 		x 		x 	",
-    "Costumed 	x 	x 	x 	x 	x 	",
-    "Crafty 	x 	x 	x 		x 	",
-    "Cultural Figure 	x 		x 		x 	",
-    "Cyberneticist 		x 		x 		",
-    "Desperate 	x 	x 	x 	x 	x 	",
-    "Diplomat 	x 		x 		x 	",
-    "Duelist 	x 		x 		x 	",
-    "Exobiology 		x 				",
-    "Explorer 	x 		x 	x 		",
-    "Federation 	x 	x 	x 	x 	x 	x",
-    "Ferengi 					x 	",
-    "Gambler 	x 		x 		x 	",
-    "Hero 	x 		x 		x 	",
-    "Hologram 	x 	x 			x 	x",
-    "Human 	x 	x 	x 	x 	x 	x",
-    "Hunter 	x 		x 			",
-    "Innovator 	x 	x 		x 		",
-    "Inspiring 	x 		x 		x 	",
-    "Jury Rigger 	x 		x 	x 		",
-    "Klingon 	x 		x 		x 	",
-    "Marksman 			x 			",
-    "Maverick 	x 		x 		x 	",
-    "Mirror Universe 	x 	x	x 		x 	",
-    "Nurse 					  	x",
-    "Physician 		x 			x 	x",
-    "Pilot 	x 		x 	x 		",
-    "Prodigy 		x 		x 		",
-    "Resourceful 	x 	x 	x 	x 	x 	",
-    "Romantic 	x 	x 	x 	x 	x 	",
-    "Romulan 			x 		x 	",
-    "Saboteur 	x 		x 			",
-    "Scoundrel 	x 		x 		x 	",
-    "Starfleet 	x 	x 	x 	x 	x 	x",
-    "Survivalist 	x 		x 		x 	",
-    "Tactician 	x 	x 	x 	x 	x 	",
-    "Telepath 	x 	x 	x 		x 	",
-    "Undercover Operative 	x 	x 	x 		x 	",
-    "Veteran 	x 		x 		x 	",
-    "Villain 	x 		x 		x 	",
-    "Vulcan 	x 	x 	x 		x 	"
+const amMap =  [
+    {
+        "name": "brutal",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "caregiver",
+        "skills": [
+            "diplomacy_skill",
+            "medicine_skill"
+        ]
+    },
+    {
+        "name": "civilian",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill",
+            "medicine_skill"
+        ]
+    },
+    {
+        "name": "communicator",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "costumed",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "crafty",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "cultural_figure",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "desperate",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "duelist",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "explorer",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "engineering_skill"
+        ]
+    },
+    {
+        "name": "gambler",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "hero",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "hunter",
+        "skills": [
+            "command_skill",
+            "security_skill"
+        ]
+    },
+    {
+        "name": "innovator",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "engineering_skill"
+        ]
+    },
+    {
+        "name": "inspiring",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "jury_rigger",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "engineering_skill"
+        ]
+    },
+    {
+        "name": "marksman",
+        "skills": [
+            "security_skill"
+        ]
+    },
+    {
+        "name": "maverick",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "mirror_universe",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "pilot",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "engineering_skill"
+        ]
+    },
+    {
+        "name": "prodigy",
+        "skills": [
+            "science_skill",
+            "engineering_skill"
+        ]
+    },
+    {
+        "name": "resourceful",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "romantic",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "saboteur",
+        "skills": [
+            "command_skill",
+            "security_skill"
+        ]
+    },
+    {
+        "name": "scoundrel",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "survivalist",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "tactician",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "telepath",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "undercover_operative",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "villain",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "federation",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill",
+            "medicine_skill"
+        ]
+    },
+    {
+        "name": "starfleet",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill",
+            "medicine_skill"
+        ]
+    },
+    {
+        "name": "astrophysicist",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "engineering_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "cyberneticist",
+        "skills": [
+            "science_skill",
+            "engineering_skill"
+        ]
+    },
+    {
+        "name": "diplomat",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "doctor",
+        "skills": [
+            "science_skill",
+            "diplomacy_skill",
+            "medicine_skill"
+        ]
+    },
+    {
+        "name": "exobiology",
+        "skills": [
+            "science_skill"
+        ]
+    },
+    {
+        "name": "nurse",
+        "skills": [
+            "medicine_skill"
+        ]
+    },
+    {
+        "name": "veteran",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "bajoran",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "borg",
+        "skills": [
+            "science_skill",
+            "security_skill",
+            "engineering_skill"
+        ]
+    },
+    {
+        "name": "cardassian",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "ferengi",
+        "skills": [
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "hologram",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "diplomacy_skill",
+            "medicine_skill"
+        ]
+    },
+    {
+        "name": "human",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill",
+            "medicine_skill"
+        ]
+    },
+    {
+        "name": "klingon",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "romulan",
+        "skills": [
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "vulcan",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    }
 ];
 
 const lookupTrait = (trait: string) => {
     const oma = [] as string[];
     for (let ln of amMap) {
-        if (ln.startsWith(trait)) {
-            let parts = ln.split("\t");
-            let c = parts.length;
-            for (let i = 1; i < c; i++) {
-                if (parts[i].includes("x")) {
-                    oma.push(amSkillOrder[i - 1]);
-                }
-            }
+        if (ln.name  == trait) {
+            return ln.skills;
         }
     }
     return oma;
 }
 
-const BetaTachyon = {        
+const BetaTachyon = {
 
     scanCrew: (config: BetaTachyonRunnerConfig) => {
 
-        const { collections, inputCrew, buffs, settings } = config;        
+        const { collections, inputCrew, buffs, settings, immortalizedSymbols } = config;
         const magic = settings.magic;
 
         let { playerData } = config;
 
         return new Promise<CiteData>((resolve, reject) => {
-            
-            
+
+
             function isNever(crew: PlayerCrew | CrewMember) {
-                let ob = crew?.obtained?.toLowerCase() ?? "Unknown";	
+                let ob = crew?.obtained?.toLowerCase() ?? "Unknown";
                 return (ob.includes("bossbattle") || ob.includes("honor") || ob.includes("gauntlet") || ob.includes("voyage") || ob.includes("collection"));
             }
-           
+
             const skills = ["command_skill", "diplomacy_skill", "science_skill", "engineering_skill", "security_skill", "medicine_skill"];
-            const shortskills = ["CMD", "DIP", "SCI", "ENG", "SEC", "MED"];
             const voyskills = ["command", "diplomacy", "science", "engineering", "security", "medicine"];
             const skillPairs = [] as string[][];
             const skillTriplets = [] as string[][];
@@ -145,7 +489,7 @@ const BetaTachyon = {
                     if (s2 === s1) continue;
                     skillPairs.push([s1, s2]);
                 }
-            }            
+            }
 
             for (let s1 of skills) {
                 for (let s2 of skills) {
@@ -154,16 +498,21 @@ const BetaTachyon = {
                         skillTriplets.push([s1, s2, s3]);
                     }
                 }
-            }            
-            
-            const skillScore = (skill: ComputedSkill) => {
+            }
+
+            const skillScore = (skill: ComputedSkill | Skill) => {
                 if (!skill?.core) return 0;
-                return skill.core;
+                if ("max" in skill) {
+                    return skill.core + (((skill.max ?? 0) + (skill.min ?? 0)) * 0.5);
+                }
+                else {
+                    return skill.core + (((skill.range_max ?? 0) + (skill.range_min ?? 0)) * 0.5);
+                }
             }
 
             function getAMSeats(crew: PlayerCrew | CrewMember) {
-                
-                return crew.traits_named.filter(tn => lookupTrait(tn).some((sk) => sk in crew && crew[sk].core));
+
+                return crew.traits.filter(tn => lookupTrait(tn).some((sk) => sk in crew && crew[sk].core));
             }
 
             function countSkills(crew: PlayerCrew) {
@@ -175,9 +524,9 @@ const BetaTachyon = {
                 }
                 return x;
             }
-            
+
             function getSkillOrder(crew: PlayerCrew | CrewMember, forceTwo?: boolean) {
-                const sk = [] as ComputedSkill[];
+                const sk = [] as Skill[];
                 let x = 0;
                 for (let skill of skills) {
                     if (skill in crew.base_skills) {
@@ -186,7 +535,7 @@ const BetaTachyon = {
                     x++;
                 }
 
-                sk.sort((a, b) => skillScore(b) - skillScore(a));                
+                sk.sort((a, b) => skillScore(b) - skillScore(a));
                 const output = [] as string[];
 
                 if (sk.length > 0 && sk[0].skill) {
@@ -201,7 +550,7 @@ const BetaTachyon = {
 
                 return forceTwo ? output.slice(0, 2) : output;
             }
-            
+
             function printSkillOrder(crew: PlayerCrew | CrewMember, forceTwo?: boolean) {
                 return getSkillOrder(crew, forceTwo).join("/");
             }
@@ -215,7 +564,7 @@ const BetaTachyon = {
                     }
                     x++;
                 }
-                sk.sort((a, b) => skillScore(b) - skillScore(a));                
+                sk.sort((a, b) => skillScore(b) - skillScore(a));
                 const output = {
                     crew: crew,
                     skills: [],
@@ -228,7 +577,7 @@ const BetaTachyon = {
                 }
                 if (!forceTwo && (sk.length > 2 && sk[2].skill)) {
                     output.skills.push({ ... sk[2] });
-                }                
+                }
 
                 return output;
             }
@@ -236,7 +585,7 @@ const BetaTachyon = {
             function makeVoys(crew: PlayerCrew) {
                 const ovoys = [] as string[];
                 if (!crew.voyScores) return [];
-                
+
                 Object.keys(crew.voyScores).forEach((sk) => {
                     if (crew.voyScores && crew.voyScores[sk]) {
                         let b = sk.split("/");
@@ -248,37 +597,37 @@ const BetaTachyon = {
             }
 
             const findBest = (crew: PlayerCrew[], skills: string[], top: number, forceTwo?: boolean) => {
-                
-                if (skills.length === 2 || forceTwo) {                
+
+                if (skills.length === 2 || forceTwo) {
                     const skillcrew = crew.filter(crew => skills[0] in crew && crew[skills[0]].core && skills[1] in crew && crew[skills[1]].core)
                         .sort((a, b) => {
-                            return (skillScore(b[skills[0]]) + skillScore(b[skills[1]])) - (skillScore(a[skills[0]]) + skillScore(a[skills[1]]));                                
+                            return (skillScore(b[skills[0]]) + skillScore(b[skills[1]])) - (skillScore(a[skills[0]]) + skillScore(a[skills[1]]));
                         });
                     return skillcrew.slice(0, top);
                 }
                 else {
                     const skillcrew = crew.filter(crew => skills[0] in crew && crew[skills[0]].core && skills[1] in crew && crew[skills[1]].core && skills[2] in crew && crew[skills[2]].core)
                         .sort((a, b) => {
-                            return (skillScore(b[skills[0]]) + skillScore(b[skills[1]]) + skillScore(b[skills[2]])) - (skillScore(a[skills[0]]) + skillScore(a[skills[1]]) + skillScore(a[skills[2]]));                                
+                            return (skillScore(b[skills[0]]) + skillScore(b[skills[1]]) + skillScore(b[skills[2]])) - (skillScore(a[skills[0]]) + skillScore(a[skills[1]]) + skillScore(a[skills[2]]));
                         });
                     return skillcrew.slice(0, top);
                 }
             };
-            
+
             const acc = {} as { [key: string]: CrewMember };
 
             const compareCrew = (crewSymbol: string, skills: string[], allCrew: CrewMember[], best: (PlayerCrew | CrewMember)[]) => {
-            
+
                 if (!(crewSymbol in acc)) {
                     let cfe = allCrew.find(c => c.symbol === crewSymbol);
                     if (!cfe) return -1;
-                    acc[crewSymbol] = cfe;    
+                    acc[crewSymbol] = cfe;
                 }
 
-                let cf = acc[crewSymbol];            
-                if (!cf) return -1;                
+                let cf = acc[crewSymbol];
+                if (!cf) return -1;
                 const crew = cf;
-        
+
                 let core = skillScore(crew[skills[0]]) + skillScore(crew[skills[1]]) + ((skills.length > 2 && skills[2] in crew) ? skillScore(crew[skills[2]]) : 0) as number;
                 if (skills.length > 2 && (!(skills[2] in crew) || !(crew[skills[2]].core))) {
                     let so = getSortedSkills(crew);
@@ -287,19 +636,19 @@ const BetaTachyon = {
 
                 let c = best.length;
                 let v = -1;
-        
+
                 for (let i = 0; i < c; i++) {
-                    let comp = skillScore(best[i][skills[0]]) + skillScore(best[i][skills[1]]) + ((skills.length > 2 && skills[2] in best[i]) ? skillScore(best[i][skills[2]]) : 0) as number;                    
+                    let comp = skillScore(best[i][skills[0]]) + skillScore(best[i][skills[1]]) + ((skills.length > 2 && skills[2] in best[i]) ? skillScore(best[i][skills[2]]) : 0) as number;
                     if (core > comp) v = i;
                     else if (core < comp) v = i + 1;
                     else v = i;
                 }
-                
+
                 return v;
             };
 
             const isImmortal = (c) => {
-                return c.level === 100 && c.equipment?.length === 4 && c.rarity === c.max_rarity;    
+                return c.level === 100 && c.equipment?.length === 4 && c.rarity === c.max_rarity;
             }
 
             if (playerData.citeMode && playerData.citeMode.rarities?.length) {
@@ -310,7 +659,7 @@ const BetaTachyon = {
 
             const getDistanceFromTop = (item: CrewMember, topCrew: { [key: string]: CrewMember | CrewMember[] }) => {
                 let printedOrder = printSkillOrder(item);
-                let ordered = getSortedSkills(item);  
+                let ordered = getSortedSkills(item);
                 let lvls = [] as number[]
                 ordered.skills.forEach(skv => {
                     let skill = skv.skill + "_skill";
@@ -319,8 +668,8 @@ const BetaTachyon = {
                     }
                     else {
                         lvls.push(skillScore(item[skill]) / skillScore(topCrew[skill][skill]));
-                    }                    
-                });                
+                    }
+                });
                 return lvls.reduce((p, n) => p + n, 0) / 3;
             };
 
@@ -329,6 +678,7 @@ const BetaTachyon = {
             if (!evalCrew?.length) {
                 resolve({
                     crewToCite: [],
+                    crewToRetrieve: [],
                     crewToTrain: [],
                     skillOrderRarities: [],
                 } as CiteData);
@@ -340,7 +690,7 @@ const BetaTachyon = {
             const skillout = {} as { [key: string]: PlayerCrew[] };
 
             let immo1 = playerData?.player?.character?.crew?.filter(c => c && isImmortal(c)) ?? [];
-            
+
             const immoCrew = immo1?.length ? immo1 : playerData?.player?.character?.crew ?? [];
 
             skillPairs.forEach((sk) => {
@@ -358,7 +708,7 @@ const BetaTachyon = {
 
             const topCrew = {} as { [key: string]: CrewMember };
             const skillOrderCrew = {} as { [key: string]: CrewMember[] };
-            
+
             const uniqueSkillOrders = [] as string[];
             const uniqueTwoSkills = [] as string[];
             const tripleRare = [] as SkillOrderRarity[];
@@ -425,7 +775,7 @@ const BetaTachyon = {
                 const fcrew = allCrew.filter(fc => skill in fc && !!fc[skill].core).sort((a, b) => skillScore(b[skill]) - skillScore(a[skill]));
                 if (fcrew?.length) {
                     topCrew[skill] = fcrew[0];
-                }                
+                }
             });
 
             uniqueSkillOrders.forEach((sko) => {
@@ -445,8 +795,8 @@ const BetaTachyon = {
                 skillOrderCrew[sko] = ccrew;
             });
 
-            Object.keys(skillbest).forEach(skill => {                
-                const skp = skill.split("/");                                
+            Object.keys(skillbest).forEach(skill => {
+                const skp = skill.split("/");
                 skillout[skill] ??= [];
                 const triplets = [] as string[];
                 Object.keys(besttrips).forEach(trip => {
@@ -457,14 +807,14 @@ const BetaTachyon = {
 
                 evalCrew.forEach((crew) => {
                     let c = compareCrew(crew.symbol, skp, allCrew, skillbest[skill]);
-                    if (c >= 0 && c < magic) {                        
+                    if (c >= 0 && c < magic) {
                         skillout[skill].push(crew);
                         crew.voyScores ??= {};
                         crew.voyScores[skill] ??= 0;
                         crew.voyScores[skill]++;
-        
-                    }                    
-        
+
+                    }
+
                     for (let t of triplets) {
                         let d = compareCrew(crew.symbol, t.split("/"), allCrew, besttrips[t]);
                         if (d >= 0 && d < 1) {
@@ -474,49 +824,55 @@ const BetaTachyon = {
                             crew.voyScores[vt]++;
                         }
                     }
-    
+
                 });
 
                 skillout[skill] = skillout[skill].filter(c => !isImmortal(c));
             });
-           
+
             const rc1 = Object.values(skillout).reduce((p, c) => p ? p.concat(c) : c);
             const resultCrew = rc1.filter((fc, idx) => rc1.findIndex(g => g.id === fc.id) === idx);
             const allGroups = {} as { [key: string]: number };
 
             for (let crew of resultCrew) {
                 let cf = allCrew.find(c => c.symbol === crew.symbol);
-                if (!cf) return -1;                
+                if (!cf) return -1;
 
                 let so = getSortedSkills(cf);
-                crew.voyagesImproved = makeVoys(crew);   
+                crew.voyagesImproved = makeVoys(crew);
 
                 let evibe = ((skillScore(so.skills[0]) * 0.35) + (skillScore(so.skills[1]) * 0.25) + (skillScore(so.skills[2]) * 0.15)) / 2.5;
 
                 let icols = playerData.player.character.cryo_collections.filter(f => {
-                    return !!f.claimable_milestone_index && 
-                        crew.collections.includes(f.name)
+                    return !!f.claimable_milestone_index &&
+                        crew.collection_ids.includes(`${f.type_id}`)
                 });
-                
-                let mcols = icols.map(ic => collections.find(fc => fc.name == ic.name)) as Collection[];
-                mcols = mcols.filter((col, idx) => {
-                    if (icols[idx].claimable_milestone_index) {
-                        return col?.milestones?.slice(icols[idx].claimable_milestone_index).some(m => !!m.buffs?.length);
-                    }
-                    else {
-                        return false;
-                    }
-                });
-                
-                //calcQuipmentScore(crew, quipment, true);
-                crew.collectionsIncreased = mcols.map(mc => mc.name);
+
+                let mcols = icols.map(ic => collections.find(fc => fc.id?.toString() == ic.type_id?.toString())) as Collection[];
+                if (immortalizedSymbols.includes(crew.symbol)) {
+                    crew.collectionsIncreased = undefined;
+                }
+                else {
+                    mcols = mcols.filter((col, idx) => {
+                        if (icols[idx].claimable_milestone_index) {
+                            return col?.milestones?.slice(icols[idx].claimable_milestone_index).some(m => !!m.buffs?.length);
+                        }
+                        else {
+                            return false;
+                        }
+                    });
+
+                    //calcQuipmentScore(crew, quipment, true);
+                    crew.collectionsIncreased = mcols.map(mc => mc.name);
+                }
+
                 crew.totalEVContribution = evibe;
                 crew.evPerCitation = evibe / crew.max_rarity;
                 crew.totalEVRemaining = crew.evPerCitation * (crew.max_rarity - crew.rarity);
                 crew.amTraits = getAMSeats(crew);
                 crew.score = getDistanceFromTop(cf, topCrew);
                 crew.scoreTrip = getDistanceFromTop(cf, skillOrderCrew);
-                
+
                 if (crew.voyagesImproved?.length) {
                     for (let vi of crew.voyagesImproved) {
                         allGroups[vi] ??= 0;
@@ -540,7 +896,7 @@ const BetaTachyon = {
             const maxam = resultCrew.map(c => c.amTraits?.length ?? 0).reduce((a, b) => a > b ? a : b);
             const maxquip = resultCrew.map(c => c.quipment_score ?? 0).reduce((a, b) => a > b ? a : b);
             const maxcols = resultCrew.map(c => c.collectionsIncreased?.length ?? 0).reduce((a, b) => a > b ? a : b);
-            
+
             resultCrew.forEach((crew) => {
                 crew.groupSparsity ??= 0;
                 crew.groupSparsity /= maxsparse;
@@ -557,10 +913,10 @@ const BetaTachyon = {
                     let pcomp = (1/ps.count*100);
                     if (max < pcomp) max = pcomp;
                 });
-        
-                // less gives weight                
+
+                // less gives weight
                 let gs = multConf.groupSparsity * (crew.groupSparsity ?? 0);
-                
+
                 // more gives weight
                 let quip = multConf.quipment * ((crew.quipment_score ?? 0) / (maxquip ? maxquip : 1));
 
@@ -569,25 +925,25 @@ const BetaTachyon = {
 
                 // more gives weight
                 let improve = multConf.improved * ((crew.voyagesImproved?.length ?? 0) / (maxvoy ? maxvoy : 1));
-                
+
                 // more gives weight
                 let totalp = multConf.power * ((crew.totalEVContribution ?? 0) / maxev);
-                
+
                 // less gives weight
                 let effort = multConf.citeEffort * (1 - ((crew.max_rarity - crew.rarity) / crew.max_rarity));
-                
-                // more gives weight    
+
+                // more gives weight
                 let amscore = multConf.antimatter * ((crew.amTraits?.length ?? 0) / maxam);
-                
+
                 // not in portal gives weight
                 let pscore = (acc[crew.symbol].in_portal ? 0 : multConf.portal);
-                
+
                 // never gives weight
                 let nscore = isNever(crew) ? multConf.never : 0;
 
                 // more gives weight
                 let ciscore = multConf.collections * ((crew.collectionsIncreased?.length ?? 0) / (maxcols ? maxcols : 1));
-                
+
                 let sko = printSkillOrder(crew);
                 let skd = printSkillOrder(crew, true);
 
@@ -601,7 +957,7 @@ const BetaTachyon = {
                 if (tr && db) {
                     // less gives weight
                     trrare = multConf.skillRare * (1 / tr.count);
-                    
+
                     // less gives weight
                     dbrare = multConf.skillRare * (db.count / 100);
                     skrare = trrare - dbrare;
@@ -637,15 +993,16 @@ const BetaTachyon = {
 
                 return r;
             });
-            
+
             resolve({
                 crewToCite: resultCrew.filter(f => f.rarity !== f.max_rarity).map(nc => JSON.parse(JSON.stringify(nc))),
+                crewToRetrieve: resultCrew.filter(f => f.rarity !== f.max_rarity && f.unique_polestar_combos?.length).map(nc => JSON.parse(JSON.stringify(nc))),
                 crewToTrain: resultCrew.filter(f => f.rarity === f.max_rarity || ((f.rarity >= f.max_rarity / 2 && f.level <= 70))).map(nc => JSON.parse(JSON.stringify(nc))),
                 skillOrderRarities: tripleRare
             } as CiteData);
         });
     },
-    
+
 }
 
 export default BetaTachyon;

@@ -12,6 +12,7 @@ import { filterTraits } from './utils';
 
 export const RetrievalCrew = () => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { collections } = globalContext.core;
 	const { playerData } = globalContext.player;
 	const { allKeystones, rosterCrew, setRosterCrew, polestarTailors, getCrewFilter, setCrewFilter, resetForm, wishlist } = React.useContext(RetrievalContext);
@@ -211,15 +212,15 @@ export const RetrievalCrew = () => {
 				if (!crew.in_portal) {
 					let source = '';
 					switch (crew.obtained) {
-						case 'BossBattle': source = 'Captain\'s Bridge'; break;
-						case 'Collection': source = 'Collection Milestone'; break;
-						case 'FactionStore': source = 'Faction Store'; break;
-						case 'Fuse': source = 'Exclusive Fusion'; break;
-						case 'Gauntlet': source = 'Gauntlet Exclusive'; break;
-						case 'HonorHall': source = 'Honor Hall'; break;
-						case 'Missions': source = 'Main Board Mission'; break;
-						case 'Voyage': source = 'Voyage Exclusive'; break;
-						case 'WebStore': source = 'Web Store'; break;
+						case 'BossBattle': source = t('obtained.long.BossBattle'); break;
+						case 'Collection': source = t('obtained.long.Collection'); break;
+						case 'FactionStore': source = t('obtained.long.FactionStore'); break;
+						case 'Fuse': source = t('obtained.long.Fuse'); break;
+						case 'Gauntlet': source = t('obtained.long.Gauntlet'); break;
+						case 'HonorHall': source = t('obtained.long.Honor Hall'); break;
+						case 'Missions': source = t('obtained.long.Missions'); break;
+						case 'Voyage': source = t('obtained.long.Voyage'); break;
+						case 'WebStore': source = t('obtained.long.WebStore'); break;
 					}
 					if (source !== '') {
 						crew.retrievable = RetrievableState.Never;

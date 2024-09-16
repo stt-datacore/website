@@ -1,8 +1,8 @@
 import React from 'react';
 import { Header, Dropdown, Form, Table, Icon, Grid, Label, Message, Button, Popup } from 'semantic-ui-react';
 
-import allTraits from '../../../static/structured/translation_en.json';
 import { SolveStatus, Solver, SolverNode, SolverTrait, Spotter, TraitOption } from '../../model/boss';
+import { GlobalContext } from '../../context/globalcontext';
 
 import { UserContext, SolverContext } from './context';
 
@@ -50,6 +50,7 @@ type TraitsProgressProps = {
 };
 
 const TraitsProgress = (props: TraitsProgressProps) => {
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { spotterPrefs } = React.useContext(UserContext);
 	const { collaboration } = React.useContext(SolverContext);
 	const { solver } = props;
@@ -58,13 +59,13 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 
 	return (
 		<div style={{ margin: '2em 0' }}>
-			<Header as='h4'>Current Solutions</Header>
-			<p>This table shows the progress of the current combo chain. Update the mystery traits when a node is solved.</p>
+			<Header as='h4'>{t('fbb.current_solutions.title')}</Header>
+			<p>{t('fbb.current_solutions.heading')}</p>
 			<Table celled selectable striped unstackable compact='very'>
 				<Table.Header>
 					<Table.Row>
-						<Table.HeaderCell>Given Traits</Table.HeaderCell>
-						<Table.HeaderCell>Mystery Traits</Table.HeaderCell>
+						<Table.HeaderCell>{t('fbb.columns.given_traits')}</Table.HeaderCell>
+						<Table.HeaderCell>{t('fbb.columns.mystery_traits')}</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -174,12 +175,13 @@ type TraitsPossibleProps = {
 };
 
 const TraitsPossible = (props: TraitsPossibleProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { solver } = props;
 
 	return (
 		<div style={{ margin: '2em 0' }}>
-			<Header as='h4'>Possible Traits</Header>
-			<p>This table should match the list of possible traits in-game.</p>
+			<Header as='h4'>{t('fbb.possible_traits.title')}</Header>
+			<p>{t('fbb.possible_traits.heading')}</p>
 			<Grid doubling columns={6} style={{ margin: '1em 0' }}>
 				{solver.traits.filter(t => t.source === 'pool').map(t =>
 					<Grid.Column key={t.id} style={{ textAlign: 'center', padding: '1px' }}>
@@ -201,6 +203,9 @@ type TraitsChecklistProps = {
 };
 
 const TraitsChecklist = (props: TraitsChecklistProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
+	const { TRAIT_NAMES } = globalContext.localized;
 	const { solver, spotter, updateSpotter } = props;
 
 	const traits = [] as string[];
@@ -211,15 +216,15 @@ const TraitsChecklist = (props: TraitsChecklistProps) => {
 			return {
 				key: trait,
 				value: trait,
-				text: allTraits.trait_names[trait]
+				text: TRAIT_NAMES[trait]
 			} as TraitOption;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 
 	return (
 		<div style={{ margin: '2em 0' }}>
-			You can manually exclude traits from consideration.
+			{t('fbb.possible_traits.manual_exclusion')}
 			<Form.Field
-				placeholder='Search for traits'
+				placeholder={t('fbb.possible_traits.hint')}
 				control={Dropdown}
 				clearable
 				fluid
@@ -239,6 +244,8 @@ type TraitsExporterProps = {
 };
 
 const TraitsExporter = (props: TraitsExporterProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
 	const { solver } = props;
 	const { nodes, traits } = solver;
 
@@ -270,15 +277,19 @@ const TraitsExporter = (props: TraitsExporterProps) => {
 	return (
 		<Message style={{ margin: '2em 0' }}>
 			<Message.Content>
-				<Message.Header>CAB's FBB Combo Chain Helper</Message.Header>
-				<p>The <b><a href={CABLink} target='_blank'>FBB Combo Chain Helper</a></b> is another tool that can help you and your fleet coordinate attacks in a Fleet Boss Battle. Click the button below to copy the known traits and the list of possible traits for use with this Google Sheet (currently v{CABVer}).</p>
+				<Message.Header>{t('fbb.cab.title')}</Message.Header>
+				<p>
+					{tfmt('fbb.cab.header', {
+						link: <b><a href={CABLink} target='_blank'>{t('fbb.cab.name')}</a></b>
+					})}
+				</p>
 				<Popup
 					content='Copied!'
 					on='click'
 					position='right center'
 					size='tiny'
 					trigger={
-						<Button icon='clipboard' content='Copy traits to clipboard' onClick={() => copyTraits()} />
+						<Button icon='clipboard' content={t('fbb.possible_traits.clipboard')} onClick={() => copyTraits()} />
 					}
 				/>
 			</Message.Content>

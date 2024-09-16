@@ -1,5 +1,5 @@
 import React from 'react';
-import { CollectionFilterContext } from './filtercontext';
+import { CollectionsContext } from './context';
 import { Pagination, Table, Grid, Image, Dropdown, Button, Checkbox, Icon, Input, Progress } from 'semantic-ui-react';
 import { Reward, BuffBase, PlayerCrew, PlayerCollection } from '../../model/player';
 import { RewardPicker, RewardsGrid } from '../crewtables/rewards';
@@ -29,10 +29,10 @@ interface ComboConfig {
 }
 
 export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
-    const colContext = React.useContext(CollectionFilterContext);
+    const colContext = React.useContext(CollectionsContext);
     const context = React.useContext(GlobalContext);
     const { workerRunning, playerCollections } = props;
-    const { favorited, setFavorited, showIncomplete, setShowIncomplete, hardFilter, setHardFilter, byCost, setByCost, matchMode, setMatchMode, costMode, setCostMode, setShort: internalSetShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
+    const { favorited, setFavorited, showIncomplete, setShowIncomplete, hardFilter, setHardFilter, byCost, setByCost, matchMode, setMatchMode, costMode, setCostMode, setShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     
@@ -46,13 +46,6 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 	const [allCrew, setAllCrew] = React.useState<PlayerCrew[]>([]);
 
 	const ownedCites = getOwnedCites(context.player.playerData?.player.character.items ?? [], costMode === 'sale');
-
-	const setShort = (value: boolean) => {
-		if (value !== short) {
-			internalSetShort(value);
-			setMapFilter({ ... mapFilter ?? {}, rewardFilter: [] });
-		}		
-	}
 
 	const setCombo = (col: CollectionGroup, combo: string | undefined) => {
 		let f = combos.find(cf => cf.collection === col.collection.name);

@@ -14,6 +14,7 @@ type PlayerHeaderProps = {
 
 const PlayerHeader = (props: PlayerHeaderProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { promptType, activePanel, setActivePanel } = props;
 
@@ -58,16 +59,16 @@ const PlayerHeader = (props: PlayerHeaderProps) => {
 		<div style={{ margin: '1em 0' }}>
 			{showRequireMessage && (
 				<Notification
-					header='Player Data Required'
-					content={<p>This page requires player data. Follow the instructions below to import your player data.</p>}
+					header={t('header.require.title')}
+					content={<p>{t('header.require.description')}</p>}
 					icon='user outline'
 					warning={true}
 				/>
 			)}
 			{showRecommendMessage && (
 				<Notification
-					header='Player Data Recommended'
-					content={<p>This page is better with player data.{activePanel !== 'input' && <>{` `}Tap here to import your player data now.</>}</p>}
+					header={t('header.recommend.title')}
+					content={<p>{t('header.recommend.description')}{activePanel !== 'input' && <>{` `}{t('header.recommend.tap_here')}</>}</p>}
 					icon='user outline'
 					onClick={activePanel !== 'input' ? () => setActivePanel('input') : undefined}
 					onDismiss={() => { dismissMessage('recommend'); if (activePanel === 'input') setActivePanel(undefined); }}
@@ -86,8 +87,8 @@ const PlayerHeader = (props: PlayerHeaderProps) => {
 			{(activePanel === 'input' || enforceInput) &&
 				<JsonInputForm
 					config={{
-						dataUrl: 'https://app.startrektimelines.com/player?client_api=20&only_read_state=true',
-						dataName: 'player',
+						dataUrl: 'https://app.startrektimelines.com/player?client_api=24&only_read_state=true',
+						dataName: t('json_types.player_data'),
 						jsonHint: '{"action":"update","player":',
 						androidFileHint: 'player.json',
 						iOSFileHint: 'player?client_api'

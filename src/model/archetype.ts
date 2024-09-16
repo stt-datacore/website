@@ -26,21 +26,21 @@ export interface Archetype20 extends ArchetypeBase {
     type: string;
     item_type: number;
   }
-  
+
   export interface Archetype17 extends ArchetypeBase {
     type: number;
   }
-  
+
   export interface ArchetypeRecipe {
     demands: ArchetypeDemand[]
     validity_hash: string
   }
-  
+
   export interface ArchetypeDemand {
     archetype_id: number
     count: number
   }
-  
+
   export interface ItemSource {
     challenge_id?: number
     challenge_skill?: string
@@ -55,8 +55,7 @@ export interface Archetype20 extends ArchetypeBase {
     dispute?: number
     mastery?: number
   }
-  
+
   export interface ArchetypeBonus {
     [key: string]: number | undefined;
   }
-  

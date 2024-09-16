@@ -44,12 +44,12 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     delete p.player.character.voyage_summaries;
     delete p.player.character.boost_windows;
     delete p.player.character.cadet_schedule;
-    delete p.player.character.cadet_tickets;
+    //delete p.player.character.cadet_tickets;
     delete p.player.character.daily_rewards_state;
     delete p.player.character.location;
     delete p.player.character.destination;
     delete p.player.character.video_ad_chroniton_boost_reward;
-    delete p.player.character.pvp_tickets;
+    //delete p.player.character.pvp_tickets;
     delete p.player.character.event_tickets;
     //delete p.player.character.pvp_divisions;
     delete p.player.character.pvp_timer;
@@ -58,8 +58,8 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     delete p.player.character.using_default_name;
     //delete p.player.character.max_level;
     delete p.player.character.can_purchase_shuttle_bay;
-    delete p.player.character.replay_energy_rate;
-    delete p.player.character.seconds_from_replay_energy_basis;
+    //delete p.player.character.replay_energy_rate;
+    //delete p.player.character.seconds_from_replay_energy_basis;
     delete p.player.character.seconds_from_last_boost_claim;
     // delete p.player.character.crew_borrows;
     // delete p.player.character.crew_shares;
@@ -192,7 +192,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     //     battle_stations: ship.battle_stations
     // }));
     
-    p.buyback_well = p.player.character.crew.filter((crew) => !!crew.in_buy_back_state).map(c => c.symbol) ?? [];
+    p.buyback_well = p.player.character.crew.filter((crew) => !!crew.in_buy_back_state) ?? [];
     p.player.character.crew = p.player.character.crew
         .filter((crew) => !crew.in_buy_back_state)
         .map((crew) => ({
@@ -202,7 +202,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
             level: crew.level,
             max_level: crew.max_level,
             rarity: crew.rarity,
-            equipment: crew.equipment.map((eq) => eq[0]),
+            equipment: crew?.equipment?.map((eq) => eq ? eq[0] : 0),
             kwipment: crew.kwipment,
             kwipment_expiration: crew.kwipment_expiration,
             q_bits: crew.q_bits,

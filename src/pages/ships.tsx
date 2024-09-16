@@ -1,11 +1,13 @@
 import React from 'react';
 import DataPageLayout from '../components/page/datapagelayout';
-import ProfileShips from '../components/profile_ships';
+import ShipTable from '../components/ship/shiptable';
+import { GlobalContext } from '../context/globalcontext';
+import { WorkerProvider } from '../context/workercontext';
 
 const ShipsPage = () => {
-
-    return <DataPageLayout playerPromptType='recommend' pageTitle='Ships'>
-        <ProfileShips />
+    const { t } = React.useContext(GlobalContext).localized;
+    return <DataPageLayout playerPromptType='recommend' pageTitle={t('pages.ships')}>
+        <ShipTable />
     </DataPageLayout>
 }
 

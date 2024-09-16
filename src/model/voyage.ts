@@ -13,6 +13,9 @@ export interface IVoyageInputConfig {
 	skills: VoyageSkills;
 	ship_trait: string;
 	crew_slots: CrewSlot[];
+	voyage_type: 'dilemma' | 'encounter';
+	high_bonus?: string[];
+	low_bonus?: string[];
 };
 
 // Extends IVoyageInputConfig to include calculation result

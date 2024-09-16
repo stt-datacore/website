@@ -8,13 +8,14 @@ type CrewStatProps = {
 	proficiencies?: boolean;
 	quipmentMode?: boolean;
 	style?: React.CSSProperties;
+	vertical?: boolean;
 };
 
 class CrewStat extends PureComponent<CrewStatProps> {
-	render() {		
+	render() {
 		const stats = this.props.data;
 		const scale = this.props.scale || 1;
-		const { proficiencies, quipmentMode } = this.props;
+		const { proficiencies, quipmentMode, vertical } = this.props;
 
 		return (
 			<div style={this.props.style}>
@@ -22,11 +23,12 @@ class CrewStat extends PureComponent<CrewStatProps> {
 				style={{
 					display: 'inline-grid',
 					width: 'max-content',
-					gridTemplateColumns: `${2.5 * scale}em auto`,
-					gridTemplateAreas: `'icon stats'\n'icon crits'`,
+					textAlign: vertical ? 'center' : undefined,
+					gridTemplateColumns: vertical ? `auto` : `${2.5 * scale}em auto auto`,
+					gridTemplateAreas: vertical ? `'icon' 'stats' 'profs' 'crits'` : `'icon stats profs' 'icon crits crits'`,
 					gridGap: `${0.2 * scale}em`,
 					paddingTop: `${0.2 * scale}em`,
-					paddingRight: `${0.4 * scale}em`,					
+					paddingRight: vertical ? '0' : `${0.4 * scale}em`,
 				}}>
 				<div style={{ gridArea: 'icon' }}>
 					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${this.props.skill_name}.png`} style={{ height: `${2 * scale}em` }} />
@@ -34,27 +36,31 @@ class CrewStat extends PureComponent<CrewStatProps> {
 				{!!stats && (
 					<React.Fragment>
 						{!proficiencies &&
-						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: `${1.5 * scale}em` }}>{stats.core}</span>
-							<span style={{ fontWeight: 'normal', fontSize: `${scale}em` }}>
-								+({stats.range_min}-{stats.range_max})
-							</span>
-						</div>}
+						<React.Fragment>
+							<div style={{ gridArea: 'stats' }}>
+								<span style={{ fontWeight: 'bolder', fontSize: `${1.5 * scale}em` }}>{stats.core}</span>
+							</div>
+							<div style={{ gridArea: 'profs' }}>
+								<span style={{ fontWeight: 'normal', fontSize: `${scale}em` }}>
+									+({stats.range_min}-{stats.range_max})
+								</span>
+							</div>
+						</React.Fragment>}
 						{!!proficiencies &&
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: `${1.5 * scale}em` }}>{stats.range_min}-{stats.range_max}</span>
-						</div>}				
+						</div>}
 						{!!quipmentMode &&
 						<div style={{ gridArea: 'crits', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: `${1 * scale}em` }} />
 							<span style={{ fontWeight: 'bolder', fontSize: `${scale}em` }}>
 								{stats.core + stats.range_min}-{stats.core + stats.range_max}
 							</span>
-						</div>}				
+						</div>}
 
 					</React.Fragment>
 				)}
-				
+
 			</div>
 			</div>
 		);

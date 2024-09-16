@@ -13,12 +13,13 @@ type RosterPickerProps = {
 	setRosterType: (rosterType: 'allCrew' | 'myCrew') => void;
 	setRosterCrew: (rosterCrew: PlayerCrew[]) => void;
 	setRosterShips: (rosterShips: Ship[]) => void;
+	voySymbol: string;
 };
 
 export const RosterPicker = (props: RosterPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, playerShips, ephemeral } = globalContext.player;
-	const { rosterType, setRosterType, setRosterCrew, setRosterShips } = props;
+	const { rosterType, setRosterType, setRosterCrew, setRosterShips, voySymbol } = props;
 
 	const [allCrew, setAllCrew] = React.useState<IVoyageCrew[] | undefined>(undefined);
 	const [myCrew, setMyCrew] = React.useState<IVoyageCrew[] | undefined>(undefined);

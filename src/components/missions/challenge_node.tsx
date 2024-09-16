@@ -5,6 +5,7 @@ import { Reward } from "../../model/player";
 import { appelate } from "../../utils/misc";
 import CONFIG from "../CONFIG";
 import { Icon } from "semantic-ui-react";
+import { GlobalContext } from "../../context/globalcontext";
 
 export interface ChallengeNodeInfo {
     quest: Quest;
@@ -23,6 +24,7 @@ export interface ChallengeNodeProps extends ChallengeNodeInfo {
 }
 
 export const ChallengeNode = (props: ChallengeNodeProps) => {
+    const { localized } = React.useContext(GlobalContext);
 
     const { excluded, tapped, mastery, style, quest, challengeId, targetGroup, crewTargetGroup } = props;
 
@@ -75,7 +77,7 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
                     ...style ?? {}
                 }}>
                 <span>
-                
+
                 {tapped && !excluded && <span style={{position:'relative', left: "0px", top: "0px", textAlign: "left"}}><Icon name='star' color='green' size='small' /></span>}
                 {tapped && excluded && <span style={{position:'relative', left: "0px", top: "0px", textAlign: "left"}}><Icon name='ban' color='red' size='small' /></span>}
 
@@ -88,7 +90,7 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
 
                 {!!challenge?.trait_bonuses?.length &&
                     <><b>Traits:&nbsp;</b><i>{challenge.trait_bonuses.map((t, idx) => {
-                        return <React.Fragment key={'trait_' + idx + t.trait}><br/><i>{appelate(t.trait)} (+{t.bonuses[mastery]})</i></React.Fragment>
+                        return <React.Fragment key={'trait_' + idx + t.trait}><br/><i>{localized.TRAIT_NAMES[t.trait]} (+{t.bonuses[mastery]})</i></React.Fragment>
                     })}</i></>
                 }
                 <img style={{ height: "2em", margin: "0.5em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />

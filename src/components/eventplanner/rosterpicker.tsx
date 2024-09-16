@@ -9,6 +9,8 @@ import CONFIG from '../../components/CONFIG';
 import { applyCrewBuffs } from '../../utils/crewutils';
 
 import { IRosterCrew } from './model';
+import { TinyStore } from '../../utils/tiny';
+import { CrewMember } from '../../model/crew';
 
 type RosterPickerProps = {
 	rosterType: string;
@@ -18,6 +20,7 @@ type RosterPickerProps = {
 
 export const RosterPicker = (props: RosterPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData, ephemeral, buffConfig } = globalContext.player;
 	const { rosterType, setRosterType, setRosterCrew } = props;
 
@@ -42,15 +45,15 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			<Step active={rosterType === 'myCrew'} onClick={() => setRosterType('myCrew')}>
 				<Icon name='users' />
 				<Step.Content>
-					<Step.Title>Owned Crew</Step.Title>
-					<Step.Description>Only consider your owned crew</Step.Description>
+					<Step.Title>{t('tool_roster_picker.owned_crew.title')}</Step.Title>
+					<Step.Description>{t('tool_roster_picker.owned_crew.description')}</Step.Description>
 				</Step.Content>
 			</Step>
 			<Step active={rosterType === 'allCrew'} onClick={() => setRosterType('allCrew')}>
 				<Icon name='fire' />
 				<Step.Content>
-					<Step.Title>Best Possible Crew</Step.Title>
-					<Step.Description>Consider all crew in the game</Step.Description>
+					<Step.Title>{t('tool_roster_picker.all_crew.title')}</Step.Title>
+					<Step.Description>{t('tool_roster_picker.all_crew.description')}</Step.Description>
 				</Step.Content>
 			</Step>
 		</Step.Group>
@@ -124,8 +127,34 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		});
 
 		// Add shared crew to roster
-		if (playerData.player.character.crew_borrows?.length && playerData.player.squad.rank !== 'LEADER') {
-			playerData.player.character.crew_borrows.forEach((crewBorrow, idx) => {
+		const store = TinyStore.getStore(`eventData/${playerData.player.dbid}`);
+
+		if (playerData.player.squad.rank !== 'LEADER' && !playerData.player.character.crew_borrows?.length) {
+			if (ephemeral?.events?.length) {
+				let crewBorrow = store.getValue<CrewMember>(`crewBorrow/${ephemeral.events[0].id}`);
+				if (crewBorrow) {
+					const sharedCrew = { ...globalContext.core.crew.find(c => c.symbol === crewBorrow.symbol), ...crewBorrow } as IRosterCrew;
+					sharedCrew.id = rosterCrew.length + 1;
+					sharedCrew.shared = true;
+					sharedCrew.statusIcon = 'share alternate';
+					sharedCrew.have = false;
+					if (buffConfig) applyCrewBuffs(sharedCrew, buffConfig);
+					rosterCrew.push(sharedCrew);
+				}
+				else {
+					store.clear();
+				}
+			}
+			else {
+				store.clear();
+			}
+		}
+		else {
+			store.clear();
+			playerData.player.character.crew_borrows?.forEach((crewBorrow, idx) => {
+				if (ephemeral?.events?.length) {
+					store.setValue<CrewMember>(`crewBorrow/${ephemeral.events[0].id}`, crewBorrow, true);
+				}
 				const sharedCrew = { ...globalContext.core.crew.find(c => c.symbol === crewBorrow.symbol), ...crewBorrow } as IRosterCrew;
 				sharedCrew.id = rosterCrew.length + idx + 1;
 				sharedCrew.shared = true;

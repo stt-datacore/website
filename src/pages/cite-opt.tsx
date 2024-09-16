@@ -1,12 +1,14 @@
 import React from 'react';
 import DataPageLayout from '../components/page/datapagelayout';
-import CiteOptimizer from '../components/citeoptimizer';
+import { CiteOptComponent } from '../components/optimizer/citeopt';
+import { GlobalContext } from '../context/globalcontext';
 
 
 const CiteOptimizerPage = () => {
+    const { t } = React.useContext(GlobalContext).localized;
 
-    return <DataPageLayout playerPromptType='require' pageTitle='Citation Optimizer' demands={['collections']}>
-        <CiteOptimizer />
+    return <DataPageLayout playerPromptType='require' pageTitle={t('menu.tools.citation_optimizer')} demands={['collections']}>
+        <CiteOptComponent />
     </DataPageLayout>
 }
 

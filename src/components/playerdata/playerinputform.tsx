@@ -9,7 +9,7 @@
 // import { PlayerData } from '../../model/player';
 // import { iOS, mobileCheck } from '../../utils/misc';
 
-// export const PLAYERLINK = 'https://app.startrektimelines.com/player?client_api=20&only_read_state=true';
+// export const PLAYERLINK = 'https://app.startrektimelines.com/player?client_api=24&only_read_state=true';
 
 // type PlayerInputFormProps = {
 // 	setValidInput: (playerData: PlayerData | undefined) => void;
@@ -25,7 +25,7 @@
 // 	const [details, setDetails] = React.useState<string | undefined>(undefined);
 // 	const [loadState, setLoadState] = React.useState(0);
 // 	const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
-	
+
 // 	React.useEffect(() => {
 // 		if (inputPlayerData) {
 // 			setValidInput(inputPlayerData);

@@ -5,12 +5,13 @@ import { GlobalContext } from '../../context/globalcontext';
 import { CrewMember, EquipmentSlot } from "../../model/crew";
 import { EquipmentItem } from '../../model/equipment';
 import { PlayerCrew, PlayerData } from "../../model/player";
-import { qbitsToSlots } from '../../utils/crewutils';
+import { qbitsToSlots, qbProgressToNext } from '../../utils/crewutils';
 import { getItemBonuses } from '../../utils/itemutils';
 import { printShortDistance } from '../../utils/misc';
 import { BuffStatTable } from '../../utils/voyageutils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import ItemDisplay from '../itemdisplay';
+import { Progress } from 'semantic-ui-react';
 
 export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
@@ -56,10 +57,12 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 
     const crew = props.crew as PlayerCrew;
     const quip = !!props.quipment;
-    
+
     const { targetGroup, locked, vertical } = props;
 
     const maxqIdx = (!quip ? 0 : (crew ? qbitsToSlots(crew.q_bits) : 0)) - 1;
+
+    const [toNext, next] = !quip ? [0, 0] : qbProgressToNext(crew.q_bits);
 
     let maxBuffs: BuffStatTable | undefined;
 
@@ -94,23 +97,23 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 }
             }
         } else {
-            
+
             [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
-    
+
             for (let i = startlevel; i < startlevel + 4; i++) {
                 let eq: EquipmentSlot;
                 eq = crew.equipment_slots[i];
-                
+
                 if (eq) {
                     let ef = context.core.items.find(item => item.symbol === eq.symbol);
                     if (ef) {
                         equip[i - startlevel] = (JSON.parse(JSON.stringify(ef)));
                     }
                 }
-                
+
             }
-        }    
-    
+        }
+
     }
     else {
 
@@ -145,8 +148,8 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                     }
                 }
             }
-            
-            equip[i] ??= {} as EquipmentItem;                
+
+            equip[i] ??= {} as EquipmentItem;
 
             if (eq) {
                 let ef = context.core.items.find(item => item?.kwipment_id?.toString() === eq?.toString());
@@ -168,7 +171,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 
     if (!quip && !!crew.equipment) {
         [0, 1, 2, 3].forEach(idx => {
-            if ((crew.equipment as number[]).indexOf(idx) < 0) {                
+            if ((crew.equipment as number[]).indexOf(idx) < 0) {
                 equip[idx].imageUrl = "items_equipment_box02_icon.png"
                 equip[idx].empty = true;
                 equip[idx].rarity = 0;
@@ -179,6 +182,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
         !context.core.items?.length &&
             <div className='ui medium centered text active inline loader'>Loading data...</div>
         ||context.core.items?.length &&
+            <>
             <div style={{
                 display: "flex",
                 flexDirection: vertical ? 'column' : 'row',
@@ -188,22 +192,24 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 padding: 0
             }}>
             {equip.map((item, idx) => (
-                    <CrewItemDisplay               
-                        vertical={!!vertical}        
+                    <CrewItemDisplay
+                        vertical={!!vertical}
                         targetGroup={targetGroup}
-                        style={(quip && maxqIdx < idx) ? { opacity: locked ? "0.50" : "0.25" } : undefined} 
+                        style={(quip && maxqIdx < idx) ? { opacity: locked ? "0.50" : "0.25" } : undefined}
                         locked={locked && (quip && maxqIdx < idx)}
-                        itemSize={props.itemSize} 
-                        mobileSize={props.mobileSize} 
-                        key={item.symbol + "_equip" + idx} 
-                        mobileWidth={mobileWidth} 
-                        crew={crew} 
+                        itemSize={props.itemSize}
+                        mobileSize={props.mobileSize}
+                        key={item.symbol + "_equip" + idx}
+                        mobileWidth={mobileWidth}
+                        crew={crew}
                         expiration={expirations ? (expirations[idx] ? printShortDistance(expirations[idx]) : <>{props.printNA && item.symbol ? props.printNA : <br/>}</>) : undefined}
                         equipment={item} />
                 ))}
             </div>
+            {!!next && <div style={{textAlign: 'center', margin: '0 0.5em', fontSize: '0.8em'}}><Progress size='tiny' total={next} value={next - toNext} style={{marginBottom: '0px'}} />({next - toNext}/{next})</div>}
+            </>
         || <></>
-        
+
 	);
 };
 
@@ -225,39 +231,38 @@ export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
         super(props);
     }
 
-
     render() {
         const entry = this.props;
         const { targetGroup, vertical } = entry;
 
         const itemSize = window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (this.props.mobileSize ?? 24) : (this.props.itemSize ?? 32);
 
-        return (<div 
+        return (<div
             onClick={(e) => !targetGroup ? navigate("/item_info?symbol=" + this.props.equipment?.symbol) : null}
             title={this.props.equipment?.name}
             style={{
             cursor: "pointer",
             display: "flex",
             flexDirection: "row",
-            justifyContent: "center",            
+            justifyContent: "center",
             margin: window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
             marginTop: vertical ? 0 : window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
             marginBottom: vertical ? 0 : window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
             //...this.props.style
         }}>
             <div style={{display:'flex', flexDirection:'column', alignItems: 'center', justifyContent: "center"}}>
-            {!!entry.expiration && <div style={{fontSize: "0.75em", textAlign: 'center'}}>{entry.expiration}</div>}           
+            {!!entry.expiration && <div style={{fontSize: "0.75em", textAlign: 'center'}}>{entry.expiration}</div>}
             <ItemDisplay
                 style={this.props.style}
                 targetGroup={targetGroup}
                 itemSymbol={entry.equipment?.symbol}
-                allItems={this.context.core.items}    
-                playerData={this.context.player.playerData}            
+                allItems={this.context.core.items}
+                playerData={this.context.player.playerData}
                 src={`${process.env.GATSBY_ASSETS_URL}${entry?.equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
                 size={itemSize}
                 maxRarity={entry?.equipment?.rarity ?? 0}
-                rarity={entry?.equipment?.rarity ?? 0}                
-            />    
+                rarity={entry?.equipment?.rarity ?? 0}
+            />
             {this.props.locked && <img style={{position: "relative", marginTop:"-16px", height: "16px"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/lock_icon.png`}/>}
             </div>
         </div>)

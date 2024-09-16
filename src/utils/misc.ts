@@ -1,10 +1,10 @@
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
 import { AvatarIcon } from '../model/game-elements';
-import { PlayerCrew } from '../model/player';
+import { PlayerCrew, TranslateMethod } from '../model/player';
+import { shortToSkill, skillToShort } from './crewutils';
 
-export type RankMode = "voyages" | "duration" | "voydur";
-
+export type RankMode = "voyages" | "duration" | "voydur" | "maxdur" | "voymaxdur";
 
 export interface DropDownItem {
 	key: string;
@@ -15,46 +15,56 @@ export interface DropDownItem {
 	content?: JSX.Element;
 }
 
-export function getCoolStats(crew: PlayerCrew | CrewMember, simple: boolean, showMore: boolean = true): string {
+export function translateSkills(string: string, separator: string = '/'): string {
+	let skills = string.split(separator);
+	let output: string[] = [];
+	for (let skill of skills) {
+		let a = shortToSkill(skill, true);
+		if (a) {
+			let b = skillToShort(a);
+			if (b) {
+				output.push(b);
+			}
+		}
+	}
+	return output.join(separator);
+}
+
+export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, simple: boolean, showMore: boolean = true, bThreshold = 40, gThreshold = 9, vThreshold = 9): string {
 	let stats = [] as string[];
 
 	const rankType = rank => {
-		return rank.startsWith('V_') ? 'Voyage' : rank.startsWith('G_') ? 'Gauntlet' : 'Base';
+		return rank.startsWith('V_') ? t('base.voyage') : rank.startsWith('G_') ? t('base.gauntlet') : t('global.base');
 	};
-
-	const skillName = short => {
-		let fskill = CONFIG.SKILLS_SHORT.find(c => c.short === short);
-		return fskill ? CONFIG.SKILLS[fskill.name] : null;
-	}
 
 	for (let rank in crew.ranks) {
 		if (simple) {
 			if (rank.startsWith('B_')) {
-				if (crew.ranks[rank] && crew.ranks[rank] <= 40) {
-					stats.push(`${rank.slice(2)} #${crew.ranks[rank]}`);
+				if (crew.ranks[rank] && crew.ranks[rank] <= bThreshold) {
+					stats.push(`${translateSkills(rank.slice(2))} #${crew.ranks[rank]}`);
 				}
 			}
 		} else {
 			if (rank.startsWith('V_') || rank.startsWith('G_') || rank.startsWith('B_')) {
-				if (crew.ranks[rank] && crew.ranks[rank] <= 9) {
-					stats.push(`${rankType(rank)} #${crew.ranks[rank]} ${rank.slice(2).replace('_', ' / ')}`);
+				if (crew.ranks[rank] && crew.ranks[rank] <= gThreshold) {
+					stats.push(`${rankType(rank)} #${crew.ranks[rank]} ${translateSkills(rank.slice(2).replace('_', ' / '), " / ")}`);
 				}
 			}
 			if (rank === 'voyTriplet') {
-				if (crew.ranks[rank] && (crew.ranks.voyTriplet?.rank ?? 0) <= 9)
-					stats.push(`Voyage #${crew.ranks.voyTriplet?.rank} ${crew.ranks.voyTriplet?.name}`);
+				if (crew.ranks[rank] && (crew.ranks.voyTriplet?.rank ?? 0) <= vThreshold)
+					stats.push(`${t('base.voyage')} #${crew.ranks.voyTriplet?.rank} ${crew.ranks.voyTriplet?.name ? translateSkills(crew.ranks.voyTriplet?.name, ' / ') : ''}`);
 			}
 		}
 	}
 
 	if (simple) {
-		stats.push(`Voyages #${crew.ranks.voyRank}`);
+		stats.push(`${t('base.voyages')} #${crew.ranks.voyRank}`);
 		return stats.join(' | ');
 	} else {
 		if (stats.length === 0) {
-			return showMore ? 'Show detailed ranks and stats...' : '';
+			return showMore ? t('cool_stats.show_detailed_ellipses') : '';
 		} else {
-			return stats.join(', ') + (showMore ? ', more stats...' : '');
+			return stats.join(', ') + (showMore ? `, ${t('cool_stats.more_stats_ellipses')}` : '');
 		}
 	}
 }
@@ -89,13 +99,13 @@ export function simplejson2csv<T>(data: T[], fields: ExportField[], delimeter = 
 /**
  * Creates a formatted title (appelation) from the given text.
  * @param text The text to convert into a title
- * @returns 
+ * @returns
  */
 export function appelate(text: string) {
 	let curr: string = "";
 	let cpos = 0;
 
-	const match = new RegExp(/[A-Za-z0-9]/);
+	const match = new RegExp(/[A-Za-z0-9']/);
 
 	for (let ch of text) {
 		if (match.test(ch)) {
@@ -151,7 +161,7 @@ export function makeAllCombos<T>(source: T[], maxResults?: number, current?: T[]
 	current ??= [];
 	index ??= 0;
 	maxResults ??= 5000;
-	
+
 	let i = 0;
 	let c = current.length;
 	let newc = [...current];
@@ -213,7 +223,7 @@ export function arraysUnion<T>(arr: T[][]) {
 
 export function printShortDistance(d?: Date, n?: number, nothousand?: boolean) {
     let now = new Date();
-	
+
 	if (d) {
 		n ??= d.getTime() - now.getTime();
 	}
@@ -242,7 +252,7 @@ export function printShortDistance(d?: Date, n?: number, nothousand?: boolean) {
             return `${min} m`;
         }
     }
-    
+
 }
 
 
@@ -272,5 +282,35 @@ export function printLastActive(n: number) {
             return `${min} m`;
         }
     }
-    
+
+}
+
+export function formatRunTime(seconds: number, t: TranslateMethod) {
+	let hours = 0, minutes = 0, days = 0;
+	seconds = Math.floor(seconds * 100) / 100;
+	const two = (x: string | number) => {
+		x = x.toString()
+		if (x.split(".")[0].length === 1) return "0" + x;
+		return x;
+	}
+
+	if (seconds >= 60) {
+		minutes = Math.floor(seconds / 60);
+		seconds -= (minutes * 60);
+	}
+	if (minutes >= 60) {
+		hours = Math.floor(minutes / 60);
+		minutes -= (hours * 60);
+	}
+	if (hours >= 24) {
+		days = Math.floor(hours / 24);
+		hours -= (days * 24);
+	}
+	if (!days) {
+		if (!hours) {
+			return `${two(minutes)}:${two(seconds)}`
+		}
+		return `${two(hours)}:${two(minutes)}:${two(seconds)}`
+	}
+	return `${two(days)}:${two(hours)}:${two(minutes)}:${two(seconds)}`
 }

@@ -3,7 +3,7 @@ import { CrewMember } from "../../model/crew";
 import { GlobalContext } from "../../context/globalcontext";
 import { ItemWithBonus, getItemWithBonus, isQuipmentMatch, sortItemsWithBonus } from "../../utils/itemutils";
 import ItemDisplay from "../itemdisplay";
-import ProfileItems from "../profile_items";
+import ItemsTable from "../items/itemstable";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { ShipSeatPicker } from "../crewtables/shipoptions";
 import { EquipmentItem } from "../../model/equipment";
@@ -35,10 +35,10 @@ export const CrewQuipment = (props: CrewQuipmentProps) => {
         }
     }, [skills]);
     React.useEffect(() => {
-        let qps = context.core.items.filter(f => 
-            f.type === 14 && 
-            (!!f.max_rarity_requirement || !!f.traits_requirement?.length) 
-            && isQuipmentMatch(crew, f)                                                
+        let qps = context.core.items.filter(f =>
+            f.type === 14 &&
+            (!!f.max_rarity_requirement || !!f.traits_requirement?.length)
+            && isQuipmentMatch(crew, f)
             )
         .map(f => getItemWithBonus(f))
         .filter(f => {
@@ -63,7 +63,7 @@ export const CrewQuipment = (props: CrewQuipmentProps) => {
     }
 
     return (
-        <div className={'ui segment'}>  
+        <div className={'ui segment'}>
             <div style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -80,24 +80,24 @@ export const CrewQuipment = (props: CrewQuipmentProps) => {
                     </div>
                     <ShipSeatPicker
                         formatTitle={formatTitle}
-                        fluid={false} 
-                        selectedSeats={skills} 
-                        setSelectedSeats={setSkills} 
+                        fluid={false}
+                        selectedSeats={skills}
+                        setSelectedSeats={setSkills}
                         availableSeats={crew_skills}  />
                 </div>
             </div>
-            <ProfileItems
+            <ItemsTable
                 itemTargetGroup={'crew_quipment'}
                 init_rows={25}
-                types={[14]}                
-                pageName={'crew_' + crew.symbol} 
+                types={[14]}
+                pageName={'crew_' + crew.symbol}
                 hideOwnedInfo={true}
                 crewMode={false}
                 hideSearch={true}
                 noWorker={true}
                 buffs={true}
                 data={quipment} />
-           
+
         </div>
     )
 }

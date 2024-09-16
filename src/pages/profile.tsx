@@ -3,11 +3,14 @@ import { Header, Label, Message, Item, Tab, Icon, Dropdown, Menu } from 'semanti
 import { Link } from 'gatsby';
 import { isMobile } from 'react-device-detect';
 import { Workbook } from 'exceljs';
+import 'moment/locale/es';
+import 'moment/locale/fr';
+import 'moment/locale/de';
 
 import ProfileCrew from '../components/profile_crew';
 import ProfileCrewMobile from '../components/profile_crew2';
-import ProfileShips from '../components/profile_ships';
-import ProfileItems from '../components/profile_items';
+import ShipTable from '../components/ship/shiptable';
+import ItemsTable from '../components/items/itemstable';
 import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
 
@@ -19,7 +22,7 @@ import { demandsPerSlot } from '../utils/equipment';
 
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
-import { PlayerData } from '../model/player';
+import { PlayerCrew, PlayerData } from '../model/player';
 import { EquipmentCommon } from '../model/equipment';
 import { DataContext } from '../context/datacontext';
 import { GlobalContext } from '../context/globalcontext';
@@ -27,6 +30,7 @@ import { calculateBuffConfig } from '../utils/voyageutils';
 import DataPageLayout from '../components/page/datapagelayout';
 import { v4 } from 'uuid';
 import moment from 'moment';
+import { PlayerBadge } from '../components/page/playerbadge';
 
 const isWindow = typeof window !== 'undefined';
 
@@ -44,13 +48,14 @@ type ProfilePageState = {
 
 
 export const ProfilePage = (props: ProfilePageProps) => {
-	const coreData = React.useContext(DataContext);
 	const globalContext = React.useContext(GlobalContext);
-
-	const isReady = coreData.ready ? coreData.ready(['crew', 'ship_schematics', 'items', 'all_buffs']) : false;
+	const { t } = globalContext.localized;
+	const isReady = !!Object.keys(globalContext.core).length;
+	const { core: coreData } = globalContext;
 
 	const [lastModified, setLastModified] = React.useState<Date | undefined>(undefined);
 	const [strippedPlayerData, setStrippedPlayerData] = React.useState<PlayerData | undefined>(undefined);
+	const [newCrew, setNewCrew] = React.useState<PlayerCrew[] | undefined>(undefined);
 	const buffConfig = strippedPlayerData ? calculateBuffConfig(strippedPlayerData.player) : undefined;
 
 	let profData: PlayerData | undefined = undefined;
@@ -58,7 +63,7 @@ export const ProfilePage = (props: ProfilePageProps) => {
 	if (isReady && strippedPlayerData && strippedPlayerData?.stripped !== false) {
 		profData = JSON.parse(JSON.stringify(strippedPlayerData)) as PlayerData;
 		prepareProfileData('PROFILE_PROVIDER', coreData.crew, profData, lastModified ?? new Date());
-		
+
 		let data = mergeShips(coreData.ship_schematics, profData.player.character.ships);
 		profData.player.character.ships = data;
 	}
@@ -76,11 +81,19 @@ export const ProfilePage = (props: ProfilePageProps) => {
 							player: {
 								loaded: !!profData,
 								playerData: profData,
-								buffConfig: buffConfig,							
-								playerShips: profData?.player.character.ships								
-							},							
+								buffConfig: buffConfig,
+								playerShips: profData?.player.character.ships,
+								showPlayerGlance: false,
+								setShowPlayerGlance: (value) => false,
+								noGradeColors: globalContext.player.noGradeColors,
+								setNoGradeColors: globalContext.player.setNoGradeColors,
+								newCrew,
+								setNewCrew
+							},
 							maxBuffs: coreData.all_buffs,
-							currentLang: globalContext.currentLang
+							isMobile: globalContext.isMobile,
+							localized: globalContext.localized,
+							readyLocalizedCore: globalContext.readyLocalizedCore
 						}}>
 							<ProfilePageComponent props={{ ...props, setLastModified: setLastModified, setPlayerData: setStrippedPlayerData }} />
 						</GlobalContext.Provider>
@@ -135,7 +148,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 		}
 	}
 
-	
+
 	private initing = false;
 
 	componentDidUpdate() {
@@ -144,7 +157,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 		const me = this;
 		if (me.initing) return;
-		
+
 		me.initing = true;
 
 		if (dbid && !playerData?.player && !errorMessage) {
@@ -180,94 +193,58 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 	}
 
 	renderDesktop() {
-		
+		const { t } = this.context.localized;
 		const { playerData } = this.context.player ?? { playerData: undefined };
-		
+
 		const panes = [
 			{
-				menuItem: 'Crew',
+				menuItem: t('profile.crew'),
 				render: () => playerData && <ProfileCrew pageId={"profile_crewTool_" + this.state.dbid} /> || <></>
 			},
 			{
-				menuItem: 'Crew (mobile)',
+				menuItem: t('profile.crew_mobile'),
 				render: () => <ProfileCrewMobile isMobile={false} />
 			},
 			{
-				menuItem: 'Ships',
-				render: () => playerData && <ProfileShips /> || <></>
+				menuItem: t('profile.ships'),
+				render: () => playerData && <ShipTable /> || <></>
 			},
 			{
-				menuItem: 'Items',
-				render: () => <ProfileItems />
+				menuItem: t('profile.items'),
+				render: () => <ItemsTable />
 			},
 			{
-				menuItem: 'Other',
+				menuItem: t('profile.other'),
 				render: () => <ProfileOther />
 			},
 			{
-				menuItem: 'Charts & Stats',
+				menuItem: t('profile.charts_and_stats'),
 				render: () => <ProfileCharts />
 			}
 		];
 
 		console.log("Avatar Debug");
 		console.log(playerData?.player?.character?.crew_avatar);
-		let portrait = `${process.env.GATSBY_ASSETS_URL}${playerData?.player?.character?.crew_avatar
-			? (playerData?.player?.character?.crew_avatar?.portrait?.file ?? playerData?.player?.character?.crew_avatar?.portrait ?? 'crew_portraits_cm_empty_sm.png')
-			: 'crew_portraits_cm_empty_sm.png'}`;
-
-		if (portrait.includes("crew_portraits") && !portrait.endsWith("_sm.png")) {
-			portrait = portrait.replace("_icon.png", "_sm.png");
-		}
-
-		const avatar = portrait;
 
 		return (
 			playerData?.player &&
 			(<>
-				<Item.Group>
-					<Item>
-						<Item.Image
-							size='tiny'
-							src={avatar}
-						/>
-
-						<Item.Content>
-							<Item.Header>{playerData.player.character.display_name}</Item.Header>
-							<Item.Meta>
-								<Label>VIP {playerData.player.vip_level}</Label>
-								<Label>Level {playerData.player.character.level}</Label>
-								<Label>{playerData.calc?.numImmortals} crew</Label>
-								<Label>{playerData.player.character.shuttle_bays} shuttles</Label>
-							</Item.Meta>
-							<Item.Description>
-								{playerData.player.fleet && (
-									<p>
-										Fleet{' '}
-										<Link to={`/fleet_info?fleetid=${playerData.player.fleet.id}`}>
-											<b>{playerData.player.fleet.slabel}</b>
-										</Link>{' '}
-											({playerData.player.fleet.rank}) Starbase level {playerData.player.fleet.nstarbase_level}{' '}
-									</p>
-								)}
-							</Item.Description>
-						</Item.Content>
-					</Item>
-				</Item.Group>
-
+				<PlayerBadge t={t} playerData={playerData} />
 				<Menu compact>
 					<Menu.Item>
-						{playerData.calc?.lastModified ? <span>Last updated: {moment(playerData.calc.lastModified).format("llll")}</span> : <span />}
+						{playerData.calc?.lastModified ? <span>{t('global.last_updated_colon')}&nbsp;{moment(playerData.calc.lastModified).locale(this.context.localized.language).format("llll")}</span> : <span />}
 					</Menu.Item>
-					<Dropdown item text='Download'>
+					<Dropdown item text={t('global.download')}>
 						<Dropdown.Menu>
-							<Dropdown.Item onClick={() => this._exportExcel()}>Complete spreadsheet (XLSX)</Dropdown.Item>
-							<Dropdown.Item onClick={() => this._exportCrew()}>Crew table (CSV)</Dropdown.Item>
-							<Dropdown.Item onClick={() => this._exportShips()}>Ship table (CSV)</Dropdown.Item>
-							<Dropdown.Item onClick={() => this._exportItems()}>Item table (CSV)</Dropdown.Item>
+							<Dropdown.Item onClick={() => this._exportExcel()}>{t('profile.download.complete_spreadsheet')} (XLSX)</Dropdown.Item>
+							<Dropdown.Item onClick={() => this._exportCrew()}>{t('profile.download.crew_table')} (CSV)</Dropdown.Item>
+							<Dropdown.Item onClick={() => this._exportShips()}>{t('profile.download.ship_table')} (CSV)</Dropdown.Item>
+							<Dropdown.Item onClick={() => this._exportItems()}>{t('profile.download.item_table')} (CSV)</Dropdown.Item>
 						</Dropdown.Menu>
 					</Dropdown>
 				</Menu>
+				<br/>
+				<div style={{margin: '0.5em 1em', fontStyle: 'italic'}}>({t('profile.switch_to_english')})</div>
 				<Tab menu={{ secondary: true, pointing: true }} panes={panes} />
 			</>
 		)) || <></>;
@@ -275,7 +252,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 	async _exportExcel() {
 		const { playerData } = this.context.player;
-
+		const { t } = this.context.localized;
 		let response = await fetch('/structured/items.json');
 		let items = await response.json();
 
@@ -288,7 +265,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 		let itemdata = playerData?.player?.character?.items ? mergeItems(playerData.player.character.items.map(item => item as EquipmentCommon), items) : undefined;
 		let shipdata = playerData ? mergeShips(ship_schematics, playerData.player.character.ships) : undefined;
 
-		let crewFields = exportCrewFields();
+		let crewFields = exportCrewFields(t);
 		let shipFields = exportShipFields();
 		let itemFields = exportItemFields();
 
@@ -441,8 +418,9 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 	_exportCrew() {
 		const { playerData } = this.context.player;
+		const { t } = this.context.localized;
 
-		let text = playerData ? exportCrew(playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew ?? [])) : "";
+		let text = playerData ? exportCrew(t, playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew ?? [])) : "";
 		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'crew.csv');
 	}
 

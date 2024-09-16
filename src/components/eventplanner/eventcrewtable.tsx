@@ -13,11 +13,12 @@ import CONFIG from '../../components/CONFIG';
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import { useStateWithStorage } from '../../utils/storage';
-import { applySkillBuff, isQuipped } from '../../utils/crewutils';
+import { applySkillBuff, crewGender, isQuipped } from '../../utils/crewutils';
 
 import { IEventData, IRosterCrew, IEventScoredCrew, IEventCombos, IEventSkill, IEventPair, IBestCombos, IBestCombo } from './model';
 import { calculateGalaxyChance, computeEventBest } from '../../utils/events';
 import { navToCrewPage } from '../../utils/nav';
+import { GatherPlanner } from '../gather/gather_planner';
 
 type EventCrewTableProps = {
 	rosterType: string;
@@ -29,6 +30,8 @@ type EventCrewTableProps = {
 
 export const EventCrewTable = (props: EventCrewTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
+
 	const { playerData, buffConfig } = globalContext.player;
 	const { rosterType, eventData, phaseIndex } = props;
 
@@ -48,21 +51,39 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	if (eventData.bonus.length === 0)
 		return (
 			<div style={{ marginTop: '1em' }}>
-				Featured crew not yet identified for this event.
+				{t('event_planner.table.featured_crew_not_identified')}
 			</div>
 		);
 
 	const tableConfig: ITableConfigRow[] = [
-		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'max_rarity', 'level'] },
-		{ width: 1, column: 'bonus', title: 'Bonus', reverse: true },
-		{ width: 1, column: 'bestSkill.score', title: 'Best', reverse: true },
-		{ width: 1, column: 'bestPair.score', title: 'Pair', reverse: true }
+		{ width: 3, column: 'name', title: t('event_planner.table.columns.crew'), pseudocolumns: ['name', 'max_rarity', 'level'] },
+		{ width: 1, column: 'bonus', title: t('event_planner.table.columns.bonus'), reverse: true },
+		{ width: 1, column: 'bestSkill.score', title: t('event_planner.table.columns.best'), reverse: true },
+		{ width: 1, column: 'bestPair.score', title: t('event_planner.table.columns.pair'), reverse: true }
 	];
+
+	const priText = t('quipment_ranks.primary');
+	const secText = t('quipment_ranks.secondary');
+
 	CONFIG.SKILLS_SHORT.forEach((skill) => {
+		const title = eventData.primary_skill === skill.name ? priText : (eventData.secondary_skill === skill.name ? secText : '')
 		tableConfig.push({
 			width: 1,
 			column: `${skill.name}.core`,
-			title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
+			title:
+				<div
+					title={title}
+					style={{
+						display: 'flex',
+						flexDirection: 'row',
+						alignItems: 'center',
+						justifyContent: 'center',
+						gap: '0.5em'
+					}}>
+					{eventData.primary_skill === skill.name && <Icon color='yellow' name= 'star'/>}
+					{eventData.secondary_skill === skill.name && <Icon color='grey' name= 'star'/>}
+					<img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />
+				</div>,
 			reverse: true
 		});
 	});
@@ -196,19 +217,19 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	return (
 		<React.Fragment>
 			<div ref={crewAnchor} />
-			<Header as='h4'>Crew</Header>
-			{eventData.bonusGuessed && <Message warning>The full list of bonus crew for this event is not yet available from player data. As a result, DataCore may not identify all of your possible event crew.</Message>}
+			<Header as='h4'>{t('base.crew')}</Header>
+			{eventData.bonusGuessed && <Message warning>{t('event_planner.table.crew_guessed')}</Message>}
 			<Form style={{ margin: '.5em 0' }}>
 				<Form.Group grouped>
 					<Form.Field
 						control={Checkbox}
-						label={`Only show event crew (${eventData.bonus_text.replace('Crew Bonus: ', '')})`}
+						label={t('event_planner.table.options.event_crew', { list: eventData.bonus_text.replace('Crew Bonus: ', '') })}
 						checked={showBonus}
 						onChange={(e, { checked }) => setShowBonus(checked)}
 					/>
 					<Form.Field
 						control={Checkbox}
-						label='Apply event bonus to skills'
+						label={t('event_planner.table.options.apply_event_bonus')}
 						checked={applyBonus}
 						onChange={(e, { checked }) => setApplyBonus(checked)}
 					/>
@@ -216,19 +237,19 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 						<React.Fragment>
 							<Form.Field
 								control={Checkbox}
-								label='Show potential skills of unleveled crew'
+								label={t('event_planner.table.options.potential_skills')}
 								checked={showPotential}
 								onChange={(e, { checked }) => setShowPotential(checked)}
 							/>
 							<Form.Field
 								control={Checkbox}
-								label='Show frozen crew'
+								label={t('event_planner.table.options.show_frozen')}
 								checked={showFrozen}
 								onChange={(e, { checked }) => setShowFrozen(checked)}
 							/>
 							<Form.Field
 								control={Checkbox}
-								label='Exclude quipped crew'
+								label={t('event_planner.table.options.exclude_quipped')}
 								checked={excludeQuipped}
 								onChange={(e, { checked }) => setExcludeQuipped(checked)}
 							/>
@@ -237,8 +258,8 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 									control={Checkbox}
 									label={
 										<label>
-											Show shared crew
-											<Popup content='Skill numbers of shared crew are based on your player buffs and may not match actual score' trigger={<Icon name='info' />} />
+											{t('event_planner.table.options.share_crew')}
+											<Popup content={t('event_planner.table.options.share_crew_help')} trigger={<Icon name='info' />} />
 										</label>
 									}
 									checked={showShared}
@@ -260,7 +281,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 				lockable={props.lockable}
 			/>
 			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, rosterCrew, buffConfig)} targetGroup='eventTarget' />
-			{phaseType !== 'skirmish' && (<EventCrewMatrix crew={rosterCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
+			{phaseType !== 'skirmish' && phaseType !== 'voyage' && (<EventCrewMatrix crew={rosterCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
 		</React.Fragment>
 	);
 
@@ -293,7 +314,8 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 					</div>
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					{crew.bonus > 1 ? `x${crew.bonus}` : ''}
+					{phaseType !== 'voyage' && crew.bonus > 1 ? `x${crew.bonus}` : ''}
+					{phaseType === 'voyage' && crew.bonus > 1 ? `${crew.bonus} AM` : ''}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<b>{scoreLabel(crew.bestSkill.score)}</b>
@@ -332,10 +354,10 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 						<React.Fragment>
 							{crew.favorite && <Icon name='heart' />}
 							{crew.immortal > 0 && <Icon name='snowflake' />}
-							<span>{crew.immortal > 0 ? (`${crew.immortal} frozen`) : crew.immortal < 0 ? crew.immortal <= -2 ? `Unowned` : `Immortalized` : (`Level ${crew.level}`)}</span>
+							<span>{crew.immortal > 0 ? (`${crew.immortal} ${t('crew_state.frozen', { __gender: crewGender(crew) })}`) : crew.immortal < 0 ? crew.immortal <= -2 ? t('crew_state.unowned') : t('crew_state.immortalized', { __gender: crewGender(crew) }) : (`${(t('base.level'))} ${crew.level}`)}</span>
 						</React.Fragment>
 					)}
-					{rosterType === 'allCrew' && <>Immortalized</>}
+					{rosterType === 'allCrew' && <>{t('crew_state.immortalized', { __gender: crewGender(crew) })}</>}
 				</div>
 			</div>
 		);
@@ -391,6 +413,7 @@ type EventCrewMatrixProps = {
 };
 
 const EventCrewMatrix = (props: EventCrewMatrixProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { crew, bestCombos, phaseType, handleClick } = props;
 
 	const [halfMatrix, setHalfMatrix] = useStateWithStorage<boolean>('eventHalfMatrix', false, { rememberForever: true });
@@ -400,8 +423,8 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 
 	return (
 		<React.Fragment>
-			<Header as='h4'>Skill Matrix</Header>
-			<p>This table shows your best crew for each possible skill combination. Use this table to identify your best crew for this event{phaseType === 'shuttles' ? ` and the best candidates to share in a faction event if you are a squad leader` : ''}. Tap a cell to view other crew with that skill combination.</p>
+			<Header as='h4'>{t('event_planner.skill_matrix')}</Header>
+			<p>{t('event_planner.skill_matrix_heading')}</p>
 			<Table definition celled striped collapsing unstackable compact='very' style={{ width: '100%' }}>
 				<Table.Header>
 					<Table.Row>
@@ -429,7 +452,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 			</Table>
 			<div title={"Show combinations only once"} style={{cursor: 'pointer', marginTop: "0.5em", display: 'flex', gap:"0.5em", flexDirection:'row', alignItems:'center'}}>
 				<Checkbox id="eventHelperHalfMatrixCheck" checked={halfMatrix} onChange={(e, { checked }) => setHalfMatrix(checked as boolean)} />
-				<label style={{cursor: 'pointer'}} htmlFor="eventHelperHalfMatrixCheck">Hide Duplicate Pairs</label>
+				<label style={{cursor: 'pointer'}} htmlFor="eventHelperHalfMatrixCheck">{t('event_planner.hide_duplicate_pairs')}</label>
 			</div>
 		</React.Fragment>
 	);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Dropdown } from 'semantic-ui-react';
-
+import { GlobalContext } from '../../../context/globalcontext';
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
 
 type CrewOwnershipFilterProps = {
@@ -10,16 +10,17 @@ type CrewOwnershipFilterProps = {
 };
 
 export const CrewOwnershipFilter = (props: CrewOwnershipFilterProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { crewFilters, setCrewFilters } = props;
 
 	const [ownershipFilter, setOwnershipFilter] = React.useState('');
 
 	const statusOptions = [
-		{ key: 'none', value: '', text: 'Show all crew' },
-		{ key: 'owned', value: 'owned', text: 'Only show owned crew' },
-		{ key: 'immortal', value: 'immortal', text: 'Only show immortalized crew' },
-		{ key: 'mortal', value: 'mortal', text: 'Only show owned non-immortals' },
-		{ key: 'unowned', value: 'unowned', text: 'Only show unowned crew' },
+		{ key: 'none', value: '', text: t('crew_ownership.none') },
+		{ key: 'owned', value: 'owned', text: t('crew_ownership.owned') },
+		{ key: 'immortal', value: 'immortal', text: t('crew_ownership.immortal') },
+		{ key: 'mortal', value: 'mortal', text: t('crew_ownership.mortal') },
+		{ key: 'unowned', value: 'unowned', text: t('crew_ownership.unowned') },
 	];
 
 	const filterByOwnership = (crew: IRosterCrew) => {
@@ -42,7 +43,7 @@ export const CrewOwnershipFilter = (props: CrewOwnershipFilterProps) => {
 	return (
 		<Form.Field>
 			<Dropdown
-				placeholder='Filter by progress'
+				placeholder={t('hints.filter_by_progress')}
 				clearable
 				selection
 				options={statusOptions}

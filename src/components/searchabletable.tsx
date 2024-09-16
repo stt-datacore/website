@@ -12,12 +12,17 @@ import { InitialOptions } from '../model/game-elements';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew } from '../model/player';
 import { appelate } from '../utils/misc';
+import { GlobalContext } from '../context/globalcontext';
+import CONFIG from './CONFIG';
+import { TranslateMethod } from '../model/player';
 
-const filterTypeOptions = [
-    { key : '0', value : 'Exact', text : 'Exact match only' },
-    { key : '1', value : 'Whole word', text : 'Whole word only' },
-    { key : '2', value : 'Any match', text : 'Match any text' }
-];
+export function getFilterTypeOptions(t: TranslateMethod) {
+	return [
+		{ key : '0', value : 'Exact', text : t('options.text_match.any') },
+		{ key : '1', value : 'Whole word', text : t('options.text_match.whole_word') },
+		{ key : '2', value : 'Any match', text : t('options.text_match.exact') }
+	];
+}
 
 const defaultPagingOptions = [
 	{ key: '0', value: 10, text: '10' },
@@ -43,6 +48,7 @@ export interface ITableConfigRow {
 	pseudocolumns?: string[];
 	reverse?: boolean;
 	tiebreakers?: string[];
+	tiebreakers_reverse?: boolean[];
 	customCompare?: (a: any, b: any) => number;
 }
 
@@ -79,6 +85,7 @@ export interface SearchableTableProps {
 
 export const SearchableTable = (props: SearchableTableProps) => {
 	let data = [...props.data];
+	const { t } = React.useContext(GlobalContext).localized;
 	const tableId = props.id ?? '';
 
 	const pagingOptions = props.pagingOptions?.length ? props.pagingOptions : defaultPagingOptions;
@@ -176,9 +183,9 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		let permalink = window.location.protocol + '//' + window.location.host + window.location.pathname;
 		if (params.toString() != '') permalink += '?' + params.toString();
 		return (
-			<Link to={permalink}>
+			<a href={permalink}>
 				<Icon name='linkify' /> Permalink
-			</Link>
+			</a>
 		);
 	}
 
@@ -221,9 +228,9 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		const columnConfig = props.config.find(col => col.column === sortColumn);
 		sortDirection = columnConfig?.reverse ? 'descending' : 'ascending';
 	}
-	
+
 	const columnConfig = props.config.find(col => col.column === sortColumn);
-	
+
 	const sortConfig: IConfigSortData = {
 		field: sortColumn,
 		direction: sortDirection,
@@ -234,10 +241,15 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	// Define tiebreaker rules with names in alphabetical order as default
 	//	Hack here to sort rarity in the same direction as max_rarity
 	let subsort = [] as SortConfig[];
-	
+
 	if (columnConfig && columnConfig.tiebreakers) {
-		subsort = columnConfig.tiebreakers.map(subfield => {
-			const subdirection = subfield.slice(subfield.length-6) === 'rarity' ? sortDirection : 'ascending';
+		subsort = columnConfig.tiebreakers.map((subfield, idx) => {
+
+			let subdirection = subfield.slice(subfield.length-6) === 'rarity' ? sortDirection : 'ascending';
+			if (columnConfig.tiebreakers_reverse && columnConfig.tiebreakers_reverse.length > idx) {
+				subdirection = columnConfig.tiebreakers_reverse[idx] ? 'descending' : 'ascending';
+			}
+
 			return { field: subfield, direction: subdirection };
 		});
 	}
@@ -295,7 +307,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 			<Input
 				style={{ width: isMobile ? '100%' : '50%' }}
 				iconPosition="left"
-				placeholder="Search..."
+				placeholder={t('global.search_ellipses')}
 				value={searchFilter}
 				onChange={(e, { value }) => onChangeFilter(value)}>
 					<input />
@@ -308,7 +320,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 			{props.showFilterOptions && (
 				<span style={{ paddingLeft: '2em' }}>
 					<Dropdown inline
-								options={filterTypeOptions}
+								options={getFilterTypeOptions(t)}
 								value={filterType}
 								onChange={(event, {value}) => setFilterType(value as string)}
 					/>
@@ -325,7 +337,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 				justifyContent: "flex-end",
 				alignItems: "center"
 			}}>
-			
+
 
 				{caption && props.dropDownChoices?.length && (
 					<div style={{
@@ -405,7 +417,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 										}}
 									/>
 									<span style={{ paddingLeft: '2em'}}>
-										Rows per page:{' '}
+										{t('global.rows_per_page')}:{' '}
 										<Dropdown
 											inline
 											upward
@@ -497,6 +509,17 @@ export function initCustomOption<T>(location: any, option: string, defaultValue:
 };
 
 export const prettyCrewColumnTitle = (column: string) => {
+	const lang = (text: string) => {
+		let skills = text.split(" / ")
+		let output = [] as string[];
+		for (let skill of skills) {
+			let i1 = CONFIG.SKILLS_SHORT_ENGLISH.findIndex(f => f.short === skill);
+			if (i1 >= 0) {
+				output.push(CONFIG.SKILLS_SHORT[i1].short);
+			}
+		}
+		return output.join(" / ");
+	}
 	if (column.slice(0, 6) == 'ranks.') {
 		let title = column.replace('ranks.', '');
 		if (title.slice(-4) == 'Rank') {
@@ -514,7 +537,7 @@ export const prettyCrewColumnTitle = (column: string) => {
 			const skills = vars.reduce((prev, curr) => prev != '' ? prev + ' / ' + curr : curr, '');
 			return (
 				<span style={{ fontSize: '.95em' }}>
-					{score}<br/>{skills}
+					{score}<br/>{lang(skills)}
 				</span>
 			);
 		}

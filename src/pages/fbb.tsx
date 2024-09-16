@@ -8,14 +8,15 @@ import { NonPlayerBossBattle } from '../components/fleetbossbattles/nonplayer';
 
 const FleetBossBattlesPage = () => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
 
 	const dbid = playerData?.player.dbid ?? '';
 
 	return (
 		<DataPageLayout
-			pageTitle='Fleet Boss Battles'
-			pageDescription='Use this tool to help activate combo chain bonuses in a fleet boss battle.'
+			pageTitle={t('menu.tools.fleet_boss_battles')}
+			pageDescription={t('fbb.heading')}
 			playerPromptType='require'
 		>
 			<React.Fragment>

@@ -2,33 +2,35 @@ import React from 'react';
 import { Step } from 'semantic-ui-react';
 
 import DataPageLayout from '../components/page/datapagelayout';
-import ProfileItems, { CustomFieldDef } from '../components/profile_items';
+import ItemsTable, { CustomFieldDef } from '../components/items/itemstable';
 import { GlobalContext } from '../context/globalcontext';
 import { EquipmentItem } from '../model/equipment';
-import { binaryLocate, formatDuration } from '../utils/itemutils';
+import { binaryLocate, formatDuration, getItemWithBonus, getPossibleQuipment } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
+import { PlayerCrew } from '../model/player';
+import { getCrewQuipment, oneCrewCopy } from '../utils/crewutils';
 
 export interface ItemsPageProps {}
 
 const ItemsPage = (props: ItemsPageProps) => {
-	
-	const [activeTabIndex, setActiveTabIndex] = useStateWithStorage<number>('items/mode', 0, { rememberForever: true });	
-	const context = React.useContext(GlobalContext);
 
-	const hasPlayer = !!context.player.playerData;
+	const [activeTabIndex, setActiveTabIndex] = useStateWithStorage<number>('items/mode', 0, { rememberForever: true });
+	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
+	const hasPlayer = !!globalContext.player.playerData;
 	const allActive = activeTabIndex === 0 || !hasPlayer;
 
 	React.useEffect(() => {
 		if (!hasPlayer && activeTabIndex === 1) {
 			setActiveTabIndex(0);
 		}
-	}, [context]);
+	}, [globalContext]);
 
-	const coreItems = JSON.parse(JSON.stringify(context.core.items.filter(item => item.type !== 14 || (!!item.max_rarity_requirement || !!item.traits_requirement?.length)))) as EquipmentItem[];
-	const crew = context.core.crew;
+	const coreItems = JSON.parse(JSON.stringify(globalContext.core.items.filter(item => item.type !== 14 || (!!item.max_rarity_requirement || !!item.traits_requirement?.length)))) as EquipmentItem[];
+	const crew = globalContext.core.crew;
 	if (hasPlayer) {
 		coreItems.forEach((item) => {
-			item.quantity = context.player.playerData?.player.character.items.find(i => i.symbol === item.symbol)?.quantity;
+			item.quantity = globalContext.player.playerData?.player.character.items.find(i => i.symbol === item.symbol)?.quantity;
 		});
 	}
 	coreItems.sort((a, b) => a.symbol.localeCompare(b.symbol));
@@ -61,75 +63,93 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 	quipCust.push({
 			field: 'duration',
-			text: 'Duration',
-			format: (value: number) => formatDuration(value)
+			text: t('items.columns.duration'),
+			format: (value: number) => formatDuration(value, t)
 		});
 
 	if (hasPlayer) {
 		quipCust.push({
 			field: 'quantity',
-			text: 'Owned',
-			format: (value: number) => value ? (value.toLocaleString()) : "Not Owned"
+			text: t('items.columns.owned'),
+			format: (value: number) => value ? (value.toLocaleString()) : t('crew_state.unowned')
 		});
 	}
-	
+
+	// // Don't delete!!!! This is to preview crew quipment
+	// if (globalContext.core?.crew?.length) {
+	// 	let crnew = oneCrewCopy(globalContext.core.crew.find(f => f.symbol === 'vash_qless_crew')!);
+	// 	crnew!.traits = ["human", "federation", "exoarchaeology", "civilian", "romantic", "crafty", "smuggler", "merchant", "casual", "playful"]
+	// 	crnew!.skill_order = ['science_skill', 'diplomacy_skill', 'medicine_skill']
+	// 	crnew!.base_skills.medicine_skill = crnew!.base_skills.command_skill;
+	// 	delete crnew!.base_skills.command_skill;
+	// 	let crewquip = getPossibleQuipment(crnew as PlayerCrew, globalContext.core.items.filter(f => f.type === 14));
+	// 	let text = '';
+	// 	if (crewquip?.length) {
+	// 		crewquip.forEach(item => {
+	// 			let bonus = getItemWithBonus(item);
+	// 			text += (`${item.name}\n    ${bonus.bonusInfo.bonusText.join('\n    ')}\n`)
+	// 		})
+	// 		console.log(text);
+	// 	}
+	// }
+
 	return (
 
-		<DataPageLayout playerPromptType='recommend' pageTitle='Items' demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet']}>
+		<DataPageLayout playerPromptType='recommend' pageTitle={t('menu.roster.items')} demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet']}>
 			<React.Fragment>
-			
+
 			<Step.Group fluid>
 				<Step active={activeTabIndex === 0} onClick={() => setActiveTabIndex(0)}>
 					<Step.Content>
-						<Step.Title>All Items</Step.Title>
-						<Step.Description>Overview of all items in the game.</Step.Description>
+						<Step.Title>{t('item_picker.all_items.title')}</Step.Title>
+						<Step.Description>{tfmt('item_picker.all_items.description')}</Step.Description>
 					</Step.Content>
 				</Step>
 
 				{hasPlayer && <Step active={activeTabIndex === 1} onClick={() => setActiveTabIndex(1)}>
 					<Step.Content>
-						<Step.Title>Owned Items</Step.Title>
-						<Step.Description>Overview of all items owned (and also needed) by the player.</Step.Description>
+						<Step.Title>{t('item_picker.owned_items.title')}</Step.Title>
+						<Step.Description>{tfmt('item_picker.owned_items.description')}</Step.Description>
 					</Step.Content>
-					
+
 				</Step>}
 
 				<Step active={activeTabIndex === 2} onClick={() => setActiveTabIndex(2)}>
 					<Step.Content>
-						<Step.Title>Quipment Browser</Step.Title>
-						<Step.Description>Browse quipment and place potential quipment on crew.</Step.Description>
+						<Step.Title>{t('item_picker.quipment_browser.title')}</Step.Title>
+						<Step.Description>{tfmt('item_picker.quipment_browser.description')}</Step.Description>
 					</Step.Content>
 				</Step>
 			</Step.Group>
-			
 
-			{/* We want both of these to load, even if they are not displayed, 
+
+			{/* We want both of these to load, even if they are not displayed,
 				because there's work that that must be done every time they are loaded.
 				Re-rendering the page for switching views would cause work to run unnecessarily. */}
 
-			<ProfileItems 
+			<ItemsTable
 				pageName={"core"}
 				noRender={activeTabIndex !== 0}
-				data={coreItems}				
-				hideOwnedInfo={true}				
+				data={coreItems}
+				hideOwnedInfo={true}
 				noWorker={true}
 				flavor={true} />
 
-			{hasPlayer && <ProfileItems
+			{hasPlayer && <ItemsTable
 				pageName={"roster"}
 				noRender={activeTabIndex !== 1 || !hasPlayer} />}
 
-			<ProfileItems
+			<ItemsTable
 				pageName={"roster"}
 				types={[14]}
 				buffs={true}
 				crewMode={true}
 				noWorker={true}
 				noRender={activeTabIndex !== 2}
-				data={coreItems}				
-				hideOwnedInfo={true}				
-				flavor={false}			
-				customFields={quipCust}	
+				data={coreItems}
+				hideOwnedInfo={true}
+				flavor={false}
+				customFields={quipCust}
 				/>
 				<br />
 				<br />

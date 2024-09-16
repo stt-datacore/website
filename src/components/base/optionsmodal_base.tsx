@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Dropdown, Button, Icon } from "semantic-ui-react";
+import { GlobalContext } from "../../context/globalcontext";
 
 export type OptionValueType = boolean | number | string | (boolean | number | string)[];
 
@@ -38,8 +39,10 @@ export interface ModalOption {
 }
 
 export abstract class OptionsModal<TOptions extends OptionsBase> extends React.Component<OptionsModalProps<TOptions>, OptionsModalState<TOptions>> {
+	static contextType = GlobalContext;
+	context!: React.ContextType<typeof GlobalContext>;
 
-    protected readonly optionGroups: OptionGroup[];
+    protected optionGroups: OptionGroup[];
 
 	constructor(props: OptionsModalProps<TOptions>) {
 		super(props);
@@ -51,7 +54,6 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 			modalIsOpen: false            
 		} as OptionsModalState<TOptions>;
 
-        this.optionGroups = this.getOptionGroups();        
         this.state = newstate;
 	}
 
@@ -86,8 +88,9 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 		const { modalIsOpen, isDefault, isDirty, options } = this.state;
         const { modalTitle } = this.props;
 
-        const optionGroups = this.optionGroups;
-        
+        const optionGroups = this.getOptionGroups();
+		const { t } = this.context.localized;
+
 		return (
 			<Modal
 				open={modalIsOpen}
@@ -121,9 +124,9 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 					
 				</Modal.Content>
 				<Modal.Actions>
-					{!isDefault && <Button content='Reset' onClick={(e) => this.resetOptions()} />}
-					{isDirty && <Button positive={true} content='Apply filters' onClick={(e) => this.applyOptions()} />}
-					{!isDirty && <Button content='Close' onClick={(e) => this.setModalIsOpen(false)} />}
+					{!isDefault && <Button content={t('global.reset')} onClick={(e) => this.resetOptions()} />}
+					{isDirty && <Button positive={true} content={t('global.apply_filters')} onClick={(e) => this.applyOptions()} />}
+					{!isDirty && <Button content={t('global.close')} onClick={(e) => this.setModalIsOpen(false)} />}
 				</Modal.Actions>
 			</Modal>
 		);
@@ -131,11 +134,11 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 
 	renderTrigger(): JSX.Element {
 		const { isDefault } = this.state;
-
+		const { t } = this.context.localized;
 		return (
 			<Button>
 				<Icon name='filter' color={!isDefault ? 'green' : undefined} />
-				Filters
+				{t('global.filters')}
 			</Button>
 		);
 	}

@@ -13,11 +13,12 @@ import { getRecentEvents, getEventData, getEvents } from '../utils/events';
 import { IEventData } from '../components/eventplanner/model';
 
 const EventPlannerPage = () => {
+	const { t } = React.useContext(GlobalContext).localized;
 	return (
 		<DataPageLayout
-			demands={['event_instances']}
-			pageTitle='Event Planner'
-			pageDescription='Find the best crew to use during an event.'
+			demands={['event_instances', 'episodes']}
+			pageTitle={t('menu.tools.event_planner')}
+			pageDescription={t('event_planner.heading')}
 			playerPromptType='recommend'
 		>
 			<React.Fragment>
@@ -29,6 +30,7 @@ const EventPlannerPage = () => {
 
 const EventPlannerSetup = () => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData, ephemeral } = globalContext.player;
 	const [activeEvents, setActiveEvents] = React.useState<IEventData[] | undefined>(undefined);
 	const [rosterType, setRosterType] = React.useState(playerData ? 'myCrew' : 'allCrew');
@@ -60,7 +62,7 @@ const EventPlannerSetup = () => {
 			)}
 			{activeEvents.length === 0 && (
 				<Message warning>
-					Information about the next event is not yet available from player data. Please try again at a later time.
+					{t('event_planner.warn_no_info')}
 				</Message>
 			)}
 		</React.Fragment>

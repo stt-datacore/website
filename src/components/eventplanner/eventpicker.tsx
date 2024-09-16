@@ -16,6 +16,8 @@ import { useStateWithStorage } from '../../utils/storage';
 import { applySkillBuff } from '../../utils/crewutils';
 
 import { IEventData, IRosterCrew } from './model';
+import { GatherPlanner } from '../gather/gather_planner';
+import ShipTable from '../ship/shiptable';
 
 interface ISelectOptions {
 	key: string;
@@ -31,6 +33,7 @@ type EventPickerProps = {
 
 export const EventPicker = (props: EventPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData, buffConfig } = globalContext.player;
 	const { events, rosterType } = props;
 
@@ -103,9 +106,10 @@ export const EventPicker = (props: EventPickerProps) => {
 	});
 
 	const EVENT_TYPES = {
-		'shuttles': 'Faction',
-		'gather': 'Galaxy',
-		'skirmish': 'Skirmish'
+		'shuttles': t('event_type.shuttles'),
+		'gather': t('event_type.gather'),
+		'skirmish': t('event_type.skirmish'),
+		'voyage': t('event_type.voyage')
 	};
 
 	const phaseList = [] as ISelectOptions[];
@@ -140,16 +144,31 @@ export const EventPicker = (props: EventPickerProps) => {
 			<div>{eventData.description}</div>
 			{phaseList.length > 1 && (
 				<div style={{ margin: '1em 0' }}>
-					Select a phase: <Dropdown selection options={phaseList} value={phaseIndex} onChange={(e, { value }) => setPhaseIndex(value as number) } />
+					{t('event_planner.select_phase')}: <Dropdown selection options={phaseList} value={phaseIndex} onChange={(e, { value }) => setPhaseIndex(value as number) } />
 				</div>
 			)}
 			<EventCrewTable rosterType={rosterType} rosterCrew={rosterCrew} eventData={eventData} phaseIndex={phaseIndex} lockable={lockable} />
+
 			{playerData && (
 				<React.Fragment>
 					{rosterType === 'myCrew' && <EventProspects pool={bonusCrew} prospects={prospects} setProspects={setProspects} />}
 					{eventData.content_types[phaseIndex] === 'shuttles' && (<EventShuttles crew={rosterCrew} eventData={eventData} />)}
+					{eventData.content_types[phaseIndex] === 'gather' && <GatherPlanner eventSymbol={eventData.symbol} />}
 				</React.Fragment>
 			)}
+
+			{playerData && eventData.content_types[phaseIndex] === 'voyage' && !!eventData.bonus_ship?.length &&
+				<div style={{marginTop: "0.5em"}}>
+					<div style={{margin: "0.5em 0"}}>
+						<h4>{t('base.event_ships')}</h4>
+					</div>
+					<ShipTable event_ships={eventData.bonus_ship}
+						high_bonus={eventData.featured_ship}
+						event_ship_traits={eventData.bonus_ship_traits}
+						/>
+				</div>
+			}
+
 		</React.Fragment>
 	);
 };
@@ -161,13 +180,14 @@ type EventProspectsProps = {
 };
 
 const EventProspects = (props: EventProspectsProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { pool, prospects, setProspects } = props;
 	if (pool.length === 0) return (<></>);
 
 	return (
 		<React.Fragment>
-			<Header as='h4'>Prospective Crew</Header>
-			<p>Add prospective crew (or potential shared crew) to see how they fit into your existing roster for this event.</p>
+			<Header as='h4'>{t('crew_view.prospect.title')}</Header>
+			<p>{t('event_planner.prospect_description')}</p>
 			<ProspectPicker pool={pool} prospects={prospects} setProspects={setProspects} />
 		</React.Fragment>
 	);
@@ -180,6 +200,7 @@ type EventShuttlesProps = {
 
 const EventShuttles = (props: EventShuttlesProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { eventData } = props;
 
@@ -190,8 +211,8 @@ const EventShuttles = (props: EventShuttlesProps) => {
 
 	return (
 		<React.Fragment>
-			<Header as='h4'>Shuttle Helper</Header>
-			<p>Use this tool to help plan your shuttles.</p>
+			<Header as='h4'>{t('menu.tools.shuttle_helper')}</Header>
+			<p>{t('shuttle_helper.heading')}</p>
 			{!eventMode && (
 				<ShuttleHelper
 					rosterType={'myCrew'} rosterCrew={props.crew}
