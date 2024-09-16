@@ -2,7 +2,7 @@ import React from 'react';
 import {
 	Button,
 	Header,
-	Icon
+	Loader
 } from 'semantic-ui-react';
 
 import { GameEvent, Voyage, VoyageDescription } from '../../model/player';
@@ -24,9 +24,7 @@ import { rosterizeMyCrew, RosterPicker } from './rosterpicker';
 import { VoyageStats } from './voyagestats';
 
 import { HistoryContext, IHistoryContext } from '../voyagehistory/context';
-import { CrewTable } from '../voyagehistory/crewtable';
-import { VoyagesTable } from '../voyagehistory/voyagestable';
-import { DataManagement, DataManagementPlaceholder } from '../voyagehistory/manage';
+import { HistoryHome } from '../voyagehistory/historyhome';
 import { HistoryMessage } from '../voyagehistory/message';
 import { createCheckpoint, defaultHistory, getTrackedData, InitState, NEW_VOYAGE_ID, postVoyage, SyncState, updateVoyageInHistory } from '../voyagehistory/utils';
 
@@ -192,7 +190,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	}, [historyInitState]);
 
 	if (historyInitState < InitState.Initialized)
-		return (<div style={{ marginTop: '1em' }}><Icon	loading name='spinner' /> Loading...</div>);
+		return <Loader active inline='centered' content='Loading voyage tool...' />;
 
 	const historyContext: IHistoryContext = {
 		dbid,
@@ -428,9 +426,9 @@ const PlayerHome = (props: PlayerHomeProps) => {
 					updateConfig={loadCustomConfig}
 				/>
 
-				<VoyagesTable />
-				<CrewTable />
-				<DataManagementPlaceholder
+				<Header as='h3'>Voyage History</Header>
+				<p>Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.</p>
+				<HistoryHome
 					postRemote={postRemote}
 					setPostRemote={setPostRemote}
 					setSyncState={setHistorySyncState}

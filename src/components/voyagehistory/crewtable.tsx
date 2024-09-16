@@ -121,7 +121,6 @@ export const CrewTable = () => {
 
 	return (
 		<React.Fragment>
-			<Header as='h3'>Crew History</Header>
 			<Form>
 				<Form.Group inline>
 					<Form.Field

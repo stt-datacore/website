@@ -96,8 +96,6 @@ export const VoyagesTable = () => {
 
 	return (
 		<React.Fragment>
-			<Header as='h3'>Voyage History</Header>
-			<p>Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.</p>
 			<Form>
 				<Form.Group inline>
 					<Form.Field
