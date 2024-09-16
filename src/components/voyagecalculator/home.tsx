@@ -430,7 +430,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 
 				<VoyagesTable />
 				<CrewTable />
-				<DataManagement
+				<DataManagementPlaceholder
 					postRemote={postRemote}
 					setPostRemote={setPostRemote}
 					setSyncState={setHistorySyncState}

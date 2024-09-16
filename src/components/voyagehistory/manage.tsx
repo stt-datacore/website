@@ -103,7 +103,8 @@ const ManageRemoteSync = (props: ManageRemoteSyncProps) => {
 			tryEnableSync();
 		}
 		else {
-			// Delete all from remote
+			// TODO: Delete all from remote?
+			setSyncState(SyncState.LocalOnly);
 			setPostRemote(false);
 		}
 	}
@@ -112,14 +113,18 @@ const ManageRemoteSync = (props: ManageRemoteSyncProps) => {
 		getTrackedData(dbid).then(async (remoteHistory) => {
 			if (remoteHistory) {
 				const voyagesToPost: ITrackedVoyage[] = discoverVoyages(remoteHistory.voyages, history.voyages);
-				let voyagesPosted: number = 0;
-				Promise.all(
-					voyagesToPost.map(voyageToSync => tryPostVoyage(voyageToSync))
-				).then(postedIds => {
-					voyagesPosted = postedIds.length;
-				});
-				if (voyagesToPost.length > voyagesPosted)
-					console.warn('Warning: not all voyages posted to remote sync!');
+				if (voyagesToPost.length > 0) {
+					let voyagesPosted: number = 0;
+					Promise.all(
+						voyagesToPost.map(voyageToSync => tryPostVoyage(voyageToSync))
+					).then(postedIds => {
+						voyagesPosted = postedIds.length;
+					});
+					if (voyagesPosted === 0)
+						throw('Failed tryEnableSync -> 0 voyages posted to remote sync!');
+					if (voyagesToPost.length > voyagesPosted)
+						console.warn('Warning: not all voyages posted to remote sync!');
+				}
 				getTrackedData(dbid).then(async (remoteHistory) => {
 					if (!!remoteHistory) setHistory(remoteHistory);
 					setSyncState(SyncState.RemoteReady);
