@@ -151,13 +151,12 @@ export const MultiVectorAssault = (
 				if (skillId === 'engineering_skill' || skillId === 'science_skill' || skillId === 'medicine_skill')
 					bGeneralist = false;
 
-				// Peak antimatter strategy now in getBoostedLineup
-				// if (options.strategy === 'peak-antimatter') {
-				// 	if (traitSlots[iSkill*2] === 0) viableSlots[iSkill*2] = 0;
-				// 	if (traitSlots[(iSkill*2)+1] === 0) viableSlots[(iSkill*2)+1] = 0;
-				// 	if (traitSlots[iSkill*2] === 0 && traitSlots[(iSkill*2)+1] === 0)
-				// 		viableSkills[iSkill] = 0;
-				// }
+				if (options.strategy === 'peak-antimatter') {
+					if (traitSlots[iSkill*2] === 0) viableSlots[iSkill*2] = 0;
+					if (traitSlots[(iSkill*2)+1] === 0) viableSlots[(iSkill*2)+1] = 0;
+					if (traitSlots[iSkill*2] === 0 && traitSlots[(iSkill*2)+1] === 0)
+						viableSkills[iSkill] = 0;
+				}
 			}
 			if (options.favorSpecialists && bGeneralist)
 				dOtherScore -= dOtherScore/10;
@@ -386,11 +385,11 @@ export const MultiVectorAssault = (
 				});
 			});
 		}
-		boostedScores.sort(
-			options.strategy === 'peak-antimatter' ? favorAntimatter :
-				(options.strategy === 'peak-vp' ? favorVP : favorScore)
-		);
-
+		// boostedScores.sort(
+		// 	options.strategy === 'peak-antimatter' ? favorAntimatter :
+		// 		(options.strategy === 'peak-vp' ? favorVP : favorScore)
+		// );
+		boostedScores.sort(options.strategy === 'peak-vp' ? favorVP : favorScore);
 		return seatCrew(primedRoster, boostedScores, !!options.debugCallback);
 	}
 
