@@ -535,6 +535,7 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 	const { t } = globalContext.localized;
 	const { dbid, history, setHistory, syncState, setMessageId } = React.useContext(HistoryContext);
 	const calculatorContext = React.useContext(CalculatorContext);
+	const { voyageConfig } = calculatorContext;
 
 	const { requests, results, setResults } = props;
 
@@ -553,30 +554,36 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 		median: number;
 		minimum: number;
 		moonshot: number;
-		antimatter: number;
 		dilemma: {
 			hour: number;
 			chance: number;
 		};
+		antimatter: number;
+		total_vp: number;
+		vp_per_min: number;
 	};
 	const bestValues: IBestValues = {
 		median: 0,
 		minimum: 0,
 		moonshot: 0,
-		antimatter: 0,
 		dilemma: {
 			hour: 0,
 			chance: 0
-		}
+		},
+		antimatter: 0,
+		total_vp: 0,
+		vp_per_min: 0
 	};
 	results.forEach(result => {
 		if (result.calcState === CalculatorState.Done && result.result) {
-			const values = flattenEstimate(result.result.estimate);
+			const values = {
+				...flattenEstimate(result.result.estimate),
+				antimatter: result.result.estimate.antimatter ?? 0,
+				total_vp: result.result.estimate.vpDetails?.total_vp ?? 0,
+				vp_per_min: result.result.estimate.vpDetails?.vp_per_min ?? 0
+			};
 			Object.keys(bestValues).forEach((valueKey) => {
-				if (valueKey === 'antimatter') {
-					bestValues.antimatter = Math.max(bestValues.antimatter, result.result?.estimate.antimatter ??  0);
-				}
-				else if (valueKey === 'dilemma') {
+				if (valueKey === 'dilemma') {
 					if (values.dilemma.hour > bestValues.dilemma.hour
 						|| (values.dilemma.hour === bestValues.dilemma.hour && values.dilemma.chance > bestValues.dilemma.chance)) {
 							bestValues.dilemma = values.dilemma;
@@ -645,13 +652,30 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 	}
 
 	function getRecommendedList(estimate: Estimate, bestValues: IBestValues): string[] {
-		const recommended = [] as string[];
-		const values = flattenEstimate(estimate);
-		Object.keys(bestValues).forEach((method) => {
-			if ((method === 'antimatter' && bestValues.antimatter === estimate.antimatter) ||
-				(method === 'dilemma' && bestValues.dilemma.hour === values.dilemma.hour && bestValues.dilemma.chance === values.dilemma.chance) ||
-				bestValues[method] === values[method])
-					recommended.push(method);
+		const recommended: string[] = [];
+		const values = {
+			...flattenEstimate(estimate),
+			antimatter: estimate.antimatter ?? 0,
+			total_vp: estimate.vpDetails?.total_vp ?? 0,
+			vp_per_min: estimate.vpDetails?.vp_per_min ?? 0
+		};
+		Object.keys(bestValues).forEach(method => {
+			let canRecommend: boolean = false;
+			if (method === 'dilemma') {
+				if (voyageConfig.voyage_type === 'dilemma') {
+					canRecommend = bestValues.dilemma.hour === values.dilemma.hour
+						&& bestValues.dilemma.chance === values.dilemma.chance;
+				}
+			}
+			else if ((method === 'total_vp' || method === 'vp_per_min')) {
+				if (voyageConfig.voyage_type === 'encounter') {
+					canRecommend = bestValues[method] === values[method];
+				}
+			}
+			else {
+				canRecommend = bestValues[method] === values[method];
+			}
+			if (canRecommend) recommended.push(method);
 		});
 		return recommended;
 	};
@@ -678,6 +702,14 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 			case 'antimatter':
 				sortName = 'starting antimatter';
 				sortValue = bestValues.antimatter;
+				break;
+			case 'total_vp':
+				sortName = 'projected VP';
+				sortValue = bestValues.total_vp.toLocaleString();
+				break;
+			case 'vp_per_min':
+				sortName = 'projected VP per minute';
+				sortValue = Math.floor(bestValues.vp_per_min);
 				break;
 		}
 		if (sortValue !== '') sortValue = ' ('+sortValue+')';

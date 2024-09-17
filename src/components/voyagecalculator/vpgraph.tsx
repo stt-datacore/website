@@ -23,7 +23,7 @@ export const VPGraphAccordion = (props: VPGraphProps) => {
 				onClick={() => setIsActive(!isActive)}
 			>
 				<Icon name={isActive ? 'caret down' : 'caret right' as SemanticICONS} />
-				Projected VP: {estimate.vpDetails.total_vp.toLocaleString()}
+				Projected VP: {estimate.vpDetails.total_vp.toLocaleString()} <span style={{ margin: '0 .5em' }}>/</span> {Math.floor(estimate.vpDetails.vp_per_min)} per minute
 			</Accordion.Title>
 			<Accordion.Content active={isActive}>
 				{isActive && renderContent()}

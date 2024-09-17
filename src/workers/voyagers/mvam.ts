@@ -151,12 +151,13 @@ export const MultiVectorAssault = (
 				if (skillId === 'engineering_skill' || skillId === 'science_skill' || skillId === 'medicine_skill')
 					bGeneralist = false;
 
-				if (options.strategy === 'peak-antimatter') {
-					if (traitSlots[iSkill*2] === 0) viableSlots[iSkill*2] = 0;
-					if (traitSlots[(iSkill*2)+1] === 0) viableSlots[(iSkill*2)+1] = 0;
-					if (traitSlots[iSkill*2] === 0 && traitSlots[(iSkill*2)+1] === 0)
-						viableSkills[iSkill] = 0;
-				}
+				// Peak antimatter strategy now in getBoostedLineup
+				// if (options.strategy === 'peak-antimatter') {
+				// 	if (traitSlots[iSkill*2] === 0) viableSlots[iSkill*2] = 0;
+				// 	if (traitSlots[(iSkill*2)+1] === 0) viableSlots[(iSkill*2)+1] = 0;
+				// 	if (traitSlots[iSkill*2] === 0 && traitSlots[(iSkill*2)+1] === 0)
+				// 		viableSkills[iSkill] = 0;
+				// }
 			}
 			if (options.favorSpecialists && bGeneralist)
 				dOtherScore -= dOtherScore/10;
@@ -355,6 +356,17 @@ export const MultiVectorAssault = (
 
 	function getBoostedLineup(primedRoster: IPrimedCrew[], boosts: IBoosts): VoyagersLineup | false {
 		const TRAIT_BOOST: number = voyage.voyage_type === 'encounter' ? 400 : 200;
+		const favorScore = (a: IVoyagerScore, b: IVoyagerScore) => b.score - a.score;
+		const favorAntimatter = (a: IVoyagerScore, b: IVoyagerScore) => {
+			if (a.traitValue === b.traitValue)
+				return b.score - a.score;
+			return b.traitValue - a.traitValue;
+		};
+		const favorVP = (a: IVoyagerScore, b: IVoyagerScore) => {
+			if (a.eventScore === b.eventScore)
+				return b.score - a.score;
+			return b.eventScore - a.eventScore;
+		};
 
 		const boostedScores: IVoyagerScore[] = [];
 		for (let i = 0; i < primedRoster.length; i++) {
@@ -368,11 +380,16 @@ export const MultiVectorAssault = (
 				boostedScores.push({
 					score: baseScore+(TRAIT_BOOST*traitFactor),
 					id: primedRoster[i].id,
-					isIdeal: traitValue > 0 && traitValue === idealTraitValue
+					isIdeal: traitValue > 0 && traitValue === idealTraitValue,
+					traitValue,
+					eventScore: primedRoster[i].event_score
 				});
 			});
 		}
-		boostedScores.sort((a, b) => b.score - a.score);
+		boostedScores.sort(
+			options.strategy === 'peak-antimatter' ? favorAntimatter :
+				(options.strategy === 'peak-vp' ? favorVP : favorScore)
+		);
 
 		return seatCrew(primedRoster, boostedScores, !!options.debugCallback);
 	}

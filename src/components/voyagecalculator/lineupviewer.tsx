@@ -797,25 +797,7 @@ const CrewFinder = (props: CrewFinderProps) => {
 
 	let popup = { content: '', trigger: <></> };
 
-	if (bestRank) {
-		let content: string = '';
-		if (bestRank.skills.length === 0)
-			content = `Select the ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from the top'} for this seat`;
-		else {
-			content = `Filter by these skills, then select the ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from the top'}`;
-		}
-		popup = {
-			content,
-			trigger:
-				<span style={{ whiteSpace: 'nowrap' }}>
-					{bestRank.skills.map(skill => (
-						<img key={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
-					))}
-					{` `}<span style={{ verticalAlign: 'middle' }}>{bestRank.rank}</span>
-				</span>
-		};
-	}
-	else if (crew.immortal > 0) {
+	if (crew.immortal > 0) {
 		popup = {
 			content: 'Unfreeze crew',
 			trigger: <div style={{textAlign: 'center' }}><Icon name='snowflake' /></div>
@@ -831,6 +813,24 @@ const CrewFinder = (props: CrewFinderProps) => {
 		popup = {
 			content: 'On voyage',
 			trigger: <div style={{textAlign: 'center' }}><Icon name='rocket' /></div>
+		};
+	}
+	else if (bestRank) {
+		let content: string = '';
+		if (bestRank.skills.length === 0)
+			content = `Select the ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from the top'} for this seat`;
+		else {
+			content = `Filter by these skills, then select the ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from the top'}`;
+		}
+		popup = {
+			content,
+			trigger:
+				<span style={{ whiteSpace: 'nowrap' }}>
+					{bestRank.skills.map(skill => (
+						<img key={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
+					))}
+					{` `}<span style={{ verticalAlign: 'middle' }}>{bestRank.rank}</span>
+				</span>
 		};
 	}
 

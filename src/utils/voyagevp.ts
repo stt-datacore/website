@@ -29,6 +29,7 @@ export interface VPDetails {
     total_opponents: number;
     total_encounters: number;
     is_overflow: boolean;
+    vp_per_min: number;
 }
 
 export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
@@ -39,7 +40,8 @@ export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
         total_encounters: 0,
         total_opponents: 0,
         total_vp: 0,
-        is_overflow: true
+        is_overflow: true,
+        vp_per_min: 0
     } as VPDetails;
 
     let dropvp = 50 + bonuses.reduce((p, n) => p + n, 0);
@@ -69,6 +71,7 @@ export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
     }
 
     vpdetails.total_vp = total;
+    vpdetails.vp_per_min = total / seconds *60;
     return vpdetails;
 }
 

@@ -74,7 +74,8 @@ export const CALCULATORS = {
 				{ key: 'minimum', text: 'Guaranteed minimum', value: 'minimum' },
 				{ key: 'moonshot', text: 'Moonshot', value: 'moonshot' },
 				{ key: 'any', text: 'Any best', value: 'any' },
-				{ key: 'peak-antimatter', text: 'Peak antimatter (experimental)', value: 'peak-antimatter' },
+				{ key: 'peak-antimatter', text: 'Peak antimatter', value: 'peak-antimatter' },
+				{ key: 'peak-vp', text: 'Peak VP', value: 'peak-vp' },
 				// { key: 'thorough', text: 'Thorough (slow)', value: 'thorough' }
 			],
 			default: 'estimate'

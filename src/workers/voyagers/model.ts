@@ -40,6 +40,8 @@ export interface IVoyagerScore {
 	score: number;
 	id: number;
 	isIdeal: boolean;
+	traitValue: number;
+	eventScore: number;
 };
 
 export interface ISkillAggregate extends Skill {
