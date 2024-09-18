@@ -21,8 +21,8 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
     const { t } = globalContext.localized;
 
     if (!globalContext.player.playerData) return <></>;
-    
-    const { citeConfig, setCiteConfig } = citeContext;    
+
+    const { citeConfig, setCiteConfig } = citeContext;
 
     const priSkills = Object.entries(CONFIG.SKILLS).map(([skill, name]) => {
         return {
@@ -48,13 +48,13 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
         }
     });
 
-    return <React.Fragment> 
+    return <React.Fragment>
             <Segment>
                 <h3>{t('global.filters')}</h3>
                 <div style={{
                     display: "flex",
                     flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row"
-                }}>                    
+                }}>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "left"}}>
                         <PortalFilter
                             portalFilter={citeConfig?.portal}
@@ -78,9 +78,8 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                             onClick={(e) => {
                                     setCiteConfig({ ... citeConfig ?? {}, nameFilter: '' });
                                     setTimeout(() => {
-                                        setCiteConfig({ ...citeConfig, checks: [] });
+                                        setCiteConfig({ ...citeConfig ?? {}, nameFilter: '' , checks: [] });
                                     });
-
                                 }
                             }
                         />
