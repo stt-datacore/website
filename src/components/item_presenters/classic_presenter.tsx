@@ -149,7 +149,7 @@ const CrewDemands = (props: { crew: CrewMember }) => {
 	};
 	return (
 		<div style={{ margin: '1em 0' }}>
-			{tfmt("crew_views.faction_items", { 
+			{tfmt("crew_views.faction_items", {
 				n: <b>{crewDemands.factionOnlyTotal}</b>
 			})}
 			<span style={{ display: 'inline-block' }}>
@@ -291,7 +291,7 @@ const Nicknames = (props: { crew: CrewMember }) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { crew } = props;
 
-	if (!crew.nicknames || crew.nicknames.length === 0) return (<></>);
+	if (!crew.nicknames || crew.nicknames.length === 0 || !crew.nicknames[0].cleverThing) return (<></>);
 	return (
 		<p>
 			<b>{t("crew_page.aka_colon")} </b>
@@ -379,7 +379,7 @@ export const Skills = (props: SkillsProps) => {
 			{(!playerLevels || !owned) && <div style={{marginTop:"0.5em"}}>
 				{owned && <OwnedLabel statsPopup={true} crew={owned} />}
 			</div> ||
-			<div className='ui segment'>				
+			<div className='ui segment'>
 				{!!owned?.immortal && <>
 					{owned.immortal > 0 ? <><Icon name='snowflake' /> {owned.immortal} {t('crew_states.frozen', { __gender: crewGender(crew) })}</> : <><Icon name='check' color='green' /> {t('crew_states.immortalized', { __gender: crewGender(crew) })}</>}</> ||  <>{t('base.level')} {owned?.level}				</>}
 				<CrewItemsView crew={owned as PlayerCrew} />
