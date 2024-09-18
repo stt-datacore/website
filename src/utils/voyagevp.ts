@@ -26,7 +26,7 @@ function extrapolateNext(a: DropMapEntry, b: DropMapEntry): DropMapEntry {
     let diff = b.encounter - a.encounter;
     let output = { ... b };
     diff += 100;
-    output.encounter = diff;
+    output.encounter += diff;
     if (output.drops === 52) output.drops = 51;
     else output.drops = 52;
     output.shown++;
