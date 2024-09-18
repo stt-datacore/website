@@ -5,6 +5,7 @@ import { VoyageSkills } from '../../model/player';
 import { IVoyageInputConfig } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../CONFIG';
+import { useStateWithStorage } from '../../utils/storage';
 
 interface ISelectOption {
 	key: string;
@@ -53,15 +54,10 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 	const { TRAIT_NAMES, SHIP_TRAIT_NAMES } = globalContext.localized;
 	const { presetConfigs, updateConfig } = props;
 
-	const [voyageConfig, setVoyageConfig] = React.useState<IVoyageInputConfig>(defaultConfig);
+	const [voyageConfig, setVoyageConfig] = useStateWithStorage<IVoyageInputConfig>('voyage/customConfig', JSON.parse(JSON.stringify(defaultConfig)));
 
 	const [modalIsOpen, setModalIsOpen] = React.useState<boolean>(false);
 	const [options, setOptions] = React.useState<IEditOptions | undefined>(undefined);
-
-	React.useEffect(() => {
-		if (presetConfigs.length === 0) return;
-		setVoyageConfig({...presetConfigs[0]});
-	}, [presetConfigs]);
 
 	voyageConfig.crew_slots.sort((s1, s2) => CONFIG.VOYAGE_CREW_SLOTS.indexOf(s1.symbol) - CONFIG.VOYAGE_CREW_SLOTS.indexOf(s2.symbol));
 
@@ -105,12 +101,12 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 
 	function loadPreset(voyageType: string): void {
 		if (voyageType === 'default') {
-			setVoyageConfig({...defaultConfig});
+			setVoyageConfig(JSON.parse(JSON.stringify(defaultConfig)));
 			return;
 		}
 		const config: IVoyageInputConfig | undefined = presetConfigs.find(preset => preset.voyage_type === voyageType);
 		if (!config) return;
-		setVoyageConfig({...config});
+		setVoyageConfig(JSON.parse(JSON.stringify(config)));
 	}
 
 	function closeAndApply(): void {

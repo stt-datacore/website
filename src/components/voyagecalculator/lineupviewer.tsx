@@ -20,8 +20,8 @@ interface IAssignment {
 	bestRank: ISkillsRank | undefined;
 };
 
-interface ISkillCombos {
-	[key: string]: PlayerCrew[];
+interface ISkillsRankings {
+	[key: string]: PlayerCrew[];	// key is skill or joined skills combo (i.e. skill,skill)
 };
 
 interface ISkillsRank {
@@ -70,7 +70,8 @@ export const LineupViewer = (props: LineupViewerProps) => {
 
 	const findBestRank: boolean = configSource === 'player';
 
-	const skillCombos: ISkillCombos = initSkillCombos();
+	const skillRankings: ISkillsRankings = initSkillRankings();
+	//const skillCombos: ISkillsRankings = initSkillCombos();
 
 	const usedCrew: number[] = [];
 	const assignments: IAssignment[] = Object.values(CONFIG.VOYAGE_CREW_SLOTS).map(entry => {
@@ -116,36 +117,57 @@ export const LineupViewer = (props: LineupViewerProps) => {
 		</ViewContext.Provider>
 	);
 
-	function initSkillCombos(): ISkillCombos {
-		const skillCombos: ISkillCombos = {};
-		if (!findBestRank) return skillCombos;
-
-		[1, 2, 3].forEach(i => {
-			souzaCombinations(Object.keys(CONFIG.SKILLS), i).forEach(skills => {
-				skillCombos[skills.join(',')] = [];
-			});
-		});
-
+	function initSkillRankings(): ISkillsRankings {
+		const skillRankings: ISkillsRankings = {};
 		if (roster) {
 			roster.forEach(crew => {
 				const crewSkills: string[] = Object.keys(crew.skills);
-				for (let i = 1; i <= crewSkills.length; i++) {
-					souzaCombinations(crewSkills, i).forEach(skills => {
-						skillCombos[skills.join(',')].push(crew);
-					});
-				}
+				crewSkills.forEach(skill => {
+					skillRankings[skill] ??= [];
+					skillRankings[skill].push(crew);
+				});
 			});
-			Object.keys(skillCombos).forEach(skills => {
-				skillCombos[skills] = skillCombos[skills].sort((c1: PlayerCrew, c2: PlayerCrew) => {
+			Object.keys(skillRankings).forEach(skill => {
+				skillRankings[skill] = skillRankings[skill].sort((c1: PlayerCrew, c2: PlayerCrew) => {
 					if (voyageConfig.voyage_type === 'encounter')
-						return encounterSort(c1, c2, skills.split(','));
-					return dilemmaSort(c1, c2, skills.split(','));
+						return encounterSort(c1, c2, [skill]);
+					return dilemmaSort(c1, c2, [skill]);
 				});
 			});
 		}
-
-		return skillCombos;
+		return skillRankings;
 	}
+
+	// function initSkillCombos(): ISkillsRankings {
+	// 	const skillCombos: ISkillsRankings = {};
+	// 	if (!findBestRank) return skillCombos;
+
+	// 	[1, 2, 3].forEach(i => {
+	// 		souzaCombinations(Object.keys(CONFIG.SKILLS), i).forEach(skills => {
+	// 			skillCombos[skills.join(',')] = [];
+	// 		});
+	// 	});
+
+	// 	if (roster) {
+	// 		roster.forEach(crew => {
+	// 			const crewSkills: string[] = Object.keys(crew.skills);
+	// 			for (let i = 1; i <= crewSkills.length; i++) {
+	// 				souzaCombinations(crewSkills, i).forEach(skills => {
+	// 					skillCombos[skills.join(',')].push(crew);
+	// 				});
+	// 			}
+	// 		});
+	// 		Object.keys(skillCombos).forEach(skills => {
+	// 			skillCombos[skills] = skillCombos[skills].sort((c1: PlayerCrew, c2: PlayerCrew) => {
+	// 				if (voyageConfig.voyage_type === 'encounter')
+	// 					return encounterSort(c1, c2, skills.split(','));
+	// 				return dilemmaSort(c1, c2, skills.split(','));
+	// 			});
+	// 		});
+	// 	}
+
+	// 	return skillCombos;
+	// }
 
 	// Match in-game order for dilemma voyage crew selection
 	function dilemmaSort(c1: PlayerCrew, c2: PlayerCrew, skills: string[]): number {
@@ -168,61 +190,104 @@ export const LineupViewer = (props: LineupViewerProps) => {
 			skills: [],
 			rank: 1000
 		};
-		const crewSkills: string[] = Object.keys(crew.skills);
-		for (let i = 1; i <= crewSkills.length; i++) {
-			souzaCombinations(crewSkills, i).forEach(skills => {
-				if (skills.includes(seatSkill)) {
-					const rank: number = skillCombos[skills.join(',')]
-						.filter(c => !usedCrew.includes(c.id))
-						.findIndex(c => c.id === crew.id) + 1;
-					if (rank < bestRank.rank) bestRank = { skills, rank };
-				}
-			});
-			if (bestRank.rank <= 3) break;
+		const seatRank: number = skillRankings[seatSkill].filter(c =>
+			!usedCrew.includes(c.id)
+		).findIndex(c => c.id === crew.id) + 1;
+		if (seatRank > 0 && seatRank <= 3) {
+			bestRank = { skills: [seatSkill], rank: seatRank };
 		}
-		bestRank.skills = sortSkills(bestRank.skills, seatSkill);
+		else {
+			const otherSkills: string[] = Object.keys(crew.skills).filter(skill => skill !== seatSkill);
+			for (let i = 0; i < otherSkills.length; i++) {
+				const sortSkill: string = otherSkills[i];
+				const pairRank: number = skillRankings[sortSkill].filter(c =>
+					!usedCrew.includes(c.id)
+						&& Object.keys(c.skills).includes(seatSkill)
+				).findIndex(c => c.id === crew.id) + 1;
+				if (pairRank >= 0 && pairRank < bestRank.rank)
+					bestRank = { skills: [seatSkill, sortSkill], rank: pairRank };
+				if (bestRank.rank <= 3) break;
+			}
+			if (bestRank.rank > 3 && otherSkills.length > 1) {
+				for (let i = 0; i < otherSkills.length; i++) {
+					const sortSkill: string = otherSkills[i];
+					const filterSkill: string = otherSkills[i == 0 ? 1 : 0];
+					const tripletRank: number = skillRankings[sortSkill].filter(c =>
+						!usedCrew.includes(c.id)
+							&& Object.keys(c.skills).includes(seatSkill)
+							&& Object.keys(c.skills).includes(filterSkill)
+					).findIndex(c => c.id === crew.id) + 1;
+					if (tripletRank >= 0 && tripletRank < bestRank.rank)
+						bestRank = { skills: [seatSkill, filterSkill, sortSkill], rank: tripletRank };
+					if (bestRank.rank <= 3) break;
+				}
+			}
+		}
+		bestRank.skills = bestRank.skills.filter(skill => skill !== seatSkill);
+		// bestRank.skills = sortSkills(bestRank.skills, seatSkill);
 		return bestRank;
 	}
 
+	// function getBestComboRank(crew: PlayerCrew, seatSkill: string, usedCrew: number[]): ISkillsRank {
+	// 	let bestRank: ISkillsRank = {
+	// 		skills: [],
+	// 		rank: 1000
+	// 	};
+	// 	const crewSkills: string[] = Object.keys(crew.skills);
+	// 	for (let i = 1; i <= crewSkills.length; i++) {
+	// 		souzaCombinations(crewSkills, i).forEach(skills => {
+	// 			if (skills.includes(seatSkill)) {
+	// 				const rank: number = skillRankings[skills.join(',')]
+	// 					.filter(c => !usedCrew.includes(c.id))
+	// 					.findIndex(c => c.id === crew.id) + 1;
+	// 				if (rank < bestRank.rank) bestRank = { skills, rank };
+	// 			}
+	// 		});
+	// 		if (bestRank.rank <= 3) break;
+	// 	}
+	// 	bestRank.skills = sortSkills(bestRank.skills, seatSkill);
+	// 	return bestRank;
+	// }
+
 	// Filter out seat skill and match in-game left-to-right order of skill filter buttons
-	function sortSkills(skills: string[], seatSkill: string): string[] {
-		const filterSkills: string[] = [
-			'command_skill', 'diplomacy_skill', 'engineering_skill',
-			'security_skill', 'medicine_skill', 'science_skill'
-		];
-		const sorted: string[] = [];
-		filterSkills.forEach(skill => {
-			if (skills.includes(skill) && seatSkill !== skill) sorted.push(skill);
-		});
-		return sorted;
-	}
+	// function sortSkills(skills: string[], seatSkill: string): string[] {
+	// 	const filterSkills: string[] = [
+	// 		'command_skill', 'diplomacy_skill', 'engineering_skill',
+	// 		'security_skill', 'medicine_skill', 'science_skill'
+	// 	];
+	// 	const sorted: string[] = [];
+	// 	filterSkills.forEach(skill => {
+	// 		if (skills.includes(skill) && seatSkill !== skill) sorted.push(skill);
+	// 	});
+	// 	return sorted;
+	// }
 
 	// https://blog.lublot.dev/combinations-in-typescript
-	function souzaCombinations<T>(items: T[], size: number = items.length): T[][] {
-		const combinations: T[][] = [];
-		const stack: number[] = [];
-		let i = 0;
+// 	function souzaCombinations<T>(items: T[], size: number = items.length): T[][] {
+// 		const combinations: T[][] = [];
+// 		const stack: number[] = [];
+// 		let i = 0;
 
-		size = Math.min(items.length, size);
+// 		size = Math.min(items.length, size);
 
-		while (true) {
-			if (stack.length === size) {
-				combinations.push(stack.map((index) => items[index]));
-				i = stack.pop()! + 1;
-			}
+// 		while (true) {
+// 			if (stack.length === size) {
+// 				combinations.push(stack.map((index) => items[index]));
+// 				i = stack.pop()! + 1;
+// 			}
 
-			if (i >= items.length) {
-				if (stack.length === 0) {
-					break;
-				}
-				i = stack.pop()! + 1;
-			} else {
-				stack.push(i++);
-			}
-		}
+// 			if (i >= items.length) {
+// 				if (stack.length === 0) {
+// 					break;
+// 				}
+// 				i = stack.pop()! + 1;
+// 			} else {
+// 				stack.push(i++);
+// 			}
+// 		}
 
-		return combinations;
-	}
+// 		return combinations;
+// 	}
 };
 
 const PlayerViewPicker = (props: { dbid: string }) => {
