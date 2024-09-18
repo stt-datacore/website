@@ -29,7 +29,7 @@ export interface PlayerGlanceProps {
     t: TranslateMethod
 }
 
-export const PlayerGlance = (props: PlayerGlanceProps) => {    
+export const PlayerGlance = (props: PlayerGlanceProps) => {
     const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'normal', { rememberForever: true })
 
     const { requestDismiss, narrow, t } = props;
@@ -39,7 +39,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const { playerData } = globalContext.player;
 
     if (!playerData?.player) return <></>;
-    
+
     const { money, premium_purchasable, honor, premium_earnable, shuttle_rental_tokens } = playerData.player;
 
     let ch = 0;
@@ -57,7 +57,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const ownedCites = getOwnedCites(playerData?.player.character.items ?? [], false);
     const cadet = playerData?.player.character.cadet_tickets?.current ?? 0;
     const pvp = playerData?.player.character.pvp_tickets?.current ?? 0;
-    
+
     let revival = playerData.player.character.items.find(f => f.symbol === 'voyage_revival');
     let coreRevival = globalContext.core.items.find(f => f.symbol === 'voyage_revival')!;
     if (revival && coreRevival) {
@@ -118,13 +118,12 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         name: t('global.item_types.arena_tickets'),
         quantity: pvp,
         imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/fleetmarker_icon.png`,
-        click: (e) => navigate('/voyage')
+        click: (e) => navigate('/ships')
     },
     {
         name: t('global.item_types.cadet_challenge_tickets'),
         quantity: cadet,
-        imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/cadet_icon.png`,
-        click: (e) => navigate('/voyage')
+        imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/cadet_icon.png`
     },
     {
         name: t('global.item_types.voyage_consumable'),
@@ -144,13 +143,13 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         if (cite.quantity <= 0 && idx !== 5) return;
         let item = globalContext.core.items.find(f => f.symbol === `honorable_citation_quality${idx}`);
         const img = `${process.env.GATSBY_ASSETS_URL}${item?.imageUrl}`;
-        
+
         if (cite.quantity > 0) {
             resources.push({
                 name: `${idx}* ` + t('global.item_types.honorable_citation'),
                 quantity: cite.quantity,
                 imageUrl: img,
-                style: {                
+                style: {
                     border: `1.5px solid ${CONFIG.RARITIES[idx].color}`
                 },
                 click: (e) => navigate('/cite-opt')
@@ -158,13 +157,13 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         }
     });
 
-    let cite = globalContext.core.items.find(f => f.symbol === `honorable_citation_quality5`);    
+    let cite = globalContext.core.items.find(f => f.symbol === `honorable_citation_quality5`);
     const cite5img = `${process.env.GATSBY_ASSETS_URL}${cite?.imageUrl}`;
     let h = Math.floor(honor / (costMode === 'normal' ? 50000 : 40000));
     resources.push({
         name: `${costMode === 'normal' ? t('global.item_types.potential_cites'): t('global.item_types.potential_cites_honor_sale')}`,
         quantity: h,
-        style: {                
+        style: {
             border: `1.5px dashed ${CONFIG.RARITIES[5].color}`
         },
         customRender: (res) => {
@@ -186,7 +185,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         }
     });
 
-    return <div className={'ui segment'} 
+    return <div className={'ui segment'}
         style={{
             width:"100%",
             display: 'flex',
@@ -220,9 +219,9 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                             &nbsp;{res.quantity?.toLocaleString() ?? 0}
                         </div>
                     )
-                  
+
                 })}
-                
+
             </div>
         </div>
 }
