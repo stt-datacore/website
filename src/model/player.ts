@@ -1109,8 +1109,13 @@ export interface EncounterVoyage extends Voyage {
     phase_id: number;
     event_instance_id: number;
     encounter: number;
-    encounter_skip_boost?: number;
-    fast_forward_boost?: number;
+    encounter_skip_boost?: {
+        boost_duration: number;
+        boost_archetype: number;
+    }
+    fast_forward_boost?: {
+        estimated_hp: number;
+    }
 }
 
 export interface PendingRewards {
