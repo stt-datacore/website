@@ -204,13 +204,13 @@ export const MultiVectorAssault = (
 	function getEncounterCrewVP(crew: IVoyageCrew, content: IVoyageEventContent): number {
 		let crewVP: number = 0;
 		if (content.featured_crews.includes(crew.symbol)) {
-			crewVP = 25;
+			crewVP = 10;
 		}
 		else {
 			if (content.antimatter_bonus_crew_traits.some(bonusTrait => {
 				return crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait);
 			})) {
-				crewVP = 10;
+				crewVP = 5;
 			}
 		}
 		return crewVP;
