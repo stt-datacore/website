@@ -1100,8 +1100,22 @@ export interface Voyage {
   seconds_since_last_dilemma: number
   first_leave: boolean
   time_to_next_event: number
-  ship_id: number
+  ship_id: number;
+  next_interaction: number;
   crew_slots: VoyageCrewSlot[]
+}
+
+export interface EncounterVoyage extends Voyage {
+    phase_id: number;
+    event_instance_id: number;
+    encounter: number;
+    encounter_skip_boost?: {
+        boost_duration: number;
+        boost_archetype: number;
+    }
+    fast_forward_boost?: {
+        estimated_hp: number;
+    }
 }
 
 export interface PendingRewards {
