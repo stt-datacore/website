@@ -38,10 +38,17 @@ const UserPrefsContext = React.createContext<IUserPrefsContext>({} as IUserPrefs
 export const Calculator = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
+	const { voyage_type } = React.useContext(CalculatorContext).voyageConfig;
 
 	return (
 		<React.Fragment>
-			{playerData && <PlayerCalculator dbid={`${playerData.player.dbid}`} />}
+			{playerData && (
+				<PlayerCalculator
+					key={voyage_type}
+					dbid={`${playerData.player.dbid}`}
+					voyageType={voyage_type}
+				/>
+			)}
 			{!playerData && <NonPlayerCalculator />}
 		</React.Fragment>
 	);
@@ -49,13 +56,14 @@ export const Calculator = () => {
 
 type PlayerCalculatorProps = {
 	dbid: string;
+	voyageType: string;
 };
 
 const PlayerCalculator = (props: PlayerCalculatorProps) => {
-	const { voyage_type: vt } = React.useContext(CalculatorContext).voyageConfig;
-	const voyage_type = vt === 'encounter' ? '/encounter' : '';
-	const [calculator, setCalculator] = useStateWithStorage(`${props.dbid}/voyage/calculator${voyage_type}`, 'iampicard', { rememberForever: true });
-	const [calcOptions, setCalcOptions] = useStateWithStorage<GameWorkerOptions>(`${props.dbid}/voyage/calcOptions${voyage_type}`, {} as GameWorkerOptions, { rememberForever: true });
+	const voyageType: string = props.voyageType === 'encounter' ? '/encounter' : '';
+	const defaultCalculator: string = props.voyageType === 'encounter' ? 'ussjohnjay-mvam' : 'iampicard';
+	const [calculator, setCalculator] = useStateWithStorage(`${props.dbid}/voyage/calculator${voyageType}`, defaultCalculator, { rememberForever: true });
+	const [calcOptions, setCalcOptions] = useStateWithStorage<GameWorkerOptions>(`${props.dbid}/voyage/calcOptions${voyageType}`, {} as GameWorkerOptions, { rememberForever: true });
 	const [telemetryOptIn, setTelemetryOptIn] = useStateWithStorage(props.dbid+'/voyage/telemetryOptIn', true, { rememberForever: true });
 
 	const userPrefs: IUserPrefsContext = {

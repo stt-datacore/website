@@ -119,6 +119,7 @@ export const LineupViewer = (props: LineupViewerProps) => {
 
 	function initSkillRankings(): ISkillsRankings {
 		const skillRankings: ISkillsRankings = {};
+		if (!findBestRank) return skillRankings;
 		if (roster) {
 			roster.forEach(crew => {
 				const crewSkills: string[] = Object.keys(crew.skills);
@@ -194,7 +195,7 @@ export const LineupViewer = (props: LineupViewerProps) => {
 			!usedCrew.includes(c.id)
 		).findIndex(c => c.id === crew.id) + 1;
 		if (seatRank > 0 && seatRank <= 3) {
-			bestRank = { skills: [seatSkill], rank: seatRank };
+			bestRank = { skills: [], rank: seatRank };
 		}
 		else {
 			const otherSkills: string[] = Object.keys(crew.skills).filter(skill => skill !== seatSkill);
@@ -205,7 +206,7 @@ export const LineupViewer = (props: LineupViewerProps) => {
 						&& Object.keys(c.skills).includes(seatSkill)
 				).findIndex(c => c.id === crew.id) + 1;
 				if (pairRank >= 0 && pairRank < bestRank.rank)
-					bestRank = { skills: [seatSkill, sortSkill], rank: pairRank };
+					bestRank = { skills: [sortSkill], rank: pairRank };
 				if (bestRank.rank <= 3) break;
 			}
 			if (bestRank.rank > 3 && otherSkills.length > 1) {
@@ -218,13 +219,11 @@ export const LineupViewer = (props: LineupViewerProps) => {
 							&& Object.keys(c.skills).includes(filterSkill)
 					).findIndex(c => c.id === crew.id) + 1;
 					if (tripletRank >= 0 && tripletRank < bestRank.rank)
-						bestRank = { skills: [seatSkill, filterSkill, sortSkill], rank: tripletRank };
+						bestRank = { skills: [filterSkill, sortSkill], rank: tripletRank };
 					if (bestRank.rank <= 3) break;
 				}
 			}
 		}
-		bestRank.skills = bestRank.skills.filter(skill => skill !== seatSkill);
-		// bestRank.skills = sortSkills(bestRank.skills, seatSkill);
 		return bestRank;
 	}
 
@@ -433,7 +432,7 @@ const TableView = (props: ViewProps) => {
 									</Popup>
 								</Table.Cell>
 								<Table.Cell width={2} className='iconic' style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
-									<CrewFinder crew={crew} bestRank={bestRank} />
+									{voyageConfig.state === 'pending' && <CrewFinder crew={crew} bestRank={bestRank} />}
 								</Table.Cell>
 								<Table.Cell width={1} className='iconic' style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
 									<div style={{display:'flex', flexDirection:'row', gap: "0.5em", alignItems: "center", justifyContent: "right", marginRight: "0.5em"}}>
@@ -584,7 +583,7 @@ const GridView = (props: ViewProps) => {
 								</Popup.Content>
 							</Popup>
 							<div style={{ marginTop: '.3em', textAlign: 'center', fontSize: '1.1em' }}>
-								<CrewFinder crew={crew} bestRank={bestRank} />
+								{voyageConfig.state === 'pending' && <CrewFinder crew={crew} bestRank={bestRank} />}
 							</div>
 						</Grid.Column>
 					);
@@ -737,7 +736,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 
 	return (
 		<Card style={{ padding: '.5em', textAlign: 'center', height: '100%' }}>
-			{(bestRank || crew.immortal > 0 || crew.active_status > 0) &&
+			{(voyageConfig.state === 'pending' && (bestRank || crew.immortal > 0 || crew.active_status > 0)) &&
 				<Label corner='right' style={{ fontSize: '1.1em', textAlign: 'right', padding: '.4em .4em 0 0' }}>
 					<CrewFinder crew={crew} bestRank={bestRank} />
 				</Label>
