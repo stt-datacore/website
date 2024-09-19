@@ -31,11 +31,14 @@ export function getCrewTraitBonus(voyageConfig: IVoyageInputConfig, crew: Player
 				traitBonus = content.antimatter_bonus_for_featured_crew;
 			}
 			else {
-				content.antimatter_bonus_crew_traits.forEach(bonusTrait => {
-					if (crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait)) {
-						traitBonus += content.antimatter_bonus_per_crew_trait;
-					}
-				});
+				if (content.antimatter_bonus_crew_traits.some(bonusTrait => (crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait)))) {
+					traitBonus = content.antimatter_bonus_per_crew_trait;
+				}
+				// content.antimatter_bonus_crew_traits.forEach(bonusTrait => {
+				// 	if (crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait)) {
+				// 		traitBonus += content.antimatter_bonus_per_crew_trait;
+				// 	}
+				// });
 			}
 		}
 	}
@@ -51,13 +54,13 @@ export function getCrewVP(voyageConfig: IVoyageInputConfig, crew: PlayerCrew): n
 		const content: IVoyageEventContent | undefined = voyageConfig.event_content;
 		if (content) {
 			if (content.featured_crews.includes(crew.symbol)) {
-				crewVP = 25;
+				crewVP = 10;
 			}
 			else {
 				if (content.antimatter_bonus_crew_traits.some(bonusTrait => {
 					return crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait);
 				})) {
-					crewVP = 10;
+					crewVP = 5;
 				}
 			}
 		}

@@ -58,7 +58,7 @@ export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
         vp_per_min: 0
     } as VPDetails;
 
-    let dropvp = 50 + bonuses.reduce((p, n) => p + n, 0);
+    let dropvp = 50 + Math.min(bonuses.reduce((p, n) => p + n, 0), 120);
     let total = 0;
     let dropmap = [ ... DropMap ];
 
