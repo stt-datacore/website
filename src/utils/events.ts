@@ -356,11 +356,14 @@ function getBonus(crew: IEventScoredCrew, eventData: IEventData, low: number, hi
 				amount = activeContent.antimatter_bonus_for_featured_crew ?? high;
 			}
 			else {
-				activeContent.antimatter_bonus_crew_traits?.forEach(trait => {
-					if (crew.traits.includes(trait) || crew.traits_hidden.includes(trait)) {
-						amount += (activeContent.antimatter_bonus_per_crew_trait ?? low);
-					}
-				});
+				if (activeContent.antimatter_bonus_crew_traits?.some(trait => (crew.traits.includes(trait) || crew.traits_hidden.includes(trait)))) {
+					amount = (activeContent.antimatter_bonus_per_crew_trait ?? low);
+				}
+				// activeContent.antimatter_bonus_crew_traits?.forEach(trait => {
+				// 	if (crew.traits.includes(trait) || crew.traits_hidden.includes(trait)) {
+				// 		amount += (activeContent.antimatter_bonus_per_crew_trait ?? low);
+				// 	}
+				// });
 			}
 		}
 		else {
