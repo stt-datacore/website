@@ -52,8 +52,10 @@ type PlayerCalculatorProps = {
 };
 
 const PlayerCalculator = (props: PlayerCalculatorProps) => {
-	const [calculator, setCalculator] = useStateWithStorage(props.dbid+'/voyage/calculator', 'iampicard', { rememberForever: true });
-	const [calcOptions, setCalcOptions] = useStateWithStorage<GameWorkerOptions>(props.dbid+'/voyage/calcOptions', {} as GameWorkerOptions, { rememberForever: true });
+	const { voyage_type: vt } = React.useContext(CalculatorContext).voyageConfig;
+	const voyage_type = vt === 'encounter' ? '/encounter' : '';
+	const [calculator, setCalculator] = useStateWithStorage(`${props.dbid}/voyage/calculator${voyage_type}`, 'iampicard', { rememberForever: true });
+	const [calcOptions, setCalcOptions] = useStateWithStorage<GameWorkerOptions>(`${props.dbid}/voyage/calcOptions${voyage_type}`, {} as GameWorkerOptions, { rememberForever: true });
 	const [telemetryOptIn, setTelemetryOptIn] = useStateWithStorage(props.dbid+'/voyage/telemetryOptIn', true, { rememberForever: true });
 
 	const userPrefs: IUserPrefsContext = {
