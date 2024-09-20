@@ -111,7 +111,7 @@ const CrewRow = (props: CrewRowProps) => {
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<b>{crew.cab_ov}</b>
-					<br /><small>{rarityLabels[crew.max_rarity-1]} #{crew.cab_ov_rank}</small>
+					<br /><small>{rarityLabels[crew.max_rarity]} #{crew.cab_ov_rank}</small>
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<b>#{crew.ranks.voyRank}</b>
