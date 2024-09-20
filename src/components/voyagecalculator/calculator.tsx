@@ -553,8 +553,10 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 
 	const analyses: string[] = [];
 
-	// In-game voyage crew picker ignores frozen crew and crew active on shuttles
-	const availableRoster = calculatorContext.crew.filter(c => c.immortal <= 0 && c.active_status !== 2);
+	// In-game voyage crew picker ignores frozen crew, active shuttlers, and active voyagers
+	const availableRoster: IVoyageCrew[] = calculatorContext.crew.filter(
+		c => c.immortal <= 0 && c.active_status !== 2 && c.active_status !== 3
+	);
 
 	if (results.length === 0)
 		return (<></>);

@@ -22,7 +22,8 @@ export const HistoryHome = (props: HistoryHomeProps) => {
 	if (history.voyages.length === 0) {
 		return (
 			<React.Fragment>
-				<p>You don't have any voyage history yet. Start tracking voyages from the crew calculator. You can also import voyage history from remote sync or from a saved file.</p>
+				<p>You don't have any voyage history yet. Start tracking voyages from the crew calculator.</p>
+				{/* <p>You don't have any voyage history yet. Start tracking voyages from the crew calculator. You can also import voyage history from remote sync or from a saved file.</p> */}
 				<DataManagement
 					postRemote={props.postRemote}
 					setPostRemote={props.setPostRemote}

@@ -1,8 +1,14 @@
 import React from 'react';
+import {
+	Accordion,
+	Icon,
+	Message,
+	Segment,
+	SemanticICONS
+} from 'semantic-ui-react';
 
-import { Estimate } from '../../model/worker';
 import { IVoyageCalcConfig } from '../../model/voyage';
-import { Accordion, Icon, Segment, SemanticICONS } from 'semantic-ui-react';
+import { Estimate } from '../../model/worker';
 
 type VPGraphProps = {
 	voyageConfig: IVoyageCalcConfig;
@@ -43,8 +49,15 @@ export const VPGraphAccordion = (props: VPGraphProps) => {
 export const VPGraph = (props: VPGraphProps) => {
 	return (
 		<React.Fragment>
-			<p>Explanation and other details to come.</p>
-			<p>Note that VP projections rely on a voyage's estimated runtime, which DataCore currently calculates as if this were a dilemma voyage.</p>
+			<Message>
+				<Message.Content>
+					<Message.Header>
+						Disclaimers
+					</Message.Header>
+					<p>VP calculations are based on assumptions from the test voyage event and may not be accurate for this event or events going forward.</p>
+					<p>DataCore currently estimates an encounter voyage's runtime as if it were a dilemma voyage. It is not yet known how accurate this is.</p>
+				</Message.Content>
+			</Message>
 		</React.Fragment>
 	);
 }

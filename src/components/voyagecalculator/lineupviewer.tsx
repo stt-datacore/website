@@ -642,7 +642,11 @@ const Aggregates = (props: ViewProps) => {
 				<Table.Cell>Base Event VP</Table.Cell>
 				<Table.Cell className='iconic' style={{width: '2.2em'}}>&nbsp;</Table.Cell>
 				<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
-					<b>{totalVP}</b>
+					<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{totalVP}</span>}>
+						<Popup.Content>
+							VP calculations are based on assumptions from the test voyage event and may not be accurate for this event or events going forward.
+						</Popup.Content>
+					</Popup>
 				</Table.Cell>
 				<Table.Cell className='iconic' textAlign='center'>
 					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1em' }} className='invertibleIcon' />
