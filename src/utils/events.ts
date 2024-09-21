@@ -407,10 +407,18 @@ export function computeEventBest(
 		}
 	}
 
+	const getVoyScore = (crew: IRosterCrew, skill: string) => {
+		return crew[skill].core + (crew[skill].min + crew[skill].max) / 2;
+	};
+
 	const getPairScore = (crew: IRosterCrew, primary: string, secondary: string) => {
 		if (phaseType === 'shuttles') {
 			if (secondary) return crew[primary].core+(crew[secondary].core/4);
 			return crew[primary].core;
+		}
+		else if (phaseType === 'voyage') {
+			if (secondary) return getVoyScore(crew, primary) + getVoyScore(crew, secondary);
+			return getVoyScore(crew, primary);
 		}
 		if (secondary) return (crew[primary].core+crew[secondary].core)/2;
 		return crew[primary].core/2;
@@ -451,8 +459,9 @@ export function computeEventBest(
 		let bestSkill: IEventSkill = { score: 0, skill: '' };
 		for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
 			const firstSkill = CONFIG.SKILLS_SHORT[first];
+			const firstSkillScore: number = phaseType === 'voyage' ? getVoyScore(crew, firstSkill.name) : crew[firstSkill.name].core;
 			const single = {
-				score: crew[firstSkill.name].core,
+				score: firstSkillScore,
 				skillA: firstSkill.name
 			};
 			combos[firstSkill.name] = single.score;

@@ -205,7 +205,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 				lockable={props.lockable}
 			/>
 			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, rosterCrew, buffConfig)} targetGroup='eventTarget' />
-			{phaseType !== 'skirmish' && phaseType !== 'voyage' && (<EventCrewMatrix crew={rosterCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
+			{phaseType !== 'skirmish' && (<EventCrewMatrix crew={rosterCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
 		</React.Fragment>
 	);
 
@@ -253,8 +253,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 				{CONFIG.SKILLS_SHORT.map(skill =>
 					crew.base_skills[skill.name] ? (
 						<Table.Cell key={skill.name} textAlign='center'>
-							<b>{scoreLabel(crew[skill.name].core)}</b>
-							{phaseType !== 'gather' && (<span><br /><small>+({crew[skill.name].min}-{crew[skill.name].max})</small></span>)}
+							{renderSkillScore(crew, skill.name)}
 						</Table.Cell>
 					) : (
 						<Table.Cell key={skill.name} />
@@ -296,6 +295,18 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		if (!score || score === 0) return (<></>);
 		if (phaseType === 'gather') return (<>{`${calculateGalaxyChance(score)}%`}</>);
 		return (<>{Math.floor(score)}</>);
+	}
+
+	function renderSkillScore(crew: IEventScoredCrew, skill: string): JSX.Element {
+		if (phaseType === 'voyage') {
+			return (
+				<React.Fragment>
+					<b>{Math.floor(crew[skill].core + (crew[skill].min + crew[skill].max) / 2)}</b>
+					<br />({crew[skill].min}-{crew[skill].max})
+				</React.Fragment>
+			);
+		}
+		return <b>{scoreLabel(crew[skill].core)}</b>;
 	}
 
 	function showThisCrew(crew: IEventScoredCrew, filters: [], filterType: string): boolean {
