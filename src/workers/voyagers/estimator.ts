@@ -93,9 +93,12 @@ export const estimateLineups = (
 			if (options.strategy === 'peak-vp') {
 				considered.sort((a, b) => {
 					if (a.vp === b.vp) {
-						if (a.projection.ticks === b.projection.ticks)
-							return b.score - a.score;
-						return b.projection.ticks - a.projection.ticks;
+						if (a.coverage === b.coverage) {
+							if (a.projection.ticks === b.projection.ticks)
+								return b.score - a.score;
+							return b.projection.ticks - a.projection.ticks;
+						}
+						return b.coverage - a.coverage;
 					}
 					return b.vp - a.vp;
 				});

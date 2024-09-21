@@ -32,6 +32,7 @@ export class VoyagersLineup {
 	proficiency: number;
 	antimatter: number;
 	vp: number;
+	coverage: number;
 	vectors: number[];
 	log: string;
 
@@ -46,6 +47,7 @@ export class VoyagersLineup {
 			science_skill: { skill: 'science_skill', core: 0, range_min: 0, range_max: 0, voyage: 0 },
 			medicine_skill: { skill: 'medicine_skill', core: 0, range_min: 0, range_max: 0, voyage: 0 }
 		};
+		const skillCoverage: Set<string> = new Set();
 		let dTotalScore: number = 0, dTotalProficiency: number = 0;
 		let iTotalBonus: number = 0, iTotalVP: number = 0;
 
@@ -72,6 +74,10 @@ export class VoyagersLineup {
 				dTotalScore += dSkillScore;
 				dTotalProficiency += dProficiency;
 			}
+			const skills: string[] = Object.keys(assignments[i].skills);
+			for (let i = 1; i < skills.length; i++) {
+				skillCoverage.add(skills[0]+','+skills[i]);
+			}
 		}
 
 		let lineupKey: string = '';
@@ -88,6 +94,7 @@ export class VoyagersLineup {
 		this.proficiency = Math.floor(dTotalProficiency/dTotalScore*100);
 		this.antimatter = iTotalBonus;
 		this.vp = iTotalVP;
+		this.coverage = skillCoverage.size;
 		this.vectors = [];
 		this.log = assemblyLog;
 	}

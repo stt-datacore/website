@@ -114,7 +114,7 @@ export const MultiVectorAssault = (
 			if (voyage.voyage_type === 'encounter' && voyage.event_content) {
 				eventTraitBonus = getEncounterTraitBonus(crew[i], voyage.event_content);
 				eventCrewVP = getEncounterCrewVP(crew[i], voyage.event_content);
-				eventCrewFactor = (eventCrewVP/5)+1;	// 3 for featured, 2 for small bonus, 1 for non-event crew
+				// eventCrewFactor = (eventCrewVP/5)+1;	// 3 for featured, 2 for small bonus, 1 for non-event crew
 			}
 
 			let bGeneralist: boolean = true;
