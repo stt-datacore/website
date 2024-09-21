@@ -476,6 +476,7 @@ const TableView = (props: ViewProps) => {
 	function renderVPBonus(crew: PlayerCrew): JSX.Element {
 		if (voyageConfig.voyage_type !== 'encounter') return <></>;
 		const crewVP: number = getCrewVP(voyageConfig, crew);
+		if (crewVP === 0) return <></>;
 		let bonusText = `+${crewVP} VP`;
 		return (
 			<Popup content={bonusText} mouseEnterDelay={POPUP_DELAY} trigger={
