@@ -3,7 +3,7 @@ name: Commander Ari bn Bem
 rarity: 5
 series: tas
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal: true
 date: 17/09/2019
 published: true
