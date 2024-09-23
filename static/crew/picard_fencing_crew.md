@@ -3,7 +3,7 @@ name: Fencing Picard
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal: true
 date: 30/11/2021
 published: true

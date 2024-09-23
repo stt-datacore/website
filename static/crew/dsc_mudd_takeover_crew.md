@@ -3,7 +3,7 @@ name: Time Loop Mudd
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal: true
 date: 22/02/2018
 published: true
