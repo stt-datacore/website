@@ -35,7 +35,7 @@ export const PlayerBadge = (props: PlayerBadgeProps) => {
 
             <div style={{display: 'inline', textAlign: 'center'}}>
                 <img src={avatar} style={{height: '84px', width: 'auto !important', margin: '0.5em', marginTop: 0}} />
-            </div>    
+            </div>
 
             <Item.Content>
                 <Item.Header>{playerData.player.character.display_name}</Item.Header>
@@ -48,7 +48,7 @@ export const PlayerBadge = (props: PlayerBadgeProps) => {
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{ t('player_badge.n_shuttles', { n: `${playerData.player.character.shuttle_bays}` })}</Label>
                 </Item.Meta>
                 <Item.Description>
-                    {playerData.player.fleet && (
+                    {!!playerData.player.fleet?.id && (
                         <p>
                             {t('global.fleet')}{' '}
                             <Link to={`/fleet_info?fleetid=${playerData.player.fleet.id}`}>
