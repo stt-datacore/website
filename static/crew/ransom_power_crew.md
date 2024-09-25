@@ -3,7 +3,7 @@ name: Power Ransom
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal:
 date: 25/07/2023
 published: true
