@@ -3,7 +3,7 @@ name: Chief Engineer Hemmer
 rarity: 4
 series: snw
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 in_portal: true
 date: 06/07/2022
 published: true
