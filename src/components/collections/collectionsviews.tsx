@@ -166,11 +166,21 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	let selnum = undefined as number | undefined;
 
-	if (typeof window !== 'undefined' && !!window.location.search?.length) {
+	if (typeof window !== 'undefined' && (!!window.location.search?.length || !!window.location.hash?.length)) {
 		if (context.player.playerData) {
-			let params = new URLSearchParams(window.location.search);
-			let sel = params.get("select");
-			let findcol = playerCollections?.find(f => f.name === sel);
+			let sel = '' as string | null;
+			if (window.location.search) {
+				let params = new URLSearchParams(window.location.search);
+				sel = params.get("select");
+			}
+			if (sel) {
+				sel = decodeURIComponent(sel);
+			}
+			else if (!sel && window.location.hash) {
+				sel = decodeURIComponent(window.location.hash.slice(1));
+			}
+			let findcol: PlayerCollection | undefined = undefined;
+			findcol = playerCollections?.find(f => f.name === sel);
 			if (findcol) {
 				const msel = selnum = findcol.id;
 				if (!mapFilter?.collectionsFilter?.includes(msel)) {
