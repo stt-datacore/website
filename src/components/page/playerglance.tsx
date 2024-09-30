@@ -24,6 +24,7 @@ export interface PlayerResource {
 
 
 export interface PlayerGlanceProps {
+    openPlayerPanel: () => void;
     requestDismiss?: () => void;
     narrow?: boolean;
     t: TranslateMethod
@@ -32,12 +33,12 @@ export interface PlayerGlanceProps {
 export const PlayerGlance = (props: PlayerGlanceProps) => {
     const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'normal', { rememberForever: true })
 
-    const { requestDismiss, narrow, t } = props;
+    const { openPlayerPanel, requestDismiss, narrow, t } = props;
 
     const globalContext = React.useContext(GlobalContext);
     const { isMobile } = globalContext;
     const { playerData } = globalContext.player;
-
+    const currentEvent = globalContext?.player?.ephemeral?.events?.find(f => f.victory_points !== undefined && f.seconds_to_start === 0 && f.seconds_to_end > 0);
     if (!playerData?.player) return <></>;
 
     const { money, premium_purchasable, honor, premium_earnable, shuttle_rental_tokens } = playerData.player;
@@ -197,31 +198,55 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
             <Label title={'Close player at-a-glance panel'} as='a' corner='right' onClick={requestDismiss}>
                 <Icon name='delete' style={{ cursor: 'pointer' }} />
             </Label>
-            <PlayerBadge t={t} playerData={playerData} style={{width: isMobile || narrow ? 'auto' : '600px', margin: '0 2em'}} />
+
+            <PlayerBadge openPlayerPanel={openPlayerPanel} t={t} playerData={playerData} style={{width: isMobile || narrow ? 'auto' : '600px', margin: '0 2em'}} />
+
             <div style={{
-                display: 'flex',
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                alignItems: 'center',
-                justifyContent: isMobile || narrow ? 'center' : 'flex-start',
-                gap: '1em'
+                display: 'grid',
+                gridTemplateAreas: `'v1' 'v2' 'v3'`,
+                gridTemplateRows: '3em auto 3em'
             }}>
-                {resources.map(res => {
-                    if (res.customRender) {
-                        return res.customRender(res);
-                    }
-                    let click = res.click;
-                    return (
-                        <div title={res.name} className={'ui label'} key={res.name} style={{cursor: click ? 'pointer' : undefined, marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style}} onClick={(e) => click ? click(e) : 0}>
-                            <div style={{width: '8em', display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                                {res.imageUrl && <Image size={'tiny'} avatar src={res.imageUrl} style={{width: 'auto', height: '24px', marginRight: "0.5em"}} />}
+                {!!currentEvent && <div style={{
+                        gridArea: 'v3',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: isMobile ? 'center' : 'flex-start',
+                        marginTop: '1em',
+                        gap: '0.5em',
+                        cursor: 'pointer'
+                    }}
+                    onClick={() => navigate('/eventplanner')}
+                    title={currentEvent.name}>
+                    <img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{height:'2em', margin:0}} />
+                    <h3 style={{margin:0}}>{currentEvent.victory_points?.toLocaleString()}&nbsp;{t('shuttle_helper.event.vp')}</h3>
+                </div>}
+                <div style={{
+                    gridArea: 'v2',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    justifyContent: isMobile || narrow ? 'center' : 'flex-start',
+                    gap: '1em'
+                }}>
+                    {resources.map(res => {
+                        if (res.customRender) {
+                            return res.customRender(res);
+                        }
+                        let click = res.click;
+                        return (
+                            <div title={res.name} className={'ui label'} key={res.name} style={{cursor: click ? 'pointer' : undefined, marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style}} onClick={(e) => click ? click(e) : 0}>
+                                <div style={{width: '8em', display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                                    {res.imageUrl && <Image size={'tiny'} avatar src={res.imageUrl} style={{width: 'auto', height: '24px', marginRight: "0.5em"}} />}
+                                </div>
+                                &nbsp;{res.quantity?.toLocaleString() ?? 0}
                             </div>
-                            &nbsp;{res.quantity?.toLocaleString() ?? 0}
-                        </div>
-                    )
+                        )
 
-                })}
+                    })}
 
+                </div>
             </div>
         </div>
 }

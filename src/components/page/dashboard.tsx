@@ -9,6 +9,7 @@ import { PlayerShareNotifications, PlayerSharePanel } from '../../components/pla
 import { PlayerGlance } from './playerglance';
 
 type DashboardProps = {
+	openInputPanel: () => void;
 	activePanel: string | undefined;
 	setActivePanel: (panel: string | undefined) => void;
 	narrow: boolean;
@@ -20,7 +21,7 @@ const Dashboard = (props: DashboardProps) => {
 	const isMobile = globalContext.isMobile;
 	const { playerData, showPlayerGlance, setShowPlayerGlance } = globalContext.player;
 	const { t } = globalContext.localized;
-	const { activePanel, setActivePanel, narrow } = props;
+	const { activePanel, setActivePanel, narrow, openInputPanel } = props;
 	const [mobileHideOverride, setMobileHideOverride] = React.useState(false);
 	const [hideOverrideHidden, setHideOverrideHidden] = React.useState(false);
 
@@ -30,6 +31,7 @@ const Dashboard = (props: DashboardProps) => {
 
 			{!!playerData && showPlayerGlance && (!isMobile || mobileHideOverride) &&
 				<PlayerGlance
+					openPlayerPanel={() => openInputPanel()}
 					t={t}
 					narrow={narrow}
 					requestDismiss={() => { setShowPlayerGlance(false) }} />}
