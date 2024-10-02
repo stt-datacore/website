@@ -153,7 +153,10 @@ export const CollectionDisplay = (props: CollectionDisplayProps) => {
 
     if (!crew.collections?.length) return <></>;
 
-    if (((("immortal" in crew)) && (crew.immortal === 0)) && playerData?.player.character.cryo_collections) {
+    if (
+        (((("immortal" in crew)) && (crew.immortal === 0)) ||
+        ("any_immortal" in crew && crew.any_immortal === false))
+        && playerData?.player.character.cryo_collections) {
         playerData?.player.character.cryo_collections.forEach(col => {
             if (col?.milestone?.goal) {
                 ocols.push(col.name);
