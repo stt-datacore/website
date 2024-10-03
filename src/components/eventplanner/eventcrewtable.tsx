@@ -17,6 +17,8 @@ import { crewGender, isQuipped } from '../../utils/crewutils';
 import { IEventData, IRosterCrew, IEventScoredCrew, IEventCombos, IBestCombos, IBestCombo } from './model';
 import { calculateGalaxyChance, computeEventBest } from '../../utils/events';
 import { navToCrewPage } from '../../utils/nav';
+import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import { SkillPicker } from '../base/skillpicker';
 
 type EventCrewTableProps = {
 	rosterType: string;
@@ -32,6 +34,8 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 
 	const { playerData, buffConfig } = globalContext.player;
 	const { rosterType, eventData, phaseIndex } = props;
+
+	const [skillFilter, setSkillFilter] = useStateWithStorage('eventplanner/skillFilter', [] as string[] | undefined);
 
 	const [showBonus, setShowBonus] = useStateWithStorage('eventplanner/showBonus', true);
 	const [applyBonus, setApplyBonus] = useStateWithStorage('eventplanner/applyBonus', true);
@@ -194,6 +198,10 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 					}
 				</Form.Group>
 			</Form>
+			<div style={{margin: '0.5em 0'}}>
+				{t('hints.filter_by_skill')}:&nbsp;&nbsp;
+				<SkillPicker multiple short value={skillFilter} setValue={setSkillFilter} />
+			</div>
 			<SearchableTable
 				id='eventplanner'
 				data={rosterCrew}
@@ -205,7 +213,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 				lockable={props.lockable}
 			/>
 			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, rosterCrew, buffConfig)} targetGroup='eventTarget' />
-			{phaseType !== 'skirmish' && (<EventCrewMatrix crew={rosterCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
+			{phaseType !== 'skirmish' && (<EventCrewMatrix skillFilter={skillFilter} crew={rosterCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
 		</React.Fragment>
 	);
 
@@ -311,6 +319,9 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 
 	function showThisCrew(crew: IEventScoredCrew, filters: [], filterType: string): boolean {
 		// Bonus, frozen crew filtering now handled before rendering entire table instead of each row
+		if (skillFilter?.length) {
+			if (!skillFilter.some(skill => [crew.bestPair.skillA, crew.bestPair.skillB].includes(skill))) return false;
+		}
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
@@ -344,55 +355,103 @@ type EventCrewMatrixProps = {
 	crew: IEventScoredCrew[];
 	bestCombos: IBestCombos;
 	phaseType: string;
+	skillFilter?: string[];
 	handleClick: (skillA: string, skillB: string) => void;
 };
 
 const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { crew, bestCombos, phaseType, handleClick } = props;
+	const { crew, bestCombos, phaseType, handleClick, skillFilter } = props;
 
 	const [halfMatrix, setHalfMatrix] = useStateWithStorage<boolean>('eventHalfMatrix', false, { rememberForever: true });
 
 	const matrixSkills = halfMatrix ? [ ... CONFIG.SKILLS_SHORT ].reverse() : CONFIG.SKILLS_SHORT;
 	const comboSeen = {} as { [key: string]: boolean };
+	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
-	return (
-		<React.Fragment>
-			<Header as='h4'>{t('event_planner.skill_matrix')}</Header>
-			<p>{t('event_planner.skill_matrix_heading')}</p>
-			<Table definition celled striped collapsing unstackable compact='very' style={{ width: '100%' }}>
-				<Table.Header>
-					<Table.Row>
-						<Table.HeaderCell />
-						{matrixSkills.map((skill, cellId) => (
-							<Table.HeaderCell key={cellId} width={2} textAlign='center'>
-								<img alt={`${skill.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />
-							</Table.HeaderCell>
-						))}
-					</Table.Row>
-				</Table.Header>
-				<Table.Body>
-					{CONFIG.SKILLS_SHORT.map((skillA, rowId) => (
-						<Table.Row key={rowId}>
-							<Table.Cell width={1} textAlign='center'><img alt={`${skillA.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillA.name}.png`} style={{ height: '1.1em' }} /></Table.Cell>
-							{matrixSkills.map((skillB, cellId) => {
-								let cbkey = [skillA.name, skillB.name].sort().join("");
-								let cbs = comboSeen[cbkey];
-								comboSeen[cbkey] = true;
-								return renderCell(skillA.name, skillB.name, halfMatrix && (cbs));
-							})}
+	if (!isMobile) {
+		return (
+			<React.Fragment>
+				<Header as='h4'>{t('event_planner.skill_matrix')}</Header>
+				<p>{t('event_planner.skill_matrix_heading')}</p>
+				<Table definition celled striped collapsing unstackable compact='very' style={{ width: '100%' }}>
+					<Table.Header>
+						<Table.Row>
+							<Table.HeaderCell />
+							{matrixSkills.map((skill, cellId) => (
+								<Table.HeaderCell key={cellId} width={2} textAlign='center'>
+									<img alt={`${skill.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />
+								</Table.HeaderCell>
+							))}
 						</Table.Row>
-					))}
-				</Table.Body>
-			</Table>
-			<div title={"Show combinations only once"} style={{cursor: 'pointer', marginTop: "0.5em", display: 'flex', gap:"0.5em", flexDirection:'row', alignItems:'center'}}>
-				<Checkbox id="eventHelperHalfMatrixCheck" checked={halfMatrix} onChange={(e, { checked }) => setHalfMatrix(checked as boolean)} />
-				<label style={{cursor: 'pointer'}} htmlFor="eventHelperHalfMatrixCheck">{t('event_planner.hide_duplicate_pairs')}</label>
-			</div>
-		</React.Fragment>
-	);
+					</Table.Header>
+					<Table.Body>
+						{CONFIG.SKILLS_SHORT.map((skillA, rowId) => (
+							<Table.Row key={rowId}>
+								<Table.Cell width={1} textAlign='center'><img alt={`${skillA.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillA.name}.png`} style={{ height: '1.1em' }} /></Table.Cell>
+								{matrixSkills.map((skillB, cellId) => {
+									let cbkey = [skillA.name, skillB.name].sort().join("");
+									let cbs = comboSeen[cbkey];
+									let vis = !skillFilter?.length || skillFilter.some(skill => [skillA.name, skillB.name].includes(skill));
+									comboSeen[cbkey] = true;
+									return renderCell(skillA.name, skillB.name, halfMatrix && (cbs || !vis), isMobile);
+								})}
+							</Table.Row>
+						))}
+					</Table.Body>
+				</Table>
+				<div title={"Show combinations only once"} style={{cursor: 'pointer', marginTop: "0.5em", display: 'flex', gap:"0.5em", flexDirection:'row', alignItems:'center'}}>
+					<Checkbox id="eventHelperHalfMatrixCheck" checked={halfMatrix} onChange={(e, { checked }) => setHalfMatrix(checked as boolean)} />
+					<label style={{cursor: 'pointer'}} htmlFor="eventHelperHalfMatrixCheck">{t('event_planner.hide_duplicate_pairs')}</label>
+				</div>
+			</React.Fragment>
+		);
 
-	function renderCell(skillA: string, skillB: string, invisible: boolean) : JSX.Element {
+	}
+	else {
+
+		return (
+			<React.Fragment>
+				<Header as='h4'>{t('event_planner.skill_matrix')}</Header>
+				<p>{t('event_planner.skill_matrix_heading')}</p>
+				{CONFIG.SKILLS_SHORT.map((skillA, rowId) => (
+					<div key={rowId}>
+						{matrixSkills.map((skillB, cellId) => {
+							let cbkey = [skillA.name, skillB.name].sort().join("");
+							let cbs = comboSeen[cbkey];
+							let vis = !skillFilter?.length || skillFilter.some(skill => [skillA.name, skillB.name].includes(skill));
+							comboSeen[cbkey] = true;
+							return !cbs && vis && <div className='ui segment' style={{
+								marginTop: '1em',
+								display: 'flex',
+								flexDirection: 'column',
+								alignItems: 'center',
+								justifyContent: 'center',
+								gap: '0.5em'}}>
+								<div style={{
+									display: 'flex',
+									flexDirection: 'row',
+									alignItems: 'center',
+									justifyContent: 'center',
+									gap: '0.5em'
+								}}>
+									<img alt={`${skillA.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillA.name}.png`} style={{ height: '1.1em' }} />
+									<span>&nbsp;/&nbsp;</span>
+									<img alt={`${skillB.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillB.name}.png`} style={{ height: '1.1em' }} />
+								</div>
+								{renderCell(skillA.name, skillB.name, cbs || !vis, isMobile)}
+							</div>;
+						})}
+					</div>
+				))}
+
+			</React.Fragment>
+		);
+
+	}
+
+
+	function renderCell(skillA: string, skillB: string, invisible: boolean, mobile: boolean) : JSX.Element {
 		let key: string, best: IBestCombo;
 		if (skillA === skillB) {
 			key = skillA;
@@ -408,12 +467,21 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 			let icon = (<></>);
 			if (bestCrew && bestCrew.immortal > 0) icon = (<Icon name='snowflake' />);
 			if (bestCrew?.statusIcon) icon = (<Icon name={bestCrew.statusIcon} />);
+			if (!isMobile)
+				return (
+					<Table.Cell key={key} textAlign='center' style={{ cursor: 'pointer', opacity: invisible ? "0" : undefined }} onClick={() => handleClick(skillA, skillB)}>
+						<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${bestCrew?.imageUrlPortrait}`} />
+						<br/>{icon} {bestCrew?.name} <small>({phaseType === 'gather' ? `${calculateGalaxyChance(best.score)}%` : Math.floor(best.score)})</small>
+					</Table.Cell>
+				);
+			else
 			return (
-				<Table.Cell key={key} textAlign='center' style={{ cursor: 'pointer', opacity: invisible ? "0" : undefined }} onClick={() => handleClick(skillA, skillB)}>
+				<div key={key} style={{ display: 'inline', cursor: 'pointer', opacity: invisible ? "0" : undefined, textAlign: 'center' }} onClick={() => handleClick(skillA, skillB)}>
 					<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${bestCrew?.imageUrlPortrait}`} />
 					<br/>{icon} {bestCrew?.name} <small>({phaseType === 'gather' ? `${calculateGalaxyChance(best.score)}%` : Math.floor(best.score)})</small>
-				</Table.Cell>
+				</div>
 			);
+
 		}
 		return (
 			<Table.Cell key={key} textAlign='center'>-</Table.Cell>
