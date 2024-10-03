@@ -394,7 +394,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 									let cbs = comboSeen[cbkey];
 									let vis = !skillFilter?.length || skillFilter.some(skill => [skillA.name, skillB.name].includes(skill));
 									comboSeen[cbkey] = true;
-									return renderCell(skillA.name, skillB.name, halfMatrix && (cbs || !vis), isMobile);
+									return renderCell(skillA.name, skillB.name, (halfMatrix && cbs) || !vis, isMobile);
 								})}
 							</Table.Row>
 						))}
