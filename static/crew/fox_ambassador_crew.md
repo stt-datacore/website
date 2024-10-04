@@ -3,7 +3,7 @@ name: Ambassador Fox
 rarity: 3
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 in_portal: true
 date: 11/07/2016
 published: true
