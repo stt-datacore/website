@@ -3,7 +3,7 @@ name: Night Writing Benny Russell
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 15/03/2023
 published: true
