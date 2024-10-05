@@ -3,7 +3,7 @@ name: Hugh
 rarity: 3
 series: tng
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 09/06/2016
 published: true

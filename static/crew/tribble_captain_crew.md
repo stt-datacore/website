@@ -3,7 +3,7 @@ name: Captain Tribble
 rarity: 5
 series: tas
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 in_portal:
 date: 23/03/2021
 published: true

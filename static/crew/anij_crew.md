@@ -3,7 +3,7 @@ name: Anij
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 in_portal: true
 date: 28/03/2018
 published: true

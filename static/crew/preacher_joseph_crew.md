@@ -3,7 +3,7 @@ name: The Preacher
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 in_portal: true
 date: 22/03/2023
 published: true

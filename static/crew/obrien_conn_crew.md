@@ -3,7 +3,7 @@ name: O'Brien at the Conn
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 4
 in_portal: true
 date: 29/06/2022
 published: true
