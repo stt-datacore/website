@@ -3,7 +3,7 @@ name: Gabriel Bell
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal: true
 date: 31/10/2017
 published: true

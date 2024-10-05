@@ -3,7 +3,7 @@ name: Amand Rauth Pike
 rarity: 5
 series: snw
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 5
 in_portal: true
 date: 16/02/2023
 published: true

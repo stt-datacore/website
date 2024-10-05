@@ -3,7 +3,7 @@ name: Thalen
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal: true
 date: 10/10/2023
 published: true

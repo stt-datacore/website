@@ -3,7 +3,7 @@ name: Lt. JG Scott
 rarity: 4
 series: snw
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal:
 date: 17/09/2024
 published: true

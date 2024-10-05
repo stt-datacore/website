@@ -3,7 +3,7 @@ name: Tearful Janeway
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal: true
 date: 16/05/2023
 published: true
