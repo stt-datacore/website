@@ -141,10 +141,7 @@ export function printRequiredTraits(
 ): JSX.Element {
 	if (item.kwipment) {
 		if (item.traits_requirement?.length) {
-			let req = item.traits_requirement.map((t) =>
-				// t === "doctor" ? "physician" : t
-				t
-			);
+			let req = item.traits_requirement!;
 			if (item.traits_requirement_operator === "and") {
 				return (
 					<Link
