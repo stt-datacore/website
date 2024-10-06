@@ -298,7 +298,7 @@ const DEFAULT_EXCLUDER_OPTIONS = {
 
 class ExcluderOptionsModal extends OptionsModal<IExcluderModalOptions> {
 	state: { isDefault: boolean; isDirty: boolean; options: any; modalIsOpen: boolean; };
-	props: any;
+	declare props: any;
 
 	protected getOptionGroups(): OptionGroup[] {
 		return [

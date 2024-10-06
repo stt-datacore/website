@@ -21,7 +21,7 @@ export class BeholdOptionsModal extends OptionsModal<BeholdModalOptions> {
 	static contextType = GlobalContext;
 	declare context: React.ContextType<typeof GlobalContext>;
 	state: { isDefault: boolean; isDirty: boolean; options: any; modalIsOpen: boolean; };
-	props: any;
+	declare props: any;
 
     protected getOptionGroups(): OptionGroup[] {
 		const { t } = this.context.localized;

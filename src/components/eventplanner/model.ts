@@ -1,11 +1,11 @@
 import { SemanticICONS } from 'semantic-ui-react';
 import { Content, PlayerCrew } from '../../model/player';
-
+import { IEventData as IOrigEventData } from '../../model/events';
 // Stripped down version of GameData, extended and standardized for DataCore tools
 //	Baseline props are event type agnostic, containing only common event props and standardized event crew/ship lists
 //	activeContent holds details about the active phase of a started event or the first phase of an unstarted event
 //	Be careful when using activeContent, especially when trying to access details about an unstarted phase 2 of a hybrid event
-export interface IEventData {
+export interface IEventData extends IOrigEventData {
 	symbol: string;
 	name: string;
 	description: string;
