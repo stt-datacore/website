@@ -34,7 +34,7 @@ export interface ShipPresenterState {
 
 export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterState> {
     static contextType = GlobalContext;
-    context!: React.ContextType<typeof GlobalContext>;
+    declare context: React.ContextType<typeof GlobalContext>;
 
     tiny: TinyStore;
 

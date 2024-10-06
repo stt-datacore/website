@@ -111,7 +111,7 @@ interface ProfilePageComponentProps {
 
 class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfilePageState> {
 	static contextType? = GlobalContext;
-	context!: React.ContextType<typeof GlobalContext>;
+	declare context: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: ProfilePageComponentProps) {
 		super(props);
@@ -181,7 +181,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 			fetch(fetchUrl)
 				.then(response => response.json())
-				.then(serverResponse => {					
+				.then(serverResponse => {
 					let lmstr = serverResponse.timeStamp as string;
 					if (lmstr) lastModified = new Date(Date.parse(lmstr));
 					let playerData: PlayerData = serverResponse.playerData;

@@ -50,7 +50,7 @@ interface Bins {
 
 export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	static contextType = GlobalContext;
-	context!: React.ContextType<typeof GlobalContext>;
+	declare context: React.ContextType<typeof GlobalContext>;
 
 	worker: Worker | undefined = undefined;
 	ship?: Ship;

@@ -76,7 +76,7 @@ interface StaticCrewComponentProps {
 
 class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrewComponentState> {
 	static contextType = GlobalContext;
-	context!: React.ContextType<typeof GlobalContext>;
+	declare context: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: StaticCrewComponentProps | Readonly<StaticCrewComponentProps>) {
 		super(props);

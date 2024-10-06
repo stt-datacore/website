@@ -225,7 +225,7 @@ export interface CrewItemDisplayProps extends CrewItemsViewProps {
 
 export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
     static contextType = GlobalContext;
-    context!: React.ContextType<typeof GlobalContext>;
+    declare context: React.ContextType<typeof GlobalContext>;
 
     constructor(props: CrewItemDisplayProps) {
         super(props);

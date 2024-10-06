@@ -88,7 +88,7 @@ const checkedStyle: React.CSSProperties = {
 
 export class StatLabel extends React.Component<StatLabelProps> {
     static contextType = GlobalContext;
-    context!: React.ContextType<typeof GlobalContext>;
+    declare context: React.ContextType<typeof GlobalContext>;
 
     render() {
         const { title, value } = this.props;
@@ -439,7 +439,7 @@ export class CrewPresenter extends React.Component<
     CrewPresenterState
 > {
     static contextType = GlobalContext;
-    context!: React.ContextType<typeof GlobalContext>;
+    declare context: React.ContextType<typeof GlobalContext>;
 
     private readonly tiny: TinyStore;
     constructor(props: CrewPresenterProps) {

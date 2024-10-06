@@ -18,7 +18,7 @@ type CrewFullEquipTreeProps = {
 
 class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 	static contextType = GlobalContext;
-	context!: React.ContextType<typeof GlobalContext>;
+	declare context: React.ContextType<typeof GlobalContext>;
 
 	render() {
 		const { crew, items } = this.props;
@@ -37,7 +37,7 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 					<p>
 						Faction-only items required <b>{factionOnlyTotal}</b>
 					</p>
-					<p>						
+					<p>
 						Estimated chroniton cost{' '}
 						<span style={{ display: 'inline-block' }}>
 							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />

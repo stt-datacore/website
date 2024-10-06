@@ -77,7 +77,7 @@ export interface ItemPresenterState {
 
 export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterState> {
     static contextType = GlobalContext;
-    context!: React.ContextType<typeof GlobalContext>;
+    declare context: React.ContextType<typeof GlobalContext>;
 
     tiny: TinyStore;
 

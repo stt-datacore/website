@@ -127,7 +127,7 @@ const GauntletTabCount = 5;
 
 class GauntletsPageComponent extends React.Component<GauntletsPageProps, GauntletsPageState> {
 	static contextType?= GlobalContext;
-	context!: React.ContextType<typeof GlobalContext>;
+	declare context: React.ContextType<typeof GlobalContext>;
 	private inited: boolean = false;
 	private readonly tiny = TinyStore.getStore('gauntlets');
 

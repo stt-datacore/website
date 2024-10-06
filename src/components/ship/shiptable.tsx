@@ -47,7 +47,7 @@ const pagingOptions = [
 
 class ShipTable extends Component<ShipTableProps, ShipTableState> {
 	static contextType = GlobalContext;
-	context!: React.ContextType<typeof GlobalContext>;
+	declare context: React.ContextType<typeof GlobalContext>;
 	inited: boolean;
 	hasPlayer: boolean;
 	private readonly tiny = TinyStore.getStore('profile_ships');
