@@ -142,7 +142,8 @@ export function printRequiredTraits(
 	if (item.kwipment) {
 		if (item.traits_requirement?.length) {
 			let req = item.traits_requirement.map((t) =>
-				t === "doctor" ? "physician" : t
+				// t === "doctor" ? "physician" : t
+				t
 			);
 			if (item.traits_requirement_operator === "and") {
 				return (
