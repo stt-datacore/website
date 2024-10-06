@@ -154,7 +154,7 @@ export const CollectionDisplay = (props: CollectionDisplayProps) => {
     if (!crew.collections?.length) return <></>;
 
     if (
-        (((("immortal" in crew)) && (crew.immortal === 0)) ||
+        (((("immortal" in crew)) && (crew.immortal === 0 || crew.immortal < -1)) ||
         ("any_immortal" in crew && crew.any_immortal === false))
         && playerData?.player.character.cryo_collections) {
         playerData?.player.character.cryo_collections.forEach(col => {

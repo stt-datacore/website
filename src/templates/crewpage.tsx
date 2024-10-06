@@ -155,10 +155,16 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 		crew.short_name = CREW_ARCHETYPES[crew.symbol]?.short_name ?? crew.short_name;
 
 		if (this.ownedCrew) {
-			let discovered = this.ownedCrew.find(item => item.symbol === crew.symbol);
-			if (discovered) {
-				crew.immortal = discovered.immortal;
-				crew.in_portal ??= discovered.in_portal;
+			let discovered = this.ownedCrew.filter(item => item.symbol === crew.symbol);
+			if (discovered?.length) {
+				let immortal = 0;
+				for (let c of discovered) {
+					if (c.immortal) {
+						immortal = c.immortal;
+						break;
+					}
+				}
+				crew.immortal = immortal;
 			}
 		}
 
