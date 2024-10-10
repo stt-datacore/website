@@ -15,7 +15,7 @@ const DefaultConfig = {
     ownedFilter: '',
     costMode: 'normal',
     short: false,
-    matchMode: 'normal',    
+    matchMode: 'normal',
     byCost: false,
     tierFilter: 1,
     hardFilter: false,
@@ -41,6 +41,7 @@ const DefaultData = {
     setFavorited: () => null,
     setShowIncomplete: () => null,
     showThisCrew: () => false,
+    setCollectionSettings: () => null
 } as ICollectionsContext;
 
 export const CollectionsContext = React.createContext<ICollectionsContext>(DefaultData);
@@ -126,11 +127,12 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
         setCostMode,
         setMatchMode,
         setShowIncomplete,
-        showThisCrew
+        showThisCrew,
+        setCollectionSettings
     } as ICollectionsContext;
 
     return (<CollectionsContext.Provider value={data}>
-        {children}    
+        {children}
     </CollectionsContext.Provider>)
 
     function showThisCrew(crew: PlayerCrew, filters: Filter[], filterType: string | null | undefined): boolean {
@@ -155,6 +157,6 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
         return crewMatchesSearchFilter(crew, filters, filterType);
     }
 
-} 
+}
 
 

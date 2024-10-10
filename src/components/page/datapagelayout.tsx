@@ -114,6 +114,10 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 			>
 				<MainContent narrowLayout={narrowLayout}>
 					<Dashboard
+						openInputPanel={() => {
+							setPlayerPanel('input');
+							scrollTo(contentAnchor);
+						}}
 						narrow={narrowLayout ?? false}
 						activePanel={dashboardPanel}
 						setActivePanel={setDashboardPanel}

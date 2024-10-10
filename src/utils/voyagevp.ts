@@ -22,6 +22,20 @@ const DropMap = [
     { start: 930, end: 1050, shown: 10, actual: 12, drops: 52, encounter: 6500, opponents: 6 },
    ] as DropMapEntry[];
 
+function extrapolateNext(a: DropMapEntry, b: DropMapEntry): DropMapEntry {
+    let diff = b.encounter - a.encounter;
+    let output = { ... b };
+    diff += 100;
+    output.encounter += diff;
+    if (output.drops === 52) output.drops = 51;
+    else output.drops = 52;
+    output.shown++;
+    output.actual++;
+    output.start += 120;
+    output.end += 120;
+    return output;
+}
+
 export interface VPDetails {
     seconds: number;
     total_drops: number;
@@ -29,6 +43,7 @@ export interface VPDetails {
     total_opponents: number;
     total_encounters: number;
     is_overflow: boolean;
+    vp_per_min: number;
 }
 
 export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
@@ -39,11 +54,20 @@ export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
         total_encounters: 0,
         total_opponents: 0,
         total_vp: 0,
-        is_overflow: true
+        is_overflow: true,
+        vp_per_min: 0
     } as VPDetails;
 
-    let dropvp = 50 + bonuses.reduce((p, n) => p + n, 0);
+    let dropvp = 50 + Math.min(bonuses.reduce((p, n) => p + n, 0), 120);
     let total = 0;
+    let dropmap = [ ... DropMap ];
+
+    while (dropmap[dropmap.length - 1].end * 60 < seconds) {
+        let a = dropmap[dropmap.length - 2];
+        let b = dropmap[dropmap.length - 1];
+        dropmap.push(extrapolateNext(a, b));
+    }
+
     let drops = DropMap.map(elem => ({
         ... elem,
         start: elem.start * 60,
@@ -69,6 +93,7 @@ export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
     }
 
     vpdetails.total_vp = total;
+    vpdetails.vp_per_min = total / seconds *60;
     return vpdetails;
 }
 

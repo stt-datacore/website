@@ -88,7 +88,7 @@ const checkedStyle: React.CSSProperties = {
 
 export class StatLabel extends React.Component<StatLabelProps> {
     static contextType = GlobalContext;
-    context!: React.ContextType<typeof GlobalContext>;
+    declare context: React.ContextType<typeof GlobalContext>;
 
     render() {
         const { title, value } = this.props;
@@ -140,18 +140,40 @@ export interface CollectionDisplayProps {
 }
 
 export const CollectionDisplay = (props: CollectionDisplayProps) => {
+    const context = React.useContext(GlobalContext);
+    const { COLLECTIONS } = context.localized;
+    const { playerData } = context.player;
+    const { crew, style } = props;
+
+    const ocols = [] as string[];
+
     const dispClick = (e, col: string) => {
         navigate("/collections?select=" + encodeURIComponent(col));
     }
 
-    const { crew, style } = props;
     if (!crew.collections?.length) return <></>;
+
+    if (
+        (((("immortal" in crew)) && (crew.immortal === 0 || crew.immortal < -1)) ||
+        ("any_immortal" in crew && crew.any_immortal === false))
+        && playerData?.player.character.cryo_collections) {
+        playerData?.player.character.cryo_collections.forEach(col => {
+            if (col?.milestone?.goal) {
+                ocols.push(col.name);
+            }
+        });
+    }
+
     return (<div style={{
         ... (style ?? {}),
         cursor: "pointer"
     }}>
         {crew.collections?.map((col, idx) => (
-            <a onClick={(e) => dispClick(e, col)} key={"collectionText_" + crew.symbol + idx}>
+            <a
+                style={{
+                    color: ocols.includes(col) ? 'lightgreen' : undefined
+                }}
+                onClick={(e) => dispClick(e, col)} key={"collectionText_" + crew.symbol + idx}>
                 {col}
             </a>))?.reduce((prev, next) => <>{prev}, {next}</>) ?? <></>}
     </div>)
@@ -417,7 +439,7 @@ export class CrewPresenter extends React.Component<
     CrewPresenterState
 > {
     static contextType = GlobalContext;
-    context!: React.ContextType<typeof GlobalContext>;
+    declare context: React.ContextType<typeof GlobalContext>;
 
     private readonly tiny: TinyStore;
     constructor(props: CrewPresenterProps) {
@@ -561,6 +583,7 @@ export class CrewPresenter extends React.Component<
 
         const { t, language, TRAIT_NAMES } = this.context.localized;
         const { mobileWidth, pluginsUsed, selectedPlugin } = this.state;
+        const { playerData } = this.context.player;
 
         if (!inputCrew) {
             return <></>;
