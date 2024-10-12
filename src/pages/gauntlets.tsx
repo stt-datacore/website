@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pagination, PaginationProps, Icon, Message, Dropdown, Button, Accordion, Checkbox, DropdownItemProps, Step, Input } from 'semantic-ui-react';
+import { Pagination, PaginationProps, Icon, Message, Dropdown, Button, Accordion, Checkbox, DropdownItemProps, Step, Input, Label } from 'semantic-ui-react';
 import * as moment from 'moment';
 import 'moment/locale/es';
 import 'moment/locale/fr';
@@ -115,6 +115,7 @@ export interface GauntletsPageState {
 	settingsOpen: boolean;
 
 	gauntletSettings: GauntletSettings;
+	apiGauntlet?: Gauntlet;
 }
 
 const DEFAULT_FILTER_PROPS = {
@@ -406,25 +407,58 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		return this.state.activeTabIndex;
 	}
 
+	private compGauntlet(today: Gauntlet, api?: Gauntlet) {
+		if (!api) return true;
+		if (today.contest_data && api.contest_data) {
+			if (today.contest_data.featured_skill !== api.contest_data.featured_skill) return false;
+			if (!today.contest_data.traits.every(t => api.contest_data?.traits.includes(t))) return false;
+			if (!api.contest_data.traits.every(t => today.contest_data?.traits.includes(t))) return false;
+			if (today.jackpot_crew !== api.jackpot_crew) return false;
+		}
+		return true;
+	}
+
+	private async loadFromApi(): Promise<Gauntlet | undefined> {
+		return fetch("https://datacore.app/api/gauntlet_info")
+			.then((result) => result.json())
+			.then((json) => ({ ...json, fromApi: true } as Gauntlet))
+			.catch((e) => undefined);
+	}
+
+	private deinit() {
+		this.inited = false;
+		let cp = Object.keys(this.crewQuip);
+		let bi = Object.keys(this.bonusInfo);
+		if (cp?.length) {
+			for (let key of cp) {
+				delete this.crewQuip[key];
+			}
+		}
+		if (bi?.length) {
+			for (let key of bi) {
+				delete this.bonusInfo[key];
+			}
+		}
+	}
+
+	private refreshAPIGauntlet() {
+		this.deinit();
+		let apiGauntlet = undefined as Gauntlet | undefined;
+		this.inited = false;
+		this.loadFromApi()
+			.then((gauntlet) => {
+				apiGauntlet = gauntlet;
+			})
+			.finally(() => this.initData(apiGauntlet));
+	}
+
 	componentDidMount() {
-		this.initData();
+		this.refreshAPIGauntlet();
 	}
 
 	componentDidUpdate() {
 		if (this.state.lastPlayerDate !== this.context.player.playerData?.calc?.lastModified) {
-			this.inited = false;
-            let cp = Object.keys(this.crewQuip);
-            let bi = Object.keys(this.bonusInfo);
-            if (cp?.length) {
-                for (let key of cp) {
-                    delete this.crewQuip[key];
-                }
-            }
-            if (bi?.length) {
-                for (let key of bi) {
-                    delete this.bonusInfo[key];
-                }
-            }
+			this.deinit();
 		}
 		setTimeout(() => this.initData());
 	}
@@ -476,18 +510,23 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		});
 	}
 
-	initData() {
+	initData(apiGauntlet?: Gauntlet) {
 		const { crew: allCrew, gauntlets: gauntsin } = this.context.core;
 		const { TRAIT_NAMES } = this.context.localized;
 		const { playerData } = this.context.player;
 		const { textFilter } = this.state;
 
+		apiGauntlet ??= this.state.apiGauntlet;
+
 		if (!(allCrew?.length) || !(gauntsin?.length)) return;
 		if (gauntsin.length && this.inited) return;
 
 		const hasPlayer = !!playerData?.player?.character?.crew?.length;
-		const gauntlets = JSON.parse(JSON.stringify(gauntsin));
-
+		const gauntlets = JSON.parse(JSON.stringify(gauntsin)) as Gauntlet[];
+		if (apiGauntlet && !this.compGauntlet(gauntlets[0], apiGauntlet)) {
+			apiGauntlet = { ... gauntlets[0], ...apiGauntlet, date: moment(new Date()).utc(false).toISOString() }
+			gauntlets.unshift(apiGauntlet);
+		}
 		const liveGauntlet = hasPlayer ? this.state.liveGauntlet : null;
 
 		let uniques = [...gauntlets];
@@ -551,7 +590,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			const today = og[0];
 			const yesterday = og[1];
 			const activePrevGauntlet = og[2];
-			const gaunts = og.slice(2);
+			const gaunts = og.slice(og[0].fromApi ? 1 : 0);
 
 			let apidx = [1, 1, 1, 1, 1];
 			let pcs = [0, 0, 0, 0, 0];
@@ -591,7 +630,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 				lastPlayerDate: this.context.player.playerData?.calc?.lastModified,
 				activePrevGauntlet,
 				uniques,
-				loading: false
+				loading: false,
+				apiGauntlet
 			});
 		}
 	}
@@ -1607,17 +1647,22 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		if (!gauntlets) return <></>
 
 		const fs = isMobile ? "0.75em" : "1em";
-
+		const tDateStr = moment(today?.date).utc(false).locale(this.context.localized.language === 'sp' ? 'es' : this.context.localized.language).format("MMM D, y");
+		const yDateStr = moment(yesterday?.date).utc(false).locale(this.context.localized.language === 'sp' ? 'es' : this.context.localized.language).format("MMM D, y");
 		const tabPanes = [
 			{
-				menuItem: isMobile ? tfmt('gauntlet.pages.today_gauntlet.short') : tfmt('gauntlet.pages.today_gauntlet.title'),
+				//menuItem: today?.fromApi ? tDateStr : (isMobile ? tfmt('gauntlet.pages.today_gauntlet.short') : tfmt('gauntlet.pages.today_gauntlet.title')),
+				menuItem: tDateStr,
 				render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(today, 0)}</div>,
-				description: tfmt('gauntlet.pages.today_gauntlet.heading')
+				description: "",
+				refresh: true
+				//description: !today?.fromApi ? tfmt('gauntlet.pages.today_gauntlet.title') : ""
 			},
 			{
-				menuItem: isMobile ? tfmt('gauntlet.pages.yesterday_gauntlet.short') : tfmt('gauntlet.pages.yesterday_gauntlet.title'),
+//				menuItem: isMobile ? tfmt('gauntlet.pages.yesterday_gauntlet.short') : tfmt('gauntlet.pages.yesterday_gauntlet.title'),
+				menuItem: yDateStr,
 				render: () => <div style={{ fontSize: fs }}>{this.renderGauntlet(yesterday, 1)}</div>,
-				description: tfmt('gauntlet.pages.yesterday_gauntlet.heading')
+				description: ''
 			},
 			{
 				menuItem: isMobile ? tfmt('gauntlet.pages.previous_gauntlets.short') : tfmt('gauntlet.pages.previous_gauntlets.title'),
@@ -1665,9 +1710,12 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						{tabPanes.map((pane, idx) => {
 							return (
 								<Step active={(activeTabIndex ?? 0) === idx} onClick={() => this.setActiveTabIndex(idx)}>
-
 									<Step.Content>
 										<Step.Title>{pane.menuItem}</Step.Title>
+										{!!pane.refresh &&
+										<Label title={'Refresh'} as='a' corner='right' onClick={() => this.refreshAPIGauntlet()}>
+										<Icon name='refresh' style={{ cursor: 'pointer' }} />
+										</Label>}
 										<Step.Description>{pane.description}</Step.Description>
 									</Step.Content>
 								</Step>
