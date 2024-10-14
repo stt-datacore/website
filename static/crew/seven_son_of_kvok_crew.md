@@ -3,9 +3,9 @@ name: Seven, Son of K'Vok
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 3
 in_portal:
-date:
+date: 08/10/2024
 published: true
 ---
 

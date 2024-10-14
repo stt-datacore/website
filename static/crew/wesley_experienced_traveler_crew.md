@@ -3,7 +3,7 @@ name: Experienced Traveler Wesley
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal:
 date: 14/05/2024
 published: true
