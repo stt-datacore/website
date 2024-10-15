@@ -131,7 +131,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 	declare context: React.ContextType<typeof GlobalContext>;
 	private inited: boolean = false;
 	private readonly tiny = TinyStore.getStore('gauntlets');
-
+	private apiGauntlet?: Gauntlet;
     private readonly crewQuip = {} as { [key: string]: EquipmentItem[] };
     private readonly bonusInfo = {} as { [key: string]: ItemBonusInfo };
 
@@ -516,7 +516,8 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 		const { playerData } = this.context.player;
 		const { textFilter } = this.state;
 
-		apiGauntlet ??= this.state.apiGauntlet;
+		apiGauntlet ??= this.apiGauntlet;
+		this.apiGauntlet = apiGauntlet;
 
 		if (!(allCrew?.length) || !(gauntsin?.length)) return;
 		if (gauntsin.length && this.inited) return;
