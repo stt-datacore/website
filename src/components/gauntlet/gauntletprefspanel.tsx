@@ -20,7 +20,7 @@ export const GauntletPrefsPanel = () => {
     const dbid = hasPlayer ? `${playerData.player.dbid}/` : '';
     const { t, tfmt } = globalContext.localized;
 
-    const [tops, setTops] = useStateWithStorage<number>(`${dbid}gauntletTops`, 100);
+    const [tops, setTops] = useStateWithStorage<number>(`${dbid}gauntletTops`, 100, { rememberForever: true });
 
     const maxBuffs = config.buffMode === 'max';
 

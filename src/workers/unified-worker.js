@@ -11,6 +11,7 @@ import ItemsWorker from './itemsworker.ts';
 import QuestSolver from './questsolver.ts';
 import { calcQLots } from '../utils/equipment.ts';
 import ShipCrewWorker from './shipcrewworker.ts';
+import { calculateGauntlet } from '../utils/gauntlet.ts';
 
 // This worker can estimate a single lineup from input config
 const voyageEstimate = (config, progress) => {
@@ -91,6 +92,10 @@ self.onmessage = (message) => {
             });
             postResult(result, false);
         }),
+        'gauntlet': () => {
+            const gauntlet = calculateGauntlet(message.data.config);
+            postResult(gauntlet, false);
+        },
         'ussjohnjay': () => VoyagersWorker(message.data, postResult, transwarp.getEstimate),
         'qpower': () => {
             const { crew, quipment, buffs, max_qbits, slots, mode } = message.data.config;

@@ -93,23 +93,23 @@ export const GauntletPicker = () => {
             />}
         <div style={{ margin: "1em 0" }}>
             <Step.Group fluid>
-                {tabPanes.map((tpane, idx) => {
+                {tabPanes.map((tabPane, idx) => {
                     return (
-                        <Step active={tpane.pane === pane} onClick={() => setPane(tpane.pane as GauntletPane)}>
+                        <Step active={tabPane.pane === pane} onClick={() => setPane(tabPane.pane as GauntletPane)}>
                             <Step.Content>
-                                <Step.Title>{tpane.menuItem}</Step.Title>
-                                {!!tpane.refresh &&
+                                <Step.Title>{tabPane.menuItem}</Step.Title>
+                                {!!tabPane.refresh &&
                                     <Label title={'Refresh'} as='a' corner='right' onClick={() => refreshApiGauntlet()}>
                                         <Icon name='refresh' style={{ cursor: 'pointer' }} />
                                     </Label>}
-                                <Step.Description>{tpane.description}</Step.Description>
+                                <Step.Description>{tabPane.description}</Step.Description>
                             </Step.Content>
                         </Step>
                     )
                 })}
             </Step.Group>
 
-            {tabPanes.find(tp => tp.pane === pane)?.render()}
+            {(tabPanes.find(tp => tp.pane === pane) ?? tabPanes[0]).render()}
 
             <GauntletSettingsPopup
                 isOpen={settingsOpen}

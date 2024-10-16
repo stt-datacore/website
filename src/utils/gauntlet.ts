@@ -4,10 +4,12 @@ import { ComputedSkill, CrewMember, Skill } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { Gauntlet, PairGroup } from "../model/gauntlets";
 import { CompletionState, PlayerBuffMode, PlayerCrew } from "../model/player";
+import { TraitNames } from "../model/traits";
 import { EMPTY_SKILL } from "../model/worker";
 import { FilterProps } from "../pages/gauntlets";
 import { applyCrewBuffs, getCrewPairScore, getCrewQuipment, getPlayerPairs, getSkills, shortToSkill, skillToShort, updatePairScore } from "./crewutils";
 import { ItemBonusInfo, getItemBonuses } from "./itemutils";
+import { BuffStatTable } from "./voyageutils";
 
 export interface InternalSettings {
 	crit5: number | string;
@@ -341,7 +343,7 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 	return pairGroups;
 }
 
-function testFilterCrew(crew: PlayerCrew, filter: FilterProps, context: IDefaultGlobal): boolean {
+function testFilterCrew(crew: PlayerCrew, filter: FilterProps, context: GauntletMinimalContext): boolean {
 	const hasPlayer = !!context.player.playerData?.player?.character?.crew?.length;
 	if (!filter.rarity || crew.rarity === filter.rarity) {
 		if (filter.skillPairs?.length) {
@@ -406,9 +408,31 @@ export interface GauntletUserPrefs {
 	onlyActiveRound?: boolean
 }
 
+export interface GauntletMinimalContext {
+	player: {
+		buffConfig?: BuffStatTable,
+		maxBuffs?: BuffStatTable,
+		playerData?: {
+			player: {
+				character: {
+					crew: PlayerCrew[],
+					unOwnedCrew?: PlayerCrew[]
+				}
+			}
+		}
+	},
+	core: {
+		crew: CrewMember[],
+		items: EquipmentItem[]
+	},
+	localized: {
+		TRAIT_NAMES: TraitNames;
+	},
+}
+
 export interface GauntletCalcConfig extends GauntletUserPrefs {
 	gauntlet: Gauntlet,
-	context: IDefaultGlobal,
+	context: GauntletMinimalContext,
 	bonusCache: { [key: string]: ItemBonusInfo }
 	equipmentCache: { [key: string]: EquipmentItem[] }
 }
@@ -476,7 +500,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	gauntlet.prettyTraits = prettyTraits;
 
 	if (!prettyTraits) {
-		return null
+		return null;
 	}
 
 	delete gauntlet.allCrew;
@@ -776,4 +800,6 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	gauntlet.maximal = maximal;
 	gauntlet.minimal = minimal;
 	gauntlet.prettyTraits = prettyTraits;
+
+	return gauntlet;
 }

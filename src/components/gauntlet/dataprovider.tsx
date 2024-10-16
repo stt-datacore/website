@@ -51,10 +51,10 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
     const dbid = playerData ? `${playerData.player.dbid}/` : '';
 
     const [apiGauntlet, setApiGauntlet] = React.useState<Gauntlet | undefined>(undefined);
-    const [pane, setPane] = useStateWithStorage<GauntletPane>(`${dbid}gauntletPane`, 'today');
+    const [pane, setPane] = useStateWithStorage<GauntletPane>(`${dbid}gauntletPane`, 'today', { rememberForever: true });
 
-    const [config, setConfig] = useStateWithStorage<GauntletUserPrefs>(`${dbid}${pane}/gauntletConfig`, DefaultUserPrefs);
-    const [viewMode, setViewMode] = useStateWithStorage<GauntletViewMode>(`${dbid}${pane}/gauntletViewMode`, 'pair_cards');
+    const [config, setConfig] = useStateWithStorage<GauntletUserPrefs>(`${dbid}${pane}/gauntletConfig`, DefaultUserPrefs, { rememberForever: true });
+    const [viewMode, setViewMode] = useStateWithStorage<GauntletViewMode>(`${dbid}${pane}/gauntletViewMode`, 'pair_cards', { rememberForever: true });
 
     const { gauntlets: outerGauntlets } = globalContext.core;
     const [gauntlets, setGauntlets] = React.useState<Gauntlet[]>(globalContext.core.gauntlets);
