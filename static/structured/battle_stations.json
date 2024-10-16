@@ -1664,5 +1664,22 @@
                 "skill": "science_skill"
             }
         ]
+    },
+    {
+        "symbol": "borg_cube_tactical_ship",
+        "battle_stations": [
+            {
+                "skill": "security_skill"
+            },
+            {
+                "skill": "security_skill"
+            },
+            {
+                "skill": "command_skill"
+            },
+            {
+                "skill": "engineering_skill"
+            }
+        ]
     }
 ]
