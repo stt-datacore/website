@@ -57,7 +57,7 @@ export const crit45 = 1.85;
 export const crit25 = 1.45;
 export const crit5 = 1;
 
-export const defaultSettings = {
+export const DefaultAdvancedGauntletSettings = {
 	crit5,
 	crit25,
 	crit45,
@@ -76,7 +76,7 @@ export const defaultSettings = {
 
 export function getBernardsNumber<T extends CrewMember>(a: T, gauntlet?: Gauntlet, apairs?: Skill[][] | Skill[], settings?: GauntletSettings) {
 	let atrait = gauntlet?.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
-	settings ??= defaultSettings;
+	settings ??= DefaultAdvancedGauntletSettings;
 
 	if (atrait >= 3) atrait = settings.crit65;
 	else if (atrait >= 2) atrait = settings.crit45;
@@ -393,20 +393,24 @@ function testFilterCrew(crew: PlayerCrew, filter: FilterProps, context: IDefault
 	return true;
 }
 
+export type GauntletPane = 'today' | 'yesterday' | 'previous' | 'browse' | 'live';
 
-export interface GauntletCalcConfig {
-	context: IDefaultGlobal,
+export interface GauntletUserPrefs {
 	settings: GauntletSettings,
-	gauntlet: Gauntlet,
 	buffMode: PlayerBuffMode;
-	equipmentCache: { [key: string]: EquipmentItem[] }
-	bonusCache: { [key: string]: ItemBonusInfo }
 	rankByPair?: string,
 	range_max?: number,
 	filter?: FilterProps,
 	textFilter?: string,
 	hideOpponents?: boolean,
 	onlyActiveRound?: boolean
+}
+
+export interface GauntletCalcConfig extends GauntletUserPrefs {
+	gauntlet: Gauntlet,
+	context: IDefaultGlobal,
+	bonusCache: { [key: string]: ItemBonusInfo }
+	equipmentCache: { [key: string]: EquipmentItem[] }
 }
 
 export function calculateGauntlet(config: GauntletCalcConfig) {

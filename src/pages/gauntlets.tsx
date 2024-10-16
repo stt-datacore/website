@@ -22,7 +22,7 @@ import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import ItemDisplay from '../components/itemdisplay';
 import GauntletSettingsPopup from '../components/gauntlet/settings';
 import { ItemBonusInfo } from '../utils/itemutils';
-import { GauntletSettings, calculateGauntlet, defaultSettings, discoverPairs, getPairGroups } from '../utils/gauntlet';
+import { GauntletSettings, calculateGauntlet, DefaultAdvancedGauntletSettings, discoverPairs, getPairGroups } from '../utils/gauntlet';
 import { EquipmentItem } from '../model/equipment';
 import { GauntletPairTable } from '../components/gauntlet/pairtable';
 import { GauntletCrewTable } from '../components/gauntlet/gauntlettable';
@@ -166,7 +166,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 			ipage.push(10);
 		}
 
-		const settings = this.tiny.getValue<GauntletSettings>('gauntletSettings', defaultSettings) ?? defaultSettings;
+		const settings = this.tiny.getValue<GauntletSettings>('gauntletSettings', DefaultAdvancedGauntletSettings) ?? DefaultAdvancedGauntletSettings;
 
 		const activeTabIndex = 0; // this.tiny.getValue<number>("activeTabIndex", lg ? 4 : 0);
 
@@ -1731,7 +1731,7 @@ class GauntletsPageComponent extends React.Component<GauntletsPageProps, Gauntle
 						config={{
 							current: this.state.gauntletSettings,
 							setCurrent: this.setSettings,
-							defaultOptions: defaultSettings
+							defaultOptions: DefaultAdvancedGauntletSettings
 							}} />
 				</div>
 				<CrewHoverStat targetGroup='gauntletsHover' />

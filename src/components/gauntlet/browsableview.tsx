@@ -1,18 +1,16 @@
-import React from "react"
-import { GauntletPane } from "../../utils/gauntlet"
+import React from "react";
 import { Gauntlet } from "../../model/gauntlets";
+import { GauntletPane } from "../../utils/gauntlet";
 import { GauntletContext } from "./dataprovider";
 
-
-
-export interface GauntletViewProps {
+export interface BrowsableViewProps {
     pane: GauntletPane;
-    gauntlet: Gauntlet;
 }
 
-export const GauntletView = (props: GauntletViewProps) => {
+export const BrowsableGauntletView = (props: BrowsableViewProps) => {
+
     const gauntletContext = React.useContext(GauntletContext);
-    const { pane, gauntlet } = props;
+    const { pane } = props;
 
     return <React.Fragment>
 
