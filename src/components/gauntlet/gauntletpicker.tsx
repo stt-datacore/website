@@ -11,12 +11,12 @@ import { GauntletImportComponent } from "./gauntletimporter";
 import GauntletSettingsPopup from "./settings";
 import { Gauntlet, GauntletRoot } from "../../model/gauntlets";
 import { GauntletView } from "./gauntletview";
-import { BrowsableGauntletView } from "./browsableview";
+import { BrowsableGauntletView } from "./browseableview";
 
 export const GauntletPicker = () => {
     const globalContext = React.useContext(GlobalContext);
     const gauntletContext = React.useContext(GauntletContext);
-    const { gauntlets, pane, setPane, config, setConfig, refreshApiGauntlet } = gauntletContext;
+    const { gauntlets, pane, setPane, config, setSettings, refreshApiGauntlet } = gauntletContext;
     const { settings } = config;
     const { playerData } = globalContext.player;
     const hasPlayer = !!playerData;
@@ -40,18 +40,15 @@ export const GauntletPicker = () => {
     const tabPanes = [
         {
             pane: 'today',
-            //menuItem: today?.fromApi ? tDateStr : (isMobile ? tfmt('gauntlet.pages.today_gauntlet.short') : tfmt('gauntlet.pages.today_gauntlet.title')),
             menuItem: tDateStr,
-            render: () => <div style={{ fontSize: fs }}><GauntletView pane={pane} gauntlet={yesterday} /></div>,
+            render: () => <div style={{ fontSize: fs }}><GauntletView gauntlets={gauntlets} gauntlet={today} /></div>,
             description: "",
             refresh: true
-            //description: !today?.fromApi ? tfmt('gauntlet.pages.today_gauntlet.title') : ""
         },
         {
             pane: 'yesterday',
-            //				menuItem: isMobile ? tfmt('gauntlet.pages.yesterday_gauntlet.short') : tfmt('gauntlet.pages.yesterday_gauntlet.title'),
             menuItem: yDateStr,
-            render: () => <div style={{ fontSize: fs }}><GauntletView pane={pane} gauntlet={yesterday} /></div>,
+            render: () => <div style={{ fontSize: fs }}><GauntletView gauntlets={gauntlets} gauntlet={yesterday} /></div>,
             description: ''
         },
         {
@@ -72,7 +69,7 @@ export const GauntletPicker = () => {
         tabPanes.push({
             pane: 'live',
             menuItem: isMobile ? tfmt('gauntlet.pages.live_gauntlet.short') : tfmt('gauntlet.pages.live_gauntlet.title'),
-            render: () => <div style={{ fontSize: fs }}><GauntletView pane={pane} gauntlet={liveGauntlet} /></div>,
+            render: () => <div style={{ fontSize: fs }}><GauntletView gauntlets={gauntlets} gauntlet={liveGauntlet} /></div>,
             description: tfmt('gauntlet.pages.live_gauntlet.heading')
         });
     }
@@ -95,11 +92,11 @@ export const GauntletPicker = () => {
             <Step.Group fluid>
                 {tabPanes.map((tabPane, idx) => {
                     return (
-                        <Step active={tabPane.pane === pane} onClick={() => setPane(tabPane.pane as GauntletPane)}>
+                        <Step key={`gauntlet_Tab_${idx}`} active={tabPane.pane === pane} onClick={() => setPane(tabPane.pane as GauntletPane)}>
                             <Step.Content>
                                 <Step.Title>{tabPane.menuItem}</Step.Title>
                                 {!!tabPane.refresh &&
-                                    <Label title={'Refresh'} as='a' corner='right' onClick={() => refreshApiGauntlet()}>
+                                    <Label title={'Refresh'} corner='right' onClick={() => refreshApiGauntlet()}>
                                         <Icon name='refresh' style={{ cursor: 'pointer' }} />
                                     </Label>}
                                 <Step.Description>{tabPane.description}</Step.Description>
@@ -197,9 +194,5 @@ export const GauntletPicker = () => {
 
     function clearGauntlet() {
         setLiveGauntlet(undefined);
-    }
-
-    function setSettings(settings: GauntletSettings) {
-        setConfig({ ...config, settings });
     }
 }

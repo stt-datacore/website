@@ -25,7 +25,7 @@ export type GauntletTableHighlightMode = 'normal' | 'live';
 
 export interface GauntletTableProps {
     pageId: string;
-    gauntlet: Gauntlet;    
+    gauntlet: Gauntlet;
     gauntlets?: Gauntlet[]
     data: PlayerCrew[];
     mode: GauntletTableHighlightMode;
@@ -104,6 +104,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
         { title: t('gauntlet.columns.in_portal'), key: "in_portal" },
         { title: t('gauntlet.columns.qp'), key: "q_bits", reverse: true }
     ];
+
     const pageSizes = [1, 5, 10, 20, 50, 100].map(size => {
         return {
             key: `pageSize_${size}`,
@@ -111,26 +112,26 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
             text: `${size}`
         } as DropdownItemProps;
     });
-    
-    React.useEffect(() => {        
+
+    React.useEffect(() => {
         if (gauntlets?.length) {
-            const elev = { ... elevated };            
+            const elev = { ... elevated };
             let uniques = [ ... new Set(gauntlets.map(g => g.contest_data?.traits?.sort() ?? []).map(f => f.sort().join("_"))) ].map(after => after.split("_"));
 
-            for (let c of data) {                
-                let elcrit = uniques.map(f => arrayIntersect(f, c.traits)?.length).filter(f => f > 1)?.length ?? 0;                
+            for (let c of data) {
+                let elcrit = uniques.map(f => arrayIntersect(f, c.traits)?.length).filter(f => f > 1)?.length ?? 0;
                 if (elcrit) {
-                    elev[c.symbol] = elcrit;                    
+                    elev[c.symbol] = elcrit;
                 }
 
                 if (elcrit) {
-                    elev[c.symbol] = elcrit;                    
+                    elev[c.symbol] = elcrit;
                 }
 
             }
             setElevated(elev);
         }
-       
+
     }, [data]);
 
     React.useEffect(() => {
@@ -148,7 +149,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                 return;
             }
         }
-        
+
         setActivePageCrew(crew.slice(pageStartIdx, pageStartIdx + itemsPerPage));
     }, [crew, itemsPerPage, activePage, totalPages]);
 
@@ -311,7 +312,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
 
         setCrew(newarr);
     }, [sortKey, sortDirection, elevated, data]);
-    
+
     return (<div style={{ overflowX: "auto" }}>
         <Input
             style={{ width: isMobile ? '100%' : '50%' }}
@@ -455,16 +456,16 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
             <Table.Footer>
                 <Table.Row>
                     <Table.HeaderCell colSpan={columns.length}>
-                        <Pagination 
-                             
-                            totalPages={totalPages} 
-                            activePage={activePage} 
-                            onPageChange={(e, data) => setActivePage(data.activePage as number)} 
-                            />                
+                        <Pagination
+
+                            totalPages={totalPages}
+                            activePage={activePage}
+                            onPageChange={(e, data) => setActivePage(data.activePage as number)}
+                            />
                         <span style={{ paddingLeft: '2em' }}>
                             {t('global.rows_per_page')}:{' '}
-                            <Dropdown 
-                            options={pageSizes} 
+                            <Dropdown
+                            options={pageSizes}
                             value={itemsPerPage}
                             inline
                             onChange={(e, { value }) => setItemsPerPage(value as number)}

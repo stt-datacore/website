@@ -13,16 +13,14 @@ import { BuffNames } from "../item_presenters/crew_preparer";
 export const GauntletPrefsPanel = () => {
     const globalContext = React.useContext(GlobalContext);
     const gauntletContext = React.useContext(GauntletContext);
-    const { config, setConfig, viewMode, pane } = gauntletContext;
+    const { config, setConfig, viewMode, pane, tops, setTops } = gauntletContext;
 
     const { playerData, buffConfig } = globalContext.player;
     const hasPlayer = !!playerData;
     const dbid = hasPlayer ? `${playerData.player.dbid}/` : '';
     const { t, tfmt } = globalContext.localized;
 
-    const [tops, setTops] = useStateWithStorage<number>(`${dbid}gauntletTops`, 100, { rememberForever: true });
-
-    const maxBuffs = config.buffMode === 'max';
+    const maxBuffs = globalContext.maxBuffs;
 
     const availBuffs = [] as { key: string | number, value: string | number, text: string, content?: JSX.Element }[];
     const filterOptions = hasPlayer ? [
@@ -93,9 +91,7 @@ export const GauntletPrefsPanel = () => {
             value: 'max',
             text: t(BuffNames['max'])
         })
-
     }
-
 
     return <React.Fragment>
         <div style={{
@@ -201,7 +197,7 @@ export const GauntletPrefsPanel = () => {
                 </div>}
 
                 <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-evenly" }}>
-                    {viewMode === 'pair_cards' && <div style={{
+                    {viewMode === 'pair_cards' && pane === 'live' && <div style={{
                         display: "flex",
                         flexDirection: "row",
                         margin: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "1em 0 0 0" : "0 2em 1em 0",

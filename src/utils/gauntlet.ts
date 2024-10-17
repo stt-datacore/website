@@ -3,10 +3,10 @@ import { IDefaultGlobal } from "../context/globalcontext";
 import { ComputedSkill, CrewMember, Skill } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { Gauntlet, PairGroup } from "../model/gauntlets";
-import { CompletionState, PlayerBuffMode, PlayerCrew } from "../model/player";
+import { CompletionState, PlayerBuffMode, PlayerCrew, PlayerImmortalMode } from "../model/player";
 import { TraitNames } from "../model/traits";
 import { EMPTY_SKILL } from "../model/worker";
-import { FilterProps } from "../pages/gauntlets";
+import { FilterProps } from "../pages/gauntlets_old";
 import { applyCrewBuffs, getCrewPairScore, getCrewQuipment, getPlayerPairs, getSkills, shortToSkill, skillToShort, updatePairScore } from "./crewutils";
 import { ItemBonusInfo, getItemBonuses } from "./itemutils";
 import { BuffStatTable } from "./voyageutils";
@@ -405,7 +405,8 @@ export interface GauntletUserPrefs {
 	filter?: FilterProps,
 	textFilter?: string,
 	hideOpponents?: boolean,
-	onlyActiveRound?: boolean
+	onlyActiveRound?: boolean,
+	immortalModes?: { [key: string]: PlayerImmortalMode }
 }
 
 export interface GauntletMinimalContext {
@@ -801,5 +802,9 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	gauntlet.minimal = minimal;
 	gauntlet.prettyTraits = prettyTraits;
 
-	return gauntlet;
+	return {
+		gauntlet,
+		bonusCache: bonusInfo,
+		equipmentCache: crewQuip
+	};
 }
