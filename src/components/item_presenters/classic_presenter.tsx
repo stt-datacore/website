@@ -12,6 +12,7 @@ import { CrewRankHighlights, CrewRanks } from './crew_ranks';
 import { OwnedLabel } from '../crewtables/commonoptions';
 import { CrewItemsView } from './crew_items';
 import { PlayerCrew } from '../../model/player';
+import { CollectionDisplay } from './crew_presenter';
 
 type ValidField =
 	'collections' |
@@ -57,6 +58,7 @@ type ClassicPresenterProps = {
 
 export const ClassicPresenter = (props: ClassicPresenterProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { crew, compact, markdownRemark } = props;
 	const myCrew = playerData ? playerData.player.character.crew : undefined;
@@ -70,7 +72,7 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 		}
 		else {
 			if (field === 'collections')
-				elements.push(<Collections key={field} crew={crew} />);
+				elements.push(<p><b>{t('base.collections')}: </b><CollectionDisplay style={{display: 'inline'}} key={field} crew={crew} /></p>);
 
 			if (field === 'crew_demands')
 				elements.push(<CrewDemands key={field} crew={crew} />);
@@ -120,23 +122,23 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 	);
 };
 
-const Collections = (props: { crew: CrewMember }) => {
-	const { crew } = props;
-	const { t } = React.useContext(GlobalContext).localized;
-	if (crew.collections.length === 0) return (<></>);
-	return (
-		<p>
-			<b>{t('base.collections')}: </b>
-			{crew.collections
-				.map(col => (
-					<Link key={col} to={`/collections?select=${encodeURIComponent(col)}`}>
-						{col}
-					</Link>
-				))
-				.reduce((prev, curr) => <>{prev}, {curr}</>)}
-		</p>
-	);
-};
+// const Collections = (props: { crew: CrewMember }) => {
+// 	const { crew } = props;
+// 	const { t } = React.useContext(GlobalContext).localized;
+// 	if (crew.collections.length === 0) return (<></>);
+// 	return (
+// 		<p>
+// 			<b>{t('base.collections')}: </b>
+// 			{crew.collections
+// 				.map(col => (
+// 					<Link key={col} to={`/collections?select=${encodeURIComponent(col)}`}>
+// 						{col}
+// 					</Link>
+// 				))
+// 				.reduce((prev, curr) => <>{prev}, {curr}</>)}
+// 		</p>
+// 	);
+// };
 
 const CrewDemands = (props: { crew: CrewMember }) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
@@ -149,7 +151,7 @@ const CrewDemands = (props: { crew: CrewMember }) => {
 	};
 	return (
 		<div style={{ margin: '1em 0' }}>
-			{tfmt("crew_views.faction_items", { 
+			{tfmt("crew_views.faction_items", {
 				n: <b>{crewDemands.factionOnlyTotal}</b>
 			})}
 			<span style={{ display: 'inline-block' }}>
@@ -291,7 +293,7 @@ const Nicknames = (props: { crew: CrewMember }) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { crew } = props;
 
-	if (!crew.nicknames || crew.nicknames.length === 0) return (<></>);
+	if (!crew.nicknames || crew.nicknames.length === 0 || !crew.nicknames[0].cleverThing) return (<></>);
 	return (
 		<p>
 			<b>{t("crew_page.aka_colon")} </b>
@@ -379,7 +381,7 @@ export const Skills = (props: SkillsProps) => {
 			{(!playerLevels || !owned) && <div style={{marginTop:"0.5em"}}>
 				{owned && <OwnedLabel statsPopup={true} crew={owned} />}
 			</div> ||
-			<div className='ui segment'>				
+			<div className='ui segment'>
 				{!!owned?.immortal && <>
 					{owned.immortal > 0 ? <><Icon name='snowflake' /> {owned.immortal} {t('crew_states.frozen', { __gender: crewGender(crew) })}</> : <><Icon name='check' color='green' /> {t('crew_states.immortalized', { __gender: crewGender(crew) })}</>}</> ||  <>{t('base.level')} {owned?.level}				</>}
 				<CrewItemsView crew={owned as PlayerCrew} />

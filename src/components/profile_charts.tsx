@@ -45,7 +45,7 @@ type ProfileChartsState = {
 
 class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 	static contextType = GlobalContext;
-	context!: React.ContextType<typeof GlobalContext>;
+	declare context: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: ProfileChartsProps) {
 		super(props);
@@ -95,7 +95,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 
 		if (includeAllCrew) {
 			r4owned.push(0);
-			r5owned.push(0);			
+			r5owned.push(0);
 		}
 
 		let ownedStars = [0, 0, 0, 0, 0];
@@ -188,7 +188,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 						r5owned[5]++;
 					}
 				}
-		
+
 				if (crew.in_portal) {
 					unowned_portal[crew.max_rarity - 1]++;
 				}
@@ -276,7 +276,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			}
 		);
 	}
-	
+
 	_onIncludeAllCrew() {
 		this.setState(
 			(prevState) => ({ includeAllCrew: !prevState.includeAllCrew }),

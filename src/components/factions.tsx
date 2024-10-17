@@ -38,7 +38,7 @@ type ShuttleInfoState = {
 
 class FactionInfo extends PureComponent<ShuttleInfoProps, ShuttleInfoState> {
   static contextType = GlobalContext;
-  context!: React.ContextType<typeof GlobalContext>;
+  declare context: React.ContextType<typeof GlobalContext>;
   inited: boolean;
 
   constructor(props) {

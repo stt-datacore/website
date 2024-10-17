@@ -3,11 +3,13 @@ import { IDefaultGlobal } from "../context/globalcontext";
 import { ComputedSkill, CrewMember, Skill } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { Gauntlet, PairGroup } from "../model/gauntlets";
-import { CompletionState, PlayerBuffMode, PlayerCrew } from "../model/player";
+import { CompletionState, PlayerBuffMode, PlayerCrew, PlayerImmortalMode } from "../model/player";
+import { TraitNames } from "../model/traits";
 import { EMPTY_SKILL } from "../model/worker";
-import { FilterProps } from "../pages/gauntlets";
+import { FilterProps } from "../pages/gauntlets_old";
 import { applyCrewBuffs, getCrewPairScore, getCrewQuipment, getPlayerPairs, getSkills, shortToSkill, skillToShort, updatePairScore } from "./crewutils";
 import { ItemBonusInfo, getItemBonuses } from "./itemutils";
+import { BuffStatTable } from "./voyageutils";
 
 export interface InternalSettings {
 	crit5: number | string;
@@ -57,7 +59,7 @@ export const crit45 = 1.85;
 export const crit25 = 1.45;
 export const crit5 = 1;
 
-export const defaultSettings = {
+export const DefaultAdvancedGauntletSettings = {
 	crit5,
 	crit25,
 	crit45,
@@ -76,7 +78,7 @@ export const defaultSettings = {
 
 export function getBernardsNumber<T extends CrewMember>(a: T, gauntlet?: Gauntlet, apairs?: Skill[][] | Skill[], settings?: GauntletSettings) {
 	let atrait = gauntlet?.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
-	settings ??= defaultSettings;
+	settings ??= DefaultAdvancedGauntletSettings;
 
 	if (atrait >= 3) atrait = settings.crit65;
 	else if (atrait >= 2) atrait = settings.crit45;
@@ -341,7 +343,7 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 	return pairGroups;
 }
 
-function testFilterCrew(crew: PlayerCrew, filter: FilterProps, context: IDefaultGlobal): boolean {
+function testFilterCrew(crew: PlayerCrew, filter: FilterProps, context: GauntletMinimalContext): boolean {
 	const hasPlayer = !!context.player.playerData?.player?.character?.crew?.length;
 	if (!filter.rarity || crew.rarity === filter.rarity) {
 		if (filter.skillPairs?.length) {
@@ -393,20 +395,47 @@ function testFilterCrew(crew: PlayerCrew, filter: FilterProps, context: IDefault
 	return true;
 }
 
+export type GauntletPane = 'today' | 'yesterday' | 'previous' | 'browse' | 'live';
 
-export interface GauntletCalcConfig {
-	context: IDefaultGlobal,
+export interface GauntletUserPrefs {
 	settings: GauntletSettings,
-	gauntlet: Gauntlet,
 	buffMode: PlayerBuffMode;
-	equipmentCache: { [key: string]: EquipmentItem[] }
-	bonusCache: { [key: string]: ItemBonusInfo }
 	rankByPair?: string,
 	range_max?: number,
 	filter?: FilterProps,
 	textFilter?: string,
 	hideOpponents?: boolean,
-	onlyActiveRound?: boolean
+	onlyActiveRound?: boolean,
+	immortalModes?: { [key: string]: PlayerImmortalMode }
+}
+
+export interface GauntletMinimalContext {
+	player: {
+		buffConfig?: BuffStatTable,
+		maxBuffs?: BuffStatTable,
+		playerData?: {
+			player: {
+				character: {
+					crew: PlayerCrew[],
+					unOwnedCrew?: PlayerCrew[]
+				}
+			}
+		}
+	},
+	core: {
+		crew: CrewMember[],
+		items: EquipmentItem[]
+	},
+	localized: {
+		TRAIT_NAMES: TraitNames;
+	},
+}
+
+export interface GauntletCalcConfig extends GauntletUserPrefs {
+	gauntlet: Gauntlet,
+	context: GauntletMinimalContext,
+	bonusCache: { [key: string]: ItemBonusInfo }
+	equipmentCache: { [key: string]: EquipmentItem[] }
 }
 
 export function calculateGauntlet(config: GauntletCalcConfig) {
@@ -472,7 +501,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	gauntlet.prettyTraits = prettyTraits;
 
 	if (!prettyTraits) {
-		return null
+		return null;
 	}
 
 	delete gauntlet.allCrew;
@@ -772,4 +801,10 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	gauntlet.maximal = maximal;
 	gauntlet.minimal = minimal;
 	gauntlet.prettyTraits = prettyTraits;
+
+	return {
+		gauntlet,
+		bonusCache: bonusInfo,
+		equipmentCache: crewQuip
+	};
 }
