@@ -68,8 +68,18 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 					if (phase === 'gather') {
 						activeBonus = 'matrix';
 					}
-					else if (phase === 'shuttles' || phase === 'voyage') {
+					else if (phase === 'shuttles') {
 						activeBonus = 'all';
+					}
+					else if (phase === 'voyage') {
+						// Don't auto-exclude event crew if seeking recommendations for active voyage event
+						if (voyageConfig.voyage_type === 'encounter') {
+							activeEvent = '';
+							activeBonus = '';
+						}
+						else {
+							activeBonus = 'all';
+						}
 					}
 					// if (!gameEvent.content_types.includes('shuttles')) activeBonus = 'featured';
 				}
