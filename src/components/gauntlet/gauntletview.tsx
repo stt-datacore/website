@@ -27,7 +27,7 @@ export const GauntletView = (props: GauntletViewProps) => {
     const gauntletContext = React.useContext(GauntletContext);
     const workerContext = React.useContext(WorkerContext);
     const globalContext = React.useContext(GlobalContext);
-    const { runWorker, running } = workerContext;
+    const { runWorker, running, cancel } = workerContext;
     const { config, pane, viewMode, tops, setConfig } = gauntletContext;
     const { textFilter, filter, buffMode, range_max } = config;
 
@@ -71,11 +71,9 @@ export const GauntletView = (props: GauntletViewProps) => {
                 bonusCache,
                 equipmentCache
             } as GauntletCalcConfig;
-            runWorker('gauntlet', workconf, (response) => {
-                setGauntlet(response.data.result.gauntlet);
-                bonusCache = response.data.result.bonusCache;
-                equipmentCache = response.data.result.equpmentCache;
-            });
+
+            cancel();
+            runWorker('gauntlet', workconf, workerResults);
         }
     }, [outerGauntlet, filter, buffMode, range_max]);
 
@@ -156,6 +154,13 @@ export const GauntletView = (props: GauntletViewProps) => {
             filter={filter!}
             setRankByPair={(value) => setRankByPair(value)}
         />
+    }
+
+    function workerResults(response: any) {
+        console.log("Gauntlet Worker Results");
+        setGauntlet(response.data.result.gauntlet);
+        bonusCache = response.data.result.bonusCache;
+        equipmentCache = response.data.result.equpmentCache;
     }
 
     function renderBigCards() {

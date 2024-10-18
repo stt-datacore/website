@@ -8,6 +8,7 @@ import { TinyStore } from "../../utils/tiny";
 import { skillToShort } from "../../utils/crewutils";
 
 export interface IGauntletContext {
+    initialized: boolean;
     viewMode: GauntletViewMode;
     pane: GauntletPane;
     gauntlets: Gauntlet[];
@@ -36,6 +37,7 @@ const DefaultUserPrefs: GauntletUserPrefs = {
 }
 
 const DefaultGauntletContext: IGauntletContext = {
+    initialized: false,
     pane: 'today',
     viewMode: 'pair_cards',
     gauntlets: [],
@@ -82,6 +84,8 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
 
     const [gauntlets, setGauntlets] = React.useState<Gauntlet[]>(globalContext.core.gauntlets);
     const [uniqueGauntlets, setUniqueGauntlets] = React.useState<Gauntlet[]>(globalContext.core.gauntlets);
+
+    const [initialized, setInitialized] = React.useState(false);
 
     React.useEffect(() => {
         refreshApiGauntlet();
