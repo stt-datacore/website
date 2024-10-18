@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Dropdown, Image, Header } from 'semantic-ui-react';
 
 import { LockedProspect } from '../../model/game-elements';
-import { ComputedSkill } from '../../model/crew';
+import { ComputedSkill, CrewMember } from '../../model/crew';
 import { CompletionState } from '../../model/player';
 
 import { GlobalContext } from '../../context/globalcontext';
@@ -37,30 +37,30 @@ export const EventPicker = (props: EventPickerProps) => {
 	const { playerData, buffConfig } = globalContext.player;
 	const { events, rosterType } = props;
 
-	const [eventIndex, setEventIndex] = useStateWithStorage('eventplanner/eventIndex', 0);
-	const [phaseIndex, setPhaseIndex] = useStateWithStorage('eventplanner/phaseIndex', 0);
-	const [prospects, setProspects] = useStateWithStorage('eventplanner/prospects', [] as LockedProspect[]);
+	const [eventIndex, setEventIndex] = useStateWithStorage<number>('eventplanner/eventIndex', 0);
+	const [phaseIndex, setPhaseIndex] = useStateWithStorage<number>('eventplanner/phaseIndex', 0);
+	const [prospects, setProspects] = useStateWithStorage<LockedProspect[]>('eventplanner/prospects', []);
 
-	const [bonusCrew, setBonusCrew] = React.useState([] as IRosterCrew[]);
-	const [rosterCrew, setRosterCrew] = React.useState([] as IRosterCrew[]);
-	const [lockable, setLockable] = React.useState([] as LockedProspect[]);
+	const [bonusCrew, setBonusCrew] = React.useState<IRosterCrew[]>([]);
+	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[]>([]);
+	const [lockable, setLockable] = React.useState<LockedProspect[]>([]);
 
 	React.useEffect(() => {
-		const eventData = events[eventIndex];
-		const bonusCrew = globalContext.core.crew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0);
+		const eventData: IEventData = events[eventIndex];
+		const bonusCrew: CrewMember[] = globalContext.core.crew.filter(c => eventData.bonus.includes(c.symbol));
 		bonusCrew.sort((a, b)=>a.name.localeCompare(b.name));
 		setBonusCrew([...bonusCrew.map(b => b as IRosterCrew)]);
 	}, [events, eventIndex]);
 
 	React.useEffect(() => {
-		const rosterCrew = JSON.parse(JSON.stringify(props.rosterCrew)) as IRosterCrew[];
-		const lockable = [] as LockedProspect[];
+		const rosterCrew: IRosterCrew[] = JSON.parse(JSON.stringify(props.rosterCrew)) as IRosterCrew[];
+		const lockable: LockedProspect[] = [];
 
 		if (rosterType === 'myCrew' && playerData && buffConfig) {
 			prospects.forEach((p) => {
 				const crew = globalContext.core.crew.find((c) => c.symbol === p.symbol);
 				if (crew) {
-					const prospect = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
+					const prospect: IRosterCrew = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
 					prospect.id = rosterCrew.length+1;
 					prospect.prospect = true;
 					prospect.statusIcon = 'add user';
@@ -94,7 +94,7 @@ export const EventPicker = (props: EventPickerProps) => {
 		setLockable([...lockable]);
 	}, [props.rosterCrew, prospects]);
 
-	const eventsList = [] as ISelectOptions[];
+	const eventsList: ISelectOptions[] = [];
 	events.forEach((activeEvent, eventId) => {
 		eventsList.push(
 			{
@@ -112,8 +112,8 @@ export const EventPicker = (props: EventPickerProps) => {
 		'voyage': t('event_type.voyage')
 	};
 
-	const phaseList = [] as ISelectOptions[];
-	const eventData = (eventIndex >= events.length) ? events[0] : events[eventIndex];
+	const phaseList: ISelectOptions[] = [];
+	const eventData: IEventData = (eventIndex >= events.length) ? events[0] : events[eventIndex];
 	if (eventIndex >= events.length) {
 		setEventIndex(0);
 	}
@@ -157,18 +157,17 @@ export const EventPicker = (props: EventPickerProps) => {
 				</React.Fragment>
 			)}
 
-			{playerData && eventData.content_types[phaseIndex] === 'voyage' && !!eventData.bonus_ship?.length &&
+			{playerData && eventData.content_types[phaseIndex] === 'voyage' && eventData.activeContent?.content_type === 'voyage' &&
 				<div style={{marginTop: "0.5em"}}>
 					<div style={{margin: "0.5em 0"}}>
 						<h4>{t('base.event_ships')}</h4>
 					</div>
-					<ShipTable event_ships={eventData.bonus_ship}
-						high_bonus={eventData.featured_ship}
-						event_ship_traits={eventData.bonus_ship_traits}
-						/>
+					<ShipTable event_ships={eventData.bonus_ships}
+						high_bonus={eventData.featured_ships}
+						event_ship_traits={eventData.activeContent?.antimatter_bonus_ship_traits}
+					/>
 				</div>
 			}
-
 		</React.Fragment>
 	);
 };

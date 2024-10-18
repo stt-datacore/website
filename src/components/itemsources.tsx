@@ -28,7 +28,7 @@ interface ItemSourcesState {
 
 class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 	static contextType = GlobalContext;
-	context!: React.ContextType<typeof GlobalContext>;
+	declare context: React.ContextType<typeof GlobalContext>;
 
 	private readonly tiny: TinyStore;
 

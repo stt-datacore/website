@@ -37,6 +37,8 @@ export interface Gauntlet {
     revive_cost?: GauntletReviveCost;
     revive_and_save_cost?: GauntletReviveAndSaveCost;
     opponents?: Opponent[];
+
+    fromApi?: boolean;
 }
 
 export interface ContestData {

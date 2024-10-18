@@ -298,6 +298,33 @@ const GatherTable = (props: GatherTableProps) => {
 
     }
 
+    // function superRareToVP(phase: number, count: number) {
+    //     interface SRTable {
+    //         min: number;
+    //         max: number;
+    //         points: number;
+    //     }
+
+    //     const Phase1Table = [
+    //         { min: 1, max: 1, points: 125 },
+    //         { min: 2, max: 4, points: 415 },
+    //         { min: 5, max: 7, points: 735 },
+    //         { min: 8, max: 12, points: 1365 },
+    //         { min: 13, max: 17, points: 2135 },
+    //         { min: 18, max: 22, points: 2950 },
+    //         { min: 23, max: 27, points: 3945 },
+    //         { min: 28, max: 0, points: 4850 },
+    //     ] as SRTable[];
+
+    //     const Phase2Table = [
+    //         { min: 1, max: 3, points: 735 },
+    //         { min: 4, max: 6, points: 1365 },
+    //         { min: 7, max: 11, points: 2135 },
+    //         { min: 12, max: 16, points: 2950 },
+    //         { min: 17, max: 21, points: 3945 },
+    //         { min: 22, max: 0, points: 4850 },
+    //     ] as SRTable[];
+    // }
 }
 
 

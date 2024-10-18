@@ -5,6 +5,7 @@ import { CalcResult, Aggregates, CalcResultEntry as VoyageSlotEntry, VoyageStats
 import { CalculatorState } from './calchelpers';
 import { HelperProps, Helper } from "./Helper";
 import { VoyageDescription } from '../../../model/player';
+import { IVoyageCalcConfig, IVoyageEventContent } from '../../../model/voyage';
 
 // This code is heavily inspired from IAmPicard's work and released under the GPL-V3 license. Huge thanks for all his contributions!
 
@@ -12,7 +13,7 @@ export class IAmPicardHelper extends Helper {
 	readonly id: string;
 	readonly calculator: string;
 	readonly calcName: string;
-	readonly calcOptions: any;
+	readonly calcOptions: GameWorkerOptions;
 
 	constructor(props: HelperProps) {
 		super(props);
@@ -22,12 +23,24 @@ export class IAmPicardHelper extends Helper {
 		this.calcOptions = {
 			searchDepth: props.calcOptions.searchDepth ?? 6,
 			extendsTarget: props.calcOptions.extendsTarget ?? 0
-		} as GameWorkerOptions;
+		};
 	}
 
 	start(): void {
 		this.perf.start = performance.now();
 		this.calcState = CalculatorState.InProgress;
+
+		const voyageConfig: IVoyageCalcConfig = JSON.parse(JSON.stringify(this.voyageConfig));
+
+		// For limited support of encounter voyages:
+		//	Set crew traits to first event bonus trait
+		//	Maybe artificially inflate skill scores for featured crew here?
+		if (voyageConfig.voyage_type === 'encounter' && voyageConfig.event_content) {
+			const content: IVoyageEventContent = voyageConfig.event_content!;
+			voyageConfig.crew_slots.forEach(slot => {
+				slot.trait = content.antimatter_bonus_crew_traits[0];
+			});
+		}
 
 		const IAmPicardConfig = {
 			searchDepth: this.calcOptions.searchDepth,
@@ -37,7 +50,7 @@ export class IAmPicardHelper extends Helper {
 			skillSecondaryMultiplier: 2.5,
 			skillMatchingMultiplier: 1.1,
 			traitScoreBoost: 200,
-			voyage_description: this.voyageConfig,
+			voyage_description: voyageConfig,
 			roster: this.consideredCrew
 		};
 
