@@ -126,7 +126,7 @@ export const OpponentTable = (props: OpponentTableProps) => {
                             {opponent.level}
                         </Table.Cell>
                         <Table.Cell>
-                            {opponent.rank}
+                            {opponent.rank || "?"}
                         </Table.Cell>
                         <Table.Cell width={8}>
                             <div style={{textAlign: 'center', gap: '4em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', flexWrap: 'wrap'}}>

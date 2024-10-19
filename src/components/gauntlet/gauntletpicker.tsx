@@ -204,6 +204,9 @@ export const GauntletPicker = () => {
                     prevoppo.rank = oppo.rank;
             	}
             	else {
+                    prevoppos.forEach((po) => {
+                        if (po.rank === oppo.rank) po.rank = 0;
+                    });
             		prevoppos.push(oppo);
             	}
             }
