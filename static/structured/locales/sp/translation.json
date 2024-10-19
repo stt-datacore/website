@@ -624,6 +624,10 @@
                 "heading": "Ver tripulación en presentaciones grandes",
                 "title": "Presentación grande"
             },
+            "oppenent_table": {
+                "heading": "Ver todos los oponentes capturados en este desafío",
+                "title": "Oponentes"
+            },
             "pair_cards": {
                 "heading": "Ver tripulación agrupada en tablas de pares",
                 "title": "Tablas de pares"

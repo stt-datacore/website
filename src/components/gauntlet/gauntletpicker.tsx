@@ -16,7 +16,7 @@ import { BrowsableGauntletView } from "./browseableview";
 export const GauntletPicker = () => {
     const globalContext = React.useContext(GlobalContext);
     const gauntletContext = React.useContext(GauntletContext);
-    const { gauntlets, pane, setPane, config, setSettings, refreshApiGauntlet } = gauntletContext;
+    const { gauntlets, pane, setPane, config, setSettings, refreshApiGauntlet, viewMode, setViewMode } = gauntletContext;
     const { settings } = config;
     const { playerData } = globalContext.player;
     const hasPlayer = !!playerData;
@@ -28,6 +28,14 @@ export const GauntletPicker = () => {
 
     const { tfmt } = globalContext.localized;
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
+    React.useEffect(() => {
+        if (pane === 'live') {
+            if (viewMode === 'opponent_table' && !liveGauntlet?.opponents?.length) {
+                setViewMode('pair_cards');
+            }
+        }
+    }, [pane, liveGauntlet]);
 
     if (!gauntlets?.length) return <></>
 

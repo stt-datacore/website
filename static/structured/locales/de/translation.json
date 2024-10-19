@@ -619,6 +619,10 @@
                 "heading": "Sehen Sie die Crew in großen Präsentationen",
                 "title": "Große Präsentation"
             },
+            "oppenent_table": {
+                "heading": "Alle in diesem Spießrutenlauf gefangenen Gegner anzeigen",
+                "title": "Gegner"
+            },
             "pair_cards": {
                 "heading": "Siehe Crew in Paartabellen gruppiert",
                 "title": "Paartabellen"

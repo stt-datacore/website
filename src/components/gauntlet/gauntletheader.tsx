@@ -69,6 +69,14 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
         heading: t('gauntlet.view_modes.small.heading')
     }]
 
+    if (pane === 'live' && gauntlet?.opponents?.length) {
+        displayOptions.push({
+            key: "opponent_table",
+            value: "opponent_table",
+            text: t('gauntlet.view_modes.opponent_table.title'),
+            heading: t('gauntlet.view_modes.opponent_table.heading')
+        });
+    }
 
     if (gauntlet.unavailable_msg) {
         return (

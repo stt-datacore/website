@@ -619,6 +619,10 @@
                 "heading": "See crew in large presentations",
                 "title": "Large Presentation"
             },
+            "oppenent_table": {
+                "heading": "View all opponents captured in this gauntlet",
+                "title": "Opponents"
+            },
             "pair_cards": {
                 "heading": "See crew grouped into pair tables",
                 "title": "Pair tables"
