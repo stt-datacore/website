@@ -624,6 +624,10 @@
                 "heading": "Ver tripulación en presentaciones grandes",
                 "title": "Presentación grande"
             },
+            "opponent_table": {
+                "heading": "Ver todos los oponentes capturados en este desafío",
+                "title": "Oponentes"
+            },
             "pair_cards": {
                 "heading": "Ver tripulación agrupada en tablas de pares",
                 "title": "Tablas de pares"
@@ -637,6 +641,10 @@
                 "title": "Tabla"
             },
             "title": "Modo de vista"
+        },
+        "opponent_table": {
+            "opponent": "Oponente",
+            "opponent_crew_n": "Tripulante del oponente {{n}}"
         }
     },
     "global": {

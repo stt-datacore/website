@@ -625,6 +625,10 @@
                 "heading": "Voir l'équipage dans de grandes présentations",
                 "title": "Grande présentation"
             },
+            "opponent_table": {
+                "heading": "Voir tous les adversaires capturés dans ce gant",
+                "title": "Adversaires"
+            },
             "pair_cards": {
                 "heading": "Voir l'équipage regroupé en tables de paires",
                 "title": "Tables des paires"
@@ -638,6 +642,10 @@
                 "title": "Table"
             },
             "title": "Mode d'affichage"
+        },
+        "opponent_table": {
+            "opponent": "Adversaire",
+            "opponent_crew_n": "Équipier Adversaire {{n}}"
         }
     },
     "global": {

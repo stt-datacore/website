@@ -86,6 +86,11 @@ const checkedStyle: React.CSSProperties = {
     marginRight: "0px",
 };
 
+const opponentStyle: React.CSSProperties = {
+    color: "tomato",
+    marginRight: "0px",
+};
+
 export class StatLabel extends React.Component<StatLabelProps> {
     static contextType = GlobalContext;
     declare context: React.ContextType<typeof GlobalContext>;
@@ -154,7 +159,7 @@ export const CollectionDisplay = (props: CollectionDisplayProps) => {
     if (!crew.collections?.length) return <></>;
 
     if (
-        (((("immortal" in crew)) && (crew.immortal === 0 || crew.immortal < -1)) ||
+        (((("immortal" in crew)) && ((crew.immortal === 0 || crew.immortal < -1) && crew.immortal !== CompletionState.DisplayAsImmortalOpponent)) ||
         ("any_immortal" in crew && crew.any_immortal === false))
         && playerData?.player.character.cryo_collections) {
         playerData?.player.character.cryo_collections.forEach(col => {
@@ -591,6 +596,8 @@ export class CrewPresenter extends React.Component<
 
         var me = this;
 
+        const opponent = "immortal" in inputCrew && inputCrew.immortal === CompletionState.DisplayAsImmortalOpponent;
+
         const availstates = this.props.quipmentMode ? ['quipment' as PlayerBuffMode] : getAvailableBuffStates(
             this.context.player.playerData,
             this.context.maxBuffs,
@@ -716,8 +723,8 @@ export class CrewPresenter extends React.Component<
             else return skillData.rarity;
         };
 
-        let pt: string | undefined = undefined;
-        let npt: string | undefined = undefined;
+        let portal_text: string | undefined = undefined;
+        let no_portal_text: string | undefined = undefined;
 
         /**
          *
@@ -727,12 +734,12 @@ export class CrewPresenter extends React.Component<
             crew.immortal === CompletionState.DisplayAsImmortalUnowned
         ) {
             if (crew.prospect) {
-                pt = t('crew_state.prospective_crew_portal');
-                npt = t('crew_state.prospective_crew_no_portal');
+                portal_text = t('crew_state.prospective_crew_portal');
+                no_portal_text = t('crew_state.prospective_crew_no_portal');
             }
             else {
-                pt = t('crew_state.unowned_portal');
-                npt = t('crew_state.unowned_no_portal');
+                portal_text = t('crew_state.unowned_portal');
+                no_portal_text = t('crew_state.unowned_no_portal');
             }
         }
         else if (
@@ -740,12 +747,12 @@ export class CrewPresenter extends React.Component<
             ("immortal" in crew &&
                 crew.immortal === CompletionState.DisplayAsImmortalStatic)
         ) {
-            pt = t('crew_state.portal_available');
-            npt = t('crew_state.not_in_portal');
+            portal_text = t('crew_state.portal_available');
+            no_portal_text = t('crew_state.not_in_portal');
         }
 
-        const portalText = pt;
-        const noPortalText = npt;
+        const portalText = portal_text;
+        const noPortalText = no_portal_text;
         const isNever = printPortalStatus(crew, t) === t('global.never');
         const isMobile = this.props.forceVertical || typeof window !== 'undefined' && window.innerWidth < mobileWidth;
 
@@ -953,6 +960,8 @@ export class CrewPresenter extends React.Component<
                                                         />
                                                     )}{" "}
                                             </>
+                                        ) : crew.immortal === CompletionState.DisplayAsImmortalOpponent ? (
+                                            <i className="chess rook icon" style={opponentStyle} />
                                         ) : crew.immortal === 0 ||
                                             crew.rarity !== crew.max_rarity ? (
                                             <b>{crew.level}</b>
@@ -964,7 +973,7 @@ export class CrewPresenter extends React.Component<
                                 </h4>
                             </div>
                         </div>
-                        <div
+                        {!opponent && <div
                             style={{
                                 display: "flex",
                                 flexDirection: "column",
@@ -1004,7 +1013,7 @@ export class CrewPresenter extends React.Component<
                                     gender={crewGender(crew)}
                                 />
                             </div>
-                        </div>
+                        </div>}
                     </div>
                     <div
                         onClick={(e) => nextBuff(e)}
@@ -1027,7 +1036,7 @@ export class CrewPresenter extends React.Component<
                             return <CrewStat
                                 quipmentMode={this.props.quipmentMode}
                                 key={"crewpresent_skill_" + key}
-                                proficiencies={proficiencies}
+                                proficiencies={proficiencies || opponent}
                                 skill_name={key}
                                 data={skill}
                                 scale={hover ? 0.75 : 1}

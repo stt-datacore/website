@@ -1193,6 +1193,7 @@ export function printImmoText(immo: number | CompletionState, item?: string, imm
 		else if (immo === -3) return t('item_state.item_is_shown_unowned', { item, level: immoText, __gender: gender });
 		else if (immo === -4) return t('item_state.item_is_shown_owned', { item, level: immoText, __gender: gender });
 		else if (immo === -2) return t('item_state.item_is_shown', { item, level: immoText, __gender: gender });
+		else if (immo === -10) return t('gauntlet.opponent_table.opponent');
 		else if (immo >= 1) {
 			if (immo === 1) {
 				return(t('item_state.item_is_frozen_one'))
@@ -1212,6 +1213,7 @@ export function printImmoText(immo: number | CompletionState, item?: string, imm
 		else if (immo === -3) return `${item} Is Shown ${immoText} (Unowned)`;
 		else if (immo === -4) return `${item} Is Shown ${immoText} (Owned)`;
 		else if (immo === -2) return `${item} Is Shown ${immoText}`;
+		else if (immo === -10) return 'Opponent';
 		else if (immo >= 1) return `${item} Is Frozen (` + (immo === 1 ? "1 copy" : immo.toString() + " copies") + ")";
 		else return `${item} Is Not ${immoText}`;
 	}

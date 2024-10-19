@@ -1,5 +1,5 @@
 import React from "react";
-import { Gauntlet, GauntletViewMode } from "../../model/gauntlets";
+import { Gauntlet, GauntletViewMode, Opponent } from "../../model/gauntlets";
 import { DefaultAdvancedGauntletSettings, GauntletPane, GauntletSettings, GauntletUserPrefs } from "../../utils/gauntlet";
 import { GlobalContext } from "../../context/globalcontext";
 import { useStateWithStorage } from "../../utils/storage";

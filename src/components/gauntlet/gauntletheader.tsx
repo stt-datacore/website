@@ -10,6 +10,7 @@ import ItemDisplay from "../itemdisplay";
 import { randomCrew } from "../../context/datacontext";
 import { CrewMember } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
+import { AvatarView } from "../item_presenters/avatarview";
 
 
 
@@ -69,6 +70,14 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
         heading: t('gauntlet.view_modes.small.heading')
     }]
 
+    if (pane === 'live' && gauntlet?.opponents?.length) {
+        displayOptions.push({
+            key: "opponent_table",
+            value: "opponent_table",
+            text: t('gauntlet.view_modes.opponent_table.title'),
+            heading: t('gauntlet.view_modes.opponent_table.heading')
+        });
+    }
 
     if (gauntlet.unavailable_msg) {
         return (
@@ -114,10 +123,10 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
             {!!jackpots?.length && pane === 'browse' &&
                 <Accordion
                     style={{ margin: "1em 0em" }}
-                    defaultActiveIndex={-1}
+                    defaultActiveIndex={undefined}
                     panels={[{
                         index: 0,
-                        key: 0,
+                        key: 'browse_exclusive_panel',
                         title: t('gauntlet.browse_gauntlet_exclusives'),
                         content: {
                             content: <>
@@ -145,7 +154,15 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                                                         alignItems: "center",
                                                         textAlign: "center"
                                                     }}>
-                                                    <ItemDisplay
+                                                        <AvatarView
+                                                            mode='crew'
+                                                            key={"jackpot" + jcrew.symbol}
+                                                            size={64}
+                                                            targetGroup='gauntletsHover'
+                                                            symbol={jcrew?.symbol}
+                                                            showMaxRarity={true}
+                                                        />
+                                                    {/* <ItemDisplay
                                                         key={"jackpot" + jcrew.symbol}
                                                         size={64}
                                                         maxRarity={jcrew.max_rarity}
@@ -155,7 +172,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                                                         playerData={globalContext.player.playerData}
                                                         targetGroup='gauntletsHover'
                                                         itemSymbol={jcrew?.symbol}
-                                                    />
+                                                    /> */}
                                                     <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.5em 0 0 0" }}>{jcrew.name}</i>
                                                     <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.25em 0 0 0" }}>({moment(jcrew.date_added).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("D MMM YYYY")})</i>
                                                 </div>
@@ -188,10 +205,10 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                     {!!jackpots?.length && pane === 'live' &&
                         <Accordion
                             style={{ margin: "1em 0em" }}
-                            defaultActiveIndex={-1}
+                            defaultActiveIndex={undefined}
                             panels={[{
                                 index: 0,
-                                key: 0,
+                                key: 'bracket_id_panel',
                                 title: `Bracket Id: ${gauntlet.bracket_id}`,
                                 content: {
                                     content: <>
@@ -217,7 +234,14 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                                                             textAlign: "center"
                                                         }}
                                                         >
-                                                            <ItemDisplay
+                                                            <AvatarView
+                                                                mode='crew'
+                                                                key={"jackpot" + jcrew.symbol}
+                                                                size={64}
+                                                                targetGroup='gauntletsHover'
+                                                                symbol={jcrew?.symbol}
+                                                            />
+                                                            {/* <ItemDisplay
                                                                 key={"jackpot" + jcrew.symbol}
                                                                 size={64}
                                                                 maxRarity={jcrew.max_rarity}
@@ -227,7 +251,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                                                                 playerData={globalContext.player.playerData}
                                                                 targetGroup='gauntletsHover'
                                                                 itemSymbol={jcrew?.symbol}
-                                                            />
+                                                            /> */}
                                                             <i style={{ color: undefined, margin: "0.5em 0 0 0" }}>{jcrew.name}</i>
                                                             <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.5em 0 0 0" }}>{crit}%</i>
                                                         </div>

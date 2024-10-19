@@ -126,6 +126,7 @@ export interface Opponent {
     icon: Icon2;
     name: string;
     crew_contest_data: CrewContestData;
+    bracket_id?: string;
 }
 
 export interface Icon2 {
@@ -149,7 +150,7 @@ export interface GauntletContestCrew {
     crit_chance: number;
 }
 
-export type GauntletViewMode = "big" | "small" | "table" | "pair_cards";
+export type GauntletViewMode = "big" | "small" | "table" | "pair_cards" | "opponent_table";
 
 // export const SKILLS = {
 //     command_skill: "CMD",

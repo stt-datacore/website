@@ -1,6 +1,6 @@
 import * as React from "react";
 import { CrewMember } from "../../model/crew";
-import { PlayerBuffMode, PlayerCrew, PlayerImmortalMode } from "../../model/player";
+import { CompletionState, PlayerBuffMode, PlayerCrew, PlayerImmortalMode } from "../../model/player";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
 import { navToCrewPage } from "../../utils/nav";
 import { CrewPlugins, CrewPresenter } from "../item_presenters/crew_presenter";
@@ -22,6 +22,7 @@ export interface CrewHoverStatState extends HoverStatState<PlayerCrew | CrewMemb
 
 export interface CrewTargetProps extends HoverStatTargetProps<PlayerCrew | CrewMember | undefined> {
     ensureOwnedState?: boolean;
+    passDirect?: boolean;
 }
 
 export interface CrewTargetState extends HoverStatTargetState {
@@ -134,6 +135,19 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     //     this.tiny.setValue<number>('tick', this.tiny.getValue<number>('tick', 0) ?? 0 + 1);
     // }
     protected prepareDisplayItem(dataIn: PlayerCrew | CrewMember | undefined): PlayerCrew | CrewMember | undefined {
+        if (this.props.passDirect) {
+            if (dataIn && "immortal" in dataIn) {
+                if (dataIn.immortal === CompletionState.DisplayAsImmortalOpponent) {
+                    if (dataIn.rarity === dataIn.max_rarity) {
+                        this.validImmortalModes = ['full']
+                    }
+                    else {
+                        this.validImmortalModes = [dataIn.rarity as PlayerImmortalMode];
+                    }
+                }
+            }
+            return dataIn;
+        }
         const buffMode = this.playerBuffMode;
         const immortalMode = this.immortalMode;
 
