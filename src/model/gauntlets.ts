@@ -126,6 +126,7 @@ export interface Opponent {
     icon: Icon2;
     name: string;
     crew_contest_data: CrewContestData;
+    bracket_id?: string;
 }
 
 export interface Icon2 {

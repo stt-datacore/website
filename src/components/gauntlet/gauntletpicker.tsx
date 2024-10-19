@@ -9,7 +9,7 @@ import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { GauntletImportComponent } from "./gauntletimporter";
 import GauntletSettingsPopup from "./settings";
-import { Gauntlet, GauntletRoot } from "../../model/gauntlets";
+import { Gauntlet, GauntletRoot, Opponent } from "../../model/gauntlets";
 import { GauntletView } from "./gauntletview";
 import { BrowsableGauntletView } from "./browseableview";
 
@@ -25,6 +25,8 @@ export const GauntletPicker = () => {
     const [liveGauntlet, setLiveGauntlet] = useStateWithStorage<Gauntlet | undefined>(`${dbid}liveGauntlet`, undefined);
     const [liveGauntletRoot, setLiveGauntletRoot] = React.useState<GauntletRoot | undefined>();
     const [settingsOpen, setSettingsOpen] = React.useState(false);
+
+    const [opponentCache, setOpponentCache] = useStateWithStorage<Opponent[]>(`${dbid}opponentCache`, []);
 
     const { tfmt } = globalContext.localized;
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
@@ -140,9 +142,8 @@ export const GauntletPicker = () => {
             const gauntlet = root.character.gauntlets[0];
 
             if (gauntlet.state?.includes("ENDED")) {
-                this.inited = false;
-                if (pane === 'live') setPane('today');
                 setLiveGauntlet(undefined);
+                if (pane === 'live') setPane('today');
                 return;
             }
 
@@ -163,34 +164,36 @@ export const GauntletPicker = () => {
             // let json = this.tiny.getValue<string>('liveGauntlet');
 
             // const prevGauntlet = json ? JSON.parse(json) as Gauntlet : {} as Gauntlet;
-            // const curroppos = [ ... gauntlet.opponents ?? [] ];
-            // const prevoppos = [ ... prevGauntlet?.opponents ?? [] ];
+            const curroppos = [ ... gauntlet.opponents ?? [] ];
+            const prevoppos = getCleanOpponents(gauntlet.bracket_id);
 
-            // for (let oppo of curroppos) {
-            // 	let po = prevoppos.find(fo => fo.player_id === oppo.player_id);
-            // 	if (po) {
-            // 		const crewdata = [ ... po.crew_contest_data.crew ];
-            // 		for (let pcrew of crewdata) {
-            // 			let fo = oppo.crew_contest_data.crew.find(foppo => foppo.archetype_symbol === pcrew.archetype_symbol);
-            // 			if (fo) {
-            // 				let pcopy = [ ... pcrew.skills, ...fo.skills];
-            // 				pcopy = pcopy.filter((pf, idx) => pcopy.findIndex(t => t.skill === pf.skill) === idx);
-            // 				pcrew.skills = pcopy;
-            // 			}
-            // 			else {
-            // 				po.crew_contest_data.crew.push(pcrew);
-            // 			}
-            // 		}
-            // 	}
-            // 	else {
-            // 		prevoppos.push(oppo);
-            // 	}
-            // }
+            for (let oppo of curroppos) {
+                oppo.bracket_id = gauntlet.bracket_id;
+            	let po = prevoppos.find(fo => fo.player_id === oppo.player_id);
+            	if (po) {
+            		const crewdata = [ ... po.crew_contest_data.crew ];
+            		for (let pcrew of crewdata) {
+            			let fo = oppo.crew_contest_data.crew.find(foppo => foppo.archetype_symbol === pcrew.archetype_symbol);
+            			if (fo) {
+            				let pcopy = [ ... pcrew.skills, ...fo.skills];
+            				pcopy = pcopy.filter((pf, idx) => pcopy.findIndex(t => t.skill === pf.skill) === idx);
+            				pcrew.skills = pcopy;
+            			}
+            			else {
+            				po.crew_contest_data.crew.push(pcrew);
+            			}
+            		}
+            	}
+            	else {
+            		prevoppos.push(oppo);
+            	}
+            }
 
             // gauntlet.opponents = prevoppos;
 
             setLiveGauntlet(gauntlet);
             setLiveGauntletRoot(live);
+            setOpponentCache(prevoppos);
             setPane('live');
         }
         catch {
@@ -202,5 +205,21 @@ export const GauntletPicker = () => {
 
     function clearGauntlet() {
         setLiveGauntlet(undefined);
+    }
+
+    function getCleanOpponents(bracket_id?: string): Opponent[] {
+        let gauntletId = bracket_id ?? liveGauntlet?.bracket_id;
+        if (opponentCache.length && gauntletId) {
+            const newCache = [] as Opponent[];
+            for (let oppo of opponentCache) {
+                if (oppo.bracket_id === gauntletId) {
+                    newCache.push(oppo);
+                }
+            }
+            return newCache;
+        }
+        else {
+            return [];
+        }
     }
 }
