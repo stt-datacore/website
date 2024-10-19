@@ -619,7 +619,7 @@
                 "heading": "See crew in large presentations",
                 "title": "Large Presentation"
             },
-            "oppenent_table": {
+            "opponent_table": {
                 "heading": "View all opponents captured in this gauntlet",
                 "title": "Opponents"
             },
@@ -636,6 +636,10 @@
                 "title": "Table"
             },
             "title": "View Mode"
+        },
+        "opponent_table": {
+            "opponent": "Opponent",
+            "opponent_crew_n": "Opponent Crew {{n}}"
         }
     },
     "global": {

@@ -123,10 +123,10 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
             {!!jackpots?.length && pane === 'browse' &&
                 <Accordion
                     style={{ margin: "1em 0em" }}
-                    defaultActiveIndex={-1}
+                    defaultActiveIndex={undefined}
                     panels={[{
                         index: 0,
-                        key: 0,
+                        key: 'browse_exclusive_panel',
                         title: t('gauntlet.browse_gauntlet_exclusives'),
                         content: {
                             content: <>
@@ -205,10 +205,10 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                     {!!jackpots?.length && pane === 'live' &&
                         <Accordion
                             style={{ margin: "1em 0em" }}
-                            defaultActiveIndex={-1}
+                            defaultActiveIndex={undefined}
                             panels={[{
                                 index: 0,
-                                key: 0,
+                                key: 'bracket_id_panel',
                                 title: `Bracket Id: ${gauntlet.bracket_id}`,
                                 content: {
                                     content: <>

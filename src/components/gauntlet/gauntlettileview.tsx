@@ -26,8 +26,8 @@ export const GauntletTileView = (props: GauntletTileViewProps) => {
     const { gauntlets, pane, config, setConfig } = gauntletContext;
     const { t } = globalContext.localized;
     const { gauntlet, viewMode, textFilter, setTextFilter } = props;
-    const [crew, setCrew] = React.useState<PlayerCrew[] | undefined>(undefined);
 
+    const [crew, setCrew] = React.useState<PlayerCrew[] | undefined>(undefined);
     const [activePageCrew, setActivePageCrew] = React.useState<PlayerCrew[] | undefined>(undefined);
 
     const [totalPages, setTotalPages] = React.useState(1);

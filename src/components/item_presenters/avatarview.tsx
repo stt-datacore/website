@@ -31,6 +31,7 @@ export interface AvatarViewProps {
     item?: BasicItem;
     partialItem?: boolean;
     preferSchematicsImage?: boolean;
+    crewHoverPassDirect?: boolean;
 }
 
 export interface BasicItem {
@@ -45,7 +46,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { playerData } = globalContext.player;
     const { items, crew, ship_schematics } = globalContext.core;
-    const { substitute_kwipment, partialItem, style, quantity, showMaxRarity, mode, symbol, id, size, ignorePlayer, hideRarity, targetGroup } = props;
+    const { crewHoverPassDirect: passDirect, substitute_kwipment, partialItem, style, quantity, showMaxRarity, mode, symbol, id, size, ignorePlayer, hideRarity, targetGroup } = props;
 
     const crewBackground = props.crewBackground ?? 'normal';
 
@@ -236,6 +237,7 @@ export const AvatarView = (props: AvatarViewProps) => {
         return (
             <div style={divStyle}>
                 <HoverTarget
+                    passDirect={passDirect}
                     inputItem={gen_item as PlayerCrew}
                     targetGroup={targetGroup}
                     >

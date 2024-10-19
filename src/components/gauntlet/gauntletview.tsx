@@ -1,6 +1,6 @@
 import React from "react"
 import { GauntletCalcConfig, GauntletPane, getPairGroups } from "../../utils/gauntlet"
-import { Gauntlet } from "../../model/gauntlets";
+import { Gauntlet, Opponent } from "../../model/gauntlets";
 import { GauntletContext } from "./dataprovider";
 import { GlobalContext } from "../../context/globalcontext";
 import { WorkerContext } from "../../context/workercontext";
@@ -14,6 +14,7 @@ import { GauntletPairTable } from "./pairtable";
 import { GauntletCrewTable } from "./gauntlettable";
 import { PlayerCrew } from "../../model/player";
 import { GauntletTileView } from "./gauntlettileview";
+import { OpponentTable } from "./opponenttable";
 
 
 export interface GauntletViewProps {
@@ -21,6 +22,7 @@ export interface GauntletViewProps {
     gauntlets: Gauntlet[];
     browseGauntlet?: string;
     dateGauntlet?: string;
+    opponentCache?: Opponent[];
 }
 
 export const GauntletView = (props: GauntletViewProps) => {
@@ -32,7 +34,7 @@ export const GauntletView = (props: GauntletViewProps) => {
     const { textFilter, filter, buffMode, range_max } = config;
 
     const { t } = globalContext.localized;
-    const { gauntlet: outerGauntlet } = props;
+    const { gauntlet: outerGauntlet, opponentCache } = props;
 
     const [gauntlet, setGauntlet] = React.useState(outerGauntlet);
 
@@ -108,9 +110,22 @@ export const GauntletView = (props: GauntletViewProps) => {
             {!running && !!gauntlet && viewMode === 'table' && !!gauntlet && renderTable()}
             {!running && !!gauntlet && viewMode === 'big' && !!gauntlet && renderBigCards()}
             {!running && !!gauntlet && viewMode === 'small' && !!gauntlet && renderSmallCards()}
+            {!running && !!gauntlet && pane === 'live' && viewMode === 'opponent_table' && !!opponentCache && renderOpponentTable()}
 
         </div>
     </React.Fragment>
+
+    function workerResults(response: any) {
+        console.log("Gauntlet Worker Results");
+        setGauntlet(response.data.result.gauntlet);
+        bonusCache = response.data.result.bonusCache;
+        equipmentCache = response.data.result.equpmentCache;
+    }
+
+    function renderOpponentTable() {
+        if (!opponentCache?.length) return <></>;
+        return <OpponentTable opponents={opponentCache} />
+    }
 
     function renderPairTableView() {
         if (!gauntlet) return <></>;
@@ -154,13 +169,6 @@ export const GauntletView = (props: GauntletViewProps) => {
             filter={filter!}
             setRankByPair={(value) => setRankByPair(value)}
         />
-    }
-
-    function workerResults(response: any) {
-        console.log("Gauntlet Worker Results");
-        setGauntlet(response.data.result.gauntlet);
-        bonusCache = response.data.result.bonusCache;
-        equipmentCache = response.data.result.equpmentCache;
     }
 
     function renderBigCards() {

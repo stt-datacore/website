@@ -619,7 +619,7 @@
                 "heading": "Sehen Sie die Crew in großen Präsentationen",
                 "title": "Große Präsentation"
             },
-            "oppenent_table": {
+            "opponent_table": {
                 "heading": "Alle in diesem Spießrutenlauf gefangenen Gegner anzeigen",
                 "title": "Gegner"
             },
@@ -636,6 +636,10 @@
                 "title": "Tabelle"
             },
             "title": "Ansichtsmodus"
+        },
+        "opponent_table": {
+            "opponent": "Gegner",
+            "opponent_crew_n": "Gegnercrew {{n}}"
         }
     },
     "global": {
