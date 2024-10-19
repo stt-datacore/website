@@ -10,6 +10,7 @@ import ItemDisplay from "../itemdisplay";
 import { randomCrew } from "../../context/datacontext";
 import { CrewMember } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
+import { AvatarView } from "../item_presenters/avatarview";
 
 
 
@@ -153,7 +154,15 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                                                         alignItems: "center",
                                                         textAlign: "center"
                                                     }}>
-                                                    <ItemDisplay
+                                                        <AvatarView
+                                                            mode='crew'
+                                                            key={"jackpot" + jcrew.symbol}
+                                                            size={64}
+                                                            targetGroup='gauntletsHover'
+                                                            symbol={jcrew?.symbol}
+                                                            showMaxRarity={true}
+                                                        />
+                                                    {/* <ItemDisplay
                                                         key={"jackpot" + jcrew.symbol}
                                                         size={64}
                                                         maxRarity={jcrew.max_rarity}
@@ -163,7 +172,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                                                         playerData={globalContext.player.playerData}
                                                         targetGroup='gauntletsHover'
                                                         itemSymbol={jcrew?.symbol}
-                                                    />
+                                                    /> */}
                                                     <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.5em 0 0 0" }}>{jcrew.name}</i>
                                                     <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.25em 0 0 0" }}>({moment(jcrew.date_added).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("D MMM YYYY")})</i>
                                                 </div>
@@ -225,7 +234,14 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                                                             textAlign: "center"
                                                         }}
                                                         >
-                                                            <ItemDisplay
+                                                            <AvatarView
+                                                                mode='crew'
+                                                                key={"jackpot" + jcrew.symbol}
+                                                                size={64}
+                                                                targetGroup='gauntletsHover'
+                                                                symbol={jcrew?.symbol}
+                                                            />
+                                                            {/* <ItemDisplay
                                                                 key={"jackpot" + jcrew.symbol}
                                                                 size={64}
                                                                 maxRarity={jcrew.max_rarity}
@@ -235,7 +251,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                                                                 playerData={globalContext.player.playerData}
                                                                 targetGroup='gauntletsHover'
                                                                 itemSymbol={jcrew?.symbol}
-                                                            />
+                                                            /> */}
                                                             <i style={{ color: undefined, margin: "0.5em 0 0 0" }}>{jcrew.name}</i>
                                                             <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.5em 0 0 0" }}>{crit}%</i>
                                                         </div>
