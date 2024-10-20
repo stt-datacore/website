@@ -15,8 +15,8 @@ export type AvatarViewMode = 'crew' | 'item' | 'ship';
 export type AvatarCrewBackground = 'normal' | 'rich';
 
 export interface AvatarViewProps {
-    /** Specify whether the avatar will display a crew, item, or ship */
-    mode: AvatarViewMode;
+    /** Item type number or 'crew', 'item', or 'ship' */
+    mode: AvatarViewMode | number;
     /** The symbol of the item to display */
     symbol?: string;
     /** The size of the item */
@@ -77,9 +77,11 @@ export const AvatarView = (props: AvatarViewProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { playerData } = globalContext.player;
     const { items, crew, ship_schematics } = globalContext.core;
-    const { passDirect, substitute_kwipment, partialItem, style, quantity, showMaxRarity, mode, id, size, ignorePlayer, hideRarity, targetGroup } = props;
+    const { passDirect, substitute_kwipment, partialItem, style, quantity, showMaxRarity, id, size, ignorePlayer, hideRarity, targetGroup } = props;
     const symbol = props.symbol || props.item?.symbol;
     const crewBackground = props.crewBackground ?? 'normal';
+
+    const mode = props.mode === 1 ? 'crew' : props.mode === 8 ? 'ship' : typeof props.mode === 'string' ? props.mode : 'item';
 
     if (id === undefined && !symbol) {
         throw new Error("Avatar View requires either id or symbol");
@@ -87,7 +89,7 @@ export const AvatarView = (props: AvatarViewProps) => {
 
     let link = props.link && typeof props.link === 'string' ? props.link : '';
 
-    let maxRarity = props.item?.rarity ?? 0;
+    let maxRarity = props?.item?.max_rarity ?? props.item?.rarity ?? 0;
     let borderWidth = Math.ceil(size / 34);
     let starSize = Math.floor(size / 6);
     let bottomStar = Math.floor(size / 23);
@@ -97,7 +99,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     let item = undefined as EquipmentItem | undefined;
     let ship = undefined as Ship | undefined;
     let HoverTarget = undefined as any | undefined;
-    let gen_item = partialItem ? undefined : props.item;
+    let gen_item = partialItem || !props.passDirect ? undefined : props.item;
     let borderColor = CONFIG.RARITIES[maxRarity ?? 0].color;
 
     let src = props.src;
@@ -248,6 +250,9 @@ export const AvatarView = (props: AvatarViewProps) => {
     }
 
     function prepareItem(gen_item?: BasicItem) {
+        if (symbol === 'jake_pahwraith_outfit_quality5_equip') {
+            console.log('break');
+        }
         if (!passDirect || !gen_item || partialItem) {
             if (!ignorePlayer && !!playerData && !gen_item) {
                 gen_item = playerData.player.character.items.find(f => f.symbol === symbol || (id !== undefined && f.archetype_id?.toString() === id?.toString())) as BasicItem | undefined;
@@ -256,6 +261,7 @@ export const AvatarView = (props: AvatarViewProps) => {
                 gen_item = items.find(f => f.symbol === symbol || (id !== undefined && f.archetype_id?.toString() === id?.toString())) as BasicItem | undefined;
                 if (gen_item) {
                     gen_item = { ...gen_item };
+                    gen_item.rarity ??= 0;
                     gen_item.max_rarity = gen_item.rarity;
                     gen_item["quantity"] = 0;
                 }
@@ -275,7 +281,7 @@ export const AvatarView = (props: AvatarViewProps) => {
             if (pitem && citem && !citem.isReward) {
                 item = mergeItems([pitem], [citem])[0] as EquipmentItem;
             }
-            else if (citem){
+            else if (citem) {
                 item = { ...citem } as EquipmentItem;
             }
             else if (pitem) {
@@ -292,7 +298,9 @@ export const AvatarView = (props: AvatarViewProps) => {
             }
 
             gen_item = item;
-
+            if (gen_item && !gen_item.max_rarity) {
+                gen_item.max_rarity = gen_item.rarity;
+            }
             if (!link && props.link === true && item) {
                 link = `/item_info/?symbol=${item.symbol}`;
             }
@@ -303,10 +311,10 @@ export const AvatarView = (props: AvatarViewProps) => {
     function prepareShip(gen_item?: BasicItem) {
         if (!passDirect || !gen_item || partialItem) {
             if (!ignorePlayer && !!playerData && !gen_item) {
-                gen_item = playerData.player.character.ships.find(f => f.symbol === symbol || (id !== undefined && f.archetype_id?.toString() === id?.toString())) as BasicItem | undefined;
+                gen_item = playerData.player.character.ships.find(f => f.symbol === symbol?.replace("_schematic", "") || (id !== undefined && f.archetype_id?.toString() === id?.toString())) as BasicItem | undefined;
             }
             if (!gen_item) {
-                gen_item = ship_schematics.find(f => f.ship.symbol === symbol || (id !== undefined && f.ship.archetype_id?.toString() === id?.toString()))?.ship as BasicItem | undefined;
+                gen_item = ship_schematics.find(f => f.ship.symbol === symbol?.replace("_schematic", "") || (id !== undefined && f.ship.archetype_id?.toString() === id?.toString()))?.ship as BasicItem | undefined;
                 if (gen_item) {
                     gen_item = { ...gen_item };
                     gen_item.max_rarity = gen_item.rarity;
@@ -320,7 +328,7 @@ export const AvatarView = (props: AvatarViewProps) => {
         if (gen_item) {
             HoverTarget = ShipTarget;
             let pship = playerData ? gen_item as any as Ship : undefined;
-            let cship = ship_schematics.find(f => f.ship.symbol === symbol);
+            let cship = ship_schematics.find(f => f.ship.symbol === symbol?.replace("_schematic", ""));
 
             if (pship && cship) {
                 ship = mergeShips([cship], [pship])[0];
@@ -339,6 +347,9 @@ export const AvatarView = (props: AvatarViewProps) => {
                 if (!src) src = `${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`;
             }
             gen_item = ship;
+            if (gen_item && !gen_item.max_rarity) {
+                gen_item.max_rarity = gen_item.rarity;
+            }
             if (!link && props.link === true && ship) {
                 link = `/ship_info/?ship=${ship.symbol}`;
             }
