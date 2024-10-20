@@ -164,7 +164,7 @@ export const OpponentTable = (props: OpponentTableProps) => {
                                             alignItems: 'center'}}>
 
                                     <AvatarView
-                                            crewHoverPassDirect={true}
+                                            passDirect={true}
                                             targetGroup="gauntletsHover"
                                             mode='crew'
                                             symbol={crew.archetype_symbol}
