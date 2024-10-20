@@ -21,7 +21,7 @@ export interface GauntletSkillsState extends PresenterPluginState {
 export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, GauntletSkillProps, GauntletSkillsState> {
     static contextType = GlobalContext;
     declare context: React.ContextType<typeof GlobalContext>;
-    props!: Readonly<GauntletSkillProps>;
+    declare props: Readonly<GauntletSkillProps>;
 
     constructor(props: GauntletSkillProps) {
         super(props);

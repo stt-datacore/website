@@ -15,6 +15,8 @@ import { GauntletCrewTable } from "./gauntlettable";
 import { PlayerCrew } from "../../model/player";
 import { GauntletTileView } from "./gauntlettileview";
 import { OpponentTable } from "./opponenttable";
+import { CrewHoverStat } from "../hovering/crewhoverstat";
+import { GauntletSkill } from "../item_presenters/gauntletskill";
 
 
 export interface GauntletViewProps {
@@ -88,12 +90,12 @@ export const GauntletView = (props: GauntletViewProps) => {
     }, [textFilter])
 
     return <React.Fragment>
+
         <div style={{
             marginBottom: "2em",
             overflowX: "auto",
             minHeight: "50vh"
         }}>
-
             {pane === 'today' && <h1 style={{ margin: 0, marginBottom: "0.5em", padding: 0 }}>{t('gauntlet.pages.today_gauntlet.title')}</h1>}
             {pane === 'yesterday' && <h1 style={{ margin: 0, marginBottom: "0.5em", padding: 0 }}>{t('gauntlet.pages.yesterday_gauntlet.title')}</h1>}
             {pane === 'live' && <h1 style={{ margin: 0, marginBottom: "0.5em", padding: 0 }}>{t('gauntlet.pages.live_gauntlet.title')}</h1>}
@@ -124,7 +126,7 @@ export const GauntletView = (props: GauntletViewProps) => {
 
     function renderOpponentTable() {
         if (!opponentCache?.length) return <></>;
-        return <OpponentTable opponents={opponentCache} />
+        return <OpponentTable opponents={opponentCache} gauntlet={gauntlet} />
     }
 
     function renderPairTableView() {
