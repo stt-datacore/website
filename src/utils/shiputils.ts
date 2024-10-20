@@ -84,7 +84,7 @@ export interface ShipPickerFilter {
 
 export function filterBy(ships: Ship[], filter?: ShipPickerFilter, clone?: boolean): Ship[] {
 	let shipOut = ships;
-	
+
 	if (!filter) {
 		if (clone) {
 			return JSON.parse(JSON.stringify(shipOut)) as Ship[];
@@ -149,7 +149,7 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 		if (owned) {
 			schematic.ship.id = owned.id;
 			schematic.ship.name = owned.name;
-			schematic.ship.flavor = owned.flavor;			
+			schematic.ship.flavor = owned.flavor;
 			schematic.ship.accuracy = owned.accuracy;
 			schematic.ship.antimatter = owned.antimatter;
 			schematic.ship.attack = owned.attack;
@@ -162,14 +162,14 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 			schematic.ship.rarity = owned.rarity;
 			schematic.ship.shield_regen = owned.shield_regen;
 			schematic.ship.shields = owned.shields;
-			
 			if (owned.battle_stations?.length) {
 				schematic.ship.battle_stations = [ ... owned.battle_stations ?? []];
 			}
-			
+
 			if (owned.actions) {
 				schematic.ship.actions = JSON.parse(JSON.stringify(owned.actions)) as ShipAction[];
 			}
+			schematic.ship.immortal = owned.level >= schematic.ship.max_level! ? -1 : 0;
 			schematic.ship.owned = true;
 		} else {
 			schematic.ship.owned = false;
@@ -185,7 +185,7 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 			schematic.ship.id = unowned_id--;
 			schematic.ship.level ??= 0;
 		}
-		
+
 		if (!schematic.ship.max_level) schematic.ship.max_level = 1;
 		else schematic.ship.max_level += 1;
 
@@ -229,19 +229,19 @@ export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)
 		}
 
 		if (seats?.length) {
-			return (seats?.some((seat) => crew.base_skills && crew.base_skills[seat] !== undefined));			
+			return (seats?.some((seat) => crew.base_skills && crew.base_skills[seat] !== undefined));
 		}
 		else {
 			return ship.battle_stations?.some(bs => bs.skill in crew.base_skills && crew.base_skills[bs.skill] !== undefined)
-		}		
+		}
 	});
-	
+
 	// now get ship grants
-	let grants = ship.actions?.filter(action => action.status !== undefined);	
+	let grants = ship.actions?.filter(action => action.status !== undefined);
 	if (grants) console.log(grants);
 	if (!grants) grants = [];
 	// now match triggers with grants.
-	if (bscrew) {		
+	if (bscrew) {
 		bscrew = bscrew.filter(crew => {
 			if ((grants?.length ?? 0) == 0) {
 				return (crew.action.ability?.condition ?? 0) === 0;
@@ -307,7 +307,7 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 					pvp_division = 'admiral';
 					rarity = 5;
 					break;
-				default: 
+				default:
 					break;
 			}
 			if (!pvp_division) return;
