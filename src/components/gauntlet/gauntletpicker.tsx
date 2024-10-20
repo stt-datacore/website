@@ -42,9 +42,14 @@ export const GauntletPicker = () => {
     React.useEffect(() => {
         let live = tiny.getValue<Gauntlet>(`${dbid}liveGauntlet`);
         let oppo = tiny.getValue<Opponent[]>(`${dbid}opponentCache`);
-        if (live) internalSetLiveGauntlet(live);
-        if (oppo?.length) internalSetOpponentCache(oppo);
-        if (live && oppo?.length) setTimeout(() => setPane('live'));
+        if (live) {
+            internalSetLiveGauntlet(live);
+            if (oppo?.length) internalSetOpponentCache(oppo);
+            if (live && oppo?.length) setTimeout(() => setPane('live'));
+        }
+        else {
+            clearGauntlet();
+        }
     }, [dbid]);
 
     React.useEffect(() => {
@@ -160,8 +165,7 @@ export const GauntletPicker = () => {
             const gauntlet = root.character.gauntlets[0];
 
             if (gauntlet.state?.includes("ENDED")) {
-                setLiveGauntlet(undefined);
-                if (pane === 'live') setPane('today');
+                clearGauntlet();
                 return;
             }
 
@@ -235,12 +239,12 @@ export const GauntletPicker = () => {
 
     function setLiveGauntlet(liveGauntlet?: Gauntlet) {
         internalSetLiveGauntlet(liveGauntlet);
-        tiny.setValue(`${dbid}liveGauntlet`, liveGauntlet);
+        tiny.setValue(`${dbid}liveGauntlet`, liveGauntlet, true);
     }
 
     function setOpponentCache(opponents: Opponent[]) {
         internalSetOpponentCache(opponents);
-        tiny.setValue(`${dbid}opponentCache`, opponents);
+        tiny.setValue(`${dbid}opponentCache`, opponents, true);
     }
 
     function getCleanOpponents(bracket_id?: string): Opponent[] {

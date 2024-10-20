@@ -1,12 +1,11 @@
 
-import { IDefaultGlobal } from "../context/globalcontext";
 import { ComputedSkill, CrewMember, Skill } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
-import { Gauntlet, PairGroup } from "../model/gauntlets";
+import { Gauntlet, GauntletContestCrew, OwnedStatus, PairGroup } from "../model/gauntlets";
 import { CompletionState, PlayerBuffMode, PlayerCrew, PlayerImmortalMode } from "../model/player";
 import { TraitNames } from "../model/traits";
 import { EMPTY_SKILL } from "../model/worker";
-import { FilterProps } from "../pages/gauntlets_old";
+
 import { applyCrewBuffs, getCrewPairScore, getCrewQuipment, getPlayerPairs, getSkills, shortToSkill, skillToShort, updatePairScore } from "./crewutils";
 import { ItemBonusInfo, getItemBonuses } from "./itemutils";
 import { BuffStatTable } from "./voyageutils";
@@ -53,6 +52,14 @@ export interface GauntletSettingsProps {
 	setIsOpen: (value: boolean) => void;
 	isOpen: boolean;
 };
+
+export interface FilterProps {
+	ownedStatus?: OwnedStatus;
+	rarity?: number;
+	maxResults?: number;
+	skillPairs?: string[];
+}
+
 
 export const crit65 = 2;
 export const crit45 = 1.85;
@@ -807,4 +814,13 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 		bonusCache: bonusInfo,
 		equipmentCache: crewQuip
 	};
+}
+
+export function getCrewCrit(crew: PlayerCrew | CrewMember | GauntletContestCrew, gauntlet: Gauntlet) {
+	if ("archetype_symbol" in crew) {
+		return crew.crit_chance;
+	}
+	else {
+		return 5 + (20 * gauntlet.contest_data!.traits.filter(f => crew.traits.includes(f)).length)
+	}
 }
