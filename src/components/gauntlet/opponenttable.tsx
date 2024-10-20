@@ -46,6 +46,12 @@ export const OpponentTable = (props: OpponentTableProps) => {
         else if (sortColumn === 'crew') {
             newOppo.sort((a, b) => {
                 let r = (a.crew_contest_data.crew.length - b.crew_contest_data.crew.length) * o;
+                if (!r) {
+                    let apower = a.crew_contest_data.crew.map(m => m.skills.map(s => (s.max + s.min) * 0.5).reduce((p, n) => p + n, 0)).reduce((p, n) => p + n, 0);
+                    let bpower = b.crew_contest_data.crew.map(m => m.skills.map(s => (s.max + s.min) * 0.5).reduce((p, n) => p + n, 0)).reduce((p, n) => p + n, 0);
+                    r = bpower - apower;
+                }
+                if (!r) r = a.rank - b.rank;
                 if (!r) r = a.name.localeCompare(b.name);
                 return r;
             });
@@ -67,10 +73,15 @@ export const OpponentTable = (props: OpponentTableProps) => {
                 return;
             }
         }
-        opponents.forEach((tempoppo) => {
-            if (tempoppo?.icon?.file && !tempoppo.icon.file.includes(".png")) {
-                tempoppo.icon.file = tempoppo.icon.file.replace("/crew_icons/", "crew_icons_") + ".png";
+        opponents.forEach((oppo) => {
+            if (oppo?.icon?.file && !oppo.icon.file.includes(".png")) {
+                oppo.icon.file = oppo.icon.file.replace("/crew_icons/", "crew_icons_") + ".png";
             }
+            oppo.crew_contest_data.crew.sort((a, b) => {
+                let ask = a.skills.map(s => (s.max + s.min) * 0.5).reduce((p, n) => p + n, 0);
+                let bsk = b.skills.map(s => (s.max + s.min) * 0.5).reduce((p, n) => p + n, 0);
+                return bsk - ask;
+            })
         })
         setActivePageOpponents(opponents.slice(pageStartIdx, pageStartIdx + itemsPerPage));
     }, [opponents, itemsPerPage, activePage, totalPages]);
