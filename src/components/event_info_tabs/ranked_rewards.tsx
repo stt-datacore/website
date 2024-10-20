@@ -7,7 +7,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import ItemDisplay from '../itemdisplay';
 import { getImageName } from '../../utils/misc';
 import { checkReward } from '../../utils/itemutils';
-import { AvatarView, BasicItem } from '../item_presenters/avatarview';
+import { AvatarView, AvatarViewMode, BasicItem } from '../item_presenters/avatarview';
 
 function getBracketLabel(bracket) {
 	if (bracket.first === bracket.last) { // top brackets aren't really a range
@@ -34,6 +34,7 @@ function RankedRewardsTab(props: {eventData: GameEvent}) {
 						<Table.Cell width={14}>
 							{row.rewards.map(reward => {
 								checkReward(items, reward);
+								let rewardTarget = reward.type === 1 ? 'event_info' : reward.type === 8 ? 'event_info_ships' : 'event_info_items';
 								return (
 									<Label key={`reward_${reward.id}`} style={{marginBottom: "0.25em"}}
 										color="black" title={reward.full_name}>
@@ -45,12 +46,11 @@ function RankedRewardsTab(props: {eventData: GameEvent}) {
 										}}>
 										{reward.icon &&
 											<AvatarView
-												mode={reward.type === 1 ? 'crew' : 'item'}
-												item={reward as BasicItem}
+												mode={reward.type}
+												symbol={reward.symbol}
 												quantity={reward.quantity}
-												passDirect={reward.type === 1 ? false : true}
 												src={getIconPath(reward.icon)}
-												targetGroup={reward.type === 1 ? 'event_info' : 'event_info_items'}
+												targetGroup={rewardTarget}
 												size={48}
 												style={{
 													marginRight: "1em"

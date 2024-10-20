@@ -7,7 +7,7 @@ import ItemDisplay from '../itemdisplay';
 import { GlobalContext } from '../../context/globalcontext';
 import { getImageName } from '../../utils/misc';
 import { checkReward } from '../../utils/itemutils';
-import { AvatarView, BasicItem } from '../item_presenters/avatarview';
+import { AvatarView, AvatarViewMode, BasicItem } from '../item_presenters/avatarview';
 
 function ThresholdRewardsTab(props: {eventData: GameEvent}) {
 	const { threshold_rewards } = props.eventData;
@@ -23,6 +23,7 @@ function ThresholdRewardsTab(props: {eventData: GameEvent}) {
 						<Table.Cell>
 							{row.rewards.map(reward => {
 								checkReward(items, reward);
+								let rewardTarget = reward.type === 1 ? 'event_info' : reward.type === 8 ? 'event_info_ships' : 'event_info_items';
 								return (
 								reward && reward.icon &&
 								<Label
@@ -35,12 +36,11 @@ function ThresholdRewardsTab(props: {eventData: GameEvent}) {
 											alignItems: "center"
 									}}>
 										<AvatarView
-											mode={reward.type === 1 ? 'crew' : 'item'}
-											item={reward as BasicItem}
+											mode={reward.type}
+											symbol={reward.symbol}
 											quantity={reward.quantity}
-											passDirect={reward.type === 1 ? false : true}
 											src={getIconPath(reward.icon)}
-											targetGroup={reward.type === 1 ? 'event_info' : 'event_info_items'}
+											targetGroup={rewardTarget}
 											size={48}
 											style={{
 												marginRight: "1em"
