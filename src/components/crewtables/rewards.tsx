@@ -7,6 +7,7 @@ import { checkReward, getCollectionRewards } from "../../utils/itemutils";
 import { getImageName } from "../../utils/misc";
 import ItemDisplay from "../itemdisplay";
 import { RewardsGridNeed } from "../../model/crew";
+import { AvatarView, BasicItem } from "../item_presenters/avatarview";
 
 export const rewardOptions = [
 	{ key: 'roAnyr', value: '*any', text: 'Any reward' },
@@ -48,7 +49,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 	const context = React.useContext(GlobalContext);
 	const { playerData } = context.player;
 	const { items: tempItems, crew: allCrew } = context.core;
-	
+
 	const items = [] as EquipmentItem[];
 
 	if (kind === 'need' && needs?.length) {
@@ -78,7 +79,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 		}
 		else {
 			return (<></>);
-		}		
+		}
 	}
 
 
@@ -93,23 +94,23 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 				return <Icon name='check circle' style={{margin: 0, padding: 0, textAlign: 'center', color:'lightgreen', height:'24px'}} />
 			}
 		}
-		
+
 		let qstr = "";
-		
+
 		if (quantity >= 10000) {
 			qstr = Math.round(quantity/1000).toLocaleString()+'K';
 		}
 		else {
 			qstr = quantity.toLocaleString();
 		}
-				
+
 		if (owned) {
 			qstr = `${owned}/${qstr}`;
 		}
 
 		return qstr;
 	};
-	
+
 	const { negative } = props;
 
 	const rewardRows = [] as Reward[][];
@@ -121,7 +122,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 
 		let idx = 0;
 		let cidx = 0;
-		
+
 		for (let reward of rewards) {
 			rewardRows[cidx].push(reward);
 			if (idx++ >= cols - 1) {
@@ -134,7 +135,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 	else {
 		rewardRows[0] = rewards;
 	}
-	
+
 	return (
 		<Grid columns={cols as SemanticWIDTHS}>
 			{rewardRows.map((row, rowIdx) => {
@@ -152,7 +153,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 										justifyContent: "center",
 										alignItems: "center"
 									}}>
-									<ItemDisplay
+									{/* <ItemDisplay
 										quantity={reward.quantity}
 										targetGroup={(reward.type === 1 ? (crewTargetGroup ?? 'collectionsTarget') : (targetGroup ?? 'collectionsTarget_item'))}
 										itemSymbol={reward.symbol}
@@ -163,8 +164,17 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 										size={props.size ?? 32}
 										maxRarity={reward.rarity}
 										rarity={reward.rarity}
-									/>
-									
+									/> */}
+									<AvatarView
+										mode={reward.type === 1 ? 'crew' : 'item'}
+										size={props.size ?? 32}
+										altItems={items}
+										targetGroup={(reward.type === 1 ? (crewTargetGroup ?? 'collectionsTarget') : (targetGroup ?? 'collectionsTarget_item'))}
+										symbol={reward.symbol}
+										src={`${process.env.GATSBY_ASSETS_URL}${img}`}
+										quantity={reward.quantity}
+										/>
+
 									<span>{(reward.quantity > 1 || !!needs?.length) && (<div><small>{quantityLabel(reward.quantity, negative, reward.owned)}</small></div>)}</span>
 									</div>
 								</Grid.Column>
@@ -191,8 +201,8 @@ export interface RewardPickerProps {
 
 export const RewardPicker = (props: RewardPickerProps) => {
 	const { disabled, placeholder, source, icons, setShort, short, value, onChange } = props;
-	
-    let rewardCol = !source ? [] : getCollectionRewards(source);	
+
+    let rewardCol = !source ? [] : getCollectionRewards(source);
 	const rewards = rewardCol.filter((f, idx) => rewardCol.findIndex(fi => fi.id === f.id) === idx).sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? 0);
 
 	const rrOpts = short ? [ ... rewardOptions ] : rewards.map((reward) => {
@@ -206,9 +216,9 @@ export const RewardPicker = (props: RewardPickerProps) => {
 			</div>)
 		}
 	});
-	
+
 	if (setShort) {
-		rrOpts.push({ 
+		rrOpts.push({
 			key: short ? 'long' : 'short',
 			value: short ? 'long' : 'short',
 			text: short ? "Show more ..." : "Show less ...",
@@ -217,34 +227,34 @@ export const RewardPicker = (props: RewardPickerProps) => {
 	}
 
 	const handleChange = (value: string[] | undefined) => {
-		
+
 		if (setShort && value?.includes('short')) {
 			setShort(true);
-			onChange([] as string[]);			
+			onChange([] as string[]);
 		}
 		else if (setShort && value?.includes('long')) {
 			setShort(false);
-			onChange([] as string[]);			
+			onChange([] as string[]);
 		}
 		else {
 			onChange(value as string[] | undefined);
 		}
-		
+
 	}
 
 	return (<>
-	
-	<Dropdown 
+
+	<Dropdown
 		disabled={disabled}
 		style={{width: "22em"}}
 		scrolling
 		placeholder={placeholder ?? 'Prioritize rewards'}
-		options={rrOpts} 
+		options={rrOpts}
 		value={value}
 		multiple
 		onChange={(e, { value }) => handleChange(value as string[] | undefined) }
 		/>
-	
+
 	</>)
 
 

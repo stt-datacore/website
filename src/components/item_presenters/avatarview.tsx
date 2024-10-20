@@ -2,19 +2,23 @@ import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import CONFIG from "../CONFIG";
 import { CompletionState, PlayerCrew, PlayerEquipmentItem } from "../../model/player";
-import { EquipmentItem } from "../../model/equipment";
+import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
 import { mergeItems } from "../../utils/itemutils";
 import { ItemTarget } from "../hovering/itemhoverstat";
 import { CrewTarget } from "../hovering/crewhoverstat";
-import { Ship } from "../../model/ship";
+import { Schematics, Ship } from "../../model/ship";
 import { mergeShips } from "../../utils/shiputils";
 import { ShipTarget } from "../hovering/shiphoverstat";
 import { navigate } from "gatsby";
+import { CrewMember } from "../../model/crew";
 
 export type AvatarViewMode = 'crew' | 'item' | 'ship';
 export type AvatarCrewBackground = 'normal' | 'rich';
 
 export interface AvatarViewProps {
+    altItems?: (EquipmentItem | EquipmentCommon)[];
+    altCrew?: (CrewMember | PlayerCrew)[];
+    altShips?: Schematics[];
     /** Item type number or 'crew', 'item', or 'ship' */
     mode: AvatarViewMode | number;
     /** The symbol of the item to display */
@@ -55,6 +59,13 @@ export interface AvatarViewProps {
     passDirect?: boolean;
 
     /**
+     * True to not process the input item.
+     * This property does not apply to the hover component.
+     * (Default is true)
+     * */
+    useDirect?: boolean;
+
+    /**
      * Internal navigation destination or true to auto-resolve
      *
      * This property is ignored if onClick is specified.
@@ -76,11 +87,14 @@ export interface BasicItem {
 export const AvatarView = (props: AvatarViewProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { playerData } = globalContext.player;
-    const { items, crew, ship_schematics } = globalContext.core;
+    const items = props.altItems ?? globalContext.core.items;
+    const crew = props.altCrew ?? globalContext.core.crew;
+    const ship_schematics = props.altShips ?? globalContext.core.ship_schematics;
     const { passDirect, substitute_kwipment, partialItem, style, quantity, showMaxRarity, id, size, ignorePlayer, hideRarity, targetGroup } = props;
     const symbol = props.symbol || props.item?.symbol;
     const crewBackground = props.crewBackground ?? 'normal';
 
+    const useDirect = props.useDirect || false //?? !!props.item;
     const mode = props.mode === 1 ? 'crew' : props.mode === 8 ? 'ship' : typeof props.mode === 'string' ? props.mode : 'item';
 
     if (id === undefined && !symbol) {
@@ -99,7 +113,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     let item = undefined as EquipmentItem | undefined;
     let ship = undefined as Ship | undefined;
     let HoverTarget = undefined as any | undefined;
-    let gen_item = partialItem || !props.passDirect ? undefined : props.item;
+    let gen_item = (partialItem || (!props.passDirect && !props.useDirect)) ? undefined : props.item;
     let borderColor = CONFIG.RARITIES[maxRarity ?? 0].color;
 
     let src = props.src;
@@ -115,11 +129,11 @@ export const AvatarView = (props: AvatarViewProps) => {
         gen_item = prepareShip(gen_item);
     }
 
-    if (!gen_item) return <></>
-
     if (partialItem && props.item) {
-        gen_item = { ... gen_item, ... props.item };
+        gen_item = { ... gen_item ?? {}, ... props.item };
     }
+
+    if (!gen_item) return <></>
 
     maxRarity = gen_item?.max_rarity ?? gen_item?.rarity ?? 0;
     borderColor = CONFIG.RARITIES[maxRarity].color;
@@ -210,7 +224,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     }
 
     function prepareCrew(gen_item?: BasicItem) {
-        if (!passDirect || !gen_item || partialItem) {
+        if ((!passDirect && !useDirect) || !gen_item || partialItem) {
             if (!ignorePlayer && !!playerData && !gen_item) {
                 gen_item = playerData.player.character.crew.find(f => f.symbol === symbol || (id !== undefined && f.id?.toString() === id?.toString()) || (id !== undefined && f.archetype_id?.toString() === id?.toString()));
             }
@@ -250,7 +264,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     }
 
     function prepareItem(gen_item?: BasicItem) {
-        if (!passDirect || !gen_item || partialItem) {
+        if ((!passDirect && !useDirect) || !gen_item || partialItem) {
             if (!ignorePlayer && !!playerData && !gen_item) {
                 gen_item = playerData.player.character.items.find(f => f.symbol === symbol || (id !== undefined && f.archetype_id?.toString() === id?.toString())) as BasicItem | undefined;
             }
@@ -301,7 +315,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     }
 
     function prepareShip(gen_item?: BasicItem) {
-        if (!passDirect || !gen_item || partialItem) {
+        if ((!passDirect && !useDirect) || !gen_item || partialItem) {
             if (!ignorePlayer && !!playerData && !gen_item) {
                 gen_item = playerData.player.character.ships.find(f => f.symbol === symbol?.replace("_schematic", "") || (id !== undefined && f.archetype_id?.toString() === id?.toString())) as BasicItem | undefined;
             }

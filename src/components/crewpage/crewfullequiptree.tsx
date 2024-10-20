@@ -8,6 +8,7 @@ import { calculateCrewDemands } from '../../utils/equipment';
 import CONFIG from '../../components/CONFIG';
 import { GlobalContext } from '../../context/globalcontext';
 import { ItemHoverStat } from '../hovering/itemhoverstat';
+import { AvatarView } from '../item_presenters/avatarview';
 
 type CrewFullEquipTreeProps = {
 	visible: boolean;
@@ -78,17 +79,25 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 										<Header
 											style={{ display: 'flex', cursor: 'zoom-in' }}
 											icon={
-												<ItemDisplay
-													playerData={playerData}
-													allItems={items}
-													itemSymbol={entry.equipment.symbol}
+												<AvatarView
+													mode='item'
+													item={entry.equipment}
+													useDirect={true}
 													targetGroup='crew_page_items'
 													style={{marginRight: "0.5em"}}
-													src={`${process.env.GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
 													size={48}
-													maxRarity={entry.equipment.rarity}
-													rarity={entry.equipment.rarity}
-												/>
+													/>
+												// <ItemDisplay
+												// 	playerData={playerData}
+												// 	allItems={items}
+												// 	itemSymbol={entry.equipment.symbol}
+												// 	targetGroup='crew_page_items'
+												// 	style={{marginRight: "0.5em"}}
+												// 	src={`${process.env.GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
+												// 	size={48}
+												// 	maxRarity={entry.equipment.rarity}
+												// 	rarity={entry.equipment.rarity}
+
 											}
 											content={entry.equipment.name}
 											subheader={`Need ${entry.count} ${entry.factionOnly ? ' (FACTION)' : ''}`}
