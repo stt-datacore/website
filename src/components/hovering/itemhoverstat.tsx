@@ -51,6 +51,7 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
     //     this.tiny.setValue<number>('tick', this.tiny.getValue<number>('tick', 0) ?? 0 + 1);
     // }
     protected prepareDisplayItem(dataIn: EquipmentItem | undefined): EquipmentItem | undefined {
+        if (this.props.passDirect) return dataIn;
         const { playerData } = this.context.player;
         const { items } = this.context.core;
 

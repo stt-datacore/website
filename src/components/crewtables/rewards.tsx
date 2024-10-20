@@ -8,6 +8,8 @@ import { getImageName } from "../../utils/misc";
 import ItemDisplay from "../itemdisplay";
 import { RewardsGridNeed } from "../../model/crew";
 import { AvatarView, BasicItem } from "../item_presenters/avatarview";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { ItemPresenter } from "../item_presenters/item_presenter";
 
 export const rewardOptions = [
 	{ key: 'roAnyr', value: '*any', text: 'Any reward' },
@@ -144,7 +146,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 
 					{row.map((reward, idx) => {
 							const img = needs?.length ? reward.icon?.file : getImageName(reward);
-							checkReward(items, reward, !!needs?.length);
+							const rewardItem = checkReward(items, reward, !!needs?.length);
 							return (
 								<Grid.Column key={idx + "_rowcolreward"}>
 									<div style={{

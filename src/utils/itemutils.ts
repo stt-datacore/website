@@ -321,7 +321,7 @@ export function binaryLocate<T extends ISymbol>(symbol: string, items: T[]) : T 
 }
 
 export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: Reward, needed?: boolean) {
-	let foundItem = items.find(f => (f as EquipmentItem).isReward && f.symbol === reward.symbol && f.quantity === reward.quantity);
+ 	let foundItem = items.find(f => (f as EquipmentItem).isReward && f.symbol === reward.symbol && f.quantity === reward.quantity);
 	if (!foundItem) {
 		let template_item = items.find(f => f.symbol === reward.symbol) ?? {} as EquipmentItem;
 		foundItem = {

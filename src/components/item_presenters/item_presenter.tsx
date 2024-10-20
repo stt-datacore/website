@@ -229,10 +229,10 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom: "8px" }}>
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", fontStyle: "italic", fontSize: "0.8em" }}>
-                        {!!item.quantity && !!item.needed && <div>{t("items.n_owned", { n: `${item.quantity}` })}, {t("items.n_needed", { n: `${item.needed}` })}</div>}
-                        {!!item.quantity && !item.needed && !!item.isReward && <div>{t("items.n_rewarded", { n: `${item.quantity}` })}</div>}
-                        {!!item.quantity && !item.needed && !item.isReward && <div>{t("items.n_owned", { n: `${item.quantity}` })}</div>}
-                        {!item.quantity && !!item.needed && <div>{t("items.n_needed", { n: `${item.needed}` })}</div>}
+                        {!!item.quantity && !!item.needed && <div>{t("items.n_owned", { n: `${item.quantity.toLocaleString()}` })}, {t("items.n_needed", { n: `${item.needed.toLocaleString()}` })}</div>}
+                        {!!item.quantity && !item.needed && !!item.isReward && <div>{t("items.n_rewarded", { n: `${item.quantity.toLocaleString()}` })}</div>}
+                        {!!item.quantity && !item.needed && !item.isReward && <div>{t("items.n_owned", { n: `${item.quantity.toLocaleString()}` })}</div>}
+                        {!item.quantity && !!item.needed && <div>{t("items.n_needed", { n: `${item.needed.toLocaleString()}` })}</div>}
                     </div>
                 </div>
             </div>

@@ -16,7 +16,7 @@ export interface Coord {
  * Default HoverStatProps
  */
 export interface HoverStatProps {
-    
+
     /**
      * The target group (required to bind)
      */
@@ -43,6 +43,11 @@ export interface HoverStatProps {
  * Default HoverStatTargetProps
  */
 export interface HoverStatTargetProps<T> {
+
+    /**
+     * Suggest that the item not be processed.
+     */
+    passDirect?: boolean;
 
     /**
      * The item to be displayed (or null)
@@ -77,7 +82,7 @@ export interface HoverStatTargetState {
 
 /**
  * HoverStatTarget abstract class
- * 
+ *
  * Use this to wrap a hover target element
  */
 export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>, TState extends HoverStatTargetState> extends React.Component<TProps, TState> {
@@ -85,7 +90,7 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
 
     constructor(props: TProps) {
         super(props);
-        this.tiny = TinyStore.getStore(props.targetGroup);        
+        this.tiny = TinyStore.getStore(props.targetGroup);
         this.state = { targetId: uuid.v4() } as TState;
     }
 
@@ -110,10 +115,10 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
     /**
      * Optionally override this method to do data transformations on the display item
      * before the setDisplayItem function is called.
-     * 
+     *
      * _This method will be called even if the displayItem is null, so that a default value may be provided
      * when required._
-     * 
+     *
      * _(The default behavior is to return the input item)_
      * @param displayItem The displayItem to transform
      * @returns The transformed displayItem
@@ -130,7 +135,7 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
         this.current = "";
         this.tiny.setRapid('displayItem', null);
     };
-    
+
     protected containerEnter = (e) => {
         const displayItem = this.prepareDisplayItem(this.props.inputItem);
 
@@ -141,16 +146,16 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
     render(): React.ReactNode {
         const { targetGroup, children } = this.props;
 
-        return (    
-            <div className={targetGroup} 
-                 onDoubleClick={(e) => this.containerEnter(e)} 
-                 // onTouchEnd={(e) => this.containerEnter(e)} 
-                 onMouseOver={(e) => this.containerEnter(e)} 
-                 onMouseOut={(e) => this.containerLeave(e)} 
+        return (
+            <div className={targetGroup}
+                 onDoubleClick={(e) => this.containerEnter(e)}
+                 // onTouchEnd={(e) => this.containerEnter(e)}
+                 onMouseOver={(e) => this.containerEnter(e)}
+                 onMouseOut={(e) => this.containerLeave(e)}
                  style={{padding:"0px",margin:"0px",background:"transparent", display: "inline-block"}}>
 
                 {children}
-            </div>)         
+            </div>)
     }
 
     componentWillUnmount(): void {
@@ -184,8 +189,8 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
     }
 
     /**
-     * Override this abstract method to render the content of the hover window 
-     * 
+     * Override this abstract method to render the content of the hover window
+     *
      * _(Optionally, you can attach a children property to a HoverStatProps derived object and pass that through, here)_
      */
     protected abstract renderContent(): JSX.Element;
@@ -220,7 +225,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
         }
         else {
             this.forceUpdate();
-        }    
+        }
     }
 
     render() {
@@ -235,19 +240,31 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
 
         const containerOut = (e) => {
             if (me._unmounted) return;
-            this.cancelled = false; 
+            this.cancelled = false;
             this._nodismiss = false;
             this.deactivate();
         }
 
-        // console.log("Render HoverStat")
-        return (
-            <div id={divId} onMouseOver={(e) => containerOver(e)} onMouseOut={(e) => containerOut(e)} className="ui segment" style={boxStyle}>                
-                {renderContent()}
-            </div>
-		);
+        try {
+            const renderedContent = renderContent();
+
+            return (
+                <div id={divId} onMouseOver={(e) => containerOver(e)} onMouseOut={(e) => containerOut(e)} className="ui segment" style={boxStyle}>
+                    {renderedContent}
+                </div>
+            );
+
+        }
+        catch(e) {
+            return (
+                <div id={divId} onMouseOver={(e) => containerOver(e)} onMouseOut={(e) => containerOut(e)} className="ui segment" style={boxStyle}>
+                   {e}
+                </div>
+            );
+
+        }
 	}
-    
+
     /**
      * This method is an event listener for the window.resize event that is only
      * wired up while the hover box is showing
@@ -259,11 +276,11 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
         // if (this.currentTarget) {
         //     this.activate(this.currentTarget);
         // }
-    }	
+    }
 
     /**
      * Custom function to determine the correct offset of the hover box relative to the visible portion of the page
-     * @param fromEl 
+     * @param fromEl
      * @returns top and left
      */
     protected getOffset(fromEl: HTMLElement, stopAt: HTMLElement | undefined = undefined) {
@@ -284,8 +301,8 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
         }
 
         return { top: y, left: x };
-    }        
-    
+    }
+
     protected currentTarget?: HTMLElement = undefined;
 
     private findCommonAncestor(el1: HTMLElement, el2: HTMLElement): HTMLElement | undefined {
@@ -295,7 +312,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
 
         while(t1) {
             if (t1.parentElement) {
-                a1.push(t1.parentElement);                
+                a1.push(t1.parentElement);
             }
             t1 = t1.parentElement;
         }
@@ -305,7 +322,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
 
         while(t2) {
             if (t2.parentElement) {
-                a2.push(t2.parentElement);                
+                a2.push(t2.parentElement);
             }
             t2 = t2.parentElement;
         }
@@ -325,15 +342,15 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
     }
 
     protected abstract get canActivate(): boolean;
-    
+
     protected realignTarget = (target?: HTMLElement) => {
 
         const { useBoundingClient, modalPositioning, customOffset } = this.props;
-        const { divId } = this.state;  
-        const hoverstat = document.getElementById(divId);    
-        
-        target ??= this.currentTarget;  
-        
+        const { divId } = this.state;
+        const hoverstat = document.getElementById(divId);
+
+        target ??= this.currentTarget;
+
         let modal: HTMLElement | undefined = undefined;
 
         if (modalPositioning) {
@@ -361,14 +378,14 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
             y -= modalBounds.y;
         }
 
-        let off = { ... this.targetOffset };             
+        let off = { ... this.targetOffset };
         let pad = { ... this.windowEdgeMinPadding };
         if (target.clientWidth >= 64) {
             off.x += ((target.clientWidth / 2));
         }
         if (!ancestor && !useBoundingClient) {
             x -= window.scrollX;
-            y -= window.scrollY;   
+            y -= window.scrollY;
         }
 
         if (!ancestor || modal) {
@@ -376,7 +393,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
         }
         else {
             hoverstat.style.position = "absolute";
-        }            
+        }
         if (customOffset) {
             x += customOffset.x;
             y += customOffset.y;
@@ -385,10 +402,10 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
         hoverstat.style.opacity = "0";
         hoverstat.style.zIndex = "1000000";
         if (isWindow) window.setTimeout(() => {
-            let hoverstat = document.getElementById(divId);     
+            let hoverstat = document.getElementById(divId);
             // console.log("Activate " + divId);
 
-            if (!hoverstat) return;   
+            if (!hoverstat) return;
 
             y -= (hoverstat.clientHeight - off.y);
             x -= off.x;
@@ -401,34 +418,34 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
 
             const widthCheck = modalBounds?.width ?? window.innerWidth;
             const heightCheck = modalBounds?.height ?? window.innerHeight;
-            
+
             if (x + hoverstat.clientWidth > window.scrollX + widthCheck - pad.x) {
                 x = window.scrollX + widthCheck - pad.x - hoverstat.clientWidth - 16;
             }
 
             if (y + hoverstat.clientHeight + (pad.y * 2) > scrolly + heightCheck) {
                 y = (scrolly + heightCheck) - (hoverstat.clientHeight + (pad.y * 2));
-            }                
+            }
 
             if (x < pad.x || x + hoverstat.clientWidth > widthCheck - pad.x) {
                 x = pad.x;
                 hoverstat.style.width = widthCheck - (pad.x * 2) + 'px';
-            }                
-            
+            }
+
             if (useBoundingClient) {
                 hoverstat.style.left = x + "px";
-                hoverstat.style.top = y + "px";    
+                hoverstat.style.top = y + "px";
             }
             else {
                 hoverstat.style.left = x + "px";
-                hoverstat.style.top = y + "px";    
+                hoverstat.style.top = y + "px";
             }
 
             hoverstat.style.zIndex = "1009";
 
             hoverstat.style.opacity = "1";
             hoverstat.style.transition = "opacity 0.25s";
-            if (isWindow) window.addEventListener("resize", this.resizer);       
+            if (isWindow) window.addEventListener("resize", this.resizer);
         }, this.hoverDelay)
     }
 
@@ -438,10 +455,10 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
      */
     protected activate = (target: HTMLElement): void => {
         if (!this.canActivate) return;
-        const { divId } = this.state;        
-        let hoverstat = document.getElementById(divId);        
+        const { divId } = this.state;
+        let hoverstat = document.getElementById(divId);
         this._nodismiss = false;
-        
+
         if (hoverstat) {
             setTimeout(() => this.realignTarget(target));
         }
@@ -464,11 +481,11 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
             // console.log("Deactivate " + divId);
             const hoverstat = document.getElementById(divId);
             if (hoverstat) {
-                hoverstat.style.zIndex = "-100";        
+                hoverstat.style.zIndex = "-100";
                 hoverstat.style.opacity = "0";
                 hoverstat.style.transition = "opacity 0.25s";
-                
-                this.currentTarget = undefined;                
+
+                this.currentTarget = undefined;
                 if (isWindow) window.removeEventListener("resize", this.resizer);
                 if (isWindow) window.setTimeout(() => hoverstat.style.display = "none", 0.25);
             }
@@ -477,26 +494,26 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
 
     /**
      * Target mouseOver
-     * @param e 
-     * @returns 
+     * @param e
+     * @returns
      */
     protected targetEnter = (e: MouseEvent) => {
         const { divId } = this.state;
 
         // console.log("Target Enter");
 
-        let hoverstat = document.getElementById(divId);        
+        let hoverstat = document.getElementById(divId);
         this.cancelled = true;
 
         if (hoverstat) {
             let target = e.target as HTMLElement;
             if (!target) return;
 
-            if (target.children.length !== 0 || !(target instanceof HTMLImageElement)) {                
+            if (target.children.length !== 0 || !(target instanceof HTMLImageElement)) {
                 return;
             }
-            if (target.src.includes("atlas/")) return;
-            if (target.src.includes("star_reward")) return;            
+            if (target.src.includes("atlas/") && !target.src.includes("energy_icon")) return;
+            if (target.src.includes("star_reward")) return;
             if (target.src.includes("Continuum")) return;
             this.activate(target);
         }
@@ -504,10 +521,10 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
 
     /**
      * Target mouseOut
-     * @param e 
-     * @returns 
+     * @param e
+     * @returns
      */
-    protected targetLeave = (e: MouseEvent | TouchEvent) => {        
+    protected targetLeave = (e: MouseEvent | TouchEvent) => {
         // console.log("Target Leave");
         let target = e.target as HTMLElement;
         if (!target || this._nodismiss) return;
@@ -520,27 +537,27 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
 
     /**
      * Target tap elsewhere
-     * @param e 
-     * @returns 
+     * @param e
+     * @returns
      */
-    protected touchTargetLeave = (e: MouseEvent | TouchEvent) => {        
+    protected touchTargetLeave = (e: MouseEvent | TouchEvent) => {
         let target = e.target as HTMLElement;
         if (!target) return;
         // console.log("Touch Target Leave");
-        let hoverstat = document.getElementById(this.state.divId);   
+        let hoverstat = document.getElementById(this.state.divId);
         if (hoverstat) {
             let ancestor = this.findCommonAncestor(target, hoverstat);
             if (ancestor === hoverstat) return;
         }
         this.deactivate(target);
     }
-    
+
     private touching?: boolean;
 
     /**
      * Target touchEnd
-     * @param e 
-     * @returns 
+     * @param e
+     * @returns
      */
     protected touchEnd = (e: TouchEvent) => {
         let target = e.target as HTMLElement;
@@ -553,8 +570,8 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
 
         if (!me.touching) return;
         me.touching = false;
-    
-        if (me.state.touchToggled) {					
+
+        if (me.state.touchToggled) {
             me.deactivate(target);
         }
         else {
@@ -563,7 +580,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
                 me.setState({ ...me.state ?? {}, touchToggled: true });
                 me.activate(target ?? me.currentTarget);
             }
-        }		
+        }
     }
     protected touchStart = (e: TouchEvent) => {
         this.touching = true;
@@ -586,7 +603,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
         var els = document.getElementsByClassName(this.props.targetGroup);
         this._elems ??= [];
         for (let pl of els) {
-            let el = pl as HTMLElement;            
+            let el = pl as HTMLElement;
 
             if (el) {
                 if (this._elems.includes(el)) continue;
@@ -600,7 +617,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
             }
         }
     }
- 
+
     componentWillUnmount(): void {
         this._unmounted = true;
         this.observer.disconnect();
