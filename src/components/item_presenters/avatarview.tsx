@@ -31,7 +31,7 @@ export interface AvatarViewProps {
     targetGroup?: string;
     /** Ignore player data and render from core, only */
     ignorePlayer?: boolean;
-    /** Reward quantity. If empty, will auto-resolve */
+    /** Reward quantity (to search for a reward item) */
     quantity?: number;
     /** Show item at max rarity regardless of owned rarity */
     showMaxRarity?: boolean;
@@ -250,9 +250,6 @@ export const AvatarView = (props: AvatarViewProps) => {
     }
 
     function prepareItem(gen_item?: BasicItem) {
-        if (symbol === 'jake_pahwraith_outfit_quality5_equip') {
-            console.log('break');
-        }
         if (!passDirect || !gen_item || partialItem) {
             if (!ignorePlayer && !!playerData && !gen_item) {
                 gen_item = playerData.player.character.items.find(f => f.symbol === symbol || (id !== undefined && f.archetype_id?.toString() === id?.toString())) as BasicItem | undefined;
@@ -263,7 +260,6 @@ export const AvatarView = (props: AvatarViewProps) => {
                     gen_item = { ...gen_item };
                     gen_item.rarity ??= 0;
                     gen_item.max_rarity = gen_item.rarity;
-                    gen_item["quantity"] = 0;
                 }
             }
             else {
@@ -291,10 +287,6 @@ export const AvatarView = (props: AvatarViewProps) => {
             if (item && citem) {
                 item.demandCrew = citem.demandCrew;
                 if (!src) src = `${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`;
-            }
-
-            if (item && props.quantity) {
-                item.quantity = props.quantity;
             }
 
             gen_item = item;
