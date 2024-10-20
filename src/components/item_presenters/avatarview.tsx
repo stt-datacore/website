@@ -10,6 +10,7 @@ import { Ship } from "../../model/ship";
 import { mergeShips } from "../../utils/shiputils";
 import { ShipTarget } from "../hovering/shiphoverstat";
 import { HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "../hovering/hoverstat";
+import { navigate } from "gatsby";
 
 export type AvatarViewMode = 'crew' | 'item' | 'ship';
 export type AvatarCrewBackground = 'normal' | 'rich';
@@ -30,8 +31,9 @@ export interface AvatarViewProps {
     src?: string;
     item?: BasicItem;
     partialItem?: boolean;
-    preferSchematicsImage?: boolean;
+    useSchematicsIcon?: boolean;
     crewHoverPassDirect?: boolean;
+    link?: string | boolean;
 }
 
 export interface BasicItem {
@@ -54,6 +56,7 @@ export const AvatarView = (props: AvatarViewProps) => {
         throw new Error("Avatar View requires either id or symbol");
     }
 
+    let link = props.link && typeof props.link === 'string' ? props.link : '';
     let maxRarity = 0;
     let borderWidth = Math.ceil(size / 34);
     let starSize = Math.floor(size / 6);
@@ -86,6 +89,7 @@ export const AvatarView = (props: AvatarViewProps) => {
             if (gen_item) {
                 gen_item = { ...gen_item };
                 gen_item.max_rarity = gen_item.rarity;
+                gen_item["quantity"] = 0;
             }
         }
         else {
@@ -139,6 +143,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     }
 
 	const divStyle = {
+        cursor: props.link ? 'pointer' : undefined,
         ... (style ?? {}),
         position: 'relative',
         display: 'flex',
@@ -170,7 +175,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     let item = undefined as EquipmentItem | undefined;
     let ship = undefined as Ship | undefined;
     let HoverTarget = undefined as any | undefined;
-    if (mode === 'crew' && gen_item && targetGroup) {
+    if (mode === 'crew' && gen_item) {
         HoverTarget = CrewTarget;
         const crew = gen_item as PlayerCrew;
         if (!src) src= `${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`;
@@ -189,8 +194,11 @@ export const AvatarView = (props: AvatarViewProps) => {
             imgStyle.backgroundRepeat = "no-repeat";
             imgStyle.backgroundClip = 'border-box';
         }
+        if (!link && props.link === true) {
+            link = `/crew/${crew.symbol}`;
+        }
     }
-    else if (mode === 'item' && gen_item && targetGroup) {
+    else if (mode === 'item' && gen_item) {
         HoverTarget = ItemTarget;
         let pitem = playerData ? gen_item as any as PlayerEquipmentItem : undefined;
         let citem = (playerData ? items.find(item => item.symbol === symbol && item.quantity === quantity && (item as EquipmentItem).isReward) : gen_item) as EquipmentItem | undefined;
@@ -209,8 +217,12 @@ export const AvatarView = (props: AvatarViewProps) => {
             item.demandCrew = citem.demandCrew;
             if (!src) src = `${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`;
         }
+        gen_item = item;
+        if (!link && props.link === true && item) {
+            link = `/item_info/?symbol=${item.symbol}`;
+        }
     }
-    else if (mode === 'ship' && gen_item && targetGroup) {
+    else if (mode === 'ship' && gen_item) {
         HoverTarget = ShipTarget;
         let pship = playerData ? gen_item as any as Ship : undefined;
         let cship = ship_schematics.find(f => f.ship.symbol === symbol);
@@ -225,17 +237,21 @@ export const AvatarView = (props: AvatarViewProps) => {
             ship = pship;
         }
 
-        if (props.preferSchematicsImage && cship) {
-            if (!src) src = `${process.env.GATSBY_ASSETS_URL}${cship.icon.file}`;
+        if (props.useSchematicsIcon && cship) {
+            if (!src) src = `${process.env.GATSBY_ASSETS_URL}${cship.icon?.file.slice(1).replace('/', '_')}.png`;
         }
         else if (ship) {
-            if (!src) src = `${process.env.GATSBY_ASSETS_URL}${ship.icon?.file}`;
+            if (!src) src = `${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`;
+        }
+        gen_item = ship;
+        if (!link && props.link === true && ship) {
+            link = `/ship_info/?ship=${ship.symbol}`;
         }
     }
 
     if (targetGroup && HoverTarget) {
         return (
-            <div style={divStyle}>
+            <div style={divStyle} onClick={() => link ? navigate(link) : undefined}>
                 <HoverTarget
                     passDirect={passDirect}
                     inputItem={gen_item as PlayerCrew}
@@ -257,7 +273,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     }
     else {
         return (
-            <div style={divStyle}>
+            <div style={divStyle} onClick={() => link ? navigate(link) : undefined}>
                 <img
                     src={src}
                     style={imgStyle}
