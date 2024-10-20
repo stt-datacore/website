@@ -1,7 +1,7 @@
 import React from 'react';
 import DataPageLayout from '../components/page/datapagelayout';
 import { GlobalContext } from '../context/globalcontext';
-import { AvatarView, AvatarViewMode } from '../components/item_presenters/avatarview';
+import { AvatarView, AvatarViewMode, BasicItem } from '../components/item_presenters/avatarview';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { ShipHoverStat } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
@@ -23,7 +23,9 @@ const TestComponent = () => {
 
     const { items, crew, ship_schematics } = globalContext.core;
 
+    const [custVis, setCustVis] = React.useState(undefined as BasicItem | undefined);
     const [nav, setNav] = React.useState(false);
+    const [navCustom, setNavCustom] = React.useState(false);
     const [hover, setHover] = React.useState(true);
     const [itemIdx, setItemIdx] = React.useState(0);
     const [crewIdx, setCrewIdx] = React.useState(0);
@@ -58,6 +60,7 @@ const TestComponent = () => {
         <ItemHoverStat targetGroup='test_item' />
         <div style={{display: 'flex', gap: '2em'}}>
             <Checkbox checked={nav} label='Click to Navigate' onClick={(e, { checked }) => setNav(checked as boolean)} />
+            <Checkbox checked={navCustom} label='Click to Navigate Custom' onClick={(e, { checked }) => setNavCustom(checked as boolean)} />
             <Checkbox checked={hover} label='Click to enable hover' onClick={(e, { checked }) => setHover(checked as boolean)} />
         </div>
         <div style={{
@@ -66,6 +69,7 @@ const TestComponent = () => {
             alignItems: 'center',
             justifyContent: 'space-evenly'
         }}>
+
         <Button icon='refresh' onClick={() => setFresh(fresh+1)} />
 
         {stuff.map((item, idx) => {
@@ -79,10 +83,18 @@ const TestComponent = () => {
                         symbol={item.symbol}
                         size={96}
                         targetGroup={hover ? group : undefined}
+                        onClick={navCustom ? (item) => clickItem(item) : undefined}
                     />
         })}
+
         </div>
+        {!!custVis && <div>{custVis.symbol} clicked!</div>}
     </>
+
+    function clickItem(item: BasicItem) {
+        setCustVis(item);
+    }
 }
+
 
 export default TestPage;
