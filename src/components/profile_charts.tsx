@@ -5,7 +5,6 @@ import { ResponsiveSunburst } from '@nivo/sunburst';
 import { ResponsiveRadar } from '@nivo/radar';
 import { ResponsivePie } from '@nivo/pie';
 
-import ItemDisplay from '../components/itemdisplay';
 import ItemSources from '../components/itemsources';
 
 import CONFIG from '../components/CONFIG';
@@ -14,16 +13,20 @@ import ErrorBoundary from './errorboundary';
 import themes from './nivo_themes';
 import { sortedStats, insertInStatTree, StatTreeNode } from '../utils/statutils';
 import { demandsPerSlot } from '../utils/equipment';
-import { DemandCounts, IDemand } from '../model/equipment';
-import { PlayerCrew, PlayerEquipmentItem } from '../model/player'
-import { IDefaultGlobal, GlobalContext } from '../context/globalcontext';
-import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
+import { DemandCounts, EquipmentCommon, IDemand } from '../model/equipment';
+import { PlayerCrew } from '../model/player';
+import { GlobalContext } from '../context/globalcontext';
+import { EquipmentItem } from '../model/equipment';
+import { AvatarView } from './item_presenters/avatarview';
+import { CrewMember } from '../model/crew';
 
 type ProfileChartsProps = {
+	items: (EquipmentItem | EquipmentCommon)[];
+	allCrew: CrewMember[];
 };
 
 type ProfileChartsState = {
-	allcrew?: PlayerCrew[];
+	allcrew?: CrewMember[];
 	items?: EquipmentItem[];
 	data_ownership: any[];
 	skill_distribution: StatTreeNode;
@@ -45,7 +48,7 @@ type ProfileChartsState = {
 
 class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 	static contextType = GlobalContext;
-	context!: React.ContextType<typeof GlobalContext>;
+	declare context: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: ProfileChartsProps) {
 		super(props);
@@ -69,17 +72,11 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 	}
 
 	componentDidMount() {
-		fetch('/structured/crew.json')
-			.then((response) => response.json())
-			.then((allcrew) => {
-				fetch('/structured/items.json')
-					.then((response) => response.json())
-					.then((items) => {
-						this.setState({ allcrew, items }, () => {
-							this._calculateStats();
-						});
-					});
+		setTimeout(() => {
+			this.setState({ allcrew: this.props.allCrew, items: this.props.items as EquipmentItem[] }, () => {
+				this._calculateStats();
 			});
+		});
 	}
 
 	_calculateStats() {
@@ -95,7 +92,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 
 		if (includeAllCrew) {
 			r4owned.push(0);
-			r5owned.push(0);			
+			r5owned.push(0);
 		}
 
 		let ownedStars = [0, 0, 0, 0, 0];
@@ -188,7 +185,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 						r5owned[5]++;
 					}
 				}
-		
+
 				if (crew.in_portal) {
 					unowned_portal[crew.max_rarity - 1]++;
 				}
@@ -276,7 +273,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			}
 		);
 	}
-	
+
 	_onIncludeAllCrew() {
 		this.setState(
 			(prevState) => ({ includeAllCrew: !prevState.includeAllCrew }),
@@ -483,16 +480,16 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 						{demands.map((entry, idx) => (
 							entry?.equipment &&
 							<Grid.Column key={idx}>
-								<Popup
+								{<Popup
 									trigger={
 										<Header
 											style={{ display: 'flex', cursor: 'zoom-in' }}
 											icon={
-												<ItemDisplay
-													src={`${process.env.GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
+												<AvatarView
+													mode={'item'}
+													item={entry.equipment}
+													partialItem={true}
 													size={48}
-													maxRarity={entry.equipment.rarity}
-													rarity={entry.equipment.rarity}
 												/>
 											}
 											content={entry.equipment.name}
@@ -503,7 +500,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 									content={<ItemSources item_sources={entry.equipment.item_sources} />}
 									on='click'
 									wide
-								/>
+								/>}
 							</Grid.Column> || <></>
 						))}
 					</Grid>

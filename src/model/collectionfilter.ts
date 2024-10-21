@@ -105,6 +105,8 @@ export interface ICollectionsContext extends CollectionsToolSettings {
     checkRewardFilter: (collection: PlayerCollection, filters: string[]) => boolean;
 
     showThisCrew: (crew: PlayerCrew, filters: Filter[], filterType: string | null | undefined) => boolean
+
+    setCollectionSettings: (value: CollectionsToolSettings) => void;
 };
 
 export type CollectionMatchMode = 'normal' | 'exact-only' | 'extended' | 'inexact-only';

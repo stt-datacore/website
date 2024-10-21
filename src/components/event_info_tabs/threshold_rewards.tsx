@@ -3,17 +3,17 @@ import { Table, Image, Label } from 'semantic-ui-react';
 
 import { getIconPath, getRarityColor } from '../../utils/assets';
 import { AtlasIcon, GameEvent } from '../../model/player';
-import { EventData } from '../../utils/events';
 import ItemDisplay from '../itemdisplay';
 import { GlobalContext } from '../../context/globalcontext';
 import { getImageName } from '../../utils/misc';
 import { checkReward } from '../../utils/itemutils';
+import { AvatarView, AvatarViewMode, BasicItem } from '../item_presenters/avatarview';
 
-function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
-	const {threshold_rewards} = props.eventData;
+function ThresholdRewardsTab(props: {eventData: GameEvent}) {
+	const { threshold_rewards } = props.eventData;
 	const context = React.useContext(GlobalContext);
 	const { items } = context.core;
-	
+
 	return (
 		<Table celled striped compact='very'>
 			<Table.Body>
@@ -21,24 +21,38 @@ function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 					<Table.Row key={row.points}>
 						<Table.Cell>{row.points}</Table.Cell>
 						<Table.Cell>
-							{row.rewards.map(reward => {								
-								checkReward(items, reward);								
+							{row.rewards.map(reward => {
+								checkReward(items, reward);
+								let rewardTarget = reward.type === 1 ? 'event_info' : reward.type === 8 ? 'event_info_ships' : 'event_info_items';
 								return (
 								reward && reward.icon &&
 								<Label
 									key={`reward_${reward.id}`} color="black" title={reward.full_name}>
-									<div 									style={{
-										display: "flex",
-										flexDirection: "row",
-										justifyContent:"center",
-										alignItems: "center"
+									<div
+										style={{
+											display: "flex",
+											flexDirection: "row",
+											justifyContent:"center",
+											alignItems: "center"
 									}}>
-									<ItemDisplay
+										<AvatarView
+											mode={reward.type}
+											symbol={reward.symbol}
+											quantity={reward.quantity}
+											src={getIconPath(reward.icon)}
+											targetGroup={rewardTarget}
+											size={48}
+											style={{
+												marginRight: "1em"
+											}}
+										/>
+
+									{/* <ItemDisplay
 										quantity={reward.quantity}
 										src={getIconPath(reward.icon)}
 										size={48}
 										rarity={reward.rarity}
-										maxRarity={reward.rarity}		
+										maxRarity={reward.rarity}
 										allCrew={context.core.crew}
 										allItems={context.core.items}
 										playerData={context.player.playerData}
@@ -52,8 +66,8 @@ function ThresholdRewardsTab(props: {eventData: GameEvent | EventData}) {
 										// 	maxWidth: '27px',
 										// 	maxHeight: '27px'
 										// }}
-										
-									/>
+
+									/> */}
 									{reward.full_name}
 									{reward.quantity > 1 ? ` x ${reward.quantity}` : ''}
 									</div>

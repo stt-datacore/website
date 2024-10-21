@@ -31,7 +31,7 @@ type CollectionsPageState = {
  * @param linkValue Optional value (parsed contents used otherwise)
  * @returns {JSX.Element} Formatted collection description
  */
-export const formatColString = (text: string, style?: React.CSSProperties, className?: string, linkFunc?: (value: string) => void, linkValue?: string) => {	
+export const formatColString = (text: string, style?: React.CSSProperties, className?: string, linkFunc?: (value: string) => void, linkValue?: string) => {
 	const greg = new RegExp(/(.+)\<([A-Fa-f0-9#]+)\>\<b\>(.+)\<\/b\>\<\/color\>(.+)/);
 	const greg2 = new RegExp(/(.+)\<span style\=\"color:([A-Fa-f0-9#]+)\"\>\<b\>(.+)\<\/b\>\<\/span\>(.+)/);
 
@@ -45,41 +45,41 @@ export const formatColString = (text: string, style?: React.CSSProperties, class
         else {
             return <div className={className} style={style}>{text}</div>;
         }
-        
-	}		
+
+	}
 
     if (testA) {
         const result = greg.exec(text);
-    
+
         return result && <div style={style}>
             {result[1]}<b style={{color: result[2], cursor: linkFunc ? 'pointer' : undefined}} onClick={(e) => linkFunc ? linkFunc(linkValue ?? result[3]) : null}>{result[3]}</b>{result[4]}
-        </div> || <>{text}</>    
+        </div> || <>{text}</>
     }
     else {
         const result = greg2.exec(text);
-    
+
         return result && <div className={className} style={style}>
             {result[1]}<b style={{color: result[2], cursor: linkFunc ? 'pointer' : undefined}} onClick={(e) => linkFunc ? linkFunc(linkValue ?? result[3]) : null}>{result[3]}</b>{result[4]}
-        </div> || <>{text}</>    
+        </div> || <>{text}</>
     }
 }
 
 
 class CollectionsOverviewComponent extends PureComponent<CollectionsPageProps, CollectionsPageState> {
 	static contextType = GlobalContext;
-	context!: React.ContextType<typeof GlobalContext>;
+	declare context: React.ContextType<typeof GlobalContext>;
 	tiny = TinyStore.getStore('collectionBrowser');
 	constructor(props: CollectionsPageProps) {
 		super(props);
-		
+
 		const sb = this.tiny.getValue<SortOptions>('sortBy', 'date_added') ?? 'date_added';
 		const sd = this.tiny.getValue<Direction>('sortDirection', 'ascending') ?? 'ascending';
-		
+
 		this.state = { collections: undefined, allcrew: undefined, sortBy: sb, direction: sd };
 	}
 
 	componentDidMount() {
-		this.setState({ ... this.state, allcrew: this.context.core.crew, collections: this.context.core.collections });			
+		this.setState({ ... this.state, allcrew: this.context.core.crew, collections: this.context.core.collections });
 		if (!this.context.player.playerData) {
 			if (this.state.sortBy === 'owned_status') {
 				this.setSort('date_added');
@@ -117,7 +117,7 @@ class CollectionsOverviewComponent extends PureComponent<CollectionsPageProps, C
 
 		for (let col of collections) {
 			let workcol = (col.crew?.map(cm => allcrew?.find(fc => fc.symbol === cm)) ?? []) as CrewMember[];
-			
+
 			if (sortBy === 'date_added') {
 				workcol?.sort((a, b) => {
 					let r = a.date_added.getTime() - b.date_added.getTime();
@@ -151,7 +151,7 @@ class CollectionsOverviewComponent extends PureComponent<CollectionsPageProps, C
 
 			col.crew = workcol.map(m => m.symbol);
 		}
-		
+
 		const directions = [
 			{
 				key: 'ascending',
@@ -164,7 +164,7 @@ class CollectionsOverviewComponent extends PureComponent<CollectionsPageProps, C
 				text: 'Descending'
 			},
 		]
-		
+
 		const sortOptions = [
 			{
 				key: 'date_added',
@@ -175,9 +175,9 @@ class CollectionsOverviewComponent extends PureComponent<CollectionsPageProps, C
 				key: 'rarity',
 				value: 'rarity',
 				text: "Rarity"
-			}						
+			}
 		];
-		
+
 		if (this.context.player.playerData) {
 			sortOptions.push({
 				key: "owned_status",
@@ -190,14 +190,14 @@ class CollectionsOverviewComponent extends PureComponent<CollectionsPageProps, C
 			<div>
 				<div style={{display:"flex", flexDirection:"row", alignItems:"center"}}>
 					<Label >Sort Crew: </Label>
-					<Dropdown 
+					<Dropdown
 						style={{margin:"0 1em"}}
 						value={this.state.sortBy}
 						onChange={(e, { value }) => this.setSort(value as SortOptions)}
 						placeholder='Sort crew...'
 						options={sortOptions} />
 					<Label>Direction: </Label>
-					<Dropdown 
+					<Dropdown
 						style={{margin:"0 1em"}}
 						value={this.state.direction}
 						onChange={(e, { value }) => this.setSort(undefined, value as Direction)}
@@ -212,9 +212,9 @@ class CollectionsOverviewComponent extends PureComponent<CollectionsPageProps, C
 
 						<Item.Content>
 							<Item.Header>
-								<div className='text' 
+								<div className='text'
 									style={{
-										cursor: !!this.context.player.playerData ? 'pointer' : undefined										
+										cursor: !!this.context.player.playerData ? 'pointer' : undefined
 										}}
 									onClick={(e) => this.props.onClick ? this.props.onClick(collection.id) : null}>
 									{collection.name}
@@ -242,7 +242,7 @@ class CollectionsOverviewComponent extends PureComponent<CollectionsPageProps, C
 					</Item>
 				))}
 				<br/><br/><br/>
-			</Item.Group>			
+			</Item.Group>
 			</div>
 		);
 	}

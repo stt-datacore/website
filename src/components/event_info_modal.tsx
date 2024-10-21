@@ -8,6 +8,7 @@ import LeaderboardTab from './event_info_tabs/leaderboard';
 import { GameEvent } from '../model/player';
 import { CrewHoverStat } from './hovering/crewhoverstat';
 import { ItemHoverStat } from './hovering/itemhoverstat';
+import { ShipHoverStat } from './hovering/shiphoverstat';
 
 type EventInfoModalProps = {
 	instanceId: number,
@@ -91,6 +92,7 @@ function EventInfoModal(props: EventInfoModalProps) {
 			/>
 			<CrewHoverStat targetGroup='event_info' modalPositioning={true}  />
 			<ItemHoverStat targetGroup='event_info_items' modalPositioning={true} />
+			<ShipHoverStat targetGroup='event_info_ships' modalPositioning={true} />
 		</Container>
 	);
 }

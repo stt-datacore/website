@@ -619,6 +619,10 @@
                 "heading": "See crew in large presentations",
                 "title": "Large Presentation"
             },
+            "opponent_table": {
+                "heading": "View all opponents captured in this gauntlet",
+                "title": "Opponents"
+            },
             "pair_cards": {
                 "heading": "See crew grouped into pair tables",
                 "title": "Pair tables"
@@ -632,6 +636,10 @@
                 "title": "Table"
             },
             "title": "View Mode"
+        },
+        "opponent_table": {
+            "opponent": "Opponent",
+            "opponent_crew_n": "Opponent Crew {{n}}"
         }
     },
     "global": {
@@ -991,6 +999,9 @@
             "shuttle_helper": "Shuttle Helper",
             "voyage_calculator": "Voyage Calculator",
             "voyage_history": "Voyage History"
+        },
+        "descriptions": {
+            "voyage_calculator": "Find the best crew for your voyages and get estimates on how long they will run."
         },
         "tools_title": "Tools"
     },

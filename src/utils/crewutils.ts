@@ -1193,6 +1193,7 @@ export function printImmoText(immo: number | CompletionState, item?: string, imm
 		else if (immo === -3) return t('item_state.item_is_shown_unowned', { item, level: immoText, __gender: gender });
 		else if (immo === -4) return t('item_state.item_is_shown_owned', { item, level: immoText, __gender: gender });
 		else if (immo === -2) return t('item_state.item_is_shown', { item, level: immoText, __gender: gender });
+		else if (immo === -10) return t('gauntlet.opponent_table.opponent');
 		else if (immo >= 1) {
 			if (immo === 1) {
 				return(t('item_state.item_is_frozen_one'))
@@ -1212,6 +1213,7 @@ export function printImmoText(immo: number | CompletionState, item?: string, imm
 		else if (immo === -3) return `${item} Is Shown ${immoText} (Unowned)`;
 		else if (immo === -4) return `${item} Is Shown ${immoText} (Owned)`;
 		else if (immo === -2) return `${item} Is Shown ${immoText}`;
+		else if (immo === -10) return 'Opponent';
 		else if (immo >= 1) return `${item} Is Frozen (` + (immo === 1 ? "1 copy" : immo.toString() + " copies") + ")";
 		else return `${item} Is Not ${immoText}`;
 	}
@@ -1229,12 +1231,12 @@ export function getSkills(item: PlayerCrew | CrewMember | CompactCrew | BaseSkil
 		bskills = item;
 	}
 
-	if (bskills?.command_skill !== undefined && bskills.command_skill.core > 0) sk.push("command_skill");
-	if (bskills?.science_skill !== undefined && bskills.science_skill.core > 0) sk.push("science_skill");
-	if (bskills?.security_skill !== undefined && bskills.security_skill.core > 0) sk.push("security_skill");
-	if (bskills?.engineering_skill !== undefined && bskills.engineering_skill.core > 0) sk.push("engineering_skill");
-	if (bskills?.diplomacy_skill !== undefined && bskills.diplomacy_skill.core > 0) sk.push("diplomacy_skill");
-	if (bskills?.medicine_skill !== undefined && bskills.medicine_skill.core > 0) sk.push("medicine_skill");
+	if (bskills?.command_skill !== undefined && (bskills.command_skill.core > 0 || bskills.command_skill.range_max > 0)) sk.push("command_skill");
+	if (bskills?.science_skill !== undefined && (bskills.science_skill.core > 0 || bskills.science_skill.range_max > 0)) sk.push("science_skill");
+	if (bskills?.security_skill !== undefined && (bskills.security_skill.core > 0 || bskills.security_skill.range_max > 0)) sk.push("security_skill");
+	if (bskills?.engineering_skill !== undefined && (bskills.engineering_skill.core > 0 || bskills.engineering_skill.range_max > 0)) sk.push("engineering_skill");
+	if (bskills?.diplomacy_skill !== undefined && (bskills.diplomacy_skill.core > 0 || bskills.diplomacy_skill.range_max > 0)) sk.push("diplomacy_skill");
+	if (bskills?.medicine_skill !== undefined && (bskills.medicine_skill.core > 0 || bskills.medicine_skill.range_max > 0)) sk.push("medicine_skill");
 
 	return sk;
 }

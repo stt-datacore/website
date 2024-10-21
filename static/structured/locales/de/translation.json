@@ -619,6 +619,10 @@
                 "heading": "Sehen Sie die Crew in großen Präsentationen",
                 "title": "Große Präsentation"
             },
+            "opponent_table": {
+                "heading": "Alle in diesem Spießrutenlauf gefangenen Gegner anzeigen",
+                "title": "Gegner"
+            },
             "pair_cards": {
                 "heading": "Siehe Crew in Paartabellen gruppiert",
                 "title": "Paartabellen"
@@ -632,6 +636,10 @@
                 "title": "Tabelle"
             },
             "title": "Ansichtsmodus"
+        },
+        "opponent_table": {
+            "opponent": "Gegner",
+            "opponent_crew_n": "Gegnercrew {{n}}"
         }
     },
     "global": {
@@ -990,6 +998,9 @@
             "shuttle_helper": "Shuttle Helfer",
             "voyage_calculator": "Reiserechner",
             "voyage_history": "Reiseverlauf"
+        },
+        "descriptions": {
+            "voyage_calculator": "Finden Sie die beste Crew für Ihre Reisen und erhalten Sie Schätzungen zur Dauer der Reisen."
         },
         "tools_title": "Werkzeuge"
     },
