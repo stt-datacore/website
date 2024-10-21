@@ -70,13 +70,13 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
     const dbid = playerData ? `${playerData.player.dbid}/` : '';
 
     const savedPane = tiny.getValue<GauntletPane>(`${dbid}/gauntletConfig`, 'today') || 'today';
-    const savedSettings = tiny.getValue<GauntletSettings>(`${dbid}gauntletSettings`, DefaultAdvancedGauntletSettings) || DefaultAdvancedGauntletSettings;
     const savedConfig = tiny.getValue<GauntletUserPrefs>(`${dbid}${savedPane}/gauntletConfig`, DefaultUserPrefs) || DefaultUserPrefs;
     const savedView = tiny.getValue<GauntletViewMode>(`${dbid}${savedPane}/gauntletViewMode`, 'pair_cards') || 'pair_cards';
     const savedTops = tiny.getValue<number>(`${dbid}${savedPane}/gauntletTops`, 100) || 100;
 
+    const [settings, internalSetSettings] = React.useState<GauntletSettings>(DefaultAdvancedGauntletSettings);
     const [pane, internalSetPane] = React.useState<GauntletPane>(savedPane);
-    const [config, internalSetConfig] = React.useState<GauntletUserPrefs>({ ...savedConfig, settings: savedSettings });
+    const [config, internalSetConfig] = React.useState<GauntletUserPrefs>({ ...savedConfig });
     const [viewMode, internalSetViewMode] = React.useState<GauntletViewMode>(savedView);
     const [tops, internalSetTops] = React.useState<number>(savedTops);
 
@@ -96,10 +96,8 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
         const savedConfig = tiny.getValue<GauntletUserPrefs>(`${dbid}${pane}/gauntletConfig`, DefaultUserPrefs) || DefaultUserPrefs;
         const savedView = tiny.getValue<GauntletViewMode>(`${dbid}${pane}/gauntletViewMode`, 'pair_cards') || 'pair_cards';
         const savedTops = tiny.getValue<number>(`${dbid}${pane}/gauntletTops`, 100) || 100;
-        internalSetConfig({
-            ... savedConfig,
-            settings: savedSettings
-        });
+        internalSetConfig(savedConfig);
+        internalSetSettings(savedSettings);
         internalSetViewMode(savedView);
         internalSetTops(savedTops);
     }, [pane, playerData]);
@@ -135,9 +133,7 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
         setSettings,
         config: {
             ...config,
-            settings: {
-                ... (savedSettings ? savedSettings : config.settings)
-            }
+            settings
         }
     } as IGauntletContext;
 
@@ -190,8 +186,9 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
     }
 
     function setSettings(settings: GauntletSettings) {
-        tiny.setValue<GauntletSettings>(`${dbid}gauntletSettings`, settings, true)
-        setConfig({ ...config, settings });
+        tiny.setValue<GauntletSettings>(`${dbid}gauntletSettings`, settings, true);
+        internalSetSettings(settings);
+        //setConfig({ ...config, settings });
     }
 
     function createUniques() {

@@ -181,11 +181,6 @@ export const GauntletPicker = () => {
                 gauntlet.date = d.toISOString();
             }
 
-            // TODO: Dormant Code to merge previous rounds!
-            //
-            // let json = this.tiny.getValue<string>('liveGauntlet');
-
-            // const prevGauntlet = json ? JSON.parse(json) as Gauntlet : {} as Gauntlet;
             const newoppos = [ ... gauntlet.opponents ?? [] ];
             const prevoppos = getCleanOpponents(gauntlet.bracket_id);
 

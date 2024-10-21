@@ -24,6 +24,10 @@ const GauntletSettingsPopup = <T extends OptionsBase>(props: GauntletSettingsPro
     }
 
     React.useEffect(() => {
+        setInnerSettings(config.current);
+    }, [config.current]);
+
+    React.useEffect(() => {
         if (modalIsOpen) inputRef.current?.focus();
     }, [modalIsOpen]);
 

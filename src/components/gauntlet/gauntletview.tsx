@@ -33,7 +33,7 @@ export const GauntletView = (props: GauntletViewProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { runWorker, running, cancel } = workerContext;
     const { config, pane, viewMode, tops, setConfig } = gauntletContext;
-    const { textFilter, filter, buffMode, range_max } = config;
+    const { textFilter, filter, buffMode, range_max, settings } = config;
 
     const { t } = globalContext.localized;
     const { gauntlet: outerGauntlet, opponentCache } = props;
@@ -79,7 +79,7 @@ export const GauntletView = (props: GauntletViewProps) => {
             cancel();
             runWorker('gauntlet', workconf, workerResults);
         }
-    }, [outerGauntlet, filter, buffMode, range_max]);
+    }, [settings, outerGauntlet, filter, buffMode, range_max]);
 
     React.useEffect(() => {
         if (!gauntlet?.allCrew) return;
