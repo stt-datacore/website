@@ -151,8 +151,8 @@ export interface Character {
   stored_immortals: StoredImmortal[]
   c_stored_immortals?: number[]
   replay_energy_max: number
-  replay_energy_rate?: number
-  seconds_from_replay_energy_basis?: number
+  replay_energy_rate: number
+  seconds_from_replay_energy_basis: number
   replay_energy_overflow: number
   boost_windows?: BoostWindow[]
   seconds_from_last_boost_claim?: number

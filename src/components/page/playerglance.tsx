@@ -9,6 +9,7 @@ import { getOwnedCites } from "../../utils/collectionutils";
 import CONFIG from "../CONFIG";
 import { mergeItems } from "../../utils/itemutils";
 import { useStateWithStorage } from "../../utils/storage";
+import { getChrons } from "../../utils/playerutils";
 
 
 export interface PlayerResource {
@@ -43,15 +44,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
 
     const { money, premium_purchasable, honor, premium_earnable, shuttle_rental_tokens } = playerData.player;
 
-    let ch = 0;
-    if (playerData.player.character.replay_energy_rate && playerData.player.character.seconds_from_replay_energy_basis) {
-        ch = Math.floor(playerData.player.character.seconds_from_replay_energy_basis / playerData.player.character.replay_energy_rate);
-    }
-    if (ch <= 0) {
-        ch = playerData.player.character.replay_energy_max + playerData.player.character.replay_energy_overflow;
-    }
-
-    const chrons = ch;
+    const chrons = getChrons(playerData);
     const ism = playerData?.forte_root.items.find(f => f.id === ISM_ID)?.quantity ?? 0;
     const quantum = playerData?.crew_crafting_root?.energy?.quantity;
     const valor = globalContext.player.ephemeral?.fleetBossBattlesRoot?.fleet_boss_battles_energy?.quantity;
