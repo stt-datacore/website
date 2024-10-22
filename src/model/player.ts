@@ -1161,7 +1161,6 @@ export interface Summary {
 
 export interface CryoCollection extends Collection {
   id: number
-  type_id?: number
   name: string
   image?: string
   description?: string

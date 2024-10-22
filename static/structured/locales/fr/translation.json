@@ -786,6 +786,7 @@
         "apply_buffs": "Appliquer des effets",
         "display_buffs": "Afficher effets",
         "filter_by_availability": "Filtrer par disponibilité",
+        "filter_by_collections": "Filtrer par collections",
         "filter_by_item_type": "Filtrer par type d'article",
         "filter_by_owned_status": "Filtrer par statut de propriété",
         "filter_by_portal_status": "Filtrer par statut du portail",

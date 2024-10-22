@@ -7,13 +7,11 @@ import { GlobalContext } from "../../context/globalcontext";
 import { CiteMode } from "../../model/player";
 import { CiteConfig, CiteOptContext, SymCheck } from "./context";
 import CONFIG from "../CONFIG";
-
-
+import { CollectionPicker } from "../collections/collectionpicker";
 
 export interface CiteConfigPanelProps {
     pageId: string;
 }
-
 
 export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
     const globalContext = React.useContext(GlobalContext);
@@ -22,7 +20,8 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
 
     if (!globalContext.player.playerData) return <></>;
 
-    const { citeConfig, setCiteConfig } = citeContext;
+    const { citeConfig, setCiteConfig, results } = citeContext;
+    const { collections: colFilter } = citeConfig;
 
     const priSkills = Object.entries(CONFIG.SKILLS).map(([skill, name]) => {
         return {
@@ -47,6 +46,9 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
             text: name
         }
     });
+
+    const resCols = results?.citeData?.crewToCite?.map(m => m.collection_ids).flat();
+    const availCols = [ ...new Set(resCols?.map(m => Number(m)) ?? globalContext.core.collections.map(m => Number(m.id))) ];
 
     return <React.Fragment>
             <Segment>
@@ -115,9 +117,26 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                             onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, seatSkills: value as string[] })}
                             />
                     </div>
-
+                </div>
+                <div style={{
+                    display: "flex",
+                    flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row",
+                    marginTop: "0.5em"
+                }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "left"}}>
+                        <CollectionPicker
+                            filter={availCols}
+                            showMilestones={true}
+                            multiple={true}
+                            selection={citeConfig.collections}
+                            setSelection={(data) => {
+                                setCiteConfig({ ... citeConfig ?? {}, collections: typeof data === 'number' ? [data] : (!data ? [] : data) });
+                            }}
+                            />
+                    </div>
                 </div>
             </Segment>
 
     </React.Fragment>
+
 }

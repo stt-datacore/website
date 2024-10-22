@@ -18,7 +18,7 @@ export const CitationOptimizerTabs = (props: { pageId: string }) => {
     const { playerData } = globalContext.player;
 
     const { results, citeConfig } = citeContext;
-    const { seatSkills, priSkills, secSkills } = citeConfig;
+    const { seatSkills, priSkills, secSkills, collections } = citeConfig;
     const { portal, nameFilter } = citeConfig;
 
     const preFilterData = results?.citeData;
@@ -79,6 +79,7 @@ export const CitationOptimizerTabs = (props: { pageId: string }) => {
                     const confine = [] as string[];
                     workset.crewToCite = workset.crewToCite.filter((crew) => crew.voyagesImproved?.some(p => voycrew.voyagesImproved?.includes(p)));
                     workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.voyagesImproved?.some(p => voycrew.voyagesImproved?.includes(p)));
+                    workset.crewToRetrieve = workset.crewToRetrieve?.filter((crew) => crew.voyagesImproved?.some(p => voycrew.voyagesImproved?.includes(p)));
                     for (let vn of voycrew.voyagesImproved ?? []) {
                         confine.push(vn);
                     }
@@ -87,6 +88,7 @@ export const CitationOptimizerTabs = (props: { pageId: string }) => {
                 else {
                     workset.crewToCite = workset.crewToCite.filter((crew) => crew.name.toLowerCase().includes(voyscan));
                     workset.crewToTrain = workset.crewToTrain.filter((crew) => crew.name.toLowerCase().includes(voyscan));
+                    workset.crewToRetrieve = workset.crewToRetrieve?.filter((crew) => crew.name.toLowerCase().includes(voyscan));
                 }
             }
             else {
@@ -95,9 +97,18 @@ export const CitationOptimizerTabs = (props: { pageId: string }) => {
                     .filter((crew) => crew.name.toLowerCase().includes(text) || crew.traits_hidden.includes(text) || crew.traits.some(t => TRAIT_NAMES[t].toLowerCase().includes(text)));
                 workset.crewToTrain = workset.crewToTrain
                     .filter((crew) => crew.name.toLowerCase().includes(text) || crew.traits_hidden.includes(text) || crew.traits.some(t => TRAIT_NAMES[t].toLowerCase().includes(text)));
+                workset.crewToRetrieve = workset?.crewToRetrieve
+                    .filter((crew) => crew.name.toLowerCase().includes(text) || crew.traits_hidden.includes(text) || crew.traits.some(t => TRAIT_NAMES[t].toLowerCase().includes(text)));
             }
         }
-
+        if (workset && collections?.length) {
+            workset.crewToCite = workset.crewToCite
+                .filter((crew) => crew.collection_ids.some(id => collections?.includes(Number(id))))
+            workset.crewToTrain = workset.crewToTrain
+                .filter((crew) => crew.collection_ids.some(id => collections?.includes(Number(id))))
+            workset.crewToRetrieve = workset?.crewToRetrieve
+                .filter((crew) => crew.collection_ids.some(id => collections?.includes(Number(id))))
+        }
         setCiteData(workset);
     }, [citeConfig, results]);
 
