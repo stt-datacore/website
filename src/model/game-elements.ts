@@ -102,6 +102,7 @@ export interface ConstellationMap {
 
 export interface Collection {
   id: number;
+  type_id?: number
   name: string;
   crew?: string[];
   description?: string;

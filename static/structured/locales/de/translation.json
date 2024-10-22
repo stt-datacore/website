@@ -778,6 +778,7 @@
         "apply_buffs": "Buffs anwenden",
         "display_buffs": "Buffs anzeigen",
         "filter_by_availability": "Filtern nach Verfügbarkeit",
+        "filter_by_collections": "Filtern nach Sammlungen",
         "filter_by_item_type": "Filtern nach Artikeltyp",
         "filter_by_owned_status": "Filtern nach Besitzstatus",
         "filter_by_portal_status": "Filtern nach Portalstatus",
