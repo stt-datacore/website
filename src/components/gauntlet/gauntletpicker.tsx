@@ -1,8 +1,7 @@
-import React from "react"
-import { useStateWithStorage } from "../../utils/storage"
-import { GlobalContext } from "../../context/globalcontext"
-import { DefaultAdvancedGauntletSettings, GauntletPane, GauntletSettings } from "../../utils/gauntlet";
-import { GauntletContext, GauntletDataProvider } from "./dataprovider";
+import React from "react";
+import { GlobalContext } from "../../context/globalcontext";
+import { DefaultAdvancedGauntletSettings, GauntletPane } from "../../utils/gauntlet";
+import { GauntletContext } from "./dataprovider";
 import moment from "moment";
 import { Step, Label, Icon } from "semantic-ui-react";
 import { CrewHoverStat } from "../hovering/crewhoverstat";

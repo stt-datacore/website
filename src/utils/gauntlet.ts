@@ -508,7 +508,11 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	gauntlet.prettyTraits = prettyTraits;
 
 	if (!prettyTraits) {
-		return null;
+		return {
+			gauntlet: null,
+			bonusCache: bonusInfo,
+			equipmentCache: crewQuip
+		};
 	}
 
 	delete gauntlet.allCrew;

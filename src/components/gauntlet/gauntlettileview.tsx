@@ -10,8 +10,6 @@ import { CrewPresenter } from "../item_presenters/crew_presenter";
 import { GauntletSkill } from "../item_presenters/gauntletskill";
 import { ShipSkill } from "../item_presenters/shipskill";
 
-
-
 export interface GauntletTileViewProps {
     gauntlet: Gauntlet;
     viewMode: 'big' | 'small';
@@ -23,6 +21,7 @@ export interface GauntletTileViewProps {
 export const GauntletTileView = (props: GauntletTileViewProps) => {
     const globalContext = React.useContext(GlobalContext);
     const gauntletContext = React.useContext(GauntletContext);
+
     const { gauntlets, pane, config, setConfig } = gauntletContext;
     const { t } = globalContext.localized;
     const { gauntlet, viewMode, textFilter, setTextFilter } = props;
@@ -33,14 +32,16 @@ export const GauntletTileView = (props: GauntletTileViewProps) => {
     const [totalPages, setTotalPages] = React.useState(1);
     const [itemsPerPage, setItemsPerPage] = React.useState(10);
     const [activePage, setActivePage] = React.useState(1);
-    const pageStartIdx = (activePage - 1) * itemsPerPage;
     const [elevated, setElevated] = React.useState({} as { [key: string]: number });
+
+    const pageStartIdx = (activePage - 1) * itemsPerPage;
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
     React.useEffect(() => {
         if (gauntlets?.length && gauntlet.allCrew) {
             const data = gauntlet.allCrew;
             const elev = { ...elevated };
+
             let uniques = [... new Set(gauntlets.map(g => g.contest_data?.traits?.sort() ?? []).map(f => f.sort().join("_")))].map(after => after.split("_"));
 
             for (let c of data) {
@@ -52,7 +53,6 @@ export const GauntletTileView = (props: GauntletTileViewProps) => {
                 if (elcrit) {
                     elev[c.symbol] = elcrit;
                 }
-
             }
             setElevated(elev);
         }
@@ -61,8 +61,7 @@ export const GauntletTileView = (props: GauntletTileViewProps) => {
 
     React.useEffect(() => {
         if (!crew) return;
-
-        let pages = Math.ceil(crew.length / itemsPerPage);
+        const pages = Math.ceil(crew.length / itemsPerPage);
         if (totalPages !== pages) {
             setTotalPages(pages);
             if (activePage > pages) {
@@ -74,7 +73,6 @@ export const GauntletTileView = (props: GauntletTileViewProps) => {
                 return;
             }
         }
-
         setActivePageCrew(crew.slice(pageStartIdx, pageStartIdx + itemsPerPage));
     }, [crew, itemsPerPage, activePage, totalPages]);
 
@@ -184,7 +182,6 @@ export const GauntletTileView = (props: GauntletTileViewProps) => {
                     </div>
                 ))}
             </div>}
-
 
         <Table>
             <Table.Header>

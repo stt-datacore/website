@@ -3,7 +3,7 @@ import { GauntletDataProvider } from "../components/gauntlet/dataprovider";
 import { GauntletPicker } from "../components/gauntlet/gauntletpicker";
 import DataPageLayout from "../components/page/datapagelayout";
 import { GlobalContext } from "../context/globalcontext";
-import { WorkerContext, WorkerProvider } from "../context/workercontext";
+import { WorkerProvider } from "../context/workercontext";
 
 const GauntletNew = () => {
     const globalContext = React.useContext(GlobalContext);

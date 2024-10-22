@@ -1,5 +1,5 @@
 import React from "react"
-import { GauntletCalcConfig, GauntletPane, getPairGroups } from "../../utils/gauntlet"
+import { GauntletCalcConfig, getPairGroups } from "../../utils/gauntlet"
 import { Gauntlet, Opponent } from "../../model/gauntlets";
 import { GauntletContext } from "./dataprovider";
 import { GlobalContext } from "../../context/globalcontext";
@@ -15,9 +15,6 @@ import { GauntletCrewTable } from "./gauntlettable";
 import { PlayerCrew } from "../../model/player";
 import { GauntletTileView } from "./gauntlettileview";
 import { OpponentTable } from "./opponenttable";
-import { CrewHoverStat } from "../hovering/crewhoverstat";
-import { GauntletSkill } from "../item_presenters/gauntletskill";
-
 
 export interface GauntletViewProps {
     gauntlet: Gauntlet;
@@ -26,6 +23,9 @@ export interface GauntletViewProps {
     dateGauntlet?: string;
     opponentCache?: Opponent[];
 }
+
+type BonusCacheType = { [key: string]: ItemBonusInfo };
+type EquipmentCacheType = { [key: string]: EquipmentItem[] };
 
 export const GauntletView = (props: GauntletViewProps) => {
     const gauntletContext = React.useContext(GauntletContext);
@@ -40,11 +40,10 @@ export const GauntletView = (props: GauntletViewProps) => {
 
     const [gauntlet, setGauntlet] = React.useState(outerGauntlet);
 
-    let bonusCache: { [key: string]: ItemBonusInfo } = {}
-    let equipmentCache: { [key: string]: EquipmentItem[] } = {}
+    const [bonusCache, setBonusCache] = React.useState<BonusCacheType>({});
+    const [equipmentCache, setEquipmentCache] = React.useState<EquipmentCacheType>({});
 
     const currContest = [gauntlet?.contest_data?.primary_skill ?? "", gauntlet?.contest_data?.secondary_skill ?? ""].sort().join()
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
     React.useEffect(() => {
         if (outerGauntlet) {
@@ -75,7 +74,6 @@ export const GauntletView = (props: GauntletViewProps) => {
                 bonusCache,
                 equipmentCache
             } as GauntletCalcConfig;
-
             cancel();
             runWorker('gauntlet', workconf, workerResults);
         }
@@ -120,8 +118,8 @@ export const GauntletView = (props: GauntletViewProps) => {
     function workerResults(response: any) {
         console.log("Gauntlet Worker Results");
         setGauntlet(response.data.result.gauntlet);
-        bonusCache = response.data.result.bonusCache;
-        equipmentCache = response.data.result.equpmentCache;
+        setBonusCache(response.data.result.bonusCache);
+        setEquipmentCache(response.data.result.equipmentCache);
     }
 
     function renderOpponentTable() {
@@ -213,5 +211,4 @@ export const GauntletView = (props: GauntletViewProps) => {
             return false;
         });
     }
-
 }
