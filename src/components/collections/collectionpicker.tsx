@@ -12,13 +12,14 @@ export interface CollectionPickerProps {
     selection?: number[];
     showMilestones?: boolean | 'auto';
     setSelection: (value?: number | number[]) => void;
+    customRender?: (collection: Collection | CryoCollection | PlayerCollection) => JSX.Element;
 }
 
 export const CollectionPicker = (props: CollectionPickerProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t, COLLECTIONS } = globalContext.localized;
     const playerCollections: (PlayerCollection | CryoCollection | Collection)[] = props.collections ?? globalContext.player.playerData?.player.character.cryo_collections ?? globalContext.core.collections;
-    const { filter, selection, setSelection, multiple } = props;
+    const { filter, selection, setSelection, multiple, customRender } = props;
     const showMilestones = props.showMilestones === 'auto' ? playerCollections.every(pc => "milestone" in pc) : (props.showMilestones ?? false);
 
     const collectionsOptions = playerCollections
@@ -30,7 +31,8 @@ export const CollectionPicker = (props: CollectionPickerProps) => {
             return {
                 key: collection.type_id,
                 value: collection.type_id,
-                text: (localized?.name || collection.name) + (showMilestones && "milestone" in collection ? ` (${collection.progress} / ${collection.milestone.goal})` : '')
+                text: (localized?.name || collection.name) + (showMilestones && "milestone" in collection ? ` (${collection.progress} / ${collection.milestone.goal})` : ''),
+                content: customRender ? customRender(collection) : undefined
             };
         });
 
