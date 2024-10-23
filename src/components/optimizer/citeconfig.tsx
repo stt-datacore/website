@@ -4,7 +4,7 @@ import { RarityFilter, PortalFilter } from "../crewtables/commonoptions";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { useStateWithStorage } from "../../utils/storage";
 import { GlobalContext } from "../../context/globalcontext";
-import { CiteMode } from "../../model/player";
+import { CiteMode, PlayerCrew } from "../../model/player";
 import { CiteConfig, CiteOptContext, SymCheck } from "./context";
 import CONFIG from "../CONFIG";
 import { CollectionPicker } from "../collections/collectionpicker";
@@ -22,6 +22,12 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
 
     const { citeConfig, setCiteConfig, results } = citeContext;
     const { collections: colFilter } = citeConfig;
+    let proccrew: PlayerCrew[] | undefined = [...results?.citeData?.crewToCite ?? [], ...results?.citeData?.crewToTrain ?? [], ...results?.citeData?.crewToRetrieve ?? [] ];
+    if (proccrew.length === 0) {
+        proccrew = undefined;
+    }
+
+    const resultCrew = proccrew?.filter((f, idx) => proccrew.findIndex(f2 => f2.symbol === f.symbol) === idx);
 
     const priSkills = Object.entries(CONFIG.SKILLS).map(([skill, name]) => {
         return {
@@ -47,9 +53,15 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
         }
     });
 
-    const resCols = results?.citeData?.crewToCite?.map(m => m.collection_ids).flat();
+    const resCols = resultCrew?.map(m => m.collection_ids).flat();
     const availCols = [ ...new Set(resCols?.map(m => Number(m)) ?? globalContext.core.collections.map(m => Number(m.id))) ];
-
+    const counts = availCols.map((ac) => {
+        let t = resultCrew?.filter(crew => crew.collection_ids.includes(ac?.toString()))?.length;
+        return {
+            col: ac,
+            count: t
+        }
+    });
     return <React.Fragment>
             <Segment>
                 <h3>{t('global.filters')}</h3>
@@ -132,6 +144,42 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                             setSelection={(data) => {
                                 setCiteConfig({ ... citeConfig ?? {}, collections: typeof data === 'number' ? [data] : (!data ? [] : data) });
                             }}
+                            customRender={(col) => {
+
+                                let count = counts.find(f => f.col === Number(col.type_id))?.count ?? 0;
+                                let green = false;
+                                let mig = '';
+                                if ("milestone" in col) {
+                                    if (col.milestone.goal !== 'n/a' && col.progress !== 'n/a') {
+                                        let remain = col.milestone.goal - col.progress;
+                                        mig = ` (${col.progress} / ${col.milestone.goal})`;
+                                        if (count >= remain) {
+                                            green = true;
+                                        }
+                                    }
+                                }
+
+                                return <div style={{
+                                        display: 'grid',
+                                        gridTemplateAreas: `'name name name' 'left center right'`,
+                                        gridTemplateColumns: '4em auto 4em',
+                                        gap: '0.25em'
+                                }}>
+                                    <div style={{gridArea:'name'}}>
+                                        {col.name}
+                                    </div>
+                                    <div style={{
+                                        color: green ? 'lightgreen' : undefined,
+                                        gridArea: 'left',
+                                        fontSize: '0.8em'}}>
+                                        {count}
+                                    </div>
+                                    <div style={{ gridArea: 'right', fontSize: '0.8em', textAlign: 'right'}}>
+                                        {mig}
+                                    </div>
+                                </div>
+                            }}
+
                             />
                     </div>
                 </div>
