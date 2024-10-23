@@ -41,8 +41,8 @@ export const QuestPicker = (props: QuestPickerProps) => {
         if ((missionsfull?.length || mission.quests?.some(q => q.challenges?.length)) && props.continuum && mission && "quest_ids" in mission && !!mission.quest_ids) {
             const result = mission;
             const rq = {} as { [key: number]: Quest };
-            if (missionsfull && !mission.quests?.every(q => q.challenges?.length)) {
-                const challenges = missionsfull
+            if (missionsfull && props.continuum && !mission.quests?.every(q => q.challenges?.length)) {
+                missionsfull
                     .filter((mission) =>
                         mission.quests.some((q) => result.quest_ids.includes(q.id))
                     )
@@ -50,16 +50,15 @@ export const QuestPicker = (props: QuestPickerProps) => {
                         mission.quests.filter((q) => result.quest_ids.includes(q.id))
                     )
                     .flat()
-                    .map((q) => {
+                    .forEach((q) => {
                         rq[q.id] = q;
-                        return q.challenges ?? [];
                     });
 
                 if (result.quests) {
                     for (let i = 0; i < result.quests.length; i++) {
                         let quests = result.quests;
-                        result.quests[i].challenges = rq[quests[i].id].challenges;
-                        challenges[i].forEach(ch => {
+                        result.quests[i].challenges = rq[quests[i].id].challenges ? JSON.parse(JSON.stringify(rq[quests[i].id].challenges)) : undefined;
+                        result.quests[i].challenges?.forEach(ch => {
                             ch.trait_bonuses = [];
                             ch.difficulty_by_mastery = [];
                         });
@@ -102,10 +101,10 @@ export const QuestPicker = (props: QuestPickerProps) => {
     function fetchContinuum(mission: ContinuumMission) {
         const missionUrl = `/structured/continuum/${mission.id}.json`;
         fetch(missionUrl)
-        .then((response) => response.json())
-        .then((result: ContinuumMission) => {
-            setMission(result);
-        });
+            .then((response) => response.json())
+            .then((result: ContinuumMission) => {
+                setMission(result);
+            });
     }
 
 }

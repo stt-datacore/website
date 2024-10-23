@@ -144,7 +144,7 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 						display: 'grid',
 						gridTemplateAreas: `'name' 'skill'`,
 						gridTemplateColumns: 'auto',
-						gridTemplateRows: '1em 1em',
+						gridTemplateRows: '1em auto',
 						gap: '0.25em'
 					}}>
 						<div style={{gridArea:'name'}}>
