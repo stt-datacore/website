@@ -81,7 +81,7 @@ self.onmessage = (message) => {
         'voyageEstimateExtended': () => voyageEstimateExtended(message.data.config, est => postResult(est, true)).then(estimate =>
             postResult(estimate, false)
         ),
-        'citeOptimizer': () => citeOptimizer(message.data.playerData, message.data.allCrew).then(data => postResult(data, false)),
+        'citeOptimizer': () => citeOptimizer(message.data.config.playerData, message.data.config.allCrew).then(data => postResult(data, false)),
         'questSolver': () => QuestSolver.solveQuest(message.data.config).then(data => postResult(data, false)),
         'ironywrit': () => BetaTachyon.scanCrew(message.data.config).then(data => postResult(data, false)),
         'colOptimizer2': () => CollectionOptimizer.scanAll2(message.data.config).then(data => postResult(data, false)),

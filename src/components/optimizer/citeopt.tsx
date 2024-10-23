@@ -5,10 +5,7 @@ import { CitationProspects } from './prospects';
 import { CiteConfigPanel } from './citeconfig';
 import { CitationOptimizerTabs } from './citetabs';
 import { CiteOptExplainer } from './explainer';
-
-
-
-
+import { WorkerProvider } from '../../context/workercontext';
 
 export const CiteOptComponent = () => {
 
@@ -18,13 +15,15 @@ export const CiteOptComponent = () => {
     return <React.Fragment>
 
         <CitationOptimizerConfigProvider pageId={pageId}>
-            <React.Fragment>
-                <CiteOptExplainer />
-                <EngineRunner pageId={pageId} />
-                <CitationProspects pageId={pageId} />
-                <CiteConfigPanel pageId={pageId} />
-                <CitationOptimizerTabs pageId={pageId} />
-            </React.Fragment>
+            <WorkerProvider>
+                <React.Fragment>
+                    <CiteOptExplainer />
+                    <EngineRunner pageId={pageId} />
+                    <CitationProspects pageId={pageId} />
+                    <CiteConfigPanel pageId={pageId} />
+                    <CitationOptimizerTabs pageId={pageId} />
+                </React.Fragment>
+            </WorkerProvider>
         </CitationOptimizerConfigProvider>
     </React.Fragment>
 

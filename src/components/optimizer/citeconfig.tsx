@@ -1,11 +1,10 @@
-import React from "react"
+import React from "react";
 import { Segment, Input, Dropdown } from "semantic-ui-react";
-import { RarityFilter, PortalFilter } from "../crewtables/commonoptions";
+import { PortalFilter } from "../crewtables/commonoptions";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { useStateWithStorage } from "../../utils/storage";
 import { GlobalContext } from "../../context/globalcontext";
-import { CiteMode, PlayerCrew } from "../../model/player";
-import { CiteConfig, CiteOptContext, SymCheck } from "./context";
+import { PlayerCrew } from "../../model/player";
+import { CiteOptContext } from "./context";
 import CONFIG from "../CONFIG";
 import { CollectionPicker } from "../collections/collectionpicker";
 
@@ -22,9 +21,14 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
 
     const { citeConfig, setCiteConfig, results } = citeContext;
     const { collections: colFilter } = citeConfig;
+
     let proccrew: PlayerCrew[] | undefined = [...results?.citeData?.crewToCite ?? [], ...results?.citeData?.crewToTrain ?? [], ...results?.citeData?.crewToRetrieve ?? [] ];
+
     if (proccrew.length === 0) {
         proccrew = undefined;
+    }
+    else if (!proccrew[0].skills) {
+        proccrew = proccrew.map(mc => globalContext.player.playerData?.player.character.crew.find(f => f.name === mc.name)!)!
     }
 
     const resultCrew = proccrew?.filter((f, idx) => proccrew.findIndex(f2 => f2.symbol === f.symbol) === idx);
