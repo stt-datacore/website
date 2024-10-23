@@ -3,7 +3,7 @@ name: 'Q as "God"'
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 08/08/2019
 published: true

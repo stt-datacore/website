@@ -3,9 +3,9 @@ name: Toreth
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 4
 in_portal:
-date:
+date: 15/10/2024
 published: true
 ---
 
