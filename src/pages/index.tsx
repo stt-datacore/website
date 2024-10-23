@@ -59,7 +59,7 @@ const IndexPage = (props: IndexPageProps) => {
 	}, [searchExtra]);
 
 	return (
-		<DataPageLayout pageTitle={t('pages.crew_stats')} playerPromptType='recommend'>
+		<DataPageLayout pageTitle={t('pages.crew_stats')} playerPromptType='recommend' demands={['continuum_missions']}>
 			<React.Fragment>
 				<RosterPicker
 					buffMode={playerData ? playerBuffMode : buffMode}
