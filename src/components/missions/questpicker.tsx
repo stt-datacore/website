@@ -28,7 +28,7 @@ export const QuestPicker = (props: QuestPickerProps) => {
         if (!mission && props.continuum) {
             const { continuum_missions } = globalContext.core;
             if (continuum_missions.length) {
-                const current = continuum_missions[0];
+                const current = continuum_missions[continuum_missions.length - 1];
                 setTimeout(() => {
                     fetchContinuum(current);
                 });
