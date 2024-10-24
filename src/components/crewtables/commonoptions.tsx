@@ -127,7 +127,7 @@ export function descriptionLabel(t: TranslateMethod, crew: IRosterCrew,  showOwn
 	return (
 		<div>
 			<React.Fragment>
-				{!!crew.is_new && <div title={t('global.new', { __gender: crewGender(crew) })} style={{fontWeight: 'bold'}}><Icon name='asterisk' style={{ color: CONFIG.RARITIES[crew.max_rarity].color}} />{t('global.new', { __gender: crewGender(crew) })}</div>} 
+				{!!crew.is_new && <div title={t('global.new', { __gender: crewGender(crew) })} style={{fontWeight: 'bold'}}><Icon name='asterisk' style={{ color: CONFIG.RARITIES[crew.max_rarity].color}} />{t('global.new', { __gender: crewGender(crew) })}</div>}
 				{!!crew.expires_in && <Icon name='warning sign' title={ t('crew_state.expires_in', { time: printShortDistance(undefined, crew.expires_in * 1000) })} />}
 				{crew.favorite && <Icon name='heart' />}
 				{crew.prospect && <Icon name='add user' />}
