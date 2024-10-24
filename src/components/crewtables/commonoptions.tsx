@@ -116,7 +116,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 export function descriptionLabel(t: TranslateMethod, crew: IRosterCrew,  showOwned?: boolean): JSX.Element {
 
 	const counts = [
-		{ name: crew.collections.length > 1 ? t('base.collections_fmt', { count: crew.collections.length.toString() }) : t('base.collection_fmt'), count: crew.collections.length }
+		{ name: crew.collections.length !== 1 ? t('base.collections_fmt', { count: crew.collections.length.toString() }) : t('base.collection_fmt'), count: crew.collections.length }
 	];
 	const formattedCounts = counts.map((count, idx) => (
 		<span key={idx} style={{ whiteSpace: 'nowrap' }}>
