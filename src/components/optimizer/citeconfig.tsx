@@ -6,7 +6,7 @@ import { GlobalContext } from "../../context/globalcontext";
 import { PlayerCrew } from "../../model/player";
 import { CiteOptContext } from "./context";
 import CONFIG from "../CONFIG";
-import { CollectionPicker } from "../collections/collectionpicker";
+import { CollectionDropDown } from "../collections/collectiondropdown";
 
 export interface CiteConfigPanelProps {
     pageId: string;
@@ -140,7 +140,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                     marginTop: "0.5em"
                 }}>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "left"}}>
-                        <CollectionPicker
+                        <CollectionDropDown
                             filter={availCols}
                             showMilestones={true}
                             multiple={true}

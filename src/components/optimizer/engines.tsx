@@ -29,6 +29,9 @@ export const EngineRunner = (props: EngineRunnerProps) => {
     const globalContext = React.useContext(GlobalContext);
     const workerContext = React.useContext(WorkerContext);
 
+    const [requestRun, setRequestRun] = React.useState(false);
+    const [initialized, setInitialized] = React.useState(false);
+
     const { running, runWorker: internalRunWorker, cancel } = workerContext;
 
     const { pageId } = props;
@@ -77,9 +80,22 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 
 
     React.useEffect(() => {
-        cancel();
-        runWorker();
+        if (!initialized) {
+            setRequestRun(true);
+        }
+        else {
+            cancel();
+            runWorker();
+        }
     }, [currentConfig, engine, rarities, appliedProspects]);
+
+    setTimeout(() => {
+        if (requestRun) {
+            cancel();
+            runWorker();
+            setRequestRun(false);
+        }
+    }, 500);
 
     if (!globalContext.player.playerData) return <></>
 
@@ -160,6 +176,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
             result.crewToRetrieve = retrievable.map((r, i) => ({ ...JSON.parse(JSON.stringify(r)), pickerId: i + 1 }));
             setResults({ citeData: result, skoMap: undefined });
         }
+        setInitialized(true);
     }
 
     function getImmortalSymbols() {

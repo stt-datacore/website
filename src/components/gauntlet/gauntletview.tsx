@@ -31,7 +31,9 @@ export const GauntletView = (props: GauntletViewProps) => {
     const gauntletContext = React.useContext(GauntletContext);
     const workerContext = React.useContext(WorkerContext);
     const globalContext = React.useContext(GlobalContext);
-    const { runWorker, running, cancel } = workerContext;
+    const [initialized, setInitialized] = React.useState(false);
+    const [requestRun, setRequestRun] = React.useState(false);
+    const { runWorker: internalRunWorker, running, cancel } = workerContext;
     const { config, pane, viewMode, tops, setConfig } = gauntletContext;
     const { textFilter, filter, buffMode, range_max, settings } = config;
     const { playerData } = globalContext.player;
@@ -46,47 +48,30 @@ export const GauntletView = (props: GauntletViewProps) => {
     const currContest = [gauntlet?.contest_data?.primary_skill ?? "", gauntlet?.contest_data?.secondary_skill ?? ""].sort().join()
 
     React.useEffect(() => {
-        if (outerGauntlet) {
-            const workconf = {
-                ...config,
-                gauntlet: outerGauntlet,
-                context: {
-                    player: {
-                        buffConfig: globalContext.player.buffConfig,
-                        maxBuffs: globalContext.player.maxBuffs,
-                        playerData: {
-                            player: {
-                                character: {
-                                    crew: globalContext.player.playerData?.player.character.crew,
-                                    unOwnedCrew: globalContext.player.playerData?.player.character.unOwnedCrew
-                                }
-                            }
-                        }
-                    },
-                    core: {
-                        crew: globalContext.core.crew,
-                        items: globalContext.core.items
-                    },
-                    localized: {
-                        TRAIT_NAMES: globalContext.localized.TRAIT_NAMES
-                    },
-                },
-                bonusCache,
-                equipmentCache
-            } as GauntletCalcConfig;
-
-            cancel();
-            runWorker('gauntlet', workconf, workerResults);
-        }
-    }, [settings, outerGauntlet, filter, buffMode, range_max, playerData]);
-
-    React.useEffect(() => {
         if (!gauntlet?.allCrew) return;
         setGauntlet({
             ...gauntlet,
             searchCrew: getTextCrew()
         })
     }, [textFilter])
+
+    React.useEffect(() => {
+        if (typeof window !== 'undefined') {
+			if (initialized) {
+				runWorker();
+			}
+			else {
+				setRequestRun(true);
+			}
+		}
+    }, [settings, outerGauntlet, filter, buffMode, range_max, playerData]);
+
+	setTimeout(() => {
+		if (requestRun) {
+			runWorker();
+			setRequestRun(false);
+		}
+	}, 500);
 
     return <React.Fragment>
 
@@ -121,6 +106,42 @@ export const GauntletView = (props: GauntletViewProps) => {
         setGauntlet(response.data.result.gauntlet);
         setBonusCache(response.data.result.bonusCache);
         setEquipmentCache(response.data.result.equipmentCache);
+        setInitialized(true);
+    }
+
+    function runWorker() {
+        if (outerGauntlet) {
+            const workconf = {
+                ...config,
+                gauntlet: outerGauntlet,
+                context: {
+                    player: {
+                        buffConfig: globalContext.player.buffConfig,
+                        maxBuffs: globalContext.player.maxBuffs,
+                        playerData: {
+                            player: {
+                                character: {
+                                    crew: globalContext.player.playerData?.player.character.crew,
+                                    unOwnedCrew: globalContext.player.playerData?.player.character.unOwnedCrew
+                                }
+                            }
+                        }
+                    },
+                    core: {
+                        crew: globalContext.core.crew,
+                        items: globalContext.core.items
+                    },
+                    localized: {
+                        TRAIT_NAMES: globalContext.localized.TRAIT_NAMES
+                    },
+                },
+                bonusCache,
+                equipmentCache
+            } as GauntletCalcConfig;
+
+            cancel();
+            internalRunWorker('gauntlet', workconf, workerResults);
+        }
     }
 
     function renderOpponentTable() {

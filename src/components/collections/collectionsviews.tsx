@@ -2,14 +2,13 @@ import { Link } from 'gatsby';
 import React from 'react';
 import { Dropdown, DropdownItemProps, Form, Header, Icon, Popup, Rating, Step, Table } from 'semantic-ui-react';
 
-import { UnifiedWorker } from '../../typings/worker';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { CollectionGroup, CollectionMap, CollectionWorkerConfig, CollectionWorkerResult, ComboCostMap } from '../../model/collectionfilter';
 import { CrewMember } from '../../model/crew';
-import { MilestoneBuff, PlayerCollection, PlayerCrew, Reward } from '../../model/player';
-import { citeSymbols, compareRewards } from '../../utils/collectionutils';
+import { PlayerCollection, PlayerCrew, Reward } from '../../model/player';
+import { compareRewards } from '../../utils/collectionutils';
 import { gradeToColor, numberToGrade } from '../../utils/crewutils';
 import { navToCrewPage } from '../../utils/nav';
 import { useStateWithStorage } from '../../utils/storage';
@@ -56,6 +55,9 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	const { playerCollections, collectionCrew } = props;
 	const { showThisCrew, favorited, hardFilter, setHardFilter, tierFilter, setTierFilter, byCost, showIncomplete, matchMode, checkCommonFilter, costMode, setShort, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter, setCollectionSettings } = colContext;
+
+	const [initialized, setInitialized] = React.useState(false);
+	const [requestRun, setRequestRun] = React.useState(false);
 
 	const tierOpts = [] as DropdownItemProps[];
 
@@ -307,8 +309,23 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	];
 
 	React.useEffect(() => {
-		runWorker();
+		if (typeof window !== 'undefined') {
+			if (initialized) {
+				runWorker();
+			}
+			else {
+				setRequestRun(true);
+			}
+		}
+
 	}, [context, mapFilter, showIncomplete, rarityFilter, fuseFilter, ownedFilter, searchFilter, matchMode, tierFilter]);
+
+	setTimeout(() => {
+		if (requestRun) {
+			runWorker();
+			setRequestRun(false);
+		}
+	}, 500);
 
 	// React.useEffect(() => {
 	// 	if (worker) {
@@ -425,6 +442,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 		setColGroups(result.maps);
 		setColOptimized(result.groups);
 		setCostMap(result.costMap);
+		setInitialized(true);
 	}
 
 	function runWorker() {

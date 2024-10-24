@@ -4,7 +4,7 @@ import { GlobalContext } from "../../context/globalcontext";
 import { Form, Dropdown } from "semantic-ui-react";
 import { Collection } from "../../model/game-elements";
 
-export interface CollectionPickerProps {
+export interface CollectionDropDownProps {
     style?: React.CSSProperties;
     collections?: (PlayerCollection | CryoCollection | Collection)[];
     filter?: number[];
@@ -15,7 +15,7 @@ export interface CollectionPickerProps {
     customRender?: (collection: Collection | CryoCollection | PlayerCollection) => JSX.Element;
 }
 
-export const CollectionPicker = (props: CollectionPickerProps) => {
+export const CollectionDropDown = (props: CollectionDropDownProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t, COLLECTIONS } = globalContext.localized;
     const playerCollections: (PlayerCollection | CryoCollection | Collection)[] = props.collections ?? globalContext.player.playerData?.player.character.cryo_collections ?? globalContext.core.collections;

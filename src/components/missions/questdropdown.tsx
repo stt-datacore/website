@@ -4,7 +4,7 @@ import { GlobalContext } from "../../context/globalcontext";
 import { Dropdown, DropdownItemProps, Form } from "semantic-ui-react";
 import { ContinuumMission } from "../../model/continuum";
 
-export interface QuestPickerProps {
+export interface QuestDropDownProps {
     mission?: ProtoMission;
     missionsfull?: Mission[];
     selection?: string | string[];
@@ -14,7 +14,7 @@ export interface QuestPickerProps {
     customRender?: (value: Quest) => JSX.Element;
 }
 
-export const QuestPicker = (props: QuestPickerProps) => {
+export const QuestDropDown = (props: QuestDropDownProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
     const { customRender, multiple, selection, setSelection } = props;

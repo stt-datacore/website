@@ -4,7 +4,7 @@ import { Form, Dropdown, Checkbox, DropdownItemProps } from 'semantic-ui-react';
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
 import { ItemWithBonus } from '../../../utils/itemutils';
 import { GlobalContext } from '../../../context/globalcontext';
-import { QuestPicker } from '../../missions/questpicker';
+import { QuestDropDown } from '../../missions/questdropdown';
 import { Mission, Quest } from '../../../model/missions';
 import { useStateWithStorage } from '../../../utils/storage';
 import { ContinuumMission } from '../../../model/continuum';
@@ -147,7 +147,7 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 				closeOnChange
 			/>
 
-			{/* <QuestPicker
+			{/* <QuestDropDown
 				selection={questFilter?.length ? questFilter[0] : undefined}
 				setSelection={(v) => setQuestFilter(v ? [v as string] : undefined)}
 				mission={mission}
