@@ -29,8 +29,6 @@ export const OpponentTable = (props: OpponentTableProps) => {
     const [itemsPerPage, setItemsPerPage] = React.useState(10);
     const [activePage, setActivePage] = React.useState(1);
     const pageStartIdx = (activePage - 1) * itemsPerPage;
-    const [elevated, setElevated] = React.useState({} as { [key: string]: number });
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
     React.useEffect(() => {
         const newOppo = [...externalOpponents];
@@ -131,7 +129,7 @@ export const OpponentTable = (props: OpponentTableProps) => {
                     return <Table.Row key={`${opponent.name}_${idx}_${opponent.player_id}`}>
                         <Table.Cell>
                             <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                                <img className="ui segment" style={{ margin: "4px 8px", borderRadius: "6px", height: "72px" }} src={`${process.env.GATSBY_ASSETS_URL}${opponent?.icon.file}`} />
+                                <img className="ui segment" style={{ margin: "4px 8px", borderRadius: "6px", height: "72px" }} src={`${process.env.GATSBY_ASSETS_URL}${opponent?.icon?.file ?? 'crew_portraits_cm_empty_sm.png'}`} />
                                 {opponent.name}
                             </div>
                         </Table.Cell>

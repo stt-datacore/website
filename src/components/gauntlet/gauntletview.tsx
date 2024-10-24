@@ -34,7 +34,7 @@ export const GauntletView = (props: GauntletViewProps) => {
     const { runWorker, running, cancel } = workerContext;
     const { config, pane, viewMode, tops, setConfig } = gauntletContext;
     const { textFilter, filter, buffMode, range_max, settings } = config;
-
+    const { playerData } = globalContext.player;
     const { t } = globalContext.localized;
     const { gauntlet: outerGauntlet, opponentCache } = props;
 
@@ -74,10 +74,11 @@ export const GauntletView = (props: GauntletViewProps) => {
                 bonusCache,
                 equipmentCache
             } as GauntletCalcConfig;
+
             cancel();
             runWorker('gauntlet', workconf, workerResults);
         }
-    }, [settings, outerGauntlet, filter, buffMode, range_max]);
+    }, [settings, outerGauntlet, filter, buffMode, range_max, playerData]);
 
     React.useEffect(() => {
         if (!gauntlet?.allCrew) return;
