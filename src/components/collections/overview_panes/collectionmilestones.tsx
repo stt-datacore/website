@@ -19,10 +19,10 @@ export const CollectionTiers = (props: { collection: Collection }) => {
             <Table.Header>
                 <Table.Row>
                     <Table.HeaderCell>
-                        {t('collections.milestones')}
+                        {t('collections.milestone')}
                     </Table.HeaderCell>
                     <Table.HeaderCell>
-                        {t('global.rewards')}
+                        {t('base.rewards')}
                     </Table.HeaderCell>
                 </Table.Row>
             </Table.Header>

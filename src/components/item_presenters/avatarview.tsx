@@ -302,7 +302,9 @@ export const AvatarView = (props: AvatarViewProps) => {
                 item.demandCrew = citem.demandCrew;
                 if (!src) src = `${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`;
             }
-
+            if (item?.symbol && globalContext.localized.ITEM_ARCHETYPES[item.symbol]) {
+                item = { ...item, ... globalContext.localized.ITEM_ARCHETYPES[item.symbol] };
+            }
             gen_item = item;
             if (gen_item && !gen_item.max_rarity) {
                 gen_item.max_rarity = gen_item.rarity;
