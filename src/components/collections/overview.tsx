@@ -1,5 +1,5 @@
 import React from 'react';
-import { Label, Modal, Grid, Segment } from 'semantic-ui-react';
+import { Label, Modal, Grid, Segment, Input, Form, Icon, Image } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { PlayerCollection } from '../../model/player';
@@ -9,6 +9,7 @@ import { formatColString } from './context';
 import { getAllStatBuffs } from '../../utils/collectionutils';
 import { getIconPath } from '../../utils/assets';
 import CONFIG from '../CONFIG';
+import { Collection } from '../../model/game-elements';
 
 type CollectionsPageProps = {
 	onClick?: (collectionId: number) => void;
@@ -17,7 +18,8 @@ type CollectionsPageProps = {
 export const CollectionsOverview = (props: CollectionsPageProps) => {
 	const globalContext = React.useContext(GlobalContext);
 
-	const { ITEM_ARCHETYPES, COLLECTIONS } = globalContext.localized;
+	const [search, setSearch] = React.useState('');
+	const { ITEM_ARCHETYPES, COLLECTIONS, t } = globalContext.localized;
 	const [modalInstance, setModalInstance] = React.useState(null as PlayerCollection | null);
 	const { collections } = globalContext.core;
 
@@ -27,12 +29,20 @@ export const CollectionsOverview = (props: CollectionsPageProps) => {
 
 	return (
 		<div>
+			<div style={{display:'flex', flexDirection: 'row', justifyContent:'flex-start', alignItems: 'center', gap: '0.5em', marginBottom: '1em'}}>
+				<Input placeholder={t('global.search')} value={search} onChange={(e, { value }) => setSearch(value.trim())} />
+				<Icon style={{margin:0,cursor:'pointer'}} name='close' onClick={() => setSearch('')} />
+			</div>
+
 			<Grid stackable columns={3}>
 				{collections.map(colInfo => {
 					const stats = getAllStatBuffs(colInfo);
 					if (COLLECTIONS[`cc-${colInfo.type_id ?? colInfo.id}`]) {
 						colInfo = { ...colInfo, ... COLLECTIONS[`cc-${colInfo.type_id ?? colInfo.id}`]};
 					}
+
+					if (!collectionMatches(colInfo)) return <></>
+
 					return (
 						<Grid.Column key={`${colInfo.type_id}_${colInfo.name}`}>
 							<div
@@ -42,7 +52,7 @@ export const CollectionsOverview = (props: CollectionsPageProps) => {
 								<Segment padded>
 									<Label attached="top">
 										<div style={{margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '0.25em', alignItems: 'center', justifyContent: 'space-between'}}>
-											<span>{colInfo.name}</span>
+											<span style={{fontSize: '1.2em', fontWeight: 'bold'}}>{colInfo.name}</span>
 											<div className='ui label' style={{margin: 0, padding: 0, flexWrap: 'wrap', display: 'flex', flexDirection: 'row', gap: '0.5em', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
 												{stats.map(stat => {
 													let arch = ITEM_ARCHETYPES[stat.symbol!];
@@ -56,10 +66,10 @@ export const CollectionsOverview = (props: CollectionsPageProps) => {
 										</div>
 
 									</Label>
-									<LazyImage
+									<Image
 										src={`${process.env.GATSBY_ASSETS_URL}${colInfo.image}`}
 										size="large"
-										onError={e => e.target.style.visibility = 'hidden'}
+										// onError={e => e.target.style.visibility = 'hidden'}
 									/>
 									<Label attached='bottom'>
 										{formatColString(colInfo.description!)}
@@ -93,6 +103,24 @@ export const CollectionsOverview = (props: CollectionsPageProps) => {
 			)}
 		</div>
 	);
+
+	function collectionMatches(c: Collection) {
+		let sl = search?.toLowerCase() || '';
+		if (!sl) return true;
+		let m = !sl || c.name.toLowerCase().includes(sl) || c.description?.toLowerCase().includes(sl)
+		if (!m && c.milestones) {
+			m = c.milestones?.some(ms => {
+				let msb = ms.buffs.some(buff => buff.flavor?.toLowerCase().includes(sl) || buff.name?.toLowerCase().includes(sl) || buff.symbol?.toLowerCase().includes(sl))
+				if (!msb) {
+					msb = ms.rewards.some(reward => reward.flavor?.toLowerCase().includes(sl) || reward.name?.toLowerCase().includes(sl) || reward.symbol?.toLowerCase().includes(sl))
+				}
+				return msb;
+			})
+		}
+		return m;
+	}
+
+
 }
 
 export default CollectionsOverview;
