@@ -116,7 +116,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 export function descriptionLabel(t: TranslateMethod, crew: IRosterCrew,  showOwned?: boolean): JSX.Element {
 
 	const counts = [
-		{ name: crew.collections.length > 1 ? t('base.collections_fmt', { count: crew.collections.length.toString() }) : t('base.collection_fmt'), count: crew.collections.length }
+		{ name: crew.collections.length !== 1 ? t('base.collections_fmt', { count: crew.collections.length.toString() }) : t('base.collection_fmt'), count: crew.collections.length }
 	];
 	const formattedCounts = counts.map((count, idx) => (
 		<span key={idx} style={{ whiteSpace: 'nowrap' }}>
@@ -127,7 +127,7 @@ export function descriptionLabel(t: TranslateMethod, crew: IRosterCrew,  showOwn
 	return (
 		<div>
 			<React.Fragment>
-				{!!crew.is_new && <div title={t('global.new', { __gender: crewGender(crew) })} style={{fontWeight: 'bold'}}><Icon name='asterisk' style={{ color: CONFIG.RARITIES[crew.max_rarity].color}} />{t('global.new', { __gender: crewGender(crew) })}</div>} 
+				{!!crew.is_new && <div title={t('global.new', { __gender: crewGender(crew) })} style={{fontWeight: 'bold'}}><Icon name='asterisk' style={{ color: CONFIG.RARITIES[crew.max_rarity].color}} />{t('global.new', { __gender: crewGender(crew) })}</div>}
 				{!!crew.expires_in && <Icon name='warning sign' title={ t('crew_state.expires_in', { time: printShortDistance(undefined, crew.expires_in * 1000) })} />}
 				{crew.favorite && <Icon name='heart' />}
 				{crew.prospect && <Icon name='add user' />}
