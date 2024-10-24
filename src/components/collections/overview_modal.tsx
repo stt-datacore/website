@@ -5,19 +5,22 @@ import { ItemHoverStat } from "../hovering/itemhoverstat"
 import { ShipHoverStat } from "../hovering/shiphoverstat"
 import { PlayerCollection } from "../../model/player"
 import { CollectionCrew } from "./overview_panes/collectioncrew"
-import { CollectionTiers } from "./overview_panes/collectiontiers"
+import { CollectionTiers } from "./overview_panes/collectionmilestones"
+import { GlobalContext } from "../../context/globalcontext"
 
 export interface CollectionDetailsProps {
 	collection: PlayerCollection;
 }
 
 export const CollectionDetails = (props: CollectionDetailsProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { collection } = props;
 	const image = collection.image;
 
 	const panes = [
 		{
-			menuItem: 'Crew',
+			menuItem: t('base.crew'),
 			render: () => (
 				<Tab.Pane attached={false}>
 					<CollectionCrew collection={collection} />
@@ -25,7 +28,7 @@ export const CollectionDetails = (props: CollectionDetailsProps) => {
 			),
 		},
 		{
-			menuItem: 'Tiers',
+			menuItem: t('collections.milestones'),
 			render: () => (
 				<Tab.Pane attached={false}>
 					<CollectionTiers collection={collection} />

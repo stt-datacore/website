@@ -48,6 +48,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 	const { kind, needs, wrap, maxCols, targetGroup, crewTargetGroup } = props;
 	const rewards = props.rewards ?? [];
 	const context = React.useContext(GlobalContext);
+	const { ITEM_ARCHETYPES } = context.localized;
 	const { playerData } = context.player;
 	const { items: tempItems, crew: allCrew } = context.core;
 
@@ -145,7 +146,10 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 					<Grid.Row key={rowIdx + "_rowreward"}>
 						{row.map((reward, idx) => {
 							const img = needs?.length ? reward.icon?.file : getImageName(reward);
-							const rewardItem = checkReward(items, reward, !!needs?.length);
+							checkReward(items, reward, !!needs?.length);
+							if (reward.symbol && ITEM_ARCHETYPES[reward.symbol]) {
+								reward = { ... reward, ... ITEM_ARCHETYPES[reward.symbol]};
+							}
 							return (
 								<Grid.Column key={idx + "_rowcolreward"}>
 									<div style={{

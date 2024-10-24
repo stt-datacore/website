@@ -303,17 +303,17 @@ export function getAllStatBuffs(col: Collection) {
     buffs.sort((a, b) => a.symbol!.localeCompare(b.symbol!));
 
     let output = [] as MilestoneBuff[];
-    let lastId = -1;
+    let lastSymbol = '';
 
     for (let buff of buffs) {
-        if (buff.id === lastId) {
+        if (buff.symbol === lastSymbol) {
             output[output.length - 1].quantity!++;
         }
         else {
             buff.quantity ??= 1;
             output.push(buff);
         }
-        lastId = buff.id;
+        lastSymbol = buff.symbol;
     }
 
     output.sort((a, b) => {

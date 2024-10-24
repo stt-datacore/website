@@ -17,7 +17,7 @@ type CollectionsPageProps = {
 export const CollectionsOverview = (props: CollectionsPageProps) => {
 	const globalContext = React.useContext(GlobalContext);
 
-	const { ITEM_ARCHETYPES } = globalContext.localized;
+	const { ITEM_ARCHETYPES, COLLECTIONS } = globalContext.localized;
 	const [modalInstance, setModalInstance] = React.useState(null as PlayerCollection | null);
 	const { collections } = globalContext.core;
 
@@ -30,7 +30,9 @@ export const CollectionsOverview = (props: CollectionsPageProps) => {
 			<Grid stackable columns={3}>
 				{collections.map(colInfo => {
 					const stats = getAllStatBuffs(colInfo);
-
+					if (COLLECTIONS[`cc-${colInfo.type_id ?? colInfo.id}`]) {
+						colInfo = { ...colInfo, ... COLLECTIONS[`cc-${colInfo.type_id ?? colInfo.id}`]};
+					}
 					return (
 						<Grid.Column key={`${colInfo.type_id}_${colInfo.name}`}>
 							<div
