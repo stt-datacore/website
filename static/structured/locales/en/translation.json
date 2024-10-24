@@ -29,6 +29,7 @@
         "qp": "QP",
         "rarity": "Rarity",
         "release_date": "Release Date",
+        "rewards": "Rewards",
         "shuttle": "Shuttle",
         "shuttles": "Shuttles",
         "uniquely_retrievable": "Uniquely Retrievable",
@@ -158,6 +159,10 @@
     },
     "clipboard": {
         "copied_exclaim": "Copied!"
+    },
+    "collections": {
+        "milestone": "Milestone",
+        "milestones": "Milestones"
     },
     "consider_crew": {
         "active_shuttles": "Consider crew on active shuttles",
@@ -562,6 +567,10 @@
         "note_unleveled_crew_max_highlight_pair_msg": "Note: Unleveled, owned crew that are shown maxed have proficiencies that are underlined and highlighted in green.",
         "note_unleveled_crew_max_highlight_table_msg": "Note: Unleveled, owned crew that are shown maxed are highlighted in green.",
         "only_highlight_active_round": "Only highlight active round",
+        "opponent_table": {
+            "opponent": "Opponent",
+            "opponent_crew_n": "Opponent Crew {{n}}"
+        },
         "owned_status": {
             "any": "All Crew",
             "fe": "Owned, Fully Equipped Crew",
@@ -636,10 +645,6 @@
                 "title": "Table"
             },
             "title": "View Mode"
-        },
-        "opponent_table": {
-            "opponent": "Opponent",
-            "opponent_crew_n": "Opponent Crew {{n}}"
         }
     },
     "global": {
@@ -959,6 +964,9 @@
     },
     "menu": {
         "about_title": "About",
+        "descriptions": {
+            "voyage_calculator": "Find the best crew for your voyages and get estimates on how long they will run."
+        },
         "game_info": {
             "bridge_crew_tool": "Bridge Crew Tool",
             "episodes": "Episodes",
@@ -1000,9 +1008,6 @@
             "shuttle_helper": "Shuttle Helper",
             "voyage_calculator": "Voyage Calculator",
             "voyage_history": "Voyage History"
-        },
-        "descriptions": {
-            "voyage_calculator": "Find the best crew for your voyages and get estimates on how long they will run."
         },
         "tools_title": "Tools"
     },
