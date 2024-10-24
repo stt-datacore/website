@@ -1,17 +1,8 @@
-import React, { PureComponent } from 'react';
-import { Item, Icon, Dropdown, Label, Modal, Grid, Segment } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import React from 'react';
+import { Label, Modal, Grid, Segment } from 'semantic-ui-react';
 
-import { CrewMember } from '../../model/crew';
-import { Collection } from '../../model/game-elements';
 import { GlobalContext } from '../../context/globalcontext';
-import CONFIG from '../CONFIG';
-import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
-import { crewCopy } from '../../utils/crewutils';
-import { TinyStore } from '../../utils/tiny';
-import { useStateWithStorage } from '../../utils/storage';
 import { PlayerCollection } from '../../model/player';
-import EventInfoModal from '../event_info_modal';
 import { CollectionDetails } from './overview_modal';
 import LazyImage from '../lazyimage';
 import { formatColString } from './context';
@@ -19,9 +10,6 @@ import { formatColString } from './context';
 type CollectionsPageProps = {
 	onClick?: (collectionId: number) => void;
 };
-
-type SortOptions = 'date_added' | 'rarity' | 'owned_status';
-type Direction = 'ascending' | 'descending';
 
 export const CollectionsOverview = (props: CollectionsPageProps) => {
 	const globalContext = React.useContext(GlobalContext);
@@ -83,6 +71,5 @@ export const CollectionsOverview = (props: CollectionsPageProps) => {
 		</div>
 	);
 }
-
 
 export default CollectionsOverview;
