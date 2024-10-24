@@ -218,6 +218,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 
 	const [showBase, setShowBase] = React.useState<boolean>(false);
 
+	const [questFilter, setQuestFilter] = useStateWithStorage<string[] | undefined>('/quipmentTools/questFilter', undefined);
 	const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>('/quipmentTools/pstMode', false, { rememberForever: true });
 	const [powerMode, setPowerMode] = useStateWithStorage<PowerMode>('/quipmentTools/powerMode', 'all', { rememberForever: true });
 	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
@@ -342,6 +343,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				});
 			},
 			form: <QuipmentToolsFilter
+					questFilter={questFilter}
+					setQuestFilter={setQuestFilter}
 					immortalOnly={true}
 					maxxed={['allCrew', 'offers', 'buyBack'].includes(rosterType)}
 					quipment={quipment}

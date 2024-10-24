@@ -29,6 +29,7 @@
         "qp": "RL",
         "rarity": "Seltenheit",
         "release_date": "Debüt",
+        "rewards": "Belohnungen",
         "shuttle": "Shuttle",
         "shuttles": "Shuttles",
         "uniquely_retrievable": "Eindeutig abrufbar",
@@ -158,6 +159,10 @@
     },
     "clipboard": {
         "copied_exclaim": "Kopiert!"
+    },
+    "collections": {
+        "milestone": "Meilenstein",
+        "milestones": "Meilensteine"
     },
     "consider_crew": {
         "active_shuttles": "Crew auf aktiven Shuttles berücksichtigen",
@@ -562,6 +567,10 @@
         "note_unleveled_crew_max_highlight_pair_msg": "Hinweis: Unleveled, eigene Crew, die als maximal angezeigt wird, hat Fähigkeiten, die unterstrichen und grün hervorgehoben sind.",
         "note_unleveled_crew_max_highlight_table_msg": "Hinweis: Unleveled, eigene Crew, die als maximal angezeigt wird, ist grün hervorgehoben.",
         "only_highlight_active_round": "Nur aktive Runde hervorheben",
+        "opponent_table": {
+            "opponent": "Gegner",
+            "opponent_crew_n": "Gegnercrew {{n}}"
+        },
         "owned_status": {
             "any": "Alle Crew",
             "fe": "Eigene, voll ausgerüstete Crew",
@@ -618,6 +627,10 @@
             "big": {
                 "heading": "Sehen Sie die Crew in großen Präsentationen",
                 "title": "Große Präsentation"
+            },
+            "opponent_table": {
+                "heading": "Alle in diesem Spießrutenlauf gefangenen Gegner anzeigen",
+                "title": "Gegner"
             },
             "pair_cards": {
                 "heading": "Siehe Crew in Paartabellen gruppiert",
@@ -770,6 +783,7 @@
         "apply_buffs": "Buffs anwenden",
         "display_buffs": "Buffs anzeigen",
         "filter_by_availability": "Filtern nach Verfügbarkeit",
+        "filter_by_collections": "Filtern nach Sammlungen",
         "filter_by_item_type": "Filtern nach Artikeltyp",
         "filter_by_owned_status": "Filtern nach Besitzstatus",
         "filter_by_portal_status": "Filtern nach Portalstatus",
@@ -949,6 +963,9 @@
     },
     "menu": {
         "about_title": "Über uns",
+        "descriptions": {
+            "voyage_calculator": "Finden Sie die beste Crew für Ihre Reisen und erhalten Sie Schätzungen zur Dauer der Reisen."
+        },
         "game_info": {
             "bridge_crew_tool": "Brückenbesatzungswerkzeug",
             "episodes": "Folgen",

@@ -5,7 +5,7 @@ import { Progress, Icon, Image } from "semantic-ui-react";
 
 import { BuffBase, PlayerCollection, Reward } from "../../model/player";
 import { CiteInventory, makeCiteNeeds } from "../../utils/collectionutils";
-import { formatColString } from "./overview";
+import { formatColString } from "./context";
 import { RewardsGrid } from "../crewtables/rewards";
 
 export interface CollectionCardProps {
@@ -30,7 +30,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
         setMapFilter,
         setSearchFilter,
     } = props;
-    
+
     const { collection } = col;
 
     const honorQ = ownedCites?.map(o => {
@@ -40,7 +40,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
             }
             else {
                 return o.quantity * o.cost;
-            }            
+            }
         }
         return 0;
     }).reduce((p, n) => p + n, 0) ?? 0;
@@ -189,7 +189,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
                     >
                         {allStars && <>All crew required to reach the next milestone are already fully fused.</>}
                         {!allStars && <>All remaining required fuses are covered by honorable citations you already own.</>}
-                        
+
                     </i>
                 )}
 
@@ -202,7 +202,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
                         next goal.
                     </i>
                 )}
-                
+
                 </React.Fragment>}
             </div>
         </>
