@@ -29,6 +29,7 @@
         "qp": "QP",
         "rarity": "Rareza",
         "release_date": "Debut",
+        "rewards": "Recompensas",
         "shuttle": "Lanzadera",
         "shuttles": "Lanzaderas",
         "uniquely_retrievable": "Únicamente recuperable"
@@ -156,6 +157,10 @@
     },
     "clipboard": {
         "copied_exclaim": "¡Copiada!"
+    },
+    "collections": {
+        "milestone": "Milestone",
+        "milestones": "Milestones"
     },
     "consider_crew": {
         "active_shuttles": "Considere las tripulantes en lanzaderas activas",
@@ -567,6 +572,10 @@
         "note_unleveled_crew_max_highlight_table_msg": "Nota: Los equipos propios sin nivel que se muestran al máximo están resaltados en verde.",
         "notes": {},
         "only_highlight_active_round": "Resaltar solo la ronda activa",
+        "opponent_table": {
+            "opponent": "Oponente",
+            "opponent_crew_n": "Tripulante del oponente {{n}}"
+        },
         "owned_status": {
             "any": "Todas las tripulantes",
             "fe": "Tripulantes propia y totalmente equipada",
@@ -641,10 +650,6 @@
                 "title": "Tabla"
             },
             "title": "Modo de vista"
-        },
-        "opponent_table": {
-            "opponent": "Oponente",
-            "opponent_crew_n": "Tripulante del oponente {{n}}"
         }
     },
     "global": {
@@ -967,6 +972,9 @@
     },
     "menu": {
         "about_title": "Sobre",
+        "descriptions": {
+            "voyage_calculator": "Encuentre las mejores tripulantes para sus viajes y obtenga estimaciones de su duración."
+        },
         "game_info": {
             "bridge_crew_tool": "Herramienta de tripulación de puente",
             "episodes": "Episodios",
@@ -1008,9 +1016,6 @@
             "shuttle_helper": "Ayudante de Lanzaderas",
             "voyage_calculator": "Calculadora de viaje",
             "voyage_history": "Historia del viaje"
-        },
-        "descriptions": {
-            "voyage_calculator": "Encuentre las mejores tripulantes para sus viajes y obtenga estimaciones de su duración."
         },
         "tools_title": "Herramientas"
     },

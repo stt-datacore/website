@@ -233,7 +233,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 			menuItem: 'Overview',
 			longTitle: 'Collections Overview',
 			description: 'Collections Overview',
-			longDescription: "Overview of All Collections",
+			//longDescription: "Overview of All Collections",
 			showFilters: false,
 			requirePlayer: false,
 			render: (workerRunning: boolean) => <CollectionsOverviewComponent

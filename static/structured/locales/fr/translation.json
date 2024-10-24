@@ -29,6 +29,7 @@
         "qp": "QP",
         "rarity": "Rareté",
         "release_date": "Début",
+        "rewards": "Récompenses",
         "shuttle": "Navette",
         "shuttles": "Navettes",
         "uniquely_retrievable": "Récupérable de manière unique"
@@ -156,6 +157,10 @@
     },
     "clipboard": {
         "copied_exclaim": "Copié!"
+    },
+    "collections": {
+        "milestone": "Milestone",
+        "milestones": "Milestones"
     },
     "consider_crew": {
         "active_shuttles": "Considérez les équipiers sur les navettes actives",
@@ -568,6 +573,10 @@
         "note_unleveled_crew_max_highlight_pair_msg": "Remarque : les équipages possédés sans niveau et affichés au maximum ont des compétences soulignées et surlignées en vert.",
         "note_unleveled_crew_max_highlight_table_msg": "Remarque : les équipages possédés sans niveau et affichés au maximum sont surlignés en vert.",
         "only_highlight_active_round": "Mettre en évidence uniquement le tour actif",
+        "opponent_table": {
+            "opponent": "Adversaire",
+            "opponent_crew_n": "Équipier Adversaire {{n}}"
+        },
         "owned_status": {
             "any": "Tous les équipiers",
             "fe": "Équipiers possédés et entièrement équipé",
@@ -642,10 +651,6 @@
                 "title": "Table"
             },
             "title": "Mode d'affichage"
-        },
-        "opponent_table": {
-            "opponent": "Adversaire",
-            "opponent_crew_n": "Équipier Adversaire {{n}}"
         }
     },
     "global": {
@@ -968,6 +973,9 @@
     },
     "menu": {
         "about_title": "À propos",
+        "descriptions": {
+            "voyage_calculator": "Trouvez les meilleurs équipiers pour vos voyages et obtenez des estimations sur leur durée."
+        },
         "game_info": {
             "bridge_crew_tool": "Outil pour l'équipage de la passerelle",
             "episodes": "Épisodes",
@@ -1009,9 +1017,6 @@
             "shuttle_helper": "Aide aux Navettes",
             "voyage_calculator": "Calculateur de voyage",
             "voyage_history": "Histoire des voyages"
-        },
-        "descriptions": {
-            "voyage_calculator": "Trouvez les meilleurs équipiers pour vos voyages et obtenez des estimations sur leur durée."
         },
         "tools_title": "Outils"
     },

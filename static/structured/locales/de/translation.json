@@ -29,6 +29,7 @@
         "qp": "RL",
         "rarity": "Seltenheit",
         "release_date": "Debüt",
+        "rewards": "Belohnungen",
         "shuttle": "Shuttle",
         "shuttles": "Shuttles",
         "uniquely_retrievable": "Eindeutig abrufbar",
@@ -158,6 +159,10 @@
     },
     "clipboard": {
         "copied_exclaim": "Kopiert!"
+    },
+    "collections": {
+        "milestone": "Milestone",
+        "milestones": "Milestones"
     },
     "consider_crew": {
         "active_shuttles": "Crew auf aktiven Shuttles berücksichtigen",
@@ -562,6 +567,10 @@
         "note_unleveled_crew_max_highlight_pair_msg": "Hinweis: Unleveled, eigene Crew, die als maximal angezeigt wird, hat Fähigkeiten, die unterstrichen und grün hervorgehoben sind.",
         "note_unleveled_crew_max_highlight_table_msg": "Hinweis: Unleveled, eigene Crew, die als maximal angezeigt wird, ist grün hervorgehoben.",
         "only_highlight_active_round": "Nur aktive Runde hervorheben",
+        "opponent_table": {
+            "opponent": "Gegner",
+            "opponent_crew_n": "Gegnercrew {{n}}"
+        },
         "owned_status": {
             "any": "Alle Crew",
             "fe": "Eigene, voll ausgerüstete Crew",
@@ -636,10 +645,6 @@
                 "title": "Tabelle"
             },
             "title": "Ansichtsmodus"
-        },
-        "opponent_table": {
-            "opponent": "Gegner",
-            "opponent_crew_n": "Gegnercrew {{n}}"
         }
     },
     "global": {
@@ -958,6 +963,9 @@
     },
     "menu": {
         "about_title": "Über uns",
+        "descriptions": {
+            "voyage_calculator": "Finden Sie die beste Crew für Ihre Reisen und erhalten Sie Schätzungen zur Dauer der Reisen."
+        },
         "game_info": {
             "bridge_crew_tool": "Brückenbesatzungswerkzeug",
             "episodes": "Folgen",
@@ -999,9 +1007,6 @@
             "shuttle_helper": "Shuttle Helfer",
             "voyage_calculator": "Reiserechner",
             "voyage_history": "Reiseverlauf"
-        },
-        "descriptions": {
-            "voyage_calculator": "Finden Sie die beste Crew für Ihre Reisen und erhalten Sie Schätzungen zur Dauer der Reisen."
         },
         "tools_title": "Werkzeuge"
     },

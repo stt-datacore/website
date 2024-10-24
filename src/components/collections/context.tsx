@@ -160,3 +160,46 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
 }
 
 
+
+/**
+ * Format collection description text by parsing the markup
+ * @param text The collection text to parse and format
+ * @param style Optional style to include on the output DIV
+ * @param className Optional className to include on the output DIV (comes before style in rendering)
+ * @param linkFunc Optional on-click function
+ * @param linkValue Optional value (parsed contents used otherwise)
+ * @returns {JSX.Element} Formatted collection description
+ */
+export const formatColString = (text: string, style?: React.CSSProperties, className?: string, linkFunc?: (value: string) => void, linkValue?: string) => {
+	const greg = new RegExp(/(.+)\<([A-Fa-f0-9#]+)\>\<b\>(.+)\<\/b\>\<\/color\>(.+)/);
+	const greg2 = new RegExp(/(.+)\<span style\=\"color:([A-Fa-f0-9#]+)\"\>\<b\>(.+)\<\/b\>\<\/span\>(.+)/);
+
+	let testA = greg.test(text);
+	let testB = greg2.test(text);
+
+	if (!testA && !testB) {
+		if (linkFunc && linkValue) {
+			return <div className={className} style={{ ...(style ?? {}), cursor: "pointer" }} onClick={(e) => linkFunc(linkValue)}>{text}</div>;
+		}
+		else {
+			return <div className={className} style={style}>{text}</div>;
+		}
+
+	}
+
+	if (testA) {
+		const result = greg.exec(text);
+
+		return result && <div style={style}>
+			{result[1]}<b style={{ color: result[2], cursor: linkFunc ? 'pointer' : undefined }} onClick={(e) => linkFunc ? linkFunc(linkValue ?? result[3]) : null}>{result[3]}</b>{result[4]}
+		</div> || <>{text}</>
+	}
+	else {
+		const result = greg2.exec(text);
+
+		return result && <div className={className} style={style}>
+			{result[1]}<b style={{ color: result[2], cursor: linkFunc ? 'pointer' : undefined }} onClick={(e) => linkFunc ? linkFunc(linkValue ?? result[3]) : null}>{result[3]}</b>{result[4]}
+		</div> || <>{text}</>
+	}
+}
+
