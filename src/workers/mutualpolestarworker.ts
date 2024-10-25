@@ -50,7 +50,7 @@ export function getPermutations<T, U>(array: T[], size: number, count?: bigint, 
 const MutualPolestarWorker = {
     calc: (options: IMutualPolestarInternalWorkerConfig, reportProgress: (data: { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: IMutualPolestarWorkerItem }) => boolean = () => true) => {
         return new Promise<MutualPolestarResults>(async (resolve, reject) => {
-            const { exclude, include, polestars, comboSize, allTraits, max_iterations, max_results, traitBucket } = options;
+            const { status_data_only, verbose, exclude, include, comboSize, allTraits, max_iterations, traitBucket } = options;
             let wcn = BigInt(allTraits.length);
             let bsn = BigInt(comboSize);
             let total_combos = factorial(wcn) / (factorial(wcn - bsn) * factorial(bsn));
@@ -67,6 +67,37 @@ const MutualPolestarWorker = {
 
             getPermutations(allTraits, comboSize, count, true, start_index, (combo) => {
                 i++;
+                if (!(i % 100n)) {
+                    let p = ((i * 100n) / count);
+
+                    if (p !== progress) {
+                        progress = p;
+
+                        if (status_data_only) {
+                            reportProgress({
+                                    percent: Number(p.toString()),
+                                    progress: i,
+                                    count,
+                                    accepted: BigInt(combos.length)
+                                });
+                        }
+                        else {
+                            if (!verbose) {
+                                reportProgress({ format: 'ship.calc.calculating_pct_ellipses', options: { percent: `${p}` } });
+                            }
+                            else {
+                                reportProgress({ format: 'ship.calc.calculating_pct_ellipses_verbose',
+                                    options: {
+                                        percent: `${p}`,
+                                        progress: `${i.toLocaleString()}`,
+                                        count: `${count.toLocaleString()}`,
+                                        accepted: `${combos.length.toLocaleString()}`
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
 				if (include.length < 2) return false;
 
 				let traitcrew = combo.map(cb => traitBucket[cb]);
@@ -81,10 +112,10 @@ const MutualPolestarWorker = {
 				let crewB = [] as string[]
 
 				Object.keys(crewcounts).forEach((f) => {
-					if (minc[f] && crewcounts[f] === i) {
+					if (minc[f] && crewcounts[f] === comboSize) {
 						crew.push(f);
 					}
-					else if (mex[f] && crewcounts[f] === i) {
+					else if (mex[f] && crewcounts[f] === comboSize) {
 						crewB.push(f);
 					}
 				})
@@ -94,8 +125,7 @@ const MutualPolestarWorker = {
 						combo,
 						crew
 					});
-
-					console.log(combos[combos.length - 1]);
+                    reportProgress({ result: combos[combos.length - 1] });
 				}
 				return combo;
             });

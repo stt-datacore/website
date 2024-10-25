@@ -1,4 +1,31 @@
 {
+    "retrieval": {
+        "calc_summary": "{{ship.calc.calc_summary}}",
+        "calculating_pct_ellipses": "{{ship.calc.calculating_pct_ellipses}}",
+        "calculating_pct_ellipses_verbose": "{{ship.calc.calculating_pct_ellipses_verbose}}",
+        "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "max_iterations": "{{ship.calc.max_iterations}}",
+        "max_workers": "{{ship.calc.max_workers}}",
+        "keystone": "Keystone",
+        "keystones": "Keystones",
+        "keystone_crate": "Keystone-Kiste",
+        "keystone_crates": "Keystone Kisten",
+        "polestar": "Polarstern",
+        "polestars": "Polarsterne",
+        "n_polestars": "{{n}} Polarsterne",
+        "one_polestar": "1 Polarstern",
+        "constellation": "Sternbilde",
+        "constellations": "Sternbilder",
+        "n_constellations": "{{n}} Sternbilder",
+        "one_constellation": "1 Sternbilde",
+        "modes": {
+            "retrieval": "Bergung",
+            "mutual_polestar_calculator": "Gemeinsamer Polarstern-Rechner"
+        },
+        "combo_length": "Combos Größe",
+        "combo": "Combo",
+        "combos": "Combos"
+    },
     "base": {
         "all_crew": "Die gesamte Crew anzeigen",
         "bigbook_tier": "Stufe",
@@ -648,6 +675,7 @@
         }
     },
     "global": {
+        "calculate": "Berechnen",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",

@@ -1,4 +1,28 @@
 {
+    "retrieval": {
+        "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "max_iterations": "{{ship.calc.max_iterations}}",
+        "max_workers": "{{ship.calc.max_workers}}",
+        "keystone": "Keystone",
+        "keystones": "Keystones",
+        "keystone_crate": "Keystone Crate",
+        "keystone_crates": "Keystone Crates",
+        "polestar": "Polestar",
+        "polestars": "Polestars",
+        "n_polestars": "{{n}} Polestars",
+        "one_polestar": "1 Polestar",
+        "constellation": "Constellation",
+        "constellations": "Constellations",
+        "n_constellations": "{{n}} Constellations",
+        "one_constellation": "1 Constellation",
+        "modes": {
+            "retrieval": "Retrieval",
+            "mutual_polestar_calculator": "Mutual Polestar Calculator"
+        },
+        "combo_length": "Combo Length",
+        "combo": "Combo",
+        "combos": "Combos"
+    },
     "base": {
         "all_crew": "Show all crew",
         "bigbook_tier": "Tier",
@@ -648,6 +672,7 @@
         }
     },
     "global": {
+        "calculate": "Calculate",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",

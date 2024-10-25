@@ -31,7 +31,6 @@ export interface MutualPolestarMultiWorkerState extends IMultiWorkerState<Mutual
 
 
 export interface MutualPolestarMultiWorkerConfig extends IMultiWorkerConfig<IMutualPolestarWorkerConfig, IMutualPolestarWorkerItem> {
-    allTraits: string[];
 }
 
 export interface MutualPolestarResults extends IWorkerResults<IMutualPolestarWorkerItem> {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Icon } from 'semantic-ui-react';
+import { Form, Icon, Step } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
@@ -9,6 +9,8 @@ import { IRetrievalContext, RetrievalContext } from './context';
 import { RetrievalCrew } from './crew';
 import { PolestarFilterModal } from './polestarfilter';
 import { PolestarProspectsModal } from './polestarprospects';
+import { MutualView } from './mutualview';
+import { MutualPolestarMultiWorker } from './mutualmultiworker';
 
 export const RetrievalKeystones = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -58,7 +60,7 @@ export const RetrievalKeystones = () => {
 		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> Loading...</div>);
 
 	if (playerData) {
-		return <KeystonesPlayer allKeystones={allKeystones} dbid={`${playerData.player.dbid}`} />;
+		return <ModePicker allKeystones={allKeystones} dbid={`${playerData.player.dbid}`} />;
 	}
 	else {
 		return <KeystonesNonPlayer allKeystones={allKeystones} />;
@@ -79,6 +81,41 @@ const crewFilterDefaults: ICrewFilters = {
 	minTraitMatches: 1,
 	collection: ''
 };
+
+type ModePickerMode = 'keystones' | 'mutual';
+
+type ModePickerProps = {
+	allKeystones: IKeystone[];
+	dbid: string;
+}
+
+const ModePicker = (props: ModePickerProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
+	const { allKeystones, dbid } = props;
+	const [mode, setMode] = useStateWithStorage<ModePickerMode>(`${dbid}/keystone_modePicker`, 'keystones');
+
+	return <>
+			<Step.Group fluid>
+				<Step key={`keystone_normal`} active={mode === 'keystones'} onClick={() => setMode('keystones')}>
+					<Step.Content>
+						<Step.Title>{t('retrieval.modes.retrieval')}</Step.Title>
+					</Step.Content>
+				</Step>
+				<Step key={`keystone_mutual`} active={mode === 'mutual'} onClick={() => setMode('mutual')}>
+					<Step.Content>
+						<Step.Title>{t('retrieval.modes.mutual_polestar_calculator')}</Step.Title>
+					</Step.Content>
+				</Step>
+            </Step.Group>
+
+			{mode === 'keystones' && <KeystonesPlayer dbid={dbid} allKeystones={allKeystones} />}
+			{mode === 'mutual' &&
+				<MutualPolestarMultiWorker>
+					<MutualView allKeystones={allKeystones} dbid={dbid} />
+				</MutualPolestarMultiWorker>}
+	</>
+}
 
 type KeystonesPlayerProps = {
 	allKeystones: IKeystone[];

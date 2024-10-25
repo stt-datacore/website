@@ -16,6 +16,7 @@ export interface WorkerConfigBase {
     max_iterations?: bigint;
     start_index?: bigint;
     status_data_only?: boolean;
+    verbose?: boolean;
 }
 
 export interface IWorkerResults<T> {
@@ -374,4 +375,5 @@ export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase {
     allTraits: string[];
     comboSize: 1 | 2 | 3 | 4;
     traitBucket: { [key: string]: string[] }
+    verbose: boolean;
 }

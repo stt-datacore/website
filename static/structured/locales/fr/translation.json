@@ -1,4 +1,31 @@
 {
+    "retrieval": {
+        "calc_summary": "{{ship.calc.calc_summary}}",
+        "calculating_pct_ellipses": "{{ship.calc.calculating_pct_ellipses}}",
+        "calculating_pct_ellipses_verbose": "{{ship.calc.calculating_pct_ellipses_verbose}}",
+        "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "max_iterations": "{{ship.calc.max_iterations}}",
+        "max_workers": "{{ship.calc.max_workers}}",
+        "keystone": "Clé de voûte",
+        "keystones": "Clés de voûte",
+        "keystone_crate": "Caisse des clés de voûte",
+        "keystone_crates": "Caisses des clés de voûte",
+        "polestar": "Étoiles polaire",
+        "polestars": "Étoiles polaires",
+        "n_polestars": "{{n}} Étoiles polaires",
+        "one_polestar": "1 Étoiles polaire",
+        "constellation": "Constellation",
+        "constellations": "Constellations",
+        "n_constellations": "{{n}} Constellations",
+        "one_constellation": "1 Constellation",
+        "modes": {
+            "retrieval": "Récupération",
+            "mutual_polestar_calculator": "Calculateur étoiles polaires mutuels"
+        },
+        "combo_length": "Taille des combos",
+        "combo": "Combo",
+        "combos": "Combos"
+    },
     "base": {
         "all_crew": "Afficher tous l'équipiers",
         "bigbook_tier": "Étage",
@@ -654,6 +681,7 @@
         }
     },
     "global": {
+        "calculate": "Calculer",
         "aborted": "Terminé",
         "admiral": "Avorté",
         "advanced_settings": "Réglages Avancés",

@@ -1,4 +1,31 @@
 {
+    "retrieval": {
+        "calc_summary": "{{ship.calc.calc_summary}}",
+        "calculating_pct_ellipses": "{{ship.calc.calculating_pct_ellipses}}",
+        "calculating_pct_ellipses_verbose": "{{ship.calc.calculating_pct_ellipses_verbose}}",
+        "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "max_iterations": "{{ship.calc.max_iterations}}",
+        "max_workers": "{{ship.calc.max_workers}}",
+        "keystone": "Piedra clave",
+        "keystones": "Piedras clave",
+        "keystone_crate": "Caja de piedras clave",
+        "keystone_crates": "Cajas de piedras clave",
+        "polestar": "Estrella polar",
+        "polestars": "Estrellas polares",
+        "n_polestars": "{{n}} Estrellas polares",
+        "one_polestar": "1 Estrella polar",
+        "constellation": "Constelación",
+        "constellations": "Constelaciones",
+        "n_constellations": "{{n}} Constelaciones",
+        "one_constellation": "1 Constelación",
+        "modes": {
+            "retrieval": "Recuperación",
+            "mutual_polestar_calculator": "Calculadora mutua de estrellas polares"
+        },
+        "combo_length": "Tamaño de los combos",
+        "combo": "Combo",
+        "combos": "Combos"
+    },
     "base": {
         "all_crew": "Mostrar toda las tripulantes",
         "bigbook_tier": "Piso",
@@ -653,6 +680,7 @@
         }
     },
     "global": {
+        "calculate": "Calcular",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
