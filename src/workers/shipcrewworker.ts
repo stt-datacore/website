@@ -314,7 +314,7 @@ const ShipCrewWorker = {
             const run_time = Math.round((endtime.getTime() - starttime.getTime()) / 1000);
 
             resolve({
-                ships: results,
+                items: results,
                 total_iterations: i,
                 run_time
             });

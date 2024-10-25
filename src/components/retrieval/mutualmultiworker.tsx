@@ -1,17 +1,16 @@
 import { v4 } from "uuid";
-import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults } from "../../model/ship";
 import React from "react";
-import { compareShipResults } from "../../utils/shiputils";
-import { IMultiWorkerContext, IMultiWorkerConfig, IMultiWorkerState, IMultiWorkerStatus } from "../../model/worker";
+import { IMultiWorkerContext, IMultiWorkerConfig, IMultiWorkerState, IMultiWorkerStatus, IMutualPolestarWorkerItem, IMutualPolestarWorkerConfig, IWorkerResults, IMutualPolestarInternalWorkerConfig } from "../../model/worker";
+import { GlobalContext } from "../../context/globalcontext";
 
-export interface ShipMultiWorkerProps {
+export interface MutualPolestarMultiWorkerProps {
     children: JSX.Element;
 }
 
-export interface ShipMultiWorkerStatus extends IMultiWorkerStatus<ShipWorkerItem> {
+export interface MutualPolestarMultiWorkerStatus extends IMultiWorkerStatus<IMutualPolestarWorkerItem> {
 }
 
-export interface IShipMultiWorkerContext extends IMultiWorkerContext<ShipMultiWorkerConfig, ShipWorkerConfig, ShipWorkerItem> {
+export interface IMutualPolestarMultiWorkerContext extends IMultiWorkerContext<MutualPolestarMultiWorkerConfig, IMutualPolestarWorkerConfig, IMutualPolestarWorkerItem> {
 }
 
 const DefaultMultiWorkerContextData = {
@@ -25,22 +24,28 @@ const DefaultMultiWorkerContextData = {
     running: false,
     startTime: new Date(),
     run_time: 0
-} as IShipMultiWorkerContext;
+} as IMutualPolestarMultiWorkerContext;
 
-export interface ShipMultiWorkerState extends IMultiWorkerState<ShipMultiWorkerConfig, ShipWorkerConfig, ShipWorkerItem> {
-    fbb_mode: boolean;
+export interface MutualPolestarMultiWorkerState extends IMultiWorkerState<MutualPolestarMultiWorkerConfig, IMutualPolestarWorkerConfig, IMutualPolestarWorkerItem> {
 }
 
 
-export interface ShipMultiWorkerConfig extends IMultiWorkerConfig<ShipWorkerConfig, ShipWorkerItem> {
-    fbb_mode: boolean;
+export interface MutualPolestarMultiWorkerConfig extends IMultiWorkerConfig<IMutualPolestarWorkerConfig, IMutualPolestarWorkerItem> {
+    allTraits: string[];
 }
 
-export const ShipMultiWorkerContext = React.createContext(DefaultMultiWorkerContextData);
+export interface MutualPolestarResults extends IWorkerResults<IMutualPolestarWorkerItem> {
 
-export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipMultiWorkerState> {
-    callback: (progress: ShipMultiWorkerStatus) => void;
-    config: ShipWorkerConfig;
+}
+
+export const MutualMultiWorkerContext = React.createContext(DefaultMultiWorkerContextData);
+
+export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMultiWorkerProps, MutualPolestarMultiWorkerState> {
+    static contextType = GlobalContext;
+    declare context: React.ContextType<typeof GlobalContext>;
+
+    callback: (progress: MutualPolestarMultiWorkerStatus) => void;
+    config: IMutualPolestarWorkerConfig;
 
     private workers: Worker[] = [];
     private ids: string[] = [];
@@ -49,15 +54,14 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
     private count: bigint = 0n;
     private progress: bigint = 0n;
     private accepted: bigint = 0n;
-    private lastResult: ShipWorkerItem | null = null;
+    private lastResult: IMutualPolestarWorkerItem | null = null;
     private progresses = {} as { [key: string]: { count: bigint, time: number, progress: bigint, accepted: bigint }};
-    private allResults: ShipWorkerItem[] = [];
+    private allResults: IMutualPolestarWorkerItem[] = [];
 
-    constructor(props: ShipMultiWorkerProps) {
+    constructor(props: MutualPolestarMultiWorkerProps) {
         super(props);
 
         this.state = {
-            fbb_mode: false,
             context: {
                 ...DefaultMultiWorkerContextData,
                 cancel: () => this.reset(true),
@@ -74,7 +78,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
         this.ids=[];
         this.running=[];
         for (let i = 0; i < cores; i++) {
-            let worker = new Worker(new URL('../../workers/battle-worker.js', import.meta.url));
+            let worker = new Worker(new URL('../../workers/polestar-worker.js', import.meta.url));
             worker.addEventListener('message', this.workerMessage);
             newworkers.push(worker);
             this.ids.push(v4());
@@ -112,14 +116,43 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
         }
     }
 
-    private readonly runWorker = (options: ShipMultiWorkerConfig) => {
+    private readonly runWorker = (options: MutualPolestarMultiWorkerConfig) => {
         this.callback = options.callback;
         this.config = options.config;
-        let fbb_mode = options.fbb_mode;
+        const allCrew = this.context.core.crew;
+        const ownedCrew = this.context.player.playerData?.player.character.crew;
+        const { polestars, comboSize } = options.config;
+
+        if (!ownedCrew) return false;
+
         this.reset(false, options.max_workers);
 
-        let wcn = BigInt(options.config.crew.length);
-        let bsn = BigInt(options.config.ship.battle_stations!.length);
+		const nonImmortals = ownedCrew.filter(f => f.rarity < f.max_rarity && f.in_portal).map(ni => ni.symbol);
+
+		let exclude = allCrew.filter(f => !nonImmortals.some(c => c === f.symbol)).map(m => m.symbol);
+		let include = allCrew.filter(f => !exclude.some(c => c === f.symbol)).map(m => m.symbol);
+
+		const traitBucket = {} as { [key: string]: string[] };
+		const mex = {} as { [key: string]: boolean };
+		const minc = {} as { [key: string]: boolean };
+
+		include.forEach((c) => minc[c] = true);
+		exclude.forEach((c) => mex[c] = true);
+
+		allCrew.forEach((crew) => {
+			crew.traits.forEach((trait) => {
+				if (polestars.some(p => p.owned && p.symbol === `${trait}_keystone`)) {
+					traitBucket[trait] ??= [];
+					traitBucket[trait].push(crew.symbol);
+				}
+			});
+		});
+
+		const allTraits = Object.keys(traitBucket);
+		const combos = [] as { combo: string[], crew: string[] }[];
+
+        let wcn = BigInt(allTraits.length);
+        let bsn = BigInt(options.config.comboSize);
         let total = (this.factorial(wcn) / (this.factorial(wcn - bsn) * this.factorial(bsn)));
         if (options.config.max_iterations && options.config.max_iterations < total) {
             total = options.config.max_iterations;
@@ -151,18 +184,22 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
             worker.postMessage({
                 id: this.ids[idx],
                 config: {
-                    ...options.config,
+                    include,
+                    exclude,
+                    allTraits,
+                    polestars,
+                    comboSize,
+                    traitBucket,
                     // ship: JSON.parse(JSON.stringify(options.config.ship)),
                     // crew: JSON.parse(JSON.stringify(options.config.crew)),
                     start_index: start,
                     max_iterations: total <= 100n ? undefined : length,
                     status_data_only: true
-                } as ShipWorkerConfig
+                } as IMutualPolestarInternalWorkerConfig
             });
         });
 
         this.setState({
-            fbb_mode,
             context: {
                 ...this.state.context,
                 cancelled: false,
@@ -193,8 +230,8 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
     }
 
     private readonly workerMessage = (message: any): void => {
-        const { fbb_mode, context } = this.state;
-        let msg = message as ShipMultiWorkerStatus;
+        const { context } = this.state;
+        let msg = message as MutualPolestarMultiWorkerStatus;
         let idx = this.ids.findIndex(fi => fi === msg.data.id);
         if (idx === -1) return;
         if (msg?.data?.inProgress && msg?.data?.id && msg?.data?.result?.progress !== undefined && msg.data?.result?.count) {
@@ -230,7 +267,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
                 this.lastResult = msg.data.result.result;
             }
             else {
-                if (compareShipResults(msg.data.result.result, this.lastResult, fbb_mode) > 0) return;
+                //if (compareMutualPolestarResults(msg.data.result.result, this.lastResult, fbb_mode) > 0) return;
             }
             this.callback({
                 data: {
@@ -262,19 +299,11 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
             }
 
             if (this.running.every(e => !e)) {
-                this.allResults.sort((a, b) => compareShipResults(a, b, fbb_mode));
+                //this.allResults.sort((a, b) => compareMutualPolestarResults(a, b, fbb_mode));
                 let top = 0;
 
-                if (fbb_mode) top = this.allResults[0].fbb_metric;
-                else top = this.allResults[0].arena_metric;
-
                 this.allResults.forEach((result) => {
-                    if (fbb_mode) {
-                        result.percentile = Math.round(1000 * (result.fbb_metric / top)) / 10;
-                    }
-                    else {
-                        result.percentile = Math.round(1000 * (result.arena_metric / top)) / 10;
-                    }
+
                 });
 
                 const endTime = new Date();
@@ -310,9 +339,9 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
         const { context } = this.state;
         const { children } = this.props;
 
-        return <ShipMultiWorkerContext.Provider value={context}>
+        return <MutualMultiWorkerContext.Provider value={context}>
             {children}
-        </ShipMultiWorkerContext.Provider>
+        </MutualMultiWorkerContext.Provider>
 
     }
 }

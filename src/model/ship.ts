@@ -2,6 +2,7 @@ import { BossEffect } from "./boss";
 import { CrewMember } from "./crew";
 import { Icon } from "./game-elements";
 import { CompletionState, PlayerCrew } from "./player";
+import { IWorkerResults, WorkerConfigBase } from "./worker";
 
 
 export interface Schematics {
@@ -187,7 +188,7 @@ export interface AdvancedCrewPowerConfig {
     setCurrent: (value: AdvancedCrewPower) => void;
 }
 
-export interface ShipWorkerConfigBase {
+export interface ShipWorkerConfigBase extends WorkerConfigBase {
     ranking_method: ShipRankingMethod,
     event_crew?: CrewMember,
     crew: CrewMember[],
@@ -255,8 +256,7 @@ export interface ShipWorkerItem {
     attacks?: AttackInstant[];
 }
 
-export interface ShipWorkerResults {
-    ships: ShipWorkerItem[]
+export interface ShipWorkerResults extends IWorkerResults<ShipWorkerItem> {
     total_iterations: bigint;
     run_time: number;
 }

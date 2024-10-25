@@ -9,9 +9,6 @@ import { IRetrievalContext, RetrievalContext } from './context';
 import { RetrievalCrew } from './crew';
 import { PolestarFilterModal } from './polestarfilter';
 import { PolestarProspectsModal } from './polestarprospects';
-import { PlayerCrew } from '../../model/player';
-import { CrewMember } from '../../model/crew';
-import { getPermutations } from '../../workers/shipcrewworker';
 
 export const RetrievalKeystones = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -61,101 +58,12 @@ export const RetrievalKeystones = () => {
 		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> Loading...</div>);
 
 	if (playerData) {
-		// setTimeout(() => {
-		// 	experiment();
-		// }, 2000);
-
 		return <KeystonesPlayer allKeystones={allKeystones} dbid={`${playerData.player.dbid}`} />;
 	}
-
-	return <KeystonesNonPlayer allKeystones={allKeystones} />;
-
-// This code works, but it needs to be parallelized and backgrounded
-
-// 	function experiment() {
-// 		if (!playerData || !allKeystones) return;
-// 		const constellations = allKeystones.filter(k => k.type !== 'keystone') as IConstellation[];
-// 		const polestars = allKeystones.filter(k => k.type === 'keystone') as IPolestar[];
-// 		polestars.forEach(polestar => {
-// 			if (playerData) {
-// 				const itemsOwned = playerData.forte_root.items.find(item => item.id === polestar.id);
-// 				polestar.owned = itemsOwned ? itemsOwned.quantity : 0;
-// 			}
-// 			else {
-// 				polestar.owned = 0;
-// 			}
-// 			const crates = constellations.filter(k => (k.type === 'crew_keystone_crate' || k.type === 'keystone_crate') && k.keystones.includes(polestar.id));
-// 			const owned = crates.filter(k => k.owned > 0);
-// 			polestar.owned_crate_count = owned.reduce((prev, curr) => prev + curr.owned, 0);
-// 			polestar.owned_best_odds = owned.length === 0 ? 0 : 1/owned.reduce((prev, curr) => Math.min(prev, curr.keystones.length), 100);
-// 			polestar.owned_total_odds = owned.length === 0 ? 0 : 1-owned.reduce((prev, curr) => prev*(((curr.keystones.length-1)/curr.keystones.length)**curr.owned), 1);
-// 		});
-
-// 		const nonImmortals = playerData.player.character.crew.filter(f => f.rarity < f.max_rarity && f.in_portal).map(ni => ni.symbol);
-
-// 		let exclude = globalContext.core.crew.filter(f => !nonImmortals.some(c => c === f.symbol)).map(m => m.symbol);
-// 		let include = globalContext.core.crew.filter(f => !exclude.some(c => c === f.symbol)).map(m => m.symbol);
-
-// 		const traitBucket = {} as { [key: string]: string[] };
-// 		const mex = {} as { [key: string]: boolean };
-// 		const minc = {} as { [key: string]: boolean };
-
-// 		include.forEach((c) => minc[c] = true);
-// 		exclude.forEach((c) => mex[c] = true);
-
-// 		globalContext.core.crew.forEach((crew) => {
-// 			crew.traits.forEach((trait) => {
-// 				if (polestars.some(p => p.owned && p.symbol === `${trait}_keystone`)) {
-// 					traitBucket[trait] ??= [];
-// 					traitBucket[trait].push(crew.symbol);
-// 				}
-// 			});
-// 		});
-
-// 		const knownTraits = Object.keys(traitBucket);
-// 		const combos = [] as { combo: string[], crew: string[] }[];
-// 		for (let i = 1; i <= 4; i++) {
-// 			getPermutations(knownTraits, i, undefined, true, 0n, ((combo) => {
-// 				if (combos.length >= 100) return combo;
-// 				if (include.length < 2) return false;
-
-// 				let traitcrew = combo.map(cb => traitBucket[cb]);
-// 				let crewcounts = {} as any;
-
-// 				traitcrew.map((tca) => tca.map(tc => {
-// 					crewcounts[tc] ??= 0;
-// 					crewcounts[tc]++;
-// 				}))
-
-// 				let crew = [] as string[];
-// 				let crewB = [] as string[]
-
-// 				Object.keys(crewcounts).forEach((f) => {
-// 					if (minc[f] && crewcounts[f] === i) {
-// 						crew.push(f);
-// 					}
-// 					else if (mex[f] && crewcounts[f] === i) {
-// 						crewB.push(f);
-// 					}
-// 				})
-
-// 				if (crew.length > 1 && crewB.length === 0) {
-// 					combos.push({
-// 						combo,
-// 						crew
-// 					});
-
-// 					console.log(combos[combos.length - 1]);
-// 				}
-// 				return combo;
-// 			}));
-// 		}
-// 		console.log(combos);
-// 	}
-
+	else {
+		return <KeystonesNonPlayer allKeystones={allKeystones} />;
+	}
 };
-
-
 
 const polestarTailorDefaults: IPolestarTailors = {
 	disabled: [],

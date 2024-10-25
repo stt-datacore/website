@@ -9,6 +9,64 @@ import { ICoreData } from "../context/datacontext";
 import { MissionChallenge, MissionTraitBonus, QuestFilterConfig } from "./missions";
 import { IEphemeralData } from "../context/playercontext";
 import { VPDetails } from "../utils/voyagevp";
+import { IPolestar } from "../components/retrieval/model";
+
+export interface WorkerConfigBase {
+    max_results?: number
+    max_iterations?: bigint;
+    start_index?: bigint;
+    status_data_only?: boolean;
+}
+
+export interface IWorkerResults<T> {
+    items: T[]
+    total_iterations: bigint;
+    run_time: number;
+}
+
+export interface IMultiWorkerState<TRun extends IMultiWorkerConfig<TConfig, TItem>, TConfig, TItem> {
+    context: IMultiWorkerContext<TRun, TConfig, TItem>;
+}
+
+export interface IMultiWorkerConfig<TConfig, TItem> {
+    config: TConfig;
+    max_workers?: number;
+    callback: (progress: IMultiWorkerStatus<TItem>) => void;
+}
+
+export interface IMultiWorkerStatus<T> {
+    data: {
+        result: {
+            items?: T[],
+            run_time?: number,
+            total_iterations?: bigint,
+            format?: string,
+            options?: any,
+            result?: T,
+            percent?: number;
+            progress?: bigint;
+            count?: bigint;
+            accepted?: bigint;
+        },
+        id: string,
+        inProgress: boolean
+    }
+}
+
+export interface IMultiWorkerContext<TRun extends IMultiWorkerConfig<TConfig, TItem>, TConfig, TItem> {
+    runWorker: (options: TRun) => void;
+    cancel: () => void;
+    workers: number;
+    count: bigint;
+    progress: bigint;
+    percent: number;
+    cancelled: boolean;
+    running: boolean;
+    startTime: Date,
+    endTime?: Date
+    run_time: number;
+}
+
 
 export interface GameWorkerOptionsList {
     key: number;
@@ -297,3 +355,23 @@ export const EMPTY_SKILL = {
 	range_max: 0,
 	range_min: 0
 } as Skill;
+
+
+export interface IMutualPolestarWorkerItem {
+    combo: string[];
+    crew: string[];
+}
+
+export interface IMutualPolestarWorkerConfig extends WorkerConfigBase {
+    polestars: IPolestar[];
+    comboSize: 1 | 2 | 3 | 4;
+}
+
+export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase {
+    polestars: IPolestar[];
+    include: string[];
+    exclude: string[];
+    allTraits: string[];
+    comboSize: 1 | 2 | 3 | 4;
+    traitBucket: { [key: string]: string[] }
+}
