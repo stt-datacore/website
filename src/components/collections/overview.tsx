@@ -1,21 +1,15 @@
 import React from 'react';
-import { Label, Modal, Grid, Segment, Input, Form, Icon, Image } from 'semantic-ui-react';
+import { Label, Modal, Grid, Segment, Input, Icon, Image, Popup } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
-import { PlayerCollection } from '../../model/player';
+import { MilestoneBuff, PlayerCollection } from '../../model/player';
 import { CollectionDetails } from './overview_modal';
-import LazyImage from '../lazyimage';
 import { formatColString } from './context';
 import { getAllStatBuffs } from '../../utils/collectionutils';
 import { getIconPath } from '../../utils/assets';
-import CONFIG from '../CONFIG';
 import { Collection } from '../../model/game-elements';
 
-type CollectionsPageProps = {
-	onClick?: (collectionId: number) => void;
-};
-
-export const CollectionsOverview = (props: CollectionsPageProps) => {
+export const CollectionsOverview = () => {
 	const globalContext = React.useContext(GlobalContext);
 
 	const [search, setSearch] = React.useState('');
@@ -44,27 +38,20 @@ export const CollectionsOverview = (props: CollectionsPageProps) => {
 					if (!collectionMatches(colInfo)) return <></>
 
 					return (
-						<Grid.Column key={`${colInfo.type_id}_${colInfo.name}`}>
+						<Grid.Column
+							key={`${colInfo.type_id}_${colInfo.name}`}>
 							<div
 								style={{ cursor: 'pointer' }}
 								onClick={() => setModalInstance(colInfo as PlayerCollection)}
 							>
 								<Segment padded>
 									<Label attached="top">
-										<div style={{margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '0.25em', alignItems: 'center', justifyContent: 'space-between'}}>
+										<div style={{margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '0.5em', alignItems: 'center', justifyContent: 'space-between'}}>
 											<span style={{fontSize: '1.2em', fontWeight: 'bold'}}>{colInfo.name}</span>
-											<div className='ui label' style={{margin: 0, padding: 0, flexWrap: 'wrap', display: 'flex', flexDirection: 'row', gap: '0.5em', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-												{stats.map(stat => {
-													let arch = ITEM_ARCHETYPES[stat.symbol!];
-													return (
-														<div title={`${arch?.name ?? stat?.name ?? ''}${stat.quantity! > 1 ? ' (x' + stat.quantity!.toString() + ')' : ''}`} key={`${colInfo.name}_stat_${stat.symbol}`} style={{margin: 0, padding: 0, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-															<img style={{height:'16px'}} src={`${getIconPath(stat.icon!)}`} />
-															<span>+{stat.quantity!}%</span>
-														</div>)
-												})}
+											<div style={{margin: 0, padding: 0, display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '0.5em', alignItems: 'center', justifyContent: 'flex-start'}}>
+												{stats.map(stat => renderBuff(colInfo, stat))}
 											</div>
 										</div>
-
 									</Label>
 									<Image
 										src={`${process.env.GATSBY_ASSETS_URL}${colInfo.image}`}
@@ -103,6 +90,37 @@ export const CollectionsOverview = (props: CollectionsPageProps) => {
 			)}
 		</div>
 	);
+
+	function renderBuff(colInfo: Collection, stat: MilestoneBuff) {
+		let arch = ITEM_ARCHETYPES[stat.symbol!];
+
+		return (
+			<div
+				title={`${arch?.name ?? stat?.name ?? ''}${stat.quantity! > 1 ? ' (x' + stat.quantity!.toString() + ')' : ''}`} key={`${colInfo.name}_stat_${stat.symbol}`} style={{margin: 0, padding: 0, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}
+			>
+				<img style={{height:'16px'}} src={`${getIconPath(stat.icon!)}`} />
+				<span>+{stat.quantity!}%</span>
+			</div>
+		)
+
+		// return <Popup
+		// 			key={`${colInfo.name}_stat_verbose_${stat.symbol}`}
+		// 			trigger={
+		// 				<div title={`${arch?.name ?? stat?.name ?? ''}${stat.quantity! > 1 ? ' (x' + stat.quantity!.toString() + ')' : ''}`} key={`${colInfo.name}_stat_${stat.symbol}`} style={{margin: 0, padding: 0, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+		// 					<img style={{height:'16px'}} src={`${getIconPath(stat.icon!)}`} />
+		// 					<span>+{stat.quantity!}%</span>
+		// 				</div>
+		// 			}
+		// >
+		// 	<Popup.Content>
+		// 		<div key={`${colInfo.name}_stat_verbose_${stat.symbol}`} style={{margin: 0, padding: 0, gap: '0.5em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start'}}>
+		// 			<img style={{height:'28px'}} src={`${getIconPath(stat.icon!)}`} />
+		// 			<span>{arch?.name ?? stat?.name ?? ''}{stat.quantity! > 1 ? ' (x' + stat.quantity!.toString() + ')' : ''}</span>
+		// 		</div>
+		// 	</Popup.Content>
+
+		// </Popup>
+	}
 
 	function collectionMatches(c: Collection) {
 		let sl = search?.toLowerCase() || '';

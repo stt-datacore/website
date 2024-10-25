@@ -13,7 +13,7 @@ function factorial(number: bigint) {
     return result;
 }
 
-function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[]) => U[] | false) {
+export function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[]) => U[] | false) {
     var current_iter = 0n;
     const mmin = start_idx ?? 0n;
     const mmax = (count ?? 0n) + mmin;
