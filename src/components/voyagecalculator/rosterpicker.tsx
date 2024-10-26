@@ -28,7 +28,11 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 	React.useEffect(() => {
 		const rosterType = playerData ? 'myCrew' : 'allCrew';
-		initializeRoster(rosterType, true);
+		let inUse = [] as number[];
+		if (ephemeral?.voyage && configSource === 'player') {
+			inUse = ephemeral.voyage.map(m => m.ship_id).filter(f => f);
+		}
+		initializeRoster(rosterType, true, inUse);
 		setRosterType(rosterType);
 	}, [playerData]);
 
@@ -58,7 +62,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		</Step.Group>
 	);
 
-	function initializeRoster(rosterType: string, forceReload: boolean = false): void {
+	function initializeRoster(rosterType: string, forceReload: boolean = false, shipsInUse?: number[]): void {
 		let rosterCrew: IVoyageCrew[] = [];
 		let rosterShips: Ship[] = [];
 
@@ -73,6 +77,9 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			setRosterCrew([...rosterCrew]);
 
 			rosterShips = rosterizeMyShips(playerShips ?? []);
+			if (shipsInUse?.length) {
+				rosterShips = rosterShips.filter(f => !shipsInUse.includes(f.id));
+			}
 			setMyShips([...rosterShips]);
 			setRosterShips([...rosterShips]);
 		}
