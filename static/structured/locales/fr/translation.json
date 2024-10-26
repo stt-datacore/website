@@ -1,5 +1,6 @@
 {
     "retrieval": {
+        "up_to_n": "Jusqu'à {{n}}",
         "consider_unowned_polestars": "Envisagez des étoiles polaires sans propriétaire (cela peut prendre beaucoup plus de temps)",
         "calc_summary": "{{ship.calc.calc_summary}}",
         "calculating_pct_ellipses": "{{ship.calc.calculating_pct_ellipses}}",

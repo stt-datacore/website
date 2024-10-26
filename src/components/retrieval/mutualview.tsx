@@ -4,7 +4,7 @@ import { Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Pagination,
 import { useStateWithStorage } from "../../utils/storage";
 import { MutualMultiWorkerContext, MutualPolestarMultiWorkerStatus, MutualPolestarResults } from "./mutualmultiworker";
 import { IConstellation, IKeystone, IPolestar } from "./model";
-import { IMutualPolestarWorkerItem } from "../../model/worker";
+import { IMutualPolestarWorkerItem, PolestarComboSize } from "../../model/worker";
 import { formatRunTime } from "../../utils/misc";
 import { compareShipResults } from "../../utils/shiputils";
 import { PlayerCrew } from "../../model/player";
@@ -17,12 +17,21 @@ import { checkReward } from "../../utils/itemutils";
 import { EquipmentItem } from "../../model/equipment";
 import { CrewDropDown } from "../base/crewdropdown";
 import { CrewMember } from "../../model/crew";
+import { RarityFilter } from "../crewtables/commonoptions";
 
+
+const optionStyle = {
+    display: 'flex',
+    gap: '0.5em',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start'
+} as React.CSSProperties;
 
 interface MutualViewConfig {
     max_workers: number;
     max_iterations?: number;
-    combo_size: 1 | 2 | 3 | 4;
+    combo_size: PolestarComboSize | '1_batch' | '2_batch' | '3_batch' | '4_batch';
     verbose: boolean;
     considerUnowned: boolean;
 }
@@ -43,7 +52,6 @@ const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
     const { t } = globalContext.localized;
 
     const { config, setConfig, clickCalculate, clickClear } = props;
-
     const comboSizes = [] as DropdownItemProps[];
 
     [1, 2, 3, 4].forEach((num) => {
@@ -52,7 +60,15 @@ const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
             value: num,
             text: `${num}`
         })
-    })
+    });
+
+    // [2, 3, 4].forEach((num) => {
+    //     comboSizes.push({
+    //         key: `comboSize_${num}_batch`,
+    //         value: `${num}_batch`,
+    //         text: t('retrieval.up_to_n', { n: `${num}`})
+    //     })
+    // });
 
     const worker_sel = [] as DropdownItemProps[];
     let work_total = navigator?.hardwareConcurrency ?? 1;
@@ -90,14 +106,6 @@ const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
         })
     }
 
-    const optionStyle = {
-        display: 'flex',
-        gap: '0.5em',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        justifyContent: 'flex-start'
-    } as React.CSSProperties;
-
     return <div className="ui segment">
         <div style={{
             display: 'flex',
@@ -113,7 +121,7 @@ const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
                     disabled={running}
                     options={comboSizes}
                     value={config.combo_size}
-                    onChange={(e, { value }) => setConfig({ ...config, combo_size: value as 1 | 2 | 3 | 4 })}
+                    onChange={(e, { value }) => setConfig({ ...config, combo_size: value as PolestarComboSize })}
                 />
             </div>
             <div style={optionStyle}>
@@ -173,7 +181,6 @@ type MutualViewProps = {
 }
 
 export const MutualView = (props: MutualViewProps) => {
-
     const { dbid, allKeystones } = props;
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
@@ -191,49 +198,45 @@ export const MutualView = (props: MutualViewProps) => {
 
     const [config, setConfig] = useStateWithStorage(`${dbid}/mutualView_config`, DefaultConfig, { rememberForever: true });
     const [progressMsg, setProgressMsg] = React.useState('');
-    const [results, setResults] = React.useState([] as IMutualPolestarWorkerItem[]);
-    const [activeSuggestion, setActiveSuggestion] = React.useState<IMutualPolestarWorkerItem | undefined>(undefined);
     const [suggestions, setSuggestions] = React.useState<IMutualPolestarWorkerItem[]>([]);
-    const [sugWait, setSugWait] = React.useState<number | undefined>();
-    const [suggestion, setSuggestion] = React.useState<number | undefined>();
-    const [resultCache, setResultCache] = React.useState([] as IMutualPolestarWorkerItem[]);
-    // Count owned constellations
-    const polestars = allKeystones.filter(k => k.type === 'keystone') as IPolestar[];
-    const constellations = allKeystones.filter(k => k.type !== 'keystone') as IConstellation[];
-    constellations.forEach(constellation => {
-        if (playerData) {
-            const itemsOwned = playerData.forte_root.items.find(item => item.id === constellation.id);
-            constellation.owned = itemsOwned ? itemsOwned.quantity : 0;
-        }
-        else {
-            constellation.owned = 0;
-        }
-    });
-    polestars.forEach(polestar => {
-        if (playerData) {
-            const itemsOwned = playerData.forte_root.items.find(item => item.id === polestar.id);
-            polestar.owned = itemsOwned ? itemsOwned.quantity : 0;
-        }
-        else {
-            polestar.owned = 0;
-        }
-        const crates = constellations.filter(k => (k.type === 'crew_keystone_crate' || k.type === 'keystone_crate') && k.keystones.includes(polestar.id));
-        const owned = crates.filter(k => k.owned > 0);
-        polestar.owned_crate_count = owned.reduce((prev, curr) => prev + curr.owned, 0);
-        polestar.owned_best_odds = owned.length === 0 ? 0 : 1/owned.reduce((prev, curr) => Math.min(prev, curr.keystones.length), 100);
-        polestar.owned_total_odds = owned.length === 0 ? 0 : 1-owned.reduce((prev, curr) => prev*(((curr.keystones.length-1)/curr.keystones.length)**curr.owned), 1);
-    });
+    const [polestars, setPolestars] = React.useState([] as IPolestar[]);
+    const [lastDbid, setLastDbid] = React.useState(undefined as string | undefined);
 
     React.useEffect(() => {
-        if (!activeSuggestion) return;
-    }, [activeSuggestion]);
+        // Count owned constellations
+        const polestars = allKeystones.filter(k => k.type === 'keystone') as IPolestar[];
+        const constellations = allKeystones.filter(k => k.type !== 'keystone') as IConstellation[];
 
-    React.useEffect(() => {
-        if (suggestions?.length && (!activeSuggestion || sugWait !== undefined)) {
-            setSuggestion(sugWait ?? 0);
-            setSugWait(undefined);
+        constellations.forEach(constellation => {
+            if (playerData) {
+                const itemsOwned = playerData.forte_root.items.find(item => item.id === constellation.id);
+                constellation.owned = itemsOwned ? itemsOwned.quantity : 0;
+            }
+            else {
+                constellation.owned = 0;
+            }
+        });
+        polestars.forEach(polestar => {
+            if (playerData) {
+                const itemsOwned = playerData.forte_root.items.find(item => item.id === polestar.id);
+                polestar.owned = itemsOwned ? itemsOwned.quantity : 0;
+            }
+            else {
+                polestar.owned = 0;
+            }
+            const crates = constellations.filter(k => (k.type === 'crew_keystone_crate' || k.type === 'keystone_crate') && k.keystones.includes(polestar.id));
+            const owned = crates.filter(k => k.owned > 0);
+            polestar.owned_crate_count = owned.reduce((prev, curr) => prev + curr.owned, 0);
+            polestar.owned_best_odds = owned.length === 0 ? 0 : 1/owned.reduce((prev, curr) => Math.min(prev, curr.keystones.length), 100);
+            polestar.owned_total_odds = owned.length === 0 ? 0 : 1-owned.reduce((prev, curr) => prev*(((curr.keystones.length-1)/curr.keystones.length)**curr.owned), 1);
+        });
+
+        setPolestars(polestars);
+        if (lastDbid && dbid !== lastDbid) {
+            setSuggestions([].concat());
         }
-    }, [sugWait, suggestions]);
+        setLastDbid(dbid);
+    }, [dbid]);
 
     return <React.Fragment>
         <MutualViewConfigPanel clickClear={clickClear} clickCalculate={clickCalculate} config={config} setConfig={setConfig} />
@@ -261,15 +264,26 @@ export const MutualView = (props: MutualViewProps) => {
             return;
         }
         setProgressMsg('');
-        setActiveSuggestion(undefined);
-        setSuggestions([]);
-        setSugWait(undefined);
+        //setSuggestions([].concat());
+
+        let comboSize: PolestarComboSize = 1;
+        let batch = false;
+
+        if (typeof config.combo_size === 'number') {
+            comboSize = config.combo_size;
+        }
+        else {
+            comboSize = Number(config.combo_size.replace("_batch", '')) as PolestarComboSize;
+            batch = true;
+        }
+
         runWorker({
             max_workers: config.max_workers,
             config: {
                 max_iterations: config.max_iterations ? BigInt(config.max_iterations) : undefined,
                 polestars,
-                comboSize: config.combo_size,
+                comboSize,
+                batch,
                 verbose: config.verbose,
                 considerUnowned: config.considerUnowned
             },
@@ -291,14 +305,13 @@ export const MutualView = (props: MutualViewProps) => {
                 let sug = suggestions.findIndex(f => f.crew.every((cr1, idx) => r.crew.findIndex(cr2 => cr2 === cr1) === idx))
                 if (sug !== -1) {
                     suggestions[sug] = r;
-                    setSugWait(sug);
                     setSuggestions([...suggestions]);
                     return;
                 }
             }
-            setSugWait(0);
-            setResultCache(result.data.result.items ?? []);
-            setSuggestions(result.data.result.items ?? []);
+            let new_cache = (result.data.result.items ?? []).concat(suggestions);
+            new_cache = new_cache.filter((f, idx) => new_cache.findIndex(f2 => itemsEqual(f, f2)) === idx);
+            setSuggestions(new_cache);
         }
         else if (result.data.inProgress && result.data.result.format) {
             setProgressMsg(t(result.data.result.format, result.data.result.options));
@@ -316,25 +329,27 @@ export const MutualView = (props: MutualViewProps) => {
             )
         }
         else if (result.data.inProgress && result.data.result.result) {
-            resultCache.push(result.data.result.result);
-            let new_cache = resultCache.concat().sort((a, b) => b.crew.length - a.crew.length || a.combo.length - b.combo.length);
-            setSuggestion(undefined);
+            suggestions.push(result.data.result.result);
+            let new_cache = suggestions.concat().sort((a, b) => b.crew.length - a.crew.length || a.combo.length - b.combo.length);
+            new_cache = new_cache.filter((f, idx) => new_cache.findIndex(f2 => itemsEqual(f, f2)) === idx);
+
             setTimeout(() => {
-                setResultCache(new_cache);
                 setSuggestions(new_cache);
-                setSugWait(0);
             });
         }
     }
 
+    function itemsEqual(a: IMutualPolestarWorkerItem, b: IMutualPolestarWorkerItem) {
+        a.combo.sort();
+        a.crew.sort();
+        b.combo.sort();
+        b.crew.sort();
+        return JSON.stringify(a) === JSON.stringify(b);
+    }
+
     function clearAll() {
         setSuggestions([].concat());
-        setSuggestion(undefined);
-        setActiveSuggestion(undefined);
-        setSugWait(undefined);
-        setResultCache([].concat());
         setProgressMsg('');
-        //setCrewStations(crewStations.map(c => undefined));
     }
 }
 
@@ -360,6 +375,7 @@ const MutualTable = (props: MutualTableProps) => {
     const [itemsPerPage, setItemsPerPage] = React.useState(10);
     const [activePage, setActivePage] = React.useState(1);
     const [workItems, setWorkItems] = React.useState([] as DisplayItem[]);
+    const [rarities, setRarities] = React.useState([] as number[]);
     const pageStartIdx = (activePage - 1) * itemsPerPage;
 
     const [crewPool, setCrewPool] = React.useState([] as (CrewMember | PlayerCrew)[]);
@@ -377,6 +393,7 @@ const MutualTable = (props: MutualTableProps) => {
         const workItems = items.map((item) => {
             const comboCrew = downfiltered.filter(f => item.crew.includes(f.symbol)).sort((a, b) => a.name.localeCompare(b.name));
             if (selCrew?.length && !comboCrew.some(cc => selCrew.includes(cc.id))) return undefined;
+            if (rarities?.length && !comboCrew.some(cc => rarities.includes(cc.max_rarity))) return undefined;
             return {
                 crew: comboCrew,
                 combo: polestars.filter(f => item.combo.some(cb => `${cb}_keystone` === f.symbol)).sort((a, b) => a.name.localeCompare(b.name))
@@ -388,16 +405,16 @@ const MutualTable = (props: MutualTableProps) => {
                 let r = 0;
                 if (!r) r = a.crew.reduce((p, n) => p + n.rarity, 0) - b.crew.reduce((p, n) => p + n.rarity, 0);
                 if (!r) r = a.crew.length - b.crew.length;
-                if (!r) r = a.combo.reduce((p, n) => p + n.owned, 0) - b.combo.reduce((p, n) => p + n.owned, 0);
                 if (!r) r = a.combo.length - b.combo.length;
+                if (!r) r = a.combo.reduce((p, n) => p + n.owned, 0) - b.combo.reduce((p, n) => p + n.owned, 0);
                 return r * mul;
             });
         }
         else if (sortBy === 'polestars') {
             workItems.sort((a, b) => {
                 let r = 0;
-                if (!r) r = a.combo.reduce((p, n) => p + n.owned, 0) - b.combo.reduce((p, n) => p + n.owned, 0);
                 if (!r) r = a.combo.length - b.combo.length;
+                if (!r) r = a.combo.reduce((p, n) => p + n.owned, 0) - b.combo.reduce((p, n) => p + n.owned, 0);
                 if (!r) r = a.crew.reduce((p, n) => p + n.rarity, 0) - b.crew.reduce((p, n) => p + n.rarity, 0);
                 if (!r) r = a.crew.length - b.crew.length;
                 return r * mul;
@@ -406,7 +423,7 @@ const MutualTable = (props: MutualTableProps) => {
 
         setWorkItems(workItems);
         setCrewPool(downfiltered);
-    }, [playerData, items, polestars, sortBy, sortOrder, selCrew]);
+    }, [playerData, items, polestars, sortBy, sortOrder, selCrew, rarities]);
 
     React.useEffect(() => {
         const totalPages = Math.ceil(workItems.length / itemsPerPage);
@@ -426,7 +443,19 @@ const MutualTable = (props: MutualTableProps) => {
     const currentPage = workItems.slice(pageStartIdx, pageStartIdx + itemsPerPage);
 
     return (<div>
-            <CrewDropDown plain showRarity pool={crewPool} selection={selCrew} setSelection={setSelCrew} />
+            <div style={{...optionStyle, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center'}}>
+                <div style={optionStyle}>
+                    <span>{t('base.crew')}</span>
+                    <CrewDropDown plain showRarity pool={crewPool} selection={selCrew} setSelection={setSelCrew} />
+                </div>
+                <div style={optionStyle}>
+                    <span>{t('base.rarity')}</span>
+                    <div style={{display:'flex', flexDirection: 'row', justifyContent:'flex-start', alignItems: 'center', gap: '0.5em', marginBottom: '1em'}}>
+                        <RarityFilter multiple rarityFilter={rarities ?? []} setRarityFilter={(r) => setRarities(r)} />
+                    </div>
+                </div>
+            </div>
+
             <Table striped sortable>
             <Table.Header>
                 <Table.Row>
