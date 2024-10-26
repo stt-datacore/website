@@ -120,7 +120,7 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
         this.config = options.config;
         const allCrew = this.context.core.crew;
         const ownedCrew = this.context.player.playerData?.player.character.crew;
-        const { polestars, comboSize } = options.config;
+        const { polestars, comboSize, batch } = options.config;
 
         if (!ownedCrew) return false;
 
@@ -189,6 +189,7 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
                     polestars,
                     comboSize,
                     traitBucket,
+                    batch,
                     // ship: JSON.parse(JSON.stringify(options.config.ship)),
                     // crew: JSON.parse(JSON.stringify(options.config.crew)),
                     start_index: start,

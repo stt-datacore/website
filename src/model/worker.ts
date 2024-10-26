@@ -363,10 +363,13 @@ export interface IMutualPolestarWorkerItem {
     crew: string[];
 }
 
+export type PolestarComboSize = 1 | 2 | 3 | 4;
+
 export interface IMutualPolestarWorkerConfig extends WorkerConfigBase {
     polestars: IPolestar[];
-    comboSize: 1 | 2 | 3 | 4;
+    comboSize: PolestarComboSize;
     considerUnowned: boolean;
+    batch: boolean;
 }
 
 export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase {
@@ -374,7 +377,8 @@ export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase {
     include: string[];
     exclude: string[];
     allTraits: string[];
-    comboSize: 1 | 2 | 3 | 4;
+    comboSize: PolestarComboSize;
     traitBucket: { [key: string]: string[] }
     verbose: boolean;
+    batch: boolean;
 }

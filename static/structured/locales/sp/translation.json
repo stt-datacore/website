@@ -1,5 +1,6 @@
 {
     "retrieval": {
+        "up_to_n": "Hasta {{n}}",
         "consider_unowned_polestars": "Considere estrellas polares sin dueño (puede llevar mucho más tiempo)",
         "calc_summary": "{{ship.calc.calc_summary}}",
         "calculating_pct_ellipses": "{{ship.calc.calculating_pct_ellipses}}",

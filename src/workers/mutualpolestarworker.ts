@@ -1,5 +1,5 @@
 import { MutualPolestarResults } from "../components/retrieval/mutualmultiworker";
-import { IMutualPolestarInternalWorkerConfig, IMutualPolestarWorkerConfig, IMutualPolestarWorkerItem } from "../model/worker";
+import { IMutualPolestarInternalWorkerConfig, IMutualPolestarWorkerConfig, IMutualPolestarWorkerItem, PolestarComboSize } from "../model/worker";
 
 function factorial(number: bigint) {
     let result = 1n;
@@ -51,17 +51,20 @@ const MutualPolestarWorker = {
     calc: (options: IMutualPolestarInternalWorkerConfig, reportProgress: (data: { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: IMutualPolestarWorkerItem }) => boolean = () => true) => {
         return new Promise<MutualPolestarResults>(async (resolve, reject) => {
             const { status_data_only, verbose, exclude, include, comboSize, allTraits, max_iterations, traitBucket } = options;
+
             let wcn = BigInt(allTraits.length);
             let bsn = BigInt(comboSize);
             let total_combos = factorial(wcn) / (factorial(wcn - bsn) * factorial(bsn));
-            const starttime = new Date();
             let count = max_iterations || total_combos; //crew_combos.length;
+
+            const starttime = new Date();
             let start_index = (options.start_index ?? 0n);
             let i = 0n;
             let progress = -1n;
             const mex = {} as { [key: string]: boolean };
             const minc = {} as { [key: string]: boolean };
             const combos = [] as IMutualPolestarWorkerItem[];
+
             include.forEach((c) => minc[c] = true);
             exclude.forEach((c) => mex[c] = true);
 
@@ -77,7 +80,7 @@ const MutualPolestarWorker = {
                             reportProgress({
                                     percent: Number(p.toString()),
                                     progress: i,
-                                    count,
+                                    count: count,
                                     accepted: BigInt(combos.length)
                                 });
                         }
@@ -98,36 +101,36 @@ const MutualPolestarWorker = {
                         }
                     }
                 }
-				if (include.length < 2) return false;
+                if (include.length < 2) return false;
 
-				let traitcrew = combo.map(cb => traitBucket[cb]);
-				let crewcounts = {} as any;
+                let traitcrew = combo.map(cb => traitBucket[cb]);
+                let crewcounts = {} as any;
 
-				traitcrew.map((tca) => tca.map(tc => {
-					crewcounts[tc] ??= 0;
-					crewcounts[tc]++;
-				}))
+                traitcrew.map((tca) => tca.map(tc => {
+                    crewcounts[tc] ??= 0;
+                    crewcounts[tc]++;
+                }));
 
-				let crew = [] as string[];
-				let crewB = [] as string[]
+                let crew = [] as string[];
+                let crewB = [] as string[]
 
-				Object.keys(crewcounts).forEach((f) => {
-					if (minc[f] && crewcounts[f] === comboSize) {
-						crew.push(f);
-					}
-					else if (mex[f] && crewcounts[f] === comboSize) {
-						crewB.push(f);
-					}
-				})
+                Object.keys(crewcounts).forEach((f) => {
+                    if (minc[f] && crewcounts[f] === comboSize) {
+                        crew.push(f);
+                    }
+                    else if (mex[f] && crewcounts[f] === comboSize) {
+                        crewB.push(f);
+                    }
+                });
 
-				if (crew.length > 1 && crewB.length === 0) {
-					combos.push({
-						combo,
-						crew
-					});
+                if (crew.length > 1 && crewB.length === 0) {
+                    combos.push({
+                        combo,
+                        crew
+                    });
                     reportProgress({ result: combos[combos.length - 1] });
-				}
-				return combo;
+                }
+                return combo;
             });
 
             const endtime = new Date();
