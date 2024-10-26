@@ -14,7 +14,7 @@ import { getIconPath } from "../../utils/assets";
 import { EquipmentItem } from "../../model/equipment";
 import { CrewDropDown } from "../base/crewdropdown";
 import { CrewMember } from "../../model/crew";
-import { RarityFilter } from "../crewtables/commonoptions";
+import { CrewTraitFilter, RarityFilter } from "../crewtables/commonoptions";
 
 
 const optionStyle = {
@@ -33,173 +33,6 @@ interface MutualViewConfig {
     considerUnowned: boolean;
     allowUnowned?: number;
     no100?: boolean;
-}
-
-interface MutualViewConfigPanelProps {
-    config: MutualViewConfig;
-    setConfig: (value: MutualViewConfig) => void;
-    clickCalculate: () => void;
-    clickClear: () => void;
-}
-
-const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
-    const workerContext = React.useContext(MutualMultiWorkerContext);
-    const { running } = workerContext;
-
-    const globalContext = React.useContext(GlobalContext);
-    const { t } = globalContext.localized;
-
-    const { config, setConfig, clickCalculate, clickClear } = props;
-    const comboSizes = [] as DropdownItemProps[];
-
-    [1, 2, 3, 4].forEach((num) => {
-        comboSizes.push({
-            key: `comboSize_${num}`,
-            value: num,
-            text: `${num}`
-        })
-    });
-
-    const allowUnowned = [] as DropdownItemProps[];
-
-    [0, 1, 2, 3].forEach((num) => {
-        allowUnowned.push({
-            key: `allowUnowned_${num}`,
-            value: num,
-            text: `${num}`
-        })
-    });
-
-    // [2, 3, 4].forEach((num) => {
-    //     comboSizes.push({
-    //         key: `comboSize_${num}_batch`,
-    //         value: `${num}_batch`,
-    //         text: t('retrieval.up_to_n', { n: `${num}`})
-    //     })
-    // });
-
-    const worker_sel = [] as DropdownItemProps[];
-    let work_total = navigator?.hardwareConcurrency ?? 1;
-    for (let i = 1; i <= work_total; i++) {
-        let bgcolor = '';
-        let fgcolor = '';
-        if (i <= work_total / 2) {
-            bgcolor = 'darkgreen';
-            fgcolor = 'white';
-        }
-        else if (i <= (work_total * 0.75)) {
-            bgcolor = 'goldenrod';
-            fgcolor = 'black';
-        }
-        else {
-            bgcolor = 'tomato';
-            fgcolor = 'white';
-        }
-
-        worker_sel.push({
-            key: `workers_${i}`,
-            value: i,
-            text: `${i}`,
-            content: <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'stretch',
-                margin: 0,
-                padding: '0.5em 1em',
-                backgroundColor: bgcolor,
-                color: fgcolor
-            }}>
-                {i}
-            </div>
-        })
-    }
-
-    return <div className="ui segment">
-        <div style={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: '2em',
-            alignItems: 'flex-start',
-            flexWrap: 'wrap',
-            justifyContent: 'center'
-        }}>
-            <div style={optionStyle}>
-                <span>{t('retrieval.combo_length')}</span>
-                <Dropdown
-                    disabled={running}
-                    options={comboSizes}
-                    value={config.combo_size}
-                    onChange={(e, { value }) => setConfig({ ...config, combo_size: value as PolestarComboSize })}
-                />
-            </div>
-            <div style={optionStyle}>
-                <span>{t('retrieval.allow_unowned')}</span>
-                <Dropdown
-                    disabled={running}
-                    options={allowUnowned}
-                    value={config.allowUnowned || 0}
-                    onChange={(e, { value }) => setConfig({ ...config, allowUnowned: value as number | undefined })}
-                />
-            </div>
-            <div style={optionStyle}>
-                <span>{t('retrieval.max_workers')}</span>
-                <Dropdown
-                    scrolling
-                    disabled={running}
-                    options={worker_sel}
-                    value={config.max_workers}
-                    onChange={(e, { value }) => setConfig({ ...config, max_workers: value as number })}
-                />
-            </div>
-            <div style={optionStyle}>
-                <span>{t('retrieval.max_iterations')}</span>
-                <div style={{display:'flex', flexDirection: 'row', justifyContent:'flex-start', alignItems: 'center', gap: '0.5em', marginBottom: '1em'}}>
-                    <Input
-                        disabled={running}
-                        style={{backgroundColor: config.max_iterations ? (Number.isNaN(Number(config.max_iterations)) ? 'tomato' : undefined) : undefined}}
-                        value={config.max_iterations ? (Number.isNaN(Number(config.max_iterations)) ? '' : config.max_iterations.toString()) : ''}
-                        onChange={(e, { value }) => setConfig({ ...config, max_iterations: value ? Number(value) : undefined })}
-                    />
-                    <Icon style={{margin:0,cursor:'pointer'}} name='close' onClick={() => setConfig({ ...config, max_iterations: undefined })} />
-                </div>
-            </div>
-        </div>
-        <div style={{...optionStyle, justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-            <div style={{...optionStyle, flexDirection: 'column', margin: '0.5em', gap: '1em'}}>
-                <Checkbox label={t('retrieval.verbose_status_updates')}
-                    disabled={running}
-                    checked={config.verbose}
-                    onChange={(e, { checked }) => setConfig({ ...config, verbose: checked as boolean || false})}
-                />
-                <Checkbox label={t('retrieval.consider_unowned_polestars')}
-                    disabled={running}
-                    checked={config.considerUnowned}
-                    onChange={(e, { checked }) => setConfig({ ...config, considerUnowned: checked as boolean || false})}
-                />
-                <Checkbox label={t('base.less_than_100_retrieval')}
-                    disabled={running}
-                    checked={config.no100}
-                    onChange={(e, { checked }) => setConfig({ ...config, no100: checked as boolean || false})}
-                />
-            </div>
-            <div style={{...optionStyle, flexDirection: 'row', margin: '0.5em'}}>
-                <Button
-                    onClick={() => clickCalculate()}>
-                    {running ? t('global.cancel') : t('global.calculate')}
-                </Button>
-                <Button
-                    disabled={running}
-                    onClick={() => clickClear()}>
-                    {t('global.clear')}
-                </Button>
-            </div>
-        </div>
-    </div>
-}
-
-type MutualViewProps = {
-    dbid: string;
-    allKeystones: IKeystone[];
 }
 
 export const MutualView = (props: MutualViewProps) => {
@@ -387,6 +220,173 @@ type DisplayItem = {
     combo: IPolestar[];
 }
 
+interface MutualViewConfigPanelProps {
+    config: MutualViewConfig;
+    setConfig: (value: MutualViewConfig) => void;
+    clickCalculate: () => void;
+    clickClear: () => void;
+}
+
+const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
+    const workerContext = React.useContext(MutualMultiWorkerContext);
+    const { running } = workerContext;
+
+    const globalContext = React.useContext(GlobalContext);
+    const { t } = globalContext.localized;
+
+    const { config, setConfig, clickCalculate, clickClear } = props;
+    const comboSizes = [] as DropdownItemProps[];
+
+    [1, 2, 3, 4].forEach((num) => {
+        comboSizes.push({
+            key: `comboSize_${num}`,
+            value: num,
+            text: `${num}`
+        })
+    });
+
+    const allowUnowned = [] as DropdownItemProps[];
+
+    [0, 1, 2, 3].forEach((num) => {
+        allowUnowned.push({
+            key: `allowUnowned_${num}`,
+            value: num,
+            text: `${num}`
+        })
+    });
+
+    // [2, 3, 4].forEach((num) => {
+    //     comboSizes.push({
+    //         key: `comboSize_${num}_batch`,
+    //         value: `${num}_batch`,
+    //         text: t('retrieval.up_to_n', { n: `${num}`})
+    //     })
+    // });
+
+    const worker_sel = [] as DropdownItemProps[];
+    let work_total = navigator?.hardwareConcurrency ?? 1;
+    for (let i = 1; i <= work_total; i++) {
+        let bgcolor = '';
+        let fgcolor = '';
+        if (i <= work_total / 2) {
+            bgcolor = 'darkgreen';
+            fgcolor = 'white';
+        }
+        else if (i <= (work_total * 0.75)) {
+            bgcolor = 'goldenrod';
+            fgcolor = 'black';
+        }
+        else {
+            bgcolor = 'tomato';
+            fgcolor = 'white';
+        }
+
+        worker_sel.push({
+            key: `workers_${i}`,
+            value: i,
+            text: `${i}`,
+            content: <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'stretch',
+                margin: 0,
+                padding: '0.5em 1em',
+                backgroundColor: bgcolor,
+                color: fgcolor
+            }}>
+                {i}
+            </div>
+        })
+    }
+
+    return <div className="ui segment">
+        <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: '2em',
+            alignItems: 'flex-start',
+            flexWrap: 'wrap',
+            justifyContent: 'center'
+        }}>
+            <div style={optionStyle}>
+                <span>{t('retrieval.combo_length')}</span>
+                <Dropdown
+                    disabled={running}
+                    options={comboSizes}
+                    value={config.combo_size}
+                    onChange={(e, { value }) => setConfig({ ...config, combo_size: value as PolestarComboSize })}
+                />
+            </div>
+            <div style={optionStyle}>
+                <span>{t('retrieval.allow_unowned')}</span>
+                <Dropdown
+                    disabled={running}
+                    options={allowUnowned}
+                    value={config.allowUnowned || 0}
+                    onChange={(e, { value }) => setConfig({ ...config, allowUnowned: value as number | undefined })}
+                />
+            </div>
+            <div style={optionStyle}>
+                <span>{t('retrieval.max_workers')}</span>
+                <Dropdown
+                    scrolling
+                    disabled={running}
+                    options={worker_sel}
+                    value={config.max_workers}
+                    onChange={(e, { value }) => setConfig({ ...config, max_workers: value as number })}
+                />
+            </div>
+            <div style={optionStyle}>
+                <span>{t('retrieval.max_iterations')}</span>
+                <div style={{display:'flex', flexDirection: 'row', justifyContent:'flex-start', alignItems: 'center', gap: '0.5em', marginBottom: '1em'}}>
+                    <Input
+                        disabled={running}
+                        style={{backgroundColor: config.max_iterations ? (Number.isNaN(Number(config.max_iterations)) ? 'tomato' : undefined) : undefined}}
+                        value={config.max_iterations ? (Number.isNaN(Number(config.max_iterations)) ? '' : config.max_iterations.toString()) : ''}
+                        onChange={(e, { value }) => setConfig({ ...config, max_iterations: value ? Number(value) : undefined })}
+                    />
+                    <Icon style={{margin:0,cursor:'pointer'}} name='close' onClick={() => setConfig({ ...config, max_iterations: undefined })} />
+                </div>
+            </div>
+        </div>
+        <div style={{...optionStyle, justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+            <div style={{...optionStyle, flexDirection: 'column', margin: '0.5em', gap: '1em'}}>
+                <Checkbox label={t('retrieval.verbose_status_updates')}
+                    disabled={running}
+                    checked={config.verbose}
+                    onChange={(e, { checked }) => setConfig({ ...config, verbose: checked as boolean || false})}
+                />
+                <Checkbox label={t('retrieval.consider_unowned_polestars')}
+                    disabled={running}
+                    checked={config.considerUnowned}
+                    onChange={(e, { checked }) => setConfig({ ...config, considerUnowned: checked as boolean || false})}
+                />
+                <Checkbox label={t('base.less_than_100_retrieval')}
+                    disabled={running}
+                    checked={config.no100}
+                    onChange={(e, { checked }) => setConfig({ ...config, no100: checked as boolean || false})}
+                />
+            </div>
+            <div style={{...optionStyle, flexDirection: 'row', margin: '0.5em'}}>
+                <Button
+                    onClick={() => clickCalculate()}>
+                    {running ? t('global.cancel') : t('global.calculate')}
+                </Button>
+                <Button
+                    disabled={running}
+                    onClick={() => clickClear()}>
+                    {t('global.clear')}
+                </Button>
+            </div>
+        </div>
+    </div>
+}
+
+type MutualViewProps = {
+    dbid: string;
+    allKeystones: IKeystone[];
+}
+
 const MutualTable = (props: MutualTableProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t, TRAIT_NAMES } = globalContext.localized;
@@ -394,12 +394,14 @@ const MutualTable = (props: MutualTableProps) => {
     const { items, polestars } = props;
 
     const { playerData } = globalContext.player;
-
+    const [traitList, setTraitList] = React.useState([] as string[]);
     const [totalPages, setTotalPages] = React.useState(1);
     const [itemsPerPage, setItemsPerPage] = React.useState(10);
     const [activePage, setActivePage] = React.useState(1);
     const [workItems, setWorkItems] = React.useState([] as DisplayItem[]);
     const [rarities, setRarities] = React.useState([] as number[]);
+    const [traits, setTraits] = React.useState([] as string[]);
+    const [minTraits, setMinTraits] = React.useState(1);
     const pageStartIdx = (activePage - 1) * itemsPerPage;
 
     const [crewPool, setCrewPool] = React.useState([] as (CrewMember | PlayerCrew)[]);
@@ -412,6 +414,7 @@ const MutualTable = (props: MutualTableProps) => {
         if (!playerData) return;
         const mul = sortOrder === 'ascending' ? 1 : -1;
         let nid = -1 * (globalContext.core.crew.length * 4);
+        let traitlist = [... new Set(items.map((item) => item.combo).flat())];
         let crew = items.map((item) =>
                 item.crew.map(symbol => playerData.player.character.crew.find(f => f.symbol === symbol && f.rarity === f.highest_owned_rarity)
                 || globalContext.core.crew.find(gfc => gfc.symbol === symbol)))
@@ -431,6 +434,8 @@ const MutualTable = (props: MutualTableProps) => {
             const comboCrew = downfiltered.filter(f => item.crew.includes(f.symbol)).sort((a, b) => a.name.localeCompare(b.name));
             if (selCrew?.length && !comboCrew.some(cc => selCrew.includes(cc.id))) return undefined;
             if (rarities?.length && !comboCrew.some(cc => rarities.includes(cc.max_rarity))) return undefined;
+            if (traits?.length && minTraits === traits.length && !traits.every(trait => comboCrew.every(cc => cc.traits.includes(trait)))) return undefined;
+            if (traits?.length && !comboCrew.every(cc => cc.traits.some(ct => traits.includes(ct)))) return undefined;
             return {
                 crew: comboCrew,
                 combo: polestars.filter(f => item.combo.some(cb => `${cb}_keystone` === f.symbol)).sort((a, b) => a.name.localeCompare(b.name))
@@ -458,9 +463,10 @@ const MutualTable = (props: MutualTableProps) => {
             });
         }
 
+        setTraitList(traitlist);
         setWorkItems(workItems);
         setCrewPool(downfiltered);
-    }, [playerData, items, polestars, sortBy, sortOrder, selCrew, rarities]);
+    }, [playerData, items, polestars, sortBy, sortOrder, selCrew, rarities, traits, minTraits]);
 
     React.useEffect(() => {
         const totalPages = Math.ceil(workItems.length / itemsPerPage);
@@ -489,6 +495,19 @@ const MutualTable = (props: MutualTableProps) => {
                     <span>{t('base.rarity')}</span>
                     <div style={{display:'flex', flexDirection: 'row', justifyContent:'flex-start', alignItems: 'center', gap: '0.5em', marginBottom: '1em'}}>
                         <RarityFilter multiple rarityFilter={rarities ?? []} setRarityFilter={(r) => setRarities(r)} />
+                    </div>
+                </div>
+                <div style={optionStyle}>
+                    <span>{t('hints.traits')}</span>
+                    <div style={{display:'flex', flexDirection: 'row', justifyContent:'flex-start', alignItems: 'center', gap: '0.5em', marginBottom: '1em'}}>
+                        <CrewTraitFilter
+                            hideTwoPlus={true}
+                            allowed={traitList}
+                            minTraitMatches={minTraits}
+                            setMinTraitMatches={setMinTraits}
+                            traitFilter={traits}
+                            setTraitFilter={setTraits}
+                            />
                     </div>
                 </div>
             </div>

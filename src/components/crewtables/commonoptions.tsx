@@ -54,6 +54,8 @@ type CrewTraitFilterProps = {
 	setTraitFilter: (traitFilter: string[]) => void;
 	minTraitMatches: number;
 	setMinTraitMatches: (minTraitMatches: number) => void;
+	allowed?: string[];
+	hideTwoPlus?: boolean;
 };
 
 export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
@@ -61,9 +63,12 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 	const [traitOptions, setTraitOptions] = React.useState<TraitOptions[] | undefined>(undefined);
 	const globalContext = React.useContext(GlobalContext);
 	const { TRAIT_NAMES } = globalContext.localized;
+	const { allowed } = props;
 
 	React.useEffect(() => {
-		const options = Object.keys(TRAIT_NAMES).map(trait => {
+		const options = Object.keys(TRAIT_NAMES)
+			.filter(trait => !allowed?.length || allowed.includes(trait))
+			.map(trait => {
 			return {
 				key: trait,
 				value: trait,
@@ -72,13 +77,13 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 			} as TraitOptions;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 		setTraitOptions([...options]);
-	}, []);
+	}, [allowed]);
 
 	if (!traitOptions) return (<></>);
 
 	const minMatchOptions = [
 		{ key: '1+', value: 1, text: t('options.trait_match.any') },
-		{ key: '2+', value: props.traitFilter.length > 2 ? 2 : 0, text: t('options.trait_match.match_two_plus') },
+		{ key: '2+', value: props.traitFilter.length > 2 && !props.hideTwoPlus ? 2 : 0, text: t('options.trait_match.match_two_plus') },
 		{ key: 'all', value: props.traitFilter.length, text: t('options.trait_match.match_all') }
 	];
 

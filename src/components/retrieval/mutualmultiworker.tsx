@@ -334,6 +334,12 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
         }
     }
 
+    componentDidUpdate(prevProps: Readonly<MutualPolestarMultiWorkerProps>, prevState: Readonly<MutualPolestarMultiWorkerState>, snapshot?: any): void {
+        if (prevProps.playerData !== this.props.playerData) {
+            this.forceUpdate();
+        }
+    }
+
     render() {
         const { context } = this.state;
         const { children } = this.props;
