@@ -97,14 +97,16 @@ const ModePicker = (props: ModePickerProps) => {
 
 	return <>
 			<Step.Group fluid>
-				<Step key={`keystone_normal`} active={mode === 'keystones'} onClick={() => setMode('keystones')}>
+				<Step style={{width: '50%'}} key={`keystone_normal`} active={mode === 'keystones'} onClick={() => setMode('keystones')}>
 					<Step.Content>
 						<Step.Title>{t('retrieval.modes.retrieval')}</Step.Title>
+						<Step.Description>{t('retrieval.modes.retrieval_desc')}</Step.Description>
 					</Step.Content>
 				</Step>
-				<Step key={`keystone_mutual`} active={mode === 'mutual'} onClick={() => setMode('mutual')}>
+				<Step style={{width: '50%'}}  key={`keystone_mutual`} active={mode === 'mutual'} onClick={() => setMode('mutual')}>
 					<Step.Content>
 						<Step.Title>{t('retrieval.modes.mutual_polestar_calculator')}</Step.Title>
+						<Step.Description>{t('retrieval.modes.mutual_polestar_calculator_desc')}</Step.Description>
 					</Step.Content>
 				</Step>
             </Step.Group>

@@ -1,5 +1,6 @@
 {
     "retrieval": {
+        "consider_unowned_polestars": "Considere estrellas polares sin dueño (puede llevar mucho más tiempo)",
         "calc_summary": "{{ship.calc.calc_summary}}",
         "calculating_pct_ellipses": "{{ship.calc.calculating_pct_ellipses}}",
         "calculating_pct_ellipses_verbose": "{{ship.calc.calculating_pct_ellipses_verbose}}",
@@ -20,7 +21,9 @@
         "one_constellation": "1 Constelación",
         "modes": {
             "retrieval": "Recuperación",
-            "mutual_polestar_calculator": "Calculadora mutua de estrellas polares"
+            "mutual_polestar_calculator": "Calculadora mutua de estrellas polares",
+            "retrieval_desc": "Planifique recuperaciones des tripulantes únicas",
+            "mutual_polestar_calculator_desc": "Encuentra combinaciones que den las mismas posibilidades de recuperar a los no inmortales"
         },
         "combo_length": "Tamaño de los combos",
         "combo": "Combo",

@@ -1,5 +1,6 @@
 {
     "retrieval": {
+        "consider_unowned_polestars": "Betrachten Sie nicht besessene Polarsterne (kann viel mehr Zeit in Anspruch nehmen)",
         "calc_summary": "{{ship.calc.calc_summary}}",
         "calculating_pct_ellipses": "{{ship.calc.calculating_pct_ellipses}}",
         "calculating_pct_ellipses_verbose": "{{ship.calc.calculating_pct_ellipses_verbose}}",
@@ -20,7 +21,9 @@
         "one_constellation": "1 Sternbilde",
         "modes": {
             "retrieval": "Bergung",
-            "mutual_polestar_calculator": "Gemeinsamer Polarstern-Rechner"
+            "mutual_polestar_calculator": "Gemeinsamer Polarstern-Rechner",
+            "retrieval_desc": "Planen Sie einmalige Crewrückholungen",
+            "mutual_polestar_calculator_desc": "Finden Sie Combos, die gleiche Chancen bieten, Nicht-Unsterbliche zurückzuholen"
         },
         "combo_length": "Combos Größe",
         "combo": "Combo",

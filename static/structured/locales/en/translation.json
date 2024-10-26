@@ -1,5 +1,6 @@
 {
     "retrieval": {
+        "consider_unowned_polestars": "Consider unowned polestars (may take much more time)",
         "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
@@ -17,7 +18,9 @@
         "one_constellation": "1 Constellation",
         "modes": {
             "retrieval": "Retrieval",
-            "mutual_polestar_calculator": "Mutual Polestar Calculator"
+            "mutual_polestar_calculator": "Mutual Polestar Calculator",
+            "retrieval_desc": "Plan unique crew retrievals",
+            "mutual_polestar_calculator_desc": "Find combos that give equal chances of retrieving non-immortals"
         },
         "combo_length": "Combo Length",
         "combo": "Combo",

@@ -10,8 +10,13 @@ import { compareShipResults } from "../../utils/shiputils";
 import { PlayerCrew } from "../../model/player";
 import { AvatarView } from "../item_presenters/avatarview";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
-import { ItemHoverStat } from "../hovering/itemhoverstat";
+import { ItemHoverStat, ItemTarget } from "../hovering/itemhoverstat";
 import { getIconPath } from "../../utils/assets";
+import { SortDirection } from "../searchabletable";
+import { checkReward } from "../../utils/itemutils";
+import { EquipmentItem } from "../../model/equipment";
+import { CrewDropDown } from "../base/crewdropdown";
+import { CrewMember } from "../../model/crew";
 
 
 interface MutualViewConfig {
@@ -19,13 +24,15 @@ interface MutualViewConfig {
     max_iterations?: number;
     combo_size: 1 | 2 | 3 | 4;
     verbose: boolean;
+    considerUnowned: boolean;
 }
 
 
 interface MutualViewConfigPanelProps {
     config: MutualViewConfig;
     setConfig: (value: MutualViewConfig) => void;
-    calculateBegin: () => void;
+    clickCalculate: () => void;
+    clickClear: () => void;
 }
 
 const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
@@ -35,7 +42,7 @@ const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
 
-    const { config, setConfig, calculateBegin } = props;
+    const { config, setConfig, clickCalculate, clickClear } = props;
 
     const comboSizes = [] as DropdownItemProps[];
 
@@ -132,15 +139,29 @@ const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
             </div>
         </div>
         <div style={{...optionStyle, justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-            <Checkbox label={t('retrieval.verbose_status_updates')}
-                disabled={running}
-                checked={config.verbose}
-                onChange={(e, { checked }) => setConfig({ ...config, verbose: checked as boolean || false})}
-            />
-            <Button
-                onClick={() => calculateBegin()}>
-                {running ? t('global.cancel') : t('global.calculate')}
-            </Button>
+            <div style={{...optionStyle, flexDirection: 'column', margin: '0.5em', gap: '1em'}}>
+                <Checkbox label={t('retrieval.verbose_status_updates')}
+                    disabled={running}
+                    checked={config.verbose}
+                    onChange={(e, { checked }) => setConfig({ ...config, verbose: checked as boolean || false})}
+                />
+                <Checkbox label={t('retrieval.consider_unowned_polestars')}
+                    disabled={running}
+                    checked={config.considerUnowned}
+                    onChange={(e, { checked }) => setConfig({ ...config, considerUnowned: checked as boolean || false})}
+                />
+            </div>
+            <div style={{...optionStyle, flexDirection: 'row', margin: '0.5em'}}>
+                <Button
+                    onClick={() => clickCalculate()}>
+                    {running ? t('global.cancel') : t('global.calculate')}
+                </Button>
+                <Button
+                    disabled={running}
+                    onClick={() => clickClear()}>
+                    {t('global.clear')}
+                </Button>
+            </div>
         </div>
     </div>
 }
@@ -160,6 +181,7 @@ export const MutualView = (props: MutualViewProps) => {
     const { cancel, running, runWorker } = workerContext;
 
     const DefaultConfig = {
+        considerUnowned: false,
         verbose: false,
         combo_size: 2,
         max_workers: navigator?.hardwareConcurrency ? navigator?.hardwareConcurrency / 2 : 2,
@@ -213,11 +235,11 @@ export const MutualView = (props: MutualViewProps) => {
     }, [sugWait, suggestions]);
 
     return <React.Fragment>
-        <MutualViewConfigPanel calculateBegin={calculateBegin} config={config} setConfig={setConfig} />
+        <MutualViewConfigPanel clickClear={clickClear} clickCalculate={clickCalculate} config={config} setConfig={setConfig} />
         {true && <div style={{ display: 'flex', textAlign: 'center', width: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '1em', marginBottom: '1em' }}>
             {progressMsg ? (running ? globalContext.core.spin(progressMsg || t('spinners.default')) : progressMsg) : t('global.idle')}
         </div>}
-        {!running && !!suggestions?.length && <div style={{textAlign: 'center'}}>
+        {!!suggestions?.length && <div style={{textAlign: 'center'}}>
             <MutualTable polestars={polestars} items={suggestions} />
 
         </div>}
@@ -225,14 +247,21 @@ export const MutualView = (props: MutualViewProps) => {
         <ItemHoverStat targetGroup="mutual_crew_item" />
     </React.Fragment>
 
-    function calculateBegin() {
+    function clickClear() {
+        if (running) {
+            cancel();
+        }
+        clearAll();
+    }
+
+    function clickCalculate() {
         if (running) {
             cancel();
             return;
         }
         setProgressMsg('');
         setActiveSuggestion(undefined);
-        setSuggestions([]);
+        //setSuggestions([]);
         setSugWait(undefined);
         runWorker({
             max_workers: config.max_workers,
@@ -240,7 +269,8 @@ export const MutualView = (props: MutualViewProps) => {
                 max_iterations: config.max_iterations ? BigInt(config.max_iterations) : undefined,
                 polestars,
                 comboSize: config.combo_size,
-                verbose: config.verbose
+                verbose: config.verbose,
+                considerUnowned: config.considerUnowned
             },
             callback: calculateCallback
         })
@@ -330,21 +360,51 @@ const MutualTable = (props: MutualTableProps) => {
     const [workItems, setWorkItems] = React.useState([] as DisplayItem[]);
     const pageStartIdx = (activePage - 1) * itemsPerPage;
 
+    const [crewPool, setCrewPool] = React.useState([] as (CrewMember | PlayerCrew)[]);
+    const [selCrew, setSelCrew] = React.useState(undefined as undefined | number[]);
+
+    const [sortOrder, setSortOrder] = useStateWithStorage('mutualView_sortOrder', 'descending' as 'ascending' | 'descending');
+    const [sortBy, setSortBy] = useStateWithStorage('mutualView_sortBy', 'polestars' as 'crew' | 'polestars');
+
     React.useEffect(() => {
         if (!playerData) return;
-
+        const mul = sortOrder === 'ascending' ? 1 : -1;
         let crew = items.map((item) => item.crew.map(symbol => playerData.player.character.crew.find(f => f.symbol === symbol))).flat().filter(f => f !== undefined);
         let downfiltered = crew.filter((c, idx) => crew.findIndex(cf => c.symbol === cf.symbol && c.highest_owned_rarity === cf.rarity) === idx);
 
         const workItems = items.map((item) => {
+            const comboCrew = downfiltered.filter(f => item.crew.includes(f.symbol)).sort((a, b) => a.name.localeCompare(b.name));
+            if (selCrew?.length && !comboCrew.some(cc => selCrew.includes(cc.id))) return undefined;
             return {
-                crew: downfiltered.filter(f => item.crew.includes(f.symbol)),
-                combo: polestars.filter(f => item.combo.some(cb => `${cb}_keystone` === f.symbol))
+                crew: comboCrew,
+                combo: polestars.filter(f => item.combo.some(cb => `${cb}_keystone` === f.symbol)).sort((a, b) => a.name.localeCompare(b.name))
             } as DisplayItem
-        })
+        }).filter(f => f !== undefined);
+
+        if (sortBy === 'crew') {
+            workItems.sort((a, b) => {
+                let r = 0;
+                if (!r) r = a.crew.reduce((p, n) => p + n.rarity, 0) - b.crew.reduce((p, n) => p + n.rarity, 0);
+                if (!r) r = a.crew.length - b.crew.length;
+                if (!r) r = a.combo.reduce((p, n) => p + n.owned, 0) - b.combo.reduce((p, n) => p + n.owned, 0);
+                if (!r) r = a.combo.length - b.combo.length;
+                return r * mul;
+            });
+        }
+        else if (sortBy === 'polestars') {
+            workItems.sort((a, b) => {
+                let r = 0;
+                if (!r) r = a.combo.reduce((p, n) => p + n.owned, 0) - b.combo.reduce((p, n) => p + n.owned, 0);
+                if (!r) r = a.combo.length - b.combo.length;
+                if (!r) r = a.crew.reduce((p, n) => p + n.rarity, 0) - b.crew.reduce((p, n) => p + n.rarity, 0);
+                if (!r) r = a.crew.length - b.crew.length;
+                return r * mul;
+            });
+        }
 
         setWorkItems(workItems);
-    }, [playerData, items, polestars])
+        setCrewPool(downfiltered);
+    }, [playerData, items, polestars, sortBy, sortOrder, selCrew]);
 
     React.useEffect(() => {
         const totalPages = Math.ceil(workItems.length / itemsPerPage);
@@ -363,64 +423,88 @@ const MutualTable = (props: MutualTableProps) => {
 
     const currentPage = workItems.slice(pageStartIdx, pageStartIdx + itemsPerPage);
 
-    return <Table striped>
-        <Table.Header>
-            <Table.Row>
-                <Table.HeaderCell>
-                    {t('retrieval.combos')}
-                </Table.HeaderCell>
-                <Table.HeaderCell>
-                    {t('base.crew')}
-                </Table.HeaderCell>
-            </Table.Row>
-        </Table.Header>
-        <Table.Body>
-            {currentPage.map((item) => renderTableRow(item))}
-        </Table.Body>
-        <Table.Footer>
-            <Table.Row>
-                <Table.HeaderCell colspan={4}>
-                    <Pagination
-                        totalPages={totalPages}
-                        activePage={activePage}
-                        onPageChange={(e, data) => setActivePage(data.activePage as number)}
-                    />
-
-                    <span style={{ paddingLeft: '2em' }}>
-                        {t('global.rows_per_page')}:{' '}
-                        <Dropdown
-                            options={pageSizes}
-                            value={itemsPerPage}
-                            inline
-                            onChange={(e, { value }) => setItemsPerPage(value as number)}
+    return (<div>
+            <CrewDropDown plain showRarity pool={crewPool} selection={selCrew} setSelection={setSelCrew} />
+            <Table striped sortable>
+            <Table.Header>
+                <Table.Row>
+                    <Table.HeaderCell
+                        sorted={sortBy === 'polestars' ? sortOrder : undefined} onClick={() => sortBy === 'polestars' ? setSortOrder(sortOrder === 'descending' ? 'ascending' : 'descending') : setSortBy('polestars')}
+                        >
+                        {t('retrieval.combos')}
+                    </Table.HeaderCell>
+                    <Table.HeaderCell
+                        sorted={sortBy === 'crew' ? sortOrder : undefined} onClick={() => sortBy === 'crew' ? setSortOrder(sortOrder === 'descending' ? 'ascending' : 'descending') : setSortBy('crew')}
+                        >
+                        {t('base.crew')}
+                    </Table.HeaderCell>
+                </Table.Row>
+            </Table.Header>
+            <Table.Body>
+                {currentPage.map((item) => renderTableRow(item))}
+            </Table.Body>
+            <Table.Footer>
+                <Table.Row>
+                    <Table.HeaderCell colspan={4}>
+                        <Pagination
+                            totalPages={totalPages}
+                            activePage={activePage}
+                            onPageChange={(e, data) => setActivePage(data.activePage as number)}
                         />
-                    </span>
-                </Table.HeaderCell>
-            </Table.Row>
-        </Table.Footer>
-    </Table>
+
+                        <span style={{ paddingLeft: '2em' }}>
+                            {t('global.rows_per_page')}:{' '}
+                            <Dropdown
+                                options={pageSizes}
+                                value={itemsPerPage}
+                                inline
+                                onChange={(e, { value }) => setItemsPerPage(value as number)}
+                            />
+                        </span>
+                    </Table.HeaderCell>
+                </Table.Row>
+            </Table.Footer>
+        </Table>
+    </div>)
 
     function renderTableRow(item: DisplayItem) {
         return <Table.Row>
             <Table.Cell>
                 <div style={{display:'flex', flexWrap:'wrap', flexDirection:'row', justifyContent: 'space-evenly', alignItems: 'flex-start'}}>
                     {item.combo.map((polestar) => {
-                        return <div style={{ width: '5em', display:'flex', flexWrap:'wrap', flexDirection:'column', justifyContent: 'center', alignItems: 'center', gap: '0.5em'}}>
-                            <img src={getIconPath(polestar.icon)} style={{height: '48px'}} />
+                        polestar.imageUrl = getIconPath(polestar.icon, true);
+                        (polestar as any)['quantity'] = polestar.owned;
+                        return <div style={{ width: '7em', display:'flex', flexWrap:'wrap', flexDirection:'column', justifyContent: 'center', alignItems: 'center', gap: '0.5em'}}>
+                            <ItemTarget
+                                inputItem={polestar as any as EquipmentItem}
+                                targetGroup="mutual_crew_item">
+                                <img src={getIconPath(polestar.icon)} style={{height: '48px'}} />
+                            </ItemTarget>
+                            <p style={{textAlign: 'center'}}>
                             {TRAIT_NAMES[polestar.symbol.replace("_keystone", "")]}
+                            </p>
+                            ({polestar.owned})
                             </div>
                     })}
                 </div>
             </Table.Cell>
-            <Table.Cell>
-                <div style={{display:'flex', flexWrap:'wrap', flexDirection:'row', justifyContent: 'space-evenly', alignItems: 'flex-start'}}>
+            <Table.Cell width={5}>
+                <div style={{display:'flex', flexWrap:'wrap', flexDirection:'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1em'}}>
                     {item.crew.map((crew) => {
-                        return <AvatarView
+                        return (
+                            <div style={{display:'flex', gap: '1em', flexWrap:'wrap', flexDirection:'row', justifyContent: 'flex-start', alignItems: 'center'}}>
+                            <AvatarView
                                     mode='crew'
                                     item={crew}
                                     size={64}
                                     targetGroup="mutual_crew_hover"
                                     />
+                                <span>
+                                    <i>{crew.name}</i>
+                                </span>
+                            </div>
+
+                        )
                     })}
                 </div>
             </Table.Cell>

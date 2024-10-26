@@ -36,6 +36,7 @@ export interface KeystoneBase {
   short_name: string;
   flavor: string;
   icon: Icon;
+  imageUrl?: string;
   rarity?: number;
   filter?: PolestarFilter;
   crew_archetype_id?: number;

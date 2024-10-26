@@ -366,6 +366,7 @@ export interface IMutualPolestarWorkerItem {
 export interface IMutualPolestarWorkerConfig extends WorkerConfigBase {
     polestars: IPolestar[];
     comboSize: 1 | 2 | 3 | 4;
+    considerUnowned: boolean;
 }
 
 export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase {

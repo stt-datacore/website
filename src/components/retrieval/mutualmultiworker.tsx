@@ -140,7 +140,7 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
 
 		allCrew.forEach((crew) => {
 			crew.traits.forEach((trait) => {
-				if (polestars.some(p => p.owned && p.symbol === `${trait}_keystone`)) {
+				if (polestars.some(p => (p.owned || options.config.considerUnowned) && p.symbol === `${trait}_keystone`)) {
 					traitBucket[trait] ??= [];
 					traitBucket[trait].push(crew.symbol);
 				}
