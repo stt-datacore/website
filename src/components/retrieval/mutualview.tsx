@@ -119,6 +119,7 @@ const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
             <div style={optionStyle}>
                 <span>{t('retrieval.max_workers')}</span>
                 <Dropdown
+                    scrolling
                     disabled={running}
                     options={worker_sel}
                     value={config.max_workers}
@@ -261,7 +262,7 @@ export const MutualView = (props: MutualViewProps) => {
         }
         setProgressMsg('');
         setActiveSuggestion(undefined);
-        //setSuggestions([]);
+        setSuggestions([]);
         setSugWait(undefined);
         runWorker({
             max_workers: config.max_workers,
@@ -296,6 +297,7 @@ export const MutualView = (props: MutualViewProps) => {
                 }
             }
             setSugWait(0);
+            setResultCache(result.data.result.items ?? []);
             setSuggestions(result.data.result.items ?? []);
         }
         else if (result.data.inProgress && result.data.result.format) {
@@ -326,7 +328,7 @@ export const MutualView = (props: MutualViewProps) => {
     }
 
     function clearAll() {
-        setSuggestions([]);
+        setSuggestions([].concat());
         setSuggestion(undefined);
         setActiveSuggestion(undefined);
         setSugWait(undefined);
