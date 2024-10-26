@@ -520,6 +520,9 @@ const CrewOptions = (props: CrewOptionsProps) => {
 
 	function preExcludeCrew(preConsideredCrew: IVoyageCrew[]): IVoyageCrew[] {
 		return preConsideredCrew.filter(crewman => {
+			if (crewman.expires_in)
+				return false;
+
 			if (!considerVoyagers && crewman.active_status === 3)
 				return false;
 
