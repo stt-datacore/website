@@ -11,6 +11,7 @@ import { PolestarFilterModal } from './polestarfilter';
 import { PolestarProspectsModal } from './polestarprospects';
 import { MutualView } from './mutualview';
 import { MutualPolestarMultiWorker } from './mutualmultiworker';
+import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 
 export const RetrievalKeystones = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -94,16 +95,17 @@ const ModePicker = (props: ModePickerProps) => {
 	const { t } = globalContext.localized;
 	const { allKeystones, dbid } = props;
 	const [mode, setMode] = useStateWithStorage<ModePickerMode>(`${dbid}/keystone_modePicker`, 'keystones');
+	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
 	return <>
 			<Step.Group fluid>
-				<Step style={{width: '50%'}} key={`keystone_normal`} active={mode === 'keystones'} onClick={() => setMode('keystones')}>
+				<Step style={{width: isMobile ? '100%' : '50%'}} key={`keystone_normal`} active={mode === 'keystones'} onClick={() => setMode('keystones')}>
 					<Step.Content>
 						<Step.Title>{t('retrieval.modes.retrieval')}</Step.Title>
 						<Step.Description>{t('retrieval.modes.retrieval_desc')}</Step.Description>
 					</Step.Content>
 				</Step>
-				<Step style={{width: '50%'}}  key={`keystone_mutual`} active={mode === 'mutual'} onClick={() => setMode('mutual')}>
+				<Step style={{width: isMobile ? '100%' : '50%'}}  key={`keystone_mutual`} active={mode === 'mutual'} onClick={() => setMode('mutual')}>
 					<Step.Content>
 						<Step.Title>{t('retrieval.modes.mutual_polestar_calculator')}</Step.Title>
 						<Step.Description>{t('retrieval.modes.mutual_polestar_calculator_desc')}</Step.Description>
