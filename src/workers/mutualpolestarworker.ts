@@ -50,7 +50,8 @@ export function getPermutations<T, U>(array: T[], size: number, count?: bigint, 
 const MutualPolestarWorker = {
     calc: (options: IMutualPolestarInternalWorkerConfig, reportProgress: (data: { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: IMutualPolestarWorkerItem }) => boolean = () => true) => {
         return new Promise<MutualPolestarResults>(async (resolve, reject) => {
-            const { status_data_only, verbose, exclude, include, comboSize, allTraits, max_iterations, traitBucket } = options;
+            const { status_data_only, verbose, unowned, exclude, include, comboSize, allTraits, max_iterations, traitBucket } = options;
+            const allowUnowned = options.allowUnowned ?? 0;
 
             let wcn = BigInt(allTraits.length);
             let bsn = BigInt(comboSize);
@@ -63,10 +64,12 @@ const MutualPolestarWorker = {
             let progress = -1n;
             const mex = {} as { [key: string]: boolean };
             const minc = {} as { [key: string]: boolean };
+            const nono = {} as { [key: string]: boolean };
             const combos = [] as IMutualPolestarWorkerItem[];
 
             include.forEach((c) => minc[c] = true);
             exclude.forEach((c) => mex[c] = true);
+            unowned?.forEach((c) => nono[c] = true);
 
             getPermutations(allTraits, comboSize, count, true, start_index, (combo) => {
                 i++;
@@ -101,6 +104,7 @@ const MutualPolestarWorker = {
                         }
                     }
                 }
+
                 if (include.length < 2) return false;
 
                 let traitcrew = combo.map(cb => traitBucket[cb]);
@@ -111,24 +115,30 @@ const MutualPolestarWorker = {
                     crewcounts[tc]++;
                 }));
 
-                let crew = [] as string[];
-                let crewB = [] as string[]
+                let owned = [] as string[];
+                let immortal = [] as string[];
+                let unowned = [] as string[];
 
                 Object.keys(crewcounts).forEach((f) => {
                     if (minc[f] && crewcounts[f] === comboSize) {
-                        crew.push(f);
+                        owned.push(f);
+                    }
+                    else if (nono[f] && crewcounts[f] === comboSize) {
+                        unowned.push(f);
                     }
                     else if (mex[f] && crewcounts[f] === comboSize) {
-                        crewB.push(f);
+                        immortal.push(f);
                     }
                 });
 
-                if (crew.length > 1 && crewB.length === 0) {
-                    combos.push({
-                        combo,
-                        crew
-                    });
-                    reportProgress({ result: combos[combos.length - 1] });
+                if (owned.length > 0 && immortal.length === 0 && unowned.length <= allowUnowned) {
+                    if (owned.length > 1 || unowned.length) {
+                        combos.push({
+                            combo,
+                            crew: owned.concat(unowned)
+                        });
+                        reportProgress({ result: combos[combos.length - 1] });
+                    }
                 }
                 return combo;
             });

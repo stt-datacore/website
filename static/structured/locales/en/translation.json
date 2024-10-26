@@ -1,6 +1,7 @@
 {
     "retrieval": {
         "up_to_n": "Up to {{n}}",
+        "allow_unowned": "Allow unowned crew",
         "consider_unowned_polestars": "Consider unowned polestars (may take much more time)",
         "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
         "max_iterations": "{{ship.calc.max_iterations}}",

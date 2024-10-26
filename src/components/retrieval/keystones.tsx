@@ -92,6 +92,7 @@ type ModePickerProps = {
 
 const ModePicker = (props: ModePickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { playerData } = globalContext.player;
 	const { t } = globalContext.localized;
 	const { allKeystones, dbid } = props;
 	const [mode, setMode] = useStateWithStorage<ModePickerMode>(`${dbid}/keystone_modePicker`, 'keystones');
@@ -115,7 +116,7 @@ const ModePicker = (props: ModePickerProps) => {
 
 			{mode === 'keystones' && <KeystonesPlayer dbid={dbid} allKeystones={allKeystones} />}
 			{mode === 'mutual' &&
-				<MutualPolestarMultiWorker>
+				<MutualPolestarMultiWorker playerData={playerData}>
 					<MutualView allKeystones={allKeystones} dbid={dbid} />
 				</MutualPolestarMultiWorker>}
 	</>

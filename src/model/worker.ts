@@ -370,6 +370,8 @@ export interface IMutualPolestarWorkerConfig extends WorkerConfigBase {
     comboSize: PolestarComboSize;
     considerUnowned: boolean;
     batch: boolean;
+    allowUnowned: number;
+    no100: boolean;
 }
 
 export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase {
@@ -381,4 +383,6 @@ export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase {
     traitBucket: { [key: string]: string[] }
     verbose: boolean;
     batch: boolean;
+    unowned?: string[];
+    allowUnowned?: number;
 }

@@ -2,9 +2,11 @@ import { v4 } from "uuid";
 import React from "react";
 import { IMultiWorkerContext, IMultiWorkerConfig, IMultiWorkerState, IMultiWorkerStatus, IMutualPolestarWorkerItem, IMutualPolestarWorkerConfig, IWorkerResults, IMutualPolestarInternalWorkerConfig } from "../../model/worker";
 import { GlobalContext } from "../../context/globalcontext";
+import { PlayerData } from "../../model/player";
 
 export interface MutualPolestarMultiWorkerProps {
     children: JSX.Element;
+    playerData?: PlayerData;
 }
 
 export interface MutualPolestarMultiWorkerStatus extends IMultiWorkerStatus<IMutualPolestarWorkerItem> {
@@ -119,17 +121,22 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
         this.callback = options.callback;
         this.config = options.config;
         const allCrew = this.context.core.crew;
-        const ownedCrew = this.context.player.playerData?.player.character.crew;
-        const { polestars, comboSize, batch } = options.config;
+        const ownedCrew = this.props.playerData?.player.character.crew;
+        const { polestars, comboSize, batch, allowUnowned, no100 } = options.config;
 
         if (!ownedCrew) return false;
 
         this.reset(false, options.max_workers);
 
-		const nonImmortals = ownedCrew.filter(f => f.rarity < f.max_rarity && f.in_portal).map(ni => ni.symbol);
+		const nonImmortals = ownedCrew.filter(f => f.rarity < f.max_rarity && f.in_portal && (!no100 || !f.unique_polestar_combos?.length)).map(ni => ni.symbol);
 
 		let exclude = allCrew.filter(f => !nonImmortals.some(c => c === f.symbol)).map(m => m.symbol);
 		let include = allCrew.filter(f => !exclude.some(c => c === f.symbol)).map(m => m.symbol);
+        let unowned = exclude.filter(f => {
+            let acf = allCrew.find(acf => acf.symbol === f);
+            if (no100 && acf?.unique_polestar_combos?.length) return false;
+            return !ownedCrew.some(oc => oc.symbol === f) && acf?.in_portal;
+        });
 
 		const traitBucket = {} as { [key: string]: string[] };
 		const mex = {} as { [key: string]: boolean };
@@ -148,7 +155,6 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
 		});
 
 		const allTraits = Object.keys(traitBucket);
-		const combos = [] as { combo: string[], crew: string[] }[];
 
         let wcn = BigInt(allTraits.length);
         let bsn = BigInt(options.config.comboSize);
@@ -190,11 +196,11 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
                     comboSize,
                     traitBucket,
                     batch,
-                    // ship: JSON.parse(JSON.stringify(options.config.ship)),
-                    // crew: JSON.parse(JSON.stringify(options.config.crew)),
                     start_index: start,
                     max_iterations: total <= 100n ? undefined : length,
-                    status_data_only: true
+                    status_data_only: true,
+                    allowUnowned,
+                    unowned
                 } as IMutualPolestarInternalWorkerConfig
             });
         });
@@ -299,13 +305,6 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
             }
 
             if (this.running.every(e => !e)) {
-                //this.allResults.sort((a, b) => compareMutualPolestarResults(a, b, fbb_mode));
-                let top = 0;
-
-                this.allResults.forEach((result) => {
-
-                });
-
                 const endTime = new Date();
                 const run_time = (endTime.getTime() - context.startTime.getTime()) / 1000;
                 this.callback({

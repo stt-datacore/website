@@ -1,19 +1,16 @@
-import React from "react"
-import { GlobalContext } from "../../context/globalcontext"
+import React from "react";
+import { GlobalContext } from "../../context/globalcontext";
 import { Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Pagination, Table } from "semantic-ui-react";
 import { useStateWithStorage } from "../../utils/storage";
-import { MutualMultiWorkerContext, MutualPolestarMultiWorkerStatus, MutualPolestarResults } from "./mutualmultiworker";
+import { MutualMultiWorkerContext, MutualPolestarMultiWorkerStatus } from "./mutualmultiworker";
 import { IConstellation, IKeystone, IPolestar } from "./model";
 import { IMutualPolestarWorkerItem, PolestarComboSize } from "../../model/worker";
 import { formatRunTime } from "../../utils/misc";
-import { compareShipResults } from "../../utils/shiputils";
-import { PlayerCrew } from "../../model/player";
+import { CompletionState, PlayerCrew } from "../../model/player";
 import { AvatarView } from "../item_presenters/avatarview";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { ItemHoverStat, ItemTarget } from "../hovering/itemhoverstat";
 import { getIconPath } from "../../utils/assets";
-import { SortDirection } from "../searchabletable";
-import { checkReward } from "../../utils/itemutils";
 import { EquipmentItem } from "../../model/equipment";
 import { CrewDropDown } from "../base/crewdropdown";
 import { CrewMember } from "../../model/crew";
@@ -34,8 +31,9 @@ interface MutualViewConfig {
     combo_size: PolestarComboSize | '1_batch' | '2_batch' | '3_batch' | '4_batch';
     verbose: boolean;
     considerUnowned: boolean;
+    allowUnowned?: number;
+    no100?: boolean;
 }
-
 
 interface MutualViewConfigPanelProps {
     config: MutualViewConfig;
@@ -57,6 +55,16 @@ const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
     [1, 2, 3, 4].forEach((num) => {
         comboSizes.push({
             key: `comboSize_${num}`,
+            value: num,
+            text: `${num}`
+        })
+    });
+
+    const allowUnowned = [] as DropdownItemProps[];
+
+    [0, 1, 2, 3].forEach((num) => {
+        allowUnowned.push({
+            key: `allowUnowned_${num}`,
             value: num,
             text: `${num}`
         })
@@ -125,6 +133,15 @@ const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
                 />
             </div>
             <div style={optionStyle}>
+                <span>{t('retrieval.allow_unowned')}</span>
+                <Dropdown
+                    disabled={running}
+                    options={allowUnowned}
+                    value={config.allowUnowned || 0}
+                    onChange={(e, { value }) => setConfig({ ...config, allowUnowned: value as number | undefined })}
+                />
+            </div>
+            <div style={optionStyle}>
                 <span>{t('retrieval.max_workers')}</span>
                 <Dropdown
                     scrolling
@@ -158,6 +175,11 @@ const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
                     disabled={running}
                     checked={config.considerUnowned}
                     onChange={(e, { checked }) => setConfig({ ...config, considerUnowned: checked as boolean || false})}
+                />
+                <Checkbox label={t('base.less_than_100_retrieval')}
+                    disabled={running}
+                    checked={config.no100}
+                    onChange={(e, { checked }) => setConfig({ ...config, no100: checked as boolean || false})}
                 />
             </div>
             <div style={{...optionStyle, flexDirection: 'row', margin: '0.5em'}}>
@@ -285,7 +307,9 @@ export const MutualView = (props: MutualViewProps) => {
                 comboSize,
                 batch,
                 verbose: config.verbose,
-                considerUnowned: config.considerUnowned
+                considerUnowned: config.considerUnowned,
+                allowUnowned: config.allowUnowned || 0,
+                no100: !!config.no100
             },
             callback: calculateCallback
         })
@@ -323,7 +347,7 @@ export const MutualView = (props: MutualViewProps) => {
                         percent: `${result.data.result.percent?.toLocaleString()}`,
                         count: `${result.data.result.count?.toLocaleString()}`,
                         progress: `${result.data.result.progress?.toLocaleString()}`,
-                        accepted: `${result.data.result.accepted?.toLocaleString()}`
+                        accepted: `${suggestions?.length.toLocaleString()}`
                     }
                 )
             )
@@ -387,9 +411,22 @@ const MutualTable = (props: MutualTableProps) => {
     React.useEffect(() => {
         if (!playerData) return;
         const mul = sortOrder === 'ascending' ? 1 : -1;
-        let crew = items.map((item) => item.crew.map(symbol => playerData.player.character.crew.find(f => f.symbol === symbol))).flat().filter(f => f !== undefined);
-        let downfiltered = crew.filter((c, idx) => crew.findIndex(cf => c.symbol === cf.symbol && c.highest_owned_rarity === cf.rarity) === idx);
+        let nid = -1 * (globalContext.core.crew.length * 4);
+        let crew = items.map((item) =>
+                item.crew.map(symbol => playerData.player.character.crew.find(f => f.symbol === symbol && f.rarity === f.highest_owned_rarity)
+                || globalContext.core.crew.find(gfc => gfc.symbol === symbol)))
+                .flat().filter(f => f !== undefined)
+                .map((m) => {
+                    let n = m as PlayerCrew;
+                    n.rarity ??= 0;
+                    n.level ??= 0;
+                    n.highest_owned_rarity ??= 0;
+                    n.id ??= nid--;
+                    n.immortal ??= CompletionState.DisplayAsImmortalUnowned;
+                    return n;
+                });
 
+        let downfiltered = crew.filter((c, idx) => crew.findIndex(cf => c.symbol === cf.symbol && c.highest_owned_rarity === cf.rarity) === idx);
         const workItems = items.map((item) => {
             const comboCrew = downfiltered.filter(f => item.crew.includes(f.symbol)).sort((a, b) => a.name.localeCompare(b.name));
             if (selCrew?.length && !comboCrew.some(cc => selCrew.includes(cc.id))) return undefined;
