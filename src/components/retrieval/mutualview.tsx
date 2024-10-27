@@ -180,7 +180,8 @@ export const MutualView = (props: MutualViewProps) => {
                 verbose: config.verbose,
                 considerUnowned: config.considerUnowned,
                 allowUnowned: config.allowUnowned || 0,
-                no100: !!config.no100
+                no100: !!config.no100,
+                status_data_only: true
             },
             callback: calculateCallback
         })

@@ -64,7 +64,9 @@
         "rewards": "Recompensas",
         "shuttle": "Lanzadera",
         "shuttles": "Lanzaderas",
-        "uniquely_retrievable": "Únicamente recuperable"
+        "uniquely_retrievable": "Únicamente recuperable",
+        "voyage": "Viaje",
+        "voyages": "Viajes"
     },
     "behold_helper": {
         "columns": {

@@ -64,7 +64,9 @@
         "rewards": "Récompenses",
         "shuttle": "Navette",
         "shuttles": "Navettes",
-        "uniquely_retrievable": "Récupérable de manière unique"
+        "uniquely_retrievable": "Récupérable de manière unique",
+        "voyage": "Voyage",
+        "voyages": "Voyages"
     },
     "behold_helper": {
         "columns": {
