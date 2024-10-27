@@ -380,6 +380,8 @@ export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase {
     exclude: string[];
     allTraits: string[];
     comboSize: PolestarComboSize;
+    skillBucket: { [key: string]: string[] }
+    rarityBucket: { [key: string]: string[] }
     traitBucket: { [key: string]: string[] }
     verbose: boolean;
     batch: boolean;

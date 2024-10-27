@@ -15,6 +15,7 @@ import { EquipmentItem } from "../../model/equipment";
 import { CrewDropDown } from "../base/crewdropdown";
 import { CrewMember } from "../../model/crew";
 import { CrewTraitFilter, RarityFilter } from "../crewtables/commonoptions";
+import CONFIG from "../CONFIG";
 
 
 const optionStyle = {
@@ -438,7 +439,7 @@ const MutualTable = (props: MutualTableProps) => {
             if (traits?.length && !comboCrew.every(cc => cc.traits.some(ct => traits.includes(ct)))) return undefined;
             return {
                 crew: comboCrew,
-                combo: polestars.filter(f => item.combo.some(cb => `${cb}_keystone` === f.symbol)).sort((a, b) => a.name.localeCompare(b.name))
+                combo: polestars.filter(f => item.combo.some(cb => `${cb}_keystone` === f.symbol || `rarity_${cb}_keystone` === f.symbol)).sort((a, b) => a.name.localeCompare(b.name))
             } as DisplayItem
         }).filter(f => f !== undefined);
 
@@ -561,6 +562,16 @@ const MutualTable = (props: MutualTableProps) => {
                     {item.combo.map((polestar) => {
                         polestar.imageUrl = getIconPath(polestar.icon, true);
                         (polestar as any)['quantity'] = polestar.owned;
+
+                        let psName = '';
+                        if (polestar.symbol.startsWith("rarity_")) {
+                            let rarity = Number(polestar.symbol.replace("rarity_", "").replace("_keystone", ""));
+                            psName = CONFIG.RARITIES[rarity].name;
+                        }
+                        else {
+                            psName = TRAIT_NAMES[polestar.symbol.replace("_keystone", "")] || CONFIG.SKILLS[polestar.symbol.replace("_keystone", "")];
+                        }
+
                         return <div style={{ width: '7em', display:'flex', flexWrap:'wrap', flexDirection:'column', justifyContent: 'center', alignItems: 'center', gap: '0.5em'}}>
                             <ItemTarget
                                 inputItem={polestar as any as EquipmentItem}
@@ -568,7 +579,7 @@ const MutualTable = (props: MutualTableProps) => {
                                 <img src={getIconPath(polestar.icon)} style={{height: '48px'}} />
                             </ItemTarget>
                             <p style={{textAlign: 'center'}}>
-                            {TRAIT_NAMES[polestar.symbol.replace("_keystone", "")]}
+                            {psName}
                             </p>
                             ({polestar.owned})
                             </div>

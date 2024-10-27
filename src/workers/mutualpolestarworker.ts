@@ -50,7 +50,7 @@ export function getPermutations<T, U>(array: T[], size: number, count?: bigint, 
 const MutualPolestarWorker = {
     calc: (options: IMutualPolestarInternalWorkerConfig, reportProgress: (data: { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: IMutualPolestarWorkerItem }) => boolean = () => true) => {
         return new Promise<MutualPolestarResults>(async (resolve, reject) => {
-            const { status_data_only, verbose, unowned, exclude, include, comboSize, allTraits, max_iterations, traitBucket } = options;
+            const { status_data_only, verbose, unowned, exclude, include, comboSize, allTraits, max_iterations, traitBucket, skillBucket, rarityBucket } = options;
             const allowUnowned = options.allowUnowned ?? 0;
 
             let wcn = BigInt(allTraits.length);
@@ -106,11 +106,38 @@ const MutualPolestarWorker = {
                 }
 
                 if (include.length < 2) return false;
+                let skills = combo?.filter(f => f.endsWith("_skill"));
+                let rarities = combo?.filter(f => !Number.isNaN(Number(f)));
+                if (rarities?.length && rarities.length > 1) return false;
+                let rarity = 0;
 
-                let traitcrew = combo.map(cb => traitBucket[cb]);
+                if (rarities.length === 1) {
+                    let r = Number(rarities[0])
+                    if (!Number.isNaN(r)) rarity = r;
+                    else rarity = 0;
+                }
+
+                let raritycrew = rarity ? rarityBucket[rarity] : undefined
+
+                let traitcrew = combo?.map(cb => traitBucket[cb]).filter(f => f);
                 let crewcounts = {} as any;
 
-                traitcrew.map((tca) => tca.map(tc => {
+                if (skills?.length) {
+                    skills?.forEach(rc => {
+                        let skillcrew = skillBucket[rc];
+                        skillcrew?.map(tc => {
+                            crewcounts[tc] ??= 0;
+                            crewcounts[tc]++;
+                        });
+                    })
+                }
+
+                raritycrew?.map(tc => {
+                    crewcounts[tc] ??= 0;
+                    crewcounts[tc]++;
+                });
+
+                traitcrew?.map((tca) => tca.map(tc => {
                     crewcounts[tc] ??= 0;
                     crewcounts[tc]++;
                 }));
@@ -118,15 +145,16 @@ const MutualPolestarWorker = {
                 let owned = [] as string[];
                 let immortal = [] as string[];
                 let unowned = [] as string[];
+                let workingSize = comboSize;
 
                 Object.keys(crewcounts).forEach((f) => {
-                    if (minc[f] && crewcounts[f] === comboSize) {
+                    if (minc[f] && crewcounts[f] === workingSize) {
                         owned.push(f);
                     }
-                    else if (nono[f] && crewcounts[f] === comboSize) {
+                    else if (nono[f] && crewcounts[f] === workingSize) {
                         unowned.push(f);
                     }
-                    else if (mex[f] && crewcounts[f] === comboSize) {
+                    else if (mex[f] && crewcounts[f] === workingSize) {
                         immortal.push(f);
                     }
                 });

@@ -138,6 +138,8 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
             return !ownedCrew.some(oc => oc.symbol === f) && acf?.in_portal;
         });
 
+		const rarityBucket = {} as { [key: string]: string[] };
+		const skillBucket = {} as { [key: string]: string[] };
 		const traitBucket = {} as { [key: string]: string[] };
 		const mex = {} as { [key: string]: boolean };
 		const minc = {} as { [key: string]: boolean };
@@ -152,9 +154,21 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
 					traitBucket[trait].push(crew.symbol);
 				}
 			});
+
+            if (polestars.some(p => (p.owned || options.config.considerUnowned) && p.symbol === `rarity_${crew.max_rarity}_keystone`)) {
+                rarityBucket[crew.max_rarity] ??= [];
+                rarityBucket[crew.max_rarity].push(crew.symbol);
+            }
+
+            crew.skill_order.forEach((skill) => {
+                if (polestars.some(p => (p.owned || options.config.considerUnowned) && p.symbol === `${skill}_keystone`)) {
+                    skillBucket[`${skill}`] ??= [];
+                    skillBucket[`${skill}`].push(crew.symbol);
+                }
+            });
 		});
 
-		const allTraits = Object.keys(traitBucket);
+		const allTraits = Object.keys(traitBucket).concat(Object.keys(rarityBucket)).concat(Object.keys(skillBucket));
 
         let wcn = BigInt(allTraits.length);
         let bsn = BigInt(options.config.comboSize);
@@ -195,6 +209,8 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
                     polestars,
                     comboSize,
                     traitBucket,
+                    rarityBucket,
+                    skillBucket,
                     batch,
                     start_index: start,
                     max_iterations: total <= 100n ? undefined : length,
