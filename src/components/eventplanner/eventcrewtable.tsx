@@ -64,6 +64,12 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		{ width: 1, column: 'bestPair.score', title: t('event_planner.table.columns.pair'), reverse: true }
 	];
 
+	if (eventData.activeContent?.content_type === 'voyage') {
+		tableConfig.push(
+			{ width: 1, column: 'q_bits', title: t('base.qp'), reverse: true }
+		)
+	}
+
 	const priText = t('quipment_ranks.primary');
 	const secText = t('quipment_ranks.secondary');
 
