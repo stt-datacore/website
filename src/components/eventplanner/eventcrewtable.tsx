@@ -12,13 +12,14 @@ import CONFIG from '../../components/CONFIG';
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import { useStateWithStorage } from '../../utils/storage';
-import { crewGender, isQuipped } from '../../utils/crewutils';
+import { crewGender, isQuipped, qbitsToSlots } from '../../utils/crewutils';
 
 import { IEventData, IRosterCrew, IEventScoredCrew, IEventCombos, IBestCombos, IBestCombo } from './model';
 import { calculateGalaxyChance, computeEventBest } from '../../utils/events';
 import { navToCrewPage } from '../../utils/nav';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { SkillPicker } from '../base/skillpicker';
+import { PlayerCrew } from '../../model/player';
 
 type EventCrewTableProps = {
 	rosterType: string;
@@ -66,7 +67,22 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 
 	if (eventData.activeContent?.content_type === 'voyage') {
 		tableConfig.push(
-			{ width: 1, column: 'q_bits', title: t('base.qp'), reverse: true }
+			{
+				width: 1,
+				column: 'q_bits',
+				title: t('base.qp'),
+				reverse: true,
+				tiebreakers: ['crew.bonus'],
+				customCompare(a: IRosterCrew, b: IRosterCrew) {
+					let aslots = qbitsToSlots(a.q_bits);
+					let bslots = qbitsToSlots(b.q_bits);
+					let r = aslots - bslots;
+					if (!r) r = a.q_bits! - b.q_bits!;
+					if (!r) r = a.score! - b.score!;
+					if (!r) r = (a as any).bestSkill.score - (b as any).bestSkill.score;
+					return r;
+				}
+			}
 		)
 	}
 
@@ -227,7 +243,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		const attributes = {
 			positive: highlighted
 		};
-
+		const slots = qbitsToSlots(crew.q_bits);
 		return (
 			<Table.Row key={idx} {...attributes}>
 				<Table.Cell>
@@ -264,6 +280,13 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 					<br /><img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillA}.png`} style={{ height: '1em' }} />
 					{crew.bestPair.skillB !== '' && (<span>+<img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillB}.png`} style={{ height: '1em' }} /></span>)}
 				</Table.Cell>
+				{eventData.activeContent?.content_type === 'voyage' &&
+				<Table.Cell textAlign='center'>
+					<b>{(crew.q_bits)}</b>
+					<br />
+					{slots === 1 && t('base.one_slot')}
+					{slots !== 1 && t('base.n_slots', { n: `${slots}`})}
+				</Table.Cell>}
 				{CONFIG.SKILLS_SHORT.map(skill =>
 					crew.base_skills[skill.name] ? (
 						<Table.Cell key={skill.name} textAlign='center'>
