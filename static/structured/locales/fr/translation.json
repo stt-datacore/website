@@ -208,7 +208,7 @@
     },
     "cool_stats": {
         "all_ranks": "Tous les rangs",
-        "base_ranks": "Rangs de base",
+        "base_ranks": "Rangs principles",
         "base_roster": "#{{rank}} {{skill}} base dans votre liste",
         "gauntlet_pair_ranks": "Rangs de paire de gantelets",
         "gauntlet_pair_roster": "#{{rank}} {{skill}} paire de gantelets dans votre liste",
