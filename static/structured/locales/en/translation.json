@@ -812,6 +812,7 @@
     "hints": {
         "apply_buffs": "Apply stat buffs",
         "display_buffs": "Display Buffs",
+        "filter_by_polestars": "Filter by polestars",
         "filter_by_availability": "Filter by availability",
         "filter_by_collections": "Filter by collections",
         "filter_by_item_type": "Filter by item type",

@@ -16,6 +16,7 @@ import { CrewDropDown } from "../base/crewdropdown";
 import { CrewMember } from "../../model/crew";
 import { CrewTraitFilter, RarityFilter } from "../crewtables/commonoptions";
 import CONFIG from "../CONFIG";
+import { PolestarDropdown } from "./polestardropdown";
 
 
 const optionStyle = {
@@ -25,6 +26,16 @@ const optionStyle = {
     alignItems: 'flex-start',
     justifyContent: 'flex-start'
 } as React.CSSProperties;
+
+function comboToPolestars(combo: string[]) {
+    const symbols = [] as string[];
+    combo.forEach((item) => {
+        if (item.includes("_skill")) symbols.push(`${item}_keystone`);
+        else if (!Number.isNaN(Number(item))) symbols.push(`rarity_${item}_keystone`);
+        else symbols.push(`${item}_keystone`);
+    })
+    return symbols;
+}
 
 interface MutualViewConfig {
     max_workers: number;
@@ -87,6 +98,32 @@ export const MutualView = (props: MutualViewProps) => {
             polestar.owned_total_odds = owned.length === 0 ? 0 : 1-owned.reduce((prev, curr) => prev*(((curr.keystones.length-1)/curr.keystones.length)**curr.owned), 1);
         });
 
+        const isSkill = (a: IPolestar) => {
+            return a.symbol.endsWith("_skill_keystone");
+        }
+
+        const isRarity = (a: IPolestar) => {
+            return a.symbol.startsWith("rarity_");
+        }
+
+        polestars.sort((a, b) => {
+            let asy = isSkill(a);
+            let bsy = isSkill(b);
+            let ary = isRarity(a);
+            let bry = isRarity(b);
+            if (ary !== bry) {
+                return ary ? -1 : 1;
+            }
+            else if (ary && bry) {
+                let ra = Number(a.symbol.replace('rarity_', '').replace("_keystone", ""))
+                let rb = Number(b.symbol.replace('rarity_', '').replace("_keystone", ""))
+                return ra - rb;
+            }
+            if (asy !== bsy) {
+                return asy ? -1 : 1;
+            }
+            return a.name.localeCompare(b.name);
+        });
         setPolestars(polestars);
         if (lastDbid && dbid !== lastDbid) {
             setSuggestions([].concat());
@@ -403,6 +440,8 @@ const MutualTable = (props: MutualTableProps) => {
     const [rarities, setRarities] = React.useState([] as number[]);
     const [traits, setTraits] = React.useState([] as string[]);
     const [minTraits, setMinTraits] = React.useState(1);
+    const [allowedPolestars, setAllowedPolestars] = React.useState([] as IPolestar[]);
+    const [polestarFilter, setPolestarFilter] = React.useState(undefined as string[] | undefined)
     const pageStartIdx = (activePage - 1) * itemsPerPage;
 
     const [crewPool, setCrewPool] = React.useState([] as (CrewMember | PlayerCrew)[]);
@@ -433,15 +472,22 @@ const MutualTable = (props: MutualTableProps) => {
         let downfiltered = crew.filter((c, idx) => crew.findIndex(cf => c.symbol === cf.symbol && c.highest_owned_rarity === cf.rarity) === idx);
         const workItems = items.map((item) => {
             const comboCrew = downfiltered.filter(f => item.crew.includes(f.symbol)).sort((a, b) => a.name.localeCompare(b.name));
+            const comboStars = polestars.filter(f => item.combo.some(cb => `${cb}_keystone` === f.symbol || `rarity_${cb}_keystone` === f.symbol)).sort((a, b) => a.name.localeCompare(b.name));
+
             if (selCrew?.length && !comboCrew.some(cc => selCrew.includes(cc.id))) return undefined;
             if (rarities?.length && !comboCrew.some(cc => rarities.includes(cc.max_rarity))) return undefined;
             if (traits?.length && minTraits === traits.length && !traits.every(trait => comboCrew.every(cc => cc.traits.includes(trait)))) return undefined;
             if (traits?.length && !comboCrew.every(cc => cc.traits.some(ct => traits.includes(ct)))) return undefined;
+            if (polestarFilter?.length && !polestarFilter.every(cs => comboStars.some(cs2 => cs2.symbol === cs) )) return undefined;
+
             return {
                 crew: comboCrew,
-                combo: polestars.filter(f => item.combo.some(cb => `${cb}_keystone` === f.symbol || `rarity_${cb}_keystone` === f.symbol)).sort((a, b) => a.name.localeCompare(b.name))
+                combo: comboStars
             } as DisplayItem
         }).filter(f => f !== undefined);
+
+        let ap = workItems.map(m => m.combo).flat()
+        ap = polestars.filter(f => ap.includes(f));
 
         if (sortBy === 'crew') {
             workItems.sort((a, b) => {
@@ -464,10 +510,11 @@ const MutualTable = (props: MutualTableProps) => {
             });
         }
 
+        setAllowedPolestars(ap);
         setTraitList(traitlist);
         setWorkItems(workItems);
         setCrewPool(downfiltered);
-    }, [playerData, items, polestars, sortBy, sortOrder, selCrew, rarities, traits, minTraits]);
+    }, [playerData, items, polestars, sortBy, sortOrder, selCrew, rarities, traits, minTraits, polestarFilter]);
 
     React.useEffect(() => {
         const totalPages = Math.ceil(workItems.length / itemsPerPage);
@@ -508,6 +555,18 @@ const MutualTable = (props: MutualTableProps) => {
                             setMinTraitMatches={setMinTraits}
                             traitFilter={traits}
                             setTraitFilter={setTraits}
+                            />
+                    </div>
+                </div>
+                <div style={optionStyle}>
+                    <span>{t('retrieval.polestars')}</span>
+                    <div style={{display:'flex', flexDirection: 'row', justifyContent:'flex-start', alignItems: 'center', gap: '0.5em', marginBottom: '1em'}}>
+                        <PolestarDropdown
+                            multiple
+                            style={{minWidth: '15em'}}
+                            selection={polestarFilter}
+                            setSelection={setPolestarFilter}
+                            polestars={allowedPolestars}
                             />
                     </div>
                 </div>
