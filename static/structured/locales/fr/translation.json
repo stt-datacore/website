@@ -309,7 +309,7 @@
     },
     "crew_views": {
         "advanced_analysis": "Analyse Avancée",
-        "base": "Afficher les compétences de base",
+        "base": "Afficher les compétences principles",
         "crew_utility": "Afficher d'utilité de l'équipier",
         "dismiss": "Rejeter {{crew}}",
         "faction_items": "{{n}} articles de faction",
@@ -696,7 +696,7 @@
         "and": "et",
         "any": "Quelconque",
         "apply_filters": "Appliquer des filtres",
-        "base": "Base",
+        "base": "Principle",
         "bonus": "Prime",
         "bonuses": "Bonus",
         "cancel": "Annuler",
