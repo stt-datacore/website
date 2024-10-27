@@ -432,14 +432,10 @@ const MutualTable = (props: MutualTableProps) => {
     const { items, polestars } = props;
 
     const { playerData } = globalContext.player;
-    const [traitList, setTraitList] = React.useState([] as string[]);
     const [totalPages, setTotalPages] = React.useState(1);
     const [itemsPerPage, setItemsPerPage] = React.useState(10);
     const [activePage, setActivePage] = React.useState(1);
     const [workItems, setWorkItems] = React.useState([] as DisplayItem[]);
-    const [rarities, setRarities] = React.useState([] as number[]);
-    const [traits, setTraits] = React.useState([] as string[]);
-    const [minTraits, setMinTraits] = React.useState(1);
     const [allowedPolestars, setAllowedPolestars] = React.useState([] as IPolestar[]);
     const [polestarFilter, setPolestarFilter] = React.useState(undefined as string[] | undefined)
     const pageStartIdx = (activePage - 1) * itemsPerPage;
@@ -454,7 +450,6 @@ const MutualTable = (props: MutualTableProps) => {
         if (!playerData) return;
         const mul = sortOrder === 'ascending' ? 1 : -1;
         let nid = -1 * (globalContext.core.crew.length * 4);
-        let traitlist = [... new Set(items.map((item) => item.combo).flat())];
         let crew = items.map((item) =>
                 item.crew.map(symbol => playerData.player.character.crew.find(f => f.symbol === symbol && f.rarity === f.highest_owned_rarity)
                 || globalContext.core.crew.find(gfc => gfc.symbol === symbol)))
@@ -475,9 +470,6 @@ const MutualTable = (props: MutualTableProps) => {
             const comboStars = polestars.filter(f => item.combo.some(cb => `${cb}_keystone` === f.symbol || `rarity_${cb}_keystone` === f.symbol)).sort((a, b) => a.name.localeCompare(b.name));
 
             if (selCrew?.length && !comboCrew.some(cc => selCrew.includes(cc.id))) return undefined;
-            if (rarities?.length && !comboCrew.some(cc => rarities.includes(cc.max_rarity))) return undefined;
-            if (traits?.length && minTraits === traits.length && !traits.every(trait => comboCrew.every(cc => cc.traits.includes(trait)))) return undefined;
-            if (traits?.length && !comboCrew.every(cc => cc.traits.some(ct => traits.includes(ct)))) return undefined;
             if (polestarFilter?.length && !polestarFilter.every(cs => comboStars.some(cs2 => cs2.symbol === cs) )) return undefined;
 
             return {
@@ -486,8 +478,8 @@ const MutualTable = (props: MutualTableProps) => {
             } as DisplayItem
         }).filter(f => f !== undefined);
 
-        let ap = workItems.map(m => m.combo).flat()
-        ap = polestars.filter(f => ap.includes(f));
+        const psSym = items.map(m => m.combo).map(c => comboToPolestars(c)).flat()
+        const allowedPolestars = polestars.filter(f => psSym.includes(f.symbol));
 
         if (sortBy === 'crew') {
             workItems.sort((a, b) => {
@@ -510,11 +502,10 @@ const MutualTable = (props: MutualTableProps) => {
             });
         }
 
-        setAllowedPolestars(ap);
-        setTraitList(traitlist);
+        setAllowedPolestars(allowedPolestars);
         setWorkItems(workItems);
         setCrewPool(downfiltered);
-    }, [playerData, items, polestars, sortBy, sortOrder, selCrew, rarities, traits, minTraits, polestarFilter]);
+    }, [playerData, items, polestars, sortBy, sortOrder, selCrew, polestarFilter]);
 
     React.useEffect(() => {
         const totalPages = Math.ceil(workItems.length / itemsPerPage);
@@ -538,25 +529,6 @@ const MutualTable = (props: MutualTableProps) => {
                 <div style={optionStyle}>
                     <span>{t('base.crew')}</span>
                     <CrewDropDown plain showRarity pool={crewPool} selection={selCrew} setSelection={setSelCrew} />
-                </div>
-                <div style={optionStyle}>
-                    <span>{t('base.rarity')}</span>
-                    <div style={{display:'flex', flexDirection: 'row', justifyContent:'flex-start', alignItems: 'center', gap: '0.5em', marginBottom: '1em'}}>
-                        <RarityFilter multiple rarityFilter={rarities ?? []} setRarityFilter={(r) => setRarities(r)} />
-                    </div>
-                </div>
-                <div style={optionStyle}>
-                    <span>{t('hints.traits')}</span>
-                    <div style={{display:'flex', flexDirection: 'row', justifyContent:'flex-start', alignItems: 'center', gap: '0.5em', marginBottom: '1em'}}>
-                        <CrewTraitFilter
-                            hideTwoPlus={true}
-                            allowed={traitList}
-                            minTraitMatches={minTraits}
-                            setMinTraitMatches={setMinTraits}
-                            traitFilter={traits}
-                            setTraitFilter={setTraits}
-                            />
-                    </div>
                 </div>
                 <div style={optionStyle}>
                     <span>{t('retrieval.polestars')}</span>
