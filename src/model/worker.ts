@@ -1,6 +1,6 @@
 import { BossBattlesRoot } from "./boss";
 import { BaseSkills, CrewMember, PlayerSkill, Skill } from "./crew";
-import { PlayerCrew, PlayerData } from "./player";
+import { CompactCrew, Player, PlayerCrew, PlayerData } from "./player";
 import { Ship } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
 import { EquipmentCommon, EquipmentItem } from "./equipment";
@@ -374,15 +374,20 @@ export interface IMutualPolestarWorkerConfig extends WorkerConfigBase {
     no100: boolean;
 }
 
+export interface IPolestarCrew extends CompactCrew {
+    disposition: 'include' | 'exclude' | 'unowned';
+}
+
 export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase {
     polestars: IPolestar[];
     include: string[];
     exclude: string[];
     allTraits: string[];
+    crew: IPolestarCrew[];
     comboSize: PolestarComboSize;
-    skillBucket: { [key: string]: string[] }
-    rarityBucket: { [key: string]: string[] }
-    traitBucket: { [key: string]: string[] }
+    // skillBucket: { [key: string]: string[] }
+    // rarityBucket: { [key: string]: string[] }
+    // traitBucket: { [key: string]: string[] }
     verbose: boolean;
     batch: boolean;
     unowned?: string[];

@@ -1,5 +1,5 @@
 /* eslint-disable */
-//unified-worker.js
+//polestar-worker.js
 import MutualPolestarWorker from './mutualpolestarworker.ts';
 
 // eslint-disable-next-line no-restricted-globals

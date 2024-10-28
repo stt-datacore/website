@@ -117,7 +117,9 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 					equipment: crew.equipment.map((eq) => eq[0]),
 					active_status: crew.active_status,
 					active_id: crew.active_id,
-					active_index: crew.active_index
+					active_index: crew.active_index,
+					max_rarity: crew.max_rarity,
+					skill_order: []
 				});
 			}
 		});

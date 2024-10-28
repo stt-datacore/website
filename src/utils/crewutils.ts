@@ -636,6 +636,29 @@ export function oneCrewCopy<T extends CrewMember>(crew: T): T {
 	return result;
 }
 
+export function makeCompact<T extends PlayerCrew>(crew: T, exclude?: string[]) : CompactCrew {
+	let newcrew = {} as CompactCrew;
+	if (!exclude?.includes("id")) newcrew.id = crew.id;
+	if (!exclude?.includes("symbol")) newcrew.symbol = crew.symbol;
+	if (!exclude?.includes("name")) newcrew.name = crew.name;
+	if (!exclude?.includes("archetype_id")) newcrew.archetype_id = crew.archetype_id;
+	if (!exclude?.includes("level")) newcrew.level = crew.level;
+	if (!exclude?.includes("traits")) newcrew.traits = [...crew.traits];
+	if (!exclude?.includes("max_level")) newcrew.max_level = crew.max_level;
+	if (!exclude?.includes("max_rarity")) newcrew.max_rarity = crew.max_rarity;
+	if (!exclude?.includes("rarity")) newcrew.rarity  = crew.rarity;
+	if (!exclude?.includes("equipment")) newcrew.equipment = newcrew.equipment ? JSON.parse(JSON.stringify(crew.equipment)) : undefined;
+	if (!exclude?.includes("skill_order")) newcrew.skill_order  = [ ...crew.skill_order ];
+	if (!exclude?.includes("base_skills")) newcrew.base_skills  = crew.base_skills ? JSON.parse(JSON.stringify(crew.base_skills)) : undefined;
+	if (!exclude?.includes("skills")) newcrew.skills  = crew.skills ? JSON.parse(JSON.stringify(crew.skills)) : undefined;
+	if (!exclude?.includes("favorite")) newcrew.favorite  = crew.favorite;
+	if (!exclude?.includes("ship_battle")) newcrew.ship_battle  = crew.ship_battle ? JSON.parse(JSON.stringify(crew.ship_battle)) : undefined;
+	if (!exclude?.includes("active_status")) newcrew.active_status  = crew.active_status;
+	if (!exclude?.includes("active_id")) newcrew.active_id  = crew.active_id;
+	if (!exclude?.includes("active_index")) newcrew.active_index  = crew.active_index;
+	return newcrew;
+}
+
 // export function averagePairs(skills: Skill[][]) {
 
 // 	let avg = [] as Skill[];

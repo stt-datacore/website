@@ -132,13 +132,9 @@ export const MutualView = (props: MutualViewProps) => {
     }, [dbid]);
 
     return <React.Fragment>
-        <MutualViewConfigPanel clickClear={clickClear} clickCalculate={clickCalculate} config={config} setConfig={setConfig} />
-        {true && <div style={{ display: 'flex', textAlign: 'center', width: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '1em', marginBottom: '1em' }}>
-            {progressMsg ? (running ? globalContext.core.spin(progressMsg || t('spinners.default')) : progressMsg) : t('global.idle')}
-        </div>}
+        <MutualViewConfigPanel progressMsg={progressMsg} clickClear={clickClear} clickCalculate={clickCalculate} config={config} setConfig={setConfig} />
         {!!suggestions?.length && <div style={{textAlign: 'center'}}>
             <MutualTable polestars={polestars} items={suggestions} />
-
         </div>}
         <CrewHoverStat targetGroup="mutual_crew_hover" />
         <ItemHoverStat targetGroup="mutual_crew_item" />
@@ -216,17 +212,18 @@ export const MutualView = (props: MutualViewProps) => {
             setProgressMsg(
                 t(config.verbose ? 'ship.calc.calculating_pct_ellipses_verbose' : 'ship.calc.calculating_pct_ellipses',
                     {
-                        percent: `${result.data.result.percent?.toLocaleString()}`,
-                        count: `${result.data.result.count?.toLocaleString()}`,
-                        progress: `${result.data.result.progress?.toLocaleString()}`,
-                        accepted: `${suggestions?.length.toLocaleString()}`
+                        percent: `${result.data.result.percent?.toLocaleString() || ''}`,
+                        count: `${result.data.result.count?.toLocaleString() || ''}`,
+                        progress: `${result.data.result.progress?.toLocaleString() || ''}`,
+                        accepted: `${result.data.result.accepted?.toLocaleString() || ''}`
                     }
                 )
             )
         }
         else if (result.data.inProgress && result.data.result.result) {
+            let new_cache = suggestions.concat();
             suggestions.push(result.data.result.result);
-            let new_cache = suggestions.concat().sort((a, b) => b.crew.length - a.crew.length || a.combo.length - b.combo.length);
+            suggestions.sort((a, b) => b.crew.length - a.crew.length || a.combo.length - b.combo.length);
             new_cache = new_cache.filter((f, idx) => new_cache.findIndex(f2 => itemsEqual(f, f2)) === idx);
 
             setTimeout(() => {
@@ -264,6 +261,7 @@ interface MutualViewConfigPanelProps {
     setConfig: (value: MutualViewConfig) => void;
     clickCalculate: () => void;
     clickClear: () => void;
+    progressMsg: string;
 }
 
 const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
@@ -273,7 +271,7 @@ const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
 
-    const { config, setConfig, clickCalculate, clickClear } = props;
+    const { config, setConfig, clickCalculate, clickClear, progressMsg } = props;
     const comboSizes = [] as DropdownItemProps[];
 
     [1, 2, 3, 4].forEach((num) => {
@@ -347,6 +345,9 @@ const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
             flexWrap: 'wrap',
             justifyContent: 'center'
         }}>
+            <div style={{ margin: '1em', display: 'flex', textAlign: 'center', width: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '1em', marginBottom: '1em' }}>
+                <span>{running && <Icon loading name='spinner' /> } {progressMsg || t('global.idle')}</span>
+            </div>
             <div style={optionStyle}>
                 <span>{t('retrieval.combo_length')}</span>
                 <Dropdown

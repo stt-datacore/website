@@ -424,7 +424,10 @@ export interface CompactCrew {
   level: number;
   max_level?: number;
   rarity: number;
+  max_rarity: number;
+  traits?: string[];
   equipment: number[][] | number[];
+  skill_order: string[];
   base_skills?: BaseSkills;
   skills?: BaseSkills;
   favorite?: boolean;

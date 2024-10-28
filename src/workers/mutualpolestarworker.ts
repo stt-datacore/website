@@ -1,5 +1,5 @@
 import { MutualPolestarResults } from "../components/retrieval/mutualmultiworker";
-import { IMutualPolestarInternalWorkerConfig, IMutualPolestarWorkerConfig, IMutualPolestarWorkerItem, PolestarComboSize } from "../model/worker";
+import { IMutualPolestarInternalWorkerConfig, IMutualPolestarWorkerConfig, IMutualPolestarWorkerItem, IPolestarCrew, PolestarComboSize } from "../model/worker";
 
 function factorial(number: bigint) {
     let result = 1n;
@@ -46,11 +46,12 @@ export function getPermutations<T, U>(array: T[], size: number, count?: bigint, 
     p([], 0);
     return result;
 }
+type ProgressType = { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: IMutualPolestarWorkerItem };
 
 const MutualPolestarWorker = {
-    calc: (options: IMutualPolestarInternalWorkerConfig, reportProgress: (data: { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: IMutualPolestarWorkerItem }) => boolean = () => true) => {
+    calc: (options: IMutualPolestarInternalWorkerConfig, reportProgress: (data: ProgressType) => boolean = () => true) => {
         return new Promise<MutualPolestarResults>(async (resolve, reject) => {
-            const { status_data_only, verbose, unowned, exclude, include, comboSize, allTraits, max_iterations, traitBucket, skillBucket, rarityBucket } = options;
+            const { status_data_only, crew, verbose, unowned, exclude, include, comboSize, allTraits, max_iterations } = options;
             const allowUnowned = options.allowUnowned ?? 0;
 
             let wcn = BigInt(allTraits.length);
@@ -62,14 +63,7 @@ const MutualPolestarWorker = {
             let start_index = (options.start_index ?? 0n);
             let i = 0n;
             let progress = -1n;
-            const mex = {} as { [key: string]: boolean };
-            const minc = {} as { [key: string]: boolean };
-            const nono = {} as { [key: string]: boolean };
             const combos = [] as IMutualPolestarWorkerItem[];
-
-            include.forEach((c) => minc[c] = true);
-            exclude.forEach((c) => mex[c] = true);
-            unowned?.forEach((c) => nono[c] = true);
 
             getPermutations(allTraits, comboSize, count, true, start_index, (combo) => {
                 i++;
@@ -105,69 +99,67 @@ const MutualPolestarWorker = {
                     }
                 }
 
-                if (include.length < 2) return false;
-                let skills = combo?.filter(f => f.endsWith("_skill"));
-                let rarities = combo?.filter(f => !Number.isNaN(Number(f)));
-                if (rarities?.length && rarities.length > 1) return false;
                 let rarity = 0;
+                let fcrew = crew;
+                let skills = combo.filter(f => f.endsWith("_skill"));
+                let rarities = combo.filter(f => ['1', '2', '3', '4', '5'].includes(f));
+                let traits = combo.filter(f => !skills.includes(f) && !rarities.includes(f));
 
-                if (rarities.length === 1) {
-                    let r = Number(rarities[0])
-                    if (!Number.isNaN(r)) rarity = r;
-                    else rarity = 0;
+                if (rarities.length > 1) return false;
+                if (skills.length > 3) return false;
+                // fcrew = fcrew.filter((f) => {
+                //     if (rarity && f.max_rarity !== rarity) return false;
+                //     if (skills.length && !skills.every(sk => f.skill_order.includes(sk))) return false;
+                //     if (traits.length && !traits.every(tr => f.traits?.includes(tr))) return false;
+                //     return true;
+                // })
+
+                if (rarities.length) {
+                    rarity = Number(rarities[0]);
+                    fcrew = fcrew.filter(f => f.max_rarity === rarity);
+                    if (!fcrew.length) return false;
                 }
 
-                let raritycrew = rarity ? rarityBucket[rarity] : undefined
-
-                let traitcrew = combo?.map(cb => traitBucket[cb]).filter(f => f);
-                let crewcounts = {} as any;
-
-                if (skills?.length) {
-                    skills?.forEach(rc => {
-                        let skillcrew = skillBucket[rc];
-                        skillcrew?.map(tc => {
-                            crewcounts[tc] ??= 0;
-                            crewcounts[tc]++;
-                        });
-                    })
+                if (skills.length) {
+                    fcrew = fcrew.filter(f => skills.every(sk => f.skill_order.includes(sk)));
+                    if (!fcrew.length) return false;
                 }
 
-                raritycrew?.map(tc => {
-                    crewcounts[tc] ??= 0;
-                    crewcounts[tc]++;
-                });
+                if (traits.length) {
+                    fcrew = fcrew.filter(f => traits.every(tr => f.traits?.includes(tr)));
+                    if (!fcrew.length) return false;
+                }
 
-                traitcrew?.map((tca) => tca.map(tc => {
-                    crewcounts[tc] ??= 0;
-                    crewcounts[tc]++;
-                }));
+                if (!fcrew.length) return false;
 
                 let owned = [] as string[];
-                let immortal = [] as string[];
                 let unowned = [] as string[];
-                let workingSize = comboSize;
 
-                Object.keys(crewcounts).forEach((f) => {
-                    if (minc[f] && crewcounts[f] === workingSize) {
-                        owned.push(f);
+                for (let c of fcrew) {
+                    if (c.disposition === 'exclude') {
+                        return false;
                     }
-                    else if (nono[f] && crewcounts[f] === workingSize) {
-                        unowned.push(f);
+                    else if (c.disposition === 'unowned') {
+                        if (unowned.length >= allowUnowned) return false;
+                        unowned.push(c.symbol);
                     }
-                    else if (mex[f] && crewcounts[f] === workingSize) {
-                        immortal.push(f);
+                    else if (c.disposition === 'include') {
+                        owned.push(c.symbol);
                     }
-                });
-
-                if (owned.length > 0 && immortal.length === 0 && unowned.length <= allowUnowned) {
-                    if (owned.length > 1 || unowned.length) {
-                        combos.push({
-                            combo,
-                            crew: owned.concat(unowned)
-                        });
-                        reportProgress({ result: combos[combos.length - 1] });
+                    else {
+                        return false;
                     }
                 }
+
+                if (owned.length + unowned.length > 1) {
+                    let result = {
+                        combo,
+                        crew: unowned.concat(owned)
+                    };
+                    combos.push(result);
+                    reportProgress({ result });
+                }
+
                 return combo;
             });
 
