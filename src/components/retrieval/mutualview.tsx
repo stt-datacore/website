@@ -2,7 +2,7 @@ import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import { Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Pagination, Table } from "semantic-ui-react";
 import { useStateWithStorage } from "../../utils/storage";
-import { MutualMultiWorkerContext, MutualPolestarMultiWorkerStatus } from "./mutualmultiworker";
+import { MutualMultiWorkerContext, MutualPolestarMultiWorker, MutualPolestarMultiWorkerStatus } from "./mutualmultiworker";
 import { IConstellation, IKeystone, IPolestar } from "./model";
 import { IMutualPolestarWorkerItem, PolestarComboSize } from "../../model/worker";
 import { formatRunTime } from "../../utils/misc";
@@ -38,6 +38,7 @@ function comboToPolestars(combo: string[]) {
 }
 
 interface MutualViewConfig {
+    calc_previews?: boolean;
     max_workers: number;
     max_iterations?: number;
     combo_size: PolestarComboSize | '1_batch' | '2_batch' | '3_batch' | '4_batch';
@@ -47,13 +48,16 @@ interface MutualViewConfig {
     no100?: boolean;
 }
 
+type MutualViewProps = {
+    dbid: string;
+    allKeystones: IKeystone[];
+}
+
 export const MutualView = (props: MutualViewProps) => {
     const { dbid, allKeystones } = props;
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
     const { playerData } = globalContext.player;
-    const workerContext = React.useContext(MutualMultiWorkerContext);
-    const { cancel, running, runWorker } = workerContext;
 
     const DefaultConfig = {
         considerUnowned: false,
@@ -64,8 +68,7 @@ export const MutualView = (props: MutualViewProps) => {
     } as MutualViewConfig;
 
     const [config, setConfig] = useStateWithStorage(`${dbid}/mutualView_config`, DefaultConfig, { rememberForever: true });
-    const [progressMsg, setProgressMsg] = React.useState('');
-    const [suggestions, setSuggestions] = React.useState<IMutualPolestarWorkerItem[]>([]);
+    const [results, setResults] = React.useState<IMutualPolestarWorkerItem[]>([]);
     const [polestars, setPolestars] = React.useState([] as IPolestar[]);
     const [lastDbid, setLastDbid] = React.useState(undefined as string | undefined);
 
@@ -126,129 +129,24 @@ export const MutualView = (props: MutualViewProps) => {
         });
         setPolestars(polestars);
         if (lastDbid && dbid !== lastDbid) {
-            setSuggestions([].concat());
+            setResults([].concat());
         }
         setLastDbid(dbid);
     }, [dbid]);
 
     return <React.Fragment>
-        <MutualViewConfigPanel progressMsg={progressMsg} clickClear={clickClear} clickCalculate={clickCalculate} config={config} setConfig={setConfig} />
-        {!!suggestions?.length && <div style={{textAlign: 'center'}}>
-            <MutualTable polestars={polestars} items={suggestions} />
+        {/* {playerData && <MutualPolestarMultiWorker playerData={playerData}>
+            <MutualWorkerPanel polestars={polestars} results={results} setResults={setResults} config={config} setConfig={setConfig} />
+        </MutualPolestarMultiWorker>} */}
+        {playerData && <MutualPolestarMultiWorker playerData={playerData}>
+            <MutualWorkerPanel polestars={polestars} results={results} setResults={setResults} config={config} setConfig={setConfig} />
+        </MutualPolestarMultiWorker>}
+        {!!results?.length && <div style={{textAlign: 'center'}}>
+            <MutualTable polestars={polestars} items={results} />
         </div>}
         <CrewHoverStat targetGroup="mutual_crew_hover" />
         <ItemHoverStat targetGroup="mutual_crew_item" />
     </React.Fragment>
-
-    function clickClear() {
-        if (running) {
-            cancel();
-        }
-        clearAll();
-    }
-
-    function clickCalculate() {
-        if (running) {
-            cancel();
-            return;
-        }
-        setProgressMsg('');
-        //setSuggestions([].concat());
-
-        let comboSize: PolestarComboSize = 1;
-        let batch = false;
-
-        if (typeof config.combo_size === 'number') {
-            comboSize = config.combo_size;
-        }
-        else {
-            comboSize = Number(config.combo_size.replace("_batch", '')) as PolestarComboSize;
-            batch = true;
-        }
-
-        runWorker({
-            max_workers: config.max_workers,
-            config: {
-                max_iterations: config.max_iterations ? BigInt(config.max_iterations) : undefined,
-                polestars,
-                comboSize,
-                batch,
-                verbose: config.verbose,
-                considerUnowned: config.considerUnowned,
-                allowUnowned: config.allowUnowned || 0,
-                no100: !!config.no100,
-                status_data_only: true
-            },
-            callback: calculateCallback
-        })
-    }
-
-    function calculateCallback(result: MutualPolestarMultiWorkerStatus) {
-        if (!result.data.inProgress) {
-            setProgressMsg(t('ship.calc.calc_summary', {
-                message: t('global.completed'),
-                count: `${result.data.result.total_iterations?.toLocaleString()}`,
-                time: formatRunTime(Math.round(result.data.result.run_time ?? 0), t),
-                accepted: `${result.data.result.items?.length.toLocaleString()}`
-            }));
-
-            if (result.data.result.items?.length === 1 && suggestions?.length && suggestions.length > 1) {
-                let r = result.data.result.items[0];
-                let sug = suggestions.findIndex(f => f.crew.every((cr1, idx) => r.crew.findIndex(cr2 => cr2 === cr1) === idx))
-                if (sug !== -1) {
-                    suggestions[sug] = r;
-                    setSuggestions([...suggestions]);
-                    return;
-                }
-            }
-            let new_cache = (result.data.result.items ?? []).concat(suggestions);
-            new_cache = new_cache.filter((f, idx) => new_cache.findIndex(f2 => itemsEqual(f, f2)) === idx);
-            setSuggestions(new_cache);
-        }
-        else if (result.data.inProgress && result.data.result.format) {
-            setProgressMsg(t(result.data.result.format, result.data.result.options));
-        }
-        else if (result.data.inProgress && result.data.result.count) {
-            setProgressMsg(
-                t(config.verbose ? 'ship.calc.calculating_pct_ellipses_verbose' : 'ship.calc.calculating_pct_ellipses',
-                    {
-                        percent: `${result.data.result.percent?.toLocaleString() || ''}`,
-                        count: `${result.data.result.count?.toLocaleString() || ''}`,
-                        progress: `${result.data.result.progress?.toLocaleString() || ''}`,
-                        accepted: `${result.data.result.accepted?.toLocaleString() || ''}`
-                    }
-                )
-            )
-        }
-        else if (result.data.inProgress && result.data.result.result) {
-            let new_cache = suggestions.concat();
-            suggestions.push(result.data.result.result);
-            suggestions.sort((a, b) => b.crew.length - a.crew.length || a.combo.length - b.combo.length);
-            new_cache = new_cache.filter((f, idx) => new_cache.findIndex(f2 => itemsEqual(f, f2)) === idx);
-
-            setTimeout(() => {
-                setSuggestions(new_cache);
-            });
-        }
-    }
-
-    function itemsEqual(a: IMutualPolestarWorkerItem, b: IMutualPolestarWorkerItem) {
-        a.combo.sort();
-        a.crew.sort();
-        b.combo.sort();
-        b.crew.sort();
-        return JSON.stringify(a) === JSON.stringify(b);
-    }
-
-    function clearAll() {
-        setSuggestions([].concat());
-        setProgressMsg('');
-    }
-}
-
-interface MutualTableProps {
-    items: IMutualPolestarWorkerItem[]
-    polestars: IPolestar[];
 }
 
 type DisplayItem = {
@@ -256,22 +154,24 @@ type DisplayItem = {
     combo: IPolestar[];
 }
 
-interface MutualViewConfigPanelProps {
+interface MutualWorkerPanelProps {
     config: MutualViewConfig;
     setConfig: (value: MutualViewConfig) => void;
-    clickCalculate: () => void;
-    clickClear: () => void;
-    progressMsg: string;
+    results: IMutualPolestarWorkerItem[];
+    setResults: (value: IMutualPolestarWorkerItem[]) => void;
+    polestars: IPolestar[];
 }
 
-const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
+const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
     const workerContext = React.useContext(MutualMultiWorkerContext);
-    const { running } = workerContext;
+    const { cancel, running, runWorker } = workerContext;
 
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
 
-    const { config, setConfig, clickCalculate, clickClear, progressMsg } = props;
+    const { polestars, config, setConfig, results, setResults } = props;
+    const [progressMsg, setProgressMsg] = React.useState('');
+
     const comboSizes = [] as DropdownItemProps[];
 
     [1, 2, 3, 4].forEach((num) => {
@@ -396,6 +296,11 @@ const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
                     checked={config.verbose}
                     onChange={(e, { checked }) => setConfig({ ...config, verbose: checked as boolean || false})}
                 />
+                <Checkbox label={t('base.live_results')}
+                    disabled={running}
+                    checked={config.calc_previews}
+                    onChange={(e, { checked }) => setConfig({ ...config, calc_previews: checked as boolean || false})}
+                />
                 <Checkbox label={t('retrieval.consider_unowned_polestars')}
                     disabled={running}
                     checked={config.considerUnowned}
@@ -420,11 +325,112 @@ const MutualViewConfigPanel = (props: MutualViewConfigPanelProps) => {
             </div>
         </div>
     </div>
+
+    function clickClear() {
+        if (running) {
+            cancel();
+        }
+        clearAll();
+    }
+
+    function clickCalculate() {
+        if (running) {
+            setResults([...results]);
+            cancel();
+            return;
+        }
+        setProgressMsg('');
+        //setSuggestions([].concat());
+
+        let comboSize: PolestarComboSize = 1;
+        let batch = false;
+
+        if (typeof config.combo_size === 'number') {
+            comboSize = config.combo_size;
+        }
+        else {
+            comboSize = Number(config.combo_size.replace("_batch", '')) as PolestarComboSize;
+            batch = true;
+        }
+
+        runWorker({
+            max_workers: config.max_workers,
+            config: {
+                max_iterations: config.max_iterations ? BigInt(config.max_iterations) : undefined,
+                polestars,
+                comboSize,
+                batch,
+                verbose: config.verbose,
+                considerUnowned: config.considerUnowned,
+                allowUnowned: config.allowUnowned || 0,
+                no100: !!config.no100
+            },
+            callback: calculateCallback
+        })
+    }
+
+    function calculateCallback(result: MutualPolestarMultiWorkerStatus) {
+        if (!result) return;
+
+        if (!result.data.inProgress) {
+            setProgressMsg(t('ship.calc.calc_summary', {
+                message: t('global.completed'),
+                count: `${result.data.result.total_iterations?.toLocaleString()}`,
+                time: formatRunTime(Math.round(result.data.result.run_time ?? 0), t),
+                accepted: `${result.data.result.items?.length.toLocaleString()}`
+            }));
+
+            if (result.data.result.items?.length === 1 && results?.length && results.length > 1) {
+                let r = result.data.result.items[0];
+                let sug = results.findIndex(f => f.crew.every((cr1, idx) => r.crew.findIndex(cr2 => cr2 === cr1) === idx))
+                if (sug !== -1) {
+                    results[sug] = r;
+                    setResults([...results]);
+                    return;
+                }
+            }
+            let new_cache = (result.data.result.items ?? []).concat(results);
+            new_cache = new_cache.filter((f, idx) => new_cache.findIndex(f2 => itemsEqual(f, f2)) === idx);
+            setResults(new_cache);
+        }
+        else if (result.data.inProgress && result.data.result.count) {
+            setProgressMsg(
+                t(config.verbose ? 'ship.calc.calculating_pct_ellipses_verbose' : 'ship.calc.calculating_pct_ellipses',
+                    {
+                        percent: `${result.data.result.percent?.toLocaleString() || ''}`,
+                        count: `${result.data.result.count?.toLocaleString() || ''}`,
+                        progress: `${result.data.result.progress?.toLocaleString() || ''}`,
+                        accepted: `${results.length.toLocaleString() || ''}`
+                    }
+                )
+            )
+        }
+        else if (result.data.inProgress && result.data.result.result) {
+            results.push(result.data.result.result);
+            if (config.calc_previews) {
+                setResults([...results]);
+            }
+        }
+    }
+
+    function itemsEqual(a: IMutualPolestarWorkerItem, b: IMutualPolestarWorkerItem) {
+        a.combo.sort();
+        a.crew.sort();
+        b.combo.sort();
+        b.crew.sort();
+        return JSON.stringify(a) === JSON.stringify(b);
+    }
+
+    function clearAll() {
+        setResults([].concat());
+        setProgressMsg('');
+    }
+
 }
 
-type MutualViewProps = {
-    dbid: string;
-    allKeystones: IKeystone[];
+interface MutualTableProps {
+    items: IMutualPolestarWorkerItem[]
+    polestars: IPolestar[];
 }
 
 const MutualTable = (props: MutualTableProps) => {

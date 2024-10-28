@@ -32,6 +32,7 @@
         "combos": "Combos"
     },
     "base": {
+        "live_results": "Résultats en direct (le calcul sera plus lent)",
         "all_crew": "Afficher tous l'équipiers",
         "bigbook_tier": "Étage",
         "cab_power": "CAB",

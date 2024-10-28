@@ -4,10 +4,11 @@ import { IMultiWorkerContext, IMultiWorkerConfig, IMultiWorkerState, IMultiWorke
 import { GlobalContext } from "../../context/globalcontext";
 import { PlayerCrew, PlayerData } from "../../model/player";
 import { crewCopy, makeCompact } from "../../utils/crewutils";
+import { PolestarMultiWorker } from "../../workers/clientclasses/polestarmultiworker";
 
 export interface MutualPolestarMultiWorkerProps {
     children: JSX.Element;
-    playerData?: PlayerData;
+    playerData: PlayerData;
 }
 
 export interface MutualPolestarMultiWorkerStatus extends IMultiWorkerStatus<IMutualPolestarWorkerItem> {
@@ -41,6 +42,50 @@ export interface MutualPolestarResults extends IWorkerResults<IMutualPolestarWor
 }
 
 export const MutualMultiWorkerContext = React.createContext(DefaultMultiWorkerContextData);
+
+// export const MutualPolestarMultiWorker = (props: MutualPolestarMultiWorkerProps) => {
+//     const globalContext = React.useContext(GlobalContext);
+//     const { children } = props;
+//     const [worker, setWorker] = React.useState<PolestarMultiWorker>();
+//     const [options, setOptions] = React.useState<MutualPolestarMultiWorkerConfig>();
+//     const [workerMessage, setWorkerMessage] = React.useState<(msg: any) => void>(() => false);
+//     const [startTime, setStartTime] = React.useState(new Date());
+
+//     React.useEffect(() => {
+//         if (worker) {
+//             worker.cancel();
+//         }
+//         if (options) {
+//             setWorker(new PolestarMultiWorker(globalContext, options.callback));
+//         }
+//     }, [options]);
+
+//     React.useEffect(() => {
+//         if (worker && options) {
+//             worker.runWorker(options);
+//         }
+//     }, [worker]);
+
+//     function runWorker(options: MutualPolestarMultiWorkerConfig) {
+//         setOptions(options);
+//     }
+
+//     function cancel() {
+//         worker?.cancel();
+//     }
+
+//     const context = {
+//         ...DefaultMultiWorkerContextData,
+//         runWorker,
+//         cancel,
+//         running: !!worker?.running,
+
+//     } as IMutualPolestarMultiWorkerContext;
+
+//     return <MutualMultiWorkerContext.Provider value={context}>
+//         {children}
+//     </MutualMultiWorkerContext.Provider>
+// }
 
 export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMultiWorkerProps, MutualPolestarMultiWorkerState> {
     static contextType = GlobalContext;
@@ -81,7 +126,8 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
         this.running=[];
         for (let i = 0; i < cores; i++) {
             let worker = new Worker(new URL('../../workers/polestar-worker.js', import.meta.url));
-            worker.addEventListener('message', this.workerMessage);
+            worker.onmessage = (data) => this.workerMessage(data);
+            // worker.addEventListener('message', this.workerMessage);
             newworkers.push(worker);
             this.ids.push(v4());
             this.running.push(false);
@@ -93,7 +139,7 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
 
     private readonly reset = (set_canceled: boolean, max_workers?: number, no_init?: boolean) => {
         this.workers.forEach((worker) => {
-            worker.removeEventListener('message', this.workerMessage);
+            //worker.removeEventListener('message', this.workerMessage);
             worker.terminate();
         });
 
@@ -233,7 +279,6 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
                     crew: copycrew,
                     start_index: start,
                     max_iterations: total <= 100n ? undefined : length,
-                    status_data_only: true,
                     allowUnowned,
                     unowned
                 } as IMutualPolestarInternalWorkerConfig

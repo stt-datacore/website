@@ -29,6 +29,7 @@
         "combos": "Combos"
     },
     "base": {
+        "live_results": "Live results (calculation will be slower)",
         "all_crew": "Show all crew",
         "bigbook_tier": "Tier",
         "cab_power": "CAB",

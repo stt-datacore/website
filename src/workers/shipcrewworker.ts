@@ -69,7 +69,6 @@ const ShipCrewWorker = {
                 max_iterations,
                 simulate,
                 ranking_method,
-                status_data_only,
                 fixed_activation_delay } = options;
 
             const opponent = opponents?.length ? opponents[0] : undefined;
@@ -225,30 +224,12 @@ const ShipCrewWorker = {
 
                     if (p !== progress) {
                         progress = p;
-
-                        if (status_data_only) {
-                            reportProgress({
-                                    percent: Number(p.toString()),
-                                    progress: i,
-                                    count,
-                                    accepted: BigInt(results.length)
-                                });
-                        }
-                        else {
-                            if (!verbose) {
-                                reportProgress({ format: 'ship.calc.calculating_pct_ellipses', options: { percent: `${p}` } });
-                            }
-                            else {
-                                reportProgress({ format: 'ship.calc.calculating_pct_ellipses_verbose',
-                                    options: {
-                                        percent: `${p}`,
-                                        progress: `${i.toLocaleString()}`,
-                                        count: `${count.toLocaleString()}`,
-                                        accepted: `${results.length.toLocaleString()}`
-                                    }
-                                });
-                            }
-                        }
+                        reportProgress({
+                            percent: Number(p.toString()),
+                            progress: i,
+                            count,
+                            accepted: BigInt(results.length)
+                        });
                     }
                 }
 
@@ -292,10 +273,6 @@ const ShipCrewWorker = {
 
                 return res;
             });
-
-            if (!status_data_only) {
-                reportProgress({ format: 'ship.calc.sorting_finalizing_ellipses' });
-            }
 
             results.sort((a, b) => compareShipResults(a, b, fbb_mode));
             results.splice(max_results);
