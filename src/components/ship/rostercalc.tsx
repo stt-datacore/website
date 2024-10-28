@@ -992,9 +992,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setSugWait(0);
             setSuggestions(result.data.result.items);
         }
-        else if (result.data.inProgress && result.data.result.format) {
-            setProgressMsg(t(result.data.result.format, result.data.result.options));
-        }
         else if (result.data.inProgress && result.data.result.count) {
             setProgressMsg(
                 t(verbose ? 'ship.calc.calculating_pct_ellipses_verbose' : 'ship.calc.calculating_pct_ellipses',

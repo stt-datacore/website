@@ -115,10 +115,7 @@ const ModePicker = (props: ModePickerProps) => {
             </Step.Group>
 
 			{mode === 'keystones' && <KeystonesPlayer dbid={dbid} allKeystones={allKeystones} />}
-			{mode === 'mutual' &&
-				<MutualPolestarMultiWorker playerData={playerData}>
-					<MutualView allKeystones={allKeystones} dbid={dbid} />
-				</MutualPolestarMultiWorker>}
+			{mode === 'mutual' && <MutualView allKeystones={allKeystones} dbid={dbid} />}
 	</>
 }
 

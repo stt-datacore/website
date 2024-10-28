@@ -11,11 +11,10 @@ import { IEphemeralData } from "../context/playercontext";
 import { VPDetails } from "../utils/voyagevp";
 import { IPolestar } from "../components/retrieval/model";
 
-export interface WorkerConfigBase {
+export interface WorkerConfigBase<T> {
     max_results?: number
     max_iterations?: bigint;
     start_index?: bigint;
-    status_data_only?: boolean;
     verbose?: boolean;
 }
 
@@ -25,11 +24,11 @@ export interface IWorkerResults<T> {
     run_time: number;
 }
 
-export interface IMultiWorkerState<TRun extends IMultiWorkerConfig<TConfig, TItem>, TConfig, TItem> {
+export interface IMultiWorkerState<TRun extends IMultiWorkerConfig<TConfig, TItem>, TConfig extends WorkerConfigBase<TItem>, TItem> {
     context: IMultiWorkerContext<TRun, TConfig, TItem>;
 }
 
-export interface IMultiWorkerConfig<TConfig, TItem> {
+export interface IMultiWorkerConfig<TConfig extends WorkerConfigBase<TItem>, TItem> {
     config: TConfig;
     max_workers?: number;
     callback: (progress: IMultiWorkerStatus<TItem>) => void;
@@ -41,7 +40,6 @@ export interface IMultiWorkerStatus<T> {
             items?: T[],
             run_time?: number,
             total_iterations?: bigint,
-            format?: string,
             options?: any,
             result?: T,
             percent?: number;
@@ -54,7 +52,7 @@ export interface IMultiWorkerStatus<T> {
     }
 }
 
-export interface IMultiWorkerContext<TRun extends IMultiWorkerConfig<TConfig, TItem>, TConfig, TItem> {
+export interface IMultiWorkerContext<TRun extends IMultiWorkerConfig<TConfig, TItem>, TConfig extends WorkerConfigBase<TItem>, TItem> {
     runWorker: (options: TRun) => void;
     cancel: () => void;
     workers: number;
@@ -365,7 +363,7 @@ export interface IMutualPolestarWorkerItem {
 
 export type PolestarComboSize = 1 | 2 | 3 | 4;
 
-export interface IMutualPolestarWorkerConfig extends WorkerConfigBase {
+export interface IMutualPolestarWorkerConfig extends WorkerConfigBase<IMutualPolestarWorkerItem> {
     polestars: IPolestar[];
     comboSize: PolestarComboSize;
     considerUnowned: boolean;
@@ -378,7 +376,7 @@ export interface IPolestarCrew extends CompactCrew {
     disposition: 'include' | 'exclude' | 'unowned';
 }
 
-export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase {
+export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase<IMutualPolestarWorkerItem> {
     polestars: IPolestar[];
     include: string[];
     exclude: string[];

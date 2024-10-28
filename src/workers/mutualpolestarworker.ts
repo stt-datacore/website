@@ -51,7 +51,7 @@ type ProgressType = { percent?: number, progress?: bigint, count?: bigint, accep
 const MutualPolestarWorker = {
     calc: (options: IMutualPolestarInternalWorkerConfig, reportProgress: (data: ProgressType) => boolean = () => true) => {
         return new Promise<MutualPolestarResults>(async (resolve, reject) => {
-            const { status_data_only, crew, verbose, unowned, exclude, include, comboSize, allTraits, max_iterations } = options;
+            const { crew, verbose, unowned, exclude, include, comboSize, allTraits, max_iterations } = options;
             const allowUnowned = options.allowUnowned ?? 0;
 
             let wcn = BigInt(allTraits.length);
@@ -73,46 +73,23 @@ const MutualPolestarWorker = {
                     if (p !== progress) {
                         progress = p;
 
-                        if (status_data_only) {
-                            reportProgress({
-                                    percent: Number(p.toString()),
-                                    progress: i,
-                                    count: count,
-                                    accepted: BigInt(combos.length)
-                                });
-                        }
-                        else {
-                            if (!verbose) {
-                                reportProgress({ format: 'ship.calc.calculating_pct_ellipses', options: { percent: `${p}` } });
-                            }
-                            else {
-                                reportProgress({ format: 'ship.calc.calculating_pct_ellipses_verbose',
-                                    options: {
-                                        percent: `${p}`,
-                                        progress: `${i.toLocaleString()}`,
-                                        count: `${count.toLocaleString()}`,
-                                        accepted: `${combos.length.toLocaleString()}`
-                                    }
-                                });
-                            }
-                        }
+                        reportProgress({
+                            percent: Number(p.toString()),
+                            progress: i,
+                            count: count,
+                            accepted: BigInt(combos.length)
+                        });
                     }
                 }
 
                 let rarity = 0;
                 let fcrew = crew;
-                let skills = combo.filter(f => f.endsWith("_skill"));
-                let rarities = combo.filter(f => ['1', '2', '3', '4', '5'].includes(f));
-                let traits = combo.filter(f => !skills.includes(f) && !rarities.includes(f));
+                const skills = combo.filter(f => f.endsWith("_skill"));
+                const rarities = combo.filter(f => ['1', '2', '3', '4', '5'].includes(f));
+                const traits = combo.filter(f => !skills.includes(f) && !rarities.includes(f));
 
                 if (rarities.length > 1) return false;
                 if (skills.length > 3) return false;
-                // fcrew = fcrew.filter((f) => {
-                //     if (rarity && f.max_rarity !== rarity) return false;
-                //     if (skills.length && !skills.every(sk => f.skill_order.includes(sk))) return false;
-                //     if (traits.length && !traits.every(tr => f.traits?.includes(tr))) return false;
-                //     return true;
-                // })
 
                 if (rarities.length) {
                     rarity = Number(rarities[0]);
@@ -132,19 +109,22 @@ const MutualPolestarWorker = {
 
                 if (!fcrew.length) return false;
 
-                let owned = [] as string[];
-                let unowned = [] as string[];
+                const owned = [] as string[];
+                const unowned = [] as string[];
 
-                for (let c of fcrew) {
-                    if (c.disposition === 'exclude') {
+                const c = fcrew.length;
+
+                for (let i = 0; i < c; i++) {
+                    let cr = fcrew[i];
+                    if (cr.disposition === 'exclude') {
                         return false;
                     }
-                    else if (c.disposition === 'unowned') {
+                    else if (cr.disposition === 'unowned') {
                         if (unowned.length >= allowUnowned) return false;
-                        unowned.push(c.symbol);
+                        unowned.push(cr.symbol);
                     }
-                    else if (c.disposition === 'include') {
-                        owned.push(c.symbol);
+                    else if (cr.disposition === 'include') {
+                        owned.push(cr.symbol);
                     }
                     else {
                         return false;
@@ -152,7 +132,7 @@ const MutualPolestarWorker = {
                 }
 
                 if (owned.length + unowned.length > 1) {
-                    let result = {
+                    const result = {
                         combo,
                         crew: unowned.concat(owned)
                     };

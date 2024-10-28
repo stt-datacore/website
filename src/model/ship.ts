@@ -188,7 +188,7 @@ export interface AdvancedCrewPowerConfig {
     setCurrent: (value: AdvancedCrewPower) => void;
 }
 
-export interface ShipWorkerConfigBase extends WorkerConfigBase {
+export interface ShipWorkerConfigBase extends WorkerConfigBase<ShipWorkerItem> {
     ranking_method: ShipRankingMethod,
     event_crew?: CrewMember,
     crew: CrewMember[],
@@ -209,11 +209,7 @@ export interface ShipWorkerConfigBase extends WorkerConfigBase {
     effects?: BossEffect[];
     max_duration?: number;
     ignore_skill?: boolean;
-    verbose?: boolean;
-    max_iterations?: bigint;
     activation_offsets?: number[];
-    start_index?: bigint;
-    status_data_only?: boolean;
     opponent_variance?: number;
 }
 
