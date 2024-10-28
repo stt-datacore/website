@@ -38,6 +38,7 @@ function comboToPolestars(combo: string[]) {
 }
 
 interface MutualViewConfig {
+    calc_previews?: boolean;
     max_workers: number;
     max_iterations?: number;
     combo_size: PolestarComboSize | '1_batch' | '2_batch' | '3_batch' | '4_batch';
@@ -295,6 +296,11 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
                     checked={config.verbose}
                     onChange={(e, { checked }) => setConfig({ ...config, verbose: checked as boolean || false})}
                 />
+                <Checkbox label={t('base.live_results')}
+                    disabled={running}
+                    checked={config.calc_previews}
+                    onChange={(e, { checked }) => setConfig({ ...config, calc_previews: checked as boolean || false})}
+                />
                 <Checkbox label={t('retrieval.consider_unowned_polestars')}
                     disabled={running}
                     checked={config.considerUnowned}
@@ -329,6 +335,7 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
 
     function clickCalculate() {
         if (running) {
+            setResults([...results]);
             cancel();
             return;
         }
@@ -393,20 +400,16 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
                         percent: `${result.data.result.percent?.toLocaleString() || ''}`,
                         count: `${result.data.result.count?.toLocaleString() || ''}`,
                         progress: `${result.data.result.progress?.toLocaleString() || ''}`,
-                        accepted: `${result.data.result.accepted?.toLocaleString() || ''}`
+                        accepted: `${results.length.toLocaleString() || ''}`
                     }
                 )
             )
         }
         else if (result.data.inProgress && result.data.result.result) {
-            let new_cache = results.concat();
             results.push(result.data.result.result);
-            results.sort((a, b) => b.crew.length - a.crew.length || a.combo.length - b.combo.length);
-            new_cache = new_cache.filter((f, idx) => new_cache.findIndex(f2 => itemsEqual(f, f2)) === idx);
-
-            setTimeout(() => {
-                setResults(new_cache);
-            });
+            if (config.calc_previews) {
+                setResults([...results]);
+            }
         }
     }
 

@@ -32,6 +32,7 @@
         "combos": "Combos"
     },
     "base": {
+        "live_results": "Live-Ergebnisse (Berechnung wird langsamer sein)",
         "all_crew": "Die gesamte Crew anzeigen",
         "bigbook_tier": "Stufe",
         "cab_power": "CAB",

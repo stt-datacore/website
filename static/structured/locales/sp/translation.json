@@ -32,6 +32,7 @@
         "combos": "Combos"
     },
     "base": {
+        "live_results": "Resultados en vivo (el cálculo será más lento)",
         "all_crew": "Mostrar toda las tripulantes",
         "bigbook_tier": "Piso",
         "cab_power": "CAB",
