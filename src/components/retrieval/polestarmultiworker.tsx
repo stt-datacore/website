@@ -1,8 +1,12 @@
 import { PlayerCrew, PlayerData } from "../../model/player";
-import { IMultiWorkerConfig, IMultiWorkerStatus, IMutualPolestarWorkerConfig as IPolestarWorkerConfig, IMutualPolestarWorkerItem as IPolestarWorkerItem, IPolestarCrew, IMultiWorkerState } from "../../model/worker";
+import { IMultiWorkerConfig, IMultiWorkerStatus, IMutualPolestarWorkerConfig as IPolestarWorkerConfig, IMutualPolestarWorkerItem as IPolestarWorkerItem, IPolestarCrew, IMultiWorkerState, IWorkerResults } from "../../model/worker";
 import { makeCompact } from "../../utils/crewutils";
 import { getComboCountBig } from "../../utils/misc";
 import { MultiWorkerBase } from "../base/multiworkerbase";
+
+export interface PolestarWorkerResults extends IWorkerResults<IPolestarWorkerItem> {
+
+}
 
 export interface PolestarMultiWorkerProps {
     children: JSX.Element;

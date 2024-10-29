@@ -1,4 +1,4 @@
-import { MutualPolestarResults } from "../components/retrieval/mutualmultiworker";
+import { PolestarWorkerResults } from "../components/retrieval/polestarmultiworker";
 import { IMutualPolestarInternalWorkerConfig, IMutualPolestarWorkerConfig, IMutualPolestarWorkerItem, IPolestarCrew, PolestarComboSize } from "../model/worker";
 import { getComboCountBig, getPermutations } from "../utils/misc";
 
@@ -6,7 +6,7 @@ type ProgressType = { percent?: number, progress?: bigint, count?: bigint, accep
 
 const MutualPolestarWorker = {
     calc: (options: IMutualPolestarInternalWorkerConfig, reportProgress: (data: ProgressType) => boolean = () => true) => {
-        return new Promise<MutualPolestarResults>(async (resolve, reject) => {
+        return new Promise<PolestarWorkerResults>(async (resolve, reject) => {
             const { crew, verbose, unowned, exclude, include, comboSize, allTraits, max_iterations } = options;
             const allowUnowned = options.allowUnowned ?? 0;
 
