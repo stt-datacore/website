@@ -3,6 +3,7 @@ import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults } from "../../model
 import React from "react";
 import { compareShipResults } from "../../utils/shiputils";
 import { IMultiWorkerContext, IMultiWorkerConfig, IMultiWorkerState, IMultiWorkerStatus } from "../../model/worker";
+import { getComboCountBig } from "../../utils/misc";
 
 export interface ShipMultiWorkerProps {
     children: JSX.Element;
@@ -120,7 +121,7 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
 
         let wcn = BigInt(options.config.crew.length);
         let bsn = BigInt(options.config.ship.battle_stations!.length);
-        let total = (this.factorial(wcn) / (this.factorial(wcn - bsn) * this.factorial(bsn)));
+        let total = getComboCountBig(wcn, bsn);
         if (options.config.max_iterations && options.config.max_iterations < total) {
             total = options.config.max_iterations;
         }
@@ -171,15 +172,6 @@ export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipM
                 startTime: new Date()
             }
         });
-    }
-
-    private factorial(number: bigint) {
-        let result = 1n;
-
-        for (let i = 1n; i <= number; i++) {
-            result *= i;
-        }
-        return result;
     }
 
     private readonly updateBigCounts = () => {

@@ -2,6 +2,7 @@ import { IDefaultGlobal } from "../../context/globalcontext";
 import { PlayerCrew } from "../../model/player";
 import { IMultiWorkerConfig, IMultiWorkerStatus, IMutualPolestarInternalWorkerConfig, IMutualPolestarWorkerConfig, IMutualPolestarWorkerItem, IPolestarCrew } from "../../model/worker";
 import { makeCompact } from "../../utils/crewutils";
+import { getComboCount, getComboCountBig } from "../../utils/misc";
 import { MultiWorkerBase } from "./multiworkerbase";
 
 export class PolestarMultiWorker extends MultiWorkerBase<IMutualPolestarWorkerConfig, IMutualPolestarWorkerItem> {
@@ -87,7 +88,7 @@ export class PolestarMultiWorker extends MultiWorkerBase<IMutualPolestarWorkerCo
 
         let wcn = BigInt(allTraits.length);
         let bsn = BigInt(options.config.comboSize);
-        let total = (this.factorial(wcn) / (this.factorial(wcn - bsn) * this.factorial(bsn)));
+        let total = getComboCountBig(wcn, bsn);
         if (options.config.max_iterations && options.config.max_iterations < total) {
             total = options.config.max_iterations;
         }
