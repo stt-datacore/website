@@ -9,6 +9,7 @@ import { RetrievalContext } from './context';
 import { CombosPlanner } from './combosplanner';
 import { CombosGrid } from './combosgrid';
 import { filterTraits } from './utils';
+import { factorial } from '../../utils/misc';
 
 interface IFuseGroups {
 	[key: string]: number[][];
@@ -315,14 +316,6 @@ export const CombosModal = (props: CombosModalProps) => {
 		result = factorial(n) / (factorial(n - r) * factorial(r));
 		if (result < n) result = n * 5;
 		return [result, combos];
-	}
-
-	function factorial(number: number) {
-		let result = 1;
-		for (let i = 1; i <= number; i++) {
-			result *= i;
-		}
-		return result;
 	}
 
 	interface ComboTrack {

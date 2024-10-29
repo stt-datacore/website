@@ -3,8 +3,8 @@ import React from "react";
 import { IMultiWorkerContext, IMultiWorkerConfig, IMultiWorkerState, IMultiWorkerStatus, IMutualPolestarWorkerItem, IMutualPolestarWorkerConfig, IWorkerResults, IMutualPolestarInternalWorkerConfig, IPolestarCrew } from "../../model/worker";
 import { GlobalContext } from "../../context/globalcontext";
 import { PlayerCrew, PlayerData } from "../../model/player";
-import { crewCopy, makeCompact } from "../../utils/crewutils";
-import { PolestarMultiWorker } from "../../workers/clientclasses/polestarmultiworker";
+import { makeCompact } from "../../utils/crewutils";
+import { getComboCountBig } from "../../utils/misc";
 
 export interface MutualPolestarMultiWorkerProps {
     children: JSX.Element;
@@ -239,7 +239,7 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
 
         let wcn = BigInt(allTraits.length);
         let bsn = BigInt(options.config.comboSize);
-        let total = (this.factorial(wcn) / (this.factorial(wcn - bsn) * this.factorial(bsn)));
+        let total = getComboCountBig(wcn, bsn);
         if (options.config.max_iterations && options.config.max_iterations < total) {
             total = options.config.max_iterations;
         }
@@ -294,15 +294,6 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
                 startTime: new Date()
             }
         });
-    }
-
-    private factorial(number: bigint) {
-        let result = 1n;
-
-        for (let i = 1n; i <= number; i++) {
-            result *= i;
-        }
-        return result;
     }
 
     private readonly updateBigCounts = () => {

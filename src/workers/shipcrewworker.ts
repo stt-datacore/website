@@ -1,54 +1,8 @@
 import { CrewMember } from "../model/crew";
 import { AttackInstant, MultiShipWorkerConfig, ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults } from "../model/ship";
+import { getComboCountBig, getPermutations } from "../utils/misc";
 import { compareShipResults } from "../utils/shiputils";
 import { canSeatAll, iterateBattle } from "./battleworkerutils";
-
-
-function factorial(number: bigint) {
-    let result = 1n;
-
-    for (let i = 1n; i <= number; i++) {
-        result *= i;
-    }
-    return result;
-}
-
-export function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[]) => U[] | false) {
-    var current_iter = 0n;
-    const mmin = start_idx ?? 0n;
-    const mmax = (count ?? 0n) + mmin;
-    function p(t: T[], i: number) {
-        if (t.length === size) {
-            if (current_iter >= mmin && (!mmax || current_iter < mmax)) {
-                if (!check) {
-                    result.push(t as any);
-                }
-                else {
-                    let response = check(t);
-                    if (response) {
-                        if (!count_only) {
-                            result.push(response);
-                        }
-                    }
-                }
-            }
-            current_iter++;
-            return;
-        }
-        if (i + 1 > array.length) {
-            return;
-        }
-
-        if (mmax !== 0n && current_iter >= mmax) return;
-        p([ ...t, array[i] ], i + 1);
-        p(t, i + 1);
-    }
-
-    var result = [] as U[][];
-
-    p([], 0);
-    return result;
-}
 
 const ShipCrewWorker = {
     calc: (options: ShipWorkerConfig, reportProgress: (data: { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: ShipWorkerItem }) => boolean = () => true) => {
@@ -92,7 +46,7 @@ const ShipCrewWorker = {
 
             let wcn = BigInt(workCrew.length);
             let bsn = BigInt(seats);
-            let total_combos = factorial(wcn) / (factorial(wcn - bsn) * factorial(bsn));
+            let total_combos = getComboCountBig(wcn, bsn);
 
             let count = max_iterations || total_combos; //crew_combos.length;
             let start_index = (options.start_index ?? 0n);

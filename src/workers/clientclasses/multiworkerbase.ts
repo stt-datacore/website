@@ -154,15 +154,6 @@ export abstract class MultiWorkerBase<TConfig extends WorkerConfigBase<TItem>, T
         });
     }
 
-    protected factorial(number: bigint) {
-        let result = 1n;
-
-        for (let i = 1n; i <= number; i++) {
-            result *= i;
-        }
-        return result;
-    }
-
     private updateBigCounts = () => {
         let bigcount = Object.values(this._progresses).map(m => m.count).reduce((p, n) => p + n, 0n);
         let bigprogress = Object.values(this._progresses).map(m => BigInt(m.progress ?? 0n)).reduce((p, n) => p + n, 0n);
