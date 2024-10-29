@@ -54,7 +54,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	worker: Worker | undefined = undefined;
 	ship?: Ship;
-	config: ExtendedVoyageStatsConfig;
+	config: ExtendedVoyageStatsConfig = {} as VoyageStatsConfig;
 
 	static defaultProps = {
 		roster: [],

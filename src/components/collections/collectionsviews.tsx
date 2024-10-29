@@ -236,21 +236,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 			//longDescription: "Overview of All Collections",
 			showFilters: false,
 			requirePlayer: false,
-			render: (workerRunning: boolean) => <CollectionsOverviewComponent
-				onClick={(col) => {
-					if (!context.player.playerData) return;
-					if (typeof window !== 'undefined') {
-						window.scrollTo({
-							top: 0,
-							left: 0,
-							behavior: "smooth",
-						  });
-					}
-					setTabIndex(3);
-					setMapFilter({ ...mapFilter ?? {}, collectionsFilter: [col]});
-					setSearchFilter('');
-				}}
-			/>
+			render: (workerRunning: boolean) => <CollectionsOverviewComponent />
 		},
 		{
 			menuItem: 'Progress',

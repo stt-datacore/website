@@ -208,6 +208,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 	renderDesktop() {
 		const { t } = this.context.localized;
 		const { playerData } = this.context.player ?? { playerData: undefined };
+		const { items, crew: allCrew } = this.context.core;
 
 		const panes = [
 			{
@@ -232,7 +233,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 			},
 			{
 				menuItem: t('profile.charts_and_stats'),
-				render: () => <ProfileCharts />
+				render: () => <ProfileCharts items={items} allCrew={allCrew} />
 			}
 		];
 

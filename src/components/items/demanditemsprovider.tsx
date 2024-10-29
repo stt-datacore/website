@@ -55,23 +55,12 @@ export const DemandItemsProvider = (props: DemandItemsProviderProps) => {
     </DemandItemsContext.Provider>
 
 	function runWorker() {
-		var me = this;
-
 		if (playerData?.calculatedDemands?.length) {
 			let data = [...playerData.calculatedDemands];
-
 			if (addNeeded) {
 				data.sort((a, b) => (a.quantity ?? 0) - (b.quantity ?? 0));
-				me.setState({
-					...this.state,
-					data,
-					column: "quantity",
-					direction: "ascending",
-					pagination_page: 1,
-				});
-			} else {
-				me.setState({ ...this.state, data });
 			}
+            setData(data);
 			return;
 		}
 

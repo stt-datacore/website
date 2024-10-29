@@ -91,8 +91,8 @@ export class MutualPolestarMultiWorker extends React.Component<MutualPolestarMul
     static contextType = GlobalContext;
     declare context: React.ContextType<typeof GlobalContext>;
 
-    callback: (progress: MutualPolestarMultiWorkerStatus) => void;
-    config: IMutualPolestarWorkerConfig;
+    callback: (progress: MutualPolestarMultiWorkerStatus) => void = () => false;
+    config: IMutualPolestarWorkerConfig = {} as any;
     private last = new Date();
     private workers: Worker[] = [];
     private ids: string[] = [];

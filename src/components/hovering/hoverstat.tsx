@@ -255,10 +255,10 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
             );
 
         }
-        catch(e) {
+        catch(err) {
             return (
                 <div id={divId} onMouseOver={(e) => containerOver(e)} onMouseOut={(e) => containerOut(e)} className="ui segment" style={boxStyle}>
-                   {e}
+                   {err?.toString()}
                 </div>
             );
 
@@ -602,9 +602,9 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
     doWireup(): void {
         var els = document.getElementsByClassName(this.props.targetGroup);
         this._elems ??= [];
-        for (let pl of els) {
-            let el = pl as HTMLElement;
-
+        let c = els.length;
+        for (let i = 0; i < c; i++) {
+            let el = els.item(i) as HTMLElement;
             if (el) {
                 if (this._elems.includes(el)) continue;
                 this._elems.push(el);

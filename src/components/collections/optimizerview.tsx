@@ -1,18 +1,14 @@
 import React from 'react';
 import { CollectionsContext } from './context';
-import { Pagination, Table, Grid, Image, Dropdown, Button, Checkbox, Icon, Input, Progress } from 'semantic-ui-react';
-import { Reward, BuffBase, PlayerCrew, PlayerCollection } from '../../model/player';
-import { RewardPicker, RewardsGrid } from '../crewtables/rewards';
-import { CrewItemsView } from '../item_presenters/crew_items';
-import { formatColString } from './overview';
-import ItemDisplay from '../itemdisplay';
+import { Pagination, Table, Grid, Dropdown, Checkbox } from 'semantic-ui-react';
+import { PlayerCrew, PlayerCollection } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { useStateWithStorage } from '../../utils/storage';
-import { appelate, makeAllCombos } from '../../utils/misc';
+import { appelate } from '../../utils/misc';
 import CollectionsCrewCard from './crewcard';
-import { ColComboMap, CollectionGroup, CollectionMap, ComboCostMap, CollectionMatchMode } from '../../model/collectionfilter';
-import { findColGroupsCrew, getOptCols, getOptCrew, getOwnedCites, makeCiteNeeds, neededStars, starCost } from '../../utils/collectionutils';
+import { CollectionGroup, ComboCostMap, CollectionMatchMode } from '../../model/collectionfilter';
+import { findColGroupsCrew, getOptCols, getOwnedCites, neededStars, starCost } from '../../utils/collectionutils';
 import { CollectionCard } from './collectioncard';
 import { RewardFilter } from './rewardfilter';
 
@@ -35,13 +31,13 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
     const { favorited, setFavorited, showIncomplete, setShowIncomplete, hardFilter, setHardFilter, byCost, setByCost, matchMode, setMatchMode, costMode, setCostMode, setShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
-    
+
     const { costMap, colOptimized } = props;
-    
+
 	const [pageSize, setPageSize] = useStateWithStorage("colOptimizer/itemsPerPage", 1, { rememberForever: true });
 	const [combos, setCombos] = React.useState([] as ComboConfig[]);
 	const [optPage, setOptPage] = React.useState(1);
-	const [optPageCount, setOptPageCount] = React.useState(1);	
+	const [optPageCount, setOptPageCount] = React.useState(1);
 	const [crewPos, setCrewPos] = useStateWithStorage<'top' | 'bottom'>("colOptimizer/crewPos", 'top', { rememberForever: true });
 	const [allCrew, setAllCrew] = React.useState<PlayerCrew[]>([]);
 
@@ -50,7 +46,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 	const setCombo = (col: CollectionGroup, combo: string | undefined) => {
 		let f = combos.find(cf => cf.collection === col.collection.name);
 		if (!f) {
-			if (!combo) return;			
+			if (!combo) return;
 			combos.push({
 				collection: col.collection.name,
 				name: combo
@@ -64,7 +60,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			}
 			else {
 				f.name = combo;
-			}			
+			}
 		}
 		setCombos([... combos]);
 	}
@@ -88,7 +84,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 		crewprep = crewprep.filter((fc, idx) => crewprep.findIndex(fi => fi.symbol === fc.symbol) === idx)
 							.sort((a, b) => a.name.localeCompare(b.name));
 
-		setAllCrew(crewprep);		
+		setAllCrew(crewprep);
 	}, [colOptimized]);
 
 	React.useEffect(() => {
@@ -110,20 +106,20 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 		<i className='ui segment' style={{color:"goldenrod", fontWeight: 'bold', margin: "0.5em 0"}}>
 			The collection optimizer view shows only owned crew.
 		</i>
-		
+
 		<div style={{
 			display: "flex",
-			flexDirection: 
+			flexDirection:
 				window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
 
 			alignItems:
 				window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'flex-start' : 'center',
 
-			justifyContent: "flex-start"			
+			justifyContent: "flex-start"
 		}}>
-							
-				<RewardFilter 
-					hardFilter={hardFilter}		
+
+				<RewardFilter
+					hardFilter={hardFilter}
 					setHardFilter={setHardFilter}
 					narrow={narrow}
 					grouped={short}
@@ -145,16 +141,16 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 
 		{!workerRunning &&
 		<>
-		{!!colOptimized?.length && 			
+		{!!colOptimized?.length &&
 			<div style={{display:"flex",
-				flexDirection: 
-					window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row', 
-				alignItems: "center"						
+				flexDirection:
+					window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
+				alignItems: "center"
 				}}>
 			<Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setOptPage(activePage as number) } />
 			<div style={{margin:"0 0.5em", padding: 0, marginTop:"-2em"}}>
 				Items Per Page:
-				<Dropdown 
+				<Dropdown
 					style={{margin: "0.5em"}}
 					placeholder={"Items Per Page"}
 					value={pageSize}
@@ -170,7 +166,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			</div>
 			<div style={{margin:"0.5em", padding: 0, marginTop: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "-1.5em"}}>
 				Show Crew:
-				<Dropdown 
+				<Dropdown
 					style={{margin: "0.5em"}}
 					placeholder={"Show Crew"}
 					value={crewPos}
@@ -186,7 +182,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			</div>
 			<div style={{margin:"0.5em", padding: 0, marginTop: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "-1.5em"}}>
 				Mode:
-				<Dropdown 
+				<Dropdown
 					style={{margin: "0.5em"}}
 					placeholder={"Mode"}
 					value={matchMode}
@@ -204,13 +200,13 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 		<Table striped>
 			<Table.Body>
 				{colOptimized.slice(pageSize * (optPage - 1), (pageSize * (optPage - 1)) + pageSize).map((col, idx) => {
-					
-					const optCombo = getCombo(col);					
+
+					const optCombo = getCombo(col);
 					const comboCrew = findColGroupsCrew(costMap, col, optCombo);
 					if (!comboCrew?.length && optCombo !== undefined && optCombo !== '') {
 						window.setTimeout(() => {
 							setCombo(col, col.combos ? col.combos[0].names.join(" / ") : undefined);
-						});						
+						});
 						return <> </>
 					}
 					const collection = JSON.parse(JSON.stringify(col.collection)) as PlayerCollection;
@@ -222,7 +218,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 					return (<Table.Row key={"colgroup" + idx} >
 						<Table.Cell width={4} style={{verticalAlign:"top"}}>
 						<CollectionCard
-							ownedCites={ownedCites} 
+							ownedCites={ownedCites}
 							mapFilter={mapFilter}
 							setMapFilter={setMapFilter}
 							searchFilter={searchFilter}
@@ -231,15 +227,15 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 
 						</Table.Cell>
 						<Table.Cell style={{verticalAlign:"top"}}>
-							<h3 style={{margin:"0.5em", textAlign: 'center'}}>Additional Collection Milestones:<br /></h3>						
-							{!!col.combos?.length && (col.combos?.length ?? 0) === 1 && 
+							<h3 style={{margin:"0.5em", textAlign: 'center'}}>Additional Collection Milestones:<br /></h3>
+							{!!col.combos?.length && (col.combos?.length ?? 0) === 1 &&
 							<div style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
 							{col.combos[0].names.join(" / ")}
 							</div>}
-							{!!col.combos?.length && (col.combos?.length ?? 0) > 1 && 
+							{!!col.combos?.length && (col.combos?.length ?? 0) > 1 &&
 							<div style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
 							<div style={{margin: "0.25em"}}>Variations: </div>
-							<Dropdown 
+							<Dropdown
 								fluid={typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH}
 								direction={typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'left' : undefined}
 								scrolling
@@ -251,21 +247,21 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 									key: opt.names.join(" / "),
 									value: opt.names.join(" / "),
 									text: opt.names.join(" / ")
-								}								
+								}
 							})}/>
 							<br />
 							</div>}
 
 							<div style={{display: 'flex', flexDirection: crewPos === 'top' ? 'column-reverse' : 'column'}}>
 							<div style={{display:'flex', flexDirection:'column'}}>
-								<Grid doubling columns={3} textAlign='center'>								
+								<Grid doubling columns={3} textAlign='center'>
 									{getOptCols(col, optCombo).map((c) => {
 										const collection = c.collection;
 										if (!collection?.totalRewards || !collection.milestone) return <></>;
 
 										return (
 											<CollectionCard
-												ownedCites={ownedCites} 
+												ownedCites={ownedCites}
 												style={{width: "350px"}}
 												brief={true}
 												mapFilter={mapFilter}
@@ -278,10 +274,10 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 						</div>
 						<Grid doubling columns={3} textAlign='center'>
 								{comboCrew.map((crew, ccidx) => (
-									<CollectionsCrewCard 
-										crew={crew} 
+									<CollectionsCrewCard
+										crew={crew}
 										collection={collection}
-										index={ccidx} 
+										index={ccidx}
 										onClick={(e, data) => addToSearchFilter(data.name)} />
 								))}
 							</Grid>
@@ -291,17 +287,17 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 				)}
 			</Table.Body>
 		</Table>
-		{true &&		
+		{true &&
 			<div style={{display:"flex",
-					flexDirection: 
-						window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row', 
-					alignItems: "center"						
+					flexDirection:
+						window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
+					alignItems: "center"
 					}}>
 
 			<Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setOptPage(activePage as number) } />
 			<div style={{margin:"0 0.5em", padding: 0, marginTop:"-2em"}}>
 				Items Per Page:
-				<Dropdown 
+				<Dropdown
 					style={{margin: "0.5em"}}
 					placeholder={"Items Per Page"}
 					value={pageSize}
@@ -317,7 +313,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			</div>
 			<div style={{margin:"0.5em", padding: 0, marginTop: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "-1.5em"}}>
 				Show Crew:
-				<Dropdown 
+				<Dropdown
 					style={{margin: "0.5em"}}
 					placeholder={"Show Crew"}
 					value={crewPos}
@@ -333,7 +329,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 			</div>
 			<div style={{margin:"0.5em", padding: 0, marginTop: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "-1.5em"}}>
 				Mode:
-				<Dropdown 
+				<Dropdown
 					style={{margin: "0.5em"}}
 					placeholder={"Mode"}
 					value={matchMode}
@@ -353,5 +349,5 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 		{!colOptimized?.length && <div className='ui segment'>No results.</div>}
 		<br /><br /><br />
 	</div>)
-    
+
 }

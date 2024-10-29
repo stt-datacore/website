@@ -46,7 +46,7 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 
 	constructor(props: OptionsModalProps<TOptions>) {
 		super(props);
-
+		this.optionGroups = [];
 		const newstate = {
 			isDefault: false,
 			isDirty: false,

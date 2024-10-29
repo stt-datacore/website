@@ -40,8 +40,8 @@ export interface ShipMultiWorkerConfig extends IMultiWorkerConfig<ShipWorkerConf
 export const ShipMultiWorkerContext = React.createContext(DefaultMultiWorkerContextData);
 
 export class ShipMultiWorker extends React.Component<ShipMultiWorkerProps, ShipMultiWorkerState> {
-    callback: (progress: ShipMultiWorkerStatus) => void;
-    config: ShipWorkerConfig;
+    callback: (progress: ShipMultiWorkerStatus) => void = () => false;
+    config: ShipWorkerConfig = {} as any;
 
     private workers: Worker[] = [];
     private ids: string[] = [];

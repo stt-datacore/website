@@ -484,7 +484,7 @@ const MutualTable = (props: MutualTableProps) => {
                 crew: comboCrew,
                 combo: comboStars
             } as DisplayItem
-        }).filter(f => f !== undefined);
+        }).filter(f => f !== undefined) as DisplayItem[];
 
         const psSym = items.map(m => m.combo).map(c => comboToPolestars(c)).flat()
         const allowedPolestars = polestars.filter(f => psSym.includes(f.symbol));

@@ -7,9 +7,7 @@ import { Fleet, Member } from '../../model/fleet';
 import { EventInstance } from '../../model/events';
 import { TinyStore } from '../../utils/tiny';
 import { FleetResponse } from '../../model/fleet';
-import { Faction } from '../../model/player';
 import { StaticFaction } from '../../model/shuttle';
-import { formatColString } from '../collections/overview';
 import { ColorName } from './colorname';
 import { appelate, printShortDistance } from '../../utils/misc';
 import { exportMembers } from '../../utils/fleet';
@@ -37,9 +35,9 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	static contextType = GlobalContext;
 	declare context: React.ContextType<typeof GlobalContext>;
 
-	private _tiny: TinyStore;
+	private _tiny?: TinyStore;
 
-	protected get tiny(): TinyStore {
+	protected get tiny(): TinyStore | undefined {
 		return this._tiny;
 	}
 
@@ -60,19 +58,17 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	}
 
 	componentDidMount() {
-
 		const { playerData } = this.context.player;
-
 		if (!playerData) return;
 
-		this._tiny = TinyStore.getStore(`fleet_info_dbid_${playerData.player.dbid}`);
+		const tiny = this._tiny = TinyStore.getStore(`fleet_info_dbid_${playerData.player.dbid}`);
 
 		this.setState({
 			fleet_id: playerData.player.fleet.id,
 			fleet_data: undefined,
 			factions: this.context.core.factions,
 			events: this.context.core.event_instances,
-			access_token: this.tiny.getValue<string | undefined>('access_token', undefined)
+			access_token: tiny.getValue<string | undefined>('access_token', undefined)
 		});
 
 		this.refreshData();
@@ -176,7 +172,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			})
 			.then(response => response.json())
 			.then((fleetData: FleetResponse) => {
-				this.tiny.setValue('access_token', fleetData.access_token, true);
+				this.tiny?.setValue('access_token', fleetData.access_token, true);
 				this.setState({ fleet_data: fleetData.fleet, access_token: fleetData.access_token });
 			})
 			.catch(err => {
@@ -216,7 +212,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 
 	private clearToken() {
 		this.setState({ ... this.state, username: '', password: '', access_token: undefined });
-		this.tiny.removeValue("access_token");
+		this.tiny?.removeValue("access_token");
 	}
 
 	private sortClick(field: string) {
