@@ -10,7 +10,6 @@ import { RetrievalCrew } from './crew';
 import { PolestarFilterModal } from './polestarfilter';
 import { PolestarProspectsModal } from './polestarprospects';
 import { MutualView } from './mutualview';
-import { MutualPolestarMultiWorker } from './mutualmultiworker';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 
 export const RetrievalKeystones = () => {

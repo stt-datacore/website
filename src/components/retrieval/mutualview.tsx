@@ -2,7 +2,6 @@ import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import { Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Pagination, Table } from "semantic-ui-react";
 import { useStateWithStorage } from "../../utils/storage";
-import { MutualMultiWorkerContext, MutualPolestarMultiWorker, MutualPolestarMultiWorkerStatus } from "./mutualmultiworker";
 import { IConstellation, IKeystone, IPolestar } from "./model";
 import { IMutualPolestarWorkerItem, PolestarComboSize } from "../../model/worker";
 import { formatRunTime } from "../../utils/misc";
@@ -14,9 +13,10 @@ import { getIconPath } from "../../utils/assets";
 import { EquipmentItem } from "../../model/equipment";
 import { CrewDropDown } from "../base/crewdropdown";
 import { CrewMember } from "../../model/crew";
-import { CrewTraitFilter, RarityFilter } from "../crewtables/commonoptions";
 import CONFIG from "../CONFIG";
 import { PolestarDropdown } from "./polestardropdown";
+import { PolestarMultiWorkerStatus, PolestarMultiWorker } from "./polestarmultiworker";
+import { MultiWorkerContext } from "../base/multiworkerbase";
 
 
 const optionStyle = {
@@ -138,9 +138,9 @@ export const MutualView = (props: MutualViewProps) => {
         {/* {playerData && <MutualPolestarMultiWorker playerData={playerData}>
             <MutualWorkerPanel polestars={polestars} results={results} setResults={setResults} config={config} setConfig={setConfig} />
         </MutualPolestarMultiWorker>} */}
-        {playerData && <MutualPolestarMultiWorker playerData={playerData}>
+        {playerData && <PolestarMultiWorker playerData={playerData}>
             <MutualWorkerPanel polestars={polestars} results={results} setResults={setResults} config={config} setConfig={setConfig} />
-        </MutualPolestarMultiWorker>}
+        </PolestarMultiWorker>}
         {!!results?.length && <div style={{textAlign: 'center'}}>
             <MutualTable polestars={polestars} items={results} />
         </div>}
@@ -163,7 +163,7 @@ interface MutualWorkerPanelProps {
 }
 
 const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
-    const workerContext = React.useContext(MutualMultiWorkerContext);
+    const workerContext = React.useContext(MultiWorkerContext);
     const { cancel, running, runWorker } = workerContext;
 
     const globalContext = React.useContext(GlobalContext);
@@ -369,7 +369,7 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
         })
     }
 
-    function calculateCallback(result: MutualPolestarMultiWorkerStatus) {
+    function calculateCallback(result: PolestarMultiWorkerStatus) {
         if (!result) return;
 
         if (!result.data.inProgress) {

@@ -1,23 +1,43 @@
-import { IDefaultGlobal } from "../../context/globalcontext";
-import { PlayerCrew } from "../../model/player";
-import { IMultiWorkerConfig, IMultiWorkerStatus, IMutualPolestarInternalWorkerConfig, IMutualPolestarWorkerConfig, IMutualPolestarWorkerItem, IPolestarCrew } from "../../model/worker";
+import { PlayerCrew, PlayerData } from "../../model/player";
+import { IMultiWorkerConfig, IMultiWorkerStatus, IMutualPolestarWorkerConfig as IPolestarWorkerConfig, IMutualPolestarWorkerItem as IPolestarWorkerItem, IPolestarCrew, IMultiWorkerState } from "../../model/worker";
 import { makeCompact } from "../../utils/crewutils";
-import { getComboCount, getComboCountBig } from "../../utils/misc";
-import { MultiWorkerBase } from "./multiworkerbase";
+import { getComboCountBig } from "../../utils/misc";
+import { MultiWorkerBase } from "../base/multiworkerbase";
 
-export class PolestarMultiWorker extends MultiWorkerBase<IMutualPolestarWorkerConfig, IMutualPolestarWorkerItem> {
+export interface PolestarMultiWorkerProps {
+    children: JSX.Element;
+    playerData: PlayerData;
+}
+
+export interface PolestarMultiWorkerStatus extends IMultiWorkerStatus<IPolestarWorkerItem> {
+}
+
+export interface PolestarMultiWorkerState extends IMultiWorkerState {
+
+}
+
+export class PolestarMultiWorker extends MultiWorkerBase<PolestarMultiWorkerProps, PolestarMultiWorkerState, IMultiWorkerConfig<IPolestarWorkerConfig, IPolestarWorkerItem>, IPolestarWorkerConfig, IPolestarWorkerItem> {
     protected createWorker(): Worker {
-        return new Worker(new URL('../polestar-worker.js', import.meta.url))
+        return new Worker(new URL('../../workers/polestar-worker.js', import.meta.url))
     }
 
-    private context: IDefaultGlobal;
-
-    constructor(globalContext: IDefaultGlobal, callback: (progress: IMultiWorkerStatus<IMutualPolestarWorkerItem>) => void) {
-        super('../../workers/polestar-worker.js', callback);
-        this.context = globalContext;
+    constructor(props: PolestarMultiWorkerProps) {
+        super(props);
     }
 
-    protected getRunConfig(options: IMultiWorkerConfig<IMutualPolestarWorkerConfig, IMutualPolestarWorkerItem>): IMutualPolestarWorkerConfig {
+    protected onComplete(msg: any): void {
+        return;
+    }
+
+    protected onProgress(msg: any): boolean {
+        return true;
+    }
+
+    protected onItem(msg: any): boolean {
+        return true;
+    }
+
+    protected getRunConfig(options: IMultiWorkerConfig<IPolestarWorkerConfig, IPolestarWorkerItem>): IPolestarWorkerConfig {
         const allCrew = this.context.core.crew;
         const ownedCrew = this.context.player.playerData?.player.character.crew;
         const { polestars, comboSize, batch, allowUnowned, no100 } = options.config;

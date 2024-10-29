@@ -24,8 +24,8 @@ export interface IWorkerResults<T> {
     run_time: number;
 }
 
-export interface IMultiWorkerState<TRun extends IMultiWorkerConfig<TConfig, TItem>, TConfig extends WorkerConfigBase<TItem>, TItem> {
-    context: IMultiWorkerContext<TRun, TConfig, TItem>;
+export interface IMultiWorkerState {
+    context: IMultiWorkerContext;
 }
 
 export interface IMultiWorkerConfig<TConfig extends WorkerConfigBase<TItem>, TItem> {
@@ -52,8 +52,8 @@ export interface IMultiWorkerStatus<T> {
     }
 }
 
-export interface IMultiWorkerContext<TRun extends IMultiWorkerConfig<TConfig, TItem>, TConfig extends WorkerConfigBase<TItem>, TItem> {
-    runWorker: (options: TRun) => void;
+export interface IMultiWorkerContext {
+    runWorker: (options: any) => void;
     cancel: () => void;
     workers: number;
     count: bigint;
