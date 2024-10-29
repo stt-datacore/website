@@ -3,7 +3,7 @@ name: Bridge La Forge
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 in_portal:
 date: 04/06/2024
 published: true
