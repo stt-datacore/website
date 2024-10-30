@@ -7,10 +7,10 @@ type ProgressType = { percent?: number, progress?: bigint, count?: bigint, accep
 const MutualPolestarWorker = {
     calc: (options: IMutualPolestarInternalWorkerConfig, reportProgress: (data: ProgressType) => boolean = () => true) => {
         return new Promise<PolestarWorkerResults>(async (resolve, reject) => {
-            const { crew, verbose, unowned, exclude, include, comboSize, allTraits, max_iterations } = options;
+            const { crew, comboSize, allPolestars, max_iterations } = options;
             const allowUnowned = options.allowUnowned ?? 0;
 
-            let wcn = BigInt(allTraits.length);
+            let wcn = BigInt(allPolestars.length);
             let bsn = BigInt(comboSize);
             let total_combos = getComboCountBig(wcn, bsn);
             let count = max_iterations || total_combos; //crew_combos.length;
@@ -21,7 +21,7 @@ const MutualPolestarWorker = {
             let progress = -1n;
             const combos = [] as IMutualPolestarWorkerItem[];
 
-            getPermutations(allTraits, comboSize, count, true, start_index, (combo) => {
+            getPermutations(allPolestars, comboSize, count, true, start_index, (combo) => {
                 i++;
                 if (!(i % 100n)) {
                     let p = ((i * 100n) / count);

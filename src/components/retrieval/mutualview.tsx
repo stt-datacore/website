@@ -61,7 +61,6 @@ interface MutualViewConfig {
     max_iterations?: number;
     combo_size: PolestarComboSize | '1_batch' | '2_batch' | '3_batch' | '4_batch';
     verbose: boolean;
-    considerUnowned: boolean;
     allowUnowned?: number;
     no100?: boolean;
 }
@@ -300,11 +299,6 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
                     checked={config.calc_previews}
                     onChange={(e, { checked }) => setConfig({ ...config, calc_previews: checked as boolean || false})}
                 />
-                <Checkbox label={t('retrieval.consider_unowned_polestars')}
-                    disabled={running}
-                    checked={config.considerUnowned}
-                    onChange={(e, { checked }) => setConfig({ ...config, considerUnowned: checked as boolean || false})}
-                />
                 <Checkbox label={t('base.less_than_100_retrieval')}
                     disabled={running}
                     checked={config.no100}
@@ -342,15 +336,15 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
         //setSuggestions([].concat());
 
         let comboSize: PolestarComboSize = 1;
-        let batch = false;
+        //let batch = false;
 
         if (typeof config.combo_size === 'number') {
             comboSize = config.combo_size;
         }
-        else {
-            comboSize = Number(config.combo_size.replace("_batch", '')) as PolestarComboSize;
-            batch = true;
-        }
+        // else {
+        //     comboSize = Number(config.combo_size.replace("_batch", '')) as PolestarComboSize;
+        //     batch = true;
+        // }
 
         runWorker({
             max_workers: config.max_workers,
@@ -358,9 +352,7 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
                 max_iterations: config.max_iterations ? BigInt(config.max_iterations) : undefined,
                 polestars,
                 comboSize,
-                batch,
                 verbose: config.verbose,
-                considerUnowned: config.considerUnowned,
                 allowUnowned: config.allowUnowned || 0,
                 no100: !!config.no100
             },

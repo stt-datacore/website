@@ -44,7 +44,7 @@ export class PolestarMultiWorker extends MultiWorkerBase<PolestarMultiWorkerProp
     protected getRunConfig(options: IMultiWorkerConfig<IPolestarWorkerConfig, IPolestarWorkerItem>): IPolestarWorkerConfig {
         const allCrew = this.context.core.crew;
         const ownedCrew = this.context.player.playerData?.player.character.crew;
-        const { polestars, comboSize, batch, allowUnowned, no100 } = options.config;
+        const { polestars, comboSize, allowUnowned, no100 } = options.config;
 
         if (!ownedCrew) throw new Error("No player data");
 
@@ -89,28 +89,28 @@ export class PolestarMultiWorker extends MultiWorkerBase<PolestarMultiWorkerProp
 
 		copycrew.forEach((crew) => {
 			crew.traits?.forEach((trait) => {
-				if (polestars.some(p => (p.owned || options.config.considerUnowned) && p.symbol === `${trait}_keystone`)) {
+				if (polestars.some(p => p.symbol === `${trait}_keystone`)) {
 					traitBucket[trait] ??= [];
 					traitBucket[trait].push(crew.symbol);
 				}
 			});
 
-            if (polestars.some(p => (p.owned || options.config.considerUnowned) && p.symbol === `rarity_${crew.max_rarity}_keystone`)) {
+            if (polestars.some(p => p.symbol === `rarity_${crew.max_rarity}_keystone`)) {
                 rarityBucket[crew.max_rarity] ??= [];
                 rarityBucket[crew.max_rarity].push(crew.symbol);
             }
 
             crew.skill_order.forEach((skill) => {
-                if (polestars.some(p => (p.owned || options.config.considerUnowned) && p.symbol === `${skill}_keystone`)) {
+                if (polestars.some(p => p.symbol === `${skill}_keystone`)) {
                     skillBucket[`${skill}`] ??= [];
                     skillBucket[`${skill}`].push(crew.symbol);
                 }
             });
 		});
 
-		const allTraits = Object.keys(skillBucket).concat(Object.keys(rarityBucket)).concat(Object.keys(traitBucket));
+		const allPolestars = Object.keys(skillBucket).concat(Object.keys(rarityBucket)).concat(Object.keys(traitBucket));
 
-        let wcn = BigInt(allTraits.length);
+        let wcn = BigInt(allPolestars.length);
         let bsn = BigInt(options.config.comboSize);
         let total = getComboCountBig(wcn, bsn);
         if (options.config.max_iterations && options.config.max_iterations < total) {
@@ -118,16 +118,11 @@ export class PolestarMultiWorker extends MultiWorkerBase<PolestarMultiWorkerProp
         }
 
         return {
-            include,
-            exclude,
-            allTraits,
-            polestars,
+            allPolestars,
             comboSize,
-            batch,
             crew: copycrew,
             max_iterations: total,
             allowUnowned,
-            unowned
         } as any
     }
 

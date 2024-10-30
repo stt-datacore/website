@@ -366,8 +366,6 @@ export type PolestarComboSize = 1 | 2 | 3 | 4;
 export interface IMutualPolestarWorkerConfig extends WorkerConfigBase<IMutualPolestarWorkerItem> {
     polestars: IPolestar[];
     comboSize: PolestarComboSize;
-    considerUnowned: boolean;
-    batch: boolean;
     allowUnowned: number;
     no100: boolean;
 }
@@ -377,17 +375,8 @@ export interface IPolestarCrew extends CompactCrew {
 }
 
 export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase<IMutualPolestarWorkerItem> {
-    polestars: IPolestar[];
-    include: string[];
-    exclude: string[];
-    allTraits: string[];
+    allPolestars: string[];
     crew: IPolestarCrew[];
     comboSize: PolestarComboSize;
-    // skillBucket: { [key: string]: string[] }
-    // rarityBucket: { [key: string]: string[] }
-    // traitBucket: { [key: string]: string[] }
-    verbose: boolean;
-    batch: boolean;
-    unowned?: string[];
     allowUnowned?: number;
 }
