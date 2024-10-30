@@ -816,6 +816,7 @@
     "hints": {
         "apply_buffs": "Buffs anwenden",
         "display_buffs": "Buffs anzeigen",
+        "filter_by_crew": "Filtern nach Crew",
         "filter_by_polestars": "Filtern nach Polarsterne",
         "filter_by_availability": "Filtern nach Verfügbarkeit",
         "filter_by_collections": "Filtern nach Sammlungen",

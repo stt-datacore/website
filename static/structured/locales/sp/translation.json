@@ -825,6 +825,7 @@
     "hints": {
         "apply_buffs": "Aplicar efectos",
         "display_buffs": "Mostrar efectos",
+        "filter_by_crew": "Filtrar por tripulación",
         "filter_by_polestars": "Filtrar por estrellas polares",
         "filter_by_availability": "Filtrar por disponibilidad",
         "filter_by_collections": "Filtrar por colecciones",
