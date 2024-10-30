@@ -68,28 +68,15 @@ interface MutualViewConfig {
 
 type MutualViewProps = {
     dbid: string;
-    allKeystones: IKeystone[];
 }
 
 export const MutualView = (props: MutualViewProps) => {
-    const { dbid, allKeystones } = props;
+    const retrievalContext = React.useContext(RetrievalContext);
+    const { allKeystones, polestarTailors } = retrievalContext;
+    const { dbid } = props;
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
     const { playerData } = globalContext.player;
-    const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[]>([]);
-
-	const [polestarTailors, setPolestarTailors] = useStateWithStorage<IPolestarTailors>(props.dbid+'retrieval/tailors', polestarTailorDefaults, { rememberForever: true });
-	const [crewFilters, setCrewFilters] = useStateWithStorage<ICrewFilters>(props.dbid+'retrieval/filters', crewFilterDefaults, { rememberForever: true });
-	const [wishlist, setWishlist] = useStateWithStorage<string[]>(props.dbid+'retrieval/wishlist', [], { rememberForever: true });
-
-	const retrievalContext: IRetrievalContext = {
-		allKeystones,
-		rosterCrew, setRosterCrew,
-		polestarTailors, setPolestarTailors,
-		getCrewFilter: () => false, setCrewFilter: () => false,
-		resetForm,
-		wishlist, setWishlist
-	};
 
     const DefaultConfig = {
         considerUnowned: false,
@@ -105,46 +92,14 @@ export const MutualView = (props: MutualViewProps) => {
     const [lastDbid, setLastDbid] = React.useState(undefined as string | undefined);
 
     React.useEffect(() => {
-        // Count owned constellations
-        if (playerData) {
-            let crew1 = crewCopy(playerData.player.character.crew.filter(f => f.in_portal && !f.immortal && !!f.unique_polestar_combos?.length) as IRosterCrew[]);
+        const disabledPolestars = polestarTailors.disabled;
+        const addedPolestars = polestarTailors.added;
 
-            crew1.forEach((c) => {
-                c.retrievable = RetrievableState.Viable;
-                c.actionable = ActionableState.Viable;
-            })
-            crew1 = crew1.filter((f, idx) => crew1.findIndex(f2 => f2.symbol === f.symbol && f.rarity === f2.highest_owned_rarity) === idx);
-            setRosterCrew(crew1 as IRosterCrew[]);
-        }
-        const polestars = allKeystones.filter(k => k.type === 'keystone') as IPolestar[];
-        const constellations = allKeystones.filter(k => k.type !== 'keystone') as IConstellation[];
+        const allPolestars = allKeystones.filter(k => k.type === 'keystone') as IPolestar[];
 
-        const disabledPolestars = polestarTailors?.disabled || [];
-        const addedPolestars = polestarTailors?.added || [];
-
-        constellations.forEach(constellation => {
-            if (playerData) {
-                const itemsOwned = playerData.forte_root.items.find(item => item.id === constellation.id);
-                constellation.owned = itemsOwned ? itemsOwned.quantity : 0;
-            }
-            else {
-                constellation.owned = 0;
-            }
-        });
-        polestars.forEach(polestar => {
-            if (playerData) {
-                const itemsOwned = playerData.forte_root.items.find(item => item.id === polestar.id);
-                polestar.owned = itemsOwned ? itemsOwned.quantity : 0;
-            }
-            else {
-                polestar.owned = 0;
-            }
-            const crates = constellations.filter(k => (k.type === 'crew_keystone_crate' || k.type === 'keystone_crate') && k.keystones.includes(polestar.id));
-            const owned = crates.filter(k => k.owned > 0);
-            polestar.owned_crate_count = owned.reduce((prev, curr) => prev + curr.owned, 0);
-            polestar.owned_best_odds = owned.length === 0 ? 0 : 1/owned.reduce((prev, curr) => Math.min(prev, curr.keystones.length), 100);
-            polestar.owned_total_odds = owned.length === 0 ? 0 : 1-owned.reduce((prev, curr) => prev*(((curr.keystones.length-1)/curr.keystones.length)**curr.owned), 1);
-        });
+        const polestars = allPolestars.filter(polestar =>
+            (polestar.owned > 0 && !disabledPolestars.includes(polestar.id)) || addedPolestars.includes(polestar.symbol)
+        );
 
         const isSkill = (a: IPolestar) => {
             return a.symbol.endsWith("_skill_keystone");
@@ -173,24 +128,17 @@ export const MutualView = (props: MutualViewProps) => {
             return a.name.localeCompare(b.name);
         });
 
-        setPolestars(polestars.filter(polestar =>
-            (polestar.owned > 0 && !disabledPolestars.includes(polestar.id)) || addedPolestars.includes(polestar.symbol)
-        ));
+        setPolestars(polestars);
 
         if (lastDbid && dbid !== lastDbid) {
             setResults([].concat());
         }
         setLastDbid(dbid);
-    }, [dbid, polestarTailors]);
+    }, [dbid, allKeystones, polestarTailors]);
 
     return <React.Fragment>
-        {/* {playerData && <MutualPolestarMultiWorker playerData={playerData}>
-            <MutualWorkerPanel polestars={polestars} results={results} setResults={setResults} config={config} setConfig={setConfig} />
-        </MutualPolestarMultiWorker>} */}
         {playerData && <PolestarMultiWorker playerData={playerData}>
-            <RetrievalContext.Provider value={retrievalContext}>
                 <MutualWorkerPanel polestars={polestars} results={results} setResults={setResults} config={config} setConfig={setConfig} />
-            </RetrievalContext.Provider>
         </PolestarMultiWorker>}
         {!!results?.length && <div style={{textAlign: 'center'}}>
             <MutualTable polestars={polestars} items={results} />
@@ -198,12 +146,6 @@ export const MutualView = (props: MutualViewProps) => {
         <CrewHoverStat targetGroup="mutual_crew_hover" />
         <ItemHoverStat targetGroup="mutual_crew_item" />
     </React.Fragment>
-
-    function resetForm(): void {
-        setPolestarTailors({...polestarTailorDefaults});
-        setCrewFilters({...crewFilterDefaults});
-    }
-
 }
 
 type DisplayItem = {
@@ -368,10 +310,6 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
                     checked={config.no100}
                     onChange={(e, { checked }) => setConfig({ ...config, no100: checked as boolean || false})}
                 />
-            </div>
-            <div style={{...optionStyle, flexDirection: 'row', margin: '0.5em', gap: "1em"}}>
-                <PolestarFilterModal />
-                {/* <PolestarProspectsModal /> */}
             </div>
             <div style={{...optionStyle, flexDirection: 'row', margin: '0.5em'}}>
                 <Button

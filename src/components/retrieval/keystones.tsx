@@ -113,20 +113,20 @@ const ModePicker = (props: ModePickerProps) => {
 				</Step>
             </Step.Group>
 
-			{mode === 'keystones' && <KeystonesPlayer dbid={dbid} allKeystones={allKeystones} />}
-			{mode === 'mutual' && <MutualView allKeystones={allKeystones} dbid={dbid} />}
+			<KeystonesPlayer mode={mode} dbid={dbid} allKeystones={allKeystones} />
 	</>
 }
 
 type KeystonesPlayerProps = {
 	allKeystones: IKeystone[];
 	dbid: string;
+	mode: ModePickerMode;
 };
 
 const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
-
+	const { dbid, mode, } = props;
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[]>([]);
 	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[]>([]);
 
@@ -186,7 +186,8 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 					<PolestarProspectsModal />
 				</Form.Group>
 			</Form>
-			<RetrievalCrew />
+			{mode === 'keystones' && <RetrievalCrew />}
+			{mode === 'mutual' && <MutualView dbid={dbid} />}
 		</RetrievalContext.Provider>
 	);
 
