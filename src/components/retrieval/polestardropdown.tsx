@@ -17,7 +17,7 @@ export interface PolestarDropdownProps {
 
 export const PolestarDropdown = (props: PolestarDropdownProps) => {
     const globalContext = React.useContext(GlobalContext);
-    const { t } = globalContext.localized;
+    const { t, ITEM_ARCHETYPES } = globalContext.localized;
     const { polestars, selection, setSelection, multiple, fluid, style } = props;
 
     const options = [] as DropdownItemProps[];
@@ -29,7 +29,7 @@ export const PolestarDropdown = (props: PolestarDropdownProps) => {
             text: polestar.name,
             content: <div style={{display:'flex', gap: '0.5em', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start'}}>
                 <img src={getIconPath(polestar.icon)} style={{height: '24px'}} />
-                <span>{polestar.name}</span>
+                <span>{ITEM_ARCHETYPES[polestar.symbol]?.name || polestar.name}</span>
             </div>
         });
     });

@@ -21,6 +21,7 @@ import { PolestarFilterModal } from "./polestarfilter";
 import { PolestarProspectsModal } from "./polestarprospects";
 import { IRetrievalContext, RetrievalContext } from "./context";
 import { crewCopy } from "../../utils/crewutils";
+import { RarityFilter } from "../crewtables/commonoptions";
 
 const polestarTailorDefaults: IPolestarTailors = {
 	disabled: [],
@@ -435,6 +436,7 @@ const MutualTable = (props: MutualTableProps) => {
     const [itemsPerPage, setItemsPerPage] = React.useState(10);
     const [activePage, setActivePage] = React.useState(1);
     const [workItems, setWorkItems] = React.useState([] as DisplayItem[]);
+    const [rarities, setRarities] = React.useState([] as number[]);
     const [allowedPolestars, setAllowedPolestars] = React.useState([] as IPolestar[]);
     const [polestarFilter, setPolestarFilter] = React.useState(undefined as string[] | undefined)
     const pageStartIdx = (activePage - 1) * itemsPerPage;
@@ -475,7 +477,7 @@ const MutualTable = (props: MutualTableProps) => {
                 crew: comboCrew,
                 combo: comboStars
             } as DisplayItem
-        }).filter(f => f !== undefined) as DisplayItem[];
+        }).filter(f => f !== undefined && (!rarities.length || f.crew.some(c => rarities.includes(c.max_rarity)))) as DisplayItem[];
 
         const psSym = items.map(m => m.combo).map(c => comboToPolestars(c)).flat()
         const allowedPolestars = polestars.filter(f => psSym.includes(f.symbol));
@@ -504,7 +506,7 @@ const MutualTable = (props: MutualTableProps) => {
         setAllowedPolestars(allowedPolestars);
         setWorkItems(workItems);
         setCrewPool(downfiltered);
-    }, [playerData, items, polestars, sortBy, sortOrder, selCrew, polestarFilter]);
+    }, [playerData, items, polestars, sortBy, sortOrder, selCrew, polestarFilter, rarities]);
 
     React.useEffect(() => {
         const totalPages = Math.ceil(workItems.length / itemsPerPage);
@@ -526,11 +528,15 @@ const MutualTable = (props: MutualTableProps) => {
     return (<div>
             <div style={{...optionStyle, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center'}}>
                 <div style={optionStyle}>
-                    <span>{t('base.crew')}</span>
+                    <span>{t('hints.filter_by_crew')}</span>
                     <CrewDropDown plain showRarity pool={crewPool} selection={selCrew} setSelection={setSelCrew} />
                 </div>
                 <div style={optionStyle}>
-                    <span>{t('retrieval.polestars')}</span>
+                    <span>{t('hints.filter_by_rarity')}</span>
+                    <RarityFilter rarityFilter={rarities} setRarityFilter={setRarities} multiple />
+                </div>
+                <div style={optionStyle}>
+                    <span>{t('hints.filter_by_polestars')}</span>
                     <div style={{display:'flex', flexDirection: 'row', justifyContent:'flex-start', alignItems: 'center', gap: '0.5em', marginBottom: '1em'}}>
                         <PolestarDropdown
                             multiple
