@@ -79,6 +79,11 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
         if (dataIn?.needed && dataOut){
             dataOut.needed = dataIn.needed;
         }
+        const { ITEM_ARCHETYPES } = this.context.localized;
+        if (dataOut && ITEM_ARCHETYPES) {
+            dataOut.name = ITEM_ARCHETYPES[dataOut.symbol]?.name ?? dataOut.name;
+            dataOut.flavor = ITEM_ARCHETYPES[dataOut.symbol]?.flavor ?? dataOut.flavor;
+        }
         return dataOut;
     }
 

@@ -2,7 +2,7 @@ import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import { Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Pagination, Table } from "semantic-ui-react";
 import { useStateWithStorage } from "../../utils/storage";
-import { ActionableState, IConstellation, ICrewFilters, IKeystone, IPolestar, IPolestarTailors, IRosterCrew, RetrievableState } from "./model";
+import { ICrewFilters, IPolestar, IPolestarTailors } from "./model";
 import { IMutualPolestarWorkerItem, PolestarComboSize } from "../../model/worker";
 import { formatRunTime } from "../../utils/misc";
 import { CompletionState, PlayerCrew } from "../../model/player";
@@ -17,10 +17,7 @@ import CONFIG from "../CONFIG";
 import { PolestarDropdown } from "./polestardropdown";
 import { PolestarMultiWorkerStatus, PolestarMultiWorker } from "./polestarmultiworker";
 import { MultiWorkerContext } from "../base/multiworkerbase";
-import { PolestarFilterModal } from "./polestarfilter";
-import { PolestarProspectsModal } from "./polestarprospects";
-import { IRetrievalContext, RetrievalContext } from "./context";
-import { crewCopy } from "../../utils/crewutils";
+import { RetrievalContext } from "./context";
 import { RarityFilter } from "../crewtables/commonoptions";
 
 const polestarTailorDefaults: IPolestarTailors = {
