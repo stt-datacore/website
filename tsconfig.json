@@ -12,10 +12,7 @@
       "forceConsistentCasingInFileNames": true,
       "lib": ["dom", "esnext"],
       "allowSyntheticDefaultImports": true,
-      "baseUrl": ".",
-      "paths": {
-        "@/*": ["src/*"]
-      }
+      "baseUrl": "."
     },
     "include": ["src/**/*"],
     "exclude": ["node_modules", ".cache", "public"]

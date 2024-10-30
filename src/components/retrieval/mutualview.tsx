@@ -2,7 +2,7 @@ import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import { Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Pagination, Table } from "semantic-ui-react";
 import { useStateWithStorage } from "../../utils/storage";
-import { IConstellation, IKeystone, IPolestar } from "./model";
+import { ActionableState, IConstellation, ICrewFilters, IKeystone, IPolestar, IPolestarTailors, IRosterCrew, RetrievableState } from "./model";
 import { IMutualPolestarWorkerItem, PolestarComboSize } from "../../model/worker";
 import { formatRunTime } from "../../utils/misc";
 import { CompletionState, PlayerCrew } from "../../model/player";
@@ -17,7 +17,25 @@ import CONFIG from "../CONFIG";
 import { PolestarDropdown } from "./polestardropdown";
 import { PolestarMultiWorkerStatus, PolestarMultiWorker } from "./polestarmultiworker";
 import { MultiWorkerContext } from "../base/multiworkerbase";
+import { PolestarFilterModal } from "./polestarfilter";
+import { PolestarProspectsModal } from "./polestarprospects";
+import { IRetrievalContext, RetrievalContext } from "./context";
+import { crewCopy } from "../../utils/crewutils";
 
+const polestarTailorDefaults: IPolestarTailors = {
+	disabled: [],
+	added: []
+};
+
+const crewFilterDefaults: ICrewFilters = {
+	retrievable: 'retrievable',
+	owned: '',
+	hideFullyFused: true,
+	rarity: [],
+	trait: [],
+	minTraitMatches: 1,
+	collection: ''
+};
 
 const optionStyle = {
     display: 'flex',
@@ -58,6 +76,20 @@ export const MutualView = (props: MutualViewProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
     const { playerData } = globalContext.player;
+    const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[]>([]);
+
+	const [polestarTailors, setPolestarTailors] = useStateWithStorage<IPolestarTailors>(props.dbid+'retrieval/tailors', polestarTailorDefaults, { rememberForever: true });
+	const [crewFilters, setCrewFilters] = useStateWithStorage<ICrewFilters>(props.dbid+'retrieval/filters', crewFilterDefaults, { rememberForever: true });
+	const [wishlist, setWishlist] = useStateWithStorage<string[]>(props.dbid+'retrieval/wishlist', [], { rememberForever: true });
+
+	const retrievalContext: IRetrievalContext = {
+		allKeystones,
+		rosterCrew, setRosterCrew,
+		polestarTailors, setPolestarTailors,
+		getCrewFilter: () => false, setCrewFilter: () => false,
+		resetForm,
+		wishlist, setWishlist
+	};
 
     const DefaultConfig = {
         considerUnowned: false,
@@ -74,8 +106,21 @@ export const MutualView = (props: MutualViewProps) => {
 
     React.useEffect(() => {
         // Count owned constellations
+        if (playerData) {
+            let crew1 = crewCopy(playerData.player.character.crew.filter(f => f.in_portal && !f.immortal && !!f.unique_polestar_combos?.length) as IRosterCrew[]);
+
+            crew1.forEach((c) => {
+                c.retrievable = RetrievableState.Viable;
+                c.actionable = ActionableState.Viable;
+            })
+            crew1 = crew1.filter((f, idx) => crew1.findIndex(f2 => f2.symbol === f.symbol && f.rarity === f2.highest_owned_rarity) === idx);
+            setRosterCrew(crew1 as IRosterCrew[]);
+        }
         const polestars = allKeystones.filter(k => k.type === 'keystone') as IPolestar[];
         const constellations = allKeystones.filter(k => k.type !== 'keystone') as IConstellation[];
+
+        const disabledPolestars = polestarTailors?.disabled || [];
+        const addedPolestars = polestarTailors?.added || [];
 
         constellations.forEach(constellation => {
             if (playerData) {
@@ -127,19 +172,25 @@ export const MutualView = (props: MutualViewProps) => {
             }
             return a.name.localeCompare(b.name);
         });
-        setPolestars(polestars);
+
+        setPolestars(polestars.filter(polestar =>
+            (polestar.owned > 0 && !disabledPolestars.includes(polestar.id)) || addedPolestars.includes(polestar.symbol)
+        ));
+
         if (lastDbid && dbid !== lastDbid) {
             setResults([].concat());
         }
         setLastDbid(dbid);
-    }, [dbid]);
+    }, [dbid, polestarTailors]);
 
     return <React.Fragment>
         {/* {playerData && <MutualPolestarMultiWorker playerData={playerData}>
             <MutualWorkerPanel polestars={polestars} results={results} setResults={setResults} config={config} setConfig={setConfig} />
         </MutualPolestarMultiWorker>} */}
         {playerData && <PolestarMultiWorker playerData={playerData}>
-            <MutualWorkerPanel polestars={polestars} results={results} setResults={setResults} config={config} setConfig={setConfig} />
+            <RetrievalContext.Provider value={retrievalContext}>
+                <MutualWorkerPanel polestars={polestars} results={results} setResults={setResults} config={config} setConfig={setConfig} />
+            </RetrievalContext.Provider>
         </PolestarMultiWorker>}
         {!!results?.length && <div style={{textAlign: 'center'}}>
             <MutualTable polestars={polestars} items={results} />
@@ -147,6 +198,12 @@ export const MutualView = (props: MutualViewProps) => {
         <CrewHoverStat targetGroup="mutual_crew_hover" />
         <ItemHoverStat targetGroup="mutual_crew_item" />
     </React.Fragment>
+
+    function resetForm(): void {
+        setPolestarTailors({...polestarTailorDefaults});
+        setCrewFilters({...crewFilterDefaults});
+    }
+
 }
 
 type DisplayItem = {
@@ -311,6 +368,10 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
                     checked={config.no100}
                     onChange={(e, { checked }) => setConfig({ ...config, no100: checked as boolean || false})}
                 />
+            </div>
+            <div style={{...optionStyle, flexDirection: 'row', margin: '0.5em', gap: "1em"}}>
+                <PolestarFilterModal />
+                {/* <PolestarProspectsModal /> */}
             </div>
             <div style={{...optionStyle, flexDirection: 'row', margin: '0.5em'}}>
                 <Button
