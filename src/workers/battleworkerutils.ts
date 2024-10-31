@@ -1,5 +1,6 @@
+import { AttackInstant } from "src/model/worker";
 import { CrewMember } from "../model/crew";
-import { ShipAction, Ship, AttackInstant } from "../model/ship";
+import { ShipAction, Ship } from "../model/ship";
 import { setupShip } from "../utils/shiputils";
 
 export interface PowerStat {

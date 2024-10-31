@@ -1,5 +1,5 @@
+import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults, AttackInstant, MultiShipWorkerConfig } from "src/model/worker";
 import { CrewMember } from "../model/crew";
-import { AttackInstant, MultiShipWorkerConfig, ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults } from "../model/ship";
 import { getComboCountBig, getPermutations } from "../utils/misc";
 import { compareShipResults } from "../utils/shiputils";
 import { canSeatAll, iterateBattle } from "./battleworkerutils";
@@ -35,7 +35,7 @@ const ShipCrewWorker = {
 
             const workCrew = options.crew;
 
-            let seats = ship.battle_stations?.length;
+            let seats = ship.battle_stations?.length ?? 0;
 
             if (!seats) {
                 reject("No battlestations");

@@ -1,12 +1,13 @@
 import { BaseSkillFields, BaseSkills, CrewMember, Skill } from "../model/crew";
 import { PlayerCrew, Setup } from "../model/player";
-import { BattleMode, PvpDivision, ShipAction, ShipInUse, ShipWorkerItem } from "../model/ship";
+import { BattleMode, PvpDivision, ShipAction, ShipInUse } from "../model/ship";
 import { Schematics, Ship } from "../model/ship";
 import { simplejson2csv, ExportField } from './misc';
 import { StatsSorter } from "./statssorter";
 import { shipStatSortConfig  } from "../utils/crewutils";
 import CONFIG from "../components/CONFIG";
 import { PlayerContextData } from "../context/playercontext";
+import { ShipWorkerItem } from "src/model/worker";
 
 export function exportShipFields(): ExportField[] {
 	return [
