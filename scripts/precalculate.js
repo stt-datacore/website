@@ -338,7 +338,12 @@ function main() {
 		} else {
 			crew.bigbook_tier = mdData.meta.bigbook_tier ? Number.parseInt(mdData.meta.bigbook_tier) : undefined;
 			crew.events = mdData.meta.events ? Number.parseInt(mdData.meta.events) : 0;
-			crew.in_portal = !!mdData.meta.in_portal;
+			if (crew.is_craftable) {
+				crew.in_portal = true;
+			}
+			else {
+				crew.in_portal = !!mdData.meta.in_portal;
+			}
 			crew.date_added = new Date();
 			if (mdData.meta.date) {
 				// Date is in European format :) "dd/mm/yyyy"
@@ -349,7 +354,7 @@ function main() {
 			}
 			if (!crew.obtained) {
 				crew.obtained = mdData.meta.obtained ? mdData.meta.obtained : 'N/A';
-			}			
+			}
 			crew.markdownContent = mdData.markdownContent;
 		}
 	}
@@ -371,8 +376,6 @@ function main() {
 		let comboIds = [];	// Potential list of combos to check later
 		for (let combo of crewPolestarCombos) {
 			let sorted = combo.sort();
-
-			// THIS IS USING AN ARRAY AS AN OBJECT KEY!!!!!!
 			if (!polestarCombos[sorted]) {
 				polestarCombos[sorted] = {
 					count: 0,
