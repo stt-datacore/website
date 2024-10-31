@@ -1627,8 +1627,8 @@ export function printPortalStatus<T extends CrewMember>(crew: T, t: TranslateMet
 }
 
 export function getVoyageQuotient<T extends CrewMember>(crew: T) {
-    if (!crew.q_lots?.power) return 0;
-	const q_power = crew.q_lots.power;
+    if (!crew.best_quipment?.skills_hash) return 0;
+	const q_power = Object.values(crew.best_quipment.skills_hash);
     let power = 0;
 	for (let skill in crew.base_skills) {
 		let qp = q_power.find(f => f.skill === skill);
