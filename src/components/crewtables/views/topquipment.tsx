@@ -3,7 +3,7 @@ import { IRosterCrew } from "../model";
 import { ITableConfigRow } from "../../searchabletable";
 import CONFIG from "../../CONFIG";
 import { Table } from "semantic-ui-react";
-import { PowerLot, QuipmentScores, Skill } from "../../../model/crew";
+import { QuippedPower, QuipmentScores, Skill } from "../../../model/crew";
 import { applySkillBuff, powerSum, skillSum, skillToShort } from "../../../utils/crewutils";
 import { CrewItemsView } from "../../item_presenters/crew_items";
 import CrewStat from "../../crewstat";
@@ -59,50 +59,50 @@ export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean |
             let m = skill;
             switch(m) {
                 case 0:
-                    if (a.q_best_one_two_lots && b.q_best_one_two_lots) {
-                        return a.q_best_one_two_lots.crew_power - b.q_best_one_two_lots.crew_power;
+                    if (a.best_quipment_1_2 && b.best_quipment_1_2) {
+                        return a.best_quipment_1_2.aggregate_power - b.best_quipment_1_2.aggregate_power;
                         //return skillSum(a.q_best_one_two_lots.power, powerMode) - skillSum(b.q_best_one_two_lots.power, powerMode);
                     }
-                    else if (a.q_best_one_two_lots) {
+                    else if (a.best_quipment_1_2) {
                         return 1;
                     }
-                    else if (b.q_best_one_two_lots) {
+                    else if (b.best_quipment_1_2) {
                         return -1;
                     }
                     return 0;
                 case 1:
-                    if (a.q_best_one_three_lots && b.q_best_one_three_lots) {
-                        return a.q_best_one_three_lots.crew_power - b.q_best_one_three_lots.crew_power;
+                    if (a.best_quipment_1_3 && b.best_quipment_1_3) {
+                        return a.best_quipment_1_3.aggregate_power - b.best_quipment_1_3.aggregate_power;
                         //return skillSum(a.q_best_one_three_lots.power, powerMode) - skillSum(b.q_best_one_three_lots.power, powerMode);
                     }
-                    else if (a.q_best_one_three_lots) {
+                    else if (a.best_quipment_1_3) {
                         return 1;
                     }
-                    else if (b.q_best_one_three_lots) {
+                    else if (b.best_quipment_1_3) {
                         return -1;
                     }
                     return 0;
                 case 2:
-                    if (a.q_best_two_three_lots && b.q_best_two_three_lots) {
-                        return a.q_best_two_three_lots.crew_power - b.q_best_two_three_lots.crew_power;
+                    if (a.best_quipment_2_3 && b.best_quipment_2_3) {
+                        return a.best_quipment_2_3.aggregate_power - b.best_quipment_2_3.aggregate_power;
                         //return skillSum(a.q_best_two_three_lots.power, powerMode) - skillSum(b.q_best_two_three_lots.power, powerMode);
                     }
-                    else if (a.q_best_two_three_lots) {
+                    else if (a.best_quipment_2_3) {
                         return 1;
                     }
-                    else if (b.q_best_two_three_lots) {
+                    else if (b.best_quipment_2_3) {
                         return -1;
                     }
                     return 0;
                 case 3:
-                    if (a.q_best_three_lots && b.q_best_three_lots) {
-                        return a.q_best_three_lots.crew_power - b.q_best_three_lots.crew_power;
+                    if (a.best_quipment_3 && b.best_quipment_3) {
+                        return a.best_quipment_3.aggregate_power - b.best_quipment_3.aggregate_power;
                         //return skillSum(a.q_best_three_lots.power, powerMode) - skillSum(b.q_best_three_lots.power, powerMode);
                     }
-                    else if (a.q_best_three_lots) {
+                    else if (a.best_quipment_3) {
                         return 1;
                     }
-                    else if (b.q_best_three_lots) {
+                    else if (b.best_quipment_3) {
                         return -1;
                     }
                     return 0;
@@ -126,22 +126,21 @@ export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean |
                 askname = bskname = skill;
             }
 
-            if ((askname && a.q_lots?.power && a.q_lots.power.some(s => s.skill === askname))
-                && (bskname && b.q_lots?.power && b.q_lots.power.some(s => s.skill === bskname))) {
-                // let askill = a.q_lots.power.find(f => f.skill === askname) as Skill;
-                // let bskill = b.q_lots.power.find(f => f.skill === bskname) as Skill;
-                let askill = (a.q_lots.power_by_skill as object)[askname];
-                let bskill = (b.q_lots.power_by_skill as object)[bskname];
+            if ((askname && a.best_quipment && a.best_quipment.skills_hash[askname])
+                && (bskname && b.best_quipment && b.best_quipment.skills_hash[bskname])) {
+
+                    let askill = (a.best_quipment.skills_hash as object)[askname];
+                let bskill = (b.best_quipment.skills_hash as object)[bskname];
 
                 let at = skillSum(askill, powerMode);
                 let bt = skillSum(bskill, powerMode);
 
                 return at - bt;
             }
-            else if (askname && a.q_lots?.power && a.q_lots.power.some(s => s.skill === askname)) {
+            else if (askname && a.best_quipment && a.best_quipment.skills_hash[askname]) {
                 return 1;
             }
-            else if (bskname && b.q_lots?.power && b.q_lots.power.some(s => s.skill === bskname)) {
+            else if (bskname && b.best_quipment && b.best_quipment.skills_hash[bskname]) {
                 return -1;
             }
             else {
@@ -216,41 +215,36 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
 
     const q_bits = allslots ? 1300 : crew.q_bits;
 
-    let q_lots = crew.q_lots ?? {} as PowerLot;
+    let q_lots = crew.best_quipment ?? {} as QuippedPower;
 
     if (pstMode === 2) {
 
     }
 
-    const q_power = crew.q_lots?.power ?? [];
     const skills = Object.keys(CONFIG.SKILLS);
 
     const printCell = (skill: string | number, multi_mode?: boolean) => {
         let power_sum = undefined as { [key: string]: Skill } | undefined;
-        let lot: PowerLot | undefined = q_lots ?? { lot: {} };
+        let lot: QuippedPower | undefined = q_lots ?? { skill_quipment: {} };
 
         if (typeof skill === 'number') {
             if (multi_mode) {
                 lot = undefined;
-                if (skill === 0 && crew.q_best_one_two_lots) {
-                    power_sum = powerSum(crew.q_best_one_two_lots.power);
-                    lot = crew.q_best_one_two_lots;
+                if (skill === 0 && crew.best_quipment_1_2) {
+                    power_sum = powerSum(Object.values(crew.best_quipment_1_2.skills_hash));
+                    lot = crew.best_quipment_1_2;
                 }
-                // else if (skill === 0 && crew.q_lots) {
-                //     skill = crew.skill_order[0];
-                //     lot = crew.q_lots;
-                // }
-                else if (skill === 1 && crew.q_best_one_three_lots) {
-                    power_sum = powerSum(crew.q_best_one_three_lots.power);
-                    lot = crew.q_best_one_three_lots;
+                else if (skill === 1 && crew.best_quipment_1_3) {
+                    power_sum = powerSum(Object.values(crew.best_quipment_1_3.skills_hash));
+                    lot = crew.best_quipment_1_3;
                 }
-                else if (skill === 2 && crew.q_best_two_three_lots) {
-                    power_sum = powerSum(crew.q_best_two_three_lots.power);
-                    lot = crew.q_best_two_three_lots;
+                else if (skill === 2 && crew.best_quipment_2_3) {
+                    power_sum = powerSum(Object.values(crew.best_quipment_2_3.skills_hash));
+                    lot = crew.best_quipment_2_3;
                 }
-                else if (skill === 3 && crew.q_best_three_lots) {
-                    power_sum = powerSum(crew.q_best_three_lots.power);
-                    lot = crew.q_best_three_lots;
+                else if (skill === 3 && crew.best_quipment_3) {
+                    power_sum = powerSum(Object.values(crew.best_quipment_3.skills_hash));
+                    lot = crew.best_quipment_3;
                 }
 
                 if (!lot && typeof skill !== 'string') {
@@ -287,13 +281,13 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
             }
         }
 
-        if (typeof skill === 'string' && crew.q_lots?.power_by_skill) {
-            lot = { ...crew.q_lots };
-            lot.lot = {};
-            lot.lot[skill] = crew.q_lots.lot[skill];
+        if (typeof skill === 'string' && crew.best_quipment?.skills_hash) {
+            lot = { ...crew.best_quipment };
+            lot.skill_quipment = {};
+            lot.skill_quipment[skill] = crew.best_quipment.skill_quipment[skill];
         }
 
-        return !!lot?.lot && <div style={{
+        return !!lot?.skill_quipment && <div style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -302,7 +296,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
         }}>
             <CrewItemsView
                 vertical={!pstMode}
-                crew={{ ...crew, q_bits, kwipment_expiration: [], kwipment: Object.values(lot.lot).flat().map(q => Number(q.kwipment_id) as number) }}
+                crew={{ ...crew, q_bits, kwipment_expiration: [], kwipment: Object.values(lot.skill_quipment).flat().map(q => Number(q.kwipment_id) as number) }}
                 targetGroup={targetGroup}
                 itemSize={32}
                 locked
@@ -313,7 +307,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
                 quipmentMode={true}
                 style={{fontSize: "0.8em"}}
                 skill_name={skill}
-                data={lot.power_by_skill ? lot.power_by_skill[skill] : lot.power.find(f => f.skill === skill)} />
+                data={lot.skills_hash[skill]} />
             ||
             !!power_sum && Object.values(power_sum).sort((a, b) => skillSum(b) - skillSum(a)).map((ps) =>
                 <CrewStat

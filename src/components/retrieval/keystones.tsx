@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Icon } from 'semantic-ui-react';
+import { Form, Icon, Step } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
@@ -9,6 +9,8 @@ import { IRetrievalContext, RetrievalContext } from './context';
 import { RetrievalCrew } from './crew';
 import { PolestarFilterModal } from './polestarfilter';
 import { PolestarProspectsModal } from './polestarprospects';
+import { MutualView } from './mutualview';
+import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 
 export const RetrievalKeystones = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -57,10 +59,12 @@ export const RetrievalKeystones = () => {
 	if (!allKeystones)
 		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> Loading...</div>);
 
-	if (playerData)
-		return <KeystonesPlayer allKeystones={allKeystones} dbid={`${playerData.player.dbid}`} />;
-
-	return <KeystonesNonPlayer allKeystones={allKeystones} />;
+	if (playerData) {
+		return <ModePicker allKeystones={allKeystones} dbid={`${playerData.player.dbid}`} />;
+	}
+	else {
+		return <KeystonesNonPlayer allKeystones={allKeystones} />;
+	}
 };
 
 const polestarTailorDefaults: IPolestarTailors = {
@@ -78,15 +82,51 @@ const crewFilterDefaults: ICrewFilters = {
 	collection: ''
 };
 
+type ModePickerMode = 'keystones' | 'mutual';
+
+type ModePickerProps = {
+	allKeystones: IKeystone[];
+	dbid: string;
+}
+
+const ModePicker = (props: ModePickerProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { playerData } = globalContext.player;
+	const { t } = globalContext.localized;
+	const { allKeystones, dbid } = props;
+	const [mode, setMode] = useStateWithStorage<ModePickerMode>(`${dbid}/keystone_modePicker`, 'keystones');
+	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
+	return <>
+			<Step.Group fluid>
+				<Step style={{width: isMobile ? '100%' : '50%'}} key={`keystone_normal`} active={mode === 'keystones'} onClick={() => setMode('keystones')}>
+					<Step.Content>
+						<Step.Title>{t('retrieval.modes.retrieval')}</Step.Title>
+						<Step.Description>{t('retrieval.modes.retrieval_desc')}</Step.Description>
+					</Step.Content>
+				</Step>
+				<Step style={{width: isMobile ? '100%' : '50%'}}  key={`keystone_mutual`} active={mode === 'mutual'} onClick={() => setMode('mutual')}>
+					<Step.Content>
+						<Step.Title>{t('retrieval.modes.mutual_polestar_calculator')}</Step.Title>
+						<Step.Description>{t('retrieval.modes.mutual_polestar_calculator_desc')}</Step.Description>
+					</Step.Content>
+				</Step>
+            </Step.Group>
+
+			<KeystonesPlayer mode={mode} dbid={dbid} allKeystones={allKeystones} />
+	</>
+}
+
 type KeystonesPlayerProps = {
 	allKeystones: IKeystone[];
 	dbid: string;
+	mode: ModePickerMode;
 };
 
 const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
-
+	const { dbid, mode, } = props;
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[]>([]);
 	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[]>([]);
 
@@ -146,7 +186,8 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 					<PolestarProspectsModal />
 				</Form.Group>
 			</Form>
-			<RetrievalCrew />
+			{mode === 'keystones' && <RetrievalCrew />}
+			{mode === 'mutual' && <MutualView dbid={dbid} />}
 		</RetrievalContext.Provider>
 	);
 

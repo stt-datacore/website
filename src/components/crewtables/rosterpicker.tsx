@@ -24,18 +24,34 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	const { maxBuffs } = globalContext;
 	const { playerData, buffConfig: playerBuffs, ephemeral } = globalContext.player;
 	const { rosterType, setRosterType, setRosterCrew, buffMode } = props;
-
 	const [allCrew, setAllCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [buyBackCrew, setBuyBackCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [myCrew, setMyCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [offerCrew, setOfferCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 
 	React.useEffect(() => {
-		const rosterType = playerData ? 'myCrew' : 'allCrew';
+		let currRoster = rosterType;
+		if (!playerData) {
+			currRoster = 'allCrew';
+		}
+		else {
+			currRoster = 'myCrew';
+		}
 		if (!playerData) setBuyBackCrew(undefined);
-		initializeRoster(rosterType, true);
-		setRosterType(rosterType);
+		initializeRoster(currRoster, true);
+		setRosterType(currRoster);
 	}, [playerData]);
+
+	React.useEffect(() => {
+		if (!buyBackCrew?.length && rosterType === 'buyBack') {
+			if (playerData) {
+				setRosterType('myCrew');
+			}
+			else {
+				setRosterType('allCrew');
+			}
+		}
+	}, [buyBackCrew]);
 
 	React.useEffect(() => {
 		initializeRoster(rosterType);
@@ -45,46 +61,63 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		initializeRoster(rosterType, true);
 	}, [buffMode]);
 
-	if (!playerData)
-		return (<></>);
-	const hasBuyBack = !!playerData.buyback_well?.length;
+	const hasBuyBack = !!playerData?.buyback_well?.length;
+	const steps = [] as JSX.Element[];
 
-	return (
-		<Step.Group fluid widths={hasBuyBack ? 4 : 3}>
+	const allCrewJSX = (
+		<Step active={rosterType === 'allCrew'} onClick={() => setRosterType('allCrew')}>
+			<Icon name='game' />
+			<Step.Content>
+				<Step.Title>{t('pages.crew_view_modes.game_roster.name')}</Step.Title>
+				<Step.Description>{t('pages.crew_view_modes.game_roster.description')}</Step.Description>
+			</Step.Content>
+		</Step>)
+
+	const offersJSX = (
+		<Step active={rosterType === 'offers'} onClick={() => setRosterType('offers')}>
+			<img src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} style={{ width: '2em', marginRight: '1em' }} />
+			<Step.Content>
+				<Step.Title>{t('pages.crew_view_modes.current_offers.name')}
+				{rosterType === 'offers' &&
+				<Label title={'Refresh offers'} as='a' corner='right' onClick={() => initializeRoster(rosterType, true)}>
+					<Icon name='refresh' style={{ cursor: 'pointer' }} />
+				</Label>}
+				</Step.Title>
+				<Step.Description>{t('pages.crew_view_modes.current_offers.description')}</Step.Description>
+			</Step.Content>
+		</Step>)
+
+	if (!!playerData) {
+		steps.push(
 			<Step active={rosterType === 'myCrew'} onClick={() => setRosterType('myCrew')}>
 				<img src='/media/crew_icon.png' style={{ width: '3em', marginRight: '1em' }} />
 				<Step.Content>
 					<Step.Title>{t('pages.crew_view_modes.owned_crew.name')}</Step.Title>
 					<Step.Description>{t('pages.crew_view_modes.owned_crew.description')}</Step.Description>
 				</Step.Content>
-			</Step>
-			{hasBuyBack && 
-			<Step active={rosterType === 'buyBack'} onClick={() => setRosterType('buyBack')}>
-				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`} style={{ width: '3em', marginRight: '1em' }} /> 
-				<Step.Content>
-					<Step.Title>{t('pages.crew_view_modes.buyback_well.name')}</Step.Title>
-					<Step.Description>{t('pages.crew_view_modes.buyback_well.description')}</Step.Description>
-				</Step.Content>
-			</Step>}
-			<Step active={rosterType === 'offers'} onClick={() => setRosterType('offers')}>
-			<img src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} style={{ width: '2em', marginRight: '1em' }} /> 
-				<Step.Content>
-					<Step.Title>{t('pages.crew_view_modes.current_offers.name')}
-					{rosterType === 'offers' &&
-					<Label title={'Refresh offers'} as='a' corner='right' onClick={() => initializeRoster(rosterType, true)}>
-						<Icon name='refresh' style={{ cursor: 'pointer' }} />
-					</Label>}
-					</Step.Title>
-					<Step.Description>{t('pages.crew_view_modes.current_offers.description')}</Step.Description>
-				</Step.Content>
-			</Step>
-			<Step active={rosterType === 'allCrew'} onClick={() => setRosterType('allCrew')}>
-				<Icon name='game' />
-				<Step.Content>
-					<Step.Title>{t('pages.crew_view_modes.game_roster.name')}</Step.Title>
-					<Step.Description>{t('pages.crew_view_modes.game_roster.description')}</Step.Description>
-				</Step.Content>
-			</Step>
+			</Step>)
+
+		if (hasBuyBack) {
+			steps.push(
+				<Step active={rosterType === 'buyBack'} onClick={() => setRosterType('buyBack')}>
+					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`} style={{ width: '3em', marginRight: '1em' }} />
+					<Step.Content>
+						<Step.Title>{t('pages.crew_view_modes.buyback_well.name')}</Step.Title>
+						<Step.Description>{t('pages.crew_view_modes.buyback_well.description')}</Step.Description>
+					</Step.Content>
+				</Step>)
+		}
+		steps.push(offersJSX);
+		steps.push(allCrewJSX);
+	}
+	else {
+		steps.push(allCrewJSX);
+		steps.push(offersJSX);
+	}
+
+	return (
+		<Step.Group fluid widths={hasBuyBack ? 4 : 3}>
+			{steps.map((step, idx) => <React.Fragment key={`index_page_step_${idx}`}>{step}</React.Fragment>)}
 		</Step.Group>
 	);
 
@@ -121,7 +154,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				});
 			})
 			const crewMap = [ ... new Set((offerData)?.map(c => c.crew).flat()) ];
-			
+
 			rosterCrew = rosterizeAllCrew(crewMap, offers);
 			setOfferCrew([...rosterCrew]);
 			setRosterCrew([...rosterCrew]);
@@ -171,7 +204,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			if (crew.is_new) {
 				console.log('new crew', crew);
 			}
-		
+
 			const crewman = {
 				... oneCrewCopy(crew),
 				//id: crewmanId++,
@@ -217,7 +250,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 			if (offerData && offerData[crewman.symbol]) {
 				crewman.offer = offerData[crewman.symbol].map(s => appelate(s.name)).sort().join(" / ");
-				
+
 				crewman.cost_text = offerData[crewman.symbol].map(offer => offer.drop_info.map(drop => drop.cost).sort((a, b) => b - a)[0].toString()).join(" / ");
 				crewman.offers = offerData[crewman.symbol];
 

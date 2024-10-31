@@ -60,6 +60,7 @@ export interface ICoreData {
 	keystones: (KeystoneBase | Polestar | Constellation)[];
 	missions: Mission[];
 	missionsfull: Mission[];
+	objective_events: ObjectiveEvent[];
 	continuum_missions: ContinuumMission[];
 	ship_schematics: Schematics[];
 	ships: Ship[];
@@ -384,9 +385,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 			for (let i = 0; i < c; i++) {
 				let ship = scsave[i];
 				if (ship.levels) {
-					if (ship.name === 'The Artifact') {
-						console.log("here");
-					}
 					let n = highestLevel(ship);
 					if (ship.max_level && n === ship.max_level + 1 && ship.levels[`${n}`].hull) {
 						scsave[i] = { ...ship, ...ship.levels[`${n}`] };

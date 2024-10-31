@@ -15,6 +15,7 @@
         "in_portal": "Dans le Portail",
         "less_than_100_retrieval": "< 100 % de Récupération",
         "level": "Niveau",
+        "live_results": "Résultats en direct (le calcul sera plus lent)",
         "n_slots": "{{n}} emplacements",
         "n_to_next": "{{n}} au suivant",
         "never_in_portal": "Jamais dans le portail",
@@ -29,9 +30,12 @@
         "qp": "QP",
         "rarity": "Rareté",
         "release_date": "Début",
+        "rewards": "Récompenses",
         "shuttle": "Navette",
         "shuttles": "Navettes",
-        "uniquely_retrievable": "Récupérable de manière unique"
+        "uniquely_retrievable": "Récupérable de manière unique",
+        "voyage": "Voyage",
+        "voyages": "Voyages"
     },
     "behold_helper": {
         "columns": {
@@ -157,6 +161,10 @@
     "clipboard": {
         "copied_exclaim": "Copié!"
     },
+    "collections": {
+        "milestone": "Étape",
+        "milestones": "Étapes"
+    },
     "consider_crew": {
         "active_shuttles": "Considérez les équipiers sur les navettes actives",
         "active_voyage": "Considérez les équipiers en voyage actif",
@@ -169,7 +177,7 @@
     },
     "cool_stats": {
         "all_ranks": "Tous les rangs",
-        "base_ranks": "Rangs de base",
+        "base_ranks": "Rangs principles",
         "base_roster": "#{{rank}} {{skill}} base dans votre liste",
         "gauntlet_pair_ranks": "Rangs de paire de gantelets",
         "gauntlet_pair_roster": "#{{rank}} {{skill}} paire de gantelets dans votre liste",
@@ -270,7 +278,7 @@
     },
     "crew_views": {
         "advanced_analysis": "Analyse Avancée",
-        "base": "Afficher les compétences de base",
+        "base": "Afficher les compétences principles",
         "crew_utility": "Afficher d'utilité de l'équipier",
         "dismiss": "Rejeter {{crew}}",
         "faction_items": "{{n}} articles de faction",
@@ -568,6 +576,10 @@
         "note_unleveled_crew_max_highlight_pair_msg": "Remarque : les équipages possédés sans niveau et affichés au maximum ont des compétences soulignées et surlignées en vert.",
         "note_unleveled_crew_max_highlight_table_msg": "Remarque : les équipages possédés sans niveau et affichés au maximum sont surlignés en vert.",
         "only_highlight_active_round": "Mettre en évidence uniquement le tour actif",
+        "opponent_table": {
+            "opponent": "Adversaire",
+            "opponent_crew_n": "Équipier Adversaire {{n}}"
+        },
         "owned_status": {
             "any": "Tous les équipiers",
             "fe": "Équipiers possédés et entièrement équipé",
@@ -625,6 +637,10 @@
                 "heading": "Voir l'équipage dans de grandes présentations",
                 "title": "Grande présentation"
             },
+            "opponent_table": {
+                "heading": "Voir tous les adversaires capturés dans ce gant",
+                "title": "Adversaires"
+            },
             "pair_cards": {
                 "heading": "Voir l'équipage regroupé en tables de paires",
                 "title": "Tables des paires"
@@ -648,9 +664,10 @@
         "and": "et",
         "any": "Quelconque",
         "apply_filters": "Appliquer des filtres",
-        "base": "Base",
+        "base": "Principle",
         "bonus": "Prime",
         "bonuses": "Bonus",
+        "calculate": "Calculer",
         "cancel": "Annuler",
         "challenge": "Défi",
         "clear": "Effacer",
@@ -751,6 +768,7 @@
         "show_less": "Montrer moins",
         "show_n_more_ellipses": "Afficher {{n}} de plus...",
         "shown": "Affiché",
+        "sort_by": "Trier par",
         "squadron_leader": "Chef d'escadron",
         "work_in_progress": {
             "heading": "Cette page est un travail en cours. Certaines fonctions et fonctionnalités peuvent être non fonctionnelles, cassées, manquantes, incomplètes ou modifiées à tout moment.",
@@ -777,8 +795,11 @@
         "apply_buffs": "Appliquer des effets",
         "display_buffs": "Afficher effets",
         "filter_by_availability": "Filtrer par disponibilité",
+        "filter_by_collections": "Filtrer par collections",
+        "filter_by_crew": "Filtrer par équipage",
         "filter_by_item_type": "Filtrer par type d'article",
         "filter_by_owned_status": "Filtrer par statut de propriété",
+        "filter_by_polestars": "Filtrer par étoiles polaires",
         "filter_by_portal_status": "Filtrer par statut du portail",
         "filter_by_primary_skill": "Filtrer par compétence principale",
         "filter_by_progress": "Filtrer par progression",
@@ -958,6 +979,9 @@
     },
     "menu": {
         "about_title": "À propos",
+        "descriptions": {
+            "voyage_calculator": "Trouvez les meilleurs équipiers pour vos voyages et obtenez des estimations sur leur durée."
+        },
         "game_info": {
             "bridge_crew_tool": "Outil pour l'équipage de la passerelle",
             "episodes": "Épisodes",
@@ -1183,6 +1207,38 @@
         "moonshot": "Shot de Lune",
         "potential_maximum": "Potentiel maximum",
         "standard": "Standard"
+    },
+    "retrieval": {
+        "allow_unowned": "Autoriser l'équipage sans propriétaire",
+        "calc_summary": "{{ship.calc.calc_summary}}",
+        "calculating_pct_ellipses": "{{ship.calc.calculating_pct_ellipses}}",
+        "calculating_pct_ellipses_verbose": "{{ship.calc.calculating_pct_ellipses_verbose}}",
+        "combo": "Combo",
+        "combo_length": "Taille des combos",
+        "combos": "Combos",
+        "consider_unowned_polestars": "Envisagez des étoiles polaires sans propriétaire (cela peut prendre beaucoup plus de temps)",
+        "constellation": "Constellation",
+        "constellations": "Constellations",
+        "keystone": "Clé de voûte",
+        "keystone_crate": "Caisse des clés de voûte",
+        "keystone_crates": "Caisses des clés de voûte",
+        "keystones": "Clés de voûte",
+        "max_iterations": "{{ship.calc.max_iterations}}",
+        "max_workers": "{{ship.calc.max_workers}}",
+        "modes": {
+            "mutual_polestar_calculator": "Calculateur étoiles polaires mutuels",
+            "mutual_polestar_calculator_desc": "Trouvez des combos qui donnent des chances égales de récupérer les non-immortels",
+            "retrieval": "Récupération",
+            "retrieval_desc": "Planifiez des récupérations d'éqipiers uniques"
+        },
+        "n_constellations": "{{n}} Constellations",
+        "n_polestars": "{{n}} Étoile polaires",
+        "one_constellation": "1 Constellation",
+        "one_polestar": "1 Étoile polaire",
+        "polestar": "Étoile polaire",
+        "polestars": "Étoiles polaire",
+        "up_to_n": "Jusqu'à {{n}}",
+        "verbose_status_updates": "{{ship.calc.verbose_status_updates}}"
     },
     "roster_summary": {
         "by_rarity": "Par rareté",

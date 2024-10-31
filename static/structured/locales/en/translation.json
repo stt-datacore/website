@@ -15,6 +15,7 @@
         "in_portal": "In Portal",
         "less_than_100_retrieval": "< 100% Retrieval",
         "level": "Level",
+        "live_results": "Live results (calculation will be slower)",
         "n_slots": "{{n}} slots",
         "n_to_next": "{{n}} to next",
         "never_in_portal": "Never In Portal",
@@ -29,6 +30,7 @@
         "qp": "QP",
         "rarity": "Rarity",
         "release_date": "Release Date",
+        "rewards": "Rewards",
         "shuttle": "Shuttle",
         "shuttles": "Shuttles",
         "uniquely_retrievable": "Uniquely Retrievable",
@@ -80,7 +82,7 @@
                 "collections": "Stat-Boosting Collections Increased",
                 "groupSparsity": "Voyage Group Sparsity",
                 "improved": "Voyages Improved",
-                "magic": "Magic number",
+                "magic": "Measure Limit (Magic number)",
                 "never": "Never In Portal",
                 "portal": "Not In Portal",
                 "power": "Base Power Score",
@@ -158,6 +160,10 @@
     },
     "clipboard": {
         "copied_exclaim": "Copied!"
+    },
+    "collections": {
+        "milestone": "Milestone",
+        "milestones": "Milestones"
     },
     "consider_crew": {
         "active_shuttles": "Consider crew on active shuttles",
@@ -562,6 +568,10 @@
         "note_unleveled_crew_max_highlight_pair_msg": "Note: Unleveled, owned crew that are shown maxed have proficiencies that are underlined and highlighted in green.",
         "note_unleveled_crew_max_highlight_table_msg": "Note: Unleveled, owned crew that are shown maxed are highlighted in green.",
         "only_highlight_active_round": "Only highlight active round",
+        "opponent_table": {
+            "opponent": "Opponent",
+            "opponent_crew_n": "Opponent Crew {{n}}"
+        },
         "owned_status": {
             "any": "All Crew",
             "fe": "Owned, Fully Equipped Crew",
@@ -619,6 +629,10 @@
                 "heading": "See crew in large presentations",
                 "title": "Large Presentation"
             },
+            "opponent_table": {
+                "heading": "View all opponents captured in this gauntlet",
+                "title": "Opponents"
+            },
             "pair_cards": {
                 "heading": "See crew grouped into pair tables",
                 "title": "Pair tables"
@@ -645,6 +659,7 @@
         "base": "Base",
         "bonus": "Bonus",
         "bonuses": "Bonuses",
+        "calculate": "Calculate",
         "cancel": "Cancel",
         "challenge": "Challenge",
         "clear": "Clear",
@@ -743,6 +758,7 @@
         "show_less": "Show less",
         "show_n_more_ellipses": "Show {{n}} more ...",
         "shown": "Shown",
+        "sort_by": "Sort by",
         "squadron_leader": "Squadron Leader",
         "work_in_progress": {
             "heading": " This page is a work in progress. Some functions and features may be non-functional, broken, missing, incomplete, or change at any time.",
@@ -769,8 +785,11 @@
         "apply_buffs": "Apply stat buffs",
         "display_buffs": "Display Buffs",
         "filter_by_availability": "Filter by availability",
+        "filter_by_collections": "Filter by collections",
+        "filter_by_crew": "Filter by crew",
         "filter_by_item_type": "Filter by item type",
         "filter_by_owned_status": "Filter by owned status",
+        "filter_by_polestars": "Filter by polestars",
         "filter_by_portal_status": "Filter by portal status",
         "filter_by_primary_skill": "Filter by primary skill",
         "filter_by_progress": "Filter by progress",
@@ -949,6 +968,9 @@
     },
     "menu": {
         "about_title": "About",
+        "descriptions": {
+            "voyage_calculator": "Find the best crew for your voyages and get estimates on how long they will run."
+        },
         "game_info": {
             "bridge_crew_tool": "Bridge Crew Tool",
             "episodes": "Episodes",
@@ -1174,6 +1196,35 @@
         "moonshot": "Moonshot",
         "potential_maximum": "Potential maximum",
         "standard": "Standard"
+    },
+    "retrieval": {
+        "allow_unowned": "Allow unowned crew",
+        "combo": "Combo",
+        "combo_length": "Combo Length",
+        "combos": "Combos",
+        "consider_unowned_polestars": "Consider unowned polestars (may take much more time)",
+        "constellation": "Constellation",
+        "constellations": "Constellations",
+        "keystone": "Keystone",
+        "keystone_crate": "Keystone Crate",
+        "keystone_crates": "Keystone Crates",
+        "keystones": "Keystones",
+        "max_iterations": "{{ship.calc.max_iterations}}",
+        "max_workers": "{{ship.calc.max_workers}}",
+        "modes": {
+            "mutual_polestar_calculator": "Mutual Polestar Calculator",
+            "mutual_polestar_calculator_desc": "Find combos that give equal chances of retrieving non-immortals",
+            "retrieval": "Retrieval",
+            "retrieval_desc": "Plan unique crew retrievals"
+        },
+        "n_constellations": "{{n}} Constellations",
+        "n_polestars": "{{n}} Polestars",
+        "one_constellation": "1 Constellation",
+        "one_polestar": "1 Polestar",
+        "polestar": "Polestar",
+        "polestars": "Polestars",
+        "up_to_n": "Up to {{n}}",
+        "verbose_status_updates": "{{ship.calc.verbose_status_updates}}"
     },
     "roster_summary": {
         "by_rarity": "By Rarity",

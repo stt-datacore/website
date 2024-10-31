@@ -2,14 +2,13 @@ import { Link } from 'gatsby';
 import React from 'react';
 import { Dropdown, DropdownItemProps, Form, Header, Icon, Popup, Rating, Step, Table } from 'semantic-ui-react';
 
-import { UnifiedWorker } from '../../typings/worker';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { CollectionGroup, CollectionMap, CollectionWorkerConfig, CollectionWorkerResult, ComboCostMap } from '../../model/collectionfilter';
 import { CrewMember } from '../../model/crew';
-import { MilestoneBuff, PlayerCollection, PlayerCrew, Reward } from '../../model/player';
-import { citeSymbols, compareRewards } from '../../utils/collectionutils';
+import { PlayerCollection, PlayerCrew, Reward } from '../../model/player';
+import { compareRewards } from '../../utils/collectionutils';
 import { gradeToColor, numberToGrade } from '../../utils/crewutils';
 import { navToCrewPage } from '../../utils/nav';
 import { useStateWithStorage } from '../../utils/storage';
@@ -49,14 +48,17 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	// const [worker, setWorker] = React.useState<UnifiedWorker | undefined>();
 	// const [workerRunning, setWorkerRunning] = React.useState(false);
 	const workerRunning = workerContext.running;
-	
+
 	const [colGroups, setColGroups] = React.useState<CollectionMap[]>([]);
 	const [colOptimized, setColOptimized] = React.useState<CollectionGroup[]>([]);
 	const [costMap, setCostMap] = React.useState<ComboCostMap[]>([]);
 
 	const { playerCollections, collectionCrew } = props;
-	const { showThisCrew, favorited, hardFilter, setHardFilter, tierFilter, setTierFilter, byCost, showIncomplete, matchMode, checkCommonFilter, costMode, setShort, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter } = colContext;
-	
+	const { showThisCrew, favorited, hardFilter, setHardFilter, tierFilter, setTierFilter, byCost, showIncomplete, matchMode, checkCommonFilter, costMode, setShort, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter, setCollectionSettings } = colContext;
+
+	const [initialized, setInitialized] = React.useState(false);
+	const [requestRun, setRequestRun] = React.useState(false);
+
 	const tierOpts = [] as DropdownItemProps[];
 
 	const [tabIndex, setTabIndex] = useStateWithStorage('collectionstool/tabIndex', 0, { rememberForever: true });
@@ -65,24 +67,24 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 		{ width: 2, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'date_added'] },
 		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['highest_owned_rarity'] },
 		{ width: 2, column: 'unmaxedIds.length', title: 'Collections', reverse: true },
-		{ 
-			width: 1, 
-			column: 'collectionScore', 
-			title: <span>Grade <Popup trigger={<Icon name='help' />} content={"A metric of a crew's usefulness in completing the most number of collections approaching a milestone"} /></span>, 
+		{
+			width: 1,
+			column: 'collectionScore',
+			title: <span>Grade <Popup trigger={<Icon name='help' />} content={"A metric of a crew's usefulness in completing the most number of collections approaching a milestone"} /></span>,
 			reverse: true
 		},
-		{ 
-			width: 1, 
-			column: 'collectionScoreN', 
-			title: <span>Star Grade <Popup trigger={<Icon name='help' />} content='A metric based off of Grade that takes into account highest owned rarity' /></span>, 
+		{
+			width: 1,
+			column: 'collectionScoreN',
+			title: <span>Star Grade <Popup trigger={<Icon name='help' />} content='A metric based off of Grade that takes into account highest owned rarity' /></span>,
 			reverse: true,
 			customCompare: (a: PlayerCrew, b: PlayerCrew) => {
 				if (a.collectionScoreN !== undefined && b.collectionScoreN !== undefined) {
 					if (a.collectionScoreN === -1 && b.collectionScoreN === -1) {
 						if (a.collectionScore !== undefined && b.collectionScore !== undefined) {
 							return a.collectionScore - b.collectionScore;
-						}	
-					}	
+						}
+					}
 					else if (a.collectionScoreN === -1) {
 						return 1;
 					}
@@ -96,10 +98,10 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 				return 0;
 			}
 		},
-		{ 
-			width: 3, 
-			column: 'immortalRewards.length', 
-			title: <span>Immortal Rewards <Popup trigger={<Icon name='help' />} content='Rewards you can claim if you immortalize this crew right now' /></span>, 
+		{
+			width: 3,
+			column: 'immortalRewards.length',
+			title: <span>Immortal Rewards <Popup trigger={<Icon name='help' />} content='Rewards you can claim if you immortalize this crew right now' /></span>,
 			reverse: true,
 			customCompare: !!mapFilter?.rewardFilter?.length ? compareCrewRewards : undefined
 		}
@@ -166,27 +168,37 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	let selnum = undefined as number | undefined;
 
-	if (typeof window !== 'undefined' && !!window.location.search?.length) {
+	if (typeof window !== 'undefined' && (!!window.location.search?.length || !!window.location.hash?.length)) {
 		if (context.player.playerData) {
-			let params = new URLSearchParams(window.location.search);
-			let sel = params.get("select");
-			let findcol = playerCollections?.find(f => f.name === sel);
+			let sel = '' as string | null;
+			if (window.location.search) {
+				let params = new URLSearchParams(window.location.search);
+				sel = params.get("select");
+			}
+			if (sel) {
+				sel = decodeURIComponent(sel);
+			}
+			else if (!sel && window.location.hash) {
+				sel = decodeURIComponent(window.location.hash.slice(1));
+			}
+			let findcol: PlayerCollection | undefined = undefined;
+			findcol = playerCollections?.find(f => f.name === sel);
 			if (findcol) {
 				const msel = selnum = findcol.id;
-				if (!mapFilter?.collectionsFilter?.includes(msel)) {				
+				if (!mapFilter?.collectionsFilter?.includes(msel)) {
 					setMapFilter({ ... (mapFilter ?? {}), collectionsFilter: [msel]});
 					window.setTimeout(() => {
 						window.history.replaceState({}, document.title, "/collections");
 						setTabIndex(3);
 					});
-				}			
+				}
 			}
 		}
 	}
 
 	// const renderFancyCites = (size?: number) => {
 	// 	size ??= 32;
-	// 	const honor = playerData.player.honor;		
+	// 	const honor = playerData.player.honor;
 	// 	const cost = costMode === 'sale' ? 40000 : 50000;
 	// 	const total = Math.floor(honor/cost);
 	// 	if (honor < cost) return <></>
@@ -200,12 +212,12 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	// 			}}>
 	// 				<div style={{fontSize: "0.8em", display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
 	// 					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`} style={{height: `${size}px`, width: `${size}px`, marginBottom: '0.5em'}} />
-	// 					{honor.toLocaleString()}				
+	// 					{honor.toLocaleString()}
 	// 				</div>
 	// 				<div style={{fontSize: '3em', display: 'inline', marginTop: '-0.8em'}}>
 	// 					&rarr;
 	// 				</div>
-	// 				<div>				
+	// 				<div>
 	// 					<RewardsGrid size={size} kind={'need'} needs={[{symbol: citeSymbols[5], quantity: total}]} />
 	// 				</div>
 	// 			</div>
@@ -217,71 +229,65 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	const buffConfig = calculateBuffConfig(playerData.player);
 
 	const tabPanes = [
-		{ 
+		{
 			menuItem: 'Overview',
 			longTitle: 'Collections Overview',
 			description: 'Collections Overview',
-			longDescription: "Overview of All Collections",
+			//longDescription: "Overview of All Collections",
 			showFilters: false,
 			requirePlayer: false,
-			render: (workerRunning: boolean) => <CollectionsOverviewComponent
-				onClick={(col) => {
-					if (!context.player.playerData) return;
-					if (typeof window !== 'undefined') {
-						window.scrollTo({
-							top: 0,
-							left: 0,
-							behavior: "smooth",
-						  });
-					}
-					setTabIndex(3);					
-					setMapFilter({ ...mapFilter ?? {}, collectionsFilter: [col]});
-					setSearchFilter(''); 
-				}}
-			/>
+			render: (workerRunning: boolean) => <CollectionsOverviewComponent />
 		},
-		{ 
-			menuItem: 'Progress', 
+		{
+			menuItem: 'Progress',
 			longTitle: 'Collection Milestone Progress',
 			description: 'Collection Progress',
 			longDescription: "Search for collections by name or description. You can also filter collections by milestone reward types. Click a row to view crew that will help you make progress on that collection.",
 			showFilters: false,
 			requirePlayer: true,
-			render: (workerRunning: boolean) => <ProgressTable workerRunning={workerRunning} playerCollections={playerCollections} 
+			render: (workerRunning: boolean) => <ProgressTable workerRunning={workerRunning} playerCollections={playerCollections}
 				filterCrewByCollection={(collection) => {
-					setTabIndex(2);
-					setMapFilter({ ...mapFilter ?? {}, collectionsFilter: [collection]});
-					setSearchFilter(''); 					
+					setCollectionSettings({
+						...colContext,
+						mapFilter: {
+							...mapFilter,
+							collectionsFilter: [collection]
+						},
+						searchFilter: ''
+					});
+					setTimeout(() => {
+						setTabIndex(2);
+					})
 				}} />
 		},
-		{ 
-			menuItem: 'Crew', 
+		{
+			menuItem: 'Crew',
 			longTitle: 'Crew Table',
-			description: 'Collections Grouped by Crew', 
+			description: 'Collections Grouped by Crew',
 			longDescription: 'Search for crew that will help you make progress on collections and see what rewards you could claim by immortalizing certain crew right now. Note: maxed collections and immortalized crew will not be shown in this table.',
 			showFilters: true,
 			requirePlayer: true,
 			render: (workerRunning: boolean) => renderTable(workerRunning)
 		},
-		{ 
-			menuItem: 'Collections', 
+		{
+			menuItem: 'Collections',
 			longTitle: 'Collections Crew Groups',
-			description: <>Visualize crew grouped into<br/>collections, and sorted by cost</>, 
+			description: <>Visualize crew grouped into<br/>collections, and sorted by cost</>,
 			longDescription: <>Show crew grouped into collections sorted by closest to max. Crew marked by a green star <Icon name='star' color='green' size='small' /> are required to reach the next milestone. Crew are sorted in ascending order of rarity, level, and equipment slots. Use the search box to search for specific crew. Clicking on a crew will append the crew name to the search box.</>,
 			showFilters: true,
 			requirePlayer: true,
 			render: (workerRunning: boolean) => <CollectionGroupTable workerRunning={workerRunning} playerCollections={playerCollections} colGroups={colGroups} />
 		},
-		{ 
-			menuItem: 'Optimizer', 
+		{
+			menuItem: 'Optimizer',
 			longTitle: 'Collections Milestone Optimizer',
-			description: <>See which crew can complete the<br/>most collections, at once.</>, 
+			description: <>See which crew can complete the<br/>most collections, at once.</>,
 			longDescription: 'Optimize collection crew to reach multiple milestones, at once. If there is more than one combination available, they will be listed in the \'Variations\' dropdown, sorted by most collections to fewest collections. Variations that completely fill the remaining crew needed for the primary collection are marked with an asterisk *.',
 			showFilters: true,
 			requirePlayer: true,
-			render: (workerRunning: boolean) => <CollectionOptimizerTable 
-				workerRunning={workerRunning} 
-				playerCollections={playerCollections} 
+			render: (workerRunning: boolean) => <CollectionOptimizerTable
+				workerRunning={workerRunning}
+				playerCollections={playerCollections}
 				colOptimized={colOptimized}
 				costMap={costMap}
 				/>
@@ -289,8 +295,23 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	];
 
 	React.useEffect(() => {
-		runWorker();
+		if (typeof window !== 'undefined') {
+			if (initialized) {
+				runWorker();
+			}
+			else {
+				setRequestRun(true);
+			}
+		}
+
 	}, [context, mapFilter, showIncomplete, rarityFilter, fuseFilter, ownedFilter, searchFilter, matchMode, tierFilter]);
+
+	setTimeout(() => {
+		if (requestRun) {
+			runWorker();
+			setRequestRun(false);
+		}
+	}, 500);
 
 	// React.useEffect(() => {
 	// 	if (worker) {
@@ -309,14 +330,14 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 				<Step.Group fluid>
 					{tabPanes.map((pane, idx) => {
 						return (
-							<Step active={(tabIndex === idx)} onClick={() => setTabIndex(idx)}>								
+							<Step active={(tabIndex === idx)} onClick={() => setTabIndex(idx)}>
 								<Step.Content>
 									<Step.Title>{pane.menuItem}</Step.Title>
 									<Step.Description>{pane.description}</Step.Description>
 								</Step.Content>
 							</Step>
 						)
-					})}						
+					})}
 				</Step.Group>
 			</div>
 
@@ -326,9 +347,9 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 
 			<Header as='h4'>{tabPanes[tabIndex ?? 0].longTitle}</Header>
 			<p>{tabPanes[tabIndex ?? 0].longDescription}</p>
-			{tabPanes[tabIndex ?? 0].showFilters && 
+			{tabPanes[tabIndex ?? 0].showFilters &&
 			<React.Fragment>
-				<div style={{ 
+				<div style={{
 						margin: '1em 0',
 						display: 'flex',
 						flexDirection: 'row',
@@ -362,7 +383,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 				<div style={{ margin: '1em 0' }}>
 					<Form>
 						<Form.Group inline>
-							
+
 							<Form.Field
 								placeholder='Filter by owned status'
 								control={Dropdown}
@@ -396,7 +417,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 					</Form>
 				</div>
 			</React.Fragment>}
-				{tabPanes[tabIndex ?? 0].render(workerRunning)}	
+				{tabPanes[tabIndex ?? 0].render(workerRunning)}
 			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, playerData.player.character.crew, buffConfig)} targetGroup='collectionsTarget' />
 			<ItemHoverStat targetGroup='collectionsTarget_item' />
 		</React.Fragment>
@@ -407,6 +428,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 		setColGroups(result.maps);
 		setColOptimized(result.groups);
 		setCostMap(result.costMap);
+		setInitialized(true);
 	}
 
 	function runWorker() {
@@ -428,16 +450,16 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 			matchMode: matchMode,
 			byCost: byCost
 		} as CollectionWorkerConfig
-		
+
 		workerContext.runWorker('colOptimizer2', options, processWorkerResult)
 	}
 
-	function renderTable(workerRunning: boolean) {		
+	function renderTable(workerRunning: boolean) {
 		return (
-		
+
 		<React.Fragment>
 			<RewardFilter
-					hardFilter={hardFilter}		
+					hardFilter={hardFilter}
 					setHardFilter={setHardFilter}
 					grouped={short}
 					setGrouped={setShort}
@@ -470,13 +492,13 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 					<td style={{ textAlign: 'right', fontSize: '.95em' }}>{collection.progress} / {collection.milestone.goal}</td>
 				</tr>
 			);
-		});		
+		});
 
 		const pctgrade = crew.collectionScore! / topCrewScore;
 		const pctgradeN = crew.collectionScoreN === -1 ? 1 : crew.collectionScoreN! / topStarScore;
 		const lettergrade = numberToGrade(pctgrade);
 		const lettergradeN = numberToGrade(pctgradeN);
-	
+
 		return (
 			<Table.Row key={crew.symbol}>
 				<Table.Cell>
@@ -518,7 +540,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 				<Table.Cell>
 					<div style={{color: gradeToColor(pctgradeN) ?? undefined, textAlign: 'center' }}>
 						{crew.collectionScoreN === -1 && <Icon name='check' color='green' />}
-						{crew.collectionScoreN !== -1 && 
+						{crew.collectionScoreN !== -1 &&
 						<div style={{textAlign: 'center'}}>
 							<div>{lettergradeN}</div>
 							<sub>{crew.collectionScoreN?.toLocaleString() ?? ''}</sub>
@@ -547,7 +569,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 		}
 		let acol = a.unmaxedIds?.map(ci => playerCollections.find(f => f.id === ci) as PlayerCollection) ?? [];
 		let bcol = b.unmaxedIds?.map(ci => playerCollections.find(f => f.id === ci) as PlayerCollection) ?? [];
-		let r = compareRewards(mapFilter, acol, bcol, short);		
+		let r = compareRewards(mapFilter, acol, bcol, short);
 		return -r;
 	}
 
@@ -567,5 +589,5 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 		}
 	}
 
-    
+
 };

@@ -60,7 +60,7 @@ const ItemInfoPage = () => {
 
 class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoComponentState> {
 	static contextType = GlobalContext;
-	context!: React.ContextType<typeof GlobalContext>;
+	declare context: React.ContextType<typeof GlobalContext>;
 
 	private inited: boolean = false;
 	private readonly tiny = TinyStore.getStore('item_info');

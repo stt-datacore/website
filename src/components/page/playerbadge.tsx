@@ -10,10 +10,11 @@ export interface PlayerBadgeProps {
     playerData: PlayerData;
     style?: React.CSSProperties;
     t: TranslateMethod;
+    openPlayerPanel?: () => void
 }
 
 export const PlayerBadge = (props: PlayerBadgeProps) => {
-    const { playerData, style, t } = props;
+    const { playerData, style, t, openPlayerPanel } = props;
     if (!playerData) return <></>;
 
     let portrait = `${process.env.GATSBY_ASSETS_URL}${playerData?.player?.character?.crew_avatar
@@ -30,12 +31,12 @@ export const PlayerBadge = (props: PlayerBadgeProps) => {
 
     const avatar = portrait;
 
-    return <Item.Group style={style}>
+    return <Item.Group style={{...style, cursor: openPlayerPanel ? 'pointer' : undefined }} onClick={() => openPlayerPanel ? openPlayerPanel() : null}>
         <Item>
 
             <div style={{display: 'inline', textAlign: 'center'}}>
                 <img src={avatar} style={{height: '84px', width: 'auto !important', margin: '0.5em', marginTop: 0}} />
-            </div>    
+            </div>
 
             <Item.Content>
                 <Item.Header>{playerData.player.character.display_name}</Item.Header>
@@ -48,7 +49,7 @@ export const PlayerBadge = (props: PlayerBadgeProps) => {
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{ t('player_badge.n_shuttles', { n: `${playerData.player.character.shuttle_bays}` })}</Label>
                 </Item.Meta>
                 <Item.Description>
-                    {playerData.player.fleet && (
+                    {!!playerData.player.fleet?.id && (
                         <p>
                             {t('global.fleet')}{' '}
                             <Link to={`/fleet_info?fleetid=${playerData.player.fleet.id}`}>

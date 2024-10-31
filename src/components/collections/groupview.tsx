@@ -1,15 +1,13 @@
 import React from 'react';
 import { GlobalContext } from '../../context/globalcontext';
-import { PlayerCollection, BuffBase, Reward } from '../../model/player';
+import { PlayerCollection } from '../../model/player';
 import { CollectionsContext } from './context';
-import { Image, Icon, Checkbox, Pagination, Table, Grid, Dropdown, Progress } from 'semantic-ui-react';
-import { RewardPicker, RewardsGrid } from '../crewtables/rewards';
+import { Checkbox, Pagination, Table, Grid, Dropdown } from 'semantic-ui-react';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
-import { formatColString } from './overview';
 import { useStateWithStorage } from '../../utils/storage';
 import CollectionsCrewCard from './crewcard';
 import { CollectionMap } from '../../model/collectionfilter';
-import { getOwnedCites, makeCiteNeeds } from '../../utils/collectionutils';
+import { getOwnedCites } from '../../utils/collectionutils';
 import { CollectionCard } from './collectioncard';
 import { RewardFilter } from './rewardfilter';
 
@@ -33,7 +31,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 
 	const [groupPage, setGroupPage] = React.useState(1);
 	const [groupPageCount, setGroupPageCount] = React.useState(1);
-	
+
     const addToSearchFilter = (value: string) => {
 		if (searchFilter?.length) {
 			setSearchFilter(searchFilter + "; " + value);
@@ -52,9 +50,9 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 	}
 	let crewprep = colGroups.map((col) => col.crew).flat();
 	const allCrew = crewprep.filter((fc, idx) => crewprep.findIndex(fi => fi.symbol === fc.symbol) === idx).sort((a, b) => a.name.localeCompare(b.name));
-	
+
 	//const rewards =
-	const renderCollectionGroups = (colMap: CollectionMap[]) => {		
+	const renderCollectionGroups = (colMap: CollectionMap[]) => {
 		return (<div style={{
 			display: "flex",
 			flexDirection: "column",
@@ -67,15 +65,15 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 
 			<div style={{
 				display: "flex",
-				flexDirection: 
+				flexDirection:
 					window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
 				alignItems:
 					window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'flex-start' : 'center',
-				justifyContent: "flex-start"			
+				justifyContent: "flex-start"
 			}}>
-				
-				<RewardFilter 
-					hardFilter={hardFilter}		
+
+				<RewardFilter
+					hardFilter={hardFilter}
 					setHardFilter={setHardFilter}
 					narrow={narrow}
 					grouped={short}
@@ -95,20 +93,20 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 
 			</div>
 
-			{!workerRunning && 
+			{!workerRunning &&
 			<>
-			{!!colMap?.length && 			
+			{!!colMap?.length &&
 			<div style={{display:"flex",
-						flexDirection: 
-							window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row', 
-						alignItems: "center"						
+						flexDirection:
+							window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
+						alignItems: "center"
 						}}>
 			<Pagination style={{
-				margin: "1em 0 1em 0"				
+				margin: "1em 0 1em 0"
 				}} totalPages={pageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />
 			<div style={{margin:"0 0.5em", padding: 0}}>
 			Items Per Page:
-			<Dropdown 
+			<Dropdown
 				style={{margin: "0.5em"}}
 				placeholder={"Items Per Page"}
 				value={pageSize}
@@ -130,12 +128,12 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 
 						const collection = col.collection;
 						if (!collection?.totalRewards || !collection.milestone) return <></>;
-				
-						return (<Table.Row key={"colgroup" + idx}>
-							<Table.Cell width={4} style={{verticalAlign:"top"}}>						
 
-								<CollectionCard 
-									ownedCites={ownedCites} 
+						return (<Table.Row key={"colgroup" + idx}>
+							<Table.Cell width={4} style={{verticalAlign:"top"}}>
+
+								<CollectionCard
+									ownedCites={ownedCites}
 									mapFilter={mapFilter}
 									setMapFilter={setMapFilter}
 									searchFilter={searchFilter}
@@ -144,14 +142,14 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 
 							</Table.Cell>
 							<Table.Cell style={{verticalAlign:"top"}}>
-								
+
 							<Grid doubling columns={3} textAlign='center' >
 									{col.crew.map((crew, ccidx) => (
-										<CollectionsCrewCard 
-											highlightIfNeeded 
-											crew={crew} 
-											collection={collection} 
-											index={ccidx} 
+										<CollectionsCrewCard
+											highlightIfNeeded
+											crew={crew}
+											collection={collection}
+											index={ccidx}
 											onClick={(e, item) => addToSearchFilter(item.name)} />
 									))}
 								</Grid>
@@ -161,16 +159,16 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 					)}
 				</Table.Body>
 			</Table>
-			{!!colMap?.length && 			
+			{!!colMap?.length &&
 			<div style={{display:"flex",
-			flexDirection: 
-				window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row', 
-			alignItems: "center"						
+			flexDirection:
+				window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
+			alignItems: "center"
 			}}>
 			<Pagination style={{margin: "1em 0 1em 0"}} totalPages={pageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />
 			<div style={{margin:"0 0.5em", padding: 0}}>
 			Items Per Page:
-			<Dropdown 
+			<Dropdown
 				style={{margin: "0.5em"}}
 				placeholder={"Items Per Page"}
 				value={pageSize}
@@ -192,7 +190,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 		</div>)
 
 	}
-    
+
     return renderCollectionGroups(colGroups);
 }
 

@@ -4,18 +4,33 @@ import { CrewSlot, PlayerCrew, VoyageCrewSlot, VoyageSkills } from './player';
 // Voyage calculator require crew.skills
 export interface IVoyageCrew extends PlayerCrew {
 	skills: BaseSkills;
+	active_voyage_type?: 'dilemma' | 'encounter';
 };
 
 // The slimmest possible version of voyageConfig, as expected as input by calculator
 //	Use Voyage for a config from player data when voyage started
 //	Use VoyageDescription for a config from player data when voyage not yet started
 export interface IVoyageInputConfig {
+	voyage_type: 'dilemma' | 'encounter';
 	skills: VoyageSkills;
 	ship_trait: string;
 	crew_slots: CrewSlot[];
-	voyage_type: 'dilemma' | 'encounter';
-	high_bonus?: string[];
-	low_bonus?: string[];
+	event_content?: IVoyageEventContent;
+};
+
+// Support for event voyage info
+export interface IVoyageEventContent {
+	voyage_symbol: string;	// encounter_voyage
+	primary_skill: string;
+	secondary_skill: string;
+	antimatter_bonus_per_crew_trait: number;
+	antimatter_bonus_crew_traits: string[];
+	antimatter_bonus_for_featured_crew: number;
+	featured_crews: string[];
+	antimatter_bonus_per_ship_trait: number;
+	antimatter_bonus_ship_traits: string[];
+	antimatter_bonus_for_featured_ship: number;
+	featured_ships: string[];
 };
 
 // Extends IVoyageInputConfig to include calculation result
@@ -71,7 +86,7 @@ export interface ITrackedAssignment {
 	tracker_id: number;
 	slot: number;	// Slot index where crew is seated
 	trait: string;	// Matched trait or empty string if no match
-	kwipment?: number[][];
+	kwipment?: number[] | number[][];
 };
 
 export interface ITrackedAssignmentsBySkill {
@@ -110,3 +125,14 @@ export interface ITrackedDataRecord {
     voyages: ITrackedVoyageRecord[];
     assignments: ITrackedCrewRecord[];
 }
+
+export interface IFullPayloadAssignment extends ITrackedAssignment {
+	crew: string;
+	kwipment?: number[] | number[][];
+};
+
+export interface ITrackedPayload {
+	dbid: number;
+	voyage: ITrackedVoyage;
+	assignments: IFullPayloadAssignment[];
+};

@@ -1,6 +1,6 @@
 import { BossBattlesRoot } from "./boss";
 import { BaseSkills, CrewMember, PlayerSkill, Skill } from "./crew";
-import { PlayerCrew, PlayerData } from "./player";
+import { CompactCrew, Player, PlayerCrew, PlayerData } from "./player";
 import { Ship } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
 import { EquipmentCommon, EquipmentItem } from "./equipment";
@@ -8,6 +8,64 @@ import { Collection } from "./game-elements";
 import { ICoreData } from "../context/datacontext";
 import { MissionChallenge, MissionTraitBonus, QuestFilterConfig } from "./missions";
 import { IEphemeralData } from "../context/playercontext";
+import { VPDetails } from "../utils/voyagevp";
+import { IPolestar } from "../components/retrieval/model";
+
+export interface WorkerConfigBase<T> {
+    max_results?: number
+    max_iterations?: bigint;
+    start_index?: bigint;
+    verbose?: boolean;
+}
+
+export interface IWorkerResults<T> {
+    items: T[]
+    total_iterations: bigint;
+    run_time: number;
+}
+
+export interface IMultiWorkerState {
+    context: IMultiWorkerContext;
+}
+
+export interface IMultiWorkerConfig<TConfig extends WorkerConfigBase<TItem>, TItem> {
+    config: TConfig;
+    max_workers?: number;
+    callback: (progress: IMultiWorkerStatus<TItem>) => void;
+}
+
+export interface IMultiWorkerStatus<T> {
+    data: {
+        result: {
+            items?: T[],
+            run_time?: number,
+            total_iterations?: bigint,
+            options?: any,
+            result?: T,
+            percent?: number;
+            progress?: bigint;
+            count?: bigint;
+            accepted?: bigint;
+        },
+        id: string,
+        inProgress: boolean
+    }
+}
+
+export interface IMultiWorkerContext {
+    runWorker: (options: any) => void;
+    cancel: () => void;
+    workers: number;
+    count: bigint;
+    progress: bigint;
+    percent: number;
+    cancelled: boolean;
+    running: boolean;
+    startTime: Date,
+    endTime?: Date
+    run_time: number;
+}
+
 
 export interface GameWorkerOptionsList {
     key: number;
@@ -31,6 +89,7 @@ export interface ExtendedVoyageStatsConfig extends VoyageStatsConfig{
 
 export interface GameWorkerOptions {
     strategy?: string;
+    proficiency?: number;
     searchDepth?: number;
     extendsTarget?: number;
 }
@@ -82,6 +141,7 @@ export interface Estimate {
     final: boolean;
     deterministic?: boolean;
     antimatter?: number;
+	vpDetails?: VPDetails;
 }
 
 export interface Refill {
@@ -294,3 +354,29 @@ export const EMPTY_SKILL = {
 	range_max: 0,
 	range_min: 0
 } as Skill;
+
+
+export interface IMutualPolestarWorkerItem {
+    combo: string[];
+    crew: string[];
+}
+
+export type PolestarComboSize = 1 | 2 | 3 | 4;
+
+export interface IMutualPolestarWorkerConfig extends WorkerConfigBase<IMutualPolestarWorkerItem> {
+    polestars: IPolestar[];
+    comboSize: PolestarComboSize;
+    allowUnowned: number;
+    no100: boolean;
+}
+
+export interface IPolestarCrew extends CompactCrew {
+    disposition: 'include' | 'exclude' | 'unowned';
+}
+
+export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase<IMutualPolestarWorkerItem> {
+    allPolestars: string[];
+    crew: IPolestarCrew[];
+    comboSize: PolestarComboSize;
+    allowUnowned?: number;
+}

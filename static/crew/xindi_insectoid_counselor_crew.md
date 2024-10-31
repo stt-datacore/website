@@ -3,7 +3,7 @@ name: Xindi Insectoid Councilor
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 13/03/2018
 published: true

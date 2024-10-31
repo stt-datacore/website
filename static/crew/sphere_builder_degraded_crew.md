@@ -3,7 +3,7 @@ name: Degraded Sphere-Builder
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal: true
 date: 06/06/2023
 published: true

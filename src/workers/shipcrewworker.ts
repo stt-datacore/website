@@ -1,54 +1,8 @@
 import { CrewMember } from "../model/crew";
 import { AttackInstant, MultiShipWorkerConfig, ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults } from "../model/ship";
+import { getComboCountBig, getPermutations } from "../utils/misc";
 import { compareShipResults } from "../utils/shiputils";
 import { canSeatAll, iterateBattle } from "./battleworkerutils";
-
-
-function factorial(number: bigint) {
-    let result = 1n;
-
-    for (let i = 1n; i <= number; i++) {
-        result *= i;
-    }
-    return result;
-}
-
-function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[]) => U[] | false) {
-    var current_iter = 0n;
-    const mmin = start_idx ?? 0n;
-    const mmax = (count ?? 0n) + mmin;
-    function p(t: T[], i: number) {
-        if (t.length === size) {
-            if (current_iter >= mmin && (!mmax || current_iter < mmax)) {
-                if (!check) {
-                    result.push(t as any);
-                }
-                else {
-                    let response = check(t);
-                    if (response) {
-                        if (!count_only) {
-                            result.push(response);
-                        }
-                    }
-                }
-            }
-            current_iter++;
-            return;
-        }
-        if (i + 1 > array.length) {
-            return;
-        }
-
-        if (mmax !== 0n && current_iter >= mmax) return;
-        p([ ...t, array[i] ], i + 1);
-        p(t, i + 1);
-    }
-
-    var result = [] as U[][];
-
-    p([], 0);
-    return result;
-}
 
 const ShipCrewWorker = {
     calc: (options: ShipWorkerConfig, reportProgress: (data: { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: ShipWorkerItem }) => boolean = () => true) => {
@@ -69,7 +23,6 @@ const ShipCrewWorker = {
                 max_iterations,
                 simulate,
                 ranking_method,
-                status_data_only,
                 fixed_activation_delay } = options;
 
             const opponent = opponents?.length ? opponents[0] : undefined;
@@ -93,7 +46,7 @@ const ShipCrewWorker = {
 
             let wcn = BigInt(workCrew.length);
             let bsn = BigInt(seats);
-            let total_combos = factorial(wcn) / (factorial(wcn - bsn) * factorial(bsn));
+            let total_combos = getComboCountBig(wcn, bsn);
 
             let count = max_iterations || total_combos; //crew_combos.length;
             let start_index = (options.start_index ?? 0n);
@@ -225,30 +178,12 @@ const ShipCrewWorker = {
 
                     if (p !== progress) {
                         progress = p;
-
-                        if (status_data_only) {
-                            reportProgress({
-                                    percent: Number(p.toString()),
-                                    progress: i,
-                                    count,
-                                    accepted: BigInt(results.length)
-                                });
-                        }
-                        else {
-                            if (!verbose) {
-                                reportProgress({ format: 'ship.calc.calculating_pct_ellipses', options: { percent: `${p}` } });
-                            }
-                            else {
-                                reportProgress({ format: 'ship.calc.calculating_pct_ellipses_verbose',
-                                    options: {
-                                        percent: `${p}`,
-                                        progress: `${i.toLocaleString()}`,
-                                        count: `${count.toLocaleString()}`,
-                                        accepted: `${results.length.toLocaleString()}`
-                                    }
-                                });
-                            }
-                        }
+                        reportProgress({
+                            percent: Number(p.toString()),
+                            progress: i,
+                            count,
+                            accepted: BigInt(results.length)
+                        });
                     }
                 }
 
@@ -293,10 +228,6 @@ const ShipCrewWorker = {
                 return res;
             });
 
-            if (!status_data_only) {
-                reportProgress({ format: 'ship.calc.sorting_finalizing_ellipses' });
-            }
-
             results.sort((a, b) => compareShipResults(a, b, fbb_mode));
             results.splice(max_results);
             results.forEach((result) => {
@@ -314,7 +245,7 @@ const ShipCrewWorker = {
             const run_time = Math.round((endtime.getTime() - starttime.getTime()) / 1000);
 
             resolve({
-                ships: results,
+                items: results,
                 total_iterations: i,
                 run_time
             });

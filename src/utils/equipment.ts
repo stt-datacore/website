@@ -1,6 +1,6 @@
 import CONFIG from '../components/CONFIG';
 import { ArchetypeRoot20 } from '../model/archetype';
-import { ComputedSkill, CrewMember, EquipmentSlot, PowerLot, Skill } from '../model/crew';
+import { ComputedSkill, CrewMember, EquipmentSlot, QuippedPower, Skill } from '../model/crew';
 import { EquipmentIngredient, EquipmentItem, ICrewDemands, IDemand } from '../model/equipment';
 import { BuffBase, PlayerCrew, PlayerEquipmentItem } from '../model/player';
 import { applySkillBuff, numberToGrade, powerSum, qbitsToSlots, skillSum } from './crewutils';
@@ -290,7 +290,7 @@ export function calcItemDemands(item: EquipmentItem, coreItems: EquipmentItem[],
 export function makeRecipeFromArchetypeCache(item: EquipmentItem, globalItems: EquipmentItem[], playerItems: PlayerEquipmentItem[], archetype_cache: ArchetypeRoot20) {
 	let aitem = archetype_cache?.archetypes.find(f => f.id.toString() === item.id?.toString());
 	if (!aitem?.recipe) return;
-	item.recipe = { 
+	item.recipe = {
 		incomplete: false,
 		craftCost: 0,
 		list: []
@@ -305,7 +305,7 @@ export function makeRecipeFromArchetypeCache(item: EquipmentItem, globalItems: E
 		item.recipe.list = item.recipe.list.concat(newrecipe);
 	}
 	item.demands = calcItemDemands(item, globalItems, playerItems);
-} 
+}
 
 
 export function canBuildItem(item: EquipmentItem, ignoreNonQuipment?: boolean) {
@@ -390,21 +390,18 @@ export function calcQLots(
 
 	const cmode = mode;
 
-	//const allslots = rosterType === 'allCrew';
 	const q_bits = max_qbits ? 1300 : crew.q_bits;
 	const qbslots = qbitsToSlots(q_bits);
 	const slots = max_slots ? (max_slots === 4 ? 4 : Math.min(qbslots, max_slots)) : qbslots;
-	if (crew.symbol === 'pike_rhapsody_crew') {
-		console.log("debug");
-	}
+
 	const crewQuipment = quipment.filter(q => isQuipmentMatch(crew, q.item))
 		.sort((a, b) => {
 			let abon = Object.keys(a.bonusInfo.bonuses).filter(f => f in crew.base_skills && Object.keys(crew.base_skills[f]).some(val => crew.base_skills[f][val]));
 			let bbon = Object.keys(b.bonusInfo.bonuses).filter(f => f in crew.base_skills && Object.keys(crew.base_skills[f]).some(val => crew.base_skills[f][val]));
 			let r = bbon.length - abon.length;
 			if (r) return r;
-			let ar = skillSum(Object.values(a.bonusInfo.bonuses), cmode);
-			let br = skillSum(Object.values(b.bonusInfo.bonuses), cmode);
+			let ar = skillSum(abon.map(ab => a.bonusInfo.bonuses[ab]), cmode);
+			let br = skillSum(bbon.map(bb => b.bonusInfo.bonuses[bb]), cmode);
 			return br - ar;
 		});
 
@@ -413,62 +410,72 @@ export function calcQLots(
 	const q_power = {} as { [key: string]: Skill };
 
 	const calcBest = (
-		best: 2 | 3,
+		combo_size: 2 | 3,
 		crew: CrewMember,
-		max_qbits?: boolean,
+		as_max_qbits?: boolean,
 		max_slots?: number,
-		use?: number[]) => {
+		skill_pos?: number[]) => {
 
-		const q_bits = max_qbits ? 1300 : crew.q_bits;
+		const q_bits = as_max_qbits ? 1300 : crew.q_bits;
 		const qbslots = qbitsToSlots(q_bits);
 		const slots = max_slots ? (max_slots === 4 ? 4 : Math.min(qbslots, max_slots)) : qbslots;
 		const skills = [] as string[];
 
 		let x = 0;
 		for (let i = 0; i < 3; i++) {
-			if (use && !use.includes(i)) continue;
-			if (x >= best) break;
+			if (skill_pos && !skill_pos.includes(i)) continue;
+			if (x >= combo_size) break;
 			if (i >= crew.skill_order.length) break;
 			skills.push(crew.skill_order[i]);
 			x++;
 		}
 
-		let maxskills = skills.length;
-		// if (maxskills===3) {
-		// 	console.log("here")
-		// }
-		crew.q_lots ??= { power: [], lot: {}, crew_power: 0, crew_by_skill: {} };
+		crew.best_quipment ??= {
+			skill_quipment: {},
+			skills_hash: {},
+			aggregate_power: 0,
+		};
 
-		//let lots = crew.q_lots;
-		let lots = { power: [], lot: {}, crew_power: 0, crew_by_skill: {} } as PowerLot;
+		let best_score = {
+			skill_quipment: {},
+			skills_hash: {},
+			aggregate_power: 0,
+		} as QuippedPower;
+
 		crewQuipment.forEach((cq) => {
 			Object.keys(cq.bonusInfo.bonuses).forEach((skill) => {
 				if (skill in crew.base_skills && skills.includes(skill)) {
-					lots.lot[skill] ??= [];
-					lots.lot[skill].push(cq.item);
+					best_score.skill_quipment[skill] ??= [];
+					best_score.skill_quipment[skill].push(cq.item);
 				}
 			});
 		});
 
-		const flots = { power: [], lot: {}, crew_power: 0, crew_by_skill: {} } as PowerLot;
+		const final_best = {
+			skill_quipment: {},
+			skills_hash: {},
+			aggregate_power: 0
+		} as QuippedPower;
+
 		const qpcounts = [] as QpCount[];
 
+		// For items that impart more than one skill
 		skills.forEach((skill) => {
-			lots.lot[skill]?.forEach((item) => {
+			best_score.skill_quipment[skill]?.forEach((item) => {
 				let f = qpcounts.find(f => f.item === item);
 				if (!f) {
 					let bonuses = Object.values(crewQuipment.find(f => f.item === item)?.bonusInfo.bonuses ?? {});
-					let filterb = bonuses.filter(fb => {
+					let elig_bonus = bonuses.filter(fb => {
 						if (fb.skill !== skill) return false;
 						if (cmode === 'core' && fb.core === 0) return false;
 						if (cmode === 'proficiency' && fb.range_max === 0 && fb.range_min === 0) return false;
 						return true;
 					});
-					if (filterb?.length) {
+					if (elig_bonus?.length) {
 						qpcounts.push({
 							item,
 							count: 1,
-							bonuses: filterb
+							bonuses: elig_bonus
 						});
 					}
 				}
@@ -478,14 +485,18 @@ export function calcQLots(
 			});
 		});
 
-		const numbers = qpcounts.map(qp => qp.item).flat().map(m => Number(m.kwipment_id as string));
-		const combos = makeAllCombos(numbers, undefined, undefined, undefined, slots).filter(c => c.length === slots);
+		const item_ids = qpcounts.map(qp => qp.item).flat().map(m => Number(m.kwipment_id!));
+		const combos = makeAllCombos(item_ids, undefined, undefined, undefined, slots).filter(c => c.length === slots);
 
-		const newmap = combos.map(cb => cb.map(co => ({ ... qpcounts.find(f => f.item.kwipment_id === co.toString()) as QpCount } as QpCount)));
+		const combo_map = combos.map(cb => cb.map(co => ({ ... qpcounts.find(f => f.item.kwipment_id === co.toString())! } as QpCount)));
 
-		const baldiff = [] as { value: number, power: QpCount[], skills: string[] }[];
+		const balance_diff = [] as {
+			value: number,
+			power: QpCount[],
+			skills: string[]
+		}[];
 
-		newmap.forEach((power) => {
+		combo_map.forEach((power) => {
 			const skillbalance = {} as { [key: string]: { value: number, skills: Skill[] } };
 			skills.forEach((skill) => {
 				const skills = power.filter(f => f.bonuses?.some(b => b?.skill === skill)).map(m => m.bonuses).flat().filter(f => f.skill === skill);
@@ -496,6 +507,7 @@ export function calcQLots(
 					skills
 				}
 			});
+
 			const outskills = Object.keys(skillbalance);
 			let value = 0;
 
@@ -506,28 +518,22 @@ export function calcQLots(
 				let values = Object.values(skillbalance).map(m => m.value).sort();
 				value = (values.reduce((p, n) => p ? p + n : n, 0)) - Math.abs(values.reduce((p, n) => p ? p - n : n, 0));
 			}
-			baldiff.push({
+			balance_diff.push({
 				value,
 				power,
 				skills: outskills
 			});
 		});
 
-		if (baldiff?.length) {
-
-			baldiff.sort((a, b) => {
+		if (balance_diff?.length) {
+			balance_diff.sort((a, b) => {
 				let r = b.skills.length - a.skills.length;
 				if (r) return r;
-				// if (a.skills.length === 2) {
-					r = b.value - a.value;
-				//}
-				// else {
-				// 	r = b.value - a.value;
-				// }
+				r = b.value - a.value;
 				return r;
 			});
 
-			baldiff[0].power.forEach((qp) => {
+			balance_diff[0].power.forEach((qp) => {
 				if (!qp?.bonuses?.length || !qp?.bonuses[0]?.skill) {
 					console.log("Problem with " + crew.symbol);
 					console.log(qp);
@@ -535,63 +541,24 @@ export function calcQLots(
 				}
 
 				let skill = qp.bonuses[0].skill;
-				flots.lot[skill] ??= [];
-				flots.lot[skill].push(qp.item);
+				final_best.skill_quipment[skill] ??= [];
+				final_best.skill_quipment[skill].push(qp.item);
 			});
 
 		}
 
-		// Object.keys(lots.lot).forEach((skill) => {
-		// 	if (!(skill in lots.lot) || !lots.lot[skill].length) return;
-
-		// 	lots.lot[skill].sort((a, b) => {
-		// 		let ai = qpcounts.find(f => f.item === a);
-		// 		let bi = qpcounts.find(f => f.item === b);
-		// 		if (ai && bi) {
-		// 			let ares = ai.bonuses.filter(sk => skills.includes(sk.skill as string)).length;
-		// 			let bres = bi.bonuses.filter(sk => skills.includes(sk.skill as string)).length;
-		// 			let r = bres - ares;
-		// 			if (r) return r;
-
-		// 			let ar = skillSum(ai.bonuses.filter(f => f.skill && f.skill in crew.base_skills));
-		// 			let br = skillSum(bi.bonuses.filter(f => f.skill && f.skill in crew.base_skills));
-		// 			return br - ar;
-		// 		}
-		// 		else if (ai) {
-		// 			return -1;
-		// 		}
-		// 		else if (bi) {
-		// 			return 1;
-		// 		}
-		// 		return 0;
-		// 	});
-		// });
-
-		// for (let i = 0; i < slots;) {
-		// 	for (let j = 0; j < maxskills; j++) {
-		// 		let skill = skills[j];
-		// 		flots.lot[skill] ??= [];
-
-		// 		if (!lots.lot[skill].length) continue;
-		// 		if (Object.keys(flots.lot).some(fk => fk in flots.lot && flots.lot[fk].includes(lots.lot[skill][0]))) {
-		// 			lots.lot[skill].splice(0, 1);
-		// 			if (lots.lot[skill].length) {
-		// 				j--;
-		// 			}
-		// 			continue;
-		// 		}
-
-		// 		flots.lot[skill] ??= [];
-		// 		flots.lot[skill].push(lots.lot[skill][0]);
-		// 		lots.lot[skill].splice(0, 1);
-
-		// 		i++;
-		// 		if (i >= slots) break;
-		// 	}
-		// }
-
-		flots.power = Object.values(flots.lot).map(lot => lot.map(item => (qpcounts.find(f => f.item === item) as QpCount).bonuses).flat()).flat()
-		return flots;
+		let final_skills = Object.values(final_best.skill_quipment).map(items => items.map(item => (qpcounts.find(f => f.item === item) as QpCount).bonuses).flat()).flat()
+		final_skills.forEach((skill) => {
+			if (final_best.skills_hash[skill.skill!]) {
+				final_best.skills_hash[skill.skill!].core += skill.core;
+				final_best.skills_hash[skill.skill!].range_max += skill.range_max;
+				final_best.skills_hash[skill.skill!].range_min += skill.range_min;
+			}
+			else {
+				final_best.skills_hash[skill.skill!] = { ...skill };
+			}
+		});
+		return final_best;
 	};
 
 	const addQPower = (
@@ -616,27 +583,34 @@ export function calcQLots(
 			}
 		}
 
-		let skq = crewQuipment.filter(f => skill in f.bonusInfo.bonuses).map(m => ({ item: m.item, skill: m.bonusInfo.bonuses[skill] }));
+		let skill_quipment = crewQuipment.filter(f => skill in f.bonusInfo.bonuses).map(m => ({ item: m.item, skill: m.bonusInfo.bonuses[skill] }));
 
-		if (skq?.length) {
-			skq.sort((a, b) => {
+		if (skill_quipment?.length) {
+			skill_quipment.sort((a, b) => {
 				let ar = skillSum(a.skill, cmode)
 				let br = skillSum(b.skill, cmode);
 				return br - ar;
 			});
 
-			for (let i = 0; i < slots; i++) {
-				if (i < skq.length) {
-					if (cmode === 'proficiency' && skq[i].skill.range_max === 0 && skq[i].skill.range_min === 0) continue;
-					else if (cmode === 'core' && skq[i].skill.core === 0) continue;
-					else if (cmode === 'all' && skq[i].skill.core === 0 && skq[i].skill.range_max === 0 && skq[i].skill.range_min === 0) continue;
+			let i = 0;
+			while (q_lots[skill].length < slots) {
+				if (i < skill_quipment.length) {
+					// We want to exclude quipment that impart nothing to the current mode ...
+					if (cmode === 'proficiency' && skill_quipment[i].skill.range_max === 0 && skill_quipment[i].skill.range_min === 0) { i++; continue; }
+					else if (cmode === 'core' && skill_quipment[i].skill.core === 0)  { i++; continue; }
+					else if (cmode === 'all' && skill_quipment[i].skill.core === 0 && skill_quipment[i].skill.range_max === 0 && skill_quipment[i].skill.range_min === 0)  { i++; continue; }
 
-					q_lots[skill].push(skq[i].item);
+					q_lots[skill].push(skill_quipment[i].item);
 
-					q_power[skill].core += skq[i].skill.core;
-					q_power[skill].range_max += skq[i].skill.range_max;
-					q_power[skill].range_min += skq[i].skill.range_min;
+					// ... but we still need the total skill values for both core and proficiencies,
+					// no matter what mode.
+					q_power[skill].core += skill_quipment[i].skill.core;
+					q_power[skill].range_max += skill_quipment[i].skill.range_max;
+					q_power[skill].range_min += skill_quipment[i].skill.range_min;
 					q_power[skill].skill = skill;
+				}
+				else {
+					break;
 				}
 			}
 		}
@@ -647,11 +621,12 @@ export function calcQLots(
 	});
 
 	const crewSkills = {} as { [key: string]: Skill };
+
 	crew.skill_order.forEach((skill) => {
-		let l: Skill;
+		let newSkill: Skill;
 		if (buffConfig) {
 			let sb = applySkillBuff(buffConfig, skill, crew.base_skills[skill]);
-			l = {
+			newSkill = {
 				core: sb.core,
 				range_max: sb.max,
 				range_min: sb.min,
@@ -659,75 +634,54 @@ export function calcQLots(
 			};
 		}
 		else {
-			l = {
+			newSkill = {
 				... crew.base_skills[skill],
 				skill
 			};
 		}
 		if (cmode === 'core') {
-			l.range_max = 0;
-			l.range_min = 0;
+			newSkill.range_max = 0;
+			newSkill.range_min = 0;
 		}
 		else if (cmode === 'proficiency') {
-			l.core = 0;
+			newSkill.core = 0;
 		}
-		crewSkills[skill] = l;
+		crewSkills[skill] = newSkill;
 	});
 
-	const addCrewPower = (lot: PowerLot) => {
+	const addCrewPower = (lot: QuippedPower) => {
 		crew.skill_order.forEach((skill) => {
-			if (!(skill in lot.lot)) return;
-			let fskills = lot.power.filter(f => f.skill === skill);
+			if (!(skill in lot.skill_quipment)) return;
+			let fskills = lot.skills_hash[skill];
 			let cskills = crewSkills[skill];
-			lot.crew_power += skillSum([...fskills, cskills], cmode)
-			lot.crew_by_skill ??= {};
-			lot.crew_by_skill[skill] = {
-				...cskills
-			}
-			for (let sk of fskills) {
-				if (cmode !== 'proficiency') {
-					lot.crew_by_skill[skill].core += sk.core;
-				}
-				if (cmode !== 'core') {
-					lot.crew_by_skill[skill].range_min += sk.range_min;
-					lot.crew_by_skill[skill].range_max += sk.range_max;
-				}
-			}
+			lot.aggregate_power += skillSum([fskills, cskills], cmode)
 		})
+	}
+	crew.best_quipment = {
+		skill_quipment: q_lots,
+		skills_hash: q_power,
+		aggregate_power: 0,
+	}
 
-	}
-	crew.q_lots = {
-		lot: q_lots,
-		power: Object.values(q_power),
-		power_by_skill: q_power,
-		crew_power: 0,
-		crew_by_skill: {}
-	}
-	if (crew.name === 'Audrid Quark' || crew.name === 'Admiral Robert April') {
-		console.log("break here");
-	}
-	addCrewPower(crew.q_lots);
+	addCrewPower(crew.best_quipment);
 
-	delete crew.q_best_one_two_lots;
-	delete crew.q_best_one_three_lots;
-	delete crew.q_best_two_three_lots;
-	delete crew.q_best_three_lots;
+	delete crew.best_quipment_1_2;
+	delete crew.best_quipment_1_3;
+	delete crew.best_quipment_2_3;
+	delete crew.best_quipment_3;
 
 	if (crew.skill_order.length >= 2) {
-		if (crew.symbol.includes("gowron_chancellor")) {
-			console.log("break");
-		}
-		crew.q_best_one_two_lots = calcBest(2, crew, max_qbits, max_slots, [0, 1]);
-		addCrewPower(crew.q_best_one_two_lots);
+		crew.best_quipment_1_2 = calcBest(2, crew, max_qbits, max_slots, [0, 1]);
+		addCrewPower(crew.best_quipment_1_2);
 	}
 
 	if (crew.skill_order.length === 3) {
-		crew.q_best_one_three_lots = calcBest(2, crew, max_qbits, max_slots, [0, 2]);
-		crew.q_best_two_three_lots = calcBest(2, crew, max_qbits, max_slots, [1, 2]);
-		crew.q_best_three_lots = calcBest(3, crew, max_qbits, max_slots);
-		addCrewPower(crew.q_best_one_three_lots);
-		addCrewPower(crew.q_best_two_three_lots);
-		addCrewPower(crew.q_best_three_lots);
+		crew.best_quipment_1_3 = calcBest(2, crew, max_qbits, max_slots, [0, 2]);
+		crew.best_quipment_2_3 = calcBest(2, crew, max_qbits, max_slots, [1, 2]);
+		crew.best_quipment_3 = calcBest(3, crew, max_qbits, max_slots);
+		addCrewPower(crew.best_quipment_1_3);
+		addCrewPower(crew.best_quipment_2_3);
+		addCrewPower(crew.best_quipment_3);
 	}
 
 	return crew;

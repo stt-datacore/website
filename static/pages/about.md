@@ -3,7 +3,7 @@ title: "About"
 hide_in_other: true
 ---
 
-> **NOTE** This project is a work in progress, still in the early stages. All feedback is welcome!
+## DataCore v2.3
 
 DataCore is a companion resource to Tilting Point's [Star Trek Timelines](https://www.tiltingpoint.com/games/star-trek-timelines/) game. It's designed as a compendium of data, statistics and assets, both extracted from the game as well as user generated.
 
@@ -31,10 +31,12 @@ Most of the code for the website, the bot and accompanying services was original
 
 The codebase is currently maintained by \[UFP\] U.S.S John Jay and \[IPA\] ironyWrit (c) 2023 - 2024 and released under the MIT license.
 
-Additional Contributors: 
+Additional Contributors:
 
 TygraDax for the Grade and Star Grade equations in the collection planner.
 Bernard for the equation for Bernard's Number in the gauntlet tool.
+JimBerlin and dmscramjet for equations related to the ship battle calculator.
+Dangevin for equations related to the voyage event VP calculator.
 
 Some crew notes are imported from [The Big Book of Behold Advice](https://www.bigbook.app/), created by [u/Automaton_2000](https://reddit.com/user/Automaton_2000). Some nicknames are imported from a curated sheet maintained by DCPilot. [STT Power Ratings](https://cabtools.app/) are maintained by A Traveling Man & Cymru Am Byth. Content used with their permission.
 

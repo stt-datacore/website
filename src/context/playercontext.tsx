@@ -9,7 +9,7 @@ import { mergeShips } from '../utils/shiputils';
 import { stripPlayerData } from '../utils/playerutils';
 import { BossBattlesRoot } from '../model/boss';
 import { ShuttleAdventure } from '../model/shuttle';
-import { Archetype20, ArchetypeBase, Archetype17, ArchetypeRoot20 } from '../model/archetype';
+import { ArchetypeRoot20 } from '../model/archetype';
 import { getItemWithBonus } from '../utils/itemutils';
 import { TinyStore } from '../utils/tiny';
 
@@ -102,32 +102,11 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const [input, setInput] = React.useState<PlayerData | undefined>(stripped);
 	const [loaded, setLoaded] = React.useState(false);
 
-	const quipment = coreData.items.filter(i => i.type === 14).map(i => getItemWithBonus(i));
-
 	React.useEffect(() => {
 		if (!input || !ship_schematics.length || !crew.length) return;
-
 		// ephemeral data (e.g. active crew, active shuttles, voyage data, and event data)
 		//	can be misleading when outdated, so keep a copy for the current session only
 		const activeCrew = [] as CompactCrew[];
-
-		if (input.stripped !== true) {
-			if (input.item_archetype_cache) {
-				input.version = 17;
-			}
-			else if (input.archetype_cache) {
-				input.version = 20;
-				input.item_archetype_cache = {
-					archetypes: input.archetype_cache.archetypes.map((a: Archetype20) => {
-						return {
-							...a as ArchetypeBase,
-							type: a.item_type,
-						} as Archetype17;
-					})
-				}
-			}
-		}
-
 		input.player.character.crew.forEach(crew => {
 			if (crew.active_status > 0) {
 				activeCrew.push({
@@ -138,12 +117,19 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 					equipment: crew.equipment.map((eq) => eq[0]),
 					active_status: crew.active_status,
 					active_id: crew.active_id,
-					active_index: crew.active_index
+					active_index: crew.active_index,
+					max_rarity: crew.max_rarity,
+					skill_order: []
 				});
 			}
 		});
 
 		if (input.stripped !== true) {
+
+			if (!!input.archetype_cache?.archetypes?.length) {
+				setItemArchetypeCache(input.archetype_cache);
+			}
+
 			setEphemeral({
 				activeCrew,
 				events: [...input.player.character.events ?? []],
@@ -154,14 +140,6 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				archetype_cache: {} as ArchetypeRoot20,
 				objectiveEventRoot: input.objective_event_root ?? {} as ObjectiveEventRoot
 			});
-
-			if (!!input.archetype_cache?.archetypes?.length) {
-				setItemArchetypeCache(input.archetype_cache);
-			}
-			// else if (!itemArchetypeCache?.archetypes?.length) {
-			// 	setItemArchetypeCache({} as ArchetypeRoot20);
-			// }
-
 		}
 
 		const dtImported = (typeof input.calc?.lastImported === 'string') ? new Date(input.calc?.lastImported) : new Date();
@@ -177,6 +155,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 		// preparedProfileData is expanded with useful data and helpers for DataCore tools
 		let preparedProfileData = {...strippedData};
+
+		const quipment = coreData.items.filter(i => i.type === 14).map(i => getItemWithBonus(i));
 		prepareProfileData('PLAYER_CONTEXT', coreData.crew, preparedProfileData, dtImported, quipment);
 		setProfile(preparedProfileData);
 

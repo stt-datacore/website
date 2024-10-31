@@ -3,7 +3,7 @@ name: Laas
 rarity: 4
 series: ds9
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 27/03/2017
 published: true

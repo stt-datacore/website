@@ -666,43 +666,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     return attacks;
 }
 
-function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[]) => U[] | false) {
-    var current_iter = 0n;
-    const mmin = start_idx ?? 0n;
-    const mmax = (count ?? 0n) + mmin;
-    function p(t: T[], i: number) {
-        if (t.length === size) {
-            if (current_iter >= mmin && (!mmax || current_iter < mmax)) {
-                if (!check) {
-                    result.push(t as any);
-                }
-                else {
-                    let response = check(t);
-                    if (response) {
-                        if (!count_only) {
-                            result.push(response);
-                        }
-                    }
-                }
-            }
-            current_iter++;
-            return;
-        }
-        if (i + 1 > array.length) {
-            return;
-        }
-
-        if (mmax !== 0n && current_iter >= mmax) return;
-        p([...t, array[i]], i + 1);
-        p(t, i + 1);
-    }
-
-    var result = [] as U[][];
-
-    p([], 0);
-    return result;
-}
-
 export function canSeatAll(precombined: number[][][], ship: Ship, crew: CrewMember[], ignore_skill: boolean): CrewMember[][] | false {
     if (!ship.battle_stations?.length || ship.battle_stations.length !== crew.length) return false;
     if (!crew.every(c => c.skill_order.some(so => ship.battle_stations?.some(bs => bs.skill === so)))) return false;

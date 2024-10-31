@@ -54,6 +54,8 @@ type CrewTraitFilterProps = {
 	setTraitFilter: (traitFilter: string[]) => void;
 	minTraitMatches: number;
 	setMinTraitMatches: (minTraitMatches: number) => void;
+	allowed?: string[];
+	hideTwoPlus?: boolean;
 };
 
 export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
@@ -61,9 +63,12 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 	const [traitOptions, setTraitOptions] = React.useState<TraitOptions[] | undefined>(undefined);
 	const globalContext = React.useContext(GlobalContext);
 	const { TRAIT_NAMES } = globalContext.localized;
+	const { allowed } = props;
 
 	React.useEffect(() => {
-		const options = Object.keys(TRAIT_NAMES).map(trait => {
+		const options = Object.keys(TRAIT_NAMES)
+			.filter(trait => !allowed?.length || allowed.includes(trait))
+			.map(trait => {
 			return {
 				key: trait,
 				value: trait,
@@ -72,13 +77,13 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 			} as TraitOptions;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 		setTraitOptions([...options]);
-	}, []);
+	}, [allowed]);
 
 	if (!traitOptions) return (<></>);
 
 	const minMatchOptions = [
 		{ key: '1+', value: 1, text: t('options.trait_match.any') },
-		{ key: '2+', value: props.traitFilter.length > 2 ? 2 : 0, text: t('options.trait_match.match_two_plus') },
+		{ key: '2+', value: props.traitFilter.length > 2 && !props.hideTwoPlus ? 2 : 0, text: t('options.trait_match.match_two_plus') },
 		{ key: 'all', value: props.traitFilter.length, text: t('options.trait_match.match_all') }
 	];
 
@@ -116,7 +121,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 export function descriptionLabel(t: TranslateMethod, crew: IRosterCrew,  showOwned?: boolean): JSX.Element {
 
 	const counts = [
-		{ name: crew.collections.length > 1 ? t('base.collections_fmt', { count: crew.collections.length.toString() }) : t('base.collection_fmt'), count: crew.collections.length }
+		{ name: crew.collections.length !== 1 ? t('base.collections_fmt', { count: crew.collections.length.toString() }) : t('base.collection_fmt'), count: crew.collections.length }
 	];
 	const formattedCounts = counts.map((count, idx) => (
 		<span key={idx} style={{ whiteSpace: 'nowrap' }}>
@@ -127,7 +132,7 @@ export function descriptionLabel(t: TranslateMethod, crew: IRosterCrew,  showOwn
 	return (
 		<div>
 			<React.Fragment>
-				{!!crew.is_new && <div title={t('global.new', { __gender: crewGender(crew) })} style={{fontWeight: 'bold'}}><Icon name='asterisk' style={{ color: CONFIG.RARITIES[crew.max_rarity].color}} />{t('global.new', { __gender: crewGender(crew) })}</div>} 
+				{!!crew.is_new && <div title={t('global.new', { __gender: crewGender(crew) })} style={{fontWeight: 'bold'}}><Icon name='asterisk' style={{ color: CONFIG.RARITIES[crew.max_rarity].color}} />{t('global.new', { __gender: crewGender(crew) })}</div>}
 				{!!crew.expires_in && <Icon name='warning sign' title={ t('crew_state.expires_in', { time: printShortDistance(undefined, crew.expires_in * 1000) })} />}
 				{crew.favorite && <Icon name='heart' />}
 				{crew.prospect && <Icon name='add user' />}

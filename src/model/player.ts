@@ -50,7 +50,6 @@ export interface PlayerData {
   captains_bridge_root?: CaptainsBridgeRoot;
   calc?: { lastImported?: string, lastModified?: Date; numImmortals?: number; };
   archetype_cache?: ArchetypeRoot20;
-  item_archetype_cache?: ArchetypeRoot17;
   [key: string]: any;
   forte_root: ForteRoot;
   version?: 17 | 20;
@@ -152,8 +151,8 @@ export interface Character {
   stored_immortals: StoredImmortal[]
   c_stored_immortals?: number[]
   replay_energy_max: number
-  replay_energy_rate?: number
-  seconds_from_replay_energy_basis?: number
+  replay_energy_rate: number
+  seconds_from_replay_energy_basis: number
   replay_energy_overflow: number
   boost_windows?: BoostWindow[]
   seconds_from_last_boost_claim?: number
@@ -425,7 +424,10 @@ export interface CompactCrew {
   level: number;
   max_level?: number;
   rarity: number;
+  max_rarity: number;
+  traits?: string[];
   equipment: number[][] | number[];
+  skill_order: string[];
   base_skills?: BaseSkills;
   skills?: BaseSkills;
   favorite?: boolean;
@@ -849,27 +851,28 @@ export interface SquadronRankedBracket {
   quantity: number
 }
 
-export interface Content {
-  content_type: string
-  crew_bonuses?: CrewBonuses
-  gather_pools?: GatherPool[]
-  craft_bonus?: number
-  refresh_cost?: RefreshCost
-  supports_buffs?: boolean
-  shuttles?: Shuttle[]
-  bonus_crew?: string[]
-  bonus_traits?: string[]
-  featured_crews?: string[];
-  antimatter_bonus_for_featured_crew?: number;
-  antimatter_bonus_crew_traits?: string[];
-  antimatter_bonus_per_crew_trait?: number;
-  antimatter_bonus_ship_traits?: string[];
-  featured_ships?: string[];
-  antimatter_bonus_per_ship_trait?: number;
-  antimatter_bonus_for_featured_ship?: number;
-  primary_skill?: string;
-  secondary_skill?: string;
-}
+  export interface Content {
+    content_type: string
+    crew_bonuses?: CrewBonuses
+    gather_pools?: GatherPool[]
+    craft_bonus?: number
+    refresh_cost?: RefreshCost
+    supports_buffs?: boolean
+    shuttles?: Shuttle[]
+    bonus_crew?: string[]
+    bonus_traits?: string[]
+    voyage_symbol?: string;	// encounter_voyage
+    primary_skill?: string;
+    secondary_skill?: string;
+    antimatter_bonus_per_crew_trait?: number;
+    antimatter_bonus_crew_traits?: string[];
+    antimatter_bonus_for_featured_crew?: number;
+    featured_crews?: string[];
+    antimatter_bonus_per_ship_trait?: number;
+    antimatter_bonus_ship_traits?: string[];
+    antimatter_bonus_for_featured_ship?: number;
+    featured_ships?: string[];
+  }
 
 export interface CrewBonuses {
   [key: string]: number;
@@ -1100,8 +1103,22 @@ export interface Voyage {
   seconds_since_last_dilemma: number
   first_leave: boolean
   time_to_next_event: number
-  ship_id: number
+  ship_id: number;
+  next_interaction: number;
   crew_slots: VoyageCrewSlot[]
+}
+
+export interface EncounterVoyage extends Voyage {
+    phase_id: number;
+    event_instance_id: number;
+    encounter: number;
+    encounter_skip_boost?: {
+        boost_duration: number;
+        boost_archetype: number;
+    }
+    fast_forward_boost?: {
+        estimated_hp: number;
+    }
 }
 
 export interface PendingRewards {
@@ -1147,7 +1164,6 @@ export interface Summary {
 
 export interface CryoCollection extends Collection {
   id: number
-  type_id?: number
   name: string
   image?: string
   description?: string

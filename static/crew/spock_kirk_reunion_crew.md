@@ -3,7 +3,7 @@ name: Reunion Spock and Kirk
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal:
 date: 22/03/2021
 published: true

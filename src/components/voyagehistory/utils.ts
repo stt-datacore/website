@@ -1,243 +1,118 @@
-import { Voyage } from '../../model/player';
-import { IVoyageCalcConfig, IVoyageHistory, ITrackedVoyage, ITrackedAssignment, ITrackedCheckpoint, ITrackedDataRecord, ITrackedAssignmentsByCrew } from '../../model/voyage';
+import { Voyage, VoyageCrewSlot } from '../../model/player';
+import { IVoyageCalcConfig, IVoyageHistory, ITrackedVoyage, ITrackedCheckpoint, ITrackedAssignmentsByCrew, ITrackedDataRecord, IFullPayloadAssignment } from '../../model/voyage';
 import { Estimate } from '../../model/worker';
 import CONFIG from '../CONFIG';
 import { flattenEstimate } from '../../utils/voyageutils';
 import { UnifiedWorker } from '../../typings/worker';
 
-export const defaultHistory = {
-	voyages: [],
-	crew: {}
-} as IVoyageHistory;
+export const NEW_VOYAGE_ID = 0;
+export const NEW_TRACKER_ID = 0;
+
+export enum InitState {
+	Initializing,
+	VarsLoading,
+	VarsLoaded,
+	HistoryLoaded,
+	Reconciling,
+	Initialized
+};
+
+export enum SyncState {
+	ReadOnly,
+	LocalOnly,
+	RemoteReady
+};
 
 export interface TrackerPostResult {
-    status: number;
-    inputId?: number;
-    trackerId?: number;
-}
+	status: number;
+	inputId?: number;
+	trackerId?: number;
+};
 
-export async function getRemoteHistory(trackerId?: string, dbid?: number): Promise<IVoyageHistory | undefined> {
+export const defaultHistory: IVoyageHistory = {
+	voyages: [],
+	crew: {}
+};
 
-	let url = `${process.env.GATSBY_DATACORE_URL}api/getTrackedData?`;
-	if (trackerId && dbid) {
-		url += `dbid=${dbid}&trackerId=${trackerId}`;
-	}
-	else if (dbid) {
-		url += `dbid=${dbid}`;
-	}
-	else {
-		return undefined;
-	}
-
-	let response = await fetch(`${url}}`);
-
-	if (response.ok) {
-		let resultcrew = {} as ITrackedAssignmentsByCrew;
-		let resultvoyages = [] as ITrackedVoyage[];
-
-		let hist = await response.json() as ITrackedDataRecord;
-
-		if (hist.assignments) {
-			for (let crew of hist.assignments) {
-				resultcrew[crew.crew] ??= [];
-				resultcrew[crew.crew].push(crew.assignment);
-			}
-		}
-
-		if (hist.voyages) {
-			resultvoyages = hist.voyages.map(histVoy => histVoy.voyage);
-		}
-
-		let result = {
-			voyages: resultvoyages,
-			crew: resultcrew
-		} as IVoyageHistory;
-
-		return result;
-	}
-	else {
-		return undefined;
-	}
-}
-
-export async function postRemoteHistory(voyage: ITrackedVoyage, dbid: number): Promise<TrackerPostResult> {
-	let route = `${process.env.GATSBY_DATACORE_URL}api/postVoyage`
-	return await fetch(route, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({
-			dbid,
-			voyage
-		})
-	})
-	.then((response: Response) => response.json())
-	.catch((error) => { throw(error); });
-}
-
-export function compareTrackedVoyages(v1: ITrackedVoyage, v2: ITrackedVoyage) {
-	if (v1.voyage_id === v2.voyage_id) return true;
-
-	let obj1 = {
-		skills: v1.skills,
-		ship: v1.ship,
-		ship_trait: v1.ship_trait,
-		max_hp: v1.max_hp,
-		skill_aggregates: v1.skill_aggregates
-	}
-
-	let obj2 = {
-		skills: v2.skills,
-		ship: v2.ship,
-		ship_trait: v2.ship_trait,
-		max_hp: v2.max_hp,
-		skill_aggregates: v2.skill_aggregates
-	}
-
-	return JSON.stringify(obj1) === JSON.stringify(obj2);
-}
-
-export async function reconcileHistories(dbid: number, local: IVoyageHistory, remote: IVoyageHistory): Promise<IVoyageHistory> {
-	let c = local.voyages.length;
-	let d = remote.voyages.length;
-	let safeId = remote.voyages.map(m => m.tracker_id).reduce((p, n) => p > n ? p : n, 0) + 1;
-	let goodLocals = [] as number[];
-
-	for (let i = 0; i < c; i++) {
-		let pass = true;
-		for (let j = 0; j < d; j++) {
-			if (compareTrackedVoyages(local.voyages[i], remote.voyages[j])) {
-				pass = false;
-				break;
-			}
-			else if (local.voyages[i].tracker_id === remote.voyages[i].tracker_id) {
-				let oldId = local.voyages[i].tracker_id;
-				let newId = safeId++;
-
-				local.voyages[i].tracker_id = newId;
-
-				Object.keys(local.crew).forEach((symbol) => {
-					for (let assignment of local.crew[symbol]) {
-						if (assignment.tracker_id === oldId) {
-							assignment.tracker_id = newId;
-						}
-					}
-				});
-			}
-		}
-
-		if (pass) {
-			goodLocals.push(local.voyages[i].tracker_id);
-		}
-	}
-
-	for (let trackerId of goodLocals) {
-		let voyage = local.voyages.find(f => f.tracker_id === trackerId)!;
-		let result = await postRemoteHistory(voyage, dbid);
-		if (result?.trackerId) {
-			const crewForPost = {} as { [key: string]: ITrackedAssignment[] };
-			voyage.tracker_id = result.trackerId;
-			for (let symbol in local.crew) {
-				let crewTrack = local.crew[symbol].find(f => f.tracker_id === trackerId);
-				if (crewTrack) {
-					crewTrack.tracker_id = voyage.tracker_id;
-					crewForPost[symbol] ??= [];
-					crewForPost[symbol].push(crewTrack);
-				}
-			}
-			await postRemoteCrew(crewForPost, dbid);
-		}
-	}
-
-	return (await getRemoteHistory())!
-}
-
-export async function addVoyageToHistory(history: IVoyageHistory, voyageConfig: IVoyageCalcConfig | Voyage, shipSymbol: string, estimate: Estimate, postRemote?: boolean, dbid?: number): Promise<number> {
-	// Get next unused id to track this voyage
-	let trackerId = history.voyages.reduce((prev, curr) => Math.max(prev, curr.tracker_id), 0) + 1;
+export function createTrackableVoyage(
+	voyageConfig: IVoyageCalcConfig,
+	shipSymbol: string,
+	estimate: Estimate,
+	trackerId?: number,
+	runningVoyage?: Voyage,
+	runningCheckpoint?: ITrackedCheckpoint
+): ITrackedVoyage {
 	const flatEstimate = flattenEstimate(estimate);
-	const voyage = {
-		tracker_id: trackerId,
-		voyage_id: 0,	// *
+	const currentTime: number = Date.now();
+	const defaultCheckpoint: ITrackedCheckpoint = {
+		state: 'pending',
+		runtime: 0,
+		hp: voyageConfig.max_hp,
+		estimate: flatEstimate,
+		checked_at: currentTime
+	};
+	return {
+		tracker_id: trackerId ?? NEW_TRACKER_ID,
+		voyage_id: runningVoyage ? runningVoyage.id : NEW_VOYAGE_ID,
 		skills: voyageConfig.skills,
-		ship: shipSymbol,	// *
+		ship: shipSymbol,
 		ship_trait: voyageConfig.ship_trait,
 		max_hp: voyageConfig.max_hp,
 		skill_aggregates: voyageConfig.skill_aggregates,
 		estimate: flatEstimate,
-		created_at: Date.now(),	// *
-		checkpoint: {
-			state: 'pending',
-			runtime: 0,
-			hp: voyageConfig.max_hp,
-			estimate: flatEstimate,
-			checked_at: Date.now()
-		},
+		created_at: runningVoyage ? Date.parse(runningVoyage.created_at) : currentTime,
+		checkpoint: runningCheckpoint ?? defaultCheckpoint,
 		revivals: 0
-	} as ITrackedVoyage;
-	// * Reconcile on next playerData update, if necessary
-
-	history.voyages.push(voyage);
-	if (postRemote && dbid) {
-		let result = await postRemoteHistory(voyage, dbid);
-		if (result?.status < 300 && result.trackerId && result.inputId === trackerId) {
-			trackerId = result.trackerId;
-		}
-	}
-
-	return trackerId;
+	};
 }
 
-export async function postRemoteCrew(assignments: { [key: string]: ITrackedAssignment[] }, dbid: number): Promise<boolean> {
-	let route = `${process.env.GATSBY_DATACORE_URL}api/postAssignments`
-	return await fetch(route, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({
-			dbid,
-			assignments
-		})
-	})
-	.then((response: Response) => !!response)
-	.catch((error) => { throw(error); });
-}
-
-export function addCrewToHistory(history: IVoyageHistory, trackerId: number, voyageConfig: IVoyageCalcConfig, postRemote?: boolean, dbid?: number): void {
-	const crewForPost = {} as { [key: string]: ITrackedAssignment[] };
-
+export function createTrackableCrew(
+	voyageConfig: IVoyageCalcConfig,
+	trackerId?: number
+): IFullPayloadAssignment[] {
+	const trackableCrew: IFullPayloadAssignment[] = [];
 	CONFIG.VOYAGE_CREW_SLOTS.forEach((slotSymbol, slotIndex) => {
-		const voyageSlot = voyageConfig.crew_slots.find(slot => slot.symbol === slotSymbol);
+		const voyageSlot: VoyageCrewSlot | undefined = voyageConfig.crew_slots.find(slot => slot.symbol === slotSymbol);
 		if (voyageSlot) {
-			const crewSymbol = voyageSlot.crew.symbol;
-			const assignment = {
-				tracker_id: trackerId,
+			trackableCrew.push({
+				tracker_id: trackerId ?? NEW_TRACKER_ID,
+				crew: voyageSlot.crew.symbol,
 				slot: slotIndex,
 				trait: voyageSlot.crew.traits.includes(voyageSlot.trait) ? voyageSlot.trait : '',
 				kwipment: voyageSlot.crew.kwipment
-			} as ITrackedAssignment;
-
-			history.crew[crewSymbol] ??= [];
-			history.crew[crewSymbol].push(assignment);
-
-			if (postRemote && dbid) {
-				crewForPost[crewSymbol] ??= [];
-				crewForPost[crewSymbol].push(assignment);
-			}
+			});
 		}
 	});
-
-
-	if (postRemote && dbid) {
-		postRemoteCrew(crewForPost, dbid);
-	}
+	return trackableCrew;
 }
 
+export function addVoyageToHistory(history: IVoyageHistory, trackerId: number, trackableVoyage: ITrackedVoyage): void {
+	history.voyages.push({...trackableVoyage, tracker_id: trackerId});
+}
+
+export function addCrewToHistory(history: IVoyageHistory, trackerId: number, trackableCrew: IFullPayloadAssignment[]): void {
+	trackableCrew.forEach(assignment => {
+		const crewSymbol: string = assignment.crew;
+		history.crew[crewSymbol] ??= [];
+		if (!history.crew[crewSymbol].find(existing => existing.tracker_id === trackerId)) {
+			history.crew[crewSymbol].push({...assignment, tracker_id: trackerId});
+		}
+	});
+}
+
+export function updateVoyageInHistory(history: IVoyageHistory, trackedVoyage: ITrackedVoyage): void {
+	const trackerIndex: number = history.voyages.findIndex(voyage => voyage.tracker_id === trackedVoyage.tracker_id);
+	if (trackerIndex >= 0) history.voyages[trackerIndex] = trackedVoyage;
+}
+
+// Remove tracked voyage and associated crew assignments
 export function removeVoyageFromHistory(history: IVoyageHistory, trackerId: number): void {
-	const index = history.voyages.findIndex(voyage => voyage.tracker_id === trackerId);
+	const index: number = history.voyages.findIndex(voyage => voyage.tracker_id === trackerId);
 	if (index >= 0) history.voyages.splice(index, 1);
 
-	const crewToDelete = [] as string[];
+	const crewToDelete: string[] = [];
 	Object.entries(history.crew).forEach(([crewSymbol, assignments]) => {
-		let index = assignments.findIndex(assignment => assignment.tracker_id === trackerId);
+		let index: number = assignments.findIndex(assignment => assignment.tracker_id === trackerId);
 		if (index >= 0) assignments.splice(index, 1);
 		if (assignments.length === 0) crewToDelete.push(crewSymbol);
 	});
@@ -300,4 +175,86 @@ export function getRuntime(voyageConfig: Voyage): number {
 	}
 
 	return runtime;
+}
+
+export async function getTrackedData(dbid: string, trackerId?: string): Promise<IVoyageHistory | undefined> {
+	let url = `${process.env.GATSBY_DATACORE_URL}api/getTrackedData?`;
+	if (trackerId) {
+		url += `dbid=${dbid}&trackerId=${trackerId}`;
+	}
+	else {
+		url += `dbid=${dbid}`;
+	}
+
+	let response = await fetch(`${url}}`);
+
+	if (response.ok) {
+		let resultcrew: ITrackedAssignmentsByCrew = {};
+		let resultvoyages: ITrackedVoyage[] = [];
+
+		let hist: ITrackedDataRecord = await response.json() as ITrackedDataRecord;
+
+		if (hist.assignments) {
+			for (let crew of hist.assignments) {
+				resultcrew[crew.crew] ??= [];
+				resultcrew[crew.crew].push(crew.assignment);
+			}
+		}
+
+		if (hist.voyages) {
+			resultvoyages = hist.voyages.map(histVoy => histVoy.voyage);
+		}
+
+		let result: IVoyageHistory = {
+			voyages: resultvoyages,
+			crew: resultcrew
+		};
+
+		return result;
+	}
+	else {
+		return undefined;
+	}
+}
+
+export async function postTrackedData(dbid: string, voyage: ITrackedVoyage, assignments: IFullPayloadAssignment[]): Promise<TrackerPostResult> {
+	let route = `${process.env.GATSBY_DATACORE_URL}api/postTrackedData`
+	return await fetch(route, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			dbid,
+			voyage,
+			assignments
+		})
+	})
+	.then((response: Response) => response.json())
+	.catch((error) => { throw(error); });
+}
+
+export async function postVoyage(dbid: string, voyage: ITrackedVoyage): Promise<TrackerPostResult> {
+	let route = `${process.env.GATSBY_DATACORE_URL}api/postVoyage`
+	return await fetch(route, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			dbid,
+			voyage
+		})
+	})
+	.then((response: Response) => response.json())
+	.catch((error) => { throw(error); });
+}
+
+export async function deleteTrackedData(dbid: string, trackerId?: number): Promise<boolean> {
+	let url = `${process.env.GATSBY_DATACORE_URL}api/deleteTrackedData?`;
+	if (trackerId) {
+		url += `dbid=${dbid}&trackerId=${trackerId}`;
+	}
+	else {
+		url += `dbid=${dbid}`;	// NOT FUNCTIONAL
+	}
+	return await fetch(url, { method: 'DELETE' })
+		.then((response: Response) => !!response)
+		.catch((error) => { throw(error); });
 }

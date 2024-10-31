@@ -15,6 +15,7 @@
         "in_portal": "Im Zeitportal",
         "less_than_100_retrieval": "< 100 % Abrufbar",
         "level": "Level",
+        "live_results": "Live-Ergebnisse (Berechnung wird langsamer sein)",
         "n_slots": "{{n}} Ablagefächer",
         "n_to_next": "{{n}} zur nächsten",
         "never_in_portal": "Nie im Zeitportal",
@@ -29,6 +30,7 @@
         "qp": "RL",
         "rarity": "Seltenheit",
         "release_date": "Debüt",
+        "rewards": "Belohnungen",
         "shuttle": "Shuttle",
         "shuttles": "Shuttles",
         "uniquely_retrievable": "Eindeutig abrufbar",
@@ -158,6 +160,10 @@
     },
     "clipboard": {
         "copied_exclaim": "Kopiert!"
+    },
+    "collections": {
+        "milestone": "Meilenstein",
+        "milestones": "Meilensteine"
     },
     "consider_crew": {
         "active_shuttles": "Crew auf aktiven Shuttles berücksichtigen",
@@ -562,6 +568,10 @@
         "note_unleveled_crew_max_highlight_pair_msg": "Hinweis: Unleveled, eigene Crew, die als maximal angezeigt wird, hat Fähigkeiten, die unterstrichen und grün hervorgehoben sind.",
         "note_unleveled_crew_max_highlight_table_msg": "Hinweis: Unleveled, eigene Crew, die als maximal angezeigt wird, ist grün hervorgehoben.",
         "only_highlight_active_round": "Nur aktive Runde hervorheben",
+        "opponent_table": {
+            "opponent": "Gegner",
+            "opponent_crew_n": "Gegnercrew {{n}}"
+        },
         "owned_status": {
             "any": "Alle Crew",
             "fe": "Eigene, voll ausgerüstete Crew",
@@ -619,6 +629,10 @@
                 "heading": "Sehen Sie die Crew in großen Präsentationen",
                 "title": "Große Präsentation"
             },
+            "opponent_table": {
+                "heading": "Alle in diesem Spießrutenlauf gefangenen Gegner anzeigen",
+                "title": "Gegner"
+            },
             "pair_cards": {
                 "heading": "Siehe Crew in Paartabellen gruppiert",
                 "title": "Paartabellen"
@@ -645,6 +659,7 @@
         "base": "Grundlage",
         "bonus": "Bonifikation",
         "bonuses": "Boni",
+        "calculate": "Berechnen",
         "cancel": "Abbrechen",
         "challenge": "Herausforderung",
         "clear": "Löschen",
@@ -743,6 +758,7 @@
         "show_less": "Zeige weniger",
         "show_n_more_ellipses": "Zeige {{n}} weitere ...",
         "shown": "Gezeigt",
+        "sort_by": "Sortieren nach",
         "squadron_leader": "Geschwaderführer",
         "work_in_progress": {
             "heading": "Diese Seite befindet sich in Bearbeitung. Einige Funktionen und Features sind möglicherweise nicht funktionsfähig, defekt, fehlen, sind unvollständig oder ändern sich jederzeit.",
@@ -769,8 +785,11 @@
         "apply_buffs": "Buffs anwenden",
         "display_buffs": "Buffs anzeigen",
         "filter_by_availability": "Filtern nach Verfügbarkeit",
+        "filter_by_collections": "Filtern nach Sammlungen",
+        "filter_by_crew": "Filtern nach Crew",
         "filter_by_item_type": "Filtern nach Artikeltyp",
         "filter_by_owned_status": "Filtern nach Besitzstatus",
+        "filter_by_polestars": "Filtern nach Polarsterne",
         "filter_by_portal_status": "Filtern nach Portalstatus",
         "filter_by_primary_skill": "Nach primärer Fähigkeit filtern",
         "filter_by_progress": "Filtern nach Fortschritt",
@@ -948,6 +967,9 @@
     },
     "menu": {
         "about_title": "Über uns",
+        "descriptions": {
+            "voyage_calculator": "Finden Sie die beste Crew für Ihre Reisen und erhalten Sie Schätzungen zur Dauer der Reisen."
+        },
         "game_info": {
             "bridge_crew_tool": "Brückenbesatzungswerkzeug",
             "episodes": "Folgen",
@@ -1173,6 +1195,38 @@
         "moonshot": "Mondschuss",
         "potential_maximum": "Potenzielles Maximum",
         "standard": "Standard"
+    },
+    "retrieval": {
+        "allow_unowned": "Unbesessene Crew zulassen",
+        "calc_summary": "{{ship.calc.calc_summary}}",
+        "calculating_pct_ellipses": "{{ship.calc.calculating_pct_ellipses}}",
+        "calculating_pct_ellipses_verbose": "{{ship.calc.calculating_pct_ellipses_verbose}}",
+        "combo": "Combo",
+        "combo_length": "Combos Größe",
+        "combos": "Combos",
+        "consider_unowned_polestars": "Betrachten Sie nicht besessene Polarsterne (kann viel mehr Zeit in Anspruch nehmen)",
+        "constellation": "Sternbilde",
+        "constellations": "Sternbilder",
+        "keystone": "Keystone",
+        "keystone_crate": "Keystone-Kiste",
+        "keystone_crates": "Keystone Kisten",
+        "keystones": "Keystones",
+        "max_iterations": "{{ship.calc.max_iterations}}",
+        "max_workers": "{{ship.calc.max_workers}}",
+        "modes": {
+            "mutual_polestar_calculator": "Gemeinsamer Polarstern-Rechner",
+            "mutual_polestar_calculator_desc": "Finden Sie Combos, die gleiche Chancen bieten, Nicht-Unsterbliche zurückzuholen",
+            "retrieval": "Bergung",
+            "retrieval_desc": "Planen Sie einmalige Crewrückholungen"
+        },
+        "n_constellations": "{{n}} Sternbilder",
+        "n_polestars": "{{n}} Polarsterne",
+        "one_constellation": "1 Sternbilde",
+        "one_polestar": "1 Polarstern",
+        "polestar": "Polarstern",
+        "polestars": "Polarsterne",
+        "up_to_n": "Bis zu {{n}}",
+        "verbose_status_updates": "{{ship.calc.verbose_status_updates}}"
     },
     "roster_summary": {
         "by_rarity": "Nach Seltenheit",

@@ -3,7 +3,7 @@ name: Lt. Shaxs
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 10/08/2022
 published: true

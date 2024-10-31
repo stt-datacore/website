@@ -21,12 +21,10 @@ export interface SkillQuipmentScores {
     trait_limited: number;
 };
 
-export interface PowerLot {
-    power: Skill[];
-    lot: { [key: string]: EquipmentItem[] };
-    power_by_skill?: { [key: string]: Skill };
-    crew_power: number;
-    crew_by_skill: { [key: string]: Skill };
+export interface QuippedPower {
+    skill_quipment: { [key: string]: EquipmentItem[] };
+    skills_hash: { [key: string]: Skill };
+    aggregate_power: number;
 }
 
 export interface QuipmentScores {
@@ -37,11 +35,11 @@ export interface QuipmentScores {
     quipment_grades?: SkillQuipmentScores;
     voyage_quotient?: number;
     voyage_quotients?: SkillQuipmentScores;
-    q_lots?: PowerLot;
-    q_best_one_two_lots?: PowerLot;
-    q_best_two_three_lots?: PowerLot;
-    q_best_one_three_lots?: PowerLot;
-    q_best_three_lots?: PowerLot;
+    best_quipment?: QuippedPower;
+    best_quipment_1_2?: QuippedPower;
+    best_quipment_2_3?: QuippedPower;
+    best_quipment_1_3?: QuippedPower;
+    best_quipment_3?: QuippedPower;
 
 }
 

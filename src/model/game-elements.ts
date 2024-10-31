@@ -36,6 +36,7 @@ export interface KeystoneBase {
   short_name: string;
   flavor: string;
   icon: Icon;
+  imageUrl?: string;
   rarity?: number;
   filter?: PolestarFilter;
   crew_archetype_id?: number;
@@ -102,6 +103,7 @@ export interface ConstellationMap {
 
 export interface Collection {
   id: number;
+  type_id?: number
   name: string;
   crew?: string[];
   description?: string;

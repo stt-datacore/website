@@ -636,6 +636,29 @@ export function oneCrewCopy<T extends CrewMember>(crew: T): T {
 	return result;
 }
 
+export function makeCompact<T extends PlayerCrew>(crew: T, exclude?: string[]) : CompactCrew {
+	let newcrew = {} as CompactCrew;
+	if (!exclude?.includes("id")) newcrew.id = crew.id;
+	if (!exclude?.includes("symbol")) newcrew.symbol = crew.symbol;
+	if (!exclude?.includes("name")) newcrew.name = crew.name;
+	if (!exclude?.includes("archetype_id")) newcrew.archetype_id = crew.archetype_id;
+	if (!exclude?.includes("level")) newcrew.level = crew.level;
+	if (!exclude?.includes("traits")) newcrew.traits = [...crew.traits];
+	if (!exclude?.includes("max_level")) newcrew.max_level = crew.max_level;
+	if (!exclude?.includes("max_rarity")) newcrew.max_rarity = crew.max_rarity;
+	if (!exclude?.includes("rarity")) newcrew.rarity  = crew.rarity;
+	if (!exclude?.includes("equipment")) newcrew.equipment = newcrew.equipment ? JSON.parse(JSON.stringify(crew.equipment)) : undefined;
+	if (!exclude?.includes("skill_order")) newcrew.skill_order  = [ ...crew.skill_order ];
+	if (!exclude?.includes("base_skills")) newcrew.base_skills  = crew.base_skills ? JSON.parse(JSON.stringify(crew.base_skills)) : undefined;
+	if (!exclude?.includes("skills")) newcrew.skills  = crew.skills ? JSON.parse(JSON.stringify(crew.skills)) : undefined;
+	if (!exclude?.includes("favorite")) newcrew.favorite  = crew.favorite;
+	if (!exclude?.includes("ship_battle")) newcrew.ship_battle  = crew.ship_battle ? JSON.parse(JSON.stringify(crew.ship_battle)) : undefined;
+	if (!exclude?.includes("active_status")) newcrew.active_status  = crew.active_status;
+	if (!exclude?.includes("active_id")) newcrew.active_id  = crew.active_id;
+	if (!exclude?.includes("active_index")) newcrew.active_index  = crew.active_index;
+	return newcrew;
+}
+
 // export function averagePairs(skills: Skill[][]) {
 
 // 	let avg = [] as Skill[];
@@ -1193,6 +1216,7 @@ export function printImmoText(immo: number | CompletionState, item?: string, imm
 		else if (immo === -3) return t('item_state.item_is_shown_unowned', { item, level: immoText, __gender: gender });
 		else if (immo === -4) return t('item_state.item_is_shown_owned', { item, level: immoText, __gender: gender });
 		else if (immo === -2) return t('item_state.item_is_shown', { item, level: immoText, __gender: gender });
+		else if (immo === -10) return t('gauntlet.opponent_table.opponent');
 		else if (immo >= 1) {
 			if (immo === 1) {
 				return(t('item_state.item_is_frozen_one'))
@@ -1212,6 +1236,7 @@ export function printImmoText(immo: number | CompletionState, item?: string, imm
 		else if (immo === -3) return `${item} Is Shown ${immoText} (Unowned)`;
 		else if (immo === -4) return `${item} Is Shown ${immoText} (Owned)`;
 		else if (immo === -2) return `${item} Is Shown ${immoText}`;
+		else if (immo === -10) return 'Opponent';
 		else if (immo >= 1) return `${item} Is Frozen (` + (immo === 1 ? "1 copy" : immo.toString() + " copies") + ")";
 		else return `${item} Is Not ${immoText}`;
 	}
@@ -1229,12 +1254,12 @@ export function getSkills(item: PlayerCrew | CrewMember | CompactCrew | BaseSkil
 		bskills = item;
 	}
 
-	if (bskills?.command_skill !== undefined && bskills.command_skill.core > 0) sk.push("command_skill");
-	if (bskills?.science_skill !== undefined && bskills.science_skill.core > 0) sk.push("science_skill");
-	if (bskills?.security_skill !== undefined && bskills.security_skill.core > 0) sk.push("security_skill");
-	if (bskills?.engineering_skill !== undefined && bskills.engineering_skill.core > 0) sk.push("engineering_skill");
-	if (bskills?.diplomacy_skill !== undefined && bskills.diplomacy_skill.core > 0) sk.push("diplomacy_skill");
-	if (bskills?.medicine_skill !== undefined && bskills.medicine_skill.core > 0) sk.push("medicine_skill");
+	if (bskills?.command_skill !== undefined && (bskills.command_skill.core > 0 || bskills.command_skill.range_max > 0)) sk.push("command_skill");
+	if (bskills?.science_skill !== undefined && (bskills.science_skill.core > 0 || bskills.science_skill.range_max > 0)) sk.push("science_skill");
+	if (bskills?.security_skill !== undefined && (bskills.security_skill.core > 0 || bskills.security_skill.range_max > 0)) sk.push("security_skill");
+	if (bskills?.engineering_skill !== undefined && (bskills.engineering_skill.core > 0 || bskills.engineering_skill.range_max > 0)) sk.push("engineering_skill");
+	if (bskills?.diplomacy_skill !== undefined && (bskills.diplomacy_skill.core > 0 || bskills.diplomacy_skill.range_max > 0)) sk.push("diplomacy_skill");
+	if (bskills?.medicine_skill !== undefined && (bskills.medicine_skill.core > 0 || bskills.medicine_skill.range_max > 0)) sk.push("medicine_skill");
 
 	return sk;
 }
@@ -1602,8 +1627,8 @@ export function printPortalStatus<T extends CrewMember>(crew: T, t: TranslateMet
 }
 
 export function getVoyageQuotient<T extends CrewMember>(crew: T) {
-    if (!crew.q_lots?.power) return 0;
-	const q_power = crew.q_lots.power;
+    if (!crew.best_quipment?.skills_hash) return 0;
+	const q_power = Object.values(crew.best_quipment.skills_hash);
     let power = 0;
 	for (let skill in crew.base_skills) {
 		let qp = q_power.find(f => f.skill === skill);
