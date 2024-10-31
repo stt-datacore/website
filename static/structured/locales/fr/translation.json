@@ -1219,6 +1219,7 @@
         "consider_unowned_polestars": "Envisagez des étoiles polaires sans propriétaire (cela peut prendre beaucoup plus de temps)",
         "constellation": "Constellation",
         "constellations": "Constellations",
+        "filter_owned_polestars": "Filtrer les étoiles polaire possédées",
         "keystone": "Clé de voûte",
         "keystone_crate": "Caisse des clés de voûte",
         "keystone_crates": "Caisses des clés de voûte",
@@ -1229,7 +1230,7 @@
             "mutual_polestar_calculator": "Calculateur étoiles polaires mutuels",
             "mutual_polestar_calculator_desc": "Trouvez des combos qui donnent des chances égales de récupérer les non-immortels",
             "retrieval": "Récupération",
-            "retrieval_desc": "Planifiez des récupérations d'éqipiers uniques"
+            "retrieval_desc": "Planifiez des récupérations d'équipiers uniques"
         },
         "n_constellations": "{{n}} Constellations",
         "n_polestars": "{{n}} Étoile polaires",

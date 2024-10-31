@@ -1218,6 +1218,7 @@
         "consider_unowned_polestars": "Considere estrellas polares sin dueño (puede llevar mucho más tiempo)",
         "constellation": "Constelación",
         "constellations": "Constelaciones",
+        "filter_owned_polestars": "Filtrar estrellas polares propias",
         "keystone": "Piedra clave",
         "keystone_crate": "Caja de piedras clave",
         "keystone_crates": "Cajas de piedras clave",

@@ -1207,6 +1207,7 @@
         "consider_unowned_polestars": "Betrachten Sie nicht besessene Polarsterne (kann viel mehr Zeit in Anspruch nehmen)",
         "constellation": "Sternbilde",
         "constellations": "Sternbilder",
+        "filter_owned_polestars": "Filtere eigene Polarsterne",
         "keystone": "Keystone",
         "keystone_crate": "Keystone-Kiste",
         "keystone_crates": "Keystone Kisten",

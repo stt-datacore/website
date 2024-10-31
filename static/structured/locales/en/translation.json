@@ -1205,6 +1205,7 @@
         "consider_unowned_polestars": "Consider unowned polestars (may take much more time)",
         "constellation": "Constellation",
         "constellations": "Constellations",
+        "filter_owned_polestars": "Filter Owned Polestars",
         "keystone": "Keystone",
         "keystone_crate": "Keystone Crate",
         "keystone_crates": "Keystone Crates",

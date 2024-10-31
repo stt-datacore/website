@@ -3,9 +3,11 @@ import { Button, Checkbox, Grid, Icon, Modal } from 'semantic-ui-react';
 
 import { IPolestar } from './model';
 import { RetrievalContext } from './context';
+import { GlobalContext } from '../../context/globalcontext';
 
 export const PolestarFilterModal = () => {
 	const { allKeystones, polestarTailors, setPolestarTailors } = React.useContext(RetrievalContext);
+	const { t } = React.useContext(GlobalContext).localized;
 
 	const disabledPolestars = polestarTailors.disabled;
 
@@ -70,7 +72,7 @@ export const PolestarFilterModal = () => {
 			trigger={<Button color={buttonColor}><Icon name='filter' />{selectedPolestars} / {ownedPolestars.length}</Button>}
 			size='large'
 		>
-			<Modal.Header>Filter Owned Polestars</Modal.Header>
+			<Modal.Header>{t('retrieval.filter_owned_polestars')}</Modal.Header>
 			<Modal.Content scrolling>
 				<Grid columns={4} stackable padded>
 					{createFilterCheckboxes()}
@@ -78,7 +80,7 @@ export const PolestarFilterModal = () => {
 			</Modal.Content>
 			<Modal.Actions>
 				<Button onClick={() => setModalIsOpen(false)}>
-					Close
+					{t('global.close')}
 				</Button>
 			</Modal.Actions>
 		</Modal>

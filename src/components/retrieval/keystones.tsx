@@ -11,6 +11,7 @@ import { PolestarFilterModal } from './polestarfilter';
 import { PolestarProspectsModal } from './polestarprospects';
 import { MutualView } from './mutualview';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import CONFIG from '../CONFIG';
 
 export const RetrievalKeystones = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -125,6 +126,7 @@ type KeystonesPlayerProps = {
 
 const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { ITEM_ARCHETYPES, language, TRAIT_NAMES } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { dbid, mode, } = props;
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[]>([]);
@@ -136,6 +138,25 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 
 	React.useEffect(() => {
 		const allKeystones = JSON.parse(JSON.stringify(props.allKeystones)) as IKeystone[];
+		allKeystones.forEach((keystone) => {
+			if (ITEM_ARCHETYPES[keystone.symbol]) {
+				keystone.name = ITEM_ARCHETYPES[keystone.symbol].name;
+				keystone.flavor = ITEM_ARCHETYPES[keystone.symbol].flavor;
+				if (keystone.symbol.endsWith("_crate")) return;
+				if (keystone.symbol.startsWith("rarity_")) {
+					let r = Number(keystone.symbol.replace("rarity_", "").replace("_keystone", ""));
+					keystone.short_name = CONFIG.RARITIES[r].name;
+				}
+				else if (keystone.symbol.endsWith("_skill_keystone")) {
+					let skill = keystone.symbol.replace("_keystone", "");
+					keystone.short_name = CONFIG.SKILLS[skill];
+				}
+				else {
+					let trait = keystone.symbol.replace("_keystone", "");
+					keystone.short_name = TRAIT_NAMES[trait];
+				}
+			}
+		});
 
 		// Count owned constellations
 		const constellations = allKeystones.filter(k => k.type !== 'keystone') as IConstellation[];
@@ -167,7 +188,7 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 		});
 
 		setAllKeystones([...allKeystones]);
-	}, [props.allKeystones, playerData]);
+	}, [props.allKeystones, playerData, language]);
 
 	const retrievalContext: IRetrievalContext = {
 		allKeystones,
