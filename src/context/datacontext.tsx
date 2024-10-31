@@ -16,6 +16,7 @@ import { StaticFaction } from '../model/shuttle';
 import { getSkillOrder } from '../utils/crewutils';
 import { highestLevel } from '../utils/shiputils';
 import { ObjectiveEvent } from '../model/player';
+import { ICoreData } from './coremodel';
 
 const DC_DEBUGGING: boolean = false;
 
@@ -44,27 +45,6 @@ export type ValidDemands =
 
 export interface DataProviderProperties {
 	children: JSX.Element;
-};
-
-export interface ICoreData {
-	all_buffs: BuffStatTable;
-	battle_stations: BattleStations[];
-	cadet: Mission[];
-	collections: Collection[];
-	crew: CrewMember[];
-	episodes: Mission[];
-	event_instances: EventInstance[];
-	factions: StaticFaction[];
-	gauntlets: Gauntlet[];
-	items: EquipmentItem[];
-	keystones: (KeystoneBase | Polestar | Constellation)[];
-	missions: Mission[];
-	missionsfull: Mission[];
-	objective_events: ObjectiveEvent[];
-	continuum_missions: ContinuumMission[];
-	ship_schematics: Schematics[];
-	ships: Ship[];
-	topQuipmentScores: QuipmentScores[];
 };
 
 export interface ICoreContext extends ICoreData {

@@ -1,4 +1,4 @@
-import { ShipWorkerConfig, ShipWorkerItem } from "../../model/ship";
+import { ShipWorkerConfig, ShipWorkerItem } from "../../model/worker";
 import React from "react";
 import { compareShipResults } from "../../utils/shiputils";
 import { IMultiWorkerContext, IMultiWorkerConfig, IMultiWorkerState, IMultiWorkerStatus } from "../../model/worker";

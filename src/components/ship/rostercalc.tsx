@@ -1,6 +1,6 @@
 import React from "react";
 import { CrewMember } from "../../model/crew";
-import { BattleMode, DefaultAdvancedCrewPower, Ship, ShipRankingMethod, ShipWorkerConfig, ShipWorkerItem } from "../../model/ship";
+import { BattleMode, DefaultAdvancedCrewPower, Ship, ShipRankingMethod } from "../../model/ship";
 import { Accordion, Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Label, SemanticICONS } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { WorkerContext } from "../../context/workercontext";
@@ -18,6 +18,7 @@ import { CrewDropDown } from "../base/crewdropdown";
 import { ShipMultiWorkerContext, ShipMultiWorkerStatus } from "./shipmultiworker";
 import AdvancedCrewPowerPopup from "./advancedpower";
 import CONFIG from "../CONFIG";
+import { ShipWorkerConfig, ShipWorkerItem } from "src/model/worker";
 
 export interface RosterCalcProps {
     pageId: string;

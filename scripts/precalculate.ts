@@ -15,7 +15,7 @@ import { BaseSkills, ComputedSkill, CrewMember, EquipmentSlot, QuipmentScores, R
 import { Mission } from '../src/model/missions';
 import { BattleStation, BattleStations, Schematics, Ship } from '../src/model/ship';
 
-const STATIC_PATH = `${__dirname}/../static/structured/`;
+const STATIC_PATH = `${__dirname}/../../static/structured/`;
 
 let crewlist = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf-8')) as (CrewMember & { _comboIds?: string[][] }) [];
 let items = JSON.parse(fs.readFileSync(STATIC_PATH + 'items.json', 'utf-8')) as EquipmentItem[];

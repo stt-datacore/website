@@ -1,9 +1,6 @@
-import { BossEffect } from "./boss";
 import { CrewMember } from "./crew";
 import { Icon } from "./game-elements";
 import { CompletionState, PlayerCrew } from "./player";
-import { IWorkerResults, WorkerConfigBase } from "./worker";
-
 
 export interface Schematics {
   id: number;
@@ -188,71 +185,3 @@ export interface AdvancedCrewPowerConfig {
     setCurrent: (value: AdvancedCrewPower) => void;
 }
 
-export interface ShipWorkerConfigBase extends WorkerConfigBase<ShipWorkerItem> {
-    ranking_method: ShipRankingMethod,
-    event_crew?: CrewMember,
-    crew: CrewMember[],
-    battle_mode: BattleMode,
-    rate: number,
-    simulate: boolean,
-    fixed_activation_delay: number,
-    power_depth?: number,
-    max_rarity?: number,
-    min_rarity?: number,
-    opponents?: Ship[],
-    action_types?: number[],
-    ability_types?: number[],
-    max_results?: number
-    defense?: number;
-    offense?: number;
-    get_attacks?: boolean;
-    effects?: BossEffect[];
-    max_duration?: number;
-    ignore_skill?: boolean;
-    activation_offsets?: number[];
-    opponent_variance?: number;
-}
-
-export interface ShipWorkerConfig extends ShipWorkerConfigBase {
-    ship: Ship,
-}
-
-export interface MultiShipWorkerConfig extends ShipWorkerConfigBase {
-    ships: Ship[],
-}
-
-
-export interface AttackInstant {
-  actions: ShipAction[];
-  second: number;
-  hull: number;
-  shields: number;
-  attack: number;
-  min_attack: number;
-  max_attack: number;
-  ship: Ship;
-}
-
-
-export interface ShipWorkerItem {
-    id: number;
-    rate: number;
-    battle_mode: BattleMode;
-    ship: Ship,
-    crew: CrewMember[]
-    attack: number;
-    min_attack: number;
-    max_attack: number;
-    battle_time: number;
-    weighted_attack: number;
-    arena_metric: number;
-    fbb_metric: number;
-    skirmish_metric: number;
-    percentile: number;
-    attacks?: AttackInstant[];
-}
-
-export interface ShipWorkerResults extends IWorkerResults<ShipWorkerItem> {
-    total_iterations: bigint;
-    run_time: number;
-}

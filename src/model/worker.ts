@@ -1,11 +1,11 @@
-import { BossBattlesRoot } from "./boss";
+import { BossBattlesRoot, BossEffect } from "./boss";
 import { BaseSkills, CrewMember, PlayerSkill, Skill } from "./crew";
 import { CompactCrew, Player, PlayerCrew, PlayerData } from "./player";
-import { Ship } from "./ship";
+import { BattleMode, Ship, ShipAction, ShipRankingMethod } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
 import { EquipmentCommon, EquipmentItem } from "./equipment";
 import { Collection } from "./game-elements";
-import { ICoreData } from "../context/datacontext";
+import { ICoreData } from "../context/coremodel";
 import { MissionChallenge, MissionTraitBonus, QuestFilterConfig } from "./missions";
 import { IEphemeralData } from "../context/playercontext";
 import { VPDetails } from "../utils/voyagevp";
@@ -379,4 +379,72 @@ export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase<IM
     crew: IPolestarCrew[];
     comboSize: PolestarComboSize;
     allowUnowned?: number;
+}
+export interface ShipWorkerConfigBase extends WorkerConfigBase<ShipWorkerItem> {
+    ranking_method: ShipRankingMethod,
+    event_crew?: CrewMember,
+    crew: CrewMember[],
+    battle_mode: BattleMode,
+    rate: number,
+    simulate: boolean,
+    fixed_activation_delay: number,
+    power_depth?: number,
+    max_rarity?: number,
+    min_rarity?: number,
+    opponents?: Ship[],
+    action_types?: number[],
+    ability_types?: number[],
+    max_results?: number
+    defense?: number;
+    offense?: number;
+    get_attacks?: boolean;
+    effects?: BossEffect[];
+    max_duration?: number;
+    ignore_skill?: boolean;
+    activation_offsets?: number[];
+    opponent_variance?: number;
+}
+
+export interface ShipWorkerConfig extends ShipWorkerConfigBase {
+    ship: Ship,
+}
+
+export interface MultiShipWorkerConfig extends ShipWorkerConfigBase {
+    ships: Ship[],
+}
+
+
+export interface AttackInstant {
+  actions: ShipAction[];
+  second: number;
+  hull: number;
+  shields: number;
+  attack: number;
+  min_attack: number;
+  max_attack: number;
+  ship: Ship;
+}
+
+
+export interface ShipWorkerItem {
+    id: number;
+    rate: number;
+    battle_mode: BattleMode;
+    ship: Ship,
+    crew: CrewMember[]
+    attack: number;
+    min_attack: number;
+    max_attack: number;
+    battle_time: number;
+    weighted_attack: number;
+    arena_metric: number;
+    fbb_metric: number;
+    skirmish_metric: number;
+    percentile: number;
+    attacks?: AttackInstant[];
+}
+
+export interface ShipWorkerResults extends IWorkerResults<ShipWorkerItem> {
+    total_iterations: bigint;
+    run_time: number;
 }
