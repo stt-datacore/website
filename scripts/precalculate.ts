@@ -708,6 +708,22 @@ function updateExcelSheet() {
 			return 'Picard';
 		}
 
+		if (short === 'low') {
+			return 'Lower Decks';
+		}
+
+		if (short === 'snw') {
+			return 'Strange New Worlds';
+		}
+
+		if (short === 'vst') {
+			return 'Very Short Treks';
+		}
+
+		if (short === 'original') {
+			return 'Star Trek Timelines Originals';
+		}
+
 		if (!short) {
 			return 'Movies';
 		}
