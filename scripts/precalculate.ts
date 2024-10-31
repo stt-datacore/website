@@ -165,7 +165,7 @@ function getCrewMarkDown(crewSymbol: string) {
 		const converter = new showdown.Converter({ metadata: true });
 		let markdownContent = fs.readFileSync(`${STATIC_PATH}/../crew/${crewSymbol}.md`, 'utf8');
 		converter.makeHtml(markdownContent);
-		let meta = converter.getMetadata();
+		let meta = converter.getMetadata(undefined);
 
 		markdownContent = markdownContent.slice(markdownContent.indexOf('---', 4) + 4).trim();
 
@@ -371,7 +371,7 @@ function main() {
 			}
 			if (!crew.obtained) {
 				crew.obtained = mdData.meta.obtained ? mdData.meta.obtained : 'N/A';
-			}			
+			}
 			crew.markdownContent = mdData.markdownContent;
 		}
 	}
@@ -385,7 +385,7 @@ function main() {
 		for (let skill in crew.base_skills) {
 			if (crew.base_skills[skill]) polestars.push(skill);
 		}
-		let onePolestarCombos = polestars.slice().map((pol) => [pol]);		
+		let onePolestarCombos = polestars.slice().map((pol) => [pol]);
 		let twoPolestarCombos = _.combinations(polestars, 2);
 		let threePolestarCombos = _.combinations(polestars, 3);
 		let fourPolestarCombos = _.combinations(polestars, 4);
@@ -836,7 +836,7 @@ function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemWithBonu
 	crew.quipment_score = qps.map(m => Object.values(m.bonusInfo.bonuses).map((n: Skill) => n.skill && n.skill in crew.base_skills && crew.base_skills[n.skill].core ? n.core + n.range_min + n.range_max : 0)).flat().reduce((p, n) => p + n, 0) * crew.max_rarity;
 	if (overallOnly) return;
 
-	crew.quipment_scores ??= {		
+	crew.quipment_scores ??= {
 		command_skill: 0,
 		medicine_skill: 0,
 		diplomacy_skill: 0,
@@ -915,7 +915,7 @@ function calculateTopQuipment() {
 			})
 		}
 	}
-	
+
 	fs.writeFileSync(STATIC_PATH + "top_quipment_scores.json", JSON.stringify(scores));
 	return scores;
 }
@@ -971,14 +971,14 @@ const STATS_CONFIG: { [index: number]: { symbol: string, skill: string, stat: st
 export function getItemBonuses(item: EquipmentItem): ItemBonusInfo {
     let bonusText = [] as string[];
     let bonuses = {} as { [key: string]: Skill };
-    
+
     if (item.bonuses) {
         for (let [key, value] of Object.entries(item.bonuses)) {
             let bonus = STATS_CONFIG[Number.parseInt(key)];
             if (bonus) {
-                bonusText.push(`+${value} ${bonus.symbol}`);	
+                bonusText.push(`+${value} ${bonus.symbol}`);
                 bonuses[bonus.skill] ??= { core: 0, range_min: 0, range_max: 0 } as Skill;
-                bonuses[bonus.skill][bonus.stat] = value;				
+                bonuses[bonus.skill][bonus.stat] = value;
                 bonuses[bonus.skill].skill = bonus.skill;
             } else {
                 // TODO: what kind of bonus is this?
