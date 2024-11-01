@@ -608,6 +608,7 @@ export function calcQLots<T extends CrewMember>(
 					q_power[skill].range_max += skill_quipment[i].skill.range_max;
 					q_power[skill].range_min += skill_quipment[i].skill.range_min;
 					q_power[skill].skill = skill;
+					i++;
 				}
 				else {
 					break;
