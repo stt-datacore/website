@@ -9,6 +9,7 @@ import CrewStat from "../crewstat";
 import { PlayerSkill, Skill } from "../../model/crew";
 import { useStateWithStorage } from "../../utils/storage";
 import { getCrewCrit } from "../../utils/gauntlet";
+import { getIconPath } from "../../utils/assets";
 
 export interface OpponentTableProps {
     opponents: Opponent[];
@@ -74,9 +75,6 @@ export const OpponentTable = (props: OpponentTableProps) => {
             }
         }
         opponents.forEach((oppo) => {
-            if (oppo?.icon?.file && !oppo.icon.file.includes(".png")) {
-                oppo.icon.file = oppo.icon.file.replace("/crew_icons/", "crew_icons_") + ".png";
-            }
             oppo.crew_contest_data.crew.sort((a, b) => {
                 let ask = a.skills.map(s => (s.max + s.min) * 0.5).reduce((p, n) => p + n, 0);
                 let bsk = b.skills.map(s => (s.max + s.min) * 0.5).reduce((p, n) => p + n, 0);
@@ -129,7 +127,7 @@ export const OpponentTable = (props: OpponentTableProps) => {
                     return <Table.Row key={`${opponent.name}_${idx}_${opponent.player_id}`}>
                         <Table.Cell>
                             <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                                <img className="ui segment" style={{ margin: "4px 8px", borderRadius: "6px", height: "72px" }} src={`${process.env.GATSBY_ASSETS_URL}${opponent?.icon?.file ?? 'crew_portraits_cm_empty_sm.png'}`} />
+                                <img className="ui segment" style={{ margin: "4px 8px", borderRadius: "6px", height: "72px" }} src={`${process.env.GATSBY_ASSETS_URL}${opponent?.icon?.file ? getIconPath(opponent?.icon, true) : 'crew_portraits_cm_empty_sm.png'}`} />
                                 {opponent.name}
                             </div>
                         </Table.Cell>

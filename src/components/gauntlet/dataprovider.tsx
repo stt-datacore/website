@@ -6,7 +6,7 @@ import { useStateWithStorage } from "../../utils/storage";
 import moment from "moment";
 import { TinyStore } from "../../utils/tiny";
 import { skillToShort } from "../../utils/crewutils";
-import { UnifiedWorker } from "src/typings/worker";
+import { UnifiedWorker } from "../../typings/worker";
 
 export interface IGauntletContext {
     initialized: boolean;

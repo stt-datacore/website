@@ -8,6 +8,7 @@ import ItemDisplay from '../itemdisplay';
 import { GlobalContext } from '../../context/globalcontext';
 import { Link } from 'gatsby';
 import { AvatarView } from '../item_presenters/avatarview';
+import { getIconPath } from '../../utils/assets';
 
 export interface PairCardProps {
     crew: CrewMember | PlayerCrew;
@@ -105,7 +106,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
     let tempicon = "";
 
     if (inMatch && context.player.playerData) {
-        tempicon = context.player.playerData.player.character.crew_avatar.portrait.file;
+        tempicon = getIconPath(context.player.playerData.player.character.crew_avatar.portrait, true);
     }
 
     const myIcon = tempicon;
@@ -114,9 +115,6 @@ export const GauntletPairCard = (props: PairCardProps) => {
 
     if (isOpponent) {
         tempoppo = gauntlet.opponents?.find(o => o.player_id === Number.parseInt(crew?.ssId ?? "0"));
-        if (tempoppo?.icon?.file && !tempoppo.icon.file.includes(".png")) {
-            tempoppo.icon.file = tempoppo.icon.file.replace("/crew_icons/", "crew_icons_") + ".png";
-        }
     }
 
     const opponent = tempoppo;
@@ -222,7 +220,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
                                 alignItems: "center"
                             }}>
                                 {opponent?.name}
-                                <img className="ui" style={{ margin: "4px 8px", borderRadius: "3px", height: "16px" }} src={`${process.env.GATSBY_ASSETS_URL}${opponent?.icon.file}`} />
+                                <img className="ui" style={{ margin: "4px 8px", borderRadius: "3px", height: "16px" }} src={`${process.env.GATSBY_ASSETS_URL}${opponent?.icon?.file ? getIconPath(opponent.icon, true) : 'crew_portraits_cm_empty_sm.png'}`} />
                             </div>
                             <span>
                                 [{opponent?.level}]
