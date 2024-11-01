@@ -23,7 +23,7 @@ export interface SkillQuipmentScores {
 
 export interface QuippedPower {
     skill_quipment: { [key: string]: EquipmentItem[] };
-    skills_hash: { [key: string]: Skill };
+    skills_hash: BaseSkills;
     aggregate_power: number;
 }
 

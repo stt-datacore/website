@@ -11,7 +11,9 @@ export const BuffNames = {
     'none': "buffs.no_buffs",
     'player': "buffs.player_buffs",
     'max': "buffs.max_buffs",
-    'quipment': "buffs.quipment_buffs"
+    'quipment': "buffs.quipment_buffs",
+    'max_quipment_2': "buffs.max_quipment_buffs_double",
+    'max_quipment_3': "buffs.max_quipment_buffs_triple",
 }
 
 export const ImmortalNames = {

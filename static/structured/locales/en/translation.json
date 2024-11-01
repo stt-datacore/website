@@ -1,5 +1,6 @@
 {
     "base": {
+        "best_pair": "Best Pair",
         "all_crew": "Show all crew",
         "bigbook_tier": "Tier",
         "cab_power": "CAB",
@@ -71,7 +72,9 @@
         "max_buffs": "Max buffs",
         "no_buffs": "No buffs",
         "player_buffs": "Player buffs",
-        "quipment_buffs": "Quipment Buffs"
+        "quipment_buffs": "Quipment Buffs",
+        "max_quipment_buffs_double": "Max Quipment Buffs (Two Skills)",
+        "max_quipment_buffs_triple": "Max Quipment Buffs (Three Skills)"
     },
     "cite_opt": {
         "btp": {
@@ -784,6 +787,7 @@
     "hints": {
         "apply_buffs": "Apply stat buffs",
         "display_buffs": "Display Buffs",
+        "filter_crew_by_rank": "Filter crew by rank",
         "filter_by_availability": "Filter by availability",
         "filter_by_collections": "Filter by collections",
         "filter_by_crew": "Filter by crew",

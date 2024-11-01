@@ -91,6 +91,8 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
 
     render() {
         const { context: crew, data: node } = this.props;
+        const { t } = this.context.localized;
+
         if (!Array.isArray(node)) {
 
         }
@@ -141,10 +143,10 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
 //                minHeight: "4em"
             }}>
                 {this.drawLeftArea()}
-                <div style={{gridArea: 'right', fontSize: "12pt", marginTop: "1em", marginBottom: "1em"}} title="Best Pair">
+                <div style={{gridArea: 'right', fontSize: "12pt", marginTop: "1em", marginBottom: "1em"}} title={t('base.best_pair')}>
                     <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairs[0][0].skill}.png`} />
                     <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairs[0][1].skill}.png`} />
-                    <div style={{margin: "0.25em"}}>{"Best Pair"}</div>
+                    <div style={{margin: "0.25em"}}>{t('base.best_pair')}</div>
                 </div>
             </div>
         </div>);

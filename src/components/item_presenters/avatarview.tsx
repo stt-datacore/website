@@ -116,6 +116,15 @@ export const AvatarView = (props: AvatarViewProps) => {
     let gen_item = (partialItem || (!props.passDirect && !props.useDirect)) ? undefined : props.item;
     let borderColor = CONFIG.RARITIES[maxRarity ?? 0].color;
 
+    const imgStyle = {
+        borderStyle: 'solid',
+        borderRadius: borderRadius + 'px',
+        borderWidth: borderWidth + 'px',
+        borderColor: borderColor,
+        width: size - 2 * borderWidth + 'px',
+        height: size - 2 * borderWidth + 'px'
+    } as React.CSSProperties;
+
     let src = props.src;
     let rarity = [] as JSX.Element[];
 
@@ -148,15 +157,6 @@ export const AvatarView = (props: AvatarViewProps) => {
         alignItems: "center",
         width: size + 'px',
         height: size + 'px',
-    } as React.CSSProperties;
-
-    const imgStyle = {
-        borderStyle: 'solid',
-        borderRadius: borderRadius + 'px',
-        borderWidth: borderWidth + 'px',
-        borderColor: borderColor,
-        width: size - 2 * borderWidth + 'px',
-        height: size - 2 * borderWidth + 'px'
     } as React.CSSProperties;
 
     const starStyle = {

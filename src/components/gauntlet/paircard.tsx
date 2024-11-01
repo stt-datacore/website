@@ -1,18 +1,19 @@
 import React from 'react';
 import { Skill, ComputedSkill, CrewMember } from '../../model/crew';
 import { Gauntlet, Opponent } from '../../model/gauntlets';
-import { PlayerCrew, CompletionState, PlayerBuffMode } from '../../model/player';
+import { PlayerCrew, CompletionState, PlayerBuffMode, GauntletPlayerBuffMode } from '../../model/player';
 import { shortToSkill, gradeToColor, getPairScore, getCrewPairScore, dynamicRangeColor, isImmortal, getPlayerPairs } from '../../utils/crewutils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import ItemDisplay from '../itemdisplay';
 import { GlobalContext } from '../../context/globalcontext';
 import { Link } from 'gatsby';
+import { AvatarView } from '../item_presenters/avatarview';
 
 export interface PairCardProps {
     crew: CrewMember | PlayerCrew;
     gauntlet: Gauntlet;
     pair: string[];
-    boostMode: PlayerBuffMode;
+    boostMode: GauntletPlayerBuffMode;
     onlyActiveRound?: boolean;
 }
 
@@ -126,7 +127,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
     if (pstr in crew.ranks) {
         rnk = crew.ranks[pstr] as number;
     }
-    
+
     let spair = pair?.map(p => shortToSkill(p) as string);
     const pairs = crew.pairs ?? getPlayerPairs(crew);
 
@@ -277,17 +278,15 @@ export const GauntletPairCard = (props: PairCardProps) => {
                     >{rnk}</div>
                 </div>
                 <div style={{ margin: 0, marginRight: "0.25em", width: "68px" }}>
-                    <ItemDisplay
+                    <AvatarView
+                        passDirect={true}
+                        mode='crew'
                         crewBackground='rich'
-                        playerData={context.player.playerData}
-                        itemSymbol={crew.symbol}
                         targetGroup='gauntletsHover'
-                        allCrew={context.core.crew}
-                        src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
-                        rarity={"rarity" in crew ? crew.rarity : crew.max_rarity}
-                        maxRarity={crew.max_rarity}
+                        symbol={crew.symbol}
+                        item={crew}
                         size={64}
-                    />
+                        />
                 </div>
                 <div style={{
                     display: "flex",
@@ -299,7 +298,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
                     <div style={{
                         display: 'flex',
                         flexDirection: 'column',
-                        alignItems: 'center', 
+                        alignItems: 'center',
                         justifyContent: 'center',
                         margin: "0"
                     }}>
@@ -377,7 +376,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
                             {!crew.in_portal && <i title={whyNoPortal(crew)} className='lock icon' />}
                         </span>}
                 </div>
-            </div>            
+            </div>
         </div>)
 
 }

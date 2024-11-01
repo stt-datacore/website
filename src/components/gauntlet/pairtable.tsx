@@ -4,7 +4,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { GauntletPairCard } from "./paircard";
 import { Gauntlet, PairGroup } from "../../model/gauntlets";
 import { Skill } from "../../model/crew";
-import { PlayerBuffMode } from "../../model/player";
+import { GauntletPlayerBuffMode, PlayerBuffMode } from "../../model/player";
 import CONFIG from "../CONFIG";
 
 
@@ -12,7 +12,7 @@ export interface GauntletPairTableProps {
     pairGroup: PairGroup;
     currContest: boolean;
     gauntlet: Gauntlet;
-    boostMode: PlayerBuffMode;
+    boostMode: GauntletPlayerBuffMode;
     onlyActiveRound?: boolean;
 }
 

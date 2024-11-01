@@ -1,5 +1,6 @@
 {
     "base": {
+        "best_pair": "Meilleure paire",
         "all_crew": "Afficher tous l'équipiers",
         "bigbook_tier": "Étage",
         "cab_power": "CAB",
@@ -71,7 +72,9 @@
         "max_buffs": "Effets maximum",
         "no_buffs": "Aucun effets",
         "player_buffs": "Effets des joueurs",
-        "quipment_buffs": "Effets de quipement"
+        "quipment_buffs": "Effets de quipement",
+        "max_quipment_buffs_double": "Effets maximum de quipement (deux compétences)",
+        "max_quipment_buffs_triple": "Effets maximum de quipement (trois compétences)"
     },
     "cite_opt": {
         "btp": {
@@ -794,6 +797,7 @@
     "hints": {
         "apply_buffs": "Appliquer des effets",
         "display_buffs": "Afficher effets",
+        "filter_crew_by_rank": "Filtrer l'équipage par rang",
         "filter_by_availability": "Filtrer par disponibilité",
         "filter_by_collections": "Filtrer par collections",
         "filter_by_crew": "Filtrer par équipage",

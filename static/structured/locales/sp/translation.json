@@ -1,5 +1,6 @@
 {
     "base": {
+        "best_pair": "Mejor pareja",
         "all_crew": "Mostrar toda las tripulantes",
         "bigbook_tier": "Piso",
         "cab_power": "CAB",
@@ -71,7 +72,9 @@
         "max_buffs": "Efectos máximas",
         "no_buffs": "Sin efectos",
         "player_buffs": "Efectos de los juegos",
-        "quipment_buffs": "Efectos de quipo"
+        "quipment_buffs": "Efectos de quipo",
+        "max_quipment_buffs_double": "Efectos máximas de quipo (dos habilidades)",
+        "max_quipment_buffs_triple": "Efectos máximas de quipo (tres habilidades)"
     },
     "cite_opt": {
         "btp": {
@@ -793,6 +796,7 @@
     "hints": {
         "apply_buffs": "Aplicar efectos",
         "display_buffs": "Mostrar efectos",
+        "filter_crew_by_rank": "Filtrar tripulación por rango",
         "filter_by_availability": "Filtrar por disponibilidad",
         "filter_by_collections": "Filtrar por colecciones",
         "filter_by_crew": "Filtrar por tripulación",

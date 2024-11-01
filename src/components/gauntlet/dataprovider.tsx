@@ -6,6 +6,7 @@ import { useStateWithStorage } from "../../utils/storage";
 import moment from "moment";
 import { TinyStore } from "../../utils/tiny";
 import { skillToShort } from "../../utils/crewutils";
+import { UnifiedWorker } from "src/typings/worker";
 
 export interface IGauntletContext {
     initialized: boolean;
@@ -84,7 +85,7 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
 
     const [gauntlets, setGauntlets] = React.useState<Gauntlet[]>(globalContext.core.gauntlets);
     const [uniqueGauntlets, setUniqueGauntlets] = React.useState<Gauntlet[]>(globalContext.core.gauntlets);
-
+    const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker>();
     const [initialized, setInitialized] = React.useState(false);
 
     React.useEffect(() => {

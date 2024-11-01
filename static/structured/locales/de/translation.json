@@ -1,5 +1,6 @@
 {
     "base": {
+        "best_pair": "Bestes Paar",
         "all_crew": "Die gesamte Crew anzeigen",
         "bigbook_tier": "Stufe",
         "cab_power": "CAB",
@@ -71,7 +72,9 @@
         "max_buffs": "Maximale Buffs",
         "no_buffs": "Keine Buffs",
         "player_buffs": "Buffs der Spieler",
-        "quipment_buffs": "Rüstzeug Buffs"
+        "quipment_buffs": "Rüstzeug Buffs",
+        "max_quipment_buffs_double": "Maximale Rüstzeug Buffs (Zwei Fähigkeiten)",
+        "max_quipment_buffs_triple": "Maximale Rüstzeug Buffs (Drei Fähigkeiten)"
     },
     "cite_opt": {
         "btp": {
@@ -784,6 +787,7 @@
     "hints": {
         "apply_buffs": "Buffs anwenden",
         "display_buffs": "Buffs anzeigen",
+        "filter_crew_by_rank": "Filtern Sie die Crew nach Rang",
         "filter_by_availability": "Filtern nach Verfügbarkeit",
         "filter_by_collections": "Filtern nach Sammlungen",
         "filter_by_crew": "Filtern nach Crew",

@@ -149,7 +149,7 @@ export const GauntletPicker = () => {
                     defaultOptions: DefaultAdvancedGauntletSettings
                 }} />
         </div>
-        <CrewHoverStat targetGroup='gauntletsHover' />
+        <CrewHoverStat targetGroup='gauntletsHover'  />
     </React.Fragment>
 
     function parseGauntlet(live?: GauntletRoot) {

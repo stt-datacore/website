@@ -370,6 +370,10 @@ export function formatDuration(time: number, t?: TranslateMethod) {
 	}
 };
 
+export function getQuipmentAsItemWithBonus(items: EquipmentItem[]) {
+	return items.filter(f => f.type === 14 && !!f.max_rarity_requirement).map(m => getItemWithBonus(m));
+}
+
 export function getItemWithBonus(item: EquipmentItem) {
 	return {
 		item,

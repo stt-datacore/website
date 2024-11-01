@@ -378,13 +378,13 @@ interface QpCount {
 	bonuses: Skill[];
 };
 
-export function calcQLots(
-	crew: CrewMember,
+export function calcQLots<T extends CrewMember>(
+	crew: T,
 	quipment: ItemWithBonus[],
 	buffConfig?: BuffStatTable,
 	max_qbits?: boolean,
 	max_slots?: number,
-	mode?: 'all' | 'core' | 'proficiency') {
+	mode?: 'all' | 'core' | 'proficiency'): T {
 
 	mode ??= 'all';
 

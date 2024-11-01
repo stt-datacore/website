@@ -90,7 +90,18 @@ export const GauntletPrefsPanel = () => {
             key: 'max',
             value: 'max',
             text: t(BuffNames['max'])
-        })
+        });
+        availBuffs.push({
+            key: 'max_quipment_2',
+            value: 'max_quipment_2',
+            text: t(BuffNames['max_quipment_2'])
+        });
+        availBuffs.push({
+            key: 'max_quipment_3',
+            value: 'max_quipment_3',
+            text: t(BuffNames['max_quipment_3'])
+        });
+
     }
 
     return <React.Fragment>
@@ -116,7 +127,7 @@ export const GauntletPrefsPanel = () => {
                         <h4><b>{t('gauntlet.show_top_crew')}</b></h4>
 
                         <Dropdown
-                            title="Filter Crew by Rank"
+                            title={t('hints.filter_crew_by_rank')}
                             options={[0, 1, 2, 3, 4, 5, 10, 15, 20, 50, 100].map(o => { return { text: o ? t('gauntlet.top_n', { n: `${o}` }) : t('gauntlet.no_limit'), key: o, value: o } })}
                             value={tops}
                             onChange={(e, { value }) => setTops(value as number)}
@@ -132,7 +143,7 @@ export const GauntletPrefsPanel = () => {
                         <h4><b>{t('gauntlet.max_results_per_table')}</b></h4>
 
                         <Dropdown
-                            title="Limit Total Results Per Section"
+                            title={t('gauntlet.max_results_per_table')}
                             options={[0, 1, 2, 3, 4, 5, 10, 15, 20, 50, 100].map(o => { return { text: !o ? 'No Limit' : "" + o, key: o, value: o } })}
                             value={config.filter?.maxResults}
                             onChange={(e, { value }) => setMaxResults(value as number)}
