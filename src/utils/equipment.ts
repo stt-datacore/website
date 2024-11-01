@@ -485,7 +485,7 @@ export function calcQLots<T extends CrewMember>(
 			});
 		});
 
-		const item_ids = qpcounts.map(qp => qp.item).flat().map(m => Number(m.kwipment_id!));
+		const item_ids = [ ... new Set(qpcounts.map(qp => qp.item).flat().map(m => Number(m.kwipment_id!))) ];
 		const combos = makeAllCombos(item_ids, undefined, undefined, undefined, slots).filter(c => c.length === slots);
 
 		const combo_map = combos.map(cb => cb.map(co => ({ ... qpcounts.find(f => f.item.kwipment_id === co.toString())! } as QpCount)));

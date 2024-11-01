@@ -516,6 +516,9 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 			else if (buffMode === 'max_quipment_3' && crew.best_quipment_3) {
 				bestQuip = crew.best_quipment_3;
 			}
+			else if (buffMode === 'max_quipment_3' && crew.best_quipment_1_2) {
+				bestQuip = crew.best_quipment_1_2;
+			}
 			else if (crew.best_quipment) {
 				bestQuip = crew.best_quipment
 			}
