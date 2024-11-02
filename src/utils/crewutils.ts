@@ -1217,6 +1217,7 @@ export function printImmoText(immo: number | CompletionState, item?: string, imm
 		else if (immo === -4) return t('item_state.item_is_shown_owned', { item, level: immoText, __gender: gender });
 		else if (immo === -2) return t('item_state.item_is_shown', { item, level: immoText, __gender: gender });
 		else if (immo === -10) return t('gauntlet.opponent_table.opponent');
+		else if (immo === -11) return t('gauntlet.live_crew');
 		else if (immo >= 1) {
 			if (immo === 1) {
 				return(t('item_state.item_is_frozen_one'))

@@ -476,7 +476,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 
 	const workCrew = acc;
 
-	if (gauntlet.opponents?.length && !hideOpponents) {
+	if (gauntlet.opponents?.length) {
 		for (let op of gauntlet.opponents) {
 			const ocrew = op.crew_contest_data.crew[0];
 			const refcrew = context.core.crew.find((cf) => cf.symbol === ocrew.archetype_symbol);
@@ -539,7 +539,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 			crew.rarity = selcrew.rarity;
 			crew.level = selcrew.level;
 			crew.have = true;
-			crew.immortal = fffe?.immortal ? -1 : 0;
+			crew.immortal = CompletionState.DisplayAsImmortalSelected;
 
 			roster.push(crew);
 		}
@@ -784,7 +784,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 
 	if (gauntlet.prettyTraits?.length) {
 		const maxpg = 10;
-		let pgs = getPairGroups(matchedCrew1, gauntlet, settings, hideOpponents, onlyActiveRound, undefined, 100, maxpg);
+		let pgs = getPairGroups(matchedCrew1, gauntlet, settings, false, onlyActiveRound, undefined, 100, maxpg);
 
 		const incidence = {} as { [key: string]: number };
 		const avgidx = {} as { [key: string]: number };

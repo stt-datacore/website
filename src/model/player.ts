@@ -378,6 +378,12 @@ export enum CompletionState {
    * Display as immortal, no way to reference.
    * (Same as -2/DisplayAsImmortal but with different wording)
    */
+  DisplayAsImmortalSelected = -11,
+
+  /**
+   * Display as immortal, no way to reference.
+   * (Same as -2/DisplayAsImmortal but with different wording)
+   */
   DisplayAsImmortalStatic = -5,
 
   /**

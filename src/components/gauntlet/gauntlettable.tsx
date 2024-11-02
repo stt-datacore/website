@@ -407,7 +407,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                             gridGap: '1px'
                         }}>
                         <div style={{ gridArea: 'icon' }}>
-                            <CrewTarget targetGroup={targetGroup} inputItem={crew} passDirect={true}>
+                            <CrewTarget targetGroup={targetGroup} inputItem={crew} passDirect={crew.isSelected || crew.isOpponent}>
                                 <img
                                     onClick={(e) => imageClick(e, crew)}
                                     width={48}

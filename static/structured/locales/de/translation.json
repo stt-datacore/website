@@ -1,7 +1,7 @@
 {
     "base": {
-        "best_pair": "Bestes Paar",
         "all_crew": "Die gesamte Crew anzeigen",
+        "best_pair": "Bestes Paar",
         "bigbook_tier": "Stufe",
         "cab_power": "CAB",
         "collection": "Sammlung",
@@ -70,11 +70,11 @@
     },
     "buffs": {
         "max_buffs": "Maximale Buffs",
+        "max_quipment_buffs_double": "Maximale Rüstzeug Buffs (Zwei Fähigkeiten)",
+        "max_quipment_buffs_triple": "Maximale Rüstzeug Buffs (Drei Fähigkeiten)",
         "no_buffs": "Keine Buffs",
         "player_buffs": "Buffs der Spieler",
-        "quipment_buffs": "Rüstzeug Buffs",
-        "max_quipment_buffs_double": "Maximale Rüstzeug Buffs (Zwei Fähigkeiten)",
-        "max_quipment_buffs_triple": "Maximale Rüstzeug Buffs (Drei Fähigkeiten)"
+        "quipment_buffs": "Rüstzeug Buffs"
     },
     "cite_opt": {
         "btp": {
@@ -562,6 +562,7 @@
         },
         "jackpot_crew": "Jackpot-Crew",
         "jackpot_crew_for_date": "Jackpot-Crew für {{date}}",
+        "live_crew": "{{gauntlet.pages.live_gauntlet.title}}",
         "max_results_per_table": "Maximale Ergebnisse pro Tabelle",
         "min_max_proficiency": "Mindest- und Höchstkompetenz",
         "no_limit": "Keine Begrenzung",
@@ -787,7 +788,6 @@
     "hints": {
         "apply_buffs": "Buffs anwenden",
         "display_buffs": "Buffs anzeigen",
-        "filter_crew_by_rank": "Filtern Sie die Crew nach Rang",
         "filter_by_availability": "Filtern nach Verfügbarkeit",
         "filter_by_collections": "Filtern nach Sammlungen",
         "filter_by_crew": "Filtern nach Crew",
@@ -805,6 +805,7 @@
         "filter_by_status": "Filtern nach Status",
         "filter_by_trait": "Filtern nach Merkmalen",
         "filter_by_voyage_seating": "Nach Reisebestuhlung filtern",
+        "filter_crew_by_rank": "Filtern Sie die Crew nach Rang",
         "filter_ship_grants": "Schiffszuschüsse filtern",
         "filter_ship_rarity": "Schiffsrarität filtern",
         "roster_maintenance": "Dienstplanpflege",

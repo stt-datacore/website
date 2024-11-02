@@ -91,6 +91,11 @@ const opponentStyle: React.CSSProperties = {
     marginRight: "0px",
 };
 
+const selectedStyle: React.CSSProperties = {
+    color: "green",
+    marginRight: "0px",
+};
+
 export class StatLabel extends React.Component<StatLabelProps> {
     static contextType = GlobalContext;
     declare context: React.ContextType<typeof GlobalContext>;
@@ -159,7 +164,7 @@ export const CollectionDisplay = (props: CollectionDisplayProps) => {
     if (!crew.collections?.length) return <></>;
 
     if (
-        (((("immortal" in crew)) && ((crew.immortal === 0 || crew.immortal < -1) && crew.immortal !== CompletionState.DisplayAsImmortalOpponent)) ||
+        (((("immortal" in crew)) && ((crew.immortal === 0 || crew.immortal < -1) && ![-10, -11].includes(crew.immortal))) ||
         ("any_immortal" in crew && crew.any_immortal === false))
         && playerData?.player.character.cryo_collections) {
         playerData?.player.character.cryo_collections.forEach(col => {
@@ -597,6 +602,7 @@ export class CrewPresenter extends React.Component<
         var me = this;
 
         const opponent = "immortal" in inputCrew && inputCrew.immortal === CompletionState.DisplayAsImmortalOpponent;
+        const selected = "immortal" in inputCrew && inputCrew.immortal === CompletionState.DisplayAsImmortalSelected;
 
         const availstates = this.props.quipmentMode ? ['quipment' as PlayerBuffMode] : getAvailableBuffStates(
             this.context.player.playerData,
@@ -704,7 +710,6 @@ export class CrewPresenter extends React.Component<
         let sc = 0;
         getSkills(crew).forEach((skill) => {
             if (!(skill in crew)) return;
-            if (!crew[skill].core) return;
             sd.base_skills[skill] = {
                 core: crew[skill].core,
                 range_min: crew[skill].min,
@@ -847,7 +852,7 @@ export class CrewPresenter extends React.Component<
                             />
                         )}
                     </div>
-                    {!compact && (
+                    {!compact && !selected && !opponent && (
                         <div style={{ marginBottom: "0.13em", marginRight: "0.5em", fontSize: "9pt", fontWeight: 'normal' }}>
                             {(crew.immortal || !crew.have) && this.validImmortalModes[0] !== 'frozen' && !!crew.kwipment?.length &&
                                 <CrewItemsView crew={crew} quipment={true} />}
@@ -962,6 +967,8 @@ export class CrewPresenter extends React.Component<
                                             </>
                                         ) : crew.immortal === CompletionState.DisplayAsImmortalOpponent ? (
                                             <i className="chess rook icon" style={opponentStyle} />
+                                        ) : crew.immortal === CompletionState.DisplayAsImmortalSelected ? (
+                                            <i className="chess rook icon" style={selectedStyle} />
                                         ) : crew.immortal === 0 ||
                                             crew.rarity !== crew.max_rarity ? (
                                             <b>{crew.level}</b>
@@ -973,7 +980,7 @@ export class CrewPresenter extends React.Component<
                                 </h4>
                             </div>
                         </div>
-                        {!opponent && <div
+                        {!opponent && !selected && <div
                             style={{
                                 display: "flex",
                                 flexDirection: "column",
@@ -1036,7 +1043,7 @@ export class CrewPresenter extends React.Component<
                             return <CrewStat
                                 quipmentMode={this.props.quipmentMode}
                                 key={"crewpresent_skill_" + key}
-                                proficiencies={proficiencies || opponent}
+                                proficiencies={proficiencies || opponent || selected}
                                 skill_name={key}
                                 data={skill}
                                 scale={hover ? 0.75 : 1}

@@ -1,7 +1,7 @@
 {
     "base": {
-        "best_pair": "Best Pair",
         "all_crew": "Show all crew",
+        "best_pair": "Best Pair",
         "bigbook_tier": "Tier",
         "cab_power": "CAB",
         "collection": "Collection",
@@ -70,11 +70,11 @@
     },
     "buffs": {
         "max_buffs": "Max buffs",
+        "max_quipment_buffs_double": "Max Quipment Buffs (Two Skills)",
+        "max_quipment_buffs_triple": "Max Quipment Buffs (Three Skills)",
         "no_buffs": "No buffs",
         "player_buffs": "Player buffs",
-        "quipment_buffs": "Quipment Buffs",
-        "max_quipment_buffs_double": "Max Quipment Buffs (Two Skills)",
-        "max_quipment_buffs_triple": "Max Quipment Buffs (Three Skills)"
+        "quipment_buffs": "Quipment Buffs"
     },
     "cite_opt": {
         "btp": {
@@ -562,6 +562,7 @@
         },
         "jackpot_crew": "Jackpot Crew",
         "jackpot_crew_for_date": "Jackpot Crew for {{date}}",
+        "live_crew": "{{gauntlet.pages.live_gauntlet.title}}",
         "max_results_per_table": "Max results per table",
         "min_max_proficiency": "Minimum max-proficiency",
         "no_limit": "No limit",
@@ -787,7 +788,6 @@
     "hints": {
         "apply_buffs": "Apply stat buffs",
         "display_buffs": "Display Buffs",
-        "filter_crew_by_rank": "Filter crew by rank",
         "filter_by_availability": "Filter by availability",
         "filter_by_collections": "Filter by collections",
         "filter_by_crew": "Filter by crew",
@@ -805,6 +805,7 @@
         "filter_by_status": "Filter by status",
         "filter_by_trait": "Filter by trait",
         "filter_by_voyage_seating": "Filter by voyage seating",
+        "filter_crew_by_rank": "Filter crew by rank",
         "filter_ship_grants": "Filter ship grants",
         "filter_ship_rarity": "Filter ship rarity",
         "roster_maintenance": "Roster maintenance",

@@ -1,7 +1,7 @@
 {
     "base": {
-        "best_pair": "Meilleure paire",
         "all_crew": "Afficher tous l'équipiers",
+        "best_pair": "Meilleure paire",
         "bigbook_tier": "Étage",
         "cab_power": "CAB",
         "collection": "Collection",
@@ -70,11 +70,11 @@
     },
     "buffs": {
         "max_buffs": "Effets maximum",
+        "max_quipment_buffs_double": "Effets maximum de quipement (deux compétences)",
+        "max_quipment_buffs_triple": "Effets maximum de quipement (trois compétences)",
         "no_buffs": "Aucun effets",
         "player_buffs": "Effets des joueurs",
-        "quipment_buffs": "Effets de quipement",
-        "max_quipment_buffs_double": "Effets maximum de quipement (deux compétences)",
-        "max_quipment_buffs_triple": "Effets maximum de quipement (trois compétences)"
+        "quipment_buffs": "Effets de quipement"
     },
     "cite_opt": {
         "btp": {
@@ -570,6 +570,7 @@
         },
         "jackpot_crew": "Équipier Jackpot",
         "jackpot_crew_for_date": "Équipier Jackpot pour {{date}}",
+        "live_crew": "{{gauntlet.pages.live_gauntlet.title}}",
         "max_results_per_table": "Max. de résultats par table",
         "min_max_proficiency": "Compétence maximale minimale",
         "no_limit": "Sans limites",
@@ -797,7 +798,6 @@
     "hints": {
         "apply_buffs": "Appliquer des effets",
         "display_buffs": "Afficher effets",
-        "filter_crew_by_rank": "Filtrer l'équipage par rang",
         "filter_by_availability": "Filtrer par disponibilité",
         "filter_by_collections": "Filtrer par collections",
         "filter_by_crew": "Filtrer par équipage",
@@ -815,6 +815,7 @@
         "filter_by_status": "Filtrer par statut",
         "filter_by_trait": "Filtrer par trait",
         "filter_by_voyage_seating": "Filtrer par sièges de voyage",
+        "filter_crew_by_rank": "Filtrer l'équipage par rang",
         "filter_ship_grants": "Filtrer les subventions d'expédition",
         "filter_ship_rarity": "Filtrer la rareté des vaisseaux",
         "roster_maintenance": "Entretien de la liste",

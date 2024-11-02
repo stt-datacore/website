@@ -251,7 +251,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
                 </div>
                 <div style={{ margin: 0, marginRight: "0.25em", width: "68px" }}>
                     <AvatarView
-                        passDirect={true}
+                        passDirect={inMatch || isOpponent}
                         mode='crew'
                         crewBackground='rich'
                         targetGroup='gauntletsHover'

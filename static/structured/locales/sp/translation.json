@@ -1,7 +1,7 @@
 {
     "base": {
-        "best_pair": "Mejor pareja",
         "all_crew": "Mostrar toda las tripulantes",
+        "best_pair": "Mejor pareja",
         "bigbook_tier": "Piso",
         "cab_power": "CAB",
         "collection": "Coleccione",
@@ -70,11 +70,11 @@
     },
     "buffs": {
         "max_buffs": "Efectos máximas",
+        "max_quipment_buffs_double": "Efectos máximas de quipo (dos habilidades)",
+        "max_quipment_buffs_triple": "Efectos máximas de quipo (tres habilidades)",
         "no_buffs": "Sin efectos",
         "player_buffs": "Efectos de los juegos",
-        "quipment_buffs": "Efectos de quipo",
-        "max_quipment_buffs_double": "Efectos máximas de quipo (dos habilidades)",
-        "max_quipment_buffs_triple": "Efectos máximas de quipo (tres habilidades)"
+        "quipment_buffs": "Efectos de quipo"
     },
     "cite_opt": {
         "btp": {
@@ -568,6 +568,7 @@
         },
         "jackpot_crew": "Tripulante del premio",
         "jackpot_crew_for_date": "Tripulante del premio mayor para {{date}}",
+        "live_crew": "{{gauntlet.pages.live_gauntlet.title}}",
         "max_results_per_table": "Resultados máximos por tabla",
         "min_max_proficiency": "Competencia máxima mínima",
         "no_limit": "Sin límite",
@@ -796,7 +797,6 @@
     "hints": {
         "apply_buffs": "Aplicar efectos",
         "display_buffs": "Mostrar efectos",
-        "filter_crew_by_rank": "Filtrar tripulación por rango",
         "filter_by_availability": "Filtrar por disponibilidad",
         "filter_by_collections": "Filtrar por colecciones",
         "filter_by_crew": "Filtrar por tripulación",
@@ -814,6 +814,7 @@
         "filter_by_status": "Filtrar por estado",
         "filter_by_trait": "Filtrar por rasgo",
         "filter_by_voyage_seating": "Filtrar por asientos de viaje",
+        "filter_crew_by_rank": "Filtrar tripulación por rango",
         "filter_ship_grants": "Filtrar subvenciones para buques",
         "filter_ship_rarity": "Filtrar la rareza del buque",
         "roster_maintenance": "Mantenimiento de la lista",
