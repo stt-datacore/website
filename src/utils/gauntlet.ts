@@ -461,8 +461,20 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 
 	const availBuffs = ['none'] as GauntletPlayerBuffMode[];
 	const oppo = [] as PlayerCrew[];
+	const roster = [] as PlayerCrew[];
 
 	const allQuipment = getQuipmentAsItemWithBonus(items);
+
+	let acc = [] as CrewMember[];
+
+	if (context.player.playerData?.player?.character?.crew) {
+		acc = context.player.playerData?.player?.character?.crew.concat(context.player.playerData?.player?.character?.unOwnedCrew ?? []);
+	}
+	else {
+		acc = allCrew;
+	}
+
+	const workCrew = acc;
 
 	if (gauntlet.opponents?.length && !hideOpponents) {
 		for (let op of gauntlet.opponents) {
@@ -485,7 +497,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 						min: opposkill?.min
 					};
 				}
-
+				fcrew.id = ocrew.crew_id;
 				fcrew.rarity = ocrew.rarity;
 				fcrew.isOpponent = true;
 				fcrew.ssId = op.player_id.toString();
@@ -493,6 +505,40 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 				fcrew.have = false;
 				oppo.push(fcrew);
 			}
+		}
+	}
+
+	if (gauntlet?.contest_data?.selected_crew?.length) {
+		for (let selcrew of gauntlet.contest_data.selected_crew) {
+			let crew = allCrew.find(f => f.symbol === selcrew.archetype_symbol)! as PlayerCrew;
+			crew = JSON.parse(JSON.stringify(crew));
+
+			crew.isSelected = true;
+			crew.isDisabled = selcrew.disabled;
+
+			crew.skills = {};
+
+			delete crew.command_skill;
+			delete crew.diplomacy_skill;
+			delete crew.engineering_skill;
+			delete crew.security_skill;
+			delete crew.science_skill;
+			delete crew.medicine_skill;
+
+			crew.id = selcrew.crew_id;
+			crew.isDebuffed = !!selcrew.debuff;
+
+			for (let selskill of selcrew.skills) {
+				let sk = selskill.skill;
+				crew.skills[sk] = { core: 0, range_max: selskill.max, range_min: selskill.min } as Skill;
+				crew[sk] = { core: 0, max: selskill.max, min: selskill.min } as ComputedSkill;
+			}
+
+			crew.rarity = selcrew.rarity;
+			crew.level = selcrew.level;
+			crew.immortal = CompletionState.DisplayAsImmortalOwned;
+
+			roster.push(crew);
 		}
 	}
 
@@ -559,74 +605,71 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	delete gauntlet.pairMax;
 	delete gauntlet.pairMin;
 
-	let acc = [] as CrewMember[];
-
-	if (context.player.playerData?.player?.character?.crew) {
-		acc = context.player.playerData?.player?.character?.crew.concat(context.player.playerData?.player?.character?.unOwnedCrew ?? []);
-	}
-	else {
-		acc = allCrew;
-	}
-
-	const workCrew = acc;
-
 	const matchedCrew1 =
-		workCrew.concat(oppo)
+		workCrew
+			.concat(roster)
+			.concat(oppo)
 			.map(crewObj => crewObj as PlayerCrew)
 			.filter(crew => {
 				return (!!crew.isOpponent || crew.max_rarity > 3 || !!crew.kwipment?.length);
 			})
 			.map((inputCrew) => {
-				let crew = !!inputCrew.isOpponent ? inputCrew : JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
-
-				if (!inputCrew.isOpponent && !crew.have) {
-					if (buffConfig && (buffMode === 'player' || buffMode === 'quipment')) {
-						applyCrewBuffs(crew, buffConfig);
-					}
-					else if (maxBuffs && buffMode.startsWith("max")) {
-						applyCrewBuffs(crew, maxBuffs);
-						applyMaxQuip(crew);
-					}
+				if (inputCrew.isSelected) {
+					inputCrew.pairs = getPlayerPairs(inputCrew);
+					return inputCrew;
 				}
-
-				// let c = context.player.playerData?.player?.character?.crew?.find(d => d.id === crew.id);
-
-				if (!crew.isOpponent && crew.have) {
-					//crew = JSON.parse(JSON.stringify(c)) as PlayerCrew;
-
-					if (buffConfig && buffMode === 'player') {
-						applyCrewBuffs(crew, buffConfig);
-					}
-					else if (buffConfig && buffMode === 'quipment') {
-						if (crew.kwipment?.length) {
-							if (!crewQuip[crew.symbol]) {
-								crewQuip[crew.symbol] = getCrewQuipment(crew, context.core.items);
-							}
-							let cq = crewQuip[crew.symbol];
-							let bn = cq?.map(q => {
-								bonusInfo[q.symbol] ??= getItemBonuses(q);
-								return bonusInfo[q.symbol];
-							}) ?? undefined;
-
-							applyCrewBuffs(crew, buffConfig, undefined, bn);
-						}
-						else {
+				let crew = !!inputCrew.isOpponent ? inputCrew : JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
+				if (!crew.isOpponent) {
+					if (!crew.have) {
+						if (buffConfig && (buffMode === 'player' || buffMode === 'quipment')) {
 							applyCrewBuffs(crew, buffConfig);
 						}
-					}
-					else if (maxBuffs && buffMode.startsWith("max")) {
-						applyCrewBuffs(crew, maxBuffs);
-						if (crew.immortal) applyMaxQuip(crew);
-					}
-					else {
-						for (let skill of Object.keys(crew.base_skills)) {
-							crew[skill] = { core: crew.base_skills[skill].core, min: crew.base_skills[skill].range_min, max: crew.base_skills[skill].range_max };
+						else if (maxBuffs && buffMode.startsWith("max")) {
+							applyCrewBuffs(crew, maxBuffs);
+							applyMaxQuip(crew);
 						}
 					}
-					// crew.have = true;
+					else if (crew.have) {
+						if (buffConfig && buffMode === 'player') {
+							applyCrewBuffs(crew, buffConfig);
+						}
+						else if (buffConfig && buffMode === 'quipment') {
+							if (crew.kwipment?.length) {
+								if (!crewQuip[crew.id!]) {
+									crewQuip[crew.id!] = getCrewQuipment(crew, context.core.items);
+								}
+								let cq = crewQuip[crew.symbol];
+								let bn = cq?.map(q => {
+									bonusInfo[q.id!] ??= getItemBonuses(q);
+									return bonusInfo[q.id!];
+								}) ?? undefined;
+
+								applyCrewBuffs(crew, buffConfig, undefined, bn);
+							}
+							else {
+								applyCrewBuffs(crew, buffConfig);
+							}
+						}
+						else if (maxBuffs && buffMode.startsWith("max")) {
+							applyCrewBuffs(crew, maxBuffs);
+							if (crew.immortal) applyMaxQuip(crew);
+						}
+						else {
+							for (let skill of Object.keys(crew.base_skills)) {
+								crew[skill] = { core: crew.base_skills[skill].core, min: crew.base_skills[skill].range_min, max: crew.base_skills[skill].range_max };
+							}
+						}
+					}
+
+					if (!hasPlayer) {
+						crew.rarity = crew.max_rarity;
+					}
+					else if (!crew.have) {
+						crew.rarity = 0;
+						crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+					}
 				}
 				else {
-					// crew.have = !!c?.skills;
 					let skills = getSkills(crew);
 					for (let s of skills) {
 						if (!(s in crew)) {
@@ -637,49 +680,6 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 							}
 						}
 					}
-				}
-
-
-				if (!crew.isOpponent) {
-					if (gauntlet.contest_data?.selected_crew?.length && crew.immortal <= 0 && crew.have) {
-						let selcrew = gauntlet.contest_data.selected_crew.find((sel) => {
-							return sel.archetype_symbol === crew.symbol;
-						});
-
-						if (selcrew && crew.skills) {
-							crew.isSelected = true;
-
-							if (selcrew.disabled) {
-								crew.isDisabled = true;
-							}
-							else {
-								let oskill = crew.skills;
-								crew.skills = {};
-								crew.isDisabled
-								delete crew.command_skill;
-								delete crew.diplomacy_skill;
-								delete crew.engineering_skill;
-								delete crew.security_skill;
-								delete crew.science_skill;
-								delete crew.medicine_skill;
-
-								for (let selskill of selcrew.skills) {
-									let sk = selskill.skill;
-									crew.isDebuffed = (oskill[sk].range_max > selskill.max);
-									crew.skills[sk] = { core: 0, range_max: selskill.max, range_min: selskill.min } as Skill;
-									crew[sk] = { core: 0, max: selskill.max, min: selskill.min } as ComputedSkill;
-								}
-							}
-						}
-					}
-
-					if (!hasPlayer) crew.rarity = crew.max_rarity;
-					else if (!crew.have) {
-						crew.rarity = 0;
-						crew.immortal = hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
-					}
-				}
-				else {
 					crew.immortal = CompletionState.DisplayAsImmortalOpponent;
 					crew.have = false;
 				}
@@ -689,6 +689,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 			})
 			.filter((crew) => (!filter || testFilterCrew(crew, filter, context)))
 			.map((crew) => {
+				if (crew.isSelected) return crew;
 				if (filter?.ownedStatus === 'nofemax' || filter?.ownedStatus === 'ownedmax' || filter?.ownedStatus === 'maxall') {
 					if ((crew.immortal) || !crew.have) return crew;
 					let fcrew = allCrew.find(z => z.symbol === crew.symbol);
@@ -725,7 +726,6 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 				return crew;
 			})
 			.filter(crew => {
-
 				let result =
 					(
 						(!rankByPair || (rankByPair in crew.ranks)) &&
@@ -736,7 +736,6 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 				return result;
 			})
 			.sort((a, b) => {
-
 				if (rankByPair) {
 					return a.ranks[rankByPair] - b.ranks[rankByPair];
 				}
@@ -787,24 +786,24 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 			let idx = 1;
 
 			for (let pgcrew of pg.crew) {
-				incidence[pgcrew.symbol] ??= 0;
-				avgidx[pgcrew.symbol] ??= 0;
+				incidence[pgcrew.id] ??= 0;
+				avgidx[pgcrew.id] ??= 0;
 
 				if (pg.pair.some(p => shortToSkill(p, true) === fsk) && pc === 0) {
-					incidence[pgcrew.symbol] += settings.linearSkillIncidenceWeightPrimary;
-					avgidx[pgcrew.symbol] += (idx * settings.linearSkillIndexWeightPrimary);
+					incidence[pgcrew.id] += settings.linearSkillIncidenceWeightPrimary;
+					avgidx[pgcrew.id] += (idx * settings.linearSkillIndexWeightPrimary);
 				}
 				else if (pg.pair.some(p => shortToSkill(p, true) === fsk) && pc === 1) {
-					incidence[pgcrew.symbol] += settings.linearSkillIncidenceWeightSecondary;
-					avgidx[pgcrew.symbol] += (idx * settings.linearSkillIndexWeightSecondary);
+					incidence[pgcrew.id] += settings.linearSkillIncidenceWeightSecondary;
+					avgidx[pgcrew.id] += (idx * settings.linearSkillIndexWeightSecondary);
 				}
 				else if (pg.pair.some(p => shortToSkill(p, true) === fsk) && pc === 2) {
-					incidence[pgcrew.symbol] += settings.linearSkillIncidenceWeightTertiary;
-					avgidx[pgcrew.symbol] += (idx * settings.linearSkillIndexWeightTertiary);
+					incidence[pgcrew.id] += settings.linearSkillIncidenceWeightTertiary;
+					avgidx[pgcrew.id] += (idx * settings.linearSkillIndexWeightTertiary);
 				}
 				else {
-					incidence[pgcrew.symbol]++;
-					avgidx[pgcrew.symbol] += idx;
+					incidence[pgcrew.id]++;
+					avgidx[pgcrew.id] += idx;
 				}
 				idx++;
 			}
@@ -815,10 +814,10 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 			avgidx[key] /= incidence[key];
 		});
 
-		matchedResults = matchedCrew1.filter(c => c.symbol in incidence).sort((a, b) => {
+		matchedResults = matchedCrew1.filter(c => c.id in incidence).sort((a, b) => {
 			let r = 0;
-			let anum = (maxpg - avgidx[a.symbol]) * incidence[a.symbol];
-			let bnum = (maxpg - avgidx[b.symbol]) * incidence[b.symbol];
+			let anum = (maxpg - avgidx[a.id]) * incidence[a.id];
+			let bnum = (maxpg - avgidx[b.id]) * incidence[b.id];
 
 			r = bnum - anum;
 			return r;

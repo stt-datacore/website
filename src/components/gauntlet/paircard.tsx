@@ -65,7 +65,6 @@ export const formatPair = (pair: Skill[], style?: React.CSSProperties, debuff?: 
     )
 }
 
-
 export function whyNoPortal(crew: PlayerCrew | CrewMember) {
     if (crew.obtained?.toLowerCase().includes("gauntlet")) return "Unowned (Gauntlet Exclusive)";
     else if (crew.obtained?.toLowerCase().includes("voyage")) return "Unowned (Voyage Exclusive)";
@@ -75,7 +74,6 @@ export function whyNoPortal(crew: PlayerCrew | CrewMember) {
         return "Unowned (Not in Portal)";
 
 }
-
 
 export const GauntletPairCard = (props: PairCardProps) => {
 
@@ -99,9 +97,8 @@ export const GauntletPairCard = (props: PairCardProps) => {
 
     const roundPair = gauntlet?.contest_data?.secondary_skill ? [gauntlet?.contest_data?.primary_skill, gauntlet?.contest_data?.secondary_skill] : []
     const isRound = !onlyActiveRound || (skills.every(s => roundPair.some(e => s === e)));
-    const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol);
+    const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.crew_id === crew.id && "isSelected" in crew);
     const isOpponent = "isOpponent" in crew && crew.isOpponent;
-
 
     let tempicon = "";
 
