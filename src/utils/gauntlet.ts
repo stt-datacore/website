@@ -645,7 +645,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 								if (!crewQuip[crew.id!]) {
 									crewQuip[crew.id!] = getCrewQuipment(crew, context.core.items);
 								}
-								let cq = crewQuip[crew.symbol];
+								let cq = crewQuip[crew.id!];
 								let bn = cq?.map(q => {
 									bonusInfo[q.id!] ??= getItemBonuses(q);
 									return bonusInfo[q.id!];
