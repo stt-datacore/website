@@ -162,17 +162,6 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                                                             symbol={jcrew?.symbol}
                                                             showMaxRarity={true}
                                                         />
-                                                    {/* <ItemDisplay
-                                                        key={"jackpot" + jcrew.symbol}
-                                                        size={64}
-                                                        maxRarity={jcrew.max_rarity}
-                                                        rarity={jcrew.max_rarity}
-                                                        src={`${process.env.GATSBY_ASSETS_URL}${jcrew.imageUrlPortrait}`}
-                                                        allCrew={globalContext.core.crew}
-                                                        playerData={globalContext.player.playerData}
-                                                        targetGroup='gauntletsHover'
-                                                        itemSymbol={jcrew?.symbol}
-                                                    /> */}
                                                     <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.5em 0 0 0" }}>{jcrew.name}</i>
                                                     <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.25em 0 0 0" }}>({moment(jcrew.date_added).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("D MMM YYYY")})</i>
                                                 </div>
@@ -220,8 +209,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                                         }}>
                                             {jackpots.sort((a, b) => a.name.localeCompare(b.name))
                                                 .map((jcrew) => {
-                                                    const crit = ((prettyTraits?.filter(t => jcrew.traits_named.includes(t))?.length ?? 0) * 20 + 5);
-
+                                                    const crit = ((prettyTraits?.filter(t => jcrew?.traits_named?.includes(t))?.length ?? 0) * 20 + 5);
                                                     return (
                                                         <div style={{
                                                             margin: "1em",

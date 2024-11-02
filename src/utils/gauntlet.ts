@@ -632,7 +632,12 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 							applyCrewBuffs(crew, buffConfig);
 						}
 						else if (maxBuffs && buffMode.startsWith("max")) {
-							applyCrewBuffs(crew, maxBuffs);
+							if (buffMode === 'max' || !buffConfig) {
+								applyCrewBuffs(crew, maxBuffs);
+							}
+							else {
+								applyCrewBuffs(crew, buffConfig);
+							}
 							applyMaxQuip(crew);
 						}
 					}
