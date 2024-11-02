@@ -634,6 +634,16 @@ export class CrewPresenter extends React.Component<
             me.immortalMode = availmodes[availmodes.length - 1];
         }
 
+        const shouldShowQuipment = (crew: PlayerCrew) => {
+            if (crew.immortal === -1 && this.validImmortalModes[0] !== 'frozen') return true;
+            else {
+                if (!crew.have) {
+                    delete (crew as any).q_bits;
+                }
+                return crew.kwipment?.some(q => typeof q === 'number' ? q !== 0 : q[0] !== 0)
+            }
+        }
+
         const clickImmo = (e) => {
             me.immortalMode = e;
             if (this.props.onImmoToggle) {
@@ -854,7 +864,7 @@ export class CrewPresenter extends React.Component<
                     </div>
                     {!compact && !selected && !opponent && (
                         <div style={{ marginBottom: "0.13em", marginRight: "0.5em", fontSize: "9pt", fontWeight: 'normal' }}>
-                            {(crew.immortal || !crew.have) && this.validImmortalModes[0] !== 'frozen' && !!crew.kwipment?.length &&
+                            {shouldShowQuipment(crew) &&
                                 <CrewItemsView crew={crew} quipment={true} />}
 
                             <CrewItemsView crew={crew} />

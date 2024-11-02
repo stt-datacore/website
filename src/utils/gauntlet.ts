@@ -738,7 +738,12 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 						}
 					}
 					else if (buffMode.startsWith('max') && maxBuffs) {
-						applyCrewBuffs(crew, maxBuffs);
+						if (buffMode === 'max' || !buffConfig) {
+							applyCrewBuffs(crew, maxBuffs);
+						}
+						else {
+							applyCrewBuffs(crew, buffConfig);
+						}
 						applyMaxQuip(crew);
 					}
 					crew.pairs = getPlayerPairs(crew);

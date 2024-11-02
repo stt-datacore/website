@@ -62,7 +62,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 
     const maxqIdx = (!quip ? 0 : (crew ? qbitsToSlots(crew.q_bits) : 0)) - 1;
 
-    const [toNext, next] = !quip ? [0, 0] : qbProgressToNext(crew.q_bits);
+    const [toNext, next] = (!quip || !crew.have || crew.immortal !== -1) ? [0, 0] : qbProgressToNext(crew.q_bits);
 
     let maxBuffs: BuffStatTable | undefined;
 
