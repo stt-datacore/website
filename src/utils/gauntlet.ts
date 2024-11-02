@@ -465,13 +465,13 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 
 	const allQuipment = getQuipmentAsItemWithBonus(items);
 
-	let acc = [] as CrewMember[];
+	let acc = [] as PlayerCrew[];
 
 	if (context.player.playerData?.player?.character?.crew) {
 		acc = context.player.playerData?.player?.character?.crew.concat(context.player.playerData?.player?.character?.unOwnedCrew ?? []);
 	}
 	else {
-		acc = allCrew;
+		acc = allCrew as PlayerCrew[];
 	}
 
 	const workCrew = acc;
@@ -513,6 +513,8 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 			let crew = context.core.crew.find(f => f.symbol === selcrew.archetype_symbol)! as PlayerCrew;
 			crew = JSON.parse(JSON.stringify(crew));
 
+			let fffe = workCrew.find(f => f.symbol === selcrew.archetype_symbol && f.immortal);
+
 			crew.isSelected = true;
 			crew.isDisabled = selcrew.disabled;
 
@@ -536,7 +538,8 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 
 			crew.rarity = selcrew.rarity;
 			crew.level = selcrew.level;
-			crew.immortal = CompletionState.DisplayAsImmortalOwned;
+			crew.have = true;
+			crew.immortal = fffe?.immortal ? -1 : 0;
 
 			roster.push(crew);
 		}
