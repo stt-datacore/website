@@ -1,14 +1,12 @@
 import React from "react";
-import { GauntletViewMode, OwnedStatus } from "../../model/gauntlets"
+import { OwnedStatus } from "../../model/gauntlets"
 import { GauntletContext } from "./dataprovider";
 import { Dropdown, Checkbox, DropdownItemProps } from "semantic-ui-react";
 import { PlayerBuffMode } from "../../model/player";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { GlobalContext } from "../../context/globalcontext";
-import { useStateWithStorage } from "../../utils/storage";
 import CONFIG from "../CONFIG";
 import { BuffNames } from "../item_presenters/crew_preparer";
-
 
 export const GauntletPrefsPanel = () => {
     const globalContext = React.useContext(GlobalContext);

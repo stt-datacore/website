@@ -15,6 +15,7 @@ import { GauntletCrewTable } from "./gauntlettable";
 import { PlayerCrew } from "../../model/player";
 import { GauntletTileView } from "./gauntlettileview";
 import { OpponentTable } from "./opponenttable";
+import { CrewMember } from "../../model/crew";
 
 export interface GauntletViewProps {
     gauntlet: Gauntlet;
@@ -223,14 +224,20 @@ export const GauntletView = (props: GauntletViewProps) => {
     }
 
     function getTextCrew() {
+        const resultmap = {} as { [key: string]: (PlayerCrew | CrewMember) };
         if (!gauntlet?.allCrew) return [];
-        let trimFilter = textFilter?.trim()?.toLowerCase();
-        if (!trimFilter) return [...gauntlet.allCrew];
-        return gauntlet.allCrew.filter(crew => {
-            if (crew.name.toLowerCase().includes(trimFilter)) return true;
-            if (crew.traits.some(t => t.includes(trimFilter))) return true;
-            if (crew.traits_hidden.some(t => t.includes(trimFilter))) return true;
-            return false;
+        let segment = (textFilter || '').trim().toLowerCase();
+        if (!segment) return [...gauntlet.allCrew];
+        gauntlet.allCrew.forEach(crew => {
+            let r = false;
+            if (crew.name.toLowerCase().includes(segment)) r = true;
+            if (crew.traits.some(t => t.includes(segment))) r = true;
+            if (crew.traits_hidden.some(t => t.includes(segment))) r = true;
+            if (r) {
+                resultmap[crew.id!] = crew;
+            }
+            return r;
         });
+        return Object.values(resultmap);
     }
 }

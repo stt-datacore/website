@@ -8,8 +8,6 @@ import { getPlayerPairs, getSkills } from "../../utils/crewutils";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { StatLabel } from "../statlabel";
 
-
-
 export interface GauntletSkillProps extends PresenterPluginProps<PlayerCrew | CrewMember> {
     data: Gauntlet | Gauntlet[];
 }
@@ -28,7 +26,6 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
     }
 
     private readonly drawLeftArea = () => {
-
         const { context: crew, data: node } = this.props;
 
         if (Array.isArray(node)) {
@@ -56,12 +53,11 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
                 flexGrow: 1
             }}>
                 {Object.keys(critters).sort().reverse().map((crit) => {
-
                     let text = crit;
                     let count = critters[crit];
 
                     return (
-                        <div style={{margin:"0.25em 0 0 0", width: '100%', height: '32px'}}>
+                        <div key={`${crew.id}_${crit}_crit`} style={{margin:"0.25em 0 0 0", width: '100%', height: '32px'}}>
                         <StatLabel
                             size={'medium'}
                             title={`${text} Crit`}
@@ -133,14 +129,7 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
                 display: 'grid',
                 gridTemplateAreas: "'left right'",
                 gridTemplateColumns: "75% auto",
-                // display: "flex",
-                // flexDirection: isMobile ? 'column' : "row",
-                // justifyContent: isMobile ? 'center' : "space-evenly",
-                // justifyItems: 'center',
-                // alignContent: 'center',
-                // alignItems: "center",
                 fontSize: "3em",
-//                minHeight: "4em"
             }}>
                 {this.drawLeftArea()}
                 <div style={{gridArea: 'right', fontSize: "12pt", marginTop: "1em", marginBottom: "1em"}} title={t('base.best_pair')}>
@@ -153,3 +142,4 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
     }
 
 }
+

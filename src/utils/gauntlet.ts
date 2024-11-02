@@ -624,6 +624,10 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 				let crew = !!inputCrew.isOpponent ? inputCrew : JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
 				if (!crew.isOpponent) {
 					if (!crew.have) {
+						if (!crew.id) {
+							crew.id = crew.archetype_id;
+						}
+						crew.immortal ??= hasPlayer ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
 						if (buffConfig && (buffMode === 'player' || buffMode === 'quipment')) {
 							applyCrewBuffs(crew, buffConfig);
 						}
@@ -632,7 +636,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 							applyMaxQuip(crew);
 						}
 					}
-					else if (crew.have) {
+					else {
 						if (buffConfig && buffMode === 'player') {
 							applyCrewBuffs(crew, buffConfig);
 						}
@@ -678,6 +682,11 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 					}
 				}
 				else {
+					crew.immortal = CompletionState.DisplayAsImmortalOpponent;
+					crew.have = false;
+				}
+
+				if (!crew.have || crew.isOpponent) {
 					let skills = getSkills(crew);
 					for (let s of skills) {
 						if (!(s in crew)) {
@@ -688,8 +697,6 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 							}
 						}
 					}
-					crew.immortal = CompletionState.DisplayAsImmortalOpponent;
-					crew.have = false;
 				}
 
 				crew.pairs = getPlayerPairs(crew);
