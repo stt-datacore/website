@@ -190,7 +190,7 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 							return true;
 						}
 						else {
-							return crew2.isOpponent !== true;
+							return !crew2.isSelected && !crew2.isOpponent;
 						}
 					}
 					else {
@@ -479,9 +479,9 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	if (gauntlet.opponents?.length && !hideOpponents) {
 		for (let op of gauntlet.opponents) {
 			const ocrew = op.crew_contest_data.crew[0];
-			const nfcrew = context.core.crew.find((cf) => cf.symbol === ocrew.archetype_symbol);
-			if (nfcrew) {
-				const fcrew = JSON.parse(JSON.stringify(nfcrew)) as PlayerCrew;
+			const refcrew = context.core.crew.find((cf) => cf.symbol === ocrew.archetype_symbol);
+			if (refcrew) {
+				const fcrew = JSON.parse(JSON.stringify(refcrew)) as PlayerCrew;
 				for (let skname of Object.keys(fcrew.base_skills)) {
 					const skill = fcrew.base_skills[skname] as Skill;
 					const opposkill = ocrew.skills.find((f) => f.skill === skname);
@@ -510,7 +510,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 
 	if (gauntlet?.contest_data?.selected_crew?.length) {
 		for (let selcrew of gauntlet.contest_data.selected_crew) {
-			let crew = allCrew.find(f => f.symbol === selcrew.archetype_symbol)! as PlayerCrew;
+			let crew = context.core.crew.find(f => f.symbol === selcrew.archetype_symbol)! as PlayerCrew;
 			crew = JSON.parse(JSON.stringify(crew));
 
 			crew.isSelected = true;
@@ -651,7 +651,12 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 							}
 						}
 						else if (maxBuffs && buffMode.startsWith("max")) {
-							applyCrewBuffs(crew, maxBuffs);
+							if (buffMode === 'max' || !buffConfig) {
+								applyCrewBuffs(crew, maxBuffs);
+							}
+							else {
+								applyCrewBuffs(crew, buffConfig);
+							}
 							if (crew.immortal) applyMaxQuip(crew);
 						}
 						else {

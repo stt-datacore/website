@@ -152,33 +152,10 @@ export const GauntletPairCard = (props: PairCardProps) => {
         }
     }
 
-    // for (let skill of skills) {
-    //     if (boostMode === 'player' && "skills" in crew && skill && skill in crew.skills) {
-    //         let cp = JSON.parse(JSON.stringify(crew.skills[skill] as Skill));
-    //         cp.skill = skill;
-    //         crewpair.push(cp);
-    //     }
-    //     else if (boostMode !== 'none' && skill && skill in crew && ((crew[skill] as ComputedSkill).core)) {
-    //         let cp = JSON.parse(JSON.stringify(crew[skill] as ComputedSkill)) as ComputedSkill;
-    //         cp.skill = skill;
-    //         crewpair.push({
-    //             core: cp.core,
-    //             range_max: cp.max,
-    //             range_min: cp.min,
-    //             skill: skill
-    //         });
-    //     }
-    //     else if (skill && skill in crew.base_skills) {
-    //         let cp = JSON.parse(JSON.stringify(crew.base_skills[skill] as Skill)) as Skill;
-    //         cp.skill = skill;
-    //         crewpair.push(cp);
-    //     }
-    // }
-
     return (
         <div
             className="ui segment"
-            key={crew.symbol + pstr + (opponent?.name ?? "")}
+            key={`${crew.id}_${crew.symbol}+${opponent?.player_id}`}
             title={crew.name
                 + (("isDisabled" in crew && crew.isDisabled) ? " (Disabled)" : "")
                 + (("isDebuffed" in crew && crew.isDebuffed) ? " (Reduced Power)" : "")
