@@ -1,4 +1,9 @@
 {
+    "missions": {
+        "continuum_mission_map": "Continuum Mission Map",
+        "mission_map": "Mission Map",
+        "current_continuum_mission_date": "Current continuum mission: {{date}}"
+    },
     "base": {
         "all_crew": "Show all crew",
         "best_pair": "Best Pair",

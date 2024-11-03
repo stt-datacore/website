@@ -1,4 +1,9 @@
 {
+    "missions": {
+        "continuum_mission_map": "Mapa de misión continuo",
+        "mission_map": "Mapa de la misión",
+        "current_continuum_mission_date": "Misión continuo actual: {{date}}"
+    },
     "base": {
         "all_crew": "Mostrar toda las tripulantes",
         "best_pair": "Mejor pareja",

@@ -1,4 +1,9 @@
 {
+    "missions": {
+        "continuum_mission_map": "Kontinuumsmissionskarte",
+        "mission_map": "Missionskarte",
+        "current_continuum_mission_date": "Aktuelle Kontinuumsmission: {{date}}"
+    },
     "base": {
         "all_crew": "Die gesamte Crew anzeigen",
         "best_pair": "Bestes Paar",
