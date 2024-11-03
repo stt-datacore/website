@@ -34,9 +34,9 @@ type EventPickerProps = {
 export const EventPicker = (props: EventPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	const { playerData, buffConfig } = globalContext.player;
+	const { playerData, buffConfig, ephemeral } = globalContext.player;
 	const { events, rosterType } = props;
-
+	const [init, setInit] = React.useState(false);
 	const [eventIndex, setEventIndex] = useStateWithStorage<number>('eventplanner/eventIndex', 0);
 	const [phaseIndex, setPhaseIndex] = useStateWithStorage<number>('eventplanner/phaseIndex', 0);
 	const [prospects, setProspects] = useStateWithStorage<LockedProspect[]>('eventplanner/prospects', []);
@@ -50,6 +50,13 @@ export const EventPicker = (props: EventPickerProps) => {
 		const bonusCrew: CrewMember[] = globalContext.core.crew.filter(c => eventData.bonus.includes(c.symbol));
 		bonusCrew.sort((a, b)=>a.name.localeCompare(b.name));
 		setBonusCrew([...bonusCrew.map(b => b as IRosterCrew)]);
+		if (!init && ephemeral && eventData) {
+			const currEvent = ephemeral.events.find(e => e.seconds_to_start === 0 && e.seconds_to_end > 0);
+			if (currEvent && currEvent.symbol === eventData.symbol && currEvent.opened_phase) {
+				setPhaseIndex(currEvent.opened_phase);
+			}
+			setInit(true);
+		}
 	}, [events, eventIndex]);
 
 	React.useEffect(() => {

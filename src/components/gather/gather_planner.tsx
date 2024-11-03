@@ -52,8 +52,9 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
         let adv = event.content.gather_pools.map(p => p.adventures).flat();
         let newadv = [...adventures];
         adv.forEach((adv) => {
-            if (!newadv.some(ad => ad.id === adv.id)) newadv.push(adv);
+            newadv.push(adv);
         });
+        newadv = newadv.reverse();
         newadv = newadv.filter((f, idx) => newadv.findIndex(fi => fi.id === f.id) === idx)
         setAdventures(newadv);
     }, [ephemeral, cachedItems]);
@@ -113,7 +114,7 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
             if (demand.item_sources?.length) {
                 demand.item_sources.forEach((source) => {
                     if (source.type === 1) return;
-                    let csource = newsources.find(f => f.source.name === source.name);
+                    let csource = newsources.find(f => f.source.name === source.name && f.source.mastery === source.mastery);
                     if (csource) {
                         const fitem = csource.items.find(f => f.symbol === demand.symbol);
                         if (fitem) {
@@ -183,7 +184,6 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
     function mergeCache(item: EquipmentItem) {
         let eitem = findEventItem(item.symbol);
         if (!eitem) addItemToCache(item);
-        else item = items.find(i => i.symbol === eitem)!;
 
         return item;
     }
