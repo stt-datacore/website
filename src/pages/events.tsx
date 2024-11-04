@@ -363,7 +363,7 @@ const EventStatsComponent = () => {
 	);
 
 	function drawTableRow(stats: EventStats, idx: number) {
-		return <Table.Row key={`event_stats_${idx}`}>
+		return <Table.Row key={`event_stats_${stats.event_name}_${idx}`}>
 			<Table.Cell>
 				<div style={{
 					display: 'flex',
@@ -374,10 +374,12 @@ const EventStatsComponent = () => {
 				}}>
 					<h3>{stats.event_name}</h3>
 					{stats.discovered && <p style={{fontSize:'0.8em',fontStyle: 'italic'}}>{moment(stats.discovered).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("MMM d, YYYY")}</p>}
-					{[stats.crew, ...stats.other_legendaries ?? []].map((symbol) => {
+					{[stats.crew, ...stats.other_legendaries ?? []].map((symbol, idx2) => {
 						const crew = globalContext.core.crew.find(f => f.symbol === symbol);
 						if (!crew) return <></>;
-						return <div style={{display:'flex', gap: '0.5em', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start'}}>
+						return <div
+							key={`${stats.event_name}_${stats.crew_name}_${idx}_${idx2}`}
+							style={{display:'flex', gap: '0.5em', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start'}}>
 							<AvatarView
 								showMaxRarity={!playerData}
 								mode='crew'
