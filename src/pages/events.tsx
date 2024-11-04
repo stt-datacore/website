@@ -193,7 +193,7 @@ const EventStatsComponent = () => {
 	const { playerData } = globalContext.player;
 	const { t } = globalContext.localized;
 	const [totalPages, setTotalPages] = React.useState(1);
-	const [itemsPerPage, setItemsPerPage] = React.useState(10);
+	const [itemsPerPage, setItemsPerPage] = React.useState(20);
 	const [activePage, setActivePage] = React.useState(1);
 
 	const [compiledStats, setCompiledStats] = React.useState<EventStats[]>([]);
@@ -206,7 +206,7 @@ const EventStatsComponent = () => {
 	const [sortDirection, setSortDirection] = React.useState<'ascending' | 'descending'>('ascending');
 
 	const [typeFilter, setTypeFilter] = React.useState(undefined as string[] | undefined);
-	const [timeframe, setTimeframe] = useStateWithStorage('event_stats/timeframe', undefined as string | undefined);
+	const [timeframe, setTimeframe] = useStateWithStorage('event_stats/timeframe', "12_months" as string | undefined);
 	const [weeks, setWeeks] = React.useState(timeframeToWeeks(timeframe));
 	const [typeTotals, setTypeTotals] = React.useState([] as TypeTotals[]);
 	const [eventTypes, setEventTypes] = useStateWithStorage('event_stats/event_types', [] as string[]);
@@ -242,7 +242,31 @@ const EventStatsComponent = () => {
 				stat.percentile = (stat.min / max) * 100;
 			});
 			bucket.sort((a, b) => b.percentile! - a.percentile!);
+			bucket.forEach((stat, idx) => stat.rank = idx+1);
 		});
+
+		newStats.sort((a, b) => a.instance_id - b.instance_id);
+
+		let lastDiscovered = new Date();
+		let maxidx = newStats.length - 1;
+
+		if (newStats.length && newStats[newStats.length - 1].discovered) {
+			lastDiscovered = new Date(newStats[newStats.length - 1].discovered!);
+			lastDiscovered.setDate(lastDiscovered.getDate() + 7);
+		}
+
+		newStats.forEach((stat, idx) => {
+			if (!stat.discovered) {
+				let w = maxidx - idx;
+				stat.discovered = new Date(lastDiscovered);
+				let dow = stat.discovered.getDay();
+				dow = 3 - dow;
+				stat.discovered.setDate(stat.discovered.getDate() + dow);
+				stat.discovered.setDate(stat.discovered.getDate() - (w * 7));
+				stat.guessed = true;
+			}
+		});
+
 		setCompiledStats(newStats);
 	}, [event_stats]);
 
@@ -253,7 +277,22 @@ const EventStatsComponent = () => {
 		let newTypeFilter = [] as string[];
 		let totals = {} as { [key: string]: number };
 
+		let lastDiscovered = new Date();
+		if (compiledStats.length && compiledStats[compiledStats.length - 1].discovered) {
+			lastDiscovered = new Date(compiledStats[compiledStats.length - 1].discovered!);
+			lastDiscovered.setDate(lastDiscovered.getDate() + 7);
+		}
 		let filtered = compiledStats.sort((a, b) => a.instance_id - b.instance_id).filter((stat, idx) => {
+			if (!stat.discovered) {
+				let w = maxidx - idx;
+				stat.discovered = new Date(lastDiscovered);
+				let dow = stat.discovered.getDay();
+				dow = 3 - dow;
+				stat.discovered.setDate(stat.discovered.getDate() + dow);
+				stat.discovered.setDate(stat.discovered.getDate() - (w * 7));
+				stat.guessed = true;
+			}
+
 			if (weeks) {
 				if (maxidx - idx > weeks) {
 					return false;
@@ -277,22 +316,40 @@ const EventStatsComponent = () => {
 		});
 
 		const pages = Math.ceil(filtered.length / itemsPerPage);
+		const dir = sortDirection === 'ascending' ? 1 : -1;
 
 		if (sortColumn) {
 			filtered.sort((a, b) => {
-				const dir = sortDirection === 'ascending' ? 1 : -1;
+				if (sortColumn === 'event_type') {
+					let r = dir * a.event_type.localeCompare(b.event_type);
+					if (!r) {
+						r = b.percentile! - a.percentile!;
+					}
+					return r;
+				}
+				else
 				if (typeof a[sortColumn] === 'string') {
 					return dir * a[sortColumn].localeCompare(b[sortColumn]);
 				}
+				else if (sortColumn === 'percentile') {
+					let r = dir * (a[sortColumn]! - b[sortColumn]!);
+					if (!r) {
+						r = a.event_type.localeCompare(b.event_type);
+					}
+					return r;
+				}
 				else {
-					return dir * (a[sortColumn] - b[sortColumn]);
+					let r = dir * (a[sortColumn] - b[sortColumn]);
+					if (!r) r = b.percentile! - a.percentile!;
+					return r;
 				}
 			});
 		}
 		else {
 			filtered.sort((a, b) => {
 				let r = b.percentile! - a.percentile!;
-				if (!r) r = b.min - a.min;
+				r *= dir;
+				if (!r) r = a.event_type.localeCompare(b.event_type);
 				return r;
 			});
 		}
@@ -375,9 +432,13 @@ const EventStatsComponent = () => {
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell
-							sorted={sortColumn === 'name' ? sortDirection : undefined}
-							onClick={(e) => sortColumn === 'name' ? switchDir() : setSortColumn('name')}
+							sorted={sortColumn === 'event_name' ? sortDirection : undefined}
+							onClick={(e) => sortColumn === 'event_name' ? switchDir() : setSortColumn('event_name')}
 							>{t("global.name")}</Table.HeaderCell>
+						<Table.HeaderCell
+							sorted={sortColumn === 'instance_id' ? sortDirection : undefined}
+							onClick={(e) => sortColumn === 'instance_id' ? switchDir() : setSortColumn('instance_id')}
+							>Id</Table.HeaderCell>
 						<Table.HeaderCell
 							sorted={sortColumn === 'event_type' ? sortDirection : undefined}
 							onClick={(e) => sortColumn === 'event_type' ? switchDir() : setSortColumn('event_type')}
@@ -458,7 +519,10 @@ const EventStatsComponent = () => {
 				}}>
 					<h3>{stats.event_name}</h3>
 					{!!url && <img src={url} style={{height: '96px'}} />}
-					{stats.discovered && <p style={{fontSize:'0.8em',fontStyle: 'italic'}}>{moment(stats.discovered).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("MMM d, YYYY")}</p>}
+					{stats.discovered && <p style={{fontSize:'0.8em',fontStyle: 'italic'}}>
+						{stats.guessed && "~ "}{moment(stats.discovered).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language)
+							.format("MMM D, YYYY")}
+					</p>}
 					{[stats.crew, ...stats.other_legendaries ?? []].map((symbol, idx2) => {
 						const crew = globalContext.core.crew.find(f => f.symbol === symbol);
 						if (!crew) return <></>;
@@ -478,7 +542,15 @@ const EventStatsComponent = () => {
 				</div>
 			</Table.Cell>
 			<Table.Cell>
-				{stats.event_type}
+				{stats.instance_id}
+			</Table.Cell>
+			<Table.Cell>
+				<span style={{
+					color: stats.percentile == 100 ? 'lightgreen' : undefined,
+					fontWeight: stats.percentile == 100 ? 'bold': undefined
+				}}>
+					{stats.event_type}
+				</span>
 			</Table.Cell>
 			<Table.Cell>
 				{stats.rank!}

@@ -14,6 +14,7 @@ export interface EventStats {
     crew_name: string;
     event_type: string;
     discovered?: Date;
+    guessed?: boolean;
     other_legendaries?: string[];
     rank?: number;
     percentile?: number;
