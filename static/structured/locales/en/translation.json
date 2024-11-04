@@ -305,7 +305,11 @@
         "n_m_compact": "{{minutes}}m",
         "n_minute_class": "{{minutes}}-minute",
         "n_minutes": "{{minutes}} minutes",
-        "title": "Duration: {{duration}}"
+        "title": "Duration: {{duration}}",
+        "n_weeks": "{{weeks}} weeks",
+        "n_months": "{{months}} months",
+        "n_years": "{{years}} years",
+        "all_time": "All Time"
     },
     "event_info": {
         "active_event_lag_warn": "If this event is currently active, the leaderboard below might be out of date.",
@@ -819,6 +823,7 @@
     "hints": {
         "apply_buffs": "Apply stat buffs",
         "display_buffs": "Display Buffs",
+        "filter_by_timeframe": "Filter by timeframe",
         "filter_by_availability": "Filter by availability",
         "filter_by_collections": "Filter by collections",
         "filter_by_crew": "Filter by crew",

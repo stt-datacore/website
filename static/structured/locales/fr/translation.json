@@ -313,7 +313,11 @@
         "n_m_compact": "{{minutes}}m",
         "n_minute_class": "{{minutes}}-minute",
         "n_minutes": "{{minutes}} minutes",
-        "title": "Durée: {{duration}}"
+        "title": "Durée: {{duration}}",
+        "n_weeks": "{{weeks}} semaines",
+        "n_months": "{{months}} moins",
+        "n_years": "{{years}} années",
+        "all_time": "Tout le temps"
     },
     "event_info": {
         "active_event_lag_warn": "Si cet événement est actuellement actif, le classement ci-dessous peut être obsolète.",
@@ -829,6 +833,7 @@
     "hints": {
         "apply_buffs": "Appliquer des effets",
         "display_buffs": "Afficher effets",
+        "filter_by_timeframe": "Filtrer par période",
         "filter_by_availability": "Filtrer par disponibilité",
         "filter_by_collections": "Filtrer par collections",
         "filter_by_crew": "Filtrer par équipage",

@@ -183,14 +183,15 @@ const EventsPageComponent = () => {
 
 const EventStatsComponent = () => {
 	const globalContext = React.useContext(GlobalContext);
-	const { event_stats } = globalContext.core;
+	const { event_stats, event_instances } = globalContext.core;
 	const { playerData } = globalContext.player;
 	const { t } = globalContext.localized;
 	const [totalPages, setTotalPages] = React.useState(1);
 	const [itemsPerPage, setItemsPerPage] = React.useState(10);
 	const [activePage, setActivePage] = React.useState(1);
 
-	const [workStats, setWorkStats] = React.useState<EventStats[]>([]);
+	const [compiledStats, setCompiledStats] = React.useState<EventStats[]>([]);
+
 	const [activePageResults, setActivePageResults] = React.useState<
 		EventStats[]
 	>([]);
@@ -198,8 +199,10 @@ const EventStatsComponent = () => {
 	const [sortColumn, setSortColumn] = React.useState('');
 	const [sortDirection, setSortDirection] = React.useState<'ascending' | 'descending'>('ascending');
 
-	const [typeFilter, setTypeFilter] = React.useState(undefined as string | undefined);
-	const [eventTypes, setEventTypes] = React.useState([] as string[]);
+	const [typeFilter, setTypeFilter] = React.useState(undefined as string[] | undefined);
+	const [timeframe, setTimeframe] = useStateWithStorage('event_stats/timeframe', undefined as string | undefined);
+	const [weeks, setWeeks] = React.useState(timeframeToWeeks(timeframe));
+	const [eventTypes, setEventTypes] = useStateWithStorage('event_stats/event_types', [] as string[]);
 
 	const switchDir = () => {
 		if (sortDirection === 'ascending') setSortDirection('descending');
@@ -213,7 +216,7 @@ const EventStatsComponent = () => {
 	React.useEffect(() => {
 		if (!event_stats?.length) return;
 		const newStats = JSON.parse(JSON.stringify(event_stats)) as EventStats[];
-		newStats.splice(0, newStats.length - 104);
+		newStats.splice(0, newStats.length - 52);
 		const buckets = makeTypeBuckets(newStats);
 		const eventTypes = [] as string[];
 		let top = {} as { [key: string]: number };
@@ -246,12 +249,19 @@ const EventStatsComponent = () => {
 		});
 		eventTypes.sort();
 		setEventTypes(eventTypes);
-		setWorkStats(newStats);
+		setCompiledStats(newStats);
 	}, [event_stats]);
 
 	React.useEffect(() => {
-		if (!workStats?.length) return;
-		const filtered = workStats.filter(f => !typeFilter || f.event_type === typeFilter);
+		if (!compiledStats?.length) return;
+		let maxidx = compiledStats.length - 1;
+		const filtered = compiledStats.filter((f, idx) => {
+			if (typeFilter?.length && !typeFilter.includes(f.event_type)) return false;
+			if (weeks) {
+				if (maxidx - idx > weeks) return false;
+			}
+			return true;
+		});
 		const pages = Math.ceil(filtered.length / itemsPerPage);
 		if (sortColumn) {
 			filtered.sort((a, b) => {
@@ -277,7 +287,7 @@ const EventStatsComponent = () => {
 		setActivePageResults(
 			filtered.slice(pageStartIdx, pageStartIdx + itemsPerPage)
 		);
-	}, [workStats, itemsPerPage, activePage, totalPages, sortColumn, sortDirection, typeFilter]);
+	}, [compiledStats, itemsPerPage, activePage, totalPages, sortColumn, sortDirection, typeFilter, weeks]);
 
 	const pageSizes = [1, 5, 10, 20, 50, 100].map((size) => {
 		return {
@@ -289,8 +299,9 @@ const EventStatsComponent = () => {
 
 	return (
 		<div>
-			<div>
+			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '1em'}}>
 				<EventTypeFilter availableTypes={eventTypes} type={typeFilter} setType={setTypeFilter} />
+				<TimeframeFilter timeframe={timeframe} setTimeframe={setTimeframe} setWeeks={setWeeks} />
 			</div>
 			<Table striped sortable>
 				<Table.Header>
@@ -363,8 +374,13 @@ const EventStatsComponent = () => {
 	);
 
 	function drawTableRow(stats: EventStats, idx: number) {
+		let instance = event_instances.find(f => f.instance_id === stats.instance_id);
+		let url = '';
+		if (instance?.image) {
+			url = `${process.env.GATSBY_ASSETS_URL}${instance.image}`;
+		}
 		return <Table.Row key={`event_stats_${stats.event_name}_${idx}`}>
-			<Table.Cell>
+			<Table.Cell width={5}>
 				<div style={{
 					display: 'flex',
 					flexDirection: 'column',
@@ -373,6 +389,7 @@ const EventStatsComponent = () => {
 					gap: '0.5em'
 				}}>
 					<h3>{stats.event_name}</h3>
+					{!!url && <img src={url} style={{height: '96px'}} />}
 					{stats.discovered && <p style={{fontSize:'0.8em',fontStyle: 'italic'}}>{moment(stats.discovered).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("MMM d, YYYY")}</p>}
 					{[stats.crew, ...stats.other_legendaries ?? []].map((symbol, idx2) => {
 						const crew = globalContext.core.crew.find(f => f.symbol === symbol);
@@ -419,11 +436,51 @@ const EventStatsComponent = () => {
 	}
 };
 
+interface TimeframeFilterProps {
+	timeframe?: string;
+	setTimeframe: (value?: string) => void;
+	setWeeks?: (value?: number) => void;
+}
+
+
+const TimeframeFilter = (props: TimeframeFilterProps) => {
+
+	const { timeframe, setTimeframe, setWeeks } = props;
+	const { t } = React.useContext(GlobalContext).localized;
+
+	const options = [
+		{ key: 'all_time', value: 'all_time', text: t('duration.all_time') },
+		{ key: '2_years', value: '2_years', text: t('duration.n_years', { years: `2`} ) },
+		{ key: '12_months', value: '12_months', text: t('duration.n_months', { months: `12`}) },
+		{ key: '9_months', value: '9_months', text: t('duration.n_months', { months: `9`}) },
+		{ key: '6_months', value: '6_months', text: t('duration.n_months', { months: `6`}) },
+		{ key: '3_months', value: '3_months', text: t('duration.n_months', { months: `3`}) },
+		{ key: '4_weeks', value: '4_months', text: t('duration.n_weeks', { weeks: `4` }) }
+	] as DropdownItemProps[];
+
+	return <Dropdown
+			placeholder={t('hints.filter_by_timeframe')}
+			clearable
+			search
+			selection
+			options={options}
+			value={timeframe}
+			onChange={(e, { value }) => {
+				if (setWeeks) {
+					setWeeks(timeframeToWeeks(value as string | undefined))
+				}
+				setTimeframe(value as string | undefined);
+			}}
+		/>
+
+}
+
 interface EventTypeFilterProps {
-	type?: string;
-	setType: (value?: string) => void;
+	type?: string[];
+	setType: (value?: string[]) => void;
 	availableTypes: string[];
 }
+
 const EventTypeFilter = (props: EventTypeFilterProps) => {
 
 	const { type, setType, availableTypes } = props;
@@ -444,10 +501,43 @@ const EventTypeFilter = (props: EventTypeFilterProps) => {
 			clearable
 			search
 			selection
+			multiple
 			options={options}
 			value={type}
-			onChange={(e, { value }) => setType(value as string | undefined)}
+			onChange={(e, { value }) => setType(value as string[] | undefined)}
 		/>
 }
+
+function timeframeToWeeks(timeframe?: string) {
+	if (!timeframe) return undefined;
+	let sp = timeframe.split("_");
+	if (sp.length !== 2) return undefined;
+	let n = Number(sp[0]);
+	if (Number.isNaN(n)) return undefined;
+	let d = new Date();
+	let e = new Date();
+
+	switch (sp[1]) {
+		case "days":
+			d.setDate(d.getDate() - n);
+			break;
+		case "weeks":
+			d.setDate(d.getDate() - (n * 7));
+			break;
+		case "months":
+			d.setMonth(d.getMonth() - n);
+			break;
+		case "years":
+			d.setFullYear(d.getFullYear() - n);
+			break;
+		default:
+			return undefined;
+	}
+
+	let w = e.getTime() - d.getTime();
+	w /= (1000 * 60 * 60 * 24 * 7);
+	return Math.floor(w);
+}
+
 
 export default EventsPage;

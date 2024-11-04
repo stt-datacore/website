@@ -311,7 +311,11 @@
         "n_m_compact": "{{minutes}}m",
         "n_minute_class": "{{minutes}}-minuto",
         "n_minutes": "{{minutes}} minutos",
-        "title": "Duración: {{duration}}"
+        "title": "Duración: {{duration}}",
+        "n_weeks": "{{weeks}} semanas",
+        "n_months": "{{months}} meses",
+        "n_years": "{{years}} años",
+        "all_time": "Todo el tiempo"
     },
     "event_info": {
         "active_event_lag_warn": "Si este evento está activo actualmente, es posible que la tabla de clasificación a continuación esté desactualizada.",
@@ -828,6 +832,7 @@
     "hints": {
         "apply_buffs": "Aplicar efectos",
         "display_buffs": "Mostrar efectos",
+        "filter_by_timeframe": "Filtrar por periodo de tiempo",
         "filter_by_availability": "Filtrar por disponibilidad",
         "filter_by_collections": "Filtrar por colecciones",
         "filter_by_crew": "Filtrar por tripulación",

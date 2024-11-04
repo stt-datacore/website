@@ -305,7 +305,11 @@
         "n_m_compact": "{{minutes}}M",
         "n_minute_class": "{{minutes}}-minute",
         "n_minutes": "{{minutes}} minuten",
-        "title": "Dauer: {{duration}}"
+        "title": "Dauer: {{duration}}",
+        "n_weeks": "{{weeks}} Wochen",
+        "n_months": "{{months}} Monate",
+        "n_years": "{{years}} Jahre",
+        "all_time": "Alle Zeiten"
     },
     "event_info": {
         "active_event_lag_warn": "Wenn dieses Ereignis derzeit aktiv ist, ist die untenstehende Bestenliste möglicherweise veraltet.",
@@ -819,6 +823,7 @@
     "hints": {
         "apply_buffs": "Buffs anwenden",
         "display_buffs": "Buffs anzeigen",
+        "filter_by_timeframe": "Filtern nach Zeitraum",
         "filter_by_availability": "Filtern nach Verfügbarkeit",
         "filter_by_collections": "Filtern nach Sammlungen",
         "filter_by_crew": "Filtern nach Crew",
