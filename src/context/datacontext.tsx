@@ -17,6 +17,7 @@ import { getSkillOrder } from '../utils/crewutils';
 import { highestLevel } from '../utils/shiputils';
 import { ObjectiveEvent } from '../model/player';
 import { ICoreData } from './coremodel';
+import { EventStats } from '../utils/event_stats';
 
 const DC_DEBUGGING: boolean = false;
 
@@ -31,6 +32,7 @@ export type ValidDemands =
 	'disputes' |
 	'episodes' |
 	'event_instances' |
+	'event_stats' |
 	'factions' |
 	'gauntlets' |
 	'items' |
@@ -66,6 +68,7 @@ const defaultData = {
 	crew: [] as CrewMember[],
 	episodes: [] as Mission[],
 	event_instances: [] as EventInstance[],
+	event_stats: [] as EventStats[],
 	factions: [] as StaticFaction[],
 	gauntlets: [] as Gauntlet[],
 	items: [] as EquipmentItem[],
@@ -128,6 +131,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'disputes',
 			'episodes',
 			'event_instances',
+			'event_stats',
 			'factions',
 			'gauntlets',
 			'items',
