@@ -7,6 +7,7 @@
   "scripts": {
     "check": "tsc --noEmit",
     "precalculate": "tsc ./scripts/precalculate.ts --outDir ./build && node build/scripts/precalculate.js",
+    "eventstats": "tsc ./scripts/eventstats.ts --outDir ./build && node build/scripts/eventstats.js",
     "build": "gatsby build",
     "buildci": "gatsby build && rimraf ./public/media/assets",
     "buildpc": "tsc scripts/precalculate.ts --skipLibCheck",
