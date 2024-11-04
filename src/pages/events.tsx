@@ -176,7 +176,7 @@ const EventsPageComponent = () => {
 					</Modal.Content>
 				</Modal>
 			)}
-			<CrewHoverStat targetGroup="event_info" />
+			<CrewHoverStat targetGroup="event_info_stats" />
 		</Container>
 	);
 };
@@ -381,7 +381,7 @@ const EventStatsComponent = () => {
 							<AvatarView
 								showMaxRarity={!playerData}
 								mode='crew'
-								targetGroup="event_info"
+								targetGroup="event_info_stats"
 								item={crew}
 								size={48}
 								/>
