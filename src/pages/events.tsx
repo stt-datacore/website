@@ -13,6 +13,7 @@ import {
 	DropdownItemProps,
 	Dropdown,
 	Pagination,
+	SemanticWIDTHS,
 } from "semantic-ui-react";
 
 import moment from "moment";
@@ -326,7 +327,7 @@ const EventStatsComponent = () => {
 	});
 
 	const typeGrid = [[]] as string[][]
-	const gridWidth = isMobile ? 1 : 4;
+	const gridWidth = isMobile ? 1 : Math.min(4, typeTotals.length);
 	let x = 0;
 	let y = 0;
 	typeTotals.forEach(({type, total }) => {
@@ -351,7 +352,7 @@ const EventStatsComponent = () => {
 				}}>
 				<h3>{t('event_info.tabs.stats.title')}</h3>
 				{!!tfp && t(`duration.n_${tfp[1]}`, { [tfp[1]]: tfp[0] })}
-				<Grid columns={gridWidth} style={{padding:'1em 2em'}}>
+				<Grid columns={gridWidth as SemanticWIDTHS} style={{padding:'1em 2em'}}>
 					{typeGrid.map((row, idx) => {
 						return <Grid.Row key={`typeGrid_row${idx}`}>
 							{row.map((col, idx2) => {
