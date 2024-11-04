@@ -367,6 +367,13 @@
         },
         "warn_no_info": "Les informations sur le prochain événement ne sont pas encore disponibles à partir des données des joueurs. Veuillez réessayer plus tard."
     },
+    "event_stats": {
+        "average_vp": "PV moyen",
+        "event_type": "Type d'événement",
+        "median_vp": "PV médian",
+        "rank": "{{cite_opt.columns.rank}}",
+        "rank_n_vp": "Rang {{n}} PV"
+    },
     "event_type": {
         "gather": "Galaxie",
         "shuttles": "Faction",
@@ -825,6 +832,7 @@
         "filter_by_availability": "Filtrer par disponibilité",
         "filter_by_collections": "Filtrer par collections",
         "filter_by_crew": "Filtrer par équipage",
+        "filter_by_event_type": "Filtrer par type d'événement",
         "filter_by_item_type": "Filtrer par type d'article",
         "filter_by_owned_status": "Filtrer par statut de propriété",
         "filter_by_polestars": "Filtrer par étoiles polaires",

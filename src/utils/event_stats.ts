@@ -15,6 +15,8 @@ export interface EventStats {
     event_type: string;
     discovered?: Date;
     other_legendaries?: string[];
+    rank?: number;
+    percentile?: number;
 }
 
 // Platform independent

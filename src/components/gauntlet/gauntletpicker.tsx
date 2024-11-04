@@ -3,6 +3,10 @@ import { GlobalContext } from "../../context/globalcontext";
 import { DefaultAdvancedGauntletSettings, GauntletPane } from "../../utils/gauntlet";
 import { GauntletContext } from "./dataprovider";
 import moment from "moment";
+import 'moment/locale/fr';
+import 'moment/locale/de';
+import 'moment/locale/es';
+
 import { Step, Label, Icon } from "semantic-ui-react";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";

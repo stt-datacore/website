@@ -359,6 +359,13 @@
         },
         "warn_no_info": "Information about the next event is not yet available from player data. Please try again at a later time."
     },
+    "event_stats": {
+        "average_vp": "Average VP",
+        "event_type": "Event Type",
+        "median_vp": "Median VP",
+        "rank": "{{cite_opt.columns.rank}}",
+        "rank_n_vp": "Rank {{n}} VP"
+    },
     "event_type": {
         "gather": "Galaxy",
         "shuttles": "Faction",
@@ -815,6 +822,7 @@
         "filter_by_availability": "Filter by availability",
         "filter_by_collections": "Filter by collections",
         "filter_by_crew": "Filter by crew",
+        "filter_by_event_type": "Filter by event type",
         "filter_by_item_type": "Filter by item type",
         "filter_by_owned_status": "Filter by owned status",
         "filter_by_polestars": "Filter by polestars",

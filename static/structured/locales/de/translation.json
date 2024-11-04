@@ -359,6 +359,13 @@
         },
         "warn_no_info": "Aus den Spielerdaten sind noch keine Informationen zum nächsten Ereignis verfügbar. Bitte versuche es zu einem späteren Zeitpunkt erneut."
     },
+    "event_stats": {
+        "average_vp": "Durchschnittlicher SP",
+        "event_type": "Ereignistyp",
+        "median_vp": "Median-SP",
+        "rank": "{{cite_opt.columns.rank}}",
+        "rank_n_vp": "Rang {{n}} SP"
+    },
     "event_type": {
         "gather": "Galaxie",
         "shuttles": "Fraktion",
@@ -815,6 +822,7 @@
         "filter_by_availability": "Filtern nach Verfügbarkeit",
         "filter_by_collections": "Filtern nach Sammlungen",
         "filter_by_crew": "Filtern nach Crew",
+        "filter_by_event_type": "Filtern nach Ereignistyp",
         "filter_by_item_type": "Filtern nach Artikeltyp",
         "filter_by_owned_status": "Filtern nach Besitzstatus",
         "filter_by_polestars": "Filtern nach Polarsterne",
