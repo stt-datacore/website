@@ -820,6 +820,7 @@ export interface GameEvent {
   next_threshold_points?: number
   next_threshold_rewards?: any[]
   bonus?: string[];
+  discovered?: Date;
 }
 
 
