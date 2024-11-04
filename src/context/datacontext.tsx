@@ -11,7 +11,7 @@ import { navigate } from 'gatsby';
 import { ContinuumMission } from '../model/continuum';
 import { calcQuipmentScore } from '../utils/equipment';
 import { getItemWithBonus } from '../utils/itemutils';
-import { EventInstance } from '../model/events';
+import { EventInstance, EventLeaderboard } from '../model/events';
 import { StaticFaction } from '../model/shuttle';
 import { getSkillOrder } from '../utils/crewutils';
 import { highestLevel } from '../utils/shiputils';
@@ -32,6 +32,7 @@ export type ValidDemands =
 	'disputes' |
 	'episodes' |
 	'event_instances' |
+	'event_leaderboards' |
 	'event_stats' |
 	'factions' |
 	'gauntlets' |
@@ -68,6 +69,7 @@ const defaultData = {
 	crew: [] as CrewMember[],
 	episodes: [] as Mission[],
 	event_instances: [] as EventInstance[],
+	event_leaderboards: [] as EventLeaderboard[],
 	event_stats: [] as EventStats[],
 	factions: [] as StaticFaction[],
 	gauntlets: [] as Gauntlet[],
@@ -131,6 +133,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'disputes',
 			'episodes',
 			'event_instances',
+			'event_leaderboards',
 			'event_stats',
 			'factions',
 			'gauntlets',

@@ -5,6 +5,7 @@ import LazyImage from '../components/lazyimage';
 import EventInfoModal from '../components/event_info_modal';
 import { EventLeaderboard } from '../model/events';
 import DataPageLayout from '../components/page/datapagelayout';
+import { GlobalContext } from '../context/globalcontext';
 
 type EventInstance = {
 	event_details?: boolean,
@@ -19,29 +20,38 @@ type EventInstance = {
 const EventsPage = () => {
 
 	return (
-		<DataPageLayout demands={['crew', 'cadet', 'all_buffs', 'items', 'ship_schematics']}>
+		<DataPageLayout
+			demands={[
+				'crew',
+				'cadet',
+				'all_buffs',
+				'items',
+				'ship_schematics',
+				'event_instances',
+				'event_leaderboards'
+			]}
+		>
 			<EventsPageComponent />
 		</DataPageLayout>
 	);
 
 }
 
-function EventsPageComponent() {
+const EventsPageComponent = () => {
+	const globalContext = React.useContext(GlobalContext);
+
+	const { event_leaderboards, event_instances } = globalContext.core;
 	const [eventsData, setEventsData] = React.useState<EventInstance[]>([]);
 	const [leaderboardData, setLeaderboardData] = React.useState<{ [key: string]: EventLeaderboard } | null>(null);
 	const [loadingError, setLoadingError] = React.useState<any>(null);
 	const [modalEventInstance, setModalEventInstance] = React.useState<EventInstance | null>(null);
 
-	// load the events and leaderboard data once on component mount
 	React.useEffect(() => {
-		async function loadData() {
+		function loadData() {
 			try {
-				const fetchEventResp = await fetch('/structured/event_instances.json');
-				const eventDataList = (await fetchEventResp.json()) as EventInstance[];
+				const eventDataList = event_instances;
 				setEventsData(eventDataList.reverse());
-
-				const fetchLeaderboardResp = await fetch('/structured/event_leaderboards.json');
-				const leaderboardDataList = await fetchLeaderboardResp.json() as EventLeaderboard[];
+				const leaderboardDataList = event_leaderboards;
 				const keyedLeaderboard = {} as { [key: string]: EventLeaderboard };
 				leaderboardDataList.forEach(entry => keyedLeaderboard[entry.instance_id] = entry);
 				setLeaderboardData(keyedLeaderboard);
