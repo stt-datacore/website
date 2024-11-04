@@ -371,6 +371,7 @@
         "rank_n_vp": "Rang {{n}} SP"
     },
     "event_type": {
+        "expedition": "Expedition",
         "gather": "Galaxie",
         "shuttles": "Fraktion",
         "skirmish": "Scharmützel",

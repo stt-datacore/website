@@ -377,6 +377,7 @@
         "rank_n_vp": "PV de rango {{n}}"
     },
     "event_type": {
+        "expedition": "Expedición",
         "gather": "Galaxia",
         "shuttles": "Facción",
         "skirmish": "Escaramuza",

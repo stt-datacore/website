@@ -379,6 +379,7 @@
         "rank_n_vp": "Rang {{n}} PV"
     },
     "event_type": {
+        "expedition": "Expédition",
         "gather": "Galaxie",
         "shuttles": "Faction",
         "skirmish": "Escarmouche",

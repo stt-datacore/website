@@ -371,6 +371,7 @@
         "rank_n_vp": "Rank {{n}} VP"
     },
     "event_type": {
+        "expedition": "Expedition",
         "gather": "Galaxy",
         "shuttles": "Faction",
         "skirmish": "Skirmish",

@@ -42,6 +42,11 @@ type EventInstance = {
 	instance_id: number;
 };
 
+type TypeTotals = {
+	type: string,
+	total: number
+}
+
 const EventsPage = () => {
 	return (
 		<DataPageLayout
@@ -202,6 +207,7 @@ const EventStatsComponent = () => {
 	const [typeFilter, setTypeFilter] = React.useState(undefined as string[] | undefined);
 	const [timeframe, setTimeframe] = useStateWithStorage('event_stats/timeframe', undefined as string | undefined);
 	const [weeks, setWeeks] = React.useState(timeframeToWeeks(timeframe));
+	const [typeTotals, setTypeTotals] = React.useState([] as TypeTotals[]);
 	const [eventTypes, setEventTypes] = useStateWithStorage('event_stats/event_types', [] as string[]);
 
 	const switchDir = () => {
@@ -216,9 +222,7 @@ const EventStatsComponent = () => {
 	React.useEffect(() => {
 		if (!event_stats?.length) return;
 		const newStats = JSON.parse(JSON.stringify(event_stats)) as EventStats[];
-		newStats.splice(0, newStats.length - 52);
 		const buckets = makeTypeBuckets(newStats);
-		const eventTypes = [] as string[];
 		let top = {} as { [key: string]: number };
 		Object.entries(buckets).forEach(([type, bucket]) => {
 			if (!bucket.length) return;
@@ -238,31 +242,41 @@ const EventStatsComponent = () => {
 			});
 			bucket.sort((a, b) => b.percentile! - a.percentile!);
 		});
-		newStats.sort((a, b) => {
-			let r = b.percentile! - a.percentile!;
-			if (!r) r = b.min - a.min;
-			return r;
-		});
-		newStats.forEach((stat, idx) => {
-			stat.rank = idx+1
-			if (!eventTypes.includes(stat.event_type)) eventTypes.push(stat.event_type);
-		});
-		eventTypes.sort();
-		setEventTypes(eventTypes);
 		setCompiledStats(newStats);
 	}, [event_stats]);
 
 	React.useEffect(() => {
 		if (!compiledStats?.length) return;
 		let maxidx = compiledStats.length - 1;
-		const filtered = compiledStats.filter((f, idx) => {
-			if (typeFilter?.length && !typeFilter.includes(f.event_type)) return false;
+		let eventTypes = [] as string[];
+		let newTypeFilter = [] as string[];
+		let totals = {} as { [key: string]: number };
+
+		let filtered = compiledStats.sort((a, b) => a.instance_id - b.instance_id).filter((stat, idx) => {
 			if (weeks) {
-				if (maxidx - idx > weeks) return false;
+				if (maxidx - idx > weeks) {
+					return false;
+				}
 			}
+			if (!eventTypes.includes(stat.event_type)) eventTypes.push(stat.event_type);
 			return true;
 		});
+
+		eventTypes.sort();
+
+		for (let t of typeFilter ?? []) {
+			if (eventTypes.includes(t)) newTypeFilter.push(t);
+		}
+
+		filtered = filtered.filter((stat, idx) => {
+			if (newTypeFilter?.length && !newTypeFilter.includes(stat.event_type)) return false;
+			totals[stat.event_type] ??= 0;
+			totals[stat.event_type]++;
+			return true;
+		});
+
 		const pages = Math.ceil(filtered.length / itemsPerPage);
+
 		if (sortColumn) {
 			filtered.sort((a, b) => {
 				const dir = sortDirection === 'ascending' ? 1 : -1;
@@ -274,6 +288,14 @@ const EventStatsComponent = () => {
 				}
 			});
 		}
+		else {
+			filtered.sort((a, b) => {
+				let r = b.percentile! - a.percentile!;
+				if (!r) r = b.min - a.min;
+				return r;
+			});
+		}
+
 		if (totalPages !== pages) {
 			setTotalPages(pages);
 			if (activePage > pages) {
@@ -284,6 +306,12 @@ const EventStatsComponent = () => {
 				return;
 			}
 		}
+
+		setTypeFilter(newTypeFilter?.length ? newTypeFilter : undefined);
+		setEventTypes(eventTypes);
+		const typeTotals = Object.entries(totals).map(([type, total]) => ({ type, total } as TypeTotals));
+		typeTotals.sort((a, b) => a.type.localeCompare(b.type));
+		setTypeTotals(typeTotals);
 		setActivePageResults(
 			filtered.slice(pageStartIdx, pageStartIdx + itemsPerPage)
 		);
@@ -297,8 +325,47 @@ const EventStatsComponent = () => {
 		} as DropdownItemProps;
 	});
 
+	const typeGrid = [[]] as string[][]
+	const gridWidth = isMobile ? 1 : 4;
+	let x = 0;
+	let y = 0;
+	typeTotals.forEach(({type, total }) => {
+		typeGrid[y].push(`${type}: ${total}`);
+		x++;
+		if (x >= gridWidth) {
+			typeGrid.push([]);
+			x = 0;
+			y++;
+		}
+	});
+	const tfp = timeframeParts(timeframe);
+
 	return (
 		<div>
+			<div className='ui segment'
+				style={{
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'center',
+					justifyContent: 'center'
+				}}>
+				<h3>{t('event_info.tabs.stats.title')}</h3>
+				{!!tfp && t(`duration.n_${tfp[1]}`, { [tfp[1]]: tfp[0] })}
+				<Grid columns={gridWidth} style={{padding:'1em 2em'}}>
+					{typeGrid.map((row, idx) => {
+						return <Grid.Row key={`typeGrid_row${idx}`}>
+							{row.map((col, idx2) => {
+								return <Grid.Column key={`typeGrid_row${idx}_col${idx2}`}>
+									{col}
+								</Grid.Column>
+							})}
+						</Grid.Row>
+					})}
+					<Grid.Row>
+
+					</Grid.Row>
+				</Grid>
+			</div>
 			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '1em'}}>
 				<EventTypeFilter availableTypes={eventTypes} type={typeFilter} setType={setTypeFilter} />
 				<TimeframeFilter timeframe={timeframe} setTimeframe={setTimeframe} setWeeks={setWeeks} />
@@ -449,7 +516,7 @@ const TimeframeFilter = (props: TimeframeFilterProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 
 	const options = [
-		{ key: 'all_time', value: 'all_time', text: t('duration.all_time') },
+		//{ key: 'all_time', value: 'all_time', text: t('duration.all_time') },
 		{ key: '2_years', value: '2_years', text: t('duration.n_years', { years: `2`} ) },
 		{ key: '12_months', value: '12_months', text: t('duration.n_months', { months: `12`}) },
 		{ key: '9_months', value: '9_months', text: t('duration.n_months', { months: `9`}) },
@@ -506,6 +573,13 @@ const EventTypeFilter = (props: EventTypeFilterProps) => {
 			value={type}
 			onChange={(e, { value }) => setType(value as string[] | undefined)}
 		/>
+}
+
+function timeframeParts(timeframe?: string): string[] | undefined {
+	if (!timeframe) return undefined;
+	let sp = timeframe.split("_");
+	if (sp.length !== 2) return undefined;
+	return sp;
 }
 
 function timeframeToWeeks(timeframe?: string) {
