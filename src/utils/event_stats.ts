@@ -11,8 +11,10 @@ export interface EventStats {
     max: number;
     median: number;
     crew: string;
+    crew_name: string;
     event_type: string;
     discovered?: Date;
+    other_legendaries?: string[];
 }
 
 // Platform independent
@@ -28,6 +30,10 @@ export async function getEventStats(crew: CrewMember[], leaderboards: EventLeade
 
         const rankedReward = eventData.ranked_brackets[0].rewards.find(f => f.type === 1 && f.rarity === 5) as Reward;
         if (!rankedReward) continue;
+        let tleg = eventData.threshold_rewards.filter(f => f.rewards.some(f => f.type === 1 && f.rarity === 5)).map(f => f.rewards).flat().filter(f => f.type === 1 && f.rarity === 5).map(r => r.symbol).filter(f => f) as string[];
+        if (tleg.length) {
+            tleg = tleg.filter((f, idx) => tleg.findIndex(f2 => f === f2) === idx).sort();
+        }
 
         const crewReward = crew.find(f => f.symbol === rankedReward.symbol)!;
         let filtered = lb.leaderboard.filter(f => f.rank <= 1500);
@@ -37,15 +43,26 @@ export async function getEventStats(crew: CrewMember[], leaderboards: EventLeade
         let min = filtered.map(e => e.score).reduce((p, n) => p < n && p !== 0 ? p : n, 0);
         let max = filtered.map(e => e.score).reduce((p, n) => p > n && p !== 0 ? p : n, 0);
         let median = filtered[filtered.length / 2].score;
+
         let contentType = eventData.content_types?.join("/") || eventData.content?.content_type;
         if (!contentType) {
             if (Array.isArray(eventData.content)) {
-                let adata = (eventData as any).content.map(c => c.content_type).join("/");
+                let adata = eventData.content.map(c => c.content_type).join("/");
                 if (adata) {
                     contentType = adata;
                 }
             }
         }
+
+        if (contentType) {
+            let cts = contentType.split("/");
+            cts = cts.filter((f, i) => cts.findIndex(f2 => f2 === f) === i);
+            contentType = cts.join("/");
+        }
+        else {
+            continue;
+        }
+
         stats.push({
             instance_id: event.instance_id,
             event_name: event.event_name,
@@ -53,12 +70,19 @@ export async function getEventStats(crew: CrewMember[], leaderboards: EventLeade
             min,
             max,
             median,
-            crew: crewReward.name,
+            crew: crewReward.symbol,
+            crew_name: crewReward.name,
             event_type: contentType,
-            discovered: eventData.discovered ? new Date(eventData.discovered) : undefined
+            discovered: eventData.discovered ? new Date(eventData.discovered) : undefined,
+            other_legendaries: tleg
         });
     }
 
+
+    return [stats, makeTypeBuckets(stats)];
+}
+
+export function makeTypeBuckets(stats: EventStats[]): { [key: string]: EventStats[] } {
     let allTypes = stats.map(m => m.event_type).sort();
     allTypes = allTypes.filter((at, idx) => allTypes.findIndex(f => f === at) === idx);
 
@@ -70,7 +94,5 @@ export async function getEventStats(crew: CrewMember[], leaderboards: EventLeade
             return b.min - a.min;
         })
     });
-
-    return [stats, typeBuckets];
+    return typeBuckets;
 }
-
