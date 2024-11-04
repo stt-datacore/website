@@ -1,9 +1,4 @@
 {
-    "missions": {
-        "continuum_mission_map": "Mapa de misión continuo",
-        "mission_map": "Mapa de la misión",
-        "current_continuum_mission_date": "Misión continuo actual: {{date}}"
-    },
     "base": {
         "all_crew": "Mostrar toda las tripulantes",
         "best_pair": "Mejor pareja",
@@ -317,6 +312,30 @@
         "n_minute_class": "{{minutes}}-minuto",
         "n_minutes": "{{minutes}} minutos",
         "title": "Duración: {{duration}}"
+    },
+    "event_info": {
+        "active_event_lag_warn": "Si este evento está activo actualmente, es posible que la tabla de clasificación a continuación esté desactualizada.",
+        "bonus_crew": "Tripulación adicional",
+        "bonus_crew_not_determined": "Las bonificaciones de la tripulación para este evento aún no se han determinado",
+        "error_load": "No se puede cargar la información del evento",
+        "featured_crew": "Tripulación destacada",
+        "leaderboard": "Tabla de clasificación",
+        "leaderboards": "Tabla de clasificación",
+        "rank": "{{cite_opt.columns.rank}}",
+        "ranked_rewards": "Recompensas clasificatorias",
+        "score": "Tanteo",
+        "tabs": {
+            "info": {
+                "description": "Ver detalles de cada evento",
+                "title": "Información del evento"
+            },
+            "stats": {
+                "description": "Ver estadísticas del evento",
+                "title": "Estadísticas de eventos"
+            }
+        },
+        "threshold_rewards": "Recompensas de umbral",
+        "title": "Evento"
     },
     "event_planner": {
         "heading": "Encuentra el mejor equipo para usar durante un evento.",
@@ -1039,6 +1058,11 @@
         "type_0": "Misión de conflicto",
         "type_2": "Batalla de buque",
         "type_4": "Desafío cadete"
+    },
+    "missions": {
+        "continuum_mission_map": "Mapa de misión continuo",
+        "current_continuum_mission_date": "Misión continuo actual: {{date}}",
+        "mission_map": "Mapa de la misión"
     },
     "obtained": {
         "long": {

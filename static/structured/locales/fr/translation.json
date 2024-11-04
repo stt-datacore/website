@@ -1,9 +1,4 @@
 {
-    "missions": {
-        "continuum_mission_map": "Carte de mission du continuum",
-        "mission_map": "Carte de mission",
-        "current_continuum_mission_date": "Mission actuelle du continuum: {{date}}"
-    },
     "base": {
         "all_crew": "Afficher tous l'équipiers",
         "best_pair": "Meilleure paire",
@@ -319,6 +314,30 @@
         "n_minute_class": "{{minutes}}-minute",
         "n_minutes": "{{minutes}} minutes",
         "title": "Durée: {{duration}}"
+    },
+    "event_info": {
+        "active_event_lag_warn": "Si cet événement est actuellement actif, le classement ci-dessous peut être obsolète.",
+        "bonus_crew": "Équipage bonus",
+        "bonus_crew_not_determined": "Les bonus d'équipage pour cet événement n'ont pas encore été déterminés.",
+        "error_load": "Impossible de charger les informations sur l'événement",
+        "featured_crew": "Équipage en vedette",
+        "leaderboard": "Classement",
+        "leaderboards": "Classements",
+        "rank": "{{cite_opt.columns.rank}}",
+        "ranked_rewards": "Récompenses classées",
+        "score": "Compte",
+        "tabs": {
+            "info": {
+                "description": "Afficher les détails de chaque événement",
+                "title": "Informations sur l'événement"
+            },
+            "stats": {
+                "description": "Afficher les statistiques des l'événements",
+                "title": "Statistiques des événements"
+            }
+        },
+        "threshold_rewards": "Récompenses de seuil",
+        "title": "Événements"
     },
     "event_planner": {
         "heading": "Trouvez les meilleurs équipiers à utiliser lors d'un événement",
@@ -1040,6 +1059,11 @@
         "type_0": "Quête de conflit",
         "type_2": "Bataille de navires",
         "type_4": "Défi des cadets"
+    },
+    "missions": {
+        "continuum_mission_map": "Carte de mission du continuum",
+        "current_continuum_mission_date": "Mission actuelle du continuum: {{date}}",
+        "mission_map": "Carte de mission"
     },
     "obtained": {
         "long": {

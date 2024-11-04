@@ -275,28 +275,28 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus:
 							bonus.push(crew.symbol);
 					});
 				}
-				// Otherwise try matching last name only (e.g. J. Archer should be Archer)
 				else {
-					if (/\s/.test(testName)) {
-						const imperfectTrait = testName.replace(/^.+\s/, '').toLowerCase();
-						const imperfectTraits = allCrew.filter(crew => crew.traits.includes(imperfectTrait) || crew.traits_hidden.includes(imperfectTrait));
-						imperfectTraits.forEach(crew => {
-							if (!bonus.includes(crew.symbol))
-								bonus.push(crew.symbol);
-						});
-					}
 					// Plural of trait
-					else if (testTrait.endsWith('s')) {
+					if (testTrait.endsWith('s')) {
 						const imperfectTrait = testTrait.slice(0, testTrait.length - 1);
-						const imperfectTraits = allCrew.filter(crew => crew.traits.includes(imperfectTrait) || crew.traits_hidden.includes(imperfectTrait));
+						const imperfectTraits = allCrew.filter(crew => crew.traits.some(trait => trait.replace(/_/g, '') === imperfectTrait) || crew.traits_hidden.some(trait => trait.replace(/_/g, '') === imperfectTrait));
 						imperfectTraits.forEach(crew => {
 							if (!bonus.includes(crew.symbol))
 								bonus.push(crew.symbol);
 						});
 					}
 					// Timelines originals
-					else if (testTrait === 'stt originals') {
+					else if (testTrait === 'sttoriginals') {
 						const imperfectTrait = 'original';
+						const imperfectTraits = allCrew.filter(crew => crew.traits.includes(imperfectTrait) || crew.traits_hidden.includes(imperfectTrait));
+						imperfectTraits.forEach(crew => {
+							if (!bonus.includes(crew.symbol))
+								bonus.push(crew.symbol);
+						});
+					}
+					// Otherwise try matching last name only (e.g. J. Archer should be Archer)
+					else if (/\s/.test(testName)) {
+						const imperfectTrait = testName.replace(/^.+\s/, '').toLowerCase();
 						const imperfectTraits = allCrew.filter(crew => crew.traits.includes(imperfectTrait) || crew.traits_hidden.includes(imperfectTrait));
 						imperfectTraits.forEach(crew => {
 							if (!bonus.includes(crew.symbol))

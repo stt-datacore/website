@@ -1,9 +1,4 @@
 {
-    "missions": {
-        "continuum_mission_map": "Kontinuumsmissionskarte",
-        "mission_map": "Missionskarte",
-        "current_continuum_mission_date": "Aktuelle Kontinuumsmission: {{date}}"
-    },
     "base": {
         "all_crew": "Die gesamte Crew anzeigen",
         "best_pair": "Bestes Paar",
@@ -311,6 +306,30 @@
         "n_minute_class": "{{minutes}}-minute",
         "n_minutes": "{{minutes}} minuten",
         "title": "Dauer: {{duration}}"
+    },
+    "event_info": {
+        "active_event_lag_warn": "Wenn dieses Ereignis derzeit aktiv ist, ist die untenstehende Bestenliste möglicherweise veraltet.",
+        "bonus_crew": "Bonus-Crew",
+        "bonus_crew_not_determined": "Die Bonuscrew für diese Ereignis steht noch nicht fest.",
+        "error_load": "Ereignisinformationen konnten nicht geladen werden",
+        "featured_crew": "Vorgestellte Crew",
+        "leaderboard": "Bestenliste",
+        "leaderboards": "Bestenlisten",
+        "rank": "{{cite_opt.columns.rank}}",
+        "ranked_rewards": "Rang-Belohnungen",
+        "score": "Ergebnis",
+        "tabs": {
+            "info": {
+                "description": "Details zu jedem Ereignis anzeigen",
+                "title": "Informationen zu Ereignissen"
+            },
+            "stats": {
+                "description": "Ereignisstatistiken anzeigen",
+                "title": "Ereignisstatistiken"
+            }
+        },
+        "threshold_rewards": "Schwellen-Belohnungen",
+        "title": "Ereignisse"
     },
     "event_planner": {
         "heading": "Finden Sie die beste Crew für den Einsatz während einer Ereignis.",
@@ -1028,6 +1047,11 @@
         "type_0": "Konfliktquest",
         "type_2": "Schiffsschlacht",
         "type_4": "Kadettenherausforderung"
+    },
+    "missions": {
+        "continuum_mission_map": "Kontinuumsmissionskarte",
+        "current_continuum_mission_date": "Aktuelle Kontinuumsmission: {{date}}",
+        "mission_map": "Missionskarte"
     },
     "obtained": {
         "long": {

@@ -150,7 +150,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
         }
         const buffMode = this.playerBuffMode;
         const immortalMode = this.immortalMode;
-        const hasQuipment = dataIn?.kwipment.some(q => typeof q === 'number' ? q !== 0 : q[0] !== 0);
+        const hasQuipment = !!dataIn?.kwipment?.some(q => typeof q === 'number' ? q !== 0 : q[0] !== 0);
         let [crewResult, immoResult] = CrewPreparer.prepareCrewMember(dataIn, buffMode, immortalMode, this.context, hasQuipment);
 
         this.validImmortalModes = immoResult ?? ['full'];

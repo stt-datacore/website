@@ -11,8 +11,7 @@
       "noImplicitAny": false,
       "forceConsistentCasingInFileNames": true,
       "lib": ["dom", "esnext"],
-      "allowSyntheticDefaultImports": true,
-      "baseUrl": "."
+      "allowSyntheticDefaultImports": true
     },
     "exclude": ["node_modules", ".cache", "public"]
   }

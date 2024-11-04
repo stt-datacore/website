@@ -1,9 +1,4 @@
 {
-    "missions": {
-        "continuum_mission_map": "Continuum Mission Map",
-        "mission_map": "Mission Map",
-        "current_continuum_mission_date": "Current continuum mission: {{date}}"
-    },
     "base": {
         "all_crew": "Show all crew",
         "best_pair": "Best Pair",
@@ -311,6 +306,30 @@
         "n_minute_class": "{{minutes}}-minute",
         "n_minutes": "{{minutes}} minutes",
         "title": "Duration: {{duration}}"
+    },
+    "event_info": {
+        "active_event_lag_warn": "If this event is currently active, the leaderboard below might be out of date.",
+        "bonus_crew": "Bonus Crew",
+        "bonus_crew_not_determined": "Bonus crew not yet determined for this event",
+        "error_load": "Unable to load event information",
+        "featured_crew": "Featured Crew",
+        "leaderboard": "Leaderboard",
+        "leaderboards": "Leaderboards",
+        "rank": "{{cite_opt.columns.rank}}",
+        "ranked_rewards": "Ranked Rewards",
+        "score": "Score",
+        "tabs": {
+            "info": {
+                "description": "View details for each event",
+                "title": "Event Information"
+            },
+            "stats": {
+                "description": "View event statistics",
+                "title": "Event Stats"
+            }
+        },
+        "threshold_rewards": "Threshold Rewards",
+        "title": "Events"
     },
     "event_planner": {
         "heading": "Find the best crew to use during an event.",
@@ -1029,6 +1048,11 @@
         "type_0": "Conflict Quest",
         "type_2": "Ship Battle",
         "type_4": "Cadet Challenge"
+    },
+    "missions": {
+        "continuum_mission_map": "Continuum Mission Map",
+        "current_continuum_mission_date": "Current continuum mission: {{date}}",
+        "mission_map": "Mission Map"
     },
     "obtained": {
         "long": {

@@ -13,6 +13,7 @@ function ThresholdRewardsTab(props: {eventData: GameEvent}) {
 	const { threshold_rewards } = props.eventData;
 	const context = React.useContext(GlobalContext);
 	const { items } = context.core;
+	const { ITEM_ARCHETYPES } = context.localized;
 
 	return (
 		<Table celled striped compact='very'>
@@ -23,6 +24,13 @@ function ThresholdRewardsTab(props: {eventData: GameEvent}) {
 						<Table.Cell>
 							{row.rewards.map(reward => {
 								checkReward(items, reward);
+								if (reward.symbol) {
+									const archetype = ITEM_ARCHETYPES[reward.symbol];
+									if (archetype) {
+										reward.full_name = archetype.name;
+										reward.flavor = archetype.flavor;
+									}
+								}
 								let rewardTarget = reward.type === 1 ? 'event_info' : reward.type === 8 ? 'event_info_ships' : 'event_info_items';
 								return (
 								reward && reward.icon &&
@@ -46,28 +54,6 @@ function ThresholdRewardsTab(props: {eventData: GameEvent}) {
 												marginRight: "1em"
 											}}
 										/>
-
-									{/* <ItemDisplay
-										quantity={reward.quantity}
-										src={getIconPath(reward.icon)}
-										size={48}
-										rarity={reward.rarity}
-										maxRarity={reward.rarity}
-										allCrew={context.core.crew}
-										allItems={context.core.items}
-										playerData={context.player.playerData}
-										itemSymbol={reward.symbol}
-										targetGroup={reward.type === 1 ? 'event_info' : 'event_info_items'}
-										style={{
-											marginRight: "1em"
-										}}
-										// style={{
-										// 	borderColor: getRarityColor(reward.rarity),
-										// 	maxWidth: '27px',
-										// 	maxHeight: '27px'
-										// }}
-
-									/> */}
 									{reward.full_name}
 									{reward.quantity > 1 ? ` x ${reward.quantity}` : ''}
 									</div>

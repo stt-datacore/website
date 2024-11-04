@@ -2,20 +2,22 @@ import React from 'react';
 import { Message, Table } from 'semantic-ui-react';
 
 import { getIconPath } from '../../utils/assets';
+import { GlobalContext } from '../../context/globalcontext';
 
 function LeaderboardTab({leaderboard}) {
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	return (
 		<>
 			<Message>
-				If this event is currently active, the leaderboard below might be out of date.
-				(Data is updated only a couple of times a week)
+				{t('event_info.active_event_lag_warn')}
 			</Message>
 			<Table celled striped compact='very'>
 				<Table.Body>
 					{leaderboard.map(member => (
 						<Table.Row key={member.dbid}>
 							<Table.Cell style={{ fontSize: '1.25em' }}>
-								Rank: {member.rank}
+								{t('event_info.rank')}: {member.rank}
 							</Table.Cell>
 							<Table.Cell>
 								<div
@@ -37,12 +39,12 @@ function LeaderboardTab({leaderboard}) {
 										</span>
 									</div>
 									<div style={{ gridArea: 'description' }}>
-										Level {member.level}
+										{t('base.level')} {member.level}
 									</div>
 								</div>
 							</Table.Cell>
 							<Table.Cell style={{ fontSize: '1.25em' }}>
-								Score: {member.score}
+								{t('event_info.score')}: {member.score}
 							</Table.Cell>
 						</Table.Row>
 					))}

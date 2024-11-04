@@ -1,15 +1,15 @@
-import { ContinuumMission } from "src/model/continuum";
-import { CrewMember, QuipmentScores } from "src/model/crew";
-import { EquipmentItem } from "src/model/equipment";
-import { EventInstance, EventLeaderboard } from "src/model/events";
-import { Collection, KeystoneBase, Polestar, Constellation } from "src/model/game-elements";
-import { Gauntlet } from "src/model/gauntlets";
-import { Mission } from "src/model/missions";
-import { ObjectiveEvent } from "src/model/player";
-import { BattleStations, Schematics, Ship } from "src/model/ship";
-import { StaticFaction } from "src/model/shuttle";
-import { EventStats } from "src/utils/event_stats";
-import { BuffStatTable } from "src/utils/voyageutils";
+import { ContinuumMission } from "../model/continuum";
+import { CrewMember, QuipmentScores } from "../model/crew";
+import { EquipmentItem } from "../model/equipment";
+import { EventInstance, EventLeaderboard } from "../model/events";
+import { Collection, KeystoneBase, Polestar, Constellation } from "../model/game-elements";
+import { Gauntlet } from "../model/gauntlets";
+import { Mission } from "../model/missions";
+import { ObjectiveEvent } from "../model/player";
+import { BattleStations, Schematics, Ship } from "../model/ship";
+import { StaticFaction } from "../model/shuttle";
+import { EventStats } from "../utils/event_stats";
+import { BuffStatTable } from "../utils/voyageutils";
 
 export interface ICoreData {
 	all_buffs: BuffStatTable;

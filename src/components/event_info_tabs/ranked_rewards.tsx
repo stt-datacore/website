@@ -24,6 +24,7 @@ function RankedRewardsTab(props: {eventData: GameEvent}) {
 	const { ranked_brackets } = props.eventData;
 	const context = React.useContext(GlobalContext);
 	const { items } = context.core;
+	const { ITEM_ARCHETYPES } = context.localized;
 
 	return (
 		<Table celled striped compact='very'>
@@ -34,6 +35,14 @@ function RankedRewardsTab(props: {eventData: GameEvent}) {
 						<Table.Cell width={14}>
 							{row.rewards.map(reward => {
 								checkReward(items, reward);
+								if (reward.symbol) {
+									const archetype = ITEM_ARCHETYPES[reward.symbol];
+									if (archetype) {
+										reward.full_name = archetype.name;
+										reward.flavor = archetype.flavor;
+									}
+								}
+
 								let rewardTarget = reward.type === 1 ? 'event_info' : reward.type === 8 ? 'event_info_ships' : 'event_info_items';
 								return (
 									<Label key={`reward_${reward.id}`} style={{marginBottom: "0.25em"}}
@@ -56,22 +65,6 @@ function RankedRewardsTab(props: {eventData: GameEvent}) {
 													marginRight: "1em"
 												}}
 											/>
-
-										// <ItemDisplay
-										// 	quantity={reward.quantity}
-										// 	src={getIconPath(reward.icon)}
-										// 	size={48}
-										// 	rarity={reward.rarity ?? 0}
-										// 	maxRarity={reward.rarity ?? 0}
-										// 	allCrew={context.core.crew}
-										// 	playerData={context.player.playerData}
-										// 	allItems={context.core.items}
-										// 	itemSymbol={reward.symbol}
-										// 	targetGroup={reward.type === 1 ? 'event_info' : 'event_info_items'}
-										// 	style={{
-										// 		marginRight: "1em"
-										// 	}}
-										// 	/>
 										}
 										{reward.full_name}
 										{reward.quantity > 1 ? ` x ${reward.quantity}` : ''}
