@@ -351,7 +351,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 			icon: constellation.icon!
 		});
 
-		let ships = context?.player?.playerShips ?? mergeShips(schematics, []) ?? [];
+		let ships = mergeShips(schematics, context.player.playerData?.player.character.ships ?? []) ?? [];
 		return [...ships];
 	}
 

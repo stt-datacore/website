@@ -115,7 +115,15 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 			name: 'Constellation Class',
 			icon: { file: '/ship_previews_fed_constellationclass' },
 			traits: ['federation','explorer'],
-			owned: true
+			owned: true,
+			battle_stations: [
+				{
+					skill: 'command_skill'
+				},
+				{
+					skill: 'diplomacy_skill'
+				}
+			]
 		} as Ship;
 
 		schematics.push({
