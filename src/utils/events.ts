@@ -4,12 +4,12 @@ import { CompletionState, Content, GameEvent, Shuttle } from '../model/player';
 import { IBestCombos, IEventCombos, IEventData, IEventPair, IEventScoredCrew, IEventSkill, IRosterCrew } from '../components/eventplanner/model';
 import { EventInstance } from '../model/events';
 import CONFIG from '../components/CONFIG';
-import { applySkillBuff, crewCopy } from './crewutils';
+import { applySkillBuff, crewCopy, getVariantTraits } from './crewutils';
 import { BuffStatTable } from './voyageutils';
 import { IDefaultGlobal } from '../context/globalcontext';
 import { Ship } from '../model/ship';
 
-export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allShips?: Ship[]): IEventData | undefined {
+export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allShips?: Ship[], lastEvent?: GameEvent): IEventData | undefined {
 	const result: IEventData = {
 		symbol: activeEvent.symbol,
 		name: activeEvent.name,
@@ -120,7 +120,7 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 
 	// Guess featured crew when not explicitly listed in event data (e.g. pre-start skirmish or hybrid w/ phase 1 skirmish)
 	if (result.bonus.length === 0) {
-		const { bonus, featured } = guessBonusCrew(activeEvent, allCrew);
+		const { bonus, featured } = guessBonusCrew(activeEvent, allCrew, lastEvent);
 		result.bonus = bonus;
 		result.featured = featured;
 		result.bonusGuessed = true;
@@ -229,10 +229,10 @@ export async function getRecentEvents(allCrew: CrewMember[], allEvents: EventIns
 	return recentEvents;
 }
 
-function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus: string[], featured: string[] } {
+function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent?: GameEvent): { bonus: string[], featured: string[] } {
 	const bonus = [] as string[];
 	const featured = [] as string[];
-
+	const leLegend = lastEvent?.ranked_brackets[0].rewards.find(f => f.type === 1 && f.rarity === 5);
 	for (let threshold of activeEvent.threshold_rewards) {
 		for (let reward of threshold.rewards) {
 			if (allCrew.some(c => c.symbol === reward.symbol && c.max_rarity === 5)) {
@@ -259,11 +259,24 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus:
 			const testName = trait.trim();
 			const perfectName = allCrew.find(crew => (crew.name_english ?? crew.name) === testName);
 			if (perfectName) {
-				if (!featured.includes(perfectName.symbol))
-					featured.push(perfectName.symbol);
+				let altPass = false;
+				if (leLegend) {
+					const altLegend = allCrew.find(crew => leLegend.symbol === crew.symbol && getVariantTraits(crew).some(trait => perfectName.traits_hidden.includes(trait)));
+					if (altLegend) {
+						altPass = true;
+						if (!featured.includes(altLegend.symbol))
+							featured.push(altLegend.symbol);
+						if (!bonus.includes(altLegend.symbol))
+							bonus.push(altLegend.symbol);
+					}
+				}
+				if (!altPass) {
+					if (!featured.includes(perfectName.symbol))
+						featured.push(perfectName.symbol);
 
-				if (!bonus.includes(perfectName.symbol))
-					bonus.push(perfectName.symbol);
+					if (!bonus.includes(perfectName.symbol))
+						bonus.push(perfectName.symbol);
+				}
 			}
 			// Otherwise search for matching trait
 			else {
