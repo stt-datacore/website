@@ -322,7 +322,36 @@ const ShipViewer = (props: ShipViewerProps) => {
 
 	function loadShips() {
 		if (!context) return [];
-		let ships = context?.player?.playerShips ?? mergeShips(context.core.ship_schematics, []) ?? [];
+		const schematics = [...context.core.ship_schematics];
+
+		const constellation = {
+			symbol: 'constellation_ship',
+			rarity: 1,
+			max_level: 5,
+			antimatter: 1250,
+			name: 'Constellation Class',
+			icon: { file: '/ship_previews_fed_constellationclass' },
+			traits: ['federation','explorer'],
+			battle_stations: [
+				{
+					skill: 'command_skill'
+				},
+				{
+					skill: 'diplomacy_skill'
+				}
+			],
+			owned: true
+		} as Ship;
+
+		schematics.push({
+			ship: constellation,
+			rarity: constellation.rarity,
+			cost: 0,
+			id: 1,
+			icon: constellation.icon!
+		});
+
+		let ships = context?.player?.playerShips ?? mergeShips(schematics, []) ?? [];
 		return [...ships];
 	}
 

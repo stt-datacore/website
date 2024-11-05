@@ -9,7 +9,7 @@ import { navigate } from 'gatsby';
 import { RarityFilter } from '../crewtables/commonoptions';
 import { ShipAbilityPicker, TraitPicker, TriggerPicker } from '../crewtables/shipoptions';
 import { isMobile } from 'react-device-detect';
-import { getShipsInUse } from '../../utils/shiputils';
+import { getShipsInUse, mergeShips } from '../../utils/shiputils';
 import CONFIG from '../CONFIG';
 import { TinyStore } from '../../utils/tiny';
 
@@ -105,18 +105,43 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 		const { event_ships } = this.props;
 
 		this.inited = true;
-		if (this.context.player.playerShips?.length) {
+		let schematics = [...this.context.core.ship_schematics];
+
+		const constellation = {
+			symbol: 'constellation_ship',
+			rarity: 1,
+			max_level: 5,
+			antimatter: 1250,
+			name: 'Constellation Class',
+			icon: { file: '/ship_previews_fed_constellationclass' },
+			traits: ['federation','explorer'],
+			owned: true
+		} as Ship;
+
+		schematics.push({
+			ship: constellation,
+			rarity: constellation.rarity,
+			cost: 0,
+			id: 1,
+			icon: constellation.icon!
+		});
+
+		if (this.context.player.playerShips?.length && this.context.player.playerData) {
+			let playerships = [...this.context.player.playerData.player.character.ships];
+			let merged = mergeShips(schematics, playerships);
 			let shipsInUse = getShipsInUse(this.context.player);
 			this.setState({
 				... this.state,
-				data: this.context.player.playerShips?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => this.transmogrify(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0),
+				data: merged?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => this.transmogrify(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0),
 				shipsInUse
 			});
 		}
 		else {
+			let coreships = [...this.context.core.ships];
+			coreships.push(constellation);
 			this.setState({
 				... this.state,
-				data: this.context.core.ships?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => this.transmogrify(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0)
+				data: coreships?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => this.transmogrify(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0)
 			});
 		}
 

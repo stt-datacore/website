@@ -227,7 +227,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                                 disabled />
                         </div>
                     </div>
-                    {stats.map((statline, index) =>
+                    {stats?.map((statline, index) =>
                         <div
                             key={index}
                             style={{
@@ -240,13 +240,13 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                                 marginBottom: "2px",
                             }}
                         >
-                            {statline.map((stat, index) =>
+                            {statline?.map((stat, index) =>
                                 <div key={index} style={{
                                         width: window.innerWidth < mobileWidth ? "30vw" : "9em", display: "flex", flexDirection: "row", alignItems: "center" }}>
                                     <img src={"/media/ship/" + stat.icon} style={{height: "1.5em", marginRight: "6px"}} />
                                     <div style={{ display: "flex", flexDirection: "column" }}>
-                                        <div>{stat.name}</div>
-                                        <div>{stat.value.toLocaleString()}</div>
+                                        <div>{stat?.name}</div>
+                                        <div>{stat?.value?.toLocaleString()}</div>
                                     </div>
                                 </div>
                             )}
@@ -276,7 +276,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                         {ship.traits_hidden?.join(", ")}
                     </div>}
                     <div>
-                        {ship.actions && <ShipSkill
+                        {!!ship.actions?.length && <ShipSkill
                                 withActionIcons={showIcon}
                                 grouped={tabs}
                                 context={ship}

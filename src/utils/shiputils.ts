@@ -7,7 +7,7 @@ import { StatsSorter } from "./statssorter";
 import { shipStatSortConfig  } from "../utils/crewutils";
 import CONFIG from "../components/CONFIG";
 import { PlayerContextData } from "../context/playercontext";
-import { ShipWorkerItem } from "src/model/worker";
+import { ShipWorkerItem } from "../model/worker";
 
 export function exportShipFields(): ExportField[] {
 	return [
@@ -141,8 +141,8 @@ export function highestLevel(ship: Ship) {
 export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[] {
 	let newShips: Ship[] = [];
 	ship_schematics = JSON.parse(JSON.stringify(ship_schematics));
-	let unowned_id = -1;
 	ship_schematics.forEach((schematic) => {
+		let unowned_id = -1;
 		let owned = ships.find((ship) => ship.symbol == schematic.ship.symbol);
 
 		let traits_named = schematic.ship.traits_named;
@@ -191,7 +191,16 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 		else schematic.ship.max_level += 1;
 
 		schematic.ship.traits_named = traits_named;
-
+		if (schematic.ship.symbol === "constellation_ship" && !schematic.ship.battle_stations) {
+			schematic.ship.battle_stations = [
+				{
+					skill: 'command_skill'
+				},
+				{
+					skill: 'diplomacy_skill'
+				}
+			];
+		}
 		newShips.push(schematic.ship);
 	});
 
