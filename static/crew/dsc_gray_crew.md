@@ -3,7 +3,7 @@ name: Gray
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 in_portal: true
 date: 07/01/2021
 published: true

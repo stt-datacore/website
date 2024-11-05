@@ -3,7 +3,7 @@ name: Indomitable Pike
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 6
 in_portal:
 date: 10/09/2024
 published: true

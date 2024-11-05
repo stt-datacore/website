@@ -3,7 +3,7 @@ name: Courier Burnham
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 in_portal: true
 date: 03/12/2020
 published: true

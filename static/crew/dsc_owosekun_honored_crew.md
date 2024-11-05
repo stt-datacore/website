@@ -3,7 +3,7 @@ name: Honored Owosekun
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 10/07/2019
 published: true
