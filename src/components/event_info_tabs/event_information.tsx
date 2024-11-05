@@ -43,8 +43,8 @@ function sortCrew(crewArray: PlayerCrew[]) {
 	return groups.flat();
 }
 
-function EventInformationTab(props: { eventData: GameEvent }) {
-	const { eventData } = props;
+function EventInformationTab(props: { eventData: GameEvent, lastEvent?: GameEvent }) {
+	const { eventData, lastEvent } = props;
 	const context = React.useContext(GlobalContext);
 	const { t, TRAIT_NAMES } = context.localized;
 
@@ -65,7 +65,7 @@ function EventInformationTab(props: { eventData: GameEvent }) {
 		content_types,
 	} = eventData;
 
-	const currEvent = getEventData(eventData, crewData, allShips);
+	const currEvent = getEventData(eventData, crewData, allShips, lastEvent);
 
 	const bonus = currEvent?.bonus;
 	const featured = currEvent?.featured;
