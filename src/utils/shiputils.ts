@@ -299,7 +299,8 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 	}
 
 	playerContext.playerData.player.character.pvp_divisions?.forEach((division) => {
-		let id = division.setup.ship_id;
+		let id = division?.setup?.ship_id;
+		if (!id) return;
 		let ship = playerContext.playerShips?.find(f => f.id === id);
 		if (ship) {
 			let pvp_division: PvpDivision | undefined = undefined;
@@ -335,7 +336,8 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 
 	playerContext.playerData.player.character.fbb_difficulties?.forEach((fbb) => {
 		if (!fbb.setup) return;
-		let id = fbb.setup.ship_id;
+		let id = fbb.setup?.ship_id;
+		if (!id) return;
 		let ship = playerContext.playerShips?.find(f => f.id === id);
 		if (ship) {
 			let battle_mode = `fbb_${fbb.id - 1}` as BattleMode;
