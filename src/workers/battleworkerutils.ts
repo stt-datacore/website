@@ -1,4 +1,4 @@
-import { AttackInstant } from "src/model/worker";
+import { AttackInstant } from "../model/worker";
 import { CrewMember } from "../model/crew";
 import { ShipAction, Ship } from "../model/ship";
 import { setupShip } from "../utils/shiputils";

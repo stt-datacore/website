@@ -1,4 +1,4 @@
-import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults, AttackInstant, MultiShipWorkerConfig } from "src/model/worker";
+import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults, AttackInstant, MultiShipWorkerConfig } from "../model/worker";
 import { CrewMember } from "../model/crew";
 import { getComboCountBig, getPermutations } from "../utils/misc";
 import { compareShipResults } from "../utils/shiputils";
