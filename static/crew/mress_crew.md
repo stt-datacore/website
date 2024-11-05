@@ -3,7 +3,7 @@ name: Shiboline M'Ress
 rarity: 5
 series: tas
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 10
 in_portal: true
 date: 19/01/2021
 published: true
