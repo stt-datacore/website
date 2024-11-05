@@ -31,7 +31,7 @@ export interface CrewItemsViewProps {
 function expToDate(playerData: PlayerData, crew: PlayerCrew) {
     if (playerData?.calc?.lastModified) {
         let dnum = Math.floor(playerData.calc.lastModified.getTime() / 1000);
-        let result = (crew.kwipment_expiration.map((kw: number | number[], idx: number) => {
+        let result = (crew.kwipment_expiration?.map((kw: number | number[], idx: number) => {
             if (kw === 0) return undefined;
             let n = 0;
             if (typeof kw === 'number') {
@@ -45,6 +45,7 @@ function expToDate(playerData: PlayerData, crew: PlayerCrew) {
             return result;
 
         })) as Date[];
+        if (!result) result = [];
         return result;
     }
     return undefined;

@@ -270,13 +270,14 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent
 							bonus.push(altLegend.symbol);
 					}
 				}
+
 				if (!altPass) {
 					if (!featured.includes(perfectName.symbol))
 						featured.push(perfectName.symbol);
-
-					if (!bonus.includes(perfectName.symbol))
-						bonus.push(perfectName.symbol);
 				}
+
+				if (!bonus.includes(perfectName.symbol))
+					bonus.push(perfectName.symbol);
 			}
 			// Otherwise search for matching trait
 			else {
