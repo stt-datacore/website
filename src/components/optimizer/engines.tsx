@@ -32,7 +32,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
     const [requestRun, setRequestRun] = React.useState(false);
     const [initialized, setInitialized] = React.useState(false);
 
-    const { running, runWorker: internalRunWorker, cancel } = workerContext;
+    const { runWorker: internalRunWorker, cancel } = workerContext;
 
     const { pageId } = props;
     const dbid = globalContext.player.playerData?.player.dbid ?? '';
@@ -45,7 +45,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 
     const { citeConfig, setCiteConfig } = citeContext;
     const { engine, setEngine } = citeContext;
-    const { results, setResults } = citeContext;
+    const { setResults } = citeContext;
 
     const { appliedProspects } = citeContext;
 
@@ -192,15 +192,18 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 		if (!globalContext.player.playerData) return;
 
         const workerName = engine === 'original' ? 'citeOptimizer' : 'ironywrit';
-
+        setResults(undefined);
         if (engine === 'original') {
-            internalRunWorker(workerName, {
-				playerData,
-				allCrew
-			}, workerResponse);
+            setTimeout(() => {
+                internalRunWorker(workerName, {
+                    playerData,
+                    allCrew
+                }, workerResponse);
+            });
 		}
 		else {
-            internalRunWorker(workerName, {
+            setTimeout(() => {
+                internalRunWorker(workerName, {
 					playerData,
 					inputCrew: allCrew,
 					collections,
@@ -209,6 +212,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 					settings: currentConfig,
 					coreItems: globalContext.core.items
 				} as BetaTachyonRunnerConfig, workerResponse);
+            });
 		}
 	}
 };
