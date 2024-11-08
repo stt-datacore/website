@@ -277,22 +277,7 @@ const EventStatsComponent = () => {
 		let newTypeFilter = [] as string[];
 		let totals = {} as { [key: string]: number };
 
-		let lastDiscovered = new Date();
-		if (compiledStats.length && compiledStats[compiledStats.length - 1].discovered) {
-			lastDiscovered = new Date(compiledStats[compiledStats.length - 1].discovered!);
-			lastDiscovered.setDate(lastDiscovered.getDate() + 7);
-		}
 		let filtered = compiledStats.sort((a, b) => a.instance_id - b.instance_id).filter((stat, idx) => {
-			if (!stat.discovered) {
-				let w = maxidx - idx;
-				stat.discovered = new Date(lastDiscovered);
-				let dow = stat.discovered.getDay();
-				dow = 3 - dow;
-				stat.discovered.setDate(stat.discovered.getDate() + dow);
-				stat.discovered.setDate(stat.discovered.getDate() - (w * 7));
-				stat.guessed = true;
-			}
-
 			if (weeks) {
 				if (maxidx - idx > weeks) {
 					return false;
