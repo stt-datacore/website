@@ -3,7 +3,7 @@ name: Kai Winn
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 09/01/2023
 published: true
