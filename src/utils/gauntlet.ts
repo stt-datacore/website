@@ -6,7 +6,7 @@ import { CompletionState, GauntletPlayerBuffMode, PlayerBuffMode, PlayerCrew, Pl
 import { TraitNames } from "../model/traits";
 import { EMPTY_SKILL } from "../model/worker";
 
-import { applyCrewBuffs, getCrewPairScore, getCrewQuipment, getPlayerPairs, getSkills, shortToSkill, skillAdd, skillToShort, updatePairScore } from "./crewutils";
+import { applyCrewBuffs, getCrewPairScore, getCrewQuipment, getPlayerPairs, getSkills, shortToSkill, skillAdd, skillSum, skillToShort, updatePairScore } from "./crewutils";
 import { calcQLots } from "./equipment";
 import { ItemBonusInfo, getItemBonuses, getQuipmentAsItemWithBonus } from "./itemutils";
 import { BuffStatTable } from "./voyageutils";
@@ -321,12 +321,15 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 	if (maxResults) {
 		pairGroups.forEach((pg) => {
 			pg.crew = pg.crew.slice(0, maxResults);
-		})
+		});
 	}
+	const blank = { core: 0, max: 0, min: 0 };
 	pairGroups.sort((a, b) => {
+		const apairs = a.pair.map(z => shortToSkill(z, true)).sort().map(s => s as string);
+		const bpairs = b.pair.map(z => shortToSkill(z, true)).sort().map(s => s as string);
 
-		const apair = a.pair.map(z => shortToSkill(z, true)).sort().join();
-		const bpair = b.pair.map(z => shortToSkill(z, true)).sort().join();
+		const apair = apairs.join();
+		const bpair = bpairs.join();
 
 		if (apair !== bpair) {
 			if (apair === currSkills) return -1;
@@ -334,10 +337,12 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 		}
 
 		if (a.pair.includes(featRank) === b.pair.includes(featRank)) {
-			let r = a.pair[0].localeCompare(b.pair[0]);
-			if (!r) {
-				r = a.pair[1].localeCompare(b.pair[1]);
-			}
+			let r = 0;
+			let asum = skillSum([a.crew[0][apairs[0]] || blank, a.crew[0][apairs[1]] || blank], 'proficiency')
+			let bsum = skillSum([b.crew[0][bpairs[0]] || blank, b.crew[0][bpairs[1]] || blank], 'proficiency')
+			r = bsum - asum;
+			if (!r) r = a.pair[0].localeCompare(b.pair[0]);
+			if (!r) r = a.pair[1].localeCompare(b.pair[1]);
 			return r;
 		}
 		else if (a.pair.includes(featRank)) {
@@ -346,7 +351,7 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 		else {
 			return 1;
 		}
-	})
+	});
 
 	return pairGroups;
 }
