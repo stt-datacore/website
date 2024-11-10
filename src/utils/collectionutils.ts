@@ -147,7 +147,7 @@ export function starCost(crew: PlayerCrew[], limit?: number, sale?: boolean) {
 	for (let c = 0; c < limit; c++) {
 		let cm = crew[c];
 		if (!cm) continue;
-		let rdiff = (cm.max_rarity ?? 2 * cm.rarity) - cm.rarity;
+		let rdiff = cm.max_rarity - cm.rarity;
 		if (!rdiff) continue;
 		tc += rdiff * costs[cm.max_rarity];
 	}
@@ -164,7 +164,7 @@ export function neededStars(crew: PlayerCrew[], limit?: number) {
 	for (let c = 0; c < limit; c++) {
 		let cm = crew[c];
 		if (!cm) continue;
-		let rdiff = (cm.max_rarity ?? 2 * cm.rarity) - cm.rarity;
+		let rdiff = cm.max_rarity - cm.rarity;
 		costs[cm.max_rarity] += rdiff;
 	}
 
