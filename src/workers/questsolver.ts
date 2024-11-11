@@ -23,10 +23,6 @@ function newQuip(crew: IQuestCrew) {
     return e;
 }
 
-export function getSkillOrder<T extends CrewMember>(crew: T) {
-    return crew.skill_order;
-}
-
 function makeSmartCombos(source: IQuestCrew[], path: MissionChallenge[], maxSolves?: number, required?: number[]) {
     maxSolves ??= 10;
     let c = source.length;

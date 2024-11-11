@@ -121,10 +121,10 @@ function populateSkillOrder(crew: CrewMember) {
 	crew.skill_order = output.map(m => m.skill!);
 }
 
-function makeTraitRanks(roster) {
+function makeTraitRanks(roster: CrewMember[]) {
 	roster = [ ...roster ];
 
-	const traitCount = {};
+	const traitCount = {} as { [key: string]: number };
 	roster.forEach((crew) => {
 		crew.traits.forEach((trait) => {
 			traitCount[trait] ??= 0;
@@ -132,7 +132,7 @@ function makeTraitRanks(roster) {
 		});
 	});
 	roster.forEach((crew) => {
-		crew.ranks ??= {};
+		crew.ranks ??= {} as Ranks;
 		let traitsum = crew.traits.map(t => traitCount[t]).reduce((p, n) => p + n, 0);
 		crew.ranks.traitRank = (1 / traitsum) / crew.traits.length;
 	});

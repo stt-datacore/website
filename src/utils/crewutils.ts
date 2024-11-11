@@ -1538,31 +1538,6 @@ export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?:
 	return tiers ?? {};
 }
 
-export function getSkillOrder<T extends CrewMember>(crew: T) {
-	const sk = [] as ComputedSkill[];
-
-	for (let skill of Object.keys(CONFIG.SKILLS)) {
-		if (skill in crew.base_skills && !!crew.base_skills[skill].core) {
-			sk.push({ ...crew.base_skills[skill], skill: skill });
-		}
-	}
-
-	sk.sort((a, b) => b.core - a.core);
-	const output = [] as string[];
-
-	if (sk.length > 0 && sk[0].skill) {
-		output.push(sk[0].skill);
-	}
-	if (sk.length > 1 && sk[1].skill) {
-		output.push(sk[1].skill);
-	}
-	if (sk.length > 2 && sk[2].skill) {
-		output.push(sk[2].skill);
-	}
-
-	return output;
-}
-
 export function printSkillOrder(crew: PlayerCrew | CrewMember) {
 	return crew.skill_order.join("/");
 }

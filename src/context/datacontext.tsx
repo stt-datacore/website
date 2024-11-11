@@ -13,7 +13,6 @@ import { calcQuipmentScore } from '../utils/equipment';
 import { getItemWithBonus } from '../utils/itemutils';
 import { EventInstance, EventLeaderboard } from '../model/events';
 import { StaticFaction } from '../model/shuttle';
-import { getSkillOrder } from '../utils/crewutils';
 import { highestLevel } from '../utils/shiputils';
 import { ObjectiveEvent } from '../model/player';
 import { ICoreData } from './coremodel';

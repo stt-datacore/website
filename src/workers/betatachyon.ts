@@ -537,7 +537,7 @@ const BetaTachyon = {
                     x++;
                 }
 
-                sk.sort((a, b) => skillScore(b) - skillScore(a));
+                sk.sort((a, b) => b.core - a.core);
                 const output = [] as string[];
 
                 if (sk.length > 0 && sk[0].skill) {

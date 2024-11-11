@@ -28,5 +28,3 @@ schema.graphql
 # By-products of converting precalculate into TS
 src/model/**/*.js
 src/utils/**/*.js
-
-build/
