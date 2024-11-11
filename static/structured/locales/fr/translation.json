@@ -151,6 +151,8 @@
         },
         "ev_show": "Afficher les colonnes VA",
         "expected_value": "Valeur attendue",
+        "max_final_ev_n": "Max. VE final: {{n}}",
+        "min_remaining_ev_n": "Min. VE restant: {{n}}",
         "original_engine": "Algorithme Original",
         "prospect": {
             "apply": "Appliquer l'état potentiel",
@@ -173,7 +175,8 @@
                 "title": "Équipiers à Former",
                 "title_short": "Former"
             }
-        }
+        },
+        "total_ev": "VE totale"
     },
     "clipboard": {
         "copied_exclaim": "Copié!"
@@ -1620,6 +1623,7 @@
         "active": {
             "active_voyage_colon": "Voyage actif :"
         },
+        "active_voyage": "Voyage actif",
         "calc": {
             "msg_type": {
                 "completed": "Votre voyage a duré {{time}}.",

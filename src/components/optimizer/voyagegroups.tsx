@@ -6,6 +6,8 @@ import { appelate } from "../../utils/misc";
 import ItemDisplay from "../itemdisplay";
 import { GlobalContext } from "../../context/globalcontext";
 import { CiteOptContext } from "./context";
+import { AvatarView } from "../item_presenters/avatarview";
+import CONFIG from "../CONFIG";
 
 
 
@@ -18,7 +20,7 @@ export interface VoyageGroupsComponentProps {
 export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
     const globalContext = React.useContext(GlobalContext);
     const citeContext = React.useContext(CiteOptContext);
-
+    const { t, tfmt } = globalContext.localized;
     const { data, confine } = props;
 
     const voyages = [] as VoyageImprovement[];
@@ -150,7 +152,10 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
         <Table striped>
             {voyages.map((voyage, idx) => {
 
-                let sp = voyage.voyage.split("/");
+                let sp = voyage.voyage.split("/").map(s => s.toLowerCase().trim());
+
+                voyage.voyage = sp.map(s => CONFIG.SKILLS[s.trim().toLowerCase() + "_skill"] || s).join("/")
+
                 if (citeMode?.priSkills?.length) {
                     if (!citeMode.priSkills.includes(sp[0])) return (<></>);
                 }
@@ -159,20 +164,22 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
                 }
 
 
+
                 return (<Table.Row key={"voy" + idx}>
-                    <Table.Cell style={{ backgroundColor: voyage.voyage === currentVoyage ? 'green' : undefined, }}>
+                    <Table.Cell width={6} style={{ backgroundColor: voyage.voyage === currentVoyage ? 'green' : undefined, }}>
                         <div style={{
                             display: "flex",
                             flexDirection: "column",
                             justifyContent: "center",
                             alignItems: "center",
                             height: "100%",
-                            margin: "1em"
+                            margin: "1em",
+                            textAlign: 'center'
                         }}>
-                            {voyage.voyage === currentVoyage && <h3 style={{ marginBottom: 0 }}><u>Current Voyage</u></h3>}
+                            {voyage.voyage === currentVoyage && <h3 style={{ marginBottom: 0 }}><u>{t('voyage.active_voyage')}</u></h3>}
                             <h2 style={{ marginBottom: 0 }}>{voyage.voyage}</h2>
-                            <i style={{ margin: 0 }}>(Max Final EV: <b>+{Math.ceil(voyage.maxEV)})</b></i>
-                            <i style={{ margin: 0 }}>(Min Remaining EV: <b>+{Math.ceil(voyage.remainingEV)})</b></i>
+                            <i style={{ margin: 0 }}>({ tfmt('cite_opt.max_final_ev_n', { n: <b>+{Math.ceil(voyage.maxEV)}</b> }) })</i>
+                            <i style={{ margin: 0 }}>({ tfmt('cite_opt.min_remaining_ev_n', { n: <b>+{Math.ceil(voyage.remainingEV)}</b> }) })</i>
                         </div>
                     </Table.Cell>
                     <Table.Cell>
@@ -180,15 +187,11 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
                         <Grid doubling columns={3} textAlign='center'>
                             {voyage.crew.filter(c => !!c).map((crew) => (
                                 <div style={{ margin: "1.5em", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                                    <ItemDisplay
+                                    <AvatarView
+                                        mode='crew'
                                         size={64}
-                                        src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
-                                        rarity={crew.rarity}
-                                        maxRarity={crew.max_rarity}
                                         targetGroup='citationTarget'
-                                        itemSymbol={crew.symbol}
-                                        allCrew={globalContext.core.crew}
-                                        playerData={globalContext.player.playerData}
+                                        symbol={crew.symbol}
                                     />
                                     <b onClick={(e) => setCiteMode({ ...citeMode ?? {}, nameFilter: crew.name })}
                                         style={{
@@ -205,8 +208,8 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
                                             title={"Click to see only voyages involving this crew member"}
                                             style={{ cursor: "pointer", margin: "0", textDecoration: "underline" }}
                                             onClick={(e) => setCiteMode({ ...citeMode ?? {}, nameFilter: "voyage:" + crew.name })}
-                                        >{crew.voyagesImproved?.length} Voyages, </span>
-                                        {Math.ceil(crew.totalEVContribution ?? 0)} Total EV
+                                        >{crew.voyagesImproved?.length} {t('base.voyages')}, </span>
+                                        {Math.ceil(crew.totalEVContribution ?? 0)} {t('cite_opt.total_ev')}
                                     </i>
                                 </div>
                             ))}

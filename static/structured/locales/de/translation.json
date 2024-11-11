@@ -151,6 +151,8 @@
         },
         "ev_show": "EW-Spalten anzeigen",
         "expected_value": "Erwarteter Wert",
+        "max_final_ev_n": "Max. Endgültiger EW: {{n}}",
+        "min_remaining_ev_n": "Min. Verbleibender EW: {{n}}",
         "original_engine": "Ursprünglicher Algorithmus",
         "prospect": {
             "apply": "Prospektiven Status anwenden",
@@ -173,7 +175,8 @@
                 "title": "Crew zum Trainieren",
                 "title_short": "Trainieren"
             }
-        }
+        },
+        "total_ev": "Gesamt-EW"
     },
     "clipboard": {
         "copied_exclaim": "Kopiert!"
@@ -1607,6 +1610,7 @@
         "active": {
             "active_voyage_colon": "Aktive Reise:"
         },
+        "active_voyage": "Aktive Reise",
         "calc": {
             "msg_type": {
                 "completed": "Ihre Reise dauerte seit {{time}}.",

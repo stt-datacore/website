@@ -151,6 +151,8 @@
         },
         "ev_show": "Mostrar las columnas VE",
         "expected_value": "Valor esperado",
+        "max_final_ev_n": "Máx. VE final: {{n}}",
+        "min_remaining_ev_n": "Min. VE restante: {{n}}",
         "original_engine": "Algoritmo Original",
         "prospect": {
             "apply": "Aplicar Estado prospectivo",
@@ -173,7 +175,8 @@
                 "title": "Tripulantes para entrenar",
                 "title_short": "Entrenar"
             }
-        }
+        },
+        "total_ev": "VE totales"
     },
     "clipboard": {
         "copied_exclaim": "¡Copiada!"
@@ -1619,6 +1622,7 @@
         "active": {
             "active_voyage_colon": "Viaje activo:"
         },
+        "active_voyage": "Viaje activo",
         "calc": {
             "msg_type": {
                 "completed": "Tu viaje duró {{time}}.",

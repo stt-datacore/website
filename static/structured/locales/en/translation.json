@@ -151,6 +151,8 @@
         },
         "ev_show": "Show EV columns",
         "expected_value": "Expected Value",
+        "max_final_ev_n": "Max Final EV: {{n}}",
+        "min_remaining_ev_n": "Min Remaining EV: {{n}}",
         "original_engine": "Original Algorithm",
         "prospect": {
             "apply": "Apply Prospect State",
@@ -173,7 +175,8 @@
                 "title": "Crew to Train",
                 "title_short": "Train"
             }
-        }
+        },
+        "total_ev": "Total EV"
     },
     "clipboard": {
         "copied_exclaim": "Copied!"
@@ -1605,6 +1608,7 @@
         "active": {
             "active_voyage_colon": "Active Voyage:"
         },
+        "active_voyage": "Active Voyage",
         "calc": {
             "msg_type": {
                 "completed": "Your voyage ran for {{time}}.",
