@@ -92,12 +92,7 @@ function populateSkillOrder(crew) {
 		});
 	});
 
-	output.sort((a, b) => {
-		let ac = a.core + ((a.range_min + a.range_max) * 0.5);
-		let bc = b.core + ((b.range_min + b.range_max) * 0.5);
-		return bc - ac;
-	});
-
+	output.sort((a, b) => b.core - a.core);
 	crew.skill_order = output.map(m => m.skill);
 }
 
