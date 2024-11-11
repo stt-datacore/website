@@ -305,7 +305,7 @@ export const AvatarView = (props: AvatarViewProps) => {
                 item = { ...item, ... globalContext.localized.ITEM_ARCHETYPES[item.symbol] };
             }
 
-            if (item && !item?.rarity && gen_item.rarity) item.rarity = gen_item.rarity;
+            if (item && gen_item.rarity) item.rarity = gen_item.rarity;
 
             gen_item = item;
             if (gen_item && !gen_item.max_rarity) {
