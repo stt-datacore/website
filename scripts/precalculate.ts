@@ -17,7 +17,13 @@ import { BattleStation, BattleStations, Schematics, Ship } from '../src/model/sh
 
 const STATIC_PATH = `${__dirname}/../../static/structured/`;
 
-let crewlist = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf-8')) as (CrewMember & { _comboIds?: string[][] }) [];
+let crewlist = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf-8'), (key, value) => {
+	if (key === 'date_added') {
+		return new Date(value);
+	}
+	return value;
+}) as (CrewMember & { _comboIds?: string[][] }) [];
+
 let items = JSON.parse(fs.readFileSync(STATIC_PATH + 'items.json', 'utf-8')) as EquipmentItem[];
 let skill_bufs = JSON.parse(fs.readFileSync(STATIC_PATH + 'skill_bufs.json', 'utf-8'));
 
@@ -88,6 +94,55 @@ function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeChecker: 
 	}
 
 	return equipment.recipe.craftCost;
+}
+
+
+function populateSkillOrder(crew: CrewMember) {
+	const output = [] as Skill[];
+	Object.entries(crew.base_skills).map(([key, value]) => {
+		value.skill = key;
+		output.push(value);
+	});
+
+	Object.values(crew.skill_data).forEach((data) => {
+		Object.entries(data.base_skills).forEach(([key, value]) => {
+			value.skill = key;
+		});
+	});
+
+	Object.values(crew.intermediate_skill_data).forEach((data) => {
+		Object.entries(data.base_skills).forEach(([key, value]) => {
+			value.skill = key;
+		});
+	});
+
+	output.sort((a, b) => {
+		let ac = a.core + ((a.range_min + a.range_max) * 0.5);
+		let bc = b.core + ((b.range_min + b.range_max) * 0.5);
+		return bc - ac;
+	});
+
+	crew.skill_order = output.map(m => m.skill!);
+}
+
+function makeTraitRanks(roster) {
+	roster = [ ...roster ];
+
+	const traitCount = {};
+	roster.forEach((crew) => {
+		crew.traits.forEach((trait) => {
+			traitCount[trait] ??= 0;
+			traitCount[trait]++;
+		});
+	});
+	roster.forEach((crew) => {
+		crew.ranks ??= {};
+		let traitsum = crew.traits.map(t => traitCount[t]).reduce((p, n) => p + n, 0);
+		crew.ranks.traitRank = (1 / traitsum) / crew.traits.length;
+	});
+
+	roster.sort((a, b) => a.ranks.traitRank - b.ranks.traitRank);
+	roster.forEach((crew, idx) => crew.ranks.traitRank = idx + 1);
 }
 
 // TODO: this function is duplicated with equiment.ts (find a way to share code between site and scripts)
@@ -276,6 +331,9 @@ function main() {
 		return crew.totalChronCost + crew.factionOnlyTotal * 30;
 	}, 'chronCostRank');
 
+	crewlist.forEach((crew) => populateSkillOrder(crew));
+	makeTraitRanks(crewlist);
+
 	let skillNames = [] as string[];
 	for (let skill in SKILLS) {
 		skillNames.push(skill);
@@ -437,13 +495,6 @@ function main() {
 
 	// Sory by date added
 	crewlist = crewlist.sort((a, b) => {
-		if (typeof a.date_added === 'string') {
-			a.date_added = new Date(a.date_added);
-		}
-		if (typeof b.date_added === 'string') {
-			b.date_added = new Date(b.date_added);
-		}
-
 		return a.date_added.getTime() - b.date_added.getTime();
 	});
 
