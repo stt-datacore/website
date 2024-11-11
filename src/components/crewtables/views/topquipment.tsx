@@ -189,10 +189,12 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
             }
         }
 
+        if (!crew.best_quipment) return <></>;
+
         if (typeof skill === 'string') {
             lot = { ... lot };
             lot.skill_quipment = {};
-            lot.skill_quipment[skill] = crew.best_quipment!.skill_quipment[skill];
+            lot.skill_quipment[skill] = crew.best_quipment.skill_quipment[skill];
         }
 
         return !!lot?.skill_quipment && <div style={{
