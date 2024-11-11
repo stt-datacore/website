@@ -1,10 +1,10 @@
 import CONFIG from '../components/CONFIG';
 import { ArchetypeRoot20 } from '../model/archetype';
-import { BaseSkills, ComputedSkill, CrewMember, EquipmentSlot, QuippedPower, Skill } from '../model/crew';
+import { BaseSkills, CrewMember, EquipmentSlot, QuippedPower, Skill } from '../model/crew';
 import { EquipmentIngredient, EquipmentItem, ICrewDemands, IDemand } from '../model/equipment';
 import { BuffBase, PlayerCrew, PlayerEquipmentItem } from '../model/player';
-import { applySkillBuff, numberToGrade, powerSum, qbitsToSlots, skillSum } from './crewutils';
-import { ItemWithBonus, getItemBonuses, isQuipmentMatch } from './itemutils';
+import { applySkillBuff, qbitsToSlots, skillSum } from './crewutils';
+import { ItemWithBonus, isQuipmentMatch } from './itemutils';
 import { makeAllCombos } from './misc';
 import { BuffStatTable } from './voyageutils';
 
@@ -407,13 +407,6 @@ export function calcQLots<T extends CrewMember>(
 				skill
 			};
 		}
-		// if (cmode === 'core') {
-		// 	newSkill.range_max = 0;
-		// 	newSkill.range_min = 0;
-		// }
-		// else if (cmode === 'proficiency') {
-		// 	newSkill.core = 0;
-		// }
 		crewSkills[skill] = newSkill;
 	});
 
@@ -436,7 +429,7 @@ export function calcQLots<T extends CrewMember>(
 	const q_lots = {} as { [key: string]: EquipmentItem[] };
 	const q_power = {} as { [key: string]: Skill };
 
-	const calcBest = (
+	const calcBestCombo = (
 		combo_size: 2 | 3,
 		crew: CrewMember,
 		as_max_qbits?: boolean,
@@ -678,14 +671,14 @@ export function calcQLots<T extends CrewMember>(
 	delete crew.best_quipment_3;
 
 	if (crew.skill_order.length >= 2) {
-		crew.best_quipment_1_2 = calcBest(2, crew, max_qbits, max_slots, [0, 1]);
+		crew.best_quipment_1_2 = calcBestCombo(2, crew, max_qbits, max_slots, [0, 1]);
 		addCrewPower(crew.best_quipment_1_2);
 	}
 
 	if (crew.skill_order.length === 3) {
-		crew.best_quipment_1_3 = calcBest(2, crew, max_qbits, max_slots, [0, 2]);
-		crew.best_quipment_2_3 = calcBest(2, crew, max_qbits, max_slots, [1, 2]);
-		crew.best_quipment_3 = calcBest(3, crew, max_qbits, max_slots);
+		crew.best_quipment_1_3 = calcBestCombo(2, crew, max_qbits, max_slots, [0, 2]);
+		crew.best_quipment_2_3 = calcBestCombo(2, crew, max_qbits, max_slots, [1, 2]);
+		crew.best_quipment_3 = calcBestCombo(3, crew, max_qbits, max_slots);
 		addCrewPower(crew.best_quipment_1_3);
 		addCrewPower(crew.best_quipment_2_3);
 		addCrewPower(crew.best_quipment_3);
