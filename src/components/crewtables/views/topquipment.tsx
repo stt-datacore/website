@@ -9,8 +9,6 @@ import { CrewItemsView } from "../../item_presenters/crew_items";
 import CrewStat from "../../crewstat";
 import { QuipmentScoreCells } from "./quipmentscores";
 import { ItemWithBonus } from "../../../utils/itemutils";
-import { appelate } from "../../../utils/misc";
-import { GlobalContext } from "../../../context/globalcontext";
 import { BuffStatTable } from "../../../utils/voyageutils";
 import { TranslateMethod } from "../../../model/player";
 
@@ -28,31 +26,7 @@ export interface TopQuipmentScoreProps {
 
 export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean | 2 | 3, excludeQBits: boolean, powerMode: 'all' | 'core' | 'proficiency', buffConfig?: BuffStatTable) => {
     const config = [] as ITableConfigRow[];
-    //config.push({ width: 1, column: 'quipment_score', title: t('quipment_ranks.overall'), reverse: true });
-    //if (pstMode) config.push({ width: 1, column: 'quipment_scores.trait_limited', title: t('quipment_ranks.specialty'), reverse: true });
     if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: t('base.qp'), reverse: true });
-
-    // config.push({
-    //     width: 1,
-    //     column: 'vqx',
-    //     title: <span>Exclusion Score</span>,
-    //     reverse: true,
-    //     customCompare: (a: IRosterCrew, b: IRosterCrew) => {
-    //         let r = 0;
-    //         r = a.max_rarity - b.max_rarity;
-    //         if (r) return r;
-    //         const va = a.voyage_quotient ?? 1;
-    //         const ta = (top[a.max_rarity - 1].voyage_quotient ? top[a.max_rarity - 1].voyage_quotient : 1) ?? 0;
-    //         const ga = 1 - (ta / va);
-
-    //         const vb = b.voyage_quotient ?? 1;
-    //         const tb = (top[b.max_rarity - 1].voyage_quotient ? top[b.max_rarity - 1].voyage_quotient : 1) ?? 0;
-    //         const gb = 1 - (tb / vb);
-
-    //         r = ga - gb;
-    //         return r;
-    //     }
-    // });
 
     const qpComp = (a: IRosterCrew, b: IRosterCrew, skill: string) => {
         if (!a.best_quipment!.aggregate_by_skill[skill]) return -1;
