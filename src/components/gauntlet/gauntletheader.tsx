@@ -33,13 +33,13 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
         jp = globalContext.core.crew.filter((crew) => {
             return crew.traits_hidden.includes("exclusive_gauntlet");
         })
-            .sort((a, b) => {
-                return a.date_added.getTime() - b.date_added.getTime();
-            });
+        .sort((a, b) => {
+            return a.date_added.getTime() - b.date_added.getTime();
+        });
     }
     else if (pane === 'live' && gauntlet) {
         let pc = gauntlet.contest_data?.selected_crew?.map(c => globalContext.player.playerData?.player.character.crew.find(f => f.symbol === c.archetype_symbol) as PlayerCrew);
-        if (pc) jp = pc;
+        if (pc) jp = pc.filter(f => f);
     }
 
     const jackpots = jp;
