@@ -6,7 +6,6 @@ import { CrewMember, EquipmentSlot } from "../../model/crew";
 import { EquipmentItem } from '../../model/equipment';
 import { PlayerCrew, PlayerData } from "../../model/player";
 import { qbitsToSlots, qbProgressToNext } from '../../utils/crewutils';
-import { getItemBonuses } from '../../utils/itemutils';
 import { printShortDistance } from '../../utils/misc';
 import { BuffStatTable } from '../../utils/voyageutils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
@@ -26,7 +25,6 @@ export interface CrewItemsViewProps {
     vertical?: boolean;
     alwaysHideProgress?: boolean;
 }
-
 
 function expToDate(playerData: PlayerData, crew: PlayerCrew) {
     if (playerData?.calc?.lastModified) {
@@ -112,10 +110,8 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                         equip[i - startlevel] = (JSON.parse(JSON.stringify(ef)));
                     }
                 }
-
             }
         }
-
     }
     else {
         if (context.player.playerData) {
@@ -126,7 +122,6 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
         if (crew.kwipment?.length && !crew.kwipment_slots) {
             if ((crew.kwipment as number[])?.some((q: number) => !!q)) {
                 let quips = (crew.kwipment as number[]).map(q => context.core.items.find(i => i.kwipment_id?.toString() === q.toString()) as EquipmentItem)?.filter(q => !!q) ?? [];
-                let buffs = quips.map(q => getItemBonuses(q));
                 crew.kwipment_slots = quips.map(q => {
                     return {
                         level: 100,
@@ -265,49 +260,3 @@ export const CrewItemDisplay = (props: CrewItemDisplayProps) => {
     </div>)
 
 }
-
-// export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
-//     static contextType = GlobalContext;
-//     declare context: React.ContextType<typeof GlobalContext>;
-
-//     constructor(props: CrewItemDisplayProps) {
-//         super(props);
-//     }
-
-//     render() {
-//         const entry = this.props;
-//         const { targetGroup, vertical } = entry;
-
-//         const itemSize = window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (this.props.mobileSize ?? 24) : (this.props.itemSize ?? 32);
-
-//         return (<div
-//             onClick={(e) => !targetGroup ? navigate("/item_info?symbol=" + this.props.equipment?.symbol) : null}
-//             title={this.props.equipment?.name}
-//             style={{
-//             cursor: "pointer",
-//             display: "flex",
-//             flexDirection: "row",
-//             justifyContent: "center",
-//             margin: window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
-//             marginTop: vertical ? 0 : window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
-//             marginBottom: vertical ? 0 : window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
-//             //...this.props.style
-//         }}>
-//             <div style={{display:'flex', flexDirection:'column', alignItems: 'center', justifyContent: "center"}}>
-//             {!!entry.expiration && <div style={{fontSize: "0.75em", textAlign: 'center'}}>{entry.expiration}</div>}
-//             <ItemDisplay
-//                 style={this.props.style}
-//                 targetGroup={targetGroup}
-//                 itemSymbol={entry.equipment?.symbol}
-//                 allItems={this.context.core.items}
-//                 playerData={this.context.player.playerData}
-//                 src={`${process.env.GATSBY_ASSETS_URL}${entry?.equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
-//                 size={itemSize}
-//                 maxRarity={entry?.equipment?.rarity ?? 0}
-//                 rarity={entry?.equipment?.rarity ?? 0}
-//             />
-//             {this.props.locked && <img style={{position: "relative", marginTop:"-16px", height: "16px"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/lock_icon.png`}/>}
-//             </div>
-//         </div>)
-//     }
-// }

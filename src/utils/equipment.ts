@@ -1,6 +1,6 @@
 import CONFIG from '../components/CONFIG';
 import { ArchetypeRoot20 } from '../model/archetype';
-import { ComputedSkill, CrewMember, EquipmentSlot, QuippedPower, Skill } from '../model/crew';
+import { BaseSkills, ComputedSkill, CrewMember, EquipmentSlot, QuippedPower, Skill } from '../model/crew';
 import { EquipmentIngredient, EquipmentItem, ICrewDemands, IDemand } from '../model/equipment';
 import { BuffBase, PlayerCrew, PlayerEquipmentItem } from '../model/player';
 import { applySkillBuff, numberToGrade, powerSum, qbitsToSlots, skillSum } from './crewutils';
@@ -387,8 +387,35 @@ export function calcQLots<T extends CrewMember>(
 	mode?: 'all' | 'core' | 'proficiency'): T {
 
 	mode ??= 'all';
-
+	const crewSkills = {} as BaseSkills;
 	const cmode = mode;
+
+	crew.skill_order.forEach((skill) => {
+		let newSkill: Skill;
+		if (buffConfig) {
+			let sb = applySkillBuff(buffConfig, skill, crew.base_skills[skill]);
+			newSkill = {
+				core: sb.core,
+				range_max: sb.max,
+				range_min: sb.min,
+				skill
+			};
+		}
+		else {
+			newSkill = {
+				... crew.base_skills[skill],
+				skill
+			};
+		}
+		// if (cmode === 'core') {
+		// 	newSkill.range_max = 0;
+		// 	newSkill.range_min = 0;
+		// }
+		// else if (cmode === 'proficiency') {
+		// 	newSkill.core = 0;
+		// }
+		crewSkills[skill] = newSkill;
+	});
 
 	const q_bits = max_qbits ? 1300 : crew.q_bits;
 	const qbslots = qbitsToSlots(q_bits);
@@ -550,17 +577,18 @@ export function calcQLots<T extends CrewMember>(
 
 		}
 
-		let final_skills = Object.values(final_best.skill_quipment).map(items => items.map(item => (qpcounts.find(f => f.item === item) as QpCount).bonuses).flat()).flat()
-		final_skills.forEach((skill) => {
-			if (final_best.skills_hash[skill.skill!]) {
-				final_best.skills_hash[skill.skill!].core += skill.core;
-				final_best.skills_hash[skill.skill!].range_max += skill.range_max;
-				final_best.skills_hash[skill.skill!].range_min += skill.range_min;
+		let item_buffs = Object.values(final_best.skill_quipment).map(items => items.map(item => (qpcounts.find(f => f.item === item) as QpCount).bonuses).flat()).flat()
+
+		for (let skill of item_buffs) {
+			if (!final_best.skills_hash[skill.skill!]) {
+				final_best.skills_hash[skill.skill!] = { ... crewSkills[skill.skill!] };
 			}
-			else {
-				final_best.skills_hash[skill.skill!] = { ...skill };
-			}
-		});
+
+			final_best.skills_hash[skill.skill!].core += skill.core;
+			final_best.skills_hash[skill.skill!].range_max += skill.range_max;
+			final_best.skills_hash[skill.skill!].range_min += skill.range_min;
+		}
+
 		return final_best;
 	};
 
@@ -624,45 +652,17 @@ export function calcQLots<T extends CrewMember>(
 		addQPower(skill, slots);
 	});
 
-	const crewSkills = {} as { [key: string]: Skill };
-
-	crew.skill_order.forEach((skill) => {
-		let newSkill: Skill;
-		if (buffConfig) {
-			let sb = applySkillBuff(buffConfig, skill, crew.base_skills[skill]);
-			newSkill = {
-				core: sb.core,
-				range_max: sb.max,
-				range_min: sb.min,
-				skill
-			};
-		}
-		else {
-			newSkill = {
-				... crew.base_skills[skill],
-				skill
-			};
-		}
-		if (cmode === 'core') {
-			newSkill.range_max = 0;
-			newSkill.range_min = 0;
-		}
-		else if (cmode === 'proficiency') {
-			newSkill.core = 0;
-		}
-		crewSkills[skill] = newSkill;
-	});
 
 	const addCrewPower = (lot: QuippedPower) => {
 		crew.skill_order.forEach((skill) => {
 			if (!(skill in lot.skill_quipment)) return;
-			let fskills = lot.skills_hash[skill];
-			let cskills = crewSkills[skill];
-			let skill_power = skillSum([fskills, cskills], cmode);
+			let fskills = lot.skills_hash[skill] as Skill;
+			let skill_power = skillSum(fskills, cmode);
 			lot.aggregate_power += skill_power;
 			lot.aggregate_by_skill[skill] = skill_power;
 		})
 	}
+
 	crew.best_quipment = {
 		skill_quipment: q_lots,
 		skills_hash: q_power,

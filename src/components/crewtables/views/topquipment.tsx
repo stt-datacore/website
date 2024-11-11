@@ -3,7 +3,7 @@ import { IRosterCrew } from "../model";
 import { ITableConfigRow } from "../../searchabletable";
 import CONFIG from "../../CONFIG";
 import { Table } from "semantic-ui-react";
-import { QuippedPower, QuipmentScores, Skill } from "../../../model/crew";
+import { QuippedPower, QuipmentScores, Skill, BaseSkills } from "../../../model/crew";
 import { applySkillBuff, powerSum, skillSum, skillToShort } from "../../../utils/crewutils";
 import { CrewItemsView } from "../../item_presenters/crew_items";
 import CrewStat from "../../crewstat";
@@ -157,76 +157,36 @@ export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean |
 }
 
 export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
-    const { pstMode, excludeQBits, targetGroup, top, allslots, crew, buffConfig } = props;
-
+    const { pstMode, excludeQBits, targetGroup, top, allslots, crew } = props;
     const q_bits = allslots ? 1300 : crew.q_bits;
+    const skills = Object.keys(CONFIG.SKILLS);
 
     let q_lots = crew.best_quipment ?? {} as QuippedPower;
 
-    const skills = Object.keys(CONFIG.SKILLS);
-
-    const printCell = (skill: string | number, multi_mode?: boolean) => {
-        let power_sum = undefined as { [key: string]: Skill } | undefined;
-        let lot: QuippedPower | undefined = q_lots ?? { skill_quipment: {} };
-
+    const printCell = (skill: string | number) => {
+        let lot: QuippedPower | undefined = q_lots;
         if (typeof skill === 'number') {
-            if (multi_mode) {
-                lot = undefined;
+            if (pstMode === 2) {
                 if (skill === 0 && crew.best_quipment_1_2) {
-                    power_sum = powerSum(Object.values(crew.best_quipment_1_2.skills_hash));
                     lot = crew.best_quipment_1_2;
                 }
                 else if (skill === 1 && crew.best_quipment_1_3) {
-                    power_sum = powerSum(Object.values(crew.best_quipment_1_3.skills_hash));
                     lot = crew.best_quipment_1_3;
                 }
                 else if (skill === 2 && crew.best_quipment_2_3) {
-                    power_sum = powerSum(Object.values(crew.best_quipment_2_3.skills_hash));
                     lot = crew.best_quipment_2_3;
                 }
                 else if (skill === 3 && crew.best_quipment_3) {
-                    power_sum = powerSum(Object.values(crew.best_quipment_3.skills_hash));
                     lot = crew.best_quipment_3;
                 }
-
-                if (!lot && typeof skill !== 'string') {
+                else {
                     return <></>;
-                }
-                else if (power_sum) {
-                    Object.keys(power_sum).forEach((skill) => {
-                        if (!(skill in crew.base_skills) && !!power_sum) {
-                            delete power_sum[skill];
-                        }
-                    });
-
-                    Object.values(power_sum).forEach((skill) => {
-                        if (skill.skill && skill.skill in crew.base_skills) {
-                            if (buffConfig) {
-                                let buffed = applySkillBuff(buffConfig, skill.skill, crew.base_skills[skill.skill]);
-                                skill.core += buffed.core;
-                                skill.range_max += buffed.max;
-                                skill.range_min += buffed.min;
-                            }
-                            else {
-                                skill.core += crew.base_skills[skill.skill].core;
-                                skill.range_max += crew.base_skills[skill.skill].range_max;
-                                skill.range_min += crew.base_skills[skill.skill].range_min;
-                            }
-                        }
-                    });
-
                 }
             }
             else {
                 if (skill >= crew.skill_order.length) return <></>;
                 skill = crew.skill_order[skill];
             }
-        }
-
-        if (typeof skill === 'string' && crew.best_quipment?.skills_hash) {
-            lot = { ...crew.best_quipment };
-            lot.skill_quipment = {};
-            lot.skill_quipment[skill] = crew.best_quipment.skill_quipment[skill];
         }
 
         return !!lot?.skill_quipment && <div style={{
@@ -251,7 +211,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
                 skill_name={skill}
                 data={lot.skills_hash[skill]} />
             ||
-            !!power_sum && Object.values(power_sum).sort((a, b) => skillSum(b) - skillSum(a)).map((ps) =>
+            !!lot.skills_hash && Object.values(lot.skills_hash).sort((a, b) => lot.aggregate_by_skill[b] - lot.aggregate_by_skill[a]).map((ps) =>
                 <CrewStat
                     key={`power_skill-${ps.skill}_${crew.id}`}
                     quipmentMode={true}
@@ -262,28 +222,28 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
         </div>
     }
 
-return <React.Fragment>
+    return <React.Fragment>
         <QuipmentScoreCells excludeGrade={true} excludeSpecialty={!pstMode} top={top} crew={crew} excludeSkills={true} excludeQBits={excludeQBits} />
-        {!pstMode && skills.map((skill) => {
+        {!pstMode && skills.map((skill, idx) => {
             if (!(skill in crew.base_skills)) {
-                return <Table.Cell key={skill + "_vqntqp" + crew.id.toString()}></Table.Cell>
+                return <Table.Cell key={`qpbest_${idx}_${skill}_${crew.id}`}></Table.Cell>
             }
             return (
-                <Table.Cell key={skill + "_vqntqp" + crew.id.toString()}>
+                <Table.Cell key={`qpbest_${idx}_${skill}_${crew.id}`}>
                     {printCell(skill)}
                 </Table.Cell>)
         })}
         {pstMode === true && ['primary', 'secondary', 'tertiary'].map((skill, idx) => {
 
             return (
-                <Table.Cell key={skill + "_vqntqp" + crew.id.toString()}>
+                <Table.Cell key={`qpbest_${idx}_${skill}_${crew.id}`}>
                     {printCell(idx)}
                 </Table.Cell>)
         })}
         {pstMode === 2 && ['first_pair', 'second_pair', 'third_pair', 'three_skills'].map((skill, idx) => {
             return (
-                <Table.Cell key={skill + "_vqntqp" + crew.id.toString()}>
-                    {printCell(idx, true)}
+                <Table.Cell key={`qpbest_${idx}_${skill}_${crew.id}`}>
+                    {printCell(idx)}
                 </Table.Cell>)
         })}
     </React.Fragment>
