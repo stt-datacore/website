@@ -297,7 +297,6 @@ export const AvatarView = (props: AvatarViewProps) => {
             else if (pitem) {
                 item = { ... pitem } as EquipmentItem;
             }
-
             if (item && citem) {
                 item.demandCrew = citem.demandCrew;
                 if (!src) src = `${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`;
@@ -305,6 +304,9 @@ export const AvatarView = (props: AvatarViewProps) => {
             if (item?.symbol && globalContext.localized.ITEM_ARCHETYPES[item.symbol]) {
                 item = { ...item, ... globalContext.localized.ITEM_ARCHETYPES[item.symbol] };
             }
+
+            if (item && !item?.rarity && gen_item.rarity) item.rarity = gen_item.rarity;
+
             gen_item = item;
             if (gen_item && !gen_item.max_rarity) {
                 gen_item.max_rarity = gen_item.rarity;
