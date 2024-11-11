@@ -13,6 +13,7 @@ node_modules/
 .prettierrc
 # Gatsby files
 .cache/
+build
 public
 public_web
 public_old
