@@ -106,7 +106,7 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
                 bs = crew.skills[skill];
             }
             else if (skill in crew) {
-                bs = { core: crew[skill].core, range_min: crew[skill].min, range_max: crew[skill].max };
+                bs = { core: crew[skill].core, range_min: crew[skill].min, range_max: crew[skill].max, skill };
             }
             else {
                 bs = crew.base_skills[skill];

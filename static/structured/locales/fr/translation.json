@@ -28,6 +28,20 @@
         "on_shuttle": "En navette",
         "on_voyage": "En voyage",
         "one_slot": "1 emplacement",
+        "pseudocolumns": {
+            "collections.length": "{{base.collections}}",
+            "date_added": "{{base.release_date}}",
+            "highest_owned_rarity": "{{global.highest_owned_rarity}}",
+            "is_new": "{{global.new}}",
+            "level": "{{base.level}}",
+            "max_rarity": "{{global.max_rarity}}",
+            "name": "{{global.name}}",
+            "q_bits": "{{base.qp}}",
+            "quipment_score": "{{rank_names.quipment_score}}",
+            "ranks": {
+                "traitRank": "{{rank_names.trait_rank}}"
+            }
+        },
         "qp": "QP",
         "rarity": "Rareté",
         "release_date": "Début",
@@ -302,6 +316,7 @@
         "items": "{{global.items}}"
     },
     "duration": {
+        "all_time": "Tout le temps",
         "n_d": "{{days}} j",
         "n_d_compact": "{{days}}d",
         "n_days": "{{days}} jours",
@@ -313,11 +328,10 @@
         "n_m_compact": "{{minutes}}m",
         "n_minute_class": "{{minutes}}-minute",
         "n_minutes": "{{minutes}} minutes",
-        "title": "Durée: {{duration}}",
-        "n_weeks": "{{weeks}} semaines",
         "n_months": "{{months}} moins",
+        "n_weeks": "{{weeks}} semaines",
         "n_years": "{{years}} années",
-        "all_time": "Tout le temps"
+        "title": "Durée: {{duration}}"
     },
     "event_info": {
         "active_event_lag_warn": "Si cet événement est actuellement actif, le classement ci-dessous peut être obsolète.",
@@ -731,6 +745,7 @@
         "group_by": "Par groupe",
         "hidden": "Caché",
         "hide": "Masquer",
+        "highest_owned_rarity": "Rareté la plus élevée possédée",
         "idle": "Inactif",
         "item_types": {
             "arena": "Arène",
@@ -834,7 +849,6 @@
     "hints": {
         "apply_buffs": "Appliquer des effets",
         "display_buffs": "Afficher effets",
-        "filter_by_timeframe": "Filtrer par période",
         "filter_by_availability": "Filtrer par disponibilité",
         "filter_by_collections": "Filtrer par collections",
         "filter_by_crew": "Filtrer par équipage",
@@ -851,6 +865,7 @@
         "filter_by_ship_ability": "Filtrer par la capacité du vaisseau",
         "filter_by_skill": "Filtrer par compétence",
         "filter_by_status": "Filtrer par statut",
+        "filter_by_timeframe": "Filtrer par période",
         "filter_by_trait": "Filtrer par trait",
         "filter_by_voyage_seating": "Filtrer par sièges de voyage",
         "filter_crew_by_rank": "Filtrer l'équipage par rang",
@@ -1243,6 +1258,7 @@
         "cab_rating": "Cote CAB",
         "gauntlet_rank": "Rang Gantelet",
         "quipment_score": "Rang de Quipement",
+        "trait_rank": "Rang du trait",
         "voyage_rank": "Rang Voyage"
     },
     "ranking_method": {

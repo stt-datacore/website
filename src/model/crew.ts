@@ -98,11 +98,11 @@ export interface CrewMember extends QuipmentScores {
     kwipment: number[][] | number[];
     kwipment_expiration: number[][] | number[];
     q_bits: number;
+    skill_order: string[];
 
     /** Used internally, not part of incoming data */
     pickerId?: number;
     pairs?: Skill[][];
-    skill_order: string[];
 }
 
 export interface EquipmentSlot {
@@ -161,14 +161,14 @@ export interface Skill {
     core: number;
     range_min: number;
     range_max: number;
-    skill?: PlayerSkill | string;
+    skill: PlayerSkill | string;
 }
 
 export interface ComputedSkill {
     core: number;
     min: number;
     max: number;
-    skill?: PlayerSkill | string;
+    skill: PlayerSkill | string;
 }
 
 export interface SkillsSummary {
@@ -184,13 +184,6 @@ export interface SkillsSummary {
     };
     tenAverage: number;
     maxPct: number;
-}
-
-export interface ComputedSkill {
-    core: number;
-    min: number;
-    max: number;
-    skill?: string;
 }
 
 export interface SkillData {
@@ -214,6 +207,7 @@ export interface Ranks {
     voyRank: number;
     gauntletRank: number;
     chronCostRank: number;
+    traitRank: number;
     B_SEC?: number;
     A_SEC?: number;
     V_CMD_SEC?: number;

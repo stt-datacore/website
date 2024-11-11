@@ -28,6 +28,20 @@
         "on_shuttle": "On shuttle",
         "on_voyage": "On voyage",
         "one_slot": "1 slot",
+        "pseudocolumns": {
+            "collections.length": "{{base.collections}}",
+            "date_added": "{{base.release_date}}",
+            "highest_owned_rarity": "{{global.highest_owned_rarity}}",
+            "is_new": "{{global.new}}",
+            "level": "{{base.level}}",
+            "max_rarity": "{{global.max_rarity}}",
+            "name": "{{global.name}}",
+            "q_bits": "{{base.qp}}",
+            "quipment_score": "{{rank_names.quipment_score}}",
+            "ranks": {
+                "traitRank": "{{rank_names.trait_rank}}"
+            }
+        },
         "qp": "QP",
         "rarity": "Rarity",
         "release_date": "Release Date",
@@ -294,6 +308,7 @@
         "items": "{{global.items}}"
     },
     "duration": {
+        "all_time": "All Time",
         "n_d": "{{days}} d",
         "n_d_compact": "{{days}}d",
         "n_days": "{{days}} days",
@@ -305,11 +320,10 @@
         "n_m_compact": "{{minutes}}m",
         "n_minute_class": "{{minutes}}-minute",
         "n_minutes": "{{minutes}} minutes",
-        "title": "Duration: {{duration}}",
-        "n_weeks": "{{weeks}} weeks",
         "n_months": "{{months}} months",
+        "n_weeks": "{{weeks}} weeks",
         "n_years": "{{years}} years",
-        "all_time": "All Time"
+        "title": "Duration: {{duration}}"
     },
     "event_info": {
         "active_event_lag_warn": "If this event is currently active, the leaderboard below might be out of date.",
@@ -723,6 +737,7 @@
         "group_by": "Group by",
         "hidden": "Hidden",
         "hide": "Hide",
+        "highest_owned_rarity": "Highest owned rarity",
         "idle": "Idle",
         "item_types": {
             "arena": "Arena",
@@ -824,7 +839,6 @@
     "hints": {
         "apply_buffs": "Apply stat buffs",
         "display_buffs": "Display Buffs",
-        "filter_by_timeframe": "Filter by timeframe",
         "filter_by_availability": "Filter by availability",
         "filter_by_collections": "Filter by collections",
         "filter_by_crew": "Filter by crew",
@@ -841,6 +855,7 @@
         "filter_by_ship_ability": "Filter by ship ability",
         "filter_by_skill": "Filter by skill",
         "filter_by_status": "Filter by status",
+        "filter_by_timeframe": "Filter by timeframe",
         "filter_by_trait": "Filter by trait",
         "filter_by_voyage_seating": "Filter by voyage seating",
         "filter_crew_by_rank": "Filter crew by rank",
@@ -1232,6 +1247,7 @@
         "cab_rating": "CAB Rating",
         "gauntlet_rank": "Gauntlet Rank",
         "quipment_score": "Quipment Score",
+        "trait_rank": "Trait Rank",
         "voyage_rank": "Voyage Rank"
     },
     "ranking_method": {

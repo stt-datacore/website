@@ -1045,11 +1045,10 @@ export class CrewPresenter extends React.Component<
                             marginBottom: "2px",
                         }}
                     >
-                        {Object.entries(skillData.base_skills).sort(([akey, askill], [bkey, bskill]) => {
-                            return (bskill as Skill).core - (askill as Skill).core;
+                        {Object.entries(skillData.base_skills).sort(([akey, askill]: [string, Skill], [bkey, bskill]: [string, Skill]) => {
+                            return bskill.core - askill.core;
 
                         }).map(([key, skill]) => {
-
                             return <CrewStat
                                 quipmentMode={this.props.quipmentMode}
                                 key={"crewpresent_skill_" + key}

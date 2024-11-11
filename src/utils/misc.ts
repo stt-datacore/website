@@ -108,6 +108,10 @@ export function appelate(text: string) {
 	const match = new RegExp(/[A-Za-z0-9']/);
 
 	for (let ch of text) {
+		if (ch === ch.toUpperCase() && !curr.endsWith(" ")) {
+			curr += " ";
+			cpos = 0;
+		}
 		if (match.test(ch)) {
 			if (cpos++ === 0) {
 				curr += ch.toUpperCase();
@@ -123,6 +127,10 @@ export function appelate(text: string) {
 	}
 
 	return curr;
+}
+
+export function translatePseudocolumn(name: string, t: TranslateMethod) {
+	return t(`base.pseudocolumns.${name}`);
 }
 
 export const getImageName = (reward) => {

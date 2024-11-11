@@ -250,11 +250,11 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 									},
 									{
 										...JSON.parse(JSON.stringify(EMPTY_SKILL)) as Skill,
-										skill: srank.find(sr => sr !== p.skill)
+										skill: srank.find(sr => sr !== p.skill) || ''
 									}
 									]
-									if (idx === 0) amatch = glitch.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
-									else bmatch = glitch.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
+									if (idx === 0) amatch = glitch.sort((a, b) => a.skill.localeCompare(b.skill) || 0);
+									else bmatch = glitch.sort((a, b) => a.skill.localeCompare(b.skill) || 0);
 									return;
 								}
 							}
@@ -495,12 +495,14 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 						...skill,
 						range_max: opposkill?.max,
 						range_min: opposkill?.min
-					};
+					} as Skill;
+
 					fcrew[skname] = {
 						core: skill.core,
 						max: opposkill?.max,
-						min: opposkill?.min
-					};
+						min: opposkill?.min,
+						skill: skill.skill
+					} as ComputedSkill;
 				}
 				fcrew.id = ocrew.crew_id;
 				fcrew.rarity = ocrew.rarity;
@@ -537,8 +539,8 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 
 			for (let selskill of selcrew.skills) {
 				let sk = selskill.skill;
-				crew.skills[sk] = { core: 0, range_max: selskill.max, range_min: selskill.min } as Skill;
-				crew[sk] = { core: 0, max: selskill.max, min: selskill.min } as ComputedSkill;
+				crew.skills[sk] = { core: 0, range_max: selskill.max, range_min: selskill.min, skill: sk } as Skill;
+				crew[sk] = { core: 0, max: selskill.max, min: selskill.min, skill: sk } as ComputedSkill;
 			}
 
 			crew.rarity = selcrew.rarity;

@@ -31,13 +31,15 @@ export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffSt
             crew[skill] = {
                 core: core,
                 min: min,
-                max: max
+                max: max,
+                skill
             };
         }
         bs[skill] = {
             core: core,
             range_min: min,
-            range_max: max
+            range_max: max,
+            skill
         };
     }
     return bs;

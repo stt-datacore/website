@@ -76,7 +76,7 @@ export const EventPicker = (props: EventPickerProps) => {
 					prospect.level = 100;
 					prospect.immortal = CompletionState.DisplayAsImmortalUnowned;
 					CONFIG.SKILLS_SHORT.forEach(skill => {
-						let score: ComputedSkill = { core: 0, min: 0, max: 0 };
+						let score: ComputedSkill = { core: 0, min: 0, max: 0, skill: skill.name };
 						if (prospect.base_skills[skill.name]) {
 							if (prospect.rarity === prospect.max_rarity)
 								score = applySkillBuff(buffConfig, skill.name, prospect.base_skills[skill.name]);

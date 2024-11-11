@@ -349,7 +349,7 @@ export interface QuestSolverCacheItem {
 }
 
 export const EMPTY_SKILL = {
-	skill: undefined,
+	skill: '',
 	core: 0,
 	range_max: 0,
 	range_min: 0

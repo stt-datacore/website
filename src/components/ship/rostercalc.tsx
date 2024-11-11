@@ -18,7 +18,7 @@ import { CrewDropDown } from "../base/crewdropdown";
 import { ShipMultiWorkerContext, ShipMultiWorkerStatus } from "./shipmultiworker";
 import AdvancedCrewPowerPopup from "./advancedpower";
 import CONFIG from "../CONFIG";
-import { ShipWorkerConfig, ShipWorkerItem } from "src/model/worker";
+import { ShipWorkerConfig, ShipWorkerItem } from "../../model/worker";
 
 export interface RosterCalcProps {
     pageId: string;

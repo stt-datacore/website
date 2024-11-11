@@ -11,7 +11,7 @@ import * as localForage from 'localforage';
 import { InitialOptions } from '../model/game-elements';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew } from '../model/player';
-import { appelate } from '../utils/misc';
+import { appelate, translatePseudocolumn } from '../utils/misc';
 import { GlobalContext } from '../context/globalcontext';
 import CONFIG from './CONFIG';
 import { TranslateMethod } from '../model/player';
@@ -164,7 +164,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 						onClick={() => onHeaderClick(cell)}
 						textAlign={cell.width === 1 ? 'center' : 'left'}
 					>
-						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{appelate(column.replace('.length', ''))}</small></>}
+						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{translatePseudocolumn(column, t)}</small></>}
 					</Table.HeaderCell>
 				))}
 			</Table.Row>

@@ -269,13 +269,15 @@ export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffSt
 			crew[skill] = {
 				core: core,
 				min: min,
-				max: max
+				max: max,
+				skill
 			};
 		}
 		bs[skill] = {
 			core: core,
 			range_min: min,
-			range_max: max
+			range_max: max,
+			skill
 		};
 	}
 
@@ -766,7 +768,7 @@ export function comparePairs(a: Skill[], b: Skill[], featuredSkill?: string, mul
 }
 
 export const emptySkill = {
-	skill: undefined,
+	skill: '',
 	core: 0,
 	range_max: 0,
 	range_min: 0
@@ -780,10 +782,10 @@ export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: numbe
 
 	// const oppo = (("isOpponent" in crew) && crew.isOpponent);
 
-	let skills = getSkills(crew).map(skill => { return { core: crew[skill].core, range_max: crew[skill].max, range_min: crew[skill].min, skill: skill } as Skill });
+	let skills = getSkills(crew).map(skill => { return { core: crew[skill].core, range_max: crew[skill].max, range_min: crew[skill].min, skill } as Skill });
 
 	if (!skills?.length || !skills[0].range_max) {
-		skills = getSkills(crew).map(skill => { return { ...crew.base_skills[skill], skill: skill } as Skill });
+		skills = getSkills(crew).map(skill => { return { ...crew.base_skills[skill], skill } as Skill });
 	}
 
 	if (skills && skills.length) {
@@ -1152,7 +1154,8 @@ export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_sk
 	return {
 		core: Math.round(base_skill.core * getMultiplier(skill, 'core')),
 		min: Math.round(base_skill.range_min * getMultiplier(skill, 'range_min')),
-		max: Math.round(base_skill.range_max * getMultiplier(skill, 'range_max'))
+		max: Math.round(base_skill.range_max * getMultiplier(skill, 'range_max')),
+		skill: base_skill.skill
 	};
 }
 

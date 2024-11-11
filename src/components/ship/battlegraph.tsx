@@ -12,7 +12,7 @@ import { useStateWithStorage } from "../../utils/storage";
 import { ShipSkill, TinyShipSkill } from "../item_presenters/shipskill";
 import { CrewMember } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
-import { ShipWorkerItem } from "src/model/worker";
+import { ShipWorkerItem } from "../../model/worker";
 
 
 interface SwarmData {
