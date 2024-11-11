@@ -7,9 +7,9 @@ import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps, ModalOption 
 import { CalculatorContext } from './context';
 import CrewPicker from '../../components/crewpicker';
 import { IEventScoredCrew } from '../eventplanner/model';
-import { computeEventBest, guessCurrentEventId } from '../../utils/events';
+import { computeEventBest } from '../../utils/events';
 import { GlobalContext } from '../../context/globalcontext';
-import { crewCopy, oneCrewCopy } from '../../utils/crewutils';
+import { oneCrewCopy } from '../../utils/crewutils';
 import CONFIG from '../CONFIG';
 
 interface ISelectOption {

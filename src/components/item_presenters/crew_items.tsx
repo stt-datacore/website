@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { navigate } from 'gatsby';
-import { GlobalContext } from '../../context/globalcontext';
+import { GlobalContext, IDefaultGlobal } from '../../context/globalcontext';
 import { CrewMember, EquipmentSlot } from "../../model/crew";
 import { EquipmentItem } from '../../model/equipment';
 import { PlayerCrew, PlayerData } from "../../model/player";
@@ -118,7 +118,6 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 
     }
     else {
-
         if (context.player.playerData) {
             expirations = expToDate(context.player.playerData, crew);
         }
@@ -195,13 +194,14 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             }}>
             {equip.map((item, idx) => (
                     <CrewItemDisplay
+                        key={`${crew.id}_${crew.symbol}_${idx}_${item.symbol}__crewEquipBox`}
+                        context={context}
                         vertical={!!vertical}
                         targetGroup={targetGroup}
                         style={(quip && maxqIdx < idx) ? { opacity: locked ? "0.50" : "0.25" } : undefined}
                         locked={locked && (quip && maxqIdx < idx)}
                         itemSize={props.itemSize}
                         mobileSize={props.mobileSize}
-                        key={item.symbol + "_equip" + idx}
                         mobileWidth={mobileWidth}
                         crew={crew}
                         expiration={expirations ? (expirations[idx] ? printShortDistance(expirations[idx]) : <>{props.printNA && item.symbol ? props.printNA : <br/>}</>) : undefined}
@@ -223,50 +223,91 @@ export interface CrewItemDisplayProps extends CrewItemsViewProps {
     mobileSize?: number;
     style?: React.CSSProperties;
     targetGroup?: string;
+    context: IDefaultGlobal;
 }
 
-export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
-    static contextType = GlobalContext;
-    declare context: React.ContextType<typeof GlobalContext>;
+export const CrewItemDisplay = (props: CrewItemDisplayProps) => {
 
-    constructor(props: CrewItemDisplayProps) {
-        super(props);
-    }
+    const globalContext = props.context;
 
-    render() {
-        const entry = this.props;
-        const { targetGroup, vertical } = entry;
+    const { locked, style, targetGroup, vertical, equipment, mobileWidth, mobileSize, expiration } = props;
 
-        const itemSize = window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (this.props.mobileSize ?? 24) : (this.props.itemSize ?? 32);
+    const itemSize = window.innerWidth < (mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (mobileSize ?? 24) : (props.itemSize ?? 32);
 
-        return (<div
-            onClick={(e) => !targetGroup ? navigate("/item_info?symbol=" + this.props.equipment?.symbol) : null}
-            title={this.props.equipment?.name}
-            style={{
-            cursor: "pointer",
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "center",
-            margin: window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
-            marginTop: vertical ? 0 : window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
-            marginBottom: vertical ? 0 : window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
-            //...this.props.style
-        }}>
-            <div style={{display:'flex', flexDirection:'column', alignItems: 'center', justifyContent: "center"}}>
-            {!!entry.expiration && <div style={{fontSize: "0.75em", textAlign: 'center'}}>{entry.expiration}</div>}
-            <ItemDisplay
-                style={this.props.style}
-                targetGroup={targetGroup}
-                itemSymbol={entry.equipment?.symbol}
-                allItems={this.context.core.items}
-                playerData={this.context.player.playerData}
-                src={`${process.env.GATSBY_ASSETS_URL}${entry?.equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
-                size={itemSize}
-                maxRarity={entry?.equipment?.rarity ?? 0}
-                rarity={entry?.equipment?.rarity ?? 0}
-            />
-            {this.props.locked && <img style={{position: "relative", marginTop:"-16px", height: "16px"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/lock_icon.png`}/>}
-            </div>
-        </div>)
-    }
+    return (<div
+        onClick={(e) => !targetGroup ? navigate("/item_info?symbol=" + props.equipment?.symbol) : null}
+        title={equipment?.name}
+        style={{
+        cursor: "pointer",
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        margin: window.innerWidth < (mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
+        marginTop: vertical ? 0 : window.innerWidth < (mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
+        marginBottom: vertical ? 0 : window.innerWidth < (mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
+        //...this.props.style
+    }}>
+        <div style={{display:'flex', flexDirection:'column', alignItems: 'center', justifyContent: "center"}}>
+        {!!expiration && <div style={{fontSize: "0.75em", textAlign: 'center'}}>{expiration}</div>}
+        <ItemDisplay
+            style={style}
+            targetGroup={targetGroup}
+            itemSymbol={equipment?.symbol}
+            allItems={globalContext.core.items}
+            playerData={globalContext.player.playerData}
+            src={`${process.env.GATSBY_ASSETS_URL}${equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
+            size={itemSize}
+            maxRarity={equipment?.rarity ?? 0}
+            rarity={equipment?.rarity ?? 0}
+        />
+        {locked && <img style={{position: "relative", marginTop:"-16px", height: "16px"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/lock_icon.png`}/>}
+        </div>
+    </div>)
+
 }
+
+// export class CrewItemDisplay extends React.Component<CrewItemDisplayProps> {
+//     static contextType = GlobalContext;
+//     declare context: React.ContextType<typeof GlobalContext>;
+
+//     constructor(props: CrewItemDisplayProps) {
+//         super(props);
+//     }
+
+//     render() {
+//         const entry = this.props;
+//         const { targetGroup, vertical } = entry;
+
+//         const itemSize = window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (this.props.mobileSize ?? 24) : (this.props.itemSize ?? 32);
+
+//         return (<div
+//             onClick={(e) => !targetGroup ? navigate("/item_info?symbol=" + this.props.equipment?.symbol) : null}
+//             title={this.props.equipment?.name}
+//             style={{
+//             cursor: "pointer",
+//             display: "flex",
+//             flexDirection: "row",
+//             justifyContent: "center",
+//             margin: window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
+//             marginTop: vertical ? 0 : window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
+//             marginBottom: vertical ? 0 : window.innerWidth < (this.props.mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? "0.15em" : "0.25em",
+//             //...this.props.style
+//         }}>
+//             <div style={{display:'flex', flexDirection:'column', alignItems: 'center', justifyContent: "center"}}>
+//             {!!entry.expiration && <div style={{fontSize: "0.75em", textAlign: 'center'}}>{entry.expiration}</div>}
+//             <ItemDisplay
+//                 style={this.props.style}
+//                 targetGroup={targetGroup}
+//                 itemSymbol={entry.equipment?.symbol}
+//                 allItems={this.context.core.items}
+//                 playerData={this.context.player.playerData}
+//                 src={`${process.env.GATSBY_ASSETS_URL}${entry?.equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
+//                 size={itemSize}
+//                 maxRarity={entry?.equipment?.rarity ?? 0}
+//                 rarity={entry?.equipment?.rarity ?? 0}
+//             />
+//             {this.props.locked && <img style={{position: "relative", marginTop:"-16px", height: "16px"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/lock_icon.png`}/>}
+//             </div>
+//         </div>)
+//     }
+// }

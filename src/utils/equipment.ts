@@ -434,12 +434,14 @@ export function calcQLots<T extends CrewMember>(
 			skill_quipment: {},
 			skills_hash: {},
 			aggregate_power: 0,
+			aggregate_by_skill: {}
 		};
 
 		let best_score = {
 			skill_quipment: {},
 			skills_hash: {},
 			aggregate_power: 0,
+			aggregate_by_skill: {}
 		} as QuippedPower;
 
 		crewQuipment.forEach((cq) => {
@@ -454,7 +456,8 @@ export function calcQLots<T extends CrewMember>(
 		const final_best = {
 			skill_quipment: {},
 			skills_hash: {},
-			aggregate_power: 0
+			aggregate_power: 0,
+			aggregate_by_skill: {}
 		} as QuippedPower;
 
 		const qpcounts = [] as QpCount[];
@@ -655,13 +658,16 @@ export function calcQLots<T extends CrewMember>(
 			if (!(skill in lot.skill_quipment)) return;
 			let fskills = lot.skills_hash[skill];
 			let cskills = crewSkills[skill];
-			lot.aggregate_power += skillSum([fskills, cskills], cmode)
+			let skill_power = skillSum([fskills, cskills], cmode);
+			lot.aggregate_power += skill_power;
+			lot.aggregate_by_skill[skill] = skill_power;
 		})
 	}
 	crew.best_quipment = {
 		skill_quipment: q_lots,
 		skills_hash: q_power,
 		aggregate_power: 0,
+		aggregate_by_skill: {}
 	}
 
 	addCrewPower(crew.best_quipment);
