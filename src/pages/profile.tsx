@@ -64,9 +64,6 @@ export const ProfilePage = (props: ProfilePageProps) => {
 	if (isReady && strippedPlayerData && strippedPlayerData?.stripped !== false) {
 		profData = JSON.parse(JSON.stringify(strippedPlayerData)) as PlayerData;
 		prepareProfileData('PROFILE_PROVIDER', coreData.crew, profData, lastModified ?? new Date());
-
-		let data = mergeShips(coreData.ship_schematics, profData.player.character.ships);
-		profData.player.character.ships = data;
 	}
 
 	return (
@@ -83,6 +80,7 @@ export const ProfilePage = (props: ProfilePageProps) => {
 								loaded: !!profData,
 								playerData: profData,
 								buffConfig: buffConfig,
+								maxBuffs: coreData.all_buffs,
 								playerShips: profData?.player.character.ships,
 								showPlayerGlance: false,
 								setShowPlayerGlance: (value) => false,
