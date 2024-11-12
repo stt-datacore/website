@@ -1160,8 +1160,20 @@ export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_sk
 }
 
 export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[]) {
-	return trait === 'dax' ? 'Dax' : trait === 'tpring' ? "T'Pring" : crewGroup[0].short_name;
+	switch(trait) {
+		case "dax":
+			return 'Dax';
+		case "tpring":
+			return "T'Pring";
+		case "gburnham":
+			return "G. Burnham";
+		case "burnham":
+			return "M. Burnham";
+		default:
+			return crewGroup[0].short_name;
+	}
 }
+
 export const crewVariantIgnore = ['sam_lavelle_crew', 'jack_crusher_crew'];
 
 export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): string[] {
