@@ -3,7 +3,7 @@ name: Writer Jake Sisko
 rarity: 3
 series: ds9
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: 9
 in_portal: true
 date: 01/01/2016
 published: true
