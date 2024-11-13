@@ -3,7 +3,7 @@ name: Activated Dahj
 rarity: 5
 series: pic
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 11/06/2020
 published: true

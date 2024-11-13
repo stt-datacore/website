@@ -3,7 +3,7 @@ name: Lt. Commander Ortegas
 rarity: 4
 series: snw
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 in_portal: true
 date: 13/07/2022
 published: true
