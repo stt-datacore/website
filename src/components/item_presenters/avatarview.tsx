@@ -243,6 +243,7 @@ export const AvatarView = (props: AvatarViewProps) => {
             if (!src) src= `${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`;
             if (!playerData) {
                 crew.immortal = CompletionState.DisplayAsImmortalUnowned;
+                crew.rarity = crew.max_rarity;
             }
             else if (crew.immortal && crewBackground === 'rich') {
                 let kwip = substitute_kwipment ?? crew.kwipment;
