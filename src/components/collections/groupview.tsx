@@ -52,48 +52,12 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 	let crewprep = colGroups.map((col) => col.crew).flat();
 	const allCrew = crewprep.filter((fc, idx) => crewprep.findIndex(fi => fi.symbol === fc.symbol) === idx).sort((a, b) => a.name.localeCompare(b.name));
 
-	//const rewards =
 	const renderCollectionGroups = (colMap: CollectionMap[]) => {
 		return (<div style={{
 			display: "flex",
 			flexDirection: "column",
 			justifyContent: "stretch"
 		}}>
-			{/* {!mapFilter?.collectionsFilter?.length && !searchFilter?.length &&
-				<i className='ui segment' style={{color:"goldenrod", fontWeight: 'bold', margin: "0.5em 0"}}>
-					The grouped collection view shows only owned crew if the collections list is not filtered.
-				</i>}
-
-			<div style={{
-				display: "flex",
-				flexDirection:
-					window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
-				alignItems:
-					window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'flex-start' : 'center',
-				justifyContent: "flex-start"
-			}}>
-
-				<RewardFilter
-					hardFilter={hardFilter}
-					setHardFilter={setHardFilter}
-					narrow={narrow}
-					grouped={short}
-					setGrouped={setShort}
-					searchFilter={searchFilter}
-					setSearchFilter={setSearchFilter}
-					collectionSource={playerCollections}
-					crewSource={allCrew}
-					selection={mapFilter?.rewardFilter}
-					setSelection={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
-				/>
-
-				<div style={{display: 'grid', gridTemplateAreas: "'a b' 'c d'"}}>
-					<Checkbox style={{margin: "0.5em 1em", gridArea: 'a'}} label={"Honor Sale Pricing"} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
-					<Checkbox style={{margin: "0.5em 1em", gridArea: 'c'}} label={"Prioritize Favorite Crew"} checked={favorited} onChange={(e, { checked }) => setFavorited(!!checked)} />
-				</div>
-
-			</div> */}
-
 			{!workerRunning &&
 			<>
 			{!!colMap?.length &&

@@ -192,6 +192,10 @@
         "columns": {
             "collections": "{{base.collections}}",
             "crew": "{{base.crew}}",
+            "descriptions": {
+                "grade": "Une mesure de l'utilité d'un équipage pour réaliser le plus grand nombre de collectes à l'approche d'une étape importante",
+                "star_grade": "Une mesure basée sur la « Grade » qui prend en compte la rareté la plus élevée possédée"
+            },
             "grade": "Grade",
             "immortal_rewards": "Récompenses pour l'immortalisation",
             "rarity": "{{base.rarity}}",
@@ -246,7 +250,7 @@
             },
             "optimizer": {
                 "description": "Découvrez quel équipage peut réaliser le plus de collections à la fois..",
-                "long_description": "Optimisez l'équipe de collection pour atteindre plusieurs jalons à la fois. Si plusieurs combinaisons sont disponibles, elles seront répertoriées dans la liste déroulante « Variations », triées du plus grand nombre de collections au plus petit nombre de collections. Les variantes qui remplissent entièrement l'équipe restante nécessaire pour la collection principale sont marquées d'un astérisque *.",
+                "long_description": "Optimisez l'équipe de collection pour atteindre plusieurs étapes à la fois. Si plusieurs combinaisons sont disponibles, elles seront répertoriées dans la liste déroulante « Variations », triées du plus grand nombre de collections au plus petit nombre de collections. Les variantes qui remplissent entièrement l'équipe restante nécessaire pour la collection principale sont marquées d'un astérisque *.",
                 "long_title": "Optimiseur des étapes clés de les collections",
                 "title": "Optimiseur"
             },

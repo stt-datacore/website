@@ -192,6 +192,10 @@
         "columns": {
             "collections": "{{base.collections}}",
             "crew": "{{base.crew}}",
+            "descriptions": {
+                "grade": "Ein Maß für die Nützlichkeit einer Crew beim Abschließen der meisten Sammlungen, die sich einem Meilenstein nähern",
+                "star_grade": "Eine auf der „Grad“ basierende Metrik, die die höchste besessene Seltenheit berücksichtigt"
+            },
             "grade": "Grad",
             "immortal_rewards": "Belohnungen für die Unsterblichkeit",
             "rarity": "{{base.rarity}}",

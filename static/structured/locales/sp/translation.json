@@ -192,6 +192,10 @@
         "columns": {
             "collections": "{{base.collections}}",
             "crew": "{{base.crew}}",
+            "descriptions": {
+                "grade": "Una métrica de la utilidad de una tripulación para completar la mayor cantidad de colecciones acercándose a un hito",
+                "star_grade": "Una métrica basada en el \"Grado\" que tiene en cuenta la rareza más alta en propiedad."
+            },
             "grade": "Grado",
             "immortal_rewards": "Recompensas por la inmortalización",
             "rarity": "{{base.rarity}}",

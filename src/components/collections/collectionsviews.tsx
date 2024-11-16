@@ -66,19 +66,19 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	const [tabIndex, setTabIndex] = useStateWithStorage('collectionstool/tabIndex', 0, { rememberForever: true });
 
 	const tableConfig: ITableConfigRow[] = [
-		{ width: 2, column: 'name', title: 'Crew', pseudocolumns: ['name', 'level', 'date_added'] },
-		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['highest_owned_rarity'] },
-		{ width: 2, column: 'unmaxedIds.length', title: 'Collections', reverse: true },
+		{ width: 2, column: 'name', title: t('collections.columns.crew'), pseudocolumns: ['name', 'level', 'date_added'] },
+		{ width: 1, column: 'max_rarity', title: t('collections.columns.rarity'), reverse: true, tiebreakers: ['highest_owned_rarity'] },
+		{ width: 2, column: 'unmaxedIds.length', title: t('collections.columns.collections'), reverse: true },
 		{
 			width: 1,
 			column: 'collectionScore',
-			title: <span>Grade <Popup trigger={<Icon name='help' />} content={"A metric of a crew's usefulness in completing the most number of collections approaching a milestone"} /></span>,
+			title: <span>{t('collections.columns.grade')} <Popup trigger={<Icon name='help' />} content={t('collections.columns.descriptions.grade')} /></span>,
 			reverse: true
 		},
 		{
 			width: 1,
 			column: 'collectionScoreN',
-			title: <span>Star Grade <Popup trigger={<Icon name='help' />} content='A metric based off of Grade that takes into account highest owned rarity' /></span>,
+			title: <span>{t('collections.columns.star_grade')} <Popup trigger={<Icon name='help' />} content={t('collections.columns.descriptions.star_grade')} /></span>,
 			reverse: true,
 			customCompare: (a: PlayerCrew, b: PlayerCrew) => {
 				if (a.collectionScoreN !== undefined && b.collectionScoreN !== undefined) {
@@ -103,7 +103,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 		{
 			width: 3,
 			column: 'immortalRewards.length',
-			title: <span>Immortal Rewards <Popup trigger={<Icon name='help' />} content='Rewards you can claim if you immortalize this crew right now' /></span>,
+			title: <span>{t('collections.columsn.immortal_rewards')} <Popup trigger={<Icon name='help' />} content='Rewards you can claim if you immortalize this crew right now' /></span>,
 			reverse: true,
 			customCompare: !!mapFilter?.rewardFilter?.length ? compareCrewRewards : undefined
 		}
@@ -404,20 +404,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 		return (
 
 		<React.Fragment>
-			<RewardFilter
-					hardFilter={hardFilter}
-					setHardFilter={setHardFilter}
-					grouped={short}
-					setGrouped={setShort}
-					searchFilter={searchFilter}
-					setSearchFilter={setSearchFilter}
-					collectionSource={playerCollections}
-					crewSource={collectionCrew}
-					selection={mapFilter?.rewardFilter}
-					setSelection={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
-				/>
-
-			{workerRunning && context.core.spin("Calculating Crew...")}
+			{workerRunning && context.core.spin(t('spinners.default'))}
 			{!workerRunning && <SearchableTable
 				id='collections/crew'
 				data={collectionCrew}

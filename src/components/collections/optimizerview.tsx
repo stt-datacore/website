@@ -104,42 +104,6 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 		flexDirection: "column",
 		justifyContent: "stretch"
 	}}>
-		{/* <i className='ui segment' style={{color:"goldenrod", fontWeight: 'bold', margin: "0.5em 0"}}>
-			The collection optimizer view shows only owned crew.
-		</i>
-
-		<div style={{
-			display: "flex",
-			flexDirection:
-				window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
-
-			alignItems:
-				window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'flex-start' : 'center',
-
-			justifyContent: "flex-start"
-		}}>
-
-				<RewardFilter
-					hardFilter={hardFilter}
-					setHardFilter={setHardFilter}
-					narrow={narrow}
-					grouped={short}
-					setGrouped={setShort}
-					searchFilter={searchFilter}
-					setSearchFilter={setSearchFilter}
-					collectionSource={playerCollections}
-					crewSource={allCrew}
-					selection={mapFilter?.rewardFilter}
-					setSelection={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
-				/>
-			<div style={{display: 'grid', gridTemplateAreas: "'a b' 'c d'"}}>
-				<Checkbox style={{margin: "0.5em 1em", gridArea: 'a'}} label={"Sort by cost"} checked={byCost} onChange={(e, { checked }) => setByCost(checked ?? false)} />
-				<Checkbox style={{margin: "0.5em 1em", gridArea: 'b'}} label={"Honor Sale Pricing"} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
-				<Checkbox style={{margin: "0.5em 1em", gridArea: 'c'}} label={"Prioritize Favorite Crew"} checked={favorited} onChange={(e, { checked }) => setFavorited(!!checked)} />
-				<Checkbox style={{margin: "0.5em 1em", gridArea: 'd'}} label={"Show Incomplete Combos"} checked={showIncomplete} onChange={(e, { checked }) => setShowIncomplete(!!checked)} />
-			</div>
-		</div> */}
-
 		{!workerRunning &&
 		<>
 		{!!colOptimized?.length &&

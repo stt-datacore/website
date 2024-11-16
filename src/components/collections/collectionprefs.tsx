@@ -186,8 +186,8 @@ export const CollectionPrefs = (props: CollectionPrefsProps) => {
                 setSelection={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
             />
             <div style={{ display: 'grid', gridTemplateAreas: "'a b' 'c d'" }}>
-                <Checkbox style={{ margin: "0.5em 1em", gridArea: 'a' }} label={t('collections.options.honor_sale_pricing')} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
-                <Checkbox style={{ margin: "0.5em 1em", gridArea: 'c' }} label={t('collections.options.prioritize_favorite_crew')} checked={favorited} onChange={(e, { checked }) => setFavorited(!!checked)} />
+                {mode !== 'crew' && <Checkbox style={{ margin: "0.5em 1em", gridArea: 'a' }} label={t('collections.options.honor_sale_pricing')} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />}
+                {mode !== 'crew' && <Checkbox style={{ margin: "0.5em 1em", gridArea: 'c' }} label={t('collections.options.prioritize_favorite_crew')} checked={favorited} onChange={(e, { checked }) => setFavorited(!!checked)} />}
                 {mode === 'optimizer' && <Checkbox style={{ margin: "0.5em 1em", gridArea: 'b' }} label={t('collections.options.sort_by_cost')} checked={byCost} onChange={(e, { checked }) => setByCost(checked ?? false)} />}
                 {mode === 'optimizer' && <Checkbox style={{ margin: "0.5em 1em", gridArea: 'd' }} label={t('collections.options.show_incomplete_combos')} checked={showIncomplete} onChange={(e, { checked }) => setShowIncomplete(!!checked)} />}
             </div>

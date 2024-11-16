@@ -192,6 +192,10 @@
         "columns": {
             "collections": "{{base.collections}}",
             "crew": "{{base.crew}}",
+            "descriptions": {
+                "grade": "A metric of a crew's usefulness in completing the most number of collections approaching a milestone",
+                "star_grade": "A metric based off of \"Grade\" that takes into account highest owned rarity"
+            },
             "grade": "Grade",
             "immortal_rewards": "Immortal Rewards",
             "rarity": "{{base.rarity}}",
