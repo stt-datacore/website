@@ -6,9 +6,9 @@ import { GlobalContext } from '../context/globalcontext';
 
 const CollectionsPage = () => {
     const context = React.useContext(GlobalContext);
-    
+    const { t } = context.localized;
     return (
-        <DataPageLayout pageTitle={!!context.player.playerData ? "Collection Planner" : "Collections"} playerPromptType='recommend' demands={['collections']}>
+        <DataPageLayout pageTitle={!!context.player.playerData ? t('menu.tools.collection_planner') : t('base.collections')} playerPromptType='recommend' demands={['collections']}>
             <CollectionsTool />
         </DataPageLayout>
     )

@@ -1,28 +1,32 @@
 import React from "react";
 import { Dropdown, Grid, Icon, SemanticWIDTHS } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
-import { PlayerCollection, Reward } from "../../model/player";
+import { PlayerCollection, Reward, TranslateMethod } from "../../model/player";
 import { EquipmentItem } from "../../model/equipment";
 import { checkReward, getCollectionRewards } from "../../utils/itemutils";
 import { getImageName } from "../../utils/misc";
 import { RewardsGridNeed } from "../../model/crew";
 import { AvatarView } from "../item_presenters/avatarview";
+import CONFIG from "../CONFIG";
 
-export const rewardOptions = [
-	{ key: 'roAnyr', value: '*any', text: 'Any reward' },
-	{ key: 'roBuff', value: '*buffs', text: 'Buffs' },
-	{ key: 'roEner', value: 'energy', text: 'Chronitons' },
-	{ key: 'roCred', value: 'nonpremium', text: 'Credits' },
-	{ key: 'roCrew', value: '=_crew$', text: 'Crew' },
-	{ key: 'roDili', value: 'premium_purchasable', text: 'Dilithium' },
-	{ key: 'roHono', value: 'honor', text: 'Honor' },
-	{ key: 'roMeri', value: 'premium_earnable', text: 'Merits' },
-	{ key: 'roPort', value: '=premium_\\d+x_bundle', text: 'Portals' },
-	{ key: 'roRepl', value: '=^replicator_fuel', text: 'Replicator Fuel' },
-	{ key: 'roSche', value: '=_ship_schematic$', text: 'Ship schematics' },
-	{ key: 'roBoos', value: '=minor_consumables_\\d+x_bundle', text: 'Shuttle boosts' },
-	{ key: 'roTrai', value: '=_production_training$', text: 'Training' }
-];
+export function makeRewards(t: TranslateMethod) {
+	return [
+		{ key: 'roAnyr', value: '*any', text: t('global.show_all') },
+		{ key: 'roBuff', value: '*buffs', text: t('global.item_types.buff') },
+		{ key: 'roEner', value: 'energy', text: t('global.item_types.chronotons') },
+		{ key: 'roCred', value: 'nonpremium', text: t('global.item_types.credits') },
+		{ key: 'roCrew', value: '=_crew$', text: t('base.crew') },
+		{ key: 'roDili', value: 'premium_purchasable', text: t('global.item_types.dilithium') },
+		{ key: 'roHono', value: 'honor', text: t('global.item_types.honor') },
+		{ key: 'roMeri', value: 'premium_earnable', text: t('global.item_types.merits') },
+		{ key: 'roPort', value: '=premium_\\d+x_bundle', text: t('global.portal') },
+		{ key: 'roRepl', value: '=^replicator_fuel', text: t('global.item_types.replicator_ration') },
+		{ key: 'roSche', value: '=_ship_schematic$', text: t('global.item_types.ship_schematic') },
+		{ key: 'roBoos', value: '=minor_consumables_\\d+x_bundle', text: t('global.item_types.shuttle_boosts') },
+		{ key: 'roTrai', value: '=_production_training$', text: CONFIG.REWARDS_ITEM_TYPE[7] }
+	];
+}
+
 export interface RewardsGridProps {
 	rewards?: Reward[];
 	wrap?: boolean;
@@ -207,18 +211,19 @@ export interface RewardPickerProps {
 
 export const RewardPicker = (props: RewardPickerProps) => {
 	const { disabled, placeholder, source, icons, setShort, short, value, onChange } = props;
+	const { t, ITEM_ARCHETYPES } = React.useContext(GlobalContext).localized;
 
 	let rewardCol = !source ? [] : getCollectionRewards(source);
 	const rewards = rewardCol.filter((f, idx) => rewardCol.findIndex(fi => fi.id === f.id) === idx).sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? 0);
-
-	const rrOpts = short ? [...rewardOptions] : rewards.map((reward) => {
+	const rrOpts = short ? makeRewards(t) : rewards.map((reward) => {
+		let arch = ITEM_ARCHETYPES[reward.symbol!];
 		return {
 			key: reward.symbol,
 			value: reward.symbol,
-			text: reward.name,
-			content: !icons ? undefined : (<div title={reward.full_name ?? reward.name} style={{ display: "flex", flexDirection: "row", width: "24px", alignItems: "center" }}>
+			text: arch?.name ?? reward.name,
+			content: !icons ? undefined : (<div title={arch?.name ?? reward.full_name ?? reward.name} style={{ display: "flex", flexDirection: "row", width: "24px", alignItems: "center" }}>
 				<img src={`${process.env.GATSBY_ASSETS_URL}${getImageName(reward)}`} style={{ height: "24px", marginRight: "0.25em" }} />
-				{reward.full_name ?? reward.name}
+				{arch?.name ?? reward.full_name ?? reward.name}
 			</div>)
 		}
 	});
@@ -227,7 +232,7 @@ export const RewardPicker = (props: RewardPickerProps) => {
 		rrOpts.push({
 			key: short ? 'long' : 'short',
 			value: short ? 'long' : 'short',
-			text: short ? "Show more ..." : "Show less ...",
+			text: short ? t('global.show_more_ellipses') : t('global.show_less_ellipses'),
 			content: undefined
 		});
 	}

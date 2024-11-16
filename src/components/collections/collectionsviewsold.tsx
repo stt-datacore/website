@@ -24,7 +24,6 @@ import CollectionsOverviewComponent from './overview';
 import { ProgressTable } from './progresstable';
 import { RewardFilter } from './rewardfilter';
 import { WorkerContext } from '../../context/workercontext';
-import { CollectionPrefs } from './collectionprefs';
 
 export interface CollectionsViewsProps {
 	allCrew: (CrewMember | PlayerCrew)[];
@@ -39,7 +38,6 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	const { topCrewScore, topStarScore } = props;
 	const context = React.useContext(GlobalContext);
-	const { t, tfmt } = context.localized;
 
 	const { playerData } = context.player;
 	if (!playerData) return <></>;
@@ -232,23 +230,21 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	const tabPanes = [
 		{
-			menuItem: '',
-			longTitle: '',
-			description: '',
+			menuItem: 'Overview',
+			longTitle: 'Collections Overview',
+			description: 'Collections Overview',
 			//longDescription: "Overview of All Collections",
 			showFilters: false,
 			requirePlayer: false,
-			mode: 'overview',
 			render: (workerRunning: boolean) => <CollectionsOverviewComponent />
 		},
 		{
-			menuItem: '',
-			longTitle: '',
-			description: '',
-			longDescription: "",
+			menuItem: 'Progress',
+			longTitle: 'Collection Milestone Progress',
+			description: 'Collection Progress',
+			longDescription: "Search for collections by name or description. You can also filter collections by milestone reward types. Click a row to view crew that will help you make progress on that collection.",
 			showFilters: false,
 			requirePlayer: true,
-			mode: 'progress',
 			render: (workerRunning: boolean) => <ProgressTable workerRunning={workerRunning} playerCollections={playerCollections}
 				filterCrewByCollection={(collection) => {
 					setCollectionSettings({
@@ -265,33 +261,30 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 				}} />
 		},
 		{
-			menuItem: '',
-			longTitle: '',
-			description: '',
-			longDescription: '',
+			menuItem: 'Crew',
+			longTitle: 'Crew Table',
+			description: 'Collections Grouped by Crew',
+			longDescription: 'Search for crew that will help you make progress on collections and see what rewards you could claim by immortalizing certain crew right now. Note: maxed collections and immortalized crew will not be shown in this table.',
 			showFilters: true,
 			requirePlayer: true,
-			mode: 'crew',
 			render: (workerRunning: boolean) => renderTable(workerRunning)
 		},
 		{
-			menuItem: '',
-			longTitle: '',
-			description: '',
-			longDescription: tfmt('collections.panes.group.long_description', { star: <Icon name='star' color='green' size='small' /> }),
+			menuItem: 'Collections',
+			longTitle: 'Collections Crew Groups',
+			description: <>Visualize crew grouped into<br/>collections, and sorted by cost</>,
+			longDescription: <>Show crew grouped into collections sorted by closest to max. Crew marked by a green star <Icon name='star' color='green' size='small' /> are required to reach the next milestone. Crew are sorted in ascending order of rarity, level, and equipment slots. Use the search box to search for specific crew. Clicking on a crew will append the crew name to the search box.</>,
 			showFilters: true,
 			requirePlayer: true,
-			mode: 'group',
 			render: (workerRunning: boolean) => <CollectionGroupTable workerRunning={workerRunning} playerCollections={playerCollections} colGroups={colGroups} />
 		},
 		{
-			menuItem: '',
-			longTitle: '',
-			description: '',
-			longDescription: '',
+			menuItem: 'Optimizer',
+			longTitle: 'Collections Milestone Optimizer',
+			description: <>See which crew can complete the<br/>most collections, at once.</>,
+			longDescription: 'Optimize collection crew to reach multiple milestones, at once. If there is more than one combination available, they will be listed in the \'Variations\' dropdown, sorted by most collections to fewest collections. Variations that completely fill the remaining crew needed for the primary collection are marked with an asterisk *.',
 			showFilters: true,
 			requirePlayer: true,
-			mode: 'optimizer',
 			render: (workerRunning: boolean) => <CollectionOptimizerTable
 				workerRunning={workerRunning}
 				playerCollections={playerCollections}
@@ -334,13 +327,13 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	return (
 		<React.Fragment>
 			<div style={{margin: "1em 0"}}>
-				<Step.Group fluid widths={5}>
+				<Step.Group fluid>
 					{tabPanes.map((pane, idx) => {
 						return (
 							<Step active={(tabIndex === idx)} onClick={() => setTabIndex(idx)}>
 								<Step.Content>
-									<Step.Title>{pane.menuItem || t(`collections.panes.${pane.mode}.title`)}</Step.Title>
-									<Step.Description>{pane.description || t(`collections.panes.${pane.mode}.description`)}</Step.Description>
+									<Step.Title>{pane.menuItem}</Step.Title>
+									<Step.Description>{pane.description}</Step.Description>
 								</Step.Content>
 							</Step>
 						)
@@ -352,18 +345,79 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 				{costMode && playerData?.player?.honor && renderFancyCites()}
 			</div> */}
 
-			<Header as='h4'>{tabPanes[tabIndex ?? 0].longTitle || t(`collections.panes.${tabPanes[tabIndex ?? 0].mode}.long_title`)}</Header>
-			<p>{tabPanes[tabIndex ?? 0].longDescription || t(`collections.panes.${tabPanes[tabIndex ?? 0].mode}.long_description`)}</p>
-
+			<Header as='h4'>{tabPanes[tabIndex ?? 0].longTitle}</Header>
+			<p>{tabPanes[tabIndex ?? 0].longDescription}</p>
 			{tabPanes[tabIndex ?? 0].showFilters &&
-				<CollectionPrefs
-					mode={tabPanes[tabIndex ?? 0].mode as any}
-					playerCollections={playerCollections}
-					colOptimized={colOptimized}
-					workerRunning={workerRunning}
+			<React.Fragment>
+				<div style={{
+						margin: '1em 0',
+						display: 'flex',
+						flexDirection: 'row',
+						alignItems: 'center',
+						gap: "1em"
+						}}>
+					<Form.Field
+						placeholder='Filter by collections'
+						control={Dropdown}
+						clearable
+						multiple
+						search
+						selection
+						options={collectionsOptions}
+						value={mapFilter.collectionsFilter}
+						onChange={(e, { value }) => setMapFilter({ ...mapFilter ?? {}, collectionsFilter: value })}
+						closeOnChange
 					/>
-			}
-			{tabPanes[tabIndex ?? 0].render(workerRunning)}
+					{mapFilter.collectionsFilter?.length === 1 && !!tierOpts.length &&
+					<Form.Field
+						placeholder='Tiers'
+						control={Dropdown}
+						clearable
+ 						selection
+						options={tierOpts}
+						value={tierFilter}
+						onChange={(e, { value }) => setTierFilter(value as number)}
+						closeOnChange
+					/>}
+				</div>
+				<div style={{ margin: '1em 0' }}>
+					<Form>
+						<Form.Group inline>
+
+							<Form.Field
+								placeholder='Filter by owned status'
+								control={Dropdown}
+								clearable
+								selection
+								options={ownedFilterOptions}
+								value={ownedFilter}
+								onChange={(e, { value }) => setOwnedFilter(value)}
+							/>
+							<Form.Field
+								placeholder='Filter by retrieval option'
+								control={Dropdown}
+								clearable
+								selection
+								options={fuseFilterOptions}
+								value={fuseFilter}
+								onChange={(e, { value }) => setFuseFilter(value)}
+							/>
+							<Form.Field
+								placeholder='Filter by rarity'
+								control={Dropdown}
+								clearable
+								multiple
+								selection
+								options={rarityFilterOptions}
+								value={rarityFilter}
+								onChange={(e, { value }) => setRarityFilter(value)}
+								closeOnChange
+							/>
+						</Form.Group>
+					</Form>
+				</div>
+			</React.Fragment>}
+				{tabPanes[tabIndex ?? 0].render(workerRunning)}
 			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, playerData.player.character.crew, buffConfig)} targetGroup='collectionsTarget' />
 			<ItemHoverStat targetGroup='collectionsTarget_item' />
 		</React.Fragment>

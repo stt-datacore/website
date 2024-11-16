@@ -23,6 +23,7 @@ export interface CollectionsCrewCardProps {
 
 const CollectionsCrewCard = (props: CollectionsCrewCardProps): JSX.Element => {
     const context = React.useContext(GlobalContext);
+    const { t } = context.localized;
     const { highlightStyle, highlightIfNeeded, collection, crew, index, onClick } = props;
     const highlightClassName = props.highlightClassName ?? 'ui segment';
     const { style, className } = props;
@@ -70,8 +71,8 @@ const CollectionsCrewCard = (props: CollectionsCrewCardProps): JSX.Element => {
             >
             {crew.favorite && <Icon name='heart' style={{textDecoration: 'none'}} />} {crew.name}
         </b>
-        <i>({crew.pickerId} collections increased)</i>
-        {crew.have && <i>Level {crew.level}</i> || <i>Level 100</i> }
+        <i>({t('collections.n_increased', { n: `${crew.pickerId}`})})</i>
+        {crew.have && <i>{t('base.level')} {crew.level}</i> || <i>{t('base.level')} 100</i> }
         <CrewItemsView itemSize={16} mobileSize={16} crew={crew} />
 
         <div style={{margin:"0.5em 0"}} title={crew.have ? 'Citations' : 'Unowned'}>

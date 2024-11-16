@@ -182,8 +182,88 @@
         "copied_exclaim": "¡Copiada!"
     },
     "collections": {
+        "additional_milestones": "Hitos de recolección adicionales",
+        "alerts": {
+            "crew_already_fused": "Todos los miembros de la tripulación necesarios para alcanzar el próximo hito ya están completamente fusionados.",
+            "crew_recruit_need_n": "Necesitas reclutar {{n}} miembros más de la tripulación para alcanzar el próximo objetivo.",
+            "fuses_covered_by_cites": "Todos los fusibles restantes necesarios están cubiertos por las menciones honoríficas que ya posees."
+        },
+        "citation_cost_to_next": "Costo de citación hasta la próxima",
+        "columns": {
+            "collections": "{{base.collections}}",
+            "crew": "{{base.crew}}",
+            "grade": "Grado",
+            "immortal_rewards": "Recompensas por la inmortalización",
+            "rarity": "{{base.rarity}}",
+            "star_grade": "Grado de estrella"
+        },
+        "group": {
+            "warning": "La vista de colecciones agrupadas muestra solo la tripulación propia si la lista de colecciones no está filtrada."
+        },
         "milestone": "Hito",
-        "milestones": "Hitos"
+        "milestone_rewards": "Recompensas por hitos",
+        "milestone_rewards_desc": "Recompensas que puedes reclamar después de inmortalizar la cantidad necesaria de tripulantes para alcanzar el siguiente hito",
+        "milestones": "Hitos",
+        "n_increased": "{{n}} colecciones aumentaron",
+        "n_needed_for_rewards": "Se necesitan {{n}} para obtener recompensas",
+        "optimizer": {
+            "warning": "La vista del optimizador de colección muestra solo la tripulación propia."
+        },
+        "options": {
+            "group_rewards": "Agrupa las recompensas",
+            "hard_filter": "Filtro duro",
+            "honor_sale_pricing": "Precios de venta de honor",
+            "mode": {
+                "exact-only": "Solo exacto",
+                "extended": "Extendido",
+                "inexact-only": "Solo inexacto",
+                "normal": "Normal",
+                "title": "Modo"
+            },
+            "prioritize_favorite_crew": "Priorizar la tripulación favorita",
+            "search_by_name_or_trait": "Busque colecciones por nombre o rasgo.",
+            "show_crew": {
+                "bottom": "Abajo",
+                "title": "Equipo del programa",
+                "top": "Arriba"
+            },
+            "show_incomplete_combos": "Mostrar combos incompletos",
+            "show_maxed_collections": "Mostrar colecciones maximizadas",
+            "sort_by_cost": "Ordenar por costo"
+        },
+        "panes": {
+            "crew": {
+                "description": "Colecciones agrupadas por tripulación",
+                "long_description": "Busca miembros de la tripulación que te ayuden a progresar en las colecciones y descubre qué recompensas puedes obtener si inmortalizas a ciertos miembros de la tripulación ahora mismo. Nota: las colecciones maximizadas y la tripulación inmortalizada no se mostrarán en esta tabla.",
+                "long_title": "Tabla de tripulación",
+                "title": "{{base.crew}}"
+            },
+            "group": {
+                "description": "Visualize crew grouped into collections, and sorted by cost",
+                "long_description": "Muestra la tripulación agrupada en colecciones ordenadas por la más cercana al máximo. La tripulación marcada con una estrella verde {{star}} es necesaria para alcanzar el siguiente hito. La tripulación se clasifica en orden ascendente de rareza, nivel y espacios de equipo. Usa el cuadro de búsqueda para buscar una tripulación específica. Al hacer clic en una tripulación, se agregará el nombre de la tripulación al cuadro de búsqueda.",
+                "long_title": "Grupos de recolección de tripulación",
+                "title": "{{base.collections}}"
+            },
+            "optimizer": {
+                "description": "Vea qué equipo puede completar la mayor cantidad de colecciones a la vez.",
+                "long_description": "Optimice el equipo de recolección para alcanzar varios hitos a la vez. Si hay más de una combinación disponible, se mostrarán en el menú desplegable \"Variaciones\", ordenadas desde la mayor cantidad de recolecciones hasta la menor cantidad de recolecciones. Las variaciones que completan por completo el equipo restante necesario para la recolección principal se marcan con un asterisco *.",
+                "long_title": "Optimizador de hitos de colección",
+                "title": "Optimizador"
+            },
+            "overview": {
+                "description": "Descripción general de las colecciones",
+                "long_description": "",
+                "long_title": "Descripción general de las colecciones",
+                "title": "Descripción general"
+            },
+            "progress": {
+                "description": "Progreso de las colecciones",
+                "long_description": "Busca colecciones por nombre o descripción. También puedes filtrar las colecciones por tipos de recompensas por hitos. Haz clic en una fila para ver el equipo que te ayudará a progresar en esa colección.",
+                "long_title": "Progreso de los hitos de la colección",
+                "title": "Progreso"
+            }
+        },
+        "progress_to_next": "Progreso a la siguiente"
     },
     "consider_crew": {
         "active_shuttles": "Considere las tripulantes en lanzaderas activas",
@@ -822,7 +902,10 @@
         "search_items": "Buscar por artículo",
         "search_items_ellipses": "Buscar por artículo...",
         "show": "Reloj",
+        "show_all": "Mostrar todo",
         "show_less": "Muestra menos",
+        "show_less_ellipses": "Mostrar menos...",
+        "show_more_ellipses": "Mostrar más...",
         "show_n_more_ellipses": "Mostrar {{n}} más ...",
         "shown": "Mostrado",
         "sort_by": "Ordenar por",
@@ -862,6 +945,7 @@
         "filter_by_primary_skill": "Filtrar por habilidad principal",
         "filter_by_progress": "Filtrar por progreso",
         "filter_by_rarity": "Filtrar por rareza",
+        "filter_by_reward": "Filtrar por recompensa",
         "filter_by_secondary_skill": "Filtrar por habilidad secundaria",
         "filter_by_series": "Filtrar por serie",
         "filter_by_ship_ability": "Filtrar por capacidad del buque",
@@ -873,12 +957,15 @@
         "filter_crew_by_rank": "Filtrar tripulación por rango",
         "filter_ship_grants": "Filtrar subvenciones para buques",
         "filter_ship_rarity": "Filtrar la rareza del buque",
+        "prioritize_rewards": "Priorizar recompensas",
         "roster_maintenance": "Mantenimiento de la lista",
+        "select_crew": "Seleccionar tripulación",
         "select_items": "Seleccionar artículos",
         "select_ship": "Seleccionar buque",
         "select_ship_abilities": "Seleccionar habilidades del buque",
         "select_ship_ability": "Seleccionar capacidad del buque",
         "select_ship_ability_amount": "Seleccione la cantidad de capacidad del buque",
+        "tiers": "Pisos",
         "trait": "Rasgo",
         "traits": "Rasgos"
     },
@@ -1152,6 +1239,7 @@
             "fodder": "Mostrar sólo tripulación no fusionado",
             "freezable": "Mostrar sólo tripulación congelable",
             "impact": "Solo muestra al tripulación que necesita 1 fusible",
+            "liminal": "Solo muestra a la tripulación que necesita 1 o 2 fusibles",
             "mortal": "Mostrar sólo a los no inmortales",
             "none": "Mostrar toda la tripulación",
             "nonfe": "Mostrar solo a los no inmortales poco equipados",

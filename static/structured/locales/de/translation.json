@@ -182,8 +182,88 @@
         "copied_exclaim": "Kopiert!"
     },
     "collections": {
+        "additional_milestones": "Zusätzliche Meilensteine ​​der Sammlung",
+        "alerts": {
+            "crew_already_fused": "Alle Crewmitglieder, die zum Erreichen des nächsten Meilensteins erforderlich sind, sind bereits vollständig fusioniert.",
+            "crew_recruit_need_n": "Sie müssen {{n}} weitere Crewmitglieder rekrutieren, um das nächste Ziel zu erreichen.",
+            "fuses_covered_by_cites": "Alle verbleibenden erforderlichen Sicherungen sind durch ehrenvolle Zitate abgedeckt, die Sie bereits besitzen."
+        },
+        "citation_cost_to_next": "Zitationskosten bis zum nächsten",
+        "columns": {
+            "collections": "{{base.collections}}",
+            "crew": "{{base.crew}}",
+            "grade": "Grad",
+            "immortal_rewards": "Belohnungen für die Unsterblichkeit",
+            "rarity": "{{base.rarity}}",
+            "star_grade": "Sterngrad"
+        },
+        "group": {
+            "warning": "In der gruppierten Sammlungsansicht werden nur die eigenen Crewmitglieder angezeigt, wenn die Sammlungsliste nicht gefiltert ist."
+        },
         "milestone": "Meilenstein",
-        "milestones": "Meilensteine"
+        "milestone_rewards": "Meilensteinbelohnungen",
+        "milestone_rewards_desc": "Belohnungen, die Sie einfordern können, nachdem Sie die erforderliche Anzahl an Crewmitgliedern verewigt haben, um den nächsten Meilenstein zu erreichen",
+        "milestones": "Meilensteine",
+        "n_increased": "{{n}} Sammlungen erhöht",
+        "n_needed_for_rewards": "{{n}} für Belohnungen erforderlich",
+        "optimizer": {
+            "warning": "In der Sammlungsoptimierungsansicht werden nur die eigenen Crewmitglieder angezeigt."
+        },
+        "options": {
+            "group_rewards": "Gruppieren Sie die Belohnungen",
+            "hard_filter": "Harter Filter",
+            "honor_sale_pricing": "Preise für den Ehrenverkauf",
+            "mode": {
+                "exact-only": "Nur exakt",
+                "extended": "Erweitert",
+                "inexact-only": "Nur ungenau",
+                "normal": "Normal",
+                "title": "Modus"
+            },
+            "prioritize_favorite_crew": "Bevorzugte Crew priorisieren",
+            "search_by_name_or_trait": "Suchen Sie nach Sammlungen nach Namen oder Merkmalen.",
+            "show_crew": {
+                "bottom": "Unten",
+                "title": "Crew anzeigen",
+                "top": "Oben"
+            },
+            "show_incomplete_combos": "Unvollständige Combos anzeigen",
+            "show_maxed_collections": "Maximale Sammlungen anzeigen",
+            "sort_by_cost": "Nach Kosten sortieren"
+        },
+        "panes": {
+            "crew": {
+                "description": "Sammlungen nach Crew gruppiert",
+                "long_description": "Suchen Sie nach Crewmitgliedern, die Ihnen beim Sammeln helfen, und sehen Sie, welche Belohnungen Sie erhalten können, wenn Sie bestimmte Crewmitglieder jetzt verewigen. Hinweis: Maximale Sammlungen und verewigter Crewmitglieder werden in dieser Tabelle nicht angezeigt.",
+                "long_title": "Crew-Tabelle",
+                "title": "{{base.crew}}"
+            },
+            "group": {
+                "description": "Visualize crew grouped into collections, and sorted by cost",
+                "long_description": "Zeigen Sie die Crew in Sammlungen gruppiert an, sortiert nach dem Maximum. Crew, die mit einem grünen Stern {{star}} gekennzeichnet ist, ist erforderlich, um den nächsten Meilenstein zu erreichen. Die Crew ist in aufsteigender Reihenfolge nach Seltenheit, Level und Ausrüstungsplätzen sortiert. Verwenden Sie das Suchfeld, um nach einer bestimmten Crew zu suchen. Wenn Sie auf eine Crew klicken, wird der Crewname an das Suchfeld angehängt.",
+                "long_title": "Crew-Sammelgruppen",
+                "title": "{{base.collections}}"
+            },
+            "optimizer": {
+                "description": "Finden Sie heraus, welche Crew die meisten Sammlungen auf einmal fertigstellen kann.",
+                "long_description": "Optimieren Sie das Sammlungsteam, um mehrere Meilensteine ​​gleichzeitig zu erreichen. Wenn mehr als eine Kombination verfügbar ist, werden sie in der Dropdown-Liste „Variationen“ aufgelistet, sortiert nach den meisten Sammlungen bis zu den wenigsten Sammlungen. Variationen, die das verbleibende Team, das für die primäre Sammlung benötigt wird, vollständig füllen, sind mit einem Sternchen * gekennzeichnet.",
+                "long_title": "Sammlung Meilensteine Optimierer",
+                "title": "Optimierer"
+            },
+            "overview": {
+                "description": "Übersicht der Sammlungen",
+                "long_description": "",
+                "long_title": "Übersicht der Sammlungen",
+                "title": "Übersicht"
+            },
+            "progress": {
+                "description": "Sammlungsfortschritt",
+                "long_description": "Suchen Sie nach Sammlungen nach Namen oder Beschreibung. Sie können Sammlungen auch nach Meilenstein-Belohnungsarten filtern. Klicken Sie auf eine Zeile, um die Crew anzuzeigen, die Ihnen dabei hilft, bei dieser Sammlung Fortschritte zu erzielen.",
+                "long_title": "Meilensteinfortschritt der Sammlung",
+                "title": "Fortschritt"
+            }
+        },
+        "progress_to_next": "Weiter zum nächsten"
     },
     "consider_crew": {
         "active_shuttles": "Crew auf aktiven Shuttles berücksichtigen",
@@ -754,7 +834,7 @@
             "component": "Komponente",
             "continuum_qbit": "Kontinuum R-Bit",
             "continuum_quipment": "Kontinuum Rüstzeug",
-            "credits": "Crédits",
+            "credits": "Credits",
             "crew_experience_training": "Crew-Erfahrungstraining",
             "dilithium": "Dilithium",
             "equipment": "Ausrüstung",
@@ -813,7 +893,10 @@
         "search_items": "Suche nach Artikel",
         "search_items_ellipses": "Suche nach Artikel...",
         "show": "Zeigen",
+        "show_all": "Alle anzeigen",
         "show_less": "Zeige weniger",
+        "show_less_ellipses": "Weniger anzeigen ...",
+        "show_more_ellipses": "Mehr anzeigen ...",
         "show_n_more_ellipses": "Zeige {{n}} weitere ...",
         "shown": "Gezeigt",
         "sort_by": "Sortieren nach",
@@ -853,6 +936,7 @@
         "filter_by_primary_skill": "Nach primärer Fähigkeit filtern",
         "filter_by_progress": "Filtern nach Fortschritt",
         "filter_by_rarity": "Filtern nach Seltenheit",
+        "filter_by_reward": "Nach Belohnung filtern",
         "filter_by_secondary_skill": "Nach sekundärer Fähigkeit filtern",
         "filter_by_series": "Filtern nach Serie",
         "filter_by_ship_ability": "Filtern nach Schiffsfähigkeit",
@@ -864,12 +948,15 @@
         "filter_crew_by_rank": "Filtern Sie die Crew nach Rang",
         "filter_ship_grants": "Schiffszuschüsse filtern",
         "filter_ship_rarity": "Schiffsrarität filtern",
+        "prioritize_rewards": "Belohnungen priorisieren",
         "roster_maintenance": "Dienstplanpflege",
+        "select_crew": "Crew auswählen",
         "select_items": "Artikel auswählen",
         "select_ship": "Schiff Auswählen",
         "select_ship_abilities": "Schiffsfähigkeiten auswählen",
         "select_ship_ability": "Schiffsfähigkeit auswählen",
         "select_ship_ability_amount": "Schiffsfähigkeitenbetrag auswählen",
+        "tiers": "Stufen",
         "trait": "Merkmal",
         "traits": "Merkmalen"
     },
@@ -1141,6 +1228,7 @@
             "fodder": "Nur nicht fusionierte Crew anzeigen",
             "freezable": "Nur einfrierbare Crew anzeigen",
             "impact": "Nur Crew anzeigen, die 1 Sicherung benötigt",
+            "liminal": "Zeigen Sie nur die Crew, die 1 oder 2 Sicherungen benötigt",
             "mortal": "Nur Nicht-Unsterbliche anzeigen",
             "none": "Gesamte Crew anzeigen",
             "nonfe": "Nur unzureichend ausgestattete Nicht-Unsterbliche anzeigen",

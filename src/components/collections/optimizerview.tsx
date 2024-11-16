@@ -27,6 +27,7 @@ interface ComboConfig {
 export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
     const colContext = React.useContext(CollectionsContext);
     const context = React.useContext(GlobalContext);
+	const { t } = context.localized;
     const { workerRunning, playerCollections } = props;
     const { favorited, setFavorited, showIncomplete, setShowIncomplete, hardFilter, setHardFilter, byCost, setByCost, matchMode, setMatchMode, costMode, setCostMode, setShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
@@ -103,7 +104,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 		flexDirection: "column",
 		justifyContent: "stretch"
 	}}>
-		<i className='ui segment' style={{color:"goldenrod", fontWeight: 'bold', margin: "0.5em 0"}}>
+		{/* <i className='ui segment' style={{color:"goldenrod", fontWeight: 'bold', margin: "0.5em 0"}}>
 			The collection optimizer view shows only owned crew.
 		</i>
 
@@ -137,7 +138,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 				<Checkbox style={{margin: "0.5em 1em", gridArea: 'c'}} label={"Prioritize Favorite Crew"} checked={favorited} onChange={(e, { checked }) => setFavorited(!!checked)} />
 				<Checkbox style={{margin: "0.5em 1em", gridArea: 'd'}} label={"Show Incomplete Combos"} checked={showIncomplete} onChange={(e, { checked }) => setShowIncomplete(!!checked)} />
 			</div>
-		</div>
+		</div> */}
 
 		{!workerRunning &&
 		<>
@@ -149,10 +150,10 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 				}}>
 			<Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setOptPage(activePage as number) } />
 			<div style={{margin:"0 0.5em", padding: 0, marginTop:"-2em"}}>
-				Items Per Page:
+				{t('global.rows_per_page')}:
 				<Dropdown
 					style={{margin: "0.5em"}}
-					placeholder={"Items Per Page"}
+					placeholder={t('global.rows_per_page')}
 					value={pageSize}
 					onChange={(e, { value }) => setPageSize(value as number)}
 					options={[1,2,5,10].map(x => {
@@ -165,7 +166,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 					/>
 			</div>
 			<div style={{margin:"0.5em", padding: 0, marginTop: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "-1.5em"}}>
-				Show Crew:
+				{t('collections.options.show_crew.title')}:
 				<Dropdown
 					style={{margin: "0.5em"}}
 					placeholder={"Show Crew"}
@@ -175,13 +176,13 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 						return {
 							value: x,
 							key: x,
-							text: "" + appelate(x)
+							text: t(`collections.options.show_crew.${x}`)
 						}
 					})}
 					/>
 			</div>
 			<div style={{margin:"0.5em", padding: 0, marginTop: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "-1.5em"}}>
-				Mode:
+				{t('collections.options.mode.title')}:
 				<Dropdown
 					style={{margin: "0.5em"}}
 					placeholder={"Mode"}
@@ -191,7 +192,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 						return {
 							value: x,
 							key: x,
-							text: "" + appelate(x)
+							text: t(`collections.options.mode.${x}`)
 						}
 					})}
 					/>
@@ -227,7 +228,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 
 						</Table.Cell>
 						<Table.Cell style={{verticalAlign:"top"}}>
-							<h3 style={{margin:"0.5em", textAlign: 'center'}}>Additional Collection Milestones:<br /></h3>
+							<h3 style={{margin:"0.5em", textAlign: 'center'}}>{t('collections.additional_milestones')}:<br /></h3>
 							{!!col.combos?.length && (col.combos?.length ?? 0) === 1 &&
 							<div style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
 							{col.combos[0].names.join(" / ")}
@@ -296,10 +297,10 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 
 			<Pagination style={{margin: "0.25em 0 2em 0"}} totalPages={optPageCount} activePage={optPage} onPageChange={(e, { activePage }) => setOptPage(activePage as number) } />
 			<div style={{margin:"0 0.5em", padding: 0, marginTop:"-2em"}}>
-				Items Per Page:
+				{t('global.rows_per_page')}:
 				<Dropdown
 					style={{margin: "0.5em"}}
-					placeholder={"Items Per Page"}
+					placeholder={t('global.rows_per_page')}
 					value={pageSize}
 					onChange={(e, { value }) => setPageSize(value as number)}
 					options={[1,2,5,10].map(x => {
@@ -312,7 +313,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 					/>
 			</div>
 			<div style={{margin:"0.5em", padding: 0, marginTop: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "-1.5em"}}>
-				Show Crew:
+				{t('collections.options.show_crew.title')}:
 				<Dropdown
 					style={{margin: "0.5em"}}
 					placeholder={"Show Crew"}
@@ -322,13 +323,13 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 						return {
 							value: x,
 							key: x,
-							text: "" + appelate(x)
+							text: t(`collections.options.show_crew.${x}`)
 						}
 					})}
 					/>
 			</div>
 			<div style={{margin:"0.5em", padding: 0, marginTop: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "-1.5em"}}>
-				Mode:
+				{t('collections.options.mode.title')}:
 				<Dropdown
 					style={{margin: "0.5em"}}
 					placeholder={"Mode"}
@@ -338,7 +339,7 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
 						return {
 							value: x,
 							key: x,
-							text: "" + appelate(x)
+							text: t(`collections.options.mode.${x}`)
 						}
 					})}
 					/>

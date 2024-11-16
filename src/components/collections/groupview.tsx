@@ -21,6 +21,7 @@ export interface GroupTableProps {
 export const CollectionGroupTable = (props: GroupTableProps) => {
     const colContext = React.useContext(CollectionsContext);
     const context = React.useContext(GlobalContext);
+	const { t } = context.localized;
     const { workerRunning, playerCollections, colGroups } = props;
     const { favorited, setFavorited, hardFilter, setHardFilter, costMode, setCostMode, setShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
@@ -58,7 +59,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 			flexDirection: "column",
 			justifyContent: "stretch"
 		}}>
-			{!mapFilter?.collectionsFilter?.length && !searchFilter?.length &&
+			{/* {!mapFilter?.collectionsFilter?.length && !searchFilter?.length &&
 				<i className='ui segment' style={{color:"goldenrod", fontWeight: 'bold', margin: "0.5em 0"}}>
 					The grouped collection view shows only owned crew if the collections list is not filtered.
 				</i>}
@@ -91,7 +92,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 					<Checkbox style={{margin: "0.5em 1em", gridArea: 'c'}} label={"Prioritize Favorite Crew"} checked={favorited} onChange={(e, { checked }) => setFavorited(!!checked)} />
 				</div>
 
-			</div>
+			</div> */}
 
 			{!workerRunning &&
 			<>
@@ -105,10 +106,10 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 				margin: "1em 0 1em 0"
 				}} totalPages={pageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />
 			<div style={{margin:"0 0.5em", padding: 0}}>
-			Items Per Page:
+			{t('global.rows_per_page')}:
 			<Dropdown
 				style={{margin: "0.5em"}}
-				placeholder={"Items Per Page"}
+				placeholder={t('global.rows_per_page')}
 				value={pageSize}
 				onChange={(e, { value }) => setPageSize(value as number)}
 				options={[1,2,5,10].map(x => {
@@ -167,10 +168,10 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 			}}>
 			<Pagination style={{margin: "1em 0 1em 0"}} totalPages={pageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />
 			<div style={{margin:"0 0.5em", padding: 0}}>
-			Items Per Page:
+			{t('global.rows_per_page')}:
 			<Dropdown
 				style={{margin: "0.5em"}}
-				placeholder={"Items Per Page"}
+				placeholder={t('global.rows_per_page')}
 				value={pageSize}
 				onChange={(e, { value }) => setPageSize(value as number)}
 				options={[1,2,5,10].map(x => {

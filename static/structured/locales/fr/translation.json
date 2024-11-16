@@ -182,8 +182,88 @@
         "copied_exclaim": "Copié!"
     },
     "collections": {
+        "additional_milestones": "Étapes de collecte supplémentaires",
+        "alerts": {
+            "crew_already_fused": "Tous les membres d'équipage requis pour atteindre la prochaine étape sont déjà entièrement fusionnés.",
+            "crew_recruit_need_n": "Vous devez recruter {{n}} membres d'équipage supplémentaires pour atteindre le prochain objectif.",
+            "fuses_covered_by_cites": "Tous les fusibles restants requis sont couverts par les citations honorables que vous possédez déjà."
+        },
+        "citation_cost_to_next": "Coût de la citation jusqu'à la suivante",
+        "columns": {
+            "collections": "{{base.collections}}",
+            "crew": "{{base.crew}}",
+            "grade": "Grade",
+            "immortal_rewards": "Récompenses pour l'immortalisation",
+            "rarity": "{{base.rarity}}",
+            "star_grade": "Grade étoile"
+        },
+        "group": {
+            "warning": "La vue des collections groupées affiche uniquement l'équipage possédé si la liste des collections n'est pas filtrée."
+        },
         "milestone": "Étape",
-        "milestones": "Étapes"
+        "milestone_rewards": "Récompenses d'étape",
+        "milestone_rewards_desc": "Récompenses que vous pouvez réclamer après avoir immortalisé le nombre de membres d'équipage nécessaire pour atteindre la prochaine étape",
+        "milestones": "Étapes",
+        "n_increased": "{{n}} collections augmentées",
+        "n_needed_for_rewards": "{{n}} nécessaire pour les récompenses",
+        "optimizer": {
+            "warning": "La vue de l'optimiseur de collection affiche uniquement l'équipage possédé."
+        },
+        "options": {
+            "group_rewards": "Regrouper les récompenses",
+            "hard_filter": "Filtre dur",
+            "honor_sale_pricing": "Prix de vente d'honneur",
+            "mode": {
+                "exact-only": "Exact uniquement",
+                "extended": "Étendu",
+                "inexact-only": "Inexact uniquement",
+                "normal": "Normal",
+                "title": "Mode"
+            },
+            "prioritize_favorite_crew": "Donner la priorité à l'équipage préféré",
+            "search_by_name_or_trait": "Recherchez des collections par nom ou par trait.",
+            "show_crew": {
+                "bottom": "En bas",
+                "title": "Montrer l'équipe",
+                "top": "En haut"
+            },
+            "show_incomplete_combos": "Afficher les combos incomplets",
+            "show_maxed_collections": "Afficher les collections maxées",
+            "sort_by_cost": "Trier par coût"
+        },
+        "panes": {
+            "crew": {
+                "description": "Collections regroupées par équipage",
+                "long_description": "Recherchez un équipage qui vous aidera à progresser dans vos collections et découvrez les récompenses que vous pourriez obtenir en immortalisant certains membres d'équipage dès maintenant. Remarque : les collections maxées et les membres d'équipage immortalisés ne seront pas affichés dans ce tableau.",
+                "long_title": "Tableau de l'équipage",
+                "title": "{{base.crew}}"
+            },
+            "group": {
+                "description": "Visualize crew grouped into collections, and sorted by cost",
+                "long_description": "Afficher les équipages groupés en collections triées par ordre décroissant de la valeur maximale. Les équipages marqués d'une étoile verte {{star}} sont requis pour atteindre le prochain jalon. Les équipages sont triés par ordre croissant de rareté, de niveau et d'emplacements d'équipement. Utilisez le champ de recherche pour rechercher un équipage spécifique. Cliquer sur un équipage ajoutera le nom de l'équipage au champ de recherche.",
+                "long_title": "Groupes de collection d'équipage",
+                "title": "{{base.collections}}"
+            },
+            "optimizer": {
+                "description": "Découvrez quel équipage peut réaliser le plus de collections à la fois..",
+                "long_description": "Optimisez l'équipe de collection pour atteindre plusieurs jalons à la fois. Si plusieurs combinaisons sont disponibles, elles seront répertoriées dans la liste déroulante « Variations », triées du plus grand nombre de collections au plus petit nombre de collections. Les variantes qui remplissent entièrement l'équipe restante nécessaire pour la collection principale sont marquées d'un astérisque *.",
+                "long_title": "Optimiseur des étapes clés de les collections",
+                "title": "Optimiseur"
+            },
+            "overview": {
+                "description": "Aperçu des collections",
+                "long_description": "",
+                "long_title": "Aperçu des collections",
+                "title": "Aperçu"
+            },
+            "progress": {
+                "description": "Progrès des collections",
+                "long_description": "Recherchez des collections par nom ou par description. Vous pouvez également filtrer les collections par types de récompenses. Cliquez sur une ligne pour voir l'équipe qui vous aidera à progresser dans cette collection.",
+                "long_title": "Étapes clés de la progression de la collection",
+                "title": "Progrès"
+            }
+        },
+        "progress_to_next": "Progression vers la prochaine étape"
     },
     "consider_crew": {
         "active_shuttles": "Considérez les équipiers sur les navettes actives",
@@ -823,7 +903,10 @@
         "search_items": "Rechercher par article",
         "search_items_ellipses": "Rechercher par article...",
         "show": "Montre",
+        "show_all": "Tout afficher",
         "show_less": "Montrer moins",
+        "show_less_ellipses": "Montrer moins ...",
+        "show_more_ellipses": "Montrer plus ...",
         "show_n_more_ellipses": "Afficher {{n}} de plus...",
         "shown": "Affiché",
         "sort_by": "Trier par",
@@ -863,6 +946,7 @@
         "filter_by_primary_skill": "Filtrer par compétence principale",
         "filter_by_progress": "Filtrer par progression",
         "filter_by_rarity": "Filtrer par rareté",
+        "filter_by_reward": "Filtrer par récompense",
         "filter_by_secondary_skill": "Filtrer par compétence secondaire",
         "filter_by_series": "Filtrer par série",
         "filter_by_ship_ability": "Filtrer par la capacité du vaisseau",
@@ -874,12 +958,15 @@
         "filter_crew_by_rank": "Filtrer l'équipage par rang",
         "filter_ship_grants": "Filtrer les subventions d'expédition",
         "filter_ship_rarity": "Filtrer la rareté des vaisseaux",
+        "prioritize_rewards": "Prioriser les récompenses",
         "roster_maintenance": "Entretien de la liste",
+        "select_crew": "Sélectionnez l'équipage",
         "select_items": "Sélectionner des articles",
         "select_ship": "Sélectionnez Vaisseau",
         "select_ship_abilities": "Sélectionner les capacités du vaisseau",
         "select_ship_ability": "Sélectionner la capacité du vaisseau",
         "select_ship_ability_amount": "Sélectionnez le montant de la capacité du vaisseau",
+        "tiers": "Étages",
         "trait": "Trait",
         "traits": "Traits"
     },
@@ -1153,6 +1240,7 @@
             "fodder": "Afficher uniquement les équipiers non fusionnés",
             "freezable": "Afficher uniquement les équipiers congelables",
             "impact": "Afficher uniquement les équipiers ayant besoin d'un fusible",
+            "liminal": "Afficher uniquement les équipiers ayant besoin de 1 ou 2 fusibles",
             "mortal": "Afficher uniquement les non-immortels",
             "none": "Afficher tous les équipiers",
             "nonfe": "Afficher uniquement les non-immortels sous-équipés",
