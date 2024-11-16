@@ -252,7 +252,7 @@
             },
             "overview": {
                 "description": "Aperçu des collections",
-                "long_description": "",
+                "long_description": " ",
                 "long_title": "Aperçu des collections",
                 "title": "Aperçu"
             },
