@@ -239,7 +239,7 @@
                 "title": "{{base.crew}}"
             },
             "group": {
-                "description": "Visualize crew grouped into collections, and sorted by cost",
+                "description": "Visualisieren Sie die Crew in Sammlungen gruppiert und nach Kosten sortiert",
                 "long_description": "Zeigen Sie die Crew in Sammlungen gruppiert an, sortiert nach dem Maximum. Crew, die mit einem grünen Stern {{star}} gekennzeichnet ist, ist erforderlich, um den nächsten Meilenstein zu erreichen. Die Crew ist in aufsteigender Reihenfolge nach Seltenheit, Level und Ausrüstungsplätzen sortiert. Verwenden Sie das Suchfeld, um nach einer bestimmten Crew zu suchen. Wenn Sie auf eine Crew klicken, wird der Crewname an das Suchfeld angehängt.",
                 "long_title": "Crew-Sammelgruppen",
                 "title": "{{base.collections}}"

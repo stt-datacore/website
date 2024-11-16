@@ -239,7 +239,7 @@
                 "title": "{{base.crew}}"
             },
             "group": {
-                "description": "Visualize crew grouped into collections, and sorted by cost",
+                "description": "Visualisez l'équipage regroupé en collections et trié par coût",
                 "long_description": "Afficher les équipages groupés en collections triées par ordre décroissant de la valeur maximale. Les équipages marqués d'une étoile verte {{star}} sont requis pour atteindre le prochain jalon. Les équipages sont triés par ordre croissant de rareté, de niveau et d'emplacements d'équipement. Utilisez le champ de recherche pour rechercher un équipage spécifique. Cliquer sur un équipage ajoutera le nom de l'équipage au champ de recherche.",
                 "long_title": "Groupes de collection d'équipage",
                 "title": "{{base.collections}}"

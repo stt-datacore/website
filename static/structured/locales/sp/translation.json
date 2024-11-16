@@ -239,7 +239,7 @@
                 "title": "{{base.crew}}"
             },
             "group": {
-                "description": "Visualize crew grouped into collections, and sorted by cost",
+                "description": "Visualice a la tripulación agrupada en colecciones y ordenada por costo",
                 "long_description": "Muestra la tripulación agrupada en colecciones ordenadas por la más cercana al máximo. La tripulación marcada con una estrella verde {{star}} es necesaria para alcanzar el siguiente hito. La tripulación se clasifica en orden ascendente de rareza, nivel y espacios de equipo. Usa el cuadro de búsqueda para buscar una tripulación específica. Al hacer clic en una tripulación, se agregará el nombre de la tripulación al cuadro de búsqueda.",
                 "long_title": "Grupos de recolección de tripulación",
                 "title": "{{base.collections}}"

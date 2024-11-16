@@ -182,13 +182,12 @@
         "copied_exclaim": "Copied!"
     },
     "collections": {
-        "alerts": {
-            "fuses_covered_by_cites": "All remaining required fuses are covered by honorable citations you already own.",
-            "crew_already_fused": "All crew required to reach the next milestone are already fully fused.",
-            "crew_recruit_need_n": "You need to recruit {{n}} more crew to reach the next goal."
-        },
-        "n_increased": "{{n}} collections increased",
         "additional_milestones": "Additional collection milestones",
+        "alerts": {
+            "crew_already_fused": "All crew required to reach the next milestone are already fully fused.",
+            "crew_recruit_need_n": "You need to recruit {{n}} more crew to reach the next goal.",
+            "fuses_covered_by_cites": "All remaining required fuses are covered by honorable citations you already own."
+        },
         "citation_cost_to_next": "Citation cost to next",
         "columns": {
             "collections": "{{base.collections}}",
@@ -205,6 +204,7 @@
         "milestone_rewards": "Milestone rewards",
         "milestone_rewards_desc": "Rewards you can claim after immortalizing the needed number of crew to reach the next milestone",
         "milestones": "Milestones",
+        "n_increased": "{{n}} collections increased",
         "n_needed_for_rewards": "{{n}} needed for rewards",
         "optimizer": {
             "warning": "The collection optimizer view shows only owned crew."
