@@ -121,7 +121,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
                 </div>
                 {!props.brief && <React.Fragment>
                     <i style={{ fontSize: "0.9em" }}>
-                    {collection.owned} / {collection.crew?.length} Owned
+                    {t('items.n_owned', { n: `${collection.owned} / ${collection.crew?.length}`})}
                 </i>
                 <i style={{ fontSize: "0.9em" }}>
                     {t('collections.progress_to_next')}:{" "}
