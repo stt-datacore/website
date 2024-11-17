@@ -6,8 +6,8 @@
   "license": "MIT",
   "scripts": {
     "check": "tsc --noEmit",
-    "precalculate": "yarn tsc ./scripts/precalculate.ts --target esnext --module nodenext --moduleResolution nodenext --outDir ./build && node build/scripts/precalculate.js",
-    "eventstats": "yarn tsc ./scripts/eventstats.ts --target esnext --module nodenext --moduleResolution nodenext --outDir ./build && node build/scripts/eventstats.js",
+    "precalculate": "yarn tsc --project ./tsconfig.node.json && node build/scripts/precalculate.js",
+    "eventstats": "yarn tsc --project ./tsconfig.node.json && node build/scripts/eventstats.js",
     "build": "gatsby build",
     "buildci": "gatsby build && rimraf ./public/media/assets",
     "buildpc": "tsc scripts/precalculate.ts --skipLibCheck",
