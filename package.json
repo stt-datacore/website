@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "check": "tsc --noEmit",
-    "precalculate": "tsc ./scripts/precalculate.ts --typeRoots ./node_modules/@types --types node --lib dom,esnext --jsx react-jsx --outDir ./build && node build/scripts/precalculate.js",
+    "precalculate": "yarn tsc ./scripts/precalculate.ts --typeRoots ./node_modules/@types --types node --lib dom,esnext --jsx react-jsx --outDir ./build && node build/scripts/precalculate.js",
     "eventstats": "tsc ./scripts/eventstats.ts --outDir ./build && node build/scripts/eventstats.js",
     "build": "gatsby build",
     "buildci": "gatsby build && rimraf ./public/media/assets",
