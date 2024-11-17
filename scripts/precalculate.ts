@@ -4,7 +4,7 @@
 // require('lodash.combinations');
 // const _ = require('lodash');
 
-import * as _ from 'lodash';
+import _ from 'lodash';
 import 'lodash.combinations';
 
 import * as fs from 'fs';
@@ -15,7 +15,7 @@ import { BaseSkills, ComputedSkill, CrewMember, EquipmentSlot, QuipmentScores, R
 import { Mission } from '../src/model/missions';
 import { BattleStations, Schematics, Ship } from '../src/model/ship';
 
-const STATIC_PATH = `${__dirname}/../../static/structured/`;
+const STATIC_PATH = `${__dirname}/../static/structured/`;
 
 let crewlist = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf-8'), (key, value) => {
 	if (key === 'date_added') {
