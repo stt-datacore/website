@@ -1,21 +1,51 @@
-// const fs = require('fs');
-// const showdown = require('showdown');
-// const ExcelJS = require('exceljs');
-// require('lodash.combinations');
-// const _ = require('lodash');
+import fs from 'fs';
+import showdown from 'showdown';
+import ExcelJS from 'exceljs';
 
-import _ from 'lodash';
-import 'lodash.combinations';
-
-import * as fs from 'fs';
-import * as showdown from 'showdown';
-import * as ExcelJS from 'exceljs';
 import { EquipmentItem, EquipmentItemSource, IDemand } from '../src/model/equipment';
 import { BaseSkills, ComputedSkill, CrewMember, EquipmentSlot, QuipmentScores, Ranks, Skill, SkillQuipmentScores } from '../src/model/crew';
 import { Mission } from '../src/model/missions';
 import { BattleStations, Schematics, Ship } from '../src/model/ship';
 
-const STATIC_PATH = `${__dirname}/../static/structured/`;
+function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[]) => U[] | false) {
+    var current_iter = 0n;
+    const mmin = start_idx ?? 0n;
+    const mmax = (count ?? 0n) + mmin;
+    function p(t: T[], i: number) {
+        if (t.length === size) {
+            if (current_iter >= mmin && (!mmax || current_iter < mmax)) {
+                if (!check) {
+                    result.push(t as any);
+                }
+                else {
+                    let response = check(t);
+                    if (response) {
+                        if (!count_only) {
+                            result.push(response);
+                        }
+                    }
+                }
+            }
+            current_iter++;
+            return;
+        }
+        if (i + 1 > array.length) {
+            return;
+        }
+
+        if (mmax !== 0n && current_iter >= mmax) return;
+        p([ ...t, array[i] ], i + 1);
+        p(t, i + 1);
+    }
+
+    var result = [] as U[][];
+
+    p([], 0);
+    return result;
+}
+
+
+const STATIC_PATH = `${__dirname}/../../static/structured/`;
 
 let crewlist = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf-8'), (key, value) => {
 	if (key === 'date_added') {
@@ -440,9 +470,11 @@ function main() {
 			if (crew.base_skills[skill]) polestars.push(skill);
 		}
 		let onePolestarCombos = polestars.slice().map((pol) => [pol]);
-		let twoPolestarCombos = _.combinations(polestars, 2);
-		let threePolestarCombos = _.combinations(polestars, 3);
-		let fourPolestarCombos = _.combinations(polestars, 4);
+
+		let twoPolestarCombos = getPermutations<string, string>(polestars, 2);
+		let threePolestarCombos = getPermutations<string, string>(polestars, 3);
+		let fourPolestarCombos = getPermutations<string, string>(polestars, 4);
+
 		let crewPolestarCombos = ([] as string[][]).concat(onePolestarCombos).concat(twoPolestarCombos).concat(threePolestarCombos).concat(fourPolestarCombos);
 		let comboIds = [] as string[][];	// Potential list of combos to check later
 		for (let combo of crewPolestarCombos) {
