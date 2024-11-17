@@ -19,10 +19,7 @@ jobs:
           GATSBY_ASSETS_URL: https://assets.datacore.app/
         uses: cypress-io/github-action@v6
         with:
-          install-command: |
-              corepack enable
-              yarn set version 3.6.3
-              yarn install
+          install-command: corepack enable && yarn set version 3.6.3 && yarn install
           wait-on: 'http://localhost:8881/'
           wait-on-timeout: 240
           start: yarn run develop
