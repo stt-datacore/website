@@ -6,7 +6,6 @@
   "license": "MIT",
   "scripts": {
     "check": "tsc --noEmit",
-    "precalculate": "yarn babel ./scripts/precalculate.ts --out-dir ./build --extensions '.ts' && node ./build/precalculate.js",
     "build": "gatsby build",
     "buildci": "gatsby build && rimraf ./public/media/assets",
     "buildpc": "tsc scripts/precalculate.ts --skipLibCheck",
@@ -75,11 +74,6 @@
     "url": "https://github.com/stt-datacore/website/issues"
   },
   "devDependencies": {
-    "@babel/cli": "^7.25.9",
-    "@babel/core": "^7.26.0",
-    "@babel/plugin-transform-typescript": "^7.25.9",
-    "@babel/preset-env": "^7.26.0",
-    "@babel/preset-typescript": "^7.26.0",
     "@types/lodash-es": "npm:^4.17.12",
     "@types/node": "^22.9.0",
     "@types/react-helmet": "^6.1.11",
@@ -88,10 +82,8 @@
     "@types/uuid": "^9.0.8",
     "cypress": "^13.8.0",
     "dotenv": "^16.4.5",
-    "lodash": "^4.17.21",
     "showdown": "^2.1.0",
     "start-server-and-test": "^2.0.3",
     "typescript": "^5.4.5"
-  },
-  "packageManager": "yarn@3.6.3"
+  }
 }
