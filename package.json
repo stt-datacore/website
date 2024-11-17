@@ -88,6 +88,7 @@
     "@types/uuid": "^9.0.8",
     "cypress": "^13.8.0",
     "dotenv": "^16.4.5",
+    "lodash": "^4.17.21",
     "showdown": "^2.1.0",
     "start-server-and-test": "^2.0.3",
     "typescript": "^5.4.5"
