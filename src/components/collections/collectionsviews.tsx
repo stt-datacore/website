@@ -63,7 +63,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	const tierOpts = [] as DropdownItemProps[];
 
-	const [tabIndex, setTabIndex] = useStateWithStorage('collectionstool/tabIndex', 0, { rememberForever: true });
+	const [tabIndex, setTabIndex] = useStateWithStorage<number | undefined>('collectionstool/tabIndex', undefined, { rememberForever: true });
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 2, column: 'name', title: t('collections.columns.crew'), pseudocolumns: ['name', 'level', 'date_added'] },
@@ -198,34 +198,6 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 		}
 	}
 
-	// const renderFancyCites = (size?: number) => {
-	// 	size ??= 32;
-	// 	const honor = playerData.player.honor;
-	// 	const cost = costMode === 'sale' ? 40000 : 50000;
-	// 	const total = Math.floor(honor/cost);
-	// 	if (honor < cost) return <></>
-	// 	return <div style={{
-	// 				textAlign: 'center',
-	// 				width: '15em',
-	// 				display: 'flex',
-	// 				flexDirection: 'row',
-	// 				alignItems: 'center',
-	// 				justifyContent: 'space-between'
-	// 			}}>
-	// 				<div style={{fontSize: "0.8em", display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-	// 					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`} style={{height: `${size}px`, width: `${size}px`, marginBottom: '0.5em'}} />
-	// 					{honor.toLocaleString()}
-	// 				</div>
-	// 				<div style={{fontSize: '3em', display: 'inline', marginTop: '-0.8em'}}>
-	// 					&rarr;
-	// 				</div>
-	// 				<div>
-	// 					<RewardsGrid size={size} kind={'need'} needs={[{symbol: citeSymbols[5], quantity: total}]} />
-	// 				</div>
-	// 			</div>
-
-	// }
-
 	const offPageSelect = selnum;
 
 	const buffConfig = calculateBuffConfig(playerData.player);
@@ -317,7 +289,9 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 		if (requestRun) {
 			runWorker();
 			setRequestRun(false);
+
 		}
+		if (tabIndex === undefined) setTabIndex(0);
 	}, 500);
 
 	// React.useEffect(() => {
@@ -347,23 +321,22 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 					})}
 				</Step.Group>
 			</div>
+			{tabIndex !== undefined &&
+			<>
+				<Header as='h4'>{tabPanes[tabIndex].longTitle || t(`collections.panes.${tabPanes[tabIndex].mode}.long_title`)}</Header>
+				<p>{tabPanes[tabIndex].longDescription || t(`collections.panes.${tabPanes[tabIndex].mode}.long_description`)}</p>
 
-			{/* <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%'}}>
-				{costMode && playerData?.player?.honor && renderFancyCites()}
-			</div> */}
-
-			<Header as='h4'>{tabPanes[tabIndex ?? 0].longTitle || t(`collections.panes.${tabPanes[tabIndex ?? 0].mode}.long_title`)}</Header>
-			<p>{tabPanes[tabIndex ?? 0].longDescription || t(`collections.panes.${tabPanes[tabIndex ?? 0].mode}.long_description`)}</p>
-
-			{tabPanes[tabIndex ?? 0].showFilters &&
-				<CollectionPrefs
-					mode={tabPanes[tabIndex ?? 0].mode as any}
-					playerCollections={playerCollections}
-					colOptimized={colOptimized}
-					workerRunning={workerRunning}
-					/>
+				{tabPanes[tabIndex].showFilters &&
+					<CollectionPrefs
+						mode={tabPanes[tabIndex ?? 0].mode as any}
+						playerCollections={playerCollections}
+						colOptimized={colOptimized}
+						workerRunning={workerRunning}
+						/>
+				}
+				{tabPanes[tabIndex].render(workerRunning)}
+			</>
 			}
-			{tabPanes[tabIndex ?? 0].render(workerRunning)}
 			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, playerData.player.character.crew, buffConfig)} targetGroup='collectionsTarget' />
 			<ItemHoverStat targetGroup='collectionsTarget_item' />
 		</React.Fragment>
