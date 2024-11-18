@@ -103,6 +103,9 @@ export interface CrewMember extends QuipmentScores {
     /** Used internally, not part of incoming data */
     pickerId?: number;
     pairs?: Skill[][];
+
+    price?: number;
+    sell_count?: number;
 }
 
 export interface EquipmentSlot {

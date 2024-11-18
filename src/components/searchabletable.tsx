@@ -49,7 +49,7 @@ export interface ITableConfigRow {
 	reverse?: boolean;
 	tiebreakers?: string[];
 	tiebreakers_reverse?: boolean[];
-	customCompare?: (a: any, b: any) => number;
+	customCompare?: (a: any, b: any, config: IConfigSortData) => number;
 }
 
 export interface SearchableTableProps {
@@ -119,7 +119,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 	// Update column and/or toggle direction, and store new values in state
 	//	Actual sorting of full dataset will occur on next render before filtering and pagination
-	function onHeaderClick(newColumn) {
+	function onHeaderClick(newColumn: ITableConfigRow) {
 		if (!newColumn.column) return;
 
 		const lastColumn = column, lastDirection = direction;
@@ -128,9 +128,9 @@ export const SearchableTable = (props: SearchableTableProps) => {
 			field: newColumn.column,
 			direction: lastDirection === 'ascending' ? 'descending' : 'ascending'
 		};
-		if (newColumn.pseudocolumns && newColumn.pseudocolumns.includes(lastColumn)) {
+		if (newColumn.pseudocolumns && newColumn.pseudocolumns.includes(lastColumn || '')) {
 			if (direction === 'descending') {
-				const nextIndex = newColumn.pseudocolumns.indexOf(lastColumn) + 1; // Will be 0 if previous column was not a pseudocolumn
+				const nextIndex = newColumn.pseudocolumns.indexOf(lastColumn || '') + 1; // Will be 0 if previous column was not a pseudocolumn
 				sortConfig.field = newColumn.pseudocolumns[nextIndex === newColumn.pseudocolumns.length ? 0 : nextIndex];
 				sortConfig.direction = 'ascending';
 			}
@@ -225,11 +225,11 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	}
 	// If no direction set, determine direction from tableConfig when possible
 	if (!sortDirection) {
-		const columnConfig = props.config.find(col => col.column === sortColumn);
+		const columnConfig = props.config.find(col => col.column === sortColumn || col.pseudocolumns?.includes(sortColumn));
 		sortDirection = columnConfig?.reverse ? 'descending' : 'ascending';
 	}
 
-	const columnConfig = props.config.find(col => col.column === sortColumn);
+	const columnConfig = props.config.find(col => col.column === sortColumn || col.pseudocolumns?.includes(sortColumn));
 
 	const sortConfig: IConfigSortData = {
 		field: sortColumn,

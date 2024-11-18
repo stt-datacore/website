@@ -36,18 +36,25 @@
             "level": "{{base.level}}",
             "max_rarity": "{{global.max_rarity}}",
             "name": "{{global.name}}",
+            "price": "{{retrieval.price.price}}",
             "q_bits": "{{base.qp}}",
             "quipment_score": "{{rank_names.quipment_score}}",
             "ranks": {
                 "traitRank": "{{rank_names.trait_rank}}"
-            }
+            },
+            "retrievable": "{{retrieval.combos}}",
+            "sell_count": "Listado para la venta"
         },
         "qp": "QP",
+        "quipment": "Quipo",
         "rarity": "Rareza",
         "release_date": "Debut",
+        "retrieval": "{{retrieval.modes.retrieval}}",
         "rewards": "Recompensas",
         "shuttle": "Lanzadera",
         "shuttles": "Lanzaderas",
+        "skills": "{{shuttle_helper.missions.columns.skills}}",
+        "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Únicamente recuperable",
         "voyage": "Viaje",
         "voyages": "Viajes"
@@ -298,7 +305,8 @@
         "mortal": "Solo mostrar propiedad de no inmortales",
         "none": "Mostrar todas tripulantes",
         "owned": "Mostrar solo equipo propiedad",
-        "unowned": "Mostrar solo equipo sin propietario"
+        "unowned": "Mostrar solo equipo sin propietario",
+        "wishlist": "Solo el equipo del programa en mi lista de deseos"
     },
     "crew_page": {
         "aka_colon": "También conocido como:",
@@ -419,6 +427,7 @@
         "title": "Duración: {{duration}}"
     },
     "event_info": {
+        "active_event": "Datos en vivo de la clasificación de eventos activos",
         "active_event_lag_warn": "Si este evento está activo actualmente, es posible que la tabla de clasificación a continuación esté desactualizada.",
         "bonus_crew": "Tripulación adicional",
         "bonus_crew_not_determined": "Las bonificaciones de la tripulación para este evento aún no se han determinado",
@@ -810,6 +819,7 @@
         "calculate": "Calcular",
         "cancel": "Cancelar",
         "challenge": "Desafío",
+        "check_all": "Marcar todo",
         "clear": "Borrar",
         "clear_all": "Borrar todo",
         "clear_cache": "Limpiar cache",
@@ -872,9 +882,12 @@
         "load_defaults": "Cargar predeterminadas",
         "loading_ellipses": "Cargando ...",
         "loading_please_wait_ellipses": "Cargando. Espere por favor...",
+        "max": "Máximo",
         "max_rarity": "Rareza máx.",
         "member": "Miembro",
+        "min": "Mínimo",
         "min_rarity": "Rareza mín.",
+        "n_available": "{{n}} disponible",
         "n_results": "{{n}} resultados",
         "name": "Nombre",
         "never": "Nunca",
@@ -914,11 +927,14 @@
         "shown": "Mostrado",
         "sort_by": "Ordenar por",
         "squadron_leader": "Líder de escuadrón",
+        "uncheck_all": "Desmarcar todo",
+        "view_options": "Ver las opciones",
         "work_in_progress": {
             "heading": "Esta página es un trabajo en progreso. Algunas funciones y características pueden no funcionar, estar rotas, faltar, estar incompletas o cambiar en cualquier momento.",
             "title": "¡Trabajo en progreso!"
         },
-        "yes": "Sí"
+        "yes": "Sí",
+        "you_own_n_of_y": "Eres dueño de {{n}} de {{y}}."
     },
     "graph": {
         "bump": "Gráfico de impacto",
@@ -949,6 +965,7 @@
         "filter_by_primary_skill": "Filtrar por habilidad principal",
         "filter_by_progress": "Filtrar por progreso",
         "filter_by_rarity": "Filtrar por rareza",
+        "filter_by_retrieval_options": "Filtrar por opciones de recuperación",
         "filter_by_reward": "Filtrar por recompensa",
         "filter_by_secondary_skill": "Filtrar por habilidad secundaria",
         "filter_by_series": "Filtrar por serie",
@@ -1377,7 +1394,22 @@
         "consider_unowned_polestars": "Considere estrellas polares sin dueño (puede llevar mucho más tiempo)",
         "constellation": "Constelación",
         "constellations": "Constelaciones",
+        "crew": {
+            "show_all_crew": "{{base.all_crew}}",
+            "show_all_uniquely_retrievable": "Mostrar toda la tripulación recuperable de forma única",
+            "show_retrievable_crew": "Solo el equipo de espectáculo que puedo recuperar"
+        },
+        "description": "Encuentre las mejores opciones para agregar tripulación a su lista a través de la recuperación de tripulación.",
+        "energy": {
+            "guaranteed_legendary": "¡Ahora puedes garantizar la recuperación de una tripulación legendaria!",
+            "quantum_regeneration": "Regenerarás suficiente del cuanto para alcanzar {{target}} en {{time}}; ",
+            "spend_90": "gasta 90 dilithium para alcanzar {{target}} en {{time}}.",
+            "spend_90_daily": "gasta 90 dilithium diariamente para alcanzar {{target}} en {{time}}.",
+            "spend_90_immediately": "gasta 90 dilithium para alcanzar {{target}} inmediatamente."
+        },
         "filter_owned_polestars": "Filtrar estrellas polares propias",
+        "hide_combos_with_unowned_polestars": "Eliminar combos con estrellas polares sin dueño",
+        "hide_fully_fused_crew": "Eliminar la tripulación completamente fusionada",
         "keystone": "Piedra clave",
         "keystone_crate": "Caja de piedras clave",
         "keystone_crates": "Cajas de piedras clave",
@@ -1392,12 +1424,54 @@
         },
         "n_constellations": "{{n}} Constelaciones",
         "n_polestars": "{{n}} Estrellas polares",
+        "n_polestars_needed": "Se necesitan {{n}} estrellas polares",
         "one_constellation": "1 Constelación",
         "one_polestar": "1 Estrella polar",
+        "option_n": "Opción {{n}}",
         "polestar": "Estrella polar",
         "polestars": "Estrellas polares",
+        "polestars_needed": "Se necesitan estrellas polares",
+        "price": {
+            "all": "Mostrar el precio actual de todas las estrellas polares",
+            "none": "No mostrar los precios de las estrellas polares",
+            "price": "Precio",
+            "unowned": "Mostrar el precio actual de las estrellas polares sin propietario"
+        },
+        "prospects": {
+            "acquisition": {
+                "acquire_to_retrieve_colon": "Adquiere el {{polestar}} para desbloquear recuperaciones garantizadas para la siguiente tripulación:",
+                "more_not_guaranteed": "Adquirir más de esta estrella polar no desbloqueará recuperaciones garantizadas para ninguna tripulación nueva.",
+                "not_guaranteed": "La adquisición de esta estrella polar no desbloqueará recuperaciones garantizadas para ninguna tripulación nueva."
+            },
+            "add_prospective_polestars": "Añadir posibles estrellas polares",
+            "columns": {
+                "added": "Agregado",
+                "crate_count": "Posibilidad de constelación",
+                "crew_count": "Tripulación en el portal",
+                "name": "{{retrieval.polestar}}",
+                "owned": "Propiedad",
+                "owned_best_odds": "Mejor probabilidad",
+                "scan_odds": "Posibilidad de escaneo"
+            },
+            "crate": {
+                "already_owned": "Ya posees todas las estrellas polares en el {{crate}}."
+            },
+            "definitions": {
+                "crate_count": "tu probabilidad de adquirir cualquier constelación con la estrella polar a partir de un escaneo exitoso.",
+                "owned_best_odds": "tu mejor probabilidad de adquirir la estrella polar a partir de una constelación en tu inventario.",
+                "scan_odds": "tu probabilidad general de adquirir la estrella polar a partir de un escaneo exitoso."
+            },
+            "filter_by_owned": "Filtrar estrellas polares por constelación propia",
+            "return_to_polestars": "Regreso a las estrellas polares",
+            "search_polestars": "Buscar estrellas polares por nombre.",
+            "show_all_polestars": "Mostrar todas las estrellas polares"
+        },
+        "showing_all_potential": "Mostrando TODAS las opciones de recuperación POTENCIALES",
         "up_to_n": "Hasta {{n}}",
-        "verbose_status_updates": "{{ship.calc.verbose_status_updates}}"
+        "use_all_combos_below_to_retrieve": "Utilice TODAS las combinaciones a continuación para recuperar",
+        "use_any_combo_below_to_retrieve": "Utilice cualquier combinación a continuación para recuperar",
+        "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "you_own_n_of_the_polestar": "Eres dueño de {{n}} de la {{polestar}}."
     },
     "roster_summary": {
         "by_rarity": "Por rareza",

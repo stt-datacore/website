@@ -36,18 +36,25 @@
             "level": "{{base.level}}",
             "max_rarity": "{{global.max_rarity}}",
             "name": "{{global.name}}",
+            "price": "{{retrieval.price.price}}",
             "q_bits": "{{base.qp}}",
             "quipment_score": "{{rank_names.quipment_score}}",
             "ranks": {
                 "traitRank": "{{rank_names.trait_rank}}"
-            }
+            },
+            "retrievable": "{{retrieval.combos}}",
+            "sell_count": "Listed for sale"
         },
         "qp": "QP",
+        "quipment": "Quipment",
         "rarity": "Rarity",
         "release_date": "Release Date",
+        "retrieval": "{{retrieval.modes.retrieval}}",
         "rewards": "Rewards",
         "shuttle": "Shuttle",
         "shuttles": "Shuttles",
+        "skills": "{{shuttle_helper.missions.columns.skills}}",
+        "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Uniquely Retrievable",
         "voyage": "Voyage",
         "voyages": "Voyages"
@@ -298,7 +305,8 @@
         "mortal": "Only show owned non-immortals",
         "none": "Show all crew",
         "owned": "Only show owned crew",
-        "unowned": "Only show unowned crew"
+        "unowned": "Only show unowned crew",
+        "wishlist": "Only show crew on my wishlist"
     },
     "crew_page": {
         "aka_colon": "Also known as:",
@@ -413,6 +421,7 @@
         "title": "Duration: {{duration}}"
     },
     "event_info": {
+        "active_event": "Active event leaderboard live data",
         "active_event_lag_warn": "If this event is currently active, the leaderboard below might be out of date.",
         "bonus_crew": "Bonus Crew",
         "bonus_crew_not_determined": "Bonus crew not yet determined for this event",
@@ -803,6 +812,7 @@
         "calculate": "Calculate",
         "cancel": "Cancel",
         "challenge": "Challenge",
+        "check_all": "Check all",
         "clear": "Clear",
         "clear_all": "Clear All",
         "clear_cache": "Clear cache",
@@ -865,9 +875,12 @@
         "load_defaults": "Load Defaults",
         "loading_ellipses": "Loading ...",
         "loading_please_wait_ellipses": "Loading. Please wait...",
+        "max": "Max",
         "max_rarity": "Max. rarity",
         "member": "Member",
+        "min": "Min",
         "min_rarity": "Min. rarity",
+        "n_available": "{{n}} available",
         "n_results": "{{n}} results",
         "name": "Name",
         "never": "Never",
@@ -905,11 +918,14 @@
         "shown": "Shown",
         "sort_by": "Sort by",
         "squadron_leader": "Squadron Leader",
+        "uncheck_all": "Uncheck all",
+        "view_options": "View Options",
         "work_in_progress": {
             "heading": " This page is a work in progress. Some functions and features may be non-functional, broken, missing, incomplete, or change at any time.",
             "title": "Work In Progress!"
         },
-        "yes": "Yes"
+        "yes": "Yes",
+        "you_own_n_of_y": "You own {{n}} of {{y}}."
     },
     "graph": {
         "bump": "Bump Graph",
@@ -940,6 +956,7 @@
         "filter_by_primary_skill": "Filter by primary skill",
         "filter_by_progress": "Filter by progress",
         "filter_by_rarity": "Filter by rarity",
+        "filter_by_retrieval_options": "Filter by retrieval options",
         "filter_by_reward": "Filter by reward",
         "filter_by_secondary_skill": "Filter by secondary skill",
         "filter_by_series": "Filter by series",
@@ -1364,7 +1381,22 @@
         "consider_unowned_polestars": "Consider unowned polestars (may take much more time)",
         "constellation": "Constellation",
         "constellations": "Constellations",
+        "crew": {
+            "show_all_crew": "{{base.all_crew}}",
+            "show_all_uniquely_retrievable": "Show all uniquely retrievable crew",
+            "show_retrievable_crew": "Only show crew I can retrieve"
+        },
+        "description": "Find the best options for adding crew to your roster via crew retrieval.",
+        "energy": {
+            "guaranteed_legendary": "You can guarantee a legendary crew retrieval now!",
+            "quantum_regeneration": "You will regenerate enough quantum to reach {{target}} in {{time}}; ",
+            "spend_90": "spend 90 dilithium to reach {{target}} in {{time}}.",
+            "spend_90_daily": "spend 90 dilithium daily to reach {{target}} in {{time}}.",
+            "spend_90_immediately": "spend 90 dilithium to reach {{target}} immediately."
+        },
         "filter_owned_polestars": "Filter Owned Polestars",
+        "hide_combos_with_unowned_polestars": "Hide combos with unowned polestars",
+        "hide_fully_fused_crew": "Hide fully fused crew",
         "keystone": "Keystone",
         "keystone_crate": "Keystone Crate",
         "keystone_crates": "Keystone Crates",
@@ -1379,12 +1411,54 @@
         },
         "n_constellations": "{{n}} Constellations",
         "n_polestars": "{{n}} Polestars",
+        "n_polestars_needed": "{{n}} polestars needed",
         "one_constellation": "1 Constellation",
         "one_polestar": "1 Polestar",
+        "option_n": "Option {{n}}",
         "polestar": "Polestar",
         "polestars": "Polestars",
+        "polestars_needed": "Polestars needed",
+        "price": {
+            "all": "Show current price of all polestars",
+            "none": "Do not show polestar prices",
+            "price": "Price",
+            "unowned": "Show current price of unowned polestars"
+        },
+        "prospects": {
+            "acquisition": {
+                "acquire_to_retrieve_colon": "Acquire the {{polestar}} to unlock guaranteed retrievals for the following crew:",
+                "more_not_guaranteed": "Acquiring more of this polestar will not unlock guaranteed retrievals for any new crew.",
+                "not_guaranteed": "Acquiring this polestar will not unlock guaranteed retrievals for any new crew."
+            },
+            "add_prospective_polestars": "Add Prospective Polestars",
+            "columns": {
+                "added": "Added",
+                "crate_count": "Constellation Chance",
+                "crew_count": "Crew in Portal",
+                "name": "{{retrieval.polestar}}",
+                "owned": "Owned",
+                "owned_best_odds": "Best Chance",
+                "scan_odds": "Scan Chance"
+            },
+            "crate": {
+                "already_owned": "You already own all polestars in the {{crate}}."
+            },
+            "definitions": {
+                "crate_count": "your chance of acquiring any constellation with the polestar from a successful scan.",
+                "owned_best_odds": "your best chance of acquiring the polestar from a constellation in your inventory.",
+                "scan_odds": "your overall chance of acquiring the polestar from a successful scan."
+            },
+            "filter_by_owned": "Filter polestars by owned constellation",
+            "return_to_polestars": "Return to Polestars",
+            "search_polestars": "Search for polestars by name.",
+            "show_all_polestars": "Show all polestars"
+        },
+        "showing_all_potential": "Showing ALL POTENTIAL retrieval options",
         "up_to_n": "Up to {{n}}",
-        "verbose_status_updates": "{{ship.calc.verbose_status_updates}}"
+        "use_all_combos_below_to_retrieve": "Use ALL combos below to retrieve",
+        "use_any_combo_below_to_retrieve": "Use any combo below to retrieve",
+        "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "you_own_n_of_the_polestar": "You own {{n}} of the {{polestar}}."
     },
     "roster_summary": {
         "by_rarity": "By Rarity",

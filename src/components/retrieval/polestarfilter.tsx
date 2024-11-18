@@ -36,17 +36,17 @@ export const PolestarFilterModal = () => {
 	};
 	const grouped: IPolestarGroup[] = [
 		{
-			title: 'Rarity',
+			title: t('base.rarity'),
 			polestars: [],
 			anyDisabled: false
 		},
 		{
-			title: 'Skills',
+			title: t('base.skills'),
 			polestars: [],
 			anyDisabled: false
 		},
 		{
-			title: 'Traits',
+			title: t('base.traits'),
 			polestars: [],
 			anyDisabled: false
 		},
@@ -113,13 +113,13 @@ export const PolestarFilterModal = () => {
 		)
 	}
 
-	function filterCheckboxGroupHeader(t: string): JSX.Element {
-		const group = grouped.find(group => group.title === t);
+	function filterCheckboxGroupHeader(title: string): JSX.Element {
+		const group = grouped.find(group => group.title === title);
 		if (!group) return <></>;
-		const groupLink = <Button style={{ marginLeft: '1em' }} size='mini' onClick={() => checkGroup(t, group.anyDisabled)}>{group.anyDisabled ? 'Check' : 'Uncheck'} All</Button>;
+		const groupLink = <Button style={{ marginLeft: '1em' }} size='mini' onClick={() => checkGroup(title, group.anyDisabled)}>{group.anyDisabled ? t('global.check_all') : t('global.uncheck_all')}</Button>;
 		return (
-			<Grid.Column largeScreen={16} mobile={4} key={t}>
-				<strong>{t}</strong> {groupLink}
+			<Grid.Column largeScreen={16} mobile={4} key={title}>
+				<strong>{title}</strong> {groupLink}
 			</Grid.Column>
 		)
 	}

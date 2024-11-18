@@ -10,6 +10,7 @@ import { CombosPlanner } from './combosplanner';
 import { CombosGrid } from './combosgrid';
 import { filterTraits } from './utils';
 import { factorial } from '../../utils/misc';
+import { useStateWithStorage } from '../../utils/storage';
 
 interface IFuseGroups {
 	[key: string]: number[][];
@@ -21,10 +22,11 @@ type CombosModalProps = {
 
 export const CombosModal = (props: CombosModalProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { allKeystones, polestarTailors, wishlist, setWishlist } = React.useContext(RetrievalContext);
 	const { crew } = props;
-
+	const dbid = playerData ? `${playerData.player.dbid}/` : '';
 	const addedPolestars = polestarTailors.added;
 	const disabledPolestars = polestarTailors.disabled;
 
@@ -41,6 +43,7 @@ export const CombosModal = (props: CombosModalProps) => {
 	const [groupIndex, setGroupIndex] = React.useState<number>(0);
 
 	const [actionableOnlyMode, setActionableOnlyMode] = React.useState<boolean>(true);
+	const [alwaysShowPrice, setAlwaysShowPrice] = useStateWithStorage(`${dbid}retrieval/always_show_polestars`, false, { rememberForever: true })
 
 	// Calc algo is always set to short now, but deep algo code should still work, if the option is ever needed
 	const [algo, setAlgo] = React.useState<string>('');
@@ -61,7 +64,7 @@ export const CombosModal = (props: CombosModalProps) => {
 			onClose={() => setModalIsOpen(false)}
 			onOpen={() => setModalIsOpen(true)}
 			trigger={renderTrigger()}
-			size='tiny'
+			size='small'
 		>
 			<Modal.Header>
 				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -75,17 +78,22 @@ export const CombosModal = (props: CombosModalProps) => {
 			</Modal.Content>
 			<Modal.Actions>
 				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-					<div>
+					<div style={{display: 'flex', flexDirection:'column', alignItems: 'flex-start', gap: '0.5em', justifyContent: 'flex-start'}}>
 						{showModeToggler && (
 							<Checkbox
-								label='Hide combos with unowned polestars'
+								label={t('retrieval.hide_combos_with_unowned_polestars')}
 								checked={actionableOnlyMode}
 								onChange={(e, { checked }) => setActionableOnlyMode(checked as boolean)}
 							/>
 						)}
+						<Checkbox
+							label={t('retrieval.price.all')}
+							checked={alwaysShowPrice}
+							onChange={(e, { checked }) => setAlwaysShowPrice(checked as boolean)}
+						/>
 					</div>
 					<Button onClick={() => setModalIsOpen(false)}>
-						Close
+						{t('global.close')}
 					</Button>
 				</div>
 			</Modal.Actions>
@@ -95,13 +103,13 @@ export const CombosModal = (props: CombosModalProps) => {
 	function renderTrigger(): JSX.Element {
 		if (playerData) {
 			if (crew.actionable === ActionableState.PostTailor)
-				return <Button compact color='blue'>View options</Button>;
+				return <Button compact color='blue'>{t('global.view_options')}</Button>;
 			else if (crew.actionable === ActionableState.PreTailor)
-				return <Button compact color='orange'>Polestars needed</Button>;
+				return <Button compact color='orange'>{t('retrieval.polestars_needed')}</Button>;
 			else if (crew.actionable === ActionableState.Viable)
-				return <Button compact color='yellow'>Polestars needed</Button>;
+				return <Button compact color='yellow'>{t('retrieval.polestars_needed')}</Button>;
 		}
-		return <Button compact>View options</Button>;
+		return <Button compact>{t('global.view_options')}</Button>;
 	}
 
 	function renderSubhead(): JSX.Element {
@@ -111,7 +119,7 @@ export const CombosModal = (props: CombosModalProps) => {
 			if (!actionableOnlyMode || (crew.actionable !== ActionableState.Now && crew.actionable !== ActionableState.PostTailor)) {
 				return (
 					<div style={{ fontSize: '1rem', fontWeight: 'normal' }}>
-						Showing <b>ALL POTENTIAL</b> retrieval options
+						{t('retrieval.showing_all_potential')}
 					</div>
 				);
 			}
@@ -129,7 +137,7 @@ export const CombosModal = (props: CombosModalProps) => {
 				let groupOptions: NumericOptions[] = [];
 				if (fuseIndex > 1) {
 					groupOptions = groups.map((group, groupId) => {
-						return { key: groupId, value: groupId, text: 'Option '+(groupId+1) };
+						return { key: groupId, value: groupId, text: t('retrieval.option_n', { n: `${(groupId+1)}` }) };
 					});
 					// Only show first 200 options
 					if (groupOptions.length > 200)
@@ -138,7 +146,8 @@ export const CombosModal = (props: CombosModalProps) => {
 
 				return (
 					<div style={{ fontSize: '1rem', fontWeight: 'normal' }}>
-						Use <b>{fuseIndex > 1 ? 'ALL combos' : 'any combo'}</b> below to retrieve
+						{fuseIndex > 1 && <>{t('retrieval.use_all_combos_below_to_retrieve')}</>}
+						{fuseIndex <= 1 && <>{t('retrieval.use_any_combo_below_to_retrieve')}</>}
 						{fuseOptions.length > 1 && (
 							<Dropdown
 								style={{ marginLeft: '1em' }}
@@ -208,7 +217,7 @@ export const CombosModal = (props: CombosModalProps) => {
 						<Message>
 							<CombosPlanner uniqueCombos={uniqueCombos} />
 						</Message>
-						<CombosGrid combos={uniqueCombos} fuseIndex={fuseIndex} />
+						<CombosGrid alwaysShowPrice={alwaysShowPrice} combos={uniqueCombos} fuseIndex={fuseIndex} />
 					</React.Fragment>
 				);
 			}
@@ -240,12 +249,12 @@ export const CombosModal = (props: CombosModalProps) => {
 							)}
 						</Message>
 					)}
-					<CombosGrid combos={combos} fuseIndex={fuseIndex} />
+					<CombosGrid alwaysShowPrice={alwaysShowPrice} combos={combos} fuseIndex={fuseIndex} />
 				</React.Fragment>
 			);
 		}
 
-		return <CombosGrid combos={uniqueCombos} fuseIndex={1} />;
+		return <CombosGrid alwaysShowPrice={alwaysShowPrice} combos={uniqueCombos} fuseIndex={1} />;
 	}
 
 	function preCalculateCombos(): void {

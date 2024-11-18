@@ -5,18 +5,20 @@ import { Grid, Icon, Label, SemanticCOLORS } from 'semantic-ui-react';
 import { GlobalContext } from '../../context/globalcontext';
 
 import { IPolestar } from './model';
-import { RetrievalContext } from './context';
+import { printISM, RetrievalContext } from './context';
 
 type CombosGridProps = {
 	combos: IPolestar[][];
 	fuseIndex: number;
+	alwaysShowPrice?: boolean
 };
 
 export const CombosGrid = (props: CombosGridProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
-	const { polestarTailors } = React.useContext(RetrievalContext);
-	const { combos, fuseIndex } = props;
+	const { polestarTailors, market } = React.useContext(RetrievalContext);
+	const { alwaysShowPrice, combos, fuseIndex } = props;
 
 	const addedPolestars = polestarTailors.added;
 	const disabledPolestars = polestarTailors.disabled;
@@ -103,9 +105,16 @@ export const CombosGrid = (props: CombosGridProps) => {
 			color = 'yellow';
 
 		return (
+			<>
 			<Label color={color}>
 				{polestar.owned}
 			</Label>
+			{!!market && (polestar.owned === 0 || alwaysShowPrice) &&
+				<div style={{margin: '0.25em', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '0.25em'}}>
+					{printISM(market[polestar.id]?.low ?? 0)}
+					{t('global.n_available', { n: `${market[polestar.id].sell_count.toLocaleString()}`})}
+				</div>}
+			</>
 		);
 	}
 };

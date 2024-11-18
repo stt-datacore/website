@@ -12,12 +12,15 @@ import { PolestarProspectsModal } from './polestarprospects';
 import { MutualView } from './mutualview';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import CONFIG from '../CONFIG';
+import { MarketAggregation } from '../../model/celestial';
 
 export const RetrievalKeystones = () => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
 
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[] | undefined>(undefined);
+	const [market, setMarket] = React.useState<MarketAggregation | undefined>(undefined);
 
 	React.useEffect(() => {
 		const allKeystones = JSON.parse(JSON.stringify(globalContext.core.keystones)) as IKeystone[];
@@ -55,16 +58,21 @@ export const RetrievalKeystones = () => {
 		});
 
 		setAllKeystones([...allKeystones]);
+		fetch('https://datacore.app/api/celestial-market')
+			.then((response) => response.json())
+			.then(market => {
+				setMarket(market);
+			})
 	}, []);
 
 	if (!allKeystones)
-		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> Loading...</div>);
+		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> {t('spinners.default')}</div>);
 
 	if (playerData) {
-		return <ModePicker allKeystones={allKeystones} dbid={`${playerData.player.dbid}`} />;
+		return <ModePicker market={market} allKeystones={allKeystones} dbid={`${playerData.player.dbid}`} />;
 	}
 	else {
-		return <KeystonesNonPlayer allKeystones={allKeystones} />;
+		return <KeystonesNonPlayer market={market} allKeystones={allKeystones} />;
 	}
 };
 
@@ -88,13 +96,14 @@ type ModePickerMode = 'keystones' | 'mutual';
 type ModePickerProps = {
 	allKeystones: IKeystone[];
 	dbid: string;
+	market?: MarketAggregation;
 }
 
 const ModePicker = (props: ModePickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
 	const { t } = globalContext.localized;
-	const { allKeystones, dbid } = props;
+	const { allKeystones, dbid, market } = props;
 	const [mode, setMode] = useStateWithStorage<ModePickerMode>(`${dbid}/keystone_modePicker`, 'keystones');
 	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
@@ -114,7 +123,7 @@ const ModePicker = (props: ModePickerProps) => {
 				</Step>
             </Step.Group>
 
-			<KeystonesPlayer mode={mode} dbid={dbid} allKeystones={allKeystones} />
+			<KeystonesPlayer market={market} mode={mode} dbid={dbid} allKeystones={allKeystones} />
 	</>
 }
 
@@ -122,13 +131,14 @@ type KeystonesPlayerProps = {
 	allKeystones: IKeystone[];
 	dbid: string;
 	mode: ModePickerMode;
+	market?: MarketAggregation;
 };
 
 const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { ITEM_ARCHETYPES, language, TRAIT_NAMES } = globalContext.localized;
 	const { playerData } = globalContext.player;
-	const { dbid, mode, } = props;
+	const { dbid, mode, market } = props;
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[]>([]);
 	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[]>([]);
 
@@ -196,7 +206,8 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 		polestarTailors, setPolestarTailors,
 		getCrewFilter, setCrewFilter,
 		resetForm,
-		wishlist, setWishlist
+		wishlist, setWishlist,
+		market
 	};
 
 	return (
@@ -228,10 +239,12 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 
 type KeystonesNonPlayerProps = {
 	allKeystones: IKeystone[];
+	market?: MarketAggregation;
 };
 
 const KeystonesNonPlayer = (props: KeystonesNonPlayerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { market } = props;
 	const { playerData } = globalContext.player;
 
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[]>([]);
@@ -267,7 +280,8 @@ const KeystonesNonPlayer = (props: KeystonesNonPlayerProps) => {
 		polestarTailors, setPolestarTailors,
 		getCrewFilter, setCrewFilter,
 		resetForm,
-		wishlist, setWishlist
+		wishlist, setWishlist,
+		market
 	};
 
 	return (
