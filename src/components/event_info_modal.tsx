@@ -10,12 +10,13 @@ import { CrewHoverStat } from './hovering/crewhoverstat';
 import { ItemHoverStat } from './hovering/itemhoverstat';
 import { ShipHoverStat } from './hovering/shiphoverstat';
 import { GlobalContext } from '../context/globalcontext';
+import { Leaderboard } from '../model/events';
 
 type EventInfoModalProps = {
 	instanceId: number,
 	image: string,
 	hasDetails?: boolean,
-	leaderboard: Array<object>,
+	leaderboard: Leaderboard[],
 }
 
 function EventInfoModal(props: EventInfoModalProps) {
