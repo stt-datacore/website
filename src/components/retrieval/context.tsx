@@ -32,8 +32,8 @@ export function printISM(quantity: number, t?: TranslateMethod, printISM?: boole
 
 export function getComboCost(combo: string[], allKeystones: IKeystone[], market: MarketAggregation, unowned_only = true) {
 	let ps = combo.map(cb => allKeystones.find(f => f.symbol === cb || f.symbol === cb + "_keystone")).filter(f => !!f);
-	let total = ps.map(cb => cb.owned && unowned_only ? 0 : market[cb.id].low).reduce((p, n) => p + n, 0);
-	let sell_count = ps.map(cb => cb.owned && unowned_only ? 0 : market[cb.id].sell_count).reduce((p, n) => p + n, 0);
+	let total = ps.map(cb => cb.owned && unowned_only ? 0 : (market[cb.id]?.low ?? 0)).reduce((p, n) => p + n, 0);
+	let sell_count = ps.map(cb => cb.owned && unowned_only ? 0 : (market[cb.id]?.sell_count ?? 0)).reduce((p, n) => p + n, 0);
 	return { total, sell_count };
 }
 
