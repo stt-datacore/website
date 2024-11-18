@@ -425,43 +425,43 @@ const EventStatsComponent = () => {
 					<Table.Row>
 						<Table.HeaderCell
 							sorted={sortColumn === 'event_name' ? sortDirection : undefined}
-							onClick={(e) => sortColumn === 'event_name' ? switchDir() : setSortColumn('event_name')}
+							onClick={() => sortColumn === 'event_name' ? switchDir() : setSortColumn('event_name')}
 							>{t("global.name")}</Table.HeaderCell>
 						<Table.HeaderCell
 							sorted={sortColumn === 'instance_id' ? sortDirection : undefined}
-							onClick={(e) => sortColumn === 'instance_id' ? switchDir() : setSortColumn('instance_id')}
+							onClick={() => sortColumn === 'instance_id' ? switchDir() : setSortColumn('instance_id')}
 							>Id</Table.HeaderCell>
 						<Table.HeaderCell
 							sorted={sortColumn === 'event_type' ? sortDirection : undefined}
-							onClick={(e) => sortColumn === 'event_type' ? switchDir() : setSortColumn('event_type')}
+							onClick={() => sortColumn === 'event_type' ? switchDir() : setSortColumn('event_type')}
 							>{t("event_stats.event_type")}</Table.HeaderCell>
 						<Table.HeaderCell
 							sorted={sortColumn === 'rank' ? sortDirection : undefined}
-							onClick={(e) => sortColumn === 'rank' ? switchDir() : setSortColumn('rank')}
+							onClick={() => sortColumn === 'rank' ? switchDir() : setSortColumn('rank')}
 							>{t("event_stats.rank")}</Table.HeaderCell>
 						<Table.HeaderCell
 							sorted={sortColumn === 'percentile' ? sortDirection : undefined}
-							onClick={(e) => sortColumn === 'percentile' ? switchDir() : setSortColumn('percentile')}
+							onClick={() => sortColumn === 'percentile' ? switchDir() : setSortColumn('percentile')}
 							>{t("global.percentile")}</Table.HeaderCell>
 						<Table.HeaderCell
 							sorted={sortColumn === 'max' ? sortDirection : undefined}
-							onClick={(e) => sortColumn === 'max' ? switchDir() : setSortColumn('max')}
+							onClick={() => sortColumn === 'max' ? switchDir() : setSortColumn('max')}
 							>
 							{t("event_stats.rank_n_vp", { n: "1" })}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							sorted={sortColumn === 'min' ? sortDirection : undefined}
-							onClick={(e) => sortColumn === 'min' ? switchDir() : setSortColumn('min')}
+							onClick={() => sortColumn === 'min' ? switchDir() : setSortColumn('min')}
 							>
 							{t("event_stats.rank_n_vp", { n: "100" })}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							sorted={sortColumn === 'median' ? sortDirection : undefined}
-							onClick={(e) => sortColumn === 'median' ? switchDir() : setSortColumn('median')}
+							onClick={() => sortColumn === 'median' ? switchDir() : setSortColumn('median')}
 							>{t("event_stats.median_vp")}</Table.HeaderCell>
 						<Table.HeaderCell
 							sorted={sortColumn === 'avg' ? sortDirection : undefined}
-							onClick={(e) => sortColumn === 'avg' ? switchDir() : setSortColumn('avg')}
+							onClick={() => sortColumn === 'avg' ? switchDir() : setSortColumn('avg')}
 							>{t("event_stats.average_vp")}</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>
@@ -512,7 +512,9 @@ const EventStatsComponent = () => {
 					<h3>{stat.event_name}</h3>
 					{!!url && <img src={url} style={{height: '96px'}} />}
 					{stat.discovered && <p style={{fontSize:'0.8em',fontStyle: 'italic'}}>
-						{stat.guessed && "~ "}{moment(stat.discovered).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language)
+						{stat.guessed && "~ "}
+						{moment(stat.discovered)
+							.locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language)
 							.format("MMM D, YYYY")}
 					</p>}
 					{[stat.crew, ...stat.other_legendaries ?? []].map((symbol, idx2) => {
@@ -573,7 +575,6 @@ interface TimeframeFilterProps {
 	setTimeframe: (value?: string) => void;
 	setWeeks?: (value?: number) => void;
 }
-
 
 const TimeframeFilter = (props: TimeframeFilterProps) => {
 
