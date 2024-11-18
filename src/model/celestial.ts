@@ -10,8 +10,10 @@ export interface CelestialMarketListing {
     count_at_low: number;
 }
 
+export type MarketAggregation =  { [key: string]: CelestialMarketListing };
+
 export interface CelestialMarketRoot {
-    aggregation: { [key: string]: CelestialMarketListing }
+    aggregation: MarketAggregation;
 }
 
 export interface CelestialMarket {
