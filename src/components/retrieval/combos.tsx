@@ -5,7 +5,7 @@ import { NumericOptions } from '../../model/game-elements';
 import { GlobalContext } from '../../context/globalcontext';
 
 import { IPolestar, IRosterCrew, ActionableState } from './model';
-import { RetrievalContext } from './context';
+import { RetrievalContext, sortCombosByCost } from './context';
 import { CombosPlanner } from './combosplanner';
 import { CombosGrid } from './combosgrid';
 import { filterTraits } from './utils';
@@ -24,7 +24,7 @@ export const CombosModal = (props: CombosModalProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
-	const { allKeystones, polestarTailors, wishlist, setWishlist } = React.useContext(RetrievalContext);
+	const { allKeystones, polestarTailors, wishlist, setWishlist, market } = React.useContext(RetrievalContext);
 	const { crew } = props;
 	const dbid = playerData ? `${playerData.player.dbid}/` : '';
 	const addedPolestars = polestarTailors.added;

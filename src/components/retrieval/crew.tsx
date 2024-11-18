@@ -6,7 +6,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import { RarityFilter, CrewTraitFilter } from '../../components/crewtables/commonoptions';
 
 import { ActionableState, IPolestar, IRosterCrew, RetrievableState } from './model';
-import { RetrievalContext } from './context';
+import { getComboCost, RetrievalContext } from './context';
 import { RetrievalCrewTable } from './crewtable';
 import { filterTraits } from './utils';
 
@@ -275,10 +275,7 @@ export const RetrievalCrew = () => {
 					if (market) {
 						const pricemap = [] as { total: number, index: number, sell_count: number }[];
 						crew.unique_polestar_combos?.forEach((combo, index) => {
-							let ps = combo.map(cb => allKeystones.find(f => f.symbol === cb + "_keystone")).filter(f => !!f);
-							let total = ps.map(cb => cb.owned ? 0 : market[cb.id].low).reduce((p, n) => p + n, 0);
-							let sell_count = ps.map(cb => market[cb.id].sell_count).reduce((p, n) => p > n ? n : p, 0);
-							pricemap.push({ total, index, sell_count });
+							pricemap.push({ ...getComboCost(combo, allKeystones, market), index });
 						});
 
 						if (pricemap.length) {
@@ -291,11 +288,9 @@ export const RetrievalCrew = () => {
 							crew.price = 0;
 							crew.sell_count = 0;
 						}
-
 					}
 				}
 			});
-
 			resolve(rosterCrew);
 		});
 	}

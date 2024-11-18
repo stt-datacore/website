@@ -3,6 +3,7 @@ import React from 'react';
 import { IKeystone, IPolestarTailors, IRosterCrew, CrewFilterField } from './model';
 import { MarketAggregation } from '../../model/celestial';
 import { TranslateMethod } from '../../model/player';
+import { KeystoneBase } from '../../model/game-elements';
 
 export interface IRetrievalContext {
 	allKeystones: IKeystone[];	// All keystones (i.e. constellations AND polestars) with quantity owned and polestar odds
@@ -28,5 +29,41 @@ export function printISM(quantity: number, t?: TranslateMethod, printISM?: boole
 		<span>{quantity.toLocaleString()} {t && printISM ? t('global.item_types.ism') : ''}</span>
 	</div>
 }
+
+export function getComboCost(combo: string[], allKeystones: IKeystone[], market: MarketAggregation, unowned_only = true) {
+	let ps = combo.map(cb => allKeystones.find(f => f.symbol === cb || f.symbol === cb + "_keystone")).filter(f => !!f);
+	let total = ps.map(cb => cb.owned && unowned_only ? 0 : market[cb.id].low).reduce((p, n) => p + n, 0);
+	let sell_count = ps.map(cb => cb.owned && unowned_only ? 0 : market[cb.id].sell_count).reduce((p, n) => p + n, 0);
+	return { total, sell_count };
+}
+
+export function sortCombosByCost(combos: string[][], allKeystones: IKeystone[], market: MarketAggregation, unowned_only = true, direction: 'ascending' | 'descending' = 'ascending', fallBack?: (a: string[], b: string[]) => number) {
+	let pricemap = [] as { total: number, sell_count: number, combo: string[] }[];
+	let mul = direction === 'ascending' ? 1 : -1;
+	combos.forEach((combo) => {
+		pricemap.push({ ... getComboCost(combo, allKeystones, market, unowned_only), combo });
+	});
+	pricemap.sort((a, b) => {
+		let r = (a.total - b.total) * mul;
+		if (r === 0 && fallBack) r = fallBack(a.combo, b.combo);
+		return r;
+	});
+	combos.sort((a, b) => pricemap.findIndex(ap => ap.combo === a) - pricemap.findIndex(bp => bp.combo === b));
+}
+
+export function sortCombosBySellCount(combos: string[][], allKeystones: IKeystone[], market: MarketAggregation, unowned_only = true, direction: 'ascending' | 'descending' = 'ascending', fallBack?: (a: string[], b: string[]) => number) {
+	let pricemap = [] as { total: number, sell_count: number, combo: string[] }[];
+	let mul = direction === 'ascending' ? 1 : -1;
+	combos.forEach((combo) => {
+		pricemap.push({ ... getComboCost(combo, allKeystones, market, unowned_only), combo });
+	});
+	pricemap.sort((a, b) => {
+		let r = (a.sell_count - b.sell_count) * mul;
+		if (r === 0 && fallBack) r = fallBack(a.combo, b.combo);
+		return r;
+	});
+	combos.sort((a, b) => pricemap.findIndex(ap => ap.combo === a) - pricemap.findIndex(bp => bp.combo === b));
+}
+
 
 export const RetrievalContext = React.createContext<IRetrievalContext>({} as IRetrievalContext);
