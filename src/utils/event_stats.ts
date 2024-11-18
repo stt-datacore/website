@@ -18,6 +18,7 @@ export interface EventStats {
     other_legendaries?: string[];
     rank?: number;
     percentile?: number;
+    sorted_event_type?: string;
 }
 
 // Platform independent
@@ -85,17 +86,30 @@ export async function getEventStats(crew: CrewMember[], leaderboards: EventLeade
     return [stats, makeTypeBuckets(stats)];
 }
 
-export function makeTypeBuckets(stats: EventStats[]): { [key: string]: EventStats[] } {
+export function makeTypeBuckets(in_stats: EventStats[]): { [key: string]: EventStats[] } {
+
+    let savedStats = {} as { [key: string]: EventStats };
+    in_stats.forEach((stat) => {
+        savedStats[stat.instance_id] = stat;
+    });
+
+    let stats = JSON.parse(JSON.stringify(in_stats)) as EventStats[];
+    stats.forEach((stat) => {
+        stat.event_type = stat.event_type?.split('/').sort().join('/');
+    });
+
     let allTypes = stats.map(m => m.event_type).sort();
     allTypes = allTypes.filter((at, idx) => allTypes.findIndex(f => f === at) === idx);
-
     const typeBuckets =  {} as { [key: string]: EventStats[] };
-
+    stats.forEach((stat) => {
+        savedStats[stat.instance_id].sorted_event_type = stat.event_type;
+    })
     allTypes.forEach((type) => {
-        typeBuckets[type] = stats.filter(f => f.event_type === type);
+        typeBuckets[type] = stats.filter(f => f.event_type === type).map(m => savedStats[m.instance_id]);
         typeBuckets[type].sort((a, b) => {
             return b.min - a.min;
         })
     });
+
     return typeBuckets;
 }

@@ -210,7 +210,7 @@ const EventStatsComponent = () => {
 	const [weeks, setWeeks] = React.useState(timeframeToWeeks(timeframe));
 	const [typeTotals, setTypeTotals] = React.useState([] as TypeTotals[]);
 	const [eventTypes, setEventTypes] = useStateWithStorage('event_stats/event_types', [] as string[]);
-
+	const [topPct, setTopPct] = React.useState<{[key:string]: number}>({});
 	const switchDir = () => {
 		if (sortDirection === 'ascending') setSortDirection('descending');
 		else setSortDirection('ascending');
@@ -239,7 +239,8 @@ const EventStatsComponent = () => {
 			const max = top[type];
 			bucket.forEach((stat) => {
 				stat.event_type = stat.event_type.split("/").map(type => t(`event_type.${type}`)).join(" / ");
-				stat.percentile = (stat.min / max) * 100;
+				stat.sorted_event_type = stat.sorted_event_type?.split("/").map(type => t(`event_type.${type}`)).join(" / ");
+				stat.percentile = Number(((stat.min / max) * 100).toFixed(1));
 			});
 			bucket.sort((a, b) => b.percentile! - a.percentile!);
 			bucket.forEach((stat, idx) => stat.rank = idx+1);
@@ -283,7 +284,7 @@ const EventStatsComponent = () => {
 					return false;
 				}
 			}
-			if (!eventTypes.includes(stat.event_type)) eventTypes.push(stat.event_type);
+			if (!eventTypes.includes(stat.sorted_event_type ?? stat.event_type)) eventTypes.push(stat.sorted_event_type ?? stat.event_type);
 			return true;
 		});
 
@@ -293,12 +294,18 @@ const EventStatsComponent = () => {
 			if (eventTypes.includes(t)) newTypeFilter.push(t);
 		}
 
+		const toppct = {} as { [key: string]: number };
+
 		filtered = filtered.filter((stat, idx) => {
-			if (newTypeFilter?.length && !newTypeFilter.includes(stat.event_type)) return false;
+			if (newTypeFilter?.length && !newTypeFilter.includes(stat.sorted_event_type ?? stat.event_type)) return false;
 			totals[stat.event_type] ??= 0;
 			totals[stat.event_type]++;
+			let key = stat.sorted_event_type ?? stat.event_type;
+			toppct[key] ??= 0;
+			if (stat.percentile && toppct[key] < stat.percentile) toppct[key] = stat.percentile;
 			return true;
 		});
+
 
 		const pages = Math.ceil(filtered.length / itemsPerPage);
 		const dir = sortDirection === 'ascending' ? 1 : -1;
@@ -349,7 +356,7 @@ const EventStatsComponent = () => {
 				return;
 			}
 		}
-
+		setTopPct(toppct);
 		setTypeFilter(newTypeFilter?.length ? newTypeFilter : undefined);
 		setEventTypes(eventTypes);
 		const typeTotals = Object.entries(totals).map(([type, total]) => ({ type, total } as TypeTotals));
@@ -487,13 +494,13 @@ const EventStatsComponent = () => {
 		</div>
 	);
 
-	function drawTableRow(stats: EventStats, idx: number) {
-		let instance = event_instances.find(f => f.instance_id === stats.instance_id);
+	function drawTableRow(stat: EventStats, idx: number) {
+		let instance = event_instances.find(f => f.instance_id === stat.instance_id);
 		let url = '';
 		if (instance?.image) {
 			url = `${process.env.GATSBY_ASSETS_URL}${instance.image}`;
 		}
-		return <Table.Row key={`event_stats_${stats.event_name}_${idx}`}>
+		return <Table.Row key={`event_stats_${stat.event_name}_${idx}`}>
 			<Table.Cell width={5}>
 				<div style={{
 					display: 'flex',
@@ -502,17 +509,17 @@ const EventStatsComponent = () => {
 					justifyContent: 'flex-start',
 					gap: '0.5em'
 				}}>
-					<h3>{stats.event_name}</h3>
+					<h3>{stat.event_name}</h3>
 					{!!url && <img src={url} style={{height: '96px'}} />}
-					{stats.discovered && <p style={{fontSize:'0.8em',fontStyle: 'italic'}}>
-						{stats.guessed && "~ "}{moment(stats.discovered).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language)
+					{stat.discovered && <p style={{fontSize:'0.8em',fontStyle: 'italic'}}>
+						{stat.guessed && "~ "}{moment(stat.discovered).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language)
 							.format("MMM D, YYYY")}
 					</p>}
-					{[stats.crew, ...stats.other_legendaries ?? []].map((symbol, idx2) => {
+					{[stat.crew, ...stat.other_legendaries ?? []].map((symbol, idx2) => {
 						const crew = globalContext.core.crew.find(f => f.symbol === symbol);
 						if (!crew) return <></>;
 						return <div
-							key={`${stats.event_name}_${stats.crew_name}_${idx}_${idx2}`}
+							key={`${stat.event_name}_${stat.crew_name}_${idx}_${idx2}`}
 							style={{display:'flex', gap: '0.5em', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start'}}>
 							<AvatarView
 								showMaxRarity={!playerData}
@@ -527,35 +534,35 @@ const EventStatsComponent = () => {
 				</div>
 			</Table.Cell>
 			<Table.Cell>
-				{stats.instance_id}
+				{stat.instance_id}
 			</Table.Cell>
 			<Table.Cell>
 				<span style={{
-					color: stats.percentile == 100 ? 'lightgreen' : undefined,
-					fontWeight: stats.percentile == 100 ? 'bold': undefined
+					color: stat.percentile! >= topPct[stat.sorted_event_type!] ? 'lightgreen' : undefined,
+					fontWeight: stat.percentile == 100 ? 'bold': undefined
 				}}>
-					{stats.event_type}
+					{stat.event_type}
 				</span>
 			</Table.Cell>
 			<Table.Cell>
-				{stats.rank!}
+				{stat.rank!}
 			</Table.Cell>
 			<Table.Cell>
-				<span style={{color: gradeToColor(stats.percentile! / 100) || undefined}}>
-					{stats.percentile!.toFixed(1)}
+				<span style={{color: gradeToColor(stat.percentile! / 100) || undefined}}>
+					{stat.percentile!.toFixed(1)}
 				</span>
 			</Table.Cell>
 			<Table.Cell>
-			{stats.max.toLocaleString()} {t('shuttle_helper.event.vp')}
+			{stat.max.toLocaleString()} {t('shuttle_helper.event.vp')}
 			</Table.Cell>
 			<Table.Cell>
-				{stats.min.toLocaleString()} {t('shuttle_helper.event.vp')}
+				{stat.min.toLocaleString()} {t('shuttle_helper.event.vp')}
 			</Table.Cell>
 			<Table.Cell>
-				{Math.round(stats.median).toLocaleString()} {t('shuttle_helper.event.vp')}
+				{Math.round(stat.median).toLocaleString()} {t('shuttle_helper.event.vp')}
 			</Table.Cell>
 			<Table.Cell>
-				{Math.round(stats.avg).toLocaleString()} {t('shuttle_helper.event.vp')}
+				{Math.round(stat.avg).toLocaleString()} {t('shuttle_helper.event.vp')}
 			</Table.Cell>
 		</Table.Row>
 	}
@@ -614,10 +621,14 @@ const EventTypeFilter = (props: EventTypeFilterProps) => {
 	const options = [] as DropdownItemProps[];
 
 	availableTypes.forEach((type) => {
+		let text = type;
+		if (type.includes("/")) {
+			text = type + ` (${t('global.or')} ${(type.split(" / ").sort((a, b) => b.localeCompare(a)).join(" / "))})`
+		}
 		options.push({
 			key: type,
 			value: type,
-			text: type
+			text
 		})
 	});
 
