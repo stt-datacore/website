@@ -1377,6 +1377,13 @@
         "allow_unowned": "Allow unowned crew",
         "combo": "Combo",
         "combo_length": "Combo Length",
+        "combo_needs": {
+            "need_exact_n": "You need exactly {{n}} of the following: {{y}}",
+            "needed_polestars": "needed polestars",
+            "or_some_combination": "Or some combination of the following: {{y}}",
+            "some_combination": "You need some combination of the following: {{y}}",
+            "unlock_retrieval_by_needed_polestars_fmt": "Unlock retrieval options for this crew by acquiring 1 or more {{needed_polestars}}"
+        },
         "combos": "Combos",
         "consider_unowned_polestars": "Consider unowned polestars (may take much more time)",
         "constellation": "Constellation",

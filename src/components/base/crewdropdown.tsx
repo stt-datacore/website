@@ -26,7 +26,7 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
 
     React.useEffect(() => {
         const newChoices = [] as DropdownItemProps[];
-        
+
         pool.forEach((c) => {
             const crewKey = c.symbol + "_" + (c.id?.toString() ?? '_');
             let rarity = c.max_rarity;
@@ -66,7 +66,7 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
                                     alignItems: 'center'
                                 }}
                             >
-                                {"immortal" in c && c.immortal > 0 && 
+                                {"immortal" in c && c.immortal > 0 &&
                                 <Icon name={'snowflake'} size={'small'} />}
                                 {c.name}
                             </div>
@@ -82,9 +82,9 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
                                 <div style={{alignSelf: 'right'}}>
                                     {c.q_bits} ({qbitsToSlots(c.q_bits)})
                                 </div>}
-                                {!plain && custom && custom(c)}                                
+                                {!plain && custom && custom(c)}
                             </div>
-                            
+
                         </div>
                     </React.Fragment>
                 )
@@ -98,20 +98,10 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
         return <></>;
     }
 
-    const internalSetSelection = (value: number[] | number | undefined) => {
-        if (typeof value === 'number') {
-            value = [value];
-        }
-        if (value && maxSelection && value.length > maxSelection) {
-            value.splice(0, value.length - maxSelection);
-        }
-        setSelection(value);
-    }
-
-    return <Dropdown 
+    return <Dropdown
         style={style}
-        search 
-        selection        
+        search
+        selection
         clearable
         fluid={fluid}
         multiple={multiple}
@@ -121,4 +111,15 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
         value={selection}
         onChange={(e, { value }) => internalSetSelection(value as number[] | number | undefined)}
     />
+
+    function internalSetSelection(value: number[] | number | undefined) {
+        if (typeof value === 'number') {
+            value = [value];
+        }
+        if (value && maxSelection && value.length > maxSelection) {
+            value.splice(0, value.length - maxSelection);
+        }
+        setSelection(value);
+    }
+
 };

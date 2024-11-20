@@ -1390,6 +1390,13 @@
         "calculating_pct_ellipses_verbose": "{{ship.calc.calculating_pct_ellipses_verbose}}",
         "combo": "Combo",
         "combo_length": "Tamaño de los combos",
+        "combo_needs": {
+            "need_exact_n": "Necesitas exactamente {{n}} de los siguientes: {{y}}",
+            "needed_polestars": "estrellas polares necesarias",
+            "or_some_combination": "O alguna combinación de lo siguiente: {{y}}",
+            "some_combination": "Necesitas alguna combinación de lo siguiente: {{y}}",
+            "unlock_retrieval_by_needed_polestars_fmt": "Desbloquea opciones de recuperación para esta tripulación adquiriendo 1 o más {{needed_polestars}}"
+        },
         "combos": "Combos",
         "consider_unowned_polestars": "Considere estrellas polares sin dueño (puede llevar mucho más tiempo)",
         "constellation": "Constelación",
