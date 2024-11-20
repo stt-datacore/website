@@ -3,7 +3,7 @@ name: Incognito Kirk
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal: true
 date: 23/01/2019
 published: true
