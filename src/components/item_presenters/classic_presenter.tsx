@@ -5,7 +5,7 @@ import { Segment, Accordion, Table, Rating, Icon, SemanticICONS } from 'semantic
 import { BaseSkills, CrewMember, SkillData } from '../../model/crew';
 import { GlobalContext } from '../../context/globalcontext';
 import CrewStat from '../../components/crewstat';
-import { applyCrewBuffs, crewGender, prettyObtained } from '../../utils/crewutils';
+import { applyCrewBuffs, crewGender, getShortNameFromTrait, getVariantTraits, prettyObtained } from '../../utils/crewutils';
 
 import { ShipSkill } from './shipskill';
 import { CrewRankHighlights, CrewRanks } from './crew_ranks';
@@ -26,16 +26,18 @@ type ValidField =
 	'ranks' |
 	'rarity' |
 	'ship_ability' |
+	'short_name' |
 	'skills' |
 	'traits';
 
 const defaultFields = [
-	'flavor',
+'flavor',
 	'skills',
 	'fuses',
 	'ship_ability',
 	'rank_highlights',
 	'ranks',
+	'short_name',
 	'traits',
 	'collections',
 	'nicknames',
@@ -109,6 +111,9 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 
 			if (field === 'skills')
 				elements.push(<Skills key={field} crew={crew} rarity={crew.max_rarity} compact={compact} />);
+
+			if (field === 'short_name')
+				elements.push(<ShortName key={field} crew={crew} />);
 
 			if (field === 'traits')
 				elements.push(<Traits key={field} crew={crew} />);
@@ -189,6 +194,18 @@ const DateAdded = (props: { crew: CrewMember }) => {
 	return (
 		<p>
 			<b>{t('base.release_date')}: </b>{new Date(crew.date_added).toLocaleDateString()} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
+		</p>
+	);
+};
+
+const ShortName = (props: { crew: CrewMember }) => {
+	const { crew } = props;
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
+	const shortNames = getVariantTraits(crew).map((t) => getShortNameFromTrait(t, crew)).join(", ");
+	return (
+		<p>
+			<b>{t('base.short_name')}: </b>{shortNames}
 		</p>
 	);
 };

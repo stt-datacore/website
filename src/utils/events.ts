@@ -4,7 +4,7 @@ import { CompletionState, Content, GameEvent, Shuttle } from '../model/player';
 import { IBestCombos, IEventCombos, IEventData, IEventPair, IEventScoredCrew, IEventSkill, IRosterCrew } from '../components/eventplanner/model';
 import { EventInstance } from '../model/events';
 import CONFIG from '../components/CONFIG';
-import { applySkillBuff, crewCopy, getVariantTraits } from './crewutils';
+import { applySkillBuff, crewCopy, getShortNameFromTrait, getVariantTraits } from './crewutils';
 import { BuffStatTable } from './voyageutils';
 import { IDefaultGlobal } from '../context/globalcontext';
 import { Ship } from '../model/ship';
@@ -233,6 +233,7 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent
 	const bonus = [] as string[];
 	const featured = [] as string[];
 	const leLegend = lastEvent?.ranked_brackets[0].rewards.find(f => f.type === 1 && f.rarity === 5);
+	const leSuperRare = activeEvent?.ranked_brackets[0].rewards.find(f => f.type === 1 && f.rarity === 4);
 	for (let threshold of activeEvent.threshold_rewards) {
 		for (let reward of threshold.rewards) {
 			if (allCrew.some(c => c.symbol === reward.symbol && c.max_rarity === 5)) {
@@ -268,6 +269,16 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent
 							featured.push(altLegend.symbol);
 						if (!bonus.includes(altLegend.symbol))
 							bonus.push(altLegend.symbol);
+					}
+				}
+				if (!altPass && leSuperRare) {
+					const altSuperRare = allCrew.find(crew => leSuperRare.symbol === crew.symbol && getVariantTraits(crew).some(trait => perfectName.traits_hidden.includes(trait)));
+					if (altSuperRare) {
+						altPass = true;
+						if (!featured.includes(altSuperRare.symbol))
+							featured.push(altSuperRare.symbol);
+						if (!bonus.includes(altSuperRare.symbol))
+							bonus.push(altSuperRare.symbol);
 					}
 				}
 
@@ -311,7 +322,12 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent
 					// Otherwise try matching last name only (e.g. J. Archer should be Archer)
 					else if (/\s/.test(testName)) {
 						const imperfectTrait = testName.replace(/^.+\s/, '').toLowerCase();
-						const imperfectTraits = allCrew.filter(crew => crew.traits.includes(imperfectTrait) || crew.traits_hidden.includes(imperfectTrait));
+						const imperfectTraits = allCrew.filter(crew => {
+							if (crew.traits.includes(imperfectTrait) || crew.traits_hidden.includes(imperfectTrait)) return true;
+							let c = getVariantTraits(crew).map((trait) => getShortNameFromTrait(trait, crew));
+							if (c.some(s => s === testName)) return true;
+							return false;
+						});
 						imperfectTraits.forEach(crew => {
 							if (!bonus.includes(crew.symbol))
 								bonus.push(crew.symbol);
@@ -319,6 +335,10 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent
 					}
 				}
 			}
+			if (leLegend && !featured.includes(leLegend.symbol!)) featured.push(leLegend.symbol!);
+			if (leLegend && !bonus.includes(leLegend.symbol!)) bonus.push(leLegend.symbol!);
+			if (leSuperRare && !featured.includes(leSuperRare.symbol!)) featured.push(leSuperRare.symbol!);
+			if (leSuperRare && !bonus.includes(leSuperRare.symbol!)) bonus.push(leSuperRare.symbol!);
 			// Identify featured from matching featured_crew
 			//	These usually include the event's legendary ranked reward, so check against the bonus crew we identified above
 			activeEvent.featured_crew.forEach(crew => {
@@ -517,7 +537,16 @@ export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventDa
 
 	// Get event data from recently uploaded playerData
 	if (ephemeral?.events) {
-		const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew, globalContext.core.ship_schematics.map(m => m.ship)))
+		let lasts = globalContext.core.event_instances.filter(f => !ephemeral.events.some(e => e.instance_id === f.instance_id)).sort((a, b) => b.instance_id - a.instance_id);
+		let lastevent = undefined as EventInstance | undefined;
+		let leg = undefined as GameEvent | undefined;
+		if (lasts.length) {
+			lastevent = lasts[0];
+			const lastResp = await fetch(`/structured/events/${lastevent.instance_id}.json`);
+			leg = await lastResp.json() as GameEvent;
+		}
+		const lastEvent = leg;
+		const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew, globalContext.core.ship_schematics.map(m => m.ship), lastEvent))
 			.filter(ev => ev !== undefined).map(ev => ev as IEventData)
 			.filter(ev => ev.seconds_to_end > 0)
 			.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);

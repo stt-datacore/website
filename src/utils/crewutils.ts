@@ -1159,7 +1159,7 @@ export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_sk
 	};
 }
 
-export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[]) {
+export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[] | CrewMember, preferEnglish = true) {
 	switch(trait) {
 		case "dax":
 			return 'Dax';
@@ -1169,8 +1169,16 @@ export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[]) {
 			return "G. Burnham";
 		case "burnham":
 			return "M. Burnham";
+		case "mburnham_sr":
+			return "M. Burnham, Sr."
+
 		default:
-			return crewGroup[0].short_name;
+			if (Array.isArray(crewGroup)) {
+				return (preferEnglish ? crewGroup[0].short_name_english : '') || crewGroup[0].short_name;
+			}
+			else {
+				return (preferEnglish ? crewGroup.short_name_english : '') || crewGroup.short_name;
+			}
 	}
 }
 
