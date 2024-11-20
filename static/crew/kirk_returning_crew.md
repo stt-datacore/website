@@ -5,7 +5,7 @@ series: tos
 memory_alpha:
 bigbook_tier: 1
 in_portal:
-date: 18/11/2024
+date: 19/11/2024
 published: true
 ---
 
