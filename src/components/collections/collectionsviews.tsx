@@ -221,7 +221,9 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 			showFilters: false,
 			requirePlayer: true,
 			mode: 'progress',
-			render: (workerRunning: boolean) => <ProgressTable workerRunning={workerRunning} playerCollections={playerCollections}
+			render: (workerRunning: boolean) => <ProgressTable
+				workerRunning={workerRunning}
+				playerCollections={playerCollections}
 				filterCrewByCollection={(collection) => {
 					setCollectionSettings({
 						...colContext,
@@ -254,7 +256,10 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 			showFilters: true,
 			requirePlayer: true,
 			mode: 'group',
-			render: (workerRunning: boolean) => <CollectionGroupTable workerRunning={workerRunning} playerCollections={playerCollections} colGroups={colGroups} />
+			render: (workerRunning: boolean) => <CollectionGroupTable
+				workerRunning={workerRunning}
+				playerCollections={playerCollections}
+				colGroups={colGroups} />
 		},
 		{
 			menuItem: '',
@@ -282,28 +287,15 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 				setRequestRun(true);
 			}
 		}
-
 	}, [context, mapFilter, showIncomplete, rarityFilter, fuseFilter, ownedFilter, searchFilter, matchMode, tierFilter]);
 
 	setTimeout(() => {
 		if (requestRun) {
 			runWorker();
 			setRequestRun(false);
-
 		}
 		if (tabIndex === undefined) setTabIndex(0);
 	}, 500);
-
-	// React.useEffect(() => {
-	// 	if (worker) {
-	// 		runWorker(worker);
-	// 	}
-	// 	else {
-	// 		let worker = new UnifiedWorker();
-	// 		worker.addEventListener('message', processWorkerResult);
-	// 		setWorker(worker);
-	// 	}
-	// }, [worker]);
 
 	return (
 		<React.Fragment>

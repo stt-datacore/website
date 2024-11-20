@@ -56,57 +56,6 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
 
     const [collectionSettings, setCollectionSettings] = useStateWithStorage(pageId +'/collectionSettings', DefaultConfig, { rememberForever: true });
 
-    const setTierFilter = (tierFilter: number) => {
-        setCollectionSettings({ ... collectionSettings, tierFilter })
-    }
-
-    const setOwnedFilter = (ownedFilter: string) => {
-        setCollectionSettings({ ... collectionSettings, ownedFilter })
-    }
-
-    const setFuseFilter = (fuseFilter: string) => {
-        setCollectionSettings({ ... collectionSettings, fuseFilter })
-    }
-
-    const setRarityFilter = (rarityFilter: number[]) => {
-        setCollectionSettings({ ... collectionSettings, rarityFilter })
-    }
-
-    const setSearchFilter = (searchFilter: string) => {
-        setCollectionSettings({ ... collectionSettings, searchFilter })
-    }
-
-    const setMapFilter = (mapFilter: MapFilterOptions) => {
-        setCollectionSettings({ ... collectionSettings, mapFilter })
-    }
-
-	const setShort = (short: boolean) => {
-        setCollectionSettings({ ... collectionSettings, short, mapFilter: { ...collectionSettings.mapFilter, rewardFilter: [] } });
-    }
-
-	const setCostMode = (costMode: "normal" | "sale") => {
-        setCollectionSettings({ ... collectionSettings, costMode })
-    }
-
-	const setMatchMode = (matchMode: CollectionMatchMode) => {
-        setCollectionSettings({ ... collectionSettings, matchMode, mapFilter: { ...collectionSettings.mapFilter } })
-    }
-
-	const setShowIncomplete = (showIncomplete: boolean) => {
-        setCollectionSettings({ ... collectionSettings, showIncomplete, mapFilter: { ...collectionSettings.mapFilter } })
-    }
-
-    const setByCost = (byCost: boolean) => {
-        setCollectionSettings({ ... collectionSettings, byCost, mapFilter: { ...collectionSettings.mapFilter } })
-	}
-
-	const setFavorited = (favorited: boolean) => {
-        setCollectionSettings({ ... collectionSettings, favorited, mapFilter: { ...collectionSettings.mapFilter } })
-	}
-
-    const setHardFilter = (hardFilter: boolean) => {
-        setCollectionSettings({ ... collectionSettings, hardFilter, mapFilter: { ...collectionSettings.mapFilter } })
-	}
 
     const data = {
         ... collectionSettings,
@@ -156,6 +105,58 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
         if (!checkCommonFilter(collectionSettings, crew)) return false;
         return crewMatchesSearchFilter(crew, filters, filterType);
     }
+
+    function setTierFilter(tierFilter: number) {
+        setCollectionSettings({ ... collectionSettings, tierFilter })
+    }
+
+    function setOwnedFilter(ownedFilter: string) {
+        setCollectionSettings({ ... collectionSettings, ownedFilter })
+    }
+
+    function setFuseFilter(fuseFilter: string) {
+        setCollectionSettings({ ... collectionSettings, fuseFilter })
+    }
+
+    function setRarityFilter(rarityFilter: number[]) {
+        setCollectionSettings({ ... collectionSettings, rarityFilter })
+    }
+
+    function setSearchFilter(searchFilter: string) {
+        setCollectionSettings({ ... collectionSettings, searchFilter })
+    }
+
+    function setMapFilter(mapFilter: MapFilterOptions) {
+        setCollectionSettings({ ... collectionSettings, mapFilter })
+    }
+
+	function setShort(short: boolean) {
+        setCollectionSettings({ ... collectionSettings, short, mapFilter: { ...collectionSettings.mapFilter, rewardFilter: [] } });
+    }
+
+	function setCostMode(costMode: "normal" | "sale") {
+        setCollectionSettings({ ... collectionSettings, costMode })
+    }
+
+	function setMatchMode(matchMode: CollectionMatchMode) {
+        setCollectionSettings({ ... collectionSettings, matchMode, mapFilter: { ...collectionSettings.mapFilter } })
+    }
+
+	function setShowIncomplete(showIncomplete: boolean) {
+        setCollectionSettings({ ... collectionSettings, showIncomplete, mapFilter: { ...collectionSettings.mapFilter } })
+    }
+
+    function setByCost(byCost: boolean) {
+        setCollectionSettings({ ... collectionSettings, byCost, mapFilter: { ...collectionSettings.mapFilter } })
+	}
+
+	function setFavorited(favorited: boolean) {
+        setCollectionSettings({ ... collectionSettings, favorited, mapFilter: { ...collectionSettings.mapFilter } })
+	}
+
+    function setHardFilter(hardFilter: boolean) {
+        setCollectionSettings({ ... collectionSettings, hardFilter, mapFilter: { ...collectionSettings.mapFilter } })
+	}
 
 }
 

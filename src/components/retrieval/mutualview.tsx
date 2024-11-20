@@ -17,7 +17,7 @@ import CONFIG from "../CONFIG";
 import { PolestarDropdown } from "./polestardropdown";
 import { PolestarMultiWorkerStatus, PolestarMultiWorker } from "./polestarmultiworker";
 import { MultiWorkerContext } from "../base/multiworkerbase";
-import { RetrievalContext } from "./context";
+import { printISM, RetrievalContext } from "./context";
 import { RarityFilter } from "../crewtables/commonoptions";
 
 const polestarTailorDefaults: IPolestarTailors = {
@@ -61,6 +61,7 @@ interface MutualViewConfig {
     verbose: boolean;
     allowUnowned?: number;
     no100?: boolean;
+    alwaysShowPrice?: boolean;
 }
 
 type MutualViewProps = {
@@ -138,7 +139,7 @@ export const MutualView = (props: MutualViewProps) => {
                 <MutualWorkerPanel polestars={polestars} results={results} setResults={setResults} config={config} setConfig={setConfig} />
         </PolestarMultiWorker>}
         {!!results?.length && <div style={{textAlign: 'center'}}>
-            <MutualTable polestars={polestars} items={results} />
+            <MutualTable alwaysShowPrice={config.alwaysShowPrice} polestars={polestars} items={results} />
         </div>}
         <CrewHoverStat targetGroup="mutual_crew_hover" />
         <ItemHoverStat targetGroup="mutual_crew_item" />
@@ -163,6 +164,8 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
     const { cancel, running, runWorker } = workerContext;
 
     const globalContext = React.useContext(GlobalContext);
+    const retrievalContext = React.useContext(RetrievalContext);
+    const { market } = retrievalContext;
     const { t } = globalContext.localized;
 
     const { polestars, config, setConfig, results, setResults } = props;
@@ -302,6 +305,11 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
                     checked={config.no100}
                     onChange={(e, { checked }) => setConfig({ ...config, no100: checked as boolean || false})}
                 />
+                {!!market && <Checkbox label={t('retrieval.price.all')}
+                    disabled={running}
+                    checked={config.alwaysShowPrice}
+                    onChange={(e, { checked }) => setConfig({ ...config, alwaysShowPrice: checked as boolean || false})}
+                />}
             </div>
             <div style={{...optionStyle, flexDirection: 'row', margin: '0.5em'}}>
                 <Button
@@ -420,13 +428,16 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
 interface MutualTableProps {
     items: IMutualPolestarWorkerItem[]
     polestars: IPolestar[];
+    alwaysShowPrice?: boolean;
 }
 
 const MutualTable = (props: MutualTableProps) => {
     const globalContext = React.useContext(GlobalContext);
+    const retrievalContext = React.useContext(RetrievalContext);
+    const { market, polestarTailors } = retrievalContext;
     const { t, TRAIT_NAMES } = globalContext.localized;
 
-    const { items, polestars } = props;
+    const { items, polestars, alwaysShowPrice } = props;
 
     const { playerData } = globalContext.player;
     const [totalPages, setTotalPages] = React.useState(1);
@@ -594,6 +605,7 @@ const MutualTable = (props: MutualTableProps) => {
                 <div style={{display:'flex', flexWrap:'wrap', flexDirection:'row', justifyContent: 'space-evenly', alignItems: 'flex-start'}}>
                     {item.combo.map((polestar) => {
                         polestar.imageUrl = getIconPath(polestar.icon, true);
+                        let tailored = polestarTailors.added.filter(t => t == polestar.symbol);
                         (polestar as any)['quantity'] = polestar.owned;
 
                         let psName = '';
@@ -614,7 +626,16 @@ const MutualTable = (props: MutualTableProps) => {
                             <p style={{textAlign: 'center'}}>
                             {psName}
                             </p>
-                            ({polestar.owned})
+                            <div className={`ui label`}
+                                 style={{backgroundColor: `${tailored.length ? 'darkgreen' : ''}`}}>
+                                ({polestar.owned + tailored.length})
+                            </div>
+                            {!!market && (alwaysShowPrice || !!tailored.length) &&
+                                <div style={{textAlign:'center'}}>
+                                    {printISM(market[polestar.id]?.low ?? 0, t)}
+                                    {t('global.n_available', { n: `${market[polestar.id]?.sell_count ?? 0}`})}
+                                </div>
+                            }
                             </div>
                     })}
                 </div>

@@ -39,18 +39,18 @@ const CollectionsCrewCard = (props: CollectionsCrewCardProps): JSX.Element => {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            padding:"0.25em 1em",
+            padding: "0.25em 1em",
             paddingTop: index < (collection?.needed ?? 0) ? '0.75em' : undefined,
             borderRadius: "5px",
             ... ((highlightIfNeeded && needed) ? highlightStyle : style) ?? {}
-    }}>
+        }}>
 
-    {needed && highlightIfNeeded &&
-        <div style={{zIndex: 5, display: 'flex', width: "100%", flexDirection:'row', justifyContent: 'center'}}>
-        <Icon color='green'
-            name='star'
-            style={{marginLeft:"-52px", marginBottom: "-16px", height:'24px'}} />
-        </div>}
+        {needed && highlightIfNeeded &&
+            <div style={{ zIndex: 5, display: 'flex', width: "100%", flexDirection: 'row', justifyContent: 'center' }}>
+                <Icon color='green'
+                    name='star'
+                    style={{ marginLeft: "-52px", marginBottom: "-16px", height: '24px' }} />
+            </div>}
 
         <AvatarView
             mode='crew'
@@ -58,25 +58,25 @@ const CollectionsCrewCard = (props: CollectionsCrewCardProps): JSX.Element => {
             targetGroup={'collectionsTarget'}
             item={crew}
             useDirect={true}
-            />
+        />
 
         <b
             onClick={(e) => onClick(e, crew)}
             style={{
-            cursor: "pointer",
-            margin:"0.5em 0 0 0",
-            textDecoration: "underline"
+                cursor: "pointer",
+                margin: "0.5em 0 0 0",
+                textDecoration: "underline"
             }}
             title={"Click to see collections containing this crew member"}
-            >
-            {crew.favorite && <Icon name='heart' style={{textDecoration: 'none'}} />} {crew.name}
+        >
+            {crew.favorite && <Icon name='heart' style={{ textDecoration: 'none' }} />} {crew.name}
         </b>
-        <i>({t('collections.n_increased', { n: `${crew.pickerId}`})})</i>
-        {crew.have && <i>{t('base.level')} {crew.level}</i> || <i>{t('base.level')} 100</i> }
+        <i>({t('collections.n_increased', { n: `${crew.pickerId}` })})</i>
+        {crew.have && <i>{t('base.level')} {crew.level}</i> || <i>{t('base.level')} 100</i>}
         <CrewItemsView itemSize={16} mobileSize={16} crew={crew} />
 
-        <div style={{margin:"0.5em 0"}} title={crew.have ? 'Citations' : 'Unowned'}>
-        <RewardsGrid kind={'need'} needs={makeCiteNeeds(crew)} negative={!crew.have} />
+        <div style={{ margin: "0.5em 0" }} title={crew.have ? 'Citations' : 'Unowned'}>
+            <RewardsGrid kind={'need'} needs={makeCiteNeeds(crew)} negative={!crew.have} />
         </div>
 
     </div>)
