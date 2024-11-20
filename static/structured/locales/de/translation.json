@@ -1379,6 +1379,13 @@
         "calculating_pct_ellipses_verbose": "{{ship.calc.calculating_pct_ellipses_verbose}}",
         "combo": "Combo",
         "combo_length": "Combos Größe",
+        "combo_needs": {
+            "need_exact_n": "Sie benötigen genau {{n}} davon: {{y}}",
+            "needed_polestars": "benötigten Polarsterne",
+            "or_some_combination": "Oder eine Kombination aus Folgendem: {{y}}",
+            "some_combination": "Sie benötigen eine Kombination aus Folgendem: {{y}}",
+            "unlock_retrieval_by_needed_polestars_fmt": "Schalte Abrufoptionen für diese Crew frei, indem du 1 oder mehr {{needed_polestars}} erwirbst."
+        },
         "combos": "Combos",
         "consider_unowned_polestars": "Betrachten Sie nicht besessene Polarsterne (kann viel mehr Zeit in Anspruch nehmen)",
         "constellation": "Sternbilde",

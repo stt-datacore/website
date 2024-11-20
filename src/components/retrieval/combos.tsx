@@ -174,7 +174,7 @@ export const CombosModal = (props: CombosModalProps) => {
 
 		return (
 			<div style={{ fontSize: '1rem', fontWeight: 'normal' }}>
-				Use <b>any combo</b> below to retrieve
+				{t('retrieval.use_any_combo_below_to_retrieve')}
 			</div>
 		);
 	}
