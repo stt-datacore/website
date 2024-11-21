@@ -180,7 +180,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				lastu = u;
 			}
 		}
-		return us.filter(f => f.rarity > 1);
+		return us.filter(f => f.rarity > 1 || f.max_rarity === 5);
 	}
 
 	function dismissNew(crew: PlayerCrew) {
