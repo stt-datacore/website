@@ -539,14 +539,13 @@ export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventDa
 	if (ephemeral?.events) {
 		let _lev = undefined as GameEvent | undefined;
 
-		if (ephemeral.events.length > 1 && ephemeral.events[0].seconds_to_start === 0) {
+		if (ephemeral.events.length > 1) {
 			_lev = ephemeral.events[0];
 		}
 		else {
 			let lasts = globalContext.core.event_instances.filter(f => !ephemeral.events.some(e => e.instance_id === f.instance_id)).sort((a, b) => b.instance_id - a.instance_id);
 			if (lasts.length) {
-				let lastevent = lasts[0];
-				const lastResp = await fetch(`/structured/events/${lastevent.instance_id}.json`);
+				const lastResp = await fetch(`/structured/events/${lasts[0].instance_id}.json`);
 				_lev = await lastResp.json() as GameEvent;
 			}
 		}
