@@ -539,7 +539,7 @@ export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventDa
 	if (ephemeral?.events) {
 		let _lev = undefined as GameEvent | undefined;
 
-		if (ephemeral.events.length > 1) {
+		if (ephemeral.events.length > 1 && ephemeral.events[0].seconds_to_start === 0) {
 			_lev = ephemeral.events[0];
 		}
 		else {
