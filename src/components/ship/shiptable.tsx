@@ -156,6 +156,9 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 	}
 
 	transmogrify(ship: Ship) {
+		if (ship.max_level && !this.context.player.playerData) {
+			ship = { ...ship, max_level: ship.max_level + 1 };
+		}
 		if (!this.props.event_ships) return ship;
 		ship = JSON.parse(JSON.stringify(ship));
 		if (this.props.high_bonus?.includes(ship.symbol)) {
@@ -430,14 +433,8 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 							<Table.Cell>{ship.hull}</Table.Cell>
 							<Table.Cell>{ship.shields} (regen {ship.shield_regen})</Table.Cell>
 							<Table.Cell>
-								{ship.level && <>
-									{ship.level} / {ship.max_level}
-								</>
-								||
-								<>
-								{(ship.max_level ?? 0) + 1}
-								</>
-								}
+								{ship.level && <> {ship.level} / {ship.max_level} </>
+								|| <>{ship.max_level}</>}
 
 
 								</Table.Cell>
