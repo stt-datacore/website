@@ -112,7 +112,9 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 			title: <div>{t('alerts.show_previously_hidden')}</div>,
 			checkVisible: (data) => !!playerData && (alertConfig.alert_fuses || alertConfig.alert_new),
 			customAction: (e, data) => {
-				setRestoreHiddenAlerts(true);
+				setTimeout(() => {
+					setRestoreHiddenAlerts(true);
+				});
 			}
 		},
 		{

@@ -12,6 +12,8 @@ import { appelate } from '../../utils/misc';
 import { Offer, OfferCrew } from '../../model/offers';
 import { useStateWithStorage } from '../../utils/storage';
 import { AlertContext } from '../alerts/alertprovider';
+import { AvatarView } from '../item_presenters/avatarview';
+import { CrewHoverStat } from '../hovering/crewhoverstat';
 
 type RosterPickerProps = {
 	rosterType: RosterType;
@@ -22,7 +24,7 @@ type RosterPickerProps = {
 
 export const RosterPicker = (props: RosterPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { config: alertConfig, restoreHiddenAlerts } = React.useContext(AlertContext);
+	const { config: alertConfig, setRestoreHiddenAlerts, restoreHiddenAlerts } = React.useContext(AlertContext);
 	const { t } = globalContext.localized;
 	const { maxBuffs } = globalContext;
 	const { playerData, buffConfig: playerBuffs, ephemeral } = globalContext.player;
@@ -39,6 +41,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		if (restoreHiddenAlerts) {
 			setNewDismissed([]);
 			setFuseDismissed([]);
+			setRestoreHiddenAlerts(false);
 		}
 	}, [restoreHiddenAlerts])
 
@@ -134,35 +137,74 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		<>
 		{!!alertConfig.alert_fuses && !!buyFuses?.length && buyFuses.map((crew, idx) => {
 			if (fuseDismissed.includes(crew.symbol)) return <></>
-			return <Message key={`buyback_${crew.symbol}+${idx}`} style={{cursor: 'pointer'}} color='blue' onClick={() => setRosterType('buyBack')}>
+			return drawAlert(crew, <>
 				{t('alerts.fusible_crew', {
-					subject: `${crew.name}`,
-					rarity: `${crew.rarity}`,
-					max_rarity: `${crew.max_rarity}`
-					})} {t('alerts.check_buyback')}
-				  <Label as='a' style={{background: 'transparent', float: 'right', margin: 0, padding: 0}} corner='right' onClick={() => dismissFuse(crew)}>
-					<Icon name='delete' style={{ cursor: 'pointer' }} />
-				</Label>
-			</Message>
+								subject: `${crew.name}`,
+								rarity: `${crew.rarity}`,
+								max_rarity: `${crew.max_rarity}`
+				})} {t('alerts.check_buyback')}
+				</>, idx, dismissFuse);
 		})}
 		{!!alertConfig.alert_new && !!buyUnowned?.length && buyUnowned.map((crew, idx) => {
 			if (newDismissed.includes(crew.symbol)) return <></>
-			return <Message key={`buyback_${crew.symbol}+${idx}`} style={{cursor: 'pointer'}} color='blue' onClick={() => setRosterType('buyBack')}>
+			return drawAlert(crew, <>
 				{t('alerts.new_crew', {
-					subject: `${crew.name}`,
-					rarity: `${crew.rarity}`,
-					max_rarity: `${crew.max_rarity}`
-					})} {t('alerts.check_buyback')}
-				  <Label as='a' style={{background: 'transparent', float: 'right', margin: 0, padding: 0}}  onClick={() => dismissNew(crew)}>
-					<Icon name='delete' style={{ cursor: 'pointer' }} />
-				</Label>
-			</Message>
+						subject: `${crew.name}`,
+						rarity: `${crew.rarity}`,
+						max_rarity: `${crew.max_rarity}`
+						})} {t('alerts.check_buyback')}
+				</>, idx, dismissNew)
 		})}
 		<Step.Group fluid widths={hasBuyBack ? 4 : 3}>
 			{steps.map((step, idx) => <React.Fragment key={`index_page_step_${idx}`}>{step}</React.Fragment>)}
 		</Step.Group>
+		<CrewHoverStat targetGroup='alerts' />
 		</>
 	);
+
+	function drawAlert(crew: PlayerCrew, message: string | JSX.Element, idx: number, dismiss: (crew: PlayerCrew) => void) {
+		return (
+			<div style={{
+				margin: '0.5em 0',
+				display: 'grid',
+				gridTemplateAreas: `'image alert'`,
+				gridTemplateColumns: '64px auto',
+				alignItems: 'center'
+			}}>
+				<div
+					style={{gridArea: 'image', marginTop: '1em', display: 'flex', alignItems: 'center'}}
+					>
+					<AvatarView
+						mode='crew'
+						item={crew}
+						partialItem={true}
+						size={48}
+						targetGroup='alerts'
+						/>
+				</div>
+				<Message
+					key={`buyback_${crew.symbol}+${idx}`}
+					style={{
+						gridArea: 'alert'
+					}}
+					color='blue'>
+					<div style={{
+						display: 'flex',
+						flexDirection: 'row',
+						alignItems: 'center',
+						justifyContent: 'flex-start',
+						gap: '1em'
+					}}>
+						<span style={{flexGrow: 1, cursor: 'pointer'}} onClick={() => setRosterType('buyBack')}>
+							{message}
+						</span>
+						<Label as='a' style={{justifySelf: 'flex-end', background: 'transparent', float: 'right', margin: 0, padding: 0}} onClick={() => dismiss(crew)}>
+							<Icon name='delete' style={{ cursor: 'pointer' }} />
+						</Label>
+					</div>
+				</Message>
+			</div>)
+	}
 
 	function getFusesInBuybackWell() {
 		if (!playerData?.buyback_well?.length) return [];
@@ -183,7 +225,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 	function getUnownedInBuybackWell() {
 		if (!playerData?.buyback_well?.length) return [];
-		let newcrew = playerData.buyback_well.filter(f => playerData.player.character.unOwnedCrew?.some(u => u.symbol === f.symbol)).sort((a, b) => a.symbol.localeCompare(b.symbol));
+		let newcrew = playerData.buyback_well.filter(f => playerData.player.character.unOwnedCrew?.some(u => u.symbol === f.symbol)).sort((a, b) => a.symbol.localeCompare(b.symbol)).map(m => playerData.player.character.unOwnedCrew!.find(f => f.symbol === m.symbol)!);
 		let lastcrew = undefined as PlayerCrew | undefined;
 		let finalcrew = [] as PlayerCrew[];
 		for (let u of newcrew) {
