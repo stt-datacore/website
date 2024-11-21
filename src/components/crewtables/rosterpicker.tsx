@@ -11,6 +11,7 @@ import { loadOfferCrew } from '../../utils/offers';
 import { appelate } from '../../utils/misc';
 import { Offer, OfferCrew } from '../../model/offers';
 import { useStateWithStorage } from '../../utils/storage';
+import { AlertContext } from '../alerts/alertprovider';
 
 type RosterPickerProps = {
 	rosterType: RosterType;
@@ -21,9 +22,10 @@ type RosterPickerProps = {
 
 export const RosterPicker = (props: RosterPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { config: alertConfig, restoreHiddenAlerts } = React.useContext(AlertContext);
 	const { t } = globalContext.localized;
 	const { maxBuffs } = globalContext;
-	const { playerData, buffConfig: playerBuffs, ephemeral, showBuybackAlerts, restoreHiddenAlerts } = globalContext.player;
+	const { playerData, buffConfig: playerBuffs, ephemeral } = globalContext.player;
 	const { rosterType, setRosterType, setRosterCrew, buffMode } = props;
 	const [allCrew, setAllCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [buyBackCrew, setBuyBackCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
@@ -130,9 +132,9 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 	return (
 		<>
-		{showBuybackAlerts && !!buyFuses?.length && buyFuses.map((crew, idx) => {
+		{!!alertConfig.alert_fuses && !!buyFuses?.length && buyFuses.map((crew, idx) => {
 			if (fuseDismissed.includes(crew.symbol)) return <></>
-			return <Message key={`buyback_${crew.symbol}+${idx}`} color='blue'>
+			return <Message key={`buyback_${crew.symbol}+${idx}`} style={{cursor: 'pointer'}} color='blue' onClick={() => setRosterType('buyBack')}>
 				{t('alerts.fusible_crew', {
 					subject: `${crew.name}`,
 					rarity: `${crew.rarity}`,
@@ -143,9 +145,9 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				</Label>
 			</Message>
 		})}
-		{showBuybackAlerts && !!buyUnowned?.length && buyUnowned.map((crew, idx) => {
+		{!!alertConfig.alert_new && !!buyUnowned?.length && buyUnowned.map((crew, idx) => {
 			if (newDismissed.includes(crew.symbol)) return <></>
-			return <Message key={`buyback_${crew.symbol}+${idx}`} color='blue'>
+			return <Message key={`buyback_${crew.symbol}+${idx}`} style={{cursor: 'pointer'}} color='blue' onClick={() => setRosterType('buyBack')}>
 				{t('alerts.new_crew', {
 					subject: `${crew.name}`,
 					rarity: `${crew.rarity}`,
@@ -242,10 +244,9 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			}
 			const crewMap = playerData.buyback_well?.map(b => {
 				let crew = globalContext.core.crew.find(f => f.symbol === b.symbol) as IRosterCrew;
-				if (!b.rarity) crew.rarity = 1;
-				else {
-					crew.rarity = b.rarity;
-				}
+				if (crew) crew = { ...crew };
+				crew.rarity = 1;
+
 				return crew;
 			});
 

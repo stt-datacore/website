@@ -1,22 +1,29 @@
 import React from "react"
 import { useStateWithStorage } from "../../utils/storage";
 import { GlobalContext } from "../../context/globalcontext";
+
+import { AlertMode, DefaultAlertConfig, IAlertConfig } from "./model";
 import { AlertModal } from "./alertmodal";
-import { AlertMode, IAlert } from "./model";
 
 
 export interface IAlertContext {
-    alerts: IAlert[];
-    setAlerts: (value: IAlert[]) => void;
-    triggered_alerts?: IAlert[];
-    drawAlertModal: (renderTrigger?: () => JSX.Element, mode?: AlertMode) => void;
+    config: IAlertConfig;
+    setConfig: (value: IAlertConfig) => void;
+    alertOpen: boolean,
+    setAlertOpen: (value: boolean) => void;
+    drawAlertModal: (renderTrigger?: () => JSX.Element) => JSX.Element;
+    restoreHiddenAlerts: boolean,
+	setRestoreHiddenAlerts: (value: boolean) => void
 }
 
 const DefaultAlertContext = {
-    alerts: [],
-    setAlerts: () => false,
-    triggered_alerts: [],
-    drawAlertModal: () => false
+    config: DefaultAlertConfig,
+    setConfig: () => false,
+    alertOpen: false,
+    setAlertOpen: () => false,
+    drawAlertModal: () => <></>,
+    restoreHiddenAlerts: false,
+	setRestoreHiddenAlerts: () => false
 } as IAlertContext;
 
 export const AlertContext = React.createContext(DefaultAlertContext);
@@ -32,18 +39,19 @@ export const AlertProvider = (props: AlertProviderProps) => {
     const { playerData } = globalContext.player;
 
     const dbid = playerData ? `${playerData.player.dbid}/` : '';
-    const [alerts, setAlerts] = useStateWithStorage<IAlert[]>(`${dbid}alerts`, []);
+    const [config, setConfig] = useStateWithStorage<IAlertConfig>(`${dbid}alerts`, DefaultAlertConfig);
     const [alertOpen, setAlertOpen] = React.useState(false);
-
-    const triggered_alerts = [] as IAlert[];
-
+    const [restoreHiddenAlerts, setRestoreHiddenAlerts] = React.useState(false);
     // Code to rummage through triggered alerts goes here.
 
     const contextData = {
-        alerts,
-        setAlerts,
+        config,
+        setConfig,
         drawAlertModal,
-        triggered_alerts
+        alertOpen,
+        setAlertOpen,
+        restoreHiddenAlerts,
+        setRestoreHiddenAlerts
     } as IAlertContext;
 
     return <React.Fragment>
@@ -52,9 +60,10 @@ export const AlertProvider = (props: AlertProviderProps) => {
         </AlertContext.Provider>
     </React.Fragment>
 
-    function drawAlertModal(renderTrigger?: () => JSX.Element, mode?: AlertMode) {
+    function drawAlertModal(renderTrigger?: () => JSX.Element) {
         return <AlertModal
-                    mode={mode}
+                    config={config}
+                    setConfig={setConfig}
                     renderTrigger={renderTrigger}
                     isOpen={alertOpen}
                     setIsOpen={setAlertOpen}
