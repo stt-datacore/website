@@ -995,6 +995,7 @@
         "filter_by_status": "Filtern nach Status",
         "filter_by_timeframe": "Filtern nach Zeitraum",
         "filter_by_trait": "Filtern nach Merkmalen",
+        "filter_by_trait_or_series": "Filtern nach Merkmal oder Serie",
         "filter_by_voyage_seating": "Nach Reisebestuhlung filtern",
         "filter_crew_by_rank": "Filtern Sie die Crew nach Rang",
         "filter_ship_grants": "Schiffszuschüsse filtern",

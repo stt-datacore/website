@@ -995,6 +995,7 @@
         "filter_by_status": "Filter by status",
         "filter_by_timeframe": "Filter by timeframe",
         "filter_by_trait": "Filter by trait",
+        "filter_by_trait_or_series": "Filter by trait or series",
         "filter_by_voyage_seating": "Filter by voyage seating",
         "filter_crew_by_rank": "Filter crew by rank",
         "filter_ship_grants": "Filter ship grants",

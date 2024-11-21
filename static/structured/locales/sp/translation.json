@@ -1004,6 +1004,7 @@
         "filter_by_status": "Filtrar por estado",
         "filter_by_timeframe": "Filtrar por periodo de tiempo",
         "filter_by_trait": "Filtrar por rasgo",
+        "filter_by_trait_or_series": "Filtrar por rasgo o serie",
         "filter_by_voyage_seating": "Filtrar por asientos de viaje",
         "filter_crew_by_rank": "Filtrar tripulación por rango",
         "filter_ship_grants": "Filtrar subvenciones para buques",

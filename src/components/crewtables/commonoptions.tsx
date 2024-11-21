@@ -76,6 +76,13 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 				//content: <div style={{display:'flex', alignItems: 'center'}}><img style={{height:'24px',margin: '0.25em'}} src={`${process.env.GATSBY_ASSETS_URL}items_keystones_${trait}.png`} />{TRAIT_NAMES[trait]}</div>
 			} as TraitOptions;
 		}).sort((a, b) => a.text.localeCompare(b.text));
+		[ ...CONFIG.SERIES].reverse().forEach(series => {
+			options.unshift({
+				key: series,
+				value: series,
+				text: t(`series.${series}`)
+			})
+		});
 		setTraitOptions([...options]);
 	}, [allowed]);
 
@@ -91,7 +98,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 		<React.Fragment>
 			<Form.Field>
 				<Dropdown
-					placeholder={t('hints.filter_by_trait')}
+					placeholder={t('hints.filter_by_trait_or_series')}
 					clearable
 					multiple
 					search

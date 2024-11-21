@@ -1005,6 +1005,7 @@
         "filter_by_status": "Filtrer par statut",
         "filter_by_timeframe": "Filtrer par période",
         "filter_by_trait": "Filtrer par trait",
+        "filter_by_trait_or_series": "Filtrer par trait ou par série",
         "filter_by_voyage_seating": "Filtrer par sièges de voyage",
         "filter_crew_by_rank": "Filtrer l'équipage par rang",
         "filter_ship_grants": "Filtrer les subventions d'expédition",
