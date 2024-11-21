@@ -8,7 +8,7 @@ import DataPageLayout from '../components/page/datapagelayout';
 
 import { RosterPicker } from '../components/eventplanner/rosterpicker';
 import { EventPicker } from '../components/eventplanner/eventpicker';
-import { getRecentEvents, getEventData, getEvents } from '../utils/events';
+import { getEvents } from '../utils/events';
 
 import { IEventData } from '../components/eventplanner/model';
 

@@ -537,15 +537,20 @@ export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventDa
 
 	// Get event data from recently uploaded playerData
 	if (ephemeral?.events) {
-		let lasts = globalContext.core.event_instances.filter(f => !ephemeral.events.some(e => e.instance_id === f.instance_id)).sort((a, b) => b.instance_id - a.instance_id);
-		let lastevent = undefined as EventInstance | undefined;
-		let leg = undefined as GameEvent | undefined;
-		if (lasts.length) {
-			lastevent = lasts[0];
-			const lastResp = await fetch(`/structured/events/${lastevent.instance_id}.json`);
-			leg = await lastResp.json() as GameEvent;
+		let _lev = undefined as GameEvent | undefined;
+
+		if (ephemeral.events.length > 1 && ephemeral.events[0].seconds_to_start === 0) {
+			_lev = ephemeral.events[0];
 		}
-		const lastEvent = leg;
+		else {
+			let lasts = globalContext.core.event_instances.filter(f => !ephemeral.events.some(e => e.instance_id === f.instance_id)).sort((a, b) => b.instance_id - a.instance_id);
+			if (lasts.length) {
+				let lastevent = lasts[0];
+				const lastResp = await fetch(`/structured/events/${lastevent.instance_id}.json`);
+				_lev = await lastResp.json() as GameEvent;
+			}
+		}
+		const lastEvent = _lev;
 		const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew, globalContext.core.ship_schematics.map(m => m.ship), lastEvent))
 			.filter(ev => ev !== undefined).map(ev => ev as IEventData)
 			.filter(ev => ev.seconds_to_end > 0)
