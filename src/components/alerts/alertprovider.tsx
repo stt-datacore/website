@@ -4,6 +4,7 @@ import { GlobalContext } from "../../context/globalcontext";
 
 import { AlertMode, DefaultAlertConfig, IAlertConfig } from "./model";
 import { AlertModal } from "./alertmodal";
+import { TinyStore } from "../../utils/tiny";
 
 
 export interface IAlertContext {
@@ -38,11 +39,25 @@ export const AlertProvider = (props: AlertProviderProps) => {
     const { t } = globalContext.localized;
     const { playerData } = globalContext.player;
 
-    const dbid = playerData ? `${playerData.player.dbid}/` : '';
-    const [config, setConfig] = useStateWithStorage<IAlertConfig>(`${dbid}alerts`, DefaultAlertConfig, { rememberForever: true });
+    const [config, internalSetConfig] = React.useState<IAlertConfig>(DefaultAlertConfig);
     const [alertOpen, setAlertOpen] = React.useState(false);
     const [restoreHiddenAlerts, setRestoreHiddenAlerts] = React.useState(false);
     // Code to rummage through triggered alerts goes here.
+
+    React.useEffect(() => {
+        if (playerData) {
+            let tiny = TinyStore.getStore(playerData.player.dbid.toString());
+            internalSetConfig(tiny.getValue<IAlertConfig>('alertConfig') || config);
+        }
+    }, [playerData]);
+
+    const setConfig = (value: IAlertConfig) => {
+        if (playerData) {
+            let tiny = TinyStore.getStore(playerData.player.dbid.toString());
+            tiny.setValue('alertConfig', value, true);
+        }
+        internalSetConfig(value);
+    }
 
     const contextData = {
         config,
@@ -53,6 +68,8 @@ export const AlertProvider = (props: AlertProviderProps) => {
         restoreHiddenAlerts,
         setRestoreHiddenAlerts
     } as IAlertContext;
+
+
 
     return <React.Fragment>
         <AlertContext.Provider value={contextData}>
