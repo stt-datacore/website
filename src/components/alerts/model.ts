@@ -9,9 +9,31 @@ export interface AlertItem {
     symbol: string;
     type: AlertItemType;
 }
-export interface IAlert {
-    name: string;
-    trigger_once: boolean;
-    active: boolean;
-    items: AlertItem[];
+
+export interface IAlertConfig {
+    disableAlerts: boolean;
+    alert_fuses: number;
+    alert_new: number;
+    always_legendary: boolean;
+    alert_crew: string[];
+    alert_items: string[];
+    alert_ships: string[];
 }
+
+export const DefaultAlertConfig = {
+    disableAlerts: false,
+    alert_fuses: 1,
+    alert_new: 2,
+    always_legendary: true,
+    alert_crew: [],
+    alert_items: [],
+    alert_ships: []
+} as IAlertConfig;
+
+export interface AlertModalProps {
+	config: IAlertConfig;
+    setConfig: (value: IAlertConfig) => void;
+	renderTrigger?: () => JSX.Element;
+	setIsOpen: (value: boolean) => void;
+	isOpen: boolean;
+};

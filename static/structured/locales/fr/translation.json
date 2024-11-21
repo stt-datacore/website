@@ -8,11 +8,12 @@
             "name": "Nom de l'alerte"
         },
         "description": "Définissez une alerte lorsque vous souhaitez être averti lorsqu'un équipage ou un objet spécifique a été acquis.",
+        "disable_all_alerts": "Désactiver toutes les alertes",
         "disabled": "{{global.disabled}}",
         "fusible_crew": "Alerte : l'équipier fusible '{{subject}}' ({{rarity}}/{{max_rarity}}*) a été acquis !",
         "hit": "Alerte : {{subject}} a été acquis !",
         "item_type": "{{item.columns.item_type}}",
-        "name": "Alerte",
+        "name": "Alertes",
         "new_crew": "Alerte : le nouvel équipier « {{subject}} » ({{rarity}}/{{max_rarity}}*) a été acquis !",
         "remove": "Supprimer",
         "show_previously_hidden": "Afficher les alertes précédemment supprimées",
@@ -20,7 +21,9 @@
         "trigger": "{{ship.trigger}}",
         "trigger_always": "Déclencher toujours",
         "trigger_once": "Déclencher une fois",
-        "trigger_once_desc": "Une fois l'alerte déclenchée, elle sera désactivée, mais vous pourrez la réactiver depuis la fenêtre d'alerte."
+        "trigger_once_desc": "Une fois l'alerte déclenchée, elle sera désactivée, mais vous pourrez la réactiver depuis la fenêtre d'alerte.",
+        "when_new_crew": "Alerte lorsque 2+ copies d'un équipier non possédé sont découvertes dans le pool de rachat.",
+        "when_new_fuse": "Alerte lorsqu'un fusible pour un équipage possédé est découvert dans le pool de rachat."
     },
     "base": {
         "all_crew": "Afficher tous l'équipiers",

@@ -8,11 +8,12 @@
             "name": "Alarmname"
         },
         "description": "Richten Sie einen Alarm ein, wenn Sie benachrichtigt werden möchten, wenn eine bestimmte Crew oder ein bestimmter Gegenstand erworben wurde.",
+        "disable_all_alerts": "Alle Alarme deaktivieren",
         "disabled": "{{global.disabled}}",
         "fusible_crew": "Alarm: Die fusionierbare Crew „{{subject}}“ ({{rarity}}/{{max_rarity}}*) wurde erworben!",
         "hit": "Warnung: {{subject}} wurde erworben!",
         "item_type": "{{item.columns.item_type}}",
-        "name": "Alarm",
+        "name": "Alarme",
         "new_crew": "Alarm: Neue Crew '{{subject}}' ({{rarity}}/{{max_rarity}}*) wurde erworben!",
         "remove": "Entfernen",
         "show_previously_hidden": "Zuvor entfernte Warnungen anzeigen",
@@ -20,7 +21,9 @@
         "trigger": "{{ship.trigger}}",
         "trigger_always": "Immer auslösen",
         "trigger_once": "Einmal auslösen",
-        "trigger_once_desc": "Sobald der Alarm ausgelöst wurde, wird er deaktiviert, Sie können ihn jedoch im Alarmmodus erneut aktivieren."
+        "trigger_once_desc": "Sobald der Alarm ausgelöst wurde, wird er deaktiviert, Sie können ihn jedoch im Alarmmodus erneut aktivieren.",
+        "when_new_crew": "Alarm, wenn 2+ Kopien einer nicht eigenen Crew im Rückkaufpool entdeckt werden.",
+        "when_new_fuse": "Alarm, wenn im Rückkaufpool eine Zündschnur für eine eigene Crew entdeckt wird."
     },
     "base": {
         "all_crew": "Die gesamte Crew anzeigen",

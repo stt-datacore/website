@@ -19,10 +19,6 @@ export interface PlayerContextData {
 	setShowPlayerGlance: (value: boolean) => void
 	noGradeColors: boolean,
 	setNoGradeColors: (value: boolean) => void
-	showBuybackAlerts: boolean,
-	setShowBuybackAlerts: (value: boolean) => void
-	restoreHiddenAlerts: boolean,
-	setRestoreHiddenAlerts: (value: boolean) => void
 	setInput?: (value: PlayerData | undefined) => void;
 	setNewCrew: (value: PlayerCrew[] | undefined) => void;
 	newCrew?: PlayerCrew[];
@@ -72,10 +68,6 @@ export const defaultPlayer = {
 	setShowPlayerGlance: () => false,
 	noGradeColors: true,
 	setNoGradeColors: () => false,
-	showBuybackAlerts: true,
-	setShowBuybackAlerts: () => false,
-	restoreHiddenAlerts: false,
-	setRestoreHiddenAlerts: () => false
 } as PlayerContextData;
 
 export const PlayerContext = React.createContext<PlayerContextData>(defaultPlayer as PlayerContextData);
