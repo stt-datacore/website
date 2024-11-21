@@ -1,6 +1,7 @@
 {
     "alerts": {
         "add": "Hinzufügen",
+        "always_alert_legendary": "Seien Sie immer wachsam, wenn im Rückkaufpool neue legendäre Crewmitglieder entdeckt werden.",
         "check_buyback": "Überprüfen Sie Ihren Rückkaufpool.",
         "columns": {
             "active": "Aktiv",
@@ -22,7 +23,7 @@
         "trigger_always": "Immer auslösen",
         "trigger_once": "Einmal auslösen",
         "trigger_once_desc": "Sobald der Alarm ausgelöst wurde, wird er deaktiviert, Sie können ihn jedoch im Alarmmodus erneut aktivieren.",
-        "when_new_crew": "Alarm, wenn 2+ Kopien einer nicht eigenen Crew im Rückkaufpool entdeckt werden.",
+        "when_new_crew": "Alarm, wenn Kopien einer nicht eigenen Crew im Rückkaufpool entdeckt werden.",
         "when_new_fuse": "Alarm, wenn im Rückkaufpool eine Zündschnur für eine eigene Crew entdeckt wird."
     },
     "base": {

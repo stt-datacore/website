@@ -1,6 +1,7 @@
 {
     "alerts": {
         "add": "Ajouter",
+        "always_alert_legendary": "Soyez toujours attentif lorsque de nouveaux membres d'équipage légendaires sont découverts dans le pool de rachat.",
         "check_buyback": "Vérifiez votre pool de rachat.",
         "columns": {
             "active": "Actif",
@@ -22,7 +23,7 @@
         "trigger_always": "Déclencher toujours",
         "trigger_once": "Déclencher une fois",
         "trigger_once_desc": "Une fois l'alerte déclenchée, elle sera désactivée, mais vous pourrez la réactiver depuis la fenêtre d'alerte.",
-        "when_new_crew": "Alerte lorsque 2+ copies d'un équipier non possédé sont découvertes dans le pool de rachat.",
+        "when_new_crew": "Alerte lorsque copies d'un équipier non possédé sont découvertes dans le pool de rachat.",
         "when_new_fuse": "Alerte lorsqu'un fusible pour un équipage possédé est découvert dans le pool de rachat."
     },
     "base": {

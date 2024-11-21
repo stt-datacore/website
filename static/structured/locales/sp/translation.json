@@ -1,6 +1,7 @@
 {
     "alerts": {
         "add": "Agregar",
+        "always_alert_legendary": "Siempre alerta cuando se descubren nuevas tripulaciones legendarias en el pozo de recompra.",
         "check_buyback": "Revise su Pozo de recompra.",
         "columns": {
             "active": "Activo",
@@ -22,7 +23,7 @@
         "trigger_always": "Activar siempre",
         "trigger_once": "Activar una vez",
         "trigger_once_desc": "Una vez que se active la alerta, se desactivará, pero podrás volver a activarla desde el modal de alerta.",
-        "when_new_crew": "Alerta cuando se descubren 2+ copias de una tripulante sin propietario en el pozo de recompra.",
+        "when_new_crew": "Alerta cuando se descubren copias de una tripulante sin propietario en el pozo de recompra.",
         "when_new_fuse": "Alerta cuando se descubre un fusible de una tripulación propia en el pozo de recompra."
     },
     "base": {

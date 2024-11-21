@@ -15,6 +15,7 @@ export const AlertModal = <T extends OptionsBase>(props: AlertModalProps) => {
     const [innerSettings, setInnerSettings] = React.useState<IAlertConfig>(DefaultAlertConfig);
 
     const [showCopied, setShowCopied] = React.useState(false);
+    const [copies, setCopies] = React.useState('');
 
     if (typeof window !== 'undefined' && document.location.search) {
         let parm = new URLSearchParams();
@@ -37,6 +38,10 @@ export const AlertModal = <T extends OptionsBase>(props: AlertModalProps) => {
         }
     }, [props.isOpen]);
 
+    React.useEffect(() => {
+        setCopies(innerSettings.alert_new.toString());
+    }, [innerSettings]);
+
     const setCurrent = (current: IAlertConfig) => {
         setInnerSettings(current);
     }
@@ -57,23 +62,35 @@ export const AlertModal = <T extends OptionsBase>(props: AlertModalProps) => {
             </Modal.Header>
             <Modal.Content scrolling>
                 <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    justifyContent: 'flex-start',
-                    gap: '0.5em'
+                    display: 'grid',
+                    gridTemplateAreas: `'setting1 text1' 'setting2 text2' 'setting3 text3'`,
+                    gridTemplateColumns: `3em auto`,
+                    gap: '1em'
                 }}>
-                    <Checkbox
-                        checked={innerSettings.alert_fuses === 1}
-                        label={t('alerts.when_new_fuse')}
-                        onChange={(e, { checked }) => setCurrent({ ...innerSettings, alert_fuses: checked ? 1 : 0 })}
-                        />
-
-                    <Checkbox
-                        checked={innerSettings.alert_new === 2}
-                        label={t('alerts.when_new_crew')}
-                        onChange={(e, { checked }) => setCurrent({ ...innerSettings, alert_new: checked ? 2 : 0 })}
-                        />
+                    <div style={{gridArea: 'setting1', margin: 'auto'}}>
+                        <Input style={{width: '3em'}} value={copies} onChange={(e, { value }) => setCopies(value)} />
+                    </div>
+                    <div style={{gridArea: 'text1', margin: 'auto', marginLeft: 0}}>
+                        {t('alerts.when_new_crew')}
+                    </div>
+                    <div style={{gridArea: 'setting2', margin: 'auto'}}>
+                        <Checkbox
+                            checked={!!innerSettings.alert_fuses}
+                            onChange={(e, { checked }) => setCurrent({ ...innerSettings, alert_fuses: checked ? 1 : 0 })}
+                            />
+                    </div>
+                    <div style={{gridArea: 'text2', cursor: 'pointer', margin: 'auto', marginLeft: 0}} onClick={() => setCurrent({ ...innerSettings, alert_fuses: innerSettings.alert_fuses ? 0 : 1})}>
+                        {t('alerts.when_new_fuse')}
+                    </div>
+                    <div style={{gridArea: 'setting3', margin: 'auto'}}>
+                        <Checkbox
+                            checked={!!innerSettings.always_legendary}
+                            onChange={(e, { checked }) => setCurrent({ ...innerSettings, always_legendary: !!checked })}
+                            />
+                    </div>
+                    <div style={{gridArea: 'text3', cursor: 'pointer', margin: 'auto', marginLeft: 0}} onClick={() => setCurrent({ ...innerSettings, always_legendary: !innerSettings.always_legendary })}>
+                        {t('alerts.always_alert_legendary')}
+                    </div>
                 </div>
             </Modal.Content>
             <Modal.Actions>
@@ -129,6 +146,7 @@ export const AlertModal = <T extends OptionsBase>(props: AlertModalProps) => {
     }
 
     function confirmSelection(): void {
+        innerSettings.alert_new = Number(copies)
         setConfig(innerSettings);
         closeModal();
     }

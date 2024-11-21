@@ -39,7 +39,7 @@ export const AlertProvider = (props: AlertProviderProps) => {
     const { playerData } = globalContext.player;
 
     const dbid = playerData ? `${playerData.player.dbid}/` : '';
-    const [config, setConfig] = useStateWithStorage<IAlertConfig>(`${dbid}alerts`, DefaultAlertConfig);
+    const [config, setConfig] = useStateWithStorage<IAlertConfig>(`${dbid}alerts`, DefaultAlertConfig, { rememberForever: true });
     const [alertOpen, setAlertOpen] = React.useState(false);
     const [restoreHiddenAlerts, setRestoreHiddenAlerts] = React.useState(false);
     // Code to rummage through triggered alerts goes here.

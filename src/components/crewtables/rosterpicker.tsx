@@ -166,23 +166,35 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 	function getFusesInBuybackWell() {
 		if (!playerData?.buyback_well?.length) return [];
-		return playerData.player.character.crew.filter(f => f.rarity < f.max_rarity && playerData.buyback_well.some(bc => bc.symbol === f.symbol));
+		let newcrew = playerData.player.character.crew.filter(f => f.rarity < f.max_rarity && playerData.buyback_well.some(bc => bc.symbol === f.symbol)).sort((a, b) => a.symbol.localeCompare(b.symbol));
+		let lastcrew = undefined as PlayerCrew | undefined;
+		let finalcrew = [] as PlayerCrew[];
+		for (let u of newcrew) {
+			u = { ...u };
+			u.rarity = 1;
+			if (lastcrew && u.symbol === lastcrew.symbol) lastcrew.rarity++;
+			else {
+				finalcrew.push(u);
+				lastcrew = u;
+			}
+		}
+		return finalcrew.filter(f => f.rarity >= alertConfig.alert_fuses || (f.highest_owned_rarity && f.highest_owned_rarity + f.rarity >= f.max_rarity) || f.max_rarity === 1 || f.max_rarity === 5);
 	}
 
 	function getUnownedInBuybackWell() {
 		if (!playerData?.buyback_well?.length) return [];
-		let uu = playerData.buyback_well.filter(f => playerData.player.character.unOwnedCrew?.some(u => u.symbol === f.symbol)).sort((a, b) => a.symbol.localeCompare(b.symbol));
-		let lastu = undefined as PlayerCrew | undefined;
-		let us = [] as PlayerCrew[];
-		for (let u of uu) {
+		let newcrew = playerData.buyback_well.filter(f => playerData.player.character.unOwnedCrew?.some(u => u.symbol === f.symbol)).sort((a, b) => a.symbol.localeCompare(b.symbol));
+		let lastcrew = undefined as PlayerCrew | undefined;
+		let finalcrew = [] as PlayerCrew[];
+		for (let u of newcrew) {
 			u.rarity = 1;
-			if (lastu && u.symbol === lastu.symbol) lastu.rarity++;
+			if (lastcrew && u.symbol === lastcrew.symbol) lastcrew.rarity++;
 			else {
-				us.push(u);
-				lastu = u;
+				finalcrew.push(u);
+				lastcrew = u;
 			}
 		}
-		return us.filter(f => f.rarity > 1 || f.max_rarity === 5);
+		return finalcrew.filter(f => f.rarity >= alertConfig.alert_new || f.max_rarity === 1 || (alertConfig.always_legendary && f.max_rarity === 5));
 	}
 
 	function dismissNew(crew: PlayerCrew) {
