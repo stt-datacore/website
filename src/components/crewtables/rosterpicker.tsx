@@ -212,10 +212,10 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		let lastcrew = undefined as PlayerCrew | undefined;
 		let finalcrew = [] as PlayerCrew[];
 		for (let u of newcrew) {
-			u = { ...u };
-			u.rarity = 1;
 			if (lastcrew && u.symbol === lastcrew.symbol) lastcrew.rarity++;
 			else {
+				u = { ...u };
+				u.rarity = 1;
 				finalcrew.push(u);
 				lastcrew = u;
 			}
@@ -225,13 +225,14 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 	function getUnownedInBuybackWell() {
 		if (!playerData?.buyback_well?.length) return [];
-		let newcrew = playerData.buyback_well.filter(f => playerData.player.character.unOwnedCrew?.some(u => u.symbol === f.symbol)).sort((a, b) => a.symbol.localeCompare(b.symbol)).map(m => playerData.player.character.unOwnedCrew!.find(f => f.symbol === m.symbol)!);
+		let newcrew = playerData.buyback_well.filter(f => playerData.player.character.unOwnedCrew?.some(u => u.symbol === f.symbol)).sort((a, b) => a.symbol.localeCompare(b.symbol)).map(m => playerData.player.character.unOwnedCrew!.find(f => f.symbol === m.symbol)!).sort((a, b) => a.symbol.localeCompare(b.symbol));
 		let lastcrew = undefined as PlayerCrew | undefined;
 		let finalcrew = [] as PlayerCrew[];
 		for (let u of newcrew) {
-			u.rarity = 1;
 			if (lastcrew && u.symbol === lastcrew.symbol) lastcrew.rarity++;
 			else {
+				u = { ...u };
+				u.rarity = 1;
 				finalcrew.push(u);
 				lastcrew = u;
 			}
