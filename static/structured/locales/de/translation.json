@@ -1,4 +1,23 @@
 {
+    "alerts": {
+        "add": "Hinzufügen",
+        "check_buyback": "Überprüfen Sie Ihren Rückkaufpool.",
+        "columns": {
+            "active": "Aktiv",
+            "items": "Alarmelemente",
+            "name": "Alarmname"
+        },
+        "description": "Richten Sie einen Alarm ein, wenn Sie benachrichtigt werden möchten, wenn eine bestimmte Crew oder ein bestimmter Gegenstand erworben wurde.",
+        "disabled": "{{global.disabled}}",
+        "hit": "Warnung: {{subject}} wurde erworben!",
+        "item_type": "{{item.columns.item_type}}",
+        "name": "Alarm",
+        "remove": "Entfernen",
+        "trigger": "{{ship.trigger}}",
+        "trigger_always": "Immer auslösen",
+        "trigger_once": "Einmal auslösen",
+        "trigger_once_desc": "Sobald der Alarm ausgelöst wurde, wird er deaktiviert, Sie können ihn jedoch im Alarmmodus erneut aktivieren."
+    },
     "base": {
         "all_crew": "Die gesamte Crew anzeigen",
         "best_pair": "Bestes Paar",
@@ -51,6 +70,7 @@
         "release_date": "Debüt",
         "retrieval": "{{retrieval.modes.retrieval}}",
         "rewards": "Belohnungen",
+        "short_name": "Kurzname",
         "shuttle": "Shuttle",
         "shuttles": "Shuttles",
         "skills": "{{shuttle_helper.missions.columns.skills}}",
@@ -820,6 +840,8 @@
         "completed": "Abgeschlossen",
         "copy_permalink_clipboard": "Permalink in die Zwischenablage kopieren",
         "default": "Standard",
+        "delete": "Löschen",
+        "delete_selected": "Ausgewählte löschen",
         "disable": "Deaktivieren",
         "disabled": "Deaktiviert",
         "dismiss": "Abweisen",

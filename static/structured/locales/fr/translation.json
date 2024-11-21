@@ -1,4 +1,23 @@
 {
+    "alerts": {
+        "add": "Ajouter",
+        "check_buyback": "Vérifiez votre pool de rachat.",
+        "columns": {
+            "active": "Actif",
+            "items": "Éléments d'alerte",
+            "name": "Nom de l'alerte"
+        },
+        "description": "Définissez une alerte lorsque vous souhaitez être averti lorsqu'un équipage ou un objet spécifique a été acquis.",
+        "disabled": "{{global.disabled}}",
+        "hit": "Alerte : {{subject}} a été acquis !",
+        "item_type": "{{item.columns.item_type}}",
+        "name": "Alerte",
+        "remove": "Supprimer",
+        "trigger": "{{ship.trigger}}",
+        "trigger_always": "Déclencher toujours",
+        "trigger_once": "Déclencher une fois",
+        "trigger_once_desc": "Une fois l'alerte déclenchée, elle sera désactivée, mais vous pourrez la réactiver depuis la fenêtre d'alerte."
+    },
     "base": {
         "all_crew": "Afficher tous l'équipiers",
         "best_pair": "Meilleure paire",
@@ -51,6 +70,7 @@
         "release_date": "Début",
         "retrieval": "{{retrieval.modes.retrieval}}",
         "rewards": "Récompenses",
+        "short_name": "Nom abrégé",
         "shuttle": "Navette",
         "shuttles": "Navettes",
         "skills": "{{shuttle_helper.missions.columns.skills}}",
@@ -828,6 +848,8 @@
         "completed": "Completed",
         "copy_permalink_clipboard": "Copier le lien permanent dans le presse-papiers",
         "default": "Défaut",
+        "delete": "Supprimer",
+        "delete_selected": "Supprimer la sélection",
         "disable": "Désactiver",
         "disabled": "Désactivé",
         "dismiss": "Rejeter",

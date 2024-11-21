@@ -1,4 +1,23 @@
 {
+    "alerts": {
+        "add": "Add",
+        "check_buyback": "Check your buy-back well.",
+        "columns": {
+            "active": "Active",
+            "items": "Alert Items",
+            "name": "Alert Name"
+        },
+        "description": "Set an alert when you want to be notified when a specific crew or item has been acquired.",
+        "disabled": "{{global.disabled}}",
+        "hit": "Alert: {{subject}} has been acquired!",
+        "item_type": "{{item.columns.item_type}}",
+        "name": "Alert",
+        "remove": "Remove",
+        "trigger": "{{ship.trigger}}",
+        "trigger_always": "Trigger Always",
+        "trigger_once": "Trigger Once",
+        "trigger_once_desc": "Once the alert has been triggered, it will be deactivated, but you can re-activate it from the alert modal."
+    },
     "base": {
         "all_crew": "Show all crew",
         "best_pair": "Best Pair",
@@ -51,6 +70,7 @@
         "release_date": "Release Date",
         "retrieval": "{{retrieval.modes.retrieval}}",
         "rewards": "Rewards",
+        "short_name": "Short Name",
         "shuttle": "Shuttle",
         "shuttles": "Shuttles",
         "skills": "{{shuttle_helper.missions.columns.skills}}",
@@ -820,6 +840,8 @@
         "completed": "Completed",
         "copy_permalink_clipboard": "Copy permalink to clipboard",
         "default": "Default",
+        "delete": "Delete",
+        "delete_selected": "Delete Selected",
         "disable": "Disable",
         "disabled": "Disabled",
         "dismiss": "Dismiss",

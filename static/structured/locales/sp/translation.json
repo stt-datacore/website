@@ -1,4 +1,23 @@
 {
+    "alerts": {
+        "add": "Agregar",
+        "check_buyback": "Revise su Pozo de recompra.",
+        "columns": {
+            "active": "Activo",
+            "items": "Elementos de la alerta",
+            "name": "Nombre de la alerta"
+        },
+        "description": "Establezca una alerta cuando desee recibir una notificación cuando se haya adquirido un equipo o un elemento específico.",
+        "disabled": "{{global.disabled}}",
+        "hit": "Alerta: ¡{{subject}} ha sido adquirido!",
+        "item_type": "{{item.columns.item_type}}",
+        "name": "Alerta",
+        "remove": "Eliminar",
+        "trigger": "{{ship.trigger}}",
+        "trigger_always": "Activar siempre",
+        "trigger_once": "Activar una vez",
+        "trigger_once_desc": "Una vez que se active la alerta, se desactivará, pero podrás volver a activarla desde el modal de alerta."
+    },
     "base": {
         "all_crew": "Mostrar toda las tripulantes",
         "best_pair": "Mejor pareja",
@@ -51,6 +70,7 @@
         "release_date": "Debut",
         "retrieval": "{{retrieval.modes.retrieval}}",
         "rewards": "Recompensas",
+        "short_name": "Nombre corto",
         "shuttle": "Lanzadera",
         "shuttles": "Lanzaderas",
         "skills": "{{shuttle_helper.missions.columns.skills}}",
@@ -827,6 +847,8 @@
         "completed": "Completado",
         "copy_permalink_clipboard": "Copiar enlace permanente al portapapeles",
         "default": "Predeterminada",
+        "delete": "Eliminar",
+        "delete_selected": "Eliminar seleccionado",
         "disable": "Desactivar",
         "disabled": "Desactivado",
         "dismiss": "Descartar",
