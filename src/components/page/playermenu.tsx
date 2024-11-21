@@ -15,7 +15,7 @@ type PlayerMenuProps = {
 export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	const { reset, showPlayerGlance, setShowPlayerGlance, noGradeColors, setNoGradeColors } = globalContext.player;
+	const { reset, showPlayerGlance, setShowPlayerGlance, noGradeColors, setNoGradeColors, showBuybackAlerts, setShowBuybackAlerts, restoreHiddenAlerts, setRestoreHiddenAlerts } = globalContext.player;
 	const [modalOpen, setModalOpen] = React.useState(false);
 	const {
 		requestPanel,
@@ -82,6 +82,20 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 			checkVisible: (data) => !!playerData,
 			customAction: (e, data) => {
 				setNoGradeColors(!noGradeColors);
+			}
+		},
+		{
+			title: <div><Icon name={showBuybackAlerts ? 'toggle off' : 'toggle on'} />&nbsp;{t('alerts.toggle_buyback_alerts')}</div>,
+			checkVisible: (data) => !!playerData,
+			customAction: (e, data) => {
+				setShowBuybackAlerts(!showBuybackAlerts);
+			}
+		},
+		{
+			title: <div>{t('alerts.show_previously_hidden')}</div>,
+			checkVisible: (data) => !!playerData && showBuybackAlerts,
+			customAction: (e, data) => {
+				setRestoreHiddenAlerts(true);
 			}
 		},
 		{

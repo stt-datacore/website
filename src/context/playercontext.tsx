@@ -19,6 +19,10 @@ export interface PlayerContextData {
 	setShowPlayerGlance: (value: boolean) => void
 	noGradeColors: boolean,
 	setNoGradeColors: (value: boolean) => void
+	showBuybackAlerts: boolean,
+	setShowBuybackAlerts: (value: boolean) => void
+	restoreHiddenAlerts: boolean,
+	setRestoreHiddenAlerts: (value: boolean) => void
 	setInput?: (value: PlayerData | undefined) => void;
 	setNewCrew: (value: PlayerCrew[] | undefined) => void;
 	newCrew?: PlayerCrew[];
@@ -67,7 +71,11 @@ export const defaultPlayer = {
 	showPlayerGlance: true,
 	setShowPlayerGlance: () => false,
 	noGradeColors: true,
-	setNoGradeColors: () => false
+	setNoGradeColors: () => false,
+	showBuybackAlerts: true,
+	setShowBuybackAlerts: () => false,
+	restoreHiddenAlerts: false,
+	setRestoreHiddenAlerts: () => false
 } as PlayerContextData;
 
 export const PlayerContext = React.createContext<PlayerContextData>(defaultPlayer as PlayerContextData);
@@ -92,6 +100,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const maxBuffs = stripped ? calculateMaxBuffs(stripped.player?.character?.all_buffs_cap_hash) : (coreData.all_buffs ?? undefined);
 	const [sessionStates, setSessionStates] = useStateWithStorage<ISessionStates | undefined>('sessionStates', defaultSessionStates);
 	const [showPlayerGlance, setShowPlayerGlance] = useStateWithStorage(`${stripped ? stripped.player.dbid : ''}_showPlayerGlance`, true, { rememberForever: true })
+	const [showBuybackAlerts, setShowBuybackAlerts] = useStateWithStorage(`${stripped ? stripped.player.dbid : ''}_showBuybackAlerts`, true, { rememberForever: true })
+	const [restoreHiddenAlerts, setRestoreHiddenAlerts] = React.useState(false);
 	const [noGradeColors, internalSetNoGradeColors] = React.useState(tiny.getValue<boolean>('noGradeColors') ?? false)
 	const [newCrew, setNewCrew] = useStateWithStorage(`${stripped ? stripped.player.dbid : ''}/newCrew`, undefined as PlayerCrew[] | undefined);
 	const setNoGradeColors = (value: boolean) => {
@@ -204,7 +214,11 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		noGradeColors,
 		setNoGradeColors,
 		setNewCrew,
-		newCrew
+		newCrew,
+		showBuybackAlerts,
+		setShowBuybackAlerts,
+		restoreHiddenAlerts,
+		setRestoreHiddenAlerts
 	} as PlayerContextData;
 
 	return (
