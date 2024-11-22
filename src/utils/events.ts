@@ -89,6 +89,10 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 				});
 			});
 		}
+
+		if (activeContent.event_ships && allShips) {
+			result.featured_ships = activeContent.event_ships.map(sId => allShips.find(ship => ship.archetype_id === sId)!.symbol);
+		}
 	}
 	else if (activeContent.content_type === 'voyage') {
 		result.bonus = activeContent.featured_crews?.slice () ?? [];
@@ -208,11 +212,14 @@ export async function getRecentEvents(allCrew: CrewMember[], allEvents: EventIns
 	const currentEventId = guessCurrentEventId(allEvents);
 
 	let index = 1;
+	let lastEvent = undefined as GameEvent | undefined;
+
 	while (recentEvents.length < 2) {
 		const eventId = allEvents[allEvents.length-index].instance_id;
 		const response = await fetch('/structured/events/'+eventId+'.json');
 		const json = await response.json();
-		const eventData = getEventData(json, allCrew, allShips) as IEventData;
+		const eventData = getEventData(json, allCrew, allShips, lastEvent) as IEventData;
+		lastEvent = json;
 		if (eventId === currentEventId) {
 			eventData.seconds_to_start = start;
 			eventData.seconds_to_end = end;
@@ -558,6 +565,6 @@ export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventDa
 	}
 	// Otherwise guess event from autosynced events
 	else {
-		return await getRecentEvents(globalContext.core.crew, globalContext.core.event_instances);
+		return await getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.ships);
 	}
 }
