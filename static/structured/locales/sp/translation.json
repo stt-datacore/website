@@ -1719,6 +1719,10 @@
         "grant": "Conferir estado {{grant}}: {{grant_description}}",
         "handicap": "Disminuir {{type}} en {{amount}}"
     },
+    "ship_ownership": {
+        "owned": "Mostrar solo buques propios",
+        "unowned": "Mostrar solo buques sin propietario"
+    },
     "shuttle_helper": {
         "calculator": {
             "change_missions": "Cambiar misiones",

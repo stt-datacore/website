@@ -1707,6 +1707,10 @@
         "grant": "Verleihe den Status {{grant}}: {{grant_description}}",
         "handicap": "Verringern Sie {{type}} um {{amount}}"
     },
+    "ship_ownership": {
+        "owned": "Nur Schiffe anzeigen, die im Besitz sind",
+        "unowned": "Nur Schiffe anzeigen, die nicht im Besitz sind"
+    },
     "shuttle_helper": {
         "calculator": {
             "change_missions": "Ändern Sie die Missionen",

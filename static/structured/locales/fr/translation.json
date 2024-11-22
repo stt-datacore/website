@@ -1720,6 +1720,10 @@
         "grant": "Conférer le statut {{grant}} : {{grant_description}}",
         "handicap": "Diminuer {{type}} de {{amount}}"
     },
+    "ship_ownership": {
+        "owned": "Afficher uniquement les vaisseaux possédés",
+        "unowned": "Afficher uniquement les vaisseaux sans propriétaire"
+    },
     "shuttle_helper": {
         "calculator": {
             "change_missions": "Modifier les missions",

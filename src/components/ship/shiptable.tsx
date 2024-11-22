@@ -7,7 +7,7 @@ import { ShipHoverStat, ShipTarget } from '../hovering/shiphoverstat';
 import { GlobalContext } from '../../context/globalcontext';
 import { navigate } from 'gatsby';
 import { RarityFilter } from '../crewtables/commonoptions';
-import { ShipAbilityPicker, TraitPicker, TriggerPicker } from '../crewtables/shipoptions';
+import { ShipAbilityPicker, ShipOwnership, TraitPicker, TriggerPicker } from '../crewtables/shipoptions';
 import { isMobile } from 'react-device-detect';
 import { getShipsInUse, mergeShips } from '../../utils/shiputils';
 import CONFIG from '../CONFIG';
@@ -35,6 +35,7 @@ type ShipTableState = {
 	textFilter?: string;
 	shipsInUse?: ShipInUse[];
 	onlyUsed?: boolean;
+	ownership?: 'owned' | 'unowned'
 };
 
 const pagingOptions = [
@@ -43,7 +44,6 @@ const pagingOptions = [
 	{ key: '2', value: '50', text: '50' },
 	{ key: '3', value: '100', text: '100' }
 ];
-
 
 class ShipTable extends Component<ShipTableProps, ShipTableState> {
 	static contextType = GlobalContext;
@@ -242,6 +242,12 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 		})
 	}
 
+	private readonly setOwnedFilter = (filter?: 'owned' | 'unowned') => {
+		window.setTimeout(() => {
+			this.setState({...this.state, ownership: filter});
+		})
+	}
+
 	private readonly setAbilityFilter = (filter: string[]) => {
 		window.setTimeout(() => {
 			this.setState({...this.state, abilityFilter: filter});
@@ -261,7 +267,7 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 		const { localized } = this.context;
 		const { t, SHIP_TRAIT_NAMES } = localized;
 		const trait_names = localized.SHIP_TRAIT_NAMES;
-		const { textFilter, grantFilter, traitFilter, abilityFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
+		const { ownership, textFilter, grantFilter, traitFilter, abilityFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
 
 		const dataContext = this.context;
 		if (!dataContext || (!dataContext.core.ships && !dataContext.player.playerShips)) return <></>;
@@ -273,6 +279,8 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 			if (grantFilter && !!grantFilter?.length && !ship.actions?.some((action) => grantFilter.some((gf) => Number.parseInt(gf) === action.status))) return false;
 			if (abilityFilter && !!abilityFilter?.length && !ship.actions?.some((action) => abilityFilter.some((af) => action.ability?.type.toString() === af))) return false;
 			if (traitFilter && !!traitFilter?.length && !ship.traits?.some((trait) => traitFilter.includes(trait))) return false;
+			if (ownership === 'owned' && !ship.owned) return false;
+			if (ownership === 'unowned' && ship.owned) return false;
 			if (textFilter?.length) {
 				const usearch = textFilter.toLocaleUpperCase();
 				if (!ship.name?.toLocaleUpperCase().includes(usearch)
@@ -299,11 +307,30 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 
 		return (<div>
-			{!this.props.event_ships?.length && <div style={{
+			{!this.props.event_ships?.length &&
+
+			<div style={{
 				display: "flex",
-				flexDirection: "row",
-				gap: "0.5em"
+				flexDirection: "column",
+				gap: "0.5em",
 			}}>
+				<div style={{
+					display: "flex",
+					flexDirection: "row",
+					gap: "0.5em",
+				}}>
+					<RarityFilter
+						altTitle={t('hints.filter_ship_rarity')}
+						rarityFilter={rarityFilter ?? []}
+						setRarityFilter={this.setRarityFilter}
+					/>
+						<TriggerPicker grants={true} altTitle={t('hints.filter_ship_grants')} selectedTriggers={grantFilter} setSelectedTriggers={(value) => this.setGrantFilter(value as string[])} />
+
+					<ShipAbilityPicker ship={true} selectedAbilities={this.state.abilityFilter} setSelectedAbilities={(value) => this.setAbilityFilter(value as string[])} />
+					<TraitPicker ship={true} selectedTraits={this.state.traitFilter} setSelectedTraits={(value) => this.setTraitFilter(value as string[])} />
+					{!!this.context.player.playerData && <ShipOwnership selectedValue={this.state.ownership} setSelectedValue={this.setOwnedFilter} />}
+				</div>
+				<div>
 				<Input
 					style={{ width: isMobile ? '100%' : '30%' }}
 					iconPosition="left"
@@ -316,19 +343,10 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 							<Icon name='delete' />
 						</Button>
 				</Input>
-
-				<RarityFilter
-					altTitle={t('hints.filter_ship_rarity')}
-					rarityFilter={rarityFilter ?? []}
-					setRarityFilter={this.setRarityFilter}
-				/>
-					<TriggerPicker grants={true} altTitle={t('hints.filter_ship_grants')} selectedTriggers={grantFilter} setSelectedTriggers={(value) => this.setGrantFilter(value as string[])} />
-
-				<ShipAbilityPicker ship={true} selectedAbilities={this.state.abilityFilter} setSelectedAbilities={(value) => this.setAbilityFilter(value as string[])} />
-				<TraitPicker ship={true} selectedTraits={this.state.traitFilter} setSelectedTraits={(value) => this.setTraitFilter(value as string[])} />
+				</div>
 			</div>}
 			{!this.props.event_ships?.length &&
-			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1em', margin: '1em'}}>
+			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '1em', margin: '1em 0'}}>
 				<Checkbox label={t('ship.show.only_in_use')} checked={this.state.onlyUsed ?? false} onChange={(e, { checked }) => this.setOnlyUsed(checked as boolean)} />
 			</div>}
 			{!!this.props.event_ships?.length &&

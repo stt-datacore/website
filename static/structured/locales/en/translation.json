@@ -1705,6 +1705,10 @@
         "grant": "Grants {{grant}} status: {{grant_description}}",
         "handicap": "Decrease {{type}} by {{amount}}"
     },
+    "ship_ownership": {
+        "owned": "Only show owned ships",
+        "unowned": "Only show unowned ships"
+    },
     "shuttle_helper": {
         "calculator": {
             "change_missions": "Change Missions",
