@@ -881,6 +881,7 @@ export interface SquadronRankedBracket {
     antimatter_bonus_ship_traits?: string[];
     antimatter_bonus_for_featured_ship?: number;
     featured_ships?: string[];
+    event_ships?: number[];
   }
 
 export interface CrewBonuses {
