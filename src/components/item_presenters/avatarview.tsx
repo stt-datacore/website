@@ -85,6 +85,7 @@ export interface BasicItem {
 }
 
 export const AvatarView = (props: AvatarViewProps) => {
+    const shipRichClr = '#091220';
     const globalContext = React.useContext(GlobalContext);
     const { playerData } = globalContext.player;
     const items = props.altItems ?? globalContext.core.items;
@@ -364,6 +365,9 @@ export const AvatarView = (props: AvatarViewProps) => {
             if (!link && props.link === true && ship) {
                 link = `/ship_info/?ship=${ship.symbol}`;
             }
+        }
+        if (crewBackground === 'rich' && gen_item) {
+            imgStyle.backgroundColor = shipRichClr;
         }
         return gen_item;
     }
