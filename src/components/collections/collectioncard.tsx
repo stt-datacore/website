@@ -47,7 +47,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
     }).reduce((p, n) => p + n, 0) ?? 0;
 
     const neededCost = Math.max((collection.neededCost ?? 0) - honorQ, 0);
-    const allStars = !col.neededStars;
+    const allStars = !col.neededStars?.some(star => !!star);
 
     if (!collection?.totalRewards || !collection.milestone) return <></>;
     const rewards =
