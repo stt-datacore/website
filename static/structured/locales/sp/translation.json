@@ -1462,6 +1462,7 @@
                 "sell_count": "Listados de mercado",
                 "sold_last_day": "Vendido en el último día"
             },
+            "most_likely_popular": "Recuperaciones más populares (según las compras de estrellas polares)",
             "description": "Explora el Mercado Celestial",
             "listed": "Listado",
             "title": "Mercado Celestial",

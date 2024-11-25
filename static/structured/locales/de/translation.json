@@ -1451,6 +1451,7 @@
                 "sell_count": "Marktangebote",
                 "sold_last_day": "Am letzten Tag verkauft"
             },
+            "most_likely_popular": "Wahrscheinlichste beliebte Abrufe (basierend auf Polarstern-Käufen)",
             "description": "Stöbern Sie durch den Himmelsmarkt",
             "listed": "Gelistet",
             "title": "Himmelsmarkt",
