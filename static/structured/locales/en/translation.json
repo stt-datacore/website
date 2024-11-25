@@ -980,6 +980,7 @@
         "filter_by_crew": "Filter by crew",
         "filter_by_event_type": "Filter by event type",
         "filter_by_item_type": "Filter by item type",
+        "filter_by_listed_status": "Filter by listed status",
         "filter_by_owned_status": "Filter by owned status",
         "filter_by_polestars": "Filter by polestars",
         "filter_by_portal_status": "Filter by portal status",
@@ -1439,6 +1440,21 @@
         "keystone_crate": "Keystone Crate",
         "keystone_crates": "Keystone Crates",
         "keystones": "Keystones",
+        "market": {
+            "title": "Celestial Market",
+            "description": "Browse the Celestial Market",
+            "updated": "Market is updated hourly",
+            "columns": {
+                "buy_count": "Placed Orders",
+                "sell_count": "Market Listings",
+                "low": "Lowest Listed Price",
+                "high": "Highest Bid",
+                "sold_last_day": "Sold in the Last Day",
+                "last_price": "Last Sold Price"
+            },
+            "listed": "Listed",
+            "unlisted": "Unlisted"
+        },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
         "modes": {

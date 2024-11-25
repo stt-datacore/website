@@ -211,7 +211,12 @@ export const PolestarProspectsModal = () => {
 		return (
 			<Table.Row key={polestar.symbol}
 				style={{ cursor: activePolestar !== polestar.symbol ? 'zoom-in' : 'zoom-out' }}
-				onClick={() => setActivePolestar(activePolestar !== polestar.symbol ? polestar.symbol : '')}
+				onClick={() => {
+					setActivePolestar(activePolestar !== polestar.symbol ? polestar.symbol : '')
+					if (market) {
+						console.log(market[polestar.id]);
+					}
+				}}
 			>
 				<Table.Cell>
 					<div

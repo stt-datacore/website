@@ -13,6 +13,7 @@ import { MutualView } from './mutualview';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import CONFIG from '../CONFIG';
 import { MarketAggregation } from '../../model/celestial';
+import { CelestialMarket } from './celestialmarket';
 
 export const RetrievalKeystones = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -91,7 +92,7 @@ const crewFilterDefaults: ICrewFilters = {
 	collection: ''
 };
 
-type ModePickerMode = 'keystones' | 'mutual';
+type ModePickerMode = 'keystones' | 'mutual' | 'market';
 
 type ModePickerProps = {
 	allKeystones: IKeystone[];
@@ -109,16 +110,22 @@ const ModePicker = (props: ModePickerProps) => {
 
 	return <>
 			<Step.Group fluid>
-				<Step style={{width: isMobile ? '100%' : '50%'}} key={`keystone_normal`} active={mode === 'keystones'} onClick={() => setMode('keystones')}>
+				<Step style={{width: isMobile ? '100%' : '33%'}} key={`keystone_normal`} active={mode === 'keystones'} onClick={() => setMode('keystones')}>
 					<Step.Content>
 						<Step.Title>{t('retrieval.modes.retrieval')}</Step.Title>
 						<Step.Description>{t('retrieval.modes.retrieval_desc')}</Step.Description>
 					</Step.Content>
 				</Step>
-				<Step style={{width: isMobile ? '100%' : '50%'}}  key={`keystone_mutual`} active={mode === 'mutual'} onClick={() => setMode('mutual')}>
+				<Step style={{width: isMobile ? '100%' : '33%'}}  key={`keystone_mutual`} active={mode === 'mutual'} onClick={() => setMode('mutual')}>
 					<Step.Content>
 						<Step.Title>{t('retrieval.modes.mutual_polestar_calculator')}</Step.Title>
 						<Step.Description>{t('retrieval.modes.mutual_polestar_calculator_desc')}</Step.Description>
+					</Step.Content>
+				</Step>
+				<Step style={{width: isMobile ? '100%' : '33%'}}  key={`celestial_market`} active={mode === 'market'} onClick={() => setMode('market')}>
+					<Step.Content>
+						<Step.Title>{t('retrieval.market.title')}</Step.Title>
+						<Step.Description>{t('retrieval.market.description')}</Step.Description>
 					</Step.Content>
 				</Step>
             </Step.Group>
@@ -212,14 +219,15 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 
 	return (
 		<RetrievalContext.Provider value={retrievalContext}>
-			<Form>
+			{mode !== 'market' && <Form>
 				<Form.Group inline>
 					<PolestarFilterModal />
 					<PolestarProspectsModal />
 				</Form.Group>
-			</Form>
+			</Form>}
 			{mode === 'keystones' && <RetrievalCrew />}
 			{mode === 'mutual' && <MutualView dbid={dbid} />}
+			{mode === 'market' && <CelestialMarket />}
 		</RetrievalContext.Provider>
 	);
 
