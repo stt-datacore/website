@@ -17,6 +17,7 @@ export interface IRetrievalContext {
 	resetForm: () => void;
 	wishlist: string[];
 	setWishlist: (wishlist: string[]) => void;
+	reloadMarket: () => void;
 };
 
 export function printISM(quantity: number, t?: TranslateMethod, printISM?: boolean) {

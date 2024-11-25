@@ -1455,19 +1455,19 @@
         "keystone_crates": "Caisses des clés de voûte",
         "keystones": "Clés de voûte",
         "market": {
-            "title": "Marché céleste",
-            "description": "Parcourez le marché céleste",
-            "updated": "Le marché est mis à jour toutes les heures",
             "columns": {
                 "buy_count": "Ordres passés",
-                "sell_count": "Listes de marché",
-                "low": "Prix le plus bas affiché",
                 "high": "Offre la plus élevée",
-                "sold_last_day": "Vendu le dernier jour",
-                "last_price": "Dernier prix de vente"
+                "last_price": "Dernier prix de vente",
+                "low": "Prix le plus bas affiché",
+                "sell_count": "Listes de marché",
+                "sold_last_day": "Vendu le dernier jour"
             },
+            "description": "Parcourez le marché céleste",
             "listed": "Répertorié",
-            "unlisted": "Non Répertorié"
+            "title": "Marché céleste",
+            "unlisted": "Non Répertorié",
+            "updated": "Le marché est mis à jour toutes les heures"
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",

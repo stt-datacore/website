@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Icon, Step } from 'semantic-ui-react';
+import { Button, Form, Icon, Label, Step } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
@@ -59,21 +59,25 @@ export const RetrievalKeystones = () => {
 		});
 
 		setAllKeystones([...allKeystones]);
-		fetch('https://datacore.app/api/celestial-market')
-			.then((response) => response.json())
-			.then(market => {
-				setMarket(market);
-			})
+		reloadMarket();
 	}, []);
 
 	if (!allKeystones)
 		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> {t('spinners.default')}</div>);
 
 	if (playerData) {
-		return <ModePicker market={market} allKeystones={allKeystones} dbid={`${playerData.player.dbid}`} />;
+		return <ModePicker market={market} reloadMarket={reloadMarket} allKeystones={allKeystones} dbid={`${playerData.player.dbid}`} />;
 	}
 	else {
-		return <KeystonesNonPlayer market={market} allKeystones={allKeystones} />;
+		return <KeystonesNonPlayer market={market} reloadMarket={reloadMarket} allKeystones={allKeystones} />;
+	}
+
+	function reloadMarket() {
+		fetch('https://datacore.app/api/celestial-market')
+			.then((response) => response.json())
+			.then(market => {
+				setMarket(market);
+			})
 	}
 };
 
@@ -98,13 +102,14 @@ type ModePickerProps = {
 	allKeystones: IKeystone[];
 	dbid: string;
 	market?: MarketAggregation;
+	reloadMarket: () => void;
 }
 
 const ModePicker = (props: ModePickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
 	const { t } = globalContext.localized;
-	const { allKeystones, dbid, market } = props;
+	const { allKeystones, dbid, market, reloadMarket } = props;
 	const [mode, setMode] = useStateWithStorage<ModePickerMode>(`${dbid}/keystone_modePicker`, 'keystones');
 	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
@@ -124,13 +129,17 @@ const ModePicker = (props: ModePickerProps) => {
 				</Step>
 				<Step style={{width: isMobile ? '100%' : '33%'}}  key={`celestial_market`} active={mode === 'market'} onClick={() => setMode('market')}>
 					<Step.Content>
-						<Step.Title>{t('retrieval.market.title')}</Step.Title>
+						<Step.Title>{t('retrieval.market.title')}
+							<Label as='a' corner='right' onClick={() => reloadMarket()}>
+								<Icon name='refresh' style={{ cursor: 'pointer' }} />
+							</Label>
+						</Step.Title>
 						<Step.Description>{t('retrieval.market.description')}</Step.Description>
 					</Step.Content>
 				</Step>
             </Step.Group>
 
-			<KeystonesPlayer market={market} mode={mode} dbid={dbid} allKeystones={allKeystones} />
+			<KeystonesPlayer market={market} reloadMarket={reloadMarket} mode={mode} dbid={dbid} allKeystones={allKeystones} />
 	</>
 }
 
@@ -139,13 +148,14 @@ type KeystonesPlayerProps = {
 	dbid: string;
 	mode: ModePickerMode;
 	market?: MarketAggregation;
+	reloadMarket: () => void;
 };
 
 const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { ITEM_ARCHETYPES, language, TRAIT_NAMES } = globalContext.localized;
 	const { playerData } = globalContext.player;
-	const { dbid, mode, market } = props;
+	const { dbid, mode, market, reloadMarket } = props;
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[]>([]);
 	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[]>([]);
 
@@ -214,7 +224,8 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 		getCrewFilter, setCrewFilter,
 		resetForm,
 		wishlist, setWishlist,
-		market
+		market,
+		reloadMarket
 	};
 
 	return (
@@ -248,11 +259,12 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 type KeystonesNonPlayerProps = {
 	allKeystones: IKeystone[];
 	market?: MarketAggregation;
+	reloadMarket: () => void;
 };
 
 const KeystonesNonPlayer = (props: KeystonesNonPlayerProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { market } = props;
+	const { market, reloadMarket } = props;
 	const { playerData } = globalContext.player;
 
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[]>([]);
@@ -289,7 +301,8 @@ const KeystonesNonPlayer = (props: KeystonesNonPlayerProps) => {
 		getCrewFilter, setCrewFilter,
 		resetForm,
 		wishlist, setWishlist,
-		market
+		market,
+		reloadMarket
 	};
 
 	return (

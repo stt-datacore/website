@@ -291,7 +291,7 @@
             },
             "overview": {
                 "description": "Descripción general de las colecciones",
-                "long_description": "",
+                "long_description": " ",
                 "long_title": "Descripción general de las colecciones",
                 "title": "Descripción general"
             },
@@ -1454,19 +1454,19 @@
         "keystone_crates": "Cajas de piedras clave",
         "keystones": "Piedras clave",
         "market": {
-            "title": "Mercado Celestial",
-            "description": "Explora el Mercado Celestial",
-            "updated": "El mercado se actualiza cada hora.",
             "columns": {
                 "buy_count": "Órdenes realizadas",
-                "sell_count": "Listados de mercado",
-                "low": "Precio de cotización más bajo",
                 "high": "Oferta más alta",
-                "sold_last_day": "Vendido en el último día",
-                "last_price": "Último precio vendido"
+                "last_price": "Último precio vendido",
+                "low": "Precio de cotización más bajo",
+                "sell_count": "Listados de mercado",
+                "sold_last_day": "Vendido en el último día"
             },
+            "description": "Explora el Mercado Celestial",
             "listed": "Listado",
-            "unlisted": "No Listado"
+            "title": "Mercado Celestial",
+            "unlisted": "No Listado",
+            "updated": "El mercado se actualiza cada hora."
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",

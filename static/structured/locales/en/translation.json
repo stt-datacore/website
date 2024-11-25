@@ -291,7 +291,7 @@
             },
             "overview": {
                 "description": "Collections Overview",
-                "long_description": "",
+                "long_description": " ",
                 "long_title": "Collections Overview",
                 "title": "Overview"
             },
@@ -1441,19 +1441,19 @@
         "keystone_crates": "Keystone Crates",
         "keystones": "Keystones",
         "market": {
-            "title": "Celestial Market",
-            "description": "Browse the Celestial Market",
-            "updated": "Market is updated hourly",
             "columns": {
                 "buy_count": "Placed Orders",
-                "sell_count": "Market Listings",
-                "low": "Lowest Listed Price",
                 "high": "Highest Bid",
-                "sold_last_day": "Sold in the Last Day",
-                "last_price": "Last Sold Price"
+                "last_price": "Last Sold Price",
+                "low": "Lowest Listed Price",
+                "sell_count": "Market Listings",
+                "sold_last_day": "Sold in the Last Day"
             },
+            "description": "Browse the Celestial Market",
             "listed": "Listed",
-            "unlisted": "Unlisted"
+            "title": "Celestial Market",
+            "unlisted": "Unlisted",
+            "updated": "Market is updated hourly."
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",

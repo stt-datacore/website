@@ -3,7 +3,7 @@ import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { GlobalContext } from "../../context/globalcontext";
 import { printISM, RetrievalContext } from "./context";
 import { CelestialMarketListing } from "../../model/celestial";
-import { Dropdown, Table } from "semantic-ui-react";
+import { Dropdown, Icon, Message, Table } from "semantic-ui-react";
 import { Filter } from "../../model/game-elements";
 import { IKeystone } from "./model";
 import { getIconPath } from "../../utils/assets";
@@ -74,6 +74,10 @@ export const CelestialMarket = () => {
     if (!market) return <></>
 
     return (<div>
+            <Message color='blue'>
+                <Icon name='info' bordered style={{borderRadius: '16px', backgroundColor: 'white'}} />
+                {t('retrieval.market.updated')}
+            </Message>
             <div className='ui segment'
                  style={{display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-start', gap: '1em'}}>
                 {renderTypeFilter()} {renderOwnedFilter()} {renderListedFilter()}

@@ -291,7 +291,7 @@
             },
             "overview": {
                 "description": "Übersicht der Sammlungen",
-                "long_description": "",
+                "long_description": " ",
                 "long_title": "Übersicht der Sammlungen",
                 "title": "Übersicht"
             },
@@ -1443,19 +1443,19 @@
         "keystone_crates": "Keystone Kisten",
         "keystones": "Keystones",
         "market": {
-            "title": "Himmelsmarkt",
-            "description": "Stöbern Sie durch den Himmelsmarkt",
-            "updated": "Der Markt wird stündlich aktualisiert",
             "columns": {
                 "buy_count": "Aufgegebene Bestellungen",
-                "sell_count": "Marktangebote",
-                "low": "Niedrigster Listenpreis",
                 "high": "Höchstgebot",
-                "sold_last_day": "Am letzten Tag verkauft",
-                "last_price": "Letzter Verkaufspreis"
+                "last_price": "Letzter Verkaufspreis",
+                "low": "Niedrigster Listenpreis",
+                "sell_count": "Marktangebote",
+                "sold_last_day": "Am letzten Tag verkauft"
             },
+            "description": "Stöbern Sie durch den Himmelsmarkt",
             "listed": "Gelistet",
-            "unlisted": "Nicht Gelistet"
+            "title": "Himmelsmarkt",
+            "unlisted": "Nicht Gelistet",
+            "updated": "Der Markt wird stündlich aktualisiert"
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
