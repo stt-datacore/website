@@ -989,6 +989,7 @@
         "filter_by_crew": "Filtrar por tripulación",
         "filter_by_event_type": "Filtrar por tipo de evento",
         "filter_by_item_type": "Filtrar por tipo de artículo",
+        "filter_by_listed_status": "Filtrar por estado de listado",
         "filter_by_owned_status": "Filtrar por estado de propiedad",
         "filter_by_polestars": "Filtrar por estrellas polares",
         "filter_by_portal_status": "Filtrar por estado del portal",
@@ -1452,6 +1453,21 @@
         "keystone_crate": "Caja de piedras clave",
         "keystone_crates": "Cajas de piedras clave",
         "keystones": "Piedras clave",
+        "market": {
+            "title": "Mercado Celestial",
+            "description": "Explora el Mercado Celestial",
+            "updated": "El mercado se actualiza cada hora.",
+            "columns": {
+                "buy_count": "Órdenes realizadas",
+                "sell_count": "Listados de mercado",
+                "low": "Precio de cotización más bajo",
+                "high": "Oferta más alta",
+                "sold_last_day": "Vendido en el último día",
+                "last_price": "Último precio vendido"
+            },
+            "listed": "Listado",
+            "unlisted": "No Listado"
+        },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
         "modes": {

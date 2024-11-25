@@ -980,6 +980,7 @@
         "filter_by_crew": "Filtern nach Crew",
         "filter_by_event_type": "Filtern nach Ereignistyp",
         "filter_by_item_type": "Filtern nach Artikeltyp",
+        "filter_by_listed_status": "Filtern nach Listenstatus",
         "filter_by_owned_status": "Filtern nach Besitzstatus",
         "filter_by_polestars": "Filtern nach Polarsterne",
         "filter_by_portal_status": "Filtern nach Portalstatus",
@@ -1441,6 +1442,21 @@
         "keystone_crate": "Keystone-Kiste",
         "keystone_crates": "Keystone Kisten",
         "keystones": "Keystones",
+        "market": {
+            "title": "Himmelsmarkt",
+            "description": "Stöbern Sie durch den Himmelsmarkt",
+            "updated": "Der Markt wird stündlich aktualisiert",
+            "columns": {
+                "buy_count": "Aufgegebene Bestellungen",
+                "sell_count": "Marktangebote",
+                "low": "Niedrigster Listenpreis",
+                "high": "Höchstgebot",
+                "sold_last_day": "Am letzten Tag verkauft",
+                "last_price": "Letzter Verkaufspreis"
+            },
+            "listed": "Gelistet",
+            "unlisted": "Nicht Gelistet"
+        },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
         "modes": {
