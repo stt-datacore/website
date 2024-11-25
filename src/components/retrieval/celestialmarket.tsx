@@ -3,7 +3,7 @@ import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { GlobalContext } from "../../context/globalcontext";
 import { printISM, RetrievalContext } from "./context";
 import { CelestialMarketListing } from "../../model/celestial";
-import { Checkbox, Dropdown, Icon, Message, Table } from "semantic-ui-react";
+import { Checkbox, Dropdown, DropdownItemProps, Icon, Label, Message, Table } from "semantic-ui-react";
 import { Filter } from "../../model/game-elements";
 import { IKeystone } from "./model";
 import { getIconPath } from "../../utils/assets";
@@ -12,13 +12,14 @@ import { ItemHoverStat, ItemTarget } from "../hovering/itemhoverstat";
 import { AvatarView } from "../item_presenters/avatarview";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import CONFIG from "../CONFIG";
+import { RarityFilter } from "../crewtables/commonoptions";
+import { useStateWithStorage } from "../../utils/storage";
 
 interface PolestarCrew extends CrewMember {
     polestar_traits: string[];
 }
 
 export const CelestialMarket = () => {
-
     const globalContext = React.useContext(GlobalContext);
     const retrievalContext = React.useContext(RetrievalContext);
     const { market, allKeystones } = retrievalContext;
@@ -28,61 +29,6 @@ export const CelestialMarket = () => {
     const [typeFilter, setTypeFilter] = React.useState<string | undefined>(undefined);
     const [ownedFilter, setOwnedFilter] = React.useState<string | undefined>(undefined);
     const [listFilter, setListFilter] = React.useState<string | undefined>(undefined);
-    const [popularCrew, setPopularCrew] = React.useState<PolestarCrew[]>([]);
-    const [includeHfs, setIncludeHfs] = React.useState(false);
-    const TRAIT_NAMES = JSON.parse(JSON.stringify(globalContext.localized.TRAIT_NAMES));
-
-    CONFIG.RARITIES.forEach((rarity, idx) => {
-        TRAIT_NAMES[`rarity_${idx}`] = rarity.name;
-    });
-
-    Object.entries(CONFIG.SKILLS).forEach(([skill, name]) => {
-        TRAIT_NAMES[skill] = name;
-    })
-
-    React.useEffect(() => {
-        let listing = [...allListings].sort((a, b) => b.sold_last_day - a.sold_last_day);
-        let keys = listing.filter(fi => (fi.data as IKeystone).type === 'keystone')
-            .map(mi => mi.data as IKeystone)
-            .map(d => d.symbol.replace("_keystone", ""))
-            .filter(f => includeHfs || !["human", "federation", "starfleet"].includes(f))
-            .slice(0, 10);
-        let tpop = globalContext.core.crew.map(fc => {
-            let obj = ({ symbol: fc.symbol, traits: fc.traits.filter(t => keys.includes(t)), skill: false, rarity: false });
-            if (keys.some(k => k === `rarity_${fc.max_rarity}`)) {
-                obj.traits.push(`rarity_${fc.max_rarity}`);
-                obj.rarity = true;
-            }
-            if (keys.some(k => k.endsWith("_skill"))) {
-                let traits = keys.filter(f => f.endsWith("_skill") && fc.base_skills[f]?.core);
-                if (traits.length) {
-                    obj.traits = obj.traits.concat(traits);
-                    obj.skill = true;
-                }
-            }
-            return obj;
-        });
-
-        tpop = tpop.sort((a, b) => b.traits.length - a.traits.length).filter(f => f.traits.length >= 3);
-        const finalcrew = tpop.map(m => globalContext.core.crew.find(fc => fc.symbol === m.symbol))
-                .filter(f => !!f)
-                .map(mc => ({ ...mc, polestar_traits: [] as string[] }))
-                .filter(f =>
-                    f.max_rarity === 5 &&
-                    f.bigbook_tier < 5 &&
-                    f.in_portal &&
-                    f.unique_polestar_combos?.length);
-
-        finalcrew.sort((a, b) => {
-            let xa = tpop.findIndex(tpa => tpa.symbol === a.symbol);
-            let xb = tpop.findIndex(tpb => tpb.symbol === b.symbol);
-            if (!a.polestar_traits.length) a.polestar_traits = tpop[xa].traits;
-            if (!b.polestar_traits.length) b.polestar_traits = tpop[xb].traits;
-            return xa - xb;
-        });
-
-        setPopularCrew(finalcrew);
-    }, [allListings, includeHfs]);
 
     React.useEffect(() => {
         if (market) {
@@ -96,7 +42,6 @@ export const CelestialMarket = () => {
                     l.name = arch?.name ?? keystone.name;
                     l.data = keystone;
                     allListings.push(l);
-
                     if (typeFilter) {
                         if (typeFilter === 'polestars' && (keystone.type === 'crew_keystone_crate' || keystone.type === 'keystone_crate')) return;
                         if (typeFilter === 'constellations' && keystone.type === 'keystone') return;
@@ -155,54 +100,10 @@ export const CelestialMarket = () => {
             config={marketTable}
             filterRow={(listing, filter) => filterText(listing, filter)}
         />
-        {renderPopularCrew()}
+        <PopularCrew allListings={allListings} />
         <ItemHoverStat targetGroup="celestial_market_items" />
         <CrewHoverStat targetGroup="celestial_market_crew" />
     </div>)
-
-    function renderPopularCrew() {
-        return (
-        <div className="ui segment">
-            <h4>{t('retrieval.market.most_likely_popular')}</h4>
-            <Checkbox
-                style={{margin: '0.5em 0'}}
-                checked={includeHfs}
-                onChange={(e, { checked }) => setIncludeHfs(!!checked)}
-                label={t('global.include_x', {
-                    x: `${[TRAIT_NAMES['human'], TRAIT_NAMES['federation'], TRAIT_NAMES['starfleet']].join(", ")}`
-                })} />
-            <div style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                justifyContent: 'flex-start',
-                flexWrap: 'wrap'
-            }}>
-                {popularCrew.map((crew, idx) => {
-                    return !!crew && <div style={{
-                        padding: '1em',
-                        width: '20%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        textAlign: 'center',
-                        fontStyle: 'italic',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: (crew as any).score === -1 ? 'lightgreen' : undefined
-                    }}>
-                        <AvatarView
-                            mode='crew'
-                            item={crew}
-                            size={64}
-                            targetGroup="celestial_market_crew"
-                        />
-                        {crew.name} ({crew.polestar_traits.map(t => TRAIT_NAMES[t]).join(", ")})
-                    </div> || <></>
-                })}
-            </div>
-        </div>)
-
-    }
 
 
     function renderTypeFilter() {
@@ -325,6 +226,171 @@ export const CelestialMarket = () => {
 
         return meetsAnyCondition;
     }
+}
 
+const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
+    const globalContext = React.useContext(GlobalContext);
+    const { t } = globalContext.localized;
+    const [popularCrew, setPopularCrew] = React.useState<PolestarCrew[]>([]);
+    const [includeHfs, setIncludeHfs] = React.useState(false);
+    const TRAIT_NAMES = JSON.parse(JSON.stringify(globalContext.localized.TRAIT_NAMES));
+    const [rarities, setRarities] = useStateWithStorage(`popular_rarity_filter`, [5] as number[], { rememberForever: true });
+    const [top, setTop] = useStateWithStorage(`popular_keystone_top`, 10, { rememberForever: true });
+    const [minPolestars, setMinPolestars] = useStateWithStorage(`popular_keystone_min_polestars`, 3, { rememberForever: true });
+
+    const topOptions = [] as DropdownItemProps[];
+
+    [5, 10, 15, 20, 30, 50, 100].map((n) => {
+        topOptions.push({
+            key: `top_${n}`,
+            value: n,
+            text: t('retrieval.market.top_n_polestars', { n: `${n}` })
+        });
+    });
+
+    const minOptions = [] as DropdownItemProps[];
+
+    [1, 2, 3, 4, 5].map((n) => {
+        minOptions.push({
+            key: `min_${n}`,
+            value: n,
+            text: `${n}`
+        });
+    });
+
+    CONFIG.RARITIES.forEach((rarity, idx) => {
+        TRAIT_NAMES[`rarity_${idx}`] = rarity.name;
+    });
+
+    Object.entries(CONFIG.SKILLS).forEach(([skill, name]) => {
+        TRAIT_NAMES[skill] = name;
+    });
+
+    const { allListings } = props;
+
+    React.useEffect(() => {
+        let listing = [...allListings].sort((a, b) => b.sold_last_day - a.sold_last_day);
+        let keys = listing.filter(fi => (fi.data as IKeystone).type === 'keystone')
+            .map(mi => mi.data as IKeystone)
+            .map(d => d.symbol.replace("_keystone", ""))
+            .filter(f => includeHfs || !["human", "federation", "starfleet"].includes(f))
+            .slice(0, top);
+
+        let tpop = globalContext.core.crew.map(fc => {
+            let obj = ({ symbol: fc.symbol, traits: fc.traits.filter(t => keys.includes(t)), skill: false, rarity: false });
+            if (keys.some(k => k === `rarity_${fc.max_rarity}`)) {
+                obj.traits.push(`rarity_${fc.max_rarity}`);
+                obj.rarity = true;
+            }
+            if (keys.some(k => k.endsWith("_skill"))) {
+                let traits = keys.filter(f => f.endsWith("_skill") && fc.base_skills[f]?.core);
+                if (traits.length) {
+                    obj.traits = obj.traits.concat(traits);
+                    obj.skill = true;
+                }
+            }
+            return obj;
+        });
+
+        tpop = tpop.sort((a, b) => b.traits.length - a.traits.length).filter(f => f.traits.length >= minPolestars);
+        const finalcrew = tpop.map(m => globalContext.core.crew.find(fc => fc.symbol === m.symbol))
+                .filter(f => !!f)
+                .map(mc => ({ ...mc, polestar_traits: [] as string[] }))
+                .filter(f =>
+                    //f.max_rarity === 5 &&
+                    f.bigbook_tier < 5 &&
+                    f.in_portal &&
+                    f.unique_polestar_combos?.length &&
+                    (!rarities.length || rarities.includes(f.max_rarity)));
+
+        finalcrew.sort((a, b) => {
+            let xa = tpop.findIndex(tpa => tpa.symbol === a.symbol);
+            let xb = tpop.findIndex(tpb => tpb.symbol === b.symbol);
+            if (!a.polestar_traits.length) a.polestar_traits = tpop[xa].traits;
+            if (!b.polestar_traits.length) b.polestar_traits = tpop[xb].traits;
+            return xa - xb;
+        });
+
+        setPopularCrew(finalcrew);
+    }, [allListings, includeHfs, rarities, top, minPolestars]);
+
+    return (
+        <div className="ui segment">
+            <Label attached="top" color='orange'>
+                {t('global.experimental')}
+            </Label>
+            <h4>{t('retrieval.market.most_likely_popular')}</h4>
+            <div style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                flexWrap: 'wrap',
+                gap: '1em'
+            }}>
+                <Checkbox
+                    style={{margin: '0.5em 0'}}
+                    checked={includeHfs}
+                    onChange={(e, { checked }) => setIncludeHfs(!!checked)}
+                    label={t('global.include_x', {
+                        x: `${[TRAIT_NAMES['human'], TRAIT_NAMES['federation'], TRAIT_NAMES['starfleet']].join(", ")}`
+                    })} />
+                <div style={{display: 'inline'}}>
+                    <p>{t('hints.filter_by_rarity')}</p>
+                    <RarityFilter
+                        rarityFilter={rarities}
+                        setRarityFilter={setRarities}
+                        />
+                </div>
+                <div style={{display: 'inline'}}>
+                    <p>{t('retrieval.market.top_n_polestars', { n: '' })}</p>
+                    <Dropdown
+                        selection
+                        value={top}
+                        options={topOptions}
+                        onChange={(e, { value }) => setTop(value as number)}
+                        />
+                </div>
+                <div style={{display: 'inline'}}>
+                    <p>{t('retrieval.market.min_polestars')}</p>
+                    <Dropdown
+                        selection
+                        value={minPolestars}
+                        options={minOptions}
+                        onChange={(e, { value }) => setMinPolestars(value as number)}
+                        />
+                </div>
+            </div>
+            <div style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                flexWrap: 'wrap'
+            }}>
+                {popularCrew.map((crew, idx) => {
+                    return !!crew && <div style={{
+                        padding: '1em',
+                        width: '20%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        textAlign: 'center',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: (crew as any).score === -1 ? 'lightgreen' : undefined
+                    }}>
+                        <AvatarView
+                            mode='crew'
+                            item={crew}
+                            size={64}
+                            targetGroup="celestial_market_crew"
+                        />
+                        {crew.name}
+                        <br />
+                        <i>({crew.polestar_traits.map(t => TRAIT_NAMES[t]).join(", ")})</i>
+                    </div> || <></>
+                })}
+            </div>
+        </div>)
 
 }

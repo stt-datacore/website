@@ -1452,10 +1452,12 @@
                 "sell_count": "Marktangebote",
                 "sold_last_day": "Am letzten Tag verkauft"
             },
-            "most_likely_popular": "Wahrscheinlichste beliebte Abrufe (basierend auf Polarstern-Käufen)",
             "description": "Stöbern Sie durch den Himmelsmarkt",
             "listed": "Gelistet",
+            "min_polestars": "Min. Polarstern-Übereinstimmungen",
+            "most_likely_popular": "Wahrscheinlichste beliebte Abrufe (basierend auf Polarstern-Käufen)",
             "title": "Himmelsmarkt",
+            "top_n_polestars": "Top {{n}} Polarsterne",
             "unlisted": "Nicht Gelistet",
             "updated": "Der Markt wird stündlich aktualisiert"
         },

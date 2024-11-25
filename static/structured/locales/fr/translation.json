@@ -1464,10 +1464,12 @@
                 "sell_count": "Listes de marché",
                 "sold_last_day": "Vendu le dernier jour"
             },
-            "most_likely_popular": "Récupérations les plus populaires (basées sur les achats d'étoiles polaires)",
             "description": "Parcourez le marché céleste",
             "listed": "Répertorié",
+            "min_polestars": "Min. allumettes d'étoile polaire",
+            "most_likely_popular": "Récupérations les plus populaires (basées sur les achats d'étoiles polaires)",
             "title": "Marché céleste",
+            "top_n_polestars": "Les {{n}} meilleures étoiles polaires",
             "unlisted": "Non Répertorié",
             "updated": "Le marché est mis à jour toutes les heures"
         },

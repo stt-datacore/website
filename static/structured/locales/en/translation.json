@@ -1442,6 +1442,7 @@
         "keystone_crates": "Keystone Crates",
         "keystones": "Keystones",
         "market": {
+            "min_polestars": "Min polestar matches",
             "columns": {
                 "buy_count": "Placed Orders",
                 "high": "Highest Bid",
@@ -1455,7 +1456,8 @@
             "listed": "Listed",
             "title": "Celestial Market",
             "unlisted": "Unlisted",
-            "updated": "Market is updated hourly."
+            "updated": "Market is updated hourly.",
+            "top_n_polestars": "Top {{n}} polestars"
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
