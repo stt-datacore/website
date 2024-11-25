@@ -52,7 +52,7 @@ export const CelestialMarket = () => {
 
     const marketTable: ITableConfigRow[] = [
 
-		{ width: 2, column: 'name', title: t('retrieval.prospects.columns.name') },
+		{ width: 2, column: 'name', title: t('global.name') },
         {
             width: 1,
             column: 'owned',
