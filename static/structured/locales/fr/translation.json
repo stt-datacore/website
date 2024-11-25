@@ -874,6 +874,7 @@
         "hide": "Masquer",
         "highest_owned_rarity": "Rareté la plus élevée possédée",
         "idle": "Inactif",
+        "include_x": "Inclure {{x}}",
         "item_types": {
             "arena": "Arène",
             "arena_tickets": "Billets pour arène",

@@ -3,15 +3,19 @@ import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { GlobalContext } from "../../context/globalcontext";
 import { printISM, RetrievalContext } from "./context";
 import { CelestialMarketListing } from "../../model/celestial";
-import { Dropdown, Icon, Message, Table } from "semantic-ui-react";
+import { Checkbox, Dropdown, Icon, Message, Table } from "semantic-ui-react";
 import { Filter } from "../../model/game-elements";
 import { IKeystone } from "./model";
 import { getIconPath } from "../../utils/assets";
 import { CrewMember } from "../../model/crew";
 import { ItemHoverStat, ItemTarget } from "../hovering/itemhoverstat";
 import { AvatarView } from "../item_presenters/avatarview";
+import { CrewHoverStat } from "../hovering/crewhoverstat";
+import CONFIG from "../CONFIG";
 
-
+interface PolestarCrew extends CrewMember {
+    polestar_traits: string[];
+}
 
 export const CelestialMarket = () => {
 
@@ -24,18 +28,61 @@ export const CelestialMarket = () => {
     const [typeFilter, setTypeFilter] = React.useState<string | undefined>(undefined);
     const [ownedFilter, setOwnedFilter] = React.useState<string | undefined>(undefined);
     const [listFilter, setListFilter] = React.useState<string | undefined>(undefined);
-    const [popularCrew, setPopularCrew] = React.useState<CrewMember[]>([]);
+    const [popularCrew, setPopularCrew] = React.useState<PolestarCrew[]>([]);
+    const [includeHfs, setIncludeHfs] = React.useState(false);
+    const TRAIT_NAMES = JSON.parse(JSON.stringify(globalContext.localized.TRAIT_NAMES));
+
+    CONFIG.RARITIES.forEach((rarity, idx) => {
+        TRAIT_NAMES[`rarity_${idx}`] = rarity.name;
+    });
+
+    Object.entries(CONFIG.SKILLS).forEach(([skill, name]) => {
+        TRAIT_NAMES[skill] = name;
+    })
 
     React.useEffect(() => {
-        allListings.sort((a, b) => b.sold_last_day - a.sold_last_day);
-        let keys = allListings.filter(fi => (fi.data as IKeystone).type === 'keystone').map(mi => mi.data as IKeystone).map(d => d.symbol.replace("_keystone", "")).slice(0, 20);
-        // let crates = allListings.filter(fi => (fi.data as IKeystone).type === 'crew_keystone_crate').map(mi => mi.data as IKeystone).map(d => d.symbol.replace("_keystone_crate", "")).slice(0, 20);
-        let tpop = globalContext.core.crew.map(fc => ({ symbol: fc.symbol, traits: fc.traits.filter(t => keys.includes(t)) }));
-        tpop = tpop.sort((a, b) => b.traits.length - a.traits.length).filter(f => f.traits.length > 3);
-        const finalcrew = globalContext.core.crew.filter(f => tpop.some(t => t.symbol === f.symbol)).filter(f => !!f).filter(f => f.max_rarity === 5 && f.bigbook_tier < 5 && f.in_portal);
-        //.concat(crates.map(m => globalContext.core.crew.find(f => f.symbol === m)!))
+        let listing = [...allListings].sort((a, b) => b.sold_last_day - a.sold_last_day);
+        let keys = listing.filter(fi => (fi.data as IKeystone).type === 'keystone')
+            .map(mi => mi.data as IKeystone)
+            .map(d => d.symbol.replace("_keystone", ""))
+            .filter(f => includeHfs || !["human", "federation", "starfleet"].includes(f))
+            .slice(0, 10);
+        let tpop = globalContext.core.crew.map(fc => {
+            let obj = ({ symbol: fc.symbol, traits: fc.traits.filter(t => keys.includes(t)), skill: false, rarity: false });
+            if (keys.some(k => k === `rarity_${fc.max_rarity}`)) {
+                obj.traits.push(`rarity_${fc.max_rarity}`);
+                obj.rarity = true;
+            }
+            if (keys.some(k => k.endsWith("_skill"))) {
+                let traits = keys.filter(f => f.endsWith("_skill") && fc.base_skills[f]?.core);
+                if (traits.length) {
+                    obj.traits = obj.traits.concat(traits);
+                    obj.skill = true;
+                }
+            }
+            return obj;
+        });
+
+        tpop = tpop.sort((a, b) => b.traits.length - a.traits.length).filter(f => f.traits.length >= 3);
+        const finalcrew = tpop.map(m => globalContext.core.crew.find(fc => fc.symbol === m.symbol))
+                .filter(f => !!f)
+                .map(mc => ({ ...mc, polestar_traits: [] as string[] }))
+                .filter(f =>
+                    f.max_rarity === 5 &&
+                    f.bigbook_tier < 5 &&
+                    f.in_portal &&
+                    f.unique_polestar_combos?.length);
+
+        finalcrew.sort((a, b) => {
+            let xa = tpop.findIndex(tpa => tpa.symbol === a.symbol);
+            let xb = tpop.findIndex(tpb => tpb.symbol === b.symbol);
+            if (!a.polestar_traits.length) a.polestar_traits = tpop[xa].traits;
+            if (!b.polestar_traits.length) b.polestar_traits = tpop[xb].traits;
+            return xa - xb;
+        });
+
         setPopularCrew(finalcrew);
-    }, [allListings]);
+    }, [allListings, includeHfs]);
 
     React.useEffect(() => {
         if (market) {
@@ -108,8 +155,22 @@ export const CelestialMarket = () => {
             config={marketTable}
             filterRow={(listing, filter) => filterText(listing, filter)}
         />
+        {renderPopularCrew()}
+        <ItemHoverStat targetGroup="celestial_market_items" />
+        <CrewHoverStat targetGroup="celestial_market_crew" />
+    </div>)
+
+    function renderPopularCrew() {
+        return (
         <div className="ui segment">
             <h4>{t('retrieval.market.most_likely_popular')}</h4>
+            <Checkbox
+                style={{margin: '0.5em 0'}}
+                checked={includeHfs}
+                onChange={(e, { checked }) => setIncludeHfs(!!checked)}
+                label={t('global.include_x', {
+                    x: `${[TRAIT_NAMES['human'], TRAIT_NAMES['federation'], TRAIT_NAMES['starfleet']].join(", ")}`
+                })} />
             <div style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -117,7 +178,6 @@ export const CelestialMarket = () => {
                 justifyContent: 'flex-start',
                 flexWrap: 'wrap'
             }}>
-
                 {popularCrew.map((crew, idx) => {
                     return !!crew && <div style={{
                         padding: '1em',
@@ -127,20 +187,22 @@ export const CelestialMarket = () => {
                         textAlign: 'center',
                         fontStyle: 'italic',
                         alignItems: 'center',
-                        justifyContent: 'center'
+                        justifyContent: 'center',
+                        color: (crew as any).score === -1 ? 'lightgreen' : undefined
                     }}>
                         <AvatarView
                             mode='crew'
                             item={crew}
                             size={64}
+                            targetGroup="celestial_market_crew"
                         />
-                        {crew.name}
+                        {crew.name} ({crew.polestar_traits.map(t => TRAIT_NAMES[t]).join(", ")})
                     </div> || <></>
                 })}
             </div>
-        </div>
-        <ItemHoverStat targetGroup="celestial_market_items" />
-    </div>)
+        </div>)
+
+    }
 
 
     function renderTypeFilter() {

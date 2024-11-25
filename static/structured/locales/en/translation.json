@@ -866,6 +866,7 @@
         "hide": "Hide",
         "highest_owned_rarity": "Highest owned rarity",
         "idle": "Idle",
+        "include_x": "Include {{x}}",
         "item_types": {
             "arena": "Arena",
             "arena_tickets": "Arena tickets",

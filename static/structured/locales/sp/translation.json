@@ -873,6 +873,7 @@
         "hide": "Ocultar",
         "highest_owned_rarity": "Mayor rareza en posesión",
         "idle": "Inactivo",
+        "include_x": "Incluye {{x}}",
         "item_types": {
             "arena": "Arena",
             "arena_tickets": "Boletos de arena",
