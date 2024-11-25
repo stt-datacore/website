@@ -7,6 +7,9 @@ import { Dropdown, Icon, Message, Table } from "semantic-ui-react";
 import { Filter } from "../../model/game-elements";
 import { IKeystone } from "./model";
 import { getIconPath } from "../../utils/assets";
+import { CrewMember } from "../../model/crew";
+import { ItemHoverStat, ItemTarget } from "../hovering/itemhoverstat";
+import { AvatarView } from "../item_presenters/avatarview";
 
 
 
@@ -16,17 +19,37 @@ export const CelestialMarket = () => {
     const retrievalContext = React.useContext(RetrievalContext);
     const { market, allKeystones } = retrievalContext;
     const { t, ITEM_ARCHETYPES } = globalContext.localized;
-    const [listings, setListings] = React.useState<CelestialMarketListing[]>([]);
+    const [filteredListings, setFilteredListings] = React.useState<CelestialMarketListing[]>([]);
+    const [allListings, setAllListings] = React.useState<CelestialMarketListing[]>([]);
     const [typeFilter, setTypeFilter] = React.useState<string | undefined>(undefined);
     const [ownedFilter, setOwnedFilter] = React.useState<string | undefined>(undefined);
     const [listFilter, setListFilter] = React.useState<string | undefined>(undefined);
+    const [popularCrew, setPopularCrew] = React.useState<CrewMember[]>([]);
+
+    React.useEffect(() => {
+        allListings.sort((a, b) => b.sold_last_day - a.sold_last_day);
+        let keys = allListings.filter(fi => (fi.data as IKeystone).type === 'keystone').map(mi => mi.data as IKeystone).map(d => d.symbol.replace("_keystone", "")).slice(0, 20);
+        // let crates = allListings.filter(fi => (fi.data as IKeystone).type === 'crew_keystone_crate').map(mi => mi.data as IKeystone).map(d => d.symbol.replace("_keystone_crate", "")).slice(0, 20);
+        let tpop = globalContext.core.crew.map(fc => ({ symbol: fc.symbol, traits: fc.traits.filter(t => keys.includes(t)) }));
+        tpop = tpop.sort((a, b) => b.traits.length - a.traits.length).filter(f => f.traits.length > 3);
+        const finalcrew = globalContext.core.crew.filter(f => tpop.some(t => t.symbol === f.symbol)).filter(f => !!f).filter(f => f.max_rarity === 5 && f.bigbook_tier < 5 && f.in_portal);
+        //.concat(crates.map(m => globalContext.core.crew.find(f => f.symbol === m)!))
+        setPopularCrew(finalcrew);
+    }, [allListings]);
 
     React.useEffect(() => {
         if (market) {
             const newListings: CelestialMarketListing[] = [];
+            const allListings: CelestialMarketListing[] = [];
             Object.entries(market).forEach(([id, listing]) => {
                 const keystone = allKeystones.find(f => f.id === Number(id));
                 if (keystone) {
+                    const l = { ...listing };
+                    const arch = ITEM_ARCHETYPES[keystone.symbol];
+                    l.name = arch?.name ?? keystone.name;
+                    l.data = keystone;
+                    allListings.push(l);
+
                     if (typeFilter) {
                         if (typeFilter === 'polestars' && (keystone.type === 'crew_keystone_crate' || keystone.type === 'keystone_crate')) return;
                         if (typeFilter === 'constellations' && keystone.type === 'keystone') return;
@@ -39,20 +62,17 @@ export const CelestialMarket = () => {
                         if (listFilter === 'listed' && !listing.sell_count) return;
                         if (listFilter === 'unlisted' && listing.sell_count) return;
                     }
-                    const l = { ... listing };
-                    const arch = ITEM_ARCHETYPES[keystone.symbol];
-                    l.name = arch?.name ?? keystone.name;
-                    l.data = keystone;
                     newListings.push(l);
                 }
             });
-            setListings(newListings);
+            setFilteredListings(newListings);
+            setAllListings(allListings);
         }
     }, [market, typeFilter, ownedFilter, listFilter]);
 
     const marketTable: ITableConfigRow[] = [
 
-		{ width: 2, column: 'name', title: t('global.name') },
+        { width: 2, column: 'name', title: t('global.name') },
         {
             width: 1,
             column: 'owned',
@@ -69,27 +89,58 @@ export const CelestialMarket = () => {
         { width: 1, column: 'high', title: t('retrieval.market.columns.high') },
         { width: 1, column: 'sold_last_day', title: t('retrieval.market.columns.sold_last_day') },
         { width: 1, column: 'last_price', title: t('retrieval.market.columns.last_price') },
-	];
+    ];
 
     if (!market) return <></>
 
     return (<div>
-            <Message color='blue'>
-                <Icon name='info' bordered style={{borderRadius: '16px', backgroundColor: 'white'}} />
-                {t('retrieval.market.updated')}
-            </Message>
-            <div className='ui segment'
-                 style={{display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-start', gap: '1em'}}>
-                {renderTypeFilter()} {renderOwnedFilter()} {renderListedFilter()}
-            </div>
-            <SearchableTable
-                data={listings}
-                renderTableRow={(data, idx) => renderTableRow(data, idx)}
-                config={marketTable}
-                filterRow={(listing, filter) => filterText(listing, filter)}
-                />
+        <Message color='blue'>
+            <Icon name='info' bordered style={{ borderRadius: '16px', backgroundColor: 'white' }} />
+            {t('retrieval.market.updated')}
+        </Message>
+        <div className='ui segment'
+            style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-start', gap: '1em' }}>
+            {renderTypeFilter()} {renderOwnedFilter()} {renderListedFilter()}
+        </div>
+        <SearchableTable
+            data={filteredListings}
+            renderTableRow={(data, idx) => renderTableRow(data, idx)}
+            config={marketTable}
+            filterRow={(listing, filter) => filterText(listing, filter)}
+        />
+        <div className="ui segment">
+            <h4>{t('retrieval.market.most_likely_popular')}</h4>
+            <div style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                flexWrap: 'wrap'
+            }}>
 
-            </div>)
+                {popularCrew.map((crew, idx) => {
+                    return !!crew && <div style={{
+                        padding: '1em',
+                        width: '20%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        textAlign: 'center',
+                        fontStyle: 'italic',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+                        <AvatarView
+                            mode='crew'
+                            item={crew}
+                            size={64}
+                        />
+                        {crew.name}
+                    </div> || <></>
+                })}
+            </div>
+        </div>
+        <ItemHoverStat targetGroup="celestial_market_items" />
+    </div>)
 
 
     function renderTypeFilter() {
@@ -105,7 +156,7 @@ export const CelestialMarket = () => {
             clearable
             selection
             onChange={(e, { value }) => setOwnedFilter(value as string | undefined)}
-            />
+        />
 
     }
 
@@ -122,7 +173,7 @@ export const CelestialMarket = () => {
             clearable
             selection
             onChange={(e, { value }) => setTypeFilter(value as string | undefined)}
-            />
+        />
 
     }
 
@@ -139,7 +190,7 @@ export const CelestialMarket = () => {
             clearable
             selection
             onChange={(e, { value }) => setListFilter(value as string | undefined)}
-            />
+        />
 
     }
 
@@ -155,8 +206,10 @@ export const CelestialMarket = () => {
                     gridTemplateColumns: '64px auto',
                     alignItems: 'center'
                 }}>
-                    <img style={{gridArea: 'img', height: '48px'}} src={`${process.env.GATSBY_ASSETS_URL}${keystone.imageUrl}`} />
-                    <span style={{gridArea: 'text'}}>
+                    <ItemTarget inputItem={{ ...keystone as any, quantity: keystone.owned }} passDirect={true} targetGroup="celestial_market_items">
+                        <img style={{ gridArea: 'img', height: '48px' }} src={`${process.env.GATSBY_ASSETS_URL}${keystone.imageUrl}`} />
+                    </ItemTarget>
+                    <span style={{ gridArea: 'text' }}>
                         {data.name}
                     </span>
                 </div>
@@ -186,30 +239,30 @@ export const CelestialMarket = () => {
     }
 
     function filterText(listing: CelestialMarketListing, filters: Filter[]): boolean {
-		if (filters.length === 0) return true;
+        if (filters.length === 0) return true;
 
-		const matchesFilter = (input: string, searchString: string) =>
-			input.toLowerCase().indexOf(searchString.toLowerCase()) >= 0;
+        const matchesFilter = (input: string, searchString: string) =>
+            input.toLowerCase().indexOf(searchString.toLowerCase()) >= 0;
 
-		let meetsAnyCondition = false;
+        let meetsAnyCondition = false;
 
-		for (let filter of filters) {
-			let meetsAllConditions = true;
-			if (filter.conditionArray?.length === 0) {
-				// text search only
-				for (let segment of filter.textSegments ?? []) {
-					let segmentResult = matchesFilter(listing.name!, segment.text);
-					meetsAllConditions = meetsAllConditions && (segment.negated ? !segmentResult : segmentResult);
-				}
-			}
-			if (meetsAllConditions) {
-				meetsAnyCondition = true;
-				break;
-			}
-		}
+        for (let filter of filters) {
+            let meetsAllConditions = true;
+            if (filter.conditionArray?.length === 0) {
+                // text search only
+                for (let segment of filter.textSegments ?? []) {
+                    let segmentResult = matchesFilter(listing.name!, segment.text);
+                    meetsAllConditions = meetsAllConditions && (segment.negated ? !segmentResult : segmentResult);
+                }
+            }
+            if (meetsAllConditions) {
+                meetsAnyCondition = true;
+                break;
+            }
+        }
 
-		return meetsAnyCondition;
-	}
+        return meetsAnyCondition;
+    }
 
 
 }
