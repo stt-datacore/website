@@ -965,6 +965,7 @@
             "heading": "Cette page est un travail en cours. Certaines fonctions et fonctionnalités peuvent être non fonctionnelles, cassées, manquantes, incomplètes ou modifiées à tout moment.",
             "title": "Travail en cours !"
         },
+        "x_or_better": "{{x}} ou mieux",
         "yes": "Oui",
         "you_own_n_of_y": "Vous possédez {{n}} de {{y}}."
     },
@@ -1467,7 +1468,7 @@
             "description": "Parcourez le marché céleste",
             "listed": "Répertorié",
             "min_polestars": "Min. allumettes d'étoile polaire",
-            "most_likely_popular": "Récupérations les plus populaires (basées sur les achats d'étoiles polaires)",
+            "most_likely_popular": "Occurrence des traits les plus populaires de l'équipage étoiles polaires (les combos exacts sont en vert)",
             "title": "Marché céleste",
             "top_n_polestars": "Les {{n}} meilleures étoiles polaires",
             "unlisted": "Non Répertorié",

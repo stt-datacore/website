@@ -964,6 +964,7 @@
             "heading": "Esta página es un trabajo en progreso. Algunas funciones y características pueden no funcionar, estar rotas, faltar, estar incompletas o cambiar en cualquier momento.",
             "title": "¡Trabajo en progreso!"
         },
+        "x_or_better": "{{x}} o mejor",
         "yes": "Sí",
         "you_own_n_of_y": "Eres dueño de {{n}} de {{y}}."
     },
@@ -1466,7 +1467,7 @@
             "description": "Explora el Mercado Celestial",
             "listed": "Listado",
             "min_polestars": "Mín. coincidencias de estrellas polares",
-            "most_likely_popular": "Recuperaciones más populares (según las compras de estrellas polares)",
+            "most_likely_popular": "Ocurrencia de los mejores rasgos de tripulación de las estrellas polares populares (las combinaciones exactas están en verde)",
             "title": "Mercado Celestial",
             "top_n_polestars": "Las {{n}} mejores estrellas polares",
             "unlisted": "No Listado",

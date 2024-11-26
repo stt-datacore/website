@@ -17,6 +17,7 @@ import { useStateWithStorage } from "../../utils/storage";
 
 interface PolestarCrew extends CrewMember {
     polestar_traits: string[];
+    contains_unique: boolean;
 }
 
 export const CelestialMarket = () => {
@@ -237,6 +238,7 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
     const [rarities, setRarities] = useStateWithStorage(`popular_rarity_filter`, [5] as number[], { rememberForever: true });
     const [top, setTop] = useStateWithStorage(`popular_keystone_top`, 10, { rememberForever: true });
     const [minPolestars, setMinPolestars] = useStateWithStorage(`popular_keystone_min_polestars`, 3, { rememberForever: true });
+    const [bbTier, setBBTier] = useStateWithStorage(`popular_keystone_bb_tier`, 4, { rememberForever: true });
 
     const topOptions = [] as DropdownItemProps[];
 
@@ -258,6 +260,16 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
         });
     });
 
+    const bbOptions = [] as DropdownItemProps[];
+
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => {
+        bbOptions.push({
+            key: `bbtier_${n}`,
+            value: n,
+            text: n === 1 ? '1' : t('global.x_or_better', { x: `${n}` })
+        });
+    });
+
     CONFIG.RARITIES.forEach((rarity, idx) => {
         TRAIT_NAMES[`rarity_${idx}`] = rarity.name;
     });
@@ -270,6 +282,8 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
 
     React.useEffect(() => {
         let listing = [...allListings].sort((a, b) => b.sold_last_day - a.sold_last_day);
+        const tsl = {} as {[key:string]: number}
+        listing.forEach(l => tsl[l.data!.symbol!.replace('_keystone', '')] = l.sold_last_day);
         let keys = listing.filter(fi => (fi.data as IKeystone).type === 'keystone')
             .map(mi => mi.data as IKeystone)
             .map(d => d.symbol.replace("_keystone", ""))
@@ -277,42 +291,74 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
             .slice(0, top);
 
         let tpop = globalContext.core.crew.map(fc => {
-            let obj = ({ symbol: fc.symbol, traits: fc.traits.filter(t => keys.includes(t)), skill: false, rarity: false });
-            if (keys.some(k => k === `rarity_${fc.max_rarity}`)) {
-                obj.traits.push(`rarity_${fc.max_rarity}`);
-                obj.rarity = true;
+            fc.unique_polestar_combos = fc.unique_polestar_combos?.map(m => ([ ... new Set(m) ]))
+            let cbs = (fc.unique_polestar_combos ?? []).map(unc => {
+                let ft = unc.filter(z => keys.includes(z));
+                return {
+                    combo: unc,
+                    score: ft.length
+                }
+            });
+            if (cbs?.length) {
+                cbs.sort((a, b) => b.score - a.score);
             }
-            if (keys.some(k => k.endsWith("_skill"))) {
-                let traits = keys.filter(f => f.endsWith("_skill") && fc.base_skills[f]?.core);
-                if (traits.length) {
-                    obj.traits = obj.traits.concat(traits);
-                    obj.skill = true;
+            let uniques = !!(cbs?.length && cbs[0].score === cbs[0].combo.length);
+            let obj = ({ symbol: fc.symbol, traits: uniques ? cbs[0].combo : fc.traits.filter(t => keys.includes(t)), skill: false, rarity: false, unique: uniques });
+
+            if (!uniques) {
+                if (keys.some(k => k === `rarity_${fc.max_rarity}`)) {
+                    obj.traits.push(`rarity_${fc.max_rarity}`);
+                    obj.rarity = true;
+                }
+                if (keys.some(k => k.endsWith("_skill"))) {
+                    let traits = keys.filter(f => f.endsWith("_skill") && fc.base_skills[f]?.core);
+                    if (traits.length) {
+                        obj.traits = obj.traits.concat(traits);
+                        obj.skill = true;
+                    }
                 }
             }
+            obj.traits = obj.traits.filter((f, idx) => obj.traits.findIndex(fo => fo === f) === idx);
             return obj;
         });
 
         tpop = tpop.sort((a, b) => b.traits.length - a.traits.length).filter(f => f.traits.length >= minPolestars);
         const finalcrew = tpop.map(m => globalContext.core.crew.find(fc => fc.symbol === m.symbol))
                 .filter(f => !!f)
-                .map(mc => ({ ...mc, polestar_traits: [] as string[] }))
+                .map(mc => ({ ...mc, polestar_traits: [] as string[], contains_unique: false }))
                 .filter(f =>
                     //f.max_rarity === 5 &&
-                    f.bigbook_tier < 5 &&
+                    f.bigbook_tier <= bbTier &&
                     f.in_portal &&
                     f.unique_polestar_combos?.length &&
                     (!rarities.length || rarities.includes(f.max_rarity)));
 
-        finalcrew.sort((a, b) => {
-            let xa = tpop.findIndex(tpa => tpa.symbol === a.symbol);
-            let xb = tpop.findIndex(tpb => tpb.symbol === b.symbol);
-            if (!a.polestar_traits.length) a.polestar_traits = tpop[xa].traits;
-            if (!b.polestar_traits.length) b.polestar_traits = tpop[xb].traits;
-            return xa - xb;
-        });
+        if (finalcrew.length === 1) {
+            let tpf = tpop.find(tf => tf.symbol === finalcrew[0].symbol);
+            if (tpf) {
+                finalcrew[0].polestar_traits = tpf.traits;
+                finalcrew[0].contains_unique = tpf.unique;
+            }
+        }
+        else {
+            finalcrew.sort((a, b) => {
+                let xa = tpop.findIndex(tpa => tpa.symbol === a.symbol);
+                let xb = tpop.findIndex(tpb => tpb.symbol === b.symbol);
+                if (!a.polestar_traits.length) {
+                    a.polestar_traits = tpop[xa].traits;
+                    a.contains_unique = tpop[xa].unique;
+                }
+                if (!b.polestar_traits.length) {
+                    b.polestar_traits = tpop[xb].traits;
+                    b.contains_unique = tpop[xb].unique;
+                }
+                return b.polestar_traits.reduce((p, n) => p + tsl[n], 0) - a.polestar_traits.reduce((p, n) => p + tsl[n], 0)
+                //return xa - xb;
+            });
+        }
 
         setPopularCrew(finalcrew);
-    }, [allListings, includeHfs, rarities, top, minPolestars]);
+    }, [allListings, includeHfs, rarities, top, minPolestars, bbTier]);
 
     return (
         <div className="ui segment">
@@ -360,6 +406,15 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
                         onChange={(e, { value }) => setMinPolestars(value as number)}
                         />
                 </div>
+                <div style={{display: 'inline'}}>
+                    <p>{t('rank_names.bigbook_tier')}</p>
+                    <Dropdown
+                        selection
+                        value={bbTier}
+                        options={bbOptions}
+                        onChange={(e, { value }) => setBBTier(value as number)}
+                        />
+                </div>
             </div>
             <div style={{
                 display: 'flex',
@@ -369,6 +424,9 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
                 flexWrap: 'wrap'
             }}>
                 {popularCrew.map((crew, idx) => {
+                    if (crew?.contains_unique) {
+                        console.log("break");
+                    }
                     return !!crew && <div style={{
                         padding: '1em',
                         width: '20%',
@@ -377,7 +435,7 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
                         textAlign: 'center',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: (crew as any).score === -1 ? 'lightgreen' : undefined
+
                     }}>
                         <AvatarView
                             mode='crew'
@@ -387,7 +445,7 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
                         />
                         {crew.name}
                         <br />
-                        <i>({crew.polestar_traits.map(t => TRAIT_NAMES[t]).join(", ")})</i>
+                        <i style={{color: crew.contains_unique ? 'lightgreen' : undefined}}>({crew.polestar_traits.map(t => TRAIT_NAMES[t]).join(", ")})</i>
                     </div> || <></>
                 })}
             </div>
