@@ -1435,6 +1435,7 @@
         "consider_unowned_polestars": "Considere estrellas polares sin dueño (puede llevar mucho más tiempo)",
         "constellation": "Constelación",
         "constellations": "Constelaciones",
+        "cost": "Costo de recuperación",
         "crew": {
             "show_all_crew": "{{base.all_crew}}",
             "show_all_uniquely_retrievable": "Mostrar toda la tripulación recuperable de forma única",

@@ -31,6 +31,30 @@ export function printISM(quantity: number, t?: TranslateMethod, printISM?: boole
 	</div>
 }
 
+export function printCredits(quantity: number, t?: TranslateMethod, printCredits?: boolean) {
+	const img = `${process.env.GATSBY_ASSETS_URL}atlas/soft_currency_icon.png`;
+
+	return <div
+		title={t ? t('global.item_types.credits') : ''}
+		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
+		<img src={img} style={{height: '1.5em'}} />
+		<span>{quantity.toLocaleString()} {t && printCredits ? t('global.item_types.credits') : ''}</span>
+	</div>
+}
+
+
+export function printQuantum(quantity: number, t?: TranslateMethod, printQuantum?: boolean) {
+	const img = `${process.env.GATSBY_ASSETS_URL}atlas/crew_crafting_energy_detailed_icon.png`;
+
+	return <div
+		title={t ? t('global.item_types.quantum') : ''}
+		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
+		<img src={img} style={{height: '1.5em'}} />
+		<span>{quantity.toLocaleString()} {t && printQuantum ? t('global.item_types.quantum') : ''}</span>
+	</div>
+}
+
+
 export function getComboCost(combo: string[], allKeystones: IKeystone[], market: MarketAggregation, unowned_only = true) {
 	let ps = combo.map(cb => allKeystones.find(f => f.symbol === cb || f.symbol === cb + "_keystone")).filter(f => !!f);
 	let total = ps.map(cb => cb.owned && unowned_only ? 0 : (market[cb.id]?.low ?? 0)).reduce((p, n) => p + n, 0);

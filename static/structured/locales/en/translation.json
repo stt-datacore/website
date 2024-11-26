@@ -1422,6 +1422,7 @@
         "consider_unowned_polestars": "Consider unowned polestars (may take much more time)",
         "constellation": "Constellation",
         "constellations": "Constellations",
+        "cost": "Retrieval Cost",
         "crew": {
             "show_all_crew": "{{base.all_crew}}",
             "show_all_uniquely_retrievable": "Show all uniquely retrievable crew",
@@ -1443,7 +1444,6 @@
         "keystone_crates": "Keystone Crates",
         "keystones": "Keystones",
         "market": {
-            "min_polestars": "Min polestar matches",
             "columns": {
                 "buy_count": "Placed Orders",
                 "high": "Highest Bid",
@@ -1452,13 +1452,14 @@
                 "sell_count": "Market Listings",
                 "sold_last_day": "Sold in the Last Day"
             },
-            "most_likely_popular": "Popular polestars best crew trait occurrance (exact combos are in green)",
             "description": "Browse the Celestial Market",
             "listed": "Listed",
+            "min_polestars": "Min polestar matches",
+            "most_likely_popular": "Popular polestars best crew trait occurrance (exact combos are in green)",
             "title": "Celestial Market",
+            "top_n_polestars": "Top {{n}} polestars",
             "unlisted": "Unlisted",
-            "updated": "Market is updated hourly.",
-            "top_n_polestars": "Top {{n}} polestars"
+            "updated": "Market is updated hourly."
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",

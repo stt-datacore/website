@@ -17,8 +17,9 @@ import CONFIG from "../CONFIG";
 import { PolestarDropdown } from "./polestardropdown";
 import { PolestarMultiWorkerStatus, PolestarMultiWorker } from "./polestarmultiworker";
 import { MultiWorkerContext } from "../base/multiworkerbase";
-import { printISM, RetrievalContext } from "./context";
+import { printCredits, printISM, printQuantum, RetrievalContext } from "./context";
 import { RarityFilter } from "../crewtables/commonoptions";
+import { calculateRetrievalCost, RetrievalCostResult } from "../../utils/retrieval";
 
 const polestarTailorDefaults: IPolestarTailors = {
 	disabled: [],
@@ -149,6 +150,7 @@ export const MutualView = (props: MutualViewProps) => {
 type DisplayItem = {
     crew: PlayerCrew[];
     combo: IPolestar[];
+    cost: RetrievalCostResult
 }
 
 interface MutualWorkerPanelProps {
@@ -453,7 +455,7 @@ const MutualTable = (props: MutualTableProps) => {
     const [selCrew, setSelCrew] = React.useState(undefined as undefined | number[]);
 
     const [sortOrder, setSortOrder] = useStateWithStorage('mutualView_sortOrder', 'descending' as 'ascending' | 'descending');
-    const [sortBy, setSortBy] = useStateWithStorage('mutualView_sortBy', 'polestars' as 'crew' | 'polestars');
+    const [sortBy, setSortBy] = useStateWithStorage('mutualView_sortBy', 'polestars' as 'crew' | 'polestars' | 'build_cost');
 
     React.useEffect(() => {
         if (!playerData) return;
@@ -480,10 +482,11 @@ const MutualTable = (props: MutualTableProps) => {
 
             if (selCrew?.length && !comboCrew.some(cc => selCrew.includes(cc.id))) return undefined;
             if (polestarFilter?.length && !polestarFilter.every(cs => comboStars.some(cs2 => cs2.symbol === cs) )) return undefined;
-
+            item.cost = calculateRetrievalCost(comboCrew);
             return {
                 crew: comboCrew,
-                combo: comboStars
+                combo: comboStars,
+                cost: item.cost
             } as DisplayItem
         }).filter(f => f !== undefined && (!rarities.length || f.crew.some(c => rarities.includes(c.max_rarity)))) as DisplayItem[];
 
@@ -509,6 +512,16 @@ const MutualTable = (props: MutualTableProps) => {
                 if (!r) r = a.crew.length - b.crew.length;
                 return r * mul;
             });
+        }
+        else if (sortBy === 'build_cost') {
+            workItems.sort((a, b) => {
+                let r = 0;
+                if (!r) r = a.cost.credits - b.cost.credits;
+                if (!r) r = a.cost.quantum - b.cost.quantum;
+                if (!r) r = a.crew.length - b.crew.length;
+                if (!r) r = a.combo.reduce((p, n) => p + n.owned, 0) - b.combo.reduce((p, n) => p + n.owned, 0);
+                return r * mul;
+            })
         }
 
         setAllowedPolestars(allowedPolestars);
@@ -570,6 +583,11 @@ const MutualTable = (props: MutualTableProps) => {
                         >
                         {t('base.crew')}
                     </Table.HeaderCell>
+                    <Table.HeaderCell
+                        sorted={sortBy === 'build_cost' ? sortOrder : undefined} onClick={() => sortBy === 'build_cost' ? setSortOrder(sortOrder === 'descending' ? 'ascending' : 'descending') : setSortBy('build_cost')}
+                        >
+                        {t('retrieval.cost')}
+                    </Table.HeaderCell>
                 </Table.Row>
             </Table.Header>
             <Table.Body>
@@ -600,6 +618,9 @@ const MutualTable = (props: MutualTableProps) => {
     </div>)
 
     function renderTableRow(item: DisplayItem) {
+
+        const costs = item.cost;
+
         return <Table.Row>
             <Table.Cell>
                 <div style={{display:'flex', flexWrap:'wrap', flexDirection:'row', justifyContent: 'space-evenly', alignItems: 'flex-start'}}>
@@ -659,6 +680,12 @@ const MutualTable = (props: MutualTableProps) => {
                         )
                     })}
                 </div>
+            </Table.Cell>
+            <Table.Cell width={3}>
+            <div style={{display:'flex', flexWrap:'wrap', flexDirection:'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1em'}}>
+                <p>{printCredits(costs?.credits ?? 0, t)}</p>
+                <p>{printQuantum(costs?.quantum ?? 0, t)}</p>
+            </div>
             </Table.Cell>
         </Table.Row>
 

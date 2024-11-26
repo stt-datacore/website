@@ -1424,6 +1424,7 @@
         "consider_unowned_polestars": "Betrachten Sie nicht besessene Polarsterne (kann viel mehr Zeit in Anspruch nehmen)",
         "constellation": "Sternbilde",
         "constellations": "Sternbilder",
+        "cost": "Abrufkosten",
         "crew": {
             "show_all_crew": "{{base.all_crew}}",
             "show_all_uniquely_retrievable": "Alle eindeutig abrufbaren Crewmitglieder anzeigen",

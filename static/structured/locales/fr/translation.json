@@ -1436,6 +1436,7 @@
         "consider_unowned_polestars": "Envisagez des étoiles polaires sans propriétaire (cela peut prendre beaucoup plus de temps)",
         "constellation": "Constellation",
         "constellations": "Constellations",
+        "cost": "Coût de récupération",
         "crew": {
             "show_all_crew": "{{base.all_crew}}",
             "show_all_uniquely_retrievable": "Afficher tous les membres d'équipage récupérables de manière unique",

@@ -10,6 +10,7 @@ import { MissionChallenge, MissionTraitBonus, QuestFilterConfig } from "./missio
 import { IEphemeralData } from "../context/playercontext";
 import { VPDetails } from "../utils/voyagevp";
 import { IPolestar } from "../components/retrieval/model";
+import { RetrievalCostResult } from "../utils/retrieval";
 
 export interface WorkerConfigBase<T> {
     max_results?: number
@@ -359,6 +360,7 @@ export const EMPTY_SKILL = {
 export interface IMutualPolestarWorkerItem {
     combo: string[];
     crew: string[];
+    cost: RetrievalCostResult
 }
 
 export type PolestarComboSize = 1 | 2 | 3 | 4;

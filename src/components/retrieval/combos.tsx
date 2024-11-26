@@ -43,7 +43,7 @@ export const CombosModal = (props: CombosModalProps) => {
 	const [groupIndex, setGroupIndex] = React.useState<number>(0);
 
 	const [actionableOnlyMode, setActionableOnlyMode] = React.useState<boolean>(true);
-	const [alwaysShowPrice, setAlwaysShowPrice] = useStateWithStorage(`${dbid}retrieval/always_show_polestars`, false, { rememberForever: true })
+	const [alwaysShowPrice, setAlwaysShowPrice] = useStateWithStorage(`retrieval/always_show_polestars`, false, { rememberForever: true })
 
 	// Calc algo is always set to short now, but deep algo code should still work, if the option is ever needed
 	const [algo, setAlgo] = React.useState<string>('');

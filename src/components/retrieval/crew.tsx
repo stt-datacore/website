@@ -63,7 +63,7 @@ export const RetrievalCrew = () => {
 		).filter(c => {
 			if (traitFilter.length === 0) return true;
 			if (minTraitMatches >= traitFilter.length)
-				return traitFilter.every(trait => c.traits.includes(trait));
+				return traitFilter.every(trait => c.traits.includes(trait) || c.traits_hidden.includes(trait));
 			else if (minTraitMatches === 2) {
 				let matches = 0;
 				traitFilter.forEach(trait => {
