@@ -955,6 +955,7 @@
             "heading": " This page is a work in progress. Some functions and features may be non-functional, broken, missing, incomplete, or change at any time.",
             "title": "Work In Progress!"
         },
+        "x_or_better": "{{x}} or better",
         "yes": "Yes",
         "you_own_n_of_y": "You own {{n}} of {{y}}."
     },
@@ -1451,7 +1452,7 @@
                 "sell_count": "Market Listings",
                 "sold_last_day": "Sold in the Last Day"
             },
-            "most_likely_popular": "Most likely popular retrievals (based on polestar purchases)",
+            "most_likely_popular": "Popular polestars best crew trait occurrance (exact combos are in green)",
             "description": "Browse the Celestial Market",
             "listed": "Listed",
             "title": "Celestial Market",

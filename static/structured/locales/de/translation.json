@@ -955,6 +955,7 @@
             "heading": "Diese Seite befindet sich in Bearbeitung. Einige Funktionen und Features sind möglicherweise nicht funktionsfähig, defekt, fehlen, sind unvollständig oder ändern sich jederzeit.",
             "title": "In Arbeit!"
         },
+        "x_or_better": "{{x}} oder besser",
         "yes": "Ja",
         "you_own_n_of_y": "Sie besitzen {{n}} von {{y}}."
     },
@@ -1455,7 +1456,7 @@
             "description": "Stöbern Sie durch den Himmelsmarkt",
             "listed": "Gelistet",
             "min_polestars": "Min. Polarstern-Übereinstimmungen",
-            "most_likely_popular": "Wahrscheinlichste beliebte Abrufe (basierend auf Polarstern-Käufen)",
+            "most_likely_popular": "Beliebte Polarsterne mit den besten Crew-Eigenschaften (genaue Kombinationen sind grün)",
             "title": "Himmelsmarkt",
             "top_n_polestars": "Top {{n}} Polarsterne",
             "unlisted": "Nicht Gelistet",
