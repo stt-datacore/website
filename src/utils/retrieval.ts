@@ -112,14 +112,11 @@ export function calculateRetrievalCost<T extends { max_rarity: number }>(items: 
     const quantum = [0, 0, 0, 0, 0, 0];
 
     const crewlen = items.length;
+    const discountFactor = (1 - (0.01 * (crewlen - 1)));
 
     for (let item of items) {
-        credits[item.max_rarity] += UniqueRetrievalCredits[item.max_rarity];
+        credits[item.max_rarity] += (UniqueRetrievalCredits[item.max_rarity] * discountFactor);
         quantum[item.max_rarity] += UniqueRetrievalQuantum[item.max_rarity];
-    }
-
-    for (let i = 1; i <= 5; i++) {
-        credits[i] *= (1 - (0.01 * (crewlen - 1)));
     }
 
     return {
