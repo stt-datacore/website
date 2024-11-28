@@ -475,7 +475,7 @@ const MutualTable = (props: MutualTableProps) => {
                     return n;
                 });
 
-        let downfiltered = crew.filter((c, idx) => crew.findIndex(cf => c.symbol === cf.symbol && c.highest_owned_rarity === cf.rarity) === idx);
+        let downfiltered = crew.filter((c, idx) => crew.findIndex(cf => c.symbol === cf.symbol && (c.highest_owned_rarity ?? c.rarity ?? 0) === (cf.rarity ?? 0)) === idx);
         const workItems = items.map((item) => {
             const comboCrew = downfiltered.filter(f => item.crew.includes(f.symbol)).sort((a, b) => a.name.localeCompare(b.name));
             const comboStars = polestars.filter(f => item.combo.some(cb => `${cb}_keystone` === f.symbol || `rarity_${cb}_keystone` === f.symbol)).sort((a, b) => a.name.localeCompare(b.name));
