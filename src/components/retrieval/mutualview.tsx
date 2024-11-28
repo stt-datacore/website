@@ -19,7 +19,7 @@ import { PolestarMultiWorkerStatus, PolestarMultiWorker } from "./polestarmultiw
 import { MultiWorkerContext } from "../base/multiworkerbase";
 import { printCredits, printISM, printQuantum, RetrievalContext } from "./context";
 import { RarityFilter } from "../crewtables/commonoptions";
-import { calculateRetrievalCost, RetrievalCostResult } from "../../utils/retrieval";
+import { calculateRetrievalCost, RetrievalCost } from "../../utils/retrieval";
 
 const polestarTailorDefaults: IPolestarTailors = {
 	disabled: [],
@@ -150,7 +150,7 @@ export const MutualView = (props: MutualViewProps) => {
 type DisplayItem = {
     crew: PlayerCrew[];
     combo: IPolestar[];
-    cost: RetrievalCostResult
+    cost: RetrievalCost
 }
 
 interface MutualWorkerPanelProps {

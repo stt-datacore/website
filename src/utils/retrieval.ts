@@ -99,39 +99,31 @@ export function findPolestars(crew: PlayerCrew | CrewMember, roster: (PlayerCrew
     return optimals;
 }
 
-export interface RetrievalCostResult {
+export interface RetrievalCost {
     credits: number,
     quantum: number
 }
 
+const UniqueRetrievalCredits = [0, 50000, 100000, 500000, 1000000, 5000000];
+const UniqueRetrievalQuantum = [0, 100, 300, 500, 800, 900];
 
-export function calculateRetrievalCost(crew: (CompactCrew | CrewMember | PlayerCrew)[]): RetrievalCostResult {
-    const result: RetrievalCostResult = {
-        credits: 0,
-        quantum: 0
-    };
+export function calculateRetrievalCost<T extends { max_rarity: number }>(items: T[]): RetrievalCost {
+    const credits = [0, 0, 0, 0, 0, 0];
+    const quantum = [0, 0, 0, 0, 0, 0];
 
-    const ucc = [0, 50000, 100000, 500000, 1000000, 5000000];
-    const uqc = [0, 100, 300, 500, 800, 900];
+    const crewlen = items.length;
 
-    const totals = [0, 0, 0, 0, 0, 0];
-    const qtotals = [0, 0, 0, 0, 0, 0];
-    const clen = crew.length;
-
-    for (let c of crew) {
-        totals[c.max_rarity] += ucc[c.max_rarity];
-        qtotals[c.max_rarity] += uqc[c.max_rarity];
+    for (let item of items) {
+        credits[item.max_rarity] += UniqueRetrievalCredits[item.max_rarity];
+        quantum[item.max_rarity] += UniqueRetrievalQuantum[item.max_rarity];
     }
 
     for (let i = 1; i <= 5; i++) {
-        totals[i] *= (1 - (0.01 * (clen - 1)));
+        credits[i] *= (1 - (0.01 * (crewlen - 1)));
     }
 
-    let pcred = totals.reduce((p, n) => p + n);
-    let pquant = qtotals.reduce((p, n) => p + n);
-
-    result.credits = Math.ceil(pcred / clen);
-    result.quantum = Math.ceil(pquant / clen);
-
-    return result;
+    return {
+        credits: Math.ceil(credits.reduce((p, n) => p + n) / crewlen),
+        quantum: Math.ceil(quantum.reduce((p, n) => p + n) / crewlen)
+    };
 }
