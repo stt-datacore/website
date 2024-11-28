@@ -16,8 +16,8 @@
         "item_type": "{{item.columns.item_type}}",
         "name": "Alertas",
         "new_crew": "Alerta: ¡Se ha adquirido la nueva tripulante '{{subject}}' ({{rarity}}/{{max_rarity}}*)!",
-        "remove": "Eliminar",
-        "show_previously_hidden": "Mostrar alertas eliminadas previamente",
+        "remove": "Ocultar",
+        "show_previously_hidden": "Mostrar alertas ocultadas previamente",
         "toggle_buyback_alerts": "Alternar alertas de recompra de pozos",
         "trigger": "{{ship.trigger}}",
         "trigger_always": "Activar siempre",
@@ -481,7 +481,7 @@
     },
     "event_planner": {
         "heading": "Encuentra el mejor equipo para usar durante un evento.",
-        "hide_duplicate_pairs": "Eliminar pares duplicados",
+        "hide_duplicate_pairs": "Ocultar pares duplicados",
         "prospect_description": "Agrega un equipo potencial (o un equipo potencial compartido) para ver cómo encajan en tu lista existente para este evento.",
         "select_phase": "Seleccione una fase",
         "skill_matrix": "Matriz de Habilidades",
@@ -661,8 +661,8 @@
                 "title": "Optimizaciones"
             },
             "unofficial": {
-                "hide_alpha": "Eliminar excepciones alfa",
-                "hide_one_hand": "Eliminar excepciones de una mano",
+                "hide_alpha": "Ocultar excepciones alfa",
+                "hide_one_hand": "Ocultar excepciones de una mano",
                 "title": "Reglas no oficiales"
             },
             "user_prefs": {
@@ -855,8 +855,8 @@
         "completed": "Completado",
         "copy_permalink_clipboard": "Copiar enlace permanente al portapapeles",
         "default": "Predeterminada",
-        "delete": "Eliminar",
-        "delete_selected": "Eliminar seleccionado",
+        "delete": "Ocultar",
+        "delete_selected": "Ocultar seleccionado",
         "disable": "Desactivar",
         "disabled": "Desactivado",
         "dismiss": "Descartar",
@@ -1450,8 +1450,8 @@
             "spend_90_immediately": "gasta 90 dilithium para alcanzar {{target}} inmediatamente."
         },
         "filter_owned_polestars": "Filtrar estrellas polares propias",
-        "hide_combos_with_unowned_polestars": "Eliminar combos con estrellas polares sin dueño",
-        "hide_fully_fused_crew": "Eliminar la tripulación completamente fusionada",
+        "hide_combos_with_unowned_polestars": "Ocultar combos con estrellas polares sin dueño",
+        "hide_fully_fused_crew": "Ocultar la tripulación completamente fusionada",
         "keystone": "Piedra clave",
         "keystone_crate": "Caja de piedras clave",
         "keystone_crates": "Cajas de piedras clave",

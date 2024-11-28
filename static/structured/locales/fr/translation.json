@@ -16,8 +16,8 @@
         "item_type": "{{item.columns.item_type}}",
         "name": "Alertes",
         "new_crew": "Alerte : le nouvel équipier « {{subject}} » ({{rarity}}/{{max_rarity}}*) a été acquis !",
-        "remove": "Supprimer",
-        "show_previously_hidden": "Afficher les alertes précédemment supprimées",
+        "remove": "Masquer",
+        "show_previously_hidden": "Afficher les alertes précédemment masquées",
         "toggle_buyback_alerts": "Basculer les alertes de pool de rachat",
         "trigger": "{{ship.trigger}}",
         "trigger_always": "Déclencher toujours",
@@ -483,7 +483,7 @@
     },
     "event_planner": {
         "heading": "Trouvez les meilleurs équipiers à utiliser lors d'un événement",
-        "hide_duplicate_pairs": "Supprimer les paires en double",
+        "hide_duplicate_pairs": "Masquer les paires en double",
         "prospect_description": "Ajoutez un équipier potentiel (ou un équipier partagé potentiel) pour voir comment ils s'intègrent dans votre liste existante pour cet événement.",
         "select_phase": "Sélectionnez une phase",
         "skill_matrix": "Matrice de Compétences",
@@ -658,13 +658,13 @@
         "select": "Sélectionnez un combat de boss",
         "settings": {
             "optimizations": {
-                "hide_non_optimal": "Supprimer l'équipage non optimal",
+                "hide_non_optimal": "Masquer l'équipage non optimal",
                 "prioritize_coverage": "Donner la priorité à l'équipage avec couverture",
                 "title": "Optimisations"
             },
             "unofficial": {
-                "hide_alpha": "Supprimer les exceptions alpha",
-                "hide_one_hand": "Supprimer les exceptions d'une main",
+                "hide_alpha": "Masquer les exceptions alpha",
+                "hide_one_hand": "Masquer les exceptions d'une main",
                 "title": "Règles non officielles"
             },
             "user_prefs": {
@@ -736,7 +736,7 @@
         },
         "gauntlet": "Gantelet",
         "gauntlets": "Gantelets",
-        "hide_opponents": "Supprimer les adversaires",
+        "hide_opponents": "Masquer les adversaires",
         "import": {
             "click_here": "Appuyez ici pour télécharger vos données",
             "heading": "Vous pouvez accéder à vos matchs gantelets en direct de la même manière que vous accédez actuellement à vos données de joueur.",
@@ -851,13 +851,13 @@
         "check_all": "Cochez tout",
         "clear": "Effacer",
         "clear_all": "Tout effacer",
-        "clear_cache": "Supprimer le cache",
+        "clear_cache": "Masquer le cache",
         "close": "Fermer",
         "completed": "Completed",
         "copy_permalink_clipboard": "Copier le lien permanent dans le presse-papiers",
         "default": "Défaut",
-        "delete": "Supprimer",
-        "delete_selected": "Supprimer la sélection",
+        "delete": "Masquer",
+        "delete_selected": "Masquer la sélection",
         "disable": "Désactiver",
         "disabled": "Désactivé",
         "dismiss": "Rejeter",
@@ -1115,12 +1115,12 @@
             "title": "Avertissement de Limite d'Inventaire"
         },
         "options": {
-            "hide_generic": "Supprimer l'équipement utile à les équipiers sans propriétaire",
+            "hide_generic": "Masquer l'équipement utile à les équipiers sans propriétaire",
             "inefficient": "Afficher uniquement les utilisations les plus inefficaces des emplacements d'inventaire",
             "single_use": "Afficher uniquement le matériel à usage unique"
         },
         "ships_maxed": "les vaisseaux que vous avez déjà terminés",
-        "ships_maxed_info": "Les plans de vaisseaux suivants peuvent être supprimés en toute sécurité car ils sont utilisés pour améliorer {{max_text}}.",
+        "ships_maxed_info": "Les plans de vaisseaux suivants peuvent être masqueés en toute sécurité car ils sont utilisés pour améliorer {{max_text}}.",
         "summary": "Vous avez {{n}} articles dans votre inventaire. Remarque : les composants du continuum ne sont pas pris en compte dans votre limite d'inventaire.",
         "title": "{{menu.roster.unneeded_items}}"
     },
@@ -1451,8 +1451,8 @@
             "spend_90_immediately": "dépensez 90 dilithium pour atteindre {{target}} immédiatement."
         },
         "filter_owned_polestars": "Filtrer les étoiles polaire possédées",
-        "hide_combos_with_unowned_polestars": "Supprimer les combos avec des étoiles polaires sans propriétaire",
-        "hide_fully_fused_crew": "Supprimer l'équipage entièrement fusionné",
+        "hide_combos_with_unowned_polestars": "Masquer les combos avec des étoiles polaires sans propriétaire",
+        "hide_fully_fused_crew": "Masquer l'équipage entièrement fusionné",
         "keystone": "Clé de voûte",
         "keystone_crate": "Caisse des clés de voûte",
         "keystone_crates": "Caisses des clés de voûte",
