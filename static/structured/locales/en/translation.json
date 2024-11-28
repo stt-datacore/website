@@ -1455,7 +1455,7 @@
             "description": "Browse the Celestial Market",
             "listed": "Listed",
             "min_polestars": "Min polestar matches",
-            "most_likely_popular": "Popular polestars best crew trait occurrance (exact combos are in green)",
+            "most_likely_popular": "Popular polestars best crew trait occurrence (exact combos are in green)",
             "title": "Celestial Market",
             "top_n_polestars": "Top {{n}} polestars",
             "unlisted": "Unlisted",
