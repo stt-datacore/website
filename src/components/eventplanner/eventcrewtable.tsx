@@ -43,6 +43,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	const [showPotential, setShowPotential] = useStateWithStorage('eventplanner/showPotential', false);
 	const [showFrozen, setShowFrozen] = useStateWithStorage('eventplanner/showFrozen', true);
 	const [excludeQuipped, setExcludeQuipped] = useStateWithStorage('eventplanner/excludeQuipped', false);
+	const [onlyIdleCrew, setOnlyIdleCrew] = useStateWithStorage('eventplanner/onlyIdleCrew', false);
 	const [showShared, setShowShared] = useStateWithStorage('eventplanner/showShared', true);
 	const [initOptions, setInitOptions] = React.useState<InitialOptions>({});
 	const crewAnchor = React.useRef<HTMLDivElement>(null);
@@ -154,6 +155,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	if (!showFrozen) rosterCrew = rosterCrew.filter((c) => c.immortal <= 0);
 	if (excludeQuipped) rosterCrew = rosterCrew.filter((c) => !isQuipped(c));
 	if (!canBorrow || !showShared) rosterCrew = rosterCrew.filter((c) => !c.shared);
+	if (onlyIdleCrew) rosterCrew = rosterCrew.filter((c) => !c.active_status);
 
 	let bestCombos: IBestCombos = computeEventBest(
 		rosterCrew,
@@ -202,6 +204,12 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 								label={t('event_planner.table.options.exclude_quipped')}
 								checked={excludeQuipped}
 								onChange={(e, { checked }) => setExcludeQuipped(checked)}
+							/>
+							<Form.Field
+								control={Checkbox}
+								label={t('options.crew_status.idle')}
+								checked={onlyIdleCrew}
+								onChange={(e, { checked }) => setOnlyIdleCrew(checked)}
 							/>
 							{canBorrow && (
 								<Form.Field
@@ -264,7 +272,9 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
 						</div>
-						<div style={{ gridArea: 'description' }}>{descriptionLabel(crew)}</div>
+						<div style={{ gridArea: 'description' }}>
+							{descriptionLabel(crew, true)}
+						</div>
 					</div>
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
@@ -305,7 +315,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		);
 	}
 
-	function descriptionLabel(crew: IEventScoredCrew): JSX.Element {
+	function descriptionLabel(crew: IEventScoredCrew, withActiveStatus = false): JSX.Element {
 		return (
 			<div>
 				<div><Rating icon='star' rating={rosterType === 'myCrew' ? crew.rarity : crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled /></div>
@@ -314,6 +324,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 						<React.Fragment>
 							{crew.favorite && <Icon name='heart' />}
 							{crew.immortal > 0 && <Icon name='snowflake' />}
+							{withActiveStatus && crew.active_status > 0 && <Icon name='space shuttle' />}
 							<span>{crew.immortal > 0 ? (`${crew.immortal} ${t('crew_state.frozen', { __gender: crewGender(crew) })}`) : crew.immortal < 0 ? crew.immortal <= -2 ? t('crew_state.unowned') : t('crew_state.immortalized', { __gender: crewGender(crew) }) : (`${(t('base.level'))} ${crew.level}`)}</span>
 						</React.Fragment>
 					)}
@@ -494,8 +505,11 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 		if (best.score > 0) {
 			const bestCrew = crew.find(c => c.id === best.id);
 			let icon = (<></>);
+
 			if (bestCrew && bestCrew.immortal > 0) icon = (<Icon name='snowflake' />);
-			if (bestCrew?.statusIcon) icon = (<Icon name={bestCrew.statusIcon} />);
+			else if (bestCrew?.statusIcon) icon = (<Icon name={bestCrew.statusIcon} />);
+			else if (bestCrew?.active_status) icon = <Icon name='space shuttle' />;
+
 			if (!isMobile)
 				return (
 					<Table.Cell key={key} textAlign='center' style={{ cursor: 'pointer', opacity: invisible ? "0" : undefined }} onClick={() => handleClick(skillA, skillB)}>
