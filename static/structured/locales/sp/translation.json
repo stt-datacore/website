@@ -1468,6 +1468,11 @@
             "description": "Explora el Mercado Celestial",
             "listed": "Listado",
             "min_polestars": "Mín. coincidencias de estrellas polares",
+            "modes": {
+                "high": "{{retrieval.market.columns.high}}",
+                "orders": "Órdenes sin completar",
+                "sold_last_day": "Venta más rápida"
+            },
             "most_likely_popular": "Ocurrencia de los mejores rasgos de tripulación de las estrellas polares populares (las combinaciones exactas están en verde)",
             "title": "Mercado Celestial",
             "top_n_polestars": "Las {{n}} mejores estrellas polares",

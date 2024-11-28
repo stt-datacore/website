@@ -1457,6 +1457,11 @@
             "description": "Stöbern Sie durch den Himmelsmarkt",
             "listed": "Gelistet",
             "min_polestars": "Min. Polarstern-Übereinstimmungen",
+            "modes": {
+                "high": "{{retrieval.market.columns.high}}",
+                "orders": "Nicht ausgeführte Bestellungen",
+                "sold_last_day": "Am schnellsten verkauft"
+            },
             "most_likely_popular": "Beliebte Polarsterne mit den besten Crew-Eigenschaften (genaue Kombinationen sind grün)",
             "title": "Himmelsmarkt",
             "top_n_polestars": "Top {{n}} Polarsterne",

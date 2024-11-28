@@ -1469,6 +1469,11 @@
             "description": "Parcourez le marché céleste",
             "listed": "Répertorié",
             "min_polestars": "Min. allumettes d'étoile polaire",
+            "modes": {
+                "list_price": "{{retrieval.market.columns.high}}",
+                "orders": "Ordres non exécutées",
+                "sold_last_day": "Vente la plus rapide"
+            },
             "most_likely_popular": "Occurrence des traits les plus populaires de l'équipage étoiles polaires (les combos exacts sont en vert)",
             "title": "Marché céleste",
             "top_n_polestars": "Les {{n}} meilleures étoiles polaires",

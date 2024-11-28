@@ -229,6 +229,8 @@ export const CelestialMarket = () => {
     }
 }
 
+type PopularityMode = 'orders' | 'high' | 'sold_last_day';
+
 const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
@@ -239,7 +241,7 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
     const [top, setTop] = useStateWithStorage(`popular_keystone_top`, 10, { rememberForever: true });
     const [minPolestars, setMinPolestars] = useStateWithStorage(`popular_keystone_min_polestars`, 3, { rememberForever: true });
     const [bbTier, setBBTier] = useStateWithStorage(`popular_keystone_bb_tier`, 4, { rememberForever: true });
-
+    const [mode, setMode] = useStateWithStorage<PopularityMode>(`popular_mode`, 'sold_last_day', { rememberForever: true });
     const topOptions = [] as DropdownItemProps[];
 
     [5, 10, 15, 20, 30, 50, 100].map((n) => {
@@ -270,6 +272,13 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
         });
     });
 
+    const modes = [
+        { key: 'orders', value: 'orders', text: t('retrieval.market.modes.orders') },
+        { key: 'high', value: 'high', text: t('retrieval.market.modes.high') },
+        { key: 'sold_last_day', value: 'sold_last_day', text: t('retrieval.market.modes.sold_last_day') },
+    ] as DropdownItemProps[];
+
+
     CONFIG.RARITIES.forEach((rarity, idx) => {
         TRAIT_NAMES[`rarity_${idx}`] = rarity.name;
     });
@@ -281,9 +290,22 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
     const { allListings } = props;
 
     React.useEffect(() => {
-        let listing = [...allListings].sort((a, b) => b.sold_last_day - a.sold_last_day);
+        let listing = [...allListings].sort((a, b) => {
+            let r = 0;
+            if (mode === 'sold_last_day') {
+                r = b.sold_last_day - a.sold_last_day;
+            }
+            else if (mode === 'high') {
+                r = b.high - a.high;
+            }
+            else {
+                r = b.buy_count - a.buy_count;
+            }
+            if (!r) r = b.low - a.low;
+            return r;
+        });
         const tsl = {} as {[key:string]: number}
-        listing.forEach(l => tsl[l.data!.symbol!.replace('_keystone', '')] = l.sold_last_day);
+        listing.forEach(l => tsl[l.data!.symbol!.replace('_keystone', '')] = mode === 'sold_last_day' ? l.sold_last_day : (mode === 'high' ? l.high : l.buy_count));
         let keys = listing.filter(fi => (fi.data as IKeystone).type === 'keystone')
             .map(mi => mi.data as IKeystone)
             .map(d => d.symbol.replace("_keystone", ""))
@@ -358,7 +380,7 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
         }
 
         setPopularCrew(finalcrew);
-    }, [allListings, includeHfs, rarities, top, minPolestars, bbTier]);
+    }, [allListings, includeHfs, rarities, top, minPolestars, bbTier, mode]);
 
     return (
         <div className="ui segment">
@@ -366,6 +388,13 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
                 {t('global.experimental')}
             </Label>
             <h4>{t('retrieval.market.most_likely_popular')}</h4>
+            <Checkbox
+                    style={{margin: '0.5em 0'}}
+                    checked={includeHfs}
+                    onChange={(e, { checked }) => setIncludeHfs(!!checked)}
+                    label={t('global.include_x', {
+                        x: `${[TRAIT_NAMES['human'], TRAIT_NAMES['federation'], TRAIT_NAMES['starfleet']].join(", ")}`
+                    })} />
             <div style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -374,13 +403,15 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
                 flexWrap: 'wrap',
                 gap: '1em'
             }}>
-                <Checkbox
-                    style={{margin: '0.5em 0'}}
-                    checked={includeHfs}
-                    onChange={(e, { checked }) => setIncludeHfs(!!checked)}
-                    label={t('global.include_x', {
-                        x: `${[TRAIT_NAMES['human'], TRAIT_NAMES['federation'], TRAIT_NAMES['starfleet']].join(", ")}`
-                    })} />
+                <div style={{display: 'inline'}}>
+                    <p>{t('collections.options.mode.title')}</p>
+                    <Dropdown
+                        selection
+                        value={mode}
+                        options={modes}
+                        onChange={(e, { value }) => setMode(value as PopularityMode)}
+                        />
+                </div>
                 <div style={{display: 'inline'}}>
                     <p>{t('hints.filter_by_rarity')}</p>
                     <RarityFilter
