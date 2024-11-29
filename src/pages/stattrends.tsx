@@ -290,6 +290,7 @@ const StatTrends = () => {
                         placeholder={t('quipment_dropdowns.mode.skill_order')}
                         selection
                         clearable
+                        search
                         value={skillKey}
                         options={skillOpts}
                         onChange={(e, { value }) => setSkillKey(value as string)}
