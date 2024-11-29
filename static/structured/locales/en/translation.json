@@ -436,24 +436,25 @@
         "all_time": "All Time",
         "n_d": "{{days}} d",
         "n_d_compact": "{{days}}d",
+        "n_day": "{{days}} day",
+        "n_days": "{{days}} days",
         "n_h": "{{hours}} h",
         "n_h_compact": "{{hours}}h",
+        "n_hour": "{{hours}} hour",
         "n_hour_class": "{{hours}}-hour",
+        "n_hours": "{{hours}} hours",
         "n_m": "{{minutes}} m",
         "n_m_compact": "{{minutes}}m",
-        "n_minute_class": "{{minutes}}-minute",
-        "n_days": "{{days}} days",
-        "n_hours": "{{hours}} hours",
-        "n_minutes": "{{minutes}} minutes",
-        "n_months": "{{months}} months",
-        "n_weeks": "{{weeks}} weeks",
-        "n_years": "{{years}} years",
-        "n_day": "{{days}} day",
-        "n_hour": "{{hours}} hour",
         "n_minute": "{{minutes}} minute",
+        "n_minute_class": "{{minutes}}-minute",
+        "n_minutes": "{{minutes}} minutes",
         "n_month": "{{months}} month",
+        "n_months": "{{months}} months",
         "n_week": "{{weeks}} week",
+        "n_weeks": "{{weeks}} weeks",
         "n_year": "{{years}} year",
+        "n_years": "{{years}} years",
+        "same_time": "Same Time",
         "title": "Duration: {{duration}}"
     },
     "event_info": {
@@ -1840,16 +1841,6 @@
         "quipment": "Calculating quipment..."
     },
     "stat_trends": {
-        "sections": {
-            "crew": {
-                "title": "{{profile.download.crew_table}}",
-                "description": "View statistics in tabular format"
-            },
-            "graphs": {
-                "title": "Charts & Graphs",
-                "description": "View visual representations of data trends"
-            }
-        },
         "columns": {
             "day_diff": "Release Interval",
             "epoch_day": "Epoch Day (Recent Crew)",
@@ -1862,6 +1853,16 @@
         "new_high": "New High",
         "released_duration_ago": "Released {{duration}} ago",
         "released_n_days_ago": "Released {{n}} days ago",
+        "sections": {
+            "crew": {
+                "description": "View statistics in tabular format",
+                "title": "{{profile.download.crew_table}}"
+            },
+            "graphs": {
+                "description": "View visual representations of data trends",
+                "title": "Charts & Graphs"
+            }
+        },
         "stats": {
             "average_time_between_releases": "Average time between releases",
             "average_velocity": "Average Velocity",

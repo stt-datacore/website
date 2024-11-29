@@ -1,19 +1,14 @@
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
-import { skillSum } from "../../utils/crewutils";
 import { Grid, Label, Step } from "semantic-ui-react";
 import CONFIG from "../CONFIG";
 import { StatLabel } from "../statlabel";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
-import { Highs, SkoBucket, EpochDiff, StatsDisplayMode, IStatsContext } from "./model";
-import { findHigh, skillIcon } from './utils';
+import { formatElapsedDays, skillIcon } from './utils';
 import { StatTrendsTable } from "./table";
 import { StatsPrefsPanel } from "./prefspanel";
-import { useStateWithStorage } from "../../utils/storage";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { StatsContext } from "./dataprovider";
-
-
 
 export const StatTrendsComponent = () => {
     const globalContext = React.useContext(GlobalContext);
@@ -128,7 +123,7 @@ export const StatTrendsComponent = () => {
                         </Grid.Column>
                         <Grid.Column width={gridWidth} style={{ padding: '0 0.5em' }}>
                             <StatLabel style={statsStyle} title={t('stat_trends.stats.average_time_between_releases')}
-                                value={t('duration.n_days', { days: avgDaysBetween?.toFixed() })} />
+                                value={formatElapsedDays(avgDaysBetween, t)} />
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row style={{ padding: '0.5em' }}>
@@ -137,7 +132,7 @@ export const StatTrendsComponent = () => {
                         </Grid.Column>
                         <Grid.Column width={gridWidth} style={{ padding: '0 0.5em' }}>
                             <StatLabel style={statsStyle} title={t('stat_trends.stats.mean_time_between_releases')}
-                                value={t('duration.n_days', { days: meanDaysBetween?.toFixed() })} />
+                                value={formatElapsedDays(meanDaysBetween, t)} />
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row style={{ padding: '0.5em' }}>

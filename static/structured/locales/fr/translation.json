@@ -444,24 +444,25 @@
         "all_time": "Tout le temps",
         "n_d": "{{days}} j",
         "n_d_compact": "{{days}}d",
+        "n_day": "{{days}} jour",
+        "n_days": "{{days}} jours",
         "n_h": "{{hours}} h",
         "n_h_compact": "{{hours}}h",
+        "n_hour": "{{hours}} heure",
         "n_hour_class": "{{hours}}-heure",
+        "n_hours": "{{hours}} heures",
         "n_m": "{{minutes}} m",
         "n_m_compact": "{{minutes}}m",
-        "n_minute_class": "{{minutes}}-minute",
-        "n_days": "{{days}} jours",
-        "n_hours": "{{hours}} heures",
-        "n_minutes": "{{minutes}} minutes",
-        "n_months": "{{months}} mois",
-        "n_weeks": "{{weeks}} semaines",
-        "n_years": "{{years}} années",
-        "n_day": "{{days}} jour",
-        "n_hour": "{{hours}} heure",
         "n_minute": "{{minutes}} minute",
+        "n_minute_class": "{{minutes}}-minute",
+        "n_minutes": "{{minutes}} minutes",
         "n_month": "{{months}} mois",
+        "n_months": "{{months}} mois",
         "n_week": "{{weeks}} semaine",
+        "n_weeks": "{{weeks}} semaines",
         "n_year": "{{years}} année",
+        "n_years": "{{years}} années",
+        "same_time": "Même Temps",
         "title": "Durée: {{duration}}"
     },
     "event_info": {
@@ -1855,16 +1856,6 @@
         "quipment": "Calcul de l'équipement..."
     },
     "stat_trends": {
-        "sections": {
-            "crew": {
-                "title": "{{profile.download.crew_table}}",
-                "description": "Afficher les statistiques de l'équipage sous forme de tableau"
-            },
-            "graphs": {
-                "title": "Diagrammes et graphiques",
-                "description": "Afficher des représentations visuelles des tendances des données"
-            }
-        },
         "columns": {
             "day_diff": "Intervalle de début",
             "epoch_day": "Jour de l'époque (équipe récente)",
@@ -1877,6 +1868,16 @@
         "new_high": "Nouveau Élevé",
         "released_duration_ago": "Débuté il y a {{duration}}",
         "released_n_days_ago": "Débuté il y a {{n}} jours",
+        "sections": {
+            "crew": {
+                "description": "Afficher les statistiques de l'équipage sous forme de tableau",
+                "title": "{{profile.download.crew_table}}"
+            },
+            "graphs": {
+                "description": "Afficher des représentations visuelles des tendances des données",
+                "title": "Diagrammes et graphiques"
+            }
+        },
         "stats": {
             "average_time_between_releases": "Temps moyen entre les versions",
             "average_velocity": "Vitesse moyenne",

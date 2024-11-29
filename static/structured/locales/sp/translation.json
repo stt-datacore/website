@@ -442,24 +442,25 @@
         "all_time": "Todo el tiempo",
         "n_d": "{{days}} d",
         "n_d_compact": "{{days}}d",
+        "n_day": "{{days}} día",
+        "n_days": "{{days}} días",
         "n_h": "{{hours}} h",
         "n_h_compact": "{{hours}}h",
+        "n_hour": "{{hours}} hora",
         "n_hour_class": "{{hours}}-hora",
+        "n_hours": "{{hours}} horas",
         "n_m": "{{minutes}} m",
         "n_m_compact": "{{minutes}}m",
-        "n_minute_class": "{{minutes}}-minuto",
-        "n_days": "{{days}} días",
-        "n_hours": "{{hours}} horas",
-        "n_minutes": "{{minutes}} minutos",
-        "n_months": "{{months}} meses",
-        "n_weeks": "{{weeks}} semanas",
-        "n_years": "{{years}} años",
-        "n_day": "{{days}} día",
-        "n_hour": "{{hours}} hora",
         "n_minute": "{{minutes}} minuto",
+        "n_minute_class": "{{minutes}}-minuto",
+        "n_minutes": "{{minutes}} minutos",
         "n_month": "{{months}} mese",
+        "n_months": "{{months}} meses",
         "n_week": "{{weeks}} semana",
+        "n_weeks": "{{weeks}} semanas",
         "n_year": "{{years}} año",
+        "n_years": "{{years}} años",
+        "same_time": "Mismo Tiempo",
         "title": "Duración: {{duration}}"
     },
     "event_info": {
@@ -1854,16 +1855,6 @@
         "quipment": "Quipo de cálculo..."
     },
     "stat_trends": {
-        "sections": {
-            "crew": {
-                "title": "{{profile.download.crew_table}}",
-                "description": "Ver las estadísticas de la tripulación en formato tabular"
-            },
-            "graphs": {
-                "title": "Gráficos y tablas",
-                "description": "Ver representaciones visuales de tendencias de datos"
-            }
-        },
         "columns": {
             "day_diff": "Intervalo de debut",
             "epoch_day": "Día de época (Tripulación reciente)",
@@ -1876,6 +1867,16 @@
         "new_high": "Nueva Máxima",
         "released_duration_ago": "Debutó hace {{duration}}",
         "released_n_days_ago": "Debutó hace {{n}} días",
+        "sections": {
+            "crew": {
+                "description": "Ver las estadísticas de la tripulación en formato tabular",
+                "title": "{{profile.download.crew_table}}"
+            },
+            "graphs": {
+                "description": "Ver representaciones visuales de tendencias de datos",
+                "title": "Gráficos y tablas"
+            }
+        },
         "stats": {
             "average_time_between_releases": "Tiempo medio entre lanzamientos",
             "average_velocity": "Velocidad media",

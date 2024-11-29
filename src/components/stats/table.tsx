@@ -92,7 +92,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
         const fhigh = findHigh(diff.epoch_days[0], skillKey ? diff.skills.slice(0, diff.aggregates[0].length) : [], allHighs, !skillKey);
         const newhigh = fhigh?.epoch_day === diff.epoch_days[0];
 
-        return <Table.Row key={`passIdf_${idx}`}>
+        return <Table.Row key={`passIdf_${idx}`} style={{textAlign: 'center'}}>
             {[0, 1].map((ci) => (
                 <Table.Cell key={`passIdf_crew_${idx}_${ci}`} style={{textAlign: 'center'}}>
                 <div style={flexRow}>
@@ -123,10 +123,11 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
             </Table.Cell>
             <Table.Cell>
                 {formatElapsedDays(diff.day_diff, t)}
-                {/* {t('duration.n_days', { days: diff.day_diff.toLocaleString() })} */}
+                {diff.day_diff > 7 && <><br />({t('duration.n_days', { days: diff.day_diff.toLocaleString() })})</>}
             </Table.Cell>
             <Table.Cell>
-                {diff.velocity.toFixed(4)}
+                {!diff.day_diff ? 'N/A' : ''}
+                {!!diff.day_diff ? diff.velocity.toFixed(2) : ''}
             </Table.Cell>
             {!!skillKey && <Table.Cell>
             <div style={flexRow}>
