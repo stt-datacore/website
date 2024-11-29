@@ -1,184 +1,37 @@
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import { skillSum } from "../../utils/crewutils";
-import { Grid, Label, Step, StepGroup } from "semantic-ui-react";
+import { Grid, Label, Step } from "semantic-ui-react";
 import CONFIG from "../CONFIG";
 import { StatLabel } from "../statlabel";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
-import { Highs, SkoBucket, PassDiff, findHigh, skillIcon } from "./model";
+import { Highs, SkoBucket, EpochDiff, StatsDisplayMode, IStatsContext } from "./model";
+import { findHigh, skillIcon } from './utils';
 import { StatTrendsTable } from "./table";
 import { StatsPrefsPanel } from "./prefspanel";
 import { useStateWithStorage } from "../../utils/storage";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { StatsContext } from "./dataprovider";
 
-export type StatsDisplayMode = 'crew' | 'graphs';
-export interface IStatsContext {
-    skillKey: string;
-    setSkillKey: (value: string) => void;
-    flatOrder: SkoBucket[];
-    setFlatOrder: (value: SkoBucket[]) => void;
-    obtainedFilter?: string[];
-    setObtainedFilter: (value?: string[]) => void;
-    uniqueObtained: string[]
-    skoBuckets: { [key: string]: SkoBucket[] },
-    displayMode: StatsDisplayMode;
-    setDisplayMode: (value: StatsDisplayMode) => void
-}
 
-const defaultContextData = {
-    skillKey: '',
-    setSkillKey: () => false,
-    flatOrder: [],
-    setFlatOrder: () => false,
-    obtainedFilter: [],
-    setObtainedFilter: () => false,
-    uniqueObtained: [],
-    skoBuckets: {},
-    displayMode: 'crew',
-    setDisplayMode: () => false
-} as IStatsContext;
-
-export const StatsContext = React.createContext(defaultContextData);
 
 export const StatTrendsComponent = () => {
     const globalContext = React.useContext(GlobalContext);
+    const statsContext = React.useContext(StatsContext);
     const crew = [...globalContext.core.crew].sort((a, b) => a.date_added.getTime() - b.date_added.getTime());
     const { t, tfmt } = globalContext.localized;
-    const [allHighs, setAllHighs] = React.useState([] as Highs[]);
 
-    const [displayMode, setDisplayMode] = useStateWithStorage<StatsDisplayMode>(`stats_display_mode`, 'crew');
-    const [skoBuckets, setSkoBuckets] = React.useState({} as { [key: string]: SkoBucket[] });
-    const [flatOrder, setFlatOrder] = React.useState([] as SkoBucket[]);
-    const [skillKey, setSkillKey] = React.useState("");
-    const [passDiffs, setPassDiffs] = React.useState([] as PassDiff[]);
     const [avgVelocity, setAvgVelocity] = React.useState(0);
     const [meanVelocity, setMeanVelocity] = React.useState(0);
     const [avgDaysBetween, setAvgDaysBetween] = React.useState(0);
     const [meanDaysBetween, setMeanDaysBetween] = React.useState(0);
-    const [uniqueObtained, setUniqueObtained] = React.useState([] as string[]);
-    const [obtainedFilter, setObtainedFilter] = React.useState([] as string[] | undefined);
-    const [crewCount, setCrewCount] = React.useState(0);
-    const gameEpoch = new Date("2016-01-01T00:00:00Z");
+    const { epochDiffs, skillKey, displayMode, setDisplayMode, crewCount } = statsContext;
 
     React.useEffect(() => {
-        const skoBuckets = {} as { [key: string]: SkoBucket[] };
-        const flat = [] as SkoBucket[];
-        const allHighs = [] as Highs[];
-        const obtained = [] as string[];
-        for (let c of crew) {
-            if (!obtained.includes(c.obtained)) obtained.push(c.obtained);
-
-            const aggregates = Object.values(c.base_skills).map(skill => skillSum(skill));
-            const epoch_day = Math.floor(((new Date(c.date_added)).getTime() - gameEpoch.getTime()) / (1000 * 60 * 60 * 24));
-
-            if (c.max_rarity !== 5) continue;
-
-            [1, 2, 3].forEach((n) => {
-                if (c.skill_order.length >= n) {
-                    let skd = c.skill_order.slice(0, n);
-                    let sko = skd.join(",");
-
-                    let levels = skd.map(m => skillSum(c.base_skills[m]));
-                    //let aggregate_sum = c.skill_order.map(m => skillSum(c.base_skills[m])).reduce((p, n) => p + n, 0);
-                    let aggregate_sum = levels.reduce((p, n) => p + n, 0);
-                    let high = findHigh(epoch_day, skd, allHighs);
-                    if (!high || high.aggregate_sum < aggregate_sum) {
-                        allHighs.push({
-                            crew: c,
-                            skills: skd,
-                            aggregates: levels,
-                            epoch_day,
-                            aggregate_sum
-                        });
-                    }
-                    if (c.symbol === 'quark_bar_owner_crew') {
-                        console.log('break');
-                    }
-                    skoBuckets[sko] ??= [];
-                    skoBuckets[sko].push({
-                        symbol: c.symbol,
-                        aggregates,
-                        epoch_day,
-                        skills: skd
-                    });
-                }
-            });
-
-            flat.push({
-                symbol: c.symbol,
-                aggregates,
-                epoch_day,
-                skills: c.skill_order
-            });
-        }
-        obtained.sort();
-        setUniqueObtained(obtained);
-        setSkoBuckets(skoBuckets);
-        setAllHighs(allHighs);
-        flat.sort((a, b) => a.epoch_day - b.epoch_day);
-        setFlatOrder(flat);
-    }, [globalContext.core.crew]);
-
-    const passObtained = (symbol: string, obtained: string[]) => {
-        let fc = crew.find(f => f.symbol === symbol);
-        if (!fc) return false;
-        if (obtained.includes(fc.obtained)) return true;
-        if (obtained.includes("Event/Pack/Giveaway") && (fc.obtained === 'Mega' || fc.obtained === 'Event' || fc.obtained === 'Pack/Giveaway')) return true;
-        if (obtained.includes("Event") && (fc.obtained === 'Event/Pack/Giveaway' || fc.obtained === 'Mega')) return true;
-        if (obtained.includes("Pack/Giveaway") && fc.obtained === 'Event/Pack/Giveaway') return true;
-        return false;
-    }
-
-    React.useEffect(() => {
-        let work: SkoBucket[] = [];
-        if (skillKey && skoBuckets && Object.keys(skoBuckets).length) {
-            work = skoBuckets[skillKey];
-        }
-        else if (flatOrder?.length) {
-            work = flatOrder;
-        }
-        else {
-            return;
-        }
-
-        if (obtainedFilter) work = work.filter(f => !obtainedFilter.length || passObtained(f.symbol, obtainedFilter));
-        if (work?.length) {
-            let tc = 1;
-            work.sort((a, b) => a.epoch_day - b.epoch_day);
-            let newdiffs = [] as PassDiff[];
-            let c = work.length;
-            let s = work[0].skills.length;
-            for (let i = 1; i < c; i++) {
-                tc++;
-                let dd = work[i].epoch_day - work[i - 1].epoch_day;
-                let sd = [] as number[];
-                for (let j = 0; j < s; j++) {
-                    sd.push(work[i].aggregates[j] - work[i - 1].aggregates[j]);
-                }
-                let diff: PassDiff = {
-                    symbols: [work[i].symbol, work[i - 1].symbol],
-                    day_diff: dd,
-                    epoch_days: [work[i].epoch_day, work[i - 1].epoch_day],
-                    skill_diffs: sd,
-                    skills: work[0].skills,
-                    velocity: 0,
-                    aggregates: [work[i].aggregates, work[i - 1].aggregates]
-                };
-                let avgdiff = diff.skill_diffs.reduce((p, n) => p + n, 0) / diff.skill_diffs.length;
-                if (avgdiff && diff.day_diff) diff.velocity = avgdiff / diff.day_diff;
-                newdiffs.push(diff);
-            }
-            newdiffs.reverse();
-            setCrewCount(tc);
-            setPassDiffs(newdiffs);
-        }
-    }, [skillKey, skoBuckets, flatOrder, obtainedFilter]);
-
-    React.useEffect(() => {
-        if (passDiffs?.length) {
-            const vels = passDiffs.map(diff => diff.velocity);
+        if (epochDiffs?.length) {
+            const vels = epochDiffs.map(diff => diff.velocity);
             vels.sort((a, b) => a - b);
-            const days = passDiffs.map(diff => diff.day_diff);
+            const days = epochDiffs.map(diff => diff.day_diff);
             days.sort((a, b) => a - b);
             const avgDays = days.reduce((p, n) => p + n, 0) / vels.length;
             const avgVel = vels.reduce((p, n) => p + n, 0) / vels.length;
@@ -199,7 +52,7 @@ export const StatTrendsComponent = () => {
             setAvgDaysBetween(0);
             setMeanDaysBetween(0);
         }
-    }, [passDiffs]);
+    }, [epochDiffs]);
 
     const gridWidth = 5;
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
@@ -233,21 +86,7 @@ export const StatTrendsComponent = () => {
     const shortSkillTitle = preskill.map(m => CONFIG.SKILLS_SHORT.find(f => f.name === m)?.short ?? m)
         .join(" / ").trim() || t('roster_summary.skills.combos.all');
 
-    const contextData = {
-        skillKey,
-        setSkillKey,
-        flatOrder,
-        setFlatOrder,
-        obtainedFilter,
-        setObtainedFilter,
-        skoBuckets,
-        uniqueObtained,
-        displayMode,
-        setDisplayMode
-    } as IStatsContext;
-
     return (
-        <StatsContext.Provider value={contextData}>
             <div>
                 <CrewHoverStat targetGroup="stat_trends_crew" />
                 <StatsPrefsPanel />
@@ -271,10 +110,9 @@ export const StatTrendsComponent = () => {
                     </Step>
                 </Step.Group>
                 {displayMode === 'crew' &&
-                <StatTrendsTable skillKey={skillKey} allHighs={allHighs} passDiffs={passDiffs} />}
+                <StatTrendsTable skillKey={skillKey} />}
 
-            </div>
-        </StatsContext.Provider>)
+            </div>)
 
     function renderStatsInfo() {
         return (
@@ -304,7 +142,7 @@ export const StatTrendsComponent = () => {
                     </Grid.Row>
                     <Grid.Row style={{ padding: '0.5em' }}>
                         <Grid.Column width={gridWidth} style={{ padding: '0 0.5em' }}>
-                            <StatLabel style={statsStyle} title={t('stat_trends.stats.last_release')} value={crew.find(f => f.symbol === passDiffs[0]?.symbols[0])?.date_added?.toDateString() || ''} />
+                            <StatLabel style={statsStyle} title={t('stat_trends.stats.last_release')} value={crew.find(f => f.symbol === epochDiffs[0]?.symbols[0])?.date_added?.toDateString() || ''} />
                         </Grid.Column>
                         <Grid.Column width={gridWidth} style={{ padding: '0 0.5em' }}>
                         </Grid.Column>

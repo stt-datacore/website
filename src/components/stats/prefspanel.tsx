@@ -1,5 +1,5 @@
 import React from "react";
-import { StatsContext } from "./statsmain";
+import { StatsContext } from "./dataprovider";
 import { Dropdown, DropdownItemProps } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { prettyObtained } from "../../utils/crewutils";
