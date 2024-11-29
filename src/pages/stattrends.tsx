@@ -1,7 +1,7 @@
 import React from "react";
 import DataPageLayout from "../components/page/datapagelayout";
 import { GlobalContext } from "../context/globalcontext";
-import { getHighest, skillSum } from "../utils/crewutils";
+import { getHighest, prettyObtained, skillSum } from "../utils/crewutils";
 import { Dropdown, DropdownItemProps, Grid, Label, Table } from "semantic-ui-react";
 import CONFIG from "../components/CONFIG";
 import { AvatarView } from "../components/item_presenters/avatarview";
@@ -10,7 +10,12 @@ import { ITableConfigRow, SearchableTable } from "../components/searchabletable"
 import { StatLabel } from "../components/statlabel";
 import { DEFAULT_MOBILE_WIDTH } from "../components/hovering/hoverstat";
 import { CrewHoverStat } from "../components/hovering/crewhoverstat";
+import { PlayerCrew } from "../model/player";
 
+
+const skillIcon = (skill: string) => {
+    return `${process.env.GATSBY_ASSETS_URL}/atlas/icon_${skill}.png`;
+}
 
 interface SkoBucket {
     symbol: string,
@@ -40,7 +45,7 @@ function findHigh(epoch_day: number, skills: string[], data: Highs[], day_only =
 const StatTrends = () => {
     const globalContext = React.useContext(GlobalContext);
     const crew = [...globalContext.core.crew].sort((a, b) => a.date_added.getTime() - b.date_added.getTime());
-    const { t } = globalContext.localized;
+    const { t, tfmt } = globalContext.localized;
     const [allHighs, setAllHighs] = React.useState([] as Highs[]);
 
     const [skoBuckets, setSkoBuckets] = React.useState({} as {[key:string]: SkoBucket[]});
@@ -51,14 +56,18 @@ const StatTrends = () => {
     const [meanVelocity, setMeanVelocity] = React.useState(0);
     const [avgDaysBetween, setAvgDaysBetween] = React.useState(0);
     const [meanDaysBetween, setMeanDaysBetween] = React.useState(0);
-
+    const [uniqueObtained, setUniqueObtained] = React.useState([] as string[]);
+    const [obtainedFilter, setObtainedFilter] = React.useState([] as string[]);
+    const [crewCount, setCrewCount] = React.useState(0);
     const gameEpoch = new Date("2016-01-01T00:00:00Z");
 
     React.useEffect(() => {
         const skoBuckets = {} as {[key:string]: SkoBucket[]};
         const flat = [] as SkoBucket[];
         const allHighs = [] as Highs[];
+        const obtained = [] as string[];
         for (let c of crew) {
+            if (!obtained.includes(c.obtained)) obtained.push(c.obtained);
 
             const aggregates = Object.values(c.base_skills).map(skill => skillSum(skill));
             const epoch_day = Math.floor(((new Date(c.date_added)).getTime() - gameEpoch.getTime()) / (1000 * 60 * 60 * 24));
@@ -103,6 +112,8 @@ const StatTrends = () => {
                 skills: c.skill_order
             });
         }
+        obtained.sort();
+        setUniqueObtained(obtained);
         setSkoBuckets(skoBuckets);
         setAllHighs(allHighs);
         flat.sort((a, b) => a.epoch_day - b.epoch_day);
@@ -117,11 +128,40 @@ const StatTrends = () => {
         skillOpts.push({
             key: key,
             value: key,
-            text: sp.join(" / ")
+            text: sp.join(" / "),
+            content: <div>
+                <div>{sp.join(" / ")}</div>
+                <div className='ui segment' style={{backgroundColor: 'navy', padding: '0.5em', display: 'inline-block', marginTop: '0.25em', marginLeft: 0 }}>{skoBuckets[key].length}  {t('base.crewmen')}</div>
+            </div>
         });
     });
 
-    skillOpts.sort((a, b) => (a.text! as string).localeCompare(b.text! as string))
+    skillOpts.sort((a, b) => {
+        let r = 0;
+        if (!r) r = skoBuckets[b.key].length - skoBuckets[a.key].length;
+        if (!r) r = (a.text! as string).localeCompare(b.text! as string);
+        return r;
+    })
+
+    const obtainedOpts = [] as DropdownItemProps[];
+
+    for (let obtained of uniqueObtained) {
+        obtainedOpts.push({
+            key: obtained,
+            value: obtained,
+            text: prettyObtained({ obtained } as PlayerCrew, t) || obtained
+        })
+    }
+
+    const passObtained = (symbol: string, obtained: string[]) => {
+        let fc = crew.find(f => f.symbol === symbol);
+        if (!fc) return false;
+        if (obtained.includes(fc.obtained)) return true;
+        if (obtained.includes("Event/Pack/Giveaway") && (fc.obtained === 'Mega' || fc.obtained === 'Event' || fc.obtained === 'Pack/Giveaway')) return true;
+        if (obtained.includes("Event") && (fc.obtained === 'Event/Pack/Giveaway' || fc.obtained === 'Mega')) return true;
+        if (obtained.includes("Pack/Giveaway") && fc.obtained === 'Event/Pack/Giveaway') return true;
+        return false;
+    }
 
     React.useEffect(() => {
         let work: SkoBucket[] = [];
@@ -135,12 +175,15 @@ const StatTrends = () => {
             return;
         }
 
+        if (obtainedFilter) work = work.filter(f => !obtainedFilter.length || passObtained(f.symbol, obtainedFilter));
         if (work?.length) {
+            let tc = 1;
             work.sort((a, b) => a.epoch_day - b.epoch_day);
             let newdiffs = [] as PassDiff[];
             let c = work.length;
             let s = work[0].skills.length;
             for (let i = 1; i < c; i++) {
+                tc++;
                 let dd = work[i].epoch_day - work[i - 1].epoch_day;
                 let sd = [] as number[];
                 for (let j = 0; j < s; j++) {
@@ -160,9 +203,10 @@ const StatTrends = () => {
                 newdiffs.push(diff);
             }
             newdiffs.reverse();
+            setCrewCount(tc);
             setPassDiffs(newdiffs);
         }
-    }, [skillKey, skoBuckets, flatOrder]);
+    }, [skillKey, skoBuckets, flatOrder, obtainedFilter]);
 
     React.useEffect(() => {
         if (passDiffs?.length) {
@@ -194,49 +238,102 @@ const StatTrends = () => {
     const gridWidth = 5;
 
     const flexRow: React.CSSProperties = {display:'flex', flexDirection: 'row', alignItems:'center', justifyContent: 'flex-start', gap: '2em'};
+    const flexCol: React.CSSProperties = {display:'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', gap: '0.25em'};
     const statsStyle: React.CSSProperties = { width: '100%', height: '3em', margin: 0 };
+
+    const preskill = skillKey.split(",").filter(f => f);
+    const skillDecors = [] as JSX.Element[];
+
+    if (skillKey.trim()) {
+        preskill.forEach((text) => {
+            if (!text) return;
+            if (skillDecors.length) skillDecors.push(<>&nbsp;/&nbsp;</>);
+            skillDecors.push(<span>
+                <img src={skillIcon(text)} style={{height: '0.75em'}} />&nbsp;
+                {CONFIG.SKILLS_SHORT.find(f => f.name === text)?.short}
+            </span>)
+        })
+    }
+
+    if (preskill.length) {
+        while(preskill.length < 3) {
+            preskill.push('*');
+            skillDecors.push(<span>&nbsp;/&nbsp;*</span>);
+        }
+    }
+    else {
+        skillDecors.push(<span>{t('roster_summary.skills.combos.all')}</span>)
+    }
+
+    const shortSkillTitle = preskill.map(m => CONFIG.SKILLS_SHORT.find(f => f.name === m)?.short ?? m)
+            .join(" / ").trim() || t('roster_summary.skills.combos.all');
 
     return <DataPageLayout pageTitle={t('stat_trends.title')} pageDescription={t('stat_trends.description')}>
         <div>
             <CrewHoverStat targetGroup="stat_trends_crew" />
             <div style={{...flexRow, margin: '1em 0'}}>
-                <Dropdown
-                    placeholder={t('quipment_dropdowns.mode.skill_order')}
-                    selection
-                    clearable
-                    value={skillKey}
-                    options={skillOpts}
-                    onChange={(e, { value }) => setSkillKey(value as string)}
-                    />
+                <div style={{...flexCol, alignItems: 'flex-start', textAlign: 'left'}}>
+                    <span>{t('global.obtained')}</span>
+                    <Dropdown
+                        placeholder={t('global.obtained')}
+                        selection
+                        clearable
+                        multiple
+                        value={obtainedFilter}
+                        options={obtainedOpts}
+                        onChange={(e, { value }) => setObtainedFilter(value as string[])}
+                        />
+                </div>
+                <div style={{...flexCol, alignItems: 'flex-start', textAlign: 'left'}}>
+                    <span>{t('quipment_dropdowns.mode.skill_order')}</span>
+                    <Dropdown
+                        placeholder={t('quipment_dropdowns.mode.skill_order')}
+                        selection
+                        clearable
+                        value={skillKey}
+                        options={skillOpts}
+                        onChange={(e, { value }) => setSkillKey(value as string)}
+                        />
+                </div>
             </div>
-            <h3>{skillKey.split(",").map(m => CONFIG.SKILLS_SHORT.find(f => f.name === m)?.short).join(" / ")}</h3>
-            <Grid style={{margin: '1em -1em'}}>
-                <Grid.Row>
-                    <Grid.Column width={gridWidth}>
-                        <StatLabel style={statsStyle} title={t('stat_trends.stats.average_velocity')} value={avgVelocity?.toFixed(2)} />
-                    </Grid.Column>
-                    <Grid.Column width={gridWidth}>
-                        <StatLabel style={statsStyle} title={t('stat_trends.stats.average_time_between_releases')}
-                            value={t('duration.n_days', { days: avgDaysBetween?.toFixed() })} />
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column width={gridWidth}>
-                        <StatLabel style={statsStyle} title={t('stat_trends.stats.mean_velocity')} value={meanVelocity?.toFixed(2)} />
-                    </Grid.Column>
-                    <Grid.Column width={gridWidth}>
-                        <StatLabel style={statsStyle} title={t('stat_trends.stats.mean_time_between_releases')}
-                            value={t('duration.n_days', { days: meanDaysBetween?.toFixed() })} />
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column width={gridWidth}>
-                        <StatLabel style={statsStyle} title={t('stat_trends.stats.last_release')} value={crew.find(f => f.symbol === passDiffs[0]?.symbols[0])?.date_added?.toDateString() || ''} />
-                    </Grid.Column>
-                    <Grid.Column width={gridWidth}>
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
+            <h3>
+            {tfmt('global.viewing_stats_for_x', {
+                        x: <b style={{textDecoration: 'underline'}}>{shortSkillTitle}</b>
+                    })}<div style={{height: '1em'}} />
+            </h3>
+            <div className="ui segment">
+                <Label style={{textAlign: 'center'}}>
+                    <h2>{skillDecors}</h2>
+                    <div className='ui segment' style={{backgroundColor: 'navy'}}>{crewCount} {t('base.crewmen')}</div>
+                </Label>
+                <Grid style={{margin: '1em -1em', gap: '0'}}>
+                    <Grid.Row style={{padding: '0.5em'}}>
+                        <Grid.Column width={gridWidth} style={{padding: '0 0.5em'}}>
+                            <StatLabel style={statsStyle} title={t('stat_trends.stats.average_velocity')} value={avgVelocity?.toFixed(2)} />
+                        </Grid.Column>
+                        <Grid.Column width={gridWidth} style={{padding: '0 0.5em'}}>
+                            <StatLabel style={statsStyle} title={t('stat_trends.stats.average_time_between_releases')}
+                                value={t('duration.n_days', { days: avgDaysBetween?.toFixed() })} />
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row style={{padding: '0.5em'}}>
+                        <Grid.Column width={gridWidth} style={{padding: '0 0.5em'}}>
+                            <StatLabel style={statsStyle} title={t('stat_trends.stats.mean_velocity')} value={meanVelocity?.toFixed(2)} />
+                        </Grid.Column>
+                        <Grid.Column width={gridWidth} style={{padding: '0 0.5em'}}>
+                            <StatLabel style={statsStyle} title={t('stat_trends.stats.mean_time_between_releases')}
+                                value={t('duration.n_days', { days: meanDaysBetween?.toFixed() })} />
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row style={{padding: '0.5em'}}>
+                        <Grid.Column width={gridWidth} style={{padding: '0 0.5em'}}>
+                            <StatLabel style={statsStyle} title={t('stat_trends.stats.last_release')} value={crew.find(f => f.symbol === passDiffs[0]?.symbols[0])?.date_added?.toDateString() || ''} />
+                        </Grid.Column>
+                        <Grid.Column width={gridWidth} style={{padding: '0 0.5em'}}>
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+            </div>
 
             <StatTrendsTable skillKey={skillKey} allHighs={allHighs} passDiffs={passDiffs} />
         </div>
@@ -262,9 +359,6 @@ const StatTrendsTable = (props: StatTrendsTableProps) => {
     const flexRow: React.CSSProperties = {display:'flex', flexDirection: 'row', alignItems:'center', justifyContent: 'flex-start', gap: '2em'};
     const flexCol: React.CSSProperties = {display:'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', gap: '0.25em'};
 
-    const skillIcon = (skill: string) => {
-        return `${process.env.GATSBY_ASSETS_URL}/atlas/icon_${skill}.png`;
-    }
     const sortAg = (a: PassDiff, b: PassDiff, idx: number) => a.aggregates[idx].reduce((p, n) => p + n, 0) - b.aggregates[idx].reduce((p, n) => p + n, 0);
     const tableConfig = [
         { width: 1, column: 'symbol[0]', title: t('stat_trends.columns.recent_crew'), customCompare: (a, b) => sortAg(a, b, 0) },

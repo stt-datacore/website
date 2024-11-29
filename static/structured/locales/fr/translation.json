@@ -36,6 +36,8 @@
         "collections": "Collections",
         "collections_fmt": "{{count}} collections",
         "crew": "Équipage",
+        "crewman": "Équipier",
+        "crewmen": "Équipiers",
         "event_ships": "Vaisseaux événementiels",
         "featured_ships": "Vaisseaux en vedette",
         "featured_traits": "Caractéristiques en vedette",
@@ -961,6 +963,7 @@
         "squadron_leader": "Chef d'escadron",
         "uncheck_all": "Décochez tout",
         "view_options": "Voir les options",
+        "viewing_stats_for_x": "Affichage des statistiques pour {{x}}",
         "work_in_progress": {
             "heading": "Cette page est un travail en cours. Certaines fonctions et fonctionnalités peuvent être non fonctionnelles, cassées, manquantes, incomplètes ou modifiées à tout moment.",
             "title": "Travail en cours !"

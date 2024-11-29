@@ -36,6 +36,8 @@
         "collections": "Sammlungen",
         "collections_fmt": "{{count}} Sammlungen",
         "crew": "Crew",
+        "crewman": "Crew",
+        "crewmen": "Crew",
         "event_ships": "Ereignis Schiffe",
         "featured_ships": "Ausgewählte Schiffe",
         "featured_traits": "Ausgewählte Eigenschaften",
@@ -951,6 +953,7 @@
         "squadron_leader": "Geschwaderführer",
         "uncheck_all": "Deaktivieren Sie alle",
         "view_options": "Optionen anzeigen",
+        "viewing_stats_for_x": "Statistiken für {{x}} anzeigen",
         "work_in_progress": {
             "heading": "Diese Seite befindet sich in Bearbeitung. Einige Funktionen und Features sind möglicherweise nicht funktionsfähig, defekt, fehlen, sind unvollständig oder ändern sich jederzeit.",
             "title": "In Arbeit!"

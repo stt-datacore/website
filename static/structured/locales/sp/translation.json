@@ -36,6 +36,8 @@
         "collections": "Colecciones",
         "collections_fmt": "{{count}} colecciones",
         "crew": "Tripulación",
+        "crewman": "Tripulante",
+        "crewmen": "Tripulantes",
         "event_ships": "Buques de eventos",
         "featured_ships": "Buques destacados",
         "featured_traits": "Características destacadas",
@@ -960,6 +962,7 @@
         "squadron_leader": "Líder de escuadrón",
         "uncheck_all": "Desmarcar todo",
         "view_options": "Ver las opciones",
+        "viewing_stats_for_x": "Visualización de estadísticas para {{x}}",
         "work_in_progress": {
             "heading": "Esta página es un trabajo en progreso. Algunas funciones y características pueden no funcionar, estar rotas, faltar, estar incompletas o cambiar en cualquier momento.",
             "title": "¡Trabajo en progreso!"

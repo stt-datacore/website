@@ -36,6 +36,8 @@
         "collections": "Collections",
         "collections_fmt": "{{count}} collections",
         "crew": "Crew",
+        "crewman": "Crew",
+        "crewmen": "Crew",
         "event_ships": "Event Ships",
         "featured_ships": "Featured Ships",
         "featured_traits": "Featured Traits",
@@ -951,6 +953,7 @@
         "squadron_leader": "Squadron Leader",
         "uncheck_all": "Uncheck all",
         "view_options": "View Options",
+        "viewing_stats_for_x": "Viewing stats for {{x}}",
         "work_in_progress": {
             "heading": " This page is a work in progress. Some functions and features may be non-functional, broken, missing, incomplete, or change at any time.",
             "title": "Work In Progress!"
