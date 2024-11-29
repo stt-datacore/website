@@ -1849,6 +1849,16 @@
         "quipment": "Calcul de l'équipement..."
     },
     "stat_trends": {
+        "sections": {
+            "crew": {
+                "title": "{{profile.download.crew_table}}",
+                "description": "Afficher les statistiques de l'équipage sous forme de tableau"
+            },
+            "graphs": {
+                "title": "Diagrammes et graphiques",
+                "description": "Afficher des représentations visuelles des tendances des données"
+            }
+        },
         "columns": {
             "day_diff": "Intervalle de début",
             "epoch_day": "Jour de l'époque (équipe récente)",

@@ -1836,6 +1836,16 @@
         "quipment": "Berechnungsausrüstung..."
     },
     "stat_trends": {
+        "sections": {
+            "crew": {
+                "title": "{{profile.download.crew_table}}",
+                "description": "Crew-Statistiken im Tabellenformat anzeigen"
+            },
+            "graphs": {
+                "title": "Diagramme und Grafiken",
+                "description": "Visuelle Darstellungen von Datentrends anzeigen"
+            }
+        },
         "columns": {
             "day_diff": "Debütintervall",
             "epoch_day": "Epochentag (letzte Crew)",
