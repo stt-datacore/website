@@ -1,25 +1,4 @@
 {
-    "stat_trends": {
-        "title": "Statistiktrends",
-        "description": "Studieren Sie Statistiken zur Entwicklung der Besatzungsstärke im Laufe der Zeit.",
-        "columns": {
-            "recent_crew": "Letzte Crew",
-            "prior_crew": "Frühere Crew",
-            "epoch_day": "Epochentag (letzte Crew)",
-            "day_diff": "Debütintervall",
-            "velocity": "Geschwindigkeit",
-            "skill_diffs": "Gesamtfähigkeitsunterschiede"
-        },
-        "stats": {
-            "average_velocity": "Durchschnittliche Geschwindigkeit",
-            "mean_velocity": "Mediane Geschwindigkeit",
-            "average_time_between_releases": "Durchschnittliche Zeit zwischen Veröffentlichungen",
-            "mean_time_between_releases": "Mediane Zeit zwischen Veröffentlichungen",
-            "last_release": "Letzte Veröffentlichung"
-        },
-        "new_high": "Neuer Highscore",
-        "released_n_days_ago": "Debüt vor {{n}} Tagen"
-    },
     "alerts": {
         "add": "Hinzufügen",
         "always_alert_legendary": "Seien Sie immer wachsam, wenn im Rückkaufpool neue legendäre Crewmitglieder entdeckt werden.",
@@ -1199,8 +1178,8 @@
             "episodes": "Folgen",
             "events": "Ereignisen",
             "misc_game_stats": "Verschiedene Spielstatistiken",
-            "voyage_hof": "Ruhmeshalle der Reise",
-            "stat_trends": "{{stat_trends.title}}"
+            "stat_trends": "{{stat_trends.title}}",
+            "voyage_hof": "Ruhmeshalle der Reise"
         },
         "game_info_title": "Spiel Info",
         "player": {
@@ -1852,6 +1831,27 @@
         "default": "Daten werden geladen…",
         "demands": "Crew fordert Berechnung...",
         "quipment": "Berechnungsausrüstung..."
+    },
+    "stat_trends": {
+        "columns": {
+            "day_diff": "Debütintervall",
+            "epoch_day": "Epochentag (letzte Crew)",
+            "prior_crew": "Frühere Crew",
+            "recent_crew": "Letzte Crew",
+            "skill_diffs": "Fähigkeitsunterschied",
+            "velocity": "Geschwindigkeit"
+        },
+        "description": "Studieren Sie Statistiken zur Entwicklung der Besatzungsstärke im Laufe der Zeit.",
+        "new_high": "Neuer Highscore",
+        "released_n_days_ago": "Debüt vor {{n}} Tagen",
+        "stats": {
+            "average_time_between_releases": "Durchschnittliche Zeit zwischen Veröffentlichungen",
+            "average_velocity": "Durchschnittliche Geschwindigkeit",
+            "last_release": "Letzte Veröffentlichung",
+            "mean_time_between_releases": "Mediane Zeit zwischen Veröffentlichungen",
+            "mean_velocity": "Mediane Geschwindigkeit"
+        },
+        "title": "Statistiktrends"
     },
     "tool_roster_picker": {
         "all_crew": {

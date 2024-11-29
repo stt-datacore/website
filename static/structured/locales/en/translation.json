@@ -1,25 +1,4 @@
 {
-    "stat_trends": {
-        "title": "Stats Trends",
-        "description": "Study statistics about crew power trending over time.",
-        "columns": {
-            "recent_crew": "Recent Crew",
-            "prior_crew": "Prior Crew",
-            "epoch_day": "Epoch Day (Recent Crew)",
-            "day_diff": "Release Interval",
-            "velocity": "Velocity",
-            "skill_diffs": "Aggregate skill differences"
-        },
-        "stats": {
-            "average_velocity": "Average Velocity",
-            "mean_velocity": "Mean Velocity",
-            "average_time_between_releases": "Average time between releases",
-            "mean_time_between_releases": "Mean time between releases",
-            "last_release": "Last Release"
-        },
-        "new_high": "New High",
-        "released_n_days_ago": "Released {{n}} days ago"
-    },
     "alerts": {
         "add": "Add",
         "always_alert_legendary": "Always alert when new legendary crew are discovered in the buy-back well.",
@@ -1200,8 +1179,8 @@
             "episodes": "Episodes",
             "events": "Events",
             "misc_game_stats": "Misc Game Stats",
-            "voyage_hof": "Voyage Hall of Fame",
-            "stat_trends": "{{stat_trends.title}}"
+            "stat_trends": "{{stat_trends.title}}",
+            "voyage_hof": "Voyage Hall of Fame"
         },
         "game_info_title": "Game Info",
         "player": {
@@ -1850,6 +1829,27 @@
         "default": "Loading data...",
         "demands": "Calculating crew demands...",
         "quipment": "Calculating quipment..."
+    },
+    "stat_trends": {
+        "columns": {
+            "day_diff": "Release Interval",
+            "epoch_day": "Epoch Day (Recent Crew)",
+            "prior_crew": "Prior Crew",
+            "recent_crew": "Recent Crew",
+            "skill_diffs": "Skill Differences",
+            "velocity": "Velocity"
+        },
+        "description": "Study statistics about crew power trending over time.",
+        "new_high": "New High",
+        "released_n_days_ago": "Released {{n}} days ago",
+        "stats": {
+            "average_time_between_releases": "Average time between releases",
+            "average_velocity": "Average Velocity",
+            "last_release": "Last Release",
+            "mean_time_between_releases": "Mean time between releases",
+            "mean_velocity": "Mean Velocity"
+        },
+        "title": "Stats Trends"
     },
     "tool_roster_picker": {
         "all_crew": {

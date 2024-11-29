@@ -9,6 +9,7 @@ import { CrewMember } from "../model/crew";
 import { ITableConfigRow, SearchableTable } from "../components/searchabletable";
 import { StatLabel } from "../components/statlabel";
 import { DEFAULT_MOBILE_WIDTH } from "../components/hovering/hoverstat";
+import { CrewHoverStat } from "../components/hovering/crewhoverstat";
 
 
 interface SkoBucket {
@@ -31,9 +32,9 @@ interface PassDiff {
 type Highs = { crew: CrewMember, aggregates: number[], aggregate_sum: number, epoch_day: number, skills: string[] };
 
 function findHigh(epoch_day: number, skills: string[], data: Highs[], day_only = false) {
-    let ssj = skills.sort().join();
+    let ssj = skills.join();
     data.sort((a, b) => b.epoch_day - a.epoch_day);
-    return data.find(f => f.epoch_day <= epoch_day && (day_only || f.skills.sort().join() === ssj));
+    return data.find(f => f.epoch_day <= epoch_day && (day_only || f.skills.join() === ssj));
 }
 
 const StatTrends = () => {
@@ -63,15 +64,15 @@ const StatTrends = () => {
             const epoch_day = Math.floor(((new Date(c.date_added)).getTime() - gameEpoch.getTime()) / (1000 * 60 * 60 * 24));
 
             if (c.max_rarity !== 5) continue;
+
             [1, 2, 3].forEach((n) => {
                 if (c.skill_order.length >= n) {
                     let skd = c.skill_order.slice(0, n);
                     let sko = skd.join(",");
 
                     let levels = skd.map(m => skillSum(c.base_skills[m]));
+                    //let aggregate_sum = c.skill_order.map(m => skillSum(c.base_skills[m])).reduce((p, n) => p + n, 0);
                     let aggregate_sum = levels.reduce((p, n) => p + n, 0);
-                    let cn = levels.reduce((p, n) => p + n, 0);
-
                     let high = findHigh(epoch_day, skd, allHighs);
                     if (!high || high.aggregate_sum < aggregate_sum) {
                         allHighs.push({
@@ -82,7 +83,9 @@ const StatTrends = () => {
                             aggregate_sum
                         });
                     }
-
+                    if (c.symbol === 'quark_bar_owner_crew') {
+                        console.log('break');
+                    }
                     skoBuckets[sko] ??= [];
                     skoBuckets[sko].push({
                         symbol: c.symbol,
@@ -104,7 +107,7 @@ const StatTrends = () => {
         setAllHighs(allHighs);
         flat.sort((a, b) => a.epoch_day - b.epoch_day);
         setFlatOrder(flat);
-    }, [crew]);
+    }, [globalContext.core.crew]);
 
     const skillOpts = [] as DropdownItemProps[];
 
@@ -188,39 +191,14 @@ const StatTrends = () => {
         }
     }, [passDiffs]);
 
-    const gridWidth = 4;
+    const gridWidth = 5;
 
     const flexRow: React.CSSProperties = {display:'flex', flexDirection: 'row', alignItems:'center', justifyContent: 'flex-start', gap: '2em'};
     const statsStyle: React.CSSProperties = { width: '100%', height: '3em', margin: 0 };
 
     return <DataPageLayout pageTitle={t('stat_trends.title')} pageDescription={t('stat_trends.description')}>
         <div>
-            <Grid style={{margin: '1em -1em'}}>
-                <Grid.Row>
-                    <Grid.Column width={gridWidth}>
-                        <StatLabel style={statsStyle} title={t('stat_trends.stats.average_velocity')} value={avgVelocity?.toFixed(2)} />
-                    </Grid.Column>
-                    <Grid.Column width={gridWidth}>
-                        <StatLabel style={statsStyle} title={t('stat_trends.stats.average_time_between_releases')} value={avgDaysBetween?.toFixed(2)} />
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column width={gridWidth}>
-                        <StatLabel style={statsStyle} title={t('stat_trends.stats.mean_velocity')} value={meanVelocity?.toFixed(2)} />
-                    </Grid.Column>
-                    <Grid.Column width={gridWidth}>
-                        <StatLabel style={statsStyle} title={t('stat_trends.stats.mean_time_between_releases')} value={meanDaysBetween?.toFixed(2)} />
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column width={gridWidth}>
-                        <StatLabel style={statsStyle} title={t('stat_trends.stats.last_release')} value={crew.find(f => f.symbol === passDiffs[0]?.symbols[0])?.date_added?.toDateString() || ''} />
-                    </Grid.Column>
-                    <Grid.Column width={gridWidth}>
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
-
+            <CrewHoverStat targetGroup="stat_trends_crew" />
             <div style={{...flexRow, margin: '1em 0'}}>
                 <Dropdown
                     placeholder={t('quipment_dropdowns.mode.skill_order')}
@@ -231,6 +209,34 @@ const StatTrends = () => {
                     onChange={(e, { value }) => setSkillKey(value as string)}
                     />
             </div>
+            <h3>{skillKey.split(",").map(m => CONFIG.SKILLS_SHORT.find(f => f.name === m)?.short).join(" / ")}</h3>
+            <Grid style={{margin: '1em -1em'}}>
+                <Grid.Row>
+                    <Grid.Column width={gridWidth}>
+                        <StatLabel style={statsStyle} title={t('stat_trends.stats.average_velocity')} value={avgVelocity?.toFixed(2)} />
+                    </Grid.Column>
+                    <Grid.Column width={gridWidth}>
+                        <StatLabel style={statsStyle} title={t('stat_trends.stats.average_time_between_releases')}
+                            value={t('duration.n_days', { days: avgDaysBetween?.toFixed() })} />
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                    <Grid.Column width={gridWidth}>
+                        <StatLabel style={statsStyle} title={t('stat_trends.stats.mean_velocity')} value={meanVelocity?.toFixed(2)} />
+                    </Grid.Column>
+                    <Grid.Column width={gridWidth}>
+                        <StatLabel style={statsStyle} title={t('stat_trends.stats.mean_time_between_releases')}
+                            value={t('duration.n_days', { days: meanDaysBetween?.toFixed() })} />
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                    <Grid.Column width={gridWidth}>
+                        <StatLabel style={statsStyle} title={t('stat_trends.stats.last_release')} value={crew.find(f => f.symbol === passDiffs[0]?.symbols[0])?.date_added?.toDateString() || ''} />
+                    </Grid.Column>
+                    <Grid.Column width={gridWidth}>
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
 
             <StatTrendsTable skillKey={skillKey} allHighs={allHighs} passDiffs={passDiffs} />
         </div>
@@ -275,16 +281,18 @@ const StatTrendsTable = (props: StatTrendsTableProps) => {
         },
         { width: 1, column: 'day_diff', title: t('stat_trends.columns.day_diff') },
         { width: 1, column: 'velocity', title: t('stat_trends.columns.velocity') },
-        {
+
+    ] as ITableConfigRow[]
+    if (skillKey) {
+        tableConfig.push({
             width: 1,
             column: 'skill_diffs',
             title: t('stat_trends.columns.skill_diffs'),
             customCompare: (a: PassDiff, b: PassDiff) => {
                 return a.skill_diffs.reduce((p, n) => p + n, 0) - b.skill_diffs.reduce((p, n) => p + n, 0)
             }
-        },
-    ] as ITableConfigRow[]
-
+        });
+    }
     return (<SearchableTable
                 config={tableConfig}
                 data={passDiffs}
@@ -299,18 +307,24 @@ const StatTrendsTable = (props: StatTrendsTableProps) => {
     function renderTableRow(diff: PassDiff, idx: number) {
 
         const crews = diff.symbols.map(m => crew.find(f => f.symbol === m)!);
-        const fhigh = findHigh(diff.epoch_days[0], diff.skills, allHighs, !skillKey);
+        const fhigh = findHigh(diff.epoch_days[0], skillKey ? diff.skills.slice(0, diff.aggregates[0].length) : [], allHighs, !skillKey);
         const newhigh = fhigh?.epoch_day === diff.epoch_days[0];
 
         return <Table.Row key={`passIdf_${idx}`}>
             <Table.Cell style={{textAlign: 'center'}}>
             <div style={flexRow}>
                 <div style={{ ...flexCol, width: '15em'}}>
-                    <AvatarView mode='crew' symbol={diff.symbols[0]} size={64} />
+                    <AvatarView
+                        item={crews[0]}
+                        mode='crew'
+                        symbol={diff.symbols[0]}
+                        size={64}
+                        targetGroup="stat_trends_crew"
+                        />
                     <span>
                         {crews[0].name}
                     </span>
-                    {newhigh && <Label color='blue'>{t('stat_trends.new_high')}</Label>}
+                    {newhigh && <Label style={{margin: '0.5em 0'}} color='blue'>{t('stat_trends.new_high')}</Label>}
                     <div style={{...flexRow, justifyContent: 'space-evenly'}}>
                         {crews[0].skill_order.map(skill => <img src={`${skillIcon(skill)}`} style={{height: '1em'}} />)}
                     </div>
@@ -323,7 +337,13 @@ const StatTrendsTable = (props: StatTrendsTableProps) => {
             <Table.Cell style={{textAlign: 'center'}}>
             <div style={flexRow}>
                 <div style={{ ...flexCol, width: '15em'}}>
-                    <AvatarView mode='crew' symbol={diff.symbols[1]} size={64} />
+                    <AvatarView
+                        item={crews[1]}
+                        mode='crew'
+                        symbol={diff.symbols[1]}
+                        size={64}
+                        targetGroup="stat_trends_crew"
+                        />
                     {crews[1].name}
                     <div style={{...flexRow, justifyContent: 'space-evenly'}}>
                         {crews[1].skill_order.map(skill => <img src={`${skillIcon(skill)}`} style={{height: '1em'}} />)}
@@ -338,12 +358,12 @@ const StatTrendsTable = (props: StatTrendsTableProps) => {
                 {diff.epoch_days[0].toLocaleString()}
             </Table.Cell>
             <Table.Cell>
-                {diff.day_diff}
+                {t('duration.n_days', { days: diff.day_diff.toLocaleString() })}
             </Table.Cell>
             <Table.Cell>
-                {diff.velocity}
+                {diff.velocity.toFixed(4)}
             </Table.Cell>
-            <Table.Cell>
+            {!!skillKey && <Table.Cell>
             <div style={flexRow}>
                 {diff.skill_diffs.map((n, idx) => {
                     return <div style={flexCol}>
@@ -353,7 +373,7 @@ const StatTrendsTable = (props: StatTrendsTableProps) => {
                     </div>
                 })}
             </div>
-            </Table.Cell>
+            </Table.Cell>}
         </Table.Row>
 
     }
