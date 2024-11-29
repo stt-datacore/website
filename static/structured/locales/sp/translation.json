@@ -1848,6 +1848,16 @@
         "quipment": "Quipo de cálculo..."
     },
     "stat_trends": {
+        "sections": {
+            "crew": {
+                "title": "{{profile.download.crew_table}}",
+                "description": "Ver las estadísticas de la tripulación en formato tabular"
+            },
+            "graphs": {
+                "title": "Gráficos y tablas",
+                "description": "Ver representaciones visuales de tendencias de datos"
+            }
+        },
         "columns": {
             "day_diff": "Intervalo de debut",
             "epoch_day": "Día de época (Tripulación reciente)",

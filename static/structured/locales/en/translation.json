@@ -1346,9 +1346,9 @@
         "crew_mobile": "{{menu.roster.crew}} (Mobile)",
         "download": {
             "complete_spreadsheet": "Complete spreadsheet",
-            "crew_table": "Crew table",
-            "item_table": "Item table",
-            "ship_table": "Ship table"
+            "crew_table": "Crew Table",
+            "item_table": "Item Table",
+            "ship_table": "Ship Table"
         },
         "items": "{{menu.roster.items}}",
         "other": "Other",
@@ -1834,6 +1834,16 @@
         "quipment": "Calculating quipment..."
     },
     "stat_trends": {
+        "sections": {
+            "crew": {
+                "title": "{{profile.download.crew_table}}",
+                "description": "View statistics in tabular format"
+            },
+            "graphs": {
+                "title": "Charts & Graphs",
+                "description": "View visual representations of data trends"
+            }
+        },
         "columns": {
             "day_diff": "Release Interval",
             "epoch_day": "Epoch Day (Recent Crew)",
