@@ -1884,7 +1884,8 @@
             "mean_time_between_releases": "Tiempo medio entre lanzamientos",
             "mean_velocity": "Velocidad media"
         },
-        "title": "Tendencias de estadísticas"
+        "title": "Tendencias de estadísticas",
+        "total_power_difference": "Diferencia de potencia total"
     },
     "tool_roster_picker": {
         "all_crew": {

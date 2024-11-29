@@ -1870,7 +1870,8 @@
             "mean_time_between_releases": "Mean time between releases",
             "mean_velocity": "Mean Velocity"
         },
-        "title": "Stats Trends"
+        "title": "Stats Trends",
+        "total_power_difference": "Total power difference"
     },
     "tool_roster_picker": {
         "all_crew": {

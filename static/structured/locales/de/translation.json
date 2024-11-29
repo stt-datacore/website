@@ -1872,7 +1872,8 @@
             "mean_time_between_releases": "Mediane Zeit zwischen Veröffentlichungen",
             "mean_velocity": "Mediane Geschwindigkeit"
         },
-        "title": "Statistiktrends"
+        "title": "Statistiktrends",
+        "total_power_difference": "Gesamtleistungsdifferenz"
     },
     "tool_roster_picker": {
         "all_crew": {
