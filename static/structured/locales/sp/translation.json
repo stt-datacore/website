@@ -1,4 +1,25 @@
 {
+    "stat_trends": {
+        "title": "Tendencias de estadísticas",
+        "description": "Estudie las estadísticas sobre la tendencia del poder de la tripulación a lo largo del tiempo.",
+        "columns": {
+            "recent_crew": "Tripulación reciente",
+            "prior_crew": "Tripulación anterior",
+            "epoch_day": "Día de época (Tripulación reciente)",
+            "day_diff": "Intervalo de debut",
+            "velocity": "Velocidad",
+            "skill_diffs": "Diferencias de habilidades agregadas"
+        },
+        "stats": {
+            "average_velocity": "Velocidad media",
+            "mean_velocity": "Velocidad media",
+            "average_time_between_releases": "Tiempo medio entre lanzamientos",
+            "mean_time_between_releases": "Tiempo medio entre lanzamientos",
+            "last_release": "Último lanzamiento"
+        },
+        "new_high": "Nueva Máxima",
+        "released_n_days_ago": "Debutó hace {{n}} días"
+    },
     "alerts": {
         "add": "Agregar",
         "always_alert_legendary": "Siempre alerta cuando se descubren nuevas tripulaciones legendarias en el pozo de recompra.",
@@ -1189,7 +1210,8 @@
             "episodes": "Episodios",
             "events": "Eventos",
             "misc_game_stats": "Estadísticas varias del juego",
-            "voyage_hof": "Salón de la fama del viaje"
+            "voyage_hof": "Salón de la fama del viaje",
+            "stat_trends": "{{stat_trends.title}}"
         },
         "game_info_title": "Info juego",
         "player": {

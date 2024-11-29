@@ -1,4 +1,25 @@
 {
+    "stat_trends": {
+        "title": "Statistiques Tendances",
+        "description": "Étudiez les statistiques sur les tendances de la puissance de l'équipage au fil du temps.",
+        "columns": {
+            "recent_crew": "Équipe récente",
+            "prior_crew": "Équipe précédente",
+            "epoch_day": "Jour de l'époque (équipe récente)",
+            "day_diff": "Intervalle de début",
+            "velocity": "Vitesse",
+            "skill_diffs": "Différences de compétences globales"
+        },
+        "stats": {
+            "average_velocity": "Vitesse moyenne",
+            "mean_velocity": "Vitesse médiane",
+            "average_time_between_releases": "Temps moyen entre les versions",
+            "mean_time_between_releases": "Temps médian entre les versions",
+            "last_release": "Dernière version"
+        },
+        "new_high": "Nouveau Élevé",
+        "released_n_days_ago": "Débuté il y a {{n}} jours"
+    },
     "alerts": {
         "add": "Ajouter",
         "always_alert_legendary": "Soyez toujours attentif lorsque de nouveaux membres d'équipage légendaires sont découverts dans le pool de rachat.",
@@ -1190,7 +1211,8 @@
             "episodes": "Épisodes",
             "events": "Événements",
             "misc_game_stats": "Statistiques diverses du jeu",
-            "voyage_hof": "Temple de la renommée des voyages"
+            "voyage_hof": "Temple de la renommée des voyages",
+            "stat_trends": "{{stat_trends.title}}"
         },
         "game_info_title": "Info jeu",
         "player": {

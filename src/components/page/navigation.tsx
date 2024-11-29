@@ -329,6 +329,7 @@ export const Navigation = (props: NavigationProps) => {
 				{ title: t('menu.game_info.voyage_hof'), link: '/hall_of_fame', sidebarRole: 'item' },
 				{ title: t('menu.game_info.misc_game_stats'), link: "/stats", sidebarRole: 'item' },
 				{ title: t('menu.game_info.bridge_crew_tool'), link: "/bridgecrew", sidebarRole: 'item' },
+				{ title: t('menu.game_info.stat_trends'), link: "/stattrends", sidebarRole: 'item' },
 			]
 		},
 		// TODO: Use later?

@@ -1,12 +1,14 @@
 import React from "react";
 import DataPageLayout from "../components/page/datapagelayout";
 import { GlobalContext } from "../context/globalcontext";
-import { skillSum } from "../utils/crewutils";
-import { Dropdown, DropdownItemProps, Table } from "semantic-ui-react";
+import { getHighest, skillSum } from "../utils/crewutils";
+import { Dropdown, DropdownItemProps, Grid, Label, Table } from "semantic-ui-react";
 import CONFIG from "../components/CONFIG";
 import { AvatarView } from "../components/item_presenters/avatarview";
 import { CrewMember } from "../model/crew";
 import { ITableConfigRow, SearchableTable } from "../components/searchabletable";
+import { StatLabel } from "../components/statlabel";
+import { DEFAULT_MOBILE_WIDTH } from "../components/hovering/hoverstat";
 
 
 interface SkoBucket {
@@ -26,25 +28,38 @@ interface PassDiff {
     aggregates: number[][]
 };
 
-const PowerCreep = () => {
+type Highs = { crew: CrewMember, aggregates: number[], aggregate_sum: number, epoch_day: number, skills: string[] };
+
+function findHigh(epoch_day: number, skills: string[], data: Highs[], day_only = false) {
+    let ssj = skills.sort().join();
+    data.sort((a, b) => b.epoch_day - a.epoch_day);
+    return data.find(f => f.epoch_day <= epoch_day && (day_only || f.skills.sort().join() === ssj));
+}
+
+const StatTrends = () => {
     const globalContext = React.useContext(GlobalContext);
-    const { crew } = globalContext.core;
+    const crew = [...globalContext.core.crew].sort((a, b) => a.date_added.getTime() - b.date_added.getTime());
+    const { t } = globalContext.localized;
+    const [allHighs, setAllHighs] = React.useState([] as Highs[]);
 
     const [skoBuckets, setSkoBuckets] = React.useState({} as {[key:string]: SkoBucket[]});
     const [flatOrder, setFlatOrder] = React.useState([] as SkoBucket[]);
     const [skillKey, setSkillKey] = React.useState("");
     const [passDiffs, setPassDiffs] = React.useState([] as PassDiff[]);
-    const [velocity, setVelocity] = React.useState(0);
-    const [daysBetween, setDaysBetween] = React.useState(0);
+    const [avgVelocity, setAvgVelocity] = React.useState(0);
+    const [meanVelocity, setMeanVelocity] = React.useState(0);
+    const [avgDaysBetween, setAvgDaysBetween] = React.useState(0);
+    const [meanDaysBetween, setMeanDaysBetween] = React.useState(0);
 
     const gameEpoch = new Date("2016-01-01T00:00:00Z");
 
     React.useEffect(() => {
         const skoBuckets = {} as {[key:string]: SkoBucket[]};
         const flat = [] as SkoBucket[];
+        const allHighs = [] as Highs[];
         for (let c of crew) {
 
-            const aggregates = Object.values(c.base_skills).map(skill => skillSum(skill, 'all', false));
+            const aggregates = Object.values(c.base_skills).map(skill => skillSum(skill));
             const epoch_day = Math.floor(((new Date(c.date_added)).getTime() - gameEpoch.getTime()) / (1000 * 60 * 60 * 24));
 
             if (c.max_rarity !== 5) continue;
@@ -52,6 +67,22 @@ const PowerCreep = () => {
                 if (c.skill_order.length >= n) {
                     let skd = c.skill_order.slice(0, n);
                     let sko = skd.join(",");
+
+                    let levels = skd.map(m => skillSum(c.base_skills[m]));
+                    let aggregate_sum = levels.reduce((p, n) => p + n, 0);
+                    let cn = levels.reduce((p, n) => p + n, 0);
+
+                    let high = findHigh(epoch_day, skd, allHighs);
+                    if (!high || high.aggregate_sum < aggregate_sum) {
+                        allHighs.push({
+                            crew: c,
+                            skills: skd,
+                            aggregates: levels,
+                            epoch_day,
+                            aggregate_sum
+                        });
+                    }
+
                     skoBuckets[sko] ??= [];
                     skoBuckets[sko].push({
                         symbol: c.symbol,
@@ -70,6 +101,7 @@ const PowerCreep = () => {
             });
         }
         setSkoBuckets(skoBuckets);
+        setAllHighs(allHighs);
         flat.sort((a, b) => a.epoch_day - b.epoch_day);
         setFlatOrder(flat);
     }, [crew]);
@@ -131,45 +163,91 @@ const PowerCreep = () => {
 
     React.useEffect(() => {
         if (passDiffs?.length) {
-            const velocities = passDiffs.map(diff => diff.velocity);
-            const db = passDiffs.map(diff => diff.day_diff).reduce((p, n) => p + n, 0) / velocities.length;
-            const averageVelocity = velocities.reduce((p, n) => p + n, 0) / velocities.length;
-            setVelocity(averageVelocity);
-            setDaysBetween(db);
+            const vels = passDiffs.map(diff => diff.velocity);
+            vels.sort((a, b) => a - b);
+            const days = passDiffs.map(diff => diff.day_diff);
+            days.sort((a, b) => a - b);
+            const avgDays = days.reduce((p, n) => p + n, 0) / vels.length;
+            const avgVel = vels.reduce((p, n) => p + n, 0) / vels.length;
+            let meanVel = avgVel;
+            let meanDays = avgDays;
+            if (vels.length > 1) {
+                meanVel = vels[Math.floor(vels.length / 2)];
+                meanDays = days[Math.floor(vels.length / 2)];
+            }
+            setAvgVelocity(avgVel);
+            setMeanVelocity(meanVel);
+            setAvgDaysBetween(avgDays);
+            setMeanDaysBetween(meanDays);
         }
         else {
-            setVelocity(0);
+            setAvgVelocity(0);
+            setMeanVelocity(0);
+            setAvgDaysBetween(0);
+            setMeanDaysBetween(0);
         }
     }, [passDiffs]);
 
-    return <DataPageLayout pageTitle="Power Creep Analysis">
-        <div>
-            <Dropdown
-                selection
-                clearable
-                value={skillKey}
-                options={skillOpts}
-                onChange={(e, { value }) => setSkillKey(value as string)}
-                />
+    const gridWidth = 4;
 
-            <h3>Average Velocity: {velocity?.toFixed(2)}</h3>
-            <h3>Average Time Between Releases: {daysBetween?.toFixed(2)}</h3>
-            <h3>Last Release: {crew.find(f => f.symbol === passDiffs[0]?.symbols[0])?.date_added?.toDateString()}</h3>
-            <PowerCreepTable passDiffs={passDiffs} />
+    const flexRow: React.CSSProperties = {display:'flex', flexDirection: 'row', alignItems:'center', justifyContent: 'flex-start', gap: '2em'};
+    const statsStyle: React.CSSProperties = { width: '100%', height: '3em', margin: 0 };
+
+    return <DataPageLayout pageTitle={t('stat_trends.title')} pageDescription={t('stat_trends.description')}>
+        <div>
+            <Grid style={{margin: '1em -1em'}}>
+                <Grid.Row>
+                    <Grid.Column width={gridWidth}>
+                        <StatLabel style={statsStyle} title={t('stat_trends.stats.average_velocity')} value={avgVelocity?.toFixed(2)} />
+                    </Grid.Column>
+                    <Grid.Column width={gridWidth}>
+                        <StatLabel style={statsStyle} title={t('stat_trends.stats.average_time_between_releases')} value={avgDaysBetween?.toFixed(2)} />
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                    <Grid.Column width={gridWidth}>
+                        <StatLabel style={statsStyle} title={t('stat_trends.stats.mean_velocity')} value={meanVelocity?.toFixed(2)} />
+                    </Grid.Column>
+                    <Grid.Column width={gridWidth}>
+                        <StatLabel style={statsStyle} title={t('stat_trends.stats.mean_time_between_releases')} value={meanDaysBetween?.toFixed(2)} />
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                    <Grid.Column width={gridWidth}>
+                        <StatLabel style={statsStyle} title={t('stat_trends.stats.last_release')} value={crew.find(f => f.symbol === passDiffs[0]?.symbols[0])?.date_added?.toDateString() || ''} />
+                    </Grid.Column>
+                    <Grid.Column width={gridWidth}>
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
+
+            <div style={{...flexRow, margin: '1em 0'}}>
+                <Dropdown
+                    placeholder={t('quipment_dropdowns.mode.skill_order')}
+                    selection
+                    clearable
+                    value={skillKey}
+                    options={skillOpts}
+                    onChange={(e, { value }) => setSkillKey(value as string)}
+                    />
+            </div>
+
+            <StatTrendsTable skillKey={skillKey} allHighs={allHighs} passDiffs={passDiffs} />
         </div>
     </DataPageLayout>
 }
 
-interface PowerCreepTableProps {
+interface StatTrendsTableProps {
     passDiffs: PassDiff[];
-
+    allHighs: Highs[];
+    skillKey: string;
 }
 
-const PowerCreepTable = (props: PowerCreepTableProps) => {
+const StatTrendsTable = (props: StatTrendsTableProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
     const { crew } = globalContext.core;
-    const { passDiffs } = props;
+    const { passDiffs, allHighs, skillKey } = props;
 
     const gameEpoch = new Date("2016-01-01T00:00:00Z");
     const nowDate = new Date();
@@ -183,24 +261,24 @@ const PowerCreepTable = (props: PowerCreepTableProps) => {
     }
     const sortAg = (a: PassDiff, b: PassDiff, idx: number) => a.aggregates[idx].reduce((p, n) => p + n, 0) - b.aggregates[idx].reduce((p, n) => p + n, 0);
     const tableConfig = [
-        { width: 1, column: 'symbol[0]', title: 'Recent Crew', customCompare: (a, b) => sortAg(a, b, 0) },
-        { width: 1, column: 'symbol[1]', title: 'Prior Crew', customCompare: (a, b) => sortAg(a, b, 1) },
+        { width: 1, column: 'symbol[0]', title: t('stat_trends.columns.recent_crew'), customCompare: (a, b) => sortAg(a, b, 0) },
+        { width: 1, column: 'symbol[1]', title: t('stat_trends.columns.prior_crew'), customCompare: (a, b) => sortAg(a, b, 1) },
         {
             width: 1,
             column: 'epoch_day',
-            title: 'Epoch Day',
+            title: t('stat_trends.columns.epoch_day'),
             customCompare: (a: PassDiff, b: PassDiff) => {
                 let r = a.epoch_days[0] - b.epoch_days[0];
                 if (!r) r = a.epoch_days[1] - b.epoch_days[1];
                 return r;
             }
         },
-        { width: 1, column: 'day_diff', title: 'Days Between Release' },
-        { width: 1, column: 'velocity', title: 'Velocity' },
+        { width: 1, column: 'day_diff', title: t('stat_trends.columns.day_diff') },
+        { width: 1, column: 'velocity', title: t('stat_trends.columns.velocity') },
         {
             width: 1,
             column: 'skill_diffs',
-            title: 'Aggregate Differences',
+            title: t('stat_trends.columns.skill_diffs'),
             customCompare: (a: PassDiff, b: PassDiff) => {
                 return a.skill_diffs.reduce((p, n) => p + n, 0) - b.skill_diffs.reduce((p, n) => p + n, 0)
             }
@@ -219,17 +297,26 @@ const PowerCreepTable = (props: PowerCreepTableProps) => {
     }
 
     function renderTableRow(diff: PassDiff, idx: number) {
+
         const crews = diff.symbols.map(m => crew.find(f => f.symbol === m)!);
+        const fhigh = findHigh(diff.epoch_days[0], diff.skills, allHighs, !skillKey);
+        const newhigh = fhigh?.epoch_day === diff.epoch_days[0];
+
         return <Table.Row key={`passIdf_${idx}`}>
             <Table.Cell style={{textAlign: 'center'}}>
             <div style={flexRow}>
                 <div style={{ ...flexCol, width: '15em'}}>
                     <AvatarView mode='crew' symbol={diff.symbols[0]} size={64} />
-                    {crews[0].name}
+                    <span>
+                        {crews[0].name}
+                    </span>
+                    {newhigh && <Label color='blue'>{t('stat_trends.new_high')}</Label>}
                     <div style={{...flexRow, justifyContent: 'space-evenly'}}>
                         {crews[0].skill_order.map(skill => <img src={`${skillIcon(skill)}`} style={{height: '1em'}} />)}
                     </div>
-                    <i>(Released {(daysFromEpoch - diff.epoch_days[0]).toLocaleString()} days ago)</i>
+                    <i>({t('stat_trends.released_n_days_ago', {
+                        n: (daysFromEpoch - diff.epoch_days[0]).toLocaleString()
+                    })})</i>
                 </div>
             </div>
             </Table.Cell>
@@ -241,7 +328,9 @@ const PowerCreepTable = (props: PowerCreepTableProps) => {
                     <div style={{...flexRow, justifyContent: 'space-evenly'}}>
                         {crews[1].skill_order.map(skill => <img src={`${skillIcon(skill)}`} style={{height: '1em'}} />)}
                     </div>
-                    <i>(Released {(daysFromEpoch - diff.epoch_days[1]).toLocaleString()} days ago)</i>
+                    <i>({t('stat_trends.released_n_days_ago', {
+                        n: (daysFromEpoch - diff.epoch_days[1]).toLocaleString()
+                    })})</i>
                 </div>
             </div>
             </Table.Cell>
@@ -272,4 +361,4 @@ const PowerCreepTable = (props: PowerCreepTableProps) => {
 }
 
 
-export default PowerCreep;
+export default StatTrends;
