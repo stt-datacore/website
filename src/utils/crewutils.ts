@@ -1666,15 +1666,16 @@ export function skillAdd(a: Skill | ComputedSkill, b: Skill | ComputedSkill): Sk
  * @param mode Specify what to add (optional)
  * @returns The sum of core + ((max+min) * 0.5) (depending on mode) from every element.
  */
-export function skillSum(skills: Skill | ComputedSkill | (Skill | ComputedSkill)[], mode?: 'all' | 'core' | 'proficiency'): number {
+export function skillSum(skills: Skill | ComputedSkill | (Skill | ComputedSkill)[], mode?: 'all' | 'core' | 'proficiency', avg = true): number {
+	const mul = avg ? 0.5 : 1;
 	if (Array.isArray(skills)) {
 		return skills.reduce((p, n) => p + skillSum(n, mode), 0);
 	}
 	else if ("range_max" in skills) {
-		return (mode !== 'proficiency' ? skills.core : 0) + (mode !== 'core' ? ((skills.range_max + skills.range_min) * 0.5) : 0);
+		return (mode !== 'proficiency' ? skills.core : 0) + (mode !== 'core' ? ((skills.range_max + skills.range_min) * mul) : 0);
 	}
 	else {
-		return (mode !== 'proficiency' ? skills.core : 0) + (mode !== 'core' ? ((skills.max + skills.min) * 0.5) : 0);
+		return (mode !== 'proficiency' ? skills.core : 0) + (mode !== 'core' ? ((skills.max + skills.min) * mul) : 0);
 	}
 }
 
