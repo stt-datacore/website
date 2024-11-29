@@ -49,16 +49,16 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
         { width: 1, column: 'velocity', title: t('stat_trends.columns.velocity') },
 
     ] as ITableConfigRow[]
-    if (skillKey) {
-        tableConfig.push({
-            width: 1,
-            column: 'skill_diffs',
-            title: t('stat_trends.columns.skill_diffs'),
-            customCompare: (a: EpochDiff, b: EpochDiff) => {
-                return a.skill_diffs.reduce((p, n) => p + n, 0) - b.skill_diffs.reduce((p, n) => p + n, 0)
-            }
-        });
-    }
+
+    tableConfig.push({
+        width: 1,
+        column: 'skill_diffs',
+        title: t('stat_trends.columns.skill_diffs'),
+        customCompare: (a: EpochDiff, b: EpochDiff) => {
+            return a.skill_diffs.reduce((p, n) => p + n, 0) - b.skill_diffs.reduce((p, n) => p + n, 0)
+        }
+    });
+
     return (<SearchableTable
                 config={tableConfig}
                 data={epochDiffs}
@@ -93,26 +93,26 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
         const newhigh = fhigh?.epoch_day === diff.epoch_days[0];
 
         return <Table.Row key={`passIdf_${idx}`} style={{textAlign: 'center'}}>
-            {[0, 1].map((ci) => (
-                <Table.Cell key={`passIdf_crew_${idx}_${ci}`} style={{textAlign: 'center'}}>
+            {[crews[0], crews[1]].map((crew, idx) => (
+                <Table.Cell key={`passIdf_crew_${idx}_${crew}`} style={{textAlign: 'center'}}>
                 <div style={flexRow}>
                     <div style={{ ...flexCol, width: '15em'}}>
                         <AvatarView
-                            item={{...crews[ci], rarity: getOwnedMaxRarity(crews[ci])}}
+                            item={{...crew, rarity: getOwnedMaxRarity(crew)}}
                             mode='crew'
-                            symbol={diff.symbols[ci]}
+                            symbol={crew.symbol}
                             size={64}
                             targetGroup="stat_trends_crew"
                             />
                         <span>
-                            {crews[ci].name}
+                            {crew.name}
                         </span>
-                        {newhigh && !ci && <Label style={{margin: '0.5em 0'}} color='blue'>{t('stat_trends.new_high')}</Label>}
+                        {newhigh && !idx && <Label style={{margin: '0.5em 0'}} color='blue'>{t('stat_trends.new_high')}</Label>}
                         <div style={{...flexRow, justifyContent: 'space-evenly'}}>
-                            {crews[ci].skill_order.map(skill => <img src={`${skillIcon(skill)}`} style={{height: '1em'}} />)}
+                            {diff.skills.map(skill => <img src={`${skillIcon(skill)}`} style={{height: '1em'}} />)}
                         </div>
                         <i>({t('stat_trends.released_duration_ago', {
-                            duration: formatElapsedDays((daysFromEpoch - diff.epoch_days[ci]), t)
+                            duration: formatElapsedDays((daysFromEpoch - diff.epoch_days[idx]), t)
                         })})</i>
                     </div>
                 </div>
@@ -129,7 +129,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
                 {!diff.day_diff ? 'N/A' : ''}
                 {!!diff.day_diff ? diff.velocity.toFixed(2) : ''}
             </Table.Cell>
-            {!!skillKey && <Table.Cell>
+            {<Table.Cell>
             <div style={flexRow}>
                 {diff.skill_diffs.map((n, idx) => {
                     return <div style={flexCol}>

@@ -7,6 +7,8 @@ export interface SkoBucket {
     epoch_day: number,
     skills: string[]
     symbol: string,
+    next?: SkoBucket,
+    prev?: SkoBucket
 }
 
 export interface EpochDiff {
@@ -39,6 +41,8 @@ export type Highs = {
 };
 
 export interface IStatsContext {
+    filterConfig: SkillFilterConfig;
+    setFilterConfig: (value: SkillFilterConfig) => void;
     crewCount: number;
     skillKey: string;
     setSkillKey: (value: string) => void;

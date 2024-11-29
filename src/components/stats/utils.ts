@@ -1,5 +1,6 @@
+import { CrewMember } from "../../model/crew";
 import { TranslateMethod } from "../../model/player";
-import { Highs } from "./model";
+import { EpochDiff, Highs, SkillFilterConfig, SkoBucket } from "./model";
 
 export function findHigh(epoch_day: number, skills: string[], data: Highs[], day_only = false) {
     let ssj = skills.join();
@@ -49,4 +50,150 @@ export function formatElapsedDays(days: number, t: TranslateMethod): string {
     }
 
     return t(fmt, { [varname]: `${val.toLocaleString()}` });
+}
+
+export function configSkillFilters(data: CrewMember[], currConfig?: SkillFilterConfig) {
+    const config: SkillFilterConfig = {
+        avail_primary: [],
+        primary: [],
+        avail_secondary: [],
+        secondary: [],
+        avail_tertiary: [],
+        tertiary: [],
+        ...currConfig
+    }
+
+    if (!data?.length) return config;
+
+    let curr_crew = [ ...data ];
+
+    ["primary", "secondary", "tertiary"].forEach((key, idx) => {
+        const new_skills = [] as string[];
+        const avail_skills = [...new Set(curr_crew.filter(f => f.skill_order.length > idx).map(m => m.skill_order[idx]))];
+        config[`available_${key}`] = avail_skills;
+
+        for (let skill of config[key]) {
+            if (avail_skills.includes(skill)) {
+                new_skills.push(skill);
+            }
+        }
+
+        config[key] = new_skills;
+        curr_crew = curr_crew.filter(f => !config[key].length || (f.skill_order.length > idx && config[key].includes(f.skill_order[idx])));
+    });
+
+    return config;
+}
+
+
+export function filterBuckets(filterConfig: SkillFilterConfig, buckets: { [key: string]: SkoBucket[] }) {
+    const newbuckets = {} as { [key: string]: SkoBucket[] };
+    Object.entries(buckets).forEach(([skill_order, entries]) => {
+        let skills = skill_order.split(",");
+        let pass = true;
+
+        if (skills.length) {
+            ["primary", "secondary", "tertiary"].forEach((pos, idx) => {
+                if (!pass) return;
+                if (idx < skills.length && (filterConfig[pos]?.length && !filterConfig[pos].includes(skills[idx]))) {
+                    pass = false;
+                }
+                else if (idx >= skills.length && filterConfig[pos]?.length) {
+                    pass = false;
+                }
+            });
+        }
+        else {
+            pass = false;
+        }
+
+        if (pass) {
+            newbuckets[skill_order] = entries;
+        }
+    });
+    return newbuckets;
+}
+
+export function filterFlatData(filterConfig: SkillFilterConfig, data: SkoBucket[]) {
+    const newdata = [] as SkoBucket[];
+    data.forEach((entry) => {
+        let skills = entry.skills;
+        let pass = true;
+
+        if (skills.length) {
+            ["primary", "secondary", "tertiary"].forEach((pos, idx) => {
+                if (!pass) return;
+                if (idx < skills.length && (filterConfig[pos]?.length && !filterConfig[pos].includes(skills[idx]))) {
+                    pass = false;
+                }
+                else if (idx >= skills.length && filterConfig[pos]?.length) {
+                    pass = false;
+                }
+            });
+        }
+        else {
+            pass = false;
+        }
+
+        if (pass) {
+            newdata.push(entry);
+        }
+    });
+    return newdata;
+}
+
+export function filterHighs(filterConfig: SkillFilterConfig, highs: Highs[]) {
+    const newhighs = [] as Highs[];
+    highs.forEach((entry) => {
+        let skills = entry.skills;
+        let pass = true;
+
+        if (skills.length) {
+            ["primary", "secondary", "tertiary"].forEach((pos, idx) => {
+                if (!pass) return;
+                if (idx < skills.length && (filterConfig[pos]?.length && !filterConfig[pos].includes(skills[idx]))) {
+                    pass = false;
+                }
+                else if (idx >= skills.length && filterConfig[pos]?.length) {
+                    pass = false;
+                }
+            });
+        }
+        else {
+            pass = false;
+        }
+
+        if (pass) {
+            newhighs.push(entry);
+        }
+    })
+    return newhighs;
+}
+
+export function filterEpochDiffs(filterConfig: SkillFilterConfig, diffs: EpochDiff[]) {
+    const newdiffs = [] as EpochDiff[];
+    diffs.forEach((diff) => {
+        let skills = diff.skills;
+        let pass = true;
+
+        if (skills.length) {
+            ["primary", "secondary", "tertiary"].forEach((pos, idx) => {
+                if (!pass) return;
+                if (idx < skills.length && (filterConfig[pos]?.length && !filterConfig[pos].includes(skills[idx]))) {
+                    pass = false;
+                }
+                else if (idx >= skills.length && filterConfig[pos]?.length) {
+                    pass = false;
+                }
+            });
+        }
+        else {
+            pass = false;
+        }
+
+        if (pass) {
+            newdiffs.push(diff);
+        }
+    });
+    return newdiffs;
 }

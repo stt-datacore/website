@@ -1,9 +1,9 @@
-import React from 'react';
-import { EpochDiff, Highs, IStatsContext, SkoBucket, StatsDisplayMode } from './model';
+import React, { useState } from 'react';
+import { EpochDiff, Highs, IStatsContext, SkillFilterConfig, SkoBucket, StatsDisplayMode } from './model';
 import { useStateWithStorage } from '../../utils/storage';
 import { GlobalContext } from '../../context/globalcontext';
 import { skillSum } from '../../utils/crewutils';
-import { findHigh } from './utils';
+import { configSkillFilters, findHigh } from './utils';
 
 const defaultContextData = {
     skillKey: '',
@@ -18,7 +18,9 @@ const defaultContextData = {
     setDisplayMode: () => false,
     epochDiffs: [],
     allHighs: [],
-    crewCount: 0
+    crewCount: 0,
+    filterConfig: configSkillFilters([]),
+    setFilterConfig: () => false
 } as IStatsContext;
 
 export const StatsContext = React.createContext(defaultContextData);
@@ -36,12 +38,12 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
     const [uniqueObtained, setUniqueObtained] = React.useState([] as string[]);
     const [obtainedFilter, setObtainedFilter] = React.useState([] as string[] | undefined);
     const [crewCount, setCrewCount] = React.useState(0);
-
+    const [filterConfig, internalSetFilterConfig] = useStateWithStorage<SkillFilterConfig>(`stats_page_skill_filter_config`, defaultContextData.filterConfig, { rememberForever: true });
     const gameEpoch = new Date("2016-01-01T00:00:00Z");
 
     React.useEffect(() => {
         if (!globalContext.core.crew.length) return;
-
+        setFilterConfig(filterConfig);
         const crew = [...globalContext.core.crew].sort((a, b) => a.date_added.getTime() - b.date_added.getTime());
         const skoBuckets = {} as { [key: string]: SkoBucket[] };
         const flat = [] as SkoBucket[];
@@ -83,16 +85,24 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
                         epoch_day,
                         skills: skd
                     });
+                    flat.push({
+                        symbol: c.symbol,
+                        aggregates,
+                        epoch_day,
+                        skills: skd
+                    });
                 }
             });
-
-            flat.push({
-                symbol: c.symbol,
-                aggregates,
-                epoch_day,
-                skills: c.skill_order
-            });
         }
+
+        const curr = {} as { [key: string]: SkoBucket };
+
+        flat.forEach((entry) => {
+            let key = entry.skills.join(",");
+            if (curr[key]) curr[key].next = entry;
+            entry.prev = curr[key];
+            curr[key] = entry;
+        });
 
         obtained.sort();
         flat.sort((a, b) => a.epoch_day - b.epoch_day);
@@ -117,27 +127,32 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
         }
 
         if (obtainedFilter) work = work.filter(f => !obtainedFilter.length || passObtained(f.symbol, obtainedFilter));
+
         if (work?.length) {
             let tc = 1;
-            work.sort((a, b) => a.epoch_day - b.epoch_day);
+            work.sort((a, b) => b.epoch_day - a.epoch_day);
             let newdiffs = [] as EpochDiff[];
             let c = work.length;
-            let s = work[0].skills.length;
-            for (let i = 1; i < c; i++) {
+            for (let i = 0; i < c; i++) {
                 tc++;
-                let dd = work[i].epoch_day - work[i - 1].epoch_day;
+                let s = work[i].skills.length;
+                let next = work[i];
+                if (!next.prev && i === c - 1) break;
+                let curr = next.prev ?? work[i + 1];
+
+                let dd = next.epoch_day - curr.epoch_day;
                 let sd = [] as number[];
                 for (let j = 0; j < s; j++) {
-                    sd.push(work[i].aggregates[j] - work[i - 1].aggregates[j]);
+                    sd.push(next.aggregates[j] - curr.aggregates[j]);
                 }
                 let diff: EpochDiff = {
-                    symbols: [work[i].symbol, work[i - 1].symbol],
+                    symbols: [next.symbol, curr.symbol],
                     day_diff: dd,
-                    epoch_days: [work[i].epoch_day, work[i - 1].epoch_day],
+                    epoch_days: [next.epoch_day, curr.epoch_day],
                     skill_diffs: sd,
-                    skills: work[0].skills,
+                    skills: next.skills,
                     velocity: 0,
-                    aggregates: [work[i].aggregates, work[i - 1].aggregates]
+                    aggregates: [next.aggregates, curr.aggregates]
                 };
                 let avgdiff = diff.skill_diffs.reduce((p, n) => p + n, 0) / diff.skill_diffs.length;
                 if (avgdiff && diff.day_diff) diff.velocity = avgdiff / diff.day_diff;
@@ -150,25 +165,31 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
     }, [skillKey, skoBuckets, flatOrder, obtainedFilter]);
 
     const contextData: IStatsContext = {
-        skillKey,
-        setSkillKey,
+        allHighs,
+        crewCount,
+        displayMode,
+        epochDiffs,
+        filterConfig,
         flatOrder,
-        setFlatOrder,
         obtainedFilter,
+        setDisplayMode,
+        setFilterConfig,
+        setFlatOrder,
         setObtainedFilter,
+        setSkillKey,
+        skillKey,
         skoBuckets,
         uniqueObtained,
-        displayMode,
-        setDisplayMode,
-        epochDiffs,
-        allHighs,
-        crewCount
     };
 
     return (
         <StatsContext.Provider value={contextData}>
             {children}
         </StatsContext.Provider>)
+
+    function setFilterConfig(config: SkillFilterConfig) {
+        internalSetFilterConfig(configSkillFilters(globalContext.core.crew, config));
+    }
 
     function passObtained(symbol: string, obtained: string[]) {
         let fc = globalContext.core.crew.find(f => f.symbol === symbol);
