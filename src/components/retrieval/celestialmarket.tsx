@@ -87,6 +87,8 @@ export const CelestialMarket = () => {
     if (!market) return <></>
 
     return (<div>
+        <CrewHoverStat targetGroup="celestial_market_crew" />
+        <ItemHoverStat targetGroup="celestial_market_items" />
         <Message color='blue'>
             <Icon name='info' bordered style={{ borderRadius: '16px', backgroundColor: 'white' }} />
             {t('retrieval.market.updated')}
@@ -102,8 +104,6 @@ export const CelestialMarket = () => {
             filterRow={(listing, filter) => filterText(listing, filter)}
         />
         <PopularCrew allListings={allListings} />
-        <ItemHoverStat targetGroup="celestial_market_items" />
-        <CrewHoverStat targetGroup="celestial_market_crew" />
     </div>)
 
 
@@ -304,7 +304,7 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
             if (!r) r = b.low - a.low;
             return r;
         });
-        const tsl = {} as {[key:string]: number}
+        const tsl = {} as { [key: string]: number }
         listing.forEach(l => tsl[l.data!.symbol!.replace('_keystone', '')] = mode === 'sold_last_day' ? l.sold_last_day : (mode === 'high' ? l.high : l.buy_count));
         let keys = listing.filter(fi => (fi.data as IKeystone).type === 'keystone')
             .map(mi => mi.data as IKeystone)
@@ -313,7 +313,7 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
             .slice(0, top);
 
         let tpop = globalContext.core.crew.map(fc => {
-            fc.unique_polestar_combos = fc.unique_polestar_combos?.map(m => ([ ... new Set(m) ]))
+            fc.unique_polestar_combos = fc.unique_polestar_combos?.map(m => ([... new Set(m)]))
             let cbs = (fc.unique_polestar_combos ?? []).map(unc => {
                 let ft = unc.filter(z => keys.includes(z));
                 return {
@@ -346,14 +346,14 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
 
         tpop = tpop.sort((a, b) => b.traits.length - a.traits.length).filter(f => f.traits.length >= minPolestars);
         const finalcrew = tpop.map(m => globalContext.core.crew.find(fc => fc.symbol === m.symbol))
-                .filter(f => !!f)
-                .map(mc => ({ ...mc, polestar_traits: [] as string[], contains_unique: false }))
-                .filter(f =>
-                    //f.max_rarity === 5 &&
-                    f.bigbook_tier <= bbTier &&
-                    f.in_portal &&
-                    f.unique_polestar_combos?.length &&
-                    (!rarities.length || rarities.includes(f.max_rarity)));
+            .filter(f => !!f)
+            .map(mc => ({ ...mc, polestar_traits: [] as string[], contains_unique: false }))
+            .filter(f =>
+                //f.max_rarity === 5 &&
+                f.bigbook_tier <= bbTier &&
+                f.in_portal &&
+                f.unique_polestar_combos?.length &&
+                (!rarities.length || rarities.includes(f.max_rarity)));
 
         if (finalcrew.length === 1) {
             let tpf = tpop.find(tf => tf.symbol === finalcrew[0].symbol);
@@ -389,12 +389,12 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
             </Label>
             <h4>{t('retrieval.market.most_likely_popular')}</h4>
             <Checkbox
-                    style={{margin: '0.5em 0'}}
-                    checked={includeHfs}
-                    onChange={(e, { checked }) => setIncludeHfs(!!checked)}
-                    label={t('global.include_x', {
-                        x: `${[TRAIT_NAMES['human'], TRAIT_NAMES['federation'], TRAIT_NAMES['starfleet']].join(", ")}`
-                    })} />
+                style={{ margin: '0.5em 0' }}
+                checked={includeHfs}
+                onChange={(e, { checked }) => setIncludeHfs(!!checked)}
+                label={t('global.include_x', {
+                    x: `${[TRAIT_NAMES['human'], TRAIT_NAMES['federation'], TRAIT_NAMES['starfleet']].join(", ")}`
+                })} />
             <div style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -403,48 +403,48 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
                 flexWrap: 'wrap',
                 gap: '1em'
             }}>
-                <div style={{display: 'inline'}}>
+                <div style={{ display: 'inline' }}>
                     <p>{t('collections.options.mode.title')}</p>
                     <Dropdown
                         selection
                         value={mode}
                         options={modes}
                         onChange={(e, { value }) => setMode(value as PopularityMode)}
-                        />
+                    />
                 </div>
-                <div style={{display: 'inline'}}>
+                <div style={{ display: 'inline' }}>
                     <p>{t('hints.filter_by_rarity')}</p>
                     <RarityFilter
                         rarityFilter={rarities}
                         setRarityFilter={setRarities}
-                        />
+                    />
                 </div>
-                <div style={{display: 'inline'}}>
+                <div style={{ display: 'inline' }}>
                     <p>{t('retrieval.market.top_n_polestars', { n: '' })}</p>
                     <Dropdown
                         selection
                         value={top}
                         options={topOptions}
                         onChange={(e, { value }) => setTop(value as number)}
-                        />
+                    />
                 </div>
-                <div style={{display: 'inline'}}>
+                <div style={{ display: 'inline' }}>
                     <p>{t('retrieval.market.min_polestars')}</p>
                     <Dropdown
                         selection
                         value={minPolestars}
                         options={minOptions}
                         onChange={(e, { value }) => setMinPolestars(value as number)}
-                        />
+                    />
                 </div>
-                <div style={{display: 'inline'}}>
+                <div style={{ display: 'inline' }}>
                     <p>{t('rank_names.bigbook_tier')}</p>
                     <Dropdown
                         selection
                         value={bbTier}
                         options={bbOptions}
                         onChange={(e, { value }) => setBBTier(value as number)}
-                        />
+                    />
                 </div>
             </div>
             <div style={{
@@ -476,7 +476,7 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
                         />
                         {crew.name}
                         <br />
-                        <i style={{color: crew.contains_unique ? 'lightgreen' : undefined}}>({crew.polestar_traits.map(t => TRAIT_NAMES[t]).join(", ")})</i>
+                        <i style={{ color: crew.contains_unique ? 'lightgreen' : undefined }}>({crew.polestar_traits.map(t => TRAIT_NAMES[t]).join(", ")})</i>
                     </div> || <></>
                 })}
             </div>
