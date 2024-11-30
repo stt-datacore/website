@@ -2,6 +2,18 @@ import { CrewMember } from "../../model/crew";
 import { TranslateMethod } from "../../model/player";
 import { EpochDiff, Highs, SkillFilterConfig, SkoBucket } from "./model";
 
+export const GameEpoch = new Date("2016-01-01T00:00:00Z");
+
+export function epochToDate(day: number) {
+    let d = new Date(GameEpoch);
+    d.setUTCDate(d.getUTCDate() + day);
+    return d;
+}
+
+export function isoDatePart(d: Date) {
+    return `${d.getUTCFullYear()}-${(d.getUTCMonth() + 1).toString().padStart(2, "0")}-${d.getUTCDate().toString().padStart(2, "0")}`
+}
+
 export function findHigh(epoch_day: number, skills: string[], data: Highs[], rarity: number, day_only = false) {
     let ssj = skills.join();
     data.sort((a, b) => b.epoch_day - a.epoch_day);

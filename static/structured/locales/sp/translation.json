@@ -848,6 +848,7 @@
         "advanced_settings": "Ajustes Avanzados",
         "adventure": "Aventura",
         "and": "y",
+        "and_n_more_ellipses": "y {{n}} más ...",
         "any": "Cualquier",
         "apply_filters": "Aplicar filtros",
         "base": "Base",
@@ -1864,6 +1865,10 @@
             "velocity": "Velocidad"
         },
         "description": "Estudie las estadísticas sobre la tendencia del poder de la tripulación a lo largo del tiempo.",
+        "graphs": {
+            "release_graph": "Release Graph",
+            "title": "Graphs"
+        },
         "new_high": "Nueva Máxima",
         "released_duration_ago": "Debutó hace {{duration}}",
         "released_n_days_ago": "Debutó hace {{n}} días",
