@@ -4,7 +4,7 @@ import { Grid, Label, Step } from "semantic-ui-react";
 import CONFIG from "../CONFIG";
 import { StatLabel } from "../statlabel";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
-import { filterEpochDiffs, formatElapsedDays, makeFilterCombos, skillIcon } from './utils';
+import { filterEpochDiffs, filterFlatData, formatElapsedDays, makeFilterCombos, skillIcon } from './utils';
 import { StatTrendsTable } from "./table";
 import { StatsPrefsPanel } from "./prefspanel";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
@@ -23,7 +23,7 @@ export const StatTrendsComponent = () => {
     const [avgDaysBetween, setAvgDaysBetween] = React.useState(0);
     const [meanDaysBetween, setMeanDaysBetween] = React.useState(0);
 
-    const { epochDiffs, displayMode, setDisplayMode, crewCount, filterConfig } = statsContext;
+    const { epochDiffs, displayMode, setDisplayMode, crewCount, filterConfig, flatOrder } = statsContext;
 
     React.useEffect(() => {
         if (epochDiffs?.length) {
@@ -50,32 +50,37 @@ export const StatTrendsComponent = () => {
             setAvgDaysBetween(0);
             setMeanDaysBetween(0);
         }
-        const filteredDiffs = filterEpochDiffs(filterConfig, epochDiffs);
-        const pd = filterEpochDiffs(filterConfig, filteredDiffs).map(ed => ed.aggregates.map(m => m.slice(0, ed.skills.length)));
+    }, [epochDiffs]);
+
+    React.useEffect(() => {
         const skilldiffs = [] as Skill[];
+        const byTime = filterFlatData(filterConfig, flatOrder).sort((a, b) => a.epoch_day - b.epoch_day);
 
         [0, 1, 2].forEach((skillPos) => {
             Object.keys(CONFIG.SKILLS).forEach((skill) => {
-                if (skilldiffs.some(sd => sd.skill === skill)) return;
+                let founddiff = skilldiffs.find(sd => sd.skill === skill);
+                if (founddiff) return;
 
-                let last = filteredDiffs.findIndex(fi => fi.skills.length > skillPos && fi.skills[skillPos] === skill);
-                let first = filteredDiffs.findLastIndex(fi => fi.skills.length > skillPos && fi.skills[skillPos] === skill);
+                let older = byTime.findIndex(fi => fi.skills.length > skillPos && fi.skills[skillPos] === skill);
+                let newer = byTime.findLastIndex(fi => fi.skills.length > skillPos && fi.skills[skillPos] === skill);
 
-                if (first >= 0 && last >= 0) {
-                    first = filteredDiffs[first].aggregates[0][0];
-                    last = filteredDiffs[last].aggregates[1][0];
-                    let diff = first - last;
+                if (newer >= 0 && older >= 0) {
+                    let oldval = byTime[older].aggregates[skillPos];
+                    let newval = byTime[newer].aggregates[skillPos];
+
+                    let diff = newval - oldval;
+
                     skilldiffs.push({
                         core: diff,
                         skill,
                         range_max: 0,
                         range_min: 0
-                    })
+                    });
                 }
-            })
+            });
         });
         setTotalPowerDiff(skilldiffs);
-    }, [epochDiffs]);
+    }, [flatOrder, filterConfig]);
 
     const gridWidth = 8;
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
