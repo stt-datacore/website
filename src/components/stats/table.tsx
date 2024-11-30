@@ -10,7 +10,6 @@ import { CrewMember } from '../../model/crew';
 import { StatsContext } from './dataprovider';
 
 export interface StatTrendsTableProps {
-    skillKey: string;
 }
 
 export const StatTrendsTable = (props: StatTrendsTableProps) => {
@@ -21,7 +20,6 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
     const { t } = globalContext.localized;
     const { crew } = globalContext.core;
     const { playerData } = globalContext.player;
-    const { skillKey } = props;
 
     const gameEpoch = new Date("2016-01-01T00:00:00Z");
     const nowDate = new Date();
@@ -89,7 +87,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
     function renderTableRow(diff: EpochDiff, idx: number) {
 
         const crews = diff.symbols.map(m => crew.find(f => f.symbol === m)!);
-        const fhigh = findHigh(diff.epoch_days[0], skillKey ? diff.skills.slice(0, diff.aggregates[0].length) : [], allHighs, !skillKey);
+        const fhigh = findHigh(diff.epoch_days[0], diff.skills.slice(0, diff.aggregates[0].length), allHighs);
         const newhigh = fhigh?.epoch_day === diff.epoch_days[0];
 
         return <Table.Row key={`passIdf_${idx}`} style={{textAlign: 'center'}}>

@@ -11,7 +11,7 @@ export const StatsPrefsPanel = () => {
     const globalContext = React.useContext(GlobalContext);
     const { t, tfmt } = globalContext.localized;
     const statsContext = React.useContext(StatsContext);
-    const { filterConfig, setFilterConfig, skillKey, setSkillKey, obtainedFilter, setObtainedFilter, skoBuckets, uniqueObtained } = statsContext;
+    const { filterConfig, setFilterConfig, obtainedFilter, setObtainedFilter, skoBuckets, uniqueObtained } = statsContext;
 
     const flexRow: React.CSSProperties = {display:'flex', flexDirection: 'row', alignItems:'center', justifyContent: 'flex-start', gap: '2em'};
     const flexCol: React.CSSProperties = {display:'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', gap: '0.25em'};
@@ -68,31 +68,29 @@ export const StatsPrefsPanel = () => {
         </div>
 
         {['primary', 'secondary', 'tertiary'].map((pos, pos_idx) => {
-            const available = filterConfig[`available_${pos}`];
+            const available = filterConfig[`available_${pos}`] as string[];
             const availopts = [] as DropdownItemProps[];
-            const crewSums = {} as { [key: string]: number };
-            Object.keys(buckets).forEach((key) => {
-                let bucket = key.split(",");
-                if (bucket.length > pos_idx) {
-                    for (let i = 0; i <= pos_idx; i++) {
-                        if (!available.includes(bucket[pos_idx])) return;
-                    }
-                }
-                let textparts = bucket.map(k => CONFIG.SKILLS[k]);
+
+            available.forEach((key) => {
+                let total = filterConfig[`${pos}_totals`][key] ?? 0;
+                let textparts = CONFIG.SKILLS[key];
                 //while (sp.length < 3) sp.push('*')
                 availopts.push({
                     key: key,
                     value: key,
-                    text: textparts.join(" / "),
+                    text: textparts,
+                    total,
                     content: <div>
-                        <div>{textparts.join(" / ")}</div>
+                        <div>{textparts}</div>
                         <div className='ui segment' style={{backgroundColor: 'navy', padding: '0.5em', display: 'inline-block', marginTop: '0.25em', marginLeft: 0 }}>
-                            {buckets[key].length}  {t('base.crewmen')}
+                            {total}  {t('base.crewmen')}
                         </div>
                     </div>
                 });
             });
 
+            //availopts.sort((a, b) => b.total - a.total);
+            availopts.sort((a, b) => (a.text as string).localeCompare(b.text as string));
             const curropts = filterConfig[pos]?.length ? filterConfig[pos] : undefined;
 
             return (<div style={{...flexCol, alignItems: 'flex-start', textAlign: 'left'}}>

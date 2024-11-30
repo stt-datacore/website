@@ -3,7 +3,7 @@ import { EpochDiff, Highs, IStatsContext, SkillFilterConfig, SkoBucket, StatsDis
 import { useStateWithStorage } from '../../utils/storage';
 import { GlobalContext } from '../../context/globalcontext';
 import { skillSum } from '../../utils/crewutils';
-import { configSkillFilters, findHigh } from './utils';
+import { configSkillFilters, filterFlatData, findHigh } from './utils';
 
 const defaultContextData = {
     skillKey: '',
@@ -33,7 +33,6 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
     const [displayMode, setDisplayMode] = useStateWithStorage<StatsDisplayMode>(`stats_display_mode`, 'crew');
     const [skoBuckets, setSkoBuckets] = React.useState({} as { [key: string]: SkoBucket[] });
     const [flatOrder, setFlatOrder] = React.useState([] as SkoBucket[]);
-    const [skillKey, setSkillKey] = React.useState("");
     const [epochDiffs, setEpochDiffs] = React.useState([] as EpochDiff[]);
     const [uniqueObtained, setUniqueObtained] = React.useState([] as string[]);
     const [obtainedFilter, setObtainedFilter] = React.useState([] as string[] | undefined);
@@ -116,10 +115,7 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
 
     React.useEffect(() => {
         let work: SkoBucket[] = [];
-        if (skillKey && skoBuckets && Object.keys(skoBuckets).length) {
-            work = skoBuckets[skillKey];
-        }
-        else if (flatOrder?.length) {
+        if (flatOrder?.length) {
             work = flatOrder;
         }
         else {
@@ -129,12 +125,13 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
         if (obtainedFilter) work = work.filter(f => !obtainedFilter.length || passObtained(f.symbol, obtainedFilter));
 
         if (work?.length) {
-            let tc = 1;
+            work = filterFlatData(filterConfig, work);
             work.sort((a, b) => b.epoch_day - a.epoch_day);
+
             let newdiffs = [] as EpochDiff[];
             let c = work.length;
+
             for (let i = 0; i < c; i++) {
-                tc++;
                 let s = work[i].skills.length;
                 let next = work[i];
                 if (!next.prev && i === c - 1) break;
@@ -158,11 +155,13 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
                 if (avgdiff && diff.day_diff) diff.velocity = avgdiff / diff.day_diff;
                 newdiffs.push(diff);
             }
+
             newdiffs.reverse();
-            setCrewCount(tc);
+
+            setCrewCount([...new Set(work.map(w => w.symbol)) ].length);
             setEpochDiffs(newdiffs);
         }
-    }, [skillKey, skoBuckets, flatOrder, obtainedFilter]);
+    }, [skoBuckets, flatOrder, obtainedFilter, filterConfig]);
 
     const contextData: IStatsContext = {
         allHighs,
@@ -176,8 +175,6 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
         setFilterConfig,
         setFlatOrder,
         setObtainedFilter,
-        setSkillKey,
-        skillKey,
         skoBuckets,
         uniqueObtained,
     };

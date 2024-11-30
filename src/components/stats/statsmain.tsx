@@ -4,7 +4,7 @@ import { Grid, Label, Step } from "semantic-ui-react";
 import CONFIG from "../CONFIG";
 import { StatLabel } from "../statlabel";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
-import { formatElapsedDays, skillIcon } from './utils';
+import { filterEpochDiffs, formatElapsedDays, makeFilterCombos, skillIcon } from './utils';
 import { StatTrendsTable } from "./table";
 import { StatsPrefsPanel } from "./prefspanel";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
@@ -23,7 +23,7 @@ export const StatTrendsComponent = () => {
     const [avgDaysBetween, setAvgDaysBetween] = React.useState(0);
     const [meanDaysBetween, setMeanDaysBetween] = React.useState(0);
 
-    const { epochDiffs, skillKey, displayMode, setDisplayMode, crewCount } = statsContext;
+    const { epochDiffs, displayMode, setDisplayMode, crewCount, filterConfig } = statsContext;
 
     React.useEffect(() => {
         if (epochDiffs?.length) {
@@ -50,66 +50,73 @@ export const StatTrendsComponent = () => {
             setAvgDaysBetween(0);
             setMeanDaysBetween(0);
         }
+        const filteredDiffs = filterEpochDiffs(filterConfig, epochDiffs);
+        const pd = filterEpochDiffs(filterConfig, filteredDiffs).map(ed => ed.aggregates.map(m => m.slice(0, ed.skills.length)));
+        const skilldiffs = [] as Skill[];
 
-        if (skillKey) {
-            const pd = epochDiffs.map(ed => ed.aggregates.map(m => m.slice(0, ed.skills.length)));
-            const skilldiffs = [] as Skill[];
-            epochDiffs[0].skills.map((skill, idx) => {
-                let first = epochDiffs[epochDiffs.length - 1].aggregates[1][idx];
-                let last = epochDiffs[0].aggregates[0][idx];
-                let diff = last - first;
-                skilldiffs.push({
-                    core: diff,
-                    skill,
-                    range_max: 0,
-                    range_min: 0
-                })
-            });
-            setTotalPowerDiff(skilldiffs);
-        }
+        [0, 1, 2].forEach((skillPos) => {
+            Object.keys(CONFIG.SKILLS).forEach((skill) => {
+                if (skilldiffs.some(sd => sd.skill === skill)) return;
+
+                let last = filteredDiffs.findIndex(fi => fi.skills.length > skillPos && fi.skills[skillPos] === skill);
+                let first = filteredDiffs.findLastIndex(fi => fi.skills.length > skillPos && fi.skills[skillPos] === skill);
+
+                if (first >= 0 && last >= 0) {
+                    first = filteredDiffs[first].aggregates[0][0];
+                    last = filteredDiffs[last].aggregates[1][0];
+                    let diff = first - last;
+                    skilldiffs.push({
+                        core: diff,
+                        skill,
+                        range_max: 0,
+                        range_min: 0
+                    })
+                }
+            })
+        });
+        setTotalPowerDiff(skilldiffs);
     }, [epochDiffs]);
 
     const gridWidth = 8;
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
     const statsStyle: React.CSSProperties = { width: '100%', height: '3em', margin: 0 };
-
-    const preskill = skillKey.split(",").filter(f => f);
     const skillDecors = [] as JSX.Element[];
 
-    if (skillKey.trim()) {
-        preskill.forEach((text) => {
-            if (!text) return;
-            if (skillDecors.length) skillDecors.push(<>&nbsp;/&nbsp;</>);
-            skillDecors.push(<span>
-                <img src={skillIcon(text)} style={{ height: '0.75em' }} />&nbsp;
-                {CONFIG.SKILLS_SHORT.find(f => f.name === text)?.short}
-            </span>)
-        })
-    }
+    const fcs = makeFilterCombos(filterConfig);
+    let sst = '';
+    fcs.forEach((skillKey) => {
+        const preskill = skillKey.split(",").filter(f => f);
 
-    if (preskill.length) {
-        while (preskill.length < 3) {
-            preskill.push('*');
-            skillDecors.push(<span>&nbsp;/&nbsp;*</span>);
+        if (skillKey.trim()) {
+            const hooch = [] as JSX.Element[];
+            preskill.forEach((text, idx) => {
+                if (!text) return;
+                if (idx) hooch.push(<>&nbsp;/&nbsp;</>);
+                hooch.push(<span>
+                    <img src={skillIcon(text)} style={{ height: '0.75em' }} />&nbsp;
+                    {CONFIG.SKILLS_SHORT.find(f => f.name === text)?.short}
+                </span>)
+            });
+            skillDecors.push(<Label color='green' style={{border: '1px solid gray', borderRadius: '1em'}}>{hooch}</Label>)
         }
-    }
-    else {
-        skillDecors.push(<span>{t('roster_summary.skills.combos.all')}</span>)
-    }
 
-    const shortSkillTitle = preskill.map(m => CONFIG.SKILLS_SHORT.find(f => f.name === m)?.short ?? m)
-        .join(" / ").trim() || t('roster_summary.skills.combos.all');
+        if (!preskill.length) {
+            skillDecors.push(<span>{t('roster_summary.skills.combos.all')}</span>)
+        }
+        if (sst) sst += "; ";
+        sst += preskill.map(m => CONFIG.SKILLS_SHORT.find(f => f.name === m)?.short ?? m)
+            .join(" / ").trim();
+
+    });
+
+    const shortSkillTitle = sst?.trim() || t('roster_summary.skills.combos.all');
+    if (!sst) skillDecors.push(<span>{t('roster_summary.skills.combos.all')}</span>);
 
     return (
             <div>
                 <CrewHoverStat targetGroup="stat_trends_crew" />
                 <StatsPrefsPanel />
-                <h3>
-                    {tfmt('global.viewing_stats_for_x', {
-                        x: <b style={{ textDecoration: 'underline' }}>{shortSkillTitle}</b>
-                    })}<div style={{ height: '1em' }} />
-                </h3>
                 {renderStatsInfo()}
 
                 <Step.Group fluid>
@@ -125,7 +132,7 @@ export const StatTrendsComponent = () => {
                     </Step>
                 </Step.Group>
                 {displayMode === 'crew' &&
-                <StatTrendsTable skillKey={skillKey} />}
+                <StatTrendsTable />}
 
             </div>)
 
@@ -134,19 +141,26 @@ export const StatTrendsComponent = () => {
             <div className="ui segment">
                 <Grid style={{ margin: '1em -1em', gap: '0' }}>
                     <Grid.Row style={{ padding: '0.5em' }}>
-                        <Grid.Column width={gridWidth} style={{ padding: '0 0.5em' }}>
-                            <Label style={{ textAlign: 'center', width: "100%" }}>
-                                <h2>{skillDecors}</h2>
-                                <div className='ui segment' style={{ backgroundColor: 'navy' }}>
-                                    {crewCount} {t('base.crewmen')}
+                        <Grid.Column width={gridWidth} style={{ padding: '0 0.5em', height: '100%' }}>
+                            <Label style={{ textAlign: 'center', width: "100%", height: '100%' }}>
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-evenly',
+                                    height: '100%'
+                                }}>
+                                <div style={{fontSize: '2em'}}>{skillDecors}</div>
+                                <Label color='blue'>
+                                    {crewCount.toLocaleString()} {t('base.crewmen')}
+                                </Label>
                                 </div>
                             </Label>
                         </Grid.Column>
-                        <Grid.Column width={gridWidth} style={{ padding: '0 0.5em' }}>
-                            {!!skillKey && <Label style={{ textAlign: 'center', width: "100%" }}>
+                        <Grid.Column width={gridWidth} style={{ padding: '0 0.5em', height: '100%'  }}>
+                            {<Label style={{ textAlign: 'center', width: "100%", height: '100%'  }}>
                                 <h2>{t('stat_trends.total_power_difference')}</h2>
-                                <div className='ui segment' style={{
-                                    backgroundColor: 'navy',
+                                <Label color='blue' className='ui segment' style={{
                                     display: 'flex',
                                     flexDirection: 'row',
                                     alignItems: 'center',
@@ -154,13 +168,12 @@ export const StatTrendsComponent = () => {
                                     gap: '1em'
                                     }}>
                                     {totalPowerDiff.map((skill) => {
-
                                         return <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5em'}}>
                                             <img src={skillIcon(skill.skill)} style={{height: '1.2em'}} />
                                             {skill.core > 0 ? "+" : ""}{skill.core.toFixed(2)}
                                         </div>
                                     })}
-                                </div>
+                                </Label>
                             </Label>}
                         </Grid.Column>
                     </Grid.Row>

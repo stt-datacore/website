@@ -60,26 +60,32 @@ export function configSkillFilters(data: CrewMember[], currConfig?: SkillFilterC
         secondary: [],
         avail_tertiary: [],
         tertiary: [],
+        primary_totals: {},
+        secondary_totals: {},
+        tertiary_totals: {},
         ...currConfig
     }
 
     if (!data?.length) return config;
 
-    let curr_crew = [ ...data ];
+    let curr_crew = [ ...data ].filter(f => f.max_rarity === 5);
 
-    ["primary", "secondary", "tertiary"].forEach((key, idx) => {
+    ["primary", "secondary", "tertiary"].forEach((pos, idx) => {
         const new_skills = [] as string[];
         const avail_skills = [...new Set(curr_crew.filter(f => f.skill_order.length > idx).map(m => m.skill_order[idx]))];
-        config[`available_${key}`] = avail_skills;
+        config[`available_${pos}`] = avail_skills;
+        avail_skills.forEach((skill) => {
+            config[`${pos}_totals`][skill] = curr_crew.filter(f => f.skill_order.length > idx && f.skill_order[idx] === skill).length;
+        });
 
-        for (let skill of config[key]) {
+        for (let skill of config[pos]) {
             if (avail_skills.includes(skill)) {
                 new_skills.push(skill);
             }
         }
 
-        config[key] = new_skills;
-        curr_crew = curr_crew.filter(f => !config[key].length || (f.skill_order.length > idx && config[key].includes(f.skill_order[idx])));
+        config[pos] = new_skills;
+        curr_crew = curr_crew.filter(f => !config[pos].length || (f.skill_order.length > idx && config[pos].includes(f.skill_order[idx])));
     });
 
     return config;
@@ -196,4 +202,26 @@ export function filterEpochDiffs(filterConfig: SkillFilterConfig, diffs: EpochDi
         }
     });
     return newdiffs;
+}
+
+export function makeFilterCombos(config: SkillFilterConfig) {
+    let a = config.primary.length ? config.primary : config.avail_primary;
+    let b = config.secondary.length ? config.secondary : config.avail_secondary;
+    let c = config.tertiary.length ? config.tertiary : config.avail_tertiary;
+
+    let p = [] as string[];
+
+    for (let z1 of a) {
+        p.push(z1);
+        for (let z2 of b) {
+            if (z2 === z1) continue;
+            p.push(`${z1},${z2}`);
+            for (let z3 of c) {
+                if (z2 === z3 || z3 === z1) continue;
+                p.push(`${z1},${z2},${z3}`);
+            }
+        }
+    }
+
+    return p;
 }
