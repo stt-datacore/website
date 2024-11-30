@@ -71,7 +71,7 @@ export const StatsPrefsPanel = () => {
             const available = filterConfig[`available_${pos}`] as string[];
             const availopts = [] as DropdownItemProps[];
 
-            available.forEach((key) => {
+            available?.forEach((key) => {
                 let total = filterConfig[`${pos}_totals`][key] ?? 0;
                 let textparts = CONFIG.SKILLS[key];
                 //while (sp.length < 3) sp.push('*')
@@ -90,7 +90,7 @@ export const StatsPrefsPanel = () => {
             });
 
             //availopts.sort((a, b) => b.total - a.total);
-            availopts.sort((a, b) => (a.text as string).localeCompare(b.text as string));
+            availopts?.sort((a, b) => (a.text as string).localeCompare(b.text as string));
             const curropts = filterConfig[pos]?.length ? filterConfig[pos] : undefined;
 
             return (<div style={{...flexCol, alignItems: 'flex-start', textAlign: 'left'}}>

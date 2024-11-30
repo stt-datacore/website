@@ -89,16 +89,16 @@ export const StatTrendsComponent = () => {
         const preskill = skillKey.split(",").filter(f => f);
 
         if (skillKey.trim()) {
-            const hooch = [] as JSX.Element[];
+            const newelem = [] as JSX.Element[];
             preskill.forEach((text, idx) => {
                 if (!text) return;
-                if (idx) hooch.push(<>&nbsp;/&nbsp;</>);
-                hooch.push(<span>
+                if (idx) newelem.push(<>&nbsp;/&nbsp;</>);
+                newelem.push(<span>
                     <img src={skillIcon(text)} style={{ height: '0.75em' }} />&nbsp;
                     {CONFIG.SKILLS_SHORT.find(f => f.name === text)?.short}
                 </span>)
             });
-            skillDecors.push(<Label color='green' style={{border: '1px solid gray', borderRadius: '1em'}}>{hooch}</Label>)
+            skillDecors.push(<Label color='green' style={{border: '1px solid gray', borderRadius: '1em'}}>{newelem}</Label>)
         }
 
         if (!preskill.length) {
