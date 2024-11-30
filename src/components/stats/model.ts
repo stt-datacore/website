@@ -9,7 +9,8 @@ export interface SkoBucket {
     symbol: string,
     rarity: number,
     next?: SkoBucket,
-    prev?: SkoBucket
+    prev?: SkoBucket,
+    crew: CrewMember
 }
 
 export interface EpochDiff {
@@ -20,7 +21,8 @@ export interface EpochDiff {
     skills: string[],
     symbols: string[],
     velocity: number,
-    rarity: number
+    rarity: number,
+    crew: CrewMember[]
 };
 
 export interface SkillFilterConfig {

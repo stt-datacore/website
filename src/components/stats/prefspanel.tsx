@@ -61,9 +61,9 @@ export const StatsPrefsPanel = () => {
                 selection
                 clearable
                 multiple
-                value={filterConfig.obtainedFilter}
+                value={filterConfig.obtainedFilter || []}
                 options={obtainedOpts}
-                onChange={(e, { value }) => setFilterConfig({...filterConfig, obtainedFilter: value as string[] })}
+                onChange={(e, { value }) => setFilterConfig({...filterConfig, obtainedFilter: (value || []) as string[] })}
                 />
         </div>
         <div style={{...flexCol, alignItems: 'flex-start', textAlign: 'left'}}>

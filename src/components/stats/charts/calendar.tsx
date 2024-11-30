@@ -2,8 +2,8 @@ import React from "react"
 import { GlobalContext } from "../../../context/globalcontext"
 import { StatsContext } from "../dataprovider";
 import { useStateWithStorage } from "../../../utils/storage";
-import { EpochDiff, GraphPropsCommon, Highs } from "../model";
-import { epochToDate, filterEpochDiffs, filterHighs, findHigh, GameEpoch, isoDatePart, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
+import { EpochDiff, GraphPropsCommon, Highs, SkoBucket } from "../model";
+import { epochToDate, filterEpochDiffs, filterFlatData, filterHighs, findHigh, GameEpoch, isoDatePart, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
 import { CalendarDatum, ResponsiveCalendar } from "@nivo/calendar";
 import { skillSum } from "../../../utils/crewutils";
 import themes from "../../nivo_themes";
@@ -19,7 +19,6 @@ interface CalendarData extends CalendarDatum {
     entries: number;
     rarities: number[];
     symbols: string[];
-    diffs: number[];
     epoch_day: number;
     crew: CrewMember[];
 }
@@ -32,13 +31,25 @@ export const StatsCalendarChart = (props: GraphPropsCommon) => {
     const statsContext = React.useContext(StatsContext);
     const { t } = globalContext.localized;
     const { crew } = globalContext.core;
-    const { filterConfig, allHighs: outerHighs, epochDiffs: outerDiffs } = statsContext;
+    const { filterConfig, allHighs: outerHighs, epochDiffs: outerDiffs, flatOrder: outerOrder } = statsContext;
 
     const [allHighs, setAllHighs] = React.useState<Highs[]>([]);
     const [epochDiffs, setEpochDiffs] = React.useState<EpochDiff[]>([]);
+    const [flatOrder, setFlatOrder] = React.useState<SkoBucket[]>([]);
     const [releaseTable, setReleaseTable] = React.useState<CalendarData[]>([]);
 
     const totalYears = (((new Date()).getUTCFullYear()) - GameEpoch.getUTCFullYear()) + 1;
+
+    React.useEffect(() => {
+        if (outerOrder.length) {
+            if (useFilters) {
+                setFlatOrder(filterFlatData(filterConfig, outerOrder));
+            }
+            else {
+                setFlatOrder(outerOrder);
+            }
+        }
+    }, [useFilters, filterConfig, outerOrder]);
 
     React.useEffect(() => {
         if (outerHighs.length) {
@@ -73,45 +84,43 @@ export const StatsCalendarChart = (props: GraphPropsCommon) => {
 
         for (let year = startYear; year <= endYear; year++) {
             const newData = [] as CalendarData[];
-            const filtered = epochDiffs.filter(f => f.epoch_days.some(ed => epochToDate(ed).getUTCFullYear() === year));
+            //const filtered = epochDiffs.filter(f => f.epoch_days.some(ed => epochToDate(ed).getUTCFullYear() === year));
 
-            for (let diff of filtered) {
-                for (let i = 0; i < 2; i++) {
-                    let d = epochToDate(diff.epoch_days[i]);
-                    if (d.getUTCFullYear() !== year) continue;
+            const filtered = flatOrder.filter(f => epochToDate(f.epoch_day).getUTCFullYear() === year);
 
-                    let c = crew.find(f => f.symbol === diff.symbols[i])!;
-                    let skillsum = skillSum(Object.values(c.base_skills), 'all', false) / c.skill_order.length;
+            for (let entry of filtered) {
+                let d = epochToDate(entry.epoch_day);
+                if (d.getUTCFullYear() !== year) continue;
 
-                    let iso = isoDatePart(d);
-                    let curr = newData.find(f => f.day === iso);
-                    let high = findHigh(diff.epoch_days[i], c.skill_order, allHighs, c.max_rarity);
+                let c = crew.find(f => f.symbol === entry.symbol)!;
+                let skillsum = skillSum(Object.values(c.base_skills), 'all', false) / c.skill_order.length;
 
-                    if (!curr) {
-                        curr = {
-                            day: iso,
-                            epoch_day: diff.epoch_days[i],
-                            entries: 1,
-                            value: skillsum,
-                            year: d.getUTCFullYear(),
-                            rarities: [diff.rarity],
-                            symbols: [diff.symbols[i]],
-                            diffs: [diff.skill_diffs.reduce((p,n)=>p+n)],
-                            crew: [c],
-                            highs: high ? [high] : []
-                        }
-                        newData.push(curr);
+                let iso = isoDatePart(d);
+                let curr = newData.find(f => f.day === iso);
+                let high = findHigh(entry.epoch_day, c.skill_order, allHighs, c.max_rarity);
+
+                if (!curr) {
+                    curr = {
+                        day: iso,
+                        epoch_day: entry.epoch_day,
+                        entries: 1,
+                        value: skillsum,
+                        year: d.getUTCFullYear(),
+                        rarities: [entry.rarity],
+                        symbols: [entry.symbol],
+                        crew: [c],
+                        highs: high ? [high] : []
                     }
-                    else {
-                        if (!curr.symbols.includes(diff.symbols[i])) {
-                            curr.value += skillsum;
-                            curr.entries++;
-                            curr.rarities.push(diff.rarity);
-                            curr.diffs.push(diff.skill_diffs.reduce((p,n)=>p+n));
-                            curr.symbols.push(diff.symbols[i]);
-                            curr.crew.push(c);
-                            if (high) curr.highs.push(high);
-                        }
+                    newData.push(curr);
+                }
+                else {
+                    if (!curr.symbols.includes(entry.symbol)) {
+                        curr.value += skillsum;
+                        curr.entries++;
+                        curr.rarities.push(entry.rarity);
+                        curr.symbols.push(entry.symbol);
+                        curr.crew.push(c);
+                        if (high) curr.highs.push(high);
                     }
                 }
             }
@@ -119,15 +128,17 @@ export const StatsCalendarChart = (props: GraphPropsCommon) => {
             newData.forEach((data) => {
                 data.crew.sort((a, b) => b.max_rarity - a.max_rarity || a.name.localeCompare(b.name));
                 let avgr = data.rarities.reduce((p,n) => p + n) / data.rarities.length;
+
                 data.value /= data.crew.length;
                 data.value *= avgr;
+
                 let highbump = data.highs.filter(f => f.epoch_day === data.epoch_day);
+
                 if (highbump.length) {
                     let agg = highbump.reduce((p, n) => n.aggregate_sum + p, 0) / highbump.length;
                     data.value *= (1 + agg);
                 }
-
-            })
+            });
             newYears.push(newData);
         }
         setReleaseTable(newYears.flat().sort((a, b) => a.day.localeCompare(b.day)));

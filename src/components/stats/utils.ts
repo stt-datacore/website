@@ -119,6 +119,7 @@ export function filterBuckets(filterConfig: SkillFilterConfig, buckets: { [key: 
     Object.entries(buckets).forEach(([skill_order, entries]) => {
         if (test(filterConfig, { skills: skill_order.split(","), rarity: 0 })) {
             let newentries = entries.filter(f => !filterConfig.rarity.length || filterConfig.rarity.includes(f.rarity));
+            if (filterConfig.obtainedFilter.length) newentries = newentries.filter(f => passObtained(f.crew, filterConfig.obtainedFilter))
             if (newentries.length) {
                 newbuckets[skill_order] = newentries;
             }
@@ -130,6 +131,7 @@ export function filterBuckets(filterConfig: SkillFilterConfig, buckets: { [key: 
 export function filterFlatData(filterConfig: SkillFilterConfig, data: SkoBucket[]) {
     const newdata = [] as SkoBucket[];
     data.forEach((entry) => {
+        if (filterConfig.obtainedFilter.length && !passObtained(entry.crew, filterConfig.obtainedFilter)) return;
         if (test(filterConfig, entry)) {
             newdata.push(entry);
         }
@@ -140,6 +142,7 @@ export function filterFlatData(filterConfig: SkillFilterConfig, data: SkoBucket[
 export function filterHighs(filterConfig: SkillFilterConfig, highs: Highs[]) {
     const newhighs = [] as Highs[];
     highs.forEach((entry) => {
+        if (filterConfig.obtainedFilter.length && !passObtained(entry.crew, filterConfig.obtainedFilter)) return;
         if (test(filterConfig, entry)) {
             newhighs.push(entry);
         }
@@ -150,6 +153,7 @@ export function filterHighs(filterConfig: SkillFilterConfig, highs: Highs[]) {
 export function filterEpochDiffs(filterConfig: SkillFilterConfig, diffs: EpochDiff[]) {
     const newdiffs = [] as EpochDiff[];
     diffs.forEach((diff) => {
+        if (filterConfig.obtainedFilter.length && !diff.crew.every(c => passObtained(c, filterConfig.obtainedFilter))) return;
         if (test(filterConfig, diff)) {
             newdiffs.push(diff);
         }
@@ -160,6 +164,9 @@ export function filterEpochDiffs(filterConfig: SkillFilterConfig, diffs: EpochDi
 export function statFilterCrew<T extends CrewMember>(filterConfig: SkillFilterConfig, crew: T[]) {
     const newcrew = [] as T[];
     crew.forEach((c) => {
+        if (filterConfig.obtainedFilter.length) {
+            if (!passObtained(c, filterConfig.obtainedFilter)) return;
+        }
         if (test(filterConfig, { rarity: c.max_rarity, skills: c.skill_order })) {
             newcrew.push(c);
         }
@@ -226,4 +233,13 @@ export function makeFilterCombos(config: SkillFilterConfig, no_avail = false) {
         }
     }
     return fp;
+}
+
+export function passObtained(fc: CrewMember, obtained: string[]) {
+    if (!fc) return false;
+    if (obtained.includes(fc.obtained)) return true;
+    if (obtained.includes("Event/Pack/Giveaway") && (fc.obtained === 'Mega' || fc.obtained === 'Event' || fc.obtained === 'Pack/Giveaway')) return true;
+    if (obtained.includes("Event") && (fc.obtained === 'Event/Pack/Giveaway' || fc.obtained === 'Mega')) return true;
+    if (obtained.includes("Pack/Giveaway") && fc.obtained === 'Event/Pack/Giveaway') return true;
+    return false;
 }

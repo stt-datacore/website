@@ -3,7 +3,7 @@ import { EpochDiff, Highs, IStatsContext, SkillFilterConfig, SkoBucket, StatsDis
 import { useStateWithStorage } from '../../utils/storage';
 import { GlobalContext } from '../../context/globalcontext';
 import { crewCopy, skillSum } from '../../utils/crewutils';
-import { configSkillFilters, filterFlatData, findHigh } from './utils';
+import { configSkillFilters, filterFlatData, findHigh, passObtained } from './utils';
 import CONFIG from '../CONFIG';
 import { CrewMember } from '../../model/crew';
 
@@ -40,19 +40,48 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
     const [epochDiffs, setEpochDiffs] = React.useState([] as EpochDiff[]);
     const [uniqueObtained, setUniqueObtained] = React.useState([] as string[]);
     const [crewCount, setCrewCount] = React.useState(0);
+    const [masterCrew, setMasterCrew] = React.useState<CrewMember[]>([]);
+    const [prefiteredCrew, setPrefilteredCrew] = React.useState<CrewMember[]>([]);
 
     const gameEpoch = new Date("2016-01-01T00:00:00Z");
 
     React.useEffect(() => {
+        setFilterConfig(filterConfig);
+    }, [])
+
+    React.useEffect(() => {
         if (!globalContext.core.crew.length) return;
-        const crew = crewCopy(globalContext.core.crew).sort((a, b) => a.date_added.getTime() - b.date_added.getTime());
+        const obtainlist = [] as string[];
+
+        for (let c of globalContext.core.crew) {
+            if (!obtainlist.includes(c.obtained)) obtainlist.push(c.obtained);
+        }
+        obtainlist.sort();
+        const crew = crewCopy(globalContext.core.crew)
+            .sort((a, b) => a.date_added.getTime() - b.date_added.getTime());
+
+        setUniqueObtained(obtainlist);
+        setMasterCrew(crew);
+    }, [globalContext.core.crew]);
+
+    React.useEffect(() => {
+        if (!masterCrew.length) return;
+
+        const filteredCrew = masterCrew
+            .filter(c => !filterConfig.obtainedFilter.length || passObtained(c, filterConfig.obtainedFilter))
+
+        setPrefilteredCrew(filteredCrew);
+    }, [masterCrew, filterConfig]);
+
+    React.useEffect(() => {
+        if (!prefiteredCrew.length) return;
+        const crew = prefiteredCrew;
         const skoBuckets = {} as { [key: string]: SkoBucket[] };
         const flat = [] as SkoBucket[];
         const allHighs = [] as Highs[];
-        const obtained = [] as string[];
+        const obtainlist = [] as string[];
         for (let c of crew) {
-            if (!obtained.includes(c.obtained)) obtained.push(c.obtained);
-
+            if (!obtainlist.includes(c.obtained)) obtainlist.push(c.obtained);
             const aggregates = Object.values(c.base_skills).map(skill => skillSum(skill));
             const epoch_day = Math.floor(((new Date(c.date_added)).getTime() - gameEpoch.getTime()) / (1000 * 60 * 60 * 24));
 
@@ -80,14 +109,16 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
                         aggregates,
                         epoch_day,
                         skills: skd,
-                        rarity: c.max_rarity
+                        rarity: c.max_rarity,
+                        crew: c
                     });
                     flat.push({
                         symbol: c.symbol,
                         aggregates,
                         epoch_day,
                         skills: skd,
-                        rarity: c.max_rarity
+                        rarity: c.max_rarity,
+                        crew: c
                     });
                 }
             });
@@ -103,16 +134,11 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
             });
         }
 
-        obtained.sort();
         flat.sort((a, b) => b.epoch_day - a.epoch_day || b.rarity - a.rarity);
-
-        setFilterConfig(filterConfig);
-        setUniqueObtained(obtained);
         setFlatOrder(flat);
         setSkoBuckets(skoBuckets);
         setAllHighs(allHighs);
-
-    }, [globalContext.core.crew]);
+    }, [prefiteredCrew]);
 
     React.useEffect(() => {
         let work: SkoBucket[] = [];
@@ -148,7 +174,8 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
                     skills: next.skills,
                     velocity: 0,
                     aggregates: [next.aggregates, curr.aggregates],
-                    rarity: curr.rarity
+                    rarity: curr.rarity,
+                    crew: [next.crew, curr.crew]
                 };
                 let avgdiff = diff.skill_diffs.reduce((p, n) => p + n, 0) / diff.skill_diffs.length;
                 if (avgdiff && diff.day_diff) diff.velocity = avgdiff / diff.day_diff;
@@ -160,7 +187,7 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
             setCrewCount([...new Set(work.map(w => w.symbol)) ].length);
             setEpochDiffs(newdiffs);
         }
-    }, [flatOrder, filterConfig]);
+    }, [flatOrder]);
 
     const contextData: IStatsContext = {
         allHighs,
@@ -184,15 +211,4 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
     function setFilterConfig(config: SkillFilterConfig) {
         internalSetFilterConfig(configSkillFilters(globalContext.core.crew, config));
     }
-
-    function passObtained(symbol: string, obtained: string[]) {
-        let fc = globalContext.core.crew.find(f => f.symbol === symbol);
-        if (!fc) return false;
-        if (obtained.includes(fc.obtained)) return true;
-        if (obtained.includes("Event/Pack/Giveaway") && (fc.obtained === 'Mega' || fc.obtained === 'Event' || fc.obtained === 'Pack/Giveaway')) return true;
-        if (obtained.includes("Event") && (fc.obtained === 'Event/Pack/Giveaway' || fc.obtained === 'Mega')) return true;
-        if (obtained.includes("Pack/Giveaway") && fc.obtained === 'Event/Pack/Giveaway') return true;
-        return false;
-    }
-
 }
