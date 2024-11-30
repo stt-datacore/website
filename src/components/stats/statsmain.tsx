@@ -10,12 +10,13 @@ import { StatsPrefsPanel } from "./prefspanel";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { StatsContext } from "./dataprovider";
 import { Skill } from "../../model/crew";
+import { ChartsView } from "./chartsview";
 
 export const StatTrendsComponent = () => {
     const globalContext = React.useContext(GlobalContext);
     const statsContext = React.useContext(StatsContext);
     const crew = [...globalContext.core.crew].sort((a, b) => a.date_added.getTime() - b.date_added.getTime());
-    const { t, tfmt } = globalContext.localized;
+    const { t } = globalContext.localized;
 
     const [totalPowerDiff, setTotalPowerDiff] = React.useState([] as (Skill & { rarity: number})[]);
     const [avgVelocity, setAvgVelocity] = React.useState(0);
@@ -138,8 +139,8 @@ export const StatTrendsComponent = () => {
                         <Step.Description>{t('stat_trends.sections.graphs.description')}</Step.Description>
                     </Step>
                 </Step.Group>
-                {displayMode === 'crew' &&
-                <StatTrendsTable />}
+                {displayMode === 'crew' && <StatTrendsTable />}
+                {displayMode === 'graphs' && <ChartsView />}
 
             </div>)
 

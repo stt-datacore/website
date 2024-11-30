@@ -841,6 +841,7 @@
         "advanced_settings": "Erweiterte Einstellungen",
         "adventure": "Abenteuer",
         "and": "und",
+        "and_n_more_ellipses": "und {{n}} weitere ...",
         "any": "Beliebig",
         "apply_filters": "Filter anwenden",
         "base": "Grundlage",
@@ -1852,6 +1853,10 @@
             "velocity": "Geschwindigkeit"
         },
         "description": "Studieren Sie Statistiken zur Entwicklung der Besatzungsstärke im Laufe der Zeit.",
+        "graphs": {
+            "release_graph": "Release Graph",
+            "title": "Graphs"
+        },
         "new_high": "Neuer Highscore",
         "released_duration_ago": "Debüt vor {{duration}}",
         "released_n_days_ago": "Debüt vor {{n}} Tagen",

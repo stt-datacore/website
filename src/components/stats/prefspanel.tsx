@@ -10,7 +10,7 @@ import { RarityFilter } from "../crewtables/commonoptions";
 
 export const StatsPrefsPanel = () => {
     const globalContext = React.useContext(GlobalContext);
-    const { t, tfmt } = globalContext.localized;
+    const { t } = globalContext.localized;
     const statsContext = React.useContext(StatsContext);
     const { filterConfig, setFilterConfig, skoBuckets, uniqueObtained } = statsContext;
 

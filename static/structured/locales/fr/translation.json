@@ -849,6 +849,7 @@
         "advanced_settings": "Réglages Avancés",
         "adventure": "Aventure",
         "and": "et",
+        "and_n_more_ellipses": "et {{n}} de plus ...",
         "any": "Quelconque",
         "apply_filters": "Appliquer des filtres",
         "base": "Principle",
@@ -1865,6 +1866,10 @@
             "velocity": "Vitesse"
         },
         "description": "Étudiez les statistiques sur les tendances de la puissance de l'équipage au fil du temps.",
+        "graphs": {
+            "release_graph": "Release Graph",
+            "title": "Graphs"
+        },
         "new_high": "Nouveau Élevé",
         "released_duration_ago": "Débuté il y a {{duration}}",
         "released_n_days_ago": "Débuté il y a {{n}} jours",

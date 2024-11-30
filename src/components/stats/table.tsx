@@ -4,7 +4,7 @@ import { GlobalContext } from "../../context/globalcontext";
 import CONFIG from "../CONFIG";
 import { AvatarView } from "../item_presenters/avatarview";
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
-import { findHigh, formatElapsedDays, skillIcon } from "./utils";
+import { findHigh, formatElapsedDays, GameEpoch, skillIcon } from "./utils";
 import { EpochDiff, Highs } from "./model";
 import { CrewMember } from '../../model/crew';
 import { StatsContext } from './dataprovider';
@@ -21,9 +21,8 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
     const { crew } = globalContext.core;
     const { playerData } = globalContext.player;
 
-    const gameEpoch = new Date("2016-01-01T00:00:00Z");
     const nowDate = new Date();
-    const daysFromEpoch = Math.floor((nowDate.getTime() - gameEpoch.getTime()) / (1000 * 60 * 60 * 24));
+    const daysFromEpoch = Math.floor((nowDate.getTime() - GameEpoch.getTime()) / (1000 * 60 * 60 * 24));
 
     const flexRow: React.CSSProperties = {display:'flex', flexDirection: 'row', alignItems:'center', justifyContent: 'flex-start', gap: '2em'};
     const flexCol: React.CSSProperties = {display:'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', gap: '0.25em'};
