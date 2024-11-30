@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { EpochDiff, Highs, IStatsContext, SkillFilterConfig, SkoBucket, StatsDisplayMode } from './model';
 import { useStateWithStorage } from '../../utils/storage';
 import { GlobalContext } from '../../context/globalcontext';
-import { skillSum } from '../../utils/crewutils';
+import { crewCopy, skillSum } from '../../utils/crewutils';
 import { configSkillFilters, filterFlatData, findHigh } from './utils';
 import CONFIG from '../CONFIG';
+import { CrewMember } from '../../model/crew';
 
 const defaultContextData = {
     skillKey: '',
@@ -44,14 +45,12 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
 
     React.useEffect(() => {
         if (!globalContext.core.crew.length) return;
-        setFilterConfig(filterConfig);
-        const crew = [...globalContext.core.crew].sort((a, b) => a.date_added.getTime() - b.date_added.getTime());
+        const crew = crewCopy(globalContext.core.crew).sort((a, b) => a.date_added.getTime() - b.date_added.getTime());
         const skoBuckets = {} as { [key: string]: SkoBucket[] };
         const flat = [] as SkoBucket[];
         const allHighs = [] as Highs[];
         const obtained = [] as string[];
         for (let c of crew) {
-            if (filterConfig.rarity.length && !filterConfig.rarity.includes(c.max_rarity)) continue;
             if (!obtained.includes(c.obtained)) obtained.push(c.obtained);
 
             const aggregates = Object.values(c.base_skills).map(skill => skillSum(skill));
@@ -63,7 +62,6 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
                     let sko = skd.join(",");
 
                     let levels = skd.map(m => skillSum(c.base_skills[m]));
-                    //let aggregate_sum = c.skill_order.map(m => skillSum(c.base_skills[m])).reduce((p, n) => p + n, 0);
                     let aggregate_sum = levels.reduce((p, n) => p + n, 0);
                     let high = findHigh(epoch_day, skd, allHighs, c.max_rarity);
                     if (!high || high.aggregate_sum < aggregate_sum) {
@@ -109,6 +107,7 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
         obtained.sort();
         flat.sort((a, b) => b.epoch_day - a.epoch_day || b.rarity - a.rarity);
 
+        setFilterConfig(filterConfig);
         setUniqueObtained(obtained);
         setFlatOrder(flat);
         setSkoBuckets(skoBuckets);
@@ -129,7 +128,7 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
 
         if (work?.length) {
             work = filterFlatData(filterConfig, work);
-            work.sort((a, b) => b.rarity - a.rarity || b.epoch_day - a.epoch_day);
+            work.sort((a, b) => b.epoch_day - a.epoch_day || b.rarity - a.rarity);
 
             let newdiffs = [] as EpochDiff[];
             let c = work.length;
@@ -160,7 +159,7 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
                 newdiffs.push(diff);
             }
 
-            newdiffs.reverse();
+            //newdiffs.reverse();
 
             setCrewCount([...new Set(work.map(w => w.symbol)) ].length);
             setEpochDiffs(newdiffs);
