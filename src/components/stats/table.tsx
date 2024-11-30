@@ -87,7 +87,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
     function renderTableRow(diff: EpochDiff, idx: number) {
 
         const crews = diff.symbols.map(m => crew.find(f => f.symbol === m)!);
-        const fhigh = findHigh(diff.epoch_days[0], diff.skills.slice(0, diff.aggregates[0].length), allHighs);
+        const fhigh = findHigh(diff.epoch_days[0], diff.skills.slice(0, diff.aggregates[0].length), allHighs, diff.rarity);
         const newhigh = fhigh?.epoch_day === diff.epoch_days[0];
 
         return <Table.Row key={`passIdf_${idx}`} style={{textAlign: 'center'}}>

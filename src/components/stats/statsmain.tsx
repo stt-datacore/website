@@ -17,7 +17,7 @@ export const StatTrendsComponent = () => {
     const crew = [...globalContext.core.crew].sort((a, b) => a.date_added.getTime() - b.date_added.getTime());
     const { t, tfmt } = globalContext.localized;
 
-    const [totalPowerDiff, setTotalPowerDiff] = React.useState([] as Skill[]);
+    const [totalPowerDiff, setTotalPowerDiff] = React.useState([] as (Skill & { rarity: number})[]);
     const [avgVelocity, setAvgVelocity] = React.useState(0);
     const [meanVelocity, setMeanVelocity] = React.useState(0);
     const [avgDaysBetween, setAvgDaysBetween] = React.useState(0);
@@ -53,32 +53,35 @@ export const StatTrendsComponent = () => {
     }, [epochDiffs]);
 
     React.useEffect(() => {
-        const skilldiffs = [] as Skill[];
+        const skilldiffs = [] as (Skill & { rarity: number })[];
         const byTime = filterFlatData(filterConfig, flatOrder).sort((a, b) => a.epoch_day - b.epoch_day);
 
-        [0, 1, 2].forEach((skillPos) => {
-            Object.keys(CONFIG.SKILLS).forEach((skill) => {
-                let founddiff = skilldiffs.find(sd => sd.skill === skill);
-                if (founddiff) return;
+        for (let rarity = 1; rarity <= 5; rarity++) {
+            [0, 1, 2].forEach((skillPos) => {
+                Object.keys(CONFIG.SKILLS).forEach((skill) => {
+                    let founddiff = skilldiffs.find(sd => sd.rarity === rarity && sd.skill === skill);
+                    if (founddiff) return;
 
-                let older = byTime.findIndex(fi => fi.skills.length > skillPos && fi.skills[skillPos] === skill);
-                let newer = byTime.findLastIndex(fi => fi.skills.length > skillPos && fi.skills[skillPos] === skill);
+                    let older = byTime.findIndex(fi => fi.rarity === rarity && fi.skills.length > skillPos && fi.skills[skillPos] === skill);
+                    let newer = byTime.findLastIndex(fi => fi.rarity === rarity && fi.skills.length > skillPos && fi.skills[skillPos] === skill);
 
-                if (newer >= 0 && older >= 0) {
-                    let oldval = byTime[older].aggregates[skillPos];
-                    let newval = byTime[newer].aggregates[skillPos];
+                    if (newer >= 0 && older >= 0) {
+                        let oldval = byTime[older].aggregates[skillPos];
+                        let newval = byTime[newer].aggregates[skillPos];
 
-                    let diff = newval - oldval;
+                        let diff = newval - oldval;
 
-                    skilldiffs.push({
-                        core: diff,
-                        skill,
-                        range_max: 0,
-                        range_min: 0
-                    });
-                }
+                        skilldiffs.push({
+                            core: diff,
+                            skill,
+                            range_max: 0,
+                            range_min: 0,
+                            rarity: rarity
+                        });
+                    }
+                });
             });
-        });
+        }
         setTotalPowerDiff(skilldiffs);
     }, [flatOrder, filterConfig]);
 
@@ -88,34 +91,31 @@ export const StatTrendsComponent = () => {
     const statsStyle: React.CSSProperties = { width: '100%', height: '3em', margin: 0 };
     const skillDecors = [] as JSX.Element[];
 
-    const fcs = makeFilterCombos(filterConfig);
     let sst = '';
-    fcs.forEach((skillKey) => {
-        const preskill = skillKey.split(",").filter(f => f);
 
-        if (skillKey.trim()) {
-            const newelem = [] as JSX.Element[];
-            preskill.forEach((text, idx) => {
-                if (!text) return;
-                if (idx) newelem.push(<>&nbsp;/&nbsp;</>);
-                newelem.push(<span>
-                    <img src={skillIcon(text)} style={{ height: '0.75em' }} />&nbsp;
-                    {CONFIG.SKILLS_SHORT.find(f => f.name === text)?.short}
-                </span>)
-            });
-            skillDecors.push(<Label color='green' style={{border: '1px solid gray', borderRadius: '1em'}}>{newelem}</Label>)
-        }
+    if (filterConfig.primary.length || filterConfig.secondary.length || filterConfig.tertiary.length) {
+        const fcs = makeFilterCombos(filterConfig, false);
+        fcs.forEach((skillKey) => {
+            const preskill = skillKey.split(",").filter(f => f);
+            if (skillKey.trim()) {
+                const newelem = [] as JSX.Element[];
+                preskill.forEach((text, idx) => {
+                    if (!text) return;
+                    if (idx) newelem.push(<>&nbsp;/&nbsp;</>);
+                    newelem.push(<span>
+                        <img src={skillIcon(text)} style={{ height: '0.75em' }} />&nbsp;
+                        {CONFIG.SKILLS_SHORT.find(f => f.name === text)?.short}
+                    </span>)
+                });
+                skillDecors.push(<Label color='green' style={{border: '1px solid gray', borderRadius: '1em'}}>{newelem}</Label>)
+            }
 
-        if (!preskill.length) {
-            skillDecors.push(<span>{t('roster_summary.skills.combos.all')}</span>)
-        }
-        if (sst) sst += "; ";
-        sst += preskill.map(m => CONFIG.SKILLS_SHORT.find(f => f.name === m)?.short ?? m)
-            .join(" / ").trim();
+            if (sst) sst += "; ";
+            sst += preskill.map(m => CONFIG.SKILLS_SHORT.find(f => f.name === m)?.short ?? m)
+                .join(" / ").trim();
 
-    });
-
-    const shortSkillTitle = sst?.trim() || t('roster_summary.skills.combos.all');
+        });
+    }
     if (!sst) skillDecors.push(<span>{t('roster_summary.skills.combos.all')}</span>);
 
     return (
@@ -142,6 +142,8 @@ export const StatTrendsComponent = () => {
             </div>)
 
     function renderStatsInfo() {
+        const useRarities = filterConfig.rarity.length ? filterConfig.rarity : [1,2,3,4,5];
+
         return (
             <div className="ui segment">
                 <Grid style={{ margin: '1em -1em', gap: '0' }}>
@@ -153,7 +155,8 @@ export const StatTrendsComponent = () => {
                                     flexDirection: 'column',
                                     alignItems: 'center',
                                     justifyContent: 'space-evenly',
-                                    height: '100%'
+                                    height: '100%',
+                                    gap: '0.5em'
                                 }}>
                                 <div style={{fontSize: '2em'}}>{skillDecors}</div>
                                 <Label color='blue'>
@@ -163,23 +166,26 @@ export const StatTrendsComponent = () => {
                             </Label>
                         </Grid.Column>
                         <Grid.Column width={gridWidth} style={{ padding: '0 0.5em', height: '100%'  }}>
-                            {<Label style={{ textAlign: 'center', width: "100%", height: '100%'  }}>
-                                <h2>{t('stat_trends.total_power_difference')}</h2>
+                            <Label style={{ textAlign: 'center', width: "100%", height: '100%' }}>
+                            <h2>{t('stat_trends.total_power_difference')}</h2>
+                            {useRarities.map((rarity, idx) =><div key={`power_diff_rarity_head_${rarity}`}>
+                                <h4 style={{marginTop: idx ? '1em' : undefined, color:CONFIG.RARITIES[rarity].color}}>{CONFIG.RARITIES[rarity].name}</h4>
                                 <Label color='blue' className='ui segment' style={{
                                     display: 'flex',
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    gap: '1em'
+                                    gap: '1em', marginBottom: idx === useRarities.length - 1 ? '0.5em' : undefined
                                     }}>
-                                    {totalPowerDiff.map((skill) => {
+                                    {totalPowerDiff.filter(f => f.rarity === rarity).map((skill) => {
                                         return <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5em'}}>
                                             <img src={skillIcon(skill.skill)} style={{height: '1.2em'}} />
                                             {skill.core > 0 ? "+" : ""}{skill.core.toFixed(2)}
                                         </div>
                                     })}
                                 </Label>
-                            </Label>}
+                            </div>)}
+                            </Label>
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row style={{ padding: '0.5em' }}>

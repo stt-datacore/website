@@ -7,6 +7,7 @@ export interface SkoBucket {
     epoch_day: number,
     skills: string[]
     symbol: string,
+    rarity: number,
     next?: SkoBucket,
     prev?: SkoBucket
 }
@@ -19,21 +20,21 @@ export interface EpochDiff {
     skills: string[],
     symbols: string[],
     velocity: number,
+    rarity: number
 };
 
-export interface SavedConfig {
+export interface SkillFilterConfig {
     primary: string[];
     secondary: string[];
     tertiary: string[];
-}
-
-export interface SkillFilterConfig extends SavedConfig {
     avail_primary: string[];
     avail_secondary: string[];
     avail_tertiary: string[];
     primary_totals: { [key: string]: number }
     secondary_totals: { [key: string]: number }
     tertiary_totals: { [key: string]: number }
+    obtainedFilter: string[];
+    rarity: number[];
 }
 
 export type Highs = {
@@ -41,7 +42,8 @@ export type Highs = {
     aggregates: number[],
     aggregate_sum: number,
     epoch_day: number,
-    skills: string[]
+    skills: string[],
+    rarity: number;
 };
 
 export interface IStatsContext {
@@ -50,8 +52,6 @@ export interface IStatsContext {
     crewCount: number;
     flatOrder: SkoBucket[];
     setFlatOrder: (value: SkoBucket[]) => void;
-    obtainedFilter?: string[];
-    setObtainedFilter: (value?: string[]) => void;
     uniqueObtained: string[]
     skoBuckets: { [key: string]: SkoBucket[] },
     displayMode: StatsDisplayMode;

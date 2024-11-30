@@ -2,10 +2,10 @@ import { CrewMember } from "../../model/crew";
 import { TranslateMethod } from "../../model/player";
 import { EpochDiff, Highs, SkillFilterConfig, SkoBucket } from "./model";
 
-export function findHigh(epoch_day: number, skills: string[], data: Highs[], day_only = false) {
+export function findHigh(epoch_day: number, skills: string[], data: Highs[], rarity: number, day_only = false) {
     let ssj = skills.join();
     data.sort((a, b) => b.epoch_day - a.epoch_day);
-    return data.find(f => f.epoch_day <= epoch_day && (day_only || f.skills.join() === ssj));
+    return data.find(f => f.rarity === rarity && f.epoch_day <= epoch_day && (day_only || f.skills.join() === ssj));
 }
 
 export function skillIcon(skill: string) {
@@ -53,6 +53,7 @@ export function formatElapsedDays(days: number, t: TranslateMethod): string {
 }
 
 export function configSkillFilters(data: CrewMember[], currConfig?: SkillFilterConfig) {
+    if (currConfig && !currConfig.rarity) currConfig.rarity = [];
     const config: SkillFilterConfig = {
         avail_primary: [],
         primary: [],
@@ -63,17 +64,19 @@ export function configSkillFilters(data: CrewMember[], currConfig?: SkillFilterC
         primary_totals: {},
         secondary_totals: {},
         tertiary_totals: {},
+        obtainedFilter: [],
+        rarity: [5],
         ...currConfig
     }
 
     if (!data?.length) return config;
 
-    let curr_crew = [ ...data ].filter(f => f.max_rarity === 5);
+    let curr_crew = [ ...data ].filter(f => !config.rarity.length || config.rarity.includes(f.max_rarity));
 
     ["primary", "secondary", "tertiary"].forEach((pos, idx) => {
         const new_skills = [] as string[];
         const avail_skills = [...new Set(curr_crew.filter(f => f.skill_order.length > idx).map(m => m.skill_order[idx]))];
-        config[`available_${pos}`] = avail_skills;
+        config[`avail_${pos}`] = avail_skills;
         avail_skills.forEach((skill) => {
             config[`${pos}_totals`][skill] = curr_crew.filter(f => f.skill_order.length > idx && f.skill_order[idx] === skill).length;
         });
@@ -83,11 +86,11 @@ export function configSkillFilters(data: CrewMember[], currConfig?: SkillFilterC
                 new_skills.push(skill);
             }
         }
-
+        let hadnone = config[pos].includes('')
         config[pos] = new_skills;
+        if (hadnone) config[pos].push('')
         curr_crew = curr_crew.filter(f => !config[pos].length || (f.skill_order.length > idx && config[pos].includes(f.skill_order[idx])));
     });
-
     return config;
 }
 
@@ -95,26 +98,11 @@ export function configSkillFilters(data: CrewMember[], currConfig?: SkillFilterC
 export function filterBuckets(filterConfig: SkillFilterConfig, buckets: { [key: string]: SkoBucket[] }) {
     const newbuckets = {} as { [key: string]: SkoBucket[] };
     Object.entries(buckets).forEach(([skill_order, entries]) => {
-        let skills = skill_order.split(",");
-        let pass = true;
-
-        if (skills.length) {
-            ["primary", "secondary", "tertiary"].forEach((pos, idx) => {
-                if (!pass) return;
-                if (idx < skills.length && (filterConfig[pos]?.length && !filterConfig[pos].includes(skills[idx]))) {
-                    pass = false;
-                }
-                else if (idx >= skills.length && filterConfig[pos]?.length) {
-                    pass = false;
-                }
-            });
-        }
-        else {
-            pass = false;
-        }
-
-        if (pass) {
-            newbuckets[skill_order] = entries;
+        if (test(filterConfig, { skills: skill_order.split(","), rarity: 0 })) {
+            let newentries = entries.filter(f => !filterConfig.rarity.length || filterConfig.rarity.includes(f.rarity));
+            if (newentries.length) {
+                newbuckets[skill_order] = newentries;
+            }
         }
     });
     return newbuckets;
@@ -123,25 +111,7 @@ export function filterBuckets(filterConfig: SkillFilterConfig, buckets: { [key: 
 export function filterFlatData(filterConfig: SkillFilterConfig, data: SkoBucket[]) {
     const newdata = [] as SkoBucket[];
     data.forEach((entry) => {
-        let skills = entry.skills;
-        let pass = true;
-
-        if (skills.length) {
-            ["primary", "secondary", "tertiary"].forEach((pos, idx) => {
-                if (!pass) return;
-                if (idx < skills.length && (filterConfig[pos]?.length && !filterConfig[pos].includes(skills[idx]))) {
-                    pass = false;
-                }
-                else if (idx >= skills.length && filterConfig[pos]?.length) {
-                    pass = false;
-                }
-            });
-        }
-        else {
-            pass = false;
-        }
-
-        if (pass) {
+        if (test(filterConfig, entry)) {
             newdata.push(entry);
         }
     });
@@ -151,29 +121,40 @@ export function filterFlatData(filterConfig: SkillFilterConfig, data: SkoBucket[
 export function filterHighs(filterConfig: SkillFilterConfig, highs: Highs[]) {
     const newhighs = [] as Highs[];
     highs.forEach((entry) => {
-        let skills = entry.skills;
-        let pass = true;
+        if (test(filterConfig, entry)) {
+            newhighs.push(entry);
+        }
+    })
+    return newhighs;
+}
 
-        if (skills.length) {
-            ["primary", "secondary", "tertiary"].forEach((pos, idx) => {
+function test<T extends { rarity: number, skills: string[] }>(filterConfig: SkillFilterConfig, entry: T) {
+    let skills = entry.skills;
+    let pass = true;
+
+    if (skills.length) {
+        ["primary", "secondary", "tertiary"].forEach((pos, idx) => {
+            let nonepos = filterConfig[pos].includes('');
+            if (!nonepos) {
                 if (!pass) return;
-                if (idx < skills.length && (filterConfig[pos]?.length && !filterConfig[pos].includes(skills[idx]))) {
+                if (skills[idx] && idx < skills.length && (filterConfig[pos]?.length && !filterConfig[pos].includes(skills[idx]))) {
                     pass = false;
                 }
                 else if (idx >= skills.length && filterConfig[pos]?.length) {
                     pass = false;
                 }
-            });
-        }
-        else {
-            pass = false;
-        }
+            }
+            else if (skills.length >= idx + 1) {
+                pass = false;
+            }
+        });
+    }
+    else {
+        pass = false;
+    }
 
-        if (pass) {
-            newhighs.push(entry);
-        }
-    })
-    return newhighs;
+    if (entry.rarity && filterConfig.rarity.length && !filterConfig.rarity.includes(entry.rarity)) pass = false;
+    return pass;
 }
 
 export function filterEpochDiffs(filterConfig: SkillFilterConfig, diffs: EpochDiff[]) {
@@ -185,7 +166,7 @@ export function filterEpochDiffs(filterConfig: SkillFilterConfig, diffs: EpochDi
         if (skills.length) {
             ["primary", "secondary", "tertiary"].forEach((pos, idx) => {
                 if (!pass) return;
-                if (idx < skills.length && (filterConfig[pos]?.length && !filterConfig[pos].includes(skills[idx]))) {
+                if (skills[idx] && idx < skills.length && (filterConfig[pos]?.length && !filterConfig[pos].includes(skills[idx]))) {
                     pass = false;
                 }
                 else if (idx >= skills.length && filterConfig[pos]?.length) {
@@ -197,6 +178,8 @@ export function filterEpochDiffs(filterConfig: SkillFilterConfig, diffs: EpochDi
             pass = false;
         }
 
+        if (filterConfig.rarity.length && !filterConfig.rarity.includes(diff.rarity)) pass = false;
+
         if (pass) {
             newdiffs.push(diff);
         }
@@ -204,21 +187,23 @@ export function filterEpochDiffs(filterConfig: SkillFilterConfig, diffs: EpochDi
     return newdiffs;
 }
 
-export function makeFilterCombos(config: SkillFilterConfig) {
-    let a = config.primary.length ? config.primary : config.avail_primary;
-    let b = config.secondary.length ? config.secondary : config.avail_secondary;
-    let c = config.tertiary.length ? config.tertiary : config.avail_tertiary;
+export function makeFilterCombos(config: SkillFilterConfig, no_avail = false) {
+    let a = config.primary.length ? config.primary : no_avail ? [] : config.avail_primary;
+    let b = config.secondary.length ? config.secondary : no_avail ? [] : config.avail_secondary;
+    let c = config.tertiary.length ? config.tertiary : no_avail ? [] : config.avail_tertiary;
 
     let p = [] as string[];
 
     for (let z1 of a) {
-        p.push(z1);
+        if (z1 && config.primary.length) p.push(z1);
         for (let z2 of b) {
             if (z2 === z1) continue;
-            p.push(`${z1},${z2}`);
+            //if (config.secondary.length || config.primary.length) p.push(`${z1},${z2}`);
+            if (z2 && config.secondary.length) p.push(`${z1},${z2}`);
             for (let z3 of c) {
                 if (z2 === z3 || z3 === z1) continue;
-                p.push(`${z1},${z2},${z3}`);
+                //if (config.primary.length || config.tertiary.length || config.secondary.length) p.push(`${z1},${z2},${z3}`);
+                if (z3 && config.tertiary.length) p.push(`${z1},${z2},${z3}`);
             }
         }
     }

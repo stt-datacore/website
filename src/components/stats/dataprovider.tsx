@@ -4,6 +4,7 @@ import { useStateWithStorage } from '../../utils/storage';
 import { GlobalContext } from '../../context/globalcontext';
 import { skillSum } from '../../utils/crewutils';
 import { configSkillFilters, filterFlatData, findHigh } from './utils';
+import CONFIG from '../CONFIG';
 
 const defaultContextData = {
     skillKey: '',
@@ -29,15 +30,16 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
     const { children } = props;
     const globalContext = React.useContext(GlobalContext);
 
+    const [displayMode, setDisplayMode] = useStateWithStorage<StatsDisplayMode>(`stats_display_mode`, 'crew', { rememberForever: true });
+    const [filterConfig, internalSetFilterConfig] = useStateWithStorage<SkillFilterConfig>(`stats_page_skill_filter_config`, defaultContextData.filterConfig, { rememberForever: true });
+
     const [allHighs, setAllHighs] = React.useState([] as Highs[]);
-    const [displayMode, setDisplayMode] = useStateWithStorage<StatsDisplayMode>(`stats_display_mode`, 'crew');
     const [skoBuckets, setSkoBuckets] = React.useState({} as { [key: string]: SkoBucket[] });
     const [flatOrder, setFlatOrder] = React.useState([] as SkoBucket[]);
     const [epochDiffs, setEpochDiffs] = React.useState([] as EpochDiff[]);
     const [uniqueObtained, setUniqueObtained] = React.useState([] as string[]);
-    const [obtainedFilter, setObtainedFilter] = React.useState([] as string[] | undefined);
     const [crewCount, setCrewCount] = React.useState(0);
-    const [filterConfig, internalSetFilterConfig] = useStateWithStorage<SkillFilterConfig>(`stats_page_skill_filter_config`, defaultContextData.filterConfig, { rememberForever: true });
+
     const gameEpoch = new Date("2016-01-01T00:00:00Z");
 
     React.useEffect(() => {
@@ -49,12 +51,11 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
         const allHighs = [] as Highs[];
         const obtained = [] as string[];
         for (let c of crew) {
+            if (filterConfig.rarity.length && !filterConfig.rarity.includes(c.max_rarity)) continue;
             if (!obtained.includes(c.obtained)) obtained.push(c.obtained);
 
             const aggregates = Object.values(c.base_skills).map(skill => skillSum(skill));
             const epoch_day = Math.floor(((new Date(c.date_added)).getTime() - gameEpoch.getTime()) / (1000 * 60 * 60 * 24));
-
-            if (c.max_rarity !== 5) continue;
 
             [1, 2, 3].forEach((n) => {
                 if (c.skill_order.length >= n) {
@@ -64,47 +65,49 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
                     let levels = skd.map(m => skillSum(c.base_skills[m]));
                     //let aggregate_sum = c.skill_order.map(m => skillSum(c.base_skills[m])).reduce((p, n) => p + n, 0);
                     let aggregate_sum = levels.reduce((p, n) => p + n, 0);
-                    let high = findHigh(epoch_day, skd, allHighs);
+                    let high = findHigh(epoch_day, skd, allHighs, c.max_rarity);
                     if (!high || high.aggregate_sum < aggregate_sum) {
                         allHighs.push({
                             crew: c,
                             skills: skd,
                             aggregates: levels,
                             epoch_day,
-                            aggregate_sum
+                            aggregate_sum,
+                            rarity: c.max_rarity
                         });
-                    }
-                    if (c.symbol === 'quark_bar_owner_crew') {
-                        console.log('break');
                     }
                     skoBuckets[sko] ??= [];
                     skoBuckets[sko].push({
                         symbol: c.symbol,
                         aggregates,
                         epoch_day,
-                        skills: skd
+                        skills: skd,
+                        rarity: c.max_rarity
                     });
                     flat.push({
                         symbol: c.symbol,
                         aggregates,
                         epoch_day,
-                        skills: skd
+                        skills: skd,
+                        rarity: c.max_rarity
                     });
                 }
             });
         }
 
-        const curr = {} as { [key: string]: SkoBucket };
+        for (let r = 1; r <= 5; r++) {
+            const curr = {} as { [key: string]: SkoBucket };
 
-        flat.forEach((entry) => {
-            let key = entry.skills.join(",");
-            if (curr[key]) curr[key].next = entry;
-            entry.prev = curr[key];
-            curr[key] = entry;
-        });
+            flat.filter(f => f.rarity === r).forEach((entry) => {
+                let key = entry.skills.join(",");
+                if (curr[key]) curr[key].next = entry;
+                entry.prev = curr[key];
+                curr[key] = entry;
+            });
+        }
 
         obtained.sort();
-        flat.sort((a, b) => a.epoch_day - b.epoch_day);
+        flat.sort((a, b) => b.epoch_day - a.epoch_day || b.rarity - a.rarity);
 
         setUniqueObtained(obtained);
         setFlatOrder(flat);
@@ -122,11 +125,11 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
             return;
         }
 
-        if (obtainedFilter) work = work.filter(f => !obtainedFilter.length || passObtained(f.symbol, obtainedFilter));
+        if (filterConfig.obtainedFilter) work = work.filter(f => !filterConfig.obtainedFilter.length || passObtained(f.symbol, filterConfig.obtainedFilter));
 
         if (work?.length) {
             work = filterFlatData(filterConfig, work);
-            work.sort((a, b) => b.epoch_day - a.epoch_day);
+            work.sort((a, b) => b.rarity - a.rarity || b.epoch_day - a.epoch_day);
 
             let newdiffs = [] as EpochDiff[];
             let c = work.length;
@@ -149,7 +152,8 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
                     skill_diffs: sd,
                     skills: next.skills,
                     velocity: 0,
-                    aggregates: [next.aggregates, curr.aggregates]
+                    aggregates: [next.aggregates, curr.aggregates],
+                    rarity: curr.rarity
                 };
                 let avgdiff = diff.skill_diffs.reduce((p, n) => p + n, 0) / diff.skill_diffs.length;
                 if (avgdiff && diff.day_diff) diff.velocity = avgdiff / diff.day_diff;
@@ -161,7 +165,7 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
             setCrewCount([...new Set(work.map(w => w.symbol)) ].length);
             setEpochDiffs(newdiffs);
         }
-    }, [skoBuckets, flatOrder, obtainedFilter, filterConfig]);
+    }, [flatOrder, filterConfig]);
 
     const contextData: IStatsContext = {
         allHighs,
@@ -170,11 +174,9 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
         epochDiffs,
         filterConfig,
         flatOrder,
-        obtainedFilter,
         setDisplayMode,
         setFilterConfig,
         setFlatOrder,
-        setObtainedFilter,
         skoBuckets,
         uniqueObtained,
     };
