@@ -103,8 +103,9 @@ export const StatTrendsComponent = () => {
                     if (!text) return;
                     if (idx) newelem.push(<>&nbsp;/&nbsp;</>);
                     newelem.push(<span>
-                        <img src={skillIcon(text)} style={{ height: '0.75em' }} />&nbsp;
-                        {CONFIG.SKILLS_SHORT.find(f => f.name === text)?.short}
+                        {text !== '*' && <><img src={skillIcon(text)} style={{ height: '0.75em' }} />&nbsp;
+                        {CONFIG.SKILLS_SHORT.find(f => f.name === text)?.short}</>}
+                        {text === '*' ? '*' : ''}
                     </span>)
                 });
                 skillDecors.push(<Label color='green' style={{border: '1px solid gray', borderRadius: '1em'}}>{newelem}</Label>)

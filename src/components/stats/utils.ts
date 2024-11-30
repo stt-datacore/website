@@ -195,7 +195,7 @@ export function makeFilterCombos(config: SkillFilterConfig, no_avail = false) {
     let p = [] as string[];
 
     for (let z1 of a) {
-        if (z1 && config.primary.length) p.push(z1);
+        if (z1 && config.primary.length) p.push(`${z1}`);
         for (let z2 of b) {
             if (z2 === z1) continue;
             //if (config.secondary.length || config.primary.length) p.push(`${z1},${z2}`);
@@ -207,6 +207,14 @@ export function makeFilterCombos(config: SkillFilterConfig, no_avail = false) {
             }
         }
     }
-
-    return p;
+    p.sort((a, b) => a.localeCompare(b));
+    let fp = [] as string[];
+    for (let pt of p) {
+        if (!p.some(px => px.startsWith(pt) && px !== pt)) {
+            let pn = pt.split(",")
+            while (pn.length < 3) pn.push("*")
+            fp.push(pn.join(","))
+        }
+    }
+    return fp;
 }
