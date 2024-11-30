@@ -93,10 +93,9 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
             });
         }
 
-        for (let r = 1; r <= 5; r++) {
-            const curr = {} as { [key: string]: SkoBucket };
-
-            flat.filter(f => f.rarity === r).forEach((entry) => {
+        for (let rarity = 1; rarity <= 5; rarity++) {
+            let curr = {} as { [key: string]: SkoBucket };
+            flat.filter(f => f.rarity === rarity).forEach((entry) => {
                 let key = entry.skills.join(",");
                 if (curr[key]) curr[key].next = entry;
                 entry.prev = curr[key];
@@ -135,7 +134,7 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
                 let next = work[i];
                 if (!next.prev && i === c - 1) break;
                 let curr = next.prev ?? work[i + 1];
-
+                if (!next.prev) continue;
                 let dd = next.epoch_day - curr.epoch_day;
                 let sd = [] as number[];
                 for (let j = 0; j < s; j++) {

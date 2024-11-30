@@ -1866,10 +1866,10 @@
         },
         "description": "Estudie las estadísticas sobre la tendencia del poder de la tripulación a lo largo del tiempo.",
         "graphs": {
+            "ignore_filters": "Ignorar los filtros actualmente activos",
             "release_graph": "Calendario de lanzamiento",
             "skill_area": "Zona de habilidades",
-            "title": "Gráficos",
-            "ignore_filters": "Ignorar los filtros actualmente activos"
+            "title": "Gráficos"
         },
         "new_high": "Nueva Máxima",
         "released_duration_ago": "Debutó hace {{duration}}",
