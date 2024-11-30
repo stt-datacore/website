@@ -26,10 +26,11 @@ export const StatTrendsComponent = () => {
     const { epochDiffs, displayMode, setDisplayMode, crewCount, filterConfig, flatOrder } = statsContext;
 
     React.useEffect(() => {
-        if (epochDiffs?.length) {
-            const vels = epochDiffs.map(diff => diff.velocity);
+        const filterDiffs = filterEpochDiffs(filterConfig, epochDiffs)
+        if (filterDiffs?.length) {
+            const vels = filterDiffs.map(diff => diff.velocity);
             vels.sort((a, b) => a - b);
-            const days = epochDiffs.map(diff => diff.day_diff);
+            const days = filterDiffs.map(diff => diff.day_diff);
             days.sort((a, b) => a - b);
             const avgDays = days.reduce((p, n) => p + n, 0) / vels.length;
             const avgVel = vels.reduce((p, n) => p + n, 0) / vels.length;
@@ -50,7 +51,7 @@ export const StatTrendsComponent = () => {
             setAvgDaysBetween(0);
             setMeanDaysBetween(0);
         }
-    }, [epochDiffs]);
+    }, [epochDiffs, filterConfig]);
 
     React.useEffect(() => {
         const skilldiffs = [] as (Skill & { rarity: number })[];

@@ -119,7 +119,7 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
     React.useEffect(() => {
         let work: SkoBucket[] = [];
         if (flatOrder?.length) {
-            work = flatOrder;
+            work = [...flatOrder];
         }
         else {
             return;

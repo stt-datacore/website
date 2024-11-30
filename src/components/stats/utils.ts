@@ -128,6 +128,16 @@ export function filterHighs(filterConfig: SkillFilterConfig, highs: Highs[]) {
     return newhighs;
 }
 
+export function filterEpochDiffs(filterConfig: SkillFilterConfig, diffs: EpochDiff[]) {
+    const newdiffs = [] as EpochDiff[];
+    diffs.forEach((diff) => {
+        if (test(filterConfig, diff)) {
+            newdiffs.push(diff);
+        }
+    });
+    return newdiffs;
+}
+
 function test<T extends { rarity: number, skills: string[] }>(filterConfig: SkillFilterConfig, entry: T) {
     let skills = entry.skills;
     let pass = true;
@@ -155,36 +165,6 @@ function test<T extends { rarity: number, skills: string[] }>(filterConfig: Skil
 
     if (entry.rarity && filterConfig.rarity.length && !filterConfig.rarity.includes(entry.rarity)) pass = false;
     return pass;
-}
-
-export function filterEpochDiffs(filterConfig: SkillFilterConfig, diffs: EpochDiff[]) {
-    const newdiffs = [] as EpochDiff[];
-    diffs.forEach((diff) => {
-        let skills = diff.skills;
-        let pass = true;
-
-        if (skills.length) {
-            ["primary", "secondary", "tertiary"].forEach((pos, idx) => {
-                if (!pass) return;
-                if (skills[idx] && idx < skills.length && (filterConfig[pos]?.length && !filterConfig[pos].includes(skills[idx]))) {
-                    pass = false;
-                }
-                else if (idx >= skills.length && filterConfig[pos]?.length) {
-                    pass = false;
-                }
-            });
-        }
-        else {
-            pass = false;
-        }
-
-        if (filterConfig.rarity.length && !filterConfig.rarity.includes(diff.rarity)) pass = false;
-
-        if (pass) {
-            newdiffs.push(diff);
-        }
-    });
-    return newdiffs;
 }
 
 export function makeFilterCombos(config: SkillFilterConfig, no_avail = false) {
