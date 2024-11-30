@@ -2,14 +2,14 @@ import React from "react"
 import { GlobalContext } from "../../../context/globalcontext"
 import { StatsContext } from "../dataprovider";
 import { useStateWithStorage } from "../../../utils/storage";
-import { EpochDiff, Highs } from "../model";
-import { epochToDate, filterEpochDiffs, filterHighs, findHigh, GameEpoch, isoDatePart } from "../utils";
+import { EpochDiff, GraphPropsCommon, Highs } from "../model";
+import { epochToDate, filterEpochDiffs, filterHighs, findHigh, GameEpoch, isoDatePart, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
 import { CalendarDatum, ResponsiveCalendar } from "@nivo/calendar";
 import { skillSum } from "../../../utils/crewutils";
 import themes from "../../nivo_themes";
 import { CrewMember } from "../../../model/crew";
 import { CrewTiles } from "../../base/crewtiles";
-import { Label } from "semantic-ui-react";
+import { Checkbox, Label } from "semantic-ui-react";
 
 interface CalendarData extends CalendarDatum {
     year: number;
@@ -24,46 +24,48 @@ interface CalendarData extends CalendarDatum {
     crew: CrewMember[];
 }
 
-export const StatsCalendarChart = () => {
 
+
+export const StatsCalendarChart = (props: GraphPropsCommon) => {
+    const { useFilters } = props;
     const globalContext = React.useContext(GlobalContext);
     const statsContext = React.useContext(StatsContext);
     const { t } = globalContext.localized;
     const { crew } = globalContext.core;
-    const { filterConfig, allHighs, epochDiffs } = statsContext;
+    const { filterConfig, allHighs: outerHighs, epochDiffs: outerDiffs } = statsContext;
 
-    const [useFilters, setUseFilters] = useStateWithStorage(`stats_calendar_use_filters`, true, { rememberForever: true });
+    const [allHighs, setAllHighs] = React.useState<Highs[]>([]);
+    const [epochDiffs, setEpochDiffs] = React.useState<EpochDiff[]>([]);
+    const [releaseTable, setReleaseTable] = React.useState<CalendarData[]>([]);
 
-    const [workHighs, setWorkHighs] = React.useState<Highs[]>([]);
-    const [workDiffs, setWorkDiffs] = React.useState<EpochDiff[]>([]);
-
-    const [years, setYears] = React.useState<CalendarData[][]>([]);
-    const [oneData, setOneData] = React.useState<CalendarData[]>([]);
     const totalYears = (((new Date()).getUTCFullYear()) - GameEpoch.getUTCFullYear()) + 1;
-    React.useEffect(() => {
-        if (allHighs.length) {
-            if (useFilters) {
-                setWorkHighs(filterHighs(filterConfig, allHighs));
-            }
-            else {
-                setWorkHighs(allHighs);
-            }
-        }
-    }, [useFilters, filterConfig, allHighs]);
 
     React.useEffect(() => {
-        if (epochDiffs.length) {
+        if (outerHighs.length) {
             if (useFilters) {
-                setWorkDiffs(filterEpochDiffs(filterConfig, epochDiffs))
+                setAllHighs(filterHighs(filterConfig, outerHighs));
             }
             else {
-                setWorkDiffs(epochDiffs);
+                setAllHighs(outerHighs);
             }
         }
-    }, [useFilters, filterConfig, epochDiffs]);
+    }, [useFilters, filterConfig, outerHighs]);
 
     React.useEffect(() => {
-        if (!workDiffs.length) return;
+        if (outerDiffs.length) {
+            if (useFilters) {
+                setEpochDiffs(filterEpochDiffs(filterConfig, outerDiffs))
+            }
+            else {
+                setEpochDiffs(outerDiffs);
+            }
+        }
+    }, [useFilters, filterConfig, outerDiffs]);
+
+    React.useEffect(() => {
+        if (!epochDiffs.length) return;
+        if (!allHighs.length) return;
+
         const newYears = [] as CalendarData[][];
         const now = new Date();
         const startYear = GameEpoch.getUTCFullYear();
@@ -71,7 +73,7 @@ export const StatsCalendarChart = () => {
 
         for (let year = startYear; year <= endYear; year++) {
             const newData = [] as CalendarData[];
-            const filtered = workDiffs.filter(f => f.epoch_days.some(ed => epochToDate(ed).getUTCFullYear() === year));
+            const filtered = epochDiffs.filter(f => f.epoch_days.some(ed => epochToDate(ed).getUTCFullYear() === year));
 
             for (let diff of filtered) {
                 for (let i = 0; i < 2; i++) {
@@ -128,11 +130,13 @@ export const StatsCalendarChart = () => {
             })
             newYears.push(newData);
         }
-        setYears(newYears);
-        setOneData(newYears.flat().sort((a, b) => a.day.localeCompare(b.day)));
-    }, [workDiffs]);
+        setReleaseTable(newYears.flat().sort((a, b) => a.day.localeCompare(b.day)));
+    }, [epochDiffs, allHighs]);
 
-    if (!oneData.length) return;
+    if (!releaseTable.length) return;
+
+    const flexRow = OptionsPanelFlexRow;
+    const flexCol = OptionsPanelFlexColumn;
 
     return (
         <div style={{
@@ -143,7 +147,8 @@ export const StatsCalendarChart = () => {
             gap: '1em',
             margin: '1em 0'
         }}>
-            {[oneData].map((year, idx) => {
+
+            {!!releaseTable?.length && [releaseTable].map((year, idx) => {
                 return <div style={{height: `${totalYears * 13}em`, width: '100%'}} key={`stats_year_calendar_${year.length ? year[0].year : '0'}_${idx}`}>
                     <ResponsiveCalendar
                         theme={themes.dark}

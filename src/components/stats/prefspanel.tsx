@@ -5,7 +5,7 @@ import { GlobalContext } from "../../context/globalcontext";
 import { prettyObtained } from "../../utils/crewutils";
 import { PlayerCrew } from "../../model/player";
 import CONFIG from "../CONFIG";
-import { filterBuckets } from "./utils";
+import { filterBuckets, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "./utils";
 import { RarityFilter } from "../crewtables/commonoptions";
 
 export const StatsPrefsPanel = () => {
@@ -14,8 +14,8 @@ export const StatsPrefsPanel = () => {
     const statsContext = React.useContext(StatsContext);
     const { filterConfig, setFilterConfig, skoBuckets, uniqueObtained } = statsContext;
 
-    const flexRow: React.CSSProperties = {display:'flex', flexDirection: 'row', alignItems:'center', justifyContent: 'flex-start', gap: '2em'};
-    const flexCol: React.CSSProperties = {display:'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', gap: '0.25em'};
+    const flexRow = OptionsPanelFlexRow;
+    const flexCol = OptionsPanelFlexColumn;
 
     const skillOpts = [] as DropdownItemProps[];
 

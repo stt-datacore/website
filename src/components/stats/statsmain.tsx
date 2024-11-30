@@ -11,6 +11,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { StatsContext } from "./dataprovider";
 import { Skill } from "../../model/crew";
 import { ChartsView } from "./chartsview";
+import { EpochDiff } from "./model";
 
 export const StatTrendsComponent = () => {
     const globalContext = React.useContext(GlobalContext);
@@ -24,10 +25,12 @@ export const StatTrendsComponent = () => {
     const [avgDaysBetween, setAvgDaysBetween] = React.useState(0);
     const [meanDaysBetween, setMeanDaysBetween] = React.useState(0);
 
-    const { epochDiffs, displayMode, setDisplayMode, crewCount, filterConfig, flatOrder } = statsContext;
+    const { epochDiffs: outerDiffs, displayMode, setDisplayMode, crewCount, filterConfig, flatOrder: outerOrder } = statsContext;
+
+    const [epochDiffs, setEpochDiffs] = React.useState<EpochDiff[]>([]);
 
     React.useEffect(() => {
-        const filterDiffs = filterEpochDiffs(filterConfig, epochDiffs)
+        const filterDiffs = filterEpochDiffs(filterConfig, outerDiffs);
         if (filterDiffs?.length) {
             const vels = filterDiffs.map(diff => diff.velocity);
             vels.sort((a, b) => a - b);
@@ -52,11 +55,12 @@ export const StatTrendsComponent = () => {
             setAvgDaysBetween(0);
             setMeanDaysBetween(0);
         }
-    }, [epochDiffs, filterConfig]);
+        setEpochDiffs(filterDiffs);
+    }, [outerDiffs, filterConfig]);
 
     React.useEffect(() => {
         const skilldiffs = [] as (Skill & { rarity: number })[];
-        const byTime = filterFlatData(filterConfig, flatOrder).sort((a, b) => a.epoch_day - b.epoch_day);
+        const byTime = filterFlatData(filterConfig, outerOrder).sort((a, b) => a.epoch_day - b.epoch_day);
 
         for (let rarity = 1; rarity <= 5; rarity++) {
             [0, 1, 2].forEach((skillPos) => {
@@ -85,7 +89,7 @@ export const StatTrendsComponent = () => {
             });
         }
         setTotalPowerDiff(skilldiffs);
-    }, [flatOrder, filterConfig]);
+    }, [outerOrder, filterConfig]);
 
     const gridWidth = 8;
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
@@ -139,7 +143,7 @@ export const StatTrendsComponent = () => {
                         <Step.Description>{t('stat_trends.sections.graphs.description')}</Step.Description>
                     </Step>
                 </Step.Group>
-                {displayMode === 'crew' && <StatTrendsTable />}
+                {displayMode === 'crew' && <StatTrendsTable prefilteredDiffs={epochDiffs} />}
                 {displayMode === 'graphs' && <ChartsView />}
 
             </div>)

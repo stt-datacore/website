@@ -1852,8 +1852,10 @@
         },
         "description": "Study statistics about crew power trending over time.",
         "graphs": {
-            "release_graph": "Release Graph",
-            "title": "Graphs"
+            "release_graph": "Release Schedule",
+            "skill_area": "Skill Area",
+            "title": "Graphs",
+            "ignore_filters": "Ignore currently active filters"
         },
         "new_high": "New High",
         "released_duration_ago": "Released {{duration}} ago",

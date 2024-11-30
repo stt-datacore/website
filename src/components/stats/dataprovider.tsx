@@ -124,10 +124,7 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
             return;
         }
 
-        if (filterConfig.obtainedFilter) work = work.filter(f => !filterConfig.obtainedFilter.length || passObtained(f.symbol, filterConfig.obtainedFilter));
-
         if (work?.length) {
-            work = filterFlatData(filterConfig, work);
             work.sort((a, b) => b.epoch_day - a.epoch_day || b.rarity - a.rarity);
 
             let newdiffs = [] as EpochDiff[];

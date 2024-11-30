@@ -4,28 +4,50 @@ import { GlobalContext } from "../../context/globalcontext";
 import CONFIG from "../CONFIG";
 import { AvatarView } from "../item_presenters/avatarview";
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
-import { findHigh, formatElapsedDays, GameEpoch, skillIcon } from "./utils";
+import { filterEpochDiffs, filterHighs, findHigh, formatElapsedDays, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow, skillIcon } from "./utils";
 import { EpochDiff, Highs } from "./model";
 import { CrewMember } from '../../model/crew';
 import { StatsContext } from './dataprovider';
 
 export interface StatTrendsTableProps {
+    prefilteredHighs?: Highs[];
+    prefilteredDiffs?: EpochDiff[];
 }
 
 export const StatTrendsTable = (props: StatTrendsTableProps) => {
     const globalContext = React.useContext(GlobalContext);
     const statsContext = React.useContext(StatsContext);
-    const { epochDiffs, allHighs } = statsContext;
+    const { epochDiffs: outerDiffs, allHighs: outerHighs, filterConfig } = statsContext;
+    const [epochDiffs, setEpochDiffs] = React.useState<EpochDiff[]>([]);
+    const [allHighs, setAllHighs] = React.useState<Highs[]>([]);
 
     const { t } = globalContext.localized;
     const { crew } = globalContext.core;
     const { playerData } = globalContext.player;
 
+    React.useEffect(() => {
+        if (props.prefilteredDiffs) {
+            setEpochDiffs(props.prefilteredDiffs);
+        }
+        else {
+            setEpochDiffs(filterEpochDiffs(filterConfig, outerDiffs));
+        }
+    }, [outerDiffs]);
+
+    React.useEffect(() => {
+        if (props.prefilteredHighs) {
+            setAllHighs(props.prefilteredHighs);
+        }
+        else {
+            setAllHighs(filterHighs(filterConfig, outerHighs));
+        }
+    }, [outerHighs]);
+
     const nowDate = new Date();
     const daysFromEpoch = Math.floor((nowDate.getTime() - GameEpoch.getTime()) / (1000 * 60 * 60 * 24));
 
-    const flexRow: React.CSSProperties = {display:'flex', flexDirection: 'row', alignItems:'center', justifyContent: 'flex-start', gap: '2em'};
-    const flexCol: React.CSSProperties = {display:'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', gap: '0.25em'};
+    const flexRow = OptionsPanelFlexRow;
+    const flexCol = OptionsPanelFlexColumn;
 
     const sortAg = (a: EpochDiff, b: EpochDiff, idx: number) => a.aggregates[idx].reduce((p, n) => p + n, 0) - b.aggregates[idx].reduce((p, n) => p + n, 0);
     const tableConfig = [

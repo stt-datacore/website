@@ -1,8 +1,10 @@
 import React from "react"
 import { StatsCalendarChart } from "./charts/calendar"
-import { Dropdown, DropdownItemProps, Step } from "semantic-ui-react"
+import { Checkbox, Dropdown, DropdownItemProps, Step } from "semantic-ui-react"
 import { GlobalContext } from "../../context/globalcontext"
 import { useStateWithStorage } from "../../utils/storage"
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "./utils"
+import { StatsSkillAreaBump } from "./charts/skillbump"
 
 
 
@@ -10,21 +12,21 @@ export const ChartsView = () => {
 
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
-    const graphOpts = [] as DropdownItemProps[];
 
     const [currGraph, setCurrGraph] = useStateWithStorage(`stat_trends_graphs_selector`, 'release_graph', { rememberForever: true });
+    const [useFilters, setUseFilters] = useStateWithStorage(`stats_calendar_use_filters`, true, { rememberForever: true });
 
-    graphOpts.push(
-        { key: 'release_graph', value: 'release_graph', text: t('stat_trends.graphs.release_graph')}
-    )
+    const graphOpts = [
+        { key: 'release_graph', value: 'release_graph', text: t('stat_trends.graphs.release_graph')},
+        { key: 'skill_area', value: 'skill_area', text: t('stat_trends.graphs.skill_area')},
+    ];
 
-    const flexCol: React.CSSProperties = {display:'flex', textAlign: 'left', flexDirection: 'column', alignItems:'flex-start', justifyContent: 'flex-start', gap: '0.5em'};
-    const flexRow: React.CSSProperties = {display:'flex', flexDirection: 'row', alignItems:'top', justifyContent: 'flex-start', gap: '2em', flexWrap: 'wrap'};
+    const flexRow = OptionsPanelFlexRow;
+    const flexCol = OptionsPanelFlexColumn;
 
     return <React.Fragment>
-
         <div style={flexRow}>
-            <div style={flexCol}>
+            <div style={{...flexCol, textAlign: 'left', alignItems: 'flex-start'}}>
                 {t('stat_trends.graphs.title')}
                 <Dropdown
                     selection
@@ -36,9 +38,17 @@ export const ChartsView = () => {
             </div>
         </div>
 
+        <div style={{...flexRow, alignSelf: 'flex-start', margin: '1em 0' }}>
+            <Checkbox
+                label={t('stat_trends.graphs.ignore_filters')}
+                checked={!useFilters}
+                onChange={(e, { checked }) => setUseFilters(!checked)}
+                />
+        </div>
 
         <h3>{t(`stat_trends.graphs.${currGraph}`)}</h3>
-        {currGraph === 'release_graph' && <StatsCalendarChart />}
+        {currGraph === 'release_graph' && <StatsCalendarChart useFilters={useFilters} />}
+        {currGraph === 'skill_area' && <StatsSkillAreaBump useFilters={useFilters} />}
 
     </React.Fragment>
 }

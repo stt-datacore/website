@@ -2,12 +2,19 @@ import { CrewMember } from "../../model/crew";
 import { TranslateMethod } from "../../model/player";
 import { EpochDiff, Highs, SkillFilterConfig, SkoBucket } from "./model";
 
+export const OptionsPanelFlexRow: React.CSSProperties = {display:'flex', flexDirection: 'row', alignItems:'center', justifyContent: 'flex-start', gap: '2em'};
+export const OptionsPanelFlexColumn: React.CSSProperties = {display:'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', gap: '0.25em'};
+
 export const GameEpoch = new Date("2016-01-01T00:00:00Z");
 
 export function epochToDate(day: number) {
     let d = new Date(GameEpoch);
     d.setUTCDate(d.getUTCDate() + day);
     return d;
+}
+
+export function dateToEpoch(d: Date = new Date()) {
+    return Math.floor((d.getTime() - GameEpoch.getTime()) / (1000 * 60 * 60 * 24));
 }
 
 export function isoDatePart(d: Date) {
@@ -148,6 +155,16 @@ export function filterEpochDiffs(filterConfig: SkillFilterConfig, diffs: EpochDi
         }
     });
     return newdiffs;
+}
+
+export function statFilterCrew<T extends CrewMember>(filterConfig: SkillFilterConfig, crew: T[]) {
+    const newcrew = [] as T[];
+    crew.forEach((c) => {
+        if (test(filterConfig, { rarity: c.max_rarity, skills: c.skill_order })) {
+            newcrew.push(c);
+        }
+    });
+    return newcrew;
 }
 
 function test<T extends { rarity: number, skills: string[] }>(filterConfig: SkillFilterConfig, entry: T) {

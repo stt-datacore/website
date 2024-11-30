@@ -59,3 +59,7 @@ export interface IStatsContext {
     epochDiffs: EpochDiff[];
     allHighs: Highs[];
 }
+
+export interface GraphPropsCommon {
+    useFilters: boolean;
+}

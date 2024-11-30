@@ -1698,6 +1698,19 @@
     d3-format "^1.4.4"
     d3-time-format "^3.0.0"
 
+"@nivo/axes@0.88.0":
+  version "0.88.0"
+  resolved "https://registry.yarnpkg.com/@nivo/axes/-/axes-0.88.0.tgz#b773efb217fc0faedbb5f8bc458f4b78820e2761"
+  integrity sha512-jF7aIxzTNayV5cI1J/b9Q1FfpMBxTXGk3OwSigXMSfYWlliskDn2u0qGRLiYhuXFdQAWIp4oXsO1GcAQ0eRVdg==
+  dependencies:
+    "@nivo/core" "0.88.0"
+    "@nivo/scales" "0.88.0"
+    "@react-spring/web" "9.4.5 || ^9.7.2"
+    "@types/d3-format" "^1.4.1"
+    "@types/d3-time-format" "^2.3.1"
+    d3-format "^1.4.4"
+    d3-time-format "^3.0.0"
+
 "@nivo/bar@^0.85.1":
   version "0.85.1"
   resolved "https://registry.yarnpkg.com/@nivo/bar/-/bar-0.85.1.tgz#3f7a0f9d403e55abb25f8fdf7f1f3c4ea3ce44ee"
@@ -1717,18 +1730,18 @@
     d3-shape "^1.3.5"
     lodash "^4.17.21"
 
-"@nivo/bump@^0.87.0":
-  version "0.87.0"
-  resolved "https://registry.yarnpkg.com/@nivo/bump/-/bump-0.87.0.tgz#d4feb8cb2edda80fea11ec5b031a9bf63d5641db"
-  integrity sha512-JMtdnw9wFoFJkGHDV/jl0/Xto9Vj2SkBJgoBjdJDfEAdIK7W5g3tyCvXU/XzrS4jUIK/yz68moW6i6DlWJy2bA==
+"@nivo/bump@^0.88.0":
+  version "0.88.0"
+  resolved "https://registry.yarnpkg.com/@nivo/bump/-/bump-0.88.0.tgz#a42ac82bd3e2d93b84b8dbe30fff4e74ab231b46"
+  integrity sha512-I/4LHIDjDpG7whSvc6nIgoFxENOGmzTSlnmCplMyGSmNKIZEyIgTl9jZLYWzl36/uoPSg+BYXfLeAmkvEdpwWQ==
   dependencies:
-    "@nivo/axes" "0.87.0"
-    "@nivo/colors" "0.87.0"
-    "@nivo/core" "0.87.0"
-    "@nivo/legends" "0.87.0"
-    "@nivo/scales" "0.87.0"
-    "@nivo/tooltip" "0.87.0"
-    "@nivo/voronoi" "0.87.0"
+    "@nivo/axes" "0.88.0"
+    "@nivo/colors" "0.88.0"
+    "@nivo/core" "0.88.0"
+    "@nivo/legends" "0.88.0"
+    "@nivo/scales" "0.88.0"
+    "@nivo/tooltip" "0.88.0"
+    "@nivo/voronoi" "0.88.0"
     "@react-spring/web" "9.4.5 || ^9.7.2"
     "@types/d3-scale" "^4.0.8"
     "@types/d3-shape" "^3.1.6"
@@ -2040,6 +2053,19 @@
     d3-time-format "^3.0.0"
     lodash "^4.17.21"
 
+"@nivo/scales@0.88.0":
+  version "0.88.0"
+  resolved "https://registry.yarnpkg.com/@nivo/scales/-/scales-0.88.0.tgz#c69110b5ab504debb80a5a01a7824780af241ffb"
+  integrity sha512-HbpxkQp6tHCltZ1yDGeqdLcaJl5ze54NPjurfGtx/Uq+H5IQoBd4Tln49bUar5CsFAMsXw8yF1HQvASr7I1SIA==
+  dependencies:
+    "@types/d3-scale" "^4.0.8"
+    "@types/d3-time" "^1.1.1"
+    "@types/d3-time-format" "^3.0.0"
+    d3-scale "^4.0.2"
+    d3-time "^1.0.11"
+    d3-time-format "^3.0.0"
+    lodash "^4.17.21"
+
 "@nivo/sunburst@^0.85.1":
   version "0.85.1"
   resolved "https://registry.yarnpkg.com/@nivo/sunburst/-/sunburst-0.85.1.tgz#5494912c987e5bca37f4397efa651a05c1824c11"
@@ -2123,6 +2149,18 @@
   dependencies:
     "@nivo/core" "0.87.0"
     "@nivo/tooltip" "0.87.0"
+    "@types/d3-delaunay" "^6.0.4"
+    "@types/d3-scale" "^4.0.8"
+    d3-delaunay "^6.0.4"
+    d3-scale "^4.0.2"
+
+"@nivo/voronoi@0.88.0":
+  version "0.88.0"
+  resolved "https://registry.yarnpkg.com/@nivo/voronoi/-/voronoi-0.88.0.tgz#029f984ccb6e72b415f398e1bd74c572960197ae"
+  integrity sha512-MyiNLvODthFoMjQ7Wjp693nogbTmVEx8Yn/7QkJhyPQbFyyA37TF/D1a/ox4h2OslXtP6K9QFN+42gB/zu7ixw==
+  dependencies:
+    "@nivo/core" "0.88.0"
+    "@nivo/tooltip" "0.88.0"
     "@types/d3-delaunay" "^6.0.4"
     "@types/d3-scale" "^4.0.8"
     d3-delaunay "^6.0.4"

@@ -1854,8 +1854,10 @@
         },
         "description": "Studieren Sie Statistiken zur Entwicklung der Besatzungsstärke im Laufe der Zeit.",
         "graphs": {
-            "release_graph": "Release Graph",
-            "title": "Graphs"
+            "release_graph": "Veröffentlichungsplan",
+            "skill_area": "Kompetenzbereich",
+            "title": "Grafiken",
+            "ignore_filters": "Derzeit aktive Filter ignorieren"
         },
         "new_high": "Neuer Highscore",
         "released_duration_ago": "Debüt vor {{duration}}",
