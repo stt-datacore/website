@@ -37,6 +37,8 @@ export interface SkillFilterConfig {
     tertiary_totals: { [key: string]: number }
     obtainedFilter: string[];
     rarity: number[];
+    start_date: string;
+    end_date: string;
 }
 
 export type Highs = {
@@ -63,4 +65,25 @@ export interface IStatsContext {
 
 export interface GraphPropsCommon {
     useFilters: boolean;
+}
+
+export interface SkillOrderDebut {
+    skill_order: string,
+    epoch_day: number,
+    crew: { symbol: string, power: number, rank_at_debut: number, new_high: boolean }[],
+    high_power: number,
+    low_power: number,
+}
+
+export interface GraphSeries {
+    id: string;
+    group: string;
+    density: number,
+    power: number,
+    low_power: number,
+    high_power: number,
+    x: number,
+    y: number,
+    epoch_start: number;
+    epoch_end: number;
 }
