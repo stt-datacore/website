@@ -2916,6 +2916,18 @@
   dependencies:
     "@types/tern" "*"
 
+"@types/color-convert@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@types/color-convert/-/color-convert-2.0.4.tgz#843398ae71e951dc5415d202dfd5e43108823eeb"
+  integrity sha512-Ub1MmDdyZ7mX//g25uBAoH/mWGd9swVbt8BseymnaE18SU4po/PjmCrHxqIIRjBo3hV/vh1KGr0eMxUhp+t+dQ==
+  dependencies:
+    "@types/color-name" "^1.1.0"
+
+"@types/color-name@^1.1.0":
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.5.tgz#3a3510c4e3661f7707c5ae9c67d726986e6e147d"
+  integrity sha512-j2K5UJqGTxeesj6oQuGpMgifpT5k9HprgQd8D1Y0lOFqKHl3PJu5GMeS4Y5EgjS55AE6OQxf8mPED9uaGbf4Cg==
+
 "@types/common-tags@^1.8.1":
   version "1.8.4"
   resolved "https://registry.yarnpkg.com/@types/common-tags/-/common-tags-1.8.4.tgz#3b31fcb5952cd326a55cabe9dbe6c5be3c1671a0"

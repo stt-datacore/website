@@ -74,6 +74,9 @@ export interface AvatarViewProps {
 
     /** Function to execute when avatar is clicked */
     onClick?: (item: BasicItem) => void;
+
+    /** True to make rounded avatars */
+    round?: boolean;
 }
 
 export interface BasicItem {
@@ -108,7 +111,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     let borderWidth = Math.ceil(size / 34);
     let starSize = Math.floor(size / 6);
     let bottomStar = Math.floor(size / 23);
-    let borderRadius = Math.floor(size / 7);
+    let borderRadius = props.round ? Math.floor(size / 2) : Math.floor(size / 7);
     let star_reward = `${process.env.GATSBY_ASSETS_URL}atlas/star_reward.png`;
     let star_reward_inactive = `${process.env.GATSBY_ASSETS_URL}atlas/star_reward_inactive.png`;
     let item = undefined as EquipmentItem | undefined;

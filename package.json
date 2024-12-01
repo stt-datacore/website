@@ -38,6 +38,7 @@
     "@nivo/sunburst": "^0.85.1",
     "@nivo/swarmplot": "^0.87.0",
     "@sentry/gatsby": "^7.109.0",
+    "color-convert": "^2.0.1",
     "easymde": "^2.18.0",
     "exceljs": "^4.4.0",
     "gatsby": "^5.13.4",
@@ -78,6 +79,7 @@
     "url": "https://github.com/stt-datacore/website/issues"
   },
   "devDependencies": {
+    "@types/color-convert": "^2.0.4",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^22.9.0",
     "@types/react-helmet": "^6.1.11",

@@ -5,6 +5,7 @@ import { GlobalContext } from "../../context/globalcontext"
 import { useStateWithStorage } from "../../utils/storage"
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "./utils"
 import { StatsSkillAreaBump } from "./charts/skillbump"
+import { StatsCircleChart } from "./charts/circle"
 
 
 
@@ -19,6 +20,7 @@ export const ChartsView = () => {
     const graphOpts = [
         { key: 'release_graph', value: 'release_graph', text: t('stat_trends.graphs.release_graph')},
         { key: 'skill_area', value: 'skill_area', text: t('stat_trends.graphs.skill_area')},
+        { key: 'circle', value: 'circle', text: t('stat_trends.graphs.circle')},
     ];
 
     const flexRow = OptionsPanelFlexRow;
@@ -49,6 +51,7 @@ export const ChartsView = () => {
         <h3>{t(`stat_trends.graphs.${currGraph}`)}</h3>
         {currGraph === 'release_graph' && <StatsCalendarChart useFilters={useFilters} />}
         {currGraph === 'skill_area' && <StatsSkillAreaBump useFilters={useFilters} />}
+        {currGraph === 'circle' && <StatsCircleChart useFilters={useFilters} />}
 
     </React.Fragment>
 }

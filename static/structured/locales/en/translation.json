@@ -1856,6 +1856,7 @@
             "release_graph": "Release Schedule",
             "skill_area": "Power Creep",
             "title": "Graphs",
+            "circle": "Skill Circles",
             "map_skill_order_density": "Map skill order density",
             "map_skill_order_power": "Map skill order power",
             "population_increase": "Population Increase",

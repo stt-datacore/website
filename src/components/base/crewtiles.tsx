@@ -13,6 +13,7 @@ export interface CrewTilesProps {
     targetGroup?: string;
     provideOwnHover?: boolean;
     style?: React.CSSProperties;
+    round?: boolean;
     cellStyle?: React.CSSProperties;
     itemWidth?: string;
     itemHeight?: string;
@@ -26,7 +27,7 @@ export interface CrewTilesProps {
 
 export const CrewTiles = (props: CrewTilesProps) => {
     const { t } = React.useContext(GlobalContext).localized;
-    const { maxCrew, extraMessage, displayExtraMessage, rich, miniSkills, provideOwnHover, style, itemWidth, itemHeight, avatarSize, pageId, cellStyle } = props;
+    const { round, maxCrew, extraMessage, displayExtraMessage, rich, miniSkills, provideOwnHover, style, itemWidth, itemHeight, avatarSize, pageId, cellStyle } = props;
     const targetGroup = props.targetGroup || (provideOwnHover ? 'crew_tiles_hover_stat' : undefined);
     const flexRow: React.CSSProperties = { display: 'flex', flexDirection: 'row', alignItems: 'top', justifyContent: 'space-evenly', gap: '2em', flexWrap: 'wrap' };
     const flexCol: React.CSSProperties = { display: 'flex', textAlign: 'center', fontStyle: 'italic', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', gap: '0.5em', width: '10em', ...cellStyle };
@@ -44,6 +45,7 @@ export const CrewTiles = (props: CrewTilesProps) => {
                 {crew.map((c, idx) => {
                     return (<div key={`crew_tiles_${pageId}_${c.symbol}+${idx}`} style={flexCol}>
                         <AvatarView
+                            round={round}
                             crewBackground={rich ? 'rich' : 'normal'}
                             mode='crew'
                             targetGroup={targetGroup}
