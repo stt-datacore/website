@@ -34,7 +34,6 @@ export const StatsCalendarChart = (props: GraphPropsCommon) => {
     const { filterConfig, allHighs: outerHighs, epochDiffs: outerDiffs, flatOrder: outerOrder } = statsContext;
 
     const [allHighs, setAllHighs] = React.useState<Highs[]>([]);
-    const [epochDiffs, setEpochDiffs] = React.useState<EpochDiff[]>([]);
     const [flatOrder, setFlatOrder] = React.useState<SkoBucket[]>([]);
     const [releaseTable, setReleaseTable] = React.useState<CalendarData[]>([]);
 
@@ -63,18 +62,7 @@ export const StatsCalendarChart = (props: GraphPropsCommon) => {
     }, [useFilters, filterConfig, outerHighs]);
 
     React.useEffect(() => {
-        if (outerDiffs.length) {
-            if (useFilters) {
-                setEpochDiffs(filterEpochDiffs(filterConfig, outerDiffs))
-            }
-            else {
-                setEpochDiffs(outerDiffs);
-            }
-        }
-    }, [useFilters, filterConfig, outerDiffs]);
-
-    React.useEffect(() => {
-        if (!epochDiffs.length) return;
+        if (!flatOrder.length) return;
         if (!allHighs.length) return;
 
         const newYears = [] as CalendarData[][];
@@ -142,7 +130,7 @@ export const StatsCalendarChart = (props: GraphPropsCommon) => {
             newYears.push(newData);
         }
         setReleaseTable(newYears.flat().sort((a, b) => a.day.localeCompare(b.day)));
-    }, [epochDiffs, allHighs]);
+    }, [flatOrder, allHighs]);
 
     if (!releaseTable.length) return;
 

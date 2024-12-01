@@ -1780,6 +1780,19 @@
     d3-chord "^1.0.6"
     d3-shape "^1.3.5"
 
+"@nivo/circle-packing@^0.88.0":
+  version "0.88.0"
+  resolved "https://registry.yarnpkg.com/@nivo/circle-packing/-/circle-packing-0.88.0.tgz#8151b965fdf22aa4cd31a6aeeab062734ae846ff"
+  integrity sha512-tk605K4FQpatKzUvoSzt/jTUekW1QCqL3E1zANL6aMoPT9o6dY8X9hRdqCSyz14Fi97qOfOU/rVykpy+rilZsA==
+  dependencies:
+    "@nivo/colors" "0.88.0"
+    "@nivo/core" "0.88.0"
+    "@nivo/tooltip" "0.88.0"
+    "@react-spring/web" "9.4.5 || ^9.7.2"
+    "@types/d3-hierarchy" "^1.1.8"
+    d3-hierarchy "^1.1.8"
+    lodash "^4.17.21"
+
 "@nivo/colors@0.85.1":
   version "0.85.1"
   resolved "https://registry.yarnpkg.com/@nivo/colors/-/colors-0.85.1.tgz#8f9adfea58fec51a4821345a5a20555acfdb7c5c"
