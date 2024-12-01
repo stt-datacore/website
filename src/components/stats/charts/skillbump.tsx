@@ -102,7 +102,7 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
                     });
 
                     let segment_power = segCrew.length ? segCrew.map(sg => skillSum(Object.values(sg.base_skills))).reduce((p, n) => p + n) : 0;
-                    if (segCrew.length) segment_power;
+                    if (segCrew.length) segment_power /= segCrew.length;
                     let power = 0;
                     if (config.considerCounts && config.considerPower || (!config.considerCounts && !config.considerPower)) {
                         power = segCrew.length * segment_power;
@@ -113,15 +113,16 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
                     else if (config.considerCounts) {
                         power = segCrew.length;
                     }
-
-                    newObj.data.push({
-                        x: epochToDate(Math.floor(time + seglen)).getUTCFullYear(),
-                        y: power,
-                        power: segment_power,
-                        density: segCrew.length,
-                        segment_start: Math.floor(time),
-                        segment_end: Math.floor(time + seglen)
-                    });
+                    if (segment_power) {
+                        newObj.data.push({
+                            x: epochToDate(Math.floor(time + seglen)).getUTCFullYear(),
+                            y: power,
+                            power: segment_power,
+                            density: segCrew.length,
+                            segment_start: Math.floor(time),
+                            segment_end: Math.floor(time + seglen)
+                        });
+                    }
                 }
                 newseries.push(newObj);
             });
@@ -165,13 +166,17 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
                         tooltip={(data) => {
                             const bump = data.serie.data.data as BumpSerie[];
                             if (bump) {
+
+                                let max = bump.map(m => m.power).reduce((p, n) => p > n ? p : n, 0);
+                                let min = bump.map(m => m.power).reduce((p, n) => n < p || !p ? n : p, 0);
+                                let inc = bump[bump.length - 1].density - bump[0].density;
                                 return <div className="ui segment" style={flexCol}>
                                     <div style={{...flexRow, borderBottom: '2px solid', padding: '0.25em 0', justifyContent: 'center', alignItems: 'center'}}>{data.serie.data.id.split(" / ").map((skill) => {
                                         let icon = skillIcon(shortToSkill(skill)!);
                                         return <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}><img src={icon} style={{height: '1em'}} />&nbsp;<span>{skill}</span></div>
                                     })}</div>
-                                    {t('stat_trends.graphs.population_increase')}: <b>{(bump[bump.length - 1].density - bump[0].density).toLocaleString()}</b>
-                                    {t('stat_trends.graphs.power_creep')}: <b>{Math.ceil((bump[0].power / bump[bump.length - 1].power) * 100).toLocaleString()}%</b>
+                                    {t('stat_trends.graphs.population_increase')}: <b>{inc ? (inc).toLocaleString() : t('global.new')}</b>
+                                    {t('stat_trends.graphs.power_creep')}: <b>{bump.length < 2 || !inc ? 'N/A' : `${Math.round((min / max) * 100).toLocaleString()}%`}</b>
                                     </div>
                             }
                             return <></>
