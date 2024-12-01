@@ -3,7 +3,7 @@ import { EpochDiff, Highs, IStatsContext, SkillFilterConfig, SkoBucket, StatsDis
 import { useStateWithStorage } from '../../utils/storage';
 import { GlobalContext } from '../../context/globalcontext';
 import { crewCopy, skillSum } from '../../utils/crewutils';
-import { configSkillFilters, filterFlatData, findHigh, passObtained } from './utils';
+import { configSkillFilters, dateToEpoch, filterFlatData, findHigh, passObtained } from './utils';
 import CONFIG from '../CONFIG';
 import { CrewMember } from '../../model/crew';
 
@@ -30,7 +30,7 @@ export const StatsContext = React.createContext(defaultContextData);
 export const StatsDataProvider = (props: { children: JSX.Element }) => {
     const { children } = props;
     const globalContext = React.useContext(GlobalContext);
-
+    const { crew: globalCrew } = globalContext.core;
     const [displayMode, setDisplayMode] = useStateWithStorage<StatsDisplayMode>(`stats_display_mode`, 'crew', { rememberForever: true });
     const [filterConfig, internalSetFilterConfig] = useStateWithStorage<SkillFilterConfig>(`stats_page_skill_filter_config`, defaultContextData.filterConfig, { rememberForever: true });
 
@@ -42,30 +42,24 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
     const [masterCrew, setMasterCrew] = React.useState<CrewMember[]>([]);
     const [prefiteredCrew, setPrefilteredCrew] = React.useState<CrewMember[]>([]);
 
-    const gameEpoch = new Date("2016-01-01T00:00:00Z");
-
     React.useEffect(() => {
-        setFilterConfig(filterConfig);
-    }, [])
-
-    React.useEffect(() => {
-        if (!globalContext.core.crew.length) return;
+        if (!globalCrew.length) return;
         const obtainlist = [] as string[];
 
-        for (let c of globalContext.core.crew) {
+        for (let c of globalCrew) {
             if (!obtainlist.includes(c.obtained)) obtainlist.push(c.obtained);
         }
         obtainlist.sort();
-        const crew = crewCopy(globalContext.core.crew)
+        const crew = crewCopy(globalCrew)
             .sort((a, b) => a.date_added.getTime() - b.date_added.getTime());
 
         setUniqueObtained(obtainlist);
         setMasterCrew(crew);
-    }, [globalContext.core.crew]);
+        setFilterConfig(filterConfig);
+    }, [globalCrew]);
 
     React.useEffect(() => {
         if (!masterCrew.length) return;
-
         const filteredCrew = masterCrew
             .filter(c => !filterConfig.obtainedFilter.length || passObtained(c, filterConfig.obtainedFilter))
 
@@ -82,7 +76,7 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
         for (let c of crew) {
             if (!obtainlist.includes(c.obtained)) obtainlist.push(c.obtained);
             const aggregates = Object.values(c.base_skills).map(skill => skillSum(skill));
-            const epoch_day = Math.floor(((new Date(c.date_added)).getTime() - gameEpoch.getTime()) / (1000 * 60 * 60 * 24));
+            const epoch_day = dateToEpoch(c.date_added);
 
             [1, 2, 3].forEach((n) => {
                 if (c.skill_order.length >= n) {

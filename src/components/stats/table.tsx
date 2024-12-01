@@ -17,6 +17,7 @@ export interface StatTrendsTableProps {
 export const StatTrendsTable = (props: StatTrendsTableProps) => {
     const globalContext = React.useContext(GlobalContext);
     const statsContext = React.useContext(StatsContext);
+    const { prefilteredDiffs, prefilteredHighs } = props;
     const { epochDiffs: outerDiffs, allHighs: outerHighs, filterConfig } = statsContext;
     const [epochDiffs, setEpochDiffs] = React.useState<EpochDiff[]>([]);
     const [allHighs, setAllHighs] = React.useState<Highs[]>([]);
@@ -26,22 +27,22 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
     const { playerData } = globalContext.player;
 
     React.useEffect(() => {
-        if (props.prefilteredDiffs) {
-            setEpochDiffs(props.prefilteredDiffs);
+        if (prefilteredDiffs) {
+            setEpochDiffs(prefilteredDiffs);
         }
         else {
             setEpochDiffs(filterEpochDiffs(filterConfig, outerDiffs));
         }
-    }, [outerDiffs]);
+    }, [outerDiffs, prefilteredDiffs, filterConfig]);
 
     React.useEffect(() => {
-        if (props.prefilteredHighs) {
-            setAllHighs(props.prefilteredHighs);
+        if (prefilteredHighs) {
+            setAllHighs(prefilteredHighs);
         }
         else {
             setAllHighs(filterHighs(filterConfig, outerHighs));
         }
-    }, [outerHighs]);
+    }, [outerHighs, prefilteredHighs, filterConfig]);
 
     const nowDate = new Date();
     const daysFromEpoch = Math.floor((nowDate.getTime() - GameEpoch.getTime()) / (1000 * 60 * 60 * 24));
