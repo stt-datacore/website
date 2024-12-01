@@ -23,11 +23,12 @@ export interface CrewTilesProps {
     maxCrew?: number;
     extraMessage?: JSX.Element | string;
     displayExtraMessage?: (crew: (PlayerCrew | CrewMember | CompactCrew)) => boolean;
+    title?: string;
 }
 
 export const CrewTiles = (props: CrewTilesProps) => {
     const { t } = React.useContext(GlobalContext).localized;
-    const { round, maxCrew, extraMessage, displayExtraMessage, rich, miniSkills, provideOwnHover, style, itemWidth, itemHeight, avatarSize, pageId, cellStyle } = props;
+    const { title, round, maxCrew, extraMessage, displayExtraMessage, rich, miniSkills, provideOwnHover, style, itemWidth, itemHeight, avatarSize, pageId, cellStyle } = props;
     const targetGroup = props.targetGroup || (provideOwnHover ? 'crew_tiles_hover_stat' : undefined);
     const flexRow: React.CSSProperties = { display: 'flex', flexDirection: 'row', alignItems: 'top', justifyContent: 'space-evenly', gap: '2em', flexWrap: 'wrap' };
     const flexCol: React.CSSProperties = { display: 'flex', textAlign: 'center', fontStyle: 'italic', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', gap: '0.5em', width: '10em', ...cellStyle };
@@ -40,6 +41,7 @@ export const CrewTiles = (props: CrewTilesProps) => {
 
     return (
         <div style={style}>
+            {!!title && <h3>{title}</h3>}
             <div style={flexRow}>
                 {!!provideOwnHover && <CrewHoverStat targetGroup="crew_tiles_hover_stat" />}
                 {crew.map((c, idx) => {

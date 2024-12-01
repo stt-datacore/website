@@ -73,7 +73,7 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
                 name: `${skillToShort(skill1)}`,
                 children: [],
                 color: SkillColors[skill1],
-                crew: crew1.map(c => c.symbol),
+                crew: crew1.filter(f => f.skill_order.length === 1).map(c => c.symbol),
                 skills: [skill1]
             } as CircleData;
             skill1d.loc = skill1d.crew.length;
@@ -90,7 +90,7 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
                     name: `${skill1d.name}/${skillToShort(skill2)}`,
                     children: [],
                     color: SkillColors[skill2],
-                    crew: crew2.map(c => c.symbol),
+                    crew: crew2.filter(f => f.skill_order.length === 2).map(c => c.symbol),
                     skills: [skill1, skill2]
                 } as CircleData;
                 skill2d.loc = skill2d.crew.length;
@@ -108,7 +108,7 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
                         name: `${skill2d.name}/${skillToShort(skill3)}`,
                         children: [],
                         color: SkillColors[skill3],
-                        crew: crew3.map(c => c.symbol),
+                        crew: crew3.filter(f => f.skill_order.length === 3).map(c => c.symbol),
                         skills: [skill1, skill2, skill3]
                     } as CircleData;
                     skill3d.loc = skill3d.crew.length;
@@ -136,10 +136,13 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
 
             {!!circleData && [circleData].map((circle, idx) => {
                 return <div style={{height: `800px`, width: '100%'}} key={`stats_skill_circle_${idx}`}>
-                    {!!zoomedElem && zoomedElem.data.children.length === 0 &&
-                    <div style={{position: 'absolute', zIndex: '1001', margin: '0 1em', height: '800px', width: '1100px', display:'flex', flexDirection:'column', alignItems: 'center', justifyContent: 'center'}} onClick={() => setZoomedElem(null)}>
+                    {!!zoomedElem && zoomedElem.data.crew.length > 0 &&
+                    <div style={{position: 'absolute', zIndex: '1001', margin: '0 1em', height: '800px', width: '1100px', display:'flex', flexDirection:'column', alignItems: 'center', justifyContent: 'center'}}
+                        onClick={() => setZoomedElem(null)}
+                    >
                             <CrewTiles crew={zoomedElem.data.crew.map(m => crew.find(f => f.symbol === m)!)}
-                                style={{textAlign: 'center', alignSelf: 'center', backgroundColor: 'rgba(70,70,70,0.5)', padding: '1em', borderRadius: '2em'}}
+                                title={zoomedElem.data.name}
+                                style={{textAlign: 'center', alignSelf: 'center', backgroundColor: 'rgba(70,70,70,0.7)', padding: '1em', borderRadius: '2em'}}
                                 round={true}
                                 maxCrew={30}
                                 rich

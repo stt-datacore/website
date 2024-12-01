@@ -1,5 +1,6 @@
 import { CrewMember } from "../../model/crew";
 import { TranslateMethod } from "../../model/player";
+import { skillSum } from "../../utils/crewutils";
 import { EpochDiff, Highs, SkillFilterConfig, SkoBucket } from "./model";
 
 export const OptionsPanelFlexRow: React.CSSProperties = {display:'flex', flexDirection: 'row', alignItems:'center', justifyContent: 'flex-start', gap: '2em'};
@@ -242,4 +243,13 @@ export function passObtained(fc: CrewMember, obtained: string[]) {
     if (obtained.includes("Event") && (fc.obtained === 'Event/Pack/Giveaway' || fc.obtained === 'Mega')) return true;
     if (obtained.includes("Pack/Giveaway") && fc.obtained === 'Event/Pack/Giveaway') return true;
     return false;
+}
+
+export function getPowerOnDay(subject: CrewMember, data: CrewMember[]) {
+    subject.date_added = new Date(subject.date_added);
+    let power = skillSum(Object.values(subject.base_skills));
+    let filter = data.filter(f => f.date_added.getTime() < subject.date_added.getTime() && f.skill_order.join() === subject.skill_order.join())
+                    .filter(f => skillSum(Object.values(f.base_skills)) > power).sort((a, b) => skillSum(Object.values(b.base_skills)) - skillSum(Object.values(a.base_skills)));
+    if (filter.length === 0) return 1;
+    return skillSum(Object.values(filter[0].base_skills)) / power;
 }
