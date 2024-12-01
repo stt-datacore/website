@@ -25,12 +25,14 @@ export const StatTrendsComponent = () => {
     const [avgDaysBetween, setAvgDaysBetween] = React.useState(0);
     const [meanDaysBetween, setMeanDaysBetween] = React.useState(0);
 
-    const { epochDiffs: outerDiffs, displayMode, setDisplayMode, crewCount, filterConfig, flatOrder: outerOrder } = statsContext;
+    const { epochDiffs: outerDiffs, displayMode, setDisplayMode, filterConfig, flatOrder: outerOrder } = statsContext;
 
     const [epochDiffs, setEpochDiffs] = React.useState<EpochDiff[]>([]);
+    const [crewCount, setCrewCount] = React.useState(0);
 
     React.useEffect(() => {
         const filterDiffs = filterEpochDiffs(filterConfig, outerDiffs);
+
         if (filterDiffs?.length) {
             const vels = filterDiffs.map(diff => diff.velocity);
             vels.sort((a, b) => a - b);
@@ -88,6 +90,9 @@ export const StatTrendsComponent = () => {
                 });
             });
         }
+
+        const uniqueSymbols = [...new Set(byTime.map(m => m.symbol))];
+        setCrewCount(uniqueSymbols.length);
         setTotalPowerDiff(skilldiffs);
     }, [outerOrder, filterConfig]);
 

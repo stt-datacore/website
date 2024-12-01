@@ -39,7 +39,6 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
     const [flatOrder, setFlatOrder] = React.useState([] as SkoBucket[]);
     const [epochDiffs, setEpochDiffs] = React.useState([] as EpochDiff[]);
     const [uniqueObtained, setUniqueObtained] = React.useState([] as string[]);
-    const [crewCount, setCrewCount] = React.useState(0);
     const [masterCrew, setMasterCrew] = React.useState<CrewMember[]>([]);
     const [prefiteredCrew, setPrefilteredCrew] = React.useState<CrewMember[]>([]);
 
@@ -182,16 +181,12 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
                 newdiffs.push(diff);
             }
 
-            //newdiffs.reverse();
-
-            setCrewCount([...new Set(work.map(w => w.symbol)) ].length);
             setEpochDiffs(newdiffs);
         }
     }, [flatOrder]);
 
     const contextData: IStatsContext = {
         allHighs,
-        crewCount,
         displayMode,
         epochDiffs,
         filterConfig,

@@ -51,7 +51,6 @@ export type Highs = {
 export interface IStatsContext {
     filterConfig: SkillFilterConfig;
     setFilterConfig: (value: SkillFilterConfig) => void;
-    crewCount: number;
     flatOrder: SkoBucket[];
     setFlatOrder: (value: SkoBucket[]) => void;
     uniqueObtained: string[]

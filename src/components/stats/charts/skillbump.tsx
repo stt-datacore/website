@@ -99,7 +99,7 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
             });
         setRarityCount(uniqueSkos.length);
         setAreaData(newseries);
-    }, [crew, filterConfig]);
+    }, [crew, filterConfig, useFilters]);
 
     return (
         <div style={{
