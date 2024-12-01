@@ -176,7 +176,7 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
                                         return <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}><img src={icon} style={{height: '1em'}} />&nbsp;<span>{skill}</span></div>
                                     })}</div>
                                     {t('stat_trends.graphs.population_increase')}: <b>{inc ? (inc).toLocaleString() : t('global.new')}</b>
-                                    {t('stat_trends.graphs.power_creep')}: <b>{bump.length < 2 || !inc ? 'N/A' : `${Math.round((min / max) * 100).toLocaleString()}%`}</b>
+                                    {t('stat_trends.graphs.power_creep')}: <b>{bump.length < 2 || !inc ? 'N/A' : `${Math.round((1 - (min / max)) * 100).toLocaleString()}%`}</b>
                                     </div>
                             }
                             return <></>
