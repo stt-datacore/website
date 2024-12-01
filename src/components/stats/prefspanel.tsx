@@ -5,7 +5,7 @@ import { GlobalContext } from "../../context/globalcontext";
 import { prettyObtained } from "../../utils/crewutils";
 import { PlayerCrew } from "../../model/player";
 import CONFIG from "../CONFIG";
-import { filterBuckets, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "./utils";
+import { dateToEpoch, filterBuckets, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "./utils";
 import { RarityFilter } from "../crewtables/commonoptions";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
@@ -54,6 +54,17 @@ export const StatsPrefsPanel = () => {
     }
 
     const skillPos = ['primary', 'secondary', 'tertiary'];
+
+    const startYear = GameEpoch.getUTCFullYear();
+    const endYear = (new Date()).getUTCFullYear();
+    const yearOpts = [] as DropdownItemProps[];
+    for (let y = startYear; y <= endYear; y++) {
+        yearOpts.push({
+            key: `year_${y}`,
+            value: y,
+            text: y.toString()
+        });
+    }
 
     return (
         <div>
@@ -149,7 +160,53 @@ export const StatsPrefsPanel = () => {
                         onChange={(e, { value }) => setFilterConfig({ ...filterConfig, end_date: value })}
                     />
                 </div>
+                <div style={{ ...flexCol, alignItems: 'flex-start', textAlign: 'left' }}>
+                    <span>{t('cite_opt.btp.settings_picker.button_text')}</span>
+                    <Dropdown
+                            placeholder={t(`cite_opt.btp.settings_picker.button_text`)}
+                            selection
+                            clearable
+                            value={getSelYear()}
+                            options={yearOpts}
+                            onChange={(e, { value }) => {
+                                setSelYear(value as number)
+                            }}
+                        />
+                </div>
             </div>
         </div>)
+
+        function getSelYear() {
+            if (filterConfig.start_date && filterConfig.end_date) {
+                let d1 = new Date(filterConfig.start_date + "T00:00:00Z");
+                let d2 = new Date(filterConfig.end_date + "T00:00:00Z");
+                if (d1.getUTCFullYear() === d2.getUTCFullYear()
+                    && d1.getUTCMonth() === 0 && d2.getUTCMonth() === 11
+                    && d1.getUTCDate() === 1 && d2.getUTCDate() === 31
+                ) {
+                    return d1.getUTCFullYear();
+                }
+            }
+            return undefined
+        }
+
+        function setSelYear(year?: number) {
+            if (!year) {
+                if (filterConfig.end_date || filterConfig.start_date) {
+                    setFilterConfig({
+                        ...filterConfig,
+                        start_date: '',
+                        end_date: ''
+                    });
+                }
+            }
+            else {
+                setFilterConfig({
+                    ...filterConfig,
+                    start_date: `${year}-01-01`,
+                    end_date: `${year}-12-31`
+                });
+            }
+        }
 
 }

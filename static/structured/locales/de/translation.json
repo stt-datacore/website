@@ -925,6 +925,8 @@
         "min_rarity": "Min. Seltenheit",
         "n_available": "{{n}} verfügbar",
         "n_results": "{{n}} Ergebnisse",
+        "n_total_x": "{{n}} {{x}} insgesamt",
+        "n_x": "{{n}} {{x}}",
         "name": "Namen",
         "never": "Niemals",
         "new": "Neu",

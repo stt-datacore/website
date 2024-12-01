@@ -3,6 +3,7 @@ import { TranslateMethod } from "../../model/player";
 import { skillSum } from "../../utils/crewutils";
 import CONFIG from "../CONFIG";
 import { EpochDiff, Highs, SkillFilterConfig, SkillOrderDebut, SkoBucket } from "./model";
+import convert from 'color-convert';
 
 export const OptionsPanelFlexRow: React.CSSProperties = {display:'flex', flexDirection: 'row', alignItems:'center', justifyContent: 'flex-start', gap: '2em'};
 export const OptionsPanelFlexColumn: React.CSSProperties = {display:'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', gap: '0.25em'};
@@ -17,6 +18,18 @@ export const SkillColors = {
     "engineering_skill": "#FFA500",
     "diplomacy_skill": "#9370DB"
 }
+
+export function getRGBSkillColors() {
+    const output = { ... SkillColors };
+    Object.keys(output).forEach((key) => {
+        let res = convert.hex.rgb(output[key].slice(1));
+        output[key] = `rgb(${res[0]},${res[1]},${res[2]})`
+    });
+    return output;
+}
+
+
+
 
 export function epochToDate(day: number) {
     let d = new Date(GameEpoch);
@@ -102,6 +115,22 @@ export function configSkillFilters(data: CrewMember[], currConfig?: SkillFilterC
     }
     config.start_date ??= '';
     config.end_date ??= '';
+    try {
+        if (config.start_date) {
+            let d = new Date(config.start_date);
+            config.start_date = `${d.getUTCFullYear()}-${(d.getUTCMonth() + 1).toString().padStart(2, '0')}-${(d.getUTCDate()).toString().padStart(2, '0')}`;
+        }
+        if (config.end_date) {
+            let d = new Date(config.end_date);
+            config.end_date = `${d.getUTCFullYear()}-${(d.getUTCMonth() + 1).toString().padStart(2, '0')}-${(d.getUTCDate()).toString().padStart(2, '0')}`;
+        }
+
+
+    }
+    catch {
+        config.start_date = '';
+        config.end_date = '';
+    }
     if (!data?.length) return config;
 
     let curr_crew = [ ...data ].filter(f => !config.rarity.length || config.rarity.includes(f.max_rarity));
@@ -177,13 +206,13 @@ export function filterEpochDiffs(filterConfig: SkillFilterConfig, diffs: EpochDi
     return newdiffs;
 }
 
-export function statFilterCrew<T extends CrewMember>(filterConfig: SkillFilterConfig, crew: T[]) {
+export function statFilterCrew<T extends CrewMember>(filterConfig: SkillFilterConfig, crew: T[], ignore_date = false) {
     const newcrew = [] as T[];
     crew.forEach((c) => {
         if (filterConfig.obtainedFilter.length) {
             if (!passObtained(c, filterConfig.obtainedFilter)) return;
         }
-        if (test(filterConfig, { rarity: c.max_rarity, skills: c.skill_order, date: c.date_added })) {
+        if (test(filterConfig, { rarity: c.max_rarity, skills: c.skill_order, date: ignore_date ? undefined : c.date_added })) {
             newcrew.push(c);
         }
     });
@@ -363,6 +392,7 @@ export function getSkillOrderDebutData(data: CrewMember[]): SkillOrderDebut[] {
     });
 
     const rawdata = Object.values(epochData).flat()
+    if (!rawdata?.length) return [];
     rawdata.sort((a, b) => a.epoch_day - b.epoch_day || a.skill_order.localeCompare(b.skill_order));
 
     const currhigh = {} as {[key:string]: number };

@@ -3,7 +3,7 @@ import { GlobalContext } from "../../../context/globalcontext"
 import { StatsContext } from "../dataprovider";
 import { useStateWithStorage } from "../../../utils/storage";
 import { EpochDiff, GraphPropsCommon, Highs, SkoBucket } from "../model";
-import { epochToDate, filterEpochDiffs, filterFlatData, filterHighs, findHigh, GameEpoch, isoDatePart, OptionsPanelFlexColumn, OptionsPanelFlexRow, SkillColors, statFilterCrew } from "../utils";
+import { epochToDate, filterEpochDiffs, filterFlatData, filterHighs, findHigh, GameEpoch, getRGBSkillColors, isoDatePart, OptionsPanelFlexColumn, OptionsPanelFlexRow, statFilterCrew } from "../utils";
 import { CalendarDatum, ResponsiveCalendar } from "@nivo/calendar";
 import { skillSum, skillToShort } from "../../../utils/crewutils";
 import themes from "../../nivo_themes";
@@ -34,12 +34,12 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
 
     const [circleData, setCircleData] = React.useState<CircleData>({} as any);
     const [zoomedElem, setZoomedElem] = React.useState<ComputedDatum<CircleData> | null>(null);
+
+    const [zoomElect, setZoomElect] = React.useState(0);
+
     const totalYears = (((new Date()).getUTCFullYear()) - GameEpoch.getUTCFullYear()) + 1;
 
-    Object.keys(SkillColors).forEach((key) => {
-        let res = convert.hex.rgb(SkillColors[key].slice(1));
-        SkillColors[key] = `rgb(${res[0]},${res[1]},${res[2]})`
-    })
+    const RGBColors = getRGBSkillColors();
 
     React.useEffect(() => {
         const workcrew = statFilterCrew(filterConfig, crew);
@@ -63,7 +63,7 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
             const skill1d = {
                 name: `${skillToShort(skill1)}`,
                 children: [],
-                color: SkillColors[skill1],
+                color: RGBColors[skill1],
                 crew: crew1.filter(f => f.skill_order.length === 1).map(c => c.symbol),
                 skills: [skill1]
             } as CircleData;
@@ -80,7 +80,7 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
                 const skill2d = {
                     name: `${skill1d.name}/${skillToShort(skill2)}`,
                     children: [],
-                    color: SkillColors[skill2],
+                    color: RGBColors[skill2],
                     crew: crew2.filter(f => f.skill_order.length === 2).map(c => c.symbol),
                     skills: [skill1, skill2]
                 } as CircleData;
@@ -98,7 +98,7 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
                     const skill3d = {
                         name: `${skill2d.name}/${skillToShort(skill3)}`,
                         children: [],
-                        color: SkillColors[skill3],
+                        color: RGBColors[skill3],
                         crew: crew3.filter(f => f.skill_order.length === 3).map(c => c.symbol),
                         skills: [skill1, skill2, skill3]
                     } as CircleData;
@@ -127,9 +127,9 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
 
             {!!circleData && [circleData].map((circle, idx) => {
                 return <div style={{height: `800px`, width: '100%'}} key={`stats_skill_circle_${idx}`}>
-                    {!!zoomedElem && zoomedElem.data.crew.length > 0 &&
+                    {!!zoomedElem && !zoomElect && zoomedElem.data.crew.length > 0 &&
                     <div style={{position: 'absolute', zIndex: '1001', margin: '0 1em', height: '800px', width: '1100px', display:'flex', flexDirection:'column', alignItems: 'center', justifyContent: 'center'}}
-                        onClick={() => setZoomedElem(null)}
+                        onClick={() => setZoomElect(1)}
                     >
                             <CrewTiles crew={zoomedElem.data.crew.map(m => crew.find(f => f.symbol === m)!)}
                                 title={zoomedElem.data.name}
@@ -145,6 +145,7 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
                     <ResponsiveCirclePacking
                         onClick={node => {
                             setZoomedElem(zoomedElem?.id === node?.id ? null : node);
+                            setZoomElect(0);
                         }}
                         zoomedId={zoomedElem?.id}
                         data={circleData}
@@ -155,7 +156,7 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
                         value="loc"
                         theme={themes.dark}
                         colors={({id, data}) => {
-                            return SkillColors[data.skills[data.skills.length - 1]] || '#333'
+                            return RGBColors[data.skills[data.skills.length - 1]] || '#333'
                         }}
                         childColor={{
                             from: 'color',

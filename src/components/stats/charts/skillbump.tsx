@@ -76,7 +76,7 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
         if (!crew.length) return;
 
         const newseries = [] as GraphSeries[];
-        const workCrew = useFilters ? statFilterCrew(filterConfig, crew) : crew;
+        const workCrew = useFilters ? statFilterCrew(filterConfig, crew, true) : crew;
 
         const data = getSkillOrderDebutData(workCrew);
         const uniqueSkos = [...new Set(workCrew.map(m => m.skill_order.join(',')))];
@@ -90,18 +90,19 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
 
         for (let time = startDay; time <= endDay; time += seglen) {
             let timedata = data.filter(f =>
-                // f.epoch_day >= time
+                // f.epoch_day >= startDay
                 // &&
                 f.epoch_day < time + seglen
                 // &&
                 // f.crew.some(c => c.new_high)
             );
 
-            let newgroup = epochToDate(Math.ceil(time + seglen)).getUTCFullYear();
+            let newgroup = epochToDate(timedata[timedata.length - 1].epoch_day).getUTCFullYear()
 
             timedata.forEach((record) => {
                 let newid = keyToNames(record.skill_order).join("/");
                 let f = newseries.find(f => f.id === newid && f.group === newgroup.toString());
+
                 if (!f) {
                     f = {
                         id: keyToNames(record.skill_order).join("/"),
@@ -200,8 +201,8 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
                                     })}</div>
                                     {t('stat_trends.graphs.population_increase')}: <b>{inc ? (inc).toLocaleString() : t('global.new')}</b>
                                     {t('stat_trends.graphs.power_creep')}: <b>{bump.length < 2 || !inc ? 'N/A' : `${Math.round((1 - (min / max)) * 100).toLocaleString()}%`}</b>
-                                    {t('stat_trends.initial_release')}: <b>{epochToDate(bump[0].epoch_start).toDateString()}</b>
-                                    {t('stat_trends.last_release')}: <b>{epochToDate(bump[bump.length - 1].epoch_end).toDateString()}</b>
+                                    {t('stat_trends.initial_release')}: <b>{epochToDate(bump[0].epoch_start).toLocaleDateString()}</b>
+                                    {t('stat_trends.last_release')}: <b>{epochToDate(bump[bump.length - 1].epoch_end).toLocaleDateString()}</b>
                                 </div>
                             }
                             return <></>

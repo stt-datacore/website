@@ -925,6 +925,8 @@
         "min_rarity": "Min. rarity",
         "n_available": "{{n}} available",
         "n_results": "{{n}} results",
+        "n_total_x": "{{n}} total {{x}}",
+        "n_x": "{{n}} {{x}}",
         "name": "Name",
         "never": "Never",
         "new": "New",

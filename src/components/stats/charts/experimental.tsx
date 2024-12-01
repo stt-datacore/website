@@ -13,6 +13,7 @@ import { shortToSkill, skillSum } from "../../../utils/crewutils";
 import { useStateWithStorage } from "../../../utils/storage";
 import { Checkbox } from "semantic-ui-react";
 import { ResponsiveSwarmPlot, SwarmPlot } from "@nivo/swarmplot";
+import { printNCrew } from "../../../utils/misc";
 
 interface MapConfig {
     considerCounts: boolean;
@@ -29,6 +30,8 @@ export const ExperimentalChart1 = (props: GraphPropsCommon) => {
     const { filterConfig } = statsContext;
 
     const [areaData, setAreaData] = React.useState<GraphSeries[]>([]);
+    const [ready, setReady] = React.useState(false);
+    const [readyCount, setReadyCount] = React.useState(0);
 
     const nowEpoch = dateToEpoch();
     const flexRow = OptionsPanelFlexRow;
@@ -38,7 +41,7 @@ export const ExperimentalChart1 = (props: GraphPropsCommon) => {
         if (!crew.length) return;
 
         const newseries = [] as GraphSeries[];
-        const workCrew = useFilters ? statFilterCrew(filterConfig, crew) : crew;
+        const workCrew = useFilters ? statFilterCrew(filterConfig, crew, true) : crew;
 
         const data = getSkillOrderDebutData(workCrew);
         const uniqueSkos = [...new Set(workCrew.map(m => m.skill_order.join(',')))];
@@ -52,14 +55,15 @@ export const ExperimentalChart1 = (props: GraphPropsCommon) => {
 
         for (let time = startDay; time <= endDay; time += seglen) {
             let timedata = data.filter(f =>
-                // f.epoch_day >= time
+                // f.epoch_day >= startDay
                 // &&
                 f.epoch_day < time + seglen
                 // &&
                 // f.crew.some(c => c.new_high)
             );
+            let ed = epochToDate(time);
 
-            let newgroup = epochToDate(Math.ceil(time + seglen)).getUTCFullYear();
+            let newgroup = `${ed.getUTCFullYear()}-${(ed.getUTCMonth() + 1).toString().padStart(2, '0')}`;
 
             timedata.forEach((record) => {
                 let newid = keyToNames(record.skill_order).join("/");
@@ -75,11 +79,12 @@ export const ExperimentalChart1 = (props: GraphPropsCommon) => {
                         x: 0,
                         y: 0,
                         epoch_end: record.epoch_day,
-                        epoch_start: record.epoch_day
+                        epoch_start: record.epoch_day,
+
                     };
                     f.power = Math.ceil(f.power);
-                    f.x = newgroup;
-                    f.y = f.power;
+                    // f.x = newgroup;
+                    // f.y = f.power;
                     newseries.push(f);
                 }
                 else {
@@ -87,8 +92,8 @@ export const ExperimentalChart1 = (props: GraphPropsCommon) => {
                     f.power += (!record.crew.length ? 0 : record.crew.map(m => m.power).reduce((p, n) => p + n) / record.crew.length);
                     f.power /= 2;
                     f.power = Math.ceil(f.power);
-                    f.x = newgroup;
-                    f.y = f.power;
+                    // f.x = newgroup;
+                    // f.y = f.power;
                     if (record.low_power < f.low_power) f.low_power = record.low_power;
                     if (record.high_power > f.high_power) f.high_power = record.high_power;
                     if (record.epoch_day > f.epoch_end) f.epoch_end = record.epoch_day;
@@ -98,6 +103,7 @@ export const ExperimentalChart1 = (props: GraphPropsCommon) => {
 
         }
         setAreaData(newseries);
+        setReady(false);
     }, [crew, filterConfig, useFilters]);
 
     return (
@@ -159,24 +165,26 @@ export const ExperimentalChart1 = (props: GraphPropsCommon) => {
                             ]
                         }}
                         tooltip={(data) => {
-                            const bump = data.data as any as GraphSeries;
-                            if (bump) {
-                                let max = bump.high_power;
-                                let min = bump.low_power;
-                                let inc = bump.density;
-                                return <div className="ui segment" style={flexCol}>
-                                    <div style={{...flexRow, borderBottom: '2px solid', padding: '0.25em 0', justifyContent: 'center', alignItems: 'center'}}>{data.data.id.split(" / ").map((skill) => {
-                                        let icon = skillIcon(shortToSkill(skill)!);
-                                        return skill.split("/").map(skill => {
-                                            let icon = skillIcon(shortToSkill(skill)!);
-                                            return <div key={`${skill}_bump_key_${bump.density}+${bump.power}`} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}><img src={icon} style={{height: '1em'}} />&nbsp;<span>{skill}</span></div>
-                                        })
-                                    })}</div>
-                                    {t('stat_trends.graphs.population_increase')}: <b>{inc ? (inc).toLocaleString() : t('global.new')}</b>
+                            const swarm = data.data as any as GraphSeries;
+                            if (swarm) {
+                                let max = swarm.high_power;
+                                let min = swarm.low_power;
+                                let inc = swarm.density;
+                                return (<div className="ui segment" style={flexCol}>
+                                    <div style={{...flexRow, borderBottom: '2px solid', padding: '0.25em 0', justifyContent: 'center', alignItems: 'center'}}>
+                                        {data.data.id.split(" / ").map((skill) => {
+                                            return skill.split("/").map(skill => {
+                                                let icon = skillIcon(shortToSkill(skill)!);
+                                                return <div key={`${skill}_bump_key_${swarm.density}+${swarm.power}`} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}><img src={icon} style={{height: '1em'}} />&nbsp;<span>{skill}</span></div>
+                                            })
+                                        })}
+                                    </div>
+                                    <span>{printNCrew(swarm.density, t, true)}</span>
+                                    {/* {t('stat_trends.graphs.population_increase')}: <b>{inc ? (inc).toLocaleString() : t('global.new')}</b> */}
                                     {t('stat_trends.graphs.power_creep')}: <b>{!inc ? 'N/A' : `${Math.round((1 - (min / max)) * 100).toLocaleString()}%`}</b>
-                                    {t('stat_trends.initial_release')}: <b>{epochToDate(bump.epoch_start).toDateString()}</b>
-                                    {t('stat_trends.last_release')}: <b>{epochToDate(bump.epoch_end).toDateString()}</b>
-                                </div>
+                                    {t('stat_trends.initial_release')}: <b>{epochToDate(swarm.epoch_start).toDateString()}</b>
+                                    {t('stat_trends.last_release')}: <b>{epochToDate(swarm.epoch_end).toDateString()}</b>
+                                </div>)
                             }
                             return <></>
                         }}

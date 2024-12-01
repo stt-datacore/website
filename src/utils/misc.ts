@@ -141,6 +141,13 @@ export const getImageName = (reward) => {
 };
 
 
+export function printNCrew(n: number, t: TranslateMethod, total = false) {
+	return t(total ? 'global.n_total_x' : 'global.n_x', {
+		n: n.toLocaleString(),
+		x: n === 1 ? t('base.crewman') : t('base.crewman')
+	});
+}
+
 
 /** Check if the device, itself, (not the resolution) is a mobile device */
 export const mobileCheck = function () {

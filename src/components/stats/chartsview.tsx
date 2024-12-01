@@ -22,7 +22,7 @@ export const ChartsView = () => {
         { key: 'release_graph', value: 'release_graph', text: t('stat_trends.graphs.release_graph')},
         { key: 'skill_area', value: 'skill_area', text: t('stat_trends.graphs.skill_area')},
         { key: 'circle', value: 'circle', text: t('stat_trends.graphs.circle')},
-        { key: 'experimental1', value: 'experimental1', text: t('global.experimental') + " #1"},
+        { key: 'experimental1', value: 'experimental1', text: t('graph.swarm')},
         // { key: 'experimental2', value: 'experimental2', text: t('global.experimental') + " #2"},
         // { key: 'experimental3', value: 'experimental3', text: t('global.experimental') + " #3"},
     ];
