@@ -3,8 +3,8 @@ import React from "react"
 import { GlobalContext } from "../../../context/globalcontext";
 import { StatsContext } from "../dataprovider";
 import { Highs, EpochDiff, GraphPropsCommon, SkoBucket, GraphSeries } from "../model";
-import { GameEpoch, filterHighs, filterEpochDiffs, filterFlatData, epochToDate, dateToEpoch, statFilterCrew, OptionsPanelFlexRow, OptionsPanelFlexColumn, skillIcon, getSkillOrderDebutData, keyToNames } from "../utils";
-import { AreaBumpSerie, BumpSerieMouseHandler, ResponsiveAreaBump } from "@nivo/bump";
+import { GameEpoch, filterHighs, filterEpochDiffs, filterFlatData, epochToDate, dateToEpoch, statFilterCrew, OptionsPanelFlexRow, OptionsPanelFlexColumn, skillIcon, keyToNames, getSkillOrderDebutData, SkillColors } from "../utils";
+import { AreaBumpSerie, Bump, BumpSerieMouseHandler, ResponsiveAreaBump, ResponsiveBump } from "@nivo/bump";
 import CONFIG from "../../CONFIG";
 
 
@@ -12,65 +12,27 @@ import themes from "../../nivo_themes";
 import { shortToSkill, skillSum } from "../../../utils/crewutils";
 import { useStateWithStorage } from "../../../utils/storage";
 import { Checkbox } from "semantic-ui-react";
-
+import { ResponsiveSwarmPlot, SwarmPlot } from "@nivo/swarmplot";
 
 interface MapConfig {
     considerCounts: boolean;
     considerPower: boolean;
 }
 
-export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
+export const ExperimentalChart1 = (props: GraphPropsCommon) => {
 
     const { useFilters } = props;
     const globalContext = React.useContext(GlobalContext);
     const statsContext = React.useContext(StatsContext);
     const { t } = globalContext.localized;
     const { crew } = globalContext.core;
-    const { filterConfig, allHighs: outerHighs, epochDiffs: outerDiffs, flatOrder: outerOrder } = statsContext;
+    const { filterConfig } = statsContext;
 
-    const [allHighs, setAllHighs] = React.useState<Highs[]>([]);
-    const [epochDiffs, setEpochDiffs] = React.useState<EpochDiff[]>([]);
-    const [areaData, setAreaData] = React.useState<AreaBumpSerie<Datum, any>[]>([]);
-    const [flatOrder, setFlatOrder] = React.useState<SkoBucket[]>([]);
-    const [rarityCount, setRarityCount] = React.useState(0);
-    const [config, setConfig] = useStateWithStorage<MapConfig>(`stats_skill_area_config`, { considerCounts: true, considerPower: true }, { rememberForever: true });
-    const totalYears = (((new Date()).getUTCFullYear()) - GameEpoch.getUTCFullYear()) + 1;
+    const [areaData, setAreaData] = React.useState<GraphSeries[]>([]);
+
     const nowEpoch = dateToEpoch();
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;
-
-    React.useEffect(() => {
-        if (outerOrder.length) {
-            if (useFilters) {
-                setFlatOrder(filterFlatData(filterConfig, outerOrder));
-            }
-            else {
-                setFlatOrder(outerOrder);
-            }
-        }
-    }, [useFilters, filterConfig, outerOrder]);
-
-    React.useEffect(() => {
-        if (outerHighs.length) {
-            if (useFilters) {
-                setAllHighs(filterHighs(filterConfig, outerHighs));
-            }
-            else {
-                setAllHighs(outerHighs);
-            }
-        }
-    }, [useFilters, filterConfig, outerHighs]);
-
-    React.useEffect(() => {
-        if (outerDiffs.length) {
-            if (useFilters) {
-                setEpochDiffs(filterEpochDiffs(filterConfig, outerDiffs))
-            }
-            else {
-                setEpochDiffs(outerDiffs);
-            }
-        }
-    }, [useFilters, filterConfig, outerDiffs]);
 
     React.useEffect(() => {
         if (!crew.length) return;
@@ -135,21 +97,8 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
             })
 
         }
-        let dataset = [...new Set(newseries.map(m => m.id))].map(group => {
-            return {
-                id: group,
-                data: newseries.filter(f => f.id === group).map(d => {
-                    let b = 1;
-                    if (config.considerCounts) b *= d.density;
-                    if (config.considerPower) b *= d.power;
-                    d.y = d.power = b;
-                    return d;
-                })
-            }
-        });
-        setAreaData(dataset);
-        setRarityCount([...new Set(newseries.map(m => m.id))].length)
-    }, [crew, filterConfig, useFilters, config]);
+        setAreaData(newseries);
+    }, [crew, filterConfig, useFilters]);
 
     return (
         <div style={{
@@ -161,67 +110,115 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
             margin: '1em 0'
         }}>
 
-            {!!areaData?.length && [areaData].map((data, idx) => {
-                return <div style={{ height: `${rarityCount * 3}em`, width: '100%' }} key={`stats_year_calendar_${data.length ? data[0].year : '0'}_${idx}`}>
+            {!!areaData?.length && [areaData].map((swarmData, idx) => {
+                return <div style={{ height: `90em`, width: '100%' }} key={`stats_year_calendar_${swarmData.length ? swarmData[0].power : '0'}_${idx}`}>
 
-                    <div style={{...flexCol, alignSelf: 'flex-start', alignItems: 'flex-start', gap: '1em', margin: '1em 0'}}>
-                        <Checkbox
-                            label={t('stat_trends.graphs.map_skill_order_density')}
-                            checked={config.considerCounts}
-                            onChange={(e, { checked }) => setConfig({...config, considerCounts: !!checked })}
-                            />
-
-                        <Checkbox
-                            label={t('stat_trends.graphs.map_skill_order_power')}
-                            checked={config.considerPower}
-                            onChange={(e, { checked }) => setConfig({...config, considerPower: !!checked })}
-                            />
-
-                    </div>
-
-                    <ResponsiveAreaBump
-                        data={data}
-                        margin={{ top: 40, right: 140, bottom: 40, left: 40 }}
-                        spacing={8}
+                    <SwarmPlot
+                        width={1100}
+                        height={1100}
+                        data={swarmData}
+                        groups={[...new Set(swarmData.map(m => m.group))]}
+                        groupBy="group"
+                        //identity="id"
+                        value="power"
+                        valueFormat=".2f"
+                        valueScale={{
+                            type: 'linear',
+                            min: swarmData.reduce((p, n) => n.power < p || !p ? n.power : p, 0) - 100,
+                            max: swarmData.reduce((p, n) => n.power > p ? n.power : p, 0) + 100,
+                            reverse: false
+                        }}
+                        size={{
+                            key: 'density',
+                            values: [
+                                1,
+                                40
+                            ],
+                            sizes: [
+                                6,
+                                50,
+                            ]
+                        }}
+                        colorBy="id"
+                        colors={(data) => SkillColors[shortToSkill(data.data.id.split("/")[0])!]}
+                        //animate={false}
                         theme={themes.dark}
+                        forceStrength={4}
+                        simulationIterations={100}
+                        borderColor={{
+                            from: 'color',
+                            modifiers: [
+                                [
+                                    'darker',
+                                    0.6
+                                ],
+                                [
+                                    'opacity',
+                                    0.5
+                                ]
+                            ]
+                        }}
                         tooltip={(data) => {
-                            const bump = data.serie.data.data as GraphSeries[];
+                            const bump = data.data as any as GraphSeries;
                             if (bump) {
-                                let max = bump.map(m => m.high_power).reduce((p, n) => p > n ? p : n, 0);
-                                let min = bump.map(m => m.low_power).reduce((p, n) => n < p || !p ? n : p, 0);
-                                let inc = bump[bump.length - 1].density - bump[0].density;
+                                let max = bump.high_power;
+                                let min = bump.low_power;
+                                let inc = bump.density;
                                 return <div className="ui segment" style={flexCol}>
-                                    <div style={{...flexRow, borderBottom: '2px solid', padding: '0.25em 0', justifyContent: 'center', alignItems: 'center'}}>{data.serie.data.id.split(" / ").map((skill) => {
+                                    <div style={{...flexRow, borderBottom: '2px solid', padding: '0.25em 0', justifyContent: 'center', alignItems: 'center'}}>{data.data.id.split(" / ").map((skill) => {
                                         let icon = skillIcon(shortToSkill(skill)!);
                                         return skill.split("/").map(skill => {
                                             let icon = skillIcon(shortToSkill(skill)!);
-                                            return <div key={`${skill}_bump_key_${bump.length}`} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}><img src={icon} style={{height: '1em'}} />&nbsp;<span>{skill}</span></div>
+                                            return <div key={`${skill}_bump_key_${bump.density}+${bump.power}`} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}><img src={icon} style={{height: '1em'}} />&nbsp;<span>{skill}</span></div>
                                         })
                                     })}</div>
                                     {t('stat_trends.graphs.population_increase')}: <b>{inc ? (inc).toLocaleString() : t('global.new')}</b>
-                                    {t('stat_trends.graphs.power_creep')}: <b>{bump.length < 2 || !inc ? 'N/A' : `${Math.round((1 - (min / max)) * 100).toLocaleString()}%`}</b>
-                                    {t('stat_trends.initial_release')}: <b>{epochToDate(bump[0].epoch_start).toDateString()}</b>
-                                    {t('stat_trends.last_release')}: <b>{epochToDate(bump[bump.length - 1].epoch_end).toDateString()}</b>
+                                    {t('stat_trends.graphs.power_creep')}: <b>{!inc ? 'N/A' : `${Math.round((1 - (min / max)) * 100).toLocaleString()}%`}</b>
+                                    {t('stat_trends.initial_release')}: <b>{epochToDate(bump.epoch_start).toDateString()}</b>
+                                    {t('stat_trends.last_release')}: <b>{epochToDate(bump.epoch_end).toDateString()}</b>
                                 </div>
                             }
                             return <></>
                         }}
+                        margin={{ top: 80, right: 100, bottom: 80, left: 100 }}
                         axisTop={{
-                            tickSize: 5,
+                            //orient: 'top',
+                            tickSize: 10,
                             tickPadding: 5,
                             tickRotation: 0,
-                            legend: '',
+                            //legend: 'group if vertical, price if horizontal',
                             legendPosition: 'middle',
-                            legendOffset: -36,
+                            legendOffset: -46,
+                            truncateTickAt: 0
+                        }}
+                        axisRight={{
+                            //orient: 'right',
+                            tickSize: 10,
+                            tickPadding: 5,
+                            tickRotation: 0,
+                            //legend: 'price if vertical, group if horizontal',
+                            legendPosition: 'middle',
+                            legendOffset: 76,
                             truncateTickAt: 0
                         }}
                         axisBottom={{
-                            tickSize: 5,
+                            //orient: 'bottom',
+                            tickSize: 10,
                             tickPadding: 5,
                             tickRotation: 0,
-                            legend: '',
+                            //legend: 'group if vertical, price if horizontal',
                             legendPosition: 'middle',
-                            legendOffset: 32,
+                            legendOffset: 46,
+                            truncateTickAt: 0
+                        }}
+                        axisLeft={{
+                            //orient: 'left',
+                            tickSize: 10,
+                            tickPadding: 5,
+                            tickRotation: 0,
+                            //legend: 'price if vertical, group if horizontal',
+                            legendPosition: 'middle',
+                            legendOffset: -76,
                             truncateTickAt: 0
                         }}
                     />

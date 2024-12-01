@@ -1,12 +1,22 @@
-import { CrewMember } from "../../model/crew";
+import { BaseSkills, CrewMember } from "../../model/crew";
 import { TranslateMethod } from "../../model/player";
 import { skillSum } from "../../utils/crewutils";
-import { EpochDiff, Highs, SkillFilterConfig, SkoBucket } from "./model";
+import CONFIG from "../CONFIG";
+import { EpochDiff, Highs, SkillFilterConfig, SkillOrderDebut, SkoBucket } from "./model";
 
 export const OptionsPanelFlexRow: React.CSSProperties = {display:'flex', flexDirection: 'row', alignItems:'center', justifyContent: 'flex-start', gap: '2em'};
 export const OptionsPanelFlexColumn: React.CSSProperties = {display:'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', gap: '0.25em'};
 
 export const GameEpoch = new Date("2016-01-01T00:00:00Z");
+
+export const SkillColors = {
+    "security_skill": "#FF6347",
+    "command_skill": "#DAA520",
+    "science_skill": "#90EE90",
+    "medicine_skill": "#7FFFD4",
+    "engineering_skill": "#FFA500",
+    "diplomacy_skill": "#9370DB"
+}
 
 export function epochToDate(day: number) {
     let d = new Date(GameEpoch);
@@ -75,6 +85,8 @@ export function formatElapsedDays(days: number, t: TranslateMethod): string {
 export function configSkillFilters(data: CrewMember[], currConfig?: SkillFilterConfig) {
     if (currConfig && !currConfig.rarity) currConfig.rarity = [];
     const config: SkillFilterConfig = {
+        start_date: '',
+        end_date: '',
         avail_primary: [],
         primary: [],
         avail_secondary: [],
@@ -88,7 +100,8 @@ export function configSkillFilters(data: CrewMember[], currConfig?: SkillFilterC
         rarity: [5],
         ...currConfig
     }
-
+    config.start_date ??= '';
+    config.end_date ??= '';
     if (!data?.length) return config;
 
     let curr_crew = [ ...data ].filter(f => !config.rarity.length || config.rarity.includes(f.max_rarity));
@@ -121,6 +134,8 @@ export function filterBuckets(filterConfig: SkillFilterConfig, buckets: { [key: 
         if (test(filterConfig, { skills: skill_order.split(","), rarity: 0 })) {
             let newentries = entries.filter(f => !filterConfig.rarity.length || filterConfig.rarity.includes(f.rarity));
             if (filterConfig.obtainedFilter.length) newentries = newentries.filter(f => passObtained(f.crew, filterConfig.obtainedFilter))
+            newentries = newentries.filter(f => testDate(filterConfig, f.epoch_day));
+
             if (newentries.length) {
                 newbuckets[skill_order] = newentries;
             }
@@ -168,16 +183,24 @@ export function statFilterCrew<T extends CrewMember>(filterConfig: SkillFilterCo
         if (filterConfig.obtainedFilter.length) {
             if (!passObtained(c, filterConfig.obtainedFilter)) return;
         }
-        if (test(filterConfig, { rarity: c.max_rarity, skills: c.skill_order })) {
+        if (test(filterConfig, { rarity: c.max_rarity, skills: c.skill_order, date: c.date_added })) {
             newcrew.push(c);
         }
     });
     return newcrew;
 }
 
-function test<T extends { rarity: number, skills: string[] }>(filterConfig: SkillFilterConfig, entry: T) {
+function test<T extends { rarity: number, skills: string[], epoch_day?: number, date?: Date, epoch_days?: number[] }>(filterConfig: SkillFilterConfig, entry: T) {
     let skills = entry.skills;
     let pass = true;
+
+    if (entry.date || entry.epoch_day) {
+        if (!testDate(filterConfig, entry.date || entry.epoch_day)) return false;
+    }
+
+    if (entry.epoch_days) {
+        if (!entry.epoch_days.some(d => testDate(filterConfig, d))) return false;
+    }
 
     if (skills.length) {
         ["primary", "secondary", "tertiary"].forEach((pos, idx) => {
@@ -202,6 +225,22 @@ function test<T extends { rarity: number, skills: string[] }>(filterConfig: Skil
 
     if (entry.rarity && filterConfig.rarity.length && !filterConfig.rarity.includes(entry.rarity)) pass = false;
     return pass;
+}
+
+export function testDate(filterConfig: SkillFilterConfig, date?: number | string | Date) {
+    if (!date || (!filterConfig.start_date && !filterConfig.end_date)) return true;
+    if (typeof date === 'string') date = new Date(date);
+    if (typeof date === 'number') date = epochToDate(date);
+
+    if (filterConfig.start_date) {
+        let d2 = new Date(filterConfig.start_date);
+        if (date.getTime() < d2.getTime()) return false;
+    }
+    if (filterConfig.start_date) {
+        let d2 = new Date(filterConfig.end_date);
+        if (date.getTime() > d2.getTime()) return false;
+    }
+    return true;
 }
 
 export function makeFilterCombos(config: SkillFilterConfig, no_avail = false) {
@@ -252,4 +291,107 @@ export function getPowerOnDay(subject: CrewMember, data: CrewMember[]) {
                     .filter(f => skillSum(Object.values(f.base_skills)) > power).sort((a, b) => skillSum(Object.values(b.base_skills)) - skillSum(Object.values(a.base_skills)));
     if (filter.length === 0) return 1;
     return skillSum(Object.values(filter[0].base_skills)) / power;
+}
+
+export function skillsToKey(skills: string[] | BaseSkills) {
+    if (Array.isArray(skills)) {
+        return skills.join(",")
+    }
+    else {
+        return Object.keys(skills).join(",")
+    }
+}
+
+export function keyToSkills(key: string) {
+    return key.replace(/\//g, ',').split(",").map(m => m.trim());
+}
+
+export function keyToNames(key: string, short = true) {
+    if (short) {
+        return keyToSkills(key).map(m => CONFIG.SKILLS_SHORT.find(f => f.name === m)?.short || '')
+    }
+    else {
+        return keyToSkills(key).map(m => CONFIG.SKILLS[m] || '')
+    }
+}
+
+export function skillsToNames(skills: string[] | BaseSkills, short = true) {
+    if (short) {
+        if (Array.isArray(skills)) {
+            return skills.map(m => CONFIG.SKILLS_SHORT.find(f => f.name === m)?.short || '')
+        }
+        else {
+            return Object.keys(skills).map(m => CONFIG.SKILLS_SHORT.find(f => f.name === m)?.short || '')
+        }
+    }
+    else {
+        if (Array.isArray(skills)) {
+            return skills.map(m => CONFIG.SKILLS[m] || '')
+        }
+        else {
+            return Object.keys(skills).map(m => CONFIG.SKILLS[m] || '')
+        }
+    }
+}
+
+export function getSkillOrderDebutData(data: CrewMember[]): SkillOrderDebut[] {
+    const epochData = {} as { [key: string]: SkillOrderDebut[] }
+
+    data.forEach((c) => {
+        let power = skillSum(Object.values(c.base_skills));
+        let ed = dateToEpoch(c.date_added);
+        epochData[ed] ??= [];
+        let key = skillsToKey(c.skill_order);
+        let f = epochData[ed].find(fe => fe.skill_order === key);
+        if (!f) {
+            f = {
+                skill_order: key,
+                crew: [{ symbol: c.symbol, power, rank_at_debut: 0, new_high: false }],
+                epoch_day: ed,
+                high_power: power,
+                low_power: power
+            }
+            epochData[ed].push(f);
+        }
+        else {
+            f.crew.push(
+                { symbol: c.symbol, power, rank_at_debut: 0, new_high: false }
+            )
+            if (power > f.high_power) f.high_power = power;
+            if (power < f.low_power) f.low_power = power;
+        }
+    });
+
+    const rawdata = Object.values(epochData).flat()
+    rawdata.sort((a, b) => a.epoch_day - b.epoch_day || a.skill_order.localeCompare(b.skill_order));
+
+    const currhigh = {} as {[key:string]: number };
+    const currlow = {} as {[key:string]: number };
+
+    const first = rawdata[0].epoch_day;
+    const last = rawdata[rawdata.length - 1].epoch_day;
+
+    for (let i = first; i <= last; i++) {
+        let records = rawdata.filter(f => f.epoch_day === i);
+        if (records?.length) {
+            for (let record of records) {
+                if (currhigh[record.skill_order] === undefined || record.high_power > currhigh[record.skill_order]) {
+                    currhigh[record.skill_order] = record.high_power;
+                }
+                if (currlow[record.skill_order] === undefined || record.low_power < currlow[record.skill_order]) {
+                    currlow[record.skill_order] = record.low_power;
+                }
+            }
+            for (let record of records) {
+                record.high_power = currhigh[record.skill_order];
+                record.low_power = currlow[record.skill_order];
+                record.crew.forEach((c) => {
+                    c.rank_at_debut = (c.power / record.high_power);
+                    c.new_high = c.rank_at_debut === 1;
+                });
+            }
+        }
+    }
+
+    return rawdata;
 }

@@ -3,7 +3,7 @@ import { GlobalContext } from "../../../context/globalcontext"
 import { StatsContext } from "../dataprovider";
 import { useStateWithStorage } from "../../../utils/storage";
 import { EpochDiff, GraphPropsCommon, Highs, SkoBucket } from "../model";
-import { epochToDate, filterEpochDiffs, filterFlatData, filterHighs, findHigh, GameEpoch, isoDatePart, OptionsPanelFlexColumn, OptionsPanelFlexRow, statFilterCrew } from "../utils";
+import { epochToDate, filterEpochDiffs, filterFlatData, filterHighs, findHigh, GameEpoch, isoDatePart, OptionsPanelFlexColumn, OptionsPanelFlexRow, SkillColors, statFilterCrew } from "../utils";
 import { CalendarDatum, ResponsiveCalendar } from "@nivo/calendar";
 import { skillSum, skillToShort } from "../../../utils/crewutils";
 import themes from "../../nivo_themes";
@@ -35,15 +35,6 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
     const [circleData, setCircleData] = React.useState<CircleData>({} as any);
     const [zoomedElem, setZoomedElem] = React.useState<ComputedDatum<CircleData> | null>(null);
     const totalYears = (((new Date()).getUTCFullYear()) - GameEpoch.getUTCFullYear()) + 1;
-
-    const SkillColors = {
-        "security_skill": "#FF6347",
-        "command_skill": "#DAA520",
-        "science_skill": "#90EE90",
-        "medicine_skill": "#7FFFD4",
-        "engineering_skill": "#FFA500",
-        "diplomacy_skill": "#9370DB"
-    }
 
     Object.keys(SkillColors).forEach((key) => {
         let res = convert.hex.rgb(SkillColors[key].slice(1));

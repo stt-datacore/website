@@ -62,7 +62,17 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
         if (!masterCrew.length) return;
         const filteredCrew = masterCrew
             .filter(c => !filterConfig.obtainedFilter.length || passObtained(c, filterConfig.obtainedFilter))
-
+            .filter(c => {
+                if (filterConfig.start_date) {
+                    let d = new Date(filterConfig.start_date);
+                    if (c.date_added.getTime() < d.getTime()) return false;
+                }
+                if (filterConfig.end_date) {
+                    let d = new Date(filterConfig.end_date);
+                    if (c.date_added.getTime() > d.getTime()) return false;
+                }
+                return true;
+            })
         setPrefilteredCrew(filteredCrew);
     }, [masterCrew, filterConfig]);
 
