@@ -1868,8 +1868,12 @@
         "graphs": {
             "ignore_filters": "Ignorar los filtros actualmente activos",
             "release_graph": "Calendario de lanzamiento",
-            "skill_area": "Zona de habilidades",
-            "title": "Gráficos"
+            "skill_area": "La incursión del poder",
+            "title": "Gráficos",
+            "map_skill_order_density": "Mapear la densidad del orden de habilidades",
+            "map_skill_order_power": "Mapear el poder del orden de habilidades",
+            "population_increase": "Aumento de la población",
+            "power_creep": "{{stat_trends.graphs.skill_area}}"
         },
         "new_high": "Nueva Máxima",
         "released_duration_ago": "Debutó hace {{duration}}",

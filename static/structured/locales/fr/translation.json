@@ -1869,8 +1869,12 @@
         "graphs": {
             "ignore_filters": "Ignorer les filtres actuellement actifs",
             "release_graph": "Calendrier de sortie",
-            "skill_area": "Zone de compétence",
-            "title": "Graphiques"
+            "skill_area": "Fluage de puissance",
+            "title": "Graphiques",
+            "map_skill_order_density": "Cartographier la densité de l'ordre des compétences",
+            "map_skill_order_power": "Cartographier l'ordre de puissance des compétences",
+            "population_increase": "Augmentation de la population",
+            "power_creep": "{{stat_trends.graphs.skill_area}}"
         },
         "new_high": "Nouveau Élevé",
         "released_duration_ago": "Débuté il y a {{duration}}",

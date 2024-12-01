@@ -1854,8 +1854,12 @@
         "graphs": {
             "ignore_filters": "Ignore currently active filters",
             "release_graph": "Release Schedule",
-            "skill_area": "Skill Area",
-            "title": "Graphs"
+            "skill_area": "Power Creep",
+            "title": "Graphs",
+            "map_skill_order_density": "Map skill order density",
+            "map_skill_order_power": "Map skill order power",
+            "population_increase": "Population Increase",
+            "power_creep": "{{stat_trends.graphs.skill_area}}"
         },
         "new_high": "New High",
         "released_duration_ago": "Released {{duration}} ago",
