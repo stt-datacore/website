@@ -102,7 +102,7 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
                     });
 
                     let segment_power = segCrew.length ? segCrew.map(sg => skillSum(Object.values(sg.base_skills))).reduce((p, n) => p + n) : 0;
-
+                    if (segCrew.length) segment_power;
                     let power = 0;
                     if (config.considerCounts && config.considerPower || (!config.considerCounts && !config.considerPower)) {
                         power = segCrew.length * segment_power;
@@ -171,7 +171,7 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
                                         return <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}><img src={icon} style={{height: '1em'}} />&nbsp;<span>{skill}</span></div>
                                     })}</div>
                                     {t('stat_trends.graphs.population_increase')}: <b>{(bump[bump.length - 1].density - bump[0].density).toLocaleString()}</b>
-                                    {t('stat_trends.graphs.power_creep')}: <b>{(bump[bump.length - 1].power - bump[0].power).toLocaleString()}</b>
+                                    {t('stat_trends.graphs.power_creep')}: <b>{Math.ceil((bump[0].power / bump[bump.length - 1].power) * 100).toLocaleString()}%</b>
                                     </div>
                             }
                             return <></>
