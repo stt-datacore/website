@@ -1,19 +1,15 @@
-import React from "react"
-import { GlobalContext } from "../../../context/globalcontext"
+import React from "react";
+import { GlobalContext } from "../../../context/globalcontext";
 import { StatsContext } from "../dataprovider";
-import { useStateWithStorage } from "../../../utils/storage";
-import { EpochDiff, GraphPropsCommon, Highs, SkoBucket } from "../model";
-import { epochToDate, filterEpochDiffs, filterFlatData, filterHighs, findHigh, GameEpoch, getRGBSkillColors, isoDatePart, OptionsPanelFlexColumn, OptionsPanelFlexRow, statFilterCrew } from "../utils";
-import { CalendarDatum, ResponsiveCalendar } from "@nivo/calendar";
+import { GraphPropsCommon } from "../model";
+import { getRGBSkillColors, OptionsPanelFlexColumn, OptionsPanelFlexRow, statFilterCrew } from "../utils";
 import { skillSum, skillToShort } from "../../../utils/crewutils";
 import themes from "../../nivo_themes";
-import { CrewMember } from "../../../model/crew";
 import { CrewTiles } from "../../base/crewtiles";
-import { Checkbox, Label } from "semantic-ui-react";
 import CONFIG from "../../CONFIG";
 import { ResponsiveCirclePacking } from "@nivo/circle-packing";
-import convert from 'color-convert';
 import { ComputedDatum } from "@nivo/circle-packing";
+import { DEFAULT_MOBILE_WIDTH } from "../../hovering/hoverstat";
 
 interface CircleData {
     name: string;
@@ -25,6 +21,7 @@ interface CircleData {
 }
 
 export const StatsCircleChart = (props: GraphPropsCommon) => {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     const { useFilters } = props;
     const globalContext = React.useContext(GlobalContext);
     const statsContext = React.useContext(StatsContext);
@@ -36,8 +33,6 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
     const [zoomedElem, setZoomedElem] = React.useState<ComputedDatum<CircleData> | null>(null);
 
     const [zoomElect, setZoomElect] = React.useState(0);
-
-    const totalYears = (((new Date()).getUTCFullYear()) - GameEpoch.getUTCFullYear()) + 1;
 
     const RGBColors = getRGBSkillColors();
 
@@ -128,14 +123,30 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
             {!!circleData && [circleData].map((circle, idx) => {
                 return <div style={{height: `800px`, width: '100%'}} key={`stats_skill_circle_${idx}`}>
                     {!!zoomedElem && !zoomElect && zoomedElem.data.crew.length > 0 &&
-                    <div style={{position: 'absolute', zIndex: '1001', margin: '0 1em', height: '800px', width: '1100px', display:'flex', flexDirection:'column', alignItems: 'center', justifyContent: 'center'}}
+                    <div style={{
+                        position: 'absolute',
+                        zIndex: '1001',
+                        margin: '1em',
+                        height: 'calc(800px - 2em)',
+                        width: isMobile ? 'calc(100% - 4em)' : '1100px',
+                        display: 'flex',
+                        flexDirection:'column',
+                        alignItems: 'center',
+                        justifyContent: 'center'}}
                         onClick={() => setZoomElect(1)}
                     >
                             <CrewTiles crew={zoomedElem.data.crew.map(m => crew.find(f => f.symbol === m)!)}
+                                targetGroup="stat_trends_crew"
+                                scrolling
                                 title={zoomedElem.data.name}
-                                style={{textAlign: 'center', alignSelf: 'center', backgroundColor: 'rgba(70,70,70,0.7)', padding: '1em', borderRadius: '2em'}}
+                                style={{
+                                    textAlign: 'center',
+                                    alignSelf: 'center',
+                                    backgroundColor: 'rgba(70,70,70,0.7)',
+                                    padding: '1em',
+                                    borderRadius: '2em'}}
                                 round={true}
-                                maxCrew={30}
+                                //maxCrew={30}
                                 rich
                                 itemHeight="8em"
                                 avatarSize={64}

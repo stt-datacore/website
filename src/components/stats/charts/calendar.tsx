@@ -1,15 +1,14 @@
-import React from "react"
-import { GlobalContext } from "../../../context/globalcontext"
+import React from "react";
+import { GlobalContext } from "../../../context/globalcontext";
 import { StatsContext } from "../dataprovider";
-import { useStateWithStorage } from "../../../utils/storage";
-import { EpochDiff, GraphPropsCommon, Highs, SkoBucket } from "../model";
-import { epochToDate, filterEpochDiffs, filterFlatData, filterHighs, findHigh, GameEpoch, isoDatePart, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
+import { GraphPropsCommon, Highs, SkoBucket } from "../model";
+import { epochToDate, filterFlatData, filterHighs, findHigh, GameEpoch, isoDatePart, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
 import { CalendarDatum, ResponsiveCalendar } from "@nivo/calendar";
 import { skillSum } from "../../../utils/crewutils";
 import themes from "../../nivo_themes";
 import { CrewMember } from "../../../model/crew";
 import { CrewTiles } from "../../base/crewtiles";
-import { Checkbox, Label } from "semantic-ui-react";
+import { Label } from "semantic-ui-react";
 
 interface CalendarData extends CalendarDatum {
     year: number;
@@ -22,8 +21,6 @@ interface CalendarData extends CalendarDatum {
     epoch_day: number;
     crew: CrewMember[];
 }
-
-
 
 export const StatsCalendarChart = (props: GraphPropsCommon) => {
     const { useFilters } = props;

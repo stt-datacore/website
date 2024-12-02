@@ -12,7 +12,6 @@ import { StatsContext } from "./dataprovider";
 import { Skill } from "../../model/crew";
 import { ChartsView } from "./chartsview";
 import { EpochDiff } from "./model";
-import { StatsCircleChart } from "./charts/circle";
 
 export const StatTrendsComponent = () => {
     const globalContext = React.useContext(GlobalContext);

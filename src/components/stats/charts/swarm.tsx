@@ -1,18 +1,13 @@
-import { CalendarData, Datum } from "@nivo/calendar";
-import React from "react"
+import React from "react";
 import { GlobalContext } from "../../../context/globalcontext";
 import { StatsContext } from "../dataprovider";
-import { Highs, EpochDiff, GraphPropsCommon, SkoBucket, GraphSeries } from "../model";
-import { GameEpoch, filterHighs, filterEpochDiffs, filterFlatData, epochToDate, dateToEpoch, statFilterCrew, OptionsPanelFlexRow, OptionsPanelFlexColumn, skillIcon, keyToNames, getSkillOrderDebutData, SkillColors } from "../utils";
-import { AreaBumpSerie, Bump, BumpSerieMouseHandler, ResponsiveAreaBump, ResponsiveBump } from "@nivo/bump";
-import CONFIG from "../../CONFIG";
+import { GraphPropsCommon, GraphSeries, SkillOrderDebutCrew } from "../model";
+import { epochToDate, dateToEpoch, statFilterCrew, OptionsPanelFlexRow, OptionsPanelFlexColumn, skillIcon, keyToNames, getSkillOrderDebutData, SkillColors } from "../utils";
 
 
 import themes from "../../nivo_themes";
 import { shortToSkill, skillSum } from "../../../utils/crewutils";
-import { useStateWithStorage } from "../../../utils/storage";
-import { Checkbox } from "semantic-ui-react";
-import { ResponsiveSwarmPlot, SwarmPlot } from "@nivo/swarmplot";
+import { SwarmPlot } from "@nivo/swarmplot";
 import { printNCrew } from "../../../utils/misc";
 
 interface MapConfig {
@@ -20,7 +15,7 @@ interface MapConfig {
     considerPower: boolean;
 }
 
-export const ExperimentalChart1 = (props: GraphPropsCommon) => {
+export const StatsSwarmGraph = (props: GraphPropsCommon) => {
 
     const { useFilters } = props;
     const globalContext = React.useContext(GlobalContext);
@@ -28,7 +23,7 @@ export const ExperimentalChart1 = (props: GraphPropsCommon) => {
     const { t } = globalContext.localized;
     const { crew } = globalContext.core;
     const { filterConfig } = statsContext;
-
+    const [segLen, setSegLen] = React.useState(0);
     const [areaData, setAreaData] = React.useState<GraphSeries[]>([]);
     const [ready, setReady] = React.useState(false);
     const [readyCount, setReadyCount] = React.useState(0);
@@ -44,26 +39,46 @@ export const ExperimentalChart1 = (props: GraphPropsCommon) => {
         const workCrew = useFilters ? statFilterCrew(filterConfig, crew, true) : crew;
 
         const data = getSkillOrderDebutData(workCrew);
-        const uniqueSkos = [...new Set(workCrew.map(m => m.skill_order.join(',')))];
 
         const startDay = filterConfig.start_date ? dateToEpoch(new Date(filterConfig.start_date)) : 0;
         const endDay = filterConfig.end_date ? dateToEpoch(new Date(filterConfig.end_date)) : nowEpoch;
 
         const totalYears = (epochToDate(endDay).getUTCFullYear() - epochToDate(startDay).getUTCFullYear()) + 1;
 
-        const seglen = Math.ceil((endDay - startDay) / (totalYears));
+        let seglen = 0;
+
+        if (endDay - startDay > (365 * 2)) {
+            seglen = Math.ceil((endDay - startDay) / (totalYears + 1));
+        }
+        else if (endDay - startDay > 31)  {
+            seglen = Math.ceil((endDay - startDay) / 4)
+        }
+        else {
+            seglen = Math.ceil((endDay - startDay) / 7)
+        }
+
+        let segments = 0;
 
         for (let time = startDay; time <= endDay; time += seglen) {
+            segments++;
+
             let timedata = data.filter(f =>
-                // f.epoch_day >= startDay
-                // &&
-                f.epoch_day < time + seglen
-                // &&
-                // f.crew.some(c => c.new_high)
+                f.epoch_day <= time + seglen
+                && f.epoch_day <= endDay
             );
             let ed = epochToDate(time);
 
-            let newgroup = `${ed.getUTCFullYear()}-${(ed.getUTCMonth() + 1).toString().padStart(2, '0')}`;
+            let newgroup = '';
+
+            if (endDay - startDay > (365 * 2)) {
+                newgroup = `${ed.getUTCFullYear()}`;
+            }
+            else if (endDay - startDay > 31)  {
+                newgroup = `${ed.getUTCFullYear()}-${(ed.getUTCMonth() + 1).toString().padStart(2, '0')}`;
+            }
+            else {
+                newgroup = `${ed.getUTCFullYear()}-${(ed.getUTCMonth() + 1).toString().padStart(2, '0')}-${(ed.getUTCDate()).toString().padStart(2, '0')}`;
+            }
 
             timedata.forEach((record) => {
                 let newid = keyToNames(record.skill_order).join("/");
@@ -83,15 +98,14 @@ export const ExperimentalChart1 = (props: GraphPropsCommon) => {
 
                     };
                     f.power = Math.ceil(f.power);
+                    f.data ??= [];
+                    f.data = f.data.concat(record.crew);
                     // f.x = newgroup;
                     // f.y = f.power;
                     newseries.push(f);
                 }
                 else {
-                    f.density += record.crew.length;
-                    f.power += (!record.crew.length ? 0 : record.crew.map(m => m.power).reduce((p, n) => p + n) / record.crew.length);
-                    f.power /= 2;
-                    f.power = Math.ceil(f.power);
+                    f.data = f.data.concat(record.crew);
                     // f.x = newgroup;
                     // f.y = f.power;
                     if (record.low_power < f.low_power) f.low_power = record.low_power;
@@ -100,8 +114,14 @@ export const ExperimentalChart1 = (props: GraphPropsCommon) => {
                     if (record.epoch_day < f.epoch_start) f.epoch_start = record.epoch_day;
                 }
             })
-
         }
+        newseries.forEach((serie) => {
+            let crews = serie.data as SkillOrderDebutCrew[];
+            crews = crews.filter((f, idx) => crews.findIndex(f2 => f2.symbol === f.symbol) === idx);
+            serie.density = crews.length;
+            serie.power = crews.map(m => m.power).reduce((p, n) => p + n) / crews.length;
+        });
+        setSegLen(segments);
         setAreaData(newseries);
         setReady(false);
     }, [crew, filterConfig, useFilters]);
@@ -142,7 +162,7 @@ export const ExperimentalChart1 = (props: GraphPropsCommon) => {
                             ],
                             sizes: [
                                 6,
-                                50,
+                                20,
                             ]
                         }}
                         colorBy="id"
