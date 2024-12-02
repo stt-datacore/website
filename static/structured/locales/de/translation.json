@@ -1852,6 +1852,7 @@
         "quipment": "Berechnungsausrüstung..."
     },
     "stat_trends": {
+        "exact_skill_order_only": "Nur exakte Fertigkeitsreihenfolgen anzeigen (keine teilweisen Übereinstimmungen)",
         "columns": {
             "day_diff": "Debütintervall",
             "epoch_day": "Epochentag (letzte Crew)",

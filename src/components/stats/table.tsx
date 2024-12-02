@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Label } from "semantic-ui-react";
+import { Table, Label, Checkbox } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import CONFIG from "../CONFIG";
 import { AvatarView } from "../item_presenters/avatarview";
@@ -8,6 +8,9 @@ import { filterEpochDiffs, filterHighs, findHigh, formatElapsedDays, GameEpoch, 
 import { EpochDiff, Highs } from "./model";
 import { CrewMember } from '../../model/crew';
 import { StatsContext } from './dataprovider';
+import { useStateWithStorage } from '../../utils/storage';
+import SearchString from 'search-string/src/searchString';
+import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 
 export interface StatTrendsTableProps {
     prefilteredHighs?: Highs[];
@@ -21,6 +24,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
     const { epochDiffs: outerDiffs, allHighs: outerHighs, filterConfig } = statsContext;
     const [epochDiffs, setEpochDiffs] = React.useState<EpochDiff[]>([]);
     const [allHighs, setAllHighs] = React.useState<Highs[]>([]);
+    const [exactOnly, setExactOnly] = useStateWithStorage('stat_trends_table_exact_skil_order_only', false, { rememberForever: true });
 
     const { t } = globalContext.localized;
     const { crew } = globalContext.core;
@@ -43,6 +47,12 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
             setAllHighs(filterHighs(filterConfig, outerHighs));
         }
     }, [outerHighs, prefilteredHighs, filterConfig]);
+
+    React.useEffect(() => {
+        if (epochDiffs?.length) {
+            setEpochDiffs([...epochDiffs]);
+        }
+    }, [exactOnly]);
 
     const nowDate = new Date();
     const daysFromEpoch = Math.floor((nowDate.getTime() - GameEpoch.getTime()) / (1000 * 60 * 60 * 24));
@@ -79,12 +89,23 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
         }
     });
 
-    return (<SearchableTable
+    return (
+        <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+            <div style={flexRow}>
+                <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start', margin: '1em 0'}}>
+                    <Checkbox label={t('stat_trends.exact_skill_order_only')}
+                        checked={exactOnly}
+                        onChange={(e, { checked }) => setExactOnly(!!checked) }
+                    />
+                </div>
+            </div>
+            <SearchableTable
                 config={tableConfig}
                 data={epochDiffs}
                 renderTableRow={(row, idx) => renderTableRow(row, idx!)}
                 filterRow={filterRow}
-                />)
+                />
+        </div>)
 
     function getOwnedMaxRarity(crew: string | CrewMember) {
         if (!playerData) {
@@ -102,7 +123,18 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
         return 0;
     }
 
-    function filterRow(row: any, filter: any, filterType?: string) {
+    function filterRow(row: EpochDiff, filters: SearchString[], filterType?: string) {
+
+        if (exactOnly) {
+            let pass = row.crew[0].skill_order.join("") === row.crew[1].skill_order.join("") &&
+                row.skills.join() === row.crew[0].skill_order.join();
+            if (!pass) return false;
+        }
+
+        if (filters?.length) {
+            return row.crew.some(c => crewMatchesSearchFilter(c, filters, filterType));
+        }
+
         return true;
     }
 

@@ -1865,6 +1865,7 @@
         "quipment": "Quipo de cálculo..."
     },
     "stat_trends": {
+        "exact_skill_order_only": "Mostrar únicamente progresiones exactas del orden de habilidades (no coincidencias parciales)",
         "columns": {
             "day_diff": "Intervalo de debut",
             "epoch_day": "Día de época (Tripulación reciente)",

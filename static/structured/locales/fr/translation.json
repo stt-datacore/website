@@ -1865,6 +1865,7 @@
         "quipment": "Calcul de l'équipement..."
     },
     "stat_trends": {
+        "exact_skill_order_only": "Afficher uniquement les progressions exactes de l'ordre des compétences (pas de correspondances partielles)",
         "columns": {
             "day_diff": "Intervalle de début",
             "epoch_day": "Jour de l'époque (équipe récente)",
