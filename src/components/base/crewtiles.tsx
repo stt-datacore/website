@@ -21,9 +21,11 @@ export interface CrewTilesProps {
     miniSkills?: boolean;
     rich?: boolean;
     maxCrew?: number;
+    ownHoverModalPositioning?: boolean;
     extraMessage?: JSX.Element | string;
     displayExtraMessage?: (crew: (PlayerCrew | CrewMember | CompactCrew)) => boolean;
-    title?: string;
+    title?: string | JSX.Element;
+    scrolling?: boolean;
 }
 
 export const CrewTiles = (props: CrewTilesProps) => {
@@ -40,10 +42,13 @@ export const CrewTiles = (props: CrewTilesProps) => {
     const crew = maxCrew ? props.crew.slice(0, maxCrew) : props.crew;
 
     return (
-        <div style={style}>
-            {!!title && <h3>{title}</h3>}
-            <div style={flexRow}>
-                {!!provideOwnHover && <CrewHoverStat targetGroup="crew_tiles_hover_stat" />}
+        <div style={{...style, overflowY: props.scrolling ? 'auto' : undefined}}>
+            {!!title && <div style={{position: 'absolute', width: '100%', textAlign: 'center'}}>
+                {typeof title === 'string' && <div className='ui label'>{title}</div>}
+                {typeof title !== 'string' && <>{title}</>}
+            </div>}
+            <div style={{...flexRow, marginTop: !!title ? '3em' : undefined}}>
+                {!!provideOwnHover && <CrewHoverStat modalPositioning={props.ownHoverModalPositioning} targetGroup="crew_tiles_hover_stat" />}
                 {crew.map((c, idx) => {
                     return (<div key={`crew_tiles_${pageId}_${c.symbol}+${idx}`} style={flexCol}>
                         <AvatarView

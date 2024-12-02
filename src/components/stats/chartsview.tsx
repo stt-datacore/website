@@ -1,12 +1,12 @@
 import React from "react"
 import { StatsCalendarChart } from "./charts/calendar"
-import { Checkbox, Dropdown, DropdownItemProps, Step } from "semantic-ui-react"
+import { Checkbox, Dropdown } from "semantic-ui-react"
 import { GlobalContext } from "../../context/globalcontext"
 import { useStateWithStorage } from "../../utils/storage"
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "./utils"
-import { StatsSkillAreaBump } from "./charts/skillbump"
+import { StatsCreepAreaGraph } from "./charts/statscreep"
 import { StatsCircleChart } from "./charts/circle"
-import { ExperimentalChart1 } from "./charts/experimental"
+import { StatsSwarmGraph } from "./charts/swarm"
 
 
 
@@ -54,9 +54,9 @@ export const ChartsView = () => {
 
         <h3>{t(`stat_trends.graphs.${currGraph}`)}</h3>
         {currGraph === 'release_graph' && <StatsCalendarChart useFilters={useFilters} />}
-        {currGraph === 'skill_area' && <StatsSkillAreaBump useFilters={useFilters} />}
+        {currGraph === 'skill_area' && <StatsCreepAreaGraph useFilters={useFilters} />}
         {currGraph === 'circle' && <StatsCircleChart useFilters={useFilters} />}
-        {currGraph === 'experimental1' && <ExperimentalChart1 useFilters={useFilters} />}
+        {currGraph === 'experimental1' && <StatsSwarmGraph useFilters={useFilters} />}
 
     </React.Fragment>
 }

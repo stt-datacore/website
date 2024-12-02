@@ -67,10 +67,17 @@ export interface GraphPropsCommon {
     useFilters: boolean;
 }
 
+export interface SkillOrderDebutCrew {
+    symbol: string,
+    power: number,
+    rank_at_debut: number,
+    new_high: boolean
+}
+
 export interface SkillOrderDebut {
     skill_order: string,
     epoch_day: number,
-    crew: { symbol: string, power: number, rank_at_debut: number, new_high: boolean }[],
+    crew: SkillOrderDebutCrew[],
     high_power: number,
     low_power: number,
 }
@@ -82,8 +89,9 @@ export interface GraphSeries {
     power: number,
     low_power: number,
     high_power: number,
-    x: number,
+    x: number | string,
     y: number,
     epoch_start: number;
     epoch_end: number;
+    data?: any;
 }

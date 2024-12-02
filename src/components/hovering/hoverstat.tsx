@@ -26,9 +26,6 @@ export interface HoverStatProps {
     boxStyle?: React.CSSProperties;
     mobileWidth?: number;
 
-    /** @deprecated Don't use this anymore */
-    useBoundingClient?: boolean;
-
     /** True if the hover is going to be used in a modal. */
     modalPositioning?: boolean;
     customOffset?: Coord;
@@ -278,29 +275,30 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
         // }
     }
 
-    /**
-     * Custom function to determine the correct offset of the hover box relative to the visible portion of the page
-     * @param fromEl
-     * @returns top and left
-     */
-    protected getOffset(fromEl: HTMLElement, stopAt: HTMLElement | undefined = undefined) {
-        var el: HTMLElement | null = fromEl;
+    protected getOffset(fromEl: HTMLElement) {
 
-        var x = 0;
-        var y = 0;
-        while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
-            x += el.offsetLeft - el.scrollLeft;
-            y += el.offsetTop - el.scrollTop;
-            if (el.scrollTop) {
-                console.log("Scroll");
-                console.log(el.offsetTop);
-                console.log(el.scrollTop);
-            }
-            if (el === stopAt) break;
-            el = el.offsetParent as HTMLElement ?? null;
-        }
+        let r = fromEl.getBoundingClientRect();
+        return {
+            top: r.y + window.scrollY,
+            left: r.x + window.scrollX
+        };
+        // var el: HTMLElement | null = fromEl;
 
-        return { top: y, left: x };
+        // var x = 0;
+        // var y = 0;
+        // while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
+        //     x += el.offsetLeft - el.scrollLeft;
+        //     y += el.offsetTop - el.scrollTop;
+        //     if (el.scrollTop) {
+        //         console.log("Scroll");
+        //         console.log(el.offsetTop);
+        //         console.log(el.scrollTop);
+        //     }
+        //     if (el === stopAt) break;
+        //     el = el.offsetParent as HTMLElement ?? null;
+        // }
+
+        // return { top: y, left: x };
     }
 
     protected currentTarget?: HTMLElement = undefined;
@@ -344,9 +342,9 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
     protected abstract get canActivate(): boolean;
 
     protected realignTarget = (target?: HTMLElement) => {
-
-        const { useBoundingClient, modalPositioning, customOffset } = this.props;
+        const { modalPositioning, customOffset } = this.props;
         const { divId } = this.state;
+
         const hoverstat = document.getElementById(divId);
 
         target ??= this.currentTarget;
@@ -363,15 +361,17 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
         if (!target || !hoverstat) return;
 
         let rect = target.getBoundingClientRect();
-        let ancestor = useBoundingClient ? undefined : (modal ?? this.findCommonAncestor(target, hoverstat));
+        let ancestor = (modal ?? this.findCommonAncestor(target, hoverstat));
+
         this.currentTarget = target;
 
-        let { top , left } = useBoundingClient || !!modal ? rect : this.getOffset(target, ancestor);
-        let { left: tx, top: ty } = this.getOffset(target, ancestor);
+        let { top , left } = !!modal ? rect : this.getOffset(target);
 
         let x = left + rect.width;
         let y = top - rect.height / 4;
+
         let modalBounds: DOMRect | undefined = undefined;
+
         if (modal) {
             modalBounds = modal.getBoundingClientRect();
             x -= modalBounds.x;
@@ -380,10 +380,11 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
 
         let off = { ... this.targetOffset };
         let pad = { ... this.windowEdgeMinPadding };
+
         if (target.clientWidth >= 64) {
             off.x += ((target.clientWidth / 2));
         }
-        if (!ancestor && !useBoundingClient) {
+        if (!ancestor) {
             x -= window.scrollX;
             y -= window.scrollY;
         }
@@ -394,23 +395,25 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
         else {
             hoverstat.style.position = "absolute";
         }
+
         if (customOffset) {
             x += customOffset.x;
             y += customOffset.y;
         }
+
         hoverstat.style.display = "flex";
         hoverstat.style.opacity = "0";
-        hoverstat.style.zIndex = "1000000";
+
+        hoverstat.style.zIndex = "1009";
+
         if (isWindow) window.setTimeout(() => {
             let hoverstat = document.getElementById(divId);
-            // console.log("Activate " + divId);
-
             if (!hoverstat) return;
 
             y -= (hoverstat.clientHeight - off.y);
             x -= off.x;
 
-            let scrolly = useBoundingClient || !!modal ? 0 : window.scrollY;
+            let scrolly = !!modal ? 0 : window.scrollY;
 
             if (y < scrolly + pad.y) {
                 y = scrolly + pad.y;
@@ -432,14 +435,8 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
                 hoverstat.style.width = widthCheck - (pad.x * 2) + 'px';
             }
 
-            if (useBoundingClient) {
-                hoverstat.style.left = x + "px";
-                hoverstat.style.top = y + "px";
-            }
-            else {
-                hoverstat.style.left = x + "px";
-                hoverstat.style.top = y + "px";
-            }
+            hoverstat.style.left = x + "px";
+            hoverstat.style.top = y + "px";
 
             hoverstat.style.zIndex = "1009";
 

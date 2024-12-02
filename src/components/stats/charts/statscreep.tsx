@@ -1,15 +1,14 @@
-import { CalendarData, Datum } from "@nivo/calendar";
-import React from "react"
+import { Datum } from "@nivo/calendar";
+import React from "react";
 import { GlobalContext } from "../../../context/globalcontext";
 import { StatsContext } from "../dataprovider";
-import { Highs, EpochDiff, GraphPropsCommon, SkoBucket, GraphSeries } from "../model";
+import { Highs, EpochDiff, GraphPropsCommon, SkoBucket, GraphSeries, SkillOrderDebutCrew } from "../model";
 import { GameEpoch, filterHighs, filterEpochDiffs, filterFlatData, epochToDate, dateToEpoch, statFilterCrew, OptionsPanelFlexRow, OptionsPanelFlexColumn, skillIcon, getSkillOrderDebutData, keyToNames } from "../utils";
-import { AreaBumpSerie, BumpSerieMouseHandler, ResponsiveAreaBump } from "@nivo/bump";
-import CONFIG from "../../CONFIG";
+import { AreaBumpSerie, ResponsiveAreaBump } from "@nivo/bump";
 
 
 import themes from "../../nivo_themes";
-import { shortToSkill, skillSum } from "../../../utils/crewutils";
+import { shortToSkill } from "../../../utils/crewutils";
 import { useStateWithStorage } from "../../../utils/storage";
 import { Checkbox } from "semantic-ui-react";
 
@@ -19,7 +18,7 @@ interface MapConfig {
     considerPower: boolean;
 }
 
-export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
+export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
 
     const { useFilters } = props;
     const globalContext = React.useContext(GlobalContext);
@@ -86,23 +85,44 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
 
         const totalYears = (epochToDate(endDay).getUTCFullYear() - epochToDate(startDay).getUTCFullYear()) + 1;
 
-        const seglen = Math.ceil((endDay - startDay) / (totalYears));
+        let seglen = 0;
+
+        if (endDay - startDay > (365 * 2)) {
+            seglen = Math.ceil((endDay - startDay) / (totalYears + 1));
+        }
+        else if (endDay - startDay > 31)  {
+            seglen = Math.ceil((endDay - startDay) / 4)
+        }
+        else {
+            seglen = Math.ceil((endDay - startDay) / 7)
+        }
+
+        let segments = 0;
 
         for (let time = startDay; time <= endDay; time += seglen) {
-            let timedata = data.filter(f =>
-                // f.epoch_day >= startDay
-                // &&
-                f.epoch_day < time + seglen
-                // &&
-                // f.crew.some(c => c.new_high)
-            );
+            segments++;
 
-            let newgroup = epochToDate(timedata[timedata.length - 1].epoch_day).getUTCFullYear()
+            let timedata = data.filter(f =>
+                f.epoch_day <= time + seglen
+                && f.epoch_day <= endDay
+            );
+            let ed = epochToDate(time);
+
+            let newgroup = '';
+
+            if (endDay - startDay > (365 * 2)) {
+                newgroup = `${ed.getUTCFullYear()}`;
+            }
+            else if (endDay - startDay > 31)  {
+                newgroup = `${ed.getUTCFullYear()}-${(ed.getUTCMonth() + 1).toString().padStart(2, '0')}`;
+            }
+            else {
+                newgroup = `${ed.getUTCFullYear()}-${(ed.getUTCMonth() + 1).toString().padStart(2, '0')}-${(ed.getUTCDate()).toString().padStart(2, '0')}`;
+            }
 
             timedata.forEach((record) => {
                 let newid = keyToNames(record.skill_order).join("/");
                 let f = newseries.find(f => f.id === newid && f.group === newgroup.toString());
-
                 if (!f) {
                     f = {
                         id: keyToNames(record.skill_order).join("/"),
@@ -114,18 +134,18 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
                         x: 0,
                         y: 0,
                         epoch_end: record.epoch_day,
-                        epoch_start: record.epoch_day
+                        epoch_start: record.epoch_day,
+
                     };
                     f.power = Math.ceil(f.power);
+                    f.data ??= [];
+                    f.data = f.data.concat(record.crew);
                     f.x = newgroup;
                     f.y = f.power;
                     newseries.push(f);
                 }
                 else {
-                    f.density += record.crew.length;
-                    f.power += (!record.crew.length ? 0 : record.crew.map(m => m.power).reduce((p, n) => p + n) / record.crew.length);
-                    f.power /= 2;
-                    f.power = Math.ceil(f.power);
+                    f.data = f.data.concat(record.crew);
                     f.x = newgroup;
                     f.y = f.power;
                     if (record.low_power < f.low_power) f.low_power = record.low_power;
@@ -134,8 +154,13 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
                     if (record.epoch_day < f.epoch_start) f.epoch_start = record.epoch_day;
                 }
             })
-
         }
+        newseries.forEach((serie) => {
+            let crews = serie.data as SkillOrderDebutCrew[];
+            crews = crews.filter((f, idx) => crews.findIndex(f2 => f2.symbol === f.symbol) === idx);
+            serie.density = crews.length;
+            serie.y = serie.power = crews.map(m => m.power).reduce((p, n) => p + n) / crews.length;
+        });
         let dataset = [...new Set(newseries.map(m => m.id))].map(group => {
             return {
                 id: group,
@@ -143,7 +168,7 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
                     let b = 1;
                     if (config.considerCounts) b *= d.density;
                     if (config.considerPower) b *= d.power;
-                    d.y = d.power = b;
+                    d.y = b;
                     return d;
                 })
             }
@@ -182,7 +207,7 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
 
                     <ResponsiveAreaBump
                         data={data}
-                        margin={{ top: 40, right: 140, bottom: 40, left: 40 }}
+                        margin={{ top: 40, right: 100, bottom: 40, left: 40 }}
                         spacing={8}
                         theme={themes.dark}
                         tooltip={(data) => {
@@ -193,7 +218,6 @@ export const StatsSkillAreaBump = (props: GraphPropsCommon) => {
                                 let inc = bump[bump.length - 1].density - bump[0].density;
                                 return <div className="ui segment" style={flexCol}>
                                     <div style={{...flexRow, borderBottom: '2px solid', padding: '0.25em 0', justifyContent: 'center', alignItems: 'center'}}>{data.serie.data.id.split(" / ").map((skill) => {
-                                        let icon = skillIcon(shortToSkill(skill)!);
                                         return skill.split("/").map(skill => {
                                             let icon = skillIcon(shortToSkill(skill)!);
                                             return <div key={`${skill}_bump_key_${bump.length}`} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}><img src={icon} style={{height: '1em'}} />&nbsp;<span>{skill}</span></div>

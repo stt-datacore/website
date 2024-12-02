@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { EpochDiff, Highs, IStatsContext, SkillFilterConfig, SkoBucket, StatsDisplayMode } from './model';
 import { useStateWithStorage } from '../../utils/storage';
 import { GlobalContext } from '../../context/globalcontext';
 import { crewCopy, skillSum } from '../../utils/crewutils';
-import { configSkillFilters, dateToEpoch, filterFlatData, findHigh, passObtained } from './utils';
-import CONFIG from '../CONFIG';
+import { configSkillFilters, dateToEpoch, findHigh, passObtained } from './utils';
 import { CrewMember } from '../../model/crew';
 
 const defaultContextData = {
