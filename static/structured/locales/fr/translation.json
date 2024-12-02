@@ -985,8 +985,12 @@
         "you_own_n_of_y": "Vous possédez {{n}} de {{y}}."
     },
     "graph": {
+        "type": "Type de graphique",
         "bump": "Graphique de bosse",
-        "swarm": "Graphique d'essaim"
+        "swarm": "Graphique d'essaim",
+        "circle": "Graphique circulaire",
+        "tree": "Arbre",
+        "area_bump": "Graphique de relief de surface"
     },
     "header": {
         "recommend": {

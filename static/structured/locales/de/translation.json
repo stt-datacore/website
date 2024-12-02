@@ -975,8 +975,12 @@
         "you_own_n_of_y": "Sie besitzen {{n}} von {{y}}."
     },
     "graph": {
+        "type": "Diagrammtyp",
         "bump": "Bump-Diagramm",
-        "swarm": "Schwarmgraph"
+        "swarm": "Schwarmgraph",
+        "circle": "Kreisdiagramm",
+        "tree": "Baum",
+        "area_bump": "Bereichs-Bump-Diagramm"
     },
     "header": {
         "recommend": {

@@ -985,8 +985,12 @@
         "you_own_n_of_y": "Eres dueño de {{n}} de {{y}}."
     },
     "graph": {
+        "type": "Tipo de gráfico",
         "bump": "Gráfico de impacto",
-        "swarm": "Gráfico de enjambre"
+        "swarm": "Gráfico de enjambre",
+        "circle": "Gráfico circular",
+        "tree": "Árbol",
+        "area_bump": "Gráfico de área"
     },
     "header": {
         "recommend": {
