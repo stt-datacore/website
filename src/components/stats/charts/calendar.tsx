@@ -1,7 +1,7 @@
 import React from "react";
 import { GlobalContext } from "../../../context/globalcontext";
 import { StatsContext } from "../dataprovider";
-import { GraphPropsCommon, Highs, SkoBucket } from "../model";
+import { GraphPropsCommon, Highs, EpochItem } from "../model";
 import { epochToDate, filterFlatData, filterHighs, findHigh, GameEpoch, isoDatePart, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
 import { CalendarDatum, ResponsiveCalendar } from "@nivo/calendar";
 import { skillSum } from "../../../utils/crewutils";
@@ -31,7 +31,7 @@ export const StatsCalendarChart = (props: GraphPropsCommon) => {
     const { filterConfig, allHighs: outerHighs, epochDiffs: outerDiffs, flatOrder: outerOrder } = statsContext;
 
     const [allHighs, setAllHighs] = React.useState<Highs[]>([]);
-    const [flatOrder, setFlatOrder] = React.useState<SkoBucket[]>([]);
+    const [flatOrder, setFlatOrder] = React.useState<EpochItem[]>([]);
     const [releaseTable, setReleaseTable] = React.useState<CalendarData[]>([]);
 
     const totalYears = (((new Date()).getUTCFullYear()) - GameEpoch.getUTCFullYear()) + 1;

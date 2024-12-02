@@ -2,19 +2,26 @@ import { CrewMember } from "../../model/crew";
 
 export type StatsDisplayMode = 'crew' | 'graphs';
 
-export interface SkoBucket {
+export type GameModeUtility = 'gauntlet' | 'voyage' | 'shuttle' | 'ship';
+
+
+export interface EpochItem {
     aggregates: number[],
+    cores: number[],
+    proficiencies: number[],
     epoch_day: number,
     skills: string[]
     symbol: string,
     rarity: number,
-    next?: SkoBucket,
-    prev?: SkoBucket,
+    next?: EpochItem,
+    prev?: EpochItem,
     crew: CrewMember
 }
 
 export interface EpochDiff {
     aggregates: number[][]
+    cores: number[][],
+    proficiencies: number[][],
     day_diff: number,
     epoch_days: number[],
     skill_diffs: number[],
@@ -24,6 +31,14 @@ export interface EpochDiff {
     rarity: number,
     crew: CrewMember[]
 };
+
+export interface StatsDataSets {
+    flatData: EpochItem[];
+    skoBuckets: { [key: string]: EpochItem[] };
+    highs: Highs[];
+    obtainedList: string[];
+    epochDiffs: EpochDiff[];
+}
 
 export interface SkillFilterConfig {
     primary: string[];
@@ -41,9 +56,11 @@ export interface SkillFilterConfig {
     end_date: string;
 }
 
-export type Highs = {
+export interface Highs {
     crew: CrewMember,
     aggregates: number[],
+    cores: number[],
+    proficiences: number[],
     aggregate_sum: number,
     epoch_day: number,
     skills: string[],
@@ -53,10 +70,10 @@ export type Highs = {
 export interface IStatsContext {
     filterConfig: SkillFilterConfig;
     setFilterConfig: (value: SkillFilterConfig) => void;
-    flatOrder: SkoBucket[];
-    setFlatOrder: (value: SkoBucket[]) => void;
+    flatOrder: EpochItem[];
+    setFlatOrder: (value: EpochItem[]) => void;
     uniqueObtained: string[]
-    skoBuckets: { [key: string]: SkoBucket[] },
+    skoBuckets: { [key: string]: EpochItem[] },
     displayMode: StatsDisplayMode;
     setDisplayMode: (value: StatsDisplayMode) => void
     epochDiffs: EpochDiff[];
@@ -70,8 +87,14 @@ export interface GraphPropsCommon {
 export interface SkillOrderDebutCrew {
     symbol: string,
     power: number,
+    core_power: number,
+    prof_power: number,
     rank_at_debut: number,
-    new_high: boolean
+    prof_rank_at_debut: number,
+    core_rank_at_debut: number,
+    new_high: boolean,
+    core_new_high: boolean,
+    prof_new_high: boolean
 }
 
 export interface SkillOrderDebut {
@@ -80,6 +103,10 @@ export interface SkillOrderDebut {
     crew: SkillOrderDebutCrew[],
     high_power: number,
     low_power: number,
+    core_high_power: number,
+    core_low_power: number,
+    prof_high_power: number,
+    prof_low_power: number
 }
 
 export interface GraphSeries {

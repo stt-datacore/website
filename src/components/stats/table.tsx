@@ -4,7 +4,7 @@ import { GlobalContext } from "../../context/globalcontext";
 import CONFIG from "../CONFIG";
 import { AvatarView } from "../item_presenters/avatarview";
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
-import { filterEpochDiffs, filterHighs, findHigh, formatElapsedDays, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow, skillIcon } from "./utils";
+import { canGauntlet, canShuttle, canVoyage, filterEpochDiffs, filterHighs, findHigh, formatElapsedDays, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow, skillIcon } from "./utils";
 import { EpochDiff, Highs } from "./model";
 import { CrewMember } from '../../model/crew';
 import { StatsContext } from './dataprovider';
@@ -62,10 +62,9 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
 
     const sortAg = (a: EpochDiff, b: EpochDiff, idx: number) => a.aggregates[idx].reduce((p, n) => p + n, 0) - b.aggregates[idx].reduce((p, n) => p + n, 0);
     const tableConfig = [
-        { width: 1, column: 'symbol[0]', title: t('stat_trends.columns.recent_crew'), customCompare: (a, b) => sortAg(a, b, 0) },
-        { width: 1, column: 'symbol[1]', title: t('stat_trends.columns.prior_crew'), customCompare: (a, b) => sortAg(a, b, 1) },
+        { width: 3, column: 'symbol[0]', title: t('stat_trends.columns.recent_crew'), customCompare: (a, b) => sortAg(a, b, 0) },
+        { width: 3, column: 'symbol[1]', title: t('stat_trends.columns.prior_crew'), customCompare: (a, b) => sortAg(a, b, 1) },
         {
-            width: 1,
             column: 'epoch_day',
             title: t('stat_trends.columns.epoch_day'),
             reverse: true,
@@ -81,7 +80,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
     ] as ITableConfigRow[]
 
     tableConfig.push({
-        width: 1,
+        width: 3,
         column: 'skill_diffs',
         title: t('stat_trends.columns.skill_diffs'),
         customCompare: (a: EpochDiff, b: EpochDiff) => {
@@ -90,7 +89,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
     });
 
     return (
-        <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+        <div style={{...flexCol, alignItems: 'stretch', justifyContent: 'flex-start', width: '100%' }}>
             <div style={flexRow}>
                 <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start', margin: '1em 0'}}>
                     <Checkbox label={t('stat_trends.exact_skill_order_only')}
@@ -147,8 +146,8 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
         return <Table.Row key={`passIdf_${idx}`} style={{textAlign: 'center'}}>
             {[crews[0], crews[1]].map((crew, idx) => (
                 <Table.Cell key={`passIdf_crew_${idx}_${crew}`} style={{textAlign: 'center'}}>
-                <div style={flexRow}>
-                    <div style={{ ...flexCol, width: '15em'}}>
+                <div style={{...flexRow, margin: '1em 0.5em', justifyContent: 'flex-start', alignItems: 'flex-start'}}>
+                    <div style={{...flexCol}}>
                         <AvatarView
                             item={{...crew, rarity: getOwnedMaxRarity(crew)}}
                             mode='crew'
@@ -166,6 +165,22 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
                         <i>({t('stat_trends.released_duration_ago', {
                             duration: formatElapsedDays((daysFromEpoch - diff.epoch_days[idx]), t)
                         })})</i>
+                        <div style={flexRow}>
+                            {canGauntlet({
+                                core: diff.cores[idx],
+                                proficiencies: diff.proficiencies[idx]
+                                }) && <img src={`/media/gauntlet.png`} style={{height: '24px'}} />}
+                            {canVoyage({
+                                core: diff.cores[idx],
+                                proficiencies: diff.proficiencies[idx],
+                                skills: diff.skills,
+                                traits: diff.crew[idx].traits
+                                }) && <img src={`/media/voyage.png`} style={{height: '24px'}} />}
+                            {canShuttle({
+                                core: diff.cores[idx],
+                                }) && <img src={`/media/faction.png`} style={{height: '24px'}} />}
+                        </div>
+
                     </div>
                 </div>
                 </Table.Cell>
@@ -179,7 +194,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
             </Table.Cell>
             <Table.Cell>
                 {!diff.day_diff ? 'N/A' : ''}
-                {!!diff.day_diff ? diff.velocity.toFixed(2) : ''}
+                {!!diff.day_diff && <span style={{color: diff.velocity < 0 ? 'orange' : 'lightgreen'}}>{diff.velocity.toFixed(2)}</span>}
             </Table.Cell>
             {<Table.Cell>
             <div style={flexRow}>
@@ -187,7 +202,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
                     return <div style={flexCol}>
                         <img src={`${skillIcon(diff.skills[idx])}`} style={{height: '1em'}} />
                         <span>{CONFIG.SKILLS_SHORT.find(sk => sk.name === diff.skills[idx])?.short}</span>
-                        <span>{n}</span>
+                        <span style={{color: n < 0 ? 'orange' : 'lightgreen'}}>{n}</span>
                     </div>
                 })}
             </div>

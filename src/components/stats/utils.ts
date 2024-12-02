@@ -1,8 +1,9 @@
 import { BaseSkills, CrewMember } from "../../model/crew";
 import { TranslateMethod } from "../../model/player";
+import { AntimatterSeatMap } from "../../model/voyage";
 import { skillSum } from "../../utils/crewutils";
 import CONFIG from "../CONFIG";
-import { EpochDiff, GraphSeries, Highs, SkillFilterConfig, SkillOrderDebut, SkillOrderDebutCrew, SkoBucket } from "./model";
+import { EpochDiff, GraphSeries, Highs, SkillFilterConfig, SkillOrderDebut, SkillOrderDebutCrew, EpochItem, StatsDataSets } from "./model";
 import convert from 'color-convert';
 
 export const OptionsPanelFlexRow: React.CSSProperties = {display:'flex', flexDirection: 'row', alignItems:'center', justifyContent: 'flex-start', gap: '2em'};
@@ -27,9 +28,6 @@ export function getRGBSkillColors() {
     });
     return output;
 }
-
-
-
 
 export function epochToDate(day: number) {
     let d = new Date(GameEpoch);
@@ -124,8 +122,6 @@ export function configSkillFilters(data: CrewMember[], currConfig?: SkillFilterC
             let d = new Date(config.end_date);
             config.end_date = `${d.getUTCFullYear()}-${(d.getUTCMonth() + 1).toString().padStart(2, '0')}-${(d.getUTCDate()).toString().padStart(2, '0')}`;
         }
-
-
     }
     catch {
         config.start_date = '';
@@ -157,8 +153,8 @@ export function configSkillFilters(data: CrewMember[], currConfig?: SkillFilterC
 }
 
 
-export function filterBuckets(filterConfig: SkillFilterConfig, buckets: { [key: string]: SkoBucket[] }) {
-    const newbuckets = {} as { [key: string]: SkoBucket[] };
+export function filterBuckets(filterConfig: SkillFilterConfig, buckets: { [key: string]: EpochItem[] }) {
+    const newbuckets = {} as { [key: string]: EpochItem[] };
     Object.entries(buckets).forEach(([skill_order, entries]) => {
         if (test(filterConfig, { skills: skill_order.split(","), rarity: 0 })) {
             let newentries = entries.filter(f => !filterConfig.rarity.length || filterConfig.rarity.includes(f.rarity));
@@ -173,8 +169,8 @@ export function filterBuckets(filterConfig: SkillFilterConfig, buckets: { [key: 
     return newbuckets;
 }
 
-export function filterFlatData(filterConfig: SkillFilterConfig, data: SkoBucket[]) {
-    const newdata = [] as SkoBucket[];
+export function filterFlatData(filterConfig: SkillFilterConfig, data: EpochItem[]) {
+    const newdata = [] as EpochItem[];
     data.forEach((entry) => {
         if (filterConfig.obtainedFilter.length && !passObtained(entry.crew, filterConfig.obtainedFilter)) return;
         if (test(filterConfig, entry)) {
@@ -368,26 +364,61 @@ export function getSkillOrderDebutData(data: CrewMember[]): SkillOrderDebut[] {
 
     data.forEach((c) => {
         let power = skillSum(Object.values(c.base_skills));
+        let core = skillSum(Object.values(c.base_skills), 'core');
+        let prof = skillSum(Object.values(c.base_skills), 'proficiency');
+
         let ed = dateToEpoch(c.date_added);
+
         epochData[ed] ??= [];
         let key = skillsToKey(c.skill_order);
         let f = epochData[ed].find(fe => fe.skill_order === key);
         if (!f) {
             f = {
                 skill_order: key,
-                crew: [{ symbol: c.symbol, power, rank_at_debut: 0, new_high: false }],
+                crew: [{
+                    symbol: c.symbol,
+                    power,
+                    rank_at_debut: 0,
+                    new_high: false,
+                    core_power: core,
+                    prof_power: prof,
+                    core_new_high: false,
+                    prof_new_high: false,
+                    core_rank_at_debut: 0,
+                    prof_rank_at_debut: 0,
+                }],
                 epoch_day: ed,
                 high_power: power,
-                low_power: power
+                low_power: power,
+                core_high_power: core,
+                core_low_power: core,
+                prof_high_power: prof,
+                prof_low_power: prof
             }
             epochData[ed].push(f);
         }
         else {
-            f.crew.push(
-                { symbol: c.symbol, power, rank_at_debut: 0, new_high: false }
-            )
+            f.crew.push({
+                symbol: c.symbol,
+                power,
+                rank_at_debut: 0,
+                new_high: false,
+                core_power: core,
+                prof_power: prof,
+                core_new_high: false,
+                prof_new_high: false,
+                core_rank_at_debut: 0,
+                prof_rank_at_debut: 0,
+        });
+
             if (power > f.high_power) f.high_power = power;
             if (power < f.low_power) f.low_power = power;
+
+            if (core > f.core_high_power) f.core_high_power = core;
+            if (core < f.core_low_power) f.core_low_power = core;
+
+            if (prof > f.prof_high_power) f.prof_high_power = prof;
+            if (prof < f.prof_low_power) f.prof_low_power = prof;
         }
     });
 
@@ -397,6 +428,10 @@ export function getSkillOrderDebutData(data: CrewMember[]): SkillOrderDebut[] {
 
     const currhigh = {} as {[key:string]: number };
     const currlow = {} as {[key:string]: number };
+    const c_currhigh = {} as {[key:string]: number };
+    const c_currlow = {} as {[key:string]: number };
+    const p_currhigh = {} as {[key:string]: number };
+    const p_currlow = {} as {[key:string]: number };
 
     const first = rawdata[0].epoch_day;
     const last = rawdata[rawdata.length - 1].epoch_day;
@@ -411,13 +446,33 @@ export function getSkillOrderDebutData(data: CrewMember[]): SkillOrderDebut[] {
                 if (currlow[record.skill_order] === undefined || record.low_power < currlow[record.skill_order]) {
                     currlow[record.skill_order] = record.low_power;
                 }
+                if (c_currhigh[record.skill_order] === undefined || record.core_high_power > c_currhigh[record.skill_order]) {
+                    c_currhigh[record.skill_order] = record.core_high_power;
+                }
+                if (c_currlow[record.skill_order] === undefined || record.core_low_power < c_currlow[record.skill_order]) {
+                    c_currlow[record.skill_order] = record.core_low_power;
+                }
+                if (p_currhigh[record.skill_order] === undefined || record.prof_high_power > p_currhigh[record.skill_order]) {
+                    p_currhigh[record.skill_order] = record.prof_high_power;
+                }
+                if (p_currlow[record.skill_order] === undefined || record.prof_low_power < p_currlow[record.skill_order]) {
+                    p_currlow[record.skill_order] = record.prof_low_power;
+                }
             }
             for (let record of records) {
                 record.high_power = currhigh[record.skill_order];
                 record.low_power = currlow[record.skill_order];
+                record.core_high_power = c_currhigh[record.skill_order];
+                record.core_low_power = c_currlow[record.skill_order];
+                record.prof_high_power = p_currhigh[record.skill_order];
+                record.prof_low_power = p_currlow[record.skill_order];
                 record.crew.forEach((c) => {
                     c.rank_at_debut = (c.power / record.high_power);
+                    c.core_rank_at_debut = (c.core_power / record.core_high_power);
+                    c.prof_rank_at_debut = (c.prof_power / record.prof_high_power);
                     c.new_high = c.rank_at_debut === 1;
+                    c.core_new_high = c.core_rank_at_debut === 1;
+                    c.prof_new_high = c.prof_rank_at_debut === 1;
                 });
             }
         }
@@ -426,3 +481,157 @@ export function getSkillOrderDebutData(data: CrewMember[]): SkillOrderDebut[] {
     return rawdata;
 }
 
+export function createStatsDataSet(prefilteredCrew: CrewMember[]) {
+    const crew = prefilteredCrew;
+    const skoBuckets = {} as { [key: string]: EpochItem[] };
+    const flatData = [] as EpochItem[];
+    const highs = [] as Highs[];
+    const obtainedList = [] as string[];
+    for (let c of crew) {
+        if (!obtainedList.includes(c.obtained)) obtainedList.push(c.obtained);
+        const aggregates = Object.values(c.base_skills).map(skill => skillSum(skill));
+        const cores = Object.values(c.base_skills).map(skill => skillSum(skill, 'core'));
+        const profs = Object.values(c.base_skills).map(skill => skillSum(skill, 'proficiency'));
+        const epoch_day = dateToEpoch(c.date_added);
+
+        [1, 2, 3].forEach((n) => {
+            if (c.skill_order.length >= n) {
+                let skd = c.skill_order.slice(0, n);
+                let sko = skd.join(",");
+
+                let levels = skd.map(m => skillSum(c.base_skills[m]));
+                let levels_core = skd.map(m => skillSum(c.base_skills[m], 'core'));
+                let levels_prof = skd.map(m => skillSum(c.base_skills[m], 'proficiency'));
+                let aggregate_sum = levels.reduce((p, n) => p + n, 0);
+                let high = findHigh(epoch_day, skd, highs, c.max_rarity);
+                if (!high || high.aggregate_sum < aggregate_sum) {
+                    highs.push({
+                        crew: c,
+                        skills: skd,
+                        aggregates: levels,
+                        cores: levels_core,
+                        proficiences: levels_prof,
+                        epoch_day,
+                        aggregate_sum,
+                        rarity: c.max_rarity
+                    });
+                }
+                skoBuckets[sko] ??= [];
+                skoBuckets[sko].push({
+                    symbol: c.symbol,
+                    cores,
+                    proficiencies: profs,
+                    aggregates,
+                    epoch_day,
+                    skills: skd,
+                    rarity: c.max_rarity,
+                    crew: c
+                });
+                flatData.push({
+                    symbol: c.symbol,
+                    cores,
+                    proficiencies: profs,
+                    aggregates,
+                    epoch_day,
+                    skills: skd,
+                    rarity: c.max_rarity,
+                    crew: c
+                });
+            }
+        });
+    }
+
+    for (let rarity = 1; rarity <= 5; rarity++) {
+        let curr = {} as { [key: string]: EpochItem };
+        flatData.filter(f => f.rarity === rarity).forEach((entry) => {
+            let key = entry.skills.join(",");
+            if (curr[key]) curr[key].next = entry;
+            entry.prev = curr[key];
+            curr[key] = entry;
+        });
+    }
+
+    flatData.sort((a, b) => b.epoch_day - a.epoch_day || b.rarity - a.rarity);
+    const epochDiffs = [] as EpochDiff[];
+
+    let work: EpochItem[] = [];
+    if (flatData?.length) {
+        work = [...flatData];
+    }
+
+    if (work?.length) {
+        work.sort((a, b) => b.epoch_day - a.epoch_day || b.rarity - a.rarity);
+        let c = work.length;
+
+        for (let i = 0; i < c; i++) {
+            let s = work[i].skills.length;
+            let next = work[i];
+            if (!next.prev && i === c - 1) break;
+            let curr = next.prev ?? work[i + 1];
+            if (!next.prev) continue;
+            let dd = next.epoch_day - curr.epoch_day;
+            let sd = [] as number[];
+            for (let j = 0; j < s; j++) {
+                sd.push(next.aggregates[j] - curr.aggregates[j]);
+            }
+            let diff: EpochDiff = {
+                symbols: [next.symbol, curr.symbol],
+                day_diff: dd,
+                epoch_days: [next.epoch_day, curr.epoch_day],
+                skill_diffs: sd,
+                skills: next.skills,
+                velocity: 0,
+                aggregates: [next.aggregates, curr.aggregates],
+                cores: [next.cores, curr.cores],
+                proficiencies: [next.proficiencies, curr.proficiencies],
+                rarity: curr.rarity,
+                crew: [next.crew, curr.crew]
+            };
+            let avgdiff = diff.skill_diffs.reduce((p, n) => p + n, 0) / diff.skill_diffs.length;
+            if (avgdiff && diff.day_diff) diff.velocity = avgdiff / diff.day_diff;
+            epochDiffs.push(diff);
+        }
+    }
+
+    return { flatData, skoBuckets, highs, obtainedList, epochDiffs } as StatsDataSets;
+}
+
+
+export function canGauntlet(item: { proficiencies: number[], core: number[] }) {
+    let prof = item.proficiencies.reduce((p, n) => p + n);
+    let core = item.core.reduce((p, n) => p + n);
+    return prof >= 1000 || (prof / core) >= 0.5
+}
+
+export function canShuttle(item: { core: number[] }) {
+    return item.core.some(c => c >= 1400);
+}
+
+export function canVoyage(item: { proficiencies: number[], core: number[], traits: string[], skills: string[] }) {
+    const lookupTrait = (trait: string) => {
+        const oma = [] as string[];
+        for (let ln of AntimatterSeatMap) {
+            if (ln.name  == trait) {
+                return ln.skills;
+            }
+        }
+        return oma;
+    }
+
+    let core = item.core.reduce((p, n, i) => p + (n * (1 - (i * 0.25))));
+    let profs = item.proficiencies.reduce((p, n, i) => p + (n * (1 - (i * 0.25))));
+
+    let raw = core + profs;
+
+    if (raw > 3000) return true;
+    else if (raw > 2500) {
+        let amtraits = item.traits.filter(f => {
+            let l = lookupTrait(f);
+            if (l.some(e => item.skills.includes(e))) return true;
+            return false;
+        });
+        if (amtraits.length >= 6) return true;
+        if (item.skills.length === 3 && ['engineering_skill', 'medicine_skill', 'science_skill'].includes(item.skills[2])) return true;
+    }
+    return false;
+}
