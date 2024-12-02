@@ -4,7 +4,7 @@ import { GlobalContext } from "../../../context/globalcontext";
 import { StatsContext } from "../dataprovider";
 import { Highs, EpochDiff, GraphPropsCommon, SkoBucket, GraphSeries, SkillOrderDebutCrew, SkillFilterConfig } from "../model";
 import { GameEpoch, filterHighs, filterEpochDiffs, filterFlatData, epochToDate, dateToEpoch, statFilterCrew, OptionsPanelFlexRow, OptionsPanelFlexColumn, skillIcon, getSkillOrderDebutData, keyToNames, computeCommonSeries, SkillColors } from "../utils";
-import { AreaBumpSerie, ResponsiveAreaBump } from "@nivo/bump";
+import { AreaBumpSerie, Bump, ResponsiveAreaBump } from "@nivo/bump";
 
 
 import themes from "../../nivo_themes";
@@ -49,7 +49,7 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
                 data: series.filter(f => f.id === group).map(d => {
                     let b = 1;
                     if (config.considerCounts) b *= d.density;
-                    if (config.considerPower) b *= d.power;
+                    if (config.considerPower) b *= (1 - (d.power / d.high_power));
                     d.y = b;
                     return d;
                 })
@@ -64,6 +64,15 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
         { key: 'areabump', value: 'areabump', text: t('graph.area_bump') },
         { key: 'swarm', value: 'swarm', text: t('graph.swarm') },
     ];
+
+    // if (filterConfig.primary.length || filterConfig.secondary.length || filterConfig.tertiary.length) {
+    //     graphTypes.push(
+    //         { key: 'bump', value: 'bump', text: t('graph.bump') }
+    //     )
+    // }
+    // else if (graphType === 'bump') {
+    //     setGraphType('areabump');
+    // }
 
     return (
         <div style={{
@@ -101,6 +110,7 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
 
                     {graphType === 'areabump' && renderAreaBumpGraph()}
                     {graphType === 'swarm' && renderSwarmPlot()}
+                    {graphType === 'bump' && renderBumpGraph()}
                 </div>
             })}
         </div>)
@@ -273,6 +283,93 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
                 legendOffset: -76,
                 truncateTickAt: 0
             }}
+        />
+    }
+
+    function renderBumpGraph() {
+        return <Bump
+            width={1100}
+            height={1100}
+            data={areaData}
+            colors={{ scheme: 'spectral' }}
+            lineWidth={3}
+            activeLineWidth={6}
+            inactiveLineWidth={3}
+            inactiveOpacity={0.15}
+            pointSize={10}
+            activePointSize={10}
+            inactivePointSize={0}
+            pointColor={{ theme: 'background' }}
+            pointBorderWidth={3}
+            activePointBorderWidth={3}
+            pointBorderColor={{ from: 'serie.color' }}
+            axisTop={{
+                tickSize: 5,
+                tickPadding: 5,
+                tickRotation: 0,
+                legend: '',
+                legendPosition: 'middle',
+                legendOffset: -36,
+                truncateTickAt: 0
+            }}
+            axisBottom={{
+                tickSize: 5,
+                tickPadding: 5,
+                tickRotation: 0,
+                legend: '',
+                legendPosition: 'middle',
+                legendOffset: 32,
+                truncateTickAt: 0
+            }}
+            axisLeft={{
+                tickSize: 5,
+                tickPadding: 5,
+                tickRotation: 0,
+                legendPosition: 'middle',
+                legendOffset: -250,
+                truncateTickAt: 0,
+            }}
+            axisRight={{
+                // tickSize: 5,
+                // tickPadding: 5,
+                // tickRotation: 0,
+                // legend: 'ranking',
+                // legendPosition: 'middle',
+                // legendOffset: -40,
+                // truncateTickAt: 0
+
+            }}
+            layers={['grid', 'axes', 'labels', 'lines', 'mesh']}
+            margin={{ top: 40, right: 30, bottom: 40, left: 300 }}
+            useMesh={true}
+            interpolation={'smooth'}
+            xPadding={10}
+            xOuterPadding={0}
+            yOuterPadding={0}
+            theme={themes.dark}
+            opacity={1}
+            activeOpacity={1}
+            startLabel={(series) => series.id}
+            startLabelPadding={40}
+            startLabelTextColor={'white'}
+            endLabel={(series) => ''}
+            endLabelPadding={1}
+            endLabelTextColor={'transparent'}
+            inactivePointBorderWidth={1}
+            enableGridX={true}
+            enableGridY={true}
+            isInteractive={areaData[0].data.length < 50}
+            defaultActiveSerieIds={[]}
+            lineTooltip={(series) => {
+                return renderAreaBumpTooltip(series.serie.data)
+            }}
+            pointTooltip={(series) => {
+                return renderSwarmTooltip(series.point.data as GraphSeries)
+            }}
+            role={''}
+            //animate={true}
+            renderWrapper={false}
+            debugMesh={false}
         />
     }
 
