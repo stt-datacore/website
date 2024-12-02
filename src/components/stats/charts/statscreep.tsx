@@ -317,7 +317,7 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
             activeLineWidth={6}
             inactiveLineWidth={3}
             inactiveOpacity={0.15}
-            pointSize={20}
+            pointSize={10}
             activePointSize={10}
             inactivePointSize={0}
             pointColor={{ theme: 'background' }}
@@ -360,7 +360,7 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
                 // truncateTickAt: 0
 
             }}
-            layers={['grid', 'labels', 'lines', 'mesh']}
+            layers={['grid', 'labels', 'lines', 'mesh', 'points']}
             margin={{ top: 40, right: 30, bottom: 40, left: 300 }}
             useMesh={true}
             interpolation={'smooth'}
