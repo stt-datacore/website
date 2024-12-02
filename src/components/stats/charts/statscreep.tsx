@@ -2,19 +2,17 @@ import { Datum } from "@nivo/calendar";
 import React from "react";
 import { GlobalContext } from "../../../context/globalcontext";
 import { StatsContext } from "../dataprovider";
-import { Highs, EpochDiff, GraphPropsCommon, SkoBucket, GraphSeries, SkillOrderDebutCrew, SkillFilterConfig } from "../model";
-import { GameEpoch, filterHighs, filterEpochDiffs, filterFlatData, epochToDate, dateToEpoch, statFilterCrew, OptionsPanelFlexRow, OptionsPanelFlexColumn, skillIcon, getSkillOrderDebutData, keyToNames, computeCommonSeries, SkillColors } from "../utils";
+import { GraphPropsCommon, GraphSeries, SkillFilterConfig, SkillOrderDebutCrew } from "../model";
+import { epochToDate, OptionsPanelFlexRow, OptionsPanelFlexColumn, skillIcon, SkillColors, dateToEpoch, getSkillOrderDebutData, keyToNames, statFilterCrew } from "../utils";
 import { AreaBumpSerie, Bump, ResponsiveAreaBump } from "@nivo/bump";
-
 
 import themes from "../../nivo_themes";
 import { shortToSkill } from "../../../utils/crewutils";
 import { useStateWithStorage } from "../../../utils/storage";
 import { Checkbox, Dropdown } from "semantic-ui-react";
-import { CrewMember } from "../../../model/crew";
 import { printNCrew } from "../../../utils/misc";
 import { SwarmPlot } from "@nivo/swarmplot";
-
+import { CrewMember } from "../../../model/crew";
 
 interface MapConfig {
     considerCounts: boolean;
@@ -30,8 +28,9 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
     const { crew } = globalContext.core;
     const { filterConfig } = statsContext;
 
-    const [areaData, setAreaData] = React.useState<AreaBumpSerie<Datum, any>[]>([]);
-    const [swarmData, setSwarmData] = React.useState<GraphSeries[]>([]);
+    const [areaSeries, setAreaSeries] = React.useState<AreaBumpSerie<Datum, any>[]>([]);
+    const [bumpSeries, setBumpSeries] = React.useState<AreaBumpSerie<Datum, any>[]>([]);
+    const [swarmSeries, setSwarmSeries] = React.useState<GraphSeries[]>([]);
     const [rarityCount, setRarityCount] = React.useState(0);
     const [config, setConfig] = useStateWithStorage<MapConfig>(`stats_skill_area_config`, { considerCounts: true, considerPower: true }, { rememberForever: true });
     const [graphType, setGraphType] = useStateWithStorage('stat_trends_power_creep_graph_type', 'areabump', { rememberForever: true });
@@ -42,8 +41,17 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
     React.useEffect(() => {
         if (!crew.length) return;
 
-        const { series } = computeCommonSeries(filterConfig, crew, useFilters);
-        const areaData = [...new Set(series.map(m => m.id))].map(group => {
+        const { series } = computeSwarmSeries(filterConfig, crew, useFilters);
+        const bump = series.filter(f => (f.data as SkillOrderDebutCrew[]).some(c => c.new_high))
+                    .map(c => {
+                        let s = (c.data as SkillOrderDebutCrew[]).sort((a, b) => b.power - a.power);
+                        return {
+                            ...c,
+                            data: s
+                        }
+                    });
+
+        const areaSeries = [...new Set(series.map(m => m.id))].map(group => {
             return {
                 id: group,
                 data: series.filter(f => f.id === group).map(d => {
@@ -55,8 +63,22 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
                 })
             }
         });
-        setAreaData(areaData);
-        setSwarmData(series);
+
+        const bumpSeries = [...new Set(bump.map(m => m.id))].map(group => {
+            return {
+                id: group,
+                data: series.filter(f => f.id === group).map(d => {
+                    let b = 1;
+                    if (config.considerCounts) b *= d.density;
+                    if (config.considerPower) b *= d.high_power;
+                    return { ...d, y: -b };
+                })
+            }
+        });
+
+        setBumpSeries(bumpSeries);
+        setAreaSeries(areaSeries);
+        setSwarmSeries(series);
         setRarityCount([...new Set(series.map(m => m.id))].length)
     }, [crew, filterConfig, useFilters, config]);
 
@@ -65,14 +87,14 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
         { key: 'swarm', value: 'swarm', text: t('graph.swarm') },
     ];
 
-    // if (filterConfig.primary.length || filterConfig.secondary.length || filterConfig.tertiary.length) {
-    //     graphTypes.push(
-    //         { key: 'bump', value: 'bump', text: t('graph.bump') }
-    //     )
-    // }
-    // else if (graphType === 'bump') {
-    //     setGraphType('areabump');
-    // }
+    if (filterConfig.primary.length || filterConfig.secondary.length || filterConfig.tertiary.length) {
+        graphTypes.push(
+            { key: 'bump', value: 'bump', text: t('graph.bump') }
+        )
+    }
+    else if (graphType === 'bump') {
+        setGraphType('areabump');
+    }
 
     return (
         <div style={{
@@ -83,8 +105,8 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
             gap: '1em',
             margin: '1em 0'
         }}>
-            {!!areaData?.length && [areaData].map((data, idx) => {
-                return <div style={{ height: `${rarityCount * 3}em`, width: '100%' }} key={`stats_year_calendar_${data.length ? data[0].year : '0'}_${idx}`}>
+            {!!areaSeries?.length &&
+                <div style={{ height: `${rarityCount * 3}em`, width: '100%' }}>
                     <div style={{ ...flexCol, alignSelf: 'flex-start', alignItems: 'flex-start', gap: '1em', margin: '1em 0' }}>
                         <Checkbox
                             label={t('stat_trends.graphs.map_skill_order_density')}
@@ -111,8 +133,7 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
                     {graphType === 'areabump' && renderAreaBumpGraph()}
                     {graphType === 'swarm' && renderSwarmPlot()}
                     {graphType === 'bump' && renderBumpGraph()}
-                </div>
-            })}
+                </div>}
         </div>)
 
     function renderAreaBumpTooltip(bump: GraphSeries[]) {
@@ -157,7 +178,7 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
     function renderAreaBumpGraph() {
         return (
             <ResponsiveAreaBump
-                data={areaData}
+                data={areaSeries}
                 margin={{ top: 40, right: 100, bottom: 40, left: 40 }}
                 spacing={8}
                 theme={themes.dark}
@@ -193,16 +214,16 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
         return <SwarmPlot
             width={1100}
             height={1100}
-            data={swarmData}
-            groups={[...new Set(swarmData.map(m => m.group))]}
+            data={swarmSeries}
+            groups={[...new Set(swarmSeries.map(m => m.group))]}
             groupBy="group"
             //identity="id"
             value="power"
             valueFormat=".2f"
             valueScale={{
                 type: 'linear',
-                min: swarmData.reduce((p, n) => n.power < p || !p ? n.power : p, 0) - 100,
-                max: swarmData.reduce((p, n) => n.power > p ? n.power : p, 0) + 100,
+                min: swarmSeries.reduce((p, n) => n.power < p || !p ? n.power : p, 0) - 100,
+                max: swarmSeries.reduce((p, n) => n.power > p ? n.power : p, 0) + 100,
                 reverse: false
             }}
             size={{
@@ -290,13 +311,13 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
         return <Bump
             width={1100}
             height={1100}
-            data={areaData}
+            data={bumpSeries}
             colors={{ scheme: 'spectral' }}
             lineWidth={3}
             activeLineWidth={6}
             inactiveLineWidth={3}
             inactiveOpacity={0.15}
-            pointSize={10}
+            pointSize={20}
             activePointSize={10}
             inactivePointSize={0}
             pointColor={{ theme: 'background' }}
@@ -339,7 +360,7 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
                 // truncateTickAt: 0
 
             }}
-            layers={['grid', 'axes', 'labels', 'lines', 'mesh']}
+            layers={['grid', 'labels', 'lines', 'mesh']}
             margin={{ top: 40, right: 30, bottom: 40, left: 300 }}
             useMesh={true}
             interpolation={'smooth'}
@@ -358,19 +379,107 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
             inactivePointBorderWidth={1}
             enableGridX={true}
             enableGridY={true}
-            isInteractive={areaData[0].data.length < 50}
+            isInteractive={true}
             defaultActiveSerieIds={[]}
-            lineTooltip={(series) => {
-                return renderAreaBumpTooltip(series.serie.data)
-            }}
-            pointTooltip={(series) => {
-                return renderSwarmTooltip(series.point.data as GraphSeries)
-            }}
+            lineTooltip={(series) => renderAreaBumpTooltip(series.serie.data)}
+            pointTooltip={(series) => renderSwarmTooltip(series.point.data as GraphSeries)}
             role={''}
             //animate={true}
-            renderWrapper={false}
+            renderWrapper={true}
             debugMesh={false}
         />
     }
 
+    function computeSwarmSeries(filterConfig: SkillFilterConfig, crew: CrewMember[], useFilters = true) {
+        const nowEpoch = dateToEpoch();
+        const series = [] as GraphSeries[];
+        const workCrew = useFilters ? statFilterCrew(filterConfig, crew, true) : crew;
+
+        const data = getSkillOrderDebutData(workCrew);
+
+        const startDay = filterConfig.start_date ? dateToEpoch(new Date(filterConfig.start_date)) : 0;
+        const endDay = filterConfig.end_date ? dateToEpoch(new Date(filterConfig.end_date)) : nowEpoch;
+
+        const totalYears = (epochToDate(endDay).getUTCFullYear() - epochToDate(startDay).getUTCFullYear()) + 1;
+
+        let seglen = 0;
+
+        if (endDay - startDay > (365 * 2)) {
+            seglen = Math.ceil((endDay - startDay) / (totalYears + 1));
+        }
+        else if (endDay - startDay > 31)  {
+            seglen = Math.ceil((endDay - startDay) / 4)
+        }
+        else {
+            seglen = Math.ceil((endDay - startDay) / 7)
+        }
+
+        let segments = 0;
+
+        for (let time = startDay; time <= endDay; time += seglen) {
+            segments++;
+
+            let timedata = data.filter(f =>
+                f.epoch_day <= time + seglen
+                && f.epoch_day <= endDay
+            );
+            let ed = epochToDate(time);
+
+            let newgroup = '';
+
+            if (endDay - startDay > (365 * 2)) {
+                newgroup = `${ed.getUTCFullYear()}`;
+            }
+            else if (endDay - startDay > 31)  {
+                newgroup = `${ed.getUTCFullYear()}-${(ed.getUTCMonth() + 1).toString().padStart(2, '0')}`;
+            }
+            else {
+                newgroup = `${ed.getUTCFullYear()}-${(ed.getUTCMonth() + 1).toString().padStart(2, '0')}-${(ed.getUTCDate()).toString().padStart(2, '0')}`;
+            }
+
+            timedata.forEach((record) => {
+                let newid = keyToNames(record.skill_order).join("/");
+                let f = series.find(f => f.id === newid && f.group === newgroup.toString());
+                if (!f) {
+                    f = {
+                        id: keyToNames(record.skill_order).join("/"),
+                        group: newgroup.toString(),
+                        density: record.crew.length,
+                        power: !record.crew.length ? 0 : record.crew.map(m => m.power).reduce((p, n) => p + n) / record.crew.length,
+                        low_power: record.low_power,
+                        high_power: record.high_power,
+                        x: 0,
+                        y: 0,
+                        epoch_end: record.epoch_day,
+                        epoch_start: record.epoch_day,
+
+                    };
+                    f.power = Math.ceil(f.power);
+                    f.data ??= [];
+                    f.data = f.data.concat(record.crew);
+                    f.x = newgroup;
+                    f.y = f.power;
+                    series.push(f);
+                }
+                else {
+                    f.data = f.data.concat(record.crew);
+                    f.x = newgroup;
+                    f.y = f.power;
+                    if (record.low_power < f.low_power) f.low_power = record.low_power;
+                    if (record.high_power > f.high_power) f.high_power = record.high_power;
+                    if (record.epoch_day > f.epoch_end) f.epoch_end = record.epoch_day;
+                    if (record.epoch_day < f.epoch_start) f.epoch_start = record.epoch_day;
+                }
+            })
+        }
+
+        series.forEach((serie) => {
+            let crews = serie.data as SkillOrderDebutCrew[];
+            crews = crews.filter((f, idx) => crews.findIndex(f2 => f2.symbol === f.symbol) === idx);
+            serie.density = crews.length;
+            serie.y = serie.power = crews.map(m => m.power).reduce((p, n) => p + n) / crews.length;
+        });
+
+        return { series, segments };
+    }
 }
