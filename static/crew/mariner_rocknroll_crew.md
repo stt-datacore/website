@@ -3,7 +3,7 @@ name: Rock'n'Roll Mariner
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 6
+bigbook_tier: 7
 in_portal: true
 date: 29/08/2023
 published: true

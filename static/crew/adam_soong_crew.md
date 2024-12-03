@@ -5,7 +5,7 @@ series: pic
 memory_alpha:
 bigbook_tier: 6
 in_portal:
-date: 23/11/2024
+date: 25/11/2024
 published: true
 ---
 
