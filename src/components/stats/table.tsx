@@ -25,6 +25,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
     const [epochDiffs, setEpochDiffs] = React.useState<EpochDiff[]>([]);
     const [allHighs, setAllHighs] = React.useState<Highs[]>([]);
     const [exactOnly, setExactOnly] = useStateWithStorage('stat_trends_table_exact_skil_order_only', false, { rememberForever: true });
+    const [newHighOnly, setNewHighOnly] = useStateWithStorage('stat_trends_table_new_high_only', false, { rememberForever: true });
 
     const { t } = globalContext.localized;
     const { crew } = globalContext.core;
@@ -91,10 +92,14 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
     return (
         <div style={{...flexCol, alignItems: 'stretch', justifyContent: 'flex-start', width: '100%' }}>
             <div style={flexRow}>
-                <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start', margin: '1em 0'}}>
+                <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start', gap: '1em', margin: '1em 0'}}>
                     <Checkbox label={t('stat_trends.exact_skill_order_only')}
                         checked={exactOnly}
                         onChange={(e, { checked }) => setExactOnly(!!checked) }
+                    />
+                    <Checkbox label={t('stat_trends.new_highs_only')}
+                        checked={newHighOnly}
+                        onChange={(e, { checked }) => setNewHighOnly(!!checked) }
                     />
                 </div>
             </div>
@@ -130,6 +135,12 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
             if (!pass) return false;
         }
 
+        if (newHighOnly) {
+            const fhigh = findHigh(row.epoch_days[0], row.skills.slice(0, row.aggregates[0].length), allHighs, row.rarity);
+            const newhigh = fhigh?.epoch_day === row.epoch_days[0];
+            if (!newhigh) return false;
+        }
+
         if (filters?.length) {
             return row.crew.some(c => crewMatchesSearchFilter(c, filters, filterType));
         }
@@ -147,7 +158,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
             {[crews[0], crews[1]].map((crew, idx) => (
                 <Table.Cell key={`passIdf_crew_${idx}_${crew}`} style={{textAlign: 'center'}}>
                 <div style={{...flexRow, margin: '1em 0.5em', justifyContent: 'flex-start', alignItems: 'flex-start'}}>
-                    <div style={{...flexCol}}>
+                    <div style={{...flexCol, width: '10em'}}>
                         <AvatarView
                             item={{...crew, rarity: getOwnedMaxRarity(crew)}}
                             mode='crew'

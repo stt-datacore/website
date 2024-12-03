@@ -80,7 +80,7 @@ export function formatElapsedDays(days: number, t: TranslateMethod): string {
         else {
             val = d1.getMonth() + (12 - d2.getMonth());
         }
-        if (Math.abs(d1.getDate() - d2.getDate()) >= 15) val++;
+        //if (Math.abs(d1.getDate() - d2.getDate()) >= 15) val++;
         fmt = `duration.n_month${val > 1 ? 's' : ''}`;
         varname = 'months';
     }

@@ -1851,6 +1851,7 @@
     },
     "stat_trends": {
         "exact_skill_order_only": "Show exact skill order progressions, only (no partial matches)",
+        "new_highs_only": "Only show new highs",
         "columns": {
             "day_diff": "Release Interval",
             "epoch_day": "Epoch Day (Recent Crew)",

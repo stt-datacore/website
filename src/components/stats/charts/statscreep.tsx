@@ -7,12 +7,13 @@ import { epochToDate, OptionsPanelFlexRow, OptionsPanelFlexColumn, skillIcon, Sk
 import { AreaBumpSerie, Bump, ResponsiveAreaBump } from "@nivo/bump";
 
 import themes from "../../nivo_themes";
-import { shortToSkill } from "../../../utils/crewutils";
+import { crewCopy, shortToSkill } from "../../../utils/crewutils";
 import { useStateWithStorage } from "../../../utils/storage";
 import { Checkbox, Dropdown } from "semantic-ui-react";
 import { printNCrew } from "../../../utils/misc";
 import { SwarmPlot } from "@nivo/swarmplot";
 import { CrewMember } from "../../../model/crew";
+import { AvatarView } from "../../item_presenters/avatarview";
 
 interface MapConfig {
     considerCounts: boolean;
@@ -154,10 +155,13 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
         </div>
     }
 
-    function renderSwarmTooltip(swarm: GraphSeries) {
+    function renderSwarmTooltip(swarm: GraphSeries, high_crew = false) {
         let max = swarm.high_power;
         let min = swarm.low_power;
         let inc = swarm.density;
+        let symbol = swarm.data?.find((f) => f.power === swarm.high_power)?.symbol;
+        let crew = symbol ? globalContext.core.crew.find(f => f.symbol === symbol) : undefined;
+
         return (<div className="ui segment" style={flexCol}>
             <div style={{ ...flexRow, borderBottom: '2px solid', padding: '0.25em 0', justifyContent: 'center', alignItems: 'center' }}>
                 {swarm.id.split(" / ").map((skill) => {
@@ -172,6 +176,14 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
             {t('stat_trends.graphs.power_creep')}: <b>{!inc ? 'N/A' : `${Math.round((1 - (min / max)) * 100).toLocaleString()}%`}</b>
             {t('stat_trends.initial_release')}: <b>{epochToDate(swarm.epoch_start).toDateString()}</b>
             {t('stat_trends.last_release')}: <b>{epochToDate(swarm.epoch_end).toDateString()}</b>
+            {!!crew && high_crew && <div style={flexCol}>
+                <AvatarView
+                    mode='crew'
+                    item={crew}
+                    size={48}
+                    />
+                <i>{crew.name}</i>
+            </div>}
         </div>)
     }
 
@@ -382,7 +394,7 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
             isInteractive={true}
             defaultActiveSerieIds={[]}
             lineTooltip={(series) => renderAreaBumpTooltip(series.serie.data)}
-            pointTooltip={(series) => renderSwarmTooltip(series.point.data as GraphSeries)}
+            pointTooltip={(series) => renderSwarmTooltip(series.point.data as GraphSeries, true)}
             role={''}
             //animate={true}
             renderWrapper={true}
@@ -462,7 +474,7 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
                     series.push(f);
                 }
                 else {
-                    f.data = f.data.concat(record.crew);
+                    f.data = f.data!.concat(record.crew);
                     f.x = newgroup;
                     f.y = f.power;
                     if (record.low_power < f.low_power) f.low_power = record.low_power;
