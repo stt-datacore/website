@@ -3,7 +3,7 @@ name: Lieutenant Commander Saru
 rarity: 2
 series: dsc
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 6
 in_portal: true
 date: 20/09/2017
 published: true
