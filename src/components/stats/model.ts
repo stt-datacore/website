@@ -120,5 +120,5 @@ export interface GraphSeries {
     y: number,
     epoch_start: number;
     epoch_end: number;
-    data?: any;
+    data?: SkillOrderDebutCrew[];
 }

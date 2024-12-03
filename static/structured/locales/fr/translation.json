@@ -1866,6 +1866,7 @@
     },
     "stat_trends": {
         "exact_skill_order_only": "Afficher uniquement les progressions exactes de l'ordre des compétences (pas de correspondances partielles)",
+        "new_highs_only": "Afficher uniquement les nouveaux élevés",
         "columns": {
             "day_diff": "Intervalle de début",
             "epoch_day": "Jour de l'époque (équipe récente)",

@@ -1853,6 +1853,7 @@
     },
     "stat_trends": {
         "exact_skill_order_only": "Nur exakte Fertigkeitsreihenfolgen anzeigen (keine teilweisen Übereinstimmungen)",
+        "new_highs_only": "Nur neue Highscores anzeigen",
         "columns": {
             "day_diff": "Debütintervall",
             "epoch_day": "Epochentag (letzte Crew)",
