@@ -16,10 +16,11 @@ export interface CrewPickerProperties {
     plain?: boolean;
     showRarity?: boolean;
     custom?: (crew: PlayerCrew | CrewMember) => JSX.Element;
+    archetypeId?: boolean;
 }
 
 export const CrewDropDown = (props: CrewPickerProperties) => {
-    const { showRarity, custom, pool, multiple, setSelection, style, placeholder, maxSelection, fluid, plain } = props;
+    const { archetypeId, showRarity, custom, pool, multiple, setSelection, style, placeholder, maxSelection, fluid, plain } = props;
     const [crewChoices, setCrewChoices] = React.useState([] as DropdownItemProps[]);
 
     const selection = !!props.selection && typeof props.selection !== 'number' && !props.multiple ? props.selection[0] : props.selection;
@@ -36,7 +37,7 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
             }
             newChoices.push({
                 key: crewKey,
-                value: c.id,
+                value: archetypeId ? c.archetype_id : c.id,
                 text: c.name,
                 content: (
                     <React.Fragment>
@@ -94,7 +95,7 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
         setCrewChoices(newChoices);
     }, [pool])
 
-    if (!pool.length || !pool.every(p => p.id)) {
+    if (!pool.length || !pool.every(p => p.id || (archetypeId && p.archetype_id))) {
         return <></>;
     }
 

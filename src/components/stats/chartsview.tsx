@@ -6,6 +6,7 @@ import { useStateWithStorage } from "../../utils/storage"
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "./utils"
 import { StatsCreepAreaGraph } from "./charts/statscreep"
 import { StatsCircleChart } from "./charts/circle"
+import { CrewLab } from "./charts/crewlab"
 
 export const ChartsView = () => {
 
@@ -19,7 +20,7 @@ export const ChartsView = () => {
         { key: 'release_graph', value: 'release_graph', text: t('stat_trends.graphs.release_graph')},
         { key: 'skill_area', value: 'skill_area', text: t('stat_trends.graphs.skill_area')},
         { key: 'circle', value: 'circle', text: t('stat_trends.graphs.circle')},
-        { key: 'experimental1', value: 'experimental1', text: t('global.experimental') + " #1"},
+        // { key: 'experimental1', value: 'experimental1', text: t('global.experimental') + " #1"},
         // { key: 'experimental2', value: 'experimental2', text: t('global.experimental') + " #2"},
         // { key: 'experimental3', value: 'experimental3', text: t('global.experimental') + " #3"},
     ];
@@ -53,7 +54,7 @@ export const ChartsView = () => {
         {currGraph === 'release_graph' && <StatsCalendarChart useFilters={useFilters} />}
         {currGraph === 'skill_area' && <StatsCreepAreaGraph useFilters={useFilters} />}
         {currGraph === 'circle' && <StatsCircleChart useFilters={useFilters} />}
-        {/* {currGraph === 'experimental1' && <StatsSwarmGraph useFilters={useFilters} />} */}
+        {currGraph === 'experimental1' && <CrewLab useFilters={useFilters} />}
 
     </React.Fragment>
 }
