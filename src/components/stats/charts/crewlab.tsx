@@ -3,7 +3,7 @@ import themes from "../../nivo_themes";
 import { GlobalContext } from "../../../context/globalcontext";
 import { StatsContext } from "../dataprovider";
 import { CrewMember } from "../../../model/crew";
-import { epochToDate, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
+import { dateToEpoch, epochToDate, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
 import { AvatarView } from "../../item_presenters/avatarview";
 import { CrewDropDown } from "../../base/crewdropdown";
 import { GraphPropsCommon } from "../model";
@@ -78,8 +78,9 @@ export const CrewLab = (props: CrewLabProps) => {
             let ld = [] as LineData[]
             let rels = statsContext.flatOrder.filter(f => selCrew.skill_order.slice(0, f.skills.length).join() === f.skills.join());
             rels.sort((a, b) => a.epoch_day - b.epoch_day);
+            let n = dateToEpoch();
             rels.forEach((rel, idx) => {
-                if ((idx + 1) % 10) return;
+                //if ((idx + 1) % 10) return;
                 let name = rel.skills.map(m => skillToShort(m)).join("/");
                 let f = ld.find(f => f.id === name);
                 let ag = rel.aggregates.reduce((p, n) => p + n);
@@ -95,8 +96,8 @@ export const CrewLab = (props: CrewLabProps) => {
                     lastag[name] = ag;
                 }
                 f.data.push({
-                    x: epochToDate(rel.epoch_day),
-                    y: lastag[name]
+                    x: rel.epoch_day,
+                    y: ag // lastag[name]
                 });
             });
             if (ld?.length) allld.push(ld);
@@ -106,7 +107,10 @@ export const CrewLab = (props: CrewLabProps) => {
     }, [statsContext, selCrew]);
 
     React.useEffect(() => {
-        if (!workCrew?.length || !ids?.length) return;
+        if (!workCrew?.length || !ids?.length) {
+            setSelCrew([]);
+            return;
+        }
         const c = workCrew.filter(f => ids.includes(f.archetype_id));
         if (c) {
             setSelCrew(c);
@@ -119,7 +123,7 @@ export const CrewLab = (props: CrewLabProps) => {
             showRarity
             plain={false}
             pool={workCrew}
-            multiple={false}
+            multiple={true}
             selection={ids}
             setSelection={setIds}
             custom={(c) => {
@@ -135,28 +139,29 @@ export const CrewLab = (props: CrewLabProps) => {
         <div style={{ ...flexCol }}>
             {!!selCrew?.length &&
                 selCrew.map((crew, idx) => {
-                    return <div key={`scully_${crew.symbol}_${idx}`} style={flexRow}>
-                            <div style={{ ...flexCol, gap: '2em', width: '340px', margin: '2em 0', marginRight: '2em' }}>
-                                <h2>{crew.name}</h2>
-                                <AvatarView
-                                    mode='crew'
-                                    item={crew}
-                                    size={256}
-                                />
+                    return (
+                    <div key={`scully_${crew.symbol}_${idx}`} style={flexRow}>
+                        <div style={{ ...flexCol, gap: '2em', width: '340px', margin: '2em 0', marginRight: '2em' }}>
+                            <h2>{crew.name}</h2>
+                            <AvatarView
+                                mode='crew'
+                                item={crew}
+                                size={256}
+                            />
+                        </div>
+                        <div style={{ ...flexCol }}>
+                            <h3>{t('quipment_dropdowns.mode.skill_order')}</h3>
+                            <div style={{ ...flexRow }}>
+                                {crew.skill_order.map((skill) => {
+                                    return <CrewStat skill_name={skill} data={crew.base_skills[skill]} />
+                                })}
                             </div>
-                            <div style={{ ...flexCol, width: '200px' }}>
-                                <h3>{t('quipment_dropdowns.mode.skill_order')}</h3>
-                                <div style={{ ...flexRow }}>
-                                    {crew.skill_order.map((skill) => {
-                                        return <CrewStat skill_name={skill} data={crew.base_skills[skill]} />
-                                    })}
-                                </div>
-                                {!!lineData?.length && !!lineData[idx] && !!lineData[idx].length &&
-                                    <div style={{ width: '700px', height: '500px' }}>
-                                        {renderLineGraph(idx)}
-                                    </div>}
-                            </div>
-                        </div>})
+                            {!!lineData?.length && !!lineData[idx] && !!lineData[idx].length &&
+                                <div style={{ width: '700px', height: '500px' }}>
+                                    {renderLineGraph(idx)}
+                                </div>}
+                        </div>
+                    </div>)})
             }
         </div>
     </div>)
@@ -165,9 +170,10 @@ export const CrewLab = (props: CrewLabProps) => {
         return (<ResponsiveLine
             data={lineData[idx]}
             theme={themes.dark}
+            curve='monotoneX'
             animate={false}
-            margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-            xScale={{ type: 'point' }}
+            margin={{ top: 50, right: 140, bottom: 50, left: 60 }}
+            xScale={{ type: 'linear', max: dateToEpoch() }}
             yScale={{
                 type: 'linear',
                 min: 'auto',
@@ -182,7 +188,7 @@ export const CrewLab = (props: CrewLabProps) => {
                 tickSize: 5,
                 tickPadding: 5,
                 tickRotation: 0,
-                legend: 'transportation',
+                legend: t('base.release_date'),
                 legendOffset: 36,
                 legendPosition: 'middle',
                 truncateTickAt: 0
@@ -191,12 +197,12 @@ export const CrewLab = (props: CrewLabProps) => {
                 tickSize: 5,
                 tickPadding: 5,
                 tickRotation: 0,
-                legend: 'count',
+                legend: t('event_info.score'),
                 legendOffset: -40,
                 legendPosition: 'middle',
                 truncateTickAt: 0
             }}
-            pointSize={10}
+            pointSize={0}
             pointColor={{ theme: 'background' }}
             pointBorderWidth={2}
             pointBorderColor={{ from: 'serieColor' }}

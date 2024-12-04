@@ -54,7 +54,7 @@ export const ChartsView = () => {
         {currGraph === 'release_graph' && <StatsCalendarChart useFilters={useFilters} />}
         {currGraph === 'skill_area' && <StatsCreepAreaGraph useFilters={useFilters} />}
         {currGraph === 'circle' && <StatsCircleChart useFilters={useFilters} />}
-        {/* {currGraph === 'experimental1' && <CrewLab useFilters={useFilters} />} */}
+        {currGraph === 'experimental1' && <CrewLab useFilters={useFilters} />}
 
     </React.Fragment>
 }
