@@ -455,7 +455,10 @@
         "n_year": "{{years}} year",
         "n_years": "{{years}} years",
         "same_time": "Same Time",
-        "title": "Duration: {{duration}}"
+        "title": "Duration: {{duration}}",
+        "today": "today",
+        "yesterday": "yesterday",
+        "tomorrow": "tomorrow"
     },
     "event_info": {
         "active_event": "Active event leaderboard live data",
@@ -1875,6 +1878,7 @@
         "initial_release": "Initial Release",
         "last_release": "Last Release",
         "new_high": "New High",
+        "released_duration": "Released {{duration}}",
         "released_duration_ago": "Released {{duration}} ago",
         "released_n_days_ago": "Released {{n}} days ago",
         "sections": {
