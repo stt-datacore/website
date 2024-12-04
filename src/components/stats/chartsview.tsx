@@ -6,6 +6,7 @@ import { useStateWithStorage } from "../../utils/storage"
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "./utils"
 import { StatsCreepAreaGraph } from "./charts/statscreep"
 import { StatsCircleChart } from "./charts/circle"
+import { CrewLab } from "./charts/crewlab"
 
 export const ChartsView = () => {
 
@@ -53,7 +54,7 @@ export const ChartsView = () => {
         {currGraph === 'release_graph' && <StatsCalendarChart useFilters={useFilters} />}
         {currGraph === 'skill_area' && <StatsCreepAreaGraph useFilters={useFilters} />}
         {currGraph === 'circle' && <StatsCircleChart useFilters={useFilters} />}
-        {/* {currGraph === 'experimental1' && <StatsSwarmGraph useFilters={useFilters} />} */}
+        {/* {currGraph === 'experimental1' && <CrewLab useFilters={useFilters} />} */}
 
     </React.Fragment>
 }
