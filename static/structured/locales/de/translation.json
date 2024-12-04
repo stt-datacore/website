@@ -455,7 +455,10 @@
         "n_year": "{{years}} Jahr",
         "n_years": "{{years}} Jahre",
         "same_time": "Selben Zeit",
-        "title": "Dauer: {{duration}}"
+        "title": "Dauer: {{duration}}",
+        "today": "heute",
+        "yesterday": "gestern",
+        "tomorrow": "morgen"
     },
     "event_info": {
         "active_event": "Livedaten der aktiven Event-Bestenliste",
@@ -1877,6 +1880,7 @@
         "initial_release": "Erste Veröffentlichung",
         "last_release": "Letzte Veröffentlichung",
         "new_high": "Neuer Highscore",
+        "released_duration": "Debüt {{duration}}",
         "released_duration_ago": "Debüt vor {{duration}}",
         "released_n_days_ago": "Debüt vor {{n}} Tagen",
         "sections": {

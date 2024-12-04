@@ -4,7 +4,7 @@ import { GlobalContext } from "../../context/globalcontext";
 import CONFIG from "../CONFIG";
 import { AvatarView } from "../item_presenters/avatarview";
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
-import { canGauntlet, canShuttle, canVoyage, filterEpochDiffs, filterHighs, findHigh, formatElapsedDays, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow, skillIcon } from "./utils";
+import { canGauntlet, canShuttle, canVoyage, dateToEpoch, filterEpochDiffs, filterHighs, findHigh, formatElapsedDays, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow, skillIcon } from "./utils";
 import { EpochDiff, Highs } from "./model";
 import { CrewMember } from '../../model/crew';
 import { StatsContext } from './dataprovider';
@@ -56,7 +56,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
     }, [exactOnly]);
 
     const nowDate = new Date();
-    const daysFromEpoch = Math.floor((nowDate.getTime() - GameEpoch.getTime()) / (1000 * 60 * 60 * 24));
+    const daysFromEpoch = dateToEpoch();
 
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;
@@ -155,47 +155,57 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
         const newhigh = fhigh?.epoch_day === diff.epoch_days[0];
 
         return <Table.Row key={`passIdf_${idx}`} style={{textAlign: 'center'}}>
-            {[crews[0], crews[1]].map((crew, idx) => (
-                <Table.Cell key={`passIdf_crew_${idx}_${crew}`} style={{textAlign: 'center'}}>
-                <div style={{...flexRow, margin: '1em 0.5em', justifyContent: 'flex-start', alignItems: 'flex-start'}}>
-                    <div style={{...flexCol, width: '10em'}}>
-                        <AvatarView
-                            item={{...crew, rarity: getOwnedMaxRarity(crew)}}
-                            mode='crew'
-                            symbol={crew.symbol}
-                            size={64}
-                            targetGroup="stat_trends_crew"
-                            />
-                        <span>
-                            {crew.name}
-                        </span>
-                        {newhigh && !idx && <Label style={{margin: '0.5em 0'}} color='blue'>{t('stat_trends.new_high')}</Label>}
-                        <div style={{...flexRow, justifyContent: 'space-evenly'}}>
-                            {diff.skills.map(skill => <img src={`${skillIcon(skill)}`} style={{height: '1em'}} />)}
-                        </div>
-                        <i>({t('stat_trends.released_duration_ago', {
-                            duration: formatElapsedDays((daysFromEpoch - diff.epoch_days[idx]), t)
-                        })})</i>
-                        <div style={flexRow}>
-                            {canGauntlet({
-                                core: diff.cores[idx],
-                                proficiencies: diff.proficiencies[idx]
-                                }) && <img src={`/media/gauntlet.png`} style={{height: '24px'}} />}
-                            {canVoyage({
-                                core: diff.cores[idx],
-                                proficiencies: diff.proficiencies[idx],
-                                skills: diff.skills,
-                                traits: diff.crew[idx].traits
-                                }) && <img src={`/media/voyage.png`} style={{height: '24px'}} />}
-                            {canShuttle({
-                                core: diff.cores[idx],
-                                }) && <img src={`/media/faction.png`} style={{height: '24px'}} />}
-                        </div>
+            {[crews[0], crews[1]].map((crew, idx) => {
+                    const daydiff = daysFromEpoch - diff.epoch_days[idx];
 
-                    </div>
-                </div>
-                </Table.Cell>
-            ))}
+                    return (
+                        <Table.Cell key={`passIdf_crew_${idx}_${crew}`} style={{textAlign: 'center'}}>
+                        <div style={{...flexRow, margin: '1em 0.5em', justifyContent: 'flex-start', alignItems: 'flex-start'}}>
+                            <div style={{...flexCol, width: '10em'}}>
+                                <AvatarView
+                                    item={{...crew, rarity: getOwnedMaxRarity(crew)}}
+                                    mode='crew'
+                                    symbol={crew.symbol}
+                                    size={64}
+                                    targetGroup="stat_trends_crew"
+                                    />
+                                <span>
+                                    {crew.name}
+                                </span>
+                                {newhigh && !idx && <Label style={{margin: '0.5em 0'}} color='blue'>{t('stat_trends.new_high')}</Label>}
+                                <div style={{...flexRow, justifyContent: 'space-evenly'}}>
+                                    {diff.skills.map(skill => <img src={`${skillIcon(skill)}`} style={{height: '1em'}} />)}
+                                </div>
+                                {daydiff > 1 && <i>({t('stat_trends.released_duration_ago', {
+                                    duration: formatElapsedDays(daydiff, t)
+                                })})</i>}
+                                {daydiff === 1 && <i>({t('stat_trends.released_duration', {
+                                    duration: formatElapsedDays(daydiff, t, true)
+                                })})</i>}
+                                {!daydiff && <i>({t('stat_trends.released_duration', {
+                                    duration: formatElapsedDays(0, t, true)
+                                })})</i>}
+                                <div style={flexRow}>
+                                    {canGauntlet({
+                                        core: diff.cores[idx],
+                                        proficiencies: diff.proficiencies[idx]
+                                        }) && <img src={`/media/gauntlet.png`} style={{height: '24px'}} />}
+                                    {canVoyage({
+                                        core: diff.cores[idx],
+                                        proficiencies: diff.proficiencies[idx],
+                                        skills: diff.skills,
+                                        traits: diff.crew[idx].traits
+                                        }) && <img src={`/media/voyage.png`} style={{height: '24px'}} />}
+                                    {canShuttle({
+                                        core: diff.cores[idx],
+                                        }) && <img src={`/media/faction.png`} style={{height: '24px'}} />}
+                                </div>
+
+                            </div>
+                        </div>
+                        </Table.Cell>
+                    )}
+                )}
             <Table.Cell>
                 {diff.epoch_days[0].toLocaleString()}
             </Table.Cell>

@@ -463,7 +463,10 @@
         "n_year": "{{years}} année",
         "n_years": "{{years}} années",
         "same_time": "Même Temps",
-        "title": "Durée: {{duration}}"
+        "title": "Durée: {{duration}}",
+        "today": "aujourd'hui",
+        "yesterday": "hier",
+        "tomorrow": "demain"
     },
     "event_info": {
         "active_event": "Données en direct du classement des événements actifs",
@@ -1890,6 +1893,7 @@
         "initial_release": "Publication initiale",
         "last_release": "Dernière publication",
         "new_high": "Nouveau Élevé",
+        "released_duration": "Débuté {{duration}}",
         "released_duration_ago": "Débuté il y a {{duration}}",
         "released_n_days_ago": "Débuté il y a {{n}} jours",
         "sections": {

@@ -53,8 +53,18 @@ export function skillIcon(skill: string) {
     return `${process.env.GATSBY_ASSETS_URL}/atlas/icon_${skill}.png`;
 }
 
-export function formatElapsedDays(days: number, t: TranslateMethod): string {
-    if (days === 0) return t('duration.same_time');
+export function formatElapsedDays(days: number, t: TranslateMethod, ago = false): string {
+    if (days === 0) {
+        if (ago) {
+            return t('duration.today');
+        }
+        else {
+            return t('duration.same_time');
+        }
+    }
+    else if (days === 1 && ago) {
+        return t('duration.yesterday');
+    }
 
     let fmt = '';
     let val = 0;
