@@ -635,3 +635,44 @@ export function canVoyage(item: { proficiencies: number[], core: number[], trait
     }
     return false;
 }
+
+export function fillGaps(data: EpochItem[]) {
+    const now = dateToEpoch();
+
+    let skos = [...new Set(data.map(d => d.skills.join()))]
+
+    data.sort((a, b) => a.epoch_day - b.epoch_day || a.skills.join().localeCompare(b.skills.join()));
+
+    for (let sko of skos) {
+        let chunk = data.filter(f => f.skills.join() === sko);
+        let missing = [] as number[];
+        let start = 0;
+        while (!chunk.some(c => c.epoch_day === start)) start++;
+
+        let prevrec = undefined as EpochItem | undefined;
+        for (let m = start; m <= now; m++) {
+            let rec = chunk.find(f => f.epoch_day === m);
+
+            if (rec) {
+                prevrec = rec;
+            }
+            else if (prevrec) {
+                let prevchunk = prevrec;
+                let newrec = { ... prevchunk };
+
+                newrec.epoch_day = m;
+                // newrec.prev = prevchunk;
+
+                // if (prevchunk.next) {
+                //     let onext = prevchunk.next;
+                //     newrec.next = onext;
+                //     onext.prev = newrec;
+                // }
+                prevrec = newrec;
+                data.push(newrec);
+            }
+        }
+    }
+
+    data.sort((a, b) => a.epoch_day - b.epoch_day || a.skills.join().localeCompare(b.skills.join()));
+}

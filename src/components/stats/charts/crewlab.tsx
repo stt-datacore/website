@@ -3,12 +3,12 @@ import themes from "../../nivo_themes";
 import { GlobalContext } from "../../../context/globalcontext";
 import { StatsContext } from "../dataprovider";
 import { CrewMember } from "../../../model/crew";
-import { dateToEpoch, epochToDate, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
+import { dateToEpoch, epochToDate, fillGaps, OptionsPanelFlexColumn, OptionsPanelFlexRow, statFilterCrew } from "../utils";
 import { AvatarView } from "../../item_presenters/avatarview";
 import { CrewDropDown } from "../../base/crewdropdown";
 import { GraphPropsCommon } from "../model";
 import CrewStat from "../../crewstat";
-import { applyCrewBuffs, crewCopy, skillToShort } from "../../../utils/crewutils";
+import { applyCrewBuffs, crewCopy, skillSum, skillToShort } from "../../../utils/crewutils";
 import { useStateWithStorage } from "../../../utils/storage";
 import { PlayerBuffMode } from "../../../model/player";
 import { DropdownItemProps } from "semantic-ui-react";
@@ -30,12 +30,13 @@ interface LineData {
 export const CrewLab = (props: CrewLabProps) => {
 
     const globalContext = React.useContext(GlobalContext);
+    const { useFilters } = props;
     const { crew } = globalContext.core;
     const { maxBuffs } = globalContext;
     const { playerData, buffConfig } = globalContext.player;
     const { t } = globalContext.localized;
     const statsContext = React.useContext(StatsContext);
-
+    const { flatOrder, filterConfig } = statsContext;
     const [selCrew, setSelCrew] = React.useState<CrewMember[]>([]);
     const [ids, setIds] = useStateWithStorage<number[] | undefined>('crew_lab_curr_crew_ids', props.crew_ids, { rememberForever: true });
     const [workCrew, setWorkCrew] = React.useState<CrewMember[]>([]);
@@ -47,16 +48,20 @@ export const CrewLab = (props: CrewLabProps) => {
 
     React.useEffect(() => {
         if (!crew?.length) return;
-        const newCrew = crewCopy(crew);
+        let cc = [...crew];
+        if (useFilters) {
+            cc = statFilterCrew(filterConfig, cc);
+        }
+        const newCrew = crewCopy(cc);
 
         if ((maxBuffs && buffMode === 'max') || (buffMode === 'player' && !buffConfig)) {
             newCrew.forEach((c) => {
-                c.base_skills = applyCrewBuffs(c, maxBuffs!)!;
+                applyCrewBuffs(c, maxBuffs!)!;
             });
         }
         else if (buffConfig && buffMode === 'player') {
             newCrew.forEach((c) => {
-                c.base_skills = applyCrewBuffs(c, buffConfig!)!;
+                applyCrewBuffs(c, buffConfig!)!;
             });
         }
         newCrew.sort((a, b) => {
@@ -74,16 +79,18 @@ export const CrewLab = (props: CrewLabProps) => {
 
         let allld: LineData[][] = [];
         selCrew.forEach((selCrew) => {
-            let lastag = {} as any;
             let ld = [] as LineData[]
-            let rels = statsContext.flatOrder.filter(f => selCrew.skill_order.slice(0, f.skills.length).join() === f.skills.join());
-            rels.sort((a, b) => a.epoch_day - b.epoch_day);
-            let n = dateToEpoch();
+            let rels = flatOrder.filter(f => selCrew.skill_order.slice(0, f.skills.length).join() === f.skills.join());
+            rels.sort((a, b) => a.epoch_day - b.epoch_day || a.skills.length - b.skills.length);
+
             rels.forEach((rel, idx) => {
-                //if ((idx + 1) % 10) return;
                 let name = rel.skills.map(m => skillToShort(m)).join("/");
                 let f = ld.find(f => f.id === name);
-                let ag = rel.aggregates.reduce((p, n) => p + n);
+
+                let ag = rel.aggregates.slice(0, rel.skills.length).reduce((p, n) => p + n);
+                // let cag = rel.cores.slice(0, rel.skills.length).reduce((p, n) => p + n);
+                // let pag = rel.proficiencies.slice(0, rel.skills.length).reduce((p, n) => p + n);
+
                 if (!f) {
                     f = {
                         id: name,
@@ -91,20 +98,17 @@ export const CrewLab = (props: CrewLabProps) => {
                     }
                     ld.push(f);
                 }
-                if (!lastag[name]) lastag[name] = ag;
-                if (ag > lastag[name]) {
-                    lastag[name] = ag;
-                }
+
                 f.data.push({
-                    x: rel.epoch_day,
-                    y: ag // lastag[name]
+                    x: epochToDate(rel.epoch_day),
+                    y: ag
                 });
             });
             if (ld?.length) allld.push(ld);
         });
         setLineData(allld);
 
-    }, [statsContext, selCrew]);
+    }, [flatOrder, selCrew, filterConfig]);
 
     React.useEffect(() => {
         if (!workCrew?.length || !ids?.length) {
@@ -121,14 +125,11 @@ export const CrewLab = (props: CrewLabProps) => {
         <CrewDropDown
             archetypeId
             showRarity
-            plain={false}
+            plain={true}
             pool={workCrew}
             multiple={true}
             selection={ids}
             setSelection={setIds}
-            custom={(c) => {
-                return <>{c.bigbook_tier}</>
-            }}
         />
         <CrewBuffModes
             buffMode={buffMode}
@@ -139,6 +140,9 @@ export const CrewLab = (props: CrewLabProps) => {
         <div style={{ ...flexCol }}>
             {!!selCrew?.length &&
                 selCrew.map((crew, idx) => {
+                    let flat = flatOrder.filter(f => f.symbol === crew.symbol)
+                    if (!flat) return <></>;
+                    let cag = flat.map(fc => fc.aggregates.slice(0, fc.skills.length).reduce((p, n) => p + n)).sort((a, b) => a - b);
                     return (
                     <div key={`scully_${crew.symbol}_${idx}`} style={flexRow}>
                         <div style={{ ...flexCol, gap: '2em', width: '340px', margin: '2em 0', marginRight: '2em' }}>
@@ -153,12 +157,12 @@ export const CrewLab = (props: CrewLabProps) => {
                             <h3>{t('quipment_dropdowns.mode.skill_order')}</h3>
                             <div style={{ ...flexRow }}>
                                 {crew.skill_order.map((skill) => {
-                                    return <CrewStat skill_name={skill} data={crew.base_skills[skill]} />
+                                    return <CrewStat skill_name={skill} data={crew[skill]} />
                                 })}
                             </div>
                             {!!lineData?.length && !!lineData[idx] && !!lineData[idx].length &&
                                 <div style={{ width: '700px', height: '500px' }}>
-                                    {renderLineGraph(idx)}
+                                    {renderLineGraph(idx, cag, crew.name)}
                                 </div>}
                         </div>
                     </div>)})
@@ -166,39 +170,51 @@ export const CrewLab = (props: CrewLabProps) => {
         </div>
     </div>)
 
-    function renderLineGraph(idx: number) {
+    function renderLineGraph(idx: number, scores: number[], name: string) {
         return (<ResponsiveLine
             data={lineData[idx]}
             theme={themes.dark}
-            curve='monotoneX'
+            curve='basis'
             animate={false}
-            margin={{ top: 50, right: 140, bottom: 50, left: 60 }}
-            xScale={{ type: 'linear', max: dateToEpoch() }}
+            margin={{ top: 50, right: 140, bottom: 90, left: 60 }}
+            // xScale={{
+            //         type: 'linear',
+            //         max: filterConfig.end_date && useFilters ? dateToEpoch(new Date(filterConfig.end_date)) : dateToEpoch(),
+            //         min: filterConfig.start_date && useFilters ? dateToEpoch(new Date(filterConfig.start_date)) : 0
+            //     }}
+            xScale={{
+                format: '%Y-%m',
+                precision: 'month',
+                type: 'time',
+                useUTC: true
+              }}
             yScale={{
                 type: 'linear',
                 min: 'auto',
                 max: 'auto',
-                stacked: true,
+                stacked: false,
                 reverse: false
             }}
             yFormat=" >-.2f"
             axisTop={null}
             axisRight={null}
             axisBottom={{
-                tickSize: 5,
+                tickSize: 10,
                 tickPadding: 5,
-                tickRotation: 0,
+                tickRotation: 90,
                 legend: t('base.release_date'),
-                legendOffset: 36,
+                legendOffset: 70,
                 legendPosition: 'middle',
-                truncateTickAt: 0
+                truncateTickAt: 0,
+                tickValues: 'every 3 months',
+                format: '%Y-%m'
             }}
             axisLeft={{
                 tickSize: 5,
                 tickPadding: 5,
                 tickRotation: 0,
                 legend: t('event_info.score'),
-                legendOffset: -40,
+                legendOffset: -45,
                 legendPosition: 'middle',
                 truncateTickAt: 0
             }}
@@ -210,6 +226,20 @@ export const CrewLab = (props: CrewLabProps) => {
             pointLabelYOffset={-12}
             enableTouchCrosshair={true}
             useMesh={true}
+            markers={scores.map(wm => ({
+                axis: 'y',
+                legend: name,
+                legendOrientation: 'horizontal',
+                textStyle: {
+                  stroke: '#a9ef33'
+                },
+                lineStyle: {
+                  stroke: 'lightgreen',
+                  strokeWidth: 3,
+                  strokeDasharray: [0, 2, 4]
+                },
+                value: wm
+              })) as any}
             legends={[
                 {
                     anchor: 'bottom-right',
