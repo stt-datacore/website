@@ -294,7 +294,6 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 			runWorker();
 			setRequestRun(false);
 		}
-		if (tabIndex === undefined) setTabIndex(0);
 	}, 500);
 
 	return (
@@ -303,7 +302,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 				<Step.Group fluid widths={5}>
 					{tabPanes.map((pane, idx) => {
 						return (
-							<Step active={(tabIndex === idx)} onClick={() => setTabIndex(idx)}>
+							<Step active={(tabIndex === idx || (idx === 0 && tabIndex === undefined))} onClick={() => setTabIndex(idx)}>
 								<Step.Content>
 									<Step.Title>{pane.menuItem || t(`collections.panes.${pane.mode}.title`)}</Step.Title>
 									<Step.Description>{pane.description || t(`collections.panes.${pane.mode}.description`)}</Step.Description>
