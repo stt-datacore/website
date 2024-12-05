@@ -562,9 +562,9 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 		availBuffs.push('max_quipment_3');
 	}
 
-	const applyMaxQuip = (crew: PlayerCrew) => {
+	const applyMaxQuip = (crew: PlayerCrew, buffs: BuffStatTable) => {
 		if (buffMode.startsWith('max_quipment')) {
-			crew = calcQLots(crew, allQuipment, maxBuffs, true, 4, "proficiency");
+			crew = calcQLots(crew, allQuipment, buffs, true, 4, "proficiency");
 			let bestQuip = undefined as QuippedPower | undefined;
 			if (buffMode === 'max_quipment_2' && crew.best_quipment_1_2) {
 				bestQuip = crew.best_quipment_1_2
@@ -588,9 +588,9 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 					}
 				});
 				Object.keys(bestQuip.skills_hash).forEach((skill) => {
-					crew[skill].base += bestQuip.skills_hash[skill].base;
-					crew[skill].min += bestQuip.skills_hash[skill].range_min;
-					crew[skill].max += bestQuip.skills_hash[skill].range_max;
+					crew[skill].base = bestQuip.skills_hash[skill].base;
+					crew[skill].min = bestQuip.skills_hash[skill].range_min;
+					crew[skill].max = bestQuip.skills_hash[skill].range_max;
 				});
 			}
 		}
@@ -641,11 +641,13 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 						else if (maxBuffs && buffMode.startsWith("max")) {
 							if (buffMode === 'max' || !buffConfig) {
 								applyCrewBuffs(crew, maxBuffs);
+								applyMaxQuip(crew, maxBuffs);
 							}
 							else {
 								applyCrewBuffs(crew, buffConfig);
+								applyMaxQuip(crew, buffConfig);
 							}
-							applyMaxQuip(crew);
+
 						}
 					}
 					else {
@@ -672,11 +674,13 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 						else if (maxBuffs && buffMode.startsWith("max")) {
 							if (buffMode === 'max' || !buffConfig) {
 								applyCrewBuffs(crew, maxBuffs);
+								if (crew.immortal) applyMaxQuip(crew, maxBuffs);
 							}
 							else {
 								applyCrewBuffs(crew, buffConfig);
+								if (crew.immortal) applyMaxQuip(crew, buffConfig);
 							}
-							if (crew.immortal) applyMaxQuip(crew);
+
 						}
 						else {
 							for (let skill of Object.keys(crew.base_skills)) {
@@ -747,11 +751,13 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 					else if (buffMode.startsWith('max') && maxBuffs) {
 						if (buffMode === 'max' || !buffConfig) {
 							applyCrewBuffs(crew, maxBuffs);
+							applyMaxQuip(crew, maxBuffs);
 						}
 						else {
 							applyCrewBuffs(crew, buffConfig);
+							applyMaxQuip(crew, buffConfig);
 						}
-						applyMaxQuip(crew);
+
 					}
 					crew.pairs = getPlayerPairs(crew);
 				}
