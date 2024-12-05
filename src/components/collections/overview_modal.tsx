@@ -21,13 +21,11 @@ export interface CollectionDetailsProps {
 }
 
 export const CollectionDetails = (props: CollectionDetailsProps) => {
-	props.activeTab ??= 0;
-
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
 	const { collection, activeTab } = props;
 	const pageId = props.pageId ? props.pageId + "/" : '';
-	const [tab, setTab] = useStateWithStorage(`${pageId}collection_details_modal/active_tab`, props.activeTab, { rememberForever: true });
+	const [tab, setTab] = useStateWithStorage(`${pageId}collection_details_modal/active_tab`, props.activeTab || 0, { rememberForever: true });
 	const [scrollY, setScrollY] = useStateWithStorage(`${pageId}collection_details_modal/scroll_y`, undefined as number | undefined);
 	const [oldRef, setOldRef] = React.useState<HTMLElement>();
 	const [shown, setShown] = React.useState(false);
