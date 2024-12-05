@@ -56,7 +56,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	const [costMap, setCostMap] = React.useState<ComboCostMap[]>([]);
 
 	const { playerCollections, collectionCrew } = props;
-	const { showThisCrew, favorited, hardFilter, setHardFilter, tierFilter, setTierFilter, byCost, showIncomplete, matchMode, checkCommonFilter, costMode, setShort, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter, setCollectionSettings } = colContext;
+	const { setModalInstance, showThisCrew, favorited, hardFilter, setHardFilter, tierFilter, setTierFilter, byCost, showIncomplete, matchMode, checkCommonFilter, costMode, setShort, short, mapFilter, setSearchFilter, setMapFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, searchFilter, fuseFilter, setFuseFilter, setCollectionSettings } = colContext;
 
 	const [initialized, setInitialized] = React.useState(false);
 	const [requestRun, setRequestRun] = React.useState(false);
@@ -385,7 +385,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 		const tabledProgress = unmaxed?.sort((a, b) => (a?.needed ?? 0) - (b?.needed ?? 0)).map(collection => {
 			if (!collection) return <></>
 			return (
-				<tr key={collection.id}>
+				<tr key={collection.id} style={{cursor: 'pointer'}} onClick={() => setModalInstance({ collection, pageId: 'collections/crew', activeTab: 1 })}>
 					<td style={{ whiteSpace: 'nowrap', fontSize: '.95em' }}>{collection.name}</td>
 					<td style={{ textAlign: 'right', fontSize: '.95em' }}>{collection.progress} / {collection.milestone.goal}</td>
 				</tr>

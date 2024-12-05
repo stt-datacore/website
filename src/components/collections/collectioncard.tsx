@@ -5,7 +5,7 @@ import { Progress, Icon, Image } from "semantic-ui-react";
 
 import { BuffBase, PlayerCollection, Reward } from "../../model/player";
 import { CiteInventory, makeCiteNeeds } from "../../utils/collectionutils";
-import { formatColString } from "./context";
+import { CollectionsContext, formatColString } from "./context";
 import { RewardsGrid } from "../crewtables/rewards";
 
 export interface CollectionCardProps {
@@ -21,6 +21,8 @@ export interface CollectionCardProps {
 
 export const CollectionCard = (props: CollectionCardProps) => {
     const context = React.useContext(GlobalContext);
+    const colContext = React.useContext(CollectionsContext);
+    const { modalInstance, setModalInstance } = colContext;
     const { t } = context.localized;
     const { style, ownedCites } = props;
 
@@ -91,11 +93,12 @@ export const CollectionCard = (props: CollectionCardProps) => {
                 />
                 <h2
                     onClick={(e) => {
-                        setSearchFilter("");
-                        setMapFilter({
-                            ...(mapFilter ?? {}),
-                            collectionsFilter: [collection.id],
-                        });
+                        setModalInstance({ collection, pageId: 'collections/card' });
+                        // setSearchFilter("");
+                        // setMapFilter({
+                        //     ...(mapFilter ?? {}),
+                        //     collectionsFilter: [collection.id],
+                        // });
                     }}
                     style={{
                         textDecoration: "underline",

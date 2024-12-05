@@ -28,10 +28,8 @@ export const CollectionOptimizerTable = (props: CollectionOptimizerProps) => {
     const colContext = React.useContext(CollectionsContext);
     const context = React.useContext(GlobalContext);
 	const { t } = context.localized;
-    const { workerRunning, playerCollections } = props;
-    const { favorited, setFavorited, showIncomplete, setShowIncomplete, hardFilter, setHardFilter, byCost, setByCost, matchMode, setMatchMode, costMode, setCostMode, setShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
-
-    const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+    const { workerRunning } = props;
+    const { matchMode, setMatchMode, costMode, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
     const { costMap, colOptimized } = props;
 

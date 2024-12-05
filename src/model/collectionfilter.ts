@@ -60,6 +60,11 @@ export interface CollectionsToolSettings {
     byCost: boolean;
 };
 
+export interface CollectionModalDisplayOptions {
+    collection: PlayerCollection;
+    activeTab?: number;
+    pageId?: string;
+}
 
 export interface ICollectionsContext extends CollectionsToolSettings {
     hardFilter: boolean;
@@ -107,6 +112,9 @@ export interface ICollectionsContext extends CollectionsToolSettings {
     showThisCrew: (crew: PlayerCrew, filters: Filter[], filterType: string | null | undefined) => boolean
 
     setCollectionSettings: (value: CollectionsToolSettings) => void;
+
+    modalInstance: CollectionModalDisplayOptions | null
+    setModalInstance: (value: CollectionModalDisplayOptions | null) => void;
 };
 
 export type CollectionMatchMode = 'normal' | 'exact-only' | 'extended' | 'inexact-only';

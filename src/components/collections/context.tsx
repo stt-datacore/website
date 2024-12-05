@@ -2,10 +2,12 @@ import React from 'react';
 
 import { PlayerCollection, PlayerCrew } from "../../model/player";
 import { useStateWithStorage } from '../../utils/storage';
-import { MapFilterOptions, ICollectionsContext, CollectionMatchMode, CollectionsToolSettings } from '../../model/collectionfilter';
+import { MapFilterOptions, ICollectionsContext, CollectionMatchMode, CollectionsToolSettings, CollectionModalDisplayOptions } from '../../model/collectionfilter';
 import { checkCommonFilter, checkRewardFilter } from '../../utils/collectionutils';
 import { Filter } from '../../model/game-elements';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
+import { Modal } from 'semantic-ui-react';
+import { CollectionDetails } from './overview_modal';
 
 const DefaultConfig = {
     mapFilter: {} as MapFilterOptions,
@@ -41,7 +43,9 @@ const DefaultData = {
     setFavorited: () => null,
     setShowIncomplete: () => null,
     showThisCrew: () => false,
-    setCollectionSettings: () => null
+    setCollectionSettings: () => null,
+    modalInstance: null,
+    setModalInstance: () => false
 } as ICollectionsContext;
 
 export const CollectionsContext = React.createContext<ICollectionsContext>(DefaultData);
@@ -55,7 +59,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
     const { children, pageId } = props;
 
     const [collectionSettings, setCollectionSettings] = useStateWithStorage(pageId +'/collectionSettings', DefaultConfig, { rememberForever: true });
-
+	const [modalInstance, setModalInstance] = React.useState(null as CollectionModalDisplayOptions | null);
 
     const data = {
         ... collectionSettings,
@@ -77,11 +81,35 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
         setMatchMode,
         setShowIncomplete,
         showThisCrew,
-        setCollectionSettings
+        setCollectionSettings,
+        modalInstance,
+        setModalInstance
     } as ICollectionsContext;
 
     return (<CollectionsContext.Provider value={data}>
-        {children}
+        <React.Fragment>
+            {children}
+            {modalInstance !== null && (
+				<Modal
+					open
+					size="large"
+					onClose={() => setModalInstance(null)}
+					closeIcon
+				>
+					<Modal.Header>
+						{modalInstance.collection.name}
+					</Modal.Header>
+					<Modal.Description>
+						<div style={{ marginLeft: '1.5em', marginBottom: '1em' }}>
+							{formatColString(modalInstance.collection.description!)}
+						</div>
+					</Modal.Description>
+					<Modal.Content scrolling>
+						<CollectionDetails collection={modalInstance.collection} pageId={modalInstance.pageId} activeTab={modalInstance.activeTab} />
+					</Modal.Content>
+				</Modal>
+			)}
+        </React.Fragment>
     </CollectionsContext.Provider>)
 
     function showThisCrew(crew: PlayerCrew, filters: Filter[], filterType: string | null | undefined): boolean {
