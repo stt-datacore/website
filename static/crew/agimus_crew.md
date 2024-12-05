@@ -3,7 +3,7 @@ name: AGIMUS
 rarity: 5
 series: low
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 4
 in_portal: true
 date: 24/08/2022
 published: true

@@ -3,7 +3,7 @@ name: C.O.P. Founder Archer
 rarity: 4
 series: ent
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 7
 in_portal: true
 date: 07/11/2017
 published: true

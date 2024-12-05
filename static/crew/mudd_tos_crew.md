@@ -3,7 +3,7 @@ name: Harry Mudd
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 5
 in_portal:
 date: 12/03/2024
 published: true
