@@ -329,13 +329,6 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
             activeLineWidth={6}
             inactiveLineWidth={3}
             inactiveOpacity={0.15}
-            pointSize={10}
-            activePointSize={10}
-            inactivePointSize={0}
-            pointColor={{ theme: 'background' }}
-            pointBorderWidth={3}
-            activePointBorderWidth={3}
-            pointBorderColor={{ from: 'serie.color' }}
             axisTop={{
                 tickSize: 5,
                 tickPadding: 5,
@@ -372,9 +365,8 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
                 // truncateTickAt: 0
 
             }}
-            layers={['grid', 'labels', 'lines', 'mesh', 'points']}
+            layers={['grid', 'labels', 'lines', 'points']}
             margin={{ top: 40, right: 30, bottom: 40, left: 300 }}
-            useMesh={true}
             interpolation={'smooth'}
             xPadding={10}
             xOuterPadding={0}
@@ -388,17 +380,27 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
             endLabel={(series) => ''}
             endLabelPadding={1}
             endLabelTextColor={'transparent'}
-            inactivePointBorderWidth={1}
             enableGridX={true}
             enableGridY={true}
             isInteractive={true}
             defaultActiveSerieIds={[]}
-            lineTooltip={(series) => renderAreaBumpTooltip(series.serie.data)}
-            pointTooltip={(series) => renderSwarmTooltip(series.point.data as GraphSeries, true)}
             role={''}
+            pointSize={20}
+            activePointSize={24}
+            inactivePointSize={16}
+            pointBorderWidth={2}
+            activePointBorderWidth={4}
+            inactivePointBorderWidth={1}
+            pointColor="#ffffff"
+            pointBorderColor={{
+                from: 'serie.color'
+              }}
+            pointComponent={PointComponent}
+            tooltip={(data) => {
+                return renderAreaBumpTooltip(data.serie.data.data)
+            }}
             //animate={true}
             renderWrapper={true}
-            debugMesh={false}
         />
     }
 
@@ -495,3 +497,21 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
         return { series, segments };
     }
 }
+
+const PointComponent = (props) => {
+    const crew = React.useContext(GlobalContext).core.crew;
+    let cmarr = props.point.serie.data.data as GraphSeries[];
+    let x = Number(props.point.id.split(".")[1]);
+    let cm = cmarr[x].data![0];
+    if (cm?.symbol) {
+        let f = crew.find(fe => fe.symbol === cm.symbol);
+        if (!f) {
+            return <></>
+        }
+        else {
+            return <div style={{zIndex: 100}}><img src={`${process.env.GATSBY_ASSETS_URL}${f.imageUrlPortrait}`}
+                    style={{height: '20px', borderRadius: '10px'}} /></div>
+        }
+    }
+}
+
