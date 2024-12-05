@@ -3,7 +3,7 @@ name: C.O.P. Janeway
 rarity: 5
 series: original
 memory_alpha:
-bigbook_tier: 5
+bigbook_tier: 4
 in_portal: true
 date: 11/01/2023
 published: true

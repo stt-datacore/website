@@ -3,7 +3,7 @@ name: Ensign Mariner
 rarity: 2
 series: low
 memory_alpha:
-bigbook_tier: 1
+bigbook_tier: 2
 in_portal: true
 date: 03/08/2022
 published: true

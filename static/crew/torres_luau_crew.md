@@ -3,7 +3,7 @@ name: Luau Torres
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 3
+bigbook_tier: 2
 in_portal: true
 date: 23/08/2023
 published: true
