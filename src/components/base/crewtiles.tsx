@@ -43,7 +43,7 @@ export const CrewTiles = (props: CrewTilesProps) => {
 
     return (
         <div style={{...style, overflowY: props.scrolling ? 'auto' : undefined}}>
-            {!!title && <div style={{position: 'absolute', width: '100%', textAlign: 'center'}}>
+            {!!title && <div style={{textAlign: 'center', position: 'sticky', top: '0'}}>
                 {typeof title === 'string' && <div className='ui label'>{title}</div>}
                 {typeof title !== 'string' && <>{title}</>}
             </div>}
