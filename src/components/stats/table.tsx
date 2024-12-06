@@ -186,19 +186,9 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
                                     duration: formatElapsedDays(0, t, true)
                                 })})</i>}
                                 <div style={flexRow}>
-                                    {canGauntlet({
-                                        core: diff.cores[idx],
-                                        proficiencies: diff.proficiencies[idx]
-                                        }) && <img src={`/media/gauntlet.png`} style={{height: '24px'}} />}
-                                    {canVoyage({
-                                        core: diff.cores[idx],
-                                        proficiencies: diff.proficiencies[idx],
-                                        skills: diff.skills,
-                                        traits: diff.crew[idx].traits
-                                        }) && <img src={`/media/voyage.png`} style={{height: '24px'}} />}
-                                    {canShuttle({
-                                        core: diff.cores[idx],
-                                        }) && <img src={`/media/faction.png`} style={{height: '24px'}} />}
+                                    {canGauntlet(diff.crew[idx]) && <img src={`/media/gauntlet.png`} style={{height: '24px'}} />}
+                                    {canVoyage(diff.crew[idx]) && <img src={`/media/voyage.png`} style={{height: '24px'}} />}
+                                    {canShuttle(diff.crew[idx]) && <img src={`/media/faction.png`} style={{height: '24px'}} />}
                                 </div>
 
                             </div>

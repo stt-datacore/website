@@ -607,44 +607,46 @@ export function createStatsDataSet(prefilteredCrew: CrewMember[]) {
 }
 
 
-export function canGauntlet(item: { proficiencies: number[], core: number[] }) {
-    let prof = item.proficiencies.reduce((p, n) => p + n);
-    let core = item.core.reduce((p, n) => p + n);
-    return prof >= 1000 || (prof / core) >= 0.5
+export function canGauntlet(crew: CrewMember) {
+    return Object.entries(crew.ranks).some(([key, value]) => (key.startsWith("G_") && value <= 20) || (key === 'gauntletRank' && value <= 20));
 }
 
-export function canShuttle(item: { core: number[] }) {
-    return item.core.some(c => c >= 1400);
+export function canShuttle(crew: CrewMember) {
+    return Object.entries(crew.ranks).some(([key, value]) => key.startsWith("B_") && value <= 20);
 }
 
-export function canVoyage(item: { proficiencies: number[], core: number[], traits: string[], skills: string[] }) {
-    const lookupTrait = (trait: string) => {
-        const oma = [] as string[];
-        for (let ln of AntimatterSeatMap) {
-            if (ln.name  == trait) {
-                return ln.skills;
-            }
-        }
-        return oma;
-    }
-
-    let core = item.core.reduce((p, n, i) => p + (n * (1 - (i * 0.25))));
-    let profs = item.proficiencies.reduce((p, n, i) => p + (n * (1 - (i * 0.25))));
-
-    let raw = core + profs;
-
-    if (raw > 3000) return true;
-    else if (raw > 2500) {
-        let amtraits = item.traits.filter(f => {
-            let l = lookupTrait(f);
-            if (l.some(e => item.skills.includes(e))) return true;
-            return false;
-        });
-        if (amtraits.length >= 6) return true;
-        if (item.skills.length === 3 && ['engineering_skill', 'medicine_skill', 'science_skill'].includes(item.skills[2])) return true;
-    }
-    return false;
+export function canVoyage(crew: CrewMember) {
+    return Object.entries(crew.ranks).some(([key, value]) => (key.startsWith("V_") && value <= 20) || (key === 'voyRank' && value <= 20));
 }
+
+// export function canVoyage(item: { proficiencies: number[], core: number[], traits: string[], skills: string[] }) {
+//     const lookupTrait = (trait: string) => {
+//         const oma = [] as string[];
+//         for (let ln of AntimatterSeatMap) {
+//             if (ln.name  == trait) {
+//                 return ln.skills;
+//             }
+//         }
+//         return oma;
+//     }
+
+//     let core = item.core.reduce((p, n, i) => p + (n * (1 - (i * 0.25))));
+//     let profs = item.proficiencies.reduce((p, n, i) => p + (n * (1 - (i * 0.25))));
+
+//     let raw = core + profs;
+
+//     if (raw > 3000) return true;
+//     else if (raw > 2500) {
+//         let amtraits = item.traits.filter(f => {
+//             let l = lookupTrait(f);
+//             if (l.some(e => item.skills.includes(e))) return true;
+//             return false;
+//         });
+//         if (amtraits.length >= 6) return true;
+//         if (item.skills.length === 3 && ['engineering_skill', 'medicine_skill', 'science_skill'].includes(item.skills[2])) return true;
+//     }
+//     return false;
+// }
 
 export function fillGaps(data: EpochItem[]) {
     const now = dateToEpoch();
