@@ -4,7 +4,7 @@ import { GlobalContext } from "../../../context/globalcontext";
 import { StatsContext } from "../dataprovider";
 import { GraphPropsCommon, GraphSeries, SkillFilterConfig, SkillOrderDebutCrew } from "../model";
 import { epochToDate, OptionsPanelFlexRow, OptionsPanelFlexColumn, skillIcon, SkillColors, dateToEpoch, getSkillOrderDebutData, keyToNames, statFilterCrew } from "../utils";
-import { AreaBumpSerie, Bump, ResponsiveAreaBump } from "@nivo/bump";
+import { AreaBumpSerie, Bump, DefaultBumpDatum, ResponsiveAreaBump } from "@nivo/bump";
 
 import themes from "../../nivo_themes";
 import { crewCopy, shortToSkill } from "../../../utils/crewutils";
@@ -14,6 +14,7 @@ import { printNCrew } from "../../../utils/misc";
 import { SwarmPlot } from "@nivo/swarmplot";
 import { CrewMember } from "../../../model/crew";
 import { AvatarView } from "../../item_presenters/avatarview";
+import { PointProps } from "@nivo/bump/dist/types/bump/Point";
 
 interface MapConfig {
     considerCounts: boolean;
@@ -365,7 +366,7 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
                 // truncateTickAt: 0
 
             }}
-            layers={['grid', 'labels', 'lines', 'points']}
+            layers={['grid', 'labels', 'lines']}
             margin={{ top: 40, right: 30, bottom: 40, left: 300 }}
             interpolation={'smooth'}
             xPadding={10}
@@ -391,12 +392,19 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
             pointBorderWidth={2}
             activePointBorderWidth={4}
             inactivePointBorderWidth={1}
-            pointColor="#ffffff"
+            pointColor={{
+                from: 'serie.color'
+            }}
             pointBorderColor={{
                 from: 'serie.color'
               }}
-            pointComponent={PointComponent}
-            tooltip={(data) => {
+            //pointComponent={(props) => PointComponent(props)}
+            useMesh={false}
+            debugMesh={false}
+            pointTooltip={(data) => {
+                return renderSwarmTooltip(data.point.serie.data)
+            }}
+            lineTooltip={(data) => {
                 return renderAreaBumpTooltip(data.serie.data.data)
             }}
             //animate={true}
@@ -498,7 +506,7 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
     }
 }
 
-const PointComponent = (props) => {
+const PointComponent = (props: PointProps<DefaultBumpDatum, any>): JSX.Element => {
     const crew = React.useContext(GlobalContext).core.crew;
     let cmarr = props.point.serie.data.data as GraphSeries[];
     let x = Number(props.point.id.split(".")[1]);
@@ -510,8 +518,12 @@ const PointComponent = (props) => {
         }
         else {
             return <div style={{zIndex: 100}}><img src={`${process.env.GATSBY_ASSETS_URL}${f.imageUrlPortrait}`}
-                    style={{height: '20px', borderRadius: '10px'}} /></div>
+                    style={{height: '20px', borderRadius: '10px'}} />
+                    </div>
         }
+    }
+    else {
+        return <></>
     }
 }
 
