@@ -1,7 +1,7 @@
 import React from 'react';
 import { Step, Icon, Label, Message, Button } from 'semantic-ui-react';
 
-import { PlayerCrew, CompactCrew, CompletionState, PlayerBuffMode } from '../../model/player';
+import { PlayerCrew, CompactCrew, CompletionState, PlayerBuffMode, CryoCollection } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
 import { oneCrewCopy, applyCrewBuffs, getSkills } from '../../utils/crewutils';
 
@@ -14,6 +14,7 @@ import { useStateWithStorage } from '../../utils/storage';
 import { AlertContext } from '../alerts/alertprovider';
 import { AvatarView } from '../item_presenters/avatarview';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
+import { navigate } from 'gatsby';
 
 type RosterPickerProps = {
 	rosterType: RosterType;
@@ -25,7 +26,7 @@ type RosterPickerProps = {
 export const RosterPicker = (props: RosterPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { config: alertConfig, setRestoreHiddenAlerts, restoreHiddenAlerts } = React.useContext(AlertContext);
-	const { t } = globalContext.localized;
+	const { t, COLLECTIONS } = globalContext.localized;
 	const { maxBuffs } = globalContext;
 	const { playerData, buffConfig: playerBuffs, ephemeral } = globalContext.player;
 	const { rosterType, setRosterType, setRosterCrew, buffMode } = props;
@@ -133,37 +134,54 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		steps.push(offersJSX);
 	}
 
+	const filterCol = (crew: PlayerCrew, f: CryoCollection) => {
+		return crew.collection_ids.includes(f.type_id!.toString())
+			&& f.milestone?.goal
+			&& f.milestone.goal !== 'n/a'
+			&& f.progress !== 'n/a'
+			//&& (f.milestone.goal - f.progress === 1 || crew.max_rarity < 4);
+	}
+
+	const getPlayerCols = (crew: PlayerCrew) => {
+		let cols = [] as CryoCollection[];
+		if (playerData) {
+			let pcols = playerData.player.character.cryo_collections.filter(f => filterCol(crew, f));
+			if (pcols.length) {
+				cols = pcols.map(m =>
+					({
+						...m,
+						name: COLLECTIONS[`cc-${m.type_id}`]?.name ?? m.name,
+						description: COLLECTIONS[`cc-${m.type_id}`]?.description ?? m.description
+					})
+				);
+			}
+		}
+		return cols;
+	}
+
 	return (
 		<>
 		{!!alertConfig.alert_fuses && !!buyFuses?.length && buyFuses.map((crew, idx) => {
 			if (fuseDismissed.includes(crew.symbol)) return <></>
-			let col = false;
-			if (playerData) {
-				let pcols = playerData.player.character.cryo_collections.filter(f => crew.collection_ids.includes(f.type_id!.toString()) && f.milestone?.goal && f.milestone.goal !== 'n/a' && f.progress !== 'n/a' && f.milestone.goal - f.progress === 1);
-				if (pcols.length) col = true;
-			}
+			let cols = getPlayerCols(crew);
 			return drawAlert(crew, <>
 				{t('alerts.fusible_crew', {
 								subject: `${crew.name}`,
 								rarity: `${crew.rarity}`,
 								max_rarity: `${crew.max_rarity}`
 				})} {t('alerts.check_buyback')}
-				</>, idx, col, dismissFuse);
+				</>, idx, cols, 'atlas/fusion_icon.png', dismissFuse);
 		})}
 		{!!alertConfig.alert_new && !!buyUnowned?.length && buyUnowned.map((crew, idx) => {
 			if (newDismissed.includes(crew.symbol)) return <></>
-			let col = false;
-			if (playerData) {
-				let pcols = playerData.player.character.cryo_collections.filter(f => crew.collection_ids.includes(f.type_id!.toString()) && f.milestone?.goal && f.milestone.goal !== 'n/a' && f.progress !== 'n/a' && f.milestone.goal - f.progress === 1);
-				if (pcols.length) col = true;
-			}
+			let cols = getPlayerCols(crew);
 			return drawAlert(crew, <>
 				{t('alerts.new_crew', {
 						subject: `${crew.name}`,
 						rarity: `${crew.rarity}`,
 						max_rarity: `${crew.max_rarity}`
 						})} {t('alerts.check_buyback')}
-				</>, idx, col, dismissNew)
+				</>, idx, cols, 'atlas/crew_icon.png', dismissNew)
 		})}
 		<Step.Group fluid widths={hasBuyBack ? 4 : 3}>
 			{steps.map((step, idx) => <React.Fragment key={`index_page_step_${idx}`}>{step}</React.Fragment>)}
@@ -172,13 +190,25 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		</>
 	);
 
-	function drawAlert(crew: PlayerCrew, message: string | JSX.Element, idx: number, col: boolean, dismiss: (crew: PlayerCrew) => void) {
+	function drawAlert(crew: PlayerCrew, message: string | JSX.Element, idx: number, cols: CryoCollection[], icon: string, dismiss: (crew: PlayerCrew) => void) {
+		let one = false;
+		if (cols.length) {
+			for (let c of cols) {
+				if ((c.milestone.goal as number) - (c.progress as number) == 1) {
+					one = true;
+					break;
+				}
+			}
+		}
+		const dispClick = (e, col: string) => {
+			navigate("/collections?select=" + encodeURIComponent(col));
+		}
 		return (
 			<div style={{
 				margin: '0.5em 0',
 				display: 'grid',
-				gridTemplateAreas: `'image alert'`,
-				gridTemplateColumns: '64px auto',
+				gridTemplateAreas: `'icon image alert'`,
+				gridTemplateColumns: '32px 56px auto',
 				alignItems: 'center'
 			}}>
 				<div
@@ -192,12 +222,13 @@ export const RosterPicker = (props: RosterPickerProps) => {
 						targetGroup='alerts'
 						/>
 				</div>
+				<img src={`${process.env.GATSBY_ASSETS_URL}${icon}`} style={{gridArea: 'icon', width: '24px', height: 'auto', margin: 'auto'}} />
 				<Message
 					key={`buyback_${crew.symbol}+${idx}`}
 					style={{
 						gridArea: 'alert'
 					}}
-					color={col ? 'green' : 'blue'}
+					color={(one ? 'violet' : 'blue')}
 					>
 					<div style={{
 						display: 'flex',
@@ -207,7 +238,10 @@ export const RosterPicker = (props: RosterPickerProps) => {
 						gap: '1em'
 					}}>
 						<span style={{flexGrow: 1, cursor: 'pointer'}} onClick={() => setRosterType('buyBack')}>
-							{message}
+							{message}<br/>{!!cols.length && <>({t('base.collections')}: {cols.map(c => {
+								let str = `${c.name} [${c.progress}/${c.milestone.goal}]`
+								return <a onClick={(e) => dispClick(e, c.name)}>{str}</a>;
+							}).reduce((p, n) => p ? <>{p}, {n}</> : n)})</>}
 						</span>
 						<Label as='a' style={{justifySelf: 'flex-end', background: 'transparent', float: 'right', margin: 0, padding: 0}} onClick={() => dismiss(crew)}>
 							<Icon name='delete' style={{ cursor: 'pointer' }} />
@@ -311,7 +345,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			const crewMap = playerData.buyback_well?.map(b => {
 				let crew = globalContext.core.crew.find(f => f.symbol === b.symbol) as IRosterCrew;
 				if (crew) crew = { ...crew };
-				crew.rarity = 1;
+				if (!crew.rarity) crew.rarity = 1;
 
 				return crew;
 			});

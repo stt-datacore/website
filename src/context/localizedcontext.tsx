@@ -38,31 +38,34 @@ interface ICrewArchetype {
 	};
 };
 
+export interface TranslationData {
+	name: string;
+}
+
+export interface FlavorTranslationData extends TranslationData {
+	flavor: string;
+}
+
+export interface CollectionTranslationData extends TranslationData {
+	description: string;
+}
+
+export interface ShipTranslationData extends FlavorTranslationData {
+	actions: Action[];
+}
+
+
+export type GameStringHash<T extends TranslationData> = { [symbol: string]: T }
+
 interface IGameStrings {
 	TRAIT_NAMES: TraitNames;
 	SHIP_TRAIT_NAMES: ShipTraitNames;
 	CREW_ARCHETYPES: {
 		[symbol: string]: ICrewArchetype;
 	};
-	SHIP_ARCHETYPES: {
-		[symbol: string]: {
-			name: string;
-			flavor: string;
-			actions: Action[];
-		};
-	};
-	COLLECTIONS: {
-		[fakeSymbol: string]: {
-			name: string;
-			description: string;
-		};
-	};
-	ITEM_ARCHETYPES: {
-		[symbol: string]: {
-			name: string;
-			flavor: string;
-		};
-	};
+	SHIP_ARCHETYPES: GameStringHash<ShipTranslationData>;
+	COLLECTIONS: GameStringHash<CollectionTranslationData>;
+	ITEM_ARCHETYPES: GameStringHash<FlavorTranslationData>;
 };
 
 export interface ILocalizedData extends IGameStrings {
@@ -71,7 +74,8 @@ export interface ILocalizedData extends IGameStrings {
 	translateCore: () => TranslatedCore;
 	translatePlayer: () => PlayerContextData;
 	t: TranslateMethod,
-	tfmt: JSXTranslateMethod
+	tfmt: JSXTranslateMethod,
+	//col: (key: string | number) => string;
 };
 
 const defaultGameStrings: IGameStrings = {
