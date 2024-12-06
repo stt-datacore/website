@@ -137,23 +137,33 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		<>
 		{!!alertConfig.alert_fuses && !!buyFuses?.length && buyFuses.map((crew, idx) => {
 			if (fuseDismissed.includes(crew.symbol)) return <></>
+			let col = false;
+			if (playerData) {
+				let pcols = playerData.player.character.cryo_collections.filter(f => crew.collection_ids.includes(f.type_id!.toString()) && f.milestone?.goal && f.milestone.goal !== 'n/a' && f.progress !== 'n/a' && f.milestone.goal - f.progress === 1);
+				if (pcols.length) col = true;
+			}
 			return drawAlert(crew, <>
 				{t('alerts.fusible_crew', {
 								subject: `${crew.name}`,
 								rarity: `${crew.rarity}`,
 								max_rarity: `${crew.max_rarity}`
 				})} {t('alerts.check_buyback')}
-				</>, idx, dismissFuse);
+				</>, idx, col, dismissFuse);
 		})}
 		{!!alertConfig.alert_new && !!buyUnowned?.length && buyUnowned.map((crew, idx) => {
 			if (newDismissed.includes(crew.symbol)) return <></>
+			let col = false;
+			if (playerData) {
+				let pcols = playerData.player.character.cryo_collections.filter(f => crew.collection_ids.includes(f.type_id!.toString()) && f.milestone?.goal && f.milestone.goal !== 'n/a' && f.progress !== 'n/a' && f.milestone.goal - f.progress === 1);
+				if (pcols.length) col = true;
+			}
 			return drawAlert(crew, <>
 				{t('alerts.new_crew', {
 						subject: `${crew.name}`,
 						rarity: `${crew.rarity}`,
 						max_rarity: `${crew.max_rarity}`
 						})} {t('alerts.check_buyback')}
-				</>, idx, dismissNew)
+				</>, idx, col, dismissNew)
 		})}
 		<Step.Group fluid widths={hasBuyBack ? 4 : 3}>
 			{steps.map((step, idx) => <React.Fragment key={`index_page_step_${idx}`}>{step}</React.Fragment>)}
@@ -162,7 +172,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		</>
 	);
 
-	function drawAlert(crew: PlayerCrew, message: string | JSX.Element, idx: number, dismiss: (crew: PlayerCrew) => void) {
+	function drawAlert(crew: PlayerCrew, message: string | JSX.Element, idx: number, col: boolean, dismiss: (crew: PlayerCrew) => void) {
 		return (
 			<div style={{
 				margin: '0.5em 0',
@@ -187,7 +197,8 @@ export const RosterPicker = (props: RosterPickerProps) => {
 					style={{
 						gridArea: 'alert'
 					}}
-					color='blue'>
+					color={col ? 'green' : 'blue'}
+					>
 					<div style={{
 						display: 'flex',
 						flexDirection: 'row',
