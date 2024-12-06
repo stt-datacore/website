@@ -465,8 +465,8 @@
         "same_time": "Mismo Tiempo",
         "title": "Duración: {{duration}}",
         "today": "hoy",
-        "yesterday": "ayer",
-        "tomorrow": "mañana"
+        "tomorrow": "mañana",
+        "yesterday": "ayer"
     },
     "event_info": {
         "active_event": "Datos en vivo de la clasificación de eventos activos",
@@ -988,12 +988,12 @@
         "you_own_n_of_y": "Eres dueño de {{n}} de {{y}}."
     },
     "graph": {
-        "type": "Tipo de gráfico",
+        "area_bump": "Gráfico de área",
         "bump": "Gráfico de impacto",
-        "swarm": "Gráfico de enjambre",
         "circle": "Gráfico circular",
+        "swarm": "Gráfico de enjambre",
         "tree": "Árbol",
-        "area_bump": "Gráfico de área"
+        "type": "Tipo de gráfico"
     },
     "header": {
         "recommend": {
@@ -1015,6 +1015,7 @@
         "filter_by_event_type": "Filtrar por tipo de evento",
         "filter_by_item_type": "Filtrar por tipo de artículo",
         "filter_by_listed_status": "Filtrar por estado de listado",
+        "filter_by_movement": "Filtrar por movimiento",
         "filter_by_owned_status": "Filtrar por estado de propiedad",
         "filter_by_polestars": "Filtrar por estrellas polares",
         "filter_by_portal_status": "Filtrar por estado del portal",
@@ -1498,6 +1499,10 @@
                 "sold_last_day": "Venta más rápida"
             },
             "most_likely_popular": "Ocurrencia de los mejores rasgos de tripulación de las estrellas polares populares (las combinaciones exactas están en verde)",
+            "movement": {
+                "not_sold_last_day": "No vendido en las últimas 24 horas",
+                "sold_last_day": "Vendido en las últimas 24 horas"
+            },
             "title": "Mercado Celestial",
             "top_n_polestars": "Las {{n}} mejores estrellas polares",
             "unlisted": "No Listado",
@@ -1868,8 +1873,6 @@
         "quipment": "Quipo de cálculo..."
     },
     "stat_trends": {
-        "exact_skill_order_only": "Mostrar únicamente progresiones exactas del orden de habilidades (no coincidencias parciales)",
-        "new_highs_only": "Mostrar solo nuevos altos",
         "columns": {
             "day_diff": "Intervalo de debut",
             "epoch_day": "Día de época (Tripulación reciente)",
@@ -1879,6 +1882,7 @@
             "velocity": "Velocidad"
         },
         "description": "Estudie las estadísticas sobre la tendencia del poder de la tripulación a lo largo del tiempo.",
+        "exact_skill_order_only": "Mostrar únicamente progresiones exactas del orden de habilidades (no coincidencias parciales)",
         "graphs": {
             "circle": "Círculos de habilidades",
             "ignore_filters": "Ignorar los filtros actualmente activos",
@@ -1893,6 +1897,7 @@
         "initial_release": "Lanzamiento inicial",
         "last_release": "Último lanzamiento",
         "new_high": "Nueva Máxima",
+        "new_highs_only": "Mostrar solo nuevos altos",
         "released_duration": "Debutó {{duration}}",
         "released_duration_ago": "Debutó hace {{duration}}",
         "released_n_days_ago": "Debutó hace {{n}} días",

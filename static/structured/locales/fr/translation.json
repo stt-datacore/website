@@ -465,8 +465,8 @@
         "same_time": "Même Temps",
         "title": "Durée: {{duration}}",
         "today": "aujourd'hui",
-        "yesterday": "hier",
-        "tomorrow": "demain"
+        "tomorrow": "demain",
+        "yesterday": "hier"
     },
     "event_info": {
         "active_event": "Données en direct du classement des événements actifs",
@@ -988,12 +988,12 @@
         "you_own_n_of_y": "Vous possédez {{n}} de {{y}}."
     },
     "graph": {
-        "type": "Type de graphique",
+        "area_bump": "Graphique de relief de surface",
         "bump": "Graphique de bosse",
-        "swarm": "Graphique d'essaim",
         "circle": "Graphique circulaire",
+        "swarm": "Graphique d'essaim",
         "tree": "Arbre",
-        "area_bump": "Graphique de relief de surface"
+        "type": "Type de graphique"
     },
     "header": {
         "recommend": {
@@ -1015,6 +1015,7 @@
         "filter_by_event_type": "Filtrer par type d'événement",
         "filter_by_item_type": "Filtrer par type d'article",
         "filter_by_listed_status": "Filtrer par statut répertorié",
+        "filter_by_movement": "Filtrer par mouvement",
         "filter_by_owned_status": "Filtrer par statut de propriété",
         "filter_by_polestars": "Filtrer par étoiles polaires",
         "filter_by_portal_status": "Filtrer par statut du portail",
@@ -1498,6 +1499,10 @@
                 "sold_last_day": "Vente la plus rapide"
             },
             "most_likely_popular": "Occurrence des traits les plus populaires de l'équipage étoiles polaires (les combos exacts sont en vert)",
+            "movement": {
+                "not_sold_last_day": "Non vendu au cours des dernières 24 heures",
+                "sold_last_day": "Vendu au cours des dernières 24 heures"
+            },
             "title": "Marché céleste",
             "top_n_polestars": "Les {{n}} meilleures étoiles polaires",
             "unlisted": "Non Répertorié",
@@ -1868,8 +1873,6 @@
         "quipment": "Calcul de l'équipement..."
     },
     "stat_trends": {
-        "exact_skill_order_only": "Afficher uniquement les progressions exactes de l'ordre des compétences (pas de correspondances partielles)",
-        "new_highs_only": "Afficher uniquement les nouveaux élevés",
         "columns": {
             "day_diff": "Intervalle de début",
             "epoch_day": "Jour de l'époque (équipe récente)",
@@ -1879,6 +1882,7 @@
             "velocity": "Vitesse"
         },
         "description": "Étudiez les statistiques sur les tendances de la puissance de l'équipage au fil du temps.",
+        "exact_skill_order_only": "Afficher uniquement les progressions exactes de l'ordre des compétences (pas de correspondances partielles)",
         "graphs": {
             "circle": "Cercles de compétences",
             "ignore_filters": "Ignorer les filtres actuellement actifs",
@@ -1893,6 +1897,7 @@
         "initial_release": "Publication initiale",
         "last_release": "Dernière publication",
         "new_high": "Nouveau Élevé",
+        "new_highs_only": "Afficher uniquement les nouveaux élevés",
         "released_duration": "Débuté {{duration}}",
         "released_duration_ago": "Débuté il y a {{duration}}",
         "released_n_days_ago": "Débuté il y a {{n}} jours",

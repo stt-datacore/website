@@ -25,13 +25,31 @@ export const CelestialMarket = () => {
     const retrievalContext = React.useContext(RetrievalContext);
     const { market, allKeystones } = retrievalContext;
     const { t, ITEM_ARCHETYPES } = globalContext.localized;
+    const { playerData } = globalContext.player;
     const [filteredListings, setFilteredListings] = React.useState<CelestialMarketListing[]>([]);
     const [allListings, setAllListings] = React.useState<CelestialMarketListing[]>([]);
-    const [typeFilter, setTypeFilter] = React.useState<string | undefined>(undefined);
-    const [ownedFilter, setOwnedFilter] = React.useState<string | undefined>(undefined);
-    const [listFilter, setListFilter] = React.useState<string | undefined>(undefined);
+    const [crewNeeds, setCrewNeeds] = React.useState<string[]>([]);
+    const [typeFilter, setTypeFilter] = useStateWithStorage('celestial_market/type_filter', undefined as string | undefined, { rememberForever: true });
+    const [ownedFilter, setOwnedFilter] = useStateWithStorage('celestial_market/owned_filter', undefined as string | undefined, { rememberForever: true });
+    const [listFilter, setListFilter] = useStateWithStorage('celestial_market/list_filter', undefined as string | undefined, { rememberForever: true });
+    const [movementFilter, setMovementFilter] = useStateWithStorage('celestial_market/movement_filter', undefined as string | undefined, { rememberForever: true });
 
     React.useEffect(() => {
+        if (!playerData) return;
+        let curr_elig = playerData.player.character.crew.filter(f => f.in_portal && (f.highest_owned_rarity || f.rarity) < f.max_rarity);
+        let rarities = [...new Set(curr_elig.map(m => `rarity_${m.max_rarity}_keystone`))];
+        let skills = [... new Set(curr_elig.map(m => m.skill_order).flat().map(s => `${s}_keystone`))];
+        let traits = [... new Set(curr_elig.map(m => m.traits).flat().map(s => `${s}_keystone`))];
+        let compiled = rarities.concat(skills).concat(traits);
+        let needed = allKeystones.filter(f => compiled.includes(f.symbol) && !f.owned).map(m => m.symbol);
+        setCrewNeeds(needed);
+    }, [playerData, allKeystones]);
+
+    React.useEffect(() => {
+        if (typeFilter === 'constellations' && ownedFilter === 'needed') {
+            setOwnedFilter(undefined);
+            return;
+        }
         if (market) {
             const newListings: CelestialMarketListing[] = [];
             const allListings: CelestialMarketListing[] = [];
@@ -50,10 +68,15 @@ export const CelestialMarket = () => {
                     if (ownedFilter) {
                         if (ownedFilter === 'owned' && !keystone.owned) return;
                         if (ownedFilter === 'unowned' && keystone.owned) return;
+                        if (ownedFilter === 'needed' && !crewNeeds.includes(keystone.symbol)) return;
                     }
                     if (listFilter) {
                         if (listFilter === 'listed' && !listing.sell_count) return;
                         if (listFilter === 'unlisted' && listing.sell_count) return;
+                    }
+                    if (movementFilter) {
+                        if (movementFilter === 'sold_last_day' && !listing.sold_last_day) return;
+                        if (movementFilter === 'not_sold_last_day' && listing.sold_last_day) return;
                     }
                     newListings.push(l);
                 }
@@ -61,7 +84,7 @@ export const CelestialMarket = () => {
             setFilteredListings(newListings);
             setAllListings(allListings);
         }
-    }, [market, typeFilter, ownedFilter, listFilter]);
+    }, [market, typeFilter, ownedFilter, listFilter, movementFilter]);
 
     const marketTable: ITableConfigRow[] = [
 
@@ -95,7 +118,7 @@ export const CelestialMarket = () => {
         </Message>
         <div className='ui segment'
             style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-start', gap: '1em' }}>
-            {renderTypeFilter()} {renderOwnedFilter()} {renderListedFilter()}
+            {renderTypeFilter()} {renderOwnedFilter()} {renderListedFilter()} {renderMovementFilter()}
         </div>
         <SearchableTable
             data={filteredListings}
@@ -111,7 +134,13 @@ export const CelestialMarket = () => {
         const options = [
             { key: 'owned', value: 'owned', text: t('crew_state.owned') },
             { key: 'unowned', value: 'unowned', text: t('crew_state.unowned') },
-        ]
+        ];
+
+        if (typeFilter !== 'constellations') {
+            options.push(
+                { key: 'needed', value: 'needed', text: t('items.columns.needed') }
+            )
+        }
 
         return <Dropdown
             placeholder={t('hints.filter_by_owned_status')}
@@ -155,6 +184,23 @@ export const CelestialMarket = () => {
             selection
             onChange={(e, { value }) => setListFilter(value as string | undefined)}
         />
+
+    }
+
+    function renderMovementFilter() {
+        const options = [
+            { key: 'sold_last_day', value: 'sold_last_day', text: t('retrieval.market.movement.sold_last_day') },
+            { key: 'not_sold_last_day', value: 'not_sold_last_day', text: t('retrieval.market.movement.not_sold_last_day') },
+        ];
+
+        return <Dropdown
+            placeholder={t('hints.filter_by_movement')}
+            options={options}
+            value={movementFilter}
+            clearable
+            selection
+            onChange={(e, { value }) => setMovementFilter(value as string | undefined)}
+    />
 
     }
 

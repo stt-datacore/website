@@ -457,8 +457,8 @@
         "same_time": "Selben Zeit",
         "title": "Dauer: {{duration}}",
         "today": "heute",
-        "yesterday": "gestern",
-        "tomorrow": "morgen"
+        "tomorrow": "morgen",
+        "yesterday": "gestern"
     },
     "event_info": {
         "active_event": "Livedaten der aktiven Event-Bestenliste",
@@ -978,12 +978,12 @@
         "you_own_n_of_y": "Sie besitzen {{n}} von {{y}}."
     },
     "graph": {
-        "type": "Diagrammtyp",
+        "area_bump": "Bereichs-Bump-Diagramm",
         "bump": "Bump-Diagramm",
-        "swarm": "Schwarmgraph",
         "circle": "Kreisdiagramm",
+        "swarm": "Schwarmgraph",
         "tree": "Baum",
-        "area_bump": "Bereichs-Bump-Diagramm"
+        "type": "Diagrammtyp"
     },
     "header": {
         "recommend": {
@@ -1005,6 +1005,7 @@
         "filter_by_event_type": "Filtern nach Ereignistyp",
         "filter_by_item_type": "Filtern nach Artikeltyp",
         "filter_by_listed_status": "Filtern nach Listenstatus",
+        "filter_by_movement": "Filtern nach Bewegung",
         "filter_by_owned_status": "Filtern nach Besitzstatus",
         "filter_by_polestars": "Filtern nach Polarsterne",
         "filter_by_portal_status": "Filtern nach Portalstatus",
@@ -1486,6 +1487,10 @@
                 "sold_last_day": "Am schnellsten verkauft"
             },
             "most_likely_popular": "Beliebte Polarsterne mit den besten Crew-Eigenschaften (genaue Kombinationen sind grün)",
+            "movement": {
+                "not_sold_last_day": "In den letzten 24 Stunden nicht verkauft",
+                "sold_last_day": "In den letzten 24 Stunden verkauft"
+            },
             "title": "Himmelsmarkt",
             "top_n_polestars": "Top {{n}} Polarsterne",
             "unlisted": "Nicht Gelistet",
@@ -1855,8 +1860,6 @@
         "quipment": "Berechnungsausrüstung..."
     },
     "stat_trends": {
-        "exact_skill_order_only": "Nur exakte Fertigkeitsreihenfolgen anzeigen (keine teilweisen Übereinstimmungen)",
-        "new_highs_only": "Nur neue Highscores anzeigen",
         "columns": {
             "day_diff": "Debütintervall",
             "epoch_day": "Epochentag (letzte Crew)",
@@ -1866,6 +1869,7 @@
             "velocity": "Geschwindigkeit"
         },
         "description": "Studieren Sie Statistiken zur Entwicklung der Besatzungsstärke im Laufe der Zeit.",
+        "exact_skill_order_only": "Nur exakte Fertigkeitsreihenfolgen anzeigen (keine teilweisen Übereinstimmungen)",
         "graphs": {
             "circle": "Kompetenzkreise",
             "ignore_filters": "Derzeit aktive Filter ignorieren",
@@ -1880,6 +1884,7 @@
         "initial_release": "Erste Veröffentlichung",
         "last_release": "Letzte Veröffentlichung",
         "new_high": "Neuer Highscore",
+        "new_highs_only": "Nur neue Highscores anzeigen",
         "released_duration": "Debüt {{duration}}",
         "released_duration_ago": "Debüt vor {{duration}}",
         "released_n_days_ago": "Debüt vor {{n}} Tagen",

@@ -457,8 +457,8 @@
         "same_time": "Same Time",
         "title": "Duration: {{duration}}",
         "today": "today",
-        "yesterday": "yesterday",
-        "tomorrow": "tomorrow"
+        "tomorrow": "tomorrow",
+        "yesterday": "yesterday"
     },
     "event_info": {
         "active_event": "Active event leaderboard live data",
@@ -978,12 +978,12 @@
         "you_own_n_of_y": "You own {{n}} of {{y}}."
     },
     "graph": {
-        "type": "Graph Type",
+        "area_bump": "Area Bump Graph",
         "bump": "Bump Graph",
-        "swarm": "Swarm Graph",
         "circle": "Circle Graph",
+        "swarm": "Swarm Graph",
         "tree": "Tree",
-        "area_bump": "Area Bump Graph"
+        "type": "Graph Type"
     },
     "header": {
         "recommend": {
@@ -1005,6 +1005,7 @@
         "filter_by_event_type": "Filter by event type",
         "filter_by_item_type": "Filter by item type",
         "filter_by_listed_status": "Filter by listed status",
+        "filter_by_movement": "Filter by movement",
         "filter_by_owned_status": "Filter by owned status",
         "filter_by_polestars": "Filter by polestars",
         "filter_by_portal_status": "Filter by portal status",
@@ -1484,6 +1485,10 @@
                 "sold_last_day": "Fastest selling"
             },
             "most_likely_popular": "Popular polestars best crew trait occurrence (exact combos are in green)",
+            "movement": {
+                "not_sold_last_day": "Not sold last 24h",
+                "sold_last_day": "Sold last 24h"
+            },
             "title": "Celestial Market",
             "top_n_polestars": "Top {{n}} polestars",
             "unlisted": "Unlisted",
@@ -1853,8 +1858,6 @@
         "quipment": "Calculating quipment..."
     },
     "stat_trends": {
-        "exact_skill_order_only": "Show exact skill order progressions, only (no partial matches)",
-        "new_highs_only": "Only show new highs",
         "columns": {
             "day_diff": "Release Interval",
             "epoch_day": "Epoch Day (Recent Crew)",
@@ -1864,6 +1867,7 @@
             "velocity": "Velocity"
         },
         "description": "Study statistics about crew power trending over time.",
+        "exact_skill_order_only": "Show exact skill order progressions, only (no partial matches)",
         "graphs": {
             "circle": "Skill Circles",
             "ignore_filters": "Ignore currently active filters",
@@ -1878,6 +1882,7 @@
         "initial_release": "Initial Release",
         "last_release": "Last Release",
         "new_high": "New High",
+        "new_highs_only": "Only show new highs",
         "released_duration": "Released {{duration}}",
         "released_duration_ago": "Released {{duration}} ago",
         "released_n_days_ago": "Released {{n}} days ago",
