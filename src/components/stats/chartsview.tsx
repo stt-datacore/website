@@ -4,7 +4,7 @@ import { Checkbox, Dropdown } from "semantic-ui-react"
 import { GlobalContext } from "../../context/globalcontext"
 import { useStateWithStorage } from "../../utils/storage"
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "./utils"
-import { StatsCreepAreaGraph } from "./charts/statscreep"
+import { StatsCreepGraphs } from "./charts/statscreep"
 import { StatsCircleChart } from "./charts/circle"
 import { CrewLab } from "./charts/crewlab"
 
@@ -51,8 +51,9 @@ export const ChartsView = () => {
         </div>
 
         <h3>{t(`stat_trends.graphs.${currGraph}`)}</h3>
+
         {currGraph === 'release_graph' && <StatsCalendarChart useFilters={useFilters} />}
-        {currGraph === 'skill_area' && <StatsCreepAreaGraph useFilters={useFilters} />}
+        {currGraph === 'skill_area' && <StatsCreepGraphs useFilters={useFilters} />}
         {currGraph === 'circle' && <StatsCircleChart useFilters={useFilters} />}
         {currGraph === 'experimental1' && <CrewLab useFilters={useFilters} />}
 

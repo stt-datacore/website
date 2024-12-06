@@ -4,7 +4,7 @@ import { GlobalContext } from "../../../context/globalcontext";
 import { StatsContext } from "../dataprovider";
 import { GraphPropsCommon, GraphSeries, SkillFilterConfig, SkillOrderDebutCrew } from "../model";
 import { epochToDate, OptionsPanelFlexRow, OptionsPanelFlexColumn, skillIcon, SkillColors, dateToEpoch, getSkillOrderDebutData, keyToNames, statFilterCrew } from "../utils";
-import { AreaBumpSerie, Bump, DefaultBumpDatum, ResponsiveAreaBump } from "@nivo/bump";
+import { AreaBump, AreaBumpSerie, Bump, DefaultBumpDatum, ResponsiveAreaBump } from "@nivo/bump";
 
 import themes from "../../nivo_themes";
 import { crewCopy, shortToSkill } from "../../../utils/crewutils";
@@ -21,7 +21,7 @@ interface MapConfig {
     considerPower: boolean;
 }
 
-export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
+export const StatsCreepGraphs = (props: GraphPropsCommon) => {
 
     const { useFilters } = props;
     const globalContext = React.useContext(GlobalContext);
@@ -131,10 +131,11 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
                             />
                         </div>
                     </div>
-
+                    <div style={{overflowX: 'auto'}}>
+                        {graphType === 'swarm' && renderSwarmPlot()}
+                        {graphType === 'bump' && renderBumpGraph()}
+                    </div>
                     {graphType === 'areabump' && renderAreaBumpGraph()}
-                    {graphType === 'swarm' && renderSwarmPlot()}
-                    {graphType === 'bump' && renderBumpGraph()}
                 </div>}
         </div>)
 
@@ -142,7 +143,7 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
         let max = bump.map(m => m.high_power).reduce((p, n) => p > n ? p : n, 0);
         let min = bump.map(m => m.low_power).reduce((p, n) => n < p || !p ? n : p, 0);
         let inc = bump[bump.length - 1].density - bump[0].density;
-        return <div className="ui segment" style={flexCol}>
+        return <div className="ui segment" style={{...flexCol, zIndex: '1001'}}>
             <div style={{ ...flexRow, borderBottom: '2px solid', padding: '0.25em 0', justifyContent: 'center', alignItems: 'center' }}>{bump[0].id.split(" / ").map((skill) => {
                 return skill.split("/").map(skill => {
                     let icon = skillIcon(shortToSkill(skill)!);
@@ -163,7 +164,7 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
         let symbol = swarm.data?.find((f) => f.power === swarm.high_power)?.symbol;
         let crew = symbol ? globalContext.core.crew.find(f => f.symbol === symbol) : undefined;
 
-        return (<div className="ui segment" style={flexCol}>
+        return (<div className="ui segment" style={{...flexCol, zIndex: '1001'}}>
             <div style={{ ...flexRow, borderBottom: '2px solid', padding: '0.25em 0', justifyContent: 'center', alignItems: 'center' }}>
                 {swarm.id.split(" / ").map((skill) => {
                     return skill.split("/").map(skill => {
@@ -191,6 +192,8 @@ export const StatsCreepAreaGraph = (props: GraphPropsCommon) => {
     function renderAreaBumpGraph() {
         return (
             <ResponsiveAreaBump
+                // width={1100}
+                // height={1100}
                 data={areaSeries}
                 margin={{ top: 40, right: 100, bottom: 40, left: 40 }}
                 spacing={8}

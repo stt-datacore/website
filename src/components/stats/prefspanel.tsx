@@ -68,7 +68,7 @@ export const StatsPrefsPanel = () => {
 
     return (
         <div>
-            <div style={{ ...flexRow, margin: '1em 0' }}>
+            <div style={{ ...flexRow, margin: '1em 0', flexWrap: 'wrap' }}>
                 <div style={{ ...flexCol, alignItems: 'flex-start', textAlign: 'left' }}>
                     <span>{t('global.obtained')}</span>
                     <Dropdown
@@ -140,7 +140,7 @@ export const StatsPrefsPanel = () => {
 
                 })}
             </div>
-            <div style={flexRow}>
+            <div style={{...flexRow, flexWrap: 'wrap'}}>
                 <div style={{ ...flexCol, alignItems: 'flex-start', textAlign: 'left' }}>
                     <span>{t('global.date_start')}</span>
                     <Form.Input

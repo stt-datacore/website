@@ -90,7 +90,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
     });
 
     return (
-        <div style={{...flexCol, alignItems: 'stretch', justifyContent: 'flex-start', width: '100%' }}>
+        <div style={{...flexCol, alignItems: 'stretch', justifyContent: 'flex-start', width: '100%', overflowX: 'auto' }}>
             <div style={flexRow}>
                 <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start', gap: '1em', margin: '1em 0'}}>
                     <Checkbox label={t('stat_trends.exact_skill_order_only')}

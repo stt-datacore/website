@@ -186,10 +186,11 @@ export const StatTrendsComponent = () => {
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                     justifyContent: 'center',
+                                    flexWrap: 'wrap',
                                     gap: '1em', marginBottom: idx === useRarities.length - 1 ? '0.5em' : undefined
                                     }}>
                                     {totalPowerDiff.filter(f => f.rarity === rarity).map((skill) => {
-                                        return <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5em'}}>
+                                        return <div style={{display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '0.5em'}}>
                                             <img src={skillIcon(skill.skill)} style={{height: '1.2em'}} />
                                             {skill.core > 0 ? "+" : ""}{skill.core.toFixed(2)}
                                         </div>
