@@ -42,6 +42,7 @@
         "featured_ships": "Vaisseaux en vedette",
         "featured_traits": "Caractéristiques en vedette",
         "gauntlet": "Gantelet",
+        "global_warn_permanent": "Attention : cette action ne peut pas être annulée.",
         "in_portal": "Dans le Portail",
         "less_than_100_retrieval": "< 100 % de Récupération",
         "level": "Niveau",
@@ -80,6 +81,8 @@
         "release_date": "Début",
         "retrieval": "{{retrieval.modes.retrieval}}",
         "rewards": "Récompenses",
+        "ship_taits": "Caractéristiques du vaisseau",
+        "ship_trait": "Caractéristiques du vaisseau",
         "short_name": "Nom abrégé",
         "shuttle": "Navette",
         "shuttles": "Navettes",
@@ -868,6 +871,7 @@
         "close": "Fermer",
         "completed": "Completed",
         "copy_permalink_clipboard": "Copier le lien permanent dans le presse-papiers",
+        "create": "Créer",
         "date_end": "Date de fin",
         "date_start": "Date de début",
         "default": "Défaut",
@@ -921,7 +925,7 @@
             "shuttle_token": "Jetons de navette",
             "starbase_component": "Composant de base stellaire",
             "valor": "Valeur",
-            "voyage_consumable": "Jetons de renaissance du voyage"
+            "voyage_consumable": "Jetons de relance du voyage"
         },
         "items": "Articles",
         "last_updated_colon": "Dernière mise à jour :",
@@ -954,6 +958,7 @@
         "percentile": "Centile",
         "permalink": "lien permanent",
         "portal": "Portail",
+        "presets": "Prédéfinies",
         "quest": "Quête",
         "recommend_crew": "Recommander des équipiers",
         "reset": "Réinitialiser",
@@ -1882,6 +1887,7 @@
         }
     },
     "spinners": {
+        "calculating_voyage_estimate": "Calcul de l'estimation. S'il vous plaît, attendez...",
         "cite_opt": "Chargement l'Optimiseur des mentions honorable...",
         "default": "Chargement des données...",
         "demands": "Calcul des demandes de l'équipage...",
@@ -1963,11 +1969,68 @@
                 "initial_estimate": "Votre estimation initiale était de {{time}}."
             }
         },
+        "current_voyage_x": "{{x}} actuel",
+        "custom": {
+            "no_trait": "Aucun trait"
+        },
+        "custom_voyage": "Voyage personnalisé",
+        "custom_voyage_create": "Créer un voyage personnalisé",
+        "custom_voyage_description": "Vous pouvez créer manuellement un voyage et afficher le meilleur équipage du jeu pour n'importe quelle configuration possible.",
+        "custom_voyage_editor": "Éditeur de voyages personnalisés",
+        "custom_voyage_x": "{{x}} personnalisé",
+        "dilemma_chance_h_y": "Probabilité d'un dilemme de {{h]} heures : {{y}} %",
         "estimate": {
+            "1_refill": "1 recharge",
+            "calculated_by_name_time": "Calculé par {{calculator_name}} en {{time}} secondes !",
             "dilemma_chance": "Chance d'un dilemme dans {{time}} : {{chance}}",
+            "estimate": "Estimation",
             "estimate_time": "Estimation : {{time}}",
-            "n_refills": "{{n}} Recharges",
-            "refill": "1 Recharge"
+            "expected_range": "(plage attendue : {{a}} à {{b}})",
+            "first_refill": "Première recharge",
+            "legend": {
+                "chance_%": "Chance (%)",
+                "voyage_length": "Durée du voyage (heures)"
+            },
+            "n_chance_of_reaching_t": "{{n}}% de chance d'atteindre {{t}}",
+            "n_refills": "{{n}} recharges",
+            "no_refills": "Aucune recharge",
+            "one_refill": "Une recharge",
+            "second_refill": "Deuxième recharge",
+            "two_refills": "Deux recharges",
+            "voyage_end": "Ce voyage se terminera à {{time}}.",
+            "voyage_extend": "Les recharges ultérieures le prolongeront de {{time}}.",
+            "voyage_long_advice": "Pour un voyage de {{h}} heures, vous aurez besoin de {{r}} recharges pour un coût de {{d}} dilithium (ou {{re}} {{global.item_types.voyage_consumable}}.)"
+        },
+        "history": {
+            "description": "Suivez vos voyages, comparez vos temps d'exécution à vos estimations initiales et identifiez l'équipage que vous utilisez le plus souvent.",
+            "not_yet": "Vous n'avez pas encore d'historique de voyage. Commencez à suivre les voyages à partir du calculateur d'équipage.",
+            "title": "{{menu.tools.voyage_history}}"
+        },
+        "loading_voyage_tool_ellipses": "Chargement de l'outil de voyage...",
+        "or_n_h_if_dupes_dismissed": "ou {{n}} {{h}} si tous les équiipers en double sont renvoyés.",
+        "seats": {
+            "captain_slot": "Premier officier",
+            "chief_communications_officer": "Officier des communications",
+            "chief_engineering_officer": "Ingénieur en chef",
+            "chief_medical_officer": "Médecin en chef",
+            "chief_science_officer": "Officier scientifique en chef",
+            "chief_security_officer": "Officier de sécurité en chef",
+            "communications_officer": "Diplomate",
+            "engineering_officer": "Ingénieur",
+            "first_officer": "Officier de barre",
+            "medical_officer": "Conseiller du vaisseau",
+            "science_officer": "Officier scientifique adjoint",
+            "security_officer": "Officier tactique"
+        },
+        "skills": {
+            "primary": {
+                "name": "Compétence principale",
+                "placeholder": "{{quipment_ranks.primary}}"
+            },
+            "secondary": {
+                "name": "Compétence secondaire",
+                "placeholder": "{{quipment_ranks.secondary}}"
+            }
         },
         "tracking": {
             "not_tracking": "Vous ne suivez pas ce voyage.",
@@ -1977,10 +2040,17 @@
             "encounter_voyage": "Voyage de rencontre",
             "test_voyage_1": "Voyage de dilemme"
         },
+        "unable_to_track_revivals": "DataCore ne peut pas suivre automatiquement le moment où un voyage a été relancé, mais vous pouvez noter manuellement la relance ici.",
         "view": {
-            "active_voyage": "Afficher le voyage actif",
+            "active_voyage": "Afficher le voyage en cours",
             "crew_calculator": "Afficher le calculateur d'équipage",
             "voyage_history": "Afficher l'historique des voyages"
+        },
+        "voyages": {
+            "all": "Tous les voyages",
+            "current": "Voyages en cours",
+            "custom": "Voyages personnalisés",
+            "upcoming": "Voyages à venir"
         }
     }
 }

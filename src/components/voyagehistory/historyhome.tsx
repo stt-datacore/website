@@ -8,6 +8,7 @@ import { VoyagesTable } from './voyagestable';
 import { CrewTable } from './crewtable';
 import { DataManagement } from './manage';
 import { SyncState } from './utils';
+import { GlobalContext } from '../../context/globalcontext';
 
 type HistoryHomeProps = {
 	postRemote: boolean;
@@ -18,11 +19,11 @@ type HistoryHomeProps = {
 export const HistoryHome = (props: HistoryHomeProps) => {
 	const { history } = React.useContext(HistoryContext);
 	const [activeItem, setActiveItem] = React.useState<string>('voyages');
-
+	const { t } = React.useContext(GlobalContext).localized;
 	if (history.voyages.length === 0) {
 		return (
 			<React.Fragment>
-				<p>You don't have any voyage history yet. Start tracking voyages from the crew calculator.</p>
+				<p>{t('voyage.history.not_yet')}</p>
 				{/* <p>You don't have any voyage history yet. Start tracking voyages from the crew calculator. You can also import voyage history from remote sync or from a saved file.</p> */}
 				<DataManagement
 					postRemote={props.postRemote}

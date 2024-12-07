@@ -27,7 +27,7 @@
         "when_new_fuse": "Alerta cuando se descubre un fusible de una tripulación propia en el pozo de recompra."
     },
     "base": {
-        "all_crew": "Mostrar toda las tripulantes",
+        "all_crew": "Mostrar todos los tripulantes",
         "best_pair": "Mejor pareja",
         "bigbook_tier": "Piso",
         "cab_power": "CAB",
@@ -42,6 +42,7 @@
         "featured_ships": "Buques destacados",
         "featured_traits": "Características destacadas",
         "gauntlet": "Reto",
+        "global_warn_permanent": "Advertencia: esta acción no se puede deshacer.",
         "in_portal": "En Portal",
         "less_than_100_retrieval": "< 100% de Recuperación",
         "level": "Nivel",
@@ -82,6 +83,8 @@
         "release_date": "Debut",
         "retrieval": "{{retrieval.modes.retrieval}}",
         "rewards": "Recompensas",
+        "ship_taits": "Rasgos del buque",
+        "ship_trait": "Rasgos del buque",
         "short_name": "Nombre corto",
         "shuttle": "Lanzadera",
         "shuttles": "Lanzaderas",
@@ -309,12 +312,12 @@
         "progress_to_next": "Progreso a la siguiente"
     },
     "consider_crew": {
-        "active_shuttles": "Considere las tripulantes en lanzaderas activas",
-        "active_voyage": "Considere las tripulantes en viaje activo",
-        "consider_frozen": "Considere las tripulantes congeladas",
-        "consider_shared": "Considerar las tripulantes compartidas",
-        "consider_unowned": "Considere las tripulantes sin propietario",
-        "exclude_quipped": "Excluir las tripulantes con quipo activo",
+        "active_shuttles": "Considere los tripulantes en lanzaderas activas",
+        "active_voyage": "Considere los tripulantes en viaje activo",
+        "consider_frozen": "Considere los tripulantes congeladas",
+        "consider_shared": "Considerar los tripulantes compartidas",
+        "consider_unowned": "Considere los tripulantes sin propietario",
+        "exclude_quipped": "Excluir los tripulantes con quipo activo",
         "only_immortal": "Sólo tripulación inmortal",
         "shared_crew_popup": "Los números de habilidades del equipo compartido se basan en las ventajas de tu jugador y pueden no coincidir con la puntuación real"
     },
@@ -349,8 +352,8 @@
         "max_buffs_applied": "Efectos máximos aplicados",
         "no_buffs_applied": "No se aplican efectos",
         "notes": {
-            "gauntlet_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre las tripulantes a utilizar, consulte {{link}}.",
-            "voyage_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre las tripulantes a utilizar, consulte {{link}}."
+            "gauntlet_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre los tripulantes a utilizar, consulte {{link}}.",
+            "voyage_determination": "Clasificaciones determinadas mediante cálculo previo. Para obtener consejos específicos sobre los tripulantes a utilizar, consulte {{link}}."
         },
         "player_buffs_applied": "Efectos de jugador aplicadas",
         "variants": "Variantes de {{crew}}"
@@ -410,7 +413,7 @@
         },
         "customize_button": "Personalizar la puntuación de utilidad...",
         "customize_header": "Puedes medir la utilidad para diferentes áreas del juego. Un número mayor considerará que más tripulantes es útil en esa área del juego.",
-        "header": "La utilidad de la tripulación identifica la cantidad de conjuntos de habilidades potencialmente útiles que tiene cada tripulantes, en relación con otros en tu lista con conjuntos de habilidades similares. Para obtener consejos específicos sobre las tripulantes a utilizar, consulte {{event_planner}}, {{gauntlets}} o {{voyage_calculator}}.",
+        "header": "La utilidad de la tripulación identifica la cantidad de conjuntos de habilidades potencialmente útiles que tiene cada tripulantes, en relación con otros en tu lista con conjuntos de habilidades similares. Para obtener consejos específicos sobre los tripulantes a utilizar, consulte {{event_planner}}, {{gauntlets}} o {{voyage_calculator}}.",
         "include_base_ranks_check": "Incluir rangos base en la tabla de utilidad de la tripulación.",
         "roster": {
             "base_shuttle": "El par base/lanzadera se ubica en su lista",
@@ -428,7 +431,7 @@
         "max_quipment": "Mostrar Quipo máximo",
         "preview": "Vista previa de {{crew}} en tu lista",
         "prospect": {
-            "description": "Agrega miembros potenciales de las tripulantes para ver cómo encajan en tu lista actual.",
+            "description": "Agrega miembros potenciales de los tripulantes para ver cómo encajan en tu lista actual.",
             "title": "Tripulación potencial"
         },
         "quipment": "Mostrar rangos de Quipos",
@@ -513,8 +516,8 @@
                 "apply_event_bonus": "Aplicar bonificación de evento a las habilidades",
                 "event_crew": "Mostrar solo el equipo del evento ({{list}})",
                 "exclude_quipped": "Excluir tripulantes con quipo activo",
-                "potential_skills": "Mostrar habilidades potenciales de las tripulantes no nivelada.",
-                "share_crew": "Mostrar las tripulantes que se comparte",
+                "potential_skills": "Mostrar habilidades potenciales de los tripulantes no nivelada.",
+                "share_crew": "Mostrar los tripulantes que se comparte",
                 "share_crew_help": "Los números de habilidades de la tripulante que se comparten se basan en los efectos de tu jugador y pueden no coincidir con el poder real",
                 "show_frozen": "Mostrar tripulantes congelada"
             }
@@ -772,10 +775,10 @@
             "opponent_crew_n": "Tripulante del oponente {{n}}"
         },
         "owned_status": {
-            "any": "Todas las tripulantes",
+            "any": "Todas los tripulantes",
             "fe": "Tripulantes propia y totalmente equipada",
             "gauntlet": "Tripulantes exclusiva del reto sin propietario",
-            "maxall": "Todas de las tripulantes al máximo",
+            "maxall": "Todas de los tripulantes al máximo",
             "nofe": "Tripulantes propias, no totalmente equipada",
             "nofemax": "Tripulantes propias, no totalmente equipada al máximo",
             "nonportal": "Tripulantes sin propietario y fuera del portal",
@@ -818,7 +821,7 @@
         "skills_and_pairs": "Habilidades y pares",
         "top_n": "Los {{n}} primeros",
         "unowned_status": {
-            "any": "Todas de las tripulantes",
+            "any": "Todas de los tripulantes",
             "gauntlet": "Tripulantes exclusiva del reto",
             "nonportal": "Equipo fuera del portal",
             "portal": "Equipo disponible en el portal"
@@ -869,6 +872,7 @@
         "close": "Cerca",
         "completed": "Completado",
         "copy_permalink_clipboard": "Copiar enlace permanente al portapapeles",
+        "create": "Crear",
         "date_end": "Fecha de finalización",
         "date_start": "Fecha de inicio",
         "default": "Predeterminada",
@@ -954,6 +958,7 @@
         "percentile": "Percentil",
         "permalink": "enlace permanente",
         "portal": "Portal",
+        "presets": "Preestablecidos",
         "quest": "Búsqueda",
         "recommend_crew": "Recomendar tripulantes",
         "reset": "Restablecer",
@@ -1705,7 +1710,7 @@
         "calc": {
             "advanced": {
                 "crew_filter": "Filtro de tripulación avanzado",
-                "exclude_ability": "Excluir las tripulantes con esta habilidad",
+                "exclude_ability": "Excluir los tripulantes con esta habilidad",
                 "power_depth": "Profundidad de potencia avanzada"
             },
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} resultados aceptados) ({{time}})",
@@ -1740,11 +1745,11 @@
         "charge_phases": "Fases de Carga",
         "clear_station": "Borrar estación",
         "cooldown": "Recargar",
-        "crew_with_trigger_check": "Mostrar solo las tripulantes con el activador coincidente",
+        "crew_with_trigger_check": "Mostrar solo los tripulantes con el activador coincidente",
         "crit_bonus": "Bonificación de Crít",
         "crit_rating": "Frecuencia de Crít",
         "cycle_time": "Uno ciclo",
-        "depth_hr_warn": "* De forma predeterminada, la profundidad del nivel de potencia no se aplica a las tripulantes de reparación de casco.",
+        "depth_hr_warn": "* De forma predeterminada, la profundidad del nivel de potencia no se aplica a los tripulantes de reparación de casco.",
         "duration": "Duración",
         "equipment_bonus": "Bonificación de equipo",
         "evasion": "Evasión",
@@ -1801,7 +1806,7 @@
             "missions_selected": "{{n}} misiones seleccionadas",
             "view_running": "ver las tareas en ejecución",
             "warn_replace": "Advertencia: esto reemplazará cualquier recomendación existente.",
-            "you_can_rearrange": "Puede reorganizar las tripulantes para equilibrar las posibilidades de transporte como mejor le parezca. Toque una asignación de asiento para cambiar la tripulante asignada al asiento. Bloquee una asignación para mantener a ese equipo en ese asiento cuando solicite nuevas recomendaciones.",
+            "you_can_rearrange": "Puede reorganizar los tripulantes para equilibrar las posibilidades de transporte como mejor le parezca. Toque una asignación de asiento para cambiar la tripulante asignada al asiento. Bloquee una asignación para mantener a ese equipo en ese asiento cuando solicite nuevas recomendaciones.",
             "you_can_view_running": "Puedes {{link}}.",
             "you_have_n_running": "Tienes {{n}} misiones de lanzadera ejecutándose en el juego.",
             "you_have_one_running": "Tienes 1 misión de lanzadera ejecutándose en el juego."
@@ -1882,6 +1887,7 @@
         }
     },
     "spinners": {
+        "calculating_voyage_estimate": "Calculando presupuesto. Por favor espere...",
         "cite_opt": "Cargando Distinción de Honor Optimizador...",
         "default": "Cargando datos...",
         "demands": "Cálculo de las demandas de la tripulante...",
@@ -1963,11 +1969,68 @@
                 "initial_estimate": "Su estimación inicial fue {{time}}."
             }
         },
+        "current_voyage_x": "{{x}} actual",
+        "custom": {
+            "no_trait": "Sin rasgo"
+        },
+        "custom_voyage": "Viaje personalizado",
+        "custom_voyage_create": "Crea un viaje personalizado",
+        "custom_voyage_description": "Puedes crear manualmente un viaje y ver la mejor tripulación del juego para cualquier configuración posible.",
+        "custom_voyage_editor": "Editor de viajes personalizado",
+        "custom_voyage_x": " {{x}} personalizado",
+        "dilemma_chance_h_y": "Probabilidad de un dilema de {{h}} horas: {{y}}%",
         "estimate": {
+            "1_refill": "1 recarga",
+            "calculated_by_name_time": "¡Calculado por {{calculator_name}} en {{time}} segundos!",
             "dilemma_chance": "Probabilidad de dilema de {{time}}: {{chance}}",
+            "estimate": "Estimado",
             "estimate_time": "Estimado: {{time}}",
-            "n_refills": "{{n}} Recargas",
-            "recarga": "1 Recarga"
+            "expected_range": "(rango esperado: {{a}} a {{b}})",
+            "first_refill": "Primera recarga",
+            "legend": {
+                "chance_%": "Probabilidad (%)",
+                "voyage_length": "Duración del viaje (horas)"
+            },
+            "n_chance_of_reaching_t": "{{n}}% de posibilidades de llegar a {{t}}",
+            "n_refills": "{{n}} recargas",
+            "no_refills": "Sin recargas",
+            "one_refill": "Una recarga",
+            "second_refill": "Segunda recarga",
+            "two_refills": "Dos recargas",
+            "voyage_end": "Este viaje finalizará a las {{time}}.",
+            "voyage_extend": "Las recargas posteriores lo extenderán por {{time}}.",
+            "voyage_long_advice": "Para un viaje de {{h}} horas, necesitarás {{r}} recargas a un costo de {{d}} dilitio (o {{re}} {{global.item_types.voyage_consumable}})."
+        },
+        "history": {
+            "description": "Realice un seguimiento de sus viajes, compare sus tiempos de ejecución con sus estimaciones iniciales e identifique la tripulación que utiliza con más frecuencia.",
+            "not_yet": "Aún no tienes ningún historial de viajes. Comienza a hacer un seguimiento de los viajes desde la calculadora de tripulación.",
+            "title": "{{menu.tools.voyage_history}}"
+        },
+        "loading_voyage_tool_ellipses": "Cargando herramienta de viaje...",
+        "or_n_h_if_dupes_dismissed": "o {{n}} {{h}} si se despide a toda los tripulantes duplicada.",
+        "seats": {
+            "captain_slot": "Primer oficial",
+            "chief_communications_officer": "Oficial de comunicaciones",
+            "chief_engineering_officer": "Ingeniero jefe",
+            "chief_medical_officer": "Oficial médico jefe",
+            "chief_science_officer": "Oficial científico jefe",
+            "chief_security_officer": "Oficial jefe de seguridad",
+            "communications_officer": "Diplomático",
+            "engineering_officer": "Ingeniero",
+            "first_officer": "Oficial timonel",
+            "medical_officer": "Consejero del buque",
+            "science_officer": "Oficial científico adjunto",
+            "security_officer": "Oficial táctico"
+        },
+        "skills": {
+            "primary": {
+                "name": "Habilidad primaria",
+                "placeholder": "{{quipment_ranks.primary}}"
+            },
+            "secondary": {
+                "name": "Habilidad secundaria",
+                "placeholder": "{{quipment_ranks.secondary}}"
+            }
         },
         "tracking": {
             "not_tracking": "No estás rastreando este viaje.",
@@ -1977,10 +2040,17 @@
             "encounter_voyage": "Viaje de encuentro",
             "test_voyage_1": "Viaje de dilema"
         },
+        "unable_to_track_revivals": "DataCore no puede rastrear automáticamente cuándo se ha reanudado un viaje, pero puedes anotar manualmente la reanudación aquí.",
         "view": {
-            "active_voyage": "Ver viaje activo",
+            "active_voyage": "Ver viaje en curso",
             "crew_calculator": "Ver calculadora de tripulación",
             "voyage_history": "Ver historial de viaje"
+        },
+        "voyages": {
+            "all": "Todos los viajes",
+            "current": "Viajes actuales",
+            "custom": "Viajes personalizados",
+            "upcoming": "Próximos viajes"
         }
     }
 }

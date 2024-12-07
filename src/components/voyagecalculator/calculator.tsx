@@ -862,7 +862,7 @@ type ResultPaneProps = {
 };
 
 const ResultPane = (props: ResultPaneProps) => {
-	const { t } = React.useContext(GlobalContext).localized;
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { syncState } = React.useContext(HistoryContext);
 	const calculatorContext = React.useContext(CalculatorContext);
 	const { configSource, rosterType } = calculatorContext;
@@ -941,9 +941,14 @@ const ResultPane = (props: ResultPaneProps) => {
 				<Message attached>
 					<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', rowGap: '1em' }}>
 						<div>
-							Estimate: <b>{formatTime(result.estimate.refills[0].result, t)}</b>{` `}
-							(expected range: {formatTime(result.estimate.refills[0].saferResult, t)} to{` `}
-								{formatTime(result.estimate.refills[0].moonshotResult, t)})
+							{tfmt('voyage.estimate.estimate_time', {
+								time: <b>{formatTime(result.estimate.refills[0].result, t)}</b>
+							})}
+							{` `}
+							{t('voyage.estimate.expected.range', {
+								a: formatTime(result.estimate.refills[0].saferResult, t),
+								b: formatTime(result.estimate.refills[0].moonshotResult, t)
+							})}
 							{analysis !== '' && (<div style={{ marginTop: '1em' }}>{analysis}</div>)}
 						</div>
 						<div>

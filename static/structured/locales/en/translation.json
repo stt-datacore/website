@@ -42,6 +42,7 @@
         "featured_ships": "Featured Ships",
         "featured_traits": "Featured Traits",
         "gauntlet": "Gauntlet",
+        "global_warn_permanent": "Warning: this action cannot be undone.",
         "in_portal": "In Portal",
         "less_than_100_retrieval": "< 100% Retrieval",
         "level": "Level",
@@ -80,6 +81,8 @@
         "release_date": "Release Date",
         "retrieval": "{{retrieval.modes.retrieval}}",
         "rewards": "Rewards",
+        "ship_taits": "Ship Traits",
+        "ship_trait": "Ship Trait",
         "short_name": "Short Name",
         "shuttle": "Shuttle",
         "shuttles": "Shuttles",
@@ -860,6 +863,7 @@
         "close": "Close",
         "completed": "Completed",
         "copy_permalink_clipboard": "Copy permalink to clipboard",
+        "create": "Create",
         "date_end": "End Date",
         "date_start": "Start Date",
         "default": "Default",
@@ -944,6 +948,7 @@
         "percentile": "Percentile",
         "permalink": "permalink",
         "portal": "Portal",
+        "presets": "Presets",
         "quest": "Quest",
         "recommend_crew": "Recommend Crew",
         "reset": "Reset",
@@ -1867,6 +1872,7 @@
         }
     },
     "spinners": {
+        "calculating_voyage_estimate": "Calculating estimate. Please wait...",
         "cite_opt": "Loading citation optimizer...",
         "default": "Loading data...",
         "demands": "Calculating crew demands...",
@@ -1948,11 +1954,68 @@
                 "initial_estimate": "Your initial estimate was {{time}}."
             }
         },
+        "current_voyage_x": "Current {{x}}",
+        "custom": {
+            "no_trait": "No trait"
+        },
+        "custom_voyage": "Custom Voyage",
+        "custom_voyage_create": "Create custom voyage",
+        "custom_voyage_description": "You can manually create a voyage and view the best crew in the game for any possible configuration.",
+        "custom_voyage_editor": "Custom Voyage Editor",
+        "custom_voyage_x": "Custom {{x}}",
+        "dilemma_chance_h_y": "Chance of {{h}} hour dilemma: {{y}}",
         "estimate": {
+            "1_refill": "1 Refill",
+            "calculated_by_name_time": "Calculated by {{calculator_name}} in {{time}} seconds!",
             "dilemma_chance": "Chance of {{time}} dilemma: {{chance}}",
+            "estimate": "Estimate",
             "estimate_time": "Estimate: {{time}}",
+            "expected_range": "(expected range: {{a}} to {{b}})",
+            "first_refill": "First Refill",
+            "legend": {
+                "chance_%": "Chance (%)",
+                "voyage_length": "Voyage Length (hours)"
+            },
+            "n_chance_of_reaching_t": "{{n}} chance of reaching {{t}}",
             "n_refills": "{{n}} Refills",
-            "refill": "1 Refill"
+            "no_refills": "No Refills",
+            "one_refill": "One Refill",
+            "second_refill": "Second Refill",
+            "two_refills": "Two Refills",
+            "voyage_end": "This voyage will end at {{time}}.",
+            "voyage_extend": "Subsequent refills will extend it by {{time}}.",
+            "voyage_long_advice": "For a {{h}} hour voyage you will need {{r}} refills at a cost of {{d}} dilithium (or {{re}} {{global.item_types.voyage_consumable}}.)"
+        },
+        "history": {
+            "description": "Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.",
+            "not_yet": "You don't have any voyage history yet. Start tracking voyages from the crew calculator.",
+            "title": "{{menu.tools.voyage_history}}"
+        },
+        "loading_voyage_tool_ellipses": "Loading voyage tool ...",
+        "or_n_h_if_dupes_dismissed": "or {{n}} {{h}} if all duplicate crew are dismissed.",
+        "seats": {
+            "captain_slot": "First Officer",
+            "chief_communications_officer": "Communications Officer",
+            "chief_engineering_officer": "Chief Engineer",
+            "chief_medical_officer": "Chief Medical Officer",
+            "chief_science_officer": "Chief Science Officer",
+            "chief_security_officer": "Chief Security Officer",
+            "communications_officer": "Diplomat",
+            "engineering_officer": "Engineer",
+            "first_officer": "Helm Officer",
+            "medical_officer": "Ship's Counselor",
+            "science_officer": "Deputy Science Officer",
+            "security_officer": "Tactical Officer"
+        },
+        "skills": {
+            "primary": {
+                "name": "Primary skill",
+                "placeholder": "{{quipment_ranks.primary}}"
+            },
+            "secondary": {
+                "name": "Secondary skill",
+                "placeholder": "{{quipment_ranks.secondary}}"
+            }
         },
         "tracking": {
             "not_tracking": "You are not tracking this voyage.",
@@ -1962,10 +2025,17 @@
             "encounter_voyage": "Encounter Voyage",
             "test_voyage_1": "Dilemma Voyage"
         },
+        "unable_to_track_revivals": "DataCore cannot automatically track when a voyage has been revived, but you can manually note the revival here.",
         "view": {
-            "active_voyage": "View Active Voyage",
-            "crew_calculator": "View Crew Calculator",
-            "voyage_history": "View Voyage History"
+            "active_voyage": "View running voyage",
+            "crew_calculator": "View crew calculator",
+            "voyage_history": "View voyage history"
+        },
+        "voyages": {
+            "all": "All voyages",
+            "current": "Current Voyages",
+            "custom": "Custom Voyages",
+            "upcoming": "Upcoming Voyages"
         }
     }
 }

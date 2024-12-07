@@ -42,6 +42,7 @@
         "featured_ships": "Ausgewählte Schiffe",
         "featured_traits": "Ausgewählte Eigenschaften",
         "gauntlet": "Herausforderung",
+        "global_warn_permanent": "Achtung: Diese Aktion kann nicht rückgängig gemacht werden.",
         "in_portal": "Im Zeitportal",
         "less_than_100_retrieval": "< 100 % Abrufbar",
         "level": "Level",
@@ -80,6 +81,8 @@
         "release_date": "Debüt",
         "retrieval": "{{retrieval.modes.retrieval}}",
         "rewards": "Belohnungen",
+        "ship_taits": "Schiffseigenschaften",
+        "ship_trait": "Schiffseigenschaft",
         "short_name": "Kurzname",
         "shuttle": "Shuttle",
         "shuttles": "Shuttles",
@@ -860,6 +863,7 @@
         "close": "Schließen",
         "completed": "Abgeschlossen",
         "copy_permalink_clipboard": "Permalink in die Zwischenablage kopieren",
+        "create": "Erstellen",
         "date_end": "Enddatum",
         "date_start": "Startdatum",
         "default": "Standard",
@@ -944,6 +948,7 @@
         "percentile": "Perzentil",
         "permalink": "Permalink",
         "portal": "Zeitportal",
+        "presets": "Presets",
         "quest": "Quest",
         "recommend_crew": "Crew empfehlen",
         "reset": "Zurücksetzen",
@@ -1869,6 +1874,7 @@
         }
     },
     "spinners": {
+        "calculating_voyage_estimate": "Schätzung wird berechnet. Bitte warten...",
         "cite_opt": "Laden Ehrenvolle Erwähnung Optimierer...",
         "default": "Daten werden geladen…",
         "demands": "Crew fordert Berechnung...",
@@ -1950,11 +1956,68 @@
                 "initial_estimate": "Ihre anfängliche Schätzung war {{time}}."
             }
         },
+        "current_voyage_x": "Aktuelle {{x}}",
+        "custom": {
+            "no_trait": "Kein Merkmal"
+        },
+        "custom_voyage": "Individuelle Reise",
+        "custom_voyage_create": "Erstellen Sie eine individuelle Reise",
+        "custom_voyage_description": "Sie können manuell eine Reise erstellen und sich die beste Crew im Spiel für jede mögliche Konfiguration anzeigen lassen.",
+        "custom_voyage_editor": "Individueller Reiseeditor",
+        "custom_voyage_x": "Individuelle {{x}}",
+        "dilemma_chance_h_y": "Chance auf ein {{h}}-Stunden-Dilemma: {{y}} %",
         "estimate": {
+            "1_refill": "1 Nachfüllung",
+            "calculated_by_name_time": "Berechnet von {{calculator_name}} in {{time}} Sekunden!",
             "dilemma_chance": "Chance auf {{time}}-Dilemma: {{chance}}",
+            "estimate": "Schätzung",
             "estimate_time": "Schätzung: {{time}}",
+            "expected_range": "(erwarteter Bereich: {{a}} bis {{b}})",
+            "first_refill": "Erste Nachfüllung",
+            "legend": {
+                "chance_%": "Chance (%)",
+                "voyage_length": "Reisedauer (Stunden)"
+            },
+            "n_chance_of_reaching_t": "{{n}} % Chance, {{t}} zu erreichen",
             "n_refills": "{{n}} Nachfüllungen",
-            "refill": "1 Nachfüllung"
+            "no_refills": "Keine Nachfüllungen",
+            "one_refill": "Eine Nachfüllung",
+            "second_refill": "Zweite Nachfüllung",
+            "two_refills": "Zwei Nachfüllungen",
+            "voyage_end": "Diese Reise endet um {{time}}.",
+            "voyage_extend": "Nachträgliche Aufladungen verlängern sie um {{time}}.",
+            "voyage_long_advice": "Für eine {{h}} stündige Reise benötigen Sie {{r}} Nachfüllungen zu einem Preis von {{d}} Dilithium (oder {{re}} {{global.item_types.voyage_consumable}}.)"
+        },
+        "history": {
+            "description": "Behalten Sie den Überblick über Ihre Reisen, sehen Sie, wie Ihre Laufzeiten im Vergleich zu Ihren ursprünglichen Schätzungen abschneiden, und identifizieren Sie die Crew, die Sie am häufigsten einsetzen.",
+            "not_yet": "Sie haben noch keinen Reiseverlauf. Beginnen Sie mit der Verfolgung von Reisen über den Crew-Rechner.",
+            "title": "{{menu.tools.voyage_history}}"
+        },
+        "loading_voyage_tool_ellipses": "Reisetool wird geladen ...",
+        "or_n_h_if_dupes_dismissed": "oder {{n}} {{h}}, wenn die gesamte doppelte Crew entlassen wird.",
+        "seats": {
+            "captain_slot": "Erster Offizier",
+            "chief_communications_officer": "Kommunikationsoffizier",
+            "chief_engineering_officer": "Chefingenieur",
+            "chief_medical_officer": "Chefarzt",
+            "chief_science_officer": "Wissenschaftschef",
+            "chief_security_officer": "Sicherheitschef",
+            "communications_officer": "Diplomat",
+            "engineering_officer": "Ingenieur",
+            "first_officer": "Steuermann",
+            "medical_officer": "Schiffsberater",
+            "science_officer": "Stellvertretender Wissenschaftsoffizier",
+            "security_officer": "Taktischer Offizier"
+        },
+        "skills": {
+            "primary": {
+                "name": "Primäre Fähigkeit",
+                "placeholder": "{{quipment_ranks.primary}}"
+            },
+            "secondary": {
+                "name": "Sekundäre Fähigkeit",
+                "placeholder": "{{quipment_ranks.secondary}}"
+            }
         },
         "tracking": {
             "not_tracking": "Sie verfolgen diese Reise nicht.",
@@ -1964,10 +2027,17 @@
             "encounter_voyage": "Begegnungsreise",
             "test_voyage_1": "Dilemma-Reise"
         },
+        "unable_to_track_revivals": "DataCore kann nicht automatisch verfolgen, wann eine Reise wiederbelebt wurde, aber Sie können die Wiederbelebung hier manuell vermerken.",
         "view": {
-            "active_voyage": "Aktive Reise anzeigen",
+            "active_voyage": "Laufende Reise anzeigen",
             "crew_calculator": "Crew-Rechner anzeigen",
             "voyage_history": "Reiseverlauf anzeigen"
+        },
+        "voyages": {
+            "all": "Alle Reisen",
+            "current": "Aktuelle Reisen",
+            "custom_voyages": "Individuelle Reisen",
+            "upcoming": "Bevorstehende Reisen"
         }
     }
 }

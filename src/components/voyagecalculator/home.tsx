@@ -121,6 +121,7 @@ type PlayerHomeProps = {
 const PlayerHome = (props: PlayerHomeProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, ephemeral } = globalContext.player;
+	const { t } = globalContext.localized;
 	const { dbid } = props;
 
 	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(
@@ -395,7 +396,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	function renderVoyagePicker(): JSX.Element {
 		return (
 			<React.Fragment>
-				<Header as='h3'>Current Voyages</Header>
+				<Header as='h3'>{t('voyage.voyages.current')}</Header>
 				{playerConfigs.map(voyageConfig => (
 					<ConfigCard
 						key={voyageConfig.voyage_type}
@@ -407,7 +408,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 
 				{upcomingConfigs.length > 0 && (
 					<React.Fragment>
-						<Header as='h3'>Upcoming Voyages</Header>
+						<Header as='h3'>{t('voyage.voyages.upcoming')}</Header>
 						{upcomingConfigs.map(voyageConfig => (
 							<ConfigCard
 								key={voyageConfig.voyage_type}
@@ -419,15 +420,15 @@ const PlayerHome = (props: PlayerHomeProps) => {
 					</React.Fragment>
 				)}
 
-				<Header as='h3'>Custom Voyage</Header>
-				<p>You can manually create a voyage and view the best crew in the game for any possible configuration.</p>
+				<Header as='h3'>{t('voyage.custom_voyage')}</Header>
+				<p>{t('voyage.custom_voyage_description')}</p>
 				<ConfigEditor
 					presetConfigs={playerConfigs.concat(upcomingConfigs)}
 					updateConfig={loadCustomConfig}
 				/>
 
-				<Header as='h3'>Voyage History</Header>
-				<p>Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.</p>
+				<Header as='h3'>{t('voyage.history.title')}</Header>
+				<p>{t('voyage.history.description')}</p>
 				<HistoryHome
 					postRemote={postRemote}
 					setPostRemote={setPostRemote}
@@ -454,7 +455,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				size='large'
 				color='blue'
 				icon={running ? 'rocket' : 'users'}
-				content={running ? 'View running voyage' : 'View crew calculator'}
+				content={running ? t('voyage.view.active_voyage') : t('voyage.view.crew_calculator')}
 				onClick={() => setActiveView({ source: configSource, config: voyageConfig })}
 			/>
 		);
@@ -484,7 +485,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 			<Button
 				size='large'
 				icon='backward'
-				content='All voyages'
+				content={t('voyage.voyages.all')}
 				onClick={() => setActiveView(undefined)}
 			/>
 		);

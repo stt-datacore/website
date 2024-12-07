@@ -19,7 +19,7 @@ type VoyageModalProps = {
 
 export const VoyageModal = (props: VoyageModalProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { SHIP_TRAIT_NAMES } = globalContext.localized;
+	const { SHIP_TRAIT_NAMES, t } = globalContext.localized;
 	const { dbid, history, setHistory, syncState, setMessageId } = React.useContext(HistoryContext);
 	const { voyage } = props;
 
@@ -44,7 +44,7 @@ export const VoyageModal = (props: VoyageModalProps) => {
 				{props.onRemove && (
 					<div style={{ marginTop: '3em' }}>
 						<Message>
-							<p>DataCore cannot automatically track when a voyage has been revived, but you can manually note the revival here.</p>
+							<p>{t('voyage.unable_to_track_revivals')}</p>
 							<Checkbox	/* This voyage was revived. */
 								label='This voyage was revived.'
 								checked={isRevived}
@@ -60,34 +60,35 @@ export const VoyageModal = (props: VoyageModalProps) => {
 								onClick={removeVoyage}
 								disabled={syncState === SyncState.ReadOnly}
 							/>
-							{` `}Warning: this action cannot be undone.
+							{` `}{t('base.global_warn_permanent')}
 						</Message>
 					</div>
 				)}
 			</Modal.Content>
 			<Modal.Actions>
 				<Button onClick={props.onClose}>
-					Close
+					{t('global.close')}
 				</Button>
 			</Modal.Actions>
 		</Modal>
 	);
 
 	function renderLineup(): JSX.Element {
+		const { t } = globalContext.localized;
 		// Maybe get this from player voyageData, if name is localized
 		const VOYAGE_SLOTS = {
-			captain_slot: { name: 'First Officer', skill: 'command_skill' },
-			first_officer: { name: 'Helm Officer', skill: 'command_skill' },
-			chief_communications_officer: { name: 'Communications Officer', skill: 'diplomacy_skill' },
-			communications_officer: { name: 'Diplomat', skill: 'diplomacy_skill' },
-			chief_security_officer: { name: 'Chief Security Officer', skill: 'security_skill' },
-			security_officer: { name: 'Tactical Officer', skill: 'security_skill' },
-			chief_engineering_officer: { name: 'Chief Engineer', skill: 'engineering_skill' },
-			engineering_officer: { name: 'Engineer', skill: 'engineering_skill' },
-			chief_science_officer: { name: 'Chief Science Officer', skill: 'science_skill' },
-			science_officer: { name: 'Deputy Science Officer', skill: 'science_skill' },
-			chief_medical_officer: { name: 'Chief Medical Officer', skill: 'medicine_skill' },
-			medical_officer: { name: 'Ship\'s Counselor', skill: 'medicine_skill' }
+			captain_slot: { name: t('voyage.seats.captain_slot'), skill: 'command_skill' },
+			first_officer: { name: t('voyage.seats.first_officer'), skill: 'command_skill' },
+			chief_communications_officer: { name: t('voyage.seats.chief_communications_officer'), skill: 'diplomacy_skill' },
+			communications_officer: { name: t('voyage.seats.communications_officer'), skill: 'diplomacy_skill' },
+			chief_security_officer: { name: t('voyage.seats.chief_security_officer'), skill: 'security_skill' },
+			security_officer: { name: t('voyage.seats.security_officer'), skill: 'security_skill' },
+			chief_engineering_officer: { name: t('voyage.seats.chief_engineering_officer'), skill: 'engineering_skill' },
+			engineering_officer: { name: t('voyage.seats.engineering_officer'), skill: 'engineering_skill' },
+			chief_science_officer: { name: t('voyage.seats.chief_science_officer'), skill: 'science_skill' },
+			science_officer: { name: t('voyage.seats.science_officer'), skill: 'science_skill' },
+			chief_medical_officer: { name: t('voyage.seats.chief_medical_officer'), skill: 'medicine_skill' },
+			medical_officer: { name: t('voyage.seats.medical_officer'), skill: 'medicine_skill' }
 		};
 		if (!history.crew) return <></>;
 		// Reconstruct voyageCrewSlots for this tracked voyage
@@ -99,7 +100,7 @@ export const VoyageModal = (props: VoyageModalProps) => {
 				const voyageCrewSlot = {
 					symbol: crewSlot,
 					trait: assigned.trait,
-					name: VOYAGE_SLOTS[crewSlot].name,
+					name: t(`voyage.seats.${crewSlot}`),
 					skill: VOYAGE_SLOTS[crewSlot].skill
 				} as VoyageCrewSlot;
 				voyageCrewSlot.trait = assigned.trait;

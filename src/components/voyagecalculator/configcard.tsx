@@ -26,13 +26,14 @@ type ConfigCardProps = {
 
 export const ConfigCard = (props: ConfigCardProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData, ephemeral } = globalContext.player;
 	const { configSource, voyageConfig, renderToggle } = props;
 
 	let voyageType: string = '';
 	switch (voyageConfig.voyage_type) {
-		case 'dilemma': voyageType = 'Dilemma Voyage'; break;
-		case 'encounter': voyageType = 'Encounter Voyage'; break;
+		case 'dilemma': voyageType = t('voyage.type_names.test_voyage_1'); break;
+		case 'encounter': voyageType = t('voyage.type_names.encounter_voyage'); break;
 	}
 
 	const running: Voyage | undefined = ephemeral?.voyage?.find(voyage =>
@@ -49,7 +50,7 @@ export const ConfigCard = (props: ConfigCardProps) => {
 		header = `${running.ship_name} (${voyageType})`;
 	}
 	else if (configSource === 'custom') {
-		header = `Custom ${voyageType}`;
+		header = t('voyage.custom_voyage_x', { x: voyageType });
 	}
 	else {
 		header = voyageType;
@@ -201,7 +202,7 @@ type RunningStatusProps = {
 
 const RunningStatus = (props: RunningStatusProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { tfmt } = globalContext.localized;
+	const { t, tfmt } = globalContext.localized;
 	const { voyage } = props;
 
 	const msgTypes = {
@@ -211,7 +212,7 @@ const RunningStatus = (props: RunningStatusProps) => {
 		completed: 'voyage.calc.msg_type.completed'	// ran for
 	};
 
-	const voyageDuration: string = formatTime(getRuntime(voyage));
+	const voyageDuration: string = formatTime(getRuntime(voyage), t);
 
 	return (
 		<span>

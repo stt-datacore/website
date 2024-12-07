@@ -15,6 +15,8 @@ import { CrewMember } from '../../model/crew';
 import { EquipmentCommon } from '../../model/equipment';
 import { checkReward, mergeItems } from '../../utils/itemutils';
 import { GlobalContext } from '../../context/globalcontext';
+import { formatTime } from '../../utils/voyageutils';
+import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 
 type VoyageStatsProps = {
 	configSource?: 'player' | 'custom';
@@ -161,18 +163,19 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	}
 
 	_formatTime(time: number) {
-		let hours = Math.floor(time);
-		let minutes = Math.floor((time-hours)*60);
+		return formatTime(time, this.context.localized.t);
+		// let hours = Math.floor(time);
+		// let minutes = Math.floor((time-hours)*60);
 
-		return hours+"h " +minutes+"m";
+		// return hours+"h " +minutes+"m";
 	}
 
 	_renderChart(needsRevive?: boolean) {
 		const estimate = this.props.estimate ?? this.state.estimate;
-
-		const names = needsRevive ? ['First refill', 'Second refill']
-															: [ 'No refills', 'One refill', 'Two refills'];
-
+		const { t } = this.context.localized;
+		const names = needsRevive ? [t('voyage.estimate.first_refill'), t('voyage.estimate.second_refill')]
+															: [ t('voyage.estimate.no_refills'), t('voyage.estimate.one_refill'), t('voyage.estimate.two_refills')];
+		const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 		const rawData = needsRevive ? estimate?.refills : estimate?.refills.slice(0, 2);
 		// Convert bins to percentages
 		const data = estimate?.refills.map((refill, index) => {
@@ -221,15 +224,20 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					xScale= {{type: 'linear', min: data[0].data[0].x}}
 					yScale={{type: 'linear', max: 100 }}
 					theme={themes.dark}
-					axisBottom={{legend : 'Voyage length (hours)', legendOffset: 30, legendPosition: 'middle'}}
-					axisLeft={{legend : 'Chance (%)', legendOffset: -36, legendPosition: 'middle'}}
-					margin={{ top: 50, right: 130, bottom: 50, left: 100 }}
+					axisBottom={{legend : t('voyage.estimate.legend.voyage_length'), legendOffset: 30, legendPosition: 'middle'}}
+					axisLeft={{legend : t('voyage.estimate.legend.chance_%'), legendOffset: -36, legendPosition: 'middle'}}
+					margin={{ top: 50, right: 170, bottom: 50, left: 60 }}
 					enablePoints= {true}
 					pointSize={0}
 					crosshairType={undefined}
 					tooltip={input => {
 						let data = input.point.data;
-						return <>{input.point.serieId}: {(data.y as number).toFixed(2)}% chance of reaching {this._formatTime(data.x as number)}</>;
+						return <>{input.point.serieId}:
+						{t('voyage.estimate.n_chance_of_reaching_t', {
+							n: (data.y as number).toFixed(2),
+							t: this._formatTime(data.x as number)
+						})}
+						</>;
 					}}
 					legends={[
 						{
@@ -265,15 +273,17 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	_renderEstimateTitle(needsRevive: boolean = false) {
 		const estimate  = this.props.estimate ?? this.state.estimate;
-
+		const { t } = this.context.localized;
 		return needsRevive || !estimate
-			?	'Estimate'
-			: 'Estimate: ' + this._formatTime(estimate['refills'][0].result);
+			?	t('voyage.estimate.estimate')
+			: t('voyage.estimate.estimate_time', {
+				time: this._formatTime(estimate['refills'][0].result)
+			});
 	}
 
 	_renderPrettyCost(cost: number, idx: number) {
 		if (this.context.player.playerData && cost) {
-
+			const { t } = this.context.localized;
 			let revivals = this.context.player.playerData.player.character.items.find(f => f.symbol === 'voyage_revival');
 
 			if (revivals && revivals.quantity && revivals.quantity >= idx) {
@@ -289,7 +299,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 						<div style={{width: "32px"}}>
 						<img style={{height:"24px", margin:"0.5em"}} src={`${process.env.GATSBY_ASSETS_URL}${revivals.imageUrl}`} />
 						</div>
-						<span>{idx} / {revivals.quantity} Voyage Revivals</span>
+						<span>{idx} / {revivals.quantity} {t('global.item_types.voyage_consumable')}</span>
 					</div>
 				}
 			}
@@ -303,7 +313,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					<div style={{width: "32px"}}>
 					<img style={{height:"24px", margin:"0.5em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} />
 					</div>
-					<span>{cost} Dilithium</span>
+					<span>{cost} {t('global.item_types.dilithium')}</span>
 				</div>
 			}
 		}
@@ -314,9 +324,9 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	_renderEstimate(needsRevive: boolean = false) {
 		const estimate  = this.props.estimate ?? this.state.estimate;
-
+		const { t, tfmt } = this.context.localized;
 		if (!estimate)
-			return (<div>Calculating estimate. Please wait...</div>);
+			return (<div>{t('spinners.calculating_voyage_estimate')}</div>);
 
 		const renderEst = (label, refills, idx) => {
 			if (refills >= estimate['refills'].length) return (<></>);
@@ -326,7 +336,12 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					<td>{label}: {this._formatTime(est.result)}</td>
 					{!isMobile && <td>90%: {this._formatTime(est.safeResult)}</td>}
 					<td>99%: {this._formatTime(est.saferResult)}</td>
-					<td>Chance of {est.lastDil} hour dilemma: {Math.floor(est.dilChance)}%</td>
+					<td>
+						{t('voyage.x_dilemma_chance_h_y', {
+							h: `${est.lastDil}`,
+							y: `${Math.floor(est.dilChance)}`
+						})}
+					</td>
 					<td>{this._renderPrettyCost(est.refillCostResult, idx)}</td>
 				</tr>
 			);
@@ -338,17 +353,27 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 			return (
 				<div>
-					The voyage will end at {this._formatTime(estimate['refills'][0].result)}.
-					Subsequent refills will extend it by {this._formatTime(extendTime)}.
+					{t('voyage.estimate.voyage_end', {
+						time: this._formatTime(estimate['refills'][0].result)
+					})}
+					{t('voyage.estimate.voyage_extend', {
+						time: this._formatTime(extendTime)
+					})}
 					{/*
 					For a {this.config?.selectedTime ?? 20} hour voyage you need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.) */}
 										<Table style={{marginTop:"0.5em"}}><tbody>
-						{!needsRevive && renderEst("Estimate", refill++, 0)}
-						{renderEst("1 Refill", refill++, 1)}
-						{renderEst("2 Refills", refill++, 2)}
+						{!needsRevive && renderEst(t('voyage.estimate.estimate'), refill++, 0)}
+						{renderEst(t('voyage.estimate.1_refill'), refill++, 1)}
+						{renderEst(t('voyage.estimate.n_refills', { n: '2' }), refill++, 2)}
 					</tbody></Table>
-					<p>For a {this.config?.selectedTime ?? 20} hour voyage you will need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.)</p>
-
+					<p>
+						{t('voyage.estimate.voyage_long_advice', {
+							h: `${this.config?.selectedTime ?? 20}`,
+							r: `${estimate['refillshr20']}`,
+							d: `${estimate['dilhr20']}`,
+							re: `${estimate['refillshr20']}`
+						})}
+					</p>
 				</div>
 			);
 		} else {
@@ -357,11 +382,18 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			return (
 				<div>
 					<Table><tbody>
-						{!needsRevive && renderEst("Estimate", refill++, 0)}
-						{renderEst("1 Refill", refill++, 1)}
-						{renderEst("2 Refills", refill++, 2)}
+						{!needsRevive && renderEst(t('voyage.estimate.estimate'), refill++, 0)}
+						{renderEst(t('voyage.estimate.1_refill'), refill++, 1)}
+						{renderEst(t('voyage.estimate.n_refills', { n: '2' }), refill++, 2)}
 					</tbody></Table>
-					<p>For a {this.config?.selectedTime ?? 20} hour voyage you will need {estimate['refillshr20']} refills at a cost of {estimate['dilhr20']} dilithium (or {estimate['refillshr20']} voyage revivals.)</p>
+					<p>
+						{t('voyage.estimate.voyage_long_advice', {
+							h: `${this.config?.selectedTime ?? 20}`,
+							r: `${estimate['refillshr20']}`,
+							d: `${estimate['dilhr20']}`,
+							re: `${estimate['refillshr20']}`
+						})}
+					</p>
 					{estimate.final && this._renderChart()}
 				</div>
 			);
@@ -370,6 +402,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	_renderRewardsTitle(rewards): JSX.Element {
 		const { roster } = this.props;
+		const { tfmt } = this.context.localized;
 		const crewGained = rewards.filter(r => r.type === 1);
 		const bestRarity = crewGained.length == 0 ? 0 : crewGained.map(c => c.rarity).reduce((acc, r) => Math.max(acc, r));
 		const bestCrewCount = crewGained
@@ -421,14 +454,14 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				/>
 
 				{dupeHonor && (
-					<span>{" (or "}
-				{` ${dupeHonor.toLocaleString()} `}
-				<img
-					src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
-					style={{width : '16px', verticalAlign: 'text-bottom'}}
-				/>
-
-					{" if all duplicate crew are dismissed)"}</span>
+					<span> ({tfmt('voyage.or_n_h_if_dupes_dismissed', {
+						n: dupeHonor.toLocaleString(),
+						h: <img
+								src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
+								style={{width : '16px', verticalAlign: 'text-bottom'}}
+							/>
+					})})
+					</span>
 				)}
 			</span>
 		)
