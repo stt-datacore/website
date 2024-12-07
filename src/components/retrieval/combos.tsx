@@ -283,6 +283,9 @@ export const CombosModal = (props: CombosModalProps) => {
 			);
 
 			const [tailoredCount, tailoredCombos] = getCombos(crew, tailoredPolestars);
+			tailoredCombos.sort((a, b) => {
+				return a.map(aa => aa.symbol).join().localeCompare(b.map(aa => aa.symbol).join())
+			})
 			if (tailoredCombos && tailoredCombos.length > 0) {
 				let fuseGroups: IFuseGroups;
 				if (algo === 'deep')
@@ -383,15 +386,15 @@ export const CombosModal = (props: CombosModalProps) => {
 
 			for (let n = 0; n < duplications.length; n++) {
 				comboout[f].push([duplications[n]]);
-				let ps = combos[duplications[n]].map(z => { return { id: z?.id, quantity: quantify(z), used: 1 } as ComboTrack });
+				// let ps = combos[duplications[n]].map(z => { return { id: z?.id, quantity: quantify(z), used: 1 } as ComboTrack });
 
 				let cc = 1;
 				seen[n] = true;
 
 				for (let y = 0; y < duplications.length; y++) {
 					if (seen[y]) continue;
-					let xs = combos[duplications[y]].map(z => { return { id: z?.id, quantity: quantify(z), used: 1 } as ComboTrack });
-					if (!dingCT(ps, xs)) continue;
+					// let xs = combos[duplications[y]].map(z => { return { id: z?.id, quantity: quantify(z), used: 1 } as ComboTrack });
+					//if (!dingCT(ps, xs)) break;
 
 					comboout[f][option].push(duplications[y]);
 					seen[y] = true;
@@ -439,6 +442,24 @@ export const CombosModal = (props: CombosModalProps) => {
 			})
 			result[key] = numres;
 		}
+		Object.keys(result).forEach((key) => {
+			if (key === 'x1') return;
+			result[key] = result[key].filter((group => {
+				let counts = {} as any;
+				let no = false;
+				group.forEach((cidx) => {
+					let combo = combos[cidx];
+					for (let i of combo) {
+						counts[i.symbol] ??= 0;
+						counts[i.symbol]++;
+						if (counts[i.symbol] > i.owned) {
+							no = true;
+						}
+					}
+				});
+				return !no;
+			}));
+		});
 		return result;
 	}
 
