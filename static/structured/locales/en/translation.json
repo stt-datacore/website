@@ -1433,6 +1433,7 @@
     },
     "retrieval": {
         "allow_unowned": "Allow unowned crew",
+        "assume_in_game_favorites": "Dynamically add in-game favorites to wishlist",
         "combo": "Combo",
         "combo_length": "Combo Length",
         "combo_needs": {
@@ -1560,6 +1561,11 @@
         "use_all_combos_below_to_retrieve": "Use ALL combos below to retrieve",
         "use_any_combo_below_to_retrieve": "Use any combo below to retrieve",
         "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "wishlist": {
+            "add": "Add to wishlist.",
+            "auto": "Crew is auto wishlisted.",
+            "remove": "Remove from wishlist."
+        },
         "you_own_n_of_the_polestar": "You own {{n}} of the {{polestar}}."
     },
     "roster_summary": {

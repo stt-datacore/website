@@ -24,7 +24,7 @@ export const CombosModal = (props: CombosModalProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
-	const { allKeystones, polestarTailors, wishlist, setWishlist, market } = React.useContext(RetrievalContext);
+	const { allKeystones, polestarTailors, wishlist, setWishlist, autoWishes, market } = React.useContext(RetrievalContext);
 	const { crew } = props;
 	const dbid = playerData ? `${playerData.player.dbid}/` : '';
 	const addedPolestars = polestarTailors.added;
@@ -182,13 +182,27 @@ export const CombosModal = (props: CombosModalProps) => {
 	function renderWishlist(): JSX.Element {
 		if (!playerData) return <></>;
 		const onWishlist = wishlist.includes(crew.symbol);
+		const autoWish = autoWishes.includes(crew.symbol) && !wishlist.includes(crew.symbol);
+
+		let content = '';
+
+		if (autoWish && !onWishlist) {
+			content = `${t('retrieval.wishlist.add')} (${t('retrieval.wishlist.auto')})`;
+		}
+		else if (onWishlist) {
+			content = `${t('retrieval.wishlist.remove')}`;
+		}
+		else {
+			content = `${t('retrieval.wishlist.add')}`;
+		}
+
 		return (
 			<Popup
-				content={onWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+				content={content}
 				trigger={(
 					<Icon
-						name={onWishlist ? 'heart' : 'heart outline'}
-						color={onWishlist ? 'pink' : undefined}
+						name={onWishlist || autoWish ? 'heart' : 'heart outline'}
+						color={onWishlist && !autoWish ? 'pink' : undefined}
 						onClick={toggleWishlist}
 						style={{ cursor: 'pointer' }}
 					/>
