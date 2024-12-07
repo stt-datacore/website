@@ -1482,8 +1482,11 @@
             "disposition": {
                 "needed": "{{items.columns.needed}}",
                 "needed_unique": "Erforderlich (Nur eindeutig abrufbar)",
+                "needed_wishlist": "Benötigt (Wunschliste)",
                 "owned": "{{crew_state.owned}}",
-                "unowned": "{{crew_state.unowned}}"
+                "owned_wishlist": "Im Besitz (Wunschliste)",
+                "unowned": "{{crew_state.unowned}}",
+                "wishlist": "Wunschliste"
             },
             "listed": "Gelistet",
             "min_polestars": "Min. Polarstern-Übereinstimmungen",

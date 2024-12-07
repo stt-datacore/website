@@ -23,12 +23,13 @@ interface PolestarCrew extends CrewMember {
 export const CelestialMarket = () => {
     const globalContext = React.useContext(GlobalContext);
     const retrievalContext = React.useContext(RetrievalContext);
-    const { market, allKeystones, polestarTailors } = retrievalContext;
+    const { market, allKeystones, polestarTailors, wishlist } = retrievalContext;
     const { t, ITEM_ARCHETYPES } = globalContext.localized;
     const { playerData } = globalContext.player;
     const [filteredListings, setFilteredListings] = React.useState<CelestialMarketListing[]>([]);
     const [allListings, setAllListings] = React.useState<CelestialMarketListing[]>([]);
     const [neededPolestars, setNeededPolestars] = React.useState<string[]>([]);
+    const [wishlistPolestars, setWishlistPolestars] = React.useState<string[]>([]);
     const [typeFilter, setTypeFilter] = useStateWithStorage('celestial_market/type_filter', undefined as string | undefined, { rememberForever: true });
     const [ownedFilter, setOwnedFilter] = useStateWithStorage('celestial_market/owned_filter', undefined as string | undefined, { rememberForever: true });
     const [listFilter, setListFilter] = useStateWithStorage('celestial_market/list_filter', undefined as string | undefined, { rememberForever: true });
@@ -36,14 +37,33 @@ export const CelestialMarket = () => {
 
     React.useEffect(() => {
         if (!playerData) return;
-        let curr_elig = playerData.player.character.crew.filter(f => f.in_portal && (f.highest_owned_rarity || f.rarity) < f.max_rarity && (ownedFilter !== 'needed_unique' || f.unique_polestar_combos?.length));
-        let rarities = [...new Set(curr_elig.map(m => `rarity_${m.max_rarity}_keystone`))];
-        let skills = [... new Set(curr_elig.map(m => m.skill_order).flat().map(s => `${s}_keystone`))];
-        let traits = [... new Set(curr_elig.map(m => ownedFilter === 'needed_unique' ? m.unique_polestar_combos?.flat() ?? [] : m.traits).flat().map(s => `${s}_keystone`))];
-        let compiled = traits.concat(rarities).concat(skills);
-        let needed = allKeystones.filter(f => compiled.includes(f.symbol) && !f.owned).map(m => m.symbol);
-        setNeededPolestars(needed);
-    }, [playerData, allKeystones, ownedFilter]);
+
+        for (let i = 0; i < 2; i++) {
+            let curr_elig = playerData.player.character.crew.filter(f => {
+                if (i === 0) {
+                    if (!f.in_portal) return false;
+                    if ((f.highest_owned_rarity || f.rarity) >= f.max_rarity) return false;
+                    if (ownedFilter === 'needed_unique' && !f.unique_polestar_combos?.length) return false;
+                    if (ownedFilter === 'needed_wishlist' && !wishlist.includes(f.symbol)) return false;
+                }
+                else if (i === 1) {
+                    if (!wishlist.includes(f.symbol)) return false;
+                }
+                return true;
+            });
+            let rarities = [...new Set(curr_elig.map(m => `rarity_${m.max_rarity}_keystone`))];
+            let skills = [... new Set(curr_elig.map(m => m.skill_order).flat().map(s => `${s}_keystone`))];
+            let traits = [... new Set(curr_elig.map(m => ownedFilter === 'needed_unique' ? m.unique_polestar_combos?.flat() ?? [] : m.traits).flat().map(s => `${s}_keystone`))];
+            let compiled = traits.concat(rarities).concat(skills);
+            let needed = allKeystones.filter(f => compiled.includes(f.symbol) && (!f.owned || i === 1)).map(m => m.symbol);
+            if (i === 0) {
+                setNeededPolestars(needed);
+            }
+            else {
+                setWishlistPolestars(needed);
+            }
+        }
+    }, [playerData, allKeystones, ownedFilter, wishlist]);
 
     React.useEffect(() => {
         if (typeFilter === 'constellations' && ['needed', 'needed_unique'].includes(ownedFilter || '')) {
@@ -68,6 +88,7 @@ export const CelestialMarket = () => {
                     if (ownedFilter) {
                         if (ownedFilter === 'owned' && !keystone.owned) return;
                         if (ownedFilter === 'unowned' && keystone.owned) return;
+                        if (ownedFilter.includes("wishlist") && !wishlistPolestars.includes(keystone.symbol)) return;
                         if (ownedFilter.startsWith("needed") && !neededPolestars.includes(keystone.symbol)) return;
                     }
                     if (listFilter) {
@@ -156,6 +177,17 @@ export const CelestialMarket = () => {
             options.push(
                 { key: 'needed_unique', value: 'needed_unique', text: t('retrieval.market.disposition.needed_unique') }
             )
+            if (wishlist.length) {
+                options.push(
+                    { key: 'wishlist', value: 'wishlist', text: t('retrieval.market.disposition.wishlist') },
+                )
+                options.push(
+                    { key: 'owned_wishlist', value: 'owned_wishlist', text: t('retrieval.market.disposition.owned_wishlist') },
+                )
+                options.push(
+                    { key: 'needed_wishlist', value: 'needed_wishlist', text: t('retrieval.market.disposition.needed_wishlist') }
+                )
+            }
         }
 
         return <Dropdown
@@ -240,6 +272,7 @@ export const CelestialMarket = () => {
                     </ItemTarget>
                     <span style={{ gridArea: 'text' }}>
                         {/* {!!isadded && <Icon name='add circle' color='blue' />} */}
+                        {wishlistPolestars.includes(keystone.symbol) && <Icon name='heart' color='pink' />}
                         {!!isremoved && <Icon name='remove circle' color='orange' />}
                         {data.name}
                     </span>

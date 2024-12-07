@@ -1494,8 +1494,11 @@
             "disposition": {
                 "needed": "{{items.columns.needed}}",
                 "needed_unique": "Nécessaire (récupérable de manière unique uniquement)",
+                "needed_wishlist": "Nécessaire (liste de souhaits)",
                 "owned": "{{crew_state.owned}}",
-                "unowned": "{{crew_state.unowned}}"
+                "owned_wishlist": "Possédé (Liste de souhaits)",
+                "unowned": "{{crew_state.unowned}}",
+                "wishlist": "Liste de souhaits"
             },
             "listed": "Répertorié",
             "min_polestars": "Min. allumettes d'étoile polaire",

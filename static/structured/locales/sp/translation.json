@@ -1494,8 +1494,11 @@
             "disposition": {
                 "needed": "{{items.columns.needed}}",
                 "needed_unique": "Necesario (solo recuperable de forma única)",
+                "needed_wishlist": "Necesario (Lista de deseos)",
                 "owned": "{{crew_state.owned}}",
-                "unowned": "{{crew_state.unowned}}"
+                "owned_wishlist": "Propiedad (Lista de deseos)",
+                "unowned": "{{crew_state.unowned}}",
+                "wishlist": "Lista de deseos"
             },
             "listed": "Listado",
             "min_polestars": "Mín. coincidencias de estrellas polares",

@@ -1480,8 +1480,11 @@
             "disposition": {
                 "needed": "{{items.columns.needed}}",
                 "needed_unique": "Needed (Uniquely-retrievable only)",
+                "needed_wishlist": "Needed (Wishlist)",
                 "owned": "{{crew_state.owned}}",
-                "unowned": "{{crew_state.unowned}}"
+                "owned_wishlist": "Owned (Wishlist)",
+                "unowned": "{{crew_state.unowned}}",
+                "wishlist": "Wishlist"
             },
             "listed": "Listed",
             "min_polestars": "Min polestar matches",
