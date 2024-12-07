@@ -616,7 +616,8 @@ export function canShuttle(crew: CrewMember) {
 }
 
 export function canVoyage(crew: CrewMember) {
-    return Object.entries(crew.ranks).some(([key, value]) => (key.startsWith("V_") && value <= 20) || (key === 'voyRank' && value <= 20));
+
+    return Object.entries(crew.ranks).some(([key, value]) => (key.startsWith("V_") && value <= 20) || (key === 'voyRank' && value <= 20) || (key === 'voyTriplet' && value.rank <= 20));
 }
 
 // export function canVoyage(item: { proficiencies: number[], core: number[], traits: string[], skills: string[] }) {

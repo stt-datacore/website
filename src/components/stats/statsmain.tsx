@@ -1,6 +1,6 @@
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
-import { Grid, Label, Step } from "semantic-ui-react";
+import { Grid, Label, Message, Step } from "semantic-ui-react";
 import CONFIG from "../CONFIG";
 import { StatLabel } from "../statlabel";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
@@ -132,6 +132,15 @@ export const StatTrendsComponent = () => {
 
     return (
             <div>
+                <Message color='orange'>
+                    <Message.Header>
+                        {t('global.work_in_progress.title')}
+                    </Message.Header>
+                    <Message.Content>
+                        {t('global.work_in_progress.heading')}
+                    </Message.Content>
+
+                </Message>
                 <CrewHoverStat targetGroup="stat_trends_crew" />
                 <StatsPrefsPanel />
                 {renderStatsInfo()}

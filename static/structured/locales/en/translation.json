@@ -1477,6 +1477,12 @@
                 "sold_last_day": "Sold in the Last Day"
             },
             "description": "Browse the Celestial Market",
+            "disposition": {
+                "needed": "{{items.columns.needed}}",
+                "needed_unique": "Needed (Uniquely-retrievable only)",
+                "owned": "{{crew_state.owned}}",
+                "unowned": "{{crew_state.unowned}}"
+            },
             "listed": "Listed",
             "min_polestars": "Min polestar matches",
             "modes": {

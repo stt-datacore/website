@@ -1479,6 +1479,12 @@
                 "sold_last_day": "Am letzten Tag verkauft"
             },
             "description": "Stöbern Sie durch den Himmelsmarkt",
+            "disposition": {
+                "needed": "{{items.columns.needed}}",
+                "needed_unique": "Erforderlich (Nur eindeutig abrufbar)",
+                "owned": "{{crew_state.owned}}",
+                "unowned": "{{crew_state.unowned}}"
+            },
             "listed": "Gelistet",
             "min_polestars": "Min. Polarstern-Übereinstimmungen",
             "modes": {

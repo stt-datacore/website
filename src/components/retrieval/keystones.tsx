@@ -21,7 +21,7 @@ export const RetrievalKeystones = () => {
 	const { playerData } = globalContext.player;
 
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[] | undefined>(undefined);
-	const [market, setMarket] = React.useState<MarketAggregation | undefined>(undefined);
+	const [market, setMarket] = React.useState<MarketAggregation>({});
 
 	React.useEffect(() => {
 		const allKeystones = JSON.parse(JSON.stringify(globalContext.core.keystones)) as IKeystone[];
@@ -65,12 +65,7 @@ export const RetrievalKeystones = () => {
 	if (!allKeystones)
 		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> {t('spinners.default')}</div>);
 
-	if (playerData) {
-		return <ModePicker market={market} reloadMarket={reloadMarket} allKeystones={allKeystones} dbid={`${playerData.player.dbid}`} />;
-	}
-	else {
-		return <KeystonesNonPlayer market={market} reloadMarket={reloadMarket} allKeystones={allKeystones} />;
-	}
+	return <ModePicker market={market} reloadMarket={reloadMarket} allKeystones={allKeystones} dbid={`${playerData?.player.dbid}`} />;
 
 	function reloadMarket() {
 		fetch('https://datacore.app/api/celestial-market')
@@ -101,7 +96,7 @@ type ModePickerMode = 'keystones' | 'mutual' | 'market';
 type ModePickerProps = {
 	allKeystones: IKeystone[];
 	dbid: string;
-	market?: MarketAggregation;
+	market: MarketAggregation;
 	reloadMarket: () => void;
 }
 
@@ -109,9 +104,16 @@ const ModePicker = (props: ModePickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
 	const { t } = globalContext.localized;
-	const { allKeystones, dbid, market, reloadMarket } = props;
-	const [mode, setMode] = useStateWithStorage<ModePickerMode>(`${dbid}/keystone_modePicker`, 'keystones');
+	const { allKeystones, market, reloadMarket } = props;
+	const dbid = props.dbid ? props.dbid + '/' : '';
+	const [mode, setMode] = useStateWithStorage<ModePickerMode>(`${dbid}keystone_modePicker`, 'keystones');
 	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
+	React.useEffect(() => {
+		if (!playerData && mode === 'mutual') {
+			setMode('keystones');
+		}
+	}, [playerData, mode]);
 
 	return <>
 			<Step.Group fluid>
@@ -121,12 +123,12 @@ const ModePicker = (props: ModePickerProps) => {
 						<Step.Description>{t('retrieval.modes.retrieval_desc')}</Step.Description>
 					</Step.Content>
 				</Step>
-				<Step style={{width: isMobile ? '100%' : '33%'}}  key={`keystone_mutual`} active={mode === 'mutual'} onClick={() => setMode('mutual')}>
+				{!!playerData && <Step style={{width: isMobile ? '100%' : '33%'}}  key={`keystone_mutual`} active={mode === 'mutual'} onClick={() => setMode('mutual')}>
 					<Step.Content>
 						<Step.Title>{t('retrieval.modes.mutual_polestar_calculator')}</Step.Title>
 						<Step.Description>{t('retrieval.modes.mutual_polestar_calculator_desc')}</Step.Description>
 					</Step.Content>
-				</Step>
+				</Step>}
 				<Step style={{width: isMobile ? '100%' : '33%'}}  key={`celestial_market`} active={mode === 'market'} onClick={() => setMode('market')}>
 					<Step.Content>
 						<Step.Title>{t('retrieval.market.title')}
@@ -139,7 +141,9 @@ const ModePicker = (props: ModePickerProps) => {
 				</Step>
             </Step.Group>
 
-			<KeystonesPlayer market={market} reloadMarket={reloadMarket} mode={mode} dbid={dbid} allKeystones={allKeystones} />
+			{!!playerData && <KeystonesPlayer market={market} reloadMarket={reloadMarket} mode={mode} dbid={dbid} allKeystones={allKeystones} />}
+			{!playerData && <KeystonesNonPlayer market={market} reloadMarket={reloadMarket} mode={mode} allKeystones={allKeystones} />}
+
 	</>
 }
 
@@ -147,7 +151,7 @@ type KeystonesPlayerProps = {
 	allKeystones: IKeystone[];
 	dbid: string;
 	mode: ModePickerMode;
-	market?: MarketAggregation;
+	market: MarketAggregation;
 	reloadMarket: () => void;
 };
 
@@ -230,12 +234,12 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 
 	return (
 		<RetrievalContext.Provider value={retrievalContext}>
-			{mode !== 'market' && <Form>
+			<Form>
 				<Form.Group inline>
 					<PolestarFilterModal />
 					<PolestarProspectsModal />
 				</Form.Group>
-			</Form>}
+			</Form>
 			{mode === 'keystones' && <RetrievalCrew />}
 			{mode === 'mutual' && <MutualView dbid={dbid} />}
 			{mode === 'market' && <CelestialMarket />}
@@ -258,13 +262,14 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 
 type KeystonesNonPlayerProps = {
 	allKeystones: IKeystone[];
-	market?: MarketAggregation;
+	market: MarketAggregation;
+	mode: ModePickerMode;
 	reloadMarket: () => void;
 };
 
 const KeystonesNonPlayer = (props: KeystonesNonPlayerProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { market, reloadMarket } = props;
+	const { market, reloadMarket, mode } = props;
 	const { playerData } = globalContext.player;
 
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[]>([]);
@@ -307,7 +312,8 @@ const KeystonesNonPlayer = (props: KeystonesNonPlayerProps) => {
 
 	return (
 		<RetrievalContext.Provider value={retrievalContext}>
-			<RetrievalCrew />
+			{mode === 'keystones' && <RetrievalCrew />}
+			{mode === 'market' && <CelestialMarket />}
 		</RetrievalContext.Provider>
 	);
 

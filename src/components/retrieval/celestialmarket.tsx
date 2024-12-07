@@ -23,12 +23,12 @@ interface PolestarCrew extends CrewMember {
 export const CelestialMarket = () => {
     const globalContext = React.useContext(GlobalContext);
     const retrievalContext = React.useContext(RetrievalContext);
-    const { market, allKeystones } = retrievalContext;
+    const { market, allKeystones, polestarTailors } = retrievalContext;
     const { t, ITEM_ARCHETYPES } = globalContext.localized;
     const { playerData } = globalContext.player;
     const [filteredListings, setFilteredListings] = React.useState<CelestialMarketListing[]>([]);
     const [allListings, setAllListings] = React.useState<CelestialMarketListing[]>([]);
-    const [crewNeeds, setCrewNeeds] = React.useState<string[]>([]);
+    const [neededPolestars, setNeededPolestars] = React.useState<string[]>([]);
     const [typeFilter, setTypeFilter] = useStateWithStorage('celestial_market/type_filter', undefined as string | undefined, { rememberForever: true });
     const [ownedFilter, setOwnedFilter] = useStateWithStorage('celestial_market/owned_filter', undefined as string | undefined, { rememberForever: true });
     const [listFilter, setListFilter] = useStateWithStorage('celestial_market/list_filter', undefined as string | undefined, { rememberForever: true });
@@ -36,17 +36,17 @@ export const CelestialMarket = () => {
 
     React.useEffect(() => {
         if (!playerData) return;
-        let curr_elig = playerData.player.character.crew.filter(f => f.in_portal && (f.highest_owned_rarity || f.rarity) < f.max_rarity);
+        let curr_elig = playerData.player.character.crew.filter(f => f.in_portal && (f.highest_owned_rarity || f.rarity) < f.max_rarity && (ownedFilter !== 'needed_unique' || f.unique_polestar_combos?.length));
         let rarities = [...new Set(curr_elig.map(m => `rarity_${m.max_rarity}_keystone`))];
         let skills = [... new Set(curr_elig.map(m => m.skill_order).flat().map(s => `${s}_keystone`))];
-        let traits = [... new Set(curr_elig.map(m => m.traits).flat().map(s => `${s}_keystone`))];
-        let compiled = rarities.concat(skills).concat(traits);
+        let traits = [... new Set(curr_elig.map(m => ownedFilter === 'needed_unique' ? m.unique_polestar_combos?.flat() ?? [] : m.traits).flat().map(s => `${s}_keystone`))];
+        let compiled = traits.concat(rarities).concat(skills);
         let needed = allKeystones.filter(f => compiled.includes(f.symbol) && !f.owned).map(m => m.symbol);
-        setCrewNeeds(needed);
-    }, [playerData, allKeystones]);
+        setNeededPolestars(needed);
+    }, [playerData, allKeystones, ownedFilter]);
 
     React.useEffect(() => {
-        if (typeFilter === 'constellations' && ownedFilter === 'needed') {
+        if (typeFilter === 'constellations' && ['needed', 'needed_unique'].includes(ownedFilter || '')) {
             setOwnedFilter(undefined);
             return;
         }
@@ -68,7 +68,7 @@ export const CelestialMarket = () => {
                     if (ownedFilter) {
                         if (ownedFilter === 'owned' && !keystone.owned) return;
                         if (ownedFilter === 'unowned' && keystone.owned) return;
-                        if (ownedFilter === 'needed' && !crewNeeds.includes(keystone.symbol)) return;
+                        if (ownedFilter.startsWith("needed") && !neededPolestars.includes(keystone.symbol)) return;
                     }
                     if (listFilter) {
                         if (listFilter === 'listed' && !listing.sell_count) return;
@@ -84,28 +84,41 @@ export const CelestialMarket = () => {
             setFilteredListings(newListings);
             setAllListings(allListings);
         }
-    }, [market, typeFilter, ownedFilter, listFilter, movementFilter]);
+    }, [market, typeFilter, ownedFilter, listFilter, movementFilter, neededPolestars]);
 
-    const marketTable: ITableConfigRow[] = [
+    let _marketTable: ITableConfigRow[] = [];
 
+    _marketTable.push(
         { width: 2, column: 'name', title: t('global.name') },
-        {
-            width: 1,
-            column: 'owned',
-            title: t('crew_state.owned'),
-            customCompare: (a, b) => {
-                let ka = a.data as IKeystone;
-                let kb = b.data as IKeystone;
-                return ka.owned - kb.owned;
+    )
+
+    if (playerData) {
+        _marketTable.push(
+            {
+                width: 1,
+                column: 'owned',
+                title: t('crew_state.owned'),
+                customCompare: (a, b) => {
+                    let keystone_a = a.data as IKeystone;
+                    let keystone_b = b.data as IKeystone;
+                    let added_a = polestarTailors?.added?.filter(f => f == keystone_a.symbol)?.length;
+                    let added_b = polestarTailors?.added?.filter(f => f == keystone_b.symbol)?.length;
+                    return keystone_a.owned - keystone_b.owned || added_a - added_b;
+                }
             }
-        },
+        )
+    }
+
+    _marketTable = _marketTable.concat([
         { width: 1, column: 'sell_count', title: t('retrieval.market.columns.sell_count') },
         { width: 1, column: 'low', title: t('retrieval.market.columns.low') },
         { width: 1, column: 'buy_count', title: t('retrieval.market.columns.buy_count') },
         { width: 1, column: 'high', title: t('retrieval.market.columns.high') },
         { width: 1, column: 'sold_last_day', title: t('retrieval.market.columns.sold_last_day') },
         { width: 1, column: 'last_price', title: t('retrieval.market.columns.last_price') },
-    ];
+    ]);
+
+    const marketTable = _marketTable;
 
     if (!market) return <></>
 
@@ -118,7 +131,7 @@ export const CelestialMarket = () => {
         </Message>
         <div className='ui segment'
             style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-start', gap: '1em' }}>
-            {renderTypeFilter()} {renderOwnedFilter()} {renderListedFilter()} {renderMovementFilter()}
+            {!!playerData && renderOwnedFilter()} {renderTypeFilter()} {renderListedFilter()} {renderMovementFilter()}
         </div>
         <SearchableTable
             data={filteredListings}
@@ -130,15 +143,18 @@ export const CelestialMarket = () => {
     </div>)
 
 
-    function renderTypeFilter() {
+    function renderOwnedFilter() {
         const options = [
-            { key: 'owned', value: 'owned', text: t('crew_state.owned') },
-            { key: 'unowned', value: 'unowned', text: t('crew_state.unowned') },
+            { key: 'owned', value: 'owned', text: t('retrieval.market.disposition.owned') },
+            { key: 'unowned', value: 'unowned', text: t('retrieval.market.disposition.unowned') },
         ];
 
         if (typeFilter !== 'constellations') {
             options.push(
-                { key: 'needed', value: 'needed', text: t('items.columns.needed') }
+                { key: 'needed', value: 'needed', text: t('retrieval.market.disposition.needed') }
+            )
+            options.push(
+                { key: 'needed_unique', value: 'needed_unique', text: t('retrieval.market.disposition.needed_unique') }
             )
         }
 
@@ -153,7 +169,7 @@ export const CelestialMarket = () => {
 
     }
 
-    function renderOwnedFilter() {
+    function renderTypeFilter() {
         const options = [
             { key: 'constellations', value: 'constellations', text: t('retrieval.constellations') },
             { key: 'polestars', value: 'polestars', text: t('retrieval.polestars') },
@@ -208,6 +224,9 @@ export const CelestialMarket = () => {
 
         const keystone = data.data as IKeystone;
         keystone.imageUrl = getIconPath(keystone.icon, true);
+        const isadded = polestarTailors?.added?.filter(f => f === keystone.symbol)?.length;
+        const isremoved = polestarTailors?.disabled?.some(f => f === keystone.id) || false;
+
         return <Table.Row key={`celest_${data.name}_${idx}`}>
             <Table.Cell>
                 <div style={{
@@ -220,13 +239,16 @@ export const CelestialMarket = () => {
                         <img style={{ gridArea: 'img', height: '48px' }} src={`${process.env.GATSBY_ASSETS_URL}${keystone.imageUrl}`} />
                     </ItemTarget>
                     <span style={{ gridArea: 'text' }}>
+                        {/* {!!isadded && <Icon name='add circle' color='blue' />} */}
+                        {!!isremoved && <Icon name='remove circle' color='orange' />}
                         {data.name}
                     </span>
                 </div>
             </Table.Cell>
-            <Table.Cell>
-                {keystone.owned?.toLocaleString() ?? '0'}
-            </Table.Cell>
+            {!!playerData && <Table.Cell>
+                {((keystone.owned)?.toLocaleString() ?? '0')}
+                {!!isadded && <Label color='blue' style={{marginLeft: '1em'}}>+ {isadded}</Label>}
+            </Table.Cell>}
             <Table.Cell>
                 {data.sell_count.toLocaleString()}
             </Table.Cell>

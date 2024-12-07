@@ -1491,6 +1491,12 @@
                 "sold_last_day": "Vendu le dernier jour"
             },
             "description": "Parcourez le marché céleste",
+            "disposition": {
+                "needed": "{{items.columns.needed}}",
+                "needed_unique": "Nécessaire (récupérable de manière unique uniquement)",
+                "owned": "{{crew_state.owned}}",
+                "unowned": "{{crew_state.unowned}}"
+            },
             "listed": "Répertorié",
             "min_polestars": "Min. allumettes d'étoile polaire",
             "modes": {
