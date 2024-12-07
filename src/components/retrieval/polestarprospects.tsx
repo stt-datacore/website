@@ -242,9 +242,9 @@ export const PolestarProspectsModal = () => {
 				</Table.Cell>
 				{market &&
 					<Table.Cell textAlign='center'>
-						<div style={{display: 'flex', gap: '0.25em', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start'}}>
-							{printISM(getPrice(polestar.id), t)}
+						<div style={{display: 'flex', gap: '0.25em', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
 							<span>{t('global.n_available', { n: (market[polestar.id]?.sell_count ?? 0).toLocaleString() })}</span>
+							{printISM(getPrice(polestar.id), t)}
 						</div>
 					</Table.Cell>
 				}

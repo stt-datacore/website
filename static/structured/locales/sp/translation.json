@@ -1491,6 +1491,12 @@
                 "sold_last_day": "Vendido en el último día"
             },
             "description": "Explora el Mercado Celestial",
+            "disposition": {
+                "needed": "{{items.columns.needed}}",
+                "needed_unique": "Necesario (solo recuperable de forma única)",
+                "owned": "{{crew_state.owned}}",
+                "unowned": "{{crew_state.unowned}}"
+            },
             "listed": "Listado",
             "min_polestars": "Mín. coincidencias de estrellas polares",
             "modes": {

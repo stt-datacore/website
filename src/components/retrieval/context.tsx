@@ -7,7 +7,7 @@ import { KeystoneBase } from '../../model/game-elements';
 
 export interface IRetrievalContext {
 	allKeystones: IKeystone[];	// All keystones (i.e. constellations AND polestars) with quantity owned and polestar odds
-	market?: MarketAggregation
+	market: MarketAggregation
 	rosterCrew: IRosterCrew[];
 	setRosterCrew: (rosterCrew: IRosterCrew[]) => void;
 	polestarTailors: IPolestarTailors;
