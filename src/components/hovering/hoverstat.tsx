@@ -406,7 +406,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
 
         hoverstat.style.zIndex = "1009";
 
-        if (isWindow) window.setTimeout(() => {
+        if (isWindow) setTimeout(() => {
             let hoverstat = document.getElementById(divId);
             if (!hoverstat) return;
 
