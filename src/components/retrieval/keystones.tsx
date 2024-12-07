@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, Icon, Label, Step } from 'semantic-ui-react';
+import { Button, Checkbox, Form, Icon, Label, Step } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
@@ -157,7 +157,7 @@ type KeystonesPlayerProps = {
 
 const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { ITEM_ARCHETYPES, language, TRAIT_NAMES } = globalContext.localized;
+	const { ITEM_ARCHETYPES, language, TRAIT_NAMES, t } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { dbid, mode, market, reloadMarket } = props;
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[]>([]);
@@ -166,6 +166,8 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 	const [polestarTailors, setPolestarTailors] = useStateWithStorage<IPolestarTailors>(props.dbid+'retrieval/tailors', polestarTailorDefaults, { rememberForever: true });
 	const [crewFilters, setCrewFilters] = useStateWithStorage<ICrewFilters>(props.dbid+'retrieval/filters', crewFilterDefaults, { rememberForever: true });
 	const [wishlist, setWishlist] = useStateWithStorage<string[]>(props.dbid+'retrieval/wishlist', [], { rememberForever: true });
+	const [autoWish, setAutoWish] = useStateWithStorage<boolean>(props.dbid+'retrieval/auto_wishlist', false, { rememberForever: true });
+	const [autoWishes, setAutoWishes] = React.useState<string[]>([]);
 
 	React.useEffect(() => {
 		const allKeystones = JSON.parse(JSON.stringify(props.allKeystones)) as IKeystone[];
@@ -221,13 +223,24 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 		setAllKeystones([...allKeystones]);
 	}, [props.allKeystones, playerData, language]);
 
+	React.useEffect(() => {
+		if (playerData && autoWish) {
+			let autocrew = [...new Set(playerData.player.character.crew.filter(f => f.favorite).map(c => c.symbol))].sort();
+			setAutoWishes(autocrew);
+			return;
+		}
+		setAutoWishes([]);
+	}, [autoWish, playerData]);
+
 	const retrievalContext: IRetrievalContext = {
 		allKeystones,
+		autoWishes,
 		rosterCrew, setRosterCrew,
 		polestarTailors, setPolestarTailors,
 		getCrewFilter, setCrewFilter,
 		resetForm,
-		wishlist, setWishlist,
+		wishlist,
+		setWishlist,
 		market,
 		reloadMarket
 	};
@@ -240,6 +253,13 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 					<PolestarProspectsModal />
 				</Form.Group>
 			</Form>
+			<Checkbox
+				style={{margin: '0.5em 0 1em 0'}}
+				label={t('retrieval.assume_in_game_favorites')}
+				type='checkbox'
+				checked={autoWish}
+				onChange={(e, { checked }) => setAutoWish(!!checked)}
+				/>
 			{mode === 'keystones' && <RetrievalCrew />}
 			{mode === 'mutual' && <MutualView dbid={dbid} />}
 			{mode === 'market' && <CelestialMarket />}
@@ -301,6 +321,7 @@ const KeystonesNonPlayer = (props: KeystonesNonPlayerProps) => {
 
 	const retrievalContext: IRetrievalContext = {
 		allKeystones,
+		autoWishes: [],
 		rosterCrew, setRosterCrew,
 		polestarTailors, setPolestarTailors,
 		getCrewFilter, setCrewFilter,

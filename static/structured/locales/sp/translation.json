@@ -1444,6 +1444,7 @@
     },
     "retrieval": {
         "allow_unowned": "Permitir tripulación sin propietario",
+        "assume_in_game_favorites": "Agregar dinámicamente los favoritos del juego a la lista de deseos",
         "calc_summary": "{{ship.calc.calc_summary}}",
         "calculating_pct_ellipses": "{{ship.calc.calculating_pct_ellipses}}",
         "calculating_pct_ellipses_verbose": "{{ship.calc.calculating_pct_ellipses_verbose}}",
@@ -1574,6 +1575,11 @@
         "use_all_combos_below_to_retrieve": "Utilice TODAS las combinaciones a continuación para recuperar",
         "use_any_combo_below_to_retrieve": "Utilice cualquier combinación a continuación para recuperar",
         "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "wishlist": {
+            "add": "Añadir a la lista de deseos.",
+            "auto": "El tripulante se añade automáticamente a la lista de deseos.",
+            "remove": "Quitar de la lista de deseos."
+        },
         "you_own_n_of_the_polestar": "Eres dueño de {{n}} de la {{polestar}}."
     },
     "roster_summary": {

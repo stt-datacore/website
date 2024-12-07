@@ -15,7 +15,7 @@ export const RetrievalCrew = () => {
 	const { t } = globalContext.localized;
 	const { collections } = globalContext.core;
 	const { playerData } = globalContext.player;
-	const { market, allKeystones, rosterCrew, setRosterCrew, polestarTailors, getCrewFilter, setCrewFilter, resetForm, wishlist } = React.useContext(RetrievalContext);
+	const { market, allKeystones, rosterCrew, setRosterCrew, polestarTailors, getCrewFilter, setCrewFilter, resetForm, wishlist, autoWishes } = React.useContext(RetrievalContext);
 
 	const addedPolestars = polestarTailors.added;
 	const disabledPolestars = polestarTailors.disabled;
@@ -52,7 +52,7 @@ export const RetrievalCrew = () => {
 			ownedFilter === '' ||
 			(ownedFilter === 'owned' && c.highest_owned_rarity > 0) ||
 			(ownedFilter === 'unowned' && c.highest_owned_rarity === 0) ||
-			(ownedFilter === 'wishlist' && wishlist.includes(c.symbol))
+			(ownedFilter === 'wishlist' && (wishlist.includes(c.symbol) || autoWishes.includes(c.symbol)))
 		).filter(c =>
 			ownedFilter === 'unowned' ||
 				!hideFullyFused ||
@@ -78,7 +78,7 @@ export const RetrievalCrew = () => {
 			return collection?.crew?.includes(c.symbol);
 		});
 		setFilteredCrew([...filtered]);
-	}, [rosterCrew, retrievableFilter, ownedFilter, hideFullyFused, rarityFilter, traitFilter, minTraitMatches, collectionFilter, wishlist]);
+	}, [rosterCrew, retrievableFilter, ownedFilter, hideFullyFused, rarityFilter, traitFilter, minTraitMatches, collectionFilter, wishlist, autoWishes]);
 
 	const retrievableFilterOptions = [
 		{ key: 'none', value: '', text: t('retrieval.crew.show_all_crew') },

@@ -1444,6 +1444,7 @@
     },
     "retrieval": {
         "allow_unowned": "Autoriser l'équipage sans propriétaire",
+        "assume_in_game_favorites": "Ajoutez dynamiquement les favoris du jeu à la liste de souhaits",
         "calc_summary": "{{ship.calc.calc_summary}}",
         "calculating_pct_ellipses": "{{ship.calc.calculating_pct_ellipses}}",
         "calculating_pct_ellipses_verbose": "{{ship.calc.calculating_pct_ellipses_verbose}}",
@@ -1574,6 +1575,11 @@
         "use_all_combos_below_to_retrieve": "Utilisez TOUS les combos ci-dessous pour récupérer",
         "use_any_combo_below_to_retrieve": "Utilisez n'importe quelle combinaison ci-dessous pour récupérer",
         "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "wishlist": {
+            "add": "Ajouter à la liste de souhaits.",
+            "auto": "L'équipier est automatiquement ajouté à la liste de souhaits.",
+            "remove": "Supprimer de la liste de souhaits."
+        },
         "you_own_n_of_the_polestar": "Vous possédez {{n}} de l'{{polestar}}."
     },
     "roster_summary": {

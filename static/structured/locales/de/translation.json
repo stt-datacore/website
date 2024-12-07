@@ -1432,6 +1432,7 @@
     },
     "retrieval": {
         "allow_unowned": "Unbesessene Crew zulassen",
+        "assume_in_game_favorites": "Spielfavoriten dynamisch zur Wunschliste hinzufügen",
         "calc_summary": "{{ship.calc.calc_summary}}",
         "calculating_pct_ellipses": "{{ship.calc.calculating_pct_ellipses}}",
         "calculating_pct_ellipses_verbose": "{{ship.calc.calculating_pct_ellipses_verbose}}",
@@ -1562,6 +1563,11 @@
         "use_all_combos_below_to_retrieve": "Verwenden Sie ALLE Combos unten, um abzurufen",
         "use_any_combo_below_to_retrieve": "Verwenden Sie eine der folgenden Kombinationen, um abzurufen",
         "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "wishlist": {
+            "add": "Zur Wunschliste hinzufügen.",
+            "auto": "Crew wird automatisch zur Wunschliste hinzugefügt.",
+            "remove": "Von Wunschliste entfernen."
+        },
         "you_own_n_of_the_polestar": "Sie besitzen {{n}} des {{polestar}}."
     },
     "roster_summary": {
