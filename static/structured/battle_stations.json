@@ -1681,5 +1681,19 @@
                 "skill": "engineering_skill"
             }
         ]
+    },
+    {
+        "symbol": "booker_ship",
+        "battle_stations": [
+            {
+                "skill": "command_skill"
+            },
+            {
+                "skill": "security_skill"
+            },
+            {
+                "skill": "engineering_skill"
+            }
+        ]
     }
 ]
