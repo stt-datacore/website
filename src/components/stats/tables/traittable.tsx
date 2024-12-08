@@ -30,6 +30,24 @@ interface TraitStats {
     retro?: number,
 }
 
+const SpecialCols = {
+    original: 34,
+    dsc: 20,
+    ent: 66,
+    voy: 74,
+    q: 31,
+    evsuit: 38,
+    ageofsail: 37,
+    exclusive_gauntlet: 32,
+    low: 54,
+    tas: 54,
+    vst: 54,
+    crew_max_rarity_3: 16,
+    crew_max_rarity_2: 15,
+    crew_max_rarity_1: 14,
+    niners: 29,
+};
+
 export const TraitStatsTable = () => {
 
     const globalContext = React.useContext(GlobalContext);
@@ -56,7 +74,10 @@ export const TraitStatsTable = () => {
         if (m <= 9) return `${t('global.approx')} ${t('global.quarter_short')}3 ${d.getUTCFullYear()}`;
         return `${t('global.approx')} ${t('global.quarter_short')}4 ${d.getUTCFullYear()}`;
     }
-
+    collections.forEach((col) => {
+        if (!col.description?.includes("trait"))
+            console.log(col.name, col.type_id || col.id, col.description);
+    })
     React.useEffect(() => {
         if (!crew?.length) return;
         let work = [...crew];
@@ -117,14 +138,22 @@ export const TraitStatsTable = () => {
                     retro: release ? 0 : rcrew.length,
                     icon: stoneicons[trait]
                 } as TraitStats;
-                if (!hidden) {
-                    let col = collections.find(f => f.description?.toLowerCase().includes((TRAIT_NAMES[trait]?.toLowerCase() ?? '')));
-                    if (col) {
-                        newtrait.collection = COLLECTIONS[`cc-${col.type_id}`]?.name ?? col.name
+                if (!hidden || SpecialCols[trait]) {
+                    if (SpecialCols[trait]) {
+                        let col = collections.find(f => f.id == SpecialCols[trait]);
+                        if (col) {
+                            newtrait.collection = COLLECTIONS[`cc-${col.type_id}`]?.name ?? col.name
+                        }
+                    }
+                    else {
+                        let col = collections.find(f => f.description?.toLowerCase().includes(">" + (TRAIT_NAMES[trait]?.toLowerCase() ?? '') + "<"));
+                        if (col) {
+                            newtrait.collection = COLLECTIONS[`cc-${col.type_id}`]?.name ?? col.name
+                        }
                     }
                 }
                 else {
-                    newtrait.collection = 'N/A'
+                    newtrait.collection = ''
                 }
                 tcrew.sort((a, b) => {
                     let adiff = Math.abs(a.date_added.getTime() - d.getTime());
@@ -151,7 +180,17 @@ export const TraitStatsTable = () => {
 
     const tableConfig = [
         { width: 1, column: 'trait', title: t('stat_trends.trait_columns.trait') },
-        { width: 1, column: 'hidden', title: t('stat_trends.trait_columns.hidden') },
+        {
+            width: 1,
+            column: 'hidden',
+            title: t('stat_trends.trait_columns.hidden'),
+            customCompare: (a: TraitStats, b: TraitStats) => {
+                if (a.hidden == b.hidden) return a.trait.localeCompare(b.trait)
+                if (!a.hidden) return -1;
+                else if (!b.hidden) return 1;
+                return 0;
+            }
+        },
         { width: 1, column: 'collection', title: t('stat_trends.trait_columns.collection') },
         {
             width: 1,
