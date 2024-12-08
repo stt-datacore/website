@@ -850,6 +850,7 @@
         "and_n_more_ellipses": "und {{n}} weitere ...",
         "any": "Beliebig",
         "apply_filters": "Filter anwenden",
+        "approx": "Ca.",
         "base": "Grundlage",
         "bonus": "Bonifikation",
         "bonuses": "Boni",
@@ -949,6 +950,7 @@
         "permalink": "Permalink",
         "portal": "Zeitportal",
         "presets": "Presets",
+        "quarter_short": "Q",
         "quest": "Quest",
         "recommend_crew": "Crew empfehlen",
         "reset": "Zurücksetzen",
@@ -1917,6 +1919,10 @@
             "graphs": {
                 "description": "Visuelle Darstellungen von Datentrends anzeigen",
                 "title": "Diagramme und Grafiken"
+            },
+            "traits": {
+                "description": "Statistiken zu Crew-Eigenschaften im Spiel",
+                "title": "{{hints.traits}}"
             }
         },
         "stats": {
@@ -1927,7 +1933,23 @@
             "mean_velocity": "Mediane Geschwindigkeit"
         },
         "title": "Statistiktrends",
-        "total_power_difference": "Gesamtleistungsdifferenz"
+        "total_power_difference": "Gesamtleistungsdifferenz",
+        "trait_columns": {
+            "collection": "{{base.collection}}",
+            "first_appearance": "Erster Auftritt",
+            "first_crew": "Älteste Crew",
+            "hidden": "{{global.hidden}}",
+            "inaugural_crew": "Eröffnungsmannschaft",
+            "latest_crew": "Neueste Crew",
+            "total_crew": "Gesamtcrew",
+            "trait": "{{hints.trait}}"
+        },
+        "traits": {
+            "hide_only_one": "Merkmale mit nur einer Crew verbergen",
+            "retroactively_added_to_n_crew": "Nachträglich zu {{n}} Crewmitgliedern hinzugefügt",
+            "show_hidden": "Versteckte Merkmale anzeigen",
+            "show_variant_traits": "Variantenmerkmale der Crew anzeigen"
+        }
     },
     "tool_roster_picker": {
         "all_crew": {
@@ -1956,6 +1978,11 @@
                 "initial_estimate": "Ihre anfängliche Schätzung war {{time}}."
             }
         },
+        "crew_finder_hints": {
+            "on_shuttle": "Im Shuttle",
+            "on_voyage": "Auf Reise",
+            "unfreeze_crew": "Crew freigeben"
+        },
         "current_voyage_x": "Aktuelle {{x}}",
         "custom": {
             "no_trait": "Kein Merkmal"
@@ -1983,6 +2010,7 @@
             "no_refills": "Keine Nachfüllungen",
             "one_refill": "Eine Nachfüllung",
             "second_refill": "Zweite Nachfüllung",
+            "title": "Reisekostenvoranschlag",
             "two_refills": "Zwei Nachfüllungen",
             "voyage_end": "Diese Reise endet um {{time}}.",
             "voyage_extend": "Nachträgliche Aufladungen verlängern sie um {{time}}.",
@@ -1993,8 +2021,20 @@
             "not_yet": "Sie haben noch keinen Reiseverlauf. Beginnen Sie mit der Verfolgung von Reisen über den Crew-Rechner.",
             "title": "{{menu.tools.voyage_history}}"
         },
+        "lineup": {
+            "crew_trait_bonuses": "Creweigenschaftsboni",
+            "level_n_ship": "Schiff der Stufe {{n}}",
+            "select_layout_colon": "Layout auswählen: ",
+            "ship_trait_bonus": "Schiffseigenschaftsbonus",
+            "title": "Reiseaufstellung"
+        },
         "loading_voyage_tool_ellipses": "Reisetool wird geladen ...",
         "or_n_h_if_dupes_dismissed": "oder {{n}} {{h}}, wenn die gesamte doppelte Crew entlassen wird.",
+        "overrun_problem_text": {
+            "line_1": "WARNUNG!!! Es wurde ein potenzielles Problem mit der gemeldeten Reisezeit erkannt.",
+            "line_2": "Wir haben versucht, dies zu korrigieren, aber die Schätzung ist möglicherweise ungenau.",
+            "line_3": "Öffnen Sie das Spiel und kehren Sie dann mit einer neuen Kopie Ihrer Spielerdaten zu DataCore zurück, um eine genauere Schätzung zu gewährleisten."
+        },
         "seats": {
             "captain_slot": "Erster Offizier",
             "chief_communications_officer": "Kommunikationsoffizier",

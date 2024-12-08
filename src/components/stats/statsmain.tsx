@@ -5,13 +5,14 @@ import CONFIG from "../CONFIG";
 import { StatLabel } from "../statlabel";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { filterEpochDiffs, filterFlatData, formatElapsedDays, makeFilterCombos, skillIcon } from './utils';
-import { StatTrendsTable } from "./table";
+import { StatTrendsTable } from "./tables/releasetable";
 import { StatsPrefsPanel } from "./prefspanel";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { StatsContext } from "./dataprovider";
 import { Skill } from "../../model/crew";
 import { ChartsView } from "./chartsview";
 import { EpochDiff } from "./model";
+import { TraitStatsTable } from "./tables/traittable";
 
 export const StatTrendsComponent = () => {
     const globalContext = React.useContext(GlobalContext);
@@ -142,22 +143,31 @@ export const StatTrendsComponent = () => {
 
                 </Message>
                 <CrewHoverStat targetGroup="stat_trends_crew" />
-                <StatsPrefsPanel />
-                {renderStatsInfo()}
+
+                {displayMode !== 'traits' && <React.Fragment>
+                    <StatsPrefsPanel />
+                    {renderStatsInfo()}
+                </React.Fragment>}
 
                 <Step.Group fluid>
                     <Step active={displayMode === 'crew'} onClick={() => setDisplayMode('crew')}
-                        style={{width: isMobile ? undefined : '50%'}}>
+                        style={{width: isMobile ? undefined : '33%'}}>
                         <Step.Title>{t('stat_trends.sections.crew.title')}</Step.Title>
                         <Step.Description>{t('stat_trends.sections.crew.description')}</Step.Description>
                     </Step>
+                    <Step active={displayMode === 'traits'} onClick={() => setDisplayMode('traits')}
+                        style={{width: isMobile ? undefined : '33%'}}>
+                        <Step.Title>{t('stat_trends.sections.traits.title')}</Step.Title>
+                        <Step.Description>{t('stat_trends.sections.traits.description')}</Step.Description>
+                    </Step>
                     <Step active={displayMode === 'graphs'} onClick={() => setDisplayMode('graphs')}
-                        style={{width: isMobile ? undefined : '50%'}}>
+                        style={{width: isMobile ? undefined : '33%'}}>
                         <Step.Title>{t('stat_trends.sections.graphs.title')}</Step.Title>
                         <Step.Description>{t('stat_trends.sections.graphs.description')}</Step.Description>
                     </Step>
                 </Step.Group>
                 {displayMode === 'crew' && <StatTrendsTable prefilteredDiffs={epochDiffs} />}
+                {displayMode === 'traits' && <TraitStatsTable />}
                 {displayMode === 'graphs' && <ChartsView />}
             </div>)
 

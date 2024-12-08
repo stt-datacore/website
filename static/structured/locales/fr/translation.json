@@ -858,6 +858,7 @@
         "and_n_more_ellipses": "et {{n}} de plus ...",
         "any": "Quelconque",
         "apply_filters": "Appliquer des filtres",
+        "approx": "Env.",
         "base": "Principle",
         "bonus": "Prime",
         "bonuses": "Bonus",
@@ -959,6 +960,7 @@
         "permalink": "lien permanent",
         "portal": "Portail",
         "presets": "Prédéfinies",
+        "quarter_short": "T",
         "quest": "Quête",
         "recommend_crew": "Recommander des équipiers",
         "reset": "Réinitialiser",
@@ -1930,6 +1932,10 @@
             "graphs": {
                 "description": "Afficher des représentations visuelles des tendances des données",
                 "title": "Diagrammes et graphiques"
+            },
+            "traits": {
+                "description": "Statistiques sur les caractéristiques de l'équipage dans le jeu",
+                "title": "{{hints.traits}}"
             }
         },
         "stats": {
@@ -1940,7 +1946,23 @@
             "mean_velocity": "Vitesse médiane"
         },
         "title": "Statistiques Tendances",
-        "total_power_difference": "Différence de puissance totale"
+        "total_power_difference": "Différence de puissance totale",
+        "trait_columns": {
+            "collection": "{{base.collection}}",
+            "first_appearance": "Première apparition",
+            "first_crew": "Équipier le plus âgé",
+            "hidden": "{{global.hidden}}",
+            "inaugural_crew": "Equipier inaugural",
+            "latest_crew": "Dernier équipier",
+            "total_crew": "Équipiers totals",
+            "trait": "{{hints.trait}}"
+        },
+        "traits": {
+            "hide_only_one": "Masquer les traits avec un seul équipier",
+            "retroactively_added_to_n_crew": "Ajouté rétroactivement à 5 équipiers",
+            "show_hidden": "Afficher les traits cachés",
+            "show_variant_traits": "Afficher les caractéristiques des variantes d'équipage"
+        }
     },
     "tool_roster_picker": {
         "all_crew": {
@@ -1969,6 +1991,11 @@
                 "initial_estimate": "Votre estimation initiale était de {{time}}."
             }
         },
+        "crew_finder_hints": {
+            "on_shuttle": "Sur la navette",
+            "on_voyage": "En voyage",
+            "unfreeze_crew": "Dégeler l'équipier"
+        },
         "current_voyage_x": "{{x}} actuel",
         "custom": {
             "no_trait": "Aucun trait"
@@ -1996,6 +2023,7 @@
             "no_refills": "Aucune recharge",
             "one_refill": "Une recharge",
             "second_refill": "Deuxième recharge",
+            "title": "Estimation du voyage",
             "two_refills": "Deux recharges",
             "voyage_end": "Ce voyage se terminera à {{time}}.",
             "voyage_extend": "Les recharges ultérieures le prolongeront de {{time}}.",
@@ -2006,8 +2034,20 @@
             "not_yet": "Vous n'avez pas encore d'historique de voyage. Commencez à suivre les voyages à partir du calculateur d'équipage.",
             "title": "{{menu.tools.voyage_history}}"
         },
+        "lineup": {
+            "crew_trait_bonuses": "Bonus de traits d'équipage",
+            "level_n_ship": "Vaisseau de niveau {{n}}",
+            "select_layout_colon": "Sélectionner la mise en page : ",
+            "ship_trait_bonus": "Bonus de trait de vaisseau",
+            "title": "Composition du voyage"
+        },
         "loading_voyage_tool_ellipses": "Chargement de l'outil de voyage...",
         "or_n_h_if_dupes_dismissed": "ou {{n}} {{h}} si tous les équiipers en double sont renvoyés.",
+        "overrun_problem_text": {
+            "line_1": "ATTENTION !!! Un problème potentiel avec la durée de voyage signalée a été détecté.",
+            "line_2": "Nous avons tenté de corriger cela, mais l'estimation peut être inexacte.",
+            "line_3": "Ouvrez le jeu, puis revenez à DataCore avec une nouvelle copie de vos données de joueur pour garantir une estimation plus précise."
+        },
         "seats": {
             "captain_slot": "Premier officier",
             "chief_communications_officer": "Officier des communications",

@@ -1,16 +1,16 @@
 import React from 'react';
 import { Table, Label, Checkbox } from "semantic-ui-react";
-import { GlobalContext } from "../../context/globalcontext";
-import CONFIG from "../CONFIG";
-import { AvatarView } from "../item_presenters/avatarview";
-import { ITableConfigRow, SearchableTable } from "../searchabletable";
-import { canGauntlet, canShuttle, canVoyage, dateToEpoch, filterEpochDiffs, filterHighs, findHigh, formatElapsedDays, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow, skillIcon } from "./utils";
-import { EpochDiff, Highs } from "./model";
-import { CrewMember } from '../../model/crew';
-import { StatsContext } from './dataprovider';
-import { useStateWithStorage } from '../../utils/storage';
+import { GlobalContext } from "../../../context/globalcontext";
+import CONFIG from "../../CONFIG";
+import { AvatarView } from "../../item_presenters/avatarview";
+import { ITableConfigRow, SearchableTable } from "../../searchabletable";
+import { canGauntlet, canShuttle, canVoyage, dateToEpoch, filterEpochDiffs, filterHighs, findHigh, formatElapsedDays, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow, skillIcon } from "../utils";
+import { EpochDiff, Highs } from "../model";
+import { CrewMember } from '../../../model/crew';
+import { StatsContext } from '../dataprovider';
+import { useStateWithStorage } from '../../../utils/storage';
 import SearchString from 'search-string/src/searchString';
-import { crewMatchesSearchFilter } from '../../utils/crewsearch';
+import { crewMatchesSearchFilter } from '../../../utils/crewsearch';
 
 export interface StatTrendsTableProps {
     prefilteredHighs?: Highs[];

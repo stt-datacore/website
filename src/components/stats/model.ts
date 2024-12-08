@@ -1,6 +1,6 @@
 import { CrewMember } from "../../model/crew";
 
-export type StatsDisplayMode = 'crew' | 'graphs';
+export type StatsDisplayMode = 'crew' | 'graphs' | 'traits';
 
 export type GameModeUtility = 'gauntlet' | 'voyage' | 'shuttle' | 'ship';
 

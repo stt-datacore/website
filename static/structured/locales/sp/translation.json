@@ -859,6 +859,7 @@
         "and_n_more_ellipses": "y {{n}} más ...",
         "any": "Cualquier",
         "apply_filters": "Aplicar filtros",
+        "approx": "Approx.",
         "base": "Base",
         "bonus": "Bonificacion",
         "bonuses": "Bonificaciones",
@@ -959,6 +960,7 @@
         "permalink": "enlace permanente",
         "portal": "Portal",
         "presets": "Preestablecidos",
+        "quarter_short": "T",
         "quest": "Búsqueda",
         "recommend_crew": "Recomendar tripulantes",
         "reset": "Restablecer",
@@ -1930,6 +1932,10 @@
             "graphs": {
                 "description": "Ver representaciones visuales de tendencias de datos",
                 "title": "Gráficos y tablas"
+            },
+            "traits": {
+                "description": "Estadísticas sobre los rasgos de la tripulación en el juego",
+                "title": "{{hints.traits}}"
             }
         },
         "stats": {
@@ -1940,7 +1946,23 @@
             "mean_velocity": "Velocidad media"
         },
         "title": "Tendencias de estadísticas",
-        "total_power_difference": "Diferencia de potencia total"
+        "total_power_difference": "Diferencia de potencia total",
+        "trait_columns": {
+            "collection": "{{base.collection}}",
+            "first_appearance": "Primera aparición",
+            "first_crew": "Tripulante más antiguo",
+            "hidden": "{{global.hidden}}",
+            "inaugural_crew": "Tripulante inaugural",
+            "latest_crew": "Última tripulante",
+            "total_crew": "Tripulantes totales",
+            "trait": "{{hints.trait}}"
+        },
+        "traits": {
+            "hide_only_one": "Ocultar rasgos con uno solo tripulante",
+            "retroactively_added_to_n_crew": "Agregado retroactivamente a {{n}} tripulantes",
+            "show_hidden": "Mostrar rasgos ocultos",
+            "show_variant_traits": "Mostrar rasgos de variantes de la tripulación"
+        }
     },
     "tool_roster_picker": {
         "all_crew": {
@@ -1969,6 +1991,11 @@
                 "initial_estimate": "Su estimación inicial fue {{time}}."
             }
         },
+        "crew_finder_hints": {
+            "on_shuttle": "En lanzadera",
+            "on_voyage": "En viaje",
+            "unfreeze_crew": "Descongelar equipo"
+        },
         "current_voyage_x": "{{x}} actual",
         "custom": {
             "no_trait": "Sin rasgo"
@@ -1996,6 +2023,7 @@
             "no_refills": "Sin recargas",
             "one_refill": "Una recarga",
             "second_refill": "Segunda recarga",
+            "title": "Estimación de viaje",
             "two_refills": "Dos recargas",
             "voyage_end": "Este viaje finalizará a las {{time}}.",
             "voyage_extend": "Las recargas posteriores lo extenderán por {{time}}.",
@@ -2006,8 +2034,20 @@
             "not_yet": "Aún no tienes ningún historial de viajes. Comienza a hacer un seguimiento de los viajes desde la calculadora de tripulación.",
             "title": "{{menu.tools.voyage_history}}"
         },
+        "lineup": {
+            "crew_trait_bonuses": "Bonificaciones de los rasgos de la tripulación",
+            "level_n_ship": "Buque de nivel {{n}}",
+            "select_layout_colon": "Seleccionar diseño: ",
+            "ship_trait_bonus": "Bonificación de los rasgos del buque",
+            "title": "Alineación de viajes"
+        },
         "loading_voyage_tool_ellipses": "Cargando herramienta de viaje...",
         "or_n_h_if_dupes_dismissed": "o {{n}} {{h}} si se despide a toda los tripulantes duplicada.",
+        "overrun_problem_text": {
+            "line_1": "¡¡¡ADVERTENCIA!!! Se ha detectado un posible problema con la duración del viaje informada.",
+            "line_2": "Hemos intentado corregir esto pero la estimación puede ser inexacta.",
+            "line_3": "Abra el juego y luego regrese a DataCore con una copia nueva de sus datos de jugador para garantizar una estimación más precisa."
+        },
         "seats": {
             "captain_slot": "Primer oficial",
             "chief_communications_officer": "Oficial de comunicaciones",

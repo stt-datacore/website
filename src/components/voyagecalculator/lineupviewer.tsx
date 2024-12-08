@@ -66,6 +66,7 @@ type LineupViewerProps = {
 export const LineupViewer = (props: LineupViewerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
+	const { t } = globalContext.localized;
 	const { configSource, voyageConfig, ship, roster, rosterType } = props;
 
 	const findBestRank: boolean = configSource === 'player';
@@ -75,7 +76,8 @@ export const LineupViewer = (props: LineupViewerProps) => {
 
 	const usedCrew: number[] = [];
 	const assignments: IAssignment[] = Object.values(CONFIG.VOYAGE_CREW_SLOTS).map(entry => {
-		const { crew, name, trait, skill } = (Object.values(voyageConfig.crew_slots).find(slot => slot.symbol === entry) as VoyageCrewSlot);
+		const { crew, trait, skill } = (Object.values(voyageConfig.crew_slots).find(slot => slot.symbol === entry) as VoyageCrewSlot);
+		const name = t(`voyage.seats.${entry}`)
 		const bestRank: ISkillsRank | undefined = findBestRank ? getBestRank(crew, skill, usedCrew) : undefined;
 		if (!crew.imageUrlPortrait)
 			crew.imageUrlPortrait = `${crew.portrait.file.slice(1).replace('/', '_')}.png`;
@@ -291,6 +293,7 @@ export const LineupViewer = (props: LineupViewerProps) => {
 
 const PlayerViewPicker = (props: { dbid: string }) => {
 	let default_layout = 'table-compact';
+	const { t } = React.useContext(GlobalContext).localized;
 	if (window.location.search?.length) {
 		let search = new URLSearchParams(window.location.search);
 		if (search.has('layout')) {
@@ -308,7 +311,7 @@ const PlayerViewPicker = (props: { dbid: string }) => {
 			{(layout === 'table-compact' || layout === 'table-standard') && <TableView layout={layout} />}
 			{(layout === 'grid-cards' || layout === 'grid-icons') && <GridView layout={layout} />}
 			<div style={{ marginTop: '2em' }}>
-				Toggle layout:{` `}
+				{t('voyage.lineup.select_layout_colon')}{` `}
 				<Button.Group>
 					<Button icon='align justify' color={layout === 'table-compact' ? 'blue' : undefined} onClick={() => setLayout('table-compact')} />
 					<Button icon='list' color={layout === 'table-standard' ? 'blue' : undefined} onClick={() => setLayout('table-standard')} />
@@ -321,13 +324,14 @@ const PlayerViewPicker = (props: { dbid: string }) => {
 };
 
 const NonPlayerViewPicker = () => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const [layout, setLayout] = React.useState('table-compact');
 	return (
 		<React.Fragment>
 			{(layout === 'table-compact' || layout === 'table-standard') && <TableView layout={layout} />}
 			{(layout === 'grid-cards' || layout === 'grid-icons') && <GridView layout={layout} />}
 			<div style={{ marginTop: '2em' }}>
-				Toggle layout:{` `}
+				{t('voyage.lineup.select_layout_colon')}{` `}
 				<Button.Group>
 					<Button icon='align justify' color={layout === 'table-compact' ? 'blue' : undefined} onClick={() => setLayout('table-compact')} />
 					<Button icon='list' color={layout === 'table-standard' ? 'blue' : undefined} onClick={() => setLayout('table-standard')} />
@@ -345,7 +349,7 @@ type ViewProps = {
 
 const TableView = (props: ViewProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { TRAIT_NAMES } = globalContext.localized;
+	const { TRAIT_NAMES, t } = globalContext.localized;
 	const { voyageConfig, rosterType, ship, shipData, assignments } = React.useContext(ViewContext);
 	const { layout } = props;
 
@@ -371,7 +375,7 @@ const TableView = (props: ViewProps) => {
 			<Table celled selectable striped unstackable compact='very' className={`voyageLineup ${compact ? 'compactView' : ''}`}>
 				<Table.Body>
 					<Table.Row>
-						<Table.Cell width={5}>Ship</Table.Cell>
+						<Table.Cell width={5}>{t('ship.ship')}</Table.Cell>
 						<Table.Cell width={8} style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
 							<b>{ship.name}</b>
 						</Table.Cell>
@@ -491,6 +495,7 @@ const TableView = (props: ViewProps) => {
 const GridView = (props: ViewProps) => {
 	const { voyageConfig, rosterType, ship, shipData, assignments } = React.useContext(ViewContext);
 	const { layout } = props;
+	const { t } = React.useContext(GlobalContext).localized;
 
 	return (
 		<React.Fragment>
@@ -520,7 +525,7 @@ const GridView = (props: ViewProps) => {
 			<Table celled selectable striped unstackable collapsing compact='very' style={{ margin: '0 auto 2em' }}>
 				<Table.Body>
 					<Table.Row>
-						<Table.Cell width={5}>Ship</Table.Cell>
+						<Table.Cell width={5}>{t('ship.ship')}</Table.Cell>
 						<Table.Cell width={8} style={{ fontSize: '1.1em' }}>
 							<b>{ship.name}</b>
 						</Table.Cell>
@@ -597,7 +602,7 @@ const GridView = (props: ViewProps) => {
 const Aggregates = (props: ViewProps) => {
 	const { voyageConfig, ship, shipData, assignments } = React.useContext(ViewContext);
 	const { layout } = props;
-
+	const { t } = React.useContext(GlobalContext).localized;
 	const landscape = layout === 'grid-cards' || layout === 'grid-icons';
 
 	return (
@@ -659,15 +664,15 @@ const Aggregates = (props: ViewProps) => {
 	function renderAntimatterRow(): JSX.Element {
 		return (
 			<Table.Row>
-				<Table.Cell>Antimatter</Table.Cell>
+				<Table.Cell>{t('ship.antimatter')}</Table.Cell>
 				<Table.Cell className='iconic' style={{width: '2.2em'}}>&nbsp;</Table.Cell>
 				<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
 					{ship && (
 						<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{voyageConfig.max_hp}</span>}>
 							<Popup.Content>
-								{ship.antimatter} (Level {ship.level} Ship)
-								<br />+{shipData.shipBonus} (Ship Trait Bonus)
-								<br />+{shipData.crewBonus} (Crew Trait Bonuses)
+								{ship.antimatter} ({t('voyage.lineup.level_n_ship', { n: ship.level.toString() })})
+								<br />+{shipData.shipBonus} ({t('voyage.lineup.ship_trait_bonus')})
+								<br />+{shipData.crewBonus} ({t('voyage.lineup.crew_trait_bonuses')})
 							</Popup.Content>
 						</Popup>
 					)}
@@ -735,12 +740,17 @@ type AssignmentCardProps = {
 
 const AssignmentCard = (props: AssignmentCardProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { TRAIT_NAMES } = globalContext.localized;
+	const { TRAIT_NAMES, language } = globalContext.localized;
 	const { voyageConfig } = React.useContext(ViewContext);
 	const { assignment: { crew, name, trait, bestRank }, showSkills } = props;
 
 	return (
-		<Card style={{ padding: '.5em', textAlign: 'center', height: '100%' }}>
+		<Card style={{
+				padding: '.5em',
+				textAlign: 'center',
+				height: 'calc(100% + 1em)',
+				//minHeight: language === 'en' ? '100%' : 'calc(96px + 9em)',
+			}}>
 			{(voyageConfig.state === 'pending' && (bestRank || crew.immortal > 0 || crew.active_status > 0)) &&
 				<Label corner='right' style={{ fontSize: '1.1em', textAlign: 'right', padding: '.4em .4em 0 0' }}>
 					<CrewFinder crew={crew} bestRank={bestRank} />
@@ -794,7 +804,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 					/>
 				)}
 			</div>
-			<Label attached='bottom' style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
+			<Label attached='bottom' style={{ whiteSpace: 'wrap', overflow: 'wrap' }}>
 				{name}
 			</Label>
 		</Card>
@@ -863,24 +873,25 @@ type CrewFinderProps = {
 
 const CrewFinder = (props: CrewFinderProps) => {
 	const { crew, bestRank } = props;
+	const { t } = React.useContext(GlobalContext).localized;
 
 	let popup = { content: '', trigger: <></> };
 
 	if (crew.immortal > 0) {
 		popup = {
-			content: 'Unfreeze crew',
+			content: t('voyage.crew_finder.unfreeze_crew'),
 			trigger: <div style={{textAlign: 'center' }}><Icon name='snowflake' /></div>
 		};
 	}
 	else if (crew.active_status === 2) {
 		popup = {
-			content: 'On shuttle',
+			content: t('voyage.crew_finder.on_shuttle'),
 			trigger: <div style={{textAlign: 'center' }}><Icon name='space shuttle' /></div>
 		};
 	}
 	else if (crew.active_status === 3) {
 		popup = {
-			content: 'On voyage',
+			content: t('voyage.crew_finder.on_voyage'),
 			trigger: <div style={{textAlign: 'center' }}><Icon name='rocket' /></div>
 		};
 	}
