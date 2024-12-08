@@ -402,7 +402,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	_renderRewardsTitle(rewards): JSX.Element {
 		const { roster } = this.props;
-		const { tfmt } = this.context.localized;
+		const { t, tfmt } = this.context.localized;
 		const crewGained = rewards.filter(r => r.type === 1);
 		const bestRarity = crewGained.length == 0 ? 0 : crewGained.map(c => c.rarity).reduce((acc, r) => Math.max(acc, r));
 		const bestCrewCount = crewGained
@@ -441,7 +441,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 		return (
 			<span>
-				{`Rewards: ${bestCrewCount} ${bestRarity}* `}&nbsp;
+				{`${t('base.rewards')}: ${bestCrewCount} ${bestRarity}* `}&nbsp;
 				{` ${chrons.toLocaleString()} `}
 				<img
 					src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`}
@@ -608,7 +608,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		const { activePanels } = this.state;
 		const voyState = voyageData.state;
 		const rewards = voyState !== 'pending' ? voyageData.pending_rewards.loot : [];
-
+		const { t } = this.context.localized;
 		// Adds/Removes panels from the active list
 		const flipItem = (items: string[], item: string) => items.includes(item)
 			? items.filter(i => i != item)
@@ -642,19 +642,19 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				<div>
 					{(voyageData.state === 'started' && timeDiscrepency > 0) &&
 						<Message warning>
-							WARNING!!! A potential problem with the reported voyage duration has been detected.
-							We have attemped to correct this but the estimate may be inaccurate.
-							Open the game, then return to DataCore with a fresh copy of your player data to guarantee a more accurate estimate.
+							{t('voyage.overrun_problem_text.line_1')}
+							{t('voyage.overrun_problem_text.line_2')}
+							{t('voyage.overrun_problem_text.line_3')}
 						</Message>
 					}
 					<Accordion fluid exclusive={false}>
 					{
 						voyState !== 'recalled' && voyState !== 'completed' &&
-						accordionPanel('Voyage estimate', this._renderEstimate(voyState === 'failed'), 'estimate', this._renderEstimateTitle())
+						accordionPanel(t('voyage.estimate.title'), this._renderEstimate(voyState === 'failed'), 'estimate', this._renderEstimateTitle())
 					}
-					{ accordionPanel('Voyage lineup', this._renderCrew(), 'crew') }
+					{ accordionPanel(t('voyage.lineup.title'), this._renderCrew(), 'crew') }
 					{
-						accordionPanel('Rewards', this._renderRewards(rewards), 'rewards', this._renderRewardsTitle(rewards))
+						accordionPanel(t('base.rewards'), this._renderRewards(rewards), 'rewards', this._renderRewardsTitle(rewards))
 					}
 					</Accordion>
 				</div>
@@ -663,8 +663,8 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			return (
 				<div>
 					<Accordion fluid exclusive={false}>
-						{ accordionPanel('Voyage estimate', this._renderEstimate(false), 'estimate', this._renderEstimateTitle()) }
-						{ accordionPanel('Voyage lineup', this._renderCrew(), 'crew') }
+						{ accordionPanel(t('voyage.estimate.title'), this._renderEstimate(false), 'estimate', this._renderEstimateTitle()) }
+						{ accordionPanel(t('voyage.lineup.title'), this._renderCrew(), 'crew') }
 					</Accordion>
 				</div>
 			);

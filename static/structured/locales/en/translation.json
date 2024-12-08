@@ -850,6 +850,7 @@
         "and_n_more_ellipses": "and {{n}} more ...",
         "any": "Any",
         "apply_filters": "Apply Filters",
+        "approx": "Approx.",
         "base": "Base",
         "bonus": "Bonus",
         "bonuses": "Bonuses",
@@ -949,6 +950,7 @@
         "permalink": "permalink",
         "portal": "Portal",
         "presets": "Presets",
+        "quarter_short": "Q",
         "quest": "Quest",
         "recommend_crew": "Recommend Crew",
         "reset": "Reset",
@@ -1915,6 +1917,10 @@
             "graphs": {
                 "description": "View visual representations of data trends",
                 "title": "Charts & Graphs"
+            },
+            "traits": {
+                "description": "Stats about crew traits in the game",
+                "title": "{{hints.traits}}"
             }
         },
         "stats": {
@@ -1925,7 +1931,23 @@
             "mean_velocity": "Mean Velocity"
         },
         "title": "Stats Trends",
-        "total_power_difference": "Total power difference"
+        "total_power_difference": "Total power difference",
+        "trait_columns": {
+            "collection": "{{base.collection}}",
+            "first_appearance": "First appearance",
+            "first_crew": "Oldest crew",
+            "hidden": "{{global.hidden}}",
+            "inaugural_crew": "Inaugural crew",
+            "latest_crew": "Latest crew",
+            "total_crew": "Total crew",
+            "trait": "{{hints.trait}}"
+        },
+        "traits": {
+            "hide_only_one": "Hide traits with only one crew",
+            "retroactively_added_to_n_crew": "Retroactively added to {{n}} crew",
+            "show_hidden": "Show hidden traits",
+            "show_variant_traits": "Show crew variant traits"
+        }
     },
     "tool_roster_picker": {
         "all_crew": {
@@ -1954,6 +1976,11 @@
                 "initial_estimate": "Your initial estimate was {{time}}."
             }
         },
+        "crew_finder_hints": {
+            "on_shuttle": "On shuttle",
+            "on_voyage": "On voyage",
+            "unfreeze_crew": "Unfreeze crew"
+        },
         "current_voyage_x": "Current {{x}}",
         "custom": {
             "no_trait": "No trait"
@@ -1981,6 +2008,7 @@
             "no_refills": "No Refills",
             "one_refill": "One Refill",
             "second_refill": "Second Refill",
+            "title": "Voyage estimate",
             "two_refills": "Two Refills",
             "voyage_end": "This voyage will end at {{time}}.",
             "voyage_extend": "Subsequent refills will extend it by {{time}}.",
@@ -1991,8 +2019,20 @@
             "not_yet": "You don't have any voyage history yet. Start tracking voyages from the crew calculator.",
             "title": "{{menu.tools.voyage_history}}"
         },
+        "lineup": {
+            "crew_trait_bonuses": "Crew trait bonuses",
+            "level_n_ship": "Level {{n}} ship",
+            "select_layout_colon": "Select layout: ",
+            "ship_trait_bonus": "Ship trait bonus",
+            "title": "Voyage lineup"
+        },
         "loading_voyage_tool_ellipses": "Loading voyage tool ...",
         "or_n_h_if_dupes_dismissed": "or {{n}} {{h}} if all duplicate crew are dismissed.",
+        "overrun_problem_text": {
+            "line_1": "WARNING!!! A potential problem with the reported voyage duration has been detected.",
+            "line_2": "We have attempted to correct this but the estimate may be inaccurate.",
+            "line_3": "Open the game, then return to DataCore with a fresh copy of your player data to guarantee a more accurate estimate."
+        },
         "seats": {
             "captain_slot": "First Officer",
             "chief_communications_officer": "Communications Officer",
