@@ -1,0 +1,35 @@
+import { ContinuumMission } from "../model/continuum";
+import { CrewMember, QuipmentScores } from "../model/crew";
+import { EquipmentItem } from "../model/equipment";
+import { EventInstance, EventLeaderboard } from "../model/events";
+import { Collection, KeystoneBase, Polestar, Constellation } from "../model/game-elements";
+import { Gauntlet } from "../model/gauntlets";
+import { Mission } from "../model/missions";
+import { ObjectiveEvent } from "../model/player";
+import { BattleStations, Schematics, Ship } from "../model/ship";
+import { StaticFaction } from "../model/shuttle";
+import { EventStats } from "../utils/event_stats";
+import { BuffStatTable } from "../utils/voyageutils";
+
+export interface ICoreData {
+	all_buffs: BuffStatTable;
+	battle_stations: BattleStations[];
+	cadet: Mission[];
+	collections: Collection[];
+	crew: CrewMember[];
+	episodes: Mission[];
+	event_instances: EventInstance[];
+	event_leaderboards: EventLeaderboard[];
+	event_stats: EventStats[];
+	factions: StaticFaction[];
+	gauntlets: Gauntlet[];
+	items: EquipmentItem[];
+	keystones: (KeystoneBase | Polestar | Constellation)[];
+	missions: Mission[];
+	missionsfull: Mission[];
+	objective_events: ObjectiveEvent[];
+	continuum_missions: ContinuumMission[];
+	ship_schematics: Schematics[];
+	ships: Ship[];
+	topQuipmentScores: QuipmentScores[];
+};

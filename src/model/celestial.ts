@@ -1,5 +1,6 @@
 
 export interface CelestialMarketListing {
+    name?: string;
     sold_last_day: number;
     buy_count: number;
     sell_count: number;
@@ -8,10 +9,13 @@ export interface CelestialMarketListing {
     wishlisted?: boolean;
     last_price: number;
     count_at_low: number;
+    data?: any;
 }
 
+export type MarketAggregation =  { [key: string]: CelestialMarketListing };
+
 export interface CelestialMarketRoot {
-    aggregation: { [key: string]: CelestialMarketListing }
+    aggregation: MarketAggregation;
 }
 
 export interface CelestialMarket {

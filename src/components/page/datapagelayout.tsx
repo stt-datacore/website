@@ -9,6 +9,7 @@ import { Container, Header } from 'semantic-ui-react';
 import { Navigation } from './navigation';
 import Dashboard from './dashboard';
 import PlayerHeader from '../../components/playerdata/playerheader';
+import { AlertContext, AlertProvider } from '../alerts/alertprovider';
 
 const DEBUG_MODE = false;
 
@@ -66,6 +67,8 @@ const MainContent = ({ children, narrowLayout }) => {
 
 const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const globalContext = React.useContext(GlobalContext);
+	const alertContext = React.useContext(AlertContext);
+	const { drawAlertModal } = alertContext;
 
 	const { children, pageId, pageTitle, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
 
@@ -94,47 +97,54 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	if (DEBUG_MODE) console.log("DataPageLayout component render");
 
 	return (
-		<div ref={topAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
-			<DataPageHelmet
-				title={pageTitle}
-				description={pageDescription}
-			/>
-			<Navigation
-				sidebarTarget={topAnchor}
-				requestPanel={(target: string, panel: string | undefined) => {
-					if (target === 'player') {
-						setPlayerPanel(panel);
-						if (panel) scrollTo(contentAnchor);
-					}
-					else if (target === 'dashboard') {
-						setDashboardPanel(panel);
-						if (panel) scrollTo(topAnchor);
-					}
-				}}
-			>
-				<MainContent narrowLayout={narrowLayout}>
-					<Dashboard
-						narrow={narrowLayout ?? false}
-						activePanel={dashboardPanel}
-						setActivePanel={setDashboardPanel}
-					/>
-					<div ref={contentAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
-						{pageTitle && (
-							<React.Fragment>
-								<Header as='h2'>{pageTitle}</Header>
-								{pageDescription && <p>{pageDescription}</p>}
-							</React.Fragment>
-						)}
-						<PlayerHeader
-							promptType={playerPromptType ?? 'none'}
-							activePanel={playerPanel}
-							setActivePanel={setPlayerPanel}
+		<AlertProvider>
+			<div ref={topAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
+
+				<DataPageHelmet
+					title={pageTitle}
+					description={pageDescription}
+				/>
+				<Navigation
+					sidebarTarget={topAnchor}
+					requestPanel={(target: string, panel: string | undefined) => {
+						if (target === 'player') {
+							setPlayerPanel(panel);
+							if (panel) scrollTo(contentAnchor);
+						}
+						else if (target === 'dashboard') {
+							setDashboardPanel(panel);
+							if (panel) scrollTo(topAnchor);
+						}
+					}}
+				>
+					<MainContent narrowLayout={narrowLayout}>
+						<Dashboard
+							openInputPanel={() => {
+								setPlayerPanel('input');
+								scrollTo(contentAnchor);
+							}}
+							narrow={narrowLayout ?? false}
+							activePanel={dashboardPanel}
+							setActivePanel={setDashboardPanel}
 						/>
-						{renderContents()}
-					</div>
-				</MainContent>
-			</Navigation>
-		</div>
+						<div ref={contentAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
+							{pageTitle && (
+								<React.Fragment>
+									<Header as='h2'>{pageTitle}</Header>
+									{pageDescription && <p>{pageDescription}</p>}
+								</React.Fragment>
+							)}
+							<PlayerHeader
+								promptType={playerPromptType ?? 'none'}
+								activePanel={playerPanel}
+								setActivePanel={setPlayerPanel}
+							/>
+							{renderContents()}
+						</div>
+					</MainContent>
+				</Navigation>
+			</div>
+		</AlertProvider>
 	);
 
 	function renderContents(): JSX.Element {

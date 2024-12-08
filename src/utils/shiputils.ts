@@ -1,12 +1,13 @@
 import { BaseSkillFields, BaseSkills, CrewMember, Skill } from "../model/crew";
 import { PlayerCrew, Setup } from "../model/player";
-import { BattleMode, PvpDivision, ShipAction, ShipInUse, ShipWorkerItem } from "../model/ship";
+import { BattleMode, PvpDivision, ShipAction, ShipInUse } from "../model/ship";
 import { Schematics, Ship } from "../model/ship";
 import { simplejson2csv, ExportField } from './misc';
 import { StatsSorter } from "./statssorter";
 import { shipStatSortConfig  } from "../utils/crewutils";
 import CONFIG from "../components/CONFIG";
 import { PlayerContextData } from "../context/playercontext";
+import { ShipWorkerItem } from "../model/worker";
 
 export function exportShipFields(): ExportField[] {
 	return [
@@ -84,7 +85,7 @@ export interface ShipPickerFilter {
 
 export function filterBy(ships: Ship[], filter?: ShipPickerFilter, clone?: boolean): Ship[] {
 	let shipOut = ships;
-	
+
 	if (!filter) {
 		if (clone) {
 			return JSON.parse(JSON.stringify(shipOut)) as Ship[];
@@ -140,8 +141,8 @@ export function highestLevel(ship: Ship) {
 export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[] {
 	let newShips: Ship[] = [];
 	ship_schematics = JSON.parse(JSON.stringify(ship_schematics));
-	let unowned_id = -1;
 	ship_schematics.forEach((schematic) => {
+		let unowned_id = -1;
 		let owned = ships.find((ship) => ship.symbol == schematic.ship.symbol);
 
 		let traits_named = schematic.ship.traits_named;
@@ -149,7 +150,7 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 		if (owned) {
 			schematic.ship.id = owned.id;
 			schematic.ship.name = owned.name;
-			schematic.ship.flavor = owned.flavor;			
+			schematic.ship.flavor = owned.flavor;
 			schematic.ship.accuracy = owned.accuracy;
 			schematic.ship.antimatter = owned.antimatter;
 			schematic.ship.attack = owned.attack;
@@ -162,14 +163,14 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 			schematic.ship.rarity = owned.rarity;
 			schematic.ship.shield_regen = owned.shield_regen;
 			schematic.ship.shields = owned.shields;
-			
 			if (owned.battle_stations?.length) {
 				schematic.ship.battle_stations = [ ... owned.battle_stations ?? []];
 			}
-			
+
 			if (owned.actions) {
 				schematic.ship.actions = JSON.parse(JSON.stringify(owned.actions)) as ShipAction[];
 			}
+			schematic.ship.immortal = owned.level >= schematic.ship.max_level! ? -1 : 0;
 			schematic.ship.owned = true;
 		} else {
 			schematic.ship.owned = false;
@@ -185,12 +186,21 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 			schematic.ship.id = unowned_id--;
 			schematic.ship.level ??= 0;
 		}
-		
+
 		if (!schematic.ship.max_level) schematic.ship.max_level = 1;
 		else schematic.ship.max_level += 1;
 
 		schematic.ship.traits_named = traits_named;
-
+		if (schematic.ship.symbol === "constellation_ship" && !schematic.ship.battle_stations) {
+			schematic.ship.battle_stations = [
+				{
+					skill: 'command_skill'
+				},
+				{
+					skill: 'diplomacy_skill'
+				}
+			];
+		}
 		newShips.push(schematic.ship);
 	});
 
@@ -229,19 +239,19 @@ export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)
 		}
 
 		if (seats?.length) {
-			return (seats?.some((seat) => crew.base_skills && crew.base_skills[seat] !== undefined));			
+			return (seats?.some((seat) => crew.base_skills && crew.base_skills[seat] !== undefined));
 		}
 		else {
 			return ship.battle_stations?.some(bs => bs.skill in crew.base_skills && crew.base_skills[bs.skill] !== undefined)
-		}		
+		}
 	});
-	
+
 	// now get ship grants
-	let grants = ship.actions?.filter(action => action.status !== undefined);	
+	let grants = ship.actions?.filter(action => action.status !== undefined);
 	if (grants) console.log(grants);
 	if (!grants) grants = [];
 	// now match triggers with grants.
-	if (bscrew) {		
+	if (bscrew) {
 		bscrew = bscrew.filter(crew => {
 			if ((grants?.length ?? 0) == 0) {
 				return (crew.action.ability?.condition ?? 0) === 0;
@@ -289,7 +299,8 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 	}
 
 	playerContext.playerData.player.character.pvp_divisions?.forEach((division) => {
-		let id = division.setup.ship_id;
+		let id = division?.setup?.ship_id;
+		if (!id) return;
 		let ship = playerContext.playerShips?.find(f => f.id === id);
 		if (ship) {
 			let pvp_division: PvpDivision | undefined = undefined;
@@ -307,7 +318,7 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 					pvp_division = 'admiral';
 					rarity = 5;
 					break;
-				default: 
+				default:
 					break;
 			}
 			if (!pvp_division) return;
@@ -325,7 +336,8 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 
 	playerContext.playerData.player.character.fbb_difficulties?.forEach((fbb) => {
 		if (!fbb.setup) return;
-		let id = fbb.setup.ship_id;
+		let id = fbb.setup?.ship_id;
+		if (!id) return;
 		let ship = playerContext.playerShips?.find(f => f.id === id);
 		if (ship) {
 			let battle_mode = `fbb_${fbb.id - 1}` as BattleMode;
