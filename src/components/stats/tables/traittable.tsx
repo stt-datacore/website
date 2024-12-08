@@ -86,10 +86,6 @@ export const TraitStatsTable = () => {
         return null;
     }
 
-    collections.forEach((col) => {
-        if (!col.description?.includes("trait"))
-            console.log(col.name, col.type_id || col.id, col.description);
-    })
     React.useEffect(() => {
         if (!crew?.length) return;
         let work = [...crew];
@@ -132,9 +128,6 @@ export const TraitStatsTable = () => {
                 let tcrew = work.filter(c => (!hidden ? c.traits : c.traits_hidden).includes(trait));
                 if (!tcrew.length) return;
                 if (hideOne && tcrew.length === 1) return;
-                if (trait === 'feb2023') {
-                    console.log("here");
-                }
                 let d = colSpecialDate(trait) || stones[trait];
                 let release = d && (d.getUTCFullYear() === 2016 && d.getMonth() < 6);
                 if (!d || d.getTime() < tcrew[0].date_added.getTime()) {
