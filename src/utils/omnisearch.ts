@@ -1,0 +1,59 @@
+import CONFIG from "../components/CONFIG";
+import { CrewMember } from "../model/crew";
+import { Filter } from "../model/game-elements";
+import { PlayerCrew } from "../model/player";
+import { skillToShort } from "./crewutils";
+
+export interface OmniSearchColumn {
+    field: string;
+    customMatch?: (fieldValue: any, text: string) => boolean;
+}
+
+export function omniSearchFilter<T>(item: T, filters: Filter[], filterType: string | null | undefined, fields: (string | OmniSearchColumn)[]): boolean {
+	if (filters.length == 0 || !filterType) return true;
+
+    const workfields = [] as OmniSearchColumn[];
+    let c = fields.length;
+    for (let i = 0; i < c; i++) {
+        if (typeof fields[i] === 'string') {
+            workfields.push({
+                field: fields[i] as string
+            });
+        }
+        else {
+            workfields.push(fields[i] as OmniSearchColumn);
+        }
+    }
+
+    const filterTypes = {
+        'Exact': (input: string, searchString: string) => input.toLowerCase() == searchString.toLowerCase(),
+        'Whole word': (input: string, searchString: string) => new RegExp('\\b' + searchString + '\\b', 'i').test(input),
+        'Any match': (input: string, searchString: string) => input.toLowerCase().indexOf(searchString.toLowerCase()) >= 0
+    };
+	const matchesFilter = filterTypes[filterType];
+	let meetsAnyCondition = false;
+
+	for (let filter of filters) {
+		let meetsAllConditions = true;
+		if ((filter.conditionArray?.length ?? 0) === 0) {
+			// text search only
+			for (let segment of filter.textSegments ?? []) {
+				let segmentResult = workfields.some((field) => {
+                    if (field.customMatch) {
+                        return field.customMatch(item[field.field], segment.text);
+                    }
+                    else {
+                        return matchesFilter(item[field.field], segment.text)
+                    }
+                });
+				meetsAllConditions = meetsAllConditions && (segment.negated ? !segmentResult : segmentResult);
+			}
+		}
+		if (meetsAllConditions) {
+			meetsAnyCondition = true;
+			break;
+		}
+	}
+
+	return meetsAnyCondition;
+}

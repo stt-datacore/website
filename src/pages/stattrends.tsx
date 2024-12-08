@@ -10,6 +10,7 @@ const StatTrends = () => {
 
     return (
         <DataPageLayout
+                demands={['collections', 'keystones']}
                 pageTitle={t('stat_trends.title')}
                 pageDescription={t('stat_trends.description')}
             >
