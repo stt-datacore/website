@@ -74,6 +74,18 @@ export const TraitStatsTable = () => {
         if (m <= 9) return `${t('global.approx')} ${t('global.quarter_short')}3 ${d.getUTCFullYear()}`;
         return `${t('global.approx')} ${t('global.quarter_short')}4 ${d.getUTCFullYear()}`;
     }
+
+    const colSpecialDate = (c: string) => {
+        let reg = /^([a-z]+)(\d+)$/;
+        if (reg.test(c)) {
+            let res = reg.exec(c);
+            if (res && res[2].length === 4) {
+                return new Date(`${res[1]} ${res[2]}`);
+            }
+        }
+        return null;
+    }
+
     collections.forEach((col) => {
         if (!col.description?.includes("trait"))
             console.log(col.name, col.type_id || col.id, col.description);
@@ -120,7 +132,10 @@ export const TraitStatsTable = () => {
                 let tcrew = work.filter(c => (!hidden ? c.traits : c.traits_hidden).includes(trait));
                 if (!tcrew.length) return;
                 if (hideOne && tcrew.length === 1) return;
-                let d = stones[trait];
+                if (trait === 'feb2023') {
+                    console.log("here");
+                }
+                let d = colSpecialDate(trait) || stones[trait];
                 let release = d && (d.getUTCFullYear() === 2016 && d.getMonth() < 6);
                 if (!d || d.getTime() < tcrew[0].date_added.getTime()) {
                     d = tcrew[0].date_added;
