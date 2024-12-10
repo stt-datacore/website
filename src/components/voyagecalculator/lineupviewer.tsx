@@ -72,7 +72,7 @@ export const LineupViewer = (props: LineupViewerProps) => {
 	const findBestRank: boolean = configSource === 'player';
 
 	const skillRankings: ISkillsRankings = initSkillRankings();
-	//const skillCombos: ISkillsRankings = initSkillCombos();
+	const skillCombos: ISkillsRankings = initSkillCombos();
 
 	const usedCrew: number[] = [];
 	const assignments: IAssignment[] = Object.values(CONFIG.VOYAGE_CREW_SLOTS).map(entry => {
@@ -141,36 +141,36 @@ export const LineupViewer = (props: LineupViewerProps) => {
 		return skillRankings;
 	}
 
-	// function initSkillCombos(): ISkillsRankings {
-	// 	const skillCombos: ISkillsRankings = {};
-	// 	if (!findBestRank) return skillCombos;
+	function initSkillCombos(): ISkillsRankings {
+		const skillCombos: ISkillsRankings = {};
+		if (!findBestRank) return skillCombos;
 
-	// 	[1, 2, 3].forEach(i => {
-	// 		souzaCombinations(Object.keys(CONFIG.SKILLS), i).forEach(skills => {
-	// 			skillCombos[skills.join(',')] = [];
-	// 		});
-	// 	});
+		[1, 2, 3].forEach(i => {
+			souzaCombinations(Object.keys(CONFIG.SKILLS), i).forEach(skills => {
+				skillCombos[skills.join(',')] = [];
+			});
+		});
 
-	// 	if (roster) {
-	// 		roster.forEach(crew => {
-	// 			const crewSkills: string[] = Object.keys(crew.skills);
-	// 			for (let i = 1; i <= crewSkills.length; i++) {
-	// 				souzaCombinations(crewSkills, i).forEach(skills => {
-	// 					skillCombos[skills.join(',')].push(crew);
-	// 				});
-	// 			}
-	// 		});
-	// 		Object.keys(skillCombos).forEach(skills => {
-	// 			skillCombos[skills] = skillCombos[skills].sort((c1: PlayerCrew, c2: PlayerCrew) => {
-	// 				if (voyageConfig.voyage_type === 'encounter')
-	// 					return encounterSort(c1, c2, skills.split(','));
-	// 				return dilemmaSort(c1, c2, skills.split(','));
-	// 			});
-	// 		});
-	// 	}
+		if (roster) {
+			roster.forEach(crew => {
+				const crewSkills: string[] = Object.keys(crew.skills);
+				for (let i = 1; i <= crewSkills.length; i++) {
+					souzaCombinations(crewSkills, i).forEach(skills => {
+						skillCombos[skills.join(',')].push(crew);
+					});
+				}
+			});
+			Object.keys(skillCombos).forEach(skills => {
+				skillCombos[skills] = skillCombos[skills].sort((c1: PlayerCrew, c2: PlayerCrew) => {
+					if (voyageConfig.voyage_type === 'encounter')
+						return encounterSort(c1, c2, skills.split(','));
+					return dilemmaSort(c1, c2, skills.split(','));
+				});
+			});
+		}
 
-	// 	return skillCombos;
-	// }
+		return skillCombos;
+	}
 
 	// Match in-game order for dilemma voyage crew selection
 	function dilemmaSort(c1: PlayerCrew, c2: PlayerCrew, skills: string[]): number {
@@ -188,46 +188,107 @@ export const LineupViewer = (props: LineupViewerProps) => {
 		return p2 - p1;
 	}
 
+	// v11.0.4
 	function getBestRank(crew: PlayerCrew, seatSkill: string, usedCrew: number[]): ISkillsRank {
 		let bestRank: ISkillsRank = {
 			skills: [],
 			rank: 1000
 		};
+
+		// Test seat skill rank
 		const seatRank: number = skillRankings[seatSkill].filter(c =>
 			!usedCrew.includes(c.id)
 		).findIndex(c => c.id === crew.id) + 1;
-		if (seatRank > 0 && seatRank <= 3) {
+		if (seatRank > 0 && seatRank <= 3)
 			bestRank = { skills: [], rank: seatRank };
-		}
-		else {
+
+		// Test other skill ranks
+		if (bestRank.rank > 3) {
 			const otherSkills: string[] = Object.keys(crew.skills).filter(skill => skill !== seatSkill);
 			for (let i = 0; i < otherSkills.length; i++) {
-				const sortSkill: string = otherSkills[i];
-				const pairRank: number = skillRankings[sortSkill].filter(c =>
+				const otherSkill: string = otherSkills[i];
+				const otherRank: number = skillRankings[otherSkill].filter(c =>
 					!usedCrew.includes(c.id)
 						&& Object.keys(c.skills).includes(seatSkill)
 				).findIndex(c => c.id === crew.id) + 1;
-				if (pairRank >= 0 && pairRank < bestRank.rank)
-					bestRank = { skills: [sortSkill], rank: pairRank };
-				if (bestRank.rank <= 3) break;
+				if (otherRank >= 0 && otherRank < bestRank.rank)
+					bestRank = { skills: [otherSkill], rank: otherRank };
 			}
-			if (bestRank.rank > 3 && otherSkills.length > 1) {
-				for (let i = 0; i < otherSkills.length; i++) {
-					const sortSkill: string = otherSkills[i];
-					const filterSkill: string = otherSkills[i == 0 ? 1 : 0];
-					const tripletRank: number = skillRankings[sortSkill].filter(c =>
+		}
+
+		// Test skill pair combo ranks (ranked by sum of skill pair)
+		if (bestRank.rank > 3) {
+			const crewSkills: string[] = Object.keys(crew.skills);
+			for (let i = 0; i < crewSkills.length; i++) {
+				const firstSkill: string = crewSkills[i];
+				for (let j = i + 1; j < crewSkills.length; j++) {
+					const secondSkill: string = crewSkills[j];
+					const skills: string[] = [firstSkill, secondSkill];
+					const pairRank: number = skillCombos[skills.join(',')].filter(c =>
 						!usedCrew.includes(c.id)
 							&& Object.keys(c.skills).includes(seatSkill)
-							&& Object.keys(c.skills).includes(filterSkill)
 					).findIndex(c => c.id === crew.id) + 1;
-					if (tripletRank >= 0 && tripletRank < bestRank.rank)
-						bestRank = { skills: [filterSkill, sortSkill], rank: tripletRank };
-					if (bestRank.rank <= 3) break;
+					if (pairRank >= 0 && pairRank < bestRank.rank)
+						bestRank = { skills, rank: pairRank };
 				}
 			}
 		}
+
+		// Test triplet (ranked by sum of all skills)
+		if (bestRank.rank > 3) {
+			const skills: string[] = Object.keys(crew.skills);
+			const tripletRank: number = skillCombos[skills.join(',')].filter(c =>
+				!usedCrew.includes(c.id)
+			).findIndex(c => c.id === crew.id) + 1;
+			if (tripletRank >= 0 && tripletRank < bestRank.rank)
+				bestRank = { skills, rank: tripletRank };
+		}
+
+		bestRank.skills = sortSkills(bestRank.skills);
 		return bestRank;
 	}
+
+	// v11.0.3
+	// function getBestRank(crew: PlayerCrew, seatSkill: string, usedCrew: number[]): ISkillsRank {
+	// 	let bestRank: ISkillsRank = {
+	// 		skills: [],
+	// 		rank: 1000
+	// 	};
+	// 	const seatRank: number = skillRankings[seatSkill].filter(c =>
+	// 		!usedCrew.includes(c.id)
+	// 	).findIndex(c => c.id === crew.id) + 1;
+	// 	if (seatRank > 0 && seatRank <= 3) {
+	// 		bestRank = { skills: [], rank: seatRank };
+	// 	}
+	// 	else {
+	// 		const otherSkills: string[] = Object.keys(crew.skills).filter(skill => skill !== seatSkill);
+	// 		for (let i = 0; i < otherSkills.length; i++) {
+	// 			const sortSkill: string = otherSkills[i];
+	// 			const pairRank: number = skillRankings[sortSkill].filter(c =>
+	// 				!usedCrew.includes(c.id)
+	// 					&& Object.keys(c.skills).includes(seatSkill)
+	// 			).findIndex(c => c.id === crew.id) + 1;
+	// 			if (pairRank >= 0 && pairRank < bestRank.rank)
+	// 				bestRank = { skills: [sortSkill], rank: pairRank };
+	// 			if (bestRank.rank <= 3) break;
+	// 		}
+	// 		if (bestRank.rank > 3 && otherSkills.length > 1) {
+	// 			for (let i = 0; i < otherSkills.length; i++) {
+	// 				const sortSkill: string = otherSkills[i];
+	// 				const filterSkill: string = otherSkills[i == 0 ? 1 : 0];
+	// 				const tripletRank: number = skillRankings[sortSkill].filter(c =>
+	// 					!usedCrew.includes(c.id)
+	// 						&& Object.keys(c.skills).includes(seatSkill)
+	// 						&& Object.keys(c.skills).includes(filterSkill)
+	// 				).findIndex(c => c.id === crew.id) + 1;
+	// 				if (tripletRank >= 0 && tripletRank < bestRank.rank)
+	// 					bestRank = { skills: [filterSkill, sortSkill], rank: tripletRank };
+	// 				if (bestRank.rank <= 3) break;
+	// 			}
+	// 		}
+	// 	}
+	// 	return bestRank;
+	// }
 
 	// function getBestComboRank(crew: PlayerCrew, seatSkill: string, usedCrew: number[]): ISkillsRank {
 	// 	let bestRank: ISkillsRank = {
@@ -251,44 +312,45 @@ export const LineupViewer = (props: LineupViewerProps) => {
 	// }
 
 	// Filter out seat skill and match in-game left-to-right order of skill filter buttons
-	// function sortSkills(skills: string[], seatSkill: string): string[] {
-	// 	const filterSkills: string[] = [
-	// 		'command_skill', 'diplomacy_skill', 'engineering_skill',
-	// 		'security_skill', 'medicine_skill', 'science_skill'
-	// 	];
-	// 	const sorted: string[] = [];
-	// 	filterSkills.forEach(skill => {
-	// 		if (skills.includes(skill) && seatSkill !== skill) sorted.push(skill);
-	// 	});
-	// 	return sorted;
-	// }
+	//	If seatSkill set, seat skill will not be displayed (i.e. <= 11.0.3, when seat skill was pre-selected)
+	function sortSkills(skills: string[], seatSkill?: string): string[] {
+		const filterSkills: string[] = [
+			'command_skill', 'diplomacy_skill', 'engineering_skill',
+			'security_skill', 'medicine_skill', 'science_skill'
+		];
+		const sorted: string[] = [];
+		filterSkills.forEach(skill => {
+			if (skills.includes(skill) && seatSkill !== skill) sorted.push(skill);
+		});
+		return sorted;
+	}
 
 	// https://blog.lublot.dev/combinations-in-typescript
-// 	function souzaCombinations<T>(items: T[], size: number = items.length): T[][] {
-// 		const combinations: T[][] = [];
-// 		const stack: number[] = [];
-// 		let i = 0;
+	function souzaCombinations<T>(items: T[], size: number = items.length): T[][] {
+		const combinations: T[][] = [];
+		const stack: number[] = [];
+		let i = 0;
 
-// 		size = Math.min(items.length, size);
+		size = Math.min(items.length, size);
 
-// 		while (true) {
-// 			if (stack.length === size) {
-// 				combinations.push(stack.map((index) => items[index]));
-// 				i = stack.pop()! + 1;
-// 			}
+		while (true) {
+			if (stack.length === size) {
+				combinations.push(stack.map((index) => items[index]));
+				i = stack.pop()! + 1;
+			}
 
-// 			if (i >= items.length) {
-// 				if (stack.length === 0) {
-// 					break;
-// 				}
-// 				i = stack.pop()! + 1;
-// 			} else {
-// 				stack.push(i++);
-// 			}
-// 		}
+			if (i >= items.length) {
+				if (stack.length === 0) {
+					break;
+				}
+				i = stack.pop()! + 1;
+			} else {
+				stack.push(i++);
+			}
+		}
 
-// 		return combinations;
-// 	}
+		return combinations;
+	}
 };
 
 const PlayerViewPicker = (props: { dbid: string }) => {
