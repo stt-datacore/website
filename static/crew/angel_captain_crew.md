@@ -9,18 +9,4 @@ date: 08/03/2023
 published: true
 ---
 
-*Epic Movie Trailer Voice guy*
-In a world - where new Rank 30 Voyage cards are released weekly...
-Clouds hang in distance obscuring the future...
-The looming threat of doom surrounds us all...
-One pirate will rise above the pile...
-And declare themselves
-CAPTAIN.....ANGEL.
-
-OK so, that intro may seem a little out there – but arguably deserving for the best CMD ENG SEC debut since...*checks notes*...Maquis Takeover Seska?  OK so maybe the intro went a bit over the top, but for the new #4 CMD Base in Timelines, and with best-in-class voyage seating for *4* traits, they certainly would be worthy of your effort to obtain a copy during rare Skirmish event.
-
-So having a top CMD base means shuttle use, that I grant you.  However, I cannot grant you any collections beyond Criminal....where the milestones stop at 10 and features 11 Super Rare...you know what, let’s look ahead to POTENTIAL COLLECTIONS – something we can all look forward to.  Carrying the future badge of honor for Smuggler, Scoundrel, Romantic and Brutal, surely they will have value for years to come....just like the game.
-Right?
-
-Wait..it’s not even a full Skirmish, but a hybrid?
-Sigh.  Get out of my chair.
+We’re still waiting for Captain Angel’s relationship with Sybok to pay off in Strange New Worlds, Season 3 or Season 4 or hopefully Season 10 (please Paramount, let us have 10 seasons), but until then, here is an aggressively-average CMD/ENG/SEC Legendary Crew with a thin Trait list and even thinner long-term prospects. But… some of these niche Traits could find themselves with associated Collections before long, and when all is said and done, Captain Angel could have themselves a quintet of tick marks on Stat-Boosting Collections.
