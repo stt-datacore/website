@@ -2009,7 +2009,7 @@
         "estimate": {
             "1_refill": "1 recarga",
             "calculated_by_name_time": "¡Calculado por {{calculator_name}} en {{time}} segundos!",
-            "dilemma_chance": "Probabilidad de dilema de {{time}}: {{chance}}",
+            "dilemma_chance": "Probabilidad de dilema de {{time}}h: {{chance}}%",
             "estimate": "Estimado",
             "estimate_time": "Estimado: {{time}}",
             "expected_range": "(rango esperado: {{a}} a {{b}})",

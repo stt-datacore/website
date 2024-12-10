@@ -1994,7 +1994,7 @@
         "estimate": {
             "1_refill": "1 Refill",
             "calculated_by_name_time": "Calculated by {{calculator_name}} in {{time}} seconds!",
-            "dilemma_chance": "Chance of {{time}} dilemma: {{chance}}",
+            "dilemma_chance": "Chance of {{time}}h dilemma: {{chance}}%",
             "estimate": "Estimate",
             "estimate_time": "Estimate: {{time}}",
             "expected_range": "(expected range: {{a}} to {{b}})",

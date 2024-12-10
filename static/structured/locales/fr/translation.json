@@ -2009,7 +2009,7 @@
         "estimate": {
             "1_refill": "1 recharge",
             "calculated_by_name_time": "Calculé par {{calculator_name}} en {{time}} secondes !",
-            "dilemma_chance": "Chance d'un dilemme dans {{time}} : {{chance}}",
+            "dilemma_chance": "Chance d'un dilemme dans {{time}}h : {{chance}} %",
             "estimate": "Estimation",
             "estimate_time": "Estimation : {{time}}",
             "expected_range": "(plage attendue : {{a}} à {{b}})",
@@ -2018,7 +2018,7 @@
                 "chance_%": "Chance (%)",
                 "voyage_length": "Durée du voyage (heures)"
             },
-            "n_chance_of_reaching_t": "{{n}}% de chance d'atteindre {{t}}",
+            "n_chance_of_reaching_t": "{{n}}% de chance d'atteindre {{t}}h",
             "n_refills": "{{n}} recharges",
             "no_refills": "Aucune recharge",
             "one_refill": "Une recharge",

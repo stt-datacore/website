@@ -337,9 +337,9 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 					{!isMobile && <td>90%: {this._formatTime(est.safeResult)}</td>}
 					<td>99%: {this._formatTime(est.saferResult)}</td>
 					<td>
-						{t('voyage.x_dilemma_chance_h_y', {
-							h: `${est.lastDil}`,
-							y: `${Math.floor(est.dilChance)}`
+						{t('voyage.estimate.dilemma_chance', {
+							time: `${est.lastDil}`,
+							chance: `${Math.floor(est.dilChance)}`
 						})}
 					</td>
 					<td>{this._renderPrettyCost(est.refillCostResult, idx)}</td>

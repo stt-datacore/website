@@ -1996,7 +1996,7 @@
         "estimate": {
             "1_refill": "1 Nachfüllung",
             "calculated_by_name_time": "Berechnet von {{calculator_name}} in {{time}} Sekunden!",
-            "dilemma_chance": "Chance auf {{time}}-Dilemma: {{chance}}",
+            "dilemma_chance": "Chance auf {{time}} Std-Dilemma: {{chance}} %",
             "estimate": "Schätzung",
             "estimate_time": "Schätzung: {{time}}",
             "expected_range": "(erwarteter Bereich: {{a}} bis {{b}})",
