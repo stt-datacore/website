@@ -231,7 +231,10 @@ export const TraitStatsTable = () => {
                     newtrait.retro = 0;
                     newtrait.first_appearance = newtrait.first_crew.date_added;
                 }
-                if (!newtrait.launch_crew || newtrait.launch_crew?.symbol === newtrait.latest_crew?.symbol) newtrait.retro = 0;
+                if (!newtrait.launch_crew || newtrait.launch_crew?.symbol === newtrait.latest_crew?.symbol) {
+                    newtrait.retro = 0;
+                    newtrait.first_appearance = newtrait.first_crew.date_added;
+                }
 
                 if (!excludeLaunch || newtrait.first_appearance.getTime() !== GameEpoch.getTime()) {
                     outstats.push(newtrait);
