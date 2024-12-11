@@ -54,7 +54,9 @@ export const TraitStatsTable = () => {
     const { t, TRAIT_NAMES, COLLECTIONS } = globalContext.localized;
     const { crew, collections, keystones } = globalContext.core;
     const [stats, setStats] = React.useState<TraitStats[]>([]);
+    const [excludeLaunch, setExcludeLaunch] = useStateWithStorage<boolean>('stat_trends/traits/exclude_launch', false, { rememberForever: true });
     const [showHidden, setShowHidden] = useStateWithStorage<boolean>('stat_trends/traits/show_hidden', false, { rememberForever: true });
+    const [showVisible, setShowVisible] = useStateWithStorage<boolean>('stat_trends/traits/show_visible', true, { rememberForever: true });
     const [hideOne, setHideOne] = useStateWithStorage<boolean>('stat_trends/traits/hide_one', false, { rememberForever: true });
     const [showVariantTraits, setShowVariantTraits] = useStateWithStorage<boolean>('stat_trends/traits/show_variant_traits', true, { rememberForever: true });
     const flexRow = OptionsPanelFlexRow;
@@ -88,7 +90,8 @@ export const TraitStatsTable = () => {
     }
 
     const approxDate = (d: Date) => {
-        let m = (d.getMonth() + 1);
+        if (d.getTime() === GameEpoch.getTime()) return t('global.initial_launch')
+        let m = (d.getUTCMonth() + 1);
         if (m <= 3) return `${t('global.approx')} ${t('global.quarter_short')}1 ${d.getUTCFullYear()}`;
         if (m <= 6) return `${t('global.approx')} ${t('global.quarter_short')}2 ${d.getUTCFullYear()}`;
         if (m <= 9) return `${t('global.approx')} ${t('global.quarter_short')}3 ${d.getUTCFullYear()}`;
@@ -109,7 +112,7 @@ export const TraitStatsTable = () => {
     React.useEffect(() => {
         if (!crew?.length) return;
         let work = [...crew];
-        work.sort((a, b) => a.date_added.getTime() - b.date_added.getTime() || (a.name_english || a.name).localeCompare(b.name_english ?? b.name));
+        work.sort((a, b) => a.date_added.getTime() - b.date_added.getTime() || a.archetype_id - b.archetype_id || (a.name_english || a.name).localeCompare(b.name_english ?? b.name));
         let crewitems = crew.map(c => {
             let symbol = c.equipment_slots.findLast(f => f.level >= 99)?.symbol ?? '';
             let item = globalContext.core.items.find(f => f.symbol === symbol);
@@ -137,17 +140,20 @@ export const TraitStatsTable = () => {
             if (ks.symbol.endsWith("_crate")) return;
             let t = ks.symbol.replace("_keystone", "");
             let d = calcReleaseVague(min, ks.id);
-            if (d.getUTCFullYear() >= 2021) d = calcRelease(ks.id, crewitems);
+            if (d.getUTCFullYear() >= 2022) d = calcRelease(ks.id, crewitems);
+            if (d.getUTCFullYear() === 2016) d = new Date(GameEpoch);
             stones[t] = d;
             stoneicons[t] = getIconPath(ks.icon);
         });
 
         work.forEach((c) => {
             const variants = getVariantTraits(c);
-            c.traits.forEach(ct => {
-                if (!showVariantTraits && variants.includes(ct)) return;
-                if (!ntraits.includes(ct) && !htraits.includes(ct)) ntraits.push(ct);
-            });
+            if (showVisible) {
+                c.traits.forEach(ct => {
+                    if (!showVariantTraits && variants.includes(ct)) return;
+                    if (!ntraits.includes(ct) && !htraits.includes(ct)) ntraits.push(ct);
+                });
+            }
             if (showHidden) {
                 c.traits_hidden.forEach(ct => {
                     if (!showVariantTraits && variants.includes(ct)) return;
@@ -161,13 +167,18 @@ export const TraitStatsTable = () => {
         [ntraits, htraits].forEach((traitset, idx) => {
             const hidden = idx === 1;
             traitset.forEach((trait) => {
-                let tcrew = work.filter(c => (!hidden ? c.traits : c.traits_hidden).includes(trait));
+                let tcrew = work.filter(c => (!hidden ? c.traits : c.traits_hidden).includes(trait))
                 if (!tcrew.length) return;
                 if (hideOne && tcrew.length === 1) return;
                 let d = colSpecialDate(trait) || stones[trait];
-                let release = d && (d.getUTCFullYear() === 2016 && d.getMonth() < 6);
+                let release = d && (d.getUTCFullYear() === 2016 && d.getUTCMonth() < 6);
                 if (!d || d.getTime() < tcrew[0].date_added.getTime()) {
                     d = tcrew[0].date_added;
+                }
+                if (d.getUTCFullYear() === 2016) {
+                    if (tcrew[0].date_added.getTime() !== GameEpoch.getTime()) {
+                        d = tcrew[0].date_added;
+                    }
                 }
                 let rcrew = tcrew.filter(c => c.date_added.getTime() < d.getTime() - (1000 * 24 * 60 * 60 * 10));
                 const newtrait = {
@@ -203,6 +214,7 @@ export const TraitStatsTable = () => {
                     let adiff = Math.abs(a.date_added.getTime() - d.getTime());
                     let bdiff = Math.abs(b.date_added.getTime() - d.getTime());
                     let r = adiff - bdiff;
+                    if (!r) r = a.archetype_id - b.archetype_id;
                     if (!r) r = a.name.localeCompare(b.name);
                     return r;
                 });
@@ -214,14 +226,21 @@ export const TraitStatsTable = () => {
                     let t = tcrew.find(f => d.getTime() < f.date_added.getTime());
                     if (t) newtrait.launch_crew = t;
                 }
+                if (newtrait.launch_crew?.symbol === newtrait.latest_crew?.symbol) newtrait.launch_crew = undefined;
+                if (newtrait.retro == tcrew.length) {
+                    newtrait.retro = 0;
+                    newtrait.first_appearance = newtrait.first_crew.date_added;
+                }
                 if (!newtrait.launch_crew || newtrait.launch_crew?.symbol === newtrait.latest_crew?.symbol) newtrait.retro = 0;
 
-                outstats.push(newtrait);
+                if (!excludeLaunch || newtrait.first_appearance.getTime() !== GameEpoch.getTime()) {
+                    outstats.push(newtrait);
+                }
             });
         });
 
         setStats(outstats);
-    }, [crew, showHidden, showVariantTraits, hideOne]);
+    }, [crew, showHidden, showVariantTraits, hideOne, showVisible, excludeLaunch]);
 
     const tableConfig = [
         { width: 1, column: 'trait', title: t('stat_trends.trait_columns.trait') },
@@ -281,9 +300,17 @@ export const TraitStatsTable = () => {
         <div style={{...flexCol, alignItems: 'stretch', justifyContent: 'flex-start', width: '100%', overflowX: 'auto' }}>
             <div style={flexRow}>
                 <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start', gap: '1em', margin: '1em 0'}}>
+                    <Checkbox label={t('stat_trends.traits.show_visible')}
+                        checked={showVisible}
+                        onChange={(e, { checked }) => setShowVisible(!!checked) }
+                    />
                     <Checkbox label={t('stat_trends.traits.hide_only_one')}
                         checked={hideOne}
                         onChange={(e, { checked }) => setHideOne(!!checked) }
+                    />
+                    <Checkbox label={t('stat_trends.traits.exclude_launch')}
+                        checked={excludeLaunch}
+                        onChange={(e, { checked }) => setExcludeLaunch(!!checked) }
                     />
                     <Checkbox label={t('stat_trends.traits.show_hidden')}
                         checked={showHidden}

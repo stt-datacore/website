@@ -842,6 +842,7 @@
         }
     },
     "global": {
+        "initial_launch": "Initial Game Launch",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
@@ -1946,6 +1947,8 @@
             "hide_only_one": "Hide traits with only one crew",
             "retroactively_added_to_n_crew": "Retroactively added to {{n}} crew",
             "show_hidden": "Show hidden traits",
+            "show_visible": "Show visible traits",
+            "exclude_launch": "Exclude launch crew",
             "show_variant_traits": "Show crew variant traits"
         }
     },

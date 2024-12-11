@@ -851,6 +851,7 @@
         }
     },
     "global": {
+        "initial_launch": "Lanzamiento inicial del juego",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
@@ -1961,6 +1962,8 @@
             "hide_only_one": "Ocultar rasgos con uno solo tripulante",
             "retroactively_added_to_n_crew": "Agregado retroactivamente a {{n}} tripulantes",
             "show_hidden": "Mostrar rasgos ocultos",
+            "show_visible": "Mostrar rasgos visibles",
+            "exclude_launch": "Exclude launch crew",
             "show_variant_traits": "Mostrar rasgos de variantes de la tripulación"
         }
     },

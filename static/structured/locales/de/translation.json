@@ -842,6 +842,7 @@
         }
     },
     "global": {
+        "initial_launch": "Erstveröffentlichung des Spiels",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
@@ -1948,6 +1949,8 @@
             "hide_only_one": "Merkmale mit nur einer Crew verbergen",
             "retroactively_added_to_n_crew": "Nachträglich zu {{n}} Crewmitgliedern hinzugefügt",
             "show_hidden": "Versteckte Merkmale anzeigen",
+            "show_visible": "Sichtbare Merkmale anzeigen",
+            "exclude_launch": "Exclude launch crew",
             "show_variant_traits": "Variantenmerkmale der Crew anzeigen"
         }
     },

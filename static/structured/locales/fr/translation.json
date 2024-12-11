@@ -850,6 +850,7 @@
         }
     },
     "global": {
+        "initial_launch": "Sortie initiale du jeu",
         "aborted": "Terminé",
         "admiral": "Avorté",
         "advanced_settings": "Réglages Avancés",
@@ -1961,6 +1962,8 @@
             "hide_only_one": "Masquer les traits avec un seul équipier",
             "retroactively_added_to_n_crew": "Ajouté rétroactivement à 5 équipiers",
             "show_hidden": "Afficher les traits cachés",
+            "show_visible": "Afficher les traits visibles",
+            "exclude_launch": "Exclude launch crew",
             "show_variant_traits": "Afficher les caractéristiques des variantes d'équipage"
         }
     },
