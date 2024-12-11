@@ -60,10 +60,30 @@ export const TraitStatsTable = () => {
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;
 
-    const calcRelease = (min: number, max: number) => {
+
+    const calcReleaseVague = (min: number, max: number) => {
         let d = new Date(GameEpoch);
         let dn = ((max - min) / 4) + 91;
         d.setDate(d.getDate() + dn);
+        return d;
+    }
+
+    const calcRelease = (number: number, items: { id: number, date: Date }[]) => {
+        let n = -1;
+        let nidx = -1;
+        let i = 0;
+        for (let item of items) {
+            if (item.id > number) break;
+            let z = number - item.id;
+            if (z >= 0 && (n === -1 || z < n)) {
+                n = z;
+                nidx = i;
+            }
+            i++;
+        }
+        if (n < 0 || nidx < 0) return new Date(GameEpoch);
+        let d = new Date(items[nidx].date);
+        d.setHours(d.getHours() - ((number - n) / 40));
         return d;
     }
 
@@ -90,6 +110,20 @@ export const TraitStatsTable = () => {
         if (!crew?.length) return;
         let work = [...crew];
         work.sort((a, b) => a.date_added.getTime() - b.date_added.getTime() || (a.name_english || a.name).localeCompare(b.name_english ?? b.name));
+        let crewitems = crew.map(c => {
+            let symbol = c.equipment_slots.findLast(f => f.level >= 99)?.symbol ?? '';
+            let item = globalContext.core.items.find(f => f.symbol === symbol);
+            if (item) {
+                return {
+                    id: Number(item.id),
+                    date: c.date_added
+                }
+            }
+            else return {
+                id: 0,
+                date: new Date()
+            }
+        }).filter(f => f.id).sort((a, b) => a.id - b.id);
 
         let workstones = [...keystones];
         workstones.sort((a, b) => a.id - b.id);
@@ -102,7 +136,9 @@ export const TraitStatsTable = () => {
         workstones.forEach((ks) => {
             if (ks.symbol.endsWith("_crate")) return;
             let t = ks.symbol.replace("_keystone", "");
-            stones[t] = calcRelease(min, ks.id);
+            let d = calcReleaseVague(min, ks.id);
+            if (d.getUTCFullYear() >= 2021) d = calcRelease(ks.id, crewitems);
+            stones[t] = d;
             stoneicons[t] = getIconPath(ks.icon);
         });
 
@@ -178,6 +214,7 @@ export const TraitStatsTable = () => {
                     let t = tcrew.find(f => d.getTime() < f.date_added.getTime());
                     if (t) newtrait.launch_crew = t;
                 }
+                if (!newtrait.launch_crew || newtrait.launch_crew?.symbol === newtrait.latest_crew?.symbol) newtrait.retro = 0;
 
                 outstats.push(newtrait);
             });
