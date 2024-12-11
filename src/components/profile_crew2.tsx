@@ -46,7 +46,7 @@ type ProfileCrewMobileState = {
 
 class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMobileState> {
 	static contextType = GlobalContext;
-	context!: React.ContextType<typeof GlobalContext>;
+	declare context: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: ProfileCrewMobileProps) {
 		super(props);
@@ -66,8 +66,8 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 			buffs: buffConfig ?? {}
 		};
 	}
-	
-	
+
+
 	private dataPrepared: boolean = false;
 
 	componentDidUpdate() {
@@ -97,7 +97,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 			});
 			this.setState({ ...this.state, data: data, itemsReady: true, buffs: this.context.player.buffConfig ?? {} });
 			this._handleSortNew({})
-		}		
+		}
 	}
 
 	_handleSortNew(config: HandleSortOptions) {

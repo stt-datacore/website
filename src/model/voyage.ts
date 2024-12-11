@@ -4,18 +4,33 @@ import { CrewSlot, PlayerCrew, VoyageCrewSlot, VoyageSkills } from './player';
 // Voyage calculator require crew.skills
 export interface IVoyageCrew extends PlayerCrew {
 	skills: BaseSkills;
+	active_voyage_type?: 'dilemma' | 'encounter';
 };
 
 // The slimmest possible version of voyageConfig, as expected as input by calculator
 //	Use Voyage for a config from player data when voyage started
 //	Use VoyageDescription for a config from player data when voyage not yet started
 export interface IVoyageInputConfig {
+	voyage_type: 'dilemma' | 'encounter';
 	skills: VoyageSkills;
 	ship_trait: string;
 	crew_slots: CrewSlot[];
-	voyage_type: 'dilemma' | 'encounter';
-	high_bonus?: string[];
-	low_bonus?: string[];
+	event_content?: IVoyageEventContent;
+};
+
+// Support for event voyage info
+export interface IVoyageEventContent {
+	voyage_symbol: string;	// encounter_voyage
+	primary_skill: string;
+	secondary_skill: string;
+	antimatter_bonus_per_crew_trait: number;
+	antimatter_bonus_crew_traits: string[];
+	antimatter_bonus_for_featured_crew: number;
+	featured_crews: string[];
+	antimatter_bonus_per_ship_trait: number;
+	antimatter_bonus_ship_traits: string[];
+	antimatter_bonus_for_featured_ship: number;
+	featured_ships: string[];
 };
 
 // Extends IVoyageInputConfig to include calculation result
@@ -71,6 +86,7 @@ export interface ITrackedAssignment {
 	tracker_id: number;
 	slot: number;	// Slot index where crew is seated
 	trait: string;	// Matched trait or empty string if no match
+	kwipment?: number[] | number[][];
 };
 
 export interface ITrackedAssignmentsBySkill {
@@ -89,3 +105,439 @@ export interface ITrackedCrewMember extends PlayerCrew {
 		created_at: number
 	};
 };
+
+export interface ITrackedVoyageRecord {
+    dbid: number;
+    trackerId: number;
+    voyage: ITrackedVoyage;
+    timeStamp: Date;
+}
+
+export interface ITrackedCrewRecord {
+    dbid: number;
+    crew: string;
+    trackerId: number;
+    assignment: ITrackedAssignment;
+    timeStamp: Date;
+}
+
+export interface ITrackedDataRecord {
+    voyages: ITrackedVoyageRecord[];
+    assignments: ITrackedCrewRecord[];
+}
+
+export interface IFullPayloadAssignment extends ITrackedAssignment {
+	crew: string;
+	kwipment?: number[] | number[][];
+};
+
+export interface ITrackedPayload {
+	dbid: number;
+	voyage: ITrackedVoyage;
+	assignments: IFullPayloadAssignment[];
+};
+
+export const AntimatterSeatMap =  [
+    {
+        "name": "brutal",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "caregiver",
+        "skills": [
+            "diplomacy_skill",
+            "medicine_skill"
+        ]
+    },
+    {
+        "name": "civilian",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill",
+            "medicine_skill"
+        ]
+    },
+    {
+        "name": "communicator",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "costumed",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "crafty",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "cultural_figure",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "desperate",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "duelist",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "explorer",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "engineering_skill"
+        ]
+    },
+    {
+        "name": "gambler",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "hero",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "hunter",
+        "skills": [
+            "command_skill",
+            "security_skill"
+        ]
+    },
+    {
+        "name": "innovator",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "engineering_skill"
+        ]
+    },
+    {
+        "name": "inspiring",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "jury_rigger",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "engineering_skill"
+        ]
+    },
+    {
+        "name": "marksman",
+        "skills": [
+            "security_skill"
+        ]
+    },
+    {
+        "name": "maverick",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "mirror_universe",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "pilot",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "engineering_skill"
+        ]
+    },
+    {
+        "name": "prodigy",
+        "skills": [
+            "science_skill",
+            "engineering_skill"
+        ]
+    },
+    {
+        "name": "resourceful",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "romantic",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "saboteur",
+        "skills": [
+            "command_skill",
+            "security_skill"
+        ]
+    },
+    {
+        "name": "scoundrel",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "survivalist",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "tactician",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "telepath",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "undercover_operative",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "villain",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "federation",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill",
+            "medicine_skill"
+        ]
+    },
+    {
+        "name": "starfleet",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill",
+            "medicine_skill"
+        ]
+    },
+    {
+        "name": "astrophysicist",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "engineering_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "cyberneticist",
+        "skills": [
+            "science_skill",
+            "engineering_skill"
+        ]
+    },
+    {
+        "name": "diplomat",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "doctor",
+        "skills": [
+            "science_skill",
+            "diplomacy_skill",
+            "medicine_skill"
+        ]
+    },
+    {
+        "name": "exobiology",
+        "skills": [
+            "science_skill"
+        ]
+    },
+    {
+        "name": "nurse",
+        "skills": [
+            "medicine_skill"
+        ]
+    },
+    {
+        "name": "veteran",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "bajoran",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "borg",
+        "skills": [
+            "science_skill",
+            "security_skill",
+            "engineering_skill"
+        ]
+    },
+    {
+        "name": "cardassian",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "ferengi",
+        "skills": [
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "hologram",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "diplomacy_skill",
+            "medicine_skill"
+        ]
+    },
+    {
+        "name": "human",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "engineering_skill",
+            "diplomacy_skill",
+            "medicine_skill"
+        ]
+    },
+    {
+        "name": "klingon",
+        "skills": [
+            "command_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "romulan",
+        "skills": [
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    },
+    {
+        "name": "vulcan",
+        "skills": [
+            "command_skill",
+            "science_skill",
+            "security_skill",
+            "diplomacy_skill"
+        ]
+    }
+];
+

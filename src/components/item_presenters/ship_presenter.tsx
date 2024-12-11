@@ -7,6 +7,7 @@ import { Ship } from "../../model/ship";
 import { TinyStore } from "../../utils/tiny";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { GlobalContext } from "../../context/globalcontext";
+import { navigate } from "gatsby";
 
 export interface PresenterProps {
     hover: boolean;
@@ -34,7 +35,7 @@ export interface ShipPresenterState {
 
 export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterState> {
     static contextType = GlobalContext;
-    context!: React.ContextType<typeof GlobalContext>;
+    declare context: React.ContextType<typeof GlobalContext>;
 
     tiny: TinyStore;
 
@@ -158,9 +159,18 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                             style={{ height: compact ? "15em" : "25em", maxWidth: "calc(100vw - 32px)", marginRight: "8px"}}
                         />
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"8px"}}>
-                        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
-
+                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"16px"}}>
+                        {!showIcon && <div
+                            onClick={() => navigate(`/ship_info/?ship=${ship.symbol}`)}
+                            style={{
+                                cursor: 'pointer',
+                                display: "flex", flexDirection: "row", justifyContent: "space-evenly", alignItems: 'center' }}>
+                            {ship.battle_stations?.map((bs, idx) => {
+                                return <img
+                                    key={`${bs.skill}_key_${ship.symbol}_${idx}`}
+                                    style={{height: '1em'}}
+                                    src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bs.skill}.png`} />
+                            })}
                             {/* {(!this.props.disableBuffs) &&
                             <i className="arrow alternate circle up icon" title="Toggle Personal Buffs" style={this.showPlayerBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />
                             ||
@@ -178,7 +188,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                                 style={("immortal" in ship && ship.immortal != 0 && (ship.immortal ?? 0) > -2) ? completeStyle : this.showImmortalized ? activeStyle : dormantStyle}
                                 onClick={(e) => immoToggle(e)} />
                             } */}
-                        </div>
+                        </div>}
                     </div>
                 </div>
                 <div
@@ -197,7 +207,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                             </a>
                         </h3>
                         <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>
-                            <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in ship ? printImmoText(ship.immortal ?? CompletionState.DisplayAsImmortalStatic, t('ship.ship'), t('ship.max_level'), t) : t('item_state.item_is_shown', { item: 'base.crew', level: 'crew_state.immortalized'})}>
+                            <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in ship ? printImmoText(ship.immortal ?? CompletionState.DisplayAsImmortalStatic, t('ship.ship'), t('ship.max_level'), t) : t('item_state.item_is_shown', { item: 'base.ship', level: 'ship.max_level'})}>
                                 {
                                     "immortal" in ship && (
                                         ((ship.immortal === 0)) ?
@@ -217,7 +227,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                                 disabled />
                         </div>
                     </div>
-                    {stats.map((statline, index) =>
+                    {stats?.map((statline, index) =>
                         <div
                             key={index}
                             style={{
@@ -230,13 +240,13 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                                 marginBottom: "2px",
                             }}
                         >
-                            {statline.map((stat, index) =>
+                            {statline?.map((stat, index) =>
                                 <div key={index} style={{
                                         width: window.innerWidth < mobileWidth ? "30vw" : "9em", display: "flex", flexDirection: "row", alignItems: "center" }}>
                                     <img src={"/media/ship/" + stat.icon} style={{height: "1.5em", marginRight: "6px"}} />
                                     <div style={{ display: "flex", flexDirection: "column" }}>
-                                        <div>{stat.name}</div>
-                                        <div>{stat.value.toLocaleString()}</div>
+                                        <div>{stat?.name}</div>
+                                        <div>{stat?.value?.toLocaleString()}</div>
                                     </div>
                                 </div>
                             )}
@@ -266,7 +276,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                         {ship.traits_hidden?.join(", ")}
                     </div>}
                     <div>
-                        {ship.actions && <ShipSkill
+                        {!!ship.actions?.length && <ShipSkill
                                 withActionIcons={showIcon}
                                 grouped={tabs}
                                 context={ship}
