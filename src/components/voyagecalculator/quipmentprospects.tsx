@@ -13,6 +13,7 @@ export type QuipmentProspectConfig = {
     current: boolean;
 	voyage: VoyageSkillPreferenceMode;
     slots: number;
+    calc: 'all' | 'core' | 'proficiency'
 }
 
 export interface QuipmentProspectProps {
@@ -48,6 +49,12 @@ export const QuipmentProspects = (props: QuipmentProspectProps) => {
         { key: '1_natural', value: 1, text: t('quipment_dropdowns.slots.n_natural', { n: 1 }) },
         { key: '2_natural', value: 2, text: t('quipment_dropdowns.slots.n_natural', { n: 2 }) },
         { key: '3_natural', value: 3, text: t('quipment_dropdowns.slots.n_natural', { n: 3 }) },
+    ]
+
+    const calcOpts = [
+        { key: 'all', value: 'all', text: t('quipment_dropdowns.calc_mode.core_and_proficiencies') },
+        { key: 'core', value: 'core', text: t('quipment_dropdowns.calc_mode.core') },
+        { key: 'proficiency', value: 'proficiency', text: t('quipment_dropdowns.calc_mode.proficiencies') },
     ]
 
     return (
@@ -102,6 +109,8 @@ export const QuipmentProspects = (props: QuipmentProspectProps) => {
                                     }}
                                     />
                             </div>
+                        </div>
+                        <div style={{...flexRow, gap: '2em', flexWrap: 'wrap'}}>
                             <div style={{...flexCol, alignItems: 'flex-start', gap: '1em'}}>
                                 <b>{t('quipment_dropdowns.slot_label')}</b>
                                 <Dropdown
@@ -112,6 +121,18 @@ export const QuipmentProspects = (props: QuipmentProspectProps) => {
                                     value={config.slots || 0}
                                     onChange={(e, { value }) => {
                                         setConfig({...config, slots: value as number || 0 })
+                                    }}
+                                    />
+                            </div>
+                            <div style={{...flexCol, alignItems: 'flex-start', gap: '1em'}}>
+                                <b>{t('quipment_dropdowns.calc_mode_label')}</b>
+                                <Dropdown
+                                    disabled={!config.enabled}
+                                    selection
+                                    options={calcOpts}
+                                    value={config.calc || 'all'}
+                                    onChange={(e, { value }) => {
+                                        setConfig({...config, calc: value as 'all' | 'core' | 'proficiency' })
                                     }}
                                     />
                             </div>

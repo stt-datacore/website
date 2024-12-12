@@ -444,20 +444,21 @@ const CrewOptions = (props: CrewOptionsProps) => {
 		voyage: 'voyage',
 		current: false,
 		enabled: false,
-		slots: 0
+		slots: 0,
+		calc: 'all'
 	}
 	const dbid = globalContext.player.playerData ? globalContext.player.playerData.player.dbid + "/" : '';
-	const [quipmentProspects, setQuipmentProspects] = useStateWithStorage(`${dbid}${voyageConfig.voyage_type}/voyage_quipment_prospect_config`, DefaultQuipmentConfig, { rememberForever: true });
+	const [qpConfig, setQPConfig] = useStateWithStorage(`${dbid}${voyageConfig.voyage_type}/voyage_quipment_prospect_config`, DefaultQuipmentConfig, { rememberForever: true });
 
 	const setExcludedCrewIds = (ids: number[]) => {
 		internalSetExcludedCrewIds([ ... new Set(ids) ]);
 	};
 
 	React.useEffect(() => {
-		const quipment = quipmentProspects.enabled ? globalContext.core.items.filter(f => f.type === 14).map(m => getItemWithBonus(m)) : [];
+		const quipment = qpConfig.enabled ? globalContext.core.items.filter(f => f.type === 14).map(m => getItemWithBonus(m)) : [];
 		const crew = calculatorContext.crew.map(c => applyQuipmentProspect(c, quipment));
 		setPreConsideredCrew(crew);
-	}, [calculatorContext.crew, quipmentProspects]);
+	}, [calculatorContext.crew, qpConfig]);
 
 	React.useEffect(() => {
 		const preExcludedCrew: IVoyageCrew[] = preExcludeCrew(preConsideredCrew);
@@ -533,8 +534,8 @@ const CrewOptions = (props: CrewOptionsProps) => {
 							/>
 
 							<QuipmentProspects
-								config={quipmentProspects}
-								setConfig={setQuipmentProspects}
+								config={qpConfig}
+								setConfig={setQPConfig}
 								/>
 						</div>
 					</Segment>
@@ -571,8 +572,8 @@ const CrewOptions = (props: CrewOptionsProps) => {
 	}
 
 	function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[]) {
-		if (quipmentProspects.enabled && c.immortal === -1 && c.q_bits >= 100) {
-			if (quipmentProspects.current && c.kwipment.some(q => typeof q === 'number' ? q : q[1])) {
+		if (qpConfig.enabled && c.immortal === -1 && c.q_bits >= 100) {
+			if (qpConfig.current && c.kwipment.some(q => typeof q === 'number' ? q : q[1])) {
 				return c;
 			}
 			let newcopy = oneCrewCopy(c);
@@ -580,13 +581,13 @@ const CrewOptions = (props: CrewOptionsProps) => {
 			let order = [...oldorder];
 			let nslots = qbitsToSlots(newcopy.q_bits);
 
-			if (quipmentProspects.voyage !== 'none') {
+			if (qpConfig.voyage !== 'none') {
 				order.sort((a, b) => {
-					if (['voyage', 'voyage_1'].includes(quipmentProspects.voyage)) {
+					if (['voyage', 'voyage_1'].includes(qpConfig.voyage)) {
 						if (voyageConfig.skills.primary_skill === a) return -1;
 						if (voyageConfig.skills.primary_skill === b) return 1;
 					}
-					if (['voyage', 'voyage_2'].includes(quipmentProspects.voyage)) {
+					if (['voyage', 'voyage_2'].includes(qpConfig.voyage)) {
 						if (voyageConfig.skills.secondary_skill === a) return -1;
 						if (voyageConfig.skills.secondary_skill === b) return 1;
 					}
@@ -596,26 +597,26 @@ const CrewOptions = (props: CrewOptionsProps) => {
 
 			newcopy.skill_order = order;
 
-			if (quipmentProspects.slots && quipmentProspects.slots < nslots) nslots = quipmentProspects.slots;
+			if (qpConfig.slots && qpConfig.slots < nslots) nslots = qpConfig.slots;
 
-			calcQLots(newcopy, quipment, globalContext.player.buffConfig, false, nslots);
+			calcQLots(newcopy, quipment, globalContext.player.buffConfig, false, nslots, qpConfig.calc);
 
 			newcopy.skill_order = oldorder;
 
 			let useQuipment: QuippedPower | undefined = undefined;
-			if (quipmentProspects.mode === 'all') {
+			if (qpConfig.mode === 'all') {
 				useQuipment = newcopy.best_quipment_3!;
 			}
-			else if (quipmentProspects.mode === 'best') {
+			else if (qpConfig.mode === 'best') {
 				useQuipment = newcopy.best_quipment!;
 			}
-			else if (quipmentProspects.mode === 'best_2') {
+			else if (qpConfig.mode === 'best_2') {
 				useQuipment = newcopy.best_quipment_1_2!;
 			}
 			if (!useQuipment) return c;
 
 
-			if (quipmentProspects.mode === 'best') {
+			if (qpConfig.mode === 'best') {
 				newcopy.kwipment = Object.values(useQuipment.skill_quipment[order[0]]).map(q => Number(q.kwipment_id));
 				let skill = useQuipment.skills_hash[order[0]];
 				newcopy[skill.skill] = {
