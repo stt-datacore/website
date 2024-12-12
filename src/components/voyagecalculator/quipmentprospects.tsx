@@ -55,18 +55,20 @@ export const QuipmentProspects = (props: QuipmentProspectProps) => {
 				{t('voyage.quipment.title')}
 			</Modal.Header>
 			<Modal.Content >
-                <div style={{...flexCol, gap: '1em'}}>
-                    <div style={{...flexCol, gap: '1em', alignItems: 'flex-start'}}>
+                <div style={{...flexCol, gap: '1em', flexWrap: 'wrap'}}>
+                    <div style={{...flexCol, gap: '1em', alignItems: 'flex-start', flexWrap: 'wrap'}}>
                         <Checkbox label={t('voyage.quipment.enable')}
+                            style={{wordWrap:'wrap'}}
                             checked={config.enabled}
                             onChange={(e, { checked }) => setConfig({...config, enabled: !!checked })}
                             />
                         <Checkbox label={t('voyage.quipment.use_current')}
+                            style={{wordWrap:'wrap'}}
                             disabled={!config.enabled}
                             checked={config.current}
                             onChange={(e, { checked }) => setConfig({...config, current: !!checked })}
                             />
-                        <div style={{...flexRow, gap: '2em'}}>
+                        <div style={{...flexRow, gap: '2em', flexWrap: 'wrap'}}>
                             <div style={{...flexCol, alignItems: 'flex-start', gap: '1em'}}>
                                 <b>{t('voyage.quipment.crew_prefs')}</b>
                                 <Dropdown
