@@ -1062,7 +1062,7 @@ const ResultPane = (props: ResultPaneProps) => {
 								time: <b>{formatTime(result.estimate.refills[0].result, t)}</b>
 							})}
 							{` `}
-							{t('voyage.estimate.expected.range', {
+							{t('voyage.estimate.expected_range', {
 								a: formatTime(result.estimate.refills[0].saferResult, t),
 								b: formatTime(result.estimate.refills[0].moonshotResult, t)
 							})}
