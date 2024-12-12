@@ -123,7 +123,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	const { playerData, ephemeral } = globalContext.player;
 	const { t } = globalContext.localized;
 	const { dbid } = props;
-
+	const { TRAIT_NAMES } = globalContext.localized.english;
 	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(
 		dbid+'/voyage/history',
 		defaultHistory,
@@ -219,7 +219,15 @@ const PlayerHome = (props: PlayerHomeProps) => {
 			const currentEvents: IEventData[] = ephemeral.events.map(ev => getEventData(ev, globalContext.core.crew))
 				.filter(ev => ev !== undefined).map(ev => ev as IEventData)
 				.filter(ev => ev.seconds_to_end > 0)
-				.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);
+				.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1)
+				.map(evt => {
+					if (evt.voyage_bonus_traits) {
+						Object.entries(TRAIT_NAMES).forEach(([trait, text]) => {
+							evt.voyage_bonus_traits = evt.voyage_bonus_traits!.map(tr => tr == text ? trait : tr)
+						});
+					}
+					return evt;
+				});
 			setEventData([...currentEvents]);
 		}
 		// Otherwise guess event from autosynced events

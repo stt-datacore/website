@@ -28,7 +28,7 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 
 		// Bonus ships by symbol
 		featured_ships: [],
-		bonus_ships: [],
+		bonus_ships: []
 	};
 
 	// activeContent holds details about the active phase of a started event or the first phase of an unstarted event
@@ -119,6 +119,16 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 						result.bonus_ships.push(ship.symbol);
 				});
 			});
+		}
+
+		const searchText = "Three of the following traits are randomly chosen for each Encounter:";
+
+		let ei = activeEvent.rules.indexOf(searchText);
+		if (ei != -1) {
+			let en = activeEvent.rules.indexOf(".", ei + searchText.length);
+			if (en != -1) {
+				result.voyage_bonus_traits = activeEvent.rules.slice(ei + searchText.length, en).split(",").map(s => s.trim());
+			}
 		}
 	}
 

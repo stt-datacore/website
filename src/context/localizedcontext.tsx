@@ -57,7 +57,13 @@ export interface ShipTranslationData extends FlavorTranslationData {
 
 export type GameStringHash<T extends TranslationData> = { [symbol: string]: T }
 
-interface IGameStrings {
+interface ITraitStrings {
+	TRAIT_NAMES: TraitNames;
+	SHIP_TRAIT_NAMES: ShipTraitNames;
+};
+
+
+interface IGameStrings extends ITraitStrings {
 	TRAIT_NAMES: TraitNames;
 	SHIP_TRAIT_NAMES: ShipTraitNames;
 	CREW_ARCHETYPES: {
@@ -69,6 +75,7 @@ interface IGameStrings {
 };
 
 export interface ILocalizedData extends IGameStrings {
+	english: ITraitStrings;
 	language: SupportedLanguage;
 	setPreferredLanguage: (value: SupportedLanguage | undefined) => void;
 	translateCore: () => TranslatedCore;
@@ -90,6 +97,7 @@ const defaultGameStrings: IGameStrings = {
 export const DefaultLocalizedData: ILocalizedData = {
 	language: 'en',
 	...defaultGameStrings,
+	english: defaultGameStrings,
 	setPreferredLanguage: () => false,
 	translateCore: () => { return {}; },
 	translatePlayer: () => { return {} as PlayerContextData; },
@@ -142,6 +150,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	const [fallbackMap, setFallbackMap] = React.useState<{[key: string]: string}>({});
 
 	const [gameStrings, setGameStrings] = React.useState<IGameStrings>(defaultGameStrings);
+	const [englishStrings, setEnglishStrings] = React.useState<ITraitStrings>(defaultGameStrings);
 
 	// // Localized strings sent to UI
 	// const [webStringMap, setWebStringMap] = useStateWithStorage<{[key: string]: string}>('localized/webstrings', {});
@@ -179,6 +188,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	const localizedData: ILocalizedData = {
 		...gameStrings,
+		english: englishStrings,
 		language,
 		setPreferredLanguage,
 		translateCore,
@@ -209,6 +219,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 		const translationResponse: Response = await fetch(`/structured/translation_${newLanguage}.json`);
 		const translationJson: TranslationSet = await translationResponse.json();
+
+		const englishResponse = newLanguage == 'en' ? undefined : await fetch(`/structured/translation_en.json`);
+		const englishJson: TranslationSet = englishResponse ? await englishResponse.json() : translationJson;
 
 		let newFallbackMap = null as any;
 
@@ -271,13 +284,18 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			ITEM_ARCHETYPES: itemArchetypes
 		};
 
+		const englishStrings: ITraitStrings = {
+			TRAIT_NAMES: englishJson.trait_names,
+			SHIP_TRAIT_NAMES: englishJson.ship_trait_names
+		};
+
 		if (newFallbackMap) {
 			setFallbackMap(makeWebstringMap(newFallbackMap));
 		}
 
 		setWebStringMap(makeWebstringMap(webStringsJson));
 		setGameStrings({...translatedGameStrings});
-
+		setEnglishStrings({...englishStrings});
 		setLanguage(newLanguage);
 	}
 

@@ -20,6 +20,7 @@ export interface IEventData extends IOrigEventData {
 	featured_ships: string[];	/* ONLY featured ships by symbol */
 	bonusGuessed?: boolean;
 	activeContent?: Content;
+	voyage_bonus_traits?: string[];
 };
 
 export interface IRosterCrew extends PlayerCrew {
