@@ -2073,6 +2073,7 @@
                 "voyage_2": "Préférer la compétence de voyage secondaire"
             },
             "title": "Quipement potentiel",
+            "use_current": "Utilisez le quipement actuel si l'équipier est déjà quipé (les emplacements vides ne seront pas remplis)",
             "voyage_prefs": "Préférence de compétence de voyage",
             "voyage_prefs_explain": "Si une préférence de compétence de voyage est sélectionnée, l'ordre des compétences de l'équipage est trié de sorte que les compétences correspondantes viennent en premier."
         },

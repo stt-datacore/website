@@ -442,6 +442,7 @@ const CrewOptions = (props: CrewOptionsProps) => {
 	const DefaultQuipmentConfig: QuipmentProspectConfig = {
 		mode: 'best',
 		voyage: 'voyage',
+		current: false,
 		enabled: false
 	}
 	const dbid = globalContext.player.playerData ? globalContext.player.playerData.player.dbid + "/" : '';
@@ -570,6 +571,9 @@ const CrewOptions = (props: CrewOptionsProps) => {
 
 	function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[]) {
 		if (quipmentProspects.enabled && c.immortal === -1 && c.q_bits >= 100) {
+			if (quipmentProspects.current && c.kwipment.some(q => typeof q === 'number' ? q : q[1])) {
+				return c;
+			}
 			let newcopy = oneCrewCopy(c);
 			let oldorder = newcopy.skill_order;
 			let order = [...oldorder];

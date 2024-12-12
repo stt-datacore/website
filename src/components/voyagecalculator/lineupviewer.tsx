@@ -849,7 +849,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 								trigger={
 									<span style={{ cursor: 'help' }}>
 										<img src={`${process.env.GATSBY_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ marginLeft: "0.25em", marginRight: "0.25em", height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
-										{!!crew.kwipment && <Icon name='add' size='tiny' />}
+										{!!crew.kwipment_prospects && <Icon name='add' size='tiny' />}
 									</span>
 								}
 							/>

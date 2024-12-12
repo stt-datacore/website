@@ -10,6 +10,7 @@ export type VoyageSkillPreferenceMode = 'none' | 'voyage' | 'voyage_1' | 'voyage
 export type QuipmentProspectConfig = {
 	mode: QuipmentProspectMode;
 	enabled: boolean;
+    current: boolean;
 	voyage: VoyageSkillPreferenceMode;
 }
 
@@ -60,10 +61,16 @@ export const QuipmentProspects = (props: QuipmentProspectProps) => {
                             checked={config.enabled}
                             onChange={(e, { checked }) => setConfig({...config, enabled: !!checked })}
                             />
+                        <Checkbox label={t('voyage.quipment.use_current')}
+                            disabled={!config.enabled}
+                            checked={config.current}
+                            onChange={(e, { checked }) => setConfig({...config, current: !!checked })}
+                            />
                         <div style={{...flexRow, gap: '2em'}}>
                             <div style={{...flexCol, alignItems: 'flex-start', gap: '1em'}}>
                                 <b>{t('voyage.quipment.crew_prefs')}</b>
                                 <Dropdown
+                                    disabled={!config.enabled}
                                     selection
                                     options={crewOpts}
                                     value={config.mode}
@@ -75,6 +82,7 @@ export const QuipmentProspects = (props: QuipmentProspectProps) => {
                             <div style={{...flexCol, alignItems: 'flex-start', gap: '1em'}}>
                                 <b>{t('voyage.quipment.voyage_prefs')}</b>
                                 <Dropdown
+                                    disabled={!config.enabled}
                                     selection
                                     clearable
                                     options={voyOpts}

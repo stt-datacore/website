@@ -2073,6 +2073,7 @@
                 "voyage_2": "Prefiero la habilidad de viaje secundaria"
             },
             "title": "Quipo prospectivo",
+            "use_current": "Utilice el quipo actual del tripulante que ya está quipado (los espacios vacíos no se llenarán)",
             "voyage_prefs": "Preferencia de habilidad de viaje",
             "voyage_prefs_explain": "Si se selecciona una preferencia de habilidad de viaje, el orden de habilidades de la tripulación se ordena de modo que las habilidades coincidentes aparezcan primero."
         },

@@ -2058,6 +2058,7 @@
                 "voyage_2": "Prefer Secondary Voyage Skill"
             },
             "title": "Prospective Quipment",
+            "use_current": "Use current quipment if crew is already quipped (empty slots will not be filled)",
             "voyage_prefs": "Voyage Skill Preference",
             "voyage_prefs_explain": "If a voyage skill preference is selected the crew's skill order is sorted so that matching skills come first."
         },
