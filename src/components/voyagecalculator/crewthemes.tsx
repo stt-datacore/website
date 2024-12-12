@@ -381,6 +381,22 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				filter: (crew: IVoyageCrew) => !crew.immortal || !(crew.q_bits >= 1300)
 			},
 			{
+				key: 'quipstress',
+				name: 'The Clique',
+				description: 'Include only quippable crew (1 to 4 slots)',
+				keywords: ['quipment'],
+				category: 'Quipment',
+				filter: (crew: IVoyageCrew) => crew.q_bits >= 100
+			},
+			{
+				key: 'quipbreakit',
+				name: 'Break The Machine',
+				description: 'Include only max quippable crew (4 slots)',
+				keywords: ['quipment'],
+				category: 'Quipment',
+				filter: (crew: IVoyageCrew) => crew.q_bits >= 1300
+			},
+			{
 				key: 'lightside',
 				name: 'Luminous and Noble',
 				description: 'Crew with the following traits: Caregiver, Counselor, Cultural Figure, Hero, Innovator, Inspiring, Nurse, Physician, Prodigy, Playful',

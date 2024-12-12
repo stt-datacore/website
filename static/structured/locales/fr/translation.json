@@ -850,7 +850,6 @@
         }
     },
     "global": {
-        "initial_launch": "Sortie initiale du jeu",
         "aborted": "Terminé",
         "admiral": "Avorté",
         "advanced_settings": "Réglages Avancés",
@@ -896,6 +895,7 @@
         "highest_owned_rarity": "Rareté la plus élevée possédée",
         "idle": "Inactif",
         "include_x": "Inclure {{x}}",
+        "initial_launch": "Sortie initiale du jeu",
         "item_types": {
             "arena": "Arène",
             "arena_tickets": "Billets pour arène",
@@ -1959,12 +1959,12 @@
             "trait": "{{hints.trait}}"
         },
         "traits": {
+            "exclude_launch": "Exclude launch crew",
             "hide_only_one": "Masquer les traits avec un seul équipier",
             "retroactively_added_to_n_crew": "Ajouté rétroactivement à 5 équipiers",
             "show_hidden": "Afficher les traits cachés",
-            "show_visible": "Afficher les traits visibles",
-            "exclude_launch": "Exclude launch crew",
-            "show_variant_traits": "Afficher les caractéristiques des variantes d'équipage"
+            "show_variant_traits": "Afficher les caractéristiques des variantes d'équipage",
+            "show_visible": "Afficher les traits visibles"
         }
     },
     "tool_roster_picker": {
@@ -2050,6 +2050,31 @@
             "line_1": "ATTENTION !!! Un problème potentiel avec la durée de voyage signalée a été détecté.",
             "line_2": "Nous avons tenté de corriger cela, mais l'estimation peut être inexacte.",
             "line_3": "Ouvrez le jeu, puis revenez à DataCore avec une nouvelle copie de vos données de joueur pour garantir une estimation plus précise."
+        },
+        "picker_options": {
+            "freezen": "Considérez l'équipage gelé",
+            "shuttle": "Considérez l'équipage sur les navettes actives",
+            "sub_title": "Un total de {{n}} des équipiers seront pris en considération pour ce voyage.",
+            "title": "Équipiers à prendre en considération",
+            "voyage": "Considérez l'équipage en voyage actif"
+        },
+        "quipment": {
+            "crew_prefs": "Préférence de compétence de l'équipage",
+            "enable": "Activer le Quipement potentiel",
+            "mode": {
+                "all": "Toutes les compétences de l'équipier",
+                "best": "Compétence principale",
+                "best_2": "Les 2 meilleures compétences de l'équipier"
+            },
+            "skill_prefs": {
+                "none": "{{global.none}}",
+                "voyage": "Préférer les compétences de voyage",
+                "voyage_1": "Préférer la compétence de voyage principale",
+                "voyage_2": "Préférer la compétence de voyage secondaire"
+            },
+            "title": "Quipement potentiel",
+            "voyage_prefs": "Préférence de compétence de voyage",
+            "voyage_prefs_explain": "Si une préférence de compétence de voyage est sélectionnée, l'ordre des compétences de l'équipage est trié de sorte que les compétences correspondantes viennent en premier."
         },
         "seats": {
             "captain_slot": "Premier officier",

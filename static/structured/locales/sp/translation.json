@@ -851,7 +851,6 @@
         }
     },
     "global": {
-        "initial_launch": "Lanzamiento inicial del juego",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
@@ -897,6 +896,7 @@
         "highest_owned_rarity": "Mayor rareza en posesión",
         "idle": "Inactivo",
         "include_x": "Incluye {{x}}",
+        "initial_launch": "Lanzamiento inicial del juego",
         "item_types": {
             "arena": "Arena",
             "arena_tickets": "Boletos de arena",
@@ -1959,12 +1959,12 @@
             "trait": "{{hints.trait}}"
         },
         "traits": {
+            "exclude_launch": "Exclude launch crew",
             "hide_only_one": "Ocultar rasgos con uno solo tripulante",
             "retroactively_added_to_n_crew": "Agregado retroactivamente a {{n}} tripulantes",
             "show_hidden": "Mostrar rasgos ocultos",
-            "show_visible": "Mostrar rasgos visibles",
-            "exclude_launch": "Exclude launch crew",
-            "show_variant_traits": "Mostrar rasgos de variantes de la tripulación"
+            "show_variant_traits": "Mostrar rasgos de variantes de la tripulación",
+            "show_visible": "Mostrar rasgos visibles"
         }
     },
     "tool_roster_picker": {
@@ -2050,6 +2050,31 @@
             "line_1": "¡¡¡ADVERTENCIA!!! Se ha detectado un posible problema con la duración del viaje informada.",
             "line_2": "Hemos intentado corregir esto pero la estimación puede ser inexacta.",
             "line_3": "Abra el juego y luego regrese a DataCore con una copia nueva de sus datos de jugador para garantizar una estimación más precisa."
+        },
+        "picker_options": {
+            "congelado": "Considere tripulación congelada",
+            "shuttle": "Considere tripulación en lanzaderas activas",
+            "sub_title": "Se considerará un total de {{n}} tripulantes para este viaje.",
+            "title": "Tripulantes a considerar",
+            "voyage": "Considerar tripulación en viajes activos"
+        },
+        "quipment": {
+            "crew_prefs": "Preferencia de habilidad de la tripulación",
+            "enable": "Habilitar quipo prospectivo",
+            "mode": {
+                "all": "Todas las habilidades del tripulante",
+                "best": "Habilidad principal",
+                "best_2": "Las 2 mejores habilidades del tripulante"
+            },
+            "skill_prefs": {
+                "none": "{{global.none}}",
+                "voyage": "Prefiero las habilidades de viaje",
+                "voyage_1": "Prefiero la habilidad de viaje principal",
+                "voyage_2": "Prefiero la habilidad de viaje secundaria"
+            },
+            "title": "Quipo prospectivo",
+            "voyage_prefs": "Preferencia de habilidad de viaje",
+            "voyage_prefs_explain": "Si se selecciona una preferencia de habilidad de viaje, el orden de habilidades de la tripulación se ordena de modo que las habilidades coincidentes aparezcan primero."
         },
         "seats": {
             "captain_slot": "Primer oficial",

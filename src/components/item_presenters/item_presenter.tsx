@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { CompletionState } from "../../model/player";
+import { CompletionState, TranslateMethod } from "../../model/player";
 import { Dropdown, Header, Rating } from "semantic-ui-react";
 import { isImmortal, printImmoText } from "../../utils/crewutils";
 import { TinyStore } from "../../utils/tiny";
@@ -15,9 +15,10 @@ import { appelate } from "../../utils/misc";
 import CONFIG from "../CONFIG";
 import { ItemBonusInfo, combineBonuses, formatDuration, getItemBonuses } from "../../utils/itemutils";
 import { printRequiredTraits } from "../items/itemstable";
+import { OptionsPanelFlexColumn } from "../stats/utils";
 
 
-export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[]) {
+export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[], prospect?: boolean, t?: TranslateMethod) {
     if (!kwipment || kwipment.every(k => !k)) return <></>;
     let quip = items.filter(f => kwipment.some(q => !!q && q.toString() === f.kwipment_id?.toString()));
     let bonuses = [] as ItemBonusInfo[];
@@ -25,10 +26,11 @@ export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[]) 
         bonuses.push(getItemBonuses(q));
     }
     let combined = combineBonuses(bonuses.map(b => b.bonuses));
-    return renderBonuses(combined);
+    return renderBonuses(combined, undefined, undefined, prospect, t);
 }
 
-export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: string, margin?: string) {
+export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: string, margin?: string, prospect?: boolean, t?: TranslateMethod) {
+    const flexCol = OptionsPanelFlexColumn;
 
     return (<div style={{
         display: "flex",
@@ -36,8 +38,8 @@ export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: strin
         justifyContent: "space-evenly",
         alignItems: "left"
     }}>
+        {!!prospect && !!t && <div style={flexCol}>{t('voyage.quipment.title')}</div>}
         {Object.values(skills).map(((skill, idx) => {
-
             const atext = CONFIG.SKILLS[skill.skill!];
             return (
                 <div

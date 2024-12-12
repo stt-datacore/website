@@ -2,7 +2,7 @@ import React from 'react';
 import { Icon, Form, Button, Grid, Message, Segment, Checkbox, Select, Header, Image, Tab, Card, Popup, SemanticICONS, DropdownItemProps } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
-import { Voyage } from '../../model/player';
+import { PlayerCrew, Voyage } from '../../model/player';
 import { IVoyageInputConfig, IVoyageCalcConfig, IVoyageCrew, ITrackedVoyage, IFullPayloadAssignment } from '../../model/voyage';
 import { CalcResult, Calculation, Estimate, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
 import { GlobalContext } from '../../context/globalcontext';
@@ -22,6 +22,12 @@ import { addVoyageToHistory, addCrewToHistory, removeVoyageFromHistory, SyncStat
 import CONFIG from '../CONFIG';
 import { getShipTraitBonus } from './utils';
 import { VPGraphAccordion } from './vpgraph';
+import { applyCrewBuffs, oneCrewCopy } from '../../utils/crewutils';
+import { calcQLots } from '../../utils/equipment';
+import { getItemWithBonus, ItemWithBonus } from '../../utils/itemutils';
+import { BaseSkills, QuippedPower, Skill } from '../../model/crew';
+import { QuipmentProspectConfig, QuipmentProspects } from './quipmentprospects';
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 
 // These preferences are per-user, so they need separate handlers when there's no player data
 interface IUserPrefsContext {
@@ -418,8 +424,12 @@ type CrewOptionsProps = {
 };
 
 const CrewOptions = (props: CrewOptionsProps) => {
+	const flexRow = OptionsPanelFlexRow;
+	const flexCol = OptionsPanelFlexColumn;
 	const calculatorContext = React.useContext(CalculatorContext);
-	const { rosterType } = calculatorContext;
+	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = globalContext.localized;
+	const { rosterType, voyageConfig } = calculatorContext;
 
 	const [preConsideredCrew, setPreConsideredCrew] = React.useState<IVoyageCrew[]>(calculatorContext.crew);
 	const [considerVoyagers, setConsiderVoyagers] = React.useState<boolean>(false);
@@ -429,16 +439,27 @@ const CrewOptions = (props: CrewOptionsProps) => {
 	const [excludedCrewIds, internalSetExcludedCrewIds] = React.useState<number[]>([]);
 	const [consideredCount, setConsideredCount] = React.useState<number>(0);
 
+	const DefaultQuipmentConfig: QuipmentProspectConfig = {
+		mode: 'best',
+		voyage: 'voyage',
+		enabled: false
+	}
+	const dbid = globalContext.player.playerData ? globalContext.player.playerData.player.dbid + "/" : '';
+	const [quipmentProspects, setQuipmentProspects] = useStateWithStorage(`${dbid}${voyageConfig.voyage_type}/voyage_quipment_prospect_config`, DefaultQuipmentConfig, { rememberForever: true });
+
 	const setExcludedCrewIds = (ids: number[]) => {
 		internalSetExcludedCrewIds([ ... new Set(ids) ]);
 	};
 
 	React.useEffect(() => {
-		setPreConsideredCrew([...calculatorContext.crew]);
-	}, [calculatorContext.crew]);
+		const quipment = quipmentProspects.enabled ? globalContext.core.items.filter(f => f.type === 14).map(m => getItemWithBonus(m)) : [];
+		const crew = calculatorContext.crew.map(c => applyQuipmentProspect(c, quipment));
+		setPreConsideredCrew(crew);
+	}, [calculatorContext.crew, quipmentProspects]);
 
 	React.useEffect(() => {
 		const preExcludedCrew: IVoyageCrew[] = preExcludeCrew(preConsideredCrew);
+
 		setPreExcludedCrew([...preExcludedCrew]);
 		const consideredCrew: IVoyageCrew[] = preExcludedCrew.filter(crewman => {
 			if (excludedCrewIds.includes(crewman.id))
@@ -462,9 +483,13 @@ const CrewOptions = (props: CrewOptionsProps) => {
 				<Grid.Column>
 					<Message attached>
 						<Message.Header>
-							Crew to Consider
+							{t('voyage.picker_options.title')}
 						</Message.Header>
-						<p>A total of <b>{consideredCount} crew</b> will be considered for this voyage.</p>
+						<p>
+							{tfmt('voyage.picker_options.sub_title', {
+								n: <b>{consideredCount} crew</b>
+							})}
+						</p>
 					</Message>
 					<Segment attached='bottom'>
 						{rosterType === 'myCrew' && (
@@ -473,7 +498,7 @@ const CrewOptions = (props: CrewOptionsProps) => {
 									{activeVoyagers > 0 && (
 										<Form.Field
 											control={Checkbox}
-											label='Consider crew on active voyages'
+											label={t('voyage.picker_options.voyage')}
 											checked={considerVoyagers}
 											onChange={(e, { checked }) => setConsiderVoyagers(checked)}
 										/>
@@ -481,28 +506,35 @@ const CrewOptions = (props: CrewOptionsProps) => {
 									{activeShuttlers > 0 && (
 										<Form.Field
 											control={Checkbox}
-											label='Consider crew on active shuttles'
+											label={t('voyage.picker_options.shuttle')}
 											checked={considerShuttlers}
 											onChange={(e, { checked }) => setConsiderShuttlers(checked)}
 										/>
 									)}
 									<Form.Field
 										control={Checkbox}
-										label='Consider frozen crew'
+										label={t('voyage.picker_options.frozen')}
 										checked={considerFrozen}
 										onChange={(e, { checked }) => setConsiderFrozen(checked)}
 									/>
 								</React.Fragment>
 							</Form.Group>
 						)}
-						<CrewThemes
-							rosterType={rosterType}
-							rosterCrew={calculatorContext.crew}
-							preExcludeCrew={preExcludeCrew}
-							considerActive={considerShuttlers}
-							considerFrozen={considerFrozen}
-							setPreConsideredCrew={setPreConsideredCrew}
-						/>
+						<div style={{...flexCol, alignItems: 'flex-start', gap: '1em'}}>
+							<CrewThemes
+								rosterType={rosterType}
+								rosterCrew={calculatorContext.crew}
+								preExcludeCrew={preExcludeCrew}
+								considerActive={considerShuttlers}
+								considerFrozen={considerFrozen}
+								setPreConsideredCrew={setPreConsideredCrew}
+							/>
+
+							<QuipmentProspects
+								config={quipmentProspects}
+								setConfig={setQuipmentProspects}
+								/>
+						</div>
 					</Segment>
 				</Grid.Column>
 				<Grid.Column>
@@ -534,6 +566,81 @@ const CrewOptions = (props: CrewOptionsProps) => {
 
 			return true;
 		});
+	}
+
+	function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[]) {
+		if (quipmentProspects.enabled && c.immortal === -1 && c.q_bits >= 100) {
+			let newcopy = oneCrewCopy(c);
+			let oldorder = newcopy.skill_order;
+			let order = [...oldorder];
+
+			if (quipmentProspects.voyage !== 'none') {
+				order.sort((a, b) => {
+					if (['voyage', 'voyage_1'].includes(quipmentProspects.voyage)) {
+						if (voyageConfig.skills.primary_skill === a) return -1;
+						if (voyageConfig.skills.primary_skill === b) return 1;
+					}
+					if (['voyage', 'voyage_2'].includes(quipmentProspects.voyage)) {
+						if (voyageConfig.skills.secondary_skill === a) return -1;
+						if (voyageConfig.skills.secondary_skill === b) return 1;
+					}
+					return oldorder.indexOf(a) - oldorder.indexOf(b);
+				});
+			}
+
+			newcopy.skill_order = order;
+
+			calcQLots(newcopy, quipment, globalContext.player.buffConfig);
+			newcopy.skill_order = oldorder;
+
+			let useQuipment: QuippedPower | undefined = undefined;
+			if (quipmentProspects.mode === 'all') {
+				useQuipment = newcopy.best_quipment_3!;
+			}
+			else if (quipmentProspects.mode === 'best') {
+				useQuipment = newcopy.best_quipment!;
+			}
+			else if (quipmentProspects.mode === 'best_2') {
+				useQuipment = newcopy.best_quipment_1_2!;
+			}
+			if (!useQuipment) return c;
+
+
+			if (quipmentProspects.mode === 'best') {
+				newcopy.kwipment = Object.values(useQuipment.skill_quipment[order[0]]).map(q => Number(q.kwipment_id));
+				let skill = useQuipment.skills_hash[order[0]];
+				newcopy[skill.skill] = {
+					core: skill.core,
+					min: skill.range_min,
+					max: skill.range_max
+				}
+				newcopy.skills[skill.skill] = {
+					...skill
+				}
+			}
+			else {
+				newcopy.kwipment = Object.entries(useQuipment.skill_quipment).map(([skill, quip]) => quip.map(q => Number(q.kwipment_id))).flat();
+				Object.entries(useQuipment.skills_hash).forEach(([key, skill]) => {
+					newcopy[key] = {
+						core: skill.core,
+						min: skill.range_min,
+						max: skill.range_max
+					}
+					newcopy.skills[key] = {
+						...skill
+					}
+				});
+			}
+
+
+			while (newcopy.kwipment.length < 4) newcopy.kwipment.push(0);
+			newcopy.kwipment_expiration = [0, 0, 0, 0];
+			newcopy.kwipment_prospects = true;
+			return newcopy;
+		}
+		else {
+			return c;
+		}
 	}
 };
 

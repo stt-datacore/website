@@ -10,7 +10,8 @@ import { printShortDistance } from '../../utils/misc';
 import { BuffStatTable } from '../../utils/voyageutils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import ItemDisplay from '../itemdisplay';
-import { Progress } from 'semantic-ui-react';
+import { Label, Progress } from 'semantic-ui-react';
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 
 export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
@@ -52,6 +53,7 @@ function expToDate(playerData: PlayerData, crew: PlayerCrew) {
 
 export const CrewItemsView = (props: CrewItemsViewProps) => {
 	const context = React.useContext(GlobalContext);
+    const { t } = context.localized;
 	const playerContext = context.player;
 	const mobileWidth = props.mobileWidth ?? DEFAULT_MOBILE_WIDTH;
 
@@ -174,11 +176,15 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             }
         });
     }
+    const flexRow = OptionsPanelFlexRow;
+    const flexCol = OptionsPanelFlexColumn;
+
 	return (
         !context.core.items?.length &&
             <div className='ui medium centered text active inline loader'>Loading data...</div>
         ||context.core.items?.length &&
-            <>
+            <div style={{...flexCol, gap: 0}}>
+            {!!crew.kwipment_prospects && quip && <Label color='blue'><i>{t('voyage.quipment.title')}</i></Label> }
             <div style={{
                 display: "flex",
                 flexDirection: vertical ? 'column' : 'row',
@@ -204,7 +210,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 ))}
             </div>
             {!!next && <div style={{textAlign: 'center', margin: '0 0.5em', fontSize: '0.8em'}}><Progress size='tiny' total={next} value={next - toNext} style={{marginBottom: '0px'}} />({next - toNext}/{next})</div>}
-            </>
+            </div>
         || <></>
 
 	);

@@ -486,6 +486,10 @@ export interface PlayerCrew extends CrewMember, CompactCrew, IntermediateSkillDa
 
   kwipment: number[][] | number[];
   kwipment_expiration: number[][] | number[];
+
+  /** Used internally, not part of game data */
+  kwipment_prospects?: boolean;
+
   //kwipment_expirations?: Date[];
   q_bits: number;
 
