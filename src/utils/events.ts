@@ -127,7 +127,7 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 		if (ei != -1) {
 			let en = activeEvent.rules.indexOf(".", ei + searchText.length);
 			if (en != -1) {
-				result.voyage_bonus_traits = activeEvent.rules.slice(ei + searchText.length, en).split(",").map(s => s.trim());
+				result.voyage_encounter_traits = activeEvent.rules.slice(ei + searchText.length, en).split(",").map(s => s.trim());
 			}
 		}
 	}

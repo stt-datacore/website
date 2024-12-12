@@ -221,9 +221,9 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				.filter(ev => ev.seconds_to_end > 0)
 				.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1)
 				.map(evt => {
-					if (evt.voyage_bonus_traits) {
+					if (evt.voyage_encounter_traits) {
 						Object.entries(TRAIT_NAMES).forEach(([trait, text]) => {
-							evt.voyage_bonus_traits = evt.voyage_bonus_traits!.map(tr => tr == text ? trait : tr)
+							evt.voyage_encounter_traits = evt.voyage_encounter_traits!.map(tr => tr == text ? trait : tr)
 						});
 					}
 					return evt;
@@ -234,9 +234,9 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		else {
 			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.ship_schematics.map(m => m.ship)).then(recentEvents => {
 				recentEvents.map(evt => {
-					if (evt.voyage_bonus_traits) {
+					if (evt.voyage_encounter_traits) {
 						Object.entries(TRAIT_NAMES).forEach(([trait, text]) => {
-							evt.voyage_bonus_traits = evt.voyage_bonus_traits!.map(tr => tr == text ? trait : tr)
+							evt.voyage_encounter_traits = evt.voyage_encounter_traits!.map(tr => tr == text ? trait : tr)
 						});
 					}
 					return evt;
