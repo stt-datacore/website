@@ -22,7 +22,7 @@ import { addVoyageToHistory, addCrewToHistory, removeVoyageFromHistory, SyncStat
 import CONFIG from '../CONFIG';
 import { getShipTraitBonus } from './utils';
 import { VPGraphAccordion } from './vpgraph';
-import { applyCrewBuffs, oneCrewCopy } from '../../utils/crewutils';
+import { applyCrewBuffs, oneCrewCopy, qbitsToSlots } from '../../utils/crewutils';
 import { calcQLots } from '../../utils/equipment';
 import { getItemWithBonus, ItemWithBonus } from '../../utils/itemutils';
 import { BaseSkills, QuippedPower, Skill } from '../../model/crew';
@@ -443,7 +443,8 @@ const CrewOptions = (props: CrewOptionsProps) => {
 		mode: 'best',
 		voyage: 'voyage',
 		current: false,
-		enabled: false
+		enabled: false,
+		slots: 0
 	}
 	const dbid = globalContext.player.playerData ? globalContext.player.playerData.player.dbid + "/" : '';
 	const [quipmentProspects, setQuipmentProspects] = useStateWithStorage(`${dbid}${voyageConfig.voyage_type}/voyage_quipment_prospect_config`, DefaultQuipmentConfig, { rememberForever: true });
@@ -577,6 +578,7 @@ const CrewOptions = (props: CrewOptionsProps) => {
 			let newcopy = oneCrewCopy(c);
 			let oldorder = newcopy.skill_order;
 			let order = [...oldorder];
+			let nslots = qbitsToSlots(newcopy.q_bits);
 
 			if (quipmentProspects.voyage !== 'none') {
 				order.sort((a, b) => {
@@ -594,7 +596,10 @@ const CrewOptions = (props: CrewOptionsProps) => {
 
 			newcopy.skill_order = order;
 
-			calcQLots(newcopy, quipment, globalContext.player.buffConfig);
+			if (quipmentProspects.slots && quipmentProspects.slots < nslots) nslots = quipmentProspects.slots;
+
+			calcQLots(newcopy, quipment, globalContext.player.buffConfig, false, nslots);
+
 			newcopy.skill_order = oldorder;
 
 			let useQuipment: QuippedPower | undefined = undefined;

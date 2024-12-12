@@ -1415,6 +1415,7 @@
         "slots": {
             "n_slots": "Quiper {{slots}} emplacements",
             "natural": "Quiper des emplacements naturels",
+            "n_natural": "Quiper jusqu'à {{n}} emplacements naturels",
             "one_slot": "Quiper 1 emplacement"
         }
     },
