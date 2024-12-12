@@ -520,14 +520,14 @@ const CrewOptions = (props: CrewOptionsProps) => {
 										checked={considerFrozen}
 										onChange={(e, { checked }) => setConsiderFrozen(checked)}
 									/>
-									{!!voyageConfig.encounter_traits?.length &&
+									{/* {!!voyageConfig.encounter_traits?.length &&
 									<Form.Field
 										control={Checkbox}
 										label={t('voyage.picker_options.encounter_traits')}
 										checked={encounterTraits}
 										onChange={(e, { checked }) => setEncounterTraits(checked)}
 									/>
-									}
+									} */}
 								</React.Fragment>
 							</Form.Group>
 						)}
