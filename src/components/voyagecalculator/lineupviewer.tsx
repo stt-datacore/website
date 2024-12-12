@@ -825,7 +825,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 					crewBackground='rich'
 					targetGroup='voyageLineupHover'
 					item={crew}
-					partialItem={true}
+					partialItem={voyageConfig.state === 'pending'}
 					size={96}
 				/>
 			</div>
