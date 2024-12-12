@@ -53,8 +53,11 @@ const POPUP_DELAY = 500;
 const voySkillScore = (sk: Skill) => sk.core + (sk.range_min + sk.range_max)/2;
 const crewVoySkillsScore = (c: PlayerCrew, skills: string[]) => skills.reduce((prev, curr) => prev + voySkillScore((c.skills[curr] as Skill)), 0);
 
-const profSkillScore = (sk: Skill) => sk.range_max;
-const crewProfSkillsScore = (c: PlayerCrew, skills: string[]) => skills.reduce((prev, curr) => prev + profSkillScore((c.skills[curr] as Skill)), 0);
+// Average prof (profSkillScore) might be first tiebreaker for encounter crew sort
+// const profSkillScore = (sk: Skill) => (sk.range_min + sk.range_max)/2;
+// const crewProfSkillsScore = (c: PlayerCrew, skills: string[]) => skills.reduce((prev, curr) => prev + profSkillScore((c.skills[curr] as Skill)), 0);
+const crewProfSkillsMax = (c: PlayerCrew, skills: string[]) => skills.reduce((prev, curr) => prev + (c.skills[curr] as Skill).range_max, 0);
+const crewProfSkillsMin = (c: PlayerCrew, skills: string[]) => skills.reduce((prev, curr) => prev + (c.skills[curr] as Skill).range_min, 0);
 
 type LineupViewerProps = {
 	configSource?: 'player' | 'custom';
@@ -183,9 +186,15 @@ export const LineupViewer = (props: LineupViewerProps) => {
 
 	// Match in-game order for encounter voyage crew selection
 	function encounterSort(c1: PlayerCrew, c2: PlayerCrew, skills: string[]): number {
-		const p1: number = crewProfSkillsScore(c1, skills);
-		const p2: number = crewProfSkillsScore(c2, skills);
-		if (p1 === p2) return c1.name.localeCompare(c2.name);	// Probably?
+		// Iniitial sort likely to be range_max
+		let p1: number = crewProfSkillsMax(c1, skills);
+		let p2: number = crewProfSkillsMax(c2, skills);
+		// First tiebreaker likely to be range_min (or possibly average prof)
+		if (p1 === p2) {
+			p1 = crewProfSkillsMin(c1, skills);
+			p2 = crewProfSkillsMin(c2, skills);
+			if (p1 === p2) return c1.name.localeCompare(c2.name);	// Probably?
+		}
 		return p2 - p1;
 	}
 
