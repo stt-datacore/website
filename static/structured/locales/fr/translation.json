@@ -1979,6 +1979,8 @@
         }
     },
     "voyage": {
+        "awaiting_crew": "Ce voyage attend les affectations de l'équipage.",
+        "encounter_traits": "Traits critiques de rencontre",
         "active": {
             "active_voyage_colon": "Voyage actif :"
         },
@@ -2057,7 +2059,8 @@
             "shuttle": "Considérez l'équipage sur les navettes actives",
             "sub_title": "Un total de {{n}} des équipiers seront pris en considération pour ce voyage.",
             "title": "Équipiers à prendre en considération",
-            "voyage": "Considérez l'équipage en voyage actif"
+            "voyage": "Considérez l'équipage en voyage actif",
+            "encounter_traits": "Ne considérez que l'équipage avec des traits critiques de rencontre"
         },
         "quipment": {
             "crew_prefs": "Préférence de compétence de l'équipage",

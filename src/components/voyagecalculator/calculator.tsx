@@ -435,6 +435,7 @@ const CrewOptions = (props: CrewOptionsProps) => {
 	const [considerVoyagers, setConsiderVoyagers] = React.useState<boolean>(false);
 	const [considerShuttlers, setConsiderShuttlers] = React.useState<boolean>(false);
 	const [considerFrozen, setConsiderFrozen] = React.useState<boolean>(false);
+	const [encounterTraits, setEncounterTraits] = React.useState<boolean>(false);
 	const [preExcludedCrew, setPreExcludedCrew] = React.useState<IVoyageCrew[]>([]);
 	const [excludedCrewIds, internalSetExcludedCrewIds] = React.useState<number[]>([]);
 	const [consideredCount, setConsideredCount] = React.useState<number>(0);
@@ -462,7 +463,6 @@ const CrewOptions = (props: CrewOptionsProps) => {
 
 	React.useEffect(() => {
 		const preExcludedCrew: IVoyageCrew[] = preExcludeCrew(preConsideredCrew);
-
 		setPreExcludedCrew([...preExcludedCrew]);
 		const consideredCrew: IVoyageCrew[] = preExcludedCrew.filter(crewman => {
 			if (excludedCrewIds.includes(crewman.id))
@@ -471,7 +471,7 @@ const CrewOptions = (props: CrewOptionsProps) => {
 		});
 		setConsideredCount(consideredCrew.length);
 		props.updateConsideredCrew(consideredCrew);
-	}, [preConsideredCrew, considerVoyagers, considerShuttlers, considerFrozen, excludedCrewIds]);
+	}, [preConsideredCrew, considerVoyagers, considerShuttlers, considerFrozen, excludedCrewIds, encounterTraits]);
 
 	const activeVoyagers: number = calculatorContext.crew.filter(crew =>
 		crew.active_status === 3
@@ -520,6 +520,14 @@ const CrewOptions = (props: CrewOptionsProps) => {
 										checked={considerFrozen}
 										onChange={(e, { checked }) => setConsiderFrozen(checked)}
 									/>
+									{!!voyageConfig.encounter_traits?.length &&
+									<Form.Field
+										control={Checkbox}
+										label={t('voyage.picker_options.encounter_traits')}
+										checked={encounterTraits}
+										onChange={(e, { checked }) => setEncounterTraits(checked)}
+									/>
+									}
 								</React.Fragment>
 							</Form.Group>
 						)}
@@ -555,6 +563,9 @@ const CrewOptions = (props: CrewOptionsProps) => {
 
 	function preExcludeCrew(preConsideredCrew: IVoyageCrew[]): IVoyageCrew[] {
 		return preConsideredCrew.filter(crewman => {
+			if (encounterTraits && voyageConfig.encounter_traits?.length) {
+				if (!voyageConfig.encounter_traits.some(trait => crewman.traits.includes(trait))) return false;
+			}
 			if (crewman.expires_in)
 				return false;
 

@@ -75,7 +75,7 @@ export const ConfigCard = (props: ConfigCardProps) => {
 						)}
 						{!running && configSource === 'player' && (
 							<p style={{ marginTop: '1em' }}>
-								This voyage is awaiting crew assignments.
+								{t('voyage.awaiting_crew')}
 							</p>
 						)}
 					</div>
@@ -142,7 +142,7 @@ type EncounterBonusesProps = {
 
 const EncounterBonuses = (props: EncounterBonusesProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { SHIP_TRAIT_NAMES, TRAIT_NAMES } = globalContext.localized;
+	const { SHIP_TRAIT_NAMES, TRAIT_NAMES, t } = globalContext.localized;
 	const { voyageConfig } = props;
 
 	if (!voyageConfig.event_content) return <></>;
@@ -181,6 +181,14 @@ const EncounterBonuses = (props: EncounterBonusesProps) => {
 		});
 	});
 
+	const encounterBonus: IBonusLabel[] = [];
+	voyageConfig.encounter_traits?.forEach(eTrait => {
+		encounterBonus.push({
+			key: eTrait,
+			content: TRAIT_NAMES[eTrait] ?? eTrait
+		});
+	})
+
 	return (
 		<React.Fragment>
 			{[bonusShips, bonusCrew].map((bonusGroup, idx) => (
@@ -192,6 +200,18 @@ const EncounterBonuses = (props: EncounterBonusesProps) => {
 					)}
 				</LabelGroup>
 			))}
+			{!!encounterBonus?.length &&
+				<div>
+					<h3>{t('voyage.encounter_traits')}</h3>
+					<LabelGroup>
+						{encounterBonus.map(bonus =>
+							<Label key={bonus.key}>
+								{bonus.content}
+							</Label>
+						)}
+					</LabelGroup>
+				</div>
+			}
 		</React.Fragment>
 	);
 };

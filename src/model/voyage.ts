@@ -16,6 +16,7 @@ export interface IVoyageInputConfig {
 	ship_trait: string;
 	crew_slots: CrewSlot[];
 	event_content?: IVoyageEventContent;
+    encounter_traits?: string[]
 };
 
 // Support for event voyage info

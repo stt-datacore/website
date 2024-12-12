@@ -868,6 +868,7 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 					{renderCrewVP()}
 					{renderTraitBonus()}
 				</div>
+				{renderCritTraitBonus()}
 				{showSkills && (
 					<CrewVoyageSkills
 						crew={crew}
@@ -909,6 +910,21 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
 			</div>
 		);
+	}
+
+	function renderCritTraitBonus(): JSX.Element {
+		if (voyageConfig.voyage_type === 'encounter' && "encounter_traits" in voyageConfig) {
+			let traits = crew.traits.filter(f => voyageConfig.encounter_traits?.includes(f));
+			if (traits?.length) {
+				return (
+					<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: '.5em' }}>
+						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_shipability_overcharge.png`} style={{ height: '1em' }} className='invertibleIcon' />
+						<span>{traits?.map(trait => TRAIT_NAMES[trait]).join(", ")}</span>
+					</div>
+				)
+			}
+		}
+		return <></>
 	}
 };
 

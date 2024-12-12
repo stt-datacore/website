@@ -1964,6 +1964,8 @@
         }
     },
     "voyage": {
+        "awaiting_crew": "This voyage is awaiting crew assignments.",
+        "encounter_traits": "Encounter crit traits",
         "active": {
             "active_voyage_colon": "Active Voyage:"
         },
@@ -2042,7 +2044,8 @@
             "shuttle": "Consider crew on active shuttles",
             "sub_title": "A total of {{n}} crew will be considered for this voyage.",
             "title": "Crew to Consider",
-            "voyage": "Consider crew on active voyages"
+            "voyage": "Consider crew on active voyages",
+            "encounter_traits": "Only consider crew with encounter crit traits"
         },
         "quipment": {
             "crew_prefs": "Crew Skill Preference",

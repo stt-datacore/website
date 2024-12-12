@@ -1979,6 +1979,8 @@
         }
     },
     "voyage": {
+        "awaiting_crew": "Este viaje está a la espera de asignaciones de tripulación.",
+        "encounter_traits": "Rasgos críticos de encuentro",
         "active": {
             "active_voyage_colon": "Viaje activo:"
         },
@@ -2057,7 +2059,8 @@
             "shuttle": "Considere tripulación en lanzaderas activas",
             "sub_title": "Se considerará un total de {{n}} tripulantes para este viaje.",
             "title": "Tripulantes a considerar",
-            "voyage": "Considerar tripulación en viajes activos"
+            "voyage": "Considerar tripulación en viajes activos",
+            "encounter_traits": "Solo se considera tripulación con rasgos de crítico de encuentro."
         },
         "quipment": {
             "crew_prefs": "Preferencia de habilidad de la tripulación",

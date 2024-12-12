@@ -1966,6 +1966,8 @@
         }
     },
     "voyage": {
+        "awaiting_crew": "Für diese Reise wird auf die Zuteilung der Crew gewartet.",
+        "encounter_traits": "Kritische Begegnungsmerkmale",
         "active": {
             "active_voyage_colon": "Aktive Reise:"
         },
@@ -2044,7 +2046,8 @@
             "shuttle": "Crew auf aktiven Shuttles berücksichtigen",
             "sub_title": "Für diese Reise werden insgesamt {{n}} Crewmitglieder in Betracht gezogen.",
             "title": "Zu berücksichtigende Crew",
-            "voyage": "Crew auf aktiven Reisen berücksichtigen"
+            "voyage": "Crew auf aktiven Reisen berücksichtigen",
+            "encounter_traits": "Berücksichtigen Sie nur Besatzungsmitglieder mit kritischen Begegnungsmerkmalen"
         },
         "quipment": {
             "crew_prefs": "Bevorzugte Fähigkeiten der Crew",

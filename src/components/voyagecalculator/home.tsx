@@ -272,15 +272,15 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				};
 				eventConfig.ship_trait = '';
 				eventConfig.crew_slots.forEach(slot => { slot.trait = ''; });
-
+				const data = eventData.find(e => e.symbol === voyageEvent.symbol);
 				// Include as a player config when voyage event phase is ongoing
 				if (voyageEvent.seconds_to_start === 0 && voyageEvent.seconds_to_end > 0) {
-					playerConfigs.push({...eventConfig, event_content: voyageEventContent} as IVoyageInputConfig);
+					playerConfigs.push({...eventConfig, event_content: voyageEventContent, encounter_traits: data?.voyage_encounter_traits ?? []} as IVoyageInputConfig);
 					if (eventConfig.id > NEW_VOYAGE_ID) runningVoyageIds.push(eventConfig.id);
 				}
 				// Otherwise include as an upcoming (custom) config
 				else {
-					upcomingConfigs.push({...eventConfig, event_content: voyageEventContent} as IVoyageInputConfig);
+					upcomingConfigs.push({...eventConfig, event_content: voyageEventContent, encounter_traits: data?.voyage_encounter_traits ?? []} as IVoyageInputConfig);
 				}
 			}
 		});
