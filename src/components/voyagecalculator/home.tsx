@@ -233,6 +233,14 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		// Otherwise guess event from autosynced events
 		else {
 			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.ship_schematics.map(m => m.ship)).then(recentEvents => {
+				recentEvents.map(evt => {
+					if (evt.voyage_bonus_traits) {
+						Object.entries(TRAIT_NAMES).forEach(([trait, text]) => {
+							evt.voyage_bonus_traits = evt.voyage_bonus_traits!.map(tr => tr == text ? trait : tr)
+						});
+					}
+					return evt;
+				});
 				setEventData([...recentEvents]);
 			});
 		}
