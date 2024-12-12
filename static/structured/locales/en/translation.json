@@ -842,7 +842,6 @@
         }
     },
     "global": {
-        "initial_launch": "Initial Game Launch",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
@@ -888,6 +887,7 @@
         "highest_owned_rarity": "Highest owned rarity",
         "idle": "Idle",
         "include_x": "Include {{x}}",
+        "initial_launch": "Initial Game Launch",
         "item_types": {
             "arena": "Arena",
             "arena_tickets": "Arena tickets",
@@ -1944,12 +1944,12 @@
             "trait": "{{hints.trait}}"
         },
         "traits": {
+            "exclude_launch": "Exclude launch crew",
             "hide_only_one": "Hide traits with only one crew",
             "retroactively_added_to_n_crew": "Retroactively added to {{n}} crew",
             "show_hidden": "Show hidden traits",
-            "show_visible": "Show visible traits",
-            "exclude_launch": "Exclude launch crew",
-            "show_variant_traits": "Show crew variant traits"
+            "show_variant_traits": "Show crew variant traits",
+            "show_visible": "Show visible traits"
         }
     },
     "tool_roster_picker": {
@@ -2035,6 +2035,31 @@
             "line_1": "WARNING!!! A potential problem with the reported voyage duration has been detected.",
             "line_2": "We have attempted to correct this but the estimate may be inaccurate.",
             "line_3": "Open the game, then return to DataCore with a fresh copy of your player data to guarantee a more accurate estimate."
+        },
+        "picker_options": {
+            "frozen": "Consider frozen crew",
+            "shuttle": "Consider crew on active shuttles",
+            "sub_title": "A total of {{n}} crew will be considered for this voyage.",
+            "title": "Crew to Consider",
+            "voyage": "Consider crew on active voyages"
+        },
+        "quipment": {
+            "crew_prefs": "Crew Skill Preference",
+            "enable": "Enable Prospective Quipment",
+            "mode": {
+                "all": "All Crew Skills",
+                "best": "Primary Skill",
+                "best_2": "Best 2 Crew Skills"
+            },
+            "skill_prefs": {
+                "none": "{{global.none}}",
+                "voyage": "Prefer Voyage Skills",
+                "voyage_1": "Prefer Primary Voyage Skill",
+                "voyage_2": "Prefer Secondary Voyage Skill"
+            },
+            "title": "Prospective Quipment",
+            "voyage_prefs": "Voyage Skill Preference",
+            "voyage_prefs_explain": "If a voyage skill preference is selected the crew's skill order is sorted so that matching skills come first."
         },
         "seats": {
             "captain_slot": "First Officer",

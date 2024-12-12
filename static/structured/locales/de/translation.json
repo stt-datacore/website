@@ -842,7 +842,6 @@
         }
     },
     "global": {
-        "initial_launch": "Erstveröffentlichung des Spiels",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
@@ -888,6 +887,7 @@
         "highest_owned_rarity": "Höchste Seltenheit",
         "idle": "Leerlauf",
         "include_x": "Einschließen von {{x}}",
+        "initial_launch": "Erstveröffentlichung des Spiels",
         "item_types": {
             "arena": "Arena",
             "arena_tickets": "Arena Eintrittskarte",
@@ -1946,12 +1946,12 @@
             "trait": "{{hints.trait}}"
         },
         "traits": {
+            "exclude_launch": "Exclude launch crew",
             "hide_only_one": "Merkmale mit nur einer Crew verbergen",
             "retroactively_added_to_n_crew": "Nachträglich zu {{n}} Crewmitgliedern hinzugefügt",
             "show_hidden": "Versteckte Merkmale anzeigen",
-            "show_visible": "Sichtbare Merkmale anzeigen",
-            "exclude_launch": "Exclude launch crew",
-            "show_variant_traits": "Variantenmerkmale der Crew anzeigen"
+            "show_variant_traits": "Variantenmerkmale der Crew anzeigen",
+            "show_visible": "Sichtbare Merkmale anzeigen"
         }
     },
     "tool_roster_picker": {
@@ -2037,6 +2037,31 @@
             "line_1": "WARNUNG!!! Es wurde ein potenzielles Problem mit der gemeldeten Reisezeit erkannt.",
             "line_2": "Wir haben versucht, dies zu korrigieren, aber die Schätzung ist möglicherweise ungenau.",
             "line_3": "Öffnen Sie das Spiel und kehren Sie dann mit einer neuen Kopie Ihrer Spielerdaten zu DataCore zurück, um eine genauere Schätzung zu gewährleisten."
+        },
+        "picker_options": {
+            "frozen": "Eingefrorene Crew berücksichtigen",
+            "shuttle": "Crew auf aktiven Shuttles berücksichtigen",
+            "sub_title": "Für diese Reise werden insgesamt {{n}} Crewmitglieder in Betracht gezogen.",
+            "title": "Zu berücksichtigende Crew",
+            "voyage": "Crew auf aktiven Reisen berücksichtigen"
+        },
+        "quipment": {
+            "crew_prefs": "Bevorzugte Fähigkeiten der Crew",
+            "enable": "Potenzielle Rüstzeug aktivieren",
+            "mode": {
+                "all": "Alle Crew-Fertigkeiten",
+                "best": "Primäre Fertigkeit",
+                "best_2": "Beste 2 Crew-Fertigkeiten"
+            },
+            "skill_prefs": {
+                "none": "{{global.none}}",
+                "voyage": "Reisefertigkeiten bevorzugen",
+                "voyage_1": "Primäre Reisefertigkeit bevorzugen",
+                "voyage_2": "Sekundäre Reisefertigkeit bevorzugen"
+            },
+            "title": "Potenzielle Rüstzeug",
+            "voyage_prefs": "Bevorzugte Fähigkeiten der Reise",
+            "voyage_prefs_explain": "Wenn eine bevorzugte Reisefertigkeit ausgewählt wird, wird die Fertigkeitsreihenfolge der Crew so sortiert, dass passende Fertigkeiten zuerst angezeigt werden."
         },
         "seats": {
             "captain_slot": "Erster Offizier",

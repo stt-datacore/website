@@ -12,6 +12,7 @@ import { useStateWithStorage } from '../../utils/storage';
 import { renderKwipmentBonus } from '../item_presenters/item_presenter';
 import { isQuipped } from '../../utils/crewutils';
 import { getCrewTraitBonus, getCrewVP, getShipTraitBonus } from './utils';
+import { AvatarView } from '../item_presenters/avatarview';
 
 interface IAssignment {
 	crew: PlayerCrew;
@@ -480,11 +481,11 @@ const TableView = (props: ViewProps) => {
 										<div style={{ cursor: 'help', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 											{!compact &&
 												<span style={{ paddingRight: '.3em' }}>
-													<ItemDisplay
-														src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+													<AvatarView
+														mode='crew'
+														item={crew}
+														partialItem={true}
 														size={32}
-														maxRarity={crew.max_rarity}
-														rarity={crew.rarity}
 														style={{ verticalAlign: 'middle' }}
 													/>
 												</span>
@@ -504,7 +505,7 @@ const TableView = (props: ViewProps) => {
 									<div style={{display:'flex', flexDirection:'row', gap: "0.5em", alignItems: "center", justifyContent: "right", marginRight: "0.5em"}}>
 										{isQuipped(crew) &&
 										<>
-										<Popup wide content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => typeof q === 'number' ? q : q[1]), globalContext.core.items)} mouseEnterDelay={POPUP_DELAY} trigger={
+										<Popup wide content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => typeof q === 'number' ? q : q[1]), globalContext.core.items, crew.kwipment_prospects, t)} mouseEnterDelay={POPUP_DELAY} trigger={
 												<span style={{ cursor: 'help' }}>
 													<img src={`${process.env.GATSBY_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 												</span>
@@ -638,11 +639,11 @@ const GridView = (props: ViewProps) => {
 						<Grid.Column key={idx}>
 							<Popup mouseEnterDelay={POPUP_DELAY} trigger={
 								<div style={{ cursor: 'help' }}>
-									<ItemDisplay
-										src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+									<AvatarView
+										mode='crew'
 										size={48}
-										maxRarity={crew.max_rarity}
-										rarity={crew.rarity}
+										item={crew}
+										partialItem={true}
 									/>
 								</div>
 							}>
@@ -802,7 +803,7 @@ type AssignmentCardProps = {
 
 const AssignmentCard = (props: AssignmentCardProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { TRAIT_NAMES, language } = globalContext.localized;
+	const { TRAIT_NAMES, t } = globalContext.localized;
 	const { voyageConfig } = React.useContext(ViewContext);
 	const { assignment: { crew, name, trait, bestRank }, showSkills } = props;
 
@@ -819,16 +820,13 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 				</Label>
 			}
 			<div style={{ margin: '0 auto' }}>
-				<ItemDisplay
+				<AvatarView
+					mode='crew'
 					crewBackground='rich'
-					allCrew={globalContext.core.crew}
-					playerData={globalContext.player.playerData}
 					targetGroup='voyageLineupHover'
-					itemSymbol={crew.symbol}
-					src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+					item={crew}
+					partialItem={true}
 					size={96}
-					maxRarity={crew.max_rarity}
-					rarity={crew.rarity}
 				/>
 			</div>
 			<div style={{ marginBottom: '2em' }}>
@@ -846,14 +844,16 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 					{isQuipped(crew) && (
 						<div style={{paddingBottom: "0.1em"}}>
 							<Popup wide
-								content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => typeof q === 'number' ? q : q[1]), globalContext.core.items)}
+								content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => typeof q === 'number' ? q : q[1]), globalContext.core.items, crew.kwipment_prospects, t)}
 								mouseEnterDelay={POPUP_DELAY}
 								trigger={
 									<span style={{ cursor: 'help' }}>
 										<img src={`${process.env.GATSBY_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ marginLeft: "0.25em", marginRight: "0.25em", height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+										{!!crew.kwipment && <Icon name='add' size='tiny' />}
 									</span>
 								}
 							/>
+
 						</div>
 					)}
 					{renderCrewVP()}
