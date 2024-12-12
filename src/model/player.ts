@@ -12,7 +12,7 @@ import { ArchetypeRoot17, ArchetypeRoot20 } from "./archetype";
 
 export const ISM_ID = 14152;
 
-export type TranslateMethod = (key: string, options?: { [key: string]: string }) => string;
+export type TranslateMethod = (key: string, options?: { [key: string]: string | number }) => string;
 
 export type PlayerBuffMode = 'none' | 'player' | 'max' | 'quipment';
 

@@ -1404,6 +1404,7 @@
         "slots": {
             "n_slots": "Quip {{slots}} slots",
             "natural": "Quip natural slots",
+            "n_natural": "Quip up to {{n}} natural slots",
             "one_slot": "Quip 1 slot"
         }
     },

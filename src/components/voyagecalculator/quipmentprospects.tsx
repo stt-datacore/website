@@ -12,6 +12,7 @@ export type QuipmentProspectConfig = {
 	enabled: boolean;
     current: boolean;
 	voyage: VoyageSkillPreferenceMode;
+    slots: number;
 }
 
 export interface QuipmentProspectProps {
@@ -40,6 +41,13 @@ export const QuipmentProspects = (props: QuipmentProspectProps) => {
         { key: 'voyage', value: 'voyage', text: t('voyage.quipment.skill_prefs.voyage') },
         { key: 'voyage_1', value: 'voyage_1', text: t('voyage.quipment.skill_prefs.voyage_1') },
         { key: 'voyage_2', value: 'voyage_2', text: t('voyage.quipment.skill_prefs.voyage_2') },
+    ]
+
+    const quipOpts = [
+        { key: 'none', value: 0, text: t('quipment_dropdowns.slots.natural') },
+        { key: '1_natural', value: 1, text: t('quipment_dropdowns.slots.n_natural', { n: 1 }) },
+        { key: '2_natural', value: 2, text: t('quipment_dropdowns.slots.n_natural', { n: 2 }) },
+        { key: '3_natural', value: 3, text: t('quipment_dropdowns.slots.n_natural', { n: 3 }) },
     ]
 
     return (
@@ -91,6 +99,19 @@ export const QuipmentProspects = (props: QuipmentProspectProps) => {
                                     value={config.voyage}
                                     onChange={(e, { value }) => {
                                         setConfig({...config, voyage: value as VoyageSkillPreferenceMode || 'none' })
+                                    }}
+                                    />
+                            </div>
+                            <div style={{...flexCol, alignItems: 'flex-start', gap: '1em'}}>
+                                <b>{t('quipment_dropdowns.slot_label')}</b>
+                                <Dropdown
+                                    disabled={!config.enabled}
+                                    selection
+                                    clearable
+                                    options={quipOpts}
+                                    value={config.slots || 0}
+                                    onChange={(e, { value }) => {
+                                        setConfig({...config, slots: value as number || 0 })
                                     }}
                                     />
                             </div>

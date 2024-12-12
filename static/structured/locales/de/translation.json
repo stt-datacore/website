@@ -1403,6 +1403,7 @@
         "slots": {
             "n_slots": "Ausstatten {{slots}} Ablagefächer",
             "natural": "Natürliche Ablagefächer ausstatten",
+            "n_natural": "Bis zu {{n}} natürliche Ablagefächer ausstatten",
             "one_slot": "Ausstatten 1 Ablagefach"
         }
     },

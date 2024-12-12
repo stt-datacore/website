@@ -475,7 +475,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		return current;
 	}
 
-	function t(v: string, opts?: { [key: string]: string }) {
+	function t(v: string, opts?: { [key: string]: string | number }) {
 		opts ??= {};
 		if ("__gender" in opts && !!opts["__gender"] && typeof opts["__gender"] === 'string') {
 			let newkey = `${v}_${opts["__gender"]}`;
@@ -493,7 +493,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 					if (part.startsWith("{{") && part.endsWith("}}")) {
 						let key = part.slice(2, part.length - 2);
 						if (key in opts) {
-							finals.push(opts[key]);
+							finals.push(`${opts[key]}`);
 						}
 						else if (key in webStringMap) {
 							finals.push(webStringMap[key]);
@@ -515,7 +515,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		}
 	}
 
-	function tfmt(v: string, opts?: { [key: string]: string | JSX.Element }): JSX.Element {
+	function tfmt(v: string, opts?: { [key: string]: string | JSX.Element | number }): JSX.Element {
 		opts ??= {};
 		if ("__gender" in opts && !!opts["__gender"] && typeof opts["__gender"] === 'string') {
 			let newkey = `${v}_${opts["__gender"]}`;
