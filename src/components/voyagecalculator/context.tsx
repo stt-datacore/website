@@ -11,6 +11,7 @@ export interface ICalculatorContext {
 	crew: IVoyageCrew[];
 	ships: Ship[];
 	events: IEventData[];
+	runningShipIds: number[];
 };
 
 export const CalculatorContext = React.createContext<ICalculatorContext>({} as ICalculatorContext);

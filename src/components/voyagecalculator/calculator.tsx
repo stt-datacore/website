@@ -115,13 +115,13 @@ const CalculatorForm = () => {
 	const { configSource, voyageConfig } = calculatorContext;
 	const userPrefs = React.useContext(UserPrefsContext);
 
-	const [bestShip, setBestShip] = React.useState<VoyageConsideration | undefined>(undefined);
 	const [consideredCrew, setConsideredCrew] = React.useState<IVoyageCrew[]>([]);
 
 	const [requests, setRequests] = React.useState<Helper[]>([]);
 	const [results, setResults] = React.useState<Calculation[]>([]);
 
-	React.useEffect(() => {
+	const bestShip = React.useMemo(() => {
+		let bestShip: VoyageConsideration | undefined;
 		const consideredShips: VoyageConsideration[] = [];
 		calculatorContext.ships.filter(ship => ship.owned).forEach(ship => {
 			const shipBonus: number = getShipTraitBonus(voyageConfig, ship);
@@ -134,14 +134,26 @@ const CalculatorForm = () => {
 			};
 			consideredShips.push(entry);
 		});
-		consideredShips.sort((a, b) => {
-			if (a.score === b.score) return a.archetype_id - b.archetype_id;
-			return b.score - a.score;
-		});
-		setBestShip(consideredShips[0]);
+		if (consideredShips.length > 0) {
+			consideredShips.sort((a, b) => {
+				if (a.score === b.score) return a.archetype_id - b.archetype_id;
+				return b.score - a.score;
+			});
+			// Recommend best non-running ship (exception: custom input should recommend best ship, even if already running)
+			for (let i = 0; i < consideredShips.length; i++) {
+				if (!calculatorContext.runningShipIds.includes(consideredShips[i].ship.id) || configSource === 'custom') {
+					bestShip = consideredShips[i];
+					break;
+				}
+			}
+		}
+		return bestShip;
+	}, [configSource, voyageConfig, calculatorContext.ships, calculatorContext.runningShipIds]);
+
+	React.useEffect(() => {
 		setRequests([]);
 		setResults([]);
-	}, [voyageConfig, calculatorContext.ships]);
+	}, [voyageConfig]);
 
 	React.useEffect(() => {
 		return function cleanup() {

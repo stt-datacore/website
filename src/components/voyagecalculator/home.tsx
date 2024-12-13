@@ -73,6 +73,7 @@ const NonPlayerHome = () => {
 							configSource='custom'
 							voyageConfig={voyageConfig}
 							eventData={eventData}
+							runningShipIds={[]}
 						/>
 					</React.Fragment>
 				</HistoryContext.Provider>
@@ -149,6 +150,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	const [playerConfigs, setPlayerConfigs] = React.useState<IVoyageInputConfig[]>([]);
 	const [upcomingConfigs, setUpcomingConfigs] = React.useState<IVoyageInputConfig[]>([]);
 	const [runningVoyageIds, setRunningVoyageIds] = React.useState<number[]>([]);
+	const [runningShipIds, setRunningShipIds] = React.useState<number[]>([]);
 
 	const [activeView, setActiveView] = React.useState<IVoyageView | undefined>(undefined);
 
@@ -234,12 +236,16 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		const playerConfigs: IVoyageInputConfig[] = [];
 		const upcomingConfigs: IVoyageInputConfig[] = [];
 		const runningVoyageIds: number[] = [];
+		const runningShipIds: number[] = [];
 
 		// Always include dilemma voyage
 		const dilemmaConfig: Voyage | VoyageDescription | undefined = getPlayerConfigByType('dilemma');
 		if (dilemmaConfig) {
 			playerConfigs.push(dilemmaConfig as IVoyageInputConfig);
-			if (dilemmaConfig.id > NEW_VOYAGE_ID) runningVoyageIds.push(dilemmaConfig.id);
+			if (dilemmaConfig.id > NEW_VOYAGE_ID) {
+				runningVoyageIds.push(dilemmaConfig.id);
+				if ('ship_id' in dilemmaConfig) runningShipIds.push(dilemmaConfig.ship_id);
+			}
 		}
 
 		// Look for voyage events
@@ -263,7 +269,10 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				// Include as a player config when voyage event phase is ongoing
 				if (voyageEvent.seconds_to_start === 0 && voyageEvent.seconds_to_end > 0) {
 					playerConfigs.push({...eventConfig, event_content: voyageEventContent} as IVoyageInputConfig);
-					if (eventConfig.id > NEW_VOYAGE_ID) runningVoyageIds.push(eventConfig.id);
+					if (eventConfig.id > NEW_VOYAGE_ID) {
+						runningVoyageIds.push(eventConfig.id);
+						if ('ship_id' in eventConfig) runningShipIds.push(eventConfig.ship_id);
+					}
 				}
 				// Otherwise include as an upcoming (custom) config
 				else {
@@ -277,6 +286,9 @@ const PlayerHome = (props: PlayerHomeProps) => {
 
 		// Queue running voyages for reconciliation with tracked voyages
 		setRunningVoyageIds([...runningVoyageIds]);
+
+		// Calculator should account for ships on already running voyages
+		setRunningShipIds([...runningShipIds]);
 
 		// Bypass home if only 1 voyage
 		setActiveView(playerConfigs.length === 1 ?
@@ -478,6 +490,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 					configSource={activeView.source}
 					voyageConfig={activeView.config}
 					eventData={eventData}
+					runningShipIds={runningShipIds}
 				/>
 			</React.Fragment>
 		);
@@ -499,12 +512,13 @@ type PlayerVoyageProps = {
 	configSource: 'player' | 'custom';
 	voyageConfig: IVoyageInputConfig;
 	eventData: IEventData[];
+	runningShipIds: number[];
 };
 
 const PlayerVoyage = (props: PlayerVoyageProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, ephemeral } = globalContext.player;
-	const { configSource, voyageConfig, eventData } = props;
+	const { configSource, voyageConfig, eventData, runningShipIds } = props;
 
 	if (!playerData || !ephemeral)
 		return <></>;
@@ -520,6 +534,7 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 				configSource={configSource}
 				voyageConfig={voyageConfig}
 				eventData={eventData}
+				runningShipIds={runningShipIds}
 			/>
 		);
 	}
@@ -558,12 +573,13 @@ type CalculatorSetupProps = {
 	configSource: 'player' | 'custom';
 	voyageConfig: IVoyageInputConfig;
 	eventData: IEventData[];
+	runningShipIds: number[];
 };
 
 const CalculatorSetup = (props: CalculatorSetupProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
-	const { configSource, voyageConfig, eventData } = props;
+	const { configSource, voyageConfig, eventData, runningShipIds } = props;
 
 	const [rosterType, setRosterType] = React.useState<'myCrew' | 'allCrew'>(playerData ? 'myCrew' : 'allCrew');
 	const [rosterCrew, setRosterCrew] = React.useState<IVoyageCrew[]>([]);
@@ -575,7 +591,8 @@ const CalculatorSetup = (props: CalculatorSetupProps) => {
 		rosterType,
 		crew: rosterCrew,
 		ships: rosterShips,
-		events: eventData
+		events: eventData,
+		runningShipIds
 	};
 
 	return (
