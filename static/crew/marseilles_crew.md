@@ -3,9 +3,9 @@ name: Lieutenant Marseilles
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: -1
+bigbook_tier: 3
 in_portal:
-date:
+date: 11/12/2024
 published: true
 ---
 

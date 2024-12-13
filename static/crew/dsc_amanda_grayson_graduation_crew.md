@@ -3,7 +3,7 @@ name: Graduation Amanda Grayson
 rarity: 5
 series: dsc
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 in_portal: true
 date: 26/01/2022
 published: true

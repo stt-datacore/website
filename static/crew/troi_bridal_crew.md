@@ -3,7 +3,7 @@ name: Bridal Deanna Troi
 rarity: 5
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: 8
 in_portal: true
 date: 04/02/2021
 published: true

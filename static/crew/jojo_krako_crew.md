@@ -3,7 +3,7 @@ name: Jojo Krako
 rarity: 4
 series: tos
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal: true
 date: 20/06/2023
 published: true

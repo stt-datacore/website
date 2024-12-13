@@ -3,7 +3,7 @@ name: Dr. Richard Daystrom
 rarity: 5
 series: tos
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 22/11/2016
 published: true
