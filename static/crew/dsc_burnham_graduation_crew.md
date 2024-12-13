@@ -3,7 +3,7 @@ name: Graduation Michael Burnham
 rarity: 4
 series: dsc
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal: true
 date: 10/01/2018
 published: true

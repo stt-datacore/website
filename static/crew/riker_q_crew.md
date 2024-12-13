@@ -3,7 +3,7 @@ name: Riker Q
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 4
+bigbook_tier: 3
 in_portal: true
 date: 08/08/2019
 published: true

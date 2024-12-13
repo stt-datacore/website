@@ -5,7 +5,7 @@ series: tng
 memory_alpha:
 bigbook_tier: 5
 in_portal:
-date: 10/12/2024
+date: 09/12/2024
 published: true
 ---
 
