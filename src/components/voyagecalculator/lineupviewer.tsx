@@ -913,8 +913,8 @@ const AssignmentCard = (props: AssignmentCardProps) => {
 	}
 
 	function renderCritTraitBonus(): JSX.Element {
-		if (voyageConfig.voyage_type === 'encounter' && "encounter_traits" in voyageConfig) {
-			let traits = crew.traits.filter(f => voyageConfig.encounter_traits?.includes(f));
+		if (voyageConfig.voyage_type === 'encounter' && 'event_content' in voyageConfig) {
+			let traits = crew.traits.filter(f => voyageConfig.event_content?.encounter_traits?.includes(f));
 			if (traits?.length) {
 				return (
 					<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: '.5em' }}>

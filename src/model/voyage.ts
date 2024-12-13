@@ -16,7 +16,6 @@ export interface IVoyageInputConfig {
 	ship_trait: string;
 	crew_slots: CrewSlot[];
 	event_content?: IVoyageEventContent;
-    encounter_traits?: string[]
 };
 
 // Support for event voyage info
@@ -32,6 +31,7 @@ export interface IVoyageEventContent {
 	antimatter_bonus_ship_traits: string[];
 	antimatter_bonus_for_featured_ship: number;
 	featured_ships: string[];
+	encounter_traits?: string[];
 };
 
 // Extends IVoyageInputConfig to include calculation result

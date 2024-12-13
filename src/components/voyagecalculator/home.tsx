@@ -12,7 +12,7 @@ import { IEventData } from '../eventplanner/model';
 import { GlobalContext } from '../../context/globalcontext';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { ItemHoverStat } from '../hovering/itemhoverstat';
-import { getEventData, getRecentEvents } from '../../utils/events';
+import { getEventData, getRecentEvents, guessEncounterTraits } from '../../utils/events';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { ICalculatorContext, CalculatorContext } from './context';
@@ -219,28 +219,12 @@ const PlayerHome = (props: PlayerHomeProps) => {
 			const currentEvents: IEventData[] = ephemeral.events.map(ev => getEventData(ev, globalContext.core.crew))
 				.filter(ev => ev !== undefined).map(ev => ev as IEventData)
 				.filter(ev => ev.seconds_to_end > 0)
-				.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1)
-				.map(evt => {
-					if (evt.voyage_encounter_traits) {
-						Object.entries(TRAIT_NAMES).forEach(([trait, text]) => {
-							evt.voyage_encounter_traits = evt.voyage_encounter_traits!.map(tr => tr == text ? trait : tr)
-						});
-					}
-					return evt;
-				});
+				.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);
 			setEventData([...currentEvents]);
 		}
 		// Otherwise guess event from autosynced events
 		else {
 			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.ship_schematics.map(m => m.ship)).then(recentEvents => {
-				recentEvents.map(evt => {
-					if (evt.voyage_encounter_traits) {
-						Object.entries(TRAIT_NAMES).forEach(([trait, text]) => {
-							evt.voyage_encounter_traits = evt.voyage_encounter_traits!.map(tr => tr == text ? trait : tr)
-						});
-					}
-					return evt;
-				});
 				setEventData([...recentEvents]);
 			});
 		}
@@ -272,15 +256,18 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				};
 				eventConfig.ship_trait = '';
 				eventConfig.crew_slots.forEach(slot => { slot.trait = ''; });
-				const data = eventData.find(e => e.symbol === voyageEvent.symbol);
+
+				// Add encounter traits to voyage event content
+				voyageEventContent.encounter_traits = guessEncounterTraits(voyageEvent, TRAIT_NAMES);
+
 				// Include as a player config when voyage event phase is ongoing
 				if (voyageEvent.seconds_to_start === 0 && voyageEvent.seconds_to_end > 0) {
-					playerConfigs.push({...eventConfig, event_content: voyageEventContent, encounter_traits: data?.voyage_encounter_traits ?? []} as IVoyageInputConfig);
+					playerConfigs.push({...eventConfig, event_content: voyageEventContent} as IVoyageInputConfig);
 					if (eventConfig.id > NEW_VOYAGE_ID) runningVoyageIds.push(eventConfig.id);
 				}
 				// Otherwise include as an upcoming (custom) config
 				else {
-					upcomingConfigs.push({...eventConfig, event_content: voyageEventContent, encounter_traits: data?.voyage_encounter_traits ?? []} as IVoyageInputConfig);
+					upcomingConfigs.push({...eventConfig, event_content: voyageEventContent} as IVoyageInputConfig);
 				}
 			}
 		});

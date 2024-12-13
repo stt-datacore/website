@@ -182,7 +182,7 @@ const EncounterBonuses = (props: EncounterBonusesProps) => {
 	});
 
 	const encounterBonus: IBonusLabel[] = [];
-	voyageConfig.encounter_traits?.forEach(eTrait => {
+	voyageConfig.event_content.encounter_traits?.forEach(eTrait => {
 		encounterBonus.push({
 			key: eTrait,
 			content: TRAIT_NAMES[eTrait] ?? eTrait
@@ -200,18 +200,18 @@ const EncounterBonuses = (props: EncounterBonusesProps) => {
 					)}
 				</LabelGroup>
 			))}
-			{!!encounterBonus?.length &&
-				<div>
-					<h3>{t('voyage.encounter_traits')}</h3>
-					<LabelGroup>
-						{encounterBonus.map(bonus =>
-							<Label key={bonus.key}>
-								{bonus.content}
-							</Label>
-						)}
-					</LabelGroup>
-				</div>
-			}
+			{!!encounterBonus?.length && (
+				<LabelGroup>
+					<span style={{ fontWeight: 'bold', fontSize: '.9em', paddingRight: '1em' }}>
+						{t('voyage.encounter_traits')}:
+					</span>
+					{encounterBonus.map(bonus =>
+						<Label key={bonus.key}>
+							{bonus.content}
+						</Label>
+					)}
+				</LabelGroup>
+			)}
 		</React.Fragment>
 	);
 };

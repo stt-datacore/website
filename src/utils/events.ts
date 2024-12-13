@@ -8,6 +8,7 @@ import { applySkillBuff, crewCopy, getShortNameFromTrait, getVariantTraits } fro
 import { BuffStatTable } from './voyageutils';
 import { IDefaultGlobal } from '../context/globalcontext';
 import { Ship } from '../model/ship';
+import { TraitNames } from '../model/traits';
 
 export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allShips?: Ship[], lastEvent?: GameEvent): IEventData | undefined {
 	const result: IEventData = {
@@ -119,16 +120,6 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 						result.bonus_ships.push(ship.symbol);
 				});
 			});
-		}
-
-		const searchText = "Three of the following traits are randomly chosen for each Encounter:";
-
-		let ei = activeEvent.rules.indexOf(searchText);
-		if (ei != -1) {
-			let en = activeEvent.rules.indexOf(".", ei + searchText.length);
-			if (en != -1) {
-				result.voyage_encounter_traits = activeEvent.rules.slice(ei + searchText.length, en).split(",").map(s => s.trim());
-			}
 		}
 	}
 
@@ -577,4 +568,20 @@ export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventDa
 	else {
 		return await getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.ships);
 	}
+}
+
+export function guessEncounterTraits(gameEvent: GameEvent, english: TraitNames): string[] {
+	const traits: string[] = [];
+	const searchText = "Three of the following traits are randomly chosen for each Encounter:";
+	let ei: number = gameEvent.rules.indexOf(searchText);
+	if (ei !== -1) {
+		let en: number = gameEvent.rules.indexOf(".", ei + searchText.length);
+		if (en !== -1) {
+			const namedTraits: string[] = gameEvent.rules.slice(ei + searchText.length, en).split(",").map(s => s.trim());
+			Object.entries(english).forEach(([trait, text]) => {
+				if (namedTraits.includes(text)) traits.push(trait);
+			});
+		}
+	}
+	return traits;
 }
