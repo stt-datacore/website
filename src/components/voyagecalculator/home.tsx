@@ -12,7 +12,7 @@ import { IEventData } from '../eventplanner/model';
 import { GlobalContext } from '../../context/globalcontext';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { ItemHoverStat } from '../hovering/itemhoverstat';
-import { getEventData, getRecentEvents, guessEncounterTraits } from '../../utils/events';
+import { getEventData, getRecentEvents, guessEncounterTimes, guessEncounterTraits } from '../../utils/events';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { ICalculatorContext, CalculatorContext } from './context';
@@ -265,7 +265,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 
 				// Add encounter traits to voyage event content
 				voyageEventContent.encounter_traits = guessEncounterTraits(voyageEvent, TRAIT_NAMES);
-
+				voyageEventContent.encounter_times = guessEncounterTimes(voyageEvent, 'minutes');
 				// Include as a player config when voyage event phase is ongoing
 				if (voyageEvent.seconds_to_start === 0 && voyageEvent.seconds_to_end > 0) {
 					playerConfigs.push({...eventConfig, event_content: voyageEventContent} as IVoyageInputConfig);
