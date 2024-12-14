@@ -20,6 +20,7 @@ import { WorkerProvider } from '../context/workercontext';
 import { ShipRosterCalc } from '../components/ship/rostercalc';
 import { useStateWithStorage } from '../utils/storage';
 import { ShipMultiWorker } from '../components/ship/shipmultiworker';
+import { OptionsPanelFlexColumn } from '../components/stats/utils';
 
 const ShipInfoPage = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -108,7 +109,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 	}, [ships, shipKey]);
 
 	if (!ship || !crew) return context.core.spin(t('spinners.default'));
-
+	const flexCol = OptionsPanelFlexColumn;
 	return (<>
 		<div>
 			<CrewPicker
@@ -175,7 +176,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 				marginBottom: '2em'
 			}}>
 				{ship.battle_stations?.map((bs, idx) => (
-					<div key={`ship_battle_station_${idx}_${bs.skill}`}>
+					<div key={`ship_battle_station_${idx}_${bs.skill}`} style={flexCol}>
 						<CrewPicker
 							renderCrewCaption={renderCrewCaption}
 							// isOpen={modalOpen}
@@ -191,6 +192,13 @@ const ShipViewer = (props: ShipViewerProps) => {
 							setOptions={(opt) => setModalOptions(opt)}
 							handleSelect={(crew) => onCrewPick(crew)}
 						/>
+						<div>
+							<Button
+								disabled={!crewStations[idx]}
+								onClick={(e) => clearStation(idx)}>
+								{t('ship.clear_station')}
+							</Button>
+						</div>
 					</div>
 				))}
 			</div>
@@ -232,9 +240,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "64px" }} />
 				}
 			</div>
-			<div>
-				<Button disabled={!crewStations[idx]} onClick={(e) => clearStation(idx)}>{t('ship.clear_station')}</Button>
-			</div>
+
 		</div>)
 
 	}
