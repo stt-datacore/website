@@ -58,7 +58,7 @@ type StaticCrewPageProps = {
 const StaticCrewPage = (props: StaticCrewPageProps) => {
 
 	return (
-		<DataPageLayout pageTitle={''} demands={['items', 'crew', 'keystones', 'cadet']} narrowLayout={true}>
+		<DataPageLayout pageTitle={''} demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet', 'keystones']} narrowLayout={true}>
 			<StaticCrewComponent props={props} />
 		</DataPageLayout>
 	);
