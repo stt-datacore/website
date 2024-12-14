@@ -32,6 +32,7 @@ export interface IVoyageEventContent {
 	antimatter_bonus_for_featured_ship: number;
 	featured_ships: string[];
 	encounter_traits?: string[];
+    encounter_times?: number[];
 };
 
 // Extends IVoyageInputConfig to include calculation result

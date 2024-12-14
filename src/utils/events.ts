@@ -585,3 +585,25 @@ export function guessEncounterTraits(gameEvent: GameEvent, english: TraitNames):
 	}
 	return traits;
 }
+
+export function guessEncounterTimes(gameEvent: GameEvent, as: 'minutes' | 'seconds'): number[] {
+	const values: number[] = [];
+	const searchText = "Voyage Encounters take place at the following points in time:";
+	let ei: number = gameEvent.rules.indexOf(searchText);
+	if (ei !== -1) {
+		let en: number = gameEvent.rules.indexOf("and", ei + searchText.length);
+		if (en !== -1) {
+			const namedTimes: string[] = gameEvent.rules.slice(ei + searchText.length, en).split(",").map(s => s.trim()).filter(s => s);
+			namedTimes.forEach((time) => {
+				let parts = time.split(" ");
+				let value = Number(parts[0]);
+				if (parts[1].toLocaleLowerCase().includes("hour")) value *= 60;
+				if (as == 'seconds') value *= 60;
+				values.push(value);
+			})
+		}
+	}
+	return values;
+}
+
+
