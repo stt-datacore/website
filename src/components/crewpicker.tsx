@@ -26,14 +26,14 @@ export interface CrewPickerProps<T extends OptionsBase> {
 };
 
 const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
-	const { handleSelect, isOpen, contextData, setIsOpen } = props;
+	const { handleSelect, isOpen: modalIsOpen, contextData, setIsOpen } = props;
 
 	const context = React.useContext(GlobalContext);
 	const { t } = context.localized;
 	const { options, setOptions } = props;
 
 	const [crewList, setCrewList] = React.useState<(PlayerCrew | CrewMember)[]>([]);
-	const [modalIsOpen, setModalIsOpen] = React.useState(isOpen);
+
 	const [searchFilter, setSearchFilter] = React.useState('');
 	const [paginationPage, setPaginationPage] = React.useState(1);
 	const [selectedCrew, setSelectedCrew] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);
@@ -55,11 +55,11 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 		}
 	}, [modalIsOpen]);
 
-	React.useEffect(() => {
-		if (isOpen !== undefined && isOpen) {
-			setModalIsOpen(true);
-		}
-	}, [isOpen, contextData]);
+	// React.useEffect(() => {
+	// 	if (isOpen !== undefined) {
+	// 		setModalIsOpen(isOpen);
+	// 	}
+	// }, [isOpen, contextData]);
 
 	React.useEffect(() => {
 		setPaginationPage(1);
@@ -72,7 +72,6 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 		<Modal
 			open={modalIsOpen}
 			onClose={closeModal}
-			onOpen={() => setModalIsOpen(true)}
 			trigger={props.renderTrigger ? props.renderTrigger() : renderDefaultTrigger()}
 			size='tiny'
 			centered={false}
@@ -112,7 +111,6 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 
 	function closeModal(): void {
 		if (setIsOpen) setIsOpen(false);
-		setModalIsOpen(false);
 	}
 
 	function renderDefaultTrigger(): JSX.Element {
@@ -176,7 +174,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 
 	function confirmSelection(crew: any): void {
 		handleSelect(crew);
-		setModalIsOpen(false);
+		if (setIsOpen) setIsOpen(false);
 		setSelectedCrew(undefined);
 	}
 };
