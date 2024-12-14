@@ -53,7 +53,7 @@ export const CollectionTiers = (props: { collection: Collection }) => {
                         ?.map((b) => b as BuffBase)
                         .concat(milestone.rewards ?? []) as Reward[])
 
-                    return <React.Fragment>
+                    return <React.Fragment key={`col_milestone_${idx}_${collection.name}`}>
                         <Table.Row>
                             <Table.Cell>
                             {ms['milestone'] && !ms[idx] && <Icon name='check' color='green' size='small' style={{margin: '0.5em'}} />}
