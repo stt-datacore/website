@@ -17,6 +17,7 @@ import { checkReward, mergeItems } from '../../utils/itemutils';
 import { GlobalContext } from '../../context/globalcontext';
 import { formatTime } from '../../utils/voyageutils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import { IEventData } from '../eventplanner/model';
 
 type VoyageStatsProps = {
 	configSource?: 'player' | 'custom';

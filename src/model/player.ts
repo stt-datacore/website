@@ -9,6 +9,8 @@ import { EquipmentItem } from "./equipment";
 import { Collection, Icon } from "./game-elements";
 import { ShuttleAdventure } from "./shuttle";
 import { ArchetypeRoot17, ArchetypeRoot20 } from "./archetype";
+import { IEventData } from "./events";
+import { IVoyageEventContent } from "./voyage";
 
 export const ISM_ID = 14152;
 
@@ -1120,6 +1122,7 @@ export interface Voyage {
   ship_id: number;
   next_interaction: number;
   crew_slots: VoyageCrewSlot[]
+  event_content?: IVoyageEventContent;
 }
 
 export interface EncounterVoyage extends Voyage {

@@ -549,10 +549,12 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 		hp: running.hp
 	};
 
+	const event_data = eventData.find(f => f.seconds_to_start === 0 && f.seconds_to_end > 0 && f.content_types.includes('voyage') && running.voyage_type === 'encounter');
+
 	return (
 		<React.Fragment>
 			<VoyageStats
-				voyageData={running}
+				voyageData={{...running, event_content: event_data?.activeContent as IVoyageEventContent }}
 				ships={ship ? [ship] : []}
 				showPanels={running.state === 'started' ? ['estimate'] : ['rewards']}
 				playerItems={playerData.player.character.items}
