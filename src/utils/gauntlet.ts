@@ -587,6 +587,8 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 						crew.kwipment.push(Number(q.kwipment_id!) as any);
 					}
 				});
+				while (crew.kwipment.length < 4) crew.kwipment.push(0 as any);
+				crew.kwipment_prospects = true;
 				Object.keys(bestQuip.skills_hash).forEach((skill) => {
 					crew[skill].base = bestQuip.skills_hash[skill].base;
 					crew[skill].min = bestQuip.skills_hash[skill].range_min;
