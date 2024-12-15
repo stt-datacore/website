@@ -249,12 +249,12 @@ export const ItemStatsTable = (props: ItemStatsTableProps) => {
                     striped
                     style={{
                         textAlign: 'left',
-                        cursor: expanded === item.symbol ? 'zoom-out' : (item.extra_traits!.length ? 'zoom-in' : undefined)}}
+                        cursor: expanded === item.symbol ? 'zoom-out' : (item.extra_traits!.length || item.more_traits ? 'zoom-in' : undefined)}}
                         onClick={() => {
                             if (expanded === item.symbol) {
                                 setExpanded('');
                             }
-                            else if (item.extra_traits!.length) {
+                            else if (item.extra_traits!.length || item.more_traits) {
                                 setExpanded(item.symbol);
                             }
                         }}
