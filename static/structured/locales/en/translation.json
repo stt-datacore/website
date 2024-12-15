@@ -842,6 +842,7 @@
         }
     },
     "global": {
+        "exclusive": "Exclusive",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
@@ -1883,6 +1884,17 @@
         "quipment": "Calculating quipment..."
     },
     "stat_trends": {
+        "items": {
+            "name": "{{global.name}}",
+            "quantity": "{{global.quantity}}",
+            "percentage": "Crew demand rate",
+            "demanded": "Crew demand total",
+            "latest_usage": "Latest usage",
+            "inaugural_crew": "{{stat_trends.trait_columns.inaugural_crew}}",
+            "first_crew": "{{stat_trends.trait_columns.first_crew}}",
+            "latest_crew": "{{stat_trends.trait_columns.latest_crew}}",
+            "popular_trait": "Most frequent trait"
+        },
         "columns": {
             "day_diff": "Release Interval",
             "epoch_day": "Epoch Day (Recent Crew)",
@@ -1923,6 +1935,10 @@
             "traits": {
                 "description": "Stats about crew traits in the game",
                 "title": "{{hints.traits}}"
+            },
+            "items": {
+                "description": "Stats about components and equipment in the game",
+                "title": "{{global.items}}"
             }
         },
         "stats": {

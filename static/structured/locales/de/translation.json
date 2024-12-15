@@ -842,6 +842,7 @@
         }
     },
     "global": {
+        "exclusive": "Exklusive",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
@@ -1885,6 +1886,17 @@
         "quipment": "Berechnungsausrüstung..."
     },
     "stat_trends": {
+        "items": {
+            "name": "{{global.name}}",
+            "owned": "{{crew_state.owned}}",
+            "percentage": "Crew-Nachfragerate",
+            "demanded": "Crew-Nachfrage gesamt",
+            "latest_usage": "Aktuelle Nutzung",
+            "inaugural_crew": "{{stat_trends.trait_columns.inaugural_crew}}",
+            "first_crew": "{{stat_trends.trait_columns.first_crew}}",
+            "latest_crew": "{{stat_trends.trait_columns.latest_crew}}",
+            "popular_trait": "Häufigstes Merkmal"
+        },
         "columns": {
             "day_diff": "Debütintervall",
             "epoch_day": "Epochentag (letzte Crew)",
@@ -1925,6 +1937,10 @@
             "traits": {
                 "description": "Statistiken zu Crew-Eigenschaften im Spiel",
                 "title": "{{hints.traits}}"
+            },
+            "items": {
+                "description": "Statistiken zu Komponenten und Ausrüstung im Spiel",
+                "title": "{{global.items}}"
             }
         },
         "stats": {

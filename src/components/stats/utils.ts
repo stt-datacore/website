@@ -369,6 +369,15 @@ export function skillsToNames(skills: string[] | BaseSkills, short = true) {
     }
 }
 
+export function approxDate(d: Date, t: TranslateMethod) {
+    if (d.getTime() === GameEpoch.getTime()) return t('global.initial_launch')
+    let m = (d.getUTCMonth() + 1);
+    if (m <= 3) return `${t('global.approx')} ${t('global.quarter_short')}1 ${d.getUTCFullYear()}`;
+    if (m <= 6) return `${t('global.approx')} ${t('global.quarter_short')}2 ${d.getUTCFullYear()}`;
+    if (m <= 9) return `${t('global.approx')} ${t('global.quarter_short')}3 ${d.getUTCFullYear()}`;
+    return `${t('global.approx')} ${t('global.quarter_short')}4 ${d.getUTCFullYear()}`;
+}
+
 export function getSkillOrderDebutData(data: CrewMember[]): SkillOrderDebut[] {
     const epochData = {} as { [key: string]: SkillOrderDebut[] }
 

@@ -851,6 +851,7 @@
         }
     },
     "global": {
+        "exclusive": "Exclusivo",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
@@ -1898,6 +1899,17 @@
         "quipment": "Quipo de cálculo..."
     },
     "stat_trends": {
+        "items": {
+            "name": "{{global.name}}",
+            "owned": "{{crew_state.owned}}",
+            "percentage": "Tasa de demanda de la tripulación",
+            "demanded": "Total de demanda de la tripulación",
+            "latest_usage": "Último uso",
+            "inaugural_crew": "{{stat_trends.trait_columns.inaugural_crew}}",
+            "first_crew": "{{stat_trends.trait_columns.first_crew}}",
+            "latest_crew": "{{stat_trends.trait_columns.latest_crew}}",
+            "popular_trait": "Rasgo más frecuente"
+        },
         "columns": {
             "day_diff": "Intervalo de debut",
             "epoch_day": "Día de época (Tripulación reciente)",
@@ -1938,6 +1950,10 @@
             "traits": {
                 "description": "Estadísticas sobre los rasgos de la tripulación en el juego",
                 "title": "{{hints.traits}}"
+            },
+            "items": {
+                "description": "Estadísticas sobre componentes y equipos en el juego",
+                "title": "{{global.items}}"
             }
         },
         "stats": {
