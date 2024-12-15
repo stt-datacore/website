@@ -3,7 +3,7 @@ import { GlobalContext } from "../../../context/globalcontext"
 import { ITableConfigRow, SearchableTable } from "../../searchabletable";
 import { EpochDiff } from "../model";
 import { Checkbox, Table } from "semantic-ui-react";
-import { dateToEpoch, formatElapsedDays, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
+import { approxDate, dateToEpoch, formatElapsedDays, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
 import 'moment/locale/fr';
 import 'moment/locale/de';
 import 'moment/locale/es';
@@ -87,15 +87,6 @@ export const TraitStatsTable = () => {
         let d = new Date(items[nidx].date);
         d.setHours(d.getHours() - ((number - n) / 40));
         return d;
-    }
-
-    const approxDate = (d: Date) => {
-        if (d.getTime() === GameEpoch.getTime()) return t('global.initial_launch')
-        let m = (d.getUTCMonth() + 1);
-        if (m <= 3) return `${t('global.approx')} ${t('global.quarter_short')}1 ${d.getUTCFullYear()}`;
-        if (m <= 6) return `${t('global.approx')} ${t('global.quarter_short')}2 ${d.getUTCFullYear()}`;
-        if (m <= 9) return `${t('global.approx')} ${t('global.quarter_short')}3 ${d.getUTCFullYear()}`;
-        return `${t('global.approx')} ${t('global.quarter_short')}4 ${d.getUTCFullYear()}`;
     }
 
     const colSpecialDate = (c: string) => {
@@ -367,7 +358,7 @@ export const TraitStatsTable = () => {
                 </Table.Cell>
                 <Table.Cell>
                     {/* {moment(item.first_appearance).utc(false).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("MMM D, y")} */}
-                    {approxDate(item.first_appearance)}
+                    {approxDate(item.first_appearance, t)}
                 </Table.Cell>
                 <Table.Cell>
                     <div style={{...flexCol, textAlign: 'center', gap: '1em'}}>

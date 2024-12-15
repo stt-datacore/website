@@ -50,6 +50,7 @@ export interface ITableConfigRow {
 	tiebreakers?: string[];
 	tiebreakers_reverse?: boolean[];
 	customCompare?: (a: any, b: any, config: IConfigSortData) => number;
+	translatePseudocolumn?: (field: string) => string | JSX.Element;
 }
 
 export interface SearchableTableProps {
@@ -164,7 +165,13 @@ export const SearchableTable = (props: SearchableTableProps) => {
 						onClick={() => onHeaderClick(cell)}
 						textAlign={cell.width === 1 ? 'center' : 'left'}
 					>
-						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{translatePseudocolumn(column, t)}</small></>}
+						{cell.title}
+						{cell.pseudocolumns?.includes(column) && <>
+							<br/>
+							<small>
+								{cell.translatePseudocolumn ? cell.translatePseudocolumn(column) : translatePseudocolumn(column, t)}
+							</small>
+						</>}
 					</Table.HeaderCell>
 				))}
 			</Table.Row>

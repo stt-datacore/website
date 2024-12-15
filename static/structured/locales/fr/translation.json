@@ -850,6 +850,7 @@
         }
     },
     "global": {
+        "exclusive": "Exclusif",
         "aborted": "Terminé",
         "admiral": "Avorté",
         "advanced_settings": "Réglages Avancés",
@@ -1898,6 +1899,17 @@
         "quipment": "Calcul de l'équipement..."
     },
     "stat_trends": {
+        "items": {
+            "name": "{{global.name}}",
+            "owned": "{{crew_state.owned}}",
+            "percentage" : "Taux de demande de l'équipage",
+            "demanded" : "Demande totale de l'équipage",
+            "latest_usage": "Dernière utilisation",
+            "inaugural_crew": "{{stat_trends.trait_columns.inaugural_crew}}",
+            "first_crew": "{{stat_trends.trait_columns.first_crew}}",
+            "latest_crew": "{{stat_trends.trait_columns.latest_crew}}",
+            "popular_trait": "Trait le plus fréquent"
+        },
         "columns": {
             "day_diff": "Intervalle de début",
             "epoch_day": "Jour de l'époque (équipe récente)",
@@ -1938,6 +1950,10 @@
             "traits": {
                 "description": "Statistiques sur les caractéristiques de l'équipage dans le jeu",
                 "title": "{{hints.traits}}"
+            },
+            "items": {
+                "description": "Statistiques sur les composants et l'équipement du jeu",
+                "title": "{{global.items}}"
             }
         },
         "stats": {

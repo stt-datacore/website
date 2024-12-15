@@ -1,6 +1,6 @@
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
-import { Grid, Label, Message, Step } from "semantic-ui-react";
+import { Button, Grid, Icon, Label, Message, Step } from "semantic-ui-react";
 import CONFIG from "../CONFIG";
 import { StatLabel } from "../statlabel";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
@@ -13,6 +13,7 @@ import { Skill } from "../../model/crew";
 import { ChartsView } from "./chartsview";
 import { EpochDiff } from "./model";
 import { TraitStatsTable } from "./tables/traittable";
+import { ItemStatsTable } from "./tables/itemtable";
 
 export const StatTrendsComponent = () => {
     const globalContext = React.useContext(GlobalContext);
@@ -30,6 +31,7 @@ export const StatTrendsComponent = () => {
 
     const [epochDiffs, setEpochDiffs] = React.useState<EpochDiff[]>([]);
     const [crewCount, setCrewCount] = React.useState(0);
+    const [refresh, setRefresh] = React.useState(false);
 
     React.useEffect(() => {
         const filterDiffs = filterEpochDiffs(filterConfig, outerDiffs);
@@ -144,30 +146,42 @@ export const StatTrendsComponent = () => {
                 </Message>
                 <CrewHoverStat targetGroup="stat_trends_crew" />
 
-                {displayMode !== 'traits' && <React.Fragment>
+                {!['traits', 'items'].includes(displayMode) && <React.Fragment>
                     <StatsPrefsPanel />
                     {renderStatsInfo()}
                 </React.Fragment>}
 
                 <Step.Group fluid>
                     <Step active={displayMode === 'crew'} onClick={() => setDisplayMode('crew')}
-                        style={{width: isMobile ? undefined : '33%'}}>
+                        style={{width: isMobile ? undefined : '25%'}}>
                         <Step.Title>{t('stat_trends.sections.crew.title')}</Step.Title>
                         <Step.Description>{t('stat_trends.sections.crew.description')}</Step.Description>
                     </Step>
                     <Step active={displayMode === 'traits'} onClick={() => setDisplayMode('traits')}
-                        style={{width: isMobile ? undefined : '33%'}}>
+                        style={{width: isMobile ? undefined : '25%'}}>
                         <Step.Title>{t('stat_trends.sections.traits.title')}</Step.Title>
                         <Step.Description>{t('stat_trends.sections.traits.description')}</Step.Description>
                     </Step>
+                    <Step active={displayMode === 'items'} onClick={() => setDisplayMode('items')}
+                        style={{width: isMobile ? undefined : '25%'}}>
+
+                        <Step.Title>
+                            {t('stat_trends.sections.items.title')}
+                            <Label corner='right'>
+                                <Icon name='refresh' style={{cursor: 'pointer'}} onClick={()=> setRefresh(true)} />
+                            </Label>
+                        </Step.Title>
+                        <Step.Description>{t('stat_trends.sections.items.description')}</Step.Description>
+                    </Step>
                     <Step active={displayMode === 'graphs'} onClick={() => setDisplayMode('graphs')}
-                        style={{width: isMobile ? undefined : '33%'}}>
+                        style={{width: isMobile ? undefined : '25%'}}>
                         <Step.Title>{t('stat_trends.sections.graphs.title')}</Step.Title>
                         <Step.Description>{t('stat_trends.sections.graphs.description')}</Step.Description>
                     </Step>
                 </Step.Group>
                 {displayMode === 'crew' && <StatTrendsTable prefilteredDiffs={epochDiffs} />}
                 {displayMode === 'traits' && <TraitStatsTable />}
+                {displayMode === 'items' && <ItemStatsTable refresh={refresh} setRefresh={setRefresh} />}
                 {displayMode === 'graphs' && <ChartsView />}
             </div>)
 
