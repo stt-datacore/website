@@ -578,7 +578,6 @@ const CrewOptions = (props: CrewOptionsProps) => {
 		const limit = 0.25;
 
 		let maxprof = -1;
-		let minprof = -1;
 
 		const cprofs = {} as {[key: string]: number}
 		const etl = voyageConfig.event_content?.encounter_traits?.length ?? 0;
@@ -588,7 +587,6 @@ const CrewOptions = (props: CrewOptionsProps) => {
 				const profs = skillSum(Object.values(crewman.skills), 'proficiency');
 				cprofs[crewman.id] = profs;
 				if (maxprof == -1 || maxprof < profs) maxprof = profs;
-				if (minprof == -1 || minprof > profs) minprof = profs;
 			}
 			if (crewman.expires_in)
 				return false;
