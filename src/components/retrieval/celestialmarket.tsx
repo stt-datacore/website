@@ -80,7 +80,7 @@ export const CelestialMarket = () => {
                         if (typeFilter === 'polestars' && (keystone.type === 'crew_keystone_crate' || keystone.type === 'keystone_crate')) return;
                         if (typeFilter === 'constellations' && keystone.type === 'keystone') return;
                     }
-                    if (ownedFilter) {
+                    if (playerData && ownedFilter) {
                         if (ownedFilter === 'owned' && !keystone.owned) return;
                         if (ownedFilter === 'unowned' && keystone.owned) return;
                         if (ownedFilter.includes("wishlist") && !wishlistPolestars.includes(keystone.symbol) && !autoWishlistPolestars.includes(keystone.symbol)) return;
