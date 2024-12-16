@@ -2063,7 +2063,7 @@
             "line_3": "Öffnen Sie das Spiel und kehren Sie dann mit einer neuen Kopie Ihrer Spielerdaten zu DataCore zurück, um eine genauere Schätzung zu gewährleisten."
         },
         "picker_options": {
-            "encounter_traits": "Berücksichtigen Sie nur Besatzungsmitglieder mit kritischen Begegnungsmerkmalen",
+            "encounter_traits": "Gleichen Sie Fertigkeiten mit Boni für kritische Treffer aus",
             "frozen": "Eingefrorene Crew berücksichtigen",
             "shuttle": "Crew auf aktiven Shuttles berücksichtigen",
             "sub_title": "Für diese Reise werden insgesamt {{n}} Crewmitglieder in Betracht gezogen.",

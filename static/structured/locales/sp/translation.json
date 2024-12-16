@@ -2077,7 +2077,7 @@
         },
         "picker_options": {
             "congelado": "Considere tripulación congelada",
-            "encounter_traits": "Solo se considera tripulación con rasgos de crítico de encuentro.",
+            "encounter_traits": "Equilibra las competencias con las bonificaciones de rasgos críticos",
             "shuttle": "Considere tripulación en lanzaderas activas",
             "sub_title": "Se considerará un total de {{n}} tripulantes para este viaje.",
             "title": "Tripulantes a considerar",

@@ -22,7 +22,7 @@ import { addVoyageToHistory, addCrewToHistory, removeVoyageFromHistory, SyncStat
 import CONFIG from '../CONFIG';
 import { getShipTraitBonus } from './utils';
 import { VPGraphAccordion } from './vpgraph';
-import { applyCrewBuffs, oneCrewCopy, qbitsToSlots } from '../../utils/crewutils';
+import { applyCrewBuffs, oneCrewCopy, qbitsToSlots, skillSum } from '../../utils/crewutils';
 import { calcQLots } from '../../utils/equipment';
 import { getItemWithBonus, ItemWithBonus } from '../../utils/itemutils';
 import { BaseSkills, QuippedPower, Skill } from '../../model/crew';
@@ -447,7 +447,7 @@ const CrewOptions = (props: CrewOptionsProps) => {
 	const [considerVoyagers, setConsiderVoyagers] = React.useState<boolean>(false);
 	const [considerShuttlers, setConsiderShuttlers] = React.useState<boolean>(false);
 	const [considerFrozen, setConsiderFrozen] = React.useState<boolean>(false);
-	const [requireEncounterTrait, setRequireEncounterTrait] = React.useState<boolean>(false);
+	const [computeETRatio, setComputeETRatio] = React.useState<boolean>(false);
 	const [preExcludedCrew, setPreExcludedCrew] = React.useState<IVoyageCrew[]>([]);
 	const [excludedCrewIds, internalSetExcludedCrewIds] = React.useState<number[]>([]);
 	const [consideredCount, setConsideredCount] = React.useState<number>(0);
@@ -483,7 +483,7 @@ const CrewOptions = (props: CrewOptionsProps) => {
 		});
 		setConsideredCount(consideredCrew.length);
 		props.updateConsideredCrew(consideredCrew);
-	}, [preConsideredCrew, considerVoyagers, considerShuttlers, considerFrozen, excludedCrewIds, requireEncounterTrait]);
+	}, [preConsideredCrew, considerVoyagers, considerShuttlers, considerFrozen, excludedCrewIds, computeETRatio]);
 
 	const activeVoyagers: number = calculatorContext.crew.filter(crew =>
 		crew.active_status === 3
@@ -532,14 +532,14 @@ const CrewOptions = (props: CrewOptionsProps) => {
 										checked={considerFrozen}
 										onChange={(e, { checked }) => setConsiderFrozen(checked)}
 									/>
-									{/* {!!voyageConfig.event_content?.encounter_traits?.length &&
+									{!!voyageConfig.event_content?.encounter_traits?.length &&
 									<Form.Field
 										control={Checkbox}
 										label={t('voyage.picker_options.encounter_traits')}
-										checked={requireEncounterTrait}
-										onChange={(e, { checked }) => setRequireEncounterTrait(checked)}
+										checked={computeETRatio}
+										onChange={(e, { checked }) => setComputeETRatio(checked)}
 									/>
-									} */}
+									}
 								</React.Fragment>
 							</Form.Group>
 						)}
@@ -574,9 +574,21 @@ const CrewOptions = (props: CrewOptionsProps) => {
 	);
 
 	function preExcludeCrew(preConsideredCrew: IVoyageCrew[]): IVoyageCrew[] {
-		return preConsideredCrew.filter(crewman => {
-			if (requireEncounterTrait && voyageConfig.event_content?.encounter_traits?.length) {
-				if (!voyageConfig.event_content.encounter_traits.some(trait => crewman.traits.includes(trait))) return false;
+
+		const limit = 0.25;
+
+		let maxprof = -1;
+		let minprof = -1;
+
+		const cprofs = {} as {[key: string]: number}
+		const etl = voyageConfig.event_content?.encounter_traits?.length ?? 0;
+
+		let preExcluded = preConsideredCrew.filter(crewman => {
+			if (computeETRatio && voyageConfig.event_content?.encounter_traits?.length) {
+				const profs = skillSum(Object.values(crewman.skills), 'proficiency');
+				cprofs[crewman.id] = profs;
+				if (maxprof == -1 || maxprof < profs) maxprof = profs;
+				if (minprof == -1 || minprof > profs) minprof = profs;
 			}
 			if (crewman.expires_in)
 				return false;
@@ -592,6 +604,19 @@ const CrewOptions = (props: CrewOptionsProps) => {
 
 			return true;
 		});
+
+		if (computeETRatio && voyageConfig.event_content?.encounter_traits?.length) {
+			preExcluded.forEach((crewman) => {
+				const ctl = voyageConfig!.event_content!.encounter_traits!.filter(trait => crewman.traits.includes(trait))?.length;
+				let ca = ctl / etl;
+				let cb = cprofs[crewman.id] / maxprof;
+				crewman.pickerId = (ca + cb) * 0.5;
+			});
+			preExcluded.sort((a, b) => b.pickerId! - a.pickerId!);
+			preExcluded = preExcluded.filter(c => c.pickerId && c.pickerId >= limit);
+		}
+
+		return preExcluded;
 	}
 
 	function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[]) {

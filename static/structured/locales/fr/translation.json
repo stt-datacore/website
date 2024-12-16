@@ -2076,7 +2076,7 @@
             "line_3": "Ouvrez le jeu, puis revenez à DataCore avec une nouvelle copie de vos données de joueur pour garantir une estimation plus précise."
         },
         "picker_options": {
-            "encounter_traits": "Ne considérez que l'équipage avec des traits critiques de rencontre",
+            "encounter_traits": "Équilibrez les compétences avec les bonus de traits critiques",
             "freezen": "Considérez l'équipage gelé",
             "shuttle": "Considérez l'équipage sur les navettes actives",
             "sub_title": "Un total de {{n}} des équipiers seront pris en considération pour ce voyage.",

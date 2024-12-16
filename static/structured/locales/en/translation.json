@@ -2061,7 +2061,7 @@
             "line_3": "Open the game, then return to DataCore with a fresh copy of your player data to guarantee a more accurate estimate."
         },
         "picker_options": {
-            "encounter_traits": "Only consider crew with encounter crit traits",
+            "encounter_traits": "Balance proficiencies with crit trait bonuses",
             "frozen": "Consider frozen crew",
             "shuttle": "Consider crew on active shuttles",
             "sub_title": "A total of {{n}} crew will be considered for this voyage.",
