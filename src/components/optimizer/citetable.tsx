@@ -120,7 +120,7 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
                     <Table.HeaderCell
                         onClick={(e) => sort === 'voyages' ? setDirection(direction === 'descending' ? 'ascending' : 'descending') : setSort('voyages')}
                         sorted={sort === 'voyages' ? direction : undefined}>
-                        {tfmt('cite_opt.columns.voyage_groups')}
+                        {tfmt('cite_opt.columns.voyages_groups')}
                     </Table.HeaderCell>
                     {engine === 'beta_tachyon_pulse' &&
                         <React.Fragment>
