@@ -532,14 +532,14 @@ const CrewOptions = (props: CrewOptionsProps) => {
 										checked={considerFrozen}
 										onChange={(e, { checked }) => setConsiderFrozen(checked)}
 									/>
-									{!!voyageConfig.event_content?.encounter_traits?.length &&
+									{/* {!!voyageConfig.event_content?.encounter_traits?.length &&
 									<Form.Field
 										control={Checkbox}
 										label={t('voyage.picker_options.encounter_traits')}
 										checked={computeETRatio}
 										onChange={(e, { checked }) => setComputeETRatio(checked)}
 									/>
-									}
+									} */}
 								</React.Fragment>
 							</Form.Group>
 						)}
@@ -575,19 +575,19 @@ const CrewOptions = (props: CrewOptionsProps) => {
 
 	function preExcludeCrew(preConsideredCrew: IVoyageCrew[]): IVoyageCrew[] {
 
-		const limit = 0.25;
+		// const limit = 0.25;
 
-		let maxprof = -1;
+		// let maxprof = -1;
 
-		const cprofs = {} as {[key: string]: number}
-		const etl = voyageConfig.event_content?.encounter_traits?.length ?? 0;
+		// const cprofs = {} as {[key: string]: number}
+		// const etl = voyageConfig.event_content?.encounter_traits?.length ?? 0;
 
 		let preExcluded = preConsideredCrew.filter(crewman => {
-			if (computeETRatio && voyageConfig.event_content?.encounter_traits?.length) {
-				const profs = skillSum(Object.values(crewman.skills), 'proficiency');
-				cprofs[crewman.id] = profs;
-				if (maxprof == -1 || maxprof < profs) maxprof = profs;
-			}
+			// if (computeETRatio && voyageConfig.event_content?.encounter_traits?.length) {
+			// 	const profs = skillSum(Object.values(crewman.skills), 'proficiency');
+			// 	cprofs[crewman.id] = profs;
+			// 	if (maxprof == -1 || maxprof < profs) maxprof = profs;
+			// }
 			if (crewman.expires_in)
 				return false;
 
@@ -603,23 +603,23 @@ const CrewOptions = (props: CrewOptionsProps) => {
 			return true;
 		});
 
-		if (computeETRatio && voyageConfig.event_content?.encounter_traits?.length) {
-			preExcluded.forEach((crewman) => {
-				const ctl = voyageConfig!.event_content!.encounter_traits!.filter(trait => crewman.traits.includes(trait))?.length;
-				let ca = ctl / etl;
-				let cb = cprofs[crewman.id] / maxprof;
-				crewman.pickerId = (ca + cb) * 0.5;
-			});
-			const fc = voyageConfig.event_content.featured_crews;
-			preExcluded.sort((a, b) => {
-				const fa = fc.includes(a.symbol);
-				const fb = fc.includes(b.symbol);
-				if (fa === fb) {
-					return b.pickerId! - a.pickerId!
-				}
-				return fa ? -1 : 1;
-			});
-		}
+		// if (computeETRatio && voyageConfig.event_content?.encounter_traits?.length) {
+		// 	preExcluded.forEach((crewman) => {
+		// 		const ctl = voyageConfig!.event_content!.encounter_traits!.filter(trait => crewman.traits.includes(trait))?.length;
+		// 		let ca = ctl / etl;
+		// 		let cb = cprofs[crewman.id] / maxprof;
+		// 		crewman.pickerId = (ca + cb) * 0.5;
+		// 	});
+		// 	const fc = voyageConfig.event_content.featured_crews;
+		// 	preExcluded.sort((a, b) => {
+		// 		const fa = fc.includes(a.symbol);
+		// 		const fb = fc.includes(b.symbol);
+		// 		if (fa === fb) {
+		// 			return b.pickerId! - a.pickerId!
+		// 		}
+		// 		return fa ? -1 : 1;
+		// 	});
+		// }
 
 		return preExcluded;
 	}
