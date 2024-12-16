@@ -26,6 +26,7 @@ export function omniSearchFilter<T>(item: T, filters: Filter[], filterType: stri
     }
 
     function getValue(data: any, field: string) {
+        if (!field) return data;
         let parts = field.split(".");
         for (let part of parts) {
             data = data[part];

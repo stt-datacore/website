@@ -14,6 +14,7 @@ import { skillSum } from '../../utils/crewutils';
 import { omniSearchFilter } from '../../utils/omnisearch';
 import CONFIG from '../CONFIG';
 import { ItemHoverStat } from '../hovering/itemhoverstat';
+import { useStateWithStorage } from '../../utils/storage';
 
 export type QuipmentProspectMode = 'best' | 'best_2' | 'all';
 export type VoyageSkillPreferenceMode = 'none' | 'voyage' | 'voyage_1' | 'voyage_2';
@@ -176,9 +177,11 @@ type RecipeType = { [key: string]: EquipmentCommon[] };
 type CrewRefType = { [key: string]: PlayerCrew[] };
 
 export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
+
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
     const { crew } = props;
+    const slots = crew.map((c, idx) => t(`voyage.seats.${CONFIG.VOYAGE_CREW_SLOTS[idx]}`));
     const quipment = globalContext.core.items.filter(f => f.type === 14 || f.type === 15);
 
     const [items, setItems] = React.useState<ItemWithBonus[]>();
@@ -186,21 +189,14 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
     const [crewRef, setCrewRef] = React.useState<CrewRefType>({});
     const [ingredients, setIngredients] = React.useState<EquipmentItem[]>([]);
 
-    const [mode, setMode] = React.useState('items');
+    const [mode, setMode] = useStateWithStorage('voyage_quipment_prospects_mode', 'items', { rememberForever: true });
     const flexCol = OptionsPanelFlexColumn;
     const flexRow = OptionsPanelFlexRow;
 
     const itemTable = [
         { width: 2, column: 'item.name', title: t('base.quipment') },
-        // {
-        //     width: 1,
-        //     column: 'item.needed',
-        //     title: t('items.columns.quantity'),
-        //     reverse: true,
-        //     customCompare: (a, b) => a.item.needed! - b.item.needed! || compareIngredients(a.item, b.item)
-        // },
         {
-            width: 2,
+            width: 1,
             column: 'buffs',
             title: t('items.columns.item_buffs'),
             reverse: true,
@@ -244,6 +240,33 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
         }
     ] as ITableConfigRow[];
 
+    const crewTable = [
+        {
+            width: 3,
+            column: 'name',
+            title: t('global.name')
+        },
+        {
+            width: 2,
+            column: 'seat',
+            title: t('shuttle_helper.missions.columns.seat'),
+            customCompare: (a: PlayerCrew, b: PlayerCrew) => {
+                let ax = crew.indexOf(a);
+                let bx = crew.indexOf(b);
+                return ax - bx;
+            }
+        },
+        {
+            column: 'kwipment',
+            title: t('base.quipment'),
+            customCompare: (a: PlayerCrew, b: PlayerCrew) => {
+                let ax = items?.filter(f => a.kwipment.includes(Number(f.item.kwipment_id!) as any));
+                let bx = items?.filter(f => b.kwipment.includes(Number(f.item.kwipment_id!) as any));
+                return ax?.reduce((p, n) => p + n.item.needed!, 0)! - bx?.reduce((p, n) => p + n.item.needed!, 0)!;
+            }
+        }
+    ] as ITableConfigRow[];
+
     React.useEffect(() => {
         const { newitems, newrecipes, newref } = compileIngredients();
         const newingredients = [] as EquipmentItem[];
@@ -269,12 +292,14 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
     const modeOpts = [
         { key: 'items', value: 'items', text: t('global.items') },
         { key: 'ingredients', value: 'ingredients', text: t('base.ingredients') },
+        { key: 'crew', value: 'crew', text: t('base.crew') },
     ]
 
     return (
         <div>
             <div style={{...flexCol, alignItems: 'flex-start', gap: '0.5em', margin: '1em 0'}}>
-                <div>{t('collections.options.mode.title')}</div>
+                {/* <div>{t('collections.options.mode.title')}</div> */}
+                <div>{t('global.group_by')}</div>
                 <Dropdown
                     selection
                     options={modeOpts}
@@ -283,16 +308,25 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                     />
             </div>
             {!!items && mode === 'items' && <SearchableTable
+                id={`prospective_quipment_items`}
                 data={items}
                 filterRow={(row, filter, filterType) => filterRow(row, filter, filterType)}
                 renderTableRow={(row, i) => renderTableRow(row, i)}
                 config={itemTable}
                 />}
             {!!items && mode === 'ingredients' && <SearchableTable
+                id={`prospective_quipment_ingredients`}
                 data={ingredients}
                 filterRow={(row, filter, filterType) => filterRow(row, filter, filterType)}
                 renderTableRow={(row, i) => renderIngredient(row, i)}
                 config={ingTable}
+                />}
+            {!!items && mode === 'crew' && <SearchableTable
+                id={`prospective_quipment_crew`}
+                data={crew}
+                filterRow={(row, filter, filterType) => filterRow(row, filter, filterType)}
+                renderTableRow={(row, i) => renderCrewRow(row, i)}
+                config={crewTable}
                 />}
         </div>
     )
@@ -340,9 +374,37 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                 ],
             );
         }
-        else {
-            return omniSearchFilter(row, filter, filterType, ['name'])
+        else if (mode === 'ingredients') {
+            return omniSearchFilter(row, filter, filterType, ['name']);
         }
+        else if (mode === 'crew') {
+            if (!row.kwipment_prospects) return false;
+            return omniSearchFilter(row, filter, filterType,
+                [
+                    'name',
+                    {
+                        field: '',
+                        customMatch: (c: PlayerCrew, text) => {
+                            if (!c) return false;
+                            return slots[crew.findIndex(cf => cf.id == c.id)]?.toLowerCase().includes(text.toLowerCase());
+                        }
+                    },
+                    {
+                        field: 'kwipment',
+                        customMatch: (value: number[], text) => {
+                            return quipment.filter(fq => value.includes(Number(fq.kwipment_id!))).some(q => q.name.toLowerCase().includes(text.toLowerCase()))
+                        }
+                    },
+                    {
+                        field: 'traits_named',
+                        customMatch: (traits: string[], text) => {
+                            return traits.some(t => t.toLowerCase().includes(text.toLowerCase()))
+                        }
+                    }
+                ]
+            );
+        }
+        return false;
 
     }
 
@@ -362,9 +424,6 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                     <span>{row.name}</span>
                 </div>
             </Table.Cell>
-            {/* <Table.Cell>
-                {row.needed || 0}
-            </Table.Cell> */}
             <Table.Cell>
                 {Object.entries(iwb.bonusInfo.bonuses).map(([skill, bonus]) => {
 
@@ -444,6 +503,45 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                                     size={32}
                                 />
                     })}
+                </div>
+            </Table.Cell>
+        </Table.Row>
+    }
+
+    function renderCrewRow(row: PlayerCrew, idx: any) {
+
+        return <Table.Row key={`quipment_prospects_crew_${row.id}_${row.symbol}_${idx}`}>
+            <Table.Cell>
+                <div style={{...flexRow}}>
+                    <AvatarView
+                        mode='crew'
+                        targetGroup='voyageLineupHover'
+                        item={row}
+                        partialItem={true}
+                        size={48}
+                        />
+                    <span>{row.name}</span>
+                </div>
+            </Table.Cell>
+            <Table.Cell>
+                {slots[crew.indexOf(row)]}
+            </Table.Cell>
+            <Table.Cell>
+                <div style={{...flexRow, justifyContent: 'flex-start', flexWrap: 'wrap', gap: '2em'}}>
+                {row.kwipment.map((m) => {
+                    let item = quipment.find(fq => fq.kwipment_id == m);
+                    if (!item) return <></>
+                    return <div style={{...flexCol, width: '12em', textAlign:'center'}}>
+                    <AvatarView
+                        mode='item'
+                        targetGroup='voyage_prospect_summary'
+                        item={item}
+                        partialItem={true}
+                        size={48}
+                        />
+                    <span>{item.name}</span>
+                </div>
+                })}
                 </div>
             </Table.Cell>
         </Table.Row>
