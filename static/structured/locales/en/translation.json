@@ -44,6 +44,8 @@
         "gauntlet": "Gauntlet",
         "global_warn_permanent": "Warning: this action cannot be undone.",
         "in_portal": "In Portal",
+        "ingredient": "Ingredient",
+        "ingredients": "Ingredients",
         "less_than_100_retrieval": "< 100% Retrieval",
         "level": "Level",
         "live_results": "Live results (calculation will be slower)",
@@ -842,7 +844,6 @@
         }
     },
     "global": {
-        "exclusive": "Exclusive",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
@@ -879,6 +880,7 @@
         "enable": "Enable",
         "enabled": "Enabled",
         "episode": "Episode",
+        "exclusive": "Exclusive",
         "experimental": "Experimental",
         "filters": "Filters",
         "fleet": "Fleet",
@@ -888,6 +890,8 @@
         "highest_owned_rarity": "Highest owned rarity",
         "idle": "Idle",
         "include_x": "Include {{x}}",
+        "ingredient_warning": "You do not have the ingredients to build this item.",
+        "ingredient_warning_all": "You do not have the ingredients to build all of these items.",
         "initial_launch": "Initial Game Launch",
         "item_types": {
             "arena": "Arena",
@@ -933,6 +937,7 @@
         "member": "Member",
         "min": "Min",
         "min_rarity": "Min. rarity",
+        "missing_colon": "Missing:",
         "n_available": "{{n}} available",
         "n_results": "{{n}} results",
         "n_total_x": "{{n}} total {{x}}",
@@ -1403,9 +1408,9 @@
         "mode_label": "Skill mode",
         "slot_label": "Slot mode",
         "slots": {
+            "n_natural": "Quip up to {{n}} natural slots",
             "n_slots": "Quip {{slots}} slots",
             "natural": "Quip natural slots",
-            "n_natural": "Quip up to {{n}} natural slots",
             "one_slot": "Quip 1 slot"
         }
     },
@@ -1884,17 +1889,6 @@
         "quipment": "Calculating quipment..."
     },
     "stat_trends": {
-        "items": {
-            "name": "{{global.name}}",
-            "quantity": "{{global.quantity}}",
-            "percentage": "Crew demand rate",
-            "demanded": "Crew demand total",
-            "latest_usage": "Latest usage",
-            "inaugural_crew": "{{stat_trends.trait_columns.inaugural_crew}}",
-            "first_crew": "{{stat_trends.trait_columns.first_crew}}",
-            "latest_crew": "{{stat_trends.trait_columns.latest_crew}}",
-            "popular_trait": "Most frequent trait"
-        },
         "columns": {
             "day_diff": "Release Interval",
             "epoch_day": "Epoch Day (Recent Crew)",
@@ -1917,6 +1911,17 @@
             "title": "Graphs"
         },
         "initial_release": "Initial Release",
+        "items": {
+            "demanded": "Crew demand total",
+            "first_crew": "{{stat_trends.trait_columns.first_crew}}",
+            "inaugural_crew": "{{stat_trends.trait_columns.inaugural_crew}}",
+            "latest_crew": "{{stat_trends.trait_columns.latest_crew}}",
+            "latest_usage": "Latest usage",
+            "name": "{{global.name}}",
+            "percentage": "Crew demand rate",
+            "popular_trait": "Most frequent trait",
+            "quantity": "{{global.quantity}}"
+        },
         "last_release": "Last Release",
         "new_high": "New High",
         "new_highs_only": "Only show new highs",
@@ -1932,13 +1937,13 @@
                 "description": "View visual representations of data trends",
                 "title": "Charts & Graphs"
             },
-            "traits": {
-                "description": "Stats about crew traits in the game",
-                "title": "{{hints.traits}}"
-            },
             "items": {
                 "description": "Stats about components and equipment in the game",
                 "title": "{{global.items}}"
+            },
+            "traits": {
+                "description": "Stats about crew traits in the game",
+                "title": "{{hints.traits}}"
             }
         },
         "stats": {
@@ -1980,12 +1985,11 @@
         }
     },
     "voyage": {
-        "awaiting_crew": "This voyage is awaiting crew assignments.",
-        "encounter_traits": "Encounter crit traits",
         "active": {
             "active_voyage_colon": "Active Voyage:"
         },
         "active_voyage": "Active Voyage",
+        "awaiting_crew": "This voyage is awaiting crew assignments.",
         "calc": {
             "msg_type": {
                 "completed": "Your voyage ran for {{time}}.",
@@ -2013,6 +2017,7 @@
         "custom_voyage_editor": "Custom Voyage Editor",
         "custom_voyage_x": "Custom {{x}}",
         "dilemma_chance_h_y": "Chance of {{h}} hour dilemma: {{y}}",
+        "encounter_traits": "Encounter crit traits",
         "estimate": {
             "1_refill": "1 Refill",
             "calculated_by_name_time": "Calculated by {{calculator_name}} in {{time}} seconds!",
@@ -2056,12 +2061,12 @@
             "line_3": "Open the game, then return to DataCore with a fresh copy of your player data to guarantee a more accurate estimate."
         },
         "picker_options": {
+            "encounter_traits": "Only consider crew with encounter crit traits",
             "frozen": "Consider frozen crew",
             "shuttle": "Consider crew on active shuttles",
             "sub_title": "A total of {{n}} crew will be considered for this voyage.",
             "title": "Crew to Consider",
-            "voyage": "Consider crew on active voyages",
-            "encounter_traits": "Only consider crew with encounter crit traits"
+            "voyage": "Consider crew on active voyages"
         },
         "quipment": {
             "crew_prefs": "Crew Skill Preference",

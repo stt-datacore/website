@@ -18,7 +18,7 @@ export interface ItemWithBonus {
 	bonusInfo: ItemBonusInfo;
 }
 
-export function mergeItems(player_items: PlayerEquipmentItem[], items: EquipmentItem[]) {
+export function mergeItems(player_items: PlayerEquipmentItem[], items: EquipmentItem[], include_missing = false) {
 	let data = [] as EquipmentCommon[];
 	player_items.forEach(item => {
 		let itemEntry = items.find(i => i.symbol === item.symbol && !i.isReward);
@@ -48,6 +48,15 @@ export function mergeItems(player_items: PlayerEquipmentItem[], items: Equipment
 			});
 		}
 	});
+	if (include_missing) {
+		items.forEach((item) => {
+			if (!data.some(d => d.symbol === item.symbol)) {
+				data.push(
+					JSON.parse(JSON.stringify(item))
+				)
+			}
+		})
+	}
 	return data;
 }
 

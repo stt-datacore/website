@@ -44,6 +44,8 @@
         "gauntlet": "Reto",
         "global_warn_permanent": "Advertencia: esta acción no se puede deshacer.",
         "in_portal": "En Portal",
+        "ingredient": "Ingrediente",
+        "ingredients": "Ingredientes",
         "less_than_100_retrieval": "< 100% de Recuperación",
         "level": "Nivel",
         "live_results": "Resultados en vivo (el cálculo será más lento)",
@@ -851,7 +853,6 @@
         }
     },
     "global": {
-        "exclusive": "Exclusivo",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
@@ -888,6 +889,7 @@
         "enable": "Habilitar",
         "enabled": "Habilitado",
         "episode": "Episodio",
+        "exclusive": "Exclusivo",
         "experimental": "Experimental",
         "filters": "Filtros",
         "fleet": "Flota",
@@ -897,6 +899,8 @@
         "highest_owned_rarity": "Mayor rareza en posesión",
         "idle": "Inactivo",
         "include_x": "Incluye {{x}}",
+        "ingredient_warning": "No tienes los ingredientes para construir este objeto.",
+        "ingredient_warning_all": "No tienes los ingredientes para construir todos estos objetos.",
         "initial_launch": "Lanzamiento inicial del juego",
         "item_types": {
             "arena": "Arena",
@@ -942,6 +946,7 @@
         "member": "Miembro",
         "min": "Mínimo",
         "min_rarity": "Rareza mín.",
+        "missing_colon": "Desaparecido:",
         "n_available": "{{n}} disponible",
         "n_results": "{{n}} resultados",
         "n_x": "{{n}} {{x}}",
@@ -1414,9 +1419,9 @@
         "mode_label": "Modo habilidad",
         "slot_label": "Modo de ranura",
         "slots": {
+            "n_natural": "Quipar hasta {{n}} espacios naturales",
             "n_slots": "Quipar {{slots}} espacios",
             "natural": "Quipar espacios naturales",
-            "n_natural": "Quipar hasta {{n}} espacios naturales",
             "one_slot": "Quipar 1 espacio"
         }
     },
@@ -1899,17 +1904,6 @@
         "quipment": "Quipo de cálculo..."
     },
     "stat_trends": {
-        "items": {
-            "name": "{{global.name}}",
-            "owned": "{{crew_state.owned}}",
-            "percentage": "Tasa de demanda de la tripulación",
-            "demanded": "Total de demanda de la tripulación",
-            "latest_usage": "Último uso",
-            "inaugural_crew": "{{stat_trends.trait_columns.inaugural_crew}}",
-            "first_crew": "{{stat_trends.trait_columns.first_crew}}",
-            "latest_crew": "{{stat_trends.trait_columns.latest_crew}}",
-            "popular_trait": "Rasgo más frecuente"
-        },
         "columns": {
             "day_diff": "Intervalo de debut",
             "epoch_day": "Día de época (Tripulación reciente)",
@@ -1932,6 +1926,17 @@
             "title": "Gráficos"
         },
         "initial_release": "Lanzamiento inicial",
+        "items": {
+            "demanded": "Total de demanda de la tripulación",
+            "first_crew": "{{stat_trends.trait_columns.first_crew}}",
+            "inaugural_crew": "{{stat_trends.trait_columns.inaugural_crew}}",
+            "latest_crew": "{{stat_trends.trait_columns.latest_crew}}",
+            "latest_usage": "Último uso",
+            "name": "{{global.name}}",
+            "owned": "{{crew_state.owned}}",
+            "percentage": "Tasa de demanda de la tripulación",
+            "popular_trait": "Rasgo más frecuente"
+        },
         "last_release": "Último lanzamiento",
         "new_high": "Nueva Máxima",
         "new_highs_only": "Mostrar solo nuevos altos",
@@ -1947,13 +1952,13 @@
                 "description": "Ver representaciones visuales de tendencias de datos",
                 "title": "Gráficos y tablas"
             },
-            "traits": {
-                "description": "Estadísticas sobre los rasgos de la tripulación en el juego",
-                "title": "{{hints.traits}}"
-            },
             "items": {
                 "description": "Estadísticas sobre componentes y equipos en el juego",
                 "title": "{{global.items}}"
+            },
+            "traits": {
+                "description": "Estadísticas sobre los rasgos de la tripulación en el juego",
+                "title": "{{hints.traits}}"
             }
         },
         "stats": {
@@ -1995,12 +2000,11 @@
         }
     },
     "voyage": {
-        "awaiting_crew": "Este viaje está a la espera de asignaciones de tripulación.",
-        "encounter_traits": "Rasgos críticos de encuentro",
         "active": {
             "active_voyage_colon": "Viaje activo:"
         },
         "active_voyage": "Viaje activo",
+        "awaiting_crew": "Este viaje está a la espera de asignaciones de tripulación.",
         "calc": {
             "msg_type": {
                 "completed": "Tu viaje duró {{time}}.",
@@ -2028,6 +2032,7 @@
         "custom_voyage_editor": "Editor de viajes personalizado",
         "custom_voyage_x": " {{x}} personalizado",
         "dilemma_chance_h_y": "Probabilidad de un dilema de {{h}} horas: {{y}}%",
+        "encounter_traits": "Rasgos críticos de encuentro",
         "estimate": {
             "1_refill": "1 recarga",
             "calculated_by_name_time": "¡Calculado por {{calculator_name}} en {{time}} segundos!",
@@ -2072,11 +2077,11 @@
         },
         "picker_options": {
             "congelado": "Considere tripulación congelada",
+            "encounter_traits": "Solo se considera tripulación con rasgos de crítico de encuentro.",
             "shuttle": "Considere tripulación en lanzaderas activas",
             "sub_title": "Se considerará un total de {{n}} tripulantes para este viaje.",
             "title": "Tripulantes a considerar",
-            "voyage": "Considerar tripulación en viajes activos",
-            "encounter_traits": "Solo se considera tripulación con rasgos de crítico de encuentro."
+            "voyage": "Considerar tripulación en viajes activos"
         },
         "quipment": {
             "crew_prefs": "Preferencia de habilidad de la tripulación",

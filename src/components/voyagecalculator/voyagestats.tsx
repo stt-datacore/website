@@ -18,6 +18,8 @@ import { GlobalContext } from '../../context/globalcontext';
 import { formatTime } from '../../utils/voyageutils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { IEventData } from '../eventplanner/model';
+import { QuipmentProspectList } from './quipmentprospects';
+import { ItemHoverStat } from '../hovering/itemhoverstat';
 
 type VoyageStatsProps = {
 	configSource?: 'player' | 'custom';
@@ -264,6 +266,12 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 				/>
 			</div>
 		);
+	}
+
+	_renderQuipmentProspects() {
+		const { configSource, voyageData, roster, rosterType } = this.props;
+		const crew = voyageData.crew_slots.map(s => s.crew);
+		return <QuipmentProspectList crew={crew} />
 	}
 
 	_renderCrew() {
@@ -600,17 +608,23 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	render() {
 		const { voyageData } = this.props;
+		const { t } = this.context.localized;
 
-		if (!voyageData)
-			return (<Dimmer active>
-        <Loader>Calculating...</Loader>
-      </Dimmer>);
+		if (!voyageData) {
+			return (
+				<Dimmer active>
+					<Loader>{t('spinners.default')}</Loader>
+			  	</Dimmer>
+			);
+		}
 
 		const { activePanels } = this.state;
 		const voyState = voyageData.state;
 		const rewards = voyState !== 'pending' ? voyageData.pending_rewards.loot : [];
-		const { t } = this.context.localized;
+		const quipment_prospects = voyState == 'pending' && voyageData.crew_slots.some(slot => slot.crew.kwipment_prospects);
+
 		// Adds/Removes panels from the active list
+
 		const flipItem = (items: string[], item: string) => items.includes(item)
 			? items.filter(i => i != item)
 			: items.concat(item);
@@ -637,7 +651,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 		if (voyState !== 'pending') {
 			const timeDiscrepency = Math.floor(voyageData.voyage_duration/7200) - Math.floor(voyageData.log_index/360);
-			const voyageDuration = this._formatTime(voyageData.state == 'started' ? voyageData.voyage_duration/3600 : voyageData.log_index/180);
+			// const voyageDuration = this._formatTime(voyageData.state == 'started' ? voyageData.voyage_duration/3600 : voyageData.log_index/180);
 
 			return (
 				<div>
@@ -653,7 +667,9 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 						voyState !== 'recalled' && voyState !== 'completed' &&
 						accordionPanel(t('voyage.estimate.title'), this._renderEstimate(voyState === 'failed'), 'estimate', this._renderEstimateTitle())
 					}
-					{ accordionPanel(t('voyage.lineup.title'), this._renderCrew(), 'crew') }
+					{
+						accordionPanel(t('voyage.lineup.title'), this._renderCrew(), 'crew')
+					}
 					{
 						accordionPanel(t('base.rewards'), this._renderRewards(rewards), 'rewards', this._renderRewardsTitle(rewards))
 					}
@@ -664,8 +680,16 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			return (
 				<div>
 					<Accordion fluid exclusive={false}>
-						{ accordionPanel(t('voyage.estimate.title'), this._renderEstimate(false), 'estimate', this._renderEstimateTitle()) }
-						{ accordionPanel(t('voyage.lineup.title'), this._renderCrew(), 'crew') }
+						{
+							accordionPanel(t('voyage.estimate.title'), this._renderEstimate(false), 'estimate', this._renderEstimateTitle())
+						}
+						{
+							accordionPanel(t('voyage.lineup.title'), this._renderCrew(), 'crew')
+						}
+						{
+							quipment_prospects &&
+							accordionPanel(t('voyage.quipment.title'), this._renderQuipmentProspects(), 'quipment_prospects')
+						}
 					</Accordion>
 				</div>
 			);

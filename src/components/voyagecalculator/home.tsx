@@ -208,6 +208,8 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		<HistoryContext.Provider value={historyContext}>
 			<React.Fragment>
 				<CrewHoverStat targetGroup='voyageLineupHover' />
+				<ItemHoverStat targetGroup='voyage_prospect_summary' />
+
 				<HistoryMessage />
 				{!activeView && renderVoyagePicker()}
 				{activeView && renderActiveView()}

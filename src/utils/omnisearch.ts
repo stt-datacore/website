@@ -25,6 +25,14 @@ export function omniSearchFilter<T>(item: T, filters: Filter[], filterType: stri
         }
     }
 
+    function getValue(data: any, field: string) {
+        let parts = field.split(".");
+        for (let part of parts) {
+            data = data[part];
+        }
+        return data;
+    }
+
     const filterTypes = {
         'Exact': (input: string, searchString: string) => input.toLowerCase() == searchString.toLowerCase(),
         'Whole word': (input: string, searchString: string) => new RegExp('\\b' + searchString + '\\b', 'i').test(input),
@@ -40,10 +48,10 @@ export function omniSearchFilter<T>(item: T, filters: Filter[], filterType: stri
 			for (let segment of filter.textSegments ?? []) {
 				let segmentResult = workfields.some((field) => {
                     if (field.customMatch) {
-                        return field.customMatch(item[field.field], segment.text);
+                        return field.customMatch(getValue(item, field.field), segment.text);
                     }
                     else {
-                        return matchesFilter(item[field.field], segment.text)
+                        return matchesFilter(getValue(item, field.field), segment.text)
                     }
                 });
 				meetsAllConditions = meetsAllConditions && (segment.negated ? !segmentResult : segmentResult);

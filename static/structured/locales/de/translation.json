@@ -44,6 +44,8 @@
         "gauntlet": "Herausforderung",
         "global_warn_permanent": "Achtung: Diese Aktion kann nicht rückgängig gemacht werden.",
         "in_portal": "Im Zeitportal",
+        "ingredient": "Zutat",
+        "ingredients": "Zutaten",
         "less_than_100_retrieval": "< 100 % Abrufbar",
         "level": "Level",
         "live_results": "Live-Ergebnisse (Berechnung wird langsamer sein)",
@@ -842,7 +844,6 @@
         }
     },
     "global": {
-        "exclusive": "Exklusive",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
@@ -879,6 +880,7 @@
         "enable": "Aktivieren",
         "enabled": "Aktiviert",
         "episode": "Episode",
+        "exclusive": "Exklusive",
         "experimental": "Experimentell",
         "filters": "Filter",
         "fleet": "Flotte",
@@ -888,6 +890,8 @@
         "highest_owned_rarity": "Höchste Seltenheit",
         "idle": "Leerlauf",
         "include_x": "Einschließen von {{x}}",
+        "ingredient_warning": "Sie haben nicht die Zutaten, um diesen Gegenstand herzustellen.",
+        "ingredient_warning_all": "Sie haben nicht die Zutaten, um alle diese Gegenstände herzustellen.",
         "initial_launch": "Erstveröffentlichung des Spiels",
         "item_types": {
             "arena": "Arena",
@@ -933,6 +937,7 @@
         "member": "Mitglied",
         "min": "Mindestwert",
         "min_rarity": "Min. Seltenheit",
+        "missing_colon": "Fehlen :",
         "n_available": "{{n}} verfügbar",
         "n_results": "{{n}} Ergebnisse",
         "n_total_x": "{{n}} {{x}} insgesamt",
@@ -1402,9 +1407,9 @@
         "mode_label": "Fertigkeiten-Modus",
         "slot_label": "Slots-Modus",
         "slots": {
+            "n_natural": "Bis zu {{n}} natürliche Ablagefächer ausstatten",
             "n_slots": "Ausstatten {{slots}} Ablagefächer",
             "natural": "Natürliche Ablagefächer ausstatten",
-            "n_natural": "Bis zu {{n}} natürliche Ablagefächer ausstatten",
             "one_slot": "Ausstatten 1 Ablagefach"
         }
     },
@@ -1886,17 +1891,6 @@
         "quipment": "Berechnungsausrüstung..."
     },
     "stat_trends": {
-        "items": {
-            "name": "{{global.name}}",
-            "owned": "{{crew_state.owned}}",
-            "percentage": "Crew-Nachfragerate",
-            "demanded": "Crew-Nachfrage gesamt",
-            "latest_usage": "Aktuelle Nutzung",
-            "inaugural_crew": "{{stat_trends.trait_columns.inaugural_crew}}",
-            "first_crew": "{{stat_trends.trait_columns.first_crew}}",
-            "latest_crew": "{{stat_trends.trait_columns.latest_crew}}",
-            "popular_trait": "Häufigstes Merkmal"
-        },
         "columns": {
             "day_diff": "Debütintervall",
             "epoch_day": "Epochentag (letzte Crew)",
@@ -1919,6 +1913,17 @@
             "title": "Grafiken"
         },
         "initial_release": "Erste Veröffentlichung",
+        "items": {
+            "demanded": "Crew-Nachfrage gesamt",
+            "first_crew": "{{stat_trends.trait_columns.first_crew}}",
+            "inaugural_crew": "{{stat_trends.trait_columns.inaugural_crew}}",
+            "latest_crew": "{{stat_trends.trait_columns.latest_crew}}",
+            "latest_usage": "Aktuelle Nutzung",
+            "name": "{{global.name}}",
+            "owned": "{{crew_state.owned}}",
+            "percentage": "Crew-Nachfragerate",
+            "popular_trait": "Häufigstes Merkmal"
+        },
         "last_release": "Letzte Veröffentlichung",
         "new_high": "Neuer Highscore",
         "new_highs_only": "Nur neue Highscores anzeigen",
@@ -1934,13 +1939,13 @@
                 "description": "Visuelle Darstellungen von Datentrends anzeigen",
                 "title": "Diagramme und Grafiken"
             },
-            "traits": {
-                "description": "Statistiken zu Crew-Eigenschaften im Spiel",
-                "title": "{{hints.traits}}"
-            },
             "items": {
                 "description": "Statistiken zu Komponenten und Ausrüstung im Spiel",
                 "title": "{{global.items}}"
+            },
+            "traits": {
+                "description": "Statistiken zu Crew-Eigenschaften im Spiel",
+                "title": "{{hints.traits}}"
             }
         },
         "stats": {
@@ -1982,12 +1987,11 @@
         }
     },
     "voyage": {
-        "awaiting_crew": "Für diese Reise wird auf die Zuteilung der Crew gewartet.",
-        "encounter_traits": "Kritische Begegnungsmerkmale",
         "active": {
             "active_voyage_colon": "Aktive Reise:"
         },
         "active_voyage": "Aktive Reise",
+        "awaiting_crew": "Für diese Reise wird auf die Zuteilung der Crew gewartet.",
         "calc": {
             "msg_type": {
                 "completed": "Ihre Reise dauerte seit {{time}}.",
@@ -2015,6 +2019,7 @@
         "custom_voyage_editor": "Individueller Reiseeditor",
         "custom_voyage_x": "Individuelle {{x}}",
         "dilemma_chance_h_y": "Chance auf ein {{h}}-Stunden-Dilemma: {{y}} %",
+        "encounter_traits": "Kritische Begegnungsmerkmale",
         "estimate": {
             "1_refill": "1 Nachfüllung",
             "calculated_by_name_time": "Berechnet von {{calculator_name}} in {{time}} Sekunden!",
@@ -2058,12 +2063,12 @@
             "line_3": "Öffnen Sie das Spiel und kehren Sie dann mit einer neuen Kopie Ihrer Spielerdaten zu DataCore zurück, um eine genauere Schätzung zu gewährleisten."
         },
         "picker_options": {
+            "encounter_traits": "Berücksichtigen Sie nur Besatzungsmitglieder mit kritischen Begegnungsmerkmalen",
             "frozen": "Eingefrorene Crew berücksichtigen",
             "shuttle": "Crew auf aktiven Shuttles berücksichtigen",
             "sub_title": "Für diese Reise werden insgesamt {{n}} Crewmitglieder in Betracht gezogen.",
             "title": "Zu berücksichtigende Crew",
-            "voyage": "Crew auf aktiven Reisen berücksichtigen",
-            "encounter_traits": "Berücksichtigen Sie nur Besatzungsmitglieder mit kritischen Begegnungsmerkmalen"
+            "voyage": "Crew auf aktiven Reisen berücksichtigen"
         },
         "quipment": {
             "crew_prefs": "Bevorzugte Fähigkeiten der Crew",

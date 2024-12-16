@@ -44,6 +44,8 @@
         "gauntlet": "Gantelet",
         "global_warn_permanent": "Attention : cette action ne peut pas être annulée.",
         "in_portal": "Dans le Portail",
+        "ingredient": "Ingrédient",
+        "ingredients": "Ingrédients",
         "less_than_100_retrieval": "< 100 % de Récupération",
         "level": "Niveau",
         "live_results": "Résultats en direct (le calcul sera plus lent)",
@@ -850,7 +852,6 @@
         }
     },
     "global": {
-        "exclusive": "Exclusif",
         "aborted": "Terminé",
         "admiral": "Avorté",
         "advanced_settings": "Réglages Avancés",
@@ -887,6 +888,7 @@
         "enable": "Activer",
         "enabled": "Activé",
         "episode": "Épisode",
+        "exclusive": "Exclusif",
         "experimental": "Expérimental",
         "filters": "Filtres",
         "fleet": "Flotte",
@@ -896,6 +898,8 @@
         "highest_owned_rarity": "Rareté la plus élevée possédée",
         "idle": "Inactif",
         "include_x": "Inclure {{x}}",
+        "ingredient_warning": "Vous n'avez pas les ingrédients pour fabriquer cet objet.",
+        "ingredient_warning_all": "Vous n'avez pas les ingrédients pour fabriquer tous ces objets.",
         "initial_launch": "Sortie initiale du jeu",
         "item_types": {
             "arena": "Arène",
@@ -941,6 +945,7 @@
         "member": "Membre",
         "min": "Min",
         "min_rarity": "Rareté min.",
+        "missing_colon": "Manquant :",
         "n_available": "{{n}} disponible",
         "n_results": "{{n}} résultats",
         "n_total_x": "{{n}} {{x}} au total",
@@ -1414,9 +1419,9 @@
         "mode_label": "Mode Compétences",
         "slot_label": "Mode Emplacements",
         "slots": {
+            "n_natural": "Quiper jusqu'à {{n}} emplacements naturels",
             "n_slots": "Quiper {{slots}} emplacements",
             "natural": "Quiper des emplacements naturels",
-            "n_natural": "Quiper jusqu'à {{n}} emplacements naturels",
             "one_slot": "Quiper 1 emplacement"
         }
     },
@@ -1899,17 +1904,6 @@
         "quipment": "Calcul de l'équipement..."
     },
     "stat_trends": {
-        "items": {
-            "name": "{{global.name}}",
-            "owned": "{{crew_state.owned}}",
-            "percentage" : "Taux de demande de l'équipage",
-            "demanded" : "Demande totale de l'équipage",
-            "latest_usage": "Dernière utilisation",
-            "inaugural_crew": "{{stat_trends.trait_columns.inaugural_crew}}",
-            "first_crew": "{{stat_trends.trait_columns.first_crew}}",
-            "latest_crew": "{{stat_trends.trait_columns.latest_crew}}",
-            "popular_trait": "Trait le plus fréquent"
-        },
         "columns": {
             "day_diff": "Intervalle de début",
             "epoch_day": "Jour de l'époque (équipe récente)",
@@ -1932,6 +1926,17 @@
             "title": "Graphiques"
         },
         "initial_release": "Publication initiale",
+        "items": {
+            "demanded": "Demande totale de l'équipage",
+            "first_crew": "{{stat_trends.trait_columns.first_crew}}",
+            "inaugural_crew": "{{stat_trends.trait_columns.inaugural_crew}}",
+            "latest_crew": "{{stat_trends.trait_columns.latest_crew}}",
+            "latest_usage": "Dernière utilisation",
+            "name": "{{global.name}}",
+            "owned": "{{crew_state.owned}}",
+            "percentage": "Taux de demande de l'équipage",
+            "popular_trait": "Trait le plus fréquent"
+        },
         "last_release": "Dernière publication",
         "new_high": "Nouveau Élevé",
         "new_highs_only": "Afficher uniquement les nouveaux élevés",
@@ -1947,13 +1952,13 @@
                 "description": "Afficher des représentations visuelles des tendances des données",
                 "title": "Diagrammes et graphiques"
             },
-            "traits": {
-                "description": "Statistiques sur les caractéristiques de l'équipage dans le jeu",
-                "title": "{{hints.traits}}"
-            },
             "items": {
                 "description": "Statistiques sur les composants et l'équipement du jeu",
                 "title": "{{global.items}}"
+            },
+            "traits": {
+                "description": "Statistiques sur les caractéristiques de l'équipage dans le jeu",
+                "title": "{{hints.traits}}"
             }
         },
         "stats": {
@@ -1995,12 +2000,11 @@
         }
     },
     "voyage": {
-        "awaiting_crew": "Ce voyage attend les affectations de l'équipage.",
-        "encounter_traits": "Traits critiques de rencontre",
         "active": {
             "active_voyage_colon": "Voyage actif :"
         },
         "active_voyage": "Voyage actif",
+        "awaiting_crew": "Ce voyage attend les affectations de l'équipage.",
         "calc": {
             "msg_type": {
                 "completed": "Votre voyage a duré {{time}}.",
@@ -2028,6 +2032,7 @@
         "custom_voyage_editor": "Éditeur de voyages personnalisés",
         "custom_voyage_x": "{{x}} personnalisé",
         "dilemma_chance_h_y": "Probabilité d'un dilemme de {{h]} heures : {{y}} %",
+        "encounter_traits": "Traits critiques de rencontre",
         "estimate": {
             "1_refill": "1 recharge",
             "calculated_by_name_time": "Calculé par {{calculator_name}} en {{time}} secondes !",
@@ -2071,12 +2076,12 @@
             "line_3": "Ouvrez le jeu, puis revenez à DataCore avec une nouvelle copie de vos données de joueur pour garantir une estimation plus précise."
         },
         "picker_options": {
+            "encounter_traits": "Ne considérez que l'équipage avec des traits critiques de rencontre",
             "freezen": "Considérez l'équipage gelé",
             "shuttle": "Considérez l'équipage sur les navettes actives",
             "sub_title": "Un total de {{n}} des équipiers seront pris en considération pour ce voyage.",
             "title": "Équipiers à prendre en considération",
-            "voyage": "Considérez l'équipage en voyage actif",
-            "encounter_traits": "Ne considérez que l'équipage avec des traits critiques de rencontre"
+            "voyage": "Considérez l'équipage en voyage actif"
         },
         "quipment": {
             "crew_prefs": "Préférence de compétence de l'équipage",
