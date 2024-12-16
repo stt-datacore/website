@@ -73,6 +73,10 @@ export const RetrievalKeystones = () => {
 			.then(market => {
 				setMarket(market);
 			})
+			.catch((e) => {
+				console.log(e);
+				if (!market) setMarket({});
+			});
 	}
 };
 
