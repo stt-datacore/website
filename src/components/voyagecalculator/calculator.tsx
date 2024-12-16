@@ -22,12 +22,12 @@ import { addVoyageToHistory, addCrewToHistory, removeVoyageFromHistory, SyncStat
 import CONFIG from '../CONFIG';
 import { getShipTraitBonus } from './utils';
 import { VPGraphAccordion } from './vpgraph';
-import { applyCrewBuffs, oneCrewCopy, qbitsToSlots, skillSum } from '../../utils/crewutils';
+import { oneCrewCopy, qbitsToSlots } from '../../utils/crewutils';
 import { calcQLots } from '../../utils/equipment';
 import { getItemWithBonus, ItemWithBonus } from '../../utils/itemutils';
-import { BaseSkills, QuippedPower, Skill } from '../../model/crew';
+import { QuippedPower } from '../../model/crew';
 import { QuipmentProspectConfig, QuipmentProspects } from './quipmentprospects';
-import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
+import { OptionsPanelFlexColumn } from '../stats/utils';
 
 // These preferences are per-user, so they need separate handlers when there's no player data
 interface IUserPrefsContext {
@@ -436,7 +436,6 @@ type CrewOptionsProps = {
 };
 
 const CrewOptions = (props: CrewOptionsProps) => {
-	const flexRow = OptionsPanelFlexRow;
 	const flexCol = OptionsPanelFlexColumn;
 	const calculatorContext = React.useContext(CalculatorContext);
 	const globalContext = React.useContext(GlobalContext);
@@ -447,7 +446,6 @@ const CrewOptions = (props: CrewOptionsProps) => {
 	const [considerVoyagers, setConsiderVoyagers] = React.useState<boolean>(false);
 	const [considerShuttlers, setConsiderShuttlers] = React.useState<boolean>(false);
 	const [considerFrozen, setConsiderFrozen] = React.useState<boolean>(false);
-	const [computeETRatio, setComputeETRatio] = React.useState<boolean>(false);
 	const [preExcludedCrew, setPreExcludedCrew] = React.useState<IVoyageCrew[]>([]);
 	const [excludedCrewIds, internalSetExcludedCrewIds] = React.useState<number[]>([]);
 	const [consideredCount, setConsideredCount] = React.useState<number>(0);
@@ -483,7 +481,7 @@ const CrewOptions = (props: CrewOptionsProps) => {
 		});
 		setConsideredCount(consideredCrew.length);
 		props.updateConsideredCrew(consideredCrew);
-	}, [preConsideredCrew, considerVoyagers, considerShuttlers, considerFrozen, excludedCrewIds, computeETRatio]);
+	}, [preConsideredCrew, considerVoyagers, considerShuttlers, considerFrozen, excludedCrewIds]);
 
 	const activeVoyagers: number = calculatorContext.crew.filter(crew =>
 		crew.active_status === 3
@@ -532,14 +530,6 @@ const CrewOptions = (props: CrewOptionsProps) => {
 										checked={considerFrozen}
 										onChange={(e, { checked }) => setConsiderFrozen(checked)}
 									/>
-									{/* {!!voyageConfig.event_content?.encounter_traits?.length &&
-									<Form.Field
-										control={Checkbox}
-										label={t('voyage.picker_options.encounter_traits')}
-										checked={computeETRatio}
-										onChange={(e, { checked }) => setComputeETRatio(checked)}
-									/>
-									} */}
 								</React.Fragment>
 							</Form.Group>
 						)}
@@ -574,20 +564,7 @@ const CrewOptions = (props: CrewOptionsProps) => {
 	);
 
 	function preExcludeCrew(preConsideredCrew: IVoyageCrew[]): IVoyageCrew[] {
-
-		// const limit = 0.25;
-
-		// let maxprof = -1;
-
-		// const cprofs = {} as {[key: string]: number}
-		// const etl = voyageConfig.event_content?.encounter_traits?.length ?? 0;
-
-		let preExcluded = preConsideredCrew.filter(crewman => {
-			// if (computeETRatio && voyageConfig.event_content?.encounter_traits?.length) {
-			// 	const profs = skillSum(Object.values(crewman.skills), 'proficiency');
-			// 	cprofs[crewman.id] = profs;
-			// 	if (maxprof == -1 || maxprof < profs) maxprof = profs;
-			// }
+		const preExcluded = preConsideredCrew.filter(crewman => {
 			if (crewman.expires_in)
 				return false;
 
@@ -602,24 +579,6 @@ const CrewOptions = (props: CrewOptionsProps) => {
 
 			return true;
 		});
-
-		// if (computeETRatio && voyageConfig.event_content?.encounter_traits?.length) {
-		// 	preExcluded.forEach((crewman) => {
-		// 		const ctl = voyageConfig!.event_content!.encounter_traits!.filter(trait => crewman.traits.includes(trait))?.length;
-		// 		let ca = ctl / etl;
-		// 		let cb = cprofs[crewman.id] / maxprof;
-		// 		crewman.pickerId = (ca + cb) * 0.5;
-		// 	});
-		// 	const fc = voyageConfig.event_content.featured_crews;
-		// 	preExcluded.sort((a, b) => {
-		// 		const fa = fc.includes(a.symbol);
-		// 		const fb = fc.includes(b.symbol);
-		// 		if (fa === fb) {
-		// 			return b.pickerId! - a.pickerId!
-		// 		}
-		// 		return fa ? -1 : 1;
-		// 	});
-		// }
 
 		return preExcluded;
 	}
