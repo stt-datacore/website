@@ -268,7 +268,7 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 				/>
 			{mode === 'keystones' && <RetrievalCrew />}
 			{mode === 'mutual' && <MutualView dbid={dbid} />}
-			{mode === 'market' && <CelestialMarket />}
+			{mode === 'market' && <CelestialMarket dbid={dbid} />}
 		</RetrievalContext.Provider>
 	);
 

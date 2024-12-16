@@ -20,7 +20,8 @@ interface PolestarCrew extends CrewMember {
     contains_unique: boolean;
 }
 
-export const CelestialMarket = () => {
+export const CelestialMarket = (props: { dbid?: string }) => {
+    const dbid = props.dbid ? props.dbid + '/' : '';
     const globalContext = React.useContext(GlobalContext);
     const retrievalContext = React.useContext(RetrievalContext);
     const { market, allKeystones, polestarTailors, wishlist, autoWishes } = retrievalContext;
@@ -31,10 +32,10 @@ export const CelestialMarket = () => {
     const [neededPolestars, setNeededPolestars] = React.useState<string[]>([]);
     const [wishlistPolestars, setWishlistPolestars] = React.useState<string[]>([]);
     const [autoWishlistPolestars, setAutoWishlistPolestars] = React.useState<string[]>([]);
-    const [typeFilter, setTypeFilter] = useStateWithStorage('celestial_market/type_filter', undefined as string | undefined, { rememberForever: true });
-    const [ownedFilter, setOwnedFilter] = useStateWithStorage('celestial_market/owned_filter', undefined as string | undefined, { rememberForever: true });
-    const [listFilter, setListFilter] = useStateWithStorage('celestial_market/list_filter', undefined as string | undefined, { rememberForever: true });
-    const [movementFilter, setMovementFilter] = useStateWithStorage('celestial_market/movement_filter', undefined as string | undefined, { rememberForever: true });
+    const [typeFilter, setTypeFilter] = useStateWithStorage(dbid + 'celestial_market/type_filter', undefined as string | undefined, { rememberForever: true });
+    const [ownedFilter, setOwnedFilter] = useStateWithStorage(dbid + 'celestial_market/owned_filter', undefined as string | undefined, { rememberForever: true });
+    const [listFilter, setListFilter] = useStateWithStorage(dbid + 'celestial_market/list_filter', undefined as string | undefined, { rememberForever: true });
+    const [movementFilter, setMovementFilter] = useStateWithStorage(dbid + 'celestial_market/movement_filter', undefined as string | undefined, { rememberForever: true });
 
     React.useEffect(() => {
         if (!playerData) return;
