@@ -427,10 +427,10 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                 </div>
             </Table.Cell>
             <Table.Cell>
-                {item.quantity || 0}
+                {item.quantity?.toLocaleString() || 0}
             </Table.Cell>
             <Table.Cell style={{color: item.needed! > item.quantity! ? 'tomato' : undefined}}>
-                {item.needed || 0}
+                {item.needed?.toLocaleString() || 0}
             </Table.Cell>
             <Table.Cell>
                 <div style={{...flexRow, justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap'}}>
