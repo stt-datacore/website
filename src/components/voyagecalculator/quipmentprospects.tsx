@@ -399,6 +399,7 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                     <AvatarView
                         targetGroup='voyageLineupHover'
                         mode='crew'
+                        partialItem={true}
                         item={c}
                         size={32} />
                     <span>{c.name}</span>
