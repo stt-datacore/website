@@ -167,11 +167,22 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[]>([]);
 	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[]>([]);
 
-	const [polestarTailors, setPolestarTailors] = useStateWithStorage<IPolestarTailors>(props.dbid+'retrieval/tailors', polestarTailorDefaults, { rememberForever: true });
-	const [crewFilters, setCrewFilters] = useStateWithStorage<ICrewFilters>(props.dbid+'retrieval/filters', crewFilterDefaults, { rememberForever: true });
-	const [wishlist, setWishlist] = useStateWithStorage<string[]>(props.dbid+'retrieval/wishlist', [], { rememberForever: true });
-	const [autoWish, setAutoWish] = useStateWithStorage<boolean>(props.dbid+'retrieval/auto_wishlist', false, { rememberForever: true });
+	const [polestarTailors, setPolestarTailors] = useStateWithStorage<IPolestarTailors>(dbid+'retrieval/tailors', polestarTailorDefaults, { rememberForever: true });
+	const [crewFilters, setCrewFilters] = useStateWithStorage<ICrewFilters>(dbid+'retrieval/filters', crewFilterDefaults, { rememberForever: true });
+
+
+	const [legacyWishlist, setLegacyWishlist] = useStateWithStorage<string[]>(dbid.replace('/', '')+'retrieval/wishlist', [], { rememberForever: true });
+
+	const [wishlist, setWishlist] = useStateWithStorage<string[]>(dbid+'retrieval/wishlist', [], { rememberForever: true });
+	const [autoWish, setAutoWish] = useStateWithStorage<boolean>(dbid+'retrieval/auto_wishlist', false, { rememberForever: true });
 	const [autoWishes, setAutoWishes] = React.useState<string[]>([]);
+
+	React.useEffect(() => {
+		if (legacyWishlist?.length) {
+			setWishlist(legacyWishlist);
+			setLegacyWishlist([]);
+		}
+	}, [legacyWishlist]);
 
 	React.useEffect(() => {
 		const allKeystones = JSON.parse(JSON.stringify(props.allKeystones)) as IKeystone[];
