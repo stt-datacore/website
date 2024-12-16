@@ -610,8 +610,15 @@ const CrewOptions = (props: CrewOptionsProps) => {
 				let cb = cprofs[crewman.id] / maxprof;
 				crewman.pickerId = (ca + cb) * 0.5;
 			});
-			preExcluded.sort((a, b) => b.pickerId! - a.pickerId!);
-			preExcluded = preExcluded.filter(c => c.pickerId && c.pickerId >= limit);
+			const fc = voyageConfig.event_content.featured_crews;
+			preExcluded.sort((a, b) => {
+				const fa = fc.includes(a.symbol);
+				const fb = fc.includes(b.symbol);
+				if (fa === fb) {
+					return b.pickerId! - a.pickerId!
+				}
+				return fa ? -1 : 1;
+			});
 		}
 
 		return preExcluded;
