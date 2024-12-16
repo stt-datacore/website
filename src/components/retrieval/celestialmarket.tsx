@@ -361,23 +361,23 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
 
     const minOptions = [] as DropdownItemProps[];
 
-    [1, 2, 3, 4, 5].map((n) => {
+    for (let n = 1; n <= 5; n++) {
         minOptions.push({
             key: `min_${n}`,
             value: n,
             text: `${n}`
         });
-    });
+    }
 
     const bbOptions = [] as DropdownItemProps[];
 
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => {
+    for (let n = 1; n <= 10; n++) {
         bbOptions.push({
             key: `bbtier_${n}`,
             value: n,
             text: n === 1 ? '1' : t('global.x_or_better', { x: `${n}` })
         });
-    });
+    }
 
     const modes = [
         { key: 'orders', value: 'orders', text: t('retrieval.market.modes.orders') },
