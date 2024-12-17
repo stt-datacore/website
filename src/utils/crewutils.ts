@@ -350,7 +350,7 @@ export function isQuipped<T extends PlayerCrew>(crew: T) {
 	}
 }
 
-export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number, quipment?: ItemWithBonus[]): PlayerCrew[] {
+export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number): PlayerCrew[] {
 	// Create a copy of crew instead of directly modifying the source (allcrew)
 	let templateCrew = JSON.parse(JSON.stringify(origCrew)) as PlayerCrew;
 	let outputcrew = [] as PlayerCrew[];
@@ -580,7 +580,7 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	let cidx = -1;
 
 	for (let c of allcrew) {
-		for (let crew of prepareOne(c, playerData, buffConfig, undefined, quipment)) {
+		for (let crew of prepareOne(c, playerData, buffConfig, undefined)) {
 			if (crew.have) {
 				if (!crew.id) {
 					crew.id = cidx--;

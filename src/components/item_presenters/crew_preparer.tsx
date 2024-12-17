@@ -144,8 +144,16 @@ export function applyImmortalState(state: PlayerImmortalMode, reference: CrewMem
     }
     else {
         pres = prepareOne(reference, playerData, buffConfig, state);
+        if (pres.length) {
+            let ret = pres.find(f => "rarity" in f && f.rarity == state)
+            if (ret) return ret;
+        }
     }
 
+    if ("id" in reference) {
+        let ret = pres.find(f => "id" in f && f.id == reference.id);
+        if (ret) return ret;
+    }
     return pres[0];
 }
 
@@ -215,10 +223,9 @@ export class CrewPreparer {
 
             if (immortalMode !== 'owned' || (buffMode !== 'none')) {
                 let cm: CrewMember | undefined = undefined;
-                cm = context.core.crew.find(c => dataIn.id ? c.id === dataIn.id : c.symbol === dataIn.symbol);
+                cm = context.core.crew.find(c => c.symbol === dataIn.symbol);
                 if (cm) {
-                    cm = { ... cm};
-
+                    cm = { ... cm} as PlayerCrew;
                     cm.kwipment = dataIn.kwipment;
                     cm.kwipment_expiration = dataIn.kwipment_expiration;
                     cm.q_bits = dataIn.q_bits;
