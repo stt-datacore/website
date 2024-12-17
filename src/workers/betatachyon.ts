@@ -7,7 +7,7 @@ import { BetaTachyonRunnerConfig, CiteData, SkillOrderRarity } from "../model/wo
 import { calcItemDemands } from "../utils/equipment";
 import { ItemWithBonus, getItemWithBonus } from "../utils/itemutils";
 import { findPolestars } from "../utils/retrieval";
-import { BuffStatTable } from "../utils/voyageutils";
+import { BuffStatTable, computeSkillRarities, lookupAMSeatsByTrait } from "../utils/voyageutils";
 
 export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable, nowrite?: boolean) {
     const getMultiplier = (skill: string, stat: string) => {
@@ -51,15 +51,6 @@ export interface CrewSkill {
     skills: ComputedSkill[];
 }
 
-const lookupTrait = (trait: string) => {
-    const oma = [] as string[];
-    for (let ln of AntimatterSeatMap) {
-        if (ln.name  == trait) {
-            return ln.skills;
-        }
-    }
-    return oma;
-}
 
 const BetaTachyon = {
 
@@ -82,6 +73,20 @@ const BetaTachyon = {
             const voyskills = ["command", "diplomacy", "science", "engineering", "security", "medicine"];
             const skillPairs = [] as string[][];
             const skillTriplets = [] as string[][];
+
+            const exclusives = computeSkillRarities({ roster: inputCrew, returnCrew: true });
+
+            function rareness(crew: CrewMember) {
+                let results = 0;
+                crew.skill_order.forEach((skill, index) => {
+                    let data = exclusives.find(f => f.skill === skill && f.position === index);
+                    if (data) {
+                        results += (1 - data.score); // * (1 + ((index + 1) / 3))
+                    }
+                });
+                //results /= crew.skill_order.length;
+                return results;
+            }
 
             for (let s1 of skills) {
                 for (let s2 of skills) {
@@ -111,7 +116,7 @@ const BetaTachyon = {
 
             function getAMSeats(crew: PlayerCrew | CrewMember) {
 
-                return crew.traits.filter(tn => lookupTrait(tn).some((sk) => sk in crew && crew[sk].core));
+                return crew.traits.filter(tn => lookupAMSeatsByTrait(tn).some((sk) => sk in crew && crew[sk].core));
             }
 
             function countSkills(crew: PlayerCrew) {
@@ -488,14 +493,13 @@ const BetaTachyon = {
                 crew.groupSparsity /= crew.voyagesImproved?.length ?? 1;
             })
 
-            const maxevents = resultCrew.map(c => c.events ?? 0).reduce((a, b) => a > b ? a : b);
             const maxvoy = resultCrew.map(c => c.voyagesImproved?.length ?? 0).reduce((a, b) => a > b ? a : b);
             const maxev = resultCrew.map(c => c.totalEVContribution ?? 0).reduce((a, b) => a > b ? a : b);
             const maxsparse = resultCrew.map(c => c.groupSparsity ?? 0).reduce((a, b) => a > b ? a : b);
             const maxam = resultCrew.map(c => c.amTraits?.length ?? 0).reduce((a, b) => a > b ? a : b);
             const maxquip = resultCrew.map(c => c.quipment_score ?? 0).reduce((a, b) => a > b ? a : b);
             const maxcols = resultCrew.map(c => c.collectionsIncreased?.length ?? 0).reduce((a, b) => a > b ? a : b);
-
+            const maxex = resultCrew.map(c => rareness(c)).reduce((a, b) => a > b ? a : b);
             resultCrew.forEach((crew) => {
                 crew.groupSparsity ??= 0;
                 crew.groupSparsity /= maxsparse;
@@ -553,6 +557,8 @@ const BetaTachyon = {
                 let trrare = 0;
                 let dbrare = 0;
 
+                let rare = (rareness(crew) / maxex) * multConf.rareness;
+
                 if (tr && db) {
                     // less gives weight
                     trrare = multConf.skillRare * (1 / tr.count);
@@ -569,10 +575,10 @@ const BetaTachyon = {
                 let adist2 = crew.scoreTrip ? (crew.scoreTrip * multConf.triplet) : 1;
                 let fin = 0;
                 if (!crew.in_portal) {
-                    fin = (100 * (gs + quip + amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 12;
+                    fin = (100 * (gs + rare + quip + amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 13;
                 }
                 else {
-                    fin = (100 * (gs + retrieval + quip + amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 13;
+                    fin = (100 * (gs + rare + retrieval + quip + amscore + adist + adist2 + skrare + improve + totalp + effort + pscore + nscore + ciscore)) / 14;
                 }
 
                 //fin *= ((adist + adist2) / 2);

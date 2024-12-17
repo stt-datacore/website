@@ -6,6 +6,7 @@ import { IVoyageInputConfig } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../CONFIG';
 import { useStateWithStorage } from '../../utils/storage';
+import { lookupAMTraitsBySeat } from '../../utils/voyageutils';
 
 interface ISelectOption {
 	key: string;
@@ -17,6 +18,7 @@ interface IEditOptions {
 	skills: ISelectOption[];
 	ships: ISelectOption[];
 	traits: ISelectOption[];
+	trait_seats: { [skill: string]: ISelectOption[] }
 };
 
 type ConfigEditorProps = {
@@ -165,24 +167,43 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 			});
 			shipTraitsList.sort((a, b) => a.text.localeCompare(b.text));
 
-			const crewTraitsList: ISelectOption[] = knownCrewTraits.map(trait => {
-				return {
-					key: trait,
-					value: trait,
-					text: TRAIT_NAMES[trait]
-				};
+			const crewTraitLists = {} as { [skill: string]: ISelectOption[] }
+
+			Object.keys(CONFIG.SKILLS).forEach((skill) => {
+				crewTraitLists[skill] = lookupAMTraitsBySeat(skill).map(trait => {
+					return {
+						key: trait,
+						value: trait,
+						text: TRAIT_NAMES[trait]
+					};
+				});
+				crewTraitLists[skill].push({
+					key: 'none',
+					value: '',
+					text: `(${t('voyage.custom.no_trait')})`
+				});
+				crewTraitLists[skill].sort((a, b) => a.text.localeCompare(b.text));
 			});
-			crewTraitsList.push({
-				key: 'none',
-				value: '',
-				text: `(${t('voyage.custom.no_trait')})`
-			});
-			crewTraitsList.sort((a, b) => a.text.localeCompare(b.text));
+
+			// const crewTraitsList: ISelectOption[] = knownCrewTraits.map(trait => {
+			// 	return {
+			// 		key: trait,
+			// 		value: trait,
+			// 		text: TRAIT_NAMES[trait]
+			// 	};
+			// });
+			// crewTraitsList.push({
+			// 	key: 'none',
+			// 	value: '',
+			// 	text: `(${t('voyage.custom.no_trait')})`
+			// });
+			// crewTraitsList.sort((a, b) => a.text.localeCompare(b.text));
 
 			const editOptions: IEditOptions = {
 				skills: skillsList,
 				ships: shipTraitsList,
-				traits: crewTraitsList
+				traits: [], // crewTraitsList,
+				trait_seats: crewTraitLists
 			};
 
 			setOptions(editOptions);
@@ -241,7 +262,8 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 								<Table.Cell>{t(`voyage.seats.${seat.symbol}`)}</Table.Cell>
 								<Table.Cell>
 									<Dropdown search selection clearable
-										options={options.traits}
+										//options={options.traits}
+										options={options.trait_seats[seat.skill]}
 										value={seat.trait}
 										onChange={(e, { value }) => setSeatTrait(seat.symbol, value as string)}
 										placeholder={t('hints.trait')}

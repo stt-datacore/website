@@ -1,6 +1,7 @@
 import CONFIG from '../components/CONFIG';
 import { CrewMember, BaseSkills, Skill } from '../model/crew';
 import { AllBuffsCapHash, Player, PlayerCrew, TranslateMethod } from '../model/player';
+import { AntimatterSeatMap } from '../model/voyage';
 import { Estimate } from '../model/worker';
 
 export const formatTime = (time: number, t?: TranslateMethod): string => {
@@ -160,4 +161,74 @@ export function guessSkillsFromCrew<T extends CrewMember>(voyage: RawVoyageRecor
     })
 
     return skills.slice(0, 2).map(sk => sk.skill as string);
+}
+
+export function lookupAMSeatsByTrait(trait: string) {
+    for (let ln of AntimatterSeatMap) {
+        if (ln.name == trait) {
+            return ln.skills;
+        }
+    }
+    return [];
+}
+
+export function lookupAMTraitsBySeat(skill: string) {
+    const results = [] as string[];
+	for (let ln of AntimatterSeatMap) {
+		if (ln.skills.includes(skill)) {
+			results.push(ln.name);
+		}
+	}
+	return results;
+}
+
+export interface SkillRarityReport<T extends CrewMember> {
+	skill: string;
+	position: number;
+	count: number;
+	score: number;
+	crew?: T[]
+}
+
+export function computeSkillRarities<T extends CrewMember>(
+	config: {
+		roster: T[],
+		returnCrew?: boolean
+	}
+) {
+	const { roster, returnCrew } = config;
+	const results: SkillRarityReport<T>[] = [];
+	const skills = Object.keys(CONFIG.SKILLS);
+
+	for (let skill of skills) {
+		for (let i = 0; i < 3; i++) {
+			let rf = roster.filter(f => f.skill_order.length > i && f.skill_order[i] == skill);
+			results.push({
+				skill,
+				count: rf.length,
+				position: i,
+				score: 0,
+				crew: returnCrew ? rf : undefined
+			});
+		}
+	}
+
+	for (let i = 0; i < 3; i++) {
+		let pc = results.filter(f => f.position === i);
+		if (pc.length) {
+			pc.sort((a, b) => a.count - b.count);
+			const max = pc[pc.length - 1].count;
+			pc.forEach((p) => p.score = p.count / max)
+		}
+	}
+
+	results.sort((a, b) => {
+		let r = 0;
+		if (!r) r = a.position - b.position;
+		if (!r) r = a.count - b.count;
+		if (!r) r = a.skill.localeCompare(b.skill);
+		return r;
+	});
+
+	return results;
 }

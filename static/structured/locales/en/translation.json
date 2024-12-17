@@ -146,6 +146,7 @@
                 "portal": "Not In Portal",
                 "power": "Base Power Score",
                 "quipment": "Quipment Score",
+                "rareness": "Exclusivity",
                 "retrieval": "Retrieval Odds",
                 "score": "Overall Roster Power Rank",
                 "skillRare": "Skill-Order Rarity",
