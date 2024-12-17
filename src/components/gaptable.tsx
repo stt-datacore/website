@@ -50,7 +50,8 @@ export const GapTable = () => {
                 }
             };
 
-            newdata.data.max = newdata.data.mortal!.map(m => skillSum(Object.values(m.base_skills))).reduce((p, n) => p + n);
+            newdata.data.max = newdata.data.mortal!.map(m => skillSum(Object.values(m.base_skills))).reduce((p, n) => p + n)
+                + newdata.crew!.map(m => skillSum(Object.values(m.base_skills))).reduce((p, n) => p + n);
 
             results.push(newdata);
         });
