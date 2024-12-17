@@ -45,11 +45,12 @@ export const GapTable = () => {
                 data: {
                     crew: stat.crew!.concat(playerCrew.filter(f => !f.immortal && f.skill_order.length > stat.position && f.skill_order[stat.position] == stat.skill)),
                     immortal: stat.crew!,
-                    mortal: playerCrew.filter(f => !f.immortal && f.skill_order.length > stat.position && f.skill_order[stat.position] == stat.skill)
+                    mortal: playerCrew.filter(f => !f.immortal && f.skill_order.length > stat.position && f.skill_order[stat.position] == stat.skill),
+                    max: 0
                 }
             };
 
-            newdata.aggregate = newdata.data.mortal!.map(m => skillSum(Object.values(m.base_skills))).reduce((p, n) => p + n);
+            newdata.data.max = newdata.data.mortal!.map(m => skillSum(Object.values(m.base_skills))).reduce((p, n) => p + n);
 
             results.push(newdata);
         });
@@ -66,7 +67,8 @@ export const GapTable = () => {
         { width: 1, column: 'position', title: t('quipment_dropdowns.mode.skill_order') },
         { width: 1, column: 'skill', title: t('base.skills') },
         { width: 1, column: 'score', title: t('event_info.score'), reverse: true },
-        { width: 1, column: 'aggregate', title: t('stat_trends.total_power_difference'), reverse: true },
+        { width: 1, column: 'data.max', title: t('stat_trends.total_power_difference'), reverse: true },
+        { width: 1, column: 'aggregate', title: t('global.max'), reverse: true },
         { width: 1, column: 'data.crew.length', title: t('crew_state.owned'), reverse: true },
         { width: 1, column: 'crew.length', title: t('crew_state.unowned'), reverse: true },
         { width: 1, column: 'data.immortal.length', title: t('roster_summary.rarity.columns.progress'), reverse: true },
@@ -103,6 +105,9 @@ export const GapTable = () => {
             </Table.Cell>
             <Table.Cell>
                 {row.score}
+            </Table.Cell>
+            <Table.Cell>
+                {row.data.max}
             </Table.Cell>
             <Table.Cell>
                 {row.aggregate}
