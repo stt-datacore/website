@@ -168,7 +168,7 @@ export const ItemStatsTable = (props: ItemStatsTableProps) => {
 
     function filterRow(row: any, filter: any, filterType?: string) {
         if (filter) {
-            return omniSearchFilter(row, filter, filterType, ['trait', 'collection', {
+            return omniSearchFilter(row, filter, filterType, ['data.name', 'collection', {
                 field: 'first_crew',
                 customMatch: (a: CrewMember, text) => {
                     return a.name.toLowerCase().includes(text.toLowerCase());

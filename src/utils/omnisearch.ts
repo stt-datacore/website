@@ -31,7 +31,7 @@ export function omniSearchFilter<T>(item: T, filters: Filter[], filterType: stri
         for (let part of parts) {
             data = data[part];
         }
-        return data;
+        return data || '';
     }
 
     const filterTypes = {
