@@ -209,7 +209,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 					collections,
                     immortalizedSymbols: getImmortalSymbols(),
 					buffs: buffConfig,
-					settings: currentConfig,
+					settings: { ...DefaultBetaTachyonSettings, ...currentConfig },
 					coreItems: globalContext.core.items
 				} as BetaTachyonRunnerConfig, workerResponse);
             });

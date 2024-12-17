@@ -250,6 +250,8 @@ export interface BetaTachyonSettings {
     quipment: number,
     // Voyage Group Sparsity
     groupSparsity: number;
+    // Crew general rareness
+    rareness: number;
 }
 
 export interface SkillOrderRarity {
