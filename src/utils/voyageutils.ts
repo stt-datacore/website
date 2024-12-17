@@ -1,6 +1,7 @@
 import CONFIG from '../components/CONFIG';
 import { CrewMember, BaseSkills, Skill } from '../model/crew';
 import { AllBuffsCapHash, Player, PlayerCrew, TranslateMethod } from '../model/player';
+import { AntimatterSeatMap } from '../model/voyage';
 import { Estimate } from '../model/worker';
 
 export const formatTime = (time: number, t?: TranslateMethod): string => {
@@ -160,4 +161,23 @@ export function guessSkillsFromCrew<T extends CrewMember>(voyage: RawVoyageRecor
     })
 
     return skills.slice(0, 2).map(sk => sk.skill as string);
+}
+
+export function lookupAMSeatsByTrait(trait: string) {
+    for (let ln of AntimatterSeatMap) {
+        if (ln.name == trait) {
+            return ln.skills;
+        }
+    }
+    return [];
+}
+
+export function lookupAMTraitsBySeat(skill: string) {
+    const results = [] as string[];
+	for (let ln of AntimatterSeatMap) {
+		if (ln.skills.includes(skill)) {
+			results.push(ln.name);
+		}
+	}
+	return results;
 }

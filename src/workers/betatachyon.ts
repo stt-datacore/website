@@ -7,7 +7,7 @@ import { BetaTachyonRunnerConfig, CiteData, SkillOrderRarity } from "../model/wo
 import { calcItemDemands } from "../utils/equipment";
 import { ItemWithBonus, getItemWithBonus } from "../utils/itemutils";
 import { findPolestars } from "../utils/retrieval";
-import { BuffStatTable } from "../utils/voyageutils";
+import { BuffStatTable, lookupAMSeatsByTrait } from "../utils/voyageutils";
 
 export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable, nowrite?: boolean) {
     const getMultiplier = (skill: string, stat: string) => {
@@ -51,15 +51,6 @@ export interface CrewSkill {
     skills: ComputedSkill[];
 }
 
-const lookupTrait = (trait: string) => {
-    const oma = [] as string[];
-    for (let ln of AntimatterSeatMap) {
-        if (ln.name  == trait) {
-            return ln.skills;
-        }
-    }
-    return oma;
-}
 
 const BetaTachyon = {
 
@@ -111,7 +102,7 @@ const BetaTachyon = {
 
             function getAMSeats(crew: PlayerCrew | CrewMember) {
 
-                return crew.traits.filter(tn => lookupTrait(tn).some((sk) => sk in crew && crew[sk].core));
+                return crew.traits.filter(tn => lookupAMSeatsByTrait(tn).some((sk) => sk in crew && crew[sk].core));
             }
 
             function countSkills(crew: PlayerCrew) {
