@@ -3,6 +3,7 @@ import { CrewMember, BaseSkills, Skill } from '../model/crew';
 import { AllBuffsCapHash, Player, PlayerCrew, TranslateMethod } from '../model/player';
 import { AntimatterSeatMap } from '../model/voyage';
 import { Estimate } from '../model/worker';
+import { skillSum } from './crewutils';
 
 export const formatTime = (time: number, t?: TranslateMethod): string => {
 
@@ -187,16 +188,20 @@ export interface SkillRarityReport<T extends CrewMember> {
 	position: number;
 	count: number;
 	score: number;
-	crew?: T[]
+	crew?: T[],
+	aggregate?: number;
+	data?: any;
 }
 
-export function computeSkillRarities<T extends CrewMember>(
+export function getSkillOrderStats<T extends CrewMember>(
 	config: {
 		roster: T[],
-		returnCrew?: boolean
+		returnCrew?: boolean,
+		computeAggregate?: boolean,
+		max?: number
 	}
 ) {
-	const { roster, returnCrew } = config;
+	const { roster, returnCrew, computeAggregate } = config;
 	const results: SkillRarityReport<T>[] = [];
 	const skills = Object.keys(CONFIG.SKILLS);
 
@@ -213,12 +218,18 @@ export function computeSkillRarities<T extends CrewMember>(
 		}
 	}
 
+	const max = config.max || roster.length;
+
 	for (let i = 0; i < 3; i++) {
 		let pc = results.filter(f => f.position === i);
 		if (pc.length) {
 			pc.sort((a, b) => a.count - b.count);
-			const max = pc[pc.length - 1].count;
-			pc.forEach((p) => p.score = p.count / max)
+			pc.forEach((p) => p.score = p.count / max);
+			if (computeAggregate && returnCrew) {
+				for (let item of pc) {
+					item.aggregate = item.crew!.map(c => skillSum(Object.values(c.base_skills))).reduce((p, n) => p > n ? p : n, 0);
+				}
+			}
 		}
 	}
 
@@ -232,3 +243,16 @@ export function computeSkillRarities<T extends CrewMember>(
 
 	return results;
 }
+
+export function getSkillOrderScore(crew: CrewMember, reports: SkillRarityReport<CrewMember>[]) {
+	let results = 0;
+	crew.skill_order.forEach((skill, index) => {
+		let data = reports.find(f => f.skill === skill && f.position === index);
+		if (data) {
+			results += (1 - data.score) * (index + 1);
+		}
+	});
+	//results /= crew.skill_order.length;
+	return results;
+}
+

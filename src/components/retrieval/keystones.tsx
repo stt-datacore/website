@@ -14,6 +14,7 @@ import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import CONFIG from '../CONFIG';
 import { MarketAggregation } from '../../model/celestial';
 import { CelestialMarket } from './celestialmarket';
+import { GapTable } from '../gaptable';
 
 export const RetrievalKeystones = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -266,6 +267,7 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 				checked={autoWish}
 				onChange={(e, { checked }) => setAutoWish(!!checked)}
 				/>
+			{/* {mode === 'keystones' && <GapTable />} */}
 			{mode === 'keystones' && <RetrievalCrew />}
 			{mode === 'mutual' && <MutualView dbid={dbid} />}
 			{mode === 'market' && <CelestialMarket dbid={dbid} />}

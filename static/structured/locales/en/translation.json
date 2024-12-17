@@ -1592,6 +1592,7 @@
                 "dupes": "Duplicate",
                 "frozen": "Frozen",
                 "immortal": "Immortal+",
+                "mortal": "Non-immortal",
                 "owned": "Owned",
                 "ownedPct": "% Owned",
                 "portalPct": "% Portal",
