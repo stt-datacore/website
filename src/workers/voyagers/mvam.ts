@@ -110,11 +110,12 @@ export const MultiVectorAssault = (
 			const crewId: number = crew[i].id ?? i;
 			const crewSkills: BaseSkills = crew[i].skills ? JSON.parse(JSON.stringify(crew[i].skills)) : {};
 
-			let eventTraitBonus: number = 0, eventCrewVP: number = 0, eventCrewFactor: number = 1;
+			let eventTraitBonus: number = 0, eventCrewVP: number = 0, eventCrewFactor: number = 1, eventCritTraits: number = 0;
 			if (voyage.voyage_type === 'encounter' && voyage.event_content) {
 				eventTraitBonus = getEncounterTraitBonus(crew[i], voyage.event_content);
 				eventCrewVP = getEncounterCrewVP(crew[i], voyage.event_content);
 				// eventCrewFactor = (eventCrewVP/5)+1;	// 3 for featured, 2 for small bonus, 1 for non-event crew
+				eventCritTraits = countEncounterCrewCritTraits(crew[i], voyage.event_content);
 			}
 
 			let bGeneralist: boolean = true;
@@ -180,7 +181,8 @@ export const MultiVectorAssault = (
 				trait_slots: traitSlots,
 				trait_values: traitValues,
 				ideal_trait_value: idealTraitValue,
-				event_score: eventCrewVP
+				event_score: eventCrewVP,
+				event_crit_traits: eventCritTraits
 			};
 			primedRoster.push(crewman);
 		}
@@ -218,6 +220,15 @@ export const MultiVectorAssault = (
 			}
 		}
 		return crewVP;
+	}
+
+	function countEncounterCrewCritTraits(crew: IVoyageCrew, content: IVoyageEventContent): number {
+		let critTraits: number = 0;
+		content.encounter_traits?.forEach(encounterTrait => {
+			if (crew.traits.includes(encounterTrait))
+				critTraits++;
+		});
+		return critTraits;
 	}
 
 	// These base target values were determined from simulations using Joshurtree's revised Chewable
@@ -359,6 +370,7 @@ export const MultiVectorAssault = (
 
 	function getBoostedLineup(primedRoster: IPrimedCrew[], boosts: IBoosts): VoyagersLineup | false {
 		const TRAIT_BOOST: number = voyage.voyage_type === 'encounter' ? 400 : 200;
+		const CRIT_BOOST: number = voyage.voyage_type === 'encounter' ? 100 : 0;
 		const favorScore = (a: IVoyagerScore, b: IVoyagerScore) => b.score - a.score;
 		const favorAntimatter = (a: IVoyagerScore, b: IVoyagerScore) => {
 			if (a.traitValue === b.traitValue)
@@ -381,7 +393,7 @@ export const MultiVectorAssault = (
 			traitValues.forEach((traitValue, idx) => {
 				const traitFactor: number = traitValues.length-idx-1;
 				boostedScores.push({
-					score: baseScore+(TRAIT_BOOST*traitFactor),
+					score: baseScore+(TRAIT_BOOST*traitFactor)+(CRIT_BOOST*primedRoster[i].event_crit_traits),
 					id: primedRoster[i].id,
 					isIdeal: traitValue > 0 && traitValue === idealTraitValue,
 					traitValue,
