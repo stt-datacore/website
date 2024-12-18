@@ -37,9 +37,20 @@ interface IUserPrefsContext {
 	setCalcOptions: (calcOptions: GameWorkerOptions) => void;
 	telemetryOptIn: boolean;
 	setTelemetryOptIn: (telemetryOptIn: boolean) => void;
+	qpConfig: QuipmentProspectConfig;
+	setQPConfig: (qpConfig: QuipmentProspectConfig) => void;
 };
 
 const UserPrefsContext = React.createContext<IUserPrefsContext>({} as IUserPrefsContext);
+
+const DefaultQuipmentConfig: QuipmentProspectConfig = {
+	mode: 'best',
+	voyage: 'voyage',
+	current: false,
+	enabled: false,
+	slots: 0,
+	calc: 'all'
+};
 
 export const Calculator = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -66,16 +77,35 @@ type PlayerCalculatorProps = {
 };
 
 const PlayerCalculator = (props: PlayerCalculatorProps) => {
-	const voyageType: string = props.voyageType === 'encounter' ? '/encounter' : '';
+	const voyageTypePath: string = props.voyageType === 'encounter' ? '/encounter' : '';
 	const defaultCalculator: string = props.voyageType === 'encounter' ? 'ussjohnjay-mvam' : 'iampicard';
-	const [calculator, setCalculator] = useStateWithStorage(`${props.dbid}/voyage/calculator${voyageType}`, defaultCalculator, { rememberForever: true });
-	const [calcOptions, setCalcOptions] = useStateWithStorage<GameWorkerOptions>(`${props.dbid}/voyage/calcOptions${voyageType}`, {} as GameWorkerOptions, { rememberForever: true });
-	const [telemetryOptIn, setTelemetryOptIn] = useStateWithStorage(props.dbid+'/voyage/telemetryOptIn', true, { rememberForever: true });
+
+	const [calculator, setCalculator] = useStateWithStorage<string>(
+		`${props.dbid}/voyage/calculator${voyageTypePath}`,
+		defaultCalculator,
+		{ rememberForever: true }
+	);
+	const [calcOptions, setCalcOptions] = useStateWithStorage<GameWorkerOptions>(
+		`${props.dbid}/voyage/calcOptions${voyageTypePath}`,
+		{} as GameWorkerOptions,
+		{ rememberForever: true }
+	);
+	const [telemetryOptIn, setTelemetryOptIn] = useStateWithStorage<boolean>(
+		`${props.dbid}/voyage/telemetryOptIn`,
+		true,
+		{ rememberForever: true }
+	);
+	const [qpConfig, setQPConfig] = useStateWithStorage<QuipmentProspectConfig>(
+		`${props.dbid}/${voyageTypePath}/voyage_quipment_prospect_config`,
+		DefaultQuipmentConfig,
+		{ rememberForever: true }
+	);
 
 	const userPrefs: IUserPrefsContext = {
 		calculator, setCalculator,
 		calcOptions, setCalcOptions,
-		telemetryOptIn, setTelemetryOptIn
+		telemetryOptIn, setTelemetryOptIn,
+		qpConfig, setQPConfig
 	};
 
 	return (
@@ -88,14 +118,16 @@ const PlayerCalculator = (props: PlayerCalculatorProps) => {
 };
 
 const NonPlayerCalculator = () => {
-	const [calculator, setCalculator] = React.useState('iampicard');
+	const [calculator, setCalculator] = React.useState<string>('iampicard');
 	const [calcOptions, setCalcOptions] = React.useState<GameWorkerOptions>({} as GameWorkerOptions);
-	const [telemetryOptIn, setTelemetryOptIn] = React.useState(false);
+	const [telemetryOptIn, setTelemetryOptIn] = React.useState<boolean>(false);
+	const [qpConfig, setQPConfig] = React.useState<QuipmentProspectConfig>(DefaultQuipmentConfig);
 
 	const userPrefs: IUserPrefsContext = {
 		calculator, setCalculator,
 		calcOptions, setCalcOptions,
-		telemetryOptIn, setTelemetryOptIn
+		telemetryOptIn, setTelemetryOptIn,
+		qpConfig, setQPConfig
 	};
 
 	return (
@@ -437,10 +469,11 @@ type CrewOptionsProps = {
 
 const CrewOptions = (props: CrewOptionsProps) => {
 	const flexCol = OptionsPanelFlexColumn;
-	const calculatorContext = React.useContext(CalculatorContext);
 	const globalContext = React.useContext(GlobalContext);
 	const { t, tfmt } = globalContext.localized;
+	const calculatorContext = React.useContext(CalculatorContext);
 	const { rosterType, voyageConfig } = calculatorContext;
+	const { qpConfig, setQPConfig } = React.useContext(UserPrefsContext);
 
 	const [preConsideredCrew, setPreConsideredCrew] = React.useState<IVoyageCrew[]>(calculatorContext.crew);
 	const [considerVoyagers, setConsiderVoyagers] = React.useState<boolean>(false);
@@ -449,17 +482,6 @@ const CrewOptions = (props: CrewOptionsProps) => {
 	const [preExcludedCrew, setPreExcludedCrew] = React.useState<IVoyageCrew[]>([]);
 	const [excludedCrewIds, internalSetExcludedCrewIds] = React.useState<number[]>([]);
 	const [consideredCount, setConsideredCount] = React.useState<number>(0);
-
-	const DefaultQuipmentConfig: QuipmentProspectConfig = {
-		mode: 'best',
-		voyage: 'voyage',
-		current: false,
-		enabled: false,
-		slots: 0,
-		calc: 'all'
-	}
-	const dbid = globalContext.player.playerData ? globalContext.player.playerData.player.dbid + "/" : '';
-	const [qpConfig, setQPConfig] = useStateWithStorage(`${dbid}${voyageConfig.voyage_type}/voyage_quipment_prospect_config`, DefaultQuipmentConfig, { rememberForever: true });
 
 	const setExcludedCrewIds = (ids: number[]) => {
 		internalSetExcludedCrewIds([ ... new Set(ids) ]);
