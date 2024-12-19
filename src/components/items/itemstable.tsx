@@ -199,7 +199,7 @@ const pagingOptions = [
 
 class ItemsTable extends Component<ItemsTableProps, ItemsTableState> {
 	static contextType = GlobalContext;
-	context!: React.ContextType<typeof GlobalContext>;
+	declare context: React.ContextType<typeof GlobalContext>;
 	readonly tiny: TinyStore;
 	private lastData: (EquipmentCommon | EquipmentItem)[] | undefined;
 

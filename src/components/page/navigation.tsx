@@ -9,6 +9,7 @@ import { NavItem, createSubMenu, DefaultOpts, DefaultOptsMobile, drawMenuItem, M
 import { useStateWithStorage } from '../../utils/storage';
 import { PlayerMenu } from "./playermenu";
 import { SupportedLanguage, getBrowserLanguage } from '../../context/localizedcontext';
+import { AlertContext } from '../alerts/alertprovider';
 
 
 type NavigationProps = {
@@ -55,9 +56,9 @@ function getLanguageFullName(lang?: SupportedLanguage) {
 
 export const Navigation = (props: NavigationProps) => {
 	const windowGlobal = typeof globalThis.window !== 'undefined' ? globalThis.window : undefined;
+	const globalContext = React.useContext(GlobalContext);
 
-	const context = React.useContext(GlobalContext);
-	const { t, language, setPreferredLanguage } = context.localized;
+	const { t, language, setPreferredLanguage } = globalContext.localized;
 
     const [isMobile, setIsMobile] = React.useState(typeof windowGlobal !== 'undefined' && windowGlobal.innerWidth < DEFAULT_MOBILE_WIDTH);
     const [openBar, setOpenBar] = React.useState(false);
@@ -65,7 +66,7 @@ export const Navigation = (props: NavigationProps) => {
 	const [activeMenu, setActiveMenu] = useStateWithStorage('navigation/active', DefaultOpts, { rememberForever: true });
 	const [mobileActiveMenu, setMobileActiveMenu] = useStateWithStorage('navigation/mobileActive', DefaultOptsMobile, { rememberForever: true });
 
-	if (!!context.player.playerData && typeof windowGlobal !== 'undefined' && !!windowGlobal.location.search?.length) {
+	if (!!globalContext.player.playerData && typeof windowGlobal !== 'undefined' && !!windowGlobal.location.search?.length) {
 		let parm = new URLSearchParams(windowGlobal.location.search);
 		if (parm.has('pmc')) {
 			let result = parsePermalink(parm.get("pmc") ?? '');
@@ -84,8 +85,8 @@ export const Navigation = (props: NavigationProps) => {
 	// 	props.requestPanel(target, panel);
 	// 	setOpenBar(false);
 	// }
-	let portrait = `${process.env.GATSBY_ASSETS_URL}${context.player.playerData?.player?.character?.crew_avatar
-		? (context.player.playerData?.player?.character?.crew_avatar?.portrait?.file ?? context.player.playerData?.player?.character?.crew_avatar?.portrait ?? 'crew_portraits_cm_empty_sm.png')
+	let portrait = `${process.env.GATSBY_ASSETS_URL}${globalContext.player.playerData?.player?.character?.crew_avatar
+		? (globalContext.player.playerData?.player?.character?.crew_avatar?.portrait?.file ?? globalContext.player.playerData?.player?.character?.crew_avatar?.portrait ?? 'crew_portraits_cm_empty_sm.png')
 		: 'crew_portraits_cm_empty_sm.png'}`;
 
 	if (portrait.includes("crew_portraits") && !portrait.endsWith("_sm.png")) {
@@ -124,7 +125,7 @@ export const Navigation = (props: NavigationProps) => {
 			icon: 'paste',
 			tooltip: "Paste or upload player data",
 			checkVisible: (data) => {
-				return !!context.player.playerData;
+				return !!globalContext.player.playerData;
 			},
 			customAction: (e, data) => props.requestPanel('player', 'input'),
 			customRender: (data) => {
@@ -141,13 +142,13 @@ export const Navigation = (props: NavigationProps) => {
 			title: isMobile ? undefined : t('menu.player.import_player_data_ellipses'),
 			customAction: () => props.requestPanel('player', 'input'),
 			checkVisible: (data) => {
-				return !context.player.playerData;
+				return !globalContext.player.playerData;
 			},
 		},
 		{
-			title: context.player.playerData?.player?.display_name ?? 'Player',
+			title: globalContext.player.playerData?.player?.display_name ?? 'Player',
 			checkVisible: (data) => {
-				return !!context.player.playerData && !isMobile;
+				return !!globalContext.player.playerData && !isMobile;
 			},
 			customRender: (data) => {
 				return (
@@ -178,7 +179,7 @@ export const Navigation = (props: NavigationProps) => {
 				{
 					sidebarRole: 'item',
 					checkVisible: (data) => {
-						return !!context.player.playerData && !isMobile;
+						return !!globalContext.player.playerData && !isMobile;
 					},
 					customRender: (data) => {
 						return (<PlayerMenu key={v4()}
@@ -328,6 +329,7 @@ export const Navigation = (props: NavigationProps) => {
 				{ title: t('menu.game_info.voyage_hof'), link: '/hall_of_fame', sidebarRole: 'item' },
 				{ title: t('menu.game_info.misc_game_stats'), link: "/stats", sidebarRole: 'item' },
 				{ title: t('menu.game_info.bridge_crew_tool'), link: "/bridgecrew", sidebarRole: 'item' },
+				{ title: t('menu.game_info.stat_trends'), link: "/stattrends", sidebarRole: 'item' },
 			]
 		},
 		// TODO: Use later?

@@ -1,10 +1,9 @@
 import React from 'react';
-import { Icon, Form, Button, Grid, Message, Segment, Checkbox, Select, Header, Image, Tab, Card, Popup, SemanticICONS } from 'semantic-ui-react';
+import { Icon, Form, Button, Grid, Message, Segment, Checkbox, Select, Header, Image, Tab, Card, Popup, SemanticICONS, DropdownItemProps } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 
-//import allTraits from '../../../static/structured/translation_en.json';
-import { Voyage } from '../../model/player';
-import { IVoyageInputConfig, IVoyageCalcConfig, IVoyageCrew, IVoyageHistory } from '../../model/voyage';
+import { PlayerCrew, Voyage } from '../../model/player';
+import { IVoyageInputConfig, IVoyageCalcConfig, IVoyageCrew, ITrackedVoyage, IFullPayloadAssignment } from '../../model/voyage';
 import { CalcResult, Calculation, Estimate, GameWorkerOptions, VoyageConsideration } from '../../model/worker';
 import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
@@ -18,8 +17,17 @@ import { Helper } from './helpers/Helper';
 import { VoyageStats } from './voyagestats';
 import { CIVASMessage } from './civas';
 
-import { defaultHistory, addVoyageToHistory, addCrewToHistory, removeVoyageFromHistory } from '../voyagehistory/utils';
+import { HistoryContext } from '../voyagehistory/context';
+import { addVoyageToHistory, addCrewToHistory, removeVoyageFromHistory, SyncState, deleteTrackedData, createTrackableVoyage, NEW_TRACKER_ID, createTrackableCrew, postTrackedData } from '../voyagehistory/utils';
 import CONFIG from '../CONFIG';
+import { getShipTraitBonus } from './utils';
+import { VPGraphAccordion } from './vpgraph';
+import { oneCrewCopy, qbitsToSlots } from '../../utils/crewutils';
+import { calcQLots } from '../../utils/equipment';
+import { getItemWithBonus, ItemWithBonus } from '../../utils/itemutils';
+import { QuippedPower } from '../../model/crew';
+import { QuipmentProspectConfig, QuipmentProspects } from './quipmentprospects';
+import { OptionsPanelFlexColumn } from '../stats/utils';
 
 // These preferences are per-user, so they need separate handlers when there's no player data
 interface IUserPrefsContext {
@@ -29,125 +37,155 @@ interface IUserPrefsContext {
 	setCalcOptions: (calcOptions: GameWorkerOptions) => void;
 	telemetryOptIn: boolean;
 	setTelemetryOptIn: (telemetryOptIn: boolean) => void;
-	history: IVoyageHistory;
-	setHistory: (history: IVoyageHistory) => void;
+	qpConfig: QuipmentProspectConfig;
+	setQPConfig: (qpConfig: QuipmentProspectConfig) => void;
 };
 
 const UserPrefsContext = React.createContext<IUserPrefsContext>({} as IUserPrefsContext);
 
-type CalculatorProps = {
-	voyageConfig: IVoyageInputConfig;
+const DefaultQuipmentConfig: QuipmentProspectConfig = {
+	mode: 'best',
+	voyage: 'voyage',
+	current: false,
+	enabled: false,
+	slots: 0,
+	calc: 'all'
 };
 
-export const Calculator = (props: CalculatorProps) => {
+export const Calculator = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
+	const { voyage_type } = React.useContext(CalculatorContext).voyageConfig;
 
 	return (
 		<React.Fragment>
-			{playerData && <PlayerCalculator voyageConfig={props.voyageConfig} dbid={`${playerData.player.dbid}`} />}
-			{!playerData && <NonPlayerCalculator voyageConfig={props.voyageConfig} />}
+			{playerData && (
+				<PlayerCalculator
+					key={voyage_type}
+					dbid={`${playerData.player.dbid}`}
+					voyageType={voyage_type}
+				/>
+			)}
+			{!playerData && <NonPlayerCalculator />}
 		</React.Fragment>
 	);
 };
 
 type PlayerCalculatorProps = {
-	voyageConfig: IVoyageInputConfig;
 	dbid: string;
+	voyageType: string;
 };
 
 const PlayerCalculator = (props: PlayerCalculatorProps) => {
-	const [calculator, setCalculator] = useStateWithStorage(props.dbid+'/voyage/calculator', 'iampicard', { rememberForever: true });
-	const [calcOptions, setCalcOptions] = useStateWithStorage<GameWorkerOptions>(props.dbid+'/voyage/calcOptions', {} as GameWorkerOptions, { rememberForever: true });
-	const [telemetryOptIn, setTelemetryOptIn] = useStateWithStorage(props.dbid+'/voyage/telemetryOptIn', true, { rememberForever: true });
-	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(props.dbid+'/voyage/history', defaultHistory, { rememberForever: true, compress: true } );
+	const voyageTypePath: string = props.voyageType === 'encounter' ? '/encounter' : '';
+	const defaultCalculator: string = props.voyageType === 'encounter' ? 'ussjohnjay-mvam' : 'iampicard';
 
-	const userPrefs = {
-		calculator, setCalculator,
-		calcOptions, setCalcOptions,
-		telemetryOptIn, setTelemetryOptIn,
-		history, setHistory
-	} as IUserPrefsContext;
-
-	return (
-		<UserPrefsContext.Provider value={userPrefs}>
-			<React.Fragment>
-				<CalculatorForm voyageConfig={props.voyageConfig} />
-			</React.Fragment>
-		</UserPrefsContext.Provider>
+	const [calculator, setCalculator] = useStateWithStorage<string>(
+		`${props.dbid}/voyage/calculator${voyageTypePath}`,
+		defaultCalculator,
+		{ rememberForever: true }
 	);
-};
+	const [calcOptions, setCalcOptions] = useStateWithStorage<GameWorkerOptions>(
+		`${props.dbid}/voyage/calcOptions${voyageTypePath}`,
+		{} as GameWorkerOptions,
+		{ rememberForever: true }
+	);
+	const [telemetryOptIn, setTelemetryOptIn] = useStateWithStorage<boolean>(
+		`${props.dbid}/voyage/telemetryOptIn`,
+		true,
+		{ rememberForever: true }
+	);
+	const [qpConfig, setQPConfig] = useStateWithStorage<QuipmentProspectConfig>(
+		`${props.dbid}/${voyageTypePath}/voyage_quipment_prospect_config`,
+		DefaultQuipmentConfig,
+		{ rememberForever: true }
+	);
 
-const NonPlayerCalculator = (props: CalculatorProps) => {
-	const [calculator, setCalculator] = React.useState('iampicard');
-	const [calcOptions, setCalcOptions] = React.useState<GameWorkerOptions>({} as GameWorkerOptions);
-	const [telemetryOptIn, setTelemetryOptIn] = React.useState(false);
-	const [history, setHistory] = React.useState<IVoyageHistory>(defaultHistory);
-
-	const userPrefs = {
+	const userPrefs: IUserPrefsContext = {
 		calculator, setCalculator,
 		calcOptions, setCalcOptions,
 		telemetryOptIn, setTelemetryOptIn,
-		history, setHistory
+		qpConfig, setQPConfig
 	};
 
 	return (
 		<UserPrefsContext.Provider value={userPrefs}>
 			<React.Fragment>
-				<CalculatorForm voyageConfig={props.voyageConfig} />
+				<CalculatorForm />
 			</React.Fragment>
 		</UserPrefsContext.Provider>
 	);
 };
 
-const CalculatorForm = (props: CalculatorProps) => {
+const NonPlayerCalculator = () => {
+	const [calculator, setCalculator] = React.useState<string>('iampicard');
+	const [calcOptions, setCalcOptions] = React.useState<GameWorkerOptions>({} as GameWorkerOptions);
+	const [telemetryOptIn, setTelemetryOptIn] = React.useState<boolean>(false);
+	const [qpConfig, setQPConfig] = React.useState<QuipmentProspectConfig>(DefaultQuipmentConfig);
+
+	const userPrefs: IUserPrefsContext = {
+		calculator, setCalculator,
+		calcOptions, setCalcOptions,
+		telemetryOptIn, setTelemetryOptIn,
+		qpConfig, setQPConfig
+	};
+
+	return (
+		<UserPrefsContext.Provider value={userPrefs}>
+			<React.Fragment>
+				<CalculatorForm />
+			</React.Fragment>
+		</UserPrefsContext.Provider>
+	);
+};
+
+const CalculatorForm = () => {
 	const globalContext = React.useContext(GlobalContext);
-	const { t, tfmt } = globalContext.localized;
-	const { playerData, ephemeral } = globalContext.player;
+	const { t } = globalContext.localized;
+	const { playerData } = globalContext.player;
 	const calculatorContext = React.useContext(CalculatorContext);
-	const { rosterType } = calculatorContext;
+	const { configSource, voyageConfig } = calculatorContext;
 	const userPrefs = React.useContext(UserPrefsContext);
-	const { voyageConfig } = props;
 
-	const [bestShip, setBestShip] = React.useState<VoyageConsideration | undefined>(undefined);
-	const [consideredCrew, setConsideredCrew] = React.useState<IVoyageCrew[]>([] as IVoyageCrew[]);
+	const [consideredCrew, setConsideredCrew] = React.useState<IVoyageCrew[]>([]);
 
-	const [requests, setRequests] = React.useState<Helper[]>([] as Helper[]);
-	const [results, setResults] = React.useState<Calculation[]>([] as Calculation[]);
+	const [requests, setRequests] = React.useState<Helper[]>([]);
+	const [results, setResults] = React.useState<Calculation[]>([]);
 
-	React.useEffect(() => {
-		const consideredShips = [] as VoyageConsideration[];
+	const bestShip = React.useMemo(() => {
+		let bestShip: VoyageConsideration | undefined;
+		const consideredShips: VoyageConsideration[] = [];
 		calculatorContext.ships.filter(ship => ship.owned).forEach(ship => {
-			const traited = ship.traits?.includes(voyageConfig.ship_trait);
-			let entry = {
+			const shipBonus: number = getShipTraitBonus(voyageConfig, ship);
+			const entry: VoyageConsideration = {
 				ship: ship,
-				score: ship.antimatter + (traited ? 150 : 0),
-				traited: traited,
+				score: ship.antimatter + shipBonus,
+				traited: shipBonus > 0,
 				bestIndex: Math.min(ship.index?.left ?? 0, ship.index?.right ?? 0),
-				archetype_id: ship.archetype_id
-			} as VoyageConsideration;
-			if (voyageConfig.voyage_type === 'encounter') {
-				let f = ephemeral?.events?.find(f => f.content_types.includes('voyage'));
-				if (f) {
-					if (f.content.featured_ships?.includes(ship.symbol)) {
-						entry.score = ship.antimatter + 500;
-					}
-					else {
-						let ftrait = f.content.antimatter_bonus_ship_traits?.filter(bs => ship.traits?.includes(bs))?.length ?? 0;
-						entry.score = ship.antimatter + (ftrait * 100);
-					}
-				}
-			}
+				archetype_id: ship.archetype_id ?? 0
+			};
 			consideredShips.push(entry);
 		});
-		consideredShips.sort((a, b) => {
-			if (a.score === b.score) return a.archetype_id - b.archetype_id;
-			return b.score - a.score;
-		});
-		setBestShip(consideredShips[0]);
+		if (consideredShips.length > 0) {
+			consideredShips.sort((a, b) => {
+				if (a.score === b.score) return a.archetype_id - b.archetype_id;
+				return b.score - a.score;
+			});
+			// Recommend best non-running ship (exception: custom input should recommend best ship, even if already running)
+			for (let i = 0; i < consideredShips.length; i++) {
+				if (!calculatorContext.runningShipIds.includes(consideredShips[i].ship.id) || configSource === 'custom') {
+					bestShip = consideredShips[i];
+					break;
+				}
+			}
+		}
+		return bestShip;
+	}, [configSource, voyageConfig, calculatorContext.ships, calculatorContext.runningShipIds]);
+
+	React.useEffect(() => {
 		setRequests([]);
 		setResults([]);
-	}, [voyageConfig, calculatorContext]);
+	}, [voyageConfig]);
 
 	React.useEffect(() => {
 		return function cleanup() {
@@ -162,7 +200,7 @@ const CalculatorForm = (props: CalculatorProps) => {
 	// Scroll here when calculator started, finished
 	const topAnchor = React.useRef<HTMLDivElement>(null);
 
-	const calculators = CALCULATORS.helpers.map(helper => {
+	const calculators: DropdownItemProps = CALCULATORS.helpers.map(helper => {
 		return { key: helper.id, value: helper.id, text: helper.name };
 	});
 	calculators.push({ key: 'all', value: 'all', text: 'All calculators (slower)' });
@@ -172,7 +210,7 @@ const CalculatorForm = (props: CalculatorProps) => {
 	return (
 		<React.Fragment>
 			<div ref={topAnchor} />
-			{false && <BestShipCard voyageConfig={voyageConfig} bestShip={bestShip} />}
+			{/* <BestShipCard voyageConfig={voyageConfig} bestShip={bestShip} /> */}
 			<ResultsGroup requests={requests} results={results} setResults={setResults} />
 			<div style={{ marginTop: '1em' }}>
 				{requests.length > 0 && <Header as='h3'>Options</Header>}
@@ -204,7 +242,7 @@ const CalculatorForm = (props: CalculatorProps) => {
 					</Button>
 				</Form>
 			</div>
-			{rosterType === 'myCrew' && (
+			{configSource === 'player' && (
 				<Message style={{ marginTop: '2em' }}>
 					<Message.Content>
 						<Message.Header>Privacy Notice</Message.Header>
@@ -313,7 +351,8 @@ const CalculatorForm = (props: CalculatorProps) => {
 		const request = requests.find(r => r.id === requestId);
 		if (!request) return;
 
-		if (rosterType !== 'myCrew') return;
+		if (configSource !== 'player') return;
+		if (voyageConfig.voyage_type !== 'dilemma') return;
 		if (request.calcOptions.strategy === 'peak-antimatter') return;
 
 		const estimatedDuration = result.estimate.refills[0].result*60*60;
@@ -429,40 +468,49 @@ type CrewOptionsProps = {
 };
 
 const CrewOptions = (props: CrewOptionsProps) => {
-	const calculatorContext = React.useContext(CalculatorContext);
+	const flexCol = OptionsPanelFlexColumn;
 	const globalContext = React.useContext(GlobalContext);
-	const { ephemeral } = globalContext.player;
-	const { rosterType, voySymbol } = calculatorContext;
+	const { t, tfmt } = globalContext.localized;
+	const calculatorContext = React.useContext(CalculatorContext);
+	const { rosterType, voyageConfig } = calculatorContext;
+	const { qpConfig, setQPConfig } = React.useContext(UserPrefsContext);
 
 	const [preConsideredCrew, setPreConsideredCrew] = React.useState<IVoyageCrew[]>(calculatorContext.crew);
-	const [considerActive, setConsiderActive] = React.useState(false);
-	const [considerFrozen, setConsiderFrozen] = React.useState(false);
-	const [preExcludedCrew, setPreExcludedCrew] = React.useState<IVoyageCrew[]>([] as IVoyageCrew[]);
-	const [excludedCrewIds, internalSetExcludedCrewIds] = React.useState<number[]>([] as number[]);
-	const [consideredCount, setConsideredCount] = React.useState(0);
+	const [considerVoyagers, setConsiderVoyagers] = React.useState<boolean>(false);
+	const [considerShuttlers, setConsiderShuttlers] = React.useState<boolean>(false);
+	const [considerFrozen, setConsiderFrozen] = React.useState<boolean>(false);
+	const [preExcludedCrew, setPreExcludedCrew] = React.useState<IVoyageCrew[]>([]);
+	const [excludedCrewIds, internalSetExcludedCrewIds] = React.useState<number[]>([]);
+	const [consideredCount, setConsideredCount] = React.useState<number>(0);
 
 	const setExcludedCrewIds = (ids: number[]) => {
 		internalSetExcludedCrewIds([ ... new Set(ids) ]);
-	}
+	};
 
 	React.useEffect(() => {
-		setPreConsideredCrew([...calculatorContext.crew]);
-	}, [calculatorContext.crew]);
+		const quipment = qpConfig.enabled ? globalContext.core.items.filter(f => f.type === 14).map(m => getItemWithBonus(m)) : [];
+		const crew = calculatorContext.crew.map(c => applyQuipmentProspect(c, quipment));
+		setPreConsideredCrew(crew);
+	}, [calculatorContext.crew, qpConfig]);
 
 	React.useEffect(() => {
-		const preExcludedCrew = preExcludeCrew(preConsideredCrew);
+		const preExcludedCrew: IVoyageCrew[] = preExcludeCrew(preConsideredCrew);
 		setPreExcludedCrew([...preExcludedCrew]);
-		const consideredCrew = preExcludedCrew.filter(crewman => {
+		const consideredCrew: IVoyageCrew[] = preExcludedCrew.filter(crewman => {
 			if (excludedCrewIds.includes(crewman.id))
 				return false;
 			return true;
 		});
 		setConsideredCount(consideredCrew.length);
 		props.updateConsideredCrew(consideredCrew);
-	}, [preConsideredCrew, considerActive, considerFrozen, excludedCrewIds]);
+	}, [preConsideredCrew, considerVoyagers, considerShuttlers, considerFrozen, excludedCrewIds]);
 
-	const otherVoyages = ephemeral?.voyage?.filter(f => f.name !== voySymbol);
-	const activeCount = calculatorContext.crew.filter(crew => crew.active_status === 2 || otherVoyages?.some(voy => voy.crew_slots?.some(cs => cs.crew.id === crew.id))).length;
+	const activeVoyagers: number = calculatorContext.crew.filter(crew =>
+		crew.active_status === 3
+	).length;
+	const activeShuttlers: number = calculatorContext.crew.filter(crew =>
+		crew.active_status === 2
+	).length;
 
 	return (
 		<Grid stackable columns={2} style={{ marginBottom: '1em' }}>
@@ -470,41 +518,58 @@ const CrewOptions = (props: CrewOptionsProps) => {
 				<Grid.Column>
 					<Message attached>
 						<Message.Header>
-							Crew to Consider
+							{t('voyage.picker_options.title')}
 						</Message.Header>
-						<p>A total of <b>{consideredCount} crew</b> will be considered for this voyage.</p>
+						<p>
+							{tfmt('voyage.picker_options.sub_title', {
+								n: <b>{consideredCount} crew</b>
+							})}
+						</p>
 					</Message>
 					<Segment attached='bottom'>
 						{rosterType === 'myCrew' && (
 							<Form.Group grouped style={{ marginBottom: '1em' }}>
 								<React.Fragment>
-									{activeCount > 0 && (
-										<>
+									{activeVoyagers > 0 && (
 										<Form.Field
 											control={Checkbox}
-											label='Consider crew on active shuttles or other voyages'
-											checked={considerActive}
-											onChange={(e, { checked }) => setConsiderActive(checked)}
+											label={t('voyage.picker_options.voyage')}
+											checked={considerVoyagers}
+											onChange={(e, { checked }) => setConsiderVoyagers(checked)}
 										/>
-										</>
+									)}
+									{activeShuttlers > 0 && (
+										<Form.Field
+											control={Checkbox}
+											label={t('voyage.picker_options.shuttle')}
+											checked={considerShuttlers}
+											onChange={(e, { checked }) => setConsiderShuttlers(checked)}
+										/>
 									)}
 									<Form.Field
 										control={Checkbox}
-										label='Consider frozen crew'
+										label={t('voyage.picker_options.frozen')}
 										checked={considerFrozen}
 										onChange={(e, { checked }) => setConsiderFrozen(checked)}
 									/>
 								</React.Fragment>
 							</Form.Group>
 						)}
-						<CrewThemes
-							rosterType={rosterType}
-							rosterCrew={calculatorContext.crew}
-							preExcludeCrew={preExcludeCrew}
-							considerActive={considerActive}
-							considerFrozen={considerFrozen}
-							setPreConsideredCrew={setPreConsideredCrew}
-						/>
+						<div style={{...flexCol, alignItems: 'flex-start', gap: '1em'}}>
+							<CrewThemes
+								rosterType={rosterType}
+								rosterCrew={calculatorContext.crew}
+								preExcludeCrew={preExcludeCrew}
+								considerActive={considerShuttlers}
+								considerFrozen={considerFrozen}
+								setPreConsideredCrew={setPreConsideredCrew}
+							/>
+
+							<QuipmentProspects
+								config={qpConfig}
+								setConfig={setQPConfig}
+								/>
+						</div>
 					</Segment>
 				</Grid.Column>
 				<Grid.Column>
@@ -521,23 +586,105 @@ const CrewOptions = (props: CrewOptionsProps) => {
 	);
 
 	function preExcludeCrew(preConsideredCrew: IVoyageCrew[]): IVoyageCrew[] {
-
-		if (!considerActive && ephemeral?.voyage?.length) {
-			let list = [...new Set(ephemeral.voyage.filter((f, idx) => f.name !== voySymbol).map(m => m.crew_slots.map(m2 => m2.crew.id)).flat()) ]
-			preConsideredCrew = preConsideredCrew.filter(f => !list.includes(f.id));
-		}
-
-		return preConsideredCrew.filter(crewman => {
-			if (!considerActive && crewman.active_status === 2)
+		const preExcluded = preConsideredCrew.filter(crewman => {
+			if (crewman.expires_in)
 				return false;
 
+			if (!considerVoyagers && crewman.active_status === 3)
+				return false;
 
+			if (!considerShuttlers && crewman.active_status === 2)
+				return false;
 
 			if (!considerFrozen && crewman.immortal > 0)
 				return false;
 
 			return true;
 		});
+
+		return preExcluded;
+	}
+
+	function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[]) {
+		if (qpConfig.enabled && c.immortal === -1 && c.q_bits >= 100) {
+			if (qpConfig.current && c.kwipment.some(q => typeof q === 'number' ? q : q[1])) {
+				return c;
+			}
+			let newcopy = oneCrewCopy(c);
+			let oldorder = newcopy.skill_order;
+			let order = [...oldorder];
+			let nslots = qbitsToSlots(newcopy.q_bits);
+
+			if (qpConfig.voyage !== 'none') {
+				order.sort((a, b) => {
+					if (['voyage', 'voyage_1'].includes(qpConfig.voyage)) {
+						if (voyageConfig.skills.primary_skill === a) return -1;
+						if (voyageConfig.skills.primary_skill === b) return 1;
+					}
+					if (['voyage', 'voyage_2'].includes(qpConfig.voyage)) {
+						if (voyageConfig.skills.secondary_skill === a) return -1;
+						if (voyageConfig.skills.secondary_skill === b) return 1;
+					}
+					return oldorder.indexOf(a) - oldorder.indexOf(b);
+				});
+			}
+
+			newcopy.skill_order = order;
+
+			if (qpConfig.slots && qpConfig.slots < nslots) nslots = qpConfig.slots;
+
+			calcQLots(newcopy, quipment, globalContext.player.buffConfig, false, nslots, qpConfig.calc);
+
+			newcopy.skill_order = oldorder;
+
+			let useQuipment: QuippedPower | undefined = undefined;
+			if (qpConfig.mode === 'all') {
+				useQuipment = newcopy.best_quipment_3!;
+			}
+			else if (qpConfig.mode === 'best') {
+				useQuipment = newcopy.best_quipment!;
+			}
+			else if (qpConfig.mode === 'best_2') {
+				useQuipment = newcopy.best_quipment_1_2!;
+			}
+			if (!useQuipment) return c;
+
+
+			if (qpConfig.mode === 'best') {
+				newcopy.kwipment = Object.values(useQuipment.skill_quipment[order[0]]).map(q => Number(q.kwipment_id));
+				let skill = useQuipment.skills_hash[order[0]];
+				newcopy[skill.skill] = {
+					core: skill.core,
+					min: skill.range_min,
+					max: skill.range_max
+				}
+				newcopy.skills[skill.skill] = {
+					...skill
+				}
+			}
+			else {
+				newcopy.kwipment = Object.entries(useQuipment.skill_quipment).map(([skill, quip]) => quip.map(q => Number(q.kwipment_id))).flat();
+				Object.entries(useQuipment.skills_hash).forEach(([key, skill]) => {
+					newcopy[key] = {
+						core: skill.core,
+						min: skill.range_min,
+						max: skill.range_max
+					}
+					newcopy.skills[key] = {
+						...skill
+					}
+				});
+			}
+
+
+			while (newcopy.kwipment.length < 4) newcopy.kwipment.push(0);
+			newcopy.kwipment_expiration = [0, 0, 0, 0];
+			newcopy.kwipment_prospects = true;
+			return newcopy;
+		}
+		else {
+			return c;
+		}
 	}
 };
 
@@ -550,17 +697,20 @@ type ResultsGroupProps = {
 const ResultsGroup = (props: ResultsGroupProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
+	const { dbid, history, setHistory, syncState, setMessageId } = React.useContext(HistoryContext);
 	const calculatorContext = React.useContext(CalculatorContext);
-	const userPrefs = React.useContext(UserPrefsContext);
+	const { voyageConfig } = calculatorContext;
 
 	const { requests, results, setResults } = props;
 
-	const [trackerId, setTrackerId] = React.useState(0);
+	const [trackerId, setTrackerId] = React.useState<number>(NEW_TRACKER_ID);
 
-	const analyses = [] as string[];
+	const analyses: string[] = [];
 
-	// In-game voyage crew picker ignores frozen crew and crew active on shuttles
-	const availableRoster = calculatorContext.crew.filter(c => c.immortal <= 0 && c.active_status !== 2);
+	// In-game voyage crew picker ignores frozen crew, active shuttlers, and active voyagers
+	const availableRoster: IVoyageCrew[] = calculatorContext.crew.filter(
+		c => c.immortal <= 0 && c.active_status !== 2 && c.active_status !== 3
+	);
 
 	if (results.length === 0)
 		return (<></>);
@@ -570,30 +720,36 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 		median: number;
 		minimum: number;
 		moonshot: number;
-		antimatter: number;
 		dilemma: {
 			hour: number;
 			chance: number;
 		};
+		antimatter: number;
+		total_vp: number;
+		vp_per_min: number;
 	};
-	const bestValues = {
+	const bestValues: IBestValues = {
 		median: 0,
 		minimum: 0,
 		moonshot: 0,
-		antimatter: 0,
 		dilemma: {
 			hour: 0,
 			chance: 0
-		}
-	} as IBestValues;
+		},
+		antimatter: 0,
+		total_vp: 0,
+		vp_per_min: 0
+	};
 	results.forEach(result => {
 		if (result.calcState === CalculatorState.Done && result.result) {
-			const values = flattenEstimate(result.result.estimate);
+			const values = {
+				...flattenEstimate(result.result.estimate),
+				antimatter: result.result.estimate.antimatter ?? 0,
+				total_vp: result.result.estimate.vpDetails?.total_vp ?? 0,
+				vp_per_min: result.result.estimate.vpDetails?.vp_per_min ?? 0
+			};
 			Object.keys(bestValues).forEach((valueKey) => {
-				if (valueKey === 'antimatter') {
-					bestValues.antimatter = Math.max(bestValues.antimatter, result.result?.estimate.antimatter ??  0);
-				}
-				else if (valueKey === 'dilemma') {
+				if (valueKey === 'dilemma') {
 					if (values.dilemma.hour > bestValues.dilemma.hour
 						|| (values.dilemma.hour === bestValues.dilemma.hour && values.dilemma.chance > bestValues.dilemma.chance)) {
 							bestValues.dilemma = values.dilemma;
@@ -606,9 +762,9 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 		}
 	});
 	results.forEach(result => {
-		let analysis = '';
+		let analysis: string = '';
 		if (result.calcState === CalculatorState.Done && result.result) {
-			const recommended = getRecommendedList(result.result.estimate, bestValues);
+			const recommended: string[] = getRecommendedList(result.result.estimate, bestValues);
 			if (results.length === 1)
 				analysis = 'Recommended for all criteria';
 			else {
@@ -662,13 +818,30 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 	}
 
 	function getRecommendedList(estimate: Estimate, bestValues: IBestValues): string[] {
-		const recommended = [] as string[];
-		const values = flattenEstimate(estimate);
-		Object.keys(bestValues).forEach((method) => {
-			if ((method === 'antimatter' && bestValues.antimatter === estimate.antimatter) ||
-				(method === 'dilemma' && bestValues.dilemma.hour === values.dilemma.hour && bestValues.dilemma.chance === values.dilemma.chance) ||
-				bestValues[method] === values[method])
-					recommended.push(method);
+		const recommended: string[] = [];
+		const values = {
+			...flattenEstimate(estimate),
+			antimatter: estimate.antimatter ?? 0,
+			total_vp: estimate.vpDetails?.total_vp ?? 0,
+			vp_per_min: estimate.vpDetails?.vp_per_min ?? 0
+		};
+		Object.keys(bestValues).forEach(method => {
+			let canRecommend: boolean = false;
+			if (method === 'dilemma') {
+				if (voyageConfig.voyage_type === 'dilemma') {
+					canRecommend = bestValues.dilemma.hour === values.dilemma.hour
+						&& bestValues.dilemma.chance === values.dilemma.chance;
+				}
+			}
+			else if ((method === 'total_vp' || method === 'vp_per_min')) {
+				if (voyageConfig.voyage_type === 'encounter') {
+					canRecommend = bestValues[method] === values[method];
+				}
+			}
+			else {
+				canRecommend = bestValues[method] === values[method];
+			}
+			if (canRecommend) recommended.push(method);
 		});
 		return recommended;
 	};
@@ -696,6 +869,14 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 				sortName = 'starting antimatter';
 				sortValue = bestValues.antimatter;
 				break;
+			case 'total_vp':
+				sortName = 'projected VP';
+				sortValue = bestValues.total_vp.toLocaleString();
+				break;
+			case 'vp_per_min':
+				sortName = 'projected VP per minute';
+				sortValue = Math.floor(bestValues.vp_per_min);
+				break;
 		}
 		if (sortValue !== '') sortValue = ' ('+sortValue+')';
 		return sortName+sortValue;
@@ -719,18 +900,57 @@ const ResultsGroup = (props: ResultsGroupProps) => {
 	}
 
 	function trackResult(resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate): void {
-		// Remove previous tracked voyage and associated crew assignments
+		// First remove previous tracked voyage and associated crew assignments
 		//	(in case user tracks a different recommendation from same request)
-		if (trackerId > 0) removeVoyageFromHistory(userPrefs.history, trackerId);
+		const trackableVoyage: ITrackedVoyage = createTrackableVoyage(
+			voyageConfig, shipSymbol, estimate, trackerId
+		);
+		const trackableCrew: IFullPayloadAssignment[] = createTrackableCrew(voyageConfig, trackerId);
+		if (syncState === SyncState.RemoteReady) {
+			deleteTrackedData(dbid, trackerId).then((success: boolean) => {
+				if (success) {
+					removeVoyageFromHistory(history, trackerId);
+					postTrackedData(dbid, trackableVoyage, trackableCrew).then(result => {
+						if (result.status < 300 && result.trackerId && result.inputId === trackerId) {
+							const newRemoteId: number = result.trackerId;
+							addVoyageToHistory(history, newRemoteId, trackableVoyage);
+							addCrewToHistory(history, newRemoteId, trackableCrew);
+							setHistory({...history});
+							updateTrackedResults(resultIndex, newRemoteId);
+						}
+						else {
+							throw('Failed trackResult -> postTrackedData');
+						}
+					})
+				}
+				else {
+					throw('Failed trackResult -> deleteTrackedData');
+				}
+			}).catch(e => {
+				setMessageId('voyage.history_msg.failed_to_track');
+				console.log(e);
+			});
+		}
+		else if (syncState === SyncState.LocalOnly) {
+			removeVoyageFromHistory(history, trackerId);
+			const newLocalId: number = history.voyages.reduce((prev, curr) => Math.max(prev, curr.tracker_id), 0) + 1;
+			addVoyageToHistory(history, newLocalId, trackableVoyage);
+			addCrewToHistory(history, newLocalId, trackableCrew);
+			setHistory({...history});
+			updateTrackedResults(resultIndex, newLocalId);
+		}
+		else {
+			setMessageId('voyage.history_msg.invalid_sync_state');
+			console.log(`Failed trackResult (invalid syncState: ${syncState})`);
+		}
+	}
 
-		const newTrackerId = addVoyageToHistory(userPrefs.history, voyageConfig, shipSymbol, estimate);
-		addCrewToHistory(userPrefs.history, newTrackerId, voyageConfig);
-		userPrefs.setHistory({...userPrefs.history});
-		setTrackerId(newTrackerId);
+	function updateTrackedResults(resultIndex: number, trackerId: number): void {
 		results.forEach((result, idx) => {
 			result.trackState = idx === resultIndex ? 1 : 0;
 		});
 		setResults([...results]);
+		setTrackerId(trackerId);
 	}
 
 	function estimateResult(resultIndex: number, voyageConfig: IVoyageCalcConfig, numSims: number): void {
@@ -793,9 +1013,10 @@ type ResultPaneProps = {
 };
 
 const ResultPane = (props: ResultPaneProps) => {
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
+	const { syncState } = React.useContext(HistoryContext);
 	const calculatorContext = React.useContext(CalculatorContext);
-	const { t } = React.useContext(GlobalContext).localized;
-	const { rosterType, activeVoyageId } = calculatorContext;
+	const { configSource, rosterType } = calculatorContext;
 	const {
 		result, resultIndex,
 		requests, requestId,
@@ -821,39 +1042,47 @@ const ResultPane = (props: ResultPaneProps) => {
 		);
 	}
 
-	const iconTrack = ['flag outline', 'flag'] as SemanticICONS[];
-	const iconConfidence = ['hourglass outline', 'hourglass half', 'hourglass end'] as SemanticICONS[];
+	const iconTrack: SemanticICONS[] = ['flag outline', 'flag'];
+	const iconConfidence: SemanticICONS[] = ['hourglass outline', 'hourglass half', 'hourglass end'];
 
-	// resultToVoyageData
-	let data = {...request.voyageConfig} as IVoyageCalcConfig;
+	// Create new voyageConfig based on input and calc results
+	const voyageConfig: IVoyageCalcConfig = {
+		...request.voyageConfig,
+		state: 'pending',
+		max_hp: result.startAM,
+		skill_aggregates: result.aggregates,
+		crew_slots: request.voyageConfig.crew_slots.map(slot => {
+			return ({
+				...slot,
+				crew: {} as IVoyageCrew
+			});
+		})
+	};
 	if (result.entries) {
-		result.entries.forEach((entry, idx) => {
-			let acrew = request.consideredCrew.find(c => c.id === entry.choice.id);
-			data.crew_slots[entry.slotId].crew = acrew ?? {} as IVoyageCrew;
+		result.entries.forEach(entry => {
+			const crew: IVoyageCrew | undefined = request.consideredCrew.find(c => c.id === entry.choice.id);
+			if (crew) voyageConfig.crew_slots[entry.slotId].crew = crew;
 		});
 	}
-	data.skill_aggregates = result.aggregates;
-	data.max_hp = result.startAM;
-	data.state = 'pending';
 
 	const renderCalculatorMessage = () => {
 		if (calcState !== CalculatorState.Done) {
 			return (
-				<>
+				<React.Fragment>
 					<Image inline size='mini' src='/media/voyage-wait-icon.gif' />
 					Calculation in progress. Please wait...{` `}
 					<Button compact style={{ marginLeft: '1em' }}
 						content='Abort' onClick={() => abortCalculation(request.id)} />
-				</>
+				</React.Fragment>
 			);
 		}
-		const inputs = Object.entries(request.calcOptions).map(entry => entry[0]+': '+entry[1]);
+		const inputs: string[] = Object.entries(request.calcOptions).map(entry => entry[0]+': '+entry[1]);
 		inputs.unshift('considered crew: '+request.consideredCrew.length);
 		return (
-			<>
+			<React.Fragment>
 				Calculated by <b>{request.calcName}</b> calculator ({inputs.join(', ')}){` `}
 				in {((request.perf.end-request.perf.start)/1000).toFixed(2)} seconds!
-			</>
+			</React.Fragment>
 		);
 	};
 
@@ -863,18 +1092,23 @@ const ResultPane = (props: ResultPaneProps) => {
 				<Message attached>
 					<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', rowGap: '1em' }}>
 						<div>
-							Estimate: <b>{formatTime(result.estimate.refills[0].result, t)}</b>{` `}
-							(expected range: {formatTime(result.estimate.refills[0].saferResult, t)} to{` `}
-								{formatTime(result.estimate.refills[0].moonshotResult, t)})
+							{tfmt('voyage.estimate.estimate_time', {
+								time: <b>{formatTime(result.estimate.refills[0].result, t)}</b>
+							})}
+							{` `}
+							{t('voyage.estimate.expected_range', {
+								a: formatTime(result.estimate.refills[0].saferResult, t),
+								b: formatTime(result.estimate.refills[0].moonshotResult, t)
+							})}
 							{analysis !== '' && (<div style={{ marginTop: '1em' }}>{analysis}</div>)}
 						</div>
 						<div>
 							<Button.Group>
-								{rosterType === 'myCrew' && activeVoyageId === 0 &&
+								{configSource === 'player' && voyageConfig.voyage_type === 'dilemma' &&
 									<Popup position='top center'
 										content={<>Track this recommendation</>}
 										trigger={
-											<Button icon onClick={() => trackResult(resultIndex, data, request.bestShip.ship.symbol, result.estimate)}>
+											<Button icon onClick={() => trackResult(resultIndex, voyageConfig, request.bestShip.ship.symbol, result.estimate)} disabled={syncState === SyncState.ReadOnly}>
 												<Icon name={iconTrack[trackState]} color={trackState === 1 ? 'green' : undefined} />
 											</Button>
 										}
@@ -883,7 +1117,7 @@ const ResultPane = (props: ResultPaneProps) => {
 								<Popup position='top center'
 									content={<>Get more confident estimate</>}
 									trigger={
-										<Button icon onClick={() => { if (confidenceState !== 1) estimateResult(resultIndex, data, 30000); }}>
+										<Button icon onClick={() => { if (confidenceState !== 1) estimateResult(resultIndex, voyageConfig, 30000); }}>
 											<Icon name={iconConfidence[confidenceState]} color={confidenceState === 2 ? 'green' : undefined} />
 										</Button>
 									}
@@ -900,8 +1134,12 @@ const ResultPane = (props: ResultPaneProps) => {
 				</Message>
 			)}
 			<Tab.Pane>
+				{result.estimate.vpDetails && (
+					<VPGraphAccordion voyageConfig={voyageConfig} estimate={result.estimate} />
+				)}
 				<VoyageStats
-					voyageData={data as Voyage}
+					configSource={configSource}
+					voyageData={voyageConfig as Voyage}
 					estimate={result.estimate}
 					ships={[request.bestShip.ship]}
 					roster={roster}
@@ -912,7 +1150,7 @@ const ResultPane = (props: ResultPaneProps) => {
 					{renderCalculatorMessage()}
 				</div>
 				{calcState === CalculatorState.Done && (
-					<CIVASMessage voyageConfig={data} estimate={result.estimate} />
+					<CIVASMessage voyageConfig={voyageConfig} estimate={result.estimate} />
 				)}
 			</Tab.Pane>
 		</React.Fragment>

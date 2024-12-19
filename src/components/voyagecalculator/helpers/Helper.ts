@@ -24,7 +24,7 @@ export abstract class Helper {
 	readonly resultsCallback: (requestId: string, reqResults: CalcResult[], calcState: number) => void;
 	readonly errorCallback: (requestId: string, error: any) => void;
 
-	calcWorker: UnifiedWorker;
+	calcWorker: UnifiedWorker | undefined = undefined;
 	calcState: number = CalculatorState.NotStarted;
 
 	perf: { start: number; end: number; } = { start: 0, end: 0 };

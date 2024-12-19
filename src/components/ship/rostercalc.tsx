@@ -1,6 +1,6 @@
 import React from "react";
 import { CrewMember } from "../../model/crew";
-import { BattleMode, DefaultAdvancedCrewPower, Ship, ShipRankingMethod, ShipWorkerConfig, ShipWorkerItem } from "../../model/ship";
+import { BattleMode, DefaultAdvancedCrewPower, Ship, ShipRankingMethod } from "../../model/ship";
 import { Accordion, Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Label, SemanticICONS } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { WorkerContext } from "../../context/workercontext";
@@ -15,9 +15,10 @@ import { getEventData } from "../../utils/events";
 import { IEventData } from "../eventplanner/model";
 import { crewCopy, getHighest, prepareOne } from "../../utils/crewutils";
 import { CrewDropDown } from "../base/crewdropdown";
-import { MultiWorkerContext, ShipMultiWorkerStatus } from "./shipmultiworker";
+import { ShipMultiWorkerContext, ShipMultiWorkerStatus } from "./shipmultiworker";
 import AdvancedCrewPowerPopup from "./advancedpower";
 import CONFIG from "../CONFIG";
+import { ShipWorkerConfig, ShipWorkerItem } from "../../model/worker";
 
 export interface RosterCalcProps {
     pageId: string;
@@ -47,7 +48,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { playerShips } = globalContext.player;
     const workerContext = React.useContext(WorkerContext);
-    const multiWorker = React.useContext(MultiWorkerContext);
+    const multiWorker = React.useContext(ShipMultiWorkerContext);
     const { running, runWorker, cancel } = multiWorker;
     //const { running, runWorker, cancel } = workerContext;
     const { t, tfmt } = globalContext.localized;
@@ -971,16 +972,16 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         //result: { data: { result: { ships?: ShipWorkerItem[], run_time?: number, total_iterations?: number, format?: string, options?: any, result?: ShipWorkerItem }, inProgress: boolean } }
         result: ShipMultiWorkerStatus
     ) {
-        if (!result.data.inProgress && result.data.result.ships?.length) {
+        if (!result.data.inProgress && result.data.result.items?.length) {
             setProgressMsg(t('ship.calc.calc_summary', {
                 message: t('global.completed'),
                 count: `${result.data.result.total_iterations?.toLocaleString()}`,
                 time: formatRunTime(Math.round(result.data.result.run_time ?? 0), t),
-                accepted: `${result.data.result.ships?.length.toLocaleString()}`
+                accepted: `${result.data.result.items?.length.toLocaleString()}`
             }));
 
-            if (result.data.result.ships.length === 1 && suggestions?.length && suggestions.length > 1) {
-                let r = result.data.result.ships[0];
+            if (result.data.result.items.length === 1 && suggestions?.length && suggestions.length > 1) {
+                let r = result.data.result.items[0];
                 let sug = suggestions.findIndex(f => f.crew.every((cr1, idx) => r.crew.findIndex(cr2 => cr2.id === cr1.id) === idx))
                 if (sug !== -1) {
                     suggestions[sug] = r;
@@ -990,10 +991,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 }
             }
             setSugWait(0);
-            setSuggestions(result.data.result.ships);
-        }
-        else if (result.data.inProgress && result.data.result.format) {
-            setProgressMsg(t(result.data.result.format, result.data.result.options));
+            setSuggestions(result.data.result.items);
         }
         else if (result.data.inProgress && result.data.result.count) {
             setProgressMsg(
