@@ -350,8 +350,17 @@ export function reverseDeduction<T extends BuffBase>(item: EquipmentItem, items:
 
 export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemWithBonus[], overallOnly?: boolean) {
 	let qps = quipment.filter(f => isQuipmentMatch(crew, f.item));
-	crew.quipment_score = qps.map(m => Object.values(m.bonusInfo.bonuses).map((n: Skill) => n.skill && n.skill in crew.base_skills && crew.base_skills[n.skill].core ? n.core + n.range_min + n.range_max : 0)).flat().reduce((p, n) => p + n, 0) * crew.max_rarity;
-	if (overallOnly) return;
+
+	if (overallOnly) {
+		crew.quipment_score = qps.map(m => Object.values(m.bonusInfo.bonuses)
+			.filter(n => crew.skill_order.includes(n.skill))
+			.sort((a, b) => skillSum(b) - skillSum(a))
+			.map((n: Skill) => skillSum(n)))
+			.flat()
+			.reduce((p, n) => p + n, 0) * crew.max_rarity;
+
+		return;
+	}
 
 	crew.quipment_scores ??= {
 		command_skill: 0,
@@ -363,13 +372,31 @@ export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemW
 		trait_limited: 0
 	};
 
-	crew.quipment_scores.trait_limited = qps.filter(f => !!f.item.traits_requirement?.length).map(m => Object.values(m.bonusInfo.bonuses).map((n: Skill) => n.core + n.range_min + n.range_max)).flat().reduce((p, n) => p + n, 0) * crew.max_rarity;
+	crew.quipment_scores.trait_limited = qps.filter(f => !!f.item.traits_requirement?.length)
+			.map(item => Object.values(item.bonusInfo.bonuses)
+			.filter(bonus => crew.skill_order.includes(bonus.skill))
+			.sort((a, b) => skillSum(b) - skillSum(a))
+			.map((skill: Skill) => skillSum(skill)))
+			.flat()
+			.reduce((p, n) => p + n, 0) * crew.max_rarity;
 
-	CONFIG.SKILLS_SHORT.forEach(sk => {
+	let qsum = 0;
+
+	CONFIG.SKILLS_SHORT.forEach(skinfo => {
+
+		if (!crew.skill_order.includes(skinfo.name)) return;
+
 		if (crew.quipment_scores) {
-			crew.quipment_scores[sk.name] = qps.map(m => Object.values(m.bonusInfo.bonuses).filter(f => f.skill === sk.name).map((n: Skill) => n.core + n.range_min + n.range_max)).flat().reduce((p, n) => p + n, 0) * crew.max_rarity;
+			qsum += crew.quipment_scores[skinfo.name] = qps.map(m => Object.values(m.bonusInfo.bonuses)
+				.filter(bonus => bonus.skill === skinfo.name)
+				.sort((a, b) => skillSum(b) - skillSum(a))
+				.map((skill: Skill) => skillSum(skill)))
+				.flat()
+				.reduce((p, n) => p + n, 0) * crew.max_rarity;
 		}
 	});
+
+	crew.quipment_score = Math.floor(qsum);
 }
 
 interface QpCount {
