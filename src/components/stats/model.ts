@@ -94,7 +94,8 @@ export interface SkillOrderDebutCrew {
     core_rank_at_debut: number,
     new_high: boolean,
     core_new_high: boolean,
-    prof_new_high: boolean
+    prof_new_high: boolean,
+    rarity: number
 }
 
 export interface SkillOrderDebut {
@@ -106,7 +107,8 @@ export interface SkillOrderDebut {
     core_high_power: number,
     core_low_power: number,
     prof_high_power: number,
-    prof_low_power: number
+    prof_low_power: number,
+    rarity: number
 }
 
 export interface GraphSeries {
@@ -121,4 +123,5 @@ export interface GraphSeries {
     epoch_start: number;
     epoch_end: number;
     data?: SkillOrderDebutCrew[];
+    rarity: number;
 }

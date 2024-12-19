@@ -15,6 +15,7 @@ import { SwarmPlot } from "@nivo/swarmplot";
 import { CrewMember } from "../../../model/crew";
 import { AvatarView } from "../../item_presenters/avatarview";
 import { PointProps } from "@nivo/bump/dist/types/bump/Point";
+import CONFIG from "../../CONFIG";
 
 interface MapConfig {
     considerCounts: boolean;
@@ -131,7 +132,7 @@ export const StatsCreepGraphs = (props: GraphPropsCommon) => {
                             />
                         </div>
                     </div>
-                    <div style={{overflowX: 'auto'}}>
+                    <div style={{overflowX: 'auto', overflowY: 'visible'}}>
                         {graphType === 'swarm' && renderSwarmPlot()}
                         {graphType === 'bump' && renderBumpGraph()}
                     </div>
@@ -144,8 +145,8 @@ export const StatsCreepGraphs = (props: GraphPropsCommon) => {
         let min = bump.map(m => m.low_power).reduce((p, n) => n < p || !p ? n : p, 0);
         let inc = bump[bump.length - 1].density - bump[0].density;
         return <div className="ui segment" style={{...flexCol, zIndex: '1001'}}>
-            <div style={{ ...flexRow, borderBottom: '2px solid', padding: '0.25em 0', justifyContent: 'center', alignItems: 'center' }}>{bump[0].id.split(" / ").map((skill) => {
-                return skill.split("/").map(skill => {
+            <div style={{ ...flexRow, borderBottom: '2px solid ' + CONFIG.RARITIES[bump[0].rarity].color, padding: '0.25em 0', justifyContent: 'center', alignItems: 'center' }}>{bump[0].id.split(" / ").map((skill) => {
+                return skill.replace(/ \(.+/, '').split("/").map(skill => {
                     let icon = skillIcon(shortToSkill(skill)!);
                     return <div key={`${skill}_bump_key_${bump.length}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><img src={icon} style={{ height: '1em' }} />&nbsp;<span>{skill}</span></div>
                 })
@@ -165,9 +166,9 @@ export const StatsCreepGraphs = (props: GraphPropsCommon) => {
         let crew = symbol ? globalContext.core.crew.find(f => f.symbol === symbol) : undefined;
 
         return (<div className="ui segment" style={{...flexCol, zIndex: '1001'}}>
-            <div style={{ ...flexRow, borderBottom: '2px solid', padding: '0.25em 0', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ ...flexRow, borderBottom: '2px solid ' + CONFIG.RARITIES[swarm.rarity].color, padding: '0.25em 0', justifyContent: 'center', alignItems: 'center' }}>
                 {swarm.id.split(" / ").map((skill) => {
-                    return skill.split("/").map(skill => {
+                    return skill.replace(/ \(.+/, '').split("/").map(skill => {
                         let icon = skillIcon(shortToSkill(skill)!);
                         return <div key={`${skill}_bump_key_${swarm.density}+${swarm.power}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><img src={icon} style={{ height: '1em' }} />&nbsp;<span>{skill}</span></div>
                     })
@@ -195,7 +196,7 @@ export const StatsCreepGraphs = (props: GraphPropsCommon) => {
                 // width={1100}
                 // height={1100}
                 data={areaSeries}
-                margin={{ top: 40, right: 100, bottom: 40, left: 40 }}
+                margin={{ top: 40, right: 120, bottom: 40, left: 40 }}
                 spacing={8}
                 theme={themes.dark}
                 tooltip={(data) => {
@@ -254,7 +255,7 @@ export const StatsCreepGraphs = (props: GraphPropsCommon) => {
                 ]
             }}
             colorBy="id"
-            colors={(data) => SkillColors[shortToSkill(data.data.id.split("/")[0])!]}
+            colors={(data) => SkillColors[shortToSkill(data.data.id.replace(/ \(.+/, '').split("/")[0])!]}
             //animate={false}
             theme={themes.dark}
             forceStrength={4}
@@ -279,7 +280,7 @@ export const StatsCreepGraphs = (props: GraphPropsCommon) => {
                 }
                 return <></>
             }}
-            margin={{ top: 80, right: 100, bottom: 80, left: 100 }}
+            margin={{ top: 200, right: 100, bottom: 80, left: 100 }}
             axisTop={{
                 //orient: 'top',
                 tickSize: 10,
@@ -369,8 +370,8 @@ export const StatsCreepGraphs = (props: GraphPropsCommon) => {
                 // truncateTickAt: 0
 
             }}
-            layers={['grid', 'labels', 'lines']}
-            margin={{ top: 40, right: 30, bottom: 40, left: 300 }}
+            layers={['grid', 'labels', 'lines', 'points']}
+            margin={{ top: 200, right: 30, bottom: 40, left: 300 }}
             interpolation={'smooth'}
             xPadding={10}
             xOuterPadding={0}
@@ -389,11 +390,11 @@ export const StatsCreepGraphs = (props: GraphPropsCommon) => {
             isInteractive={true}
             defaultActiveSerieIds={[]}
             role={''}
-            pointSize={20}
-            activePointSize={24}
-            inactivePointSize={16}
-            pointBorderWidth={2}
-            activePointBorderWidth={4}
+            pointSize={10}
+            activePointSize={10}
+            inactivePointSize={10}
+            pointBorderWidth={1}
+            activePointBorderWidth={1}
             inactivePointBorderWidth={1}
             pointColor={{
                 from: 'serie.color'
@@ -410,7 +411,7 @@ export const StatsCreepGraphs = (props: GraphPropsCommon) => {
             lineTooltip={(data) => {
                 return renderAreaBumpTooltip(data.serie.data.data)
             }}
-            //animate={true}
+            animate={true}
             renderWrapper={true}
         />
     }
@@ -464,10 +465,13 @@ export const StatsCreepGraphs = (props: GraphPropsCommon) => {
 
             timedata.forEach((record) => {
                 let newid = keyToNames(record.skill_order).join("/");
+                if (!useFilters || filterConfig.rarity.length !== 1) {
+                    newid += ` (${record.rarity})`;
+                }
                 let f = series.find(f => f.id === newid && f.group === newgroup.toString());
                 if (!f) {
                     f = {
-                        id: keyToNames(record.skill_order).join("/"),
+                        id: newid,
                         group: newgroup.toString(),
                         density: record.crew.length,
                         power: !record.crew.length ? 0 : record.crew.map(m => m.power).reduce((p, n) => p + n) / record.crew.length,
@@ -477,7 +481,7 @@ export const StatsCreepGraphs = (props: GraphPropsCommon) => {
                         y: 0,
                         epoch_end: record.epoch_day,
                         epoch_start: record.epoch_day,
-
+                        rarity: record.rarity
                     };
                     f.power = Math.ceil(f.power);
                     f.data ??= [];
@@ -506,6 +510,10 @@ export const StatsCreepGraphs = (props: GraphPropsCommon) => {
         });
 
         return { series, segments };
+    }
+
+    function getGraphAverage(series: GraphSeries) {
+
     }
 }
 

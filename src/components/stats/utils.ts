@@ -322,18 +322,18 @@ export function passObtained(fc: CrewMember, obtained: string[]) {
 export function getPowerOnDay(subject: CrewMember, data: CrewMember[]) {
     subject.date_added = new Date(subject.date_added);
     let power = skillSum(Object.values(subject.base_skills));
-    let filter = data.filter(f => f.date_added.getTime() < subject.date_added.getTime() && f.skill_order.join() === subject.skill_order.join())
+    let filter = data.filter(f => f.max_rarity == subject.max_rarity && f.date_added.getTime() < subject.date_added.getTime() && f.skill_order.join() === subject.skill_order.join())
                     .filter(f => skillSum(Object.values(f.base_skills)) > power).sort((a, b) => skillSum(Object.values(b.base_skills)) - skillSum(Object.values(a.base_skills)));
     if (filter.length === 0) return 1;
     return skillSum(Object.values(filter[0].base_skills)) / power;
 }
 
-export function skillsToKey(skills: string[] | BaseSkills) {
+export function skillsToKey(skills: string[] | BaseSkills, rarity: number) {
     if (Array.isArray(skills)) {
-        return skills.join(",")
+        return skills.join(",") + "," + rarity
     }
     else {
-        return Object.keys(skills).join(",")
+        return Object.keys(skills).join(",") + "," + rarity
     }
 }
 
@@ -343,10 +343,10 @@ export function keyToSkills(key: string) {
 
 export function keyToNames(key: string, short = true) {
     if (short) {
-        return keyToSkills(key).map(m => CONFIG.SKILLS_SHORT.find(f => f.name === m)?.short || '')
+        return keyToSkills(key).map(m => CONFIG.SKILLS_SHORT.find(f => f.name === m)?.short || '').filter(f => f)
     }
     else {
-        return keyToSkills(key).map(m => CONFIG.SKILLS[m] || '')
+        return keyToSkills(key).map(m => CONFIG.SKILLS[m] || '').filter(f => f)
     }
 }
 
@@ -389,7 +389,7 @@ export function getSkillOrderDebutData(data: CrewMember[]): SkillOrderDebut[] {
         let ed = dateToEpoch(c.date_added);
 
         epochData[ed] ??= [];
-        let key = skillsToKey(c.skill_order);
+        let key = skillsToKey(c.skill_order, c.max_rarity);
         let f = epochData[ed].find(fe => fe.skill_order === key);
         if (!f) {
             f = {
@@ -405,6 +405,7 @@ export function getSkillOrderDebutData(data: CrewMember[]): SkillOrderDebut[] {
                     prof_new_high: false,
                     core_rank_at_debut: 0,
                     prof_rank_at_debut: 0,
+                    rarity: c.max_rarity
                 }],
                 epoch_day: ed,
                 high_power: power,
@@ -412,7 +413,8 @@ export function getSkillOrderDebutData(data: CrewMember[]): SkillOrderDebut[] {
                 core_high_power: core,
                 core_low_power: core,
                 prof_high_power: prof,
-                prof_low_power: prof
+                prof_low_power: prof,
+                rarity: c.max_rarity
             }
             epochData[ed].push(f);
         }
@@ -428,7 +430,8 @@ export function getSkillOrderDebutData(data: CrewMember[]): SkillOrderDebut[] {
                 prof_new_high: false,
                 core_rank_at_debut: 0,
                 prof_rank_at_debut: 0,
-        });
+                rarity: c.max_rarity
+            });
 
             if (power > f.high_power) f.high_power = power;
             if (power < f.low_power) f.low_power = power;
