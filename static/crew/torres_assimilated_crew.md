@@ -3,7 +3,7 @@ name: Assimilated Torres
 rarity: 5
 series: voy
 memory_alpha:
-bigbook_tier: 8
+bigbook_tier: 9
 in_portal: true
 date: 08/05/2017
 published: true
