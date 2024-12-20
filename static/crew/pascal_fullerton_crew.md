@@ -3,7 +3,7 @@ name: Pascal Fullerton
 rarity: 5
 series: ds9
 memory_alpha:
-bigbook_tier: 7
+bigbook_tier: 8
 in_portal: true
 date: 02/08/2023
 published: true
