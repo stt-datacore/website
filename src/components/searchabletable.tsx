@@ -11,7 +11,7 @@ import * as localForage from 'localforage';
 import { InitialOptions } from '../model/game-elements';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew } from '../model/player';
-import { appelate } from '../utils/misc';
+import { appelate, translatePseudocolumn } from '../utils/misc';
 import { GlobalContext } from '../context/globalcontext';
 import CONFIG from './CONFIG';
 import { TranslateMethod } from '../model/player';
@@ -49,7 +49,8 @@ export interface ITableConfigRow {
 	reverse?: boolean;
 	tiebreakers?: string[];
 	tiebreakers_reverse?: boolean[];
-	customCompare?: (a: any, b: any) => number;
+	customCompare?: (a: any, b: any, config: IConfigSortData) => number;
+	translatePseudocolumn?: (field: string) => string | JSX.Element;
 }
 
 export interface SearchableTableProps {
@@ -119,7 +120,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 	// Update column and/or toggle direction, and store new values in state
 	//	Actual sorting of full dataset will occur on next render before filtering and pagination
-	function onHeaderClick(newColumn) {
+	function onHeaderClick(newColumn: ITableConfigRow) {
 		if (!newColumn.column) return;
 
 		const lastColumn = column, lastDirection = direction;
@@ -128,9 +129,9 @@ export const SearchableTable = (props: SearchableTableProps) => {
 			field: newColumn.column,
 			direction: lastDirection === 'ascending' ? 'descending' : 'ascending'
 		};
-		if (newColumn.pseudocolumns && newColumn.pseudocolumns.includes(lastColumn)) {
+		if (newColumn.pseudocolumns && newColumn.pseudocolumns.includes(lastColumn || '')) {
 			if (direction === 'descending') {
-				const nextIndex = newColumn.pseudocolumns.indexOf(lastColumn) + 1; // Will be 0 if previous column was not a pseudocolumn
+				const nextIndex = newColumn.pseudocolumns.indexOf(lastColumn || '') + 1; // Will be 0 if previous column was not a pseudocolumn
 				sortConfig.field = newColumn.pseudocolumns[nextIndex === newColumn.pseudocolumns.length ? 0 : nextIndex];
 				sortConfig.direction = 'ascending';
 			}
@@ -164,7 +165,13 @@ export const SearchableTable = (props: SearchableTableProps) => {
 						onClick={() => onHeaderClick(cell)}
 						textAlign={cell.width === 1 ? 'center' : 'left'}
 					>
-						{cell.title}{cell.pseudocolumns?.includes(column) && <><br/><small>{appelate(column.replace('.length', ''))}</small></>}
+						{cell.title}
+						{cell.pseudocolumns?.includes(column) && <>
+							<br/>
+							<small>
+								{cell.translatePseudocolumn ? cell.translatePseudocolumn(column) : translatePseudocolumn(column, t)}
+							</small>
+						</>}
 					</Table.HeaderCell>
 				))}
 			</Table.Row>
@@ -225,11 +232,11 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	}
 	// If no direction set, determine direction from tableConfig when possible
 	if (!sortDirection) {
-		const columnConfig = props.config.find(col => col.column === sortColumn);
+		const columnConfig = props.config.find(col => col.column === sortColumn || col.pseudocolumns?.includes(sortColumn));
 		sortDirection = columnConfig?.reverse ? 'descending' : 'ascending';
 	}
 
-	const columnConfig = props.config.find(col => col.column === sortColumn);
+	const columnConfig = props.config.find(col => col.column === sortColumn || col.pseudocolumns?.includes(sortColumn));
 
 	const sortConfig: IConfigSortData = {
 		field: sortColumn,

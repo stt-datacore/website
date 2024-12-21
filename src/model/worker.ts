@@ -1,13 +1,72 @@
-import { BossBattlesRoot } from "./boss";
+import { BossBattlesRoot, BossEffect } from "./boss";
 import { BaseSkills, CrewMember, PlayerSkill, Skill } from "./crew";
-import { PlayerCrew, PlayerData } from "./player";
-import { Ship } from "./ship";
+import { CompactCrew, Player, PlayerCrew, PlayerData } from "./player";
+import { BattleMode, Ship, ShipAction, ShipRankingMethod } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
 import { EquipmentCommon, EquipmentItem } from "./equipment";
 import { Collection } from "./game-elements";
-import { ICoreData } from "../context/datacontext";
+import { ICoreData } from "../context/coremodel";
 import { MissionChallenge, MissionTraitBonus, QuestFilterConfig } from "./missions";
 import { IEphemeralData } from "../context/playercontext";
+import { VPDetails } from "../utils/voyagevp";
+import { IPolestar } from "../components/retrieval/model";
+import { RetrievalCost } from "../utils/retrieval";
+
+export interface WorkerConfigBase<T> {
+    max_results?: number
+    max_iterations?: bigint;
+    start_index?: bigint;
+    verbose?: boolean;
+}
+
+export interface IWorkerResults<T> {
+    items: T[]
+    total_iterations: bigint;
+    run_time: number;
+}
+
+export interface IMultiWorkerState {
+    context: IMultiWorkerContext;
+}
+
+export interface IMultiWorkerConfig<TConfig extends WorkerConfigBase<TItem>, TItem> {
+    config: TConfig;
+    max_workers?: number;
+    callback: (progress: IMultiWorkerStatus<TItem>) => void;
+}
+
+export interface IMultiWorkerStatus<T> {
+    data: {
+        result: {
+            items?: T[],
+            run_time?: number,
+            total_iterations?: bigint,
+            options?: any,
+            result?: T,
+            percent?: number;
+            progress?: bigint;
+            count?: bigint;
+            accepted?: bigint;
+        },
+        id: string,
+        inProgress: boolean
+    }
+}
+
+export interface IMultiWorkerContext {
+    runWorker: (options: any) => void;
+    cancel: () => void;
+    workers: number;
+    count: bigint;
+    progress: bigint;
+    percent: number;
+    cancelled: boolean;
+    running: boolean;
+    startTime: Date,
+    endTime?: Date
+    run_time: number;
+}
+
 
 export interface GameWorkerOptionsList {
     key: number;
@@ -31,6 +90,7 @@ export interface ExtendedVoyageStatsConfig extends VoyageStatsConfig{
 
 export interface GameWorkerOptions {
     strategy?: string;
+    proficiency?: number;
     searchDepth?: number;
     extendsTarget?: number;
 }
@@ -82,6 +142,7 @@ export interface Estimate {
     final: boolean;
     deterministic?: boolean;
     antimatter?: number;
+	vpDetails?: VPDetails;
 }
 
 export interface Refill {
@@ -189,6 +250,8 @@ export interface BetaTachyonSettings {
     quipment: number,
     // Voyage Group Sparsity
     groupSparsity: number;
+    // Crew general rareness
+    rareness: number;
 }
 
 export interface SkillOrderRarity {
@@ -289,8 +352,103 @@ export interface QuestSolverCacheItem {
 }
 
 export const EMPTY_SKILL = {
-	skill: undefined,
+	skill: '',
 	core: 0,
 	range_max: 0,
 	range_min: 0
 } as Skill;
+
+
+export interface IMutualPolestarWorkerItem {
+    combo: string[];
+    crew: string[];
+    cost: RetrievalCost
+}
+
+export type PolestarComboSize = 1 | 2 | 3 | 4;
+
+export interface IMutualPolestarWorkerConfig extends WorkerConfigBase<IMutualPolestarWorkerItem> {
+    polestars: IPolestar[];
+    comboSize: PolestarComboSize;
+    allowUnowned: number;
+    no100: boolean;
+}
+
+export interface IPolestarCrew extends CompactCrew {
+    disposition: 'include' | 'exclude' | 'unowned';
+}
+
+export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase<IMutualPolestarWorkerItem> {
+    allPolestars: string[];
+    crew: IPolestarCrew[];
+    comboSize: PolestarComboSize;
+    allowUnowned?: number;
+}
+export interface ShipWorkerConfigBase extends WorkerConfigBase<ShipWorkerItem> {
+    ranking_method: ShipRankingMethod,
+    event_crew?: CrewMember,
+    crew: CrewMember[],
+    battle_mode: BattleMode,
+    rate: number,
+    simulate: boolean,
+    fixed_activation_delay: number,
+    power_depth?: number,
+    max_rarity?: number,
+    min_rarity?: number,
+    opponents?: Ship[],
+    action_types?: number[],
+    ability_types?: number[],
+    max_results?: number
+    defense?: number;
+    offense?: number;
+    get_attacks?: boolean;
+    effects?: BossEffect[];
+    max_duration?: number;
+    ignore_skill?: boolean;
+    activation_offsets?: number[];
+    opponent_variance?: number;
+}
+
+export interface ShipWorkerConfig extends ShipWorkerConfigBase {
+    ship: Ship,
+}
+
+export interface MultiShipWorkerConfig extends ShipWorkerConfigBase {
+    ships: Ship[],
+}
+
+
+export interface AttackInstant {
+  actions: ShipAction[];
+  second: number;
+  hull: number;
+  shields: number;
+  attack: number;
+  min_attack: number;
+  max_attack: number;
+  ship: Ship;
+}
+
+
+export interface ShipWorkerItem {
+    id: number;
+    rate: number;
+    battle_mode: BattleMode;
+    ship: Ship,
+    crew: CrewMember[]
+    attack: number;
+    min_attack: number;
+    max_attack: number;
+    battle_time: number;
+    weighted_attack: number;
+    arena_metric: number;
+    fbb_metric: number;
+    skirmish_metric: number;
+    percentile: number;
+    attacks?: AttackInstant[];
+}
+
+export interface ShipWorkerResults extends IWorkerResults<ShipWorkerItem> {
+    total_iterations: bigint;
+    run_time: number;
+}

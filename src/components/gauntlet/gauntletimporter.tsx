@@ -95,7 +95,7 @@ export const GauntletImportComponent = (props: GauntletImporterProps) => {
 					title={`Gauntlet Input Form`}
 					validateInput={validateGauntlet}
 					setValidInput={(gauntlet) => {
-						if (gauntlet) setCollapsed(true);
+						//if (gauntlet) setCollapsed(true);
 						setGauntlet(gauntlet);
 					}}
 

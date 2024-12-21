@@ -41,6 +41,7 @@ type ProfilePageProps = {
 
 type ProfilePageState = {
 	dbid?: string;
+	dbidHash?: string;
 	errorMessage?: string;
 	lastModified?: Date;
 	mobile: boolean;
@@ -63,9 +64,6 @@ export const ProfilePage = (props: ProfilePageProps) => {
 	if (isReady && strippedPlayerData && strippedPlayerData?.stripped !== false) {
 		profData = JSON.parse(JSON.stringify(strippedPlayerData)) as PlayerData;
 		prepareProfileData('PROFILE_PROVIDER', coreData.crew, profData, lastModified ?? new Date());
-
-		let data = mergeShips(coreData.ship_schematics, profData.player.character.ships);
-		profData.player.character.ships = data;
 	}
 
 	return (
@@ -82,6 +80,7 @@ export const ProfilePage = (props: ProfilePageProps) => {
 								loaded: !!profData,
 								playerData: profData,
 								buffConfig: buffConfig,
+								maxBuffs: coreData.all_buffs,
 								playerShips: profData?.player.character.ships,
 								showPlayerGlance: false,
 								setShowPlayerGlance: (value) => false,
@@ -110,7 +109,7 @@ interface ProfilePageComponentProps {
 
 class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfilePageState> {
 	static contextType? = GlobalContext;
-	context!: React.ContextType<typeof GlobalContext>;
+	declare context: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: ProfilePageComponentProps) {
 		super(props);
@@ -130,7 +129,11 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 		}
 		if (urlParams.has('dbid')) {
 			this.setState({ dbid: urlParams.get('dbid') as string });
-		} else if (urlParams.has('discord') && window.location.hash !== '') {
+		}
+		else if (urlParams.has('hash')) {
+			this.setState({ dbidHash: urlParams.get('hash') as string });
+		}
+		else if (urlParams.has('discord') && window.location.hash !== '') {
 			let discordUsername = urlParams.get('discord');
 			let discordDiscriminator = window.location.hash.replace('#', '');
 			fetch(`${process.env.GATSBY_DATACORE_URL}api/get_dbid_from_discord?username=${discordUsername}&discriminator=${discordDiscriminator}`)
@@ -152,7 +155,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 	private initing = false;
 
 	componentDidUpdate() {
-		const { dbid, errorMessage } = this.state;
+		const { dbidHash, dbid, errorMessage } = this.state;
 		const { playerData } = this.context.player;
 
 		const me = this;
@@ -160,23 +163,31 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 		me.initing = true;
 
-		if (dbid && !playerData?.player && !errorMessage) {
+		if ((dbid || dbidHash) && !playerData?.player && !errorMessage) {
 			let lastModified: Date | undefined = undefined;
 			let hash = v4();
+			let url: string;
 
-			fetch(`${process.env.GATSBY_DATACORE_URL}profiles/${dbid}?hash=${hash}`)
-				.then(response => {
-					let lmstr = response.headers.get('Last-Modified');
+			if (dbidHash) {
+				url = `${process.env.GATSBY_DATACORE_URL}api/getProfile?dbidhash=${dbidHash}&h=${hash}`
+			}
+			else {
+				url = `${process.env.GATSBY_DATACORE_URL}api/getProfile?dbid=${dbid}&h=${hash}`;
+			}
+
+			const fetchUrl = url;
+
+			fetch(fetchUrl)
+				.then(response => response.json())
+				.then(serverResponse => {
+					let lmstr = serverResponse.timeStamp as string;
 					if (lmstr) lastModified = new Date(Date.parse(lmstr));
-
-					return response.json();
-				})
-				.then(playerData => {
+					let playerData: PlayerData = serverResponse.playerData;
 
 					if (isWindow) window.setTimeout(() => {
 						if (me.props.props.setPlayerData) {
 							me.props.props.setPlayerData(playerData);
-							me.setState({... this.state, lastModified : lastModified });
+							me.setState({... this.state, lastModified : lastModified, dbid: serverResponse.dbid.toString() });
 							if (me.props.props.setLastModified) {
 								me.props.props.setLastModified(lastModified);
 							}
@@ -195,6 +206,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 	renderDesktop() {
 		const { t } = this.context.localized;
 		const { playerData } = this.context.player ?? { playerData: undefined };
+		const { items, crew: allCrew } = this.context.core;
 
 		const panes = [
 			{
@@ -219,7 +231,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 			},
 			{
 				menuItem: t('profile.charts_and_stats'),
-				render: () => <ProfileCharts />
+				render: () => <ProfileCharts items={items} allCrew={allCrew} />
 			}
 		];
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Icon, Message, Button } from 'semantic-ui-react';
 
 import { findPotentialCrew, mergeShips, setupShip } from '../utils/shiputils';
-import { Ship } from '../model/ship';
+import { BattleStation, Ship } from '../model/ship';
 import { PlayerCrew } from '../model/player';
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
@@ -20,6 +20,7 @@ import { WorkerProvider } from '../context/workercontext';
 import { ShipRosterCalc } from '../components/ship/rostercalc';
 import { useStateWithStorage } from '../utils/storage';
 import { ShipMultiWorker } from '../components/ship/shipmultiworker';
+import { OptionsPanelFlexColumn } from '../components/stats/utils';
 
 const ShipInfoPage = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -108,13 +109,13 @@ const ShipViewer = (props: ShipViewerProps) => {
 	}, [ships, shipKey]);
 
 	if (!ship || !crew) return context.core.spin(t('spinners.default'));
-
+	const flexCol = OptionsPanelFlexColumn;
 	return (<>
 		<div>
 			<CrewPicker
 				renderCrewCaption={renderCrewCaption}
-				isOpen={modalOpen}
-				setIsOpen={setModalOpen}
+				// isOpen={modalOpen}
+				// setIsOpen={setModalOpen}
 				filterCrew={filterCrew}
 				renderTrigger={() => <div></div>}
 				crewList={currentStationCrew}
@@ -175,36 +176,28 @@ const ShipViewer = (props: ShipViewerProps) => {
 				marginBottom: '2em'
 			}}>
 				{ship.battle_stations?.map((bs, idx) => (
-					<div key={idx} style={{
-						display: "flex",
-						flexDirection: "column",
-						justifyContent: "center",
-						alignItems: "center"
-					}}>
-						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "32px", margin: '1em' }} />
-						<div
-							onClick={(e) => clickStation(idx, bs.skill)}
-							className="ui segment button"
-							style={{
-								margin: "2em",
-								display: "flex",
-								flexDirection: "row",
-								width: "128px",
-								height: "128px",
-								padding: "1em",
-								justifyContent: "center",
-								alignItems: "center"
-							}}>
-							{crewStations[idx] && (
-								<CrewTarget inputItem={crewStations[idx]} targetGroup='ship_profile'>
-									<img src={`${process.env.GATSBY_ASSETS_URL}${crewStations[idx]?.imageUrlPortrait}`} style={{ height: "128px" }} />
-								</CrewTarget>
-							) ||
-								<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "64px" }} />
-							}
-						</div>
+					<div key={`ship_battle_station_${idx}_${bs.skill}`} style={flexCol}>
+						<CrewPicker
+							renderCrewCaption={renderCrewCaption}
+							// isOpen={modalOpen}
+							// setIsOpen={setModalOpen}
+							filterCrew={filterCrew}
+							contextData={bs}
+							renderTrigger={() => renderBattleStation(bs, idx)}
+							beforeOpen={(d, o) => clickStation(idx, d.skill)}
+							crewList={currentStationCrew}
+							defaultOptions={DEFAULT_SHIP_OPTIONS}
+							pickerModal={ShipCrewOptionsModal}
+							options={modalOptions}
+							setOptions={(opt) => setModalOptions(opt)}
+							handleSelect={(crew) => onCrewPick(crew)}
+						/>
 						<div>
-							<Button disabled={!crewStations[idx]} onClick={(e) => clearStation(idx)}>{t('ship.clear_station')}</Button>
+							<Button
+								disabled={!crewStations[idx]}
+								onClick={(e) => clearStation(idx)}>
+								{t('ship.clear_station')}
+							</Button>
 						</div>
 					</div>
 				))}
@@ -218,6 +211,39 @@ const ShipViewer = (props: ShipViewerProps) => {
 		</div>
 
 	</>)
+
+	function renderBattleStation(bs: BattleStation, idx: number) {
+		return (<div key={idx} style={{
+			display: "flex",
+			flexDirection: "column",
+			justifyContent: "center",
+			alignItems: "center"
+		}}>
+			<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "32px", margin: '1em' }} />
+			<div
+				className="ui segment button"
+				style={{
+					margin: "2em",
+					display: "flex",
+					flexDirection: "row",
+					width: "128px",
+					height: "128px",
+					padding: "1em",
+					justifyContent: "center",
+					alignItems: "center"
+				}}>
+				{crewStations[idx] && (
+					<CrewTarget inputItem={crewStations[idx]} targetGroup='ship_profile'>
+						<img src={`${process.env.GATSBY_ASSETS_URL}${crewStations[idx]?.imageUrlPortrait}`} style={{ height: "128px" }} />
+					</CrewTarget>
+				) ||
+					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "64px" }} />
+				}
+			</div>
+
+		</div>)
+
+	}
 
 	function renderCrewCaption(crew: PlayerCrew | CrewMember) {
 		return (
@@ -322,7 +348,36 @@ const ShipViewer = (props: ShipViewerProps) => {
 
 	function loadShips() {
 		if (!context) return [];
-		let ships = context?.player?.playerShips ?? mergeShips(context.core.ship_schematics, []) ?? [];
+		const schematics = [...context.core.ship_schematics];
+
+		const constellation = {
+			symbol: 'constellation_ship',
+			rarity: 1,
+			max_level: 5,
+			antimatter: 1250,
+			name: 'Constellation Class',
+			icon: { file: '/ship_previews_fed_constellationclass' },
+			traits: ['federation','explorer'],
+			battle_stations: [
+				{
+					skill: 'command_skill'
+				},
+				{
+					skill: 'diplomacy_skill'
+				}
+			],
+			owned: true
+		} as Ship;
+
+		schematics.push({
+			ship: constellation,
+			rarity: constellation.rarity,
+			cost: 0,
+			id: 1,
+			icon: constellation.icon!
+		});
+
+		let ships = mergeShips(schematics, context.player.playerData?.player.character.ships ?? []) ?? [];
 		return [...ships];
 	}
 
@@ -334,7 +389,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 
 		setCurrentStation(index);
 		setCurrentStationCrew(newCrew);
-		setModalOpen(true);
+		//setModalOpen(true);
 	}
 
 	function clearStation(index?: number) {
@@ -346,7 +401,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 			stations = stations.map(sta => undefined);
 		}
 		setCrewStations(stations);
-		setModalOpen(false);
+		//setModalOpen(false);
 		setCurrentStationCrew([]);
 		setCurrentStation(undefined);
 	}

@@ -1,5 +1,5 @@
 import React from "react"
-import { Ship, ShipAction, ShipWorkerItem } from "../../model/ship"
+import { Ship, ShipAction } from "../../model/ship"
 import { GlobalContext } from "../../context/globalcontext"
 import { BumpDatum, BumpSerie, BumpSerieExtraProps } from "@nivo/bump";
 
@@ -12,6 +12,7 @@ import { useStateWithStorage } from "../../utils/storage";
 import { ShipSkill, TinyShipSkill } from "../item_presenters/shipskill";
 import { CrewMember } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
+import { ShipWorkerItem } from "../../model/worker";
 
 
 interface SwarmData {
@@ -47,7 +48,7 @@ export const BattleGraph = (props: BattleGraphProps) => {
         }
         else if (graphType === 'swarm') {
             setSwarmData(shipRunToSwarmPlotData());
-        }        
+        }
     }, [battle, graphType])
 
     if (!battle?.attacks) {
@@ -80,12 +81,12 @@ export const BattleGraph = (props: BattleGraphProps) => {
 
         <div className={'ui label'} style={{position: 'absolute', zIndex: '100', border:'1px solid #111'}}>
             <Dropdown
-                
+
                 options={graphOpts}
                 value={graphType}
                 onChange={(e, { value }) => setGraphType(value as 'bump' | 'swarm')}
             />
-        </div>         
+        </div>
 
         {bumpData?.length && graphType === 'bump' && <Bump
             width={300 + (bumpData[0].data.length * 60)}
@@ -176,7 +177,7 @@ export const BattleGraph = (props: BattleGraphProps) => {
             groups={getAllActions().map(act => act.name)}
             value="second"
             valueScale={{ nice: true, type: 'linear', min: 1, max: battle.battle_time, reverse: false }}
-            groupBy={'group'}            
+            groupBy={'group'}
             theme={themes.dark}
             //valueFormat="$.2f"
             size={(node) => {
@@ -215,10 +216,10 @@ export const BattleGraph = (props: BattleGraphProps) => {
                         <div className='ui label'>{t('ship.attack')}: {Math.round(node.data.attack).toLocaleString()}</div>
                         <div className='ui label'>{t('ship.battle_stations')}: {node.data.group_size}</div>
                     </div>
-                    
+
                     <TinyShipSkill action={node.data.group_data} />
                 </div>
-            }}    
+            }}
             colorBy={'group'}
             axisRight={{
                 // tickSize: 10,
@@ -340,7 +341,7 @@ export const BattleGraph = (props: BattleGraphProps) => {
                     group_size: attack.actions.length,
                     crew: act.crew ? battle.crew.find(f => f.id === act.crew) : undefined,
                     ship: battle.ship
-                });                
+                });
             });
         });
 

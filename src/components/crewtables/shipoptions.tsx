@@ -135,7 +135,7 @@ export type ShipAbilityPickerProps = {
     selectedAbilities: string[];
     setSelectedAbilities: (ability: string[]) => void | React.Dispatch<React.SetStateAction<string[]>>;
 	ship?: boolean;
-	fluid?: boolean;	
+	fluid?: boolean;
 };
 
 export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
@@ -467,4 +467,38 @@ export const TraitPicker = (props: TraitPickerProps) => {
 		</Form.Field>
 	);
 };
+
+export interface ShipOwnershipProps {
+	selectedValue?: 'owned' | 'unowned';
+	setSelectedValue: (value?: 'owned' | 'unowned') => void;
+	altTitle?: string;
+}
+
+export const ShipOwnership = (props: ShipOwnershipProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
+	const { selectedValue: selectedValue, setSelectedValue: setSelectedUses } = props;
+
+    const ownershipOptions = ['owned', 'unowned'].map((u) => {
+        return {
+            key: u,
+            value: u,
+            text: t(`ship_ownership.${u}`)
+        }
+    })
+
+	return (
+		<Form.Field>
+			<Dropdown
+				placeholder={props.altTitle ?? t('hints.filter_by_owned_status')}
+				clearable
+				selection
+				options={ownershipOptions}
+				value={selectedValue}
+				onChange={(e, { value }) => setSelectedUses(value as any)}
+				closeOnChange
+			/>
+		</Form.Field>
+	);
+};
+
 
