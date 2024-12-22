@@ -1,20 +1,23 @@
 import React, { Component } from 'react';
-import { Accordion, Segment, Message, Dimmer, Loader } from 'semantic-ui-react';
-
-import { LineupViewer } from '../lineup/viewer';
+import { Accordion, Message, Dimmer, Loader } from 'semantic-ui-react';
 
 import { UnifiedWorker as Worker } from '../../../typings/worker';
-import { Loot, PlayerCrew, PlayerData, PlayerEquipmentItem, Reward, Voyage } from '../../../model/player';
+import { PlayerCrew, PlayerData, PlayerEquipmentItem, Voyage } from '../../../model/player';
 import { Ship } from '../../../model/ship';
 import { Estimate, ExtendedVoyageStatsConfig, VoyageStatsConfig } from '../../../model/worker';
 import { CrewMember } from '../../../model/crew';
 import { EquipmentCommon } from '../../../model/equipment';
 import { GlobalContext } from '../../../context/globalcontext';
 import { formatTime } from '../../../utils/voyageutils';
-import { QuipmentProspectList } from '../quipmentprospects';
 import { VoyageStatsEstimate, VoyageStatsEstimateTitle } from './statsestimate';
-import { VoyageStatsRewardsTitle, VoyageStatsRewards } from './statsrewards';
+
 import { StatsAccordionPanel } from './accordionpanel';
+
+//import { Segment } from 'semantic-ui-react';
+//import { LineupViewer } from '../lineup/viewer';
+//import { Loot, Reward } from '../../../model/player';
+//import { QuipmentProspectList } from '../quipmentprospects';
+//import { VoyageStatsRewardsTitle, VoyageStatsRewards } from './statsrewards';
 
 type VoyageStatsProps = {
 	configSource?: 'player' | 'custom';
@@ -40,13 +43,13 @@ type VoyageStatsState = {
 	hoverCrew?: CrewMember | PlayerCrew | undefined;
 };
 
-interface RefillBin {
-	result: number;
-	count: number;
-}
-interface Bins {
-	[key: number]: RefillBin;
-}
+// interface RefillBin {
+// 	result: number;
+// 	count: number;
+// }
+// interface Bins {
+// 	[key: number]: RefillBin;
+// }
 
 export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 	static contextType = GlobalContext;
