@@ -14,7 +14,7 @@ import { CrewThemes } from './crewthemes';
 import { CrewExcluder } from './crewexcluder';
 import { CALCULATORS, CalculatorState } from './helpers/calchelpers';
 import { Helper } from './helpers/Helper';
-import { VoyageStats } from './voyagestats';
+import { VoyageStats } from './stats/viewer';
 import { CIVASMessage } from './civas';
 
 import { HistoryContext } from '../voyagehistory/context';

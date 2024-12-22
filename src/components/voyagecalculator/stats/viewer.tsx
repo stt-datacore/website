@@ -1,19 +1,20 @@
 import React, { Component } from 'react';
 import { Accordion, Segment, Message, Dimmer, Loader } from 'semantic-ui-react';
 
-import { LineupViewer } from './lineupviewer';
+import { LineupViewer } from '../lineup/viewer';
 
-import { UnifiedWorker as Worker } from '../../typings/worker';
-import { PlayerCrew, PlayerData, PlayerEquipmentItem, Voyage } from '../../model/player';
-import { Ship } from '../../model/ship';
-import { Estimate, ExtendedVoyageStatsConfig, VoyageStatsConfig } from '../../model/worker';
-import { CrewMember } from '../../model/crew';
-import { EquipmentCommon } from '../../model/equipment';
-import { GlobalContext } from '../../context/globalcontext';
-import { formatTime } from '../../utils/voyageutils';
-import { QuipmentProspectList } from './quipmentprospects';
-import { VoyageStatsEstimate, VoyageStatsEstimateTitle } from './stats/statsestimate';
-import { VoyageStatsRewardsTitle, VoyageStatsRewards } from './stats/statsrewards';
+import { UnifiedWorker as Worker } from '../../../typings/worker';
+import { Loot, PlayerCrew, PlayerData, PlayerEquipmentItem, Reward, Voyage } from '../../../model/player';
+import { Ship } from '../../../model/ship';
+import { Estimate, ExtendedVoyageStatsConfig, VoyageStatsConfig } from '../../../model/worker';
+import { CrewMember } from '../../../model/crew';
+import { EquipmentCommon } from '../../../model/equipment';
+import { GlobalContext } from '../../../context/globalcontext';
+import { formatTime } from '../../../utils/voyageutils';
+import { QuipmentProspectList } from '../quipmentprospects';
+import { VoyageStatsEstimate, VoyageStatsEstimateTitle } from './statsestimate';
+import { VoyageStatsRewardsTitle, VoyageStatsRewards } from './statsrewards';
+import { StatsAccordionPanel } from './accordionpanel';
 
 type VoyageStatsProps = {
 	configSource?: 'player' | 'custom';
@@ -179,6 +180,43 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		return <LineupViewer configSource={configSource} voyageConfig={voyageData} ship={this.ship} roster={roster} rosterType={rosterType} />;
 	}
 
+	_renderEstimateTitle() {
+		return (
+			<VoyageStatsEstimateTitle
+				selectedTime={this.config.selectedTime}
+				estimate={this.props.estimate ?? this.state.estimate}
+			/>
+		)
+	}
+
+	_renderEstimate(voyState?: string) {
+		return (
+			<VoyageStatsEstimate
+				selectedTime={this.config?.selectedTime}
+				estimate={this.props.estimate ?? this.state.estimate}
+				needsRevive={voyState == 'failed'}
+			/>
+		)
+	}
+
+	_renderRewardsTitle(rewards: Loot[] | Reward[]) {
+		return (
+			<VoyageStatsRewardsTitle
+				roster={this.props.roster}
+				rewards={rewards} />
+		)
+	}
+
+	_renderRewards(rewards: Loot[] | Reward[]) {
+		return (
+			<VoyageStatsRewards
+				roster={this.props.roster}
+				playerItems={this.props.playerItems}
+				rewards={rewards}
+			/>
+		)
+	}
+
 	/* Not yet in use
 	_renderReminder() {
 		return (
@@ -230,18 +268,16 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			});
 
 		const accordionPanel = (title: string, content: JSX.Element, key: string, ctitle?: string | JSX.Element) => {
-
-			const collapsedTitle = ctitle ? ctitle : title;
-			const isActive = activePanels.includes(key);
-
 			return (
-				<Accordion.Panel
-					active={isActive}
+				<StatsAccordionPanel
+					isActive={activePanels.includes(key)}
+					handleClick={handleClick}
+					title={title}
+					content={content}
 					index={key}
-					onTitleClick={(e, {index}) => handleClick(e, {index})}
-					title={isActive ? {icon: 'caret down', content: collapsedTitle} : {icon: 'caret right', content: collapsedTitle}}
-					content={{content: <Segment>{content}</Segment>}}/>
-			);
+					collapsedTitle={ctitle}
+					/>
+			)
 		};
 
 		if (voyState !== 'pending') {
@@ -262,33 +298,24 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 						voyState !== 'recalled' && voyState !== 'completed' &&
 						accordionPanel(
 							t('voyage.estimate.title'),
-							<VoyageStatsEstimate
-								selectedTime={this.config?.selectedTime}
-								estimate={this.props.estimate ?? this.state.estimate}
-								needsRevive={voyState == 'failed'}
- 							/>,
+							this._renderEstimate(voyState),
 							'estimate',
-							<VoyageStatsEstimateTitle
-								selectedTime={this.config.selectedTime}
-								estimate={this.props.estimate ?? this.state.estimate}
-							/>
+							this._renderEstimateTitle()
 						)
 					}
 					{
-						accordionPanel(t('voyage.lineup.title'), this._renderCrew(), 'crew')
+						accordionPanel(
+							t('voyage.lineup.title'),
+							this._renderCrew(),
+							'crew'
+						)
 					}
 					{
 						accordionPanel(
 							t('base.rewards'),
-							<VoyageStatsRewards
-								roster={this.props.roster}
-								playerItems={this.props.playerItems}
-								rewards={rewards}
-							/>,
+							this._renderRewards(rewards),
 							'rewards',
-							<VoyageStatsRewardsTitle
-								roster={this.props.roster}
-								rewards={rewards} />
+							this._renderRewardsTitle(rewards)
 						)
 					}
 					</Accordion>
@@ -301,22 +328,25 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 						{
 							accordionPanel(
 								t('voyage.estimate.title'),
-								<VoyageStatsEstimate
-									selectedTime={this.config?.selectedTime}
-									estimate={this.props.estimate ?? this.state.estimate}
-								/>,
+								this._renderEstimate(),
 								'estimate',
-								<VoyageStatsEstimateTitle
-									selectedTime={this.config.selectedTime}
-									estimate={this.props.estimate ?? this.state.estimate} />
+								this._renderEstimateTitle()
 							)
 						}
 						{
-							accordionPanel(t('voyage.lineup.title'), this._renderCrew(), 'crew')
+							accordionPanel(
+								t('voyage.lineup.title'),
+								this._renderCrew(),
+								'crew'
+							)
 						}
 						{
 							quipment_prospects &&
-							accordionPanel(t('voyage.quipment.title'), this._renderQuipmentProspects(), 'quipment_prospects')
+							accordionPanel(
+								t('voyage.quipment.title'),
+								this._renderQuipmentProspects(),
+								'quipment_prospects'
+							)
 						}
 					</Accordion>
 				</div>

@@ -21,7 +21,7 @@ import { CIVASMessage } from './civas';
 import { ConfigCard } from './configcard';
 import { ConfigEditor } from './configeditor';
 import { rosterizeMyCrew, RosterPicker } from './rosterpicker';
-import { VoyageStats } from './voyagestats';
+import { VoyageStats } from './stats/viewer';
 
 import { HistoryContext, IHistoryContext } from '../voyagehistory/context';
 import { HistoryHome } from '../voyagehistory/historyhome';
