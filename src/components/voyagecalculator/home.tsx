@@ -29,6 +29,7 @@ import { HistoryMessage } from '../voyagehistory/message';
 import { createCheckpoint, defaultHistory, getTrackedData, InitState, NEW_VOYAGE_ID, postVoyage, SyncState, updateVoyageInHistory } from '../voyagehistory/utils';
 import { LineupViewerAccordion } from './lineup/viewer';
 import { StatsRewardsAccordion } from './stats/statsrewards';
+import { OptionsPanelFlexColumn } from '../stats/utils';
 
 export const VoyageHome = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -554,31 +555,34 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 	};
 
 	const event_data = eventData.find(f => f.seconds_to_start === 0 && f.seconds_to_end > 0 && f.content_types.includes('voyage') && running.voyage_type === 'encounter');
+	const runningVoyage = {...running, event_content: event_data?.activeContent as IVoyageEventContent };
+	const flexCol = OptionsPanelFlexColumn;
 
 	return (
 		<React.Fragment>
-			<VoyageStats
-				voyageData={{...running, event_content: event_data?.activeContent as IVoyageEventContent }}
-				ships={ship ? [ship] : []}
-				showPanels={running.state === 'started' ? ['estimate'] : ['rewards']}
-				playerItems={playerData.player.character.items}
-				roster={myCrew}
-				rosterType={'myCrew'}
-				allCrew={globalContext.core.crew}
-				allItems={globalContext.core.items}
-				playerData={playerData}
-			/>
-			<LineupViewerAccordion
-				voyageConfig={{...running, event_content: event_data?.activeContent as IVoyageEventContent }}
-				ship={ship}
-				roster={myCrew}
-				rosterType={'myCrew'}
-			/>
-			<StatsRewardsAccordion
-				voyage={{...running, event_content: event_data?.activeContent as IVoyageEventContent  }}
-				roster={myCrew}
+			<div style={{...flexCol, alignItems: 'stretch', gap: '0.5em'}}>
+				<VoyageStats
+					voyageData={runningVoyage}
+					ships={ship ? [ship] : []}
+					showPanels={running.state === 'started' ? ['estimate'] : ['rewards']}
+					playerItems={playerData.player.character.items}
+					roster={myCrew}
+					rosterType={'myCrew'}
+					allCrew={globalContext.core.crew}
+					allItems={globalContext.core.items}
+					playerData={playerData}
 				/>
-
+				<LineupViewerAccordion
+					voyageConfig={runningVoyage}
+					ship={ship}
+					roster={myCrew}
+					rosterType={'myCrew'}
+				/>
+				<StatsRewardsAccordion
+					voyage={runningVoyage}
+					roster={myCrew}
+					/>
+			</div>
 			<CIVASMessage voyageConfig={running} activeDetails={activeDetails} />
 			<CrewHoverStat targetGroup='voyageRewards_crew' />
 			<ItemHoverStat targetGroup='voyageRewards_item' />

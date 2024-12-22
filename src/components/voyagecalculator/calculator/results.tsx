@@ -15,6 +15,7 @@ import VoyageStats from '../stats/viewer';
 import { VPGraphAccordion } from '../vpgraph';
 import { LineupViewerAccordion } from '../lineup/viewer';
 import { QuipmentProspectAccordion } from '../quipmentprospects';
+import { OptionsPanelFlexColumn } from '../../stats/utils';
 
 export type ResultPaneProps = {
 	result: CalcResult | undefined;
@@ -106,6 +107,8 @@ export const ResultPane = (props: ResultPaneProps) => {
 		);
 	};
 
+	const flexCol = OptionsPanelFlexColumn;
+
 	return (
 		<React.Fragment>
 			{calcState === CalculatorState.Done && (
@@ -154,31 +157,34 @@ export const ResultPane = (props: ResultPaneProps) => {
 				</Message>
 			)}
 			<Tab.Pane>
-				{result.estimate.vpDetails && (
-					<VPGraphAccordion voyageConfig={voyageConfig} estimate={result.estimate} />
-				)}
-				<VoyageStats
-					configSource={configSource}
-					voyageData={voyageConfig as Voyage}
-					estimate={result.estimate}
-					ships={[request.bestShip.ship]}
-					roster={roster}
-					rosterType={rosterType}
-					showPanels={['crew']}
-				/>
-				<LineupViewerAccordion
-					configSource={configSource}
-					voyageConfig={voyageConfig}
-					ship={request.bestShip.ship}
-					roster={roster}
-					rosterType={rosterType}
-					isActive={true}
-				/>
-				<QuipmentProspectAccordion
-					voyageConfig={voyageConfig}
-				/>
-				<div style={{ marginTop: '1em' }}>
-					{renderCalculatorMessage()}
+				<div style={{...flexCol, alignItems: 'stretch', gap: '0.5em'}}>
+
+					{result.estimate.vpDetails && (
+						<VPGraphAccordion voyageConfig={voyageConfig} estimate={result.estimate} />
+					)}
+					<VoyageStats
+						configSource={configSource}
+						voyageData={voyageConfig as Voyage}
+						estimate={result.estimate}
+						ships={[request.bestShip.ship]}
+						roster={roster}
+						rosterType={rosterType}
+						showPanels={['crew']}
+					/>
+					<LineupViewerAccordion
+						configSource={configSource}
+						voyageConfig={voyageConfig}
+						ship={request.bestShip.ship}
+						roster={roster}
+						rosterType={rosterType}
+						isActive={true}
+					/>
+					<QuipmentProspectAccordion
+						voyageConfig={voyageConfig}
+					/>
+					<div style={{ marginTop: '1em' }}>
+						{renderCalculatorMessage()}
+					</div>
 				</div>
 				{calcState === CalculatorState.Done && (
 					<CIVASMessage voyageConfig={voyageConfig} estimate={result.estimate} />
