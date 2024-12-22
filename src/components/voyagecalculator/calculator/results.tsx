@@ -14,6 +14,7 @@ import { CalculatorState } from '../helpers/calchelpers';
 import VoyageStats from '../stats/viewer';
 import { VPGraphAccordion } from '../vpgraph';
 import { LineupViewerAccordion } from '../lineup/viewer';
+import { QuipmentProspectAccordion } from '../quipmentprospects';
 
 export type ResultPaneProps = {
 	result: CalcResult | undefined;
@@ -171,6 +172,10 @@ export const ResultPane = (props: ResultPaneProps) => {
 					ship={request.bestShip.ship}
 					roster={roster}
 					rosterType={rosterType}
+					isActive={true}
+				/>
+				<QuipmentProspectAccordion
+					voyageConfig={voyageConfig}
 				/>
 				<div style={{ marginTop: '1em' }}>
 					{renderCalculatorMessage()}

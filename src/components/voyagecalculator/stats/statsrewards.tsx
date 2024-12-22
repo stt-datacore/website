@@ -1,11 +1,55 @@
 import React from 'react';
-import { Loot, PlayerCrew, PlayerEquipmentItem, Reward } from "../../../model/player";
+import { Loot, PlayerCrew, PlayerEquipmentItem, Reward, Voyage } from "../../../model/player";
 import { isMobile } from 'react-device-detect';
-import { Grid, Header } from 'semantic-ui-react';
+import { Accordion, Grid, Header, Icon, Segment, SemanticICONS } from 'semantic-ui-react';
 import { checkReward } from '../../../utils/itemutils';
 import ItemDisplay from '../../itemdisplay';
 import { GlobalContext } from '../../../context/globalcontext';
+import { Ship } from '../../../model/ship';
+import { IVoyageCalcConfig } from '../../../model/voyage';
+import { LineupViewer } from '../lineup/viewer';
 
+
+type VoyageRewardsAccordionProps = {
+	voyage: Voyage;
+	roster?: PlayerCrew[];
+};
+
+export const StatsRewardsAccordion = (props: VoyageRewardsAccordionProps) => {
+    const globalContext = React.useContext(GlobalContext);
+    const { t } = globalContext.localized;
+    const playerItems = globalContext.player.playerData?.player.character.items ?? [];
+
+	const [isActive, setIsActive] = React.useState<boolean>(false);
+	const { voyage, roster } = props;
+
+    const rewards = voyage.pending_rewards?.loot ?? [];
+
+	return (
+		<Accordion>
+			<Accordion.Title
+				active={isActive}
+				onClick={() => setIsActive(!isActive)}
+			>
+                <Icon name={isActive ? 'caret down' : 'caret right' as SemanticICONS} />
+				<VoyageStatsRewardsTitle
+                    roster={roster}
+                    rewards={rewards} />
+			</Accordion.Title>
+			<Accordion.Content active={isActive}>
+				{isActive && (
+					<Segment>
+						<VoyageStatsRewards
+							playerItems={playerItems}
+                            roster={roster}
+                            rewards={rewards}
+						/>
+					</Segment>
+				)}
+			</Accordion.Content>
+		</Accordion>
+	);
+};
 
 export interface VoyageStatsRewardsProps {
     playerItems?: PlayerEquipmentItem[];

@@ -168,17 +168,17 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		// return hours+"h " +minutes+"m";
 	}
 
-	_renderQuipmentProspects() {
-		const { configSource, voyageData, roster, rosterType } = this.props;
-		const crew = voyageData.crew_slots.map(s => s.crew);
-		return <QuipmentProspectList crew={crew} />
-	}
+	// _renderQuipmentProspects() {
+	// 	const { configSource, voyageData, roster, rosterType } = this.props;
+	// 	const crew = voyageData.crew_slots.map(s => s.crew);
+	// 	return <QuipmentProspectList crew={crew} />
+	// }
 
-	_renderCrew() {
-		const { configSource, voyageData, roster, rosterType } = this.props;
-		if (!this.ship || !roster) return <></>;
-		return <LineupViewer configSource={configSource} voyageConfig={voyageData} ship={this.ship} roster={roster} rosterType={rosterType} />;
-	}
+	// _renderCrew() {
+	// 	const { configSource, voyageData, roster, rosterType } = this.props;
+	// 	if (!this.ship || !roster) return <></>;
+	// 	return <LineupViewer configSource={configSource} voyageConfig={voyageData} ship={this.ship} roster={roster} rosterType={rosterType} />;
+	// }
 
 	_renderEstimateTitle() {
 		return (
@@ -199,23 +199,23 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 		)
 	}
 
-	_renderRewardsTitle(rewards: Loot[] | Reward[]) {
-		return (
-			<VoyageStatsRewardsTitle
-				roster={this.props.roster}
-				rewards={rewards} />
-		)
-	}
+	// _renderRewardsTitle(rewards: Loot[] | Reward[]) {
+	// 	return (
+	// 		<VoyageStatsRewardsTitle
+	// 			roster={this.props.roster}
+	// 			rewards={rewards} />
+	// 	)
+	// }
 
-	_renderRewards(rewards: Loot[] | Reward[]) {
-		return (
-			<VoyageStatsRewards
-				roster={this.props.roster}
-				playerItems={this.props.playerItems}
-				rewards={rewards}
-			/>
-		)
-	}
+	// _renderRewards(rewards: Loot[] | Reward[]) {
+	// 	return (
+	// 		<VoyageStatsRewards
+	// 			roster={this.props.roster}
+	// 			playerItems={this.props.playerItems}
+	// 			rewards={rewards}
+	// 		/>
+	// 	)
+	// }
 
 	/* Not yet in use
 	_renderReminder() {
@@ -303,7 +303,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 							this._renderEstimateTitle()
 						)
 					}
-					{
+					{/* {
 						accordionPanel(
 							t('voyage.lineup.title'),
 							this._renderCrew(),
@@ -317,7 +317,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 							'rewards',
 							this._renderRewardsTitle(rewards)
 						)
-					}
+					} */}
 					</Accordion>
 				</div>
 			);
@@ -333,7 +333,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 								this._renderEstimateTitle()
 							)
 						}
-						{
+						{/* {
 							accordionPanel(
 								t('voyage.lineup.title'),
 								this._renderCrew(),
@@ -347,7 +347,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 								this._renderQuipmentProspects(),
 								'quipment_prospects'
 							)
-						}
+						} */}
 					</Accordion>
 				</div>
 			);

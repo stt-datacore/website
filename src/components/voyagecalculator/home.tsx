@@ -28,6 +28,7 @@ import { HistoryHome } from '../voyagehistory/historyhome';
 import { HistoryMessage } from '../voyagehistory/message';
 import { createCheckpoint, defaultHistory, getTrackedData, InitState, NEW_VOYAGE_ID, postVoyage, SyncState, updateVoyageInHistory } from '../voyagehistory/utils';
 import { LineupViewerAccordion } from './lineup/viewer';
+import { StatsRewardsAccordion } from './stats/statsrewards';
 
 export const VoyageHome = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -568,12 +569,16 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 				playerData={playerData}
 			/>
 			<LineupViewerAccordion
-				configSource={configSource}
 				voyageConfig={{...running, event_content: event_data?.activeContent as IVoyageEventContent }}
 				ship={ship}
 				roster={myCrew}
 				rosterType={'myCrew'}
 			/>
+			<StatsRewardsAccordion
+				voyage={{...running, event_content: event_data?.activeContent as IVoyageEventContent  }}
+				roster={myCrew}
+				/>
+
 			<CIVASMessage voyageConfig={running} activeDetails={activeDetails} />
 			<CrewHoverStat targetGroup='voyageRewards_crew' />
 			<ItemHoverStat targetGroup='voyageRewards_item' />

@@ -21,12 +21,20 @@ type LineupViewerProps = {
 	ship?: Ship;
 	roster?: PlayerCrew[];
 	rosterType?: 'allCrew' | 'myCrew';
+	isActive?: boolean;
 };
 
 export const LineupViewerAccordion = (props: LineupViewerProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 
 	const [isActive, setIsActive] = React.useState<boolean>(false);
+	const { configSource, voyageConfig, ship, roster, rosterType, isActive: externActive } = props;
+
+	React.useEffect(() => {
+		if (externActive !== undefined) {
+			setIsActive(externActive);
+		}
+	}, [externActive]);
 
 	return (
 		<Accordion>
@@ -41,11 +49,11 @@ export const LineupViewerAccordion = (props: LineupViewerProps) => {
 				{isActive && (
 					<Segment>
 						<LineupViewer
-							configSource={props.configSource}
-							voyageConfig={props.voyageConfig}
-							ship={props.ship}
-							roster={props.roster}
-							rosterType={props.rosterType}
+							configSource={configSource}
+							voyageConfig={voyageConfig}
+							ship={ship}
+							roster={roster}
+							rosterType={rosterType}
 						/>
 					</Segment>
 				)}

@@ -1,10 +1,10 @@
 
 import React from 'react';
 import { GlobalContext } from '../../context/globalcontext';
-import { Modal, Button, Checkbox, Dropdown, Table } from 'semantic-ui-react';
+import { Modal, Button, Checkbox, Dropdown, Table, Accordion, Icon, Segment, SemanticICONS } from 'semantic-ui-react';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { Skill } from '../../model/crew';
-import { PlayerCrew } from '../../model/player';
+import { PlayerCrew, Voyage } from '../../model/player';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 import { EquipmentCommon, EquipmentItem } from '../../model/equipment';
 import { getItemWithBonus, ItemWithBonus, mergeItems } from '../../utils/itemutils';
@@ -15,6 +15,8 @@ import { omniSearchFilter } from '../../utils/omnisearch';
 import CONFIG from '../CONFIG';
 import { ItemHoverStat } from '../hovering/itemhoverstat';
 import { useStateWithStorage } from '../../utils/storage';
+import { VoyageStatsRewards } from './stats/statsrewards';
+import { IVoyageCalcConfig } from '../../model/voyage';
 
 export type QuipmentProspectMode = 'best' | 'best_2' | 'all';
 export type VoyageSkillPreferenceMode = 'none' | 'voyage' | 'voyage_1' | 'voyage_2';
@@ -169,12 +171,52 @@ export const QuipmentProspects = (props: QuipmentProspectProps) => {
     }
 }
 
+type RecipeType = { [key: string]: EquipmentCommon[] };
+type CrewRefType = { [key: string]: PlayerCrew[] };
+
+export interface QuipmentProspectAccordionProps {
+    voyageConfig: Voyage | IVoyageCalcConfig;
+}
+
+export const QuipmentProspectAccordion = (props: QuipmentProspectAccordionProps) => {
+
+    const globalContext = React.useContext(GlobalContext);
+    const { t } = globalContext.localized;
+
+	const [isActive, setIsActive] = React.useState<boolean>(false);
+    const { voyageConfig: voyageData } = props;
+	const crew = voyageData.crew_slots.map(s => s.crew);
+
+    const voyState = voyageData.state;
+    const quipment_prospects = voyState == 'pending' && voyageData.crew_slots.some(slot => slot.crew.kwipment_prospects);
+
+    if (!quipment_prospects) return <></>;
+
+	return (
+		<Accordion>
+			<Accordion.Title
+				active={isActive}
+				onClick={() => setIsActive(!isActive)}
+			>
+                <Icon name={isActive ? 'caret down' : 'caret right' as SemanticICONS} />
+				{t('voyage.quipment.title')}
+			</Accordion.Title>
+			<Accordion.Content active={isActive}>
+				{isActive && (
+					<Segment>
+		                <QuipmentProspectList crew={crew} />
+                    </Segment>
+				)}
+			</Accordion.Content>
+		</Accordion>
+	);
+
+}
+
+
 export interface QuipmentProspectListProps {
     crew: PlayerCrew[];
 }
-
-type RecipeType = { [key: string]: EquipmentCommon[] };
-type CrewRefType = { [key: string]: PlayerCrew[] };
 
 export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
 
