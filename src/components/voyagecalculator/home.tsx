@@ -567,6 +567,7 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 					roster={myCrew}
 					rosterType={'myCrew'}
 					playerData={playerData}
+					isActive={true}
 				/>
 				<LineupViewerAccordion
 					voyageConfig={runningVoyage}
