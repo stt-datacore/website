@@ -16,7 +16,7 @@ import { getEventData, getRecentEvents, guessEncounterTimes, guessEncounterTrait
 import { useStateWithStorage } from '../../utils/storage';
 
 import { ICalculatorContext, CalculatorContext } from './context';
-import { Calculator } from './calculator';
+import { Calculator } from './calculator/main';
 import { CIVASMessage } from './civas';
 import { ConfigCard } from './configcard';
 import { ConfigEditor } from './configeditor';
