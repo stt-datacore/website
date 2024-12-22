@@ -14,6 +14,7 @@ import { AvatarView, BasicItem } from '../../item_presenters/avatarview';
 type VoyageRewardsAccordionProps = {
 	voyage: Voyage;
 	roster?: PlayerCrew[];
+    isActive?: boolean;
 };
 
 export const StatsRewardsAccordion = (props: VoyageRewardsAccordionProps) => {
@@ -22,9 +23,15 @@ export const StatsRewardsAccordion = (props: VoyageRewardsAccordionProps) => {
     const playerItems = globalContext.player.playerData?.player.character.items ?? [];
 
 	const [isActive, setIsActive] = React.useState<boolean>(false);
-	const { voyage, roster } = props;
+	const { voyage, roster, isActive: externActive } = props;
 
     const rewards = voyage.pending_rewards?.loot ?? [];
+
+    React.useEffect(() => {
+        if (externActive !== undefined) {
+            setIsActive(externActive);
+        }
+    }, [externActive]);
 
 	return (
 		<Accordion>

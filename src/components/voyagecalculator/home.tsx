@@ -558,6 +558,8 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 	const runningVoyage = {...running, event_content: event_data?.activeContent as IVoyageEventContent };
 	const flexCol = OptionsPanelFlexColumn;
 
+	const recalled = runningVoyage.state === 'recalled';
+
 	return (
 		<React.Fragment>
 			<div style={{...flexCol, alignItems: 'stretch', gap: '0.5em'}}>
@@ -567,7 +569,7 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 					roster={myCrew}
 					rosterType={'myCrew'}
 					playerData={playerData}
-					isActive={true}
+					isActive={!recalled}
 				/>
 				<LineupViewerAccordion
 					voyageConfig={runningVoyage}
@@ -578,6 +580,7 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 				<StatsRewardsAccordion
 					voyage={runningVoyage}
 					roster={myCrew}
+					isActive={recalled}
 					/>
 			</div>
 			<CIVASMessage voyageConfig={running} activeDetails={activeDetails} />
