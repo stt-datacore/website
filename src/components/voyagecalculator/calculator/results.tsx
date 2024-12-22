@@ -13,6 +13,7 @@ import { CalculatorContext } from '../context';
 import { CalculatorState } from '../helpers/calchelpers';
 import VoyageStats from '../stats/viewer';
 import { VPGraphAccordion } from '../vpgraph';
+import { LineupViewerAccordion } from '../lineup/viewer';
 
 export type ResultPaneProps = {
 	result: CalcResult | undefined;
@@ -163,6 +164,13 @@ export const ResultPane = (props: ResultPaneProps) => {
 					roster={roster}
 					rosterType={rosterType}
 					showPanels={['crew']}
+				/>
+				<LineupViewerAccordion
+					configSource={configSource}
+					voyageConfig={voyageConfig}
+					ship={request.bestShip.ship}
+					roster={roster}
+					rosterType={rosterType}
 				/>
 				<div style={{ marginTop: '1em' }}>
 					{renderCalculatorMessage()}

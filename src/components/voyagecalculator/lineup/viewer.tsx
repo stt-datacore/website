@@ -1,4 +1,10 @@
 import React from 'react';
+import {
+	Accordion,
+	Icon,
+	Segment,
+	SemanticICONS
+} from 'semantic-ui-react';
 
 import { PlayerCrew, Voyage, VoyageCrewSlot } from '../../../model/player';
 import { Ship } from '../../../model/ship';
@@ -15,6 +21,37 @@ type LineupViewerProps = {
 	ship?: Ship;
 	roster?: PlayerCrew[];
 	rosterType?: 'allCrew' | 'myCrew';
+};
+
+export const LineupViewerAccordion = (props: LineupViewerProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
+
+	const [isActive, setIsActive] = React.useState<boolean>(false);
+
+	return (
+		<Accordion>
+			<Accordion.Title
+				active={isActive}
+				onClick={() => setIsActive(!isActive)}
+			>
+				<Icon name={isActive ? 'caret down' : 'caret right' as SemanticICONS} />
+				{t('voyage.lineup.title')}
+			</Accordion.Title>
+			<Accordion.Content active={isActive}>
+				{isActive && (
+					<Segment>
+						<LineupViewer
+							configSource={props.configSource}
+							voyageConfig={props.voyageConfig}
+							ship={props.ship}
+							roster={props.roster}
+							rosterType={props.rosterType}
+						/>
+					</Segment>
+				)}
+			</Accordion.Content>
+		</Accordion>
+	);
 };
 
 export const LineupViewer = (props: LineupViewerProps) => {
