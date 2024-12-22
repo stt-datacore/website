@@ -3,13 +3,8 @@ import { Loot, PlayerCrew, PlayerEquipmentItem, Reward, Voyage } from "../../../
 import { isMobile } from 'react-device-detect';
 import { Accordion, Grid, Header, Icon, Segment, SemanticICONS } from 'semantic-ui-react';
 import { checkReward } from '../../../utils/itemutils';
-import ItemDisplay from '../../itemdisplay';
 import { GlobalContext } from '../../../context/globalcontext';
-import { Ship } from '../../../model/ship';
-import { IVoyageCalcConfig } from '../../../model/voyage';
-import { LineupViewer } from '../lineup/viewer';
 import { AvatarView, BasicItem } from '../../item_presenters/avatarview';
-
 
 type VoyageRewardsAccordionProps = {
 	voyage: Voyage;

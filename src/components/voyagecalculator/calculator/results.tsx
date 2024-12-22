@@ -11,10 +11,10 @@ import { SyncState } from '../../voyagehistory/utils';
 import { CIVASMessage } from '../civas';
 import { CalculatorContext } from '../context';
 import { CalculatorState } from '../helpers/calchelpers';
-import VoyageStatsAccordion from '../stats/accordion';
+import VoyageStatsAccordion from '../stats/stats_accordion';
 import { VPGraphAccordion } from '../vpgraph';
-import { LineupViewerAccordion } from '../lineup/viewer';
-import { QuipmentProspectAccordion } from '../quipmentprospects';
+import { LineupViewerAccordion } from '../lineup/lineup_accordion';
+import { QuipmentProspectAccordion } from '../quipment/quipmentprospects';
 import { OptionsPanelFlexColumn } from '../../stats/utils';
 
 export type ResultPaneProps = {
@@ -166,7 +166,6 @@ export const ResultPane = (props: ResultPaneProps) => {
 						configSource={configSource}
 						voyageData={voyageConfig as Voyage}
 						estimate={result.estimate}
-						ships={[request.bestShip.ship]}
 						roster={roster}
 						rosterType={rosterType}
 					/>

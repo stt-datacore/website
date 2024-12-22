@@ -16,19 +16,19 @@ import { getEventData, getRecentEvents, guessEncounterTimes, guessEncounterTrait
 import { useStateWithStorage } from '../../utils/storage';
 
 import { ICalculatorContext, CalculatorContext } from './context';
-import { Calculator } from './calculator/main';
+import { Calculator } from './calculator/calc_main';
 import { CIVASMessage } from './civas';
 import { ConfigCard } from './configcard';
 import { ConfigEditor } from './configeditor';
 import { rosterizeMyCrew, RosterPicker } from './rosterpicker';
-import { VoyageStatsAccordion } from './stats/accordion';
+import { VoyageStatsAccordion } from './stats/stats_accordion';
 
 import { HistoryContext, IHistoryContext } from '../voyagehistory/context';
 import { HistoryHome } from '../voyagehistory/historyhome';
 import { HistoryMessage } from '../voyagehistory/message';
 import { createCheckpoint, defaultHistory, getTrackedData, InitState, NEW_VOYAGE_ID, postVoyage, SyncState, updateVoyageInHistory } from '../voyagehistory/utils';
-import { LineupViewerAccordion } from './lineup/viewer';
-import { StatsRewardsAccordion } from './stats/statsrewards';
+import { LineupViewerAccordion } from './lineup/lineup_accordion';
+import { StatsRewardsAccordion } from './rewards/rewards_accordion';
 import { OptionsPanelFlexColumn } from '../stats/utils';
 
 export const VoyageHome = () => {
@@ -565,7 +565,6 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 			<div style={{...flexCol, alignItems: 'stretch', gap: '0.5em'}}>
 				<VoyageStatsAccordion
 					voyageData={runningVoyage}
-					ships={ship ? [ship] : []}
 					roster={myCrew}
 					rosterType={'myCrew'}
 					playerData={playerData}

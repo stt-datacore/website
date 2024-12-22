@@ -5,7 +5,7 @@ import { GlobalContext } from '../../../context/globalcontext';
 import { useStateWithStorage } from '../../../utils/storage';
 import { CalculatorContext } from '../context';
 
-import { QuipmentProspectConfig } from '../quipmentprospects';
+import { QuipmentProspectConfig } from '../quipment/options';
 import { IUserPrefsContext, UserPrefsContext } from './userprefs';
 import { CalculatorForm } from './calcform';
 

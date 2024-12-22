@@ -5,7 +5,7 @@ import { PlayerCrew, VoyageCrewSlot } from '../../model/player';
 import { IVoyageCalcConfig, ITrackedVoyage } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';
-import { LineupViewer } from '../voyagecalculator/lineup/viewer';
+import { LineupViewer } from '../voyagecalculator/lineup/lineup_accordion';
 
 import { HistoryContext } from './context';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
