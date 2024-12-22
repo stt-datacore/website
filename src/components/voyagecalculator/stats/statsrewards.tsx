@@ -8,6 +8,7 @@ import { GlobalContext } from '../../../context/globalcontext';
 import { Ship } from '../../../model/ship';
 import { IVoyageCalcConfig } from '../../../model/voyage';
 import { LineupViewer } from '../lineup/viewer';
+import { AvatarView, BasicItem } from '../../item_presenters/avatarview';
 
 
 type VoyageRewardsAccordionProps = {
@@ -135,7 +136,7 @@ export const VoyageStatsRewards = (props: VoyageStatsRewardsProps) => {
     return (
         <>
             <div>
-                <Grid columns={isMobile ? 2 : 5} centered padded>
+                <Grid columns={isMobile ? 2 : 5} centered padded style={{justifyContent: 'flex-start'}}>
                     {rewards.map((reward: Reward, idx) => {
                         checkReward(allItems ?? [], reward);
                         return (
@@ -143,19 +144,17 @@ export const VoyageStatsRewards = (props: VoyageStatsRewardsProps) => {
                                 <Header
                                     style={{ display: 'flex' }}
                                     icon={
-                                        <ItemDisplay
-                                            quantity={reward.quantity}
-                                            src={assetURL(reward.icon?.file)}
+                                        <AvatarView
+                                            style={{marginRight: '0.25em'}}
+                                            mode={reward.type === 1 ? 'crew' : 'item'}
                                             size={48}
-                                            rarity={rarity(reward)}
-                                            maxRarity={reward.rarity}
-                                            hideRarity={hideRarity(reward)}
                                             targetGroup={reward.type === 1 ? 'voyageRewards_crew' : 'voyageRewards_item'}
-                                            itemSymbol={getCrewSymbol(reward)}
-                                            allCrew={allCrew}
-                                            allItems={allItems}
-                                            playerData={playerData}
-                                        />
+                                            item={{
+                                                ...reward,
+                                                isReward: true
+                                            } as BasicItem}
+                                            partialItem={true}
+                                            />
                                     }
                                     content={reward.name}
                                     subheader={`Got ${reward.quantity?.toLocaleString()} ${ownedFuncs[reward.type] ? ownedFuncs[reward.type](reward) : reward.type}`}
