@@ -298,7 +298,7 @@ export function makeRecipeFromArchetypeCache(item: EquipmentItem, globalItems: E
 	let recipe_items = globalItems.filter(f => aitem.recipe?.demands?.some(d => d.archetype_id?.toString() === f.id?.toString()))
 	if (recipe_items?.length) {
 		let newrecipe = recipe_items.map((m, idx) => ({
-			count: aitem.recipe?.demands[idx].count,
+			count: aitem.recipe?.demands[idx]?.count ?? 0,
 			factionOnly: false,
 			symbol: m.symbol
 		} as EquipmentIngredient));
