@@ -21,7 +21,7 @@ import { CIVASMessage } from './civas';
 import { ConfigCard } from './configcard';
 import { ConfigEditor } from './configeditor';
 import { rosterizeMyCrew, RosterPicker } from './rosterpicker';
-import { VoyageStats } from './stats/viewer';
+import { VoyageStatsAccordion } from './stats/accordion';
 
 import { HistoryContext, IHistoryContext } from '../voyagehistory/context';
 import { HistoryHome } from '../voyagehistory/historyhome';
@@ -561,15 +561,11 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 	return (
 		<React.Fragment>
 			<div style={{...flexCol, alignItems: 'stretch', gap: '0.5em'}}>
-				<VoyageStats
+				<VoyageStatsAccordion
 					voyageData={runningVoyage}
 					ships={ship ? [ship] : []}
-					showPanels={running.state === 'started' ? ['estimate'] : ['rewards']}
-					playerItems={playerData.player.character.items}
 					roster={myCrew}
 					rosterType={'myCrew'}
-					allCrew={globalContext.core.crew}
-					allItems={globalContext.core.items}
 					playerData={playerData}
 				/>
 				<LineupViewerAccordion

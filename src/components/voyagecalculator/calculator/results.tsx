@@ -11,7 +11,7 @@ import { SyncState } from '../../voyagehistory/utils';
 import { CIVASMessage } from '../civas';
 import { CalculatorContext } from '../context';
 import { CalculatorState } from '../helpers/calchelpers';
-import VoyageStats from '../stats/viewer';
+import VoyageStatsAccordion from '../stats/accordion';
 import { VPGraphAccordion } from '../vpgraph';
 import { LineupViewerAccordion } from '../lineup/viewer';
 import { QuipmentProspectAccordion } from '../quipmentprospects';
@@ -162,14 +162,13 @@ export const ResultPane = (props: ResultPaneProps) => {
 					{result.estimate.vpDetails && (
 						<VPGraphAccordion voyageConfig={voyageConfig} estimate={result.estimate} />
 					)}
-					<VoyageStats
+					<VoyageStatsAccordion
 						configSource={configSource}
 						voyageData={voyageConfig as Voyage}
 						estimate={result.estimate}
 						ships={[request.bestShip.ship]}
 						roster={roster}
 						rosterType={rosterType}
-						showPanels={['crew']}
 					/>
 					<LineupViewerAccordion
 						configSource={configSource}

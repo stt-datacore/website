@@ -6,52 +6,34 @@ import { PlayerCrew, PlayerData, PlayerEquipmentItem, Voyage } from '../../../mo
 import { Ship } from '../../../model/ship';
 import { Estimate, ExtendedVoyageStatsConfig, VoyageStatsConfig } from '../../../model/worker';
 import { CrewMember } from '../../../model/crew';
-import { EquipmentCommon } from '../../../model/equipment';
 import { GlobalContext } from '../../../context/globalcontext';
 import { formatTime } from '../../../utils/voyageutils';
 import { VoyageStatsEstimate, VoyageStatsEstimateTitle } from './statsestimate';
 
 import { StatsAccordionPanel } from './accordionpanel';
 
-//import { Segment } from 'semantic-ui-react';
-//import { LineupViewer } from '../lineup/viewer';
-//import { Loot, Reward } from '../../../model/player';
-//import { QuipmentProspectList } from '../quipmentprospects';
-//import { VoyageStatsRewardsTitle, VoyageStatsRewards } from './statsrewards';
-
 type VoyageStatsProps = {
 	configSource?: 'player' | 'custom';
 	voyageData: Voyage;	// Note: non-active voyage being passed here as IVoyageCalcConfig
 	numSims?: number;
 	ships: Ship[];
-	showPanels: string[];
 	estimate?: Estimate;
 	roster?: PlayerCrew[];
 	rosterType?: 'allCrew' | 'myCrew';
-	playerItems?: PlayerEquipmentItem[];
-	allCrew?: CrewMember[];
-	allItems?: EquipmentCommon[];
 	playerData?: PlayerData;
+	isActive?: boolean;
 };
 
 type VoyageStatsState = {
 	estimate?: Estimate;
-	activePanels: string[];
+	isActive: boolean;
 	currentAm: number;
 	currentDuration?: number;
 	voyageBugDetected: boolean;
 	hoverCrew?: CrewMember | PlayerCrew | undefined;
 };
 
-// interface RefillBin {
-// 	result: number;
-// 	count: number;
-// }
-// interface Bins {
-// 	[key: number]: RefillBin;
-// }
-
-export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
+export class VoyageStatsAccordion extends Component<VoyageStatsProps, VoyageStatsState> {
 	static contextType = GlobalContext;
 	declare context: React.ContextType<typeof GlobalContext>;
 
@@ -119,11 +101,11 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	constructor(props: VoyageStatsProps | Readonly<VoyageStatsProps>) {
 		super(props);
-		const { estimate, showPanels, voyageData } = this.props;
+		const { estimate, voyageData } = this.props;
 
 		this.state = {
 			estimate: estimate,
-			activePanels: showPanels ? showPanels : [],
+			isActive: props.isActive ?? false,
 			voyageBugDetected: 	Math.floor(voyageData.voyage_duration/7200) > Math.floor(voyageData.log_index/360),
 			currentAm: props.voyageData.hp ?? voyageData.max_hp
 		};
@@ -165,23 +147,7 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 	_formatTime(time: number) {
 		return formatTime(time, this.context.localized.t);
-		// let hours = Math.floor(time);
-		// let minutes = Math.floor((time-hours)*60);
-
-		// return hours+"h " +minutes+"m";
 	}
-
-	// _renderQuipmentProspects() {
-	// 	const { configSource, voyageData, roster, rosterType } = this.props;
-	// 	const crew = voyageData.crew_slots.map(s => s.crew);
-	// 	return <QuipmentProspectList crew={crew} />
-	// }
-
-	// _renderCrew() {
-	// 	const { configSource, voyageData, roster, rosterType } = this.props;
-	// 	if (!this.ship || !roster) return <></>;
-	// 	return <LineupViewer configSource={configSource} voyageConfig={voyageData} ship={this.ship} roster={roster} rosterType={rosterType} />;
-	// }
 
 	_renderEstimateTitle() {
 		return (
@@ -201,24 +167,6 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			/>
 		)
 	}
-
-	// _renderRewardsTitle(rewards: Loot[] | Reward[]) {
-	// 	return (
-	// 		<VoyageStatsRewardsTitle
-	// 			roster={this.props.roster}
-	// 			rewards={rewards} />
-	// 	)
-	// }
-
-	// _renderRewards(rewards: Loot[] | Reward[]) {
-	// 	return (
-	// 		<VoyageStatsRewards
-	// 			roster={this.props.roster}
-	// 			playerItems={this.props.playerItems}
-	// 			rewards={rewards}
-	// 		/>
-	// 	)
-	// }
 
 	/* Not yet in use
 	_renderReminder() {
@@ -254,26 +202,20 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 			);
 		}
 
-		const { activePanels } = this.state;
+		const { isActive } = this.state;
 		const voyState = voyageData.state;
-		const rewards = voyState !== 'pending' ? voyageData.pending_rewards.loot : [];
-		const quipment_prospects = voyState == 'pending' && voyageData.crew_slots.some(slot => slot.crew.kwipment_prospects);
 
 		// Adds/Removes panels from the active list
 
-		const flipItem = (items: string[], item: string) => items.includes(item)
-			? items.filter(i => i != item)
-			: items.concat(item);
-
 		const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, {index}: { index: string | number | undefined; }) =>
 			this.setState({
-				activePanels: flipItem(activePanels, index as string)
+				...this.state, isActive: !isActive
 			});
 
 		const accordionPanel = (title: string, content: JSX.Element, key: string, ctitle?: string | JSX.Element) => {
 			return (
 				<StatsAccordionPanel
-					isActive={activePanels.includes(key)}
+					isActive={isActive}
 					handleClick={handleClick}
 					title={title}
 					content={content}
@@ -306,21 +248,6 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 							this._renderEstimateTitle()
 						)
 					}
-					{/* {
-						accordionPanel(
-							t('voyage.lineup.title'),
-							this._renderCrew(),
-							'crew'
-						)
-					}
-					{
-						accordionPanel(
-							t('base.rewards'),
-							this._renderRewards(rewards),
-							'rewards',
-							this._renderRewardsTitle(rewards)
-						)
-					} */}
 					</Accordion>
 				</div>
 			);
@@ -336,21 +263,6 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 								this._renderEstimateTitle()
 							)
 						}
-						{/* {
-							accordionPanel(
-								t('voyage.lineup.title'),
-								this._renderCrew(),
-								'crew'
-							)
-						}
-						{
-							quipment_prospects &&
-							accordionPanel(
-								t('voyage.quipment.title'),
-								this._renderQuipmentProspects(),
-								'quipment_prospects'
-							)
-						} */}
 					</Accordion>
 				</div>
 			);
@@ -359,4 +271,4 @@ export class VoyageStats extends Component<VoyageStatsProps, VoyageStatsState> {
 
 }
 
-export default VoyageStats;
+export default VoyageStatsAccordion;
