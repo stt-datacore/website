@@ -131,7 +131,7 @@ export const VoyageStatsRewards = (props: VoyageStatsRewardsProps) => {
                                     icon={
                                         <AvatarView
                                             style={{marginRight: '0.25em'}}
-                                            mode={reward.type === 1 ? 'crew' : 'item'}
+                                            mode={reward.type}
                                             size={48}
                                             targetGroup={reward.type === 1 ? 'voyageRewards_crew' : 'voyageRewards_item'}
                                             item={{
