@@ -17,8 +17,6 @@ type VoyageStatsProps = {
 	rosterType?: 'allCrew' | 'myCrew';
 	playerData?: PlayerData;
 	isActive?: boolean;
-	/** Default is true */
-	accordion?: boolean;
 };
 
 type VoyageStatsState = {
