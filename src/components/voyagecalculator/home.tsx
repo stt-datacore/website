@@ -568,7 +568,7 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 					roster={myCrew}
 					rosterType={'myCrew'}
 					playerData={playerData}
-					isActive={!recalled}
+					initialExpand={!recalled}
 				/>
 				<LineupViewerAccordion
 					voyageConfig={runningVoyage}
@@ -579,7 +579,7 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 				<StatsRewardsAccordion
 					voyage={runningVoyage}
 					roster={myCrew}
-					isActive={recalled}
+					initialExpand={recalled}
 					/>
 			</div>
 			<CIVASMessage voyageConfig={running} activeDetails={activeDetails} />

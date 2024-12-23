@@ -16,7 +16,7 @@ type VoyageStatsProps = {
 	roster?: PlayerCrew[];
 	rosterType?: 'allCrew' | 'myCrew';
 	playerData?: PlayerData;
-	isActive?: boolean;
+	initialExpand?: boolean;
 };
 
 type VoyageStatsState = {
@@ -41,7 +41,7 @@ export class VoyageStatsAccordion extends Component<VoyageStatsProps, VoyageStat
 
 		this.state = {
 			estimate: estimate,
-			isActive: props.isActive ?? false,
+			isActive: props.initialExpand ?? false,
 			voyageBugDetected: Math.floor(voyageData.voyage_duration / 7200) > Math.floor(voyageData.log_index / 360),
 			currentAm: props.voyageData.hp ?? voyageData.max_hp
 		};

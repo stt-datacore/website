@@ -175,7 +175,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 						ship={request.bestShip.ship}
 						roster={roster}
 						rosterType={rosterType}
-						isActive={true}
+						initialExpand={true}
 					/>
 					<QuipmentProspectAccordion
 						voyageConfig={voyageConfig}

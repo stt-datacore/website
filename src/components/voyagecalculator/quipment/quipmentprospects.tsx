@@ -21,6 +21,7 @@ type CrewRefType = { [key: string]: PlayerCrew[] };
 
 export interface QuipmentProspectAccordionProps {
     voyageConfig: Voyage | IVoyageCalcConfig;
+    initialExpand?: boolean;
 }
 
 export const QuipmentProspectAccordion = (props: QuipmentProspectAccordionProps) => {
@@ -29,11 +30,17 @@ export const QuipmentProspectAccordion = (props: QuipmentProspectAccordionProps)
     const { t } = globalContext.localized;
 
 	const [isActive, setIsActive] = React.useState<boolean>(false);
-    const { voyageConfig: voyageData } = props;
+    const { voyageConfig: voyageData, initialExpand: externActive } = props;
 	const crew = voyageData.crew_slots.map(s => s.crew);
 
     const voyState = voyageData.state;
     const quipment_prospects = voyState == 'pending' && voyageData.crew_slots.some(slot => slot.crew.kwipment_prospects);
+
+    React.useEffect(() => {
+        if (externActive !== undefined) {
+            setIsActive(externActive);
+        }
+    }, [externActive]);
 
     if (!quipment_prospects) return <></>;
 

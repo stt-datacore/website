@@ -21,14 +21,14 @@ type LineupViewerProps = {
 	ship?: Ship;
 	roster?: PlayerCrew[];
 	rosterType?: 'allCrew' | 'myCrew';
-	isActive?: boolean;
+	initialExpand?: boolean;
 };
 
 export const LineupViewerAccordion = (props: LineupViewerProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 
 	const [isActive, setIsActive] = React.useState<boolean>(false);
-	const { configSource, voyageConfig, ship, roster, rosterType, isActive: externActive } = props;
+	const { configSource, voyageConfig, ship, roster, rosterType, initialExpand: externActive } = props;
 
 	React.useEffect(() => {
 		if (externActive !== undefined) {
