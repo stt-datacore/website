@@ -16,17 +16,20 @@ import { getEventData, getRecentEvents, guessEncounterTimes, guessEncounterTrait
 import { useStateWithStorage } from '../../utils/storage';
 
 import { ICalculatorContext, CalculatorContext } from './context';
-import { Calculator } from './calculator/main';
+import { Calculator } from './calculator/calc_main';
 import { CIVASMessage } from './civas';
 import { ConfigCard } from './configcard';
 import { ConfigEditor } from './configeditor';
 import { rosterizeMyCrew, RosterPicker } from './rosterpicker';
-import { VoyageStats } from './stats/viewer';
+import { VoyageStatsAccordion } from './stats/stats_accordion';
 
 import { HistoryContext, IHistoryContext } from '../voyagehistory/context';
 import { HistoryHome } from '../voyagehistory/historyhome';
 import { HistoryMessage } from '../voyagehistory/message';
 import { createCheckpoint, defaultHistory, getTrackedData, InitState, NEW_VOYAGE_ID, postVoyage, SyncState, updateVoyageInHistory } from '../voyagehistory/utils';
+import { LineupViewerAccordion } from './lineupviewer/lineup_accordion';
+import { StatsRewardsAccordion } from './rewards/rewards_accordion';
+import { OptionsPanelFlexColumn } from '../stats/utils';
 
 export const VoyageHome = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -552,20 +555,33 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 	};
 
 	const event_data = eventData.find(f => f.seconds_to_start === 0 && f.seconds_to_end > 0 && f.content_types.includes('voyage') && running.voyage_type === 'encounter');
+	const runningVoyage = {...running, event_content: event_data?.activeContent as IVoyageEventContent };
+	const flexCol = OptionsPanelFlexColumn;
+
+	const recalled = runningVoyage.state === 'recalled';
 
 	return (
 		<React.Fragment>
-			<VoyageStats
-				voyageData={{...running, event_content: event_data?.activeContent as IVoyageEventContent }}
-				ships={ship ? [ship] : []}
-				showPanels={running.state === 'started' ? ['estimate'] : ['rewards']}
-				playerItems={playerData.player.character.items}
-				roster={myCrew}
-				rosterType={'myCrew'}
-				allCrew={globalContext.core.crew}
-				allItems={globalContext.core.items}
-				playerData={playerData}
-			/>
+			<div style={{...flexCol, alignItems: 'stretch', gap: '0.5em'}}>
+				<VoyageStatsAccordion
+					voyageData={runningVoyage}
+					roster={myCrew}
+					rosterType={'myCrew'}
+					playerData={playerData}
+					initialExpand={!recalled}
+				/>
+				<LineupViewerAccordion
+					voyageConfig={runningVoyage}
+					ship={ship}
+					roster={myCrew}
+					rosterType={'myCrew'}
+				/>
+				<StatsRewardsAccordion
+					voyage={runningVoyage}
+					roster={myCrew}
+					initialExpand={recalled}
+					/>
+			</div>
 			<CIVASMessage voyageConfig={running} activeDetails={activeDetails} />
 			<CrewHoverStat targetGroup='voyageRewards_crew' />
 			<ItemHoverStat targetGroup='voyageRewards_item' />

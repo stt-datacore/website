@@ -1,22 +1,29 @@
-import React from "react";
-import { ViewProps } from "./context";
-import { Grid, Table, Popup, Icon, SemanticICONS } from "semantic-ui-react";
-import { GlobalContext } from "../../../context/globalcontext";
-import { PlayerCrew } from "../../../model/player";
-import { isQuipped } from "../../../utils/crewutils";
-import { AvatarView } from "../../item_presenters/avatarview";
-import { renderKwipmentBonus } from "../../item_presenters/item_presenter";
-import { getCrewTraitBonus, getCrewVP } from "../utils";
-import { AssignmentCard } from "./card";
-import { ViewContext, SHOW_SHIP_FINDER, POPUP_DELAY } from "./context";
-import { CrewFinder } from "./crewfinder";
-import { Aggregates } from "./aggregates";
+import React from 'react';
+import {
+	Grid,
+	Popup,
+	Table
+} from 'semantic-ui-react';
 
-export const TableView = (props: ViewProps) => {
+import { PlayerCrew } from '../../../model/player';
+import { GlobalContext } from '../../../context/globalcontext';
+import { isQuipped } from '../../../utils/crewutils';
+
+import { AvatarView } from '../../item_presenters/avatarview';
+import { renderKwipmentBonus } from '../../item_presenters/item_presenter';
+
+import { getCrewTraitBonus, getCrewVP, POPUP_DELAY } from '../utils';
+
+import { LayoutContext, ViewerContext } from './context';
+import { Aggregates } from './aggregates';
+import { AssignmentCard } from './assignmentcard';
+import { CrewFinder } from './crewfinder';
+
+export const TableView = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { TRAIT_NAMES, t } = globalContext.localized;
-	const { voyageConfig, rosterType, ship, shipData, assignments } = React.useContext(ViewContext);
-	const { layout } = props;
+	const { voyageConfig, rosterType, ship, shipData, assignments } = React.useContext(ViewerContext);
+	const { layout } = React.useContext(LayoutContext);
 
 	const compact = layout === 'table-compact';
 
@@ -29,7 +36,7 @@ export const TableView = (props: ViewProps) => {
 				</React.Fragment>
 			</Grid.Column>
 			<Grid.Column verticalAlign='middle'>
-				<Aggregates layout={layout} />
+				<Aggregates />
 			</Grid.Column>
 		</Grid>
 	);
@@ -45,7 +52,8 @@ export const TableView = (props: ViewProps) => {
 							<b>{ship.name}</b>
 						</Table.Cell>
 						<Table.Cell width={2} className='iconic' style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
-							{SHOW_SHIP_FINDER && voyageConfig.state === 'pending' && rosterType === 'myCrew' &&
+							{/* Ship finder deprecated as it's no longer needed */}
+							{/* {voyageConfig.state === 'pending' && rosterType === 'myCrew' &&
 								<span style={{ cursor: 'help' }}>
 									<Popup content={`On voyage selection screen, tap ${shipData.direction} ${shipData.index} times to select ship`} mouseEnterDelay={POPUP_DELAY} trigger={
 										<span style={{ whiteSpace: 'nowrap' }}>
@@ -53,7 +61,7 @@ export const TableView = (props: ViewProps) => {
 										</span>
 									} />
 								</span>
-							}
+							} */}
 						</Table.Cell>
 						<Table.Cell width={1} className='iconic'>
 							{ship.traits?.includes(voyageConfig.ship_trait) &&

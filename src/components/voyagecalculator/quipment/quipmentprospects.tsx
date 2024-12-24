@@ -1,180 +1,73 @@
 
 import React from 'react';
-import { GlobalContext } from '../../context/globalcontext';
-import { Modal, Button, Checkbox, Dropdown, Table } from 'semantic-ui-react';
-import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
-import { Skill } from '../../model/crew';
-import { PlayerCrew } from '../../model/player';
-import { ITableConfigRow, SearchableTable } from '../searchabletable';
-import { EquipmentCommon, EquipmentItem } from '../../model/equipment';
-import { getItemWithBonus, ItemWithBonus, mergeItems } from '../../utils/itemutils';
-import { AvatarView } from '../item_presenters/avatarview';
-import CrewStat from '../crewstat';
-import { skillSum } from '../../utils/crewutils';
-import { omniSearchFilter } from '../../utils/omnisearch';
-import CONFIG from '../CONFIG';
-import { ItemHoverStat } from '../hovering/itemhoverstat';
-import { useStateWithStorage } from '../../utils/storage';
+import { GlobalContext } from '../../../context/globalcontext';
+import { Modal, Button, Checkbox, Dropdown, Table, Accordion, Icon, Segment, SemanticICONS } from 'semantic-ui-react';
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../../stats/utils';
+import { Skill } from '../../../model/crew';
+import { PlayerCrew, Voyage } from '../../../model/player';
+import { ITableConfigRow, SearchableTable } from '../../searchabletable';
+import { EquipmentCommon, EquipmentItem } from '../../../model/equipment';
+import { getItemWithBonus, ItemWithBonus, mergeItems } from '../../../utils/itemutils';
+import { AvatarView } from '../../item_presenters/avatarview';
+import CrewStat from '../../crewstat';
+import { skillSum } from '../../../utils/crewutils';
+import { omniSearchFilter } from '../../../utils/omnisearch';
+import CONFIG from '../../CONFIG';
+import { useStateWithStorage } from '../../../utils/storage';
+import { IVoyageCalcConfig } from '../../../model/voyage';
 
-export type QuipmentProspectMode = 'best' | 'best_2' | 'all';
-export type VoyageSkillPreferenceMode = 'none' | 'voyage' | 'voyage_1' | 'voyage_2';
+type RecipeType = { [key: string]: EquipmentCommon[] };
+type CrewRefType = { [key: string]: PlayerCrew[] };
 
-export type QuipmentProspectConfig = {
-	mode: QuipmentProspectMode;
-	enabled: boolean;
-    current: boolean;
-	voyage: VoyageSkillPreferenceMode;
-    slots: number;
-    calc: 'all' | 'core' | 'proficiency'
+export interface QuipmentProspectAccordionProps {
+    voyageConfig: Voyage | IVoyageCalcConfig;
+    initialExpand?: boolean;
 }
 
-export interface QuipmentProspectProps {
-    config: QuipmentProspectConfig;
-    setConfig: (value: QuipmentProspectConfig) => void;
-}
+export const QuipmentProspectAccordion = (props: QuipmentProspectAccordionProps) => {
 
-export const QuipmentProspects = (props: QuipmentProspectProps) => {
     const globalContext = React.useContext(GlobalContext);
-
     const { t } = globalContext.localized;
-    const { config, setConfig } = props;
-    const [modalIsOpen, setModalIsOpen] = React.useState(false);
 
-    const flexRow = OptionsPanelFlexRow;
-    const flexCol = OptionsPanelFlexColumn;
+	const [isActive, setIsActive] = React.useState<boolean>(false);
+    const { voyageConfig: voyageData, initialExpand: externActive } = props;
+	const crew = voyageData.crew_slots.map(s => s.crew);
 
-    const crewOpts = [
-        { key: 'best', value: 'best', text: t('voyage.quipment.mode.best') },
-        { key: 'best_2', value: 'best_2', text: t('voyage.quipment.mode.best_2') },
-        { key: 'all', value: 'all', text: t('voyage.quipment.mode.all') },
-    ]
+    const voyState = voyageData.state;
+    const quipment_prospects = voyState == 'pending' && voyageData.crew_slots.some(slot => slot.crew.kwipment_prospects);
 
-    const voyOpts = [
-        { key: 'none', value: 'none', text: t('voyage.quipment.skill_prefs.none') },
-        { key: 'voyage', value: 'voyage', text: t('voyage.quipment.skill_prefs.voyage') },
-        { key: 'voyage_1', value: 'voyage_1', text: t('voyage.quipment.skill_prefs.voyage_1') },
-        { key: 'voyage_2', value: 'voyage_2', text: t('voyage.quipment.skill_prefs.voyage_2') },
-    ]
+    React.useEffect(() => {
+        if (externActive !== undefined) {
+            setIsActive(externActive);
+        }
+    }, [externActive]);
 
-    const quipOpts = [
-        { key: 'none', value: 0, text: t('quipment_dropdowns.slots.natural') },
-        { key: '1_natural', value: 1, text: t('quipment_dropdowns.slots.n_natural', { n: 1 }) },
-        { key: '2_natural', value: 2, text: t('quipment_dropdowns.slots.n_natural', { n: 2 }) },
-        { key: '3_natural', value: 3, text: t('quipment_dropdowns.slots.n_natural', { n: 3 }) },
-    ]
+    if (!quipment_prospects) return <></>;
 
-    const calcOpts = [
-        { key: 'all', value: 'all', text: t('quipment_dropdowns.calc_mode.core_and_proficiencies') },
-        { key: 'core', value: 'core', text: t('quipment_dropdowns.calc_mode.core') },
-        { key: 'proficiency', value: 'proficiency', text: t('quipment_dropdowns.calc_mode.proficiencies') },
-    ]
-
-    return (
-		<Modal
-			size='small'
-			open={modalIsOpen}
-			onClose={() => setModalIsOpen(false)}
-			onOpen={() => setModalIsOpen(true)}
-			trigger={renderTrigger()}
-			centered={true}
-		>
-			<Modal.Header>
+	return (
+		<Accordion>
+			<Accordion.Title
+				active={isActive}
+				onClick={() => setIsActive(!isActive)}
+			>
+                <Icon name={isActive ? 'caret down' : 'caret right' as SemanticICONS} />
 				{t('voyage.quipment.title')}
-			</Modal.Header>
-			<Modal.Content >
-                <div style={{...flexCol, gap: '1em', flexWrap: 'wrap'}}>
-                    <div style={{...flexCol, gap: '1em', alignItems: 'flex-start', flexWrap: 'wrap'}}>
-                        <Checkbox label={t('voyage.quipment.enable')}
-                            style={{wordWrap:'wrap'}}
-                            checked={config.enabled}
-                            onChange={(e, { checked }) => setConfig({...config, enabled: !!checked })}
-                            />
-                        <Checkbox label={t('voyage.quipment.use_current')}
-                            style={{wordWrap:'wrap'}}
-                            disabled={!config.enabled}
-                            checked={config.current}
-                            onChange={(e, { checked }) => setConfig({...config, current: !!checked })}
-                            />
-                        <div style={{...flexRow, gap: '2em', flexWrap: 'wrap'}}>
-                            <div style={{...flexCol, alignItems: 'flex-start', gap: '1em'}}>
-                                <b>{t('voyage.quipment.crew_prefs')}</b>
-                                <Dropdown
-                                    disabled={!config.enabled}
-                                    selection
-                                    options={crewOpts}
-                                    value={config.mode}
-                                    onChange={(e, { value }) => {
-                                        setConfig({...config, mode: value as QuipmentProspectMode })
-                                    }}
-                                    />
-                            </div>
-                            <div style={{...flexCol, alignItems: 'flex-start', gap: '1em'}}>
-                                <b>{t('voyage.quipment.voyage_prefs')}</b>
-                                <Dropdown
-                                    disabled={!config.enabled}
-                                    selection
-                                    clearable
-                                    options={voyOpts}
-                                    value={config.voyage}
-                                    onChange={(e, { value }) => {
-                                        setConfig({...config, voyage: value as VoyageSkillPreferenceMode || 'none' })
-                                    }}
-                                    />
-                            </div>
-                        </div>
-                        <div style={{...flexRow, gap: '2em', flexWrap: 'wrap'}}>
-                            <div style={{...flexCol, alignItems: 'flex-start', gap: '1em'}}>
-                                <b>{t('quipment_dropdowns.slot_label')}</b>
-                                <Dropdown
-                                    disabled={!config.enabled}
-                                    selection
-                                    clearable
-                                    options={quipOpts}
-                                    value={config.slots || 0}
-                                    onChange={(e, { value }) => {
-                                        setConfig({...config, slots: value as number || 0 })
-                                    }}
-                                    />
-                            </div>
-                            <div style={{...flexCol, alignItems: 'flex-start', gap: '1em'}}>
-                                <b>{t('quipment_dropdowns.calc_mode_label')}</b>
-                                <Dropdown
-                                    disabled={!config.enabled}
-                                    selection
-                                    options={calcOpts}
-                                    value={config.calc || 'all'}
-                                    onChange={(e, { value }) => {
-                                        setConfig({...config, calc: value as 'all' | 'core' | 'proficiency' })
-                                    }}
-                                    />
-                            </div>
-                        </div>
-                        <i>{t('voyage.quipment.voyage_prefs_explain')}</i>
-                    </div>
-                </div>
-			</Modal.Content>
-			<Modal.Actions>
-				<Button onClick={() => setModalIsOpen(false)}>
-                    {t('global.close')}
-				</Button>
-			</Modal.Actions>
-		</Modal>
+			</Accordion.Title>
+			<Accordion.Content active={isActive}>
+				{isActive && (
+					<Segment>
+		                <QuipmentProspectList crew={crew} />
+                    </Segment>
+				)}
+			</Accordion.Content>
+		</Accordion>
 	);
 
-    function renderTrigger() {
-
-        return <Button color={config.enabled ? 'green' : undefined}>
-            {t('voyage.quipment.title')}
-        </Button>
-    }
 }
 
 export interface QuipmentProspectListProps {
     crew: PlayerCrew[];
 }
-
-type RecipeType = { [key: string]: EquipmentCommon[] };
-type CrewRefType = { [key: string]: PlayerCrew[] };
 
 export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
 

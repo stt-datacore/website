@@ -1,11 +1,57 @@
 import React from 'react';
-import { Loot, PlayerCrew, PlayerEquipmentItem, Reward } from "../../../model/player";
+import { Loot, PlayerCrew, PlayerEquipmentItem, Reward, Voyage } from "../../../model/player";
 import { isMobile } from 'react-device-detect';
-import { Grid, Header } from 'semantic-ui-react';
+import { Accordion, Grid, Header, Icon, Segment, SemanticICONS } from 'semantic-ui-react';
 import { checkReward } from '../../../utils/itemutils';
-import ItemDisplay from '../../itemdisplay';
 import { GlobalContext } from '../../../context/globalcontext';
+import { AvatarView, BasicItem } from '../../item_presenters/avatarview';
 
+type VoyageRewardsAccordionProps = {
+	voyage: Voyage;
+	roster?: PlayerCrew[];
+    initialExpand?: boolean;
+};
+
+export const StatsRewardsAccordion = (props: VoyageRewardsAccordionProps) => {
+    const globalContext = React.useContext(GlobalContext);
+    const playerItems = globalContext.player.playerData?.player.character.items ?? [];
+
+	const [isActive, setIsActive] = React.useState<boolean>(false);
+	const { voyage, roster, initialExpand: externActive } = props;
+
+    const rewards = voyage.pending_rewards?.loot ?? [];
+
+    React.useEffect(() => {
+        if (externActive !== undefined) {
+            setIsActive(externActive);
+        }
+    }, [externActive]);
+
+	return (
+		<Accordion>
+			<Accordion.Title
+				active={isActive}
+				onClick={() => setIsActive(!isActive)}
+			>
+                <Icon name={isActive ? 'caret down' : 'caret right' as SemanticICONS} />
+				<VoyageStatsRewardsTitle
+                    roster={roster}
+                    rewards={rewards} />
+			</Accordion.Title>
+			<Accordion.Content active={isActive}>
+				{isActive && (
+					<Segment>
+						<VoyageStatsRewards
+							playerItems={playerItems}
+                            roster={roster}
+                            rewards={rewards}
+						/>
+					</Segment>
+				)}
+			</Accordion.Content>
+		</Accordion>
+	);
+};
 
 export interface VoyageStatsRewardsProps {
     playerItems?: PlayerEquipmentItem[];
@@ -13,19 +59,17 @@ export interface VoyageStatsRewardsProps {
     rewards: Loot[] | Reward[]
 }
 
-
 export const VoyageStatsRewards = (props: VoyageStatsRewardsProps) => {
     const { playerItems, roster, rewards } = props;
     const globalContext = React.useContext(GlobalContext);
-    const { items: allItems, crew: allCrew } = globalContext.core;
-    const { playerData } = globalContext.player;
+    const { items: allItems } = globalContext.core;
 
-    rewards.sort((a, b) => {
+    rewards.sort((a: Loot | Reward, b: Loot | Reward) => {
         if (a.type == b.type && a.item_type === b.item_type && a.rarity == b.rarity)
             return a.full_name.localeCompare(b.full_name);
         else if (a.type == b.type && a.item_type === b.item_type)
             return b.rarity - a.rarity;
-        else if (a.type == b.type)
+        else if (a.type == b.type && a.item_type !== undefined && b.item_type !== undefined)
             return b.item_type - a.item_type;
         else if (a.type == 2)
             return 1;
@@ -34,24 +78,12 @@ export const VoyageStatsRewards = (props: VoyageStatsRewardsProps) => {
         return a.type - b.type;
     });
 
-    const hideRarity = entry => entry.type == 3;
-    const rarity = entry => entry.type == 1 ? 1 : entry.rarity;
-    const getCrewSymbol = entry => entry.type == 1 ? entry.symbol : entry.symbol;
-    const assetURL = file => {
-        let url = file === 'energy_icon'
-            ? 'atlas/energy_icon.png'
-            : `${file.substring(1).replaceAll('/', '_')}`;
-
-        if (!url.match(/\.png$/))
-            url += '.png'
-        return `${process.env.GATSBY_ASSETS_URL}${url}`;
-    };
-
-    const itemsOwned = item => {
+    const itemsOwned = (item: { symbol?: string }) => {
         const pItem = playerItems?.find(i => i.symbol == item.symbol);
         return `(Have ${pItem ? (pItem?.quantity ?? 0) > 1000 ? `${Math.floor((pItem.quantity ?? 0) / 1000)}k+` : pItem.quantity : 0})`;
     };
-    const ownedFuncs = [
+
+    const ownedFuncs: ((item: { symbol?: string }) => string)[] = [
         item => '',
         item => {
             const owned = roster?.filter(c => c.symbol == item.symbol);
@@ -86,12 +118,10 @@ export const VoyageStatsRewards = (props: VoyageStatsRewardsProps) => {
         item => '',
     ];
 
-    var me = this;
-
     return (
         <>
             <div>
-                <Grid columns={isMobile ? 2 : 5} centered padded>
+                <Grid columns={isMobile ? 2 : 5} centered padded style={{justifyContent: 'flex-start'}}>
                     {rewards.map((reward: Reward, idx) => {
                         checkReward(allItems ?? [], reward);
                         return (
@@ -99,19 +129,17 @@ export const VoyageStatsRewards = (props: VoyageStatsRewardsProps) => {
                                 <Header
                                     style={{ display: 'flex' }}
                                     icon={
-                                        <ItemDisplay
-                                            quantity={reward.quantity}
-                                            src={assetURL(reward.icon?.file)}
+                                        <AvatarView
+                                            style={{marginRight: '0.25em'}}
+                                            mode={reward.type}
                                             size={48}
-                                            rarity={rarity(reward)}
-                                            maxRarity={reward.rarity}
-                                            hideRarity={hideRarity(reward)}
                                             targetGroup={reward.type === 1 ? 'voyageRewards_crew' : 'voyageRewards_item'}
-                                            itemSymbol={getCrewSymbol(reward)}
-                                            allCrew={allCrew}
-                                            allItems={allItems}
-                                            playerData={playerData}
-                                        />
+                                            item={{
+                                                ...reward,
+                                                isReward: true
+                                            } as BasicItem}
+                                            partialItem={true}
+                                            />
                                     }
                                     content={reward.name}
                                     subheader={`Got ${reward.quantity?.toLocaleString()} ${ownedFuncs[reward.type] ? ownedFuncs[reward.type](reward) : reward.type}`}

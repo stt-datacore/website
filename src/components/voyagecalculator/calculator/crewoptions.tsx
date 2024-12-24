@@ -11,7 +11,7 @@ import { OptionsPanelFlexColumn } from "../../stats/utils";
 import { CalculatorContext } from "../context";
 import { CrewExcluder } from "../crewexcluder";
 import { CrewThemes } from "../crewthemes";
-import { QuipmentProspects } from "../quipmentprospects";
+import { QuipmentProspectsOptions } from "../quipment/options";
 import { UserPrefsContext } from "./userprefs";
 
 export type CrewOptionsProps = {
@@ -116,7 +116,7 @@ export const CrewOptions = (props: CrewOptionsProps) => {
 								setPreConsideredCrew={setPreConsideredCrew}
 							/>
 
-							<QuipmentProspects
+							<QuipmentProspectsOptions
 								config={qpConfig}
 								setConfig={setQPConfig}
 								/>

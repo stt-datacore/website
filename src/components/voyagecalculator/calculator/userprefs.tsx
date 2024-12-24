@@ -1,6 +1,6 @@
 import React from "react";
 import { GameWorkerOptions } from "../../../model/worker";
-import { QuipmentProspectConfig } from "../quipmentprospects";
+import { QuipmentProspectConfig } from "../quipment/options";
 
 // These preferences are per-user, so they need separate handlers when there's no player data
 export interface IUserPrefsContext {

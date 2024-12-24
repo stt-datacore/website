@@ -1,16 +1,19 @@
-import React from "react";
+import React from 'react';
+import {
+	Icon,
+	Popup,
+	Table
+} from 'semantic-ui-react';
 
-import { POPUP_DELAY, ViewContext, ViewProps, voySkillScore } from './context';
-import { Table, Popup, Icon } from "semantic-ui-react";
-import { GlobalContext } from "../../../context/globalcontext";
-import CONFIG from "../../CONFIG";
-import { getCrewVP } from "../utils";
+import { GlobalContext } from '../../../context/globalcontext';
+import CONFIG from '../../CONFIG';
+import { getCrewVP, POPUP_DELAY, voySkillScore } from '../utils';
+import { LayoutContext, ViewerContext } from './context';
 
-
-export const Aggregates = (props: ViewProps) => {
-	const { voyageConfig, ship, shipData, assignments } = React.useContext(ViewContext);
-	const { layout } = props;
+export const Aggregates = () => {
 	const { t } = React.useContext(GlobalContext).localized;
+	const { voyageConfig, ship, shipData, assignments } = React.useContext(ViewerContext);
+	const { layout } = React.useContext(LayoutContext);
 	const landscape = layout === 'grid-cards' || layout === 'grid-icons';
 
 	return (
@@ -140,4 +143,3 @@ export const Aggregates = (props: ViewProps) => {
 		);
 	}
 };
-
