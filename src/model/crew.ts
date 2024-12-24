@@ -106,6 +106,7 @@ export interface CrewMember extends QuipmentScores {
 
     price?: number;
     sell_count?: number;
+    post_bigbook_epoch: boolean;
 }
 
 export interface EquipmentSlot {

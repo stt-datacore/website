@@ -1,6 +1,8 @@
 import { CrewMember } from "./crew";
 import { MilestoneBuff, Reward } from "./player";
 
+export const POST_BIGBOOK_EPOCH = new Date('2024-12-24T00:00:00Z');
+
 export type Variant = {
   name: string;
   trait_variants: CrewMember[];

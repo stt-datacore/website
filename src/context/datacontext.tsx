@@ -3,7 +3,7 @@ import { Gauntlet } from '../model/gauntlets';
 import { CrewMember, QuipmentScores, SkillQuipmentScores } from '../model/crew';
 import { Ship, Schematics, BattleStations } from '../model/ship';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
-import { Collection, Constellation, KeystoneBase, Polestar } from '../model/game-elements';
+import { Collection, Constellation, KeystoneBase, Polestar, POST_BIGBOOK_EPOCH } from '../model/game-elements';
 import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
 import { Mission } from '../model/missions';
 import { Icon } from 'semantic-ui-react';
@@ -328,6 +328,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (typeof item.date_added === 'string') {
 				item.date_added = new Date(item.date_added);
 			}
+			item.post_bigbook_epoch = item.date_added.getTime() > POST_BIGBOOK_EPOCH.getTime();
 		});
 
 		return result;
