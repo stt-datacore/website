@@ -6,6 +6,9 @@ import { EquipmentItem, EquipmentItemSource, IDemand } from '../src/model/equipm
 import { BaseSkills, ComputedSkill, CrewMember, EquipmentSlot, QuipmentScores, Ranks, Skill, SkillQuipmentScores } from '../src/model/crew';
 import { Mission } from '../src/model/missions';
 import { BattleStations, Schematics, Ship } from '../src/model/ship';
+import { iterateBattle } from '../src/workers/battleworkerutils';
+import { set } from 'lodash-es';
+import { AttackInstant, ShipWorkerItem } from '../src/model/worker';
 
 function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[]) => U[] | false) {
     var current_iter = 0n;
@@ -1184,7 +1187,114 @@ function processShips(): void {
 	}
 }
 
+function processCrewShipStats() {
+	let ship_schematics = JSON.parse(fs.readFileSync(STATIC_PATH + 'ship_schematics.json', 'utf-8')) as Schematics[];
+	let crew = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf-8')) as CrewMember[];
+
+	let ships = ship_schematics.map(m => m.ship).filter(s => highestLevel(s) == (s.max_level ?? s.level) + 1);
+	let current_id = 1;
+	let ignore_skill = true;
+	let battle_mode = 'skirmish';
+
+	const processBattleRun = (attacks: AttackInstant[], crew_set: CrewMember[]) => {
+		let result_crew = [] as CrewMember[];
+		const ship = attacks[0].ship;
+
+		ship.battle_stations?.forEach((bs) => {
+			for (let c of crew_set) {
+				if (!result_crew.includes(c)) {
+					if (c.skill_order.includes(bs.skill) || ignore_skill) {
+						result_crew.push(c);
+						break;
+					}
+				}
+			}
+		});
+
+		const attack = attacks.reduce((p, n) => p + n.attack, 0);
+		const min_attack = attacks.reduce((p, n) => p + n.min_attack, 0);
+		const max_attack = attacks.reduce((p, n) => p + n.max_attack, 0);
+		const battle_time = attacks.reduce((p, n) => p > n.second ? p : n.second, 0);
+		let weighted_attack = 0;
+		if (battle_mode === 'skirmish') {
+			weighted_attack = attacks.reduce((p, n) => (p + (!n.second ? 0 : (n.attack / (n.second * 2)))), 0);
+		}
+		else {
+			weighted_attack = attacks.reduce((p, n) => (p + (!n.second ? 0 : (n.attack / n.second))), 0);
+		}
+
+		let highest_attack = 0;
+		let high_attack_second = 0;
+
+		attacks.forEach((attack) => {
+			if (attack.max_attack > highest_attack) {
+				highest_attack = attack.max_attack;
+				high_attack_second = attack.second;
+			}
+		});
+
+		let arena_metric = (highest_attack / high_attack_second);
+		let skirmish_metric = weighted_attack;
+		let fbb_metric = attack;
+
+		return {
+			id: current_id++,
+			rate: 0.5,
+			battle_mode: 'pvp',
+			attack,
+			min_attack,
+			max_attack,
+			battle_time,
+			crew: result_crew,
+			percentile: 0,
+			ship: attacks[0].ship,
+			weighted_attack,
+			skirmish_metric,
+			arena_metric,
+			fbb_metric,
+			//attacks: get_attacks ? attacks : undefined
+		} as ShipWorkerItem;
+	}
+
+	const crew_attacks = {} as {[key: string]: { crew: string, ship: string, score: number }};
+
+	console.log("Calculate crew ship battle scores...");
+	for (let ship of ships) {
+		console.log(`Testing crew on ${ship.name} ...`);
+		for (let c of crew) {
+			let result = iterateBattle(0.5, false, ship, [c], undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true);
+			if (result.length) {
+				result[0].ship = ship;
+				let attack = processBattleRun(result, [c]);
+				crew_attacks[c.symbol] ??= {
+					crew: c.symbol,
+					ship: ship.symbol,
+					score: 0
+				}
+				let metric = attack.arena_metric;
+				if (c.action.ability?.condition && (!ship.actions?.some(a => a.status == c.action?.ability?.condition))) {
+					metric /= 4;
+				}
+				if (!c.skill_order.some(skill => ship.battle_stations?.some(bs => skill == bs.skill))) {
+					metric /= 4;
+				}
+				if (c.action?.limit) {
+					let lim = 4 - c.action.limit;
+					if (lim <= 0) lim = 1;
+					metric /= lim;
+				}
+				metric *= ship.rarity;
+				crew_attacks[c.symbol].score += Math.ceil(metric);
+			}
+		}
+	}
+	let scores = Object.values(crew_attacks);
+	scores.sort((a, b) => b.score - a.score);
+	console.log(scores.map(c => c.crew));
+}
+
 main();
 updateExcelSheet();
 generateMissions();
 processShips();
+processCrewShipStats();

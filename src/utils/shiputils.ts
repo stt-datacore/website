@@ -356,8 +356,8 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 	return results;
 }
 
-export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true): Ship | false {
-	if (!ship?.battle_stations?.length || !crewStations?.length || crewStations.length !== ship.battle_stations.length) return false;
+export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true, ignoreSeats = false): Ship | false {
+	if (!ship?.battle_stations?.length || !crewStations?.length || (!ignoreSeats && crewStations.length !== ship.battle_stations.length)) return false;
 
 	let newship = JSON.parse(JSON.stringify(ship)) as Ship;
 	let x = 0;
