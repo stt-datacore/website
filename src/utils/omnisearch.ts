@@ -1,8 +1,4 @@
-import CONFIG from "../components/CONFIG";
-import { CrewMember } from "../model/crew";
 import { Filter } from "../model/game-elements";
-import { PlayerCrew } from "../model/player";
-import { skillToShort } from "./crewutils";
 
 export interface OmniSearchColumn {
     field: string;
