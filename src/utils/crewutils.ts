@@ -888,7 +888,7 @@ export function formatTierLabel(crew: PlayerCrew | CrewMember): string {
 	// 	return '$';
 	// }
 	if (!crew.bigbook_tier || crew.bigbook_tier === -1) {
-		if (crew.post_bigbook_epoch) return 'N/A';
+		if (crew.post_bigbook_epoch) return '-';
 		return '?';
 	}
 	return `${crew.bigbook_tier}`;
