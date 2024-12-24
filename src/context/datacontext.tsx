@@ -329,6 +329,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 				item.date_added = new Date(item.date_added);
 			}
 			item.post_bigbook_epoch = item.date_added.getTime() > POST_BIGBOOK_EPOCH.getTime();
+			item.bigbook_tier ??= 0;
 		});
 
 		return result;
