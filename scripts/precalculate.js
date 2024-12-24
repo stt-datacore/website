@@ -395,7 +395,7 @@ function main() {
 			else {
 				crew.in_portal = !!mdData.meta.in_portal;
 			}
-			crew.date_added = new Date();
+
 			if (mdData.meta.date) {
 				// Date is in European format :) "dd/mm/yyyy"
 				let m = mdData.meta.date.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
@@ -403,6 +403,12 @@ function main() {
 					crew.date_added = new Date(m[3], m[2] - 1, m[1]);
 				}
 			}
+			else {
+				crew.date_added ??= new Date();
+			}
+
+			if (typeof crew.date_added === 'string') crew.date_added = new Date(crew.date_added);
+
 			if (!crew.obtained) {
 				crew.obtained = mdData.meta.obtained ? mdData.meta.obtained : 'N/A';
 			}
