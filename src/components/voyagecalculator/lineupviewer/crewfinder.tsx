@@ -1,9 +1,13 @@
-import React from "react";
-import { Icon, Popup } from "semantic-ui-react";
-import { GlobalContext } from "../../../context/globalcontext";
-import { PlayerCrew } from "../../../model/player";
-import { ISkillsRank, POPUP_DELAY } from "./context";
+import React from 'react';
+import {
+	Icon,
+	Popup
+} from 'semantic-ui-react';
 
+import { PlayerCrew } from '../../../model/player';
+import { GlobalContext } from '../../../context/globalcontext';
+import { POPUP_DELAY } from '../utils';
+import { ISkillsRank } from './model';
 
 export type CrewFinderProps = {
 	crew: PlayerCrew;
@@ -11,8 +15,8 @@ export type CrewFinderProps = {
 };
 
 export const CrewFinder = (props: CrewFinderProps) => {
-	const { crew, bestRank } = props;
 	const { t } = React.useContext(GlobalContext).localized;
+	const { crew, bestRank } = props;
 
 	let popup = { content: '', trigger: <></> };
 

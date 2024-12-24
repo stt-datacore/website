@@ -1,15 +1,24 @@
 import React from 'react';
-import { Card, Label, Popup, Icon } from 'semantic-ui-react';
+import {
+	Card,
+	Icon,
+	Label,
+	Popup
+} from 'semantic-ui-react';
+
+import { PlayerCrew } from '../../../model/player';
 import { GlobalContext } from '../../../context/globalcontext';
 import { isQuipped } from '../../../utils/crewutils';
+
+import CONFIG from '../../CONFIG';
 import { AvatarView } from '../../item_presenters/avatarview';
 import { renderKwipmentBonus } from '../../item_presenters/item_presenter';
-import { getCrewVP, getCrewTraitBonus } from '../utils';
-import { IAssignment, ViewContext, POPUP_DELAY, voySkillScore } from './context';
-import { PlayerCrew } from '../../../model/player';
-import CONFIG from '../../CONFIG';
-import { CrewFinder } from './crewfinder';
 
+import { getCrewTraitBonus, getCrewVP, POPUP_DELAY, voySkillScore } from '../utils';
+
+import { IAssignment } from './model';
+import { ViewerContext } from './context';
+import { CrewFinder } from './crewfinder';
 
 export type AssignmentCardProps = {
 	assignment: IAssignment;
@@ -19,7 +28,7 @@ export type AssignmentCardProps = {
 export const AssignmentCard = (props: AssignmentCardProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { TRAIT_NAMES, t } = globalContext.localized;
-	const { voyageConfig } = React.useContext(ViewContext);
+	const { voyageConfig } = React.useContext(ViewerContext);
 	const { assignment: { crew, name, trait, bestRank }, showSkills } = props;
 
 	return (

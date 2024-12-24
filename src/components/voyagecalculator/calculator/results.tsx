@@ -13,7 +13,7 @@ import { CalculatorContext } from '../context';
 import { CalculatorState } from '../helpers/calchelpers';
 import VoyageStatsAccordion from '../stats/stats_accordion';
 import { VPGraphAccordion } from '../vpgraph';
-import { LineupViewerAccordion } from '../lineup/lineup_accordion';
+import { LineupViewerAccordion } from '../lineupviewer/lineup_accordion';
 import { QuipmentProspectAccordion } from '../quipment/quipmentprospects';
 import { OptionsPanelFlexColumn } from '../../stats/utils';
 

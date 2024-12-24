@@ -1,16 +1,24 @@
-import React from "react";
-import { POPUP_DELAY, SHOW_SHIP_FINDER, ViewContext, ViewProps } from "./context";
-import { Grid, Table, Popup, Icon, SemanticICONS } from "semantic-ui-react";
-import { GlobalContext } from "../../../context/globalcontext";
-import { AvatarView } from "../../item_presenters/avatarview";
-import { Aggregates } from "./aggregates";
-import { AssignmentCard } from "./card";
-import { CrewFinder } from "./crewfinder";
+import React from 'react';
+import {
+	Grid,
+	Popup,
+	Table
+} from 'semantic-ui-react';
 
-export const GridView = (props: ViewProps) => {
-	const { voyageConfig, rosterType, ship, shipData, assignments } = React.useContext(ViewContext);
-	const { layout } = props;
+import { GlobalContext } from '../../../context/globalcontext';
+import { AvatarView } from '../../item_presenters/avatarview';
+
+import { POPUP_DELAY } from '../utils';
+
+import { LayoutContext, ViewerContext } from './context';
+import { Aggregates } from './aggregates';
+import { AssignmentCard } from './assignmentcard';
+import { CrewFinder } from './crewfinder';
+
+export const GridView = () => {
 	const { t } = React.useContext(GlobalContext).localized;
+	const { voyageConfig, rosterType, ship, shipData, assignments } = React.useContext(ViewerContext);
+	const { layout } = React.useContext(LayoutContext);
 
 	return (
 		<React.Fragment>
@@ -29,7 +37,7 @@ export const GridView = (props: ViewProps) => {
 			}
 
 			<div style={{ marginTop: '2em' }}>
-				<Aggregates layout={layout} />
+				<Aggregates />
 			</div>
 		</React.Fragment>
 	);
@@ -45,7 +53,8 @@ export const GridView = (props: ViewProps) => {
 							<b>{ship.name}</b>
 						</Table.Cell>
 						<Table.Cell width={2} className='iconic' style={{ fontSize: '1.1em' }}>
-							{SHOW_SHIP_FINDER && voyageConfig.state === 'pending' && rosterType === 'myCrew' &&
+							{/* Ship finder deprecated as it's no longer needed */}
+							{/* {voyageConfig.state === 'pending' && rosterType === 'myCrew' &&
 								<span style={{ cursor: 'help' }}>
 									<Popup content={`On voyage selection screen, tap ${shipData.direction} ${shipData.index} times to select ship`} mouseEnterDelay={POPUP_DELAY} trigger={
 										<span style={{ whiteSpace: 'nowrap' }}>
@@ -53,7 +62,7 @@ export const GridView = (props: ViewProps) => {
 										</span>
 									} />
 								</span>
-							}
+							} */}
 						</Table.Cell>
 						<Table.Cell width={1} className='iconic'>
 							{shipData.shipBonus > 0 &&
@@ -113,4 +122,3 @@ export const GridView = (props: ViewProps) => {
 		);
 	}
 };
-

@@ -6,14 +6,22 @@ import {
 	SemanticICONS
 } from 'semantic-ui-react';
 
+import { Skill } from '../../../model/crew';
 import { PlayerCrew, Voyage, VoyageCrewSlot } from '../../../model/player';
 import { Ship } from '../../../model/ship';
 import { IVoyageCalcConfig } from '../../../model/voyage';
 import { GlobalContext } from '../../../context/globalcontext';
+import { useStateWithStorage } from '../../../utils/storage';
+
 import CONFIG from '../../CONFIG';
-import { getShipTraitBonus } from '../utils';
-import { ISkillsRankings, IAssignment, ISkillsRank, IShipData, IViewContext, ViewContext, crewVoySkillsScore, crewProfSkillsMax, crewProfSkillsMin } from './context';
-import { NonPlayerViewPicker, PlayerViewPicker } from './pickers';
+
+import { getShipTraitBonus, voySkillScore } from '../utils';
+
+import { ILayoutContext, IViewerContext, LayoutContext, ViewerContext } from './context';
+import { ISkillsRankings, IAssignment, ISkillsRank, IShipData } from './model';
+import { GridView } from './gridview';
+import { LayoutPicker } from './layoutpicker';
+import { TableView } from './tableview';
 
 type LineupViewerProps = {
 	configSource?: 'player' | 'custom';
@@ -70,6 +78,14 @@ export const LineupViewer = (props: LineupViewerProps) => {
 
 	const findBestRank: boolean = configSource === 'player';
 
+	const crewVoySkillsScore = (c: PlayerCrew, skills: string[]) => skills.reduce((prev, curr) => prev + voySkillScore((c.skills[curr] as Skill)), 0);
+
+	// Average prof (profSkillScore) might be first tiebreaker for encounter crew sort
+	// const profSkillScore = (sk: Skill) => (sk.range_min + sk.range_max)/2;
+	// const crewProfSkillsScore = (c: PlayerCrew, skills: string[]) => skills.reduce((prev, curr) => prev + profSkillScore((c.skills[curr] as Skill)), 0);
+	const crewProfSkillsMax = (c: PlayerCrew, skills: string[]) => skills.reduce((prev, curr) => prev + (c.skills[curr] as Skill).range_max, 0);
+	const crewProfSkillsMin = (c: PlayerCrew, skills: string[]) => skills.reduce((prev, curr) => prev + (c.skills[curr] as Skill).range_min, 0);
+
 	const skillRankings: ISkillsRankings = initSkillRankings();
 	const skillCombos: ISkillsRankings = initSkillCombos();
 
@@ -101,7 +117,7 @@ export const LineupViewer = (props: LineupViewerProps) => {
 		shipData.crewBonus = voyageConfig.max_hp - ship.antimatter - shipData.shipBonus;
 	}
 
-	const viewContext: IViewContext = {
+	const viewerContext: IViewerContext = {
 		voyageConfig,
 		rosterType,
 		ship,
@@ -110,12 +126,12 @@ export const LineupViewer = (props: LineupViewerProps) => {
 	};
 
 	return (
-		<ViewContext.Provider value={viewContext}>
+		<ViewerContext.Provider value={viewerContext}>
 			<React.Fragment>
-				{playerData && <PlayerViewPicker dbid={`${playerData.player.dbid}`} />}
-				{!playerData && <NonPlayerViewPicker />}
+				{playerData && <PlayerLineupViewer dbid={`${playerData.player.dbid}`} />}
+				{!playerData && <NonPlayerLineupViewer />}
 			</React.Fragment>
-		</ViewContext.Provider>
+		</ViewerContext.Provider>
 	);
 
 	function initSkillRankings(): ISkillsRankings {
@@ -358,3 +374,57 @@ export const LineupViewer = (props: LineupViewerProps) => {
 	}
 };
 
+const PlayerLineupViewer = (props: { dbid: string }) => {
+	const [layout, setLayout] = useStateWithStorage<string>(props.dbid+'/voyage/layout', 'table-compact', { rememberForever: true });
+
+	// Layout override may prevent user from changing layout
+	//	(When is this used?)
+	let layoutOverride: string | undefined;
+	if (window.location.search?.length) {
+		const search: URLSearchParams = new URLSearchParams(window.location.search);
+		if (search.has('layout')) {
+			const paramLayout: string | null = search.get('layout');
+			if (paramLayout && ['table-compact', 'table-standard', 'grid-cards', 'grid-icons'].includes(paramLayout)) {
+				layoutOverride = paramLayout;
+			}
+		}
+	}
+
+	const layoutContext: ILayoutContext = {
+		layout: layoutOverride ?? layout,
+		setLayout
+	};
+
+	return (
+		<LayoutContext.Provider value={layoutContext}>
+			<React.Fragment>
+				{(layout === 'table-compact' || layout === 'table-standard') && <TableView />}
+				{(layout === 'grid-cards' || layout === 'grid-icons') && <GridView />}
+				<div style={{ marginTop: '2em' }}>
+					<LayoutPicker />
+				</div>
+			</React.Fragment>
+		</LayoutContext.Provider>
+	);
+};
+
+const NonPlayerLineupViewer = () => {
+	const [layout, setLayout] = React.useState<string>('table-compact');
+
+	const layoutContext: ILayoutContext = {
+		layout,
+		setLayout
+	};
+
+	return (
+		<LayoutContext.Provider value={layoutContext}>
+			<React.Fragment>
+				{(layout === 'table-compact' || layout === 'table-standard') && <TableView />}
+				{(layout === 'grid-cards' || layout === 'grid-icons') && <GridView />}
+				<div style={{ marginTop: '2em' }}>
+					<LayoutPicker />
+				</div>
+			</React.Fragment>
+		</LayoutContext.Provider>
+	);
+};

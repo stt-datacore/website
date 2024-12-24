@@ -27,7 +27,7 @@ import { HistoryContext, IHistoryContext } from '../voyagehistory/context';
 import { HistoryHome } from '../voyagehistory/historyhome';
 import { HistoryMessage } from '../voyagehistory/message';
 import { createCheckpoint, defaultHistory, getTrackedData, InitState, NEW_VOYAGE_ID, postVoyage, SyncState, updateVoyageInHistory } from '../voyagehistory/utils';
-import { LineupViewerAccordion } from './lineup/lineup_accordion';
+import { LineupViewerAccordion } from './lineupviewer/lineup_accordion';
 import { StatsRewardsAccordion } from './rewards/rewards_accordion';
 import { OptionsPanelFlexColumn } from '../stats/utils';
 

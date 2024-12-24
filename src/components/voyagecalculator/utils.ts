@@ -1,6 +1,11 @@
+import { Skill } from '../../model/crew';
 import { PlayerCrew } from '../../model/player';
 import { Ship } from '../../model/ship';
 import { IVoyageEventContent, IVoyageInputConfig } from '../../model/voyage';
+
+export const POPUP_DELAY = 500;
+
+export const voySkillScore = (sk: Skill) => sk.core + (sk.range_min + sk.range_max) / 2;
 
 export function getShipTraitBonus(voyageConfig: IVoyageInputConfig, ship: Ship): number {
 	let shipBonus: number = 0;
