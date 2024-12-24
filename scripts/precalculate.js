@@ -403,9 +403,8 @@ function main() {
 					crew.date_added = new Date(m[3], m[2] - 1, m[1]);
 				}
 			}
-			else {
-				crew.date_added ??= new Date();
-			}
+
+			crew.date_added ??= new Date();
 
 			if (typeof crew.date_added === 'string') crew.date_added = new Date(crew.date_added);
 
