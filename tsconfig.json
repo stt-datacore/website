@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+      "target": "esnext",
+      "module": "esnext",
+      "moduleResolution": "node",
+      "jsx": "preserve",
+      "resolveJsonModule": true,
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "noImplicitAny": false,
+      "forceConsistentCasingInFileNames": true,
+      "lib": ["dom", "esnext"],
+      "allowSyntheticDefaultImports": true
+    },
+    "exclude": ["node_modules", ".cache", "public"]
+  }

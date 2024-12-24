@@ -551,7 +551,8 @@ export default class CONFIG {
 				{ name: 'Episch', imageUrl: 'mastery_highest_icon' }
 			)
 
-			this.SKILLS.command_skill = 'Befehl';
+			this.SKILLS.command_skill = 'Kommando';
+			//this.SKILLS.command_skill = 'Befehl';
 			this.SKILLS.science_skill = 'Wissenschaft';
 			this.SKILLS.security_skill = 'Sicherheit';
 			this.SKILLS.engineering_skill = 'Ingenieurwesen';

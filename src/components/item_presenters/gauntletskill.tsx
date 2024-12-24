@@ -8,8 +8,6 @@ import { getPlayerPairs, getSkills } from "../../utils/crewutils";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { StatLabel } from "../statlabel";
 
-
-
 export interface GauntletSkillProps extends PresenterPluginProps<PlayerCrew | CrewMember> {
     data: Gauntlet | Gauntlet[];
 }
@@ -20,15 +18,14 @@ export interface GauntletSkillsState extends PresenterPluginState {
 
 export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, GauntletSkillProps, GauntletSkillsState> {
     static contextType = GlobalContext;
-    context!: React.ContextType<typeof GlobalContext>;
-    props!: Readonly<GauntletSkillProps>;
-    
+    declare context: React.ContextType<typeof GlobalContext>;
+    declare props: Readonly<GauntletSkillProps>;
+
     constructor(props: GauntletSkillProps) {
         super(props);
     }
-    
-    private readonly drawLeftArea = () => {
 
+    private readonly drawLeftArea = () => {
         const { context: crew, data: node } = this.props;
 
         if (Array.isArray(node)) {
@@ -43,7 +40,7 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
                     let pct = `${tf.length * 20 + 5}%`;
                     critters[pct] ??= 0;
                     critters[pct]++;
-                }                
+                }
             }
 
             return (<div style={{
@@ -52,18 +49,17 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
                 flexDirection: 'column',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
-                marginBottom: "0.25em",                
+                marginBottom: "0.25em",
                 flexGrow: 1
             }}>
                 {Object.keys(critters).sort().reverse().map((crit) => {
-
                     let text = crit;
                     let count = critters[crit];
 
                     return (
-                        <div style={{margin:"0.25em 0 0 0", width: '100%', height: '32px'}}>
-                        <StatLabel    
-                            size={'medium'}                        
+                        <div key={`${crew.id}_${crit}_crit`} style={{margin:"0.25em 0 0 0", width: '100%', height: '32px'}}>
+                        <StatLabel
+                            size={'medium'}
                             title={`${text} Crit`}
                             value={count}
                         />
@@ -76,12 +72,12 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
 
             return (<div style={{gridArea: 'left', display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center'}}>
                 <div style={{margin: "0.5em"}}>
-                
+
                 {((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
                 </div>
                 <div style={{margin: "0.5em"}}>
-                    {crew.base_skills[node.contest_data?.featured_skill ?? "_invalid"] ? 
-                    <img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} /> 
+                    {crew.base_skills[node.contest_data?.featured_skill ?? "_invalid"] ?
+                    <img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} />
                     : ''}
                 </div>
             </div>)
@@ -91,6 +87,8 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
 
     render() {
         const { context: crew, data: node } = this.props;
+        const { t } = this.context.localized;
+
         if (!Array.isArray(node)) {
 
         }
@@ -103,20 +101,20 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
 
         for (let skill of skills) {
             let bs: Skill | undefined = undefined;
-            
+
             if ("skills" in crew && skill in crew.skills) {
                 bs = crew.skills[skill];
             }
             else if (skill in crew) {
-                bs = { core: crew[skill].core, range_min: crew[skill].min, range_max: crew[skill].max };
+                bs = { core: crew[skill].core, range_min: crew[skill].min, range_max: crew[skill].max, skill };
             }
             else {
                 bs = crew.base_skills[skill];
             }
-            
+
             if (bs) ask.push({ name: skill, max: bs.range_max, min: bs.range_min });
         }
-        
+
         ask.sort((a, b) => b.max - a.max);
         const best = ask.slice(0, ask.length < 2 ? 1 : 2);
 
@@ -126,28 +124,22 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
             justifyContent: "space-evenly",
             width: "100%"
         }}>
-            
+
             <div style={{
                 display: 'grid',
                 gridTemplateAreas: "'left right'",
                 gridTemplateColumns: "75% auto",
-                // display: "flex",
-                // flexDirection: isMobile ? 'column' : "row",
-                // justifyContent: isMobile ? 'center' : "space-evenly",
-                // justifyItems: 'center',
-                // alignContent: 'center',
-                // alignItems: "center",
                 fontSize: "3em",
-//                minHeight: "4em"
-            }}>                
-                {this.drawLeftArea()}                
-                <div style={{gridArea: 'right', fontSize: "12pt", marginTop: "1em", marginBottom: "1em"}} title="Best Pair">                    
-                    <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairs[0][0].skill}.png`} /> 
-                    <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairs[0][1].skill}.png`} /> 
-                    <div style={{margin: "0.25em"}}>{"Best Pair"}</div>
+            }}>
+                {this.drawLeftArea()}
+                <div style={{gridArea: 'right', fontSize: "12pt", marginTop: "1em", marginBottom: "1em"}} title={t('base.best_pair')}>
+                    <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairs[0][0].skill}.png`} />
+                    <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairs[0][1].skill}.png`} />
+                    <div style={{margin: "0.25em"}}>{t('base.best_pair')}</div>
                 </div>
             </div>
         </div>);
     }
 
 }
+

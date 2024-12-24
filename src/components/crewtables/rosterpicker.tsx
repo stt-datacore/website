@@ -1,7 +1,7 @@
 import React from 'react';
-import { Step, Icon, Label } from 'semantic-ui-react';
+import { Step, Icon, Label, Message, Button } from 'semantic-ui-react';
 
-import { PlayerCrew, CompactCrew, CompletionState, PlayerBuffMode } from '../../model/player';
+import { PlayerCrew, CompactCrew, CompletionState, PlayerBuffMode, CryoCollection } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
 import { oneCrewCopy, applyCrewBuffs, getSkills } from '../../utils/crewutils';
 
@@ -10,6 +10,11 @@ import { CrewMember } from '../../model/crew';
 import { loadOfferCrew } from '../../utils/offers';
 import { appelate } from '../../utils/misc';
 import { Offer, OfferCrew } from '../../model/offers';
+import { useStateWithStorage } from '../../utils/storage';
+import { AlertContext } from '../alerts/alertprovider';
+import { AvatarView } from '../item_presenters/avatarview';
+import { CrewHoverStat } from '../hovering/crewhoverstat';
+import { navigate } from 'gatsby';
 
 type RosterPickerProps = {
 	rosterType: RosterType;
@@ -20,22 +25,50 @@ type RosterPickerProps = {
 
 export const RosterPicker = (props: RosterPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { t } = globalContext.localized;
+	const { config: alertConfig, setRestoreHiddenAlerts, restoreHiddenAlerts } = React.useContext(AlertContext);
+	const { t, COLLECTIONS } = globalContext.localized;
 	const { maxBuffs } = globalContext;
 	const { playerData, buffConfig: playerBuffs, ephemeral } = globalContext.player;
 	const { rosterType, setRosterType, setRosterCrew, buffMode } = props;
-
 	const [allCrew, setAllCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [buyBackCrew, setBuyBackCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [myCrew, setMyCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [offerCrew, setOfferCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 
+	const [newDismissed, setNewDismissed] = useStateWithStorage('bbnew_dismissed', [] as string[]);
+	const [fuseDismissed, setFuseDismissed] = useStateWithStorage('bbfuse_dismissed', [] as string[]);
+
 	React.useEffect(() => {
-		const rosterType = playerData ? 'myCrew' : 'allCrew';
+		if (restoreHiddenAlerts) {
+			setNewDismissed([]);
+			setFuseDismissed([]);
+			setRestoreHiddenAlerts(false);
+		}
+	}, [restoreHiddenAlerts])
+
+	React.useEffect(() => {
+		let currRoster = rosterType;
+		if (!playerData) {
+			currRoster = 'allCrew';
+		}
+		else {
+			currRoster = 'myCrew';
+		}
 		if (!playerData) setBuyBackCrew(undefined);
-		initializeRoster(rosterType, true);
-		setRosterType(rosterType);
+		initializeRoster(currRoster, true);
+		setRosterType(currRoster);
 	}, [playerData]);
+
+	React.useEffect(() => {
+		if (!buyBackCrew?.length && rosterType === 'buyBack') {
+			if (playerData) {
+				setRosterType('myCrew');
+			}
+			else {
+				setRosterType('allCrew');
+			}
+		}
+	}, [buyBackCrew]);
 
 	React.useEffect(() => {
 		initializeRoster(rosterType);
@@ -45,48 +78,226 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		initializeRoster(rosterType, true);
 	}, [buffMode]);
 
-	if (!playerData)
-		return (<></>);
-	const hasBuyBack = !!playerData.buyback_well?.length;
+	const hasBuyBack = !!playerData?.buyback_well?.length;
+	const steps = [] as JSX.Element[];
+	const buyFuses = getFusesInBuybackWell();
+	const buyUnowned = getUnownedInBuybackWell();
 
-	return (
-		<Step.Group fluid widths={hasBuyBack ? 4 : 3}>
+	const allCrewJSX = (
+		<Step active={rosterType === 'allCrew'} onClick={() => setRosterType('allCrew')}>
+			<Icon name='game' />
+			<Step.Content>
+				<Step.Title>{t('pages.crew_view_modes.game_roster.name')}</Step.Title>
+				<Step.Description>{t('pages.crew_view_modes.game_roster.description')}</Step.Description>
+			</Step.Content>
+		</Step>)
+
+	const offersJSX = (
+		<Step active={rosterType === 'offers'} onClick={() => setRosterType('offers')}>
+			<img src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} style={{ width: '2em', marginRight: '1em' }} />
+			<Step.Content>
+				<Step.Title>{t('pages.crew_view_modes.current_offers.name')}
+				{rosterType === 'offers' &&
+				<Label title={'Refresh offers'} as='a' corner='right' onClick={() => initializeRoster(rosterType, true)}>
+					<Icon name='refresh' style={{ cursor: 'pointer' }} />
+				</Label>}
+				</Step.Title>
+				<Step.Description>{t('pages.crew_view_modes.current_offers.description')}</Step.Description>
+			</Step.Content>
+		</Step>)
+
+	if (!!playerData) {
+		steps.push(
 			<Step active={rosterType === 'myCrew'} onClick={() => setRosterType('myCrew')}>
 				<img src='/media/crew_icon.png' style={{ width: '3em', marginRight: '1em' }} />
 				<Step.Content>
 					<Step.Title>{t('pages.crew_view_modes.owned_crew.name')}</Step.Title>
 					<Step.Description>{t('pages.crew_view_modes.owned_crew.description')}</Step.Description>
 				</Step.Content>
-			</Step>
-			{hasBuyBack && 
-			<Step active={rosterType === 'buyBack'} onClick={() => setRosterType('buyBack')}>
-				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`} style={{ width: '3em', marginRight: '1em' }} /> 
-				<Step.Content>
-					<Step.Title>{t('pages.crew_view_modes.buyback_well.name')}</Step.Title>
-					<Step.Description>{t('pages.crew_view_modes.buyback_well.description')}</Step.Description>
-				</Step.Content>
-			</Step>}
-			<Step active={rosterType === 'offers'} onClick={() => setRosterType('offers')}>
-			<img src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} style={{ width: '2em', marginRight: '1em' }} /> 
-				<Step.Content>
-					<Step.Title>{t('pages.crew_view_modes.current_offers.name')}
-					{rosterType === 'offers' &&
-					<Label title={'Refresh offers'} as='a' corner='right' onClick={() => initializeRoster(rosterType, true)}>
-						<Icon name='refresh' style={{ cursor: 'pointer' }} />
-					</Label>}
-					</Step.Title>
-					<Step.Description>{t('pages.crew_view_modes.current_offers.description')}</Step.Description>
-				</Step.Content>
-			</Step>
-			<Step active={rosterType === 'allCrew'} onClick={() => setRosterType('allCrew')}>
-				<Icon name='game' />
-				<Step.Content>
-					<Step.Title>{t('pages.crew_view_modes.game_roster.name')}</Step.Title>
-					<Step.Description>{t('pages.crew_view_modes.game_roster.description')}</Step.Description>
-				</Step.Content>
-			</Step>
+			</Step>)
+
+		if (hasBuyBack) {
+			steps.push(
+				<Step active={rosterType === 'buyBack'} onClick={() => setRosterType('buyBack')}>
+					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`} style={{ width: '3em', marginRight: '1em' }} />
+					<Step.Content>
+						<Step.Title>{t('pages.crew_view_modes.buyback_well.name')}</Step.Title>
+						<Step.Description>{t('pages.crew_view_modes.buyback_well.description')}</Step.Description>
+					</Step.Content>
+				</Step>)
+		}
+		steps.push(offersJSX);
+		steps.push(allCrewJSX);
+	}
+	else {
+		steps.push(allCrewJSX);
+		steps.push(offersJSX);
+	}
+
+	const filterCol = (crew: PlayerCrew, f: CryoCollection) => {
+		return crew.collection_ids.includes(f.type_id!.toString())
+			&& f.milestone?.goal
+			&& f.milestone.goal !== 'n/a'
+			&& f.progress !== 'n/a'
+			//&& (f.milestone.goal - f.progress === 1 || crew.max_rarity < 4);
+	}
+
+	const getPlayerCols = (crew: PlayerCrew) => {
+		let cols = [] as CryoCollection[];
+		if (playerData) {
+			let pcols = playerData.player.character.cryo_collections.filter(f => filterCol(crew, f));
+			if (pcols.length) {
+				cols = pcols.map(m =>
+					({
+						...m,
+						name: COLLECTIONS[`cc-${m.type_id}`]?.name ?? m.name,
+						description: COLLECTIONS[`cc-${m.type_id}`]?.description ?? m.description
+					})
+				);
+			}
+		}
+		return cols;
+	}
+
+	return (
+		<>
+		{!!alertConfig.alert_fuses && !!buyFuses?.length && buyFuses.map((crew, idx) => {
+			if (fuseDismissed.includes(crew.symbol)) return <></>
+			let cols = getPlayerCols(crew);
+			return drawAlert(crew, <>
+				{t('alerts.fusible_crew', {
+								subject: `${crew.name}`,
+								rarity: `${crew.rarity}`,
+								max_rarity: `${crew.max_rarity}`
+				})} {t('alerts.check_buyback')}
+				</>, idx, cols, 'atlas/fusion_icon.png', dismissFuse);
+		})}
+		{!!alertConfig.alert_new && !!buyUnowned?.length && buyUnowned.map((crew, idx) => {
+			if (newDismissed.includes(crew.symbol)) return <></>
+			let cols = getPlayerCols(crew);
+			return drawAlert(crew, <>
+				{t('alerts.new_crew', {
+						subject: `${crew.name}`,
+						rarity: `${crew.rarity}`,
+						max_rarity: `${crew.max_rarity}`
+						})} {t('alerts.check_buyback')}
+				</>, idx, cols, 'atlas/crew_icon.png', dismissNew)
+		})}
+		<Step.Group fluid widths={hasBuyBack ? 4 : 3}>
+			{steps.map((step, idx) => <React.Fragment key={`index_page_step_${idx}`}>{step}</React.Fragment>)}
 		</Step.Group>
+		<CrewHoverStat targetGroup='alerts' />
+		</>
 	);
+
+	function drawAlert(crew: PlayerCrew, message: string | JSX.Element, idx: number, cols: CryoCollection[], icon: string, dismiss: (crew: PlayerCrew) => void) {
+		let one = false;
+		if (cols.length) {
+			for (let c of cols) {
+				if ((c.milestone.goal as number) - (c.progress as number) == 1) {
+					one = true;
+					break;
+				}
+			}
+		}
+		const dispClick = (e, col: string) => {
+			navigate("/collections?select=" + encodeURIComponent(col));
+		}
+		return (
+			<div style={{
+				margin: '0.5em 0',
+				display: 'grid',
+				gridTemplateAreas: `'icon image alert'`,
+				gridTemplateColumns: '32px 56px auto',
+				alignItems: 'center'
+			}}>
+				<div
+					style={{gridArea: 'image', marginTop: '1em', display: 'flex', alignItems: 'center'}}
+					>
+					<AvatarView
+						mode='crew'
+						item={crew}
+						partialItem={true}
+						size={48}
+						targetGroup='alerts'
+						/>
+				</div>
+				<img src={`${process.env.GATSBY_ASSETS_URL}${icon}`} style={{gridArea: 'icon', width: '24px', height: 'auto', margin: 'auto'}} />
+				<Message
+					key={`buyback_${crew.symbol}+${idx}`}
+					style={{
+						gridArea: 'alert'
+					}}
+					color={(one ? 'violet' : 'blue')}
+					>
+					<div style={{
+						display: 'flex',
+						flexDirection: 'row',
+						alignItems: 'center',
+						justifyContent: 'flex-start',
+						gap: '1em'
+					}}>
+						<span style={{flexGrow: 1, cursor: 'pointer'}} onClick={() => setRosterType('buyBack')}>
+							{message}<br/>{!!cols.length && <>({t('base.collections')}: {cols.map(c => {
+								let str = `${c.name} [${c.progress}/${c.milestone.goal}]`
+								return <a onClick={(e) => dispClick(e, c.name)}>{str}</a>;
+							}).reduce((p, n) => p ? <>{p}, {n}</> : n)})</>}
+						</span>
+						<Label as='a' style={{justifySelf: 'flex-end', background: 'transparent', float: 'right', margin: 0, padding: 0}} onClick={() => dismiss(crew)}>
+							<Icon name='delete' style={{ cursor: 'pointer' }} />
+						</Label>
+					</div>
+				</Message>
+			</div>)
+	}
+
+	function getFusesInBuybackWell() {
+		if (!playerData?.buyback_well?.length) return [];
+		let newcrew = playerData.player.character.crew.filter(f => f.rarity < f.max_rarity && playerData.buyback_well.some(bc => bc.symbol === f.symbol)).sort((a, b) => a.symbol.localeCompare(b.symbol));
+		let lastcrew = undefined as PlayerCrew | undefined;
+		let finalcrew = [] as PlayerCrew[];
+		for (let u of newcrew) {
+			if (lastcrew && u.symbol === lastcrew.symbol) lastcrew.rarity++;
+			else {
+				u = { ...u };
+				u.rarity = 1;
+				finalcrew.push(u);
+				lastcrew = u;
+			}
+		}
+		return finalcrew.filter(f => f.rarity >= alertConfig.alert_fuses || (f.highest_owned_rarity && f.highest_owned_rarity + f.rarity >= f.max_rarity) || f.max_rarity === 1 || f.max_rarity === 5);
+	}
+
+	function getUnownedInBuybackWell() {
+		if (!playerData?.buyback_well?.length) return [];
+		let newcrew = playerData.buyback_well.filter(f => playerData.player.character.unOwnedCrew?.some(u => u.symbol === f.symbol)).sort((a, b) => a.symbol.localeCompare(b.symbol)).map(m => playerData.player.character.unOwnedCrew!.find(f => f.symbol === m.symbol)!).sort((a, b) => a.symbol.localeCompare(b.symbol));
+		let lastcrew = undefined as PlayerCrew | undefined;
+		let finalcrew = [] as PlayerCrew[];
+		for (let u of newcrew) {
+			if (lastcrew && u.symbol === lastcrew.symbol) lastcrew.rarity++;
+			else {
+				u = { ...u };
+				u.rarity = 1;
+				finalcrew.push(u);
+				lastcrew = u;
+			}
+		}
+		return finalcrew.filter(f => f.rarity >= alertConfig.alert_new || f.max_rarity === 1 || (alertConfig.always_legendary && f.max_rarity === 5));
+	}
+
+	function dismissNew(crew: PlayerCrew) {
+		if (!newDismissed.includes(crew.symbol)) {
+			newDismissed.push(crew.symbol);
+			setNewDismissed([...newDismissed]);
+		}
+	}
+
+	function dismissFuse(crew: PlayerCrew) {
+		if (!fuseDismissed.includes(crew.symbol)) {
+			fuseDismissed.push(crew.symbol);
+			setFuseDismissed([...fuseDismissed]);
+		}
+	}
 
 	async function initializeRoster(rosterType: RosterType, forceReload: boolean = false): Promise<void> {
 		let rosterCrew = [] as IRosterCrew[];
@@ -121,7 +332,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				});
 			})
 			const crewMap = [ ... new Set((offerData)?.map(c => c.crew).flat()) ];
-			
+
 			rosterCrew = rosterizeAllCrew(crewMap, offers);
 			setOfferCrew([...rosterCrew]);
 			setRosterCrew([...rosterCrew]);
@@ -133,10 +344,9 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			}
 			const crewMap = playerData.buyback_well?.map(b => {
 				let crew = globalContext.core.crew.find(f => f.symbol === b.symbol) as IRosterCrew;
-				if (!b.rarity) crew.rarity = 1;
-				else {
-					crew.rarity = b.rarity;
-				}
+				if (crew) crew = { ...crew };
+				if (!crew.rarity) crew.rarity = 1;
+
 				return crew;
 			});
 
@@ -171,7 +381,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			if (crew.is_new) {
 				console.log('new crew', crew);
 			}
-		
+
 			const crewman = {
 				... oneCrewCopy(crew),
 				//id: crewmanId++,
@@ -217,7 +427,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 			if (offerData && offerData[crewman.symbol]) {
 				crewman.offer = offerData[crewman.symbol].map(s => appelate(s.name)).sort().join(" / ");
-				
+
 				crewman.cost_text = offerData[crewman.symbol].map(offer => offer.drop_info.map(drop => drop.cost).sort((a, b) => b - a)[0].toString()).join(" / ");
 				crewman.offers = offerData[crewman.symbol];
 

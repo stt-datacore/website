@@ -8,41 +8,59 @@ import LeaderboardTab from './event_info_tabs/leaderboard';
 import { GameEvent } from '../model/player';
 import { CrewHoverStat } from './hovering/crewhoverstat';
 import { ItemHoverStat } from './hovering/itemhoverstat';
+import { ShipHoverStat } from './hovering/shiphoverstat';
+import { GlobalContext } from '../context/globalcontext';
+import { Leaderboard } from '../model/events';
 
 type EventInfoModalProps = {
 	instanceId: number,
 	image: string,
 	hasDetails?: boolean,
-	leaderboard: Array<object>,
+	leaderboard: Leaderboard[],
 }
 
 function EventInfoModal(props: EventInfoModalProps) {
+	const globalContext = React.useContext(GlobalContext);
+	const { event_instances } = globalContext.core;
+
+	const { t } = globalContext.localized;
 	const {instanceId, image, hasDetails, leaderboard} = props;
 	const [eventData, setEventData] = React.useState<GameEvent | null>(null);
+	const [lastEvent, setLastEvent] = React.useState<GameEvent | null>(null);
 
 	React.useEffect(() => {
 		async function fetchEventData() {
 			if (hasDetails) {
 				const fetchResp = await fetch(`/structured/events/${instanceId}.json`);
-				const data = await fetchResp.json();
+				const data = await fetchResp.json() as GameEvent;
+				if (data.content_types.includes('skirmish')) {
+					event_instances.sort((a, b) => a.instance_id - b.instance_id);
+					let idx = event_instances.findIndex(fi => fi.instance_id === instanceId);
+					if (idx > 0) {
+						idx--;
+						let lastId = event_instances[idx].instance_id;
+						const lastResp = await fetch(`/structured/events/${lastId}.json`);
+						const lastEvent = await lastResp.json() as GameEvent;
+						setLastEvent(lastEvent);
+					}
+				}
 				setEventData(data);
 			}
 		}
-
 		fetchEventData();
 	}, []);
 
 	const eventInfoPanes = [
 		{
-			menuItem: 'Event Information',
+			menuItem: t('event_info.tabs.info.title'),
 			render: () => (
 				<Tab.Pane attached={false}>
-					{eventData ? <EventInformationTab eventData={eventData} /> : <div></div>}
+					{eventData ? <EventInformationTab lastEvent={lastEvent || undefined} eventData={eventData} /> : <div></div>}
 				</Tab.Pane>
 			),
 		},
 		{
-			menuItem: 'Threshold Rewards',
+			menuItem: t('event_info.threshold_rewards'),
 			render: () => (
 				<Tab.Pane attached={false}>
 					{eventData ? <ThresholdRewardsTab eventData={eventData} /> : <div></div>}
@@ -50,7 +68,7 @@ function EventInfoModal(props: EventInfoModalProps) {
 			),
 		},
 		{
-			menuItem: 'Ranked Rewards',
+			menuItem: t('event_info.ranked_rewards'),
 			render: () => (
 				<Tab.Pane attached={false}>
 					{eventData ? <RankedRewardsTab eventData={eventData} /> : <div></div>}
@@ -61,7 +79,7 @@ function EventInfoModal(props: EventInfoModalProps) {
 
 	const leaderboardPane = [
 		{
-			menuItem: 'Leaderboard',
+			menuItem: t('event_info.leaderboard'),
 			render: () => (
 				<Tab.Pane attached={false}>
 					<LeaderboardTab leaderboard={leaderboard} />
@@ -91,6 +109,7 @@ function EventInfoModal(props: EventInfoModalProps) {
 			/>
 			<CrewHoverStat targetGroup='event_info' modalPositioning={true}  />
 			<ItemHoverStat targetGroup='event_info_items' modalPositioning={true} />
+			<ShipHoverStat targetGroup='event_info_ships' modalPositioning={true} />
 		</Container>
 	);
 }

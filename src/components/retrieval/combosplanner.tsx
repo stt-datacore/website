@@ -4,6 +4,7 @@ import { Label } from 'semantic-ui-react';
 import { IPolestar } from './model';
 import { RetrievalContext } from './context';
 import { PolestarConstellations } from './constellations';
+import { GlobalContext } from '../../context/globalcontext';
 
 type CombosPlannerProps = {
 	uniqueCombos: IPolestar[][];
@@ -11,6 +12,7 @@ type CombosPlannerProps = {
 
 export const CombosPlanner = (props: CombosPlannerProps) => {
 	const { uniqueCombos } = props;
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 
 	const neededIdSets: number[][] = [];
 	uniqueCombos.forEach(combo => {
@@ -37,7 +39,9 @@ export const CombosPlanner = (props: CombosPlannerProps) => {
 
 	return (
 		<React.Fragment>
-			Unlock retrieval options for this crew by acquiring 1 or more <Label color='yellow'>needed polestars</Label>
+			{tfmt('retrieval.combo_needs.unlock_retrieval_by_needed_polestars_fmt', {
+				needed_polestars: <Label color='yellow'>{t('retrieval.combo_needs.needed_polestars')}</Label>
+			})}
 			<UsefulPolestars usefulAloneIds={usefulAloneIds} usefulOtherIds={usefulOtherIds} />
 		</React.Fragment>
 	);
@@ -53,6 +57,7 @@ type UsefulPolestarsProps = {
 const UsefulPolestars = (props: UsefulPolestarsProps) => {
 	const { allKeystones } = React.useContext(RetrievalContext);
 	const { usefulAloneIds, usefulOtherIds } = props;
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 
 	if (usefulAloneIds.length === 0 && usefulOtherIds.length === 0) return <></>;
 
@@ -72,14 +77,27 @@ const UsefulPolestars = (props: UsefulPolestarsProps) => {
 			<div style={{ marginTop: '1em' }}>
 				{usefulAlone.length > 0 && (
 					<React.Fragment>
-						<div>You need <b>exactly 1</b> of the following: {renderPolestarsInline(usefulAlone)}</div>
+						<div>
+							{tfmt('retrieval.combo_needs.need_exact_n', {
+								n: '1',
+								y: renderPolestarsInline(usefulAlone)
+							})}
+						</div>
 						{usefulOthers.length > 1 && (
-							<div>Or <b>some combination</b> of the following: {renderPolestarsInline(usefulOthers)}</div>
+							<div>
+								{tfmt('retrieval.combo_needs.or_some_combination', {
+									y: renderPolestarsInline(usefulOthers)
+								})}
+							</div>
 						)}
 					</React.Fragment>
 				)}
 				{usefulAlone.length === 0 && (
-					<div>You need <b>some combination</b> of the following: {renderPolestarsInline(usefulOthers)}</div>
+					<div>
+						{tfmt('retrieval.combo_needs.some_combination', {
+							y: renderPolestarsInline(usefulOthers)
+						})}
+					</div>
 				)}
 			</div>
 		);

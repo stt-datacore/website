@@ -26,7 +26,7 @@ import { CrewUtilityForm, getCrewUtilityTableConfig, CrewUtilityCells } from './
 
 import RosterSummary from './rostersummary';
 import { QuipmentScoreCells, getQuipmentTableConfig as getQuipmentTableConfig } from './views/quipmentscores';
-import { getItemWithBonus } from '../../utils/itemutils';
+import { getItemWithBonus, getQuipmentAsItemWithBonus } from '../../utils/itemutils';
 import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from './views/topquipment';
 import { PowerMode, QuipmentToolsFilter } from './filters/quipmenttools';
 import { calcQLots } from '../../utils/equipment';
@@ -218,6 +218,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 
 	const [showBase, setShowBase] = React.useState<boolean>(false);
 
+	const [questFilter, setQuestFilter] = useStateWithStorage<string[] | undefined>('/quipmentTools/questFilter', undefined);
 	const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>('/quipmentTools/pstMode', false, { rememberForever: true });
 	const [powerMode, setPowerMode] = useStateWithStorage<PowerMode>('/quipmentTools/powerMode', 'all', { rememberForever: true });
 	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
@@ -225,7 +226,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 
 	const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>(undefined);
 
-	const quipment = globalContext.core.items.filter(f => f.type === 14 && !!f.max_rarity_requirement).map(m => getItemWithBonus(m));
+	const quipment = getQuipmentAsItemWithBonus(globalContext.core.items);
 
 	const getActiveBuffs = () => {
 		if (buffMode === 'none' || !buffMode) return undefined;
@@ -342,6 +343,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				});
 			},
 			form: <QuipmentToolsFilter
+					questFilter={questFilter}
+					setQuestFilter={setQuestFilter}
 					immortalOnly={true}
 					maxxed={['allCrew', 'offers', 'buyBack'].includes(rosterType)}
 					quipment={quipment}

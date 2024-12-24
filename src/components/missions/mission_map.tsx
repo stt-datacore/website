@@ -50,8 +50,10 @@ export function cleanTraitSelection(quests: Quest[], traits: TraitSelection[]) {
 }
 
 export const MissionMapComponent = (props: MissionComponentProps) => {
-    const context = React.useContext(GlobalContext);
+    const globalcontext = React.useContext(GlobalContext);
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
+    const { t } = globalcontext.localized;
 
     const {
         isRemote,
@@ -96,7 +98,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         if (!data.quest.challenges) return;
         let mch = data.quest.challenges.find(i => i.id === data.challengeId);
         let id = data.quest.challenges.find(i => i.id === data.challengeId)?.id ?? -1;
-        
+
         let haschildren = !!mch?.children?.length;
 
         let selNode = highlighted?.find(h => h.quest === quest?.id && h.challenge === id);
@@ -104,7 +106,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         if (selNode && selNode.clicked && (selNode.excluded || !haschildren)) {
             currSelection = currSelection.filter(f => f.challenge !== selNode?.challenge);
         }
-        else {            
+        else {
             currSelection = currSelection.filter(f => f.challenge !== selNode?.challenge);
 
             selNode = {
@@ -133,7 +135,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                         trait: t.trait,
                         selected: true,
                         questId: quest.id,
-                        clicked: false, 
+                        clicked: false,
                         excluded: false
                     } as TraitSelection;
                 }));
@@ -219,12 +221,19 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
             const navmap = makeNavMap(mquest);
             const pathInfo = getNodePaths(navmap[0], navmap);
 
-            let stages = {} as { [key: number]: NavMapItem[] };
+            let stages = {} as { [key: string]: NavMapItem[] };
 
             for (let item of navmap) {
                 stages[item.stage] ??= [];
                 stages[item.stage].push(item);
             }
+            Object.keys(stages).forEach((key) => {
+                stages[key].sort((a, b) => {
+                    let r = a.challenge.grid_y - b.challenge.grid_y;
+                    if (!r) r = a.challenge.grid_x - b.challenge.grid_x;
+                    return -1 * r;
+                })
+            })
 
             setQuest(mquest);
             setStages(Object.values(stages));
@@ -271,7 +280,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                     <h3>{isRemote && isRemote[questId] ? <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>{quest.name}</span> : quest.name}</h3>
                                                 </div>
                                                 <div>
-                                                    <MapExplanation header="Continuum Mission Map" />
+                                                    <MapExplanation header={t('missons.continuum_mission_map')} />
                                                 </div>
                                             </div>
 

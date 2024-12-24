@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal, Input, Button } from 'semantic-ui-react';
 import { GlobalContext } from '../../context/globalcontext';
 import { OptionsBase } from '../base/optionsmodal_base';
-import { GauntletSettingsProps, InternalSettings, defaultSettings, GauntletSettings } from '../../utils/gauntlet';
+import { GauntletSettingsProps, InternalSettings, DefaultAdvancedGauntletSettings, GauntletSettings } from '../../utils/gauntlet';
 
 const GauntletSettingsPopup = <T extends OptionsBase>(props: GauntletSettingsProps) => {
     const globalContext = React.useContext(GlobalContext);
@@ -22,6 +22,10 @@ const GauntletSettingsPopup = <T extends OptionsBase>(props: GauntletSettingsPro
             let value = parm.get("pmc");
         }
     }
+
+    React.useEffect(() => {
+        setInnerSettings(config.current);
+    }, [config.current]);
 
     React.useEffect(() => {
         if (modalIsOpen) inputRef.current?.focus();
@@ -58,13 +62,13 @@ const GauntletSettingsPopup = <T extends OptionsBase>(props: GauntletSettingsPro
             <Modal.Actions>
                 <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
-                        {/* <Button 
+                        {/* <Button
                             style={{alignSelf: "flex-start"}}
                             content={`Permalink`}
                             icon='chain'
                             onClick={() => copyPermalink()} />
                             {showCopied && <div style={{margin: "0 0.5em"}}>Link copied to clipboard!</div>} */}
-                        <Button style={{ alignSelf: "flex-end" }} content={t('global.load_defaults')} onClick={() => setCurrent(defaultSettings)} />
+                        <Button style={{ alignSelf: "flex-end" }} content={t('global.load_defaults')} onClick={() => setCurrent(DefaultAdvancedGauntletSettings)} />
                     </div>
                     <div>
                         <Button
