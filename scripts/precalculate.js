@@ -404,7 +404,9 @@ function main() {
 				}
 			}
 
-			crew.date_added ??= new Date();
+			if (!crew.date_added) {
+				crew.date_added = new Date();
+			}
 
 			if (typeof crew.date_added === 'string') crew.date_added = new Date(crew.date_added);
 
