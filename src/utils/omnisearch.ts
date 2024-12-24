@@ -30,6 +30,7 @@ export function omniSearchFilter<T>(item: T, filters: Filter[], filterType: stri
         let parts = field.split(".");
         for (let part of parts) {
             data = data[part];
+            if (!data) break;
         }
         return data || '';
     }
