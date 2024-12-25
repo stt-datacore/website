@@ -335,8 +335,8 @@ export interface IterateBattleConfig {
     simulate?: boolean;
 }
 
-export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false, opponent_variance = 5) {
-    let ship = setupShip(input_ship, crew, false) || undefined;
+export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false, opponent_variance = 5, ignoreSeats = false) {
+    let ship = setupShip(input_ship, crew, false, ignoreSeats) || undefined;
     defense ??= 0;
     offense ??= 0;
     time *= rate;
