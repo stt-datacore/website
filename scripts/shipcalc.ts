@@ -7,27 +7,26 @@ import { iterateBattle } from "../src/workers/battleworkerutils";
 
 const STATIC_PATH = `${__dirname}/../../static/structured/`;
 
-type ShipTest = {
-	symbol: string,
-	name: string,
-	arena_attack: number,
-	arena_duration: number,
-	fbb_attack: number,
-	fbb_duration: number,
-	type: number,
-	score: number,
-	arena_score: number,
-	fbb_score: number,
-	arena_times: number,
-	fbb_times: number,
-	data?: {
-		ships: number,
-		fully_compatible: number,
-		average_compatibility: number,
-        average_fbb_rarity: number,
-        bosses: 0
-	};
-};
+interface Score {
+    kind: 'crew' | 'ship';
+    symbol: string;
+    name: string;
+    overall: number;
+    fbb: number;
+    arena: number,
+    count: number
+}
+
+interface BattleRun {
+    crew: CrewMember;
+    ship: Ship;
+    boss?: Ship;
+    damage: number;
+    duration: number;
+    seated: number;
+    battle: 'arena' | 'fbb',
+    type: 'defense' | 'offense'
+}
 
 function highestLevel(ship: Ship) {
 	if (!ship.levels || !Object.keys(ship.levels).length) return 0;
@@ -110,7 +109,6 @@ function processCrewShipStats() {
 	}
 
 	const getBosses = (ship: Ship, crew: CrewMember) => {
-		//if (crew.action.limit) return [];
 		let bosses = [] as Ship[];
 		all_bosses.forEach((boss, idx) => {
 			let rarity = boss.id - 1;
@@ -131,19 +129,32 @@ function processCrewShipStats() {
 		return bosses;
 	}
 
-	const shipnum = (ship: Ship) => (ship.attack * ship.attacks_per_second * 60) + ship.hull + ship.evasion + ship.accuracy + ship.crit_bonus + ship.crit_chance;
+	const shipnum = (ship: Ship) => (ship.hull - (ship.attack * ship.attacks_per_second)) / (ship.hull + (ship.attack * ship.attacks_per_second));
 
 	let ship_schematics = JSON.parse(fs.readFileSync(STATIC_PATH + 'ship_schematics.json', 'utf-8')) as Schematics[];
 	let crew = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf-8')) as CrewMember[];
 
 	let ships = mergeShips(ship_schematics.filter(sc => highestLevel(sc.ship) == (sc.ship.max_level ?? sc.ship.level) + 1 && (sc.ship.battle_stations?.length)), []);
 	ships = ships.sort((a, b) => shipnum(b) - shipnum(a)); //.slice(0, 5);
-	let current_id = 1;
+
+    const allruns = [] as BattleRun[];
+    allruns.length = (ships.length * crew.length * 6);
+
+    const crewcategories = {} as {[key: string]: 'defense' | 'offense' }
+    crew.forEach((c) => crewcategories[c.symbol] = characterizeCrew(c) < 0 ? 'defense' : 'offense');
+
+    let runidx = 0;
+    let current_id = 1;
 	let ignore_skill = true;
 	let battle_mode = 'arena';
 
 	const processBattleRun = (attacks: AttackInstant[], crew_set: CrewMember[]) => {
-		let result_crew = [] as CrewMember[];
+        if (!attacks?.length) return null;
+		let lastIdx = attacks.findLastIndex(a => a.actions.some(act => (act as any).comes_from === 'crew'));
+        attacks = attacks.slice(0, lastIdx + 1);
+        if (!attacks?.length) return null;
+
+        let result_crew = [] as CrewMember[];
 		const ship = attacks[0].ship;
 
 		ship.battle_stations?.forEach((bs) => {
@@ -161,8 +172,10 @@ function processCrewShipStats() {
 		const min_attack = attacks.reduce((p, n) => p + n.min_attack, 0);
 		const max_attack = attacks.reduce((p, n) => p + n.max_attack, 0);
 		const battle_time = attacks.reduce((p, n) => p > n.second ? p : n.second, 0);
-		let weighted_attack = 0;
-		if (battle_mode === 'skirmish') {
+
+        let weighted_attack = 0;
+
+        if (battle_mode === 'skirmish') {
 			weighted_attack = attacks.reduce((p, n) => (p + (!n.second ? 0 : (n.attack / (n.second * 2)))), 0);
 		}
 		else {
@@ -202,218 +215,216 @@ function processCrewShipStats() {
 		} as ShipWorkerItem;
 	}
 
-	const crew_tests = {} as {[key: string]: ShipTest };
-	const ship_tests = {} as {[key: string]: ShipTest };
-
 	console.log("Calculate crew and ship battle scores...");
 	let count = 1;
 	for (let ship of ships) {
-		ship_tests[ship.symbol] ??= {
-			symbol: ship.symbol,
-			name: ship.name!,
-			arena_attack: 0,
-			arena_duration: 0,
-			fbb_attack: 0,
-			fbb_duration: 0,
-			score: 0,
-			arena_score: 0,
-			fbb_score: 0,
-			type: 1,
-			arena_times: 0,
-			fbb_times: 0
-		}
-
-		const ship_scoring = ship_tests[ship.symbol];
-
 		console.log(`Testing crew on ${ship.name} (${count++} / ${ships.length})...`);
-		for (let c of crew) {
 
-			crew_tests[c.symbol] ??= {
-				symbol: c.symbol,
-				name: c.name,
-				arena_attack: 0,
-				arena_duration: 0,
-				fbb_attack: 0,
-				fbb_duration: 0,
-				score: 0,
-				arena_score: 0,
-				fbb_score: 0,
-				type: characterizeCrew(c),
-				arena_times: 0,
-				fbb_times: 0,
-				data: {
-					ships: 0,
-					fully_compatible: 0,
-					average_compatibility: 0,
-                    average_fbb_rarity: 0,
-                    bosses: 0
-				}
-			}
+        for (let c of crew) {
+            const crewtype = characterizeCrew(c) < 0 ? 'defense' : 'offense';
+			// if (c.action.ability?.condition && (!ship.actions?.some(a => a.status == c.action?.ability?.condition))) {
+			// 	// TODO?
+            //     continue;
+			// }
+			// if (!c.skill_order.some(skill => ship.battle_stations?.some(bs => skill == bs.skill))) {
+			// 	// TODO?
+            //     continue;
+			// }
 
-			const scoring = crew_tests[c.symbol];
-			const staff = [] as CrewMember[];
-			for (let i = 0; i < ship.battle_stations!.length; i++) {
+            const staff = [] as CrewMember[];
+
+            for (let i = 0; i < ship.battle_stations!.length; i++) {
 				staff.push(c);
 				if (i >= 0) break;
 			}
-			battle_mode = 'arena';
-			// Test Arena
-			let result = iterateBattle(0.5, false, ship, staff, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true);
+
+            battle_mode = 'arena';
+
+            // Test Arena
+            let result = iterateBattle(0.5, false, ship, staff, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true);
 			if (result.length) {
 				result[0].ship = ship;
-				scoring.data!.ships++;
-				let sc = shipCompatibility(ship, c);
-				scoring.data!.average_compatibility += sc;
-				if (sc == 1) scoring.data!.fully_compatible++;
-
 				let attack = processBattleRun(result, staff);
-				let bt = Math.ceil(attack.battle_time);
-				let am = Math.ceil(attack.arena_metric);
-				scoring.arena_attack += am;
-				scoring.arena_duration += bt;
-                ship_scoring.fbb_attack += am;
-                ship_scoring.fbb_duration += bt;
-				// if (am > ship_scoring.arena_attack) {
-				// 	ship_scoring.arena_attack = am;
-				// }
-				// if (bt > ship_scoring.arena_duration) {
-				// 	ship_scoring.arena_duration = bt;
-				// }
-				scoring.arena_times++;
-				ship_scoring.arena_times++;
+                if (attack) {
+                    let time = Math.ceil(attack.battle_time);
+                    let dmg = Math.ceil(attack.arena_metric);
+                    allruns[runidx++] = {
+                        crew: c,
+                        ship: ship,
+                        damage: dmg,
+                        duration: time,
+                        type: crewtype,
+                        battle: 'arena',
+                        seated: staff.length
+                    }
+                }
 			}
 
 			battle_mode = 'fbb';
-			// Test FBB
+
+            // Test FBB
 			let bosses = getBosses(ship, c);
-			if (bosses?.length) {
-				let att = 0;
-				let dur = 0;
+            if (bosses?.length) {
 				bosses.sort((a, b) => b.id - a.id);
 				bosses.forEach((boss) => {
 					result = iterateBattle(0.5, true, ship, staff, boss, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true);
 					if (result.length) {
 						let attack = processBattleRun(result, staff);
-						att += attack.fbb_metric;
-						dur += attack.battle_time;
-                        scoring.data!.average_fbb_rarity += boss.id;
-                        scoring.data!.bosses++;
-					}
+                        if (attack) {
+                            let time = attack.battle_time;
+                            let dmg = attack.fbb_metric;
+                            if (c.action.limit) dmg *= (time / 180);
+                            allruns[runidx++] = {
+                                crew: c,
+                                ship: ship,
+                                boss,
+                                damage: dmg,
+                                duration: time,
+                                type: crewtype,
+                                battle: 'fbb',
+                                seated: staff.length
+                            }
+                        }
+                    }
 				});
-
-				if (c.action.limit && dur) {
-					att *= ((dur / bosses.length) / 180);
-				}
-
-				let bt = Math.ceil(dur / bosses.length);
-				let am = Math.ceil(att / bosses.length);
-				scoring.fbb_attack += am;
-				scoring.fbb_duration += bt;
-                ship_scoring.fbb_attack += am;
-                ship_scoring.fbb_duration += bt;
-                // if (am > ship_scoring.fbb_attack) {
-				// 	ship_scoring.fbb_attack = am;
-				// }
-				// if (bt > ship_scoring.fbb_duration) {
-				// 	ship_scoring.fbb_duration = bt;
-				// }
-				scoring.fbb_times++;
-				ship_scoring.fbb_times++;
 			}
-
-			// if (c.action.ability?.condition && (!ship.actions?.some(a => a.status == c.action?.ability?.condition))) {
-			// 	// TODO?
-			// }
-			// if (!c.skill_order.some(skill => ship.battle_stations?.some(bs => skill == bs.skill))) {
-			// 	// TODO?
-			// }
-			// if (c.action?.limit) {
-			// 	// TODO?
-			// }
 		}
 	}
 
-	const buckets = [Object.values(crew_tests).filter(f => f.arena_attack || f.fbb_attack), Object.values(ship_tests).filter(f => f.arena_attack || f.fbb_attack)];
+    allruns.splice(runidx);
 
-	buckets.forEach((bucket, idx) => {
-		let types = [...new Set(bucket.map(s => s.type)) ];
-		// if (!idx) {
-		// 	bucket.forEach((record) => {
-		// 		if (record.arena_times) {
-		// 			record.arena_attack /= record.arena_times;
-		// 			record.arena_duration /= record.arena_times;
-		// 		}
-		// 		if (record.fbb_times) {
-		// 			record.fbb_attack /= record.fbb_times;
-		// 			record.fbb_duration /= record.fbb_times;
-		// 		}
-		// 	});
-		// }
-		// const arenanum = (c: ShipTest) => c.type < 0 ? c.arena_duration : c.arena_attack;
-		// const fbbnum = (c: ShipTest) => c.type < 0 ? c.fbb_duration : c.fbb_attack;
-		const arenanum = (c: ShipTest) => c.arena_attack;
-		const fbbnum = (c: ShipTest) => c.fbb_attack;
+    const fbbruns: BattleRun[] = [];
+    const arenaruns: BattleRun[] = [];
 
-		types.forEach((type) => {
-			let batch = bucket.filter(f => f.type == type);
+    for (let run of allruns) {
+        if (run.battle === 'fbb') {
+            fbbruns.push(run);
+        }
+        else if (run.battle === 'arena') {
+            arenaruns.push(run);
+        }
+    }
 
-			batch.sort((a, b) => arenanum(b) - arenanum(a));
-			let highest = arenanum(batch[0]);
+    allruns.length = 0;
 
-			for (let s of batch) {
-				let z = ((arenanum(s) / highest) * 10).toFixed(1);
-				s.arena_score = Number(z);
-			}
+    const shipscores = [] as Score[];
+    const crewscores = [] as Score[];
 
-			batch.sort((a, b) => fbbnum(b) - fbbnum(a));
-			highest = fbbnum(batch[0]);
+    [arenaruns, fbbruns].forEach((runset, idx) => {
+        const crewinc = {} as {[key:string]: number[] };
+        runset.sort((a, b) => b.damage - a.damage);
 
-			for (let s of batch) {
-				let z = ((fbbnum(s) / highest) * 10).toFixed(1);
-				s.fbb_score = Number(z);
-			}
+        crew.forEach((c) => {
+            const cidx = [] as number[];
+            let zi = 1;
+            for (let run of runset) {
+                if (run.crew === c) {
+                    cidx.push(zi);
+                }
+                zi++;
+            }
+            let num = cidx.reduce((p, n) => p + n, 0) / cidx.length;
+            if (num) {
+                crewinc[c.symbol] ??= [];
+                crewinc[c.symbol].push(num);
+            }
+        });
 
-			for (let s of batch) {
-				let z = ((s.fbb_score + s.arena_score) / 2).toFixed(1);
-				s.score = Number(z);
-				if (s.data) {
-					s.data.average_compatibility /= s.data.ships;
-                    let compats = s.data.fully_compatible / s.data.ships;
-                    let fbb_rare = (s.data.average_fbb_rarity / s.data.bosses) / 6;
-					s.score *= ((compats + fbb_rare) / 2);
-				}
-			}
+        const shipinc = {} as {[key:string]: number[] };
 
-			// batch.sort((a, b) => b.score - a.score || b.arena_score - a.arena_score || b.fbb_score - a.fbb_score);
-			// highest = batch[0].score;
+        ships.forEach((s) => {
+            const cidx = [] as number[];
+            let zi = 1;
+            for (let run of runset) {
+                if (run.ship === s) {
+                    cidx.push(zi);
+                }
+                zi++;
+            }
+            let num = cidx.reduce((p, n) => p + n, 0) / cidx.length;
+            if (num) {
+                shipinc[s.symbol] ??= [];
+                shipinc[s.symbol].push(num);
+            }
+        });
 
-			// for (let s of batch) {
-			// 	let z = ((s.score / highest) * 10).toFixed(1);
-			// 	s.score = Number(z);
-			// }
-		});
+        Object.entries(crewinc).map(([key, value]) => {
+            let val = !value.length ? 0 : value.reduce((p, n) => p + n, 0) / value.length;
+            return [key, val] as [string, number]
+        }).sort((a, b) => a[1] - b[1]).forEach((c) => {
+            if (!c[1]) return;
+            let scoreobj = crewscores.find(f => f.symbol === c[0]);
+            if (!scoreobj) {
+                scoreobj = {
+                    kind: 'crew',
+                    name: '',
+                    symbol: c[0],
+                    overall: 0,
+                    fbb: 0,
+                    arena: 0,
+                    count: 0
+                };
+                crewscores.push(scoreobj);
+            }
+            scoreobj.count++;
+            if (idx < 1) scoreobj.arena += c[1];
+            else scoreobj.fbb += c[1];
+        });
 
-		bucket.sort((a, b) => b.score - a.score);
-		let highest = bucket[0].score;
+        Object.entries(shipinc).map(([key, value]) => {
+            let val = !value.length ? 0 : value.reduce((p, n) => p + n, 0) / value.length;
+            return [key, val] as [string, number]
+        }).sort((a, b) => a[1] - b[1]).forEach((c) => {
+            if (!c[1]) return;
+            let scoreobj = shipscores.find(f => f.symbol === c[0]);
+            if (!scoreobj) {
+                scoreobj = {
+                    kind: 'ship',
+                    name: '',
+                    symbol: c[0],
+                    overall: 0,
+                    fbb: 0,
+                    arena: 0,
+                    count: 0
+                };
+                shipscores.push(scoreobj);
+            }
+            scoreobj.count++;
+            if (idx < 1) scoreobj.arena += c[1];
+            else scoreobj.fbb += c[1];
+        });
+    });
 
-		for (let s of bucket) {
-			let z = ((s.score / highest) * 10).toFixed(1);
-			s.score = Number(z);
-		}
+    crewscores.forEach((score) => {
+        let c = crew.find(f => f.symbol === score.symbol)!;
+        score.name = c.name;
+        score.arena /= score.count;
+        score.fbb /= score.count;
+        score.overall = (score.arena + score.fbb) / 2;
+    });
 
-		console.log("");
-		console.log((idx ? "Ships" : "Crew").padEnd(40, " "), "Score", "Arena Score", "FBB Score", "Type")
+    shipscores.forEach((score) => {
+        let c = ships.find(f => f.symbol === score.symbol)!;
+        score.name = c.name!;
+        score.arena /= score.count;
+        score.fbb /= score.count;
+        score.overall = (score.arena + score.fbb) / 2;
+    });
 
-		bucket.slice(0, 100).forEach((score) => {
-			console.log(score.name.padEnd(40, " "), `${score.score}`.padEnd(5, " "), `${score.arena_score}`.padEnd(11, " "), `${score.fbb_score}`.padEnd(9, " "), idx ? "Ship" : score.type < 0 ? "Defense" : "Offense");
-		});
-	});
+    crewscores.sort((a, b) => a.overall - b.overall);
+    shipscores.sort((a, b) => a.overall - b.overall);
+
+    [crewscores, shipscores].forEach((scores, idx) => {
+        let working = scores.slice(0, 50);
+        for (let item of working) {
+            console.log(item.name.padEnd(40, " "), `${item.overall}`, `${item.arena}`, `${item.fbb}`, idx ? 'Ship' : 'Crew', idx ? 'Ship' : crewcategories[item.symbol]);
+        }
+    });
 
 	const runEnd = new Date();
 
 	const diff = (runEnd.getTime() - runStart.getTime()) / (1000 * 60);
 	console.log("Run Time", `${diff.toFixed(2)} minutes.`);
-	return buckets;
 }
 
 processShips();
