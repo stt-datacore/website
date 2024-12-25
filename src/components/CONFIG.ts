@@ -179,6 +179,8 @@ export default class CONFIG {
 		12: 'Reflection Damage',
 	};
 
+	static readonly OFFENSE_ABILITIES = [0, 1, 4, 5, 7, 8, 10, 12];
+	static readonly DEFENSE_ABILITIES = [2, 3, 6, 9, 10, 11];
 
 	static readonly SHIP_BATTLE_ABILITY_ICON: { [index: number]: string } = {
 		0: '',

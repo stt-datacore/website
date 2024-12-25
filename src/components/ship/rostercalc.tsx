@@ -334,6 +334,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         else {
             newconfig.opponent = undefined;
         }
+
         setBattleConfig(newconfig);
 
         if (battleMode === 'skirmish') {
