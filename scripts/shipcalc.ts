@@ -4,8 +4,6 @@ import { Ship, Schematics } from "../src/model/ship";
 import { AttackInstant, ShipWorkerItem } from "../src/model/worker";
 import { mergeShips } from "../src/utils/shiputils";
 import { iterateBattle } from "../src/workers/battleworkerutils";
-import { highestLevel } from "./precalculate";
-
 
 const STATIC_PATH = `${__dirname}/../../static/structured/`;
 
@@ -25,9 +23,18 @@ type ShipTest = {
 	data?: {
 		ships: number,
 		fully_compatible: number,
-		average_compatibility: number
+		average_compatibility: number,
+        average_fbb_rarity: number,
+        bosses: 0
 	};
 };
+
+function highestLevel(ship: Ship) {
+	if (!ship.levels || !Object.keys(ship.levels).length) return 0;
+	let levels = Object.keys(ship.levels).map(m => Number(m)).sort((a ,b) => b - a);
+	let highest = levels[0];
+	return highest;
+}
 
 function processCrewShipStats() {
 
@@ -221,7 +228,9 @@ function processCrewShipStats() {
 				data: {
 					ships: 0,
 					fully_compatible: 0,
-					average_compatibility: 0
+					average_compatibility: 0,
+                    average_fbb_rarity: 0,
+                    bosses: 0
 				}
 			}
 
@@ -269,6 +278,8 @@ function processCrewShipStats() {
 						let attack = processBattleRun(result, staff);
 						att += attack.fbb_metric;
 						dur += attack.battle_time;
+                        scoring.data!.average_fbb_rarity += boss.id;
+                        scoring.data!.bosses++;
 					}
 				});
 
@@ -348,7 +359,8 @@ function processCrewShipStats() {
 				if (s.data) {
 					s.data.average_compatibility /= s.data.ships;
                     let compats = s.data.fully_compatible / s.data.ships;
-					s.score *= ((s.data.average_compatibility + compats) / 2);
+                    let fbb_rare = (s.data.average_fbb_rarity / s.data.bosses) / 6;
+					s.score *= ((s.data.average_compatibility + compats + fbb_rare) / 3);
 				}
 			}
 

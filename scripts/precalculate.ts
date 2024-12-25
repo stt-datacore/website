@@ -1165,13 +1165,6 @@ function postProcessCadetItems(items: EquipmentItem[], cadet: Mission[]): void {
 	}
 }
 
-export function highestLevel(ship: Ship) {
-	if (!ship.levels || !Object.keys(ship.levels).length) return 0;
-	let levels = Object.keys(ship.levels).map(m => Number(m)).sort((a ,b) => b - a);
-	let highest = levels[0];
-	return highest;
-}
-
 function processShips(): void {
 	let ship_schematics = JSON.parse(fs.readFileSync(STATIC_PATH + 'ship_schematics.json', 'utf-8')) as Schematics[];
 	let battle_stations = JSON.parse(fs.readFileSync(STATIC_PATH + 'battle_stations.json', 'utf-8')) as BattleStations[];
