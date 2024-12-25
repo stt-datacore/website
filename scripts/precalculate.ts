@@ -1184,4 +1184,3 @@ function processShips(): void {
 main();
 updateExcelSheet();
 generateMissions();
-processShips();

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { CrewMember } from "../src/model/crew";
-import { Ship, Schematics } from "../src/model/ship";
+import { Ship, Schematics, BattleStations } from "../src/model/ship";
 import { AttackInstant, ShipWorkerItem } from "../src/model/worker";
 import { mergeShips } from "../src/utils/shiputils";
 import { iterateBattle } from "../src/workers/battleworkerutils";
@@ -34,6 +34,22 @@ function highestLevel(ship: Ship) {
 	let levels = Object.keys(ship.levels).map(m => Number(m)).sort((a ,b) => b - a);
 	let highest = levels[0];
 	return highest;
+}
+
+function processShips(): void {
+	let ship_schematics = JSON.parse(fs.readFileSync(STATIC_PATH + 'ship_schematics.json', 'utf-8')) as Schematics[];
+	let battle_stations = JSON.parse(fs.readFileSync(STATIC_PATH + 'battle_stations.json', 'utf-8')) as BattleStations[];
+	let data = { ship_schematics, battle_stations };
+	if (data.battle_stations.length && data.ship_schematics.length) {
+		for (let sch of data.ship_schematics) {
+			let battle = data.battle_stations.find(b => b.symbol === sch.ship.symbol);
+			if (battle) {
+				sch.ship.battle_stations = battle.battle_stations;
+			}
+		}
+
+		fs.writeFileSync(STATIC_PATH + "ship_schematics.json", JSON.stringify(data.ship_schematics));
+	}
 }
 
 function processCrewShipStats() {
@@ -255,12 +271,14 @@ function processCrewShipStats() {
 				let am = Math.ceil(attack.arena_metric);
 				scoring.arena_attack += am;
 				scoring.arena_duration += bt;
-				if (am > ship_scoring.arena_attack) {
-					ship_scoring.arena_attack = am;
-				}
-				if (bt > ship_scoring.arena_duration) {
-					ship_scoring.arena_duration = bt;
-				}
+                ship_scoring.fbb_attack += am;
+                ship_scoring.fbb_duration += bt;
+				// if (am > ship_scoring.arena_attack) {
+				// 	ship_scoring.arena_attack = am;
+				// }
+				// if (bt > ship_scoring.arena_duration) {
+				// 	ship_scoring.arena_duration = bt;
+				// }
 				scoring.arena_times++;
 				ship_scoring.arena_times++;
 			}
@@ -291,12 +309,14 @@ function processCrewShipStats() {
 				let am = Math.ceil(att / bosses.length);
 				scoring.fbb_attack += am;
 				scoring.fbb_duration += bt;
-				if (am > ship_scoring.fbb_attack) {
-					ship_scoring.fbb_attack = am;
-				}
-				if (bt > ship_scoring.fbb_duration) {
-					ship_scoring.fbb_duration = bt;
-				}
+                ship_scoring.fbb_attack += am;
+                ship_scoring.fbb_duration += bt;
+                // if (am > ship_scoring.fbb_attack) {
+				// 	ship_scoring.fbb_attack = am;
+				// }
+				// if (bt > ship_scoring.fbb_duration) {
+				// 	ship_scoring.fbb_duration = bt;
+				// }
 				scoring.fbb_times++;
 				ship_scoring.fbb_times++;
 			}
@@ -360,7 +380,7 @@ function processCrewShipStats() {
 					s.data.average_compatibility /= s.data.ships;
                     let compats = s.data.fully_compatible / s.data.ships;
                     let fbb_rare = (s.data.average_fbb_rarity / s.data.bosses) / 6;
-					s.score *= ((s.data.average_compatibility + compats + fbb_rare) / 3);
+					s.score *= ((compats + fbb_rare) / 2);
 				}
 			}
 
@@ -396,4 +416,5 @@ function processCrewShipStats() {
 	return buckets;
 }
 
+processShips();
 processCrewShipStats();
