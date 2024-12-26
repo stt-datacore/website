@@ -3,10 +3,10 @@ name: Lore
 rarity: 4
 series: tng
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: -1
 in_portal: true
-date: 01/11/2016
+date:
 published: true
 ---
 
-His best (and perhaps only) blip of realized usage is a quintet of featured Events in the game’s history. Aside from his modest Collection profile, he'd be worth a thaw if he catches more features, otherwise he can only boast fast-activating Evasion on Ships if you find yourself being stomped in the Arena like a late harvest Chateau Picard.
+

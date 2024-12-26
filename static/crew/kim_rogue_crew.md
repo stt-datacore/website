@@ -3,10 +3,10 @@ name: Rogue Harry Kim
 rarity: 4
 series: voy
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: -1
 in_portal: true
-date: 15/08/2016
+date:
 published: true
 ---
 
-Alternate future Harry Kim has a bad hairstyle, bad statistics almost everywhere, but a pair of Collections and one remaining barely viable Trait that could get him a third. Kim events are not aplenty, but count on one or two a year.
+

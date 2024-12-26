@@ -3,10 +3,10 @@ name: Yeoman Rand
 rarity: 1
 series: tos
 memory_alpha:
-bigbook_tier: 9
+bigbook_tier: -1
 in_portal: true
-date: 01/01/2016
+date:
 published: true
 ---
 
-The only female CMD option at the Common level. Eat your heart out, Nightmare mode.
+
