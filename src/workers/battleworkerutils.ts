@@ -722,7 +722,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 o_action = oppo_actions![o_actidx];
                 o_state_time![o_actidx] += r_inc;
 
-                if (!o_inited![actidx]) {
+                if (!o_inited![o_actidx]) {
                     if (!oppo_activated && o_state_time![o_actidx] >= (o_action.initial_cooldown - 0.01) + delay()) {
                         if (sec - at_second >= delay()) {
                             oppo_activation = activate(o_action, o_actidx, true);
