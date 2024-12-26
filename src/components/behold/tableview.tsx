@@ -38,7 +38,7 @@ export const TableView = (props: TableViewProps) => {
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: t('base.crew'), pseudocolumns: ['name', 'date_added'] },
 		{ width: 1, column: 'max_rarity', title: t('base.rarity'), reverse: true },
-		{ width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier'), tiebreakers: ['cab_ov_rank'], tiebreakers_reverse: [false] },
+		// { width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier'), tiebreakers: ['cab_ov_rank'], tiebreakers_reverse: [false] },
 		{ width: 1, column: 'cab_ov', title: <span>{t('base.cab_power')} <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
 		{ width: 1, column: 'ranks.voyRank', title: t('base.voyage') },
 		{ width: 1, column: 'ranks.gauntletRank', title: t('base.gauntlet') },
@@ -108,9 +108,9 @@ export const TableView = (props: TableViewProps) => {
 				<Table.Cell>
 					<Rating icon='star' rating={crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
 				</Table.Cell>
-				<Table.Cell textAlign='center'>
+				{/* <Table.Cell textAlign='center'>
 					<b>{formatTierLabel(crew)}</b>
-				</Table.Cell>
+				</Table.Cell> */}
 				<Table.Cell style={{ textAlign: 'center' }}>
 					<b>{crew.cab_ov}</b><br />
 					<small>{rarityLabels[crew.max_rarity-1]} #{crew.cab_ov_rank}</small>

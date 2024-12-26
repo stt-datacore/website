@@ -635,6 +635,7 @@
         }
     },
     "global": {
+        "reserved": "Reserviert",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",

@@ -640,6 +640,7 @@
         }
     },
     "global": {
+        "reserved": "Reservado",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",

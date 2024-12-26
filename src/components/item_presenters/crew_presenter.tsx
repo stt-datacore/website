@@ -1112,15 +1112,17 @@ export class CrewPresenter extends React.Component<
                                 }}
                             >
                                 <StatLabel
-                                    title={t('rank_names.bigbook_tier')}
+                                    title={t('rank_names.cab_grade')}
                                     value={
                                         <div
                                             style={{
                                                 fontWeight: "bold",
-                                                color: gradeToColor(crew.bigbook_tier) ?? undefined,
+                                                color:
+                                                    gradeToColor(crew.cab_ov_grade as string) ??
+                                                    undefined,
                                             }}
                                         >
-                                            {formatTierLabel(crew)}
+                                            {crew.cab_ov_grade ?? "?"}
                                         </div>
                                     }
                                 />
@@ -1148,17 +1150,15 @@ export class CrewPresenter extends React.Component<
                                 }}
                             >
                                 <StatLabel
-                                    title={t('rank_names.cab_grade')}
+                                    title={t('global.reserved')}
                                     value={
                                         <div
                                             style={{
                                                 fontWeight: "bold",
-                                                color:
-                                                    gradeToColor(crew.cab_ov_grade as string) ??
-                                                    undefined,
+                                                color: gradeToColor(crew.bigbook_tier) ?? undefined,
                                             }}
                                         >
-                                            {crew.cab_ov_grade ?? "?"}
+                                            -
                                         </div>
                                     }
                                 />
