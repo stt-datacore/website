@@ -51,7 +51,7 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
             const crew1 = workcrew.filter(f => f.skill_order.length >= 1 && f.skill_order[0] === skill1);
             crew1.sort((a, b) => {
                 let r = b.max_rarity - a.max_rarity;
-                if (!r) r = a.bigbook_tier - b.bigbook_tier;
+                if (!r) r = a.cab_ov_rank - b.cab_ov_rank;
                 if (!r) r = skillSum(Object.values(b.base_skills)) - skillSum(Object.values(a.base_skills))
                 return r;
             });
@@ -68,7 +68,7 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
                 const crew2 = crew1.filter(f => f.skill_order.length >= 2 && f.skill_order[1] === skill2);
                 crew2.sort((a, b) => {
                     let r = b.max_rarity - a.max_rarity;
-                    if (!r) r = a.bigbook_tier - b.bigbook_tier;
+                    if (!r) r = a.cab_ov_rank - b.cab_ov_rank;
                     if (!r) r = skillSum(Object.values(b.base_skills)) - skillSum(Object.values(a.base_skills))
                     return r;
                 });
@@ -86,7 +86,7 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
                     const crew3 = crew2.filter(f => f.skill_order.length >= 3 && f.skill_order[2] === skill3);
                     crew3.sort((a, b) => {
                         let r = b.max_rarity - a.max_rarity;
-                        if (!r) r = a.bigbook_tier - b.bigbook_tier;
+                        if (!r) r = a.cab_ov_rank - b.cab_ov_rank;
                         if (!r) r = skillSum(Object.values(b.base_skills)) - skillSum(Object.values(a.base_skills))
                         return r;
                     });

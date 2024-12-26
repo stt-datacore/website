@@ -66,8 +66,8 @@ export const CrewLab = (props: CrewLabProps) => {
         }
         newCrew.sort((a, b) => {
             let r = b.max_rarity - a.max_rarity;
-            if (!r) r = a.bigbook_tier - b.bigbook_tier;
-            if (!r) r = b.cab_ov_rank - a.cab_ov_rank;
+            // if (!r) r = a.bigbook_tier - b.bigbook_tier;
+            if (!r) r = a.cab_ov_rank - b.cab_ov_rank;
             if (!r) r = a.name.localeCompare(b.name);
             return r;
         });

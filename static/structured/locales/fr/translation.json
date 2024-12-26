@@ -853,6 +853,7 @@
         }
     },
     "global": {
+        "reserved": "Réservé",
         "aborted": "Terminé",
         "admiral": "Avorté",
         "advanced_settings": "Réglages Avancés",

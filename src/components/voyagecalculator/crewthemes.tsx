@@ -299,10 +299,10 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			{
 				key: 'bottomcrew',
 				name: 'Bottom of the Barrel',
-				description: 'Crew who are ranked Tier 10 by Big Book or graded F by CAB',
+				description: 'Crew who are graded F by CAB',
 				keywords: ['ranking'],
 				category: 'Ranking',
-				filter: (crew: IVoyageCrew) => crew.bigbook_tier === 10 || crew.cab_ov_grade === 'F'
+				filter: (crew: IVoyageCrew) => crew.cab_ov_grade === 'F'
 			},
 			{
 				key: 'twoskills',

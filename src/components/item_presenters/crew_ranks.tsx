@@ -62,17 +62,17 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 					}
 				/>
 				<StatLabel
-					title={t('rank_names.bigbook_tier')}
+					title={t('global.reserved')}
 					size='jumbo'
 					value={<div
 						style={{
 							fontWeight: "bold",
-							color: gradeToColor(
-								crew.bigbook_tier
-							) ?? undefined,
+							// color: gradeToColor(
+							// 	crew.bigbook_tier
+							// ) ?? undefined,
 						}}
 					>
-						{formatTierLabel(crew)}
+						-
 					</div>}
 				/>
 				<StatLabel title={t('rank_names.voyage_rank')}

@@ -845,6 +845,7 @@
         }
     },
     "global": {
+        "reserved": "Reserved",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",

@@ -1197,15 +1197,14 @@ export class CrewPresenter extends React.Component<
                                 }}
                             >
                                 <StatLabel
-                                    title={t('rank_names.bigbook_tier')}
+                                    title={t('global.reserved')}
                                     value={
                                         <div
                                             style={{
                                                 fontWeight: "bold",
-                                                color: gradeToColor(crew.bigbook_tier) ?? undefined,
                                             }}
                                         >
-                                            {formatTierLabel(crew)}
+                                            {' '}
                                         </div>
                                     }
                                 />

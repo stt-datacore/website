@@ -348,7 +348,7 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
     const [rarities, setRarities] = useStateWithStorage(`popular_rarity_filter`, [5] as number[], { rememberForever: true });
     const [top, setTop] = useStateWithStorage(`popular_keystone_top`, 10, { rememberForever: true });
     const [minPolestars, setMinPolestars] = useStateWithStorage(`popular_keystone_min_polestars`, 3, { rememberForever: true });
-    const [bbTier, setBBTier] = useStateWithStorage(`popular_keystone_bb_tier`, 4, { rememberForever: true });
+    const [cabOv, setCabOv] = useStateWithStorage(`popular_keystone_cab_ov`, 4, { rememberForever: true });
     const [mode, setMode] = useStateWithStorage<PopularityMode>(`popular_mode`, 'sold_last_day', { rememberForever: true });
     const topOptions = [] as DropdownItemProps[];
 
@@ -370,13 +370,13 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
         });
     }
 
-    const bbOptions = [] as DropdownItemProps[];
+    const cabOptions = [] as DropdownItemProps[];
 
-    for (let n = 1; n <= 10; n++) {
-        bbOptions.push({
-            key: `bbtier_${n}`,
+    for (let n = 16; n >= 1; n++) {
+        cabOptions.push({
+            key: `cab_opt_${n}`,
             value: n,
-            text: n === 1 ? '1' : t('global.x_or_better', { x: `${n}` })
+            text: n === 16 ? '16' : t('global.x_or_better', { x: `${n}` })
         });
     }
 
@@ -458,7 +458,7 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
             .map(mc => ({ ...mc, polestar_traits: [] as string[], contains_unique: false }))
             .filter(f =>
                 //f.max_rarity === 5 &&
-                f.bigbook_tier <= bbTier &&
+                f.cab_ov_rank >= cabOv &&
                 f.in_portal &&
                 f.unique_polestar_combos?.length &&
                 (!rarities.length || rarities.includes(f.max_rarity)));
@@ -488,7 +488,7 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
         }
 
         setPopularCrew(finalcrew);
-    }, [allListings, includeHfs, rarities, top, minPolestars, bbTier, mode]);
+    }, [allListings, includeHfs, rarities, top, minPolestars, cabOv, mode]);
 
     return (
         <div className="ui segment">
@@ -546,12 +546,12 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
                     />
                 </div>
                 <div style={{ display: 'inline' }}>
-                    <p>{t('rank_names.bigbook_tier')}</p>
+                    <p>{t('rank_names.cab_rank')}</p>
                     <Dropdown
                         selection
-                        value={bbTier}
-                        options={bbOptions}
-                        onChange={(e, { value }) => setBBTier(value as number)}
+                        value={cabOv}
+                        options={cabOptions}
+                        onChange={(e, { value }) => setCabOv(value as number)}
                     />
                 </div>
             </div>
