@@ -237,14 +237,19 @@ function processCrewShipStats() {
 
             for (let i = 0; i < ship.battle_stations!.length; i++) {
 				staff.push(c);
-				//if (i >= 1) break;
+                if (c.action.ability?.type === 2) {
+                    if (i >= 1) break;
+                }
+                else {
+                    if (i >= 0) break;
+                }
 			}
 
             battle_mode = 'arena';
             let compat = shipCompatibility(ship, c);
 
             // Test Arena
-            let result = iterateBattle(0.5, false, ship, staff, ship, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true);
+            let result = iterateBattle(1, false, ship, staff, ship, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true);
 			if (result.length) {
 				result[0].ship = ship;
 				let attack = processBattleRun(result, staff);
@@ -271,7 +276,7 @@ function processCrewShipStats() {
             if (bosses?.length) {
 				bosses.sort((a, b) => b.id - a.id);
 				bosses.forEach((boss) => {
-					result = iterateBattle(0.5, true, ship, staff, boss, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true);
+					result = iterateBattle(1, true, ship, staff, boss, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true);
 					if (result.length) {
 						let attack = processBattleRun(result, staff);
                         if (attack) {
