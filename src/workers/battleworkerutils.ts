@@ -515,7 +515,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                         }
                     }
                     else {
-                        processChargePhases(action, actidx);
+                        processChargePhases(action, actidx, oppo);
                         return false;
                     }
                 }
@@ -529,7 +529,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                         }
                     }
                     else {
-                        processChargePhases(action, actidx);
+                        processChargePhases(action, actidx, oppo);
                         return false;
                     }
                 }
@@ -539,7 +539,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                     let pctneed = 1 - (oppo_shields / oppo_origshield);
                     let pctfix = action.ability.amount / 100;
                     if (pctneed >= pctfix || pctneed >= 0.3) {
-                        oppo_shields += (origshield * pctfix);
+                        oppo_shields += (oppo_origshield * pctfix);
                         if (action.charge_phases) {
                             resetAction(action);
                         }
@@ -559,7 +559,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                         }
                     }
                     else {
-                        processChargePhases(action, actidx);
+                        processChargePhases(action, actidx, oppo);
                         return false;
                     }
                 }

@@ -25,7 +25,8 @@ interface BattleRun {
     duration: number;
     seated: number;
     battle: 'arena' | 'fbb',
-    type: 'defense' | 'offense'
+    type: 'defense' | 'offense',
+    win: boolean
 }
 
 function highestLevel(ship: Ship) {
@@ -153,7 +154,7 @@ function processCrewShipStats() {
 		// let lastIdx = attacks.findLastIndex(a => a.actions.some(act => (act as any).comes_from === 'crew'));
         // attacks = attacks.slice(0, lastIdx + 1);
         // if (!attacks?.length) return null;
-
+        let win = attacks.some(a => a.win);
         let result_crew = [] as CrewMember[];
 		const ship = attacks[0].ship;
 
@@ -211,6 +212,7 @@ function processCrewShipStats() {
 			skirmish_metric,
 			arena_metric,
 			fbb_metric,
+            win
 			//attacks: get_attacks ? attacks : undefined
 		} as ShipWorkerItem;
 	}
@@ -235,7 +237,7 @@ function processCrewShipStats() {
 
             for (let i = 0; i < ship.battle_stations!.length; i++) {
 				staff.push(c);
-				if (i >= 0) break;
+				//if (i >= 1) break;
 			}
 
             battle_mode = 'arena';
@@ -256,7 +258,8 @@ function processCrewShipStats() {
                         duration: time,
                         type: crewtype,
                         battle: 'arena',
-                        seated: staff.length
+                        seated: staff.length,
+                        win: !!attack.win
                     }
                 }
 			}
@@ -283,7 +286,8 @@ function processCrewShipStats() {
                                 duration: time,
                                 type: crewtype,
                                 battle: 'fbb',
-                                seated: staff.length
+                                seated: staff.length,
+                                win: !!attack.win
                             }
                         }
                     }
@@ -316,7 +320,7 @@ function processCrewShipStats() {
 
     [arenaruns, fbbruns].forEach((runset, idx) => {
         const crewinc = {} as {[key:string]: number[] };
-        runset.sort((a, b) => b.damage - a.damage);
+        runset.sort((a, b) => (a.win !== b.win) ? (a.win ? -1 : 1) : b.damage - a.damage);
 
         crew.forEach((c) => {
             const cidx = [] as number[];
@@ -406,7 +410,7 @@ function processCrewShipStats() {
         score.fbb /= score.count;
         score.arena = Math.round(((arenamax - (score.arena - 1)) / arenamax) * 10000) / 100;
         score.fbb = Math.round(((fbbmax - (score.fbb - 1)) / fbbmax) * 10000) / 100;
-        score.overall = Math.round(((score.arena + score.fbb) / 2) * 10) / 10;
+        score.overall = Math.round(((score.arena + score.fbb) / 2) * 100) / 100;
     });
 
     shipscores.forEach((score) => {
@@ -416,7 +420,7 @@ function processCrewShipStats() {
         score.fbb /= score.count;
         score.arena = Math.round(((arenamax - (score.arena - 1)) / arenamax) * 10000) / 100;
         score.fbb = Math.round(((fbbmax - (score.fbb - 1)) / fbbmax) * 10000) / 100;
-        score.overall = Math.round(((score.arena + score.fbb) / 2) * 10) / 10;
+        score.overall = Math.round(((score.arena + score.fbb) / 2) * 100) / 100;
     });
 
     const normalize = (items: Score[]) => {
@@ -424,21 +428,21 @@ function processCrewShipStats() {
         let max = items[0].arena;
 
         items.forEach((item) => {
-            item.arena = Math.round((item.arena / max) * 100) / 10;
+            item.arena = Math.round((item.arena / max) * 1000) / 100;
         });
 
         items.sort((a, b) => b.fbb - a.fbb);
         max = items[0].fbb;
 
         items.forEach((item) => {
-            item.fbb = Math.round((item.fbb / max) * 100) / 10;
+            item.fbb = Math.round((item.fbb / max) * 1000) / 100;
         });
 
         items.sort((a, b) => b.overall - a.overall);
         max = items[0].overall;
 
         items.forEach((item) => {
-            item.overall = Math.round((item.overall / max) * 100) / 10;
+            item.overall = Math.round((item.overall / max) * 1000) / 100;
         });
     };
 
