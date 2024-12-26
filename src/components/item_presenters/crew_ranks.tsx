@@ -24,7 +24,7 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 			<div style={{ textAlign: 'center' }}>
 				<StatLabel title={t('rank_names.voyage_rank')} value={crew.ranks.voyRank} />
 				<StatLabel title={t('rank_names.gauntlet_rank')} value={crew.ranks.gauntletRank} />
-				<StatLabel title={t('rank_names.bigbook_tier')} value={formatTierLabel(crew)} />
+				<StatLabel title={t('rank_names.cab_ov_grade')} value={crew.cab_ov_grade} />
 				{crew.quipment_grade && <StatLabel title={t('rank_names.quipment_score')} value={<span style={{color: gradeToColor(crew.quipment_grade) ?? undefined}}>{numberToGrade(crew.quipment_grade)}</span>} />}
 			</div>
 		);
@@ -45,20 +45,6 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 				marginLeft: 0,
 				flexWrap: "wrap"}}>
 				<StatLabel
-					title={t('rank_names.bigbook_tier')}
-					size='jumbo'
-					value={<div
-						style={{
-							fontWeight: "bold",
-							color: gradeToColor(
-								crew.bigbook_tier
-							) ?? undefined,
-						}}
-					>
-						{formatTierLabel(crew)}
-					</div>}
-				/>
-				<StatLabel
 					title={t('rank_names.cab_grade')}
 					size='jumbo'
 					value={
@@ -73,6 +59,17 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 							{crew.cab_ov_grade ?? '?'}
 						</div>
 					}
+				/>
+				<StatLabel
+					title={t('global.reserved')}
+					size='jumbo'
+					value={<div
+						style={{
+							fontWeight: "bold",
+						}}
+					>
+						-
+					</div>}
 				/>
 				<StatLabel title={t('rank_names.voyage_rank')}
 					value={rankLinker(false, crew.ranks.voyRank, crew.symbol, 'ranks.voyRank')}/>

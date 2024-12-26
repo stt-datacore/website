@@ -31,7 +31,7 @@ type ProfileCrewMobileProps = {
 
 type ProfileCrewMobileState = {
 	column: any;
-	defaultColumn: 'bigbook_tier',
+	defaultColumn: 'cab_ov_grade',
 	direction: 'descending' | 'ascending' | null;
 	searchFilter: string;
 	data?: PlayerCrew[];
@@ -53,8 +53,8 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		const buffConfig = this.context?.player.buffConfig;
 
 		this.state = {
-			column: 'bigbook_tier',
-			defaultColumn: 'bigbook_tier',
+			column: 'cab_ov_grade',
+			defaultColumn: 'cab_ov_grade',
 			direction: 'descending',
 			searchFilter: '',
 			activeItem: '',
@@ -66,8 +66,8 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 			buffs: buffConfig ?? {}
 		};
 	}
-	
-	
+
+
 	private dataPrepared: boolean = false;
 
 	componentDidUpdate() {
@@ -97,7 +97,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 			});
 			this.setState({ ...this.state, data: data, itemsReady: true, buffs: this.context.player.buffConfig ?? {} });
 			this._handleSortNew({})
-		}		
+		}
 	}
 
 	_handleSortNew(config: HandleSortOptions) {
@@ -113,7 +113,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 		if(
 			((!config.activeItem && !config.sortKind) || config.activeItem === activeItem)
-			&& (!config.column || ['name', 'short_name', 'bigbook_tier'].indexOf(config.column) !== -1)
+			&& (!config.column || ['name', 'short_name', 'cab_ov_grade'].indexOf(config.column) !== -1)
 		) {
 			sortConfig.direction = 'ascending';
 			sortConfig.secondary = {
