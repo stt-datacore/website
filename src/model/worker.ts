@@ -427,6 +427,7 @@ export interface AttackInstant {
   min_attack: number;
   max_attack: number;
   ship: Ship;
+  win?: boolean;
 }
 
 
@@ -446,6 +447,7 @@ export interface ShipWorkerItem {
     skirmish_metric: number;
     percentile: number;
     attacks?: AttackInstant[];
+    win?: boolean;
 }
 
 export interface ShipWorkerResults extends IWorkerResults<ShipWorkerItem> {

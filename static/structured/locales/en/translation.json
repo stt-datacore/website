@@ -1721,6 +1721,7 @@
             "ignore_skill": "Ignore skills",
             "iterations": "Iterations",
             "max_init": "Max init time",
+            "min_init": "Min init time",
             "max_iterations": "Max iterations",
             "max_workers": "Max workers",
             "ranking_method": "Ranking Method",

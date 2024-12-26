@@ -337,9 +337,14 @@ export interface IterateBattleConfig {
 
 export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false, opponent_variance = 5, ignoreSeats = false) {
     let ship = setupShip(input_ship, crew, false, ignoreSeats) || undefined;
+    let work_opponent = opponent ? setupShip(opponent, [], false, ignoreSeats, true) || undefined : setupShip(input_ship, [...crew], false, ignoreSeats, true) || undefined;
+    let oppo_crew = work_opponent?.battle_stations?.map(m => m.crew).filter(f => !!f) as CrewMember[];
+
     defense ??= 0;
     offense ??= 0;
+
     time *= rate;
+
     if (!ship) return [];
 
     let hull = ship.hull;
@@ -348,12 +353,20 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     let shields = ship.shields;
     let origshield = shields;
     let shield_regen = ship.shield_regen / rate;
-    let orig_regen = shield_regen;
+
+    let oppo_hull = work_opponent?.hull ?? ship.hull;
+    let oppo_orighull = work_opponent?.hull ?? oppo_hull;
+
+    let oppo_shields = work_opponent?.shields ?? ship.shields;
+    let oppo_origshield = oppo_shields;
+    let oppo_shield_regen = (work_opponent?.shield_regen ?? ship.shield_regen) / rate;
 
     const attacks = [] as AttackInstant[];
     crew.forEach(c => c.action.crew = c.id!);
+    if (work_opponent) oppo_crew?.forEach(c => c.action.crew = c.id!);
 
     let allactions = JSON.parse(JSON.stringify([...ship.actions ?? [], ...crew.map(c => c.action)])) as ChargeAction[];
+    let oppo_actions = (work_opponent?.actions?.length || oppo_crew?.length) ? JSON.parse(JSON.stringify([...work_opponent?.actions ?? [], ...oppo_crew.map(c => c.action)])) as ChargeAction[] : undefined;
 
     const delay = () => {
         if (simulate) {
@@ -382,15 +395,43 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         }
     });
 
+    oppo_actions?.forEach((action, i) => {
+        action.comes_from = i >= (work_opponent!.actions?.length ?? 0) ? 'crew' : 'ship';
+        if (action.charge_phases?.length) {
+            if (action.ability) {
+                action.orig_ability_amount = action.ability?.amount;
+                action.orig_bonus = action.bonus_amount;
+                action.orig_cooldown = action.cooldown;
+                action.current_phase = 0;
+            }
+        }
+        // if (action.comes_from === 'crew' && activation_offsets?.length && activation_offsets.length === input_ship.battle_stations?.length) {
+        //     let x = i - (ship!.actions?.length ?? 0);
+        //     if (activation_offsets[x]) {
+        //         action.initial_cooldown += activation_offsets[x];
+        //     }
+        // }
+    });
+
+
     let alen = allactions.length;
     let uses = allactions.map(a => 0);
     let state_time = allactions.map(a => 0);
     let inited = allactions.map(a => false);
     let active = allactions.map(a => false);
 
+    let o_alen = oppo_actions?.length ?? 0;
+    let o_uses = oppo_actions?.map(a => 0);
+    let o_state_time = oppo_actions?.map(a => 0);
+    let o_inited = oppo_actions?.map(a => false);
+    let o_active = oppo_actions?.map(a => false);
+
     const currents = allactions.map(m => false as false | ShipAction);
+    const oppos = oppo_actions?.map(m => false as false | ShipAction);
 
     let cloaked = false;
+    let oppo_cloaked = false;
+
     let oppoattack = 0;
 
     const resetAction = (action: ChargeAction) => {
@@ -419,112 +460,206 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         }
     }
 
-    const processChargePhases = (action: ChargeAction, actidx: number) => {
+    const processChargePhases = (action: ChargeAction, actidx: number, oppo = false) => {
         if (action.charge_phases) {
             if (!action.current_phase) {
                 action.current_phase = 1;
-                state_time[actidx] = 0;
-                inited[actidx] = true;
+                if (oppo) {
+                    o_state_time![actidx] = 0;
+                    o_inited![actidx] = true;
+                }
+                else {
+                    state_time[actidx] = 0;
+                    inited[actidx] = true;
+                }
             }
             else if (action.current_phase < action.charge_phases.length) {
                 bumpAction(action, action.current_phase);
                 action.current_phase++;
-                state_time[actidx] = 0;
-                inited[actidx] = true;
+                if (oppo) {
+                    o_state_time![actidx] = 0;
+                    o_inited![actidx] = true;
+                }
+                else {
+                    state_time[actidx] = 0;
+                    inited[actidx] = true;
+                }
             }
             else if (action.current_phase === action.charge_phases.length) {
                 bumpAction(action, action.current_phase);
                 action.current_phase++;
-                inited[actidx] = true;
+                if (oppo) {
+                    o_inited![actidx] = true;
+                }
+                else {
+                    inited[actidx] = true;
+                }
             }
         }
     }
 
-    const activate = (action: ChargeAction, actidx: number) => {
+    const activate = (action: ChargeAction, actidx: number, oppo = false) => {
         let immediate = false as boolean | number;
         if (!action.ability?.condition || currents.some(act => typeof act !== 'boolean' && act.status === action.ability?.condition)) {
             if (action.ability?.type === 1) {
                 immediate = (action.ability.amount / 100);
             }
             else if (action.ability?.type === 2) {
-                let pctneed = 1 - (hull / orighull);
-                let pctfix = action.ability.amount / 100;
-                if (pctneed >= pctfix || pctneed >= 0.3) {
-                    hull += (orighull * pctfix);
-                    if (action.charge_phases) {
-                        resetAction(action);
+                if (oppo) {
+                    let pctneed = 1 - (oppo_hull / oppo_orighull);
+                    let pctfix = action.ability.amount / 100;
+                    if (pctneed >= pctfix || pctneed >= 0.3) {
+                        oppo_hull += (oppo_orighull * pctfix);
+                        if (action.charge_phases) {
+                            resetAction(action);
+                        }
+                    }
+                    else {
+                        processChargePhases(action, actidx);
+                        return false;
                     }
                 }
                 else {
-                    processChargePhases(action, actidx);
-                    return false;
+                    let pctneed = 1 - (hull / orighull);
+                    let pctfix = action.ability.amount / 100;
+                    if (pctneed >= pctfix || pctneed >= 0.3) {
+                        hull += (orighull * pctfix);
+                        if (action.charge_phases) {
+                            resetAction(action);
+                        }
+                    }
+                    else {
+                        processChargePhases(action, actidx);
+                        return false;
+                    }
                 }
             }
             else if (action.ability?.type === 3) {
-                let pctneed = 1 - (shields / origshield);
-                let pctfix = action.ability.amount / 100;
-                if (pctneed >= pctfix || pctneed >= 0.3) {
-                    shields += (origshield * pctfix);
-                    if (action.charge_phases) {
-                        resetAction(action);
+                if (oppo) {
+                    let pctneed = 1 - (oppo_shields / oppo_origshield);
+                    let pctfix = action.ability.amount / 100;
+                    if (pctneed >= pctfix || pctneed >= 0.3) {
+                        oppo_shields += (origshield * pctfix);
+                        if (action.charge_phases) {
+                            resetAction(action);
+                        }
+                    }
+                    else {
+                        processChargePhases(action, actidx, oppo);
+                        return false;
                     }
                 }
                 else {
-                    processChargePhases(action, actidx);
-                    return false;
+                    let pctneed = 1 - (shields / origshield);
+                    let pctfix = action.ability.amount / 100;
+                    if (pctneed >= pctfix || pctneed >= 0.3) {
+                        shields += (origshield * pctfix);
+                        if (action.charge_phases) {
+                            resetAction(action);
+                        }
+                    }
+                    else {
+                        processChargePhases(action, actidx);
+                        return false;
+                    }
                 }
             }
             else if (action.ability?.type === 10) {
                 let time = action.ability.amount;
-                for (let idx = 0; idx < alen; idx++) {
-                    if (!active[idx]) {
-                        if (!allactions[idx].current_phase) {
-                            state_time[idx] += time;
+                if (oppo) {
+                    for (let idx = 0; idx < o_alen; idx++) {
+                        if (!o_active![idx]) {
+                            if (!oppo_actions![idx].current_phase) {
+                                o_state_time![idx] += time;
+                            }
+                        }
+                    }
+                }
+                else {
+                    for (let idx = 0; idx < alen; idx++) {
+                        if (!active[idx]) {
+                            if (!allactions[idx].current_phase) {
+                                state_time[idx] += time;
+                            }
                         }
                     }
                 }
             }
             else if (action.ability?.type === 6) {
-                shield_regen += (action.ability.amount / rate);
+                if (oppo) {
+                    oppo_shield_regen += (action.ability.amount / rate);
+                }
+                else {
+                    shield_regen += (action.ability.amount / rate);
+                }
             }
 
             if (immediate === false) immediate = true;
-            currents[actidx] = action;
-            cloaked = action.status === 2;
-            uses[actidx]++;
-            state_time[actidx] = 0;
-            inited[actidx] = true;
-            active[actidx] = true;
+            if (oppo) {
+                oppos![actidx] = action;
+                oppo_cloaked = action.status === 2;
+                o_uses![actidx]++;
+                o_state_time![actidx] = 0;
+                o_inited![actidx] = true;
+                o_active![actidx] = true;
+            }
+            else {
+                currents[actidx] = action;
+                cloaked = action.status === 2;
+                uses[actidx]++;
+                state_time[actidx] = 0;
+                inited[actidx] = true;
+                active[actidx] = true;
+            }
         }
         else {
-            processChargePhases(action, actidx);
+            processChargePhases(action, actidx, oppo);
             return false;
         }
 
         return immediate;
     }
 
-    const deactivate = (action: ShipAction, actidx: number) => {
-        if (action.ability?.type === 6) {
-            shield_regen -= (action.ability.amount / rate);
+    const deactivate = (action: ShipAction, actidx: number, oppo = false) => {
+        if (oppo) {
+            if (action.ability?.type === 6) {
+                oppo_shield_regen -= (action.ability.amount / rate);
+            }
+            o_state_time![actidx] = 0;
+            o_active![actidx] = false;
+            oppos![actidx] = false;
         }
-        state_time[actidx] = 0;
-        active[actidx] = false;
-        currents[actidx] = false;
+        else {
+            if (action.ability?.type === 6) {
+                shield_regen -= (action.ability.amount / rate);
+            }
+            state_time[actidx] = 0;
+            active[actidx] = false;
+            currents[actidx] = false;
+        }
     }
 
     let immediates = [] as { base: number, max: number, standard: number }[];
+    let oppo_immediates = [] as { base: number, max: number, standard: number }[];
     let activation = 0 as number | boolean;
+    let oppo_activation = 0 as number | boolean;
     let ca = 0;
     let powerInfo: InstantPowerInfo | null = null;
+    let oppo_powerInfo: InstantPowerInfo | null = null;
     let r_inc = 1 / rate;
     let actidx = 0;
     let act_cnt = currents.length;
     let activated = false;
     let sec = 0;
     let action = null as null | ChargeAction;
+    let o_action = null as null | ChargeAction;
+
+    let o_actidx = 0;
+    let oppo_cnt = oppos?.length ?? 0;
+    let oppo_activated = false;
 
     let attack_inc = 0;
+    let my_attack_inc = 0;
     let at_second = 0;
     let attack_time_check = 100 - (opponent_variance ?? 0);
 
@@ -561,7 +696,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
             if (activation) {
                 at_second = sec;
-                powerInfo = getInstantPowerInfo(rate, ship, currents, opponent, offense);
+                powerInfo = getInstantPowerInfo(rate, ship, currents, work_opponent, offense);
 
                 if (activation !== true) {
                     immediates.push({
@@ -577,7 +712,57 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         }
 
         if (!powerInfo) {
-            powerInfo = getInstantPowerInfo(rate, ship, currents, opponent, offense);
+            powerInfo = getInstantPowerInfo(rate, ship, currents, work_opponent, offense);
+        }
+
+        if (oppos) {
+            oppo_activated = false;
+
+            for (o_actidx = 0; o_actidx < oppo_cnt; o_actidx++) {
+                o_action = oppo_actions![o_actidx];
+                o_state_time![o_actidx] += r_inc;
+
+                if (!inited[actidx]) {
+                    if (!oppo_activated && o_state_time![o_actidx] >= (o_action.initial_cooldown - 0.01) + delay()) {
+                        if (sec - at_second >= delay()) {
+                            oppo_activation = activate(o_action, o_actidx, true);
+                        }
+                    }
+                }
+                else if (o_inited![o_actidx] && oppos![o_actidx]) {
+                    if (o_state_time![o_actidx] >= o_action.duration - 0.01) {
+                        deactivate(o_action, o_actidx, true);
+                        oppo_powerInfo = null;
+                    }
+                }
+                else if (o_inited![o_actidx] && !oppos![o_actidx] && (!o_action.limit || o_uses![o_actidx] < o_action.limit)) {
+                    if (!oppo_activated && o_state_time![o_actidx] >= o_action.cooldown - 0.01) {
+                        if (sec - at_second >= delay()) {
+                            oppo_activation = activate(o_action, o_actidx, true);
+                        }
+                    }
+                }
+
+                if (oppo_activation) {
+                    at_second = sec;
+                    oppo_powerInfo = getInstantPowerInfo(rate, work_opponent!, oppos ?? [], ship, 0);
+
+                    if (oppo_activation !== true) {
+                        oppo_immediates.push({
+                            base: (oppo_powerInfo.computed.attack.base * oppo_activation) / (oppo_powerInfo.computed.attacks_per_second / rate),
+                            max: (oppo_powerInfo.computed.attack.with_bonus * oppo_activation) / (oppo_powerInfo.computed.attacks_per_second / rate),
+                            standard: (oppo_powerInfo.computed.attack.with_bonus_and_chance * oppo_activation) / (oppo_powerInfo.computed.attacks_per_second / rate)
+                        });
+                    }
+
+                    oppo_activation = false;
+                    oppo_activated = true;
+                }
+            }
+        }
+
+        if (work_opponent && !oppo_powerInfo && oppos) {
+            oppo_powerInfo = getInstantPowerInfo(rate, work_opponent!, oppos ?? [], ship, 0);
         }
 
         let base_attack = powerInfo.computed.attack.base;
@@ -607,27 +792,41 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         }
 
         if (inc % rate === 0) {
-            if (opponent) {
-                attack_inc += (opponent.attacks_per_second * 100);
+            if (work_opponent) {
+                if (!oppo_powerInfo) {
+                    attack_inc += (work_opponent.attacks_per_second * 100);
+                }
+                else {
+                    attack_inc += (oppo_powerInfo!.computed.attacks_per_second * rate) * 100;
+                }
             }
             else {
                 attack_inc += (powerInfo.computed.attacks_per_second * rate) * 100;
             }
 
+            my_attack_inc += (powerInfo.computed.attacks_per_second * rate) * 100;
+
             if (attack_inc >= 100) {
                 if (fbb_mode || !cloaked) {
                     let mul = currents.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
                     mul = 1 - (mul / 100);
-
-                    if (opponent) {
-                        oppoattack = (opponent.attack * (attack_inc / 100) * hitChance(opponent.accuracy, powerInfo.computed.active.evasion));
+                    if (work_opponent) {
+                        if (!oppo_powerInfo) {
+                            oppoattack = (work_opponent.attack * (attack_inc / 100) * hitChance(work_opponent.accuracy, powerInfo.computed.active.evasion));
+                        }
+                        else {
+                            oppoattack = (oppo_powerInfo!.computed.active.attack * (attack_inc / 100) * hitChance(oppo_powerInfo!.computed.active.accuracy, powerInfo.computed.active.evasion));
+                        }
                     }
 
                     let incoming_damage = 0;
+                    let outgoing_damage = 0;
+
+                    let actual_attack = standard_attack * rate;
+                    outgoing_damage = (attack_inc / attack_time_check) * (((actual_attack - (actual_attack * (fbb_mode ? defense : 0))) * mul));
 
                     if (!oppoattack) {
-                        let actual_attack = standard_attack * rate;
-                        incoming_damage = (attack_inc / attack_time_check) * (((actual_attack - (actual_attack * (fbb_mode ? defense : 0))) * mul));
+                        incoming_damage = outgoing_damage;
                     }
                     else {
                         incoming_damage = (attack_inc / attack_time_check) * (((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul));
@@ -643,10 +842,34 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                     else {
                         hull -= incoming_damage;
                     }
-
                 }
                 attack_inc = 0;
             }
+
+            if (my_attack_inc >= 100) {
+                if (fbb_mode || !oppo_cloaked) {
+                    let mul = oppos?.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
+                    mul = 1 - (mul / 100);
+
+                    let outgoing_damage = 0;
+                    let actual_attack = standard_attack * rate;
+
+                    outgoing_damage = (my_attack_inc / attack_time_check) * (((actual_attack - (actual_attack * (fbb_mode ? defense : 0))) * mul));
+
+                    if (oppo_shields > 0) {
+                        oppo_shields -= outgoing_damage;
+                        if (oppo_shields < 0) {
+                            oppo_hull += oppo_shields;
+                            oppo_shields = 0;
+                        }
+                    }
+                    else {
+                        oppo_hull -= outgoing_damage;
+                    }
+                }
+                my_attack_inc = 0;
+            }
+
         }
 
         if (hull <= 0) break;
@@ -661,6 +884,11 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             max_attack: max_attack,
             ship
         });
+
+        if (oppo_hull <= 0) {
+            attacks[attacks.length - 1].win = true;
+            break;
+        }
     }
 
     ship = undefined;

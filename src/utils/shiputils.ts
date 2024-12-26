@@ -1,6 +1,6 @@
 import { BaseSkillFields, BaseSkills, CrewMember, Skill } from "../model/crew";
 import { PlayerCrew, Setup } from "../model/player";
-import { BattleMode, PvpDivision, ShipAction, ShipInUse } from "../model/ship";
+import { BattleMode, BattleStation, PvpDivision, ShipAction, ShipInUse } from "../model/ship";
 import { Schematics, Ship } from "../model/ship";
 import { simplejson2csv, ExportField } from './misc';
 import { StatsSorter } from "./statssorter";
@@ -356,10 +356,34 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 	return results;
 }
 
-export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true, ignoreSeats = false): Ship | false {
-	if (!ship?.battle_stations?.length || !crewStations?.length || (!ignoreSeats && crewStations.length !== ship.battle_stations.length)) return false;
+export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true, ignoreSeats = false, opponent = false): Ship | false {
+	if (opponent && !crewStations?.length && ship.battle_stations?.some(bs => bs.crew)) {
+		crewStations = ship.battle_stations.map(bs => bs.crew);
+	}
+
+	if (!ship?.battle_stations?.length || !crewStations?.length || (!ignoreSeats && crewStations.length !== ship.battle_stations.length)) {
+		if (ship.battle_stations === undefined) return ship;
+		else return false;
+	}
+
+	let new_bs = ship.battle_stations.map(m => ({...m, crew: undefined } as BattleStation));
+	let old_bs = ship.battle_stations;
+
+	ship.battle_stations = new_bs;
 
 	let newship = JSON.parse(JSON.stringify(ship)) as Ship;
+
+	newship.battle_stations = new_bs.map((bs, idx) => {
+		bs.crew = old_bs[idx].crew;
+		return bs;
+	});
+
+	if (crewStations?.length) {
+		for (let i = 0; i < crewStations.length && i < ship.battle_stations.length; i++) {
+			newship.battle_stations[i].crew = crewStations[i];
+		}
+	}
+
 	let x = 0;
 
 	for (let action of newship.actions ?? []) {
@@ -374,7 +398,9 @@ export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | u
 		newship.evasion ??= 0;
 		newship.accuracy ??= 0;
 
-		if (crew.skill_order.includes(ship.battle_stations[x].skill)) {
+		if (crew.skill_order.includes(ship.battle_stations[x].skill) ||
+			(ignoreSeats && crew.skill_order.some(sk => ship.battle_stations?.some(bs => bs.skill == sk))))
+		{
 			newship.crit_bonus += crew.ship_battle.crit_bonus ?? 0;
 			newship.crit_chance += crew.ship_battle.crit_chance ?? 0;
 			newship.evasion += crew.ship_battle.evasion ?? 0;
@@ -383,6 +409,8 @@ export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | u
 
 		newship.actions ??= [];
 		crew.action.source = crew.name;
+		ship.battle_stations[x].crew = crew;
+
 		if (crew.id !== undefined) crew.action.crew = crew.id;
 		if (pushAction) newship.actions.push(crew.action);
 		x++;

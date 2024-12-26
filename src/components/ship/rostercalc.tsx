@@ -73,6 +73,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [rate, setRate] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/rate`, 1, { rememberForever: true });
     const [fixedActivationDelay, setFixedActivationDelay] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/fixedActivationDelay`, 0.6, { rememberForever: true });
     const [maxInitTime, setMaxInitTime] = useStateWithStorage<number | undefined>(`${pageId}/${ship.symbol}/maxInitTime`, undefined, { rememberForever: true });
+    const [minInitTime, setMinInitTime] = useStateWithStorage<number | undefined>(`${pageId}/${ship.symbol}/minInitTime`, undefined, { rememberForever: true });
     const [maxIter, setMaxIter] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/maxIter`, 3000000, { rememberForever: true });
     const [activationOffsets, setActivationOffsets] = useStateWithStorage<number[]>(`${pageId}/${ship.symbol}/activationOffsets`, ship.battle_stations!.map(m => 0), { rememberForever: true });
     const [advancedPowerOpen, setAdvancedPowerOpen] = React.useState<boolean>(false);
@@ -247,7 +248,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         value: 'none',
         text: t('global.none')
     });
-    for (let i = 0; i < 11; i++) {
+    for (let i = 0; i < 15; i++) {
         max_init_times.push({
             key: `init_${i}`,
             value: i,
@@ -533,6 +534,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     gap: '1em',
                     marginTop: '1em'
                 }}>
+
                     <div style={{ display: 'inline', width: '30%' }}>
                         <h4>{t('ship.calc.max_init')}</h4>
                         <Dropdown
@@ -541,6 +543,17 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             selection
                             value={maxInitTime ?? 'none'}
                             onChange={(e, { value }) => setMaxInitTime(value === 'none' ? undefined : value as number)}
+                            options={max_init_times}
+                        />
+                    </div>
+                    <div style={{ display: 'inline', width: '30%' }}>
+                        <h4>{t('ship.calc.min_init')}</h4>
+                        <Dropdown
+                            fluid
+                            scrolling
+                            selection
+                            value={minInitTime ?? 'none'}
+                            onChange={(e, { value }) => setMinInitTime(value === 'none' ? undefined : value as number)}
                             options={max_init_times}
                         />
                     </div>
@@ -1038,6 +1051,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             if (onlyImmortal && ("immortal" in crew && !crew.immortal)) return false;
             if (!fbb_mode && maxInitTime !== undefined) {
                 if (crew.action.initial_cooldown > maxInitTime) return false;
+            }
+            if (!fbb_mode && minInitTime !== undefined) {
+                if (crew.action.initial_cooldown < minInitTime) return false;
             }
             if (!ignoreSkills && !crew.skill_order.some(skill => ship.battle_stations?.some(bs => bs.skill === skill))) return false;
             if (crew.action.ability?.condition && !ship.actions?.some(act => act.status === crew.action.ability?.condition)) return false;

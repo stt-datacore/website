@@ -1736,6 +1736,7 @@
             "ignore_skill": "Ignorer les compétences",
             "iterations": "Itérations",
             "max_init": "Temps d'initialisation maximum",
+            "min_init": "Temps d'initialisation minimum",
             "max_iterations": "Itérations max.",
             "max_workers": "Max. ouvriers",
             "ranking_method": "Méthode de classement",

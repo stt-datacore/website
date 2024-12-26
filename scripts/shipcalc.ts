@@ -150,9 +150,9 @@ function processCrewShipStats() {
 
 	const processBattleRun = (attacks: AttackInstant[], crew_set: CrewMember[]) => {
         if (!attacks?.length) return null;
-		let lastIdx = attacks.findLastIndex(a => a.actions.some(act => (act as any).comes_from === 'crew'));
-        attacks = attacks.slice(0, lastIdx + 1);
-        if (!attacks?.length) return null;
+		// let lastIdx = attacks.findLastIndex(a => a.actions.some(act => (act as any).comes_from === 'crew'));
+        // attacks = attacks.slice(0, lastIdx + 1);
+        // if (!attacks?.length) return null;
 
         let result_crew = [] as CrewMember[];
 		const ship = attacks[0].ship;
@@ -239,15 +239,16 @@ function processCrewShipStats() {
 			}
 
             battle_mode = 'arena';
+            let compat = shipCompatibility(ship, c);
 
             // Test Arena
-            let result = iterateBattle(0.5, false, ship, staff, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true);
+            let result = iterateBattle(0.5, false, ship, staff, ship, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true);
 			if (result.length) {
 				result[0].ship = ship;
 				let attack = processBattleRun(result, staff);
                 if (attack) {
                     let time = Math.ceil(attack.battle_time);
-                    let dmg = Math.ceil(attack.arena_metric);
+                    let dmg = Math.ceil(attack.arena_metric) * compat * ship.rarity;
                     allruns[runidx++] = {
                         crew: c,
                         ship: ship,
@@ -272,7 +273,7 @@ function processCrewShipStats() {
 						let attack = processBattleRun(result, staff);
                         if (attack) {
                             let time = attack.battle_time;
-                            let dmg = attack.fbb_metric;
+                            let dmg = attack.fbb_metric * compat * ship.rarity;
                             if (c.action.limit) dmg *= (time / 180);
                             allruns[runidx++] = {
                                 crew: c,
@@ -309,6 +310,9 @@ function processCrewShipStats() {
 
     const shipscores = [] as Score[];
     const crewscores = [] as Score[];
+
+    const arenamax = arenaruns.length;
+    const fbbmax = fbbruns.length;
 
     [arenaruns, fbbruns].forEach((runset, idx) => {
         const crewinc = {} as {[key:string]: number[] };
@@ -400,7 +404,9 @@ function processCrewShipStats() {
         score.name = c.name;
         score.arena /= score.count;
         score.fbb /= score.count;
-        score.overall = (score.arena + score.fbb) / 2;
+        score.arena = Math.round(((arenamax - (score.arena - 1)) / arenamax) * 10000) / 100;
+        score.fbb = Math.round(((fbbmax - (score.fbb - 1)) / fbbmax) * 10000) / 100;
+        score.overall = Math.round(((score.arena + score.fbb) / 2) * 10) / 10;
     });
 
     shipscores.forEach((score) => {
@@ -408,16 +414,52 @@ function processCrewShipStats() {
         score.name = c.name!;
         score.arena /= score.count;
         score.fbb /= score.count;
-        score.overall = (score.arena + score.fbb) / 2;
+        score.arena = Math.round(((arenamax - (score.arena - 1)) / arenamax) * 10000) / 100;
+        score.fbb = Math.round(((fbbmax - (score.fbb - 1)) / fbbmax) * 10000) / 100;
+        score.overall = Math.round(((score.arena + score.fbb) / 2) * 10) / 10;
     });
 
-    crewscores.sort((a, b) => a.overall - b.overall);
-    shipscores.sort((a, b) => a.overall - b.overall);
+    const normalize = (items: Score[]) => {
+        items.sort((a, b) => b.arena - a.arena);
+        let max = items[0].arena;
 
-    [crewscores, shipscores].forEach((scores, idx) => {
-        let working = scores.slice(0, 50);
+        items.forEach((item) => {
+            item.arena = Math.round((item.arena / max) * 100) / 10;
+        });
+
+        items.sort((a, b) => b.fbb - a.fbb);
+        max = items[0].fbb;
+
+        items.forEach((item) => {
+            item.fbb = Math.round((item.fbb / max) * 100) / 10;
+        });
+
+        items.sort((a, b) => b.overall - a.overall);
+        max = items[0].overall;
+
+        items.forEach((item) => {
+            item.overall = Math.round((item.overall / max) * 100) / 10;
+        });
+    };
+
+    shipscores.sort((a, b) => b.overall - a.overall);
+
+    const offs = crewscores.filter(cs => crewcategories[cs.symbol] === 'offense');
+    const defs = crewscores.filter(cs => crewcategories[cs.symbol] === 'defense');
+
+    normalize(shipscores);
+    normalize(offs);
+    normalize(defs);
+    const shipidx = 1;
+    const newcrew = offs.concat(defs).sort((a, b) => b.overall - a.overall);
+    [newcrew, shipscores].forEach((scores, idx) => {
+        console.log(" ");
+        //console.log(`${idx == 0 ? 'Offense' : idx == 1 ? 'Defense' : 'Ship'}`);
+        console.log(`${idx == 0 ? 'Crew' : 'Ships'}`);
+        console.log(" ");
+        let working = scores.slice(0, 100);
         for (let item of working) {
-            console.log(item.name.padEnd(40, " "), `${item.overall}`, `${item.arena}`, `${item.fbb}`, idx ? 'Ship' : 'Crew', idx ? 'Ship' : crewcategories[item.symbol]);
+            console.log(item.name.padEnd(40, " "), `${item.overall}`.padEnd(5, ' '), `${item.arena}`.padEnd(5, ' '), `${item.fbb}`.padEnd(5, ' '), idx ? 'Ship' : 'Crew', idx == shipidx ? 'Ship' : crewcategories[item.symbol].slice(0, 1).toUpperCase() + crewcategories[item.symbol].slice(1));
         }
     });
 
