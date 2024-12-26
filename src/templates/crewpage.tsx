@@ -265,13 +265,13 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 				{hasBigBookEntry && (
 					<React.Fragment>
 						<div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />
-						{!!crew.markdownInfo &&
+						{/* {!!crew.markdownInfo &&
 							<div style={{ textAlign: "right" }}>
 								<i style={{ fontSize: "0.85em" }}>- {crew.markdownInfo.author} ({(new Date(crew.markdownInfo.modified)).toLocaleDateString()})</i>
-							</div>}
-						<div style={{ marginTop: '1em', textAlign: 'right' }}>
+							</div>} */}
+						{/* <div style={{ marginTop: '1em', textAlign: 'right' }}>
 							— <a href={`https://www.bigbook.app/crew/${crew.symbol}`}>The Big Book of Behold Advice</a>
-						</div>
+						</div> */}
 					</React.Fragment>
 				)}
 				<ItemHoverStat targetGroup={'crew_quipment'} />
