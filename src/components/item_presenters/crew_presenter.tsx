@@ -1202,9 +1202,10 @@ export class CrewPresenter extends React.Component<
                                         <div
                                             style={{
                                                 fontWeight: "bold",
+                                                color: gradeToColor(crew.bigbook_tier) ?? undefined,
                                             }}
                                         >
-                                            {' '}
+                                            -
                                         </div>
                                     }
                                 />

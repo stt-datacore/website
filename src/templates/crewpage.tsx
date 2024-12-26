@@ -168,9 +168,9 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 			}
 		}
 
-		if (markdownRemark && markdownRemark.frontmatter) {
-			crew.bigbook_tier = markdownRemark.frontmatter.bigbook_tier ?? 0;
-		}
+		// if (markdownRemark && markdownRemark.frontmatter) {
+		// 	crew.bigbook_tier = markdownRemark.frontmatter.bigbook_tier ?? 0;
+		// }
 
 
 		const imageDoubleClick = () => {

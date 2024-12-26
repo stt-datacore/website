@@ -24,8 +24,7 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 			<div style={{ textAlign: 'center' }}>
 				<StatLabel title={t('rank_names.voyage_rank')} value={crew.ranks.voyRank} />
 				<StatLabel title={t('rank_names.gauntlet_rank')} value={crew.ranks.gauntletRank} />
-				{/* <StatLabel title={t('rank_names.bigbook_tier')} value={formatTierLabel(crew)} /> */}
-				<StatLabel title={t('rank_names.cab_grade')} value={<span style={{color: gradeToColor(crew.cab_ov_grade) ?? undefined}}>{crew.cab_ov_grade}</span>} />
+				<StatLabel title={t('rank_names.cab_ov_grade')} value={crew.cab_ov_grade} />
 				{crew.quipment_grade && <StatLabel title={t('rank_names.quipment_score')} value={<span style={{color: gradeToColor(crew.quipment_grade) ?? undefined}}>{numberToGrade(crew.quipment_grade)}</span>} />}
 			</div>
 		);
@@ -67,9 +66,6 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 					value={<div
 						style={{
 							fontWeight: "bold",
-							// color: gradeToColor(
-							// 	crew.bigbook_tier
-							// ) ?? undefined,
 						}}
 					>
 						-

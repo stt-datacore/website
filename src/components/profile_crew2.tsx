@@ -31,7 +31,7 @@ type ProfileCrewMobileProps = {
 
 type ProfileCrewMobileState = {
 	column: any;
-	defaultColumn: 'cab_ov',
+	defaultColumn: 'cab_ov_grade',
 	direction: 'descending' | 'ascending' | null;
 	searchFilter: string;
 	data?: PlayerCrew[];
@@ -53,8 +53,8 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		const buffConfig = this.context?.player.buffConfig;
 
 		this.state = {
-			column: 'cab_ov',
-			defaultColumn: 'cab_ov',
+			column: 'cab_ov_grade',
+			defaultColumn: 'cab_ov_grade',
 			direction: 'descending',
 			searchFilter: '',
 			activeItem: '',
@@ -113,7 +113,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 		if(
 			((!config.activeItem && !config.sortKind) || config.activeItem === activeItem)
-			&& (!config.column || ['name', 'short_name', 'cab_ov'].indexOf(config.column) !== -1)
+			&& (!config.column || ['name', 'short_name', 'cab_ov_grade'].indexOf(config.column) !== -1)
 		) {
 			sortConfig.direction = 'ascending';
 			sortConfig.secondary = {
