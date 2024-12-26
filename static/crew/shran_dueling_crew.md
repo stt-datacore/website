@@ -3,10 +3,10 @@ name: Ushaan Shran
 rarity: 5
 series: ent
 memory_alpha:
-bigbook_tier: 10
+bigbook_tier: -1
 in_portal: true
-date: 01/01/2016
+date:
 published: true
 ---
 
-With essentially no daily usability left in his Base or Proficiency numbers, cherish the moments when you do get to level/thaw Ushaan Shran for Events. We could see a ceiling of four Collections for this crew, which is a bonanza for one with only a quartet of Traits. And, oh yea, he makes a hell of a bridge crew photo op next to Ushaan Archer.
+
