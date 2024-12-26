@@ -1736,6 +1736,7 @@
             "ignore_skill": "Ignora las habilidades",
             "iterations": "Iteraciones",
             "max_init": "Tiempo máximo de inicio",
+            "min_init": "Tiempo mínimo de inicio",
             "max_iterations": "Iteraciones máx.",
             "max_workers": "Máx. trabajadores",
             "ranking_method": "Método de clasificación",

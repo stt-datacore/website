@@ -57,6 +57,7 @@ const ShipCrewWorker = {
             const processBattleRun = (attacks: AttackInstant[], crew_set: CrewMember[]) => {
                 let result_crew = [] as CrewMember[];
                 const ship = attacks[0].ship;
+                let win = attacks.some(a => a.win);
 
                 ship.battle_stations?.forEach((bs) => {
                     for (let c of crew_set) {
@@ -129,7 +130,8 @@ const ShipCrewWorker = {
                     skirmish_metric,
                     arena_metric,
                     fbb_metric,
-                    attacks: get_attacks ? attacks : undefined
+                    attacks: get_attacks ? attacks : undefined,
+                    win
                 } as ShipWorkerItem;
             }
 
@@ -210,7 +212,7 @@ const ShipCrewWorker = {
                     }
                     else {
                         let d = compareShipResults(attack, last_high, fbb_mode);
-                        if (d < 0) {
+                        if (d < 0 || attack.win) {
                             accepted = true;
                             results.push(attack);
                             last_high = attack;
