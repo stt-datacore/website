@@ -335,7 +335,7 @@ export interface IterateBattleConfig {
     simulate?: boolean;
 }
 
-export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false, opponent_variance = 5, ignoreSeats = false) {
+export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false, opponent_variance = 5, ignoreSeats = false, ignoreDefeat = false) {
     let ship = setupShip(input_ship, crew, false, ignoreSeats) || undefined;
     let work_opponent = opponent ? setupShip(opponent, [], false, ignoreSeats, true) || undefined : setupShip(input_ship, [...crew], false, ignoreSeats, true) || undefined;
     let oppo_crew = work_opponent?.battle_stations?.map(m => m.crew).filter(f => !!f) as CrewMember[];
@@ -416,12 +416,14 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
     let alen = allactions.length;
     let uses = allactions.map(a => 0);
+    let max_uses = allactions.map(a => a.limit ?? 0);
     let state_time = allactions.map(a => 0);
     let inited = allactions.map(a => false);
     let active = allactions.map(a => false);
 
     let o_alen = oppo_actions?.length ?? 0;
     let o_uses = oppo_actions?.map(a => 0);
+    //let o_max_uses = oppo_actions?.map(a => a.limit ?? 0);
     let o_state_time = oppo_actions?.map(a => 0);
     let o_inited = oppo_actions?.map(a => false);
     let o_active = oppo_actions?.map(a => false);
@@ -872,16 +874,31 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
         }
 
-        if (hull <= 0) break;
+        if (hull <= 0) {
+            if (ignoreDefeat) {
+                let br = false;
+                let cu = uses.length;
+                for (let i = 0; i < cu; i++) {
+                    if (max_uses[i] && max_uses[i] <= uses[i]) {
+                        br = true;
+                        break;
+                    }
+                }
+                if (br) break;
+            }
+            else {
+                break;
+            }
+        }
 
         attacks.push({
             actions: currents.filter(f => f !== false) as ShipAction[],
             hull,
             shields,
             second: sec,
-            attack: standard_attack,
-            min_attack: base_attack,
-            max_attack: max_attack,
+            attack: cloaked ? 0 : standard_attack,
+            min_attack: cloaked ? 0 : base_attack,
+            max_attack: cloaked ? 0 : max_attack,
             ship
         });
 
