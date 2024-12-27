@@ -361,7 +361,7 @@ export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | u
 		crewStations = ship.battle_stations.map(bs => bs.crew);
 	}
 
-	if (!ship?.battle_stations?.length || !crewStations?.length || (!ignoreSeats && crewStations.length !== ship.battle_stations.length)) {
+	if (!ship?.battle_stations?.length || (!ignoreSeats && !crewStations?.length) || (!ignoreSeats && crewStations.length !== ship.battle_stations.length)) {
 		if (ship.battle_stations === undefined) return ship;
 		else return false;
 	}
