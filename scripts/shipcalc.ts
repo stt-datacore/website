@@ -414,7 +414,7 @@ function processCrewShipStats() {
 				let attack = processBattleRun(result, staff);
                 if (attack) {
                     let time = Math.ceil(attack.battle_time);
-                    let dmg = attack.arena_metric;
+                    let dmg = attack.arena_metric + (attack.win ? 100000 : 0);
 
                     allruns[runidx++] = {
                         crew: c,
@@ -432,7 +432,6 @@ function processCrewShipStats() {
 			}
 
 			battle_mode = 'fbb';
-            staff.length = 0;
             //makeStaff(ship, c, staff, true);
             if (c.action.ability?.type === 2) {
                 staff.push(c);
@@ -442,7 +441,7 @@ function processCrewShipStats() {
             if (bosses?.length) {
 				bosses.sort((a, b) => b.id - a.id);
 				bosses.forEach((boss) => {
-					result = iterateBattle(5, true, ship, staff, boss, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true, crewtype === 'offense');
+					result = iterateBattle(5, true, ship, staff, boss, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true);
 					if (result.length) {
 						let attack = processBattleRun(result, staff);
                         if (attack) {
