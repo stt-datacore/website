@@ -681,7 +681,7 @@ function processCrewShipStats() {
         console.log(" ");
         let working = scores.slice(0, 100);
         for (let item of working) {
-            console.log(item.name.padEnd(40, " "), `${item.overall}`.padEnd(5, ' '), `${item.arena}`.padEnd(5, ' '), `${item.fbb}`.padEnd(5, ' '), idx ? 'Ship' : 'Crew', idx == shipidx ? 'Ship' : crewcategories[item.symbol].slice(0, 1).toUpperCase() + crewcategories[item.symbol].slice(1));
+            console.log(item.name.padEnd(40, " "), `${item.overall}`.padEnd(5, ' '), `${item.arena}`.padEnd(5, ' '), `${item.fbb}`.padEnd(5, ' '), idx == shipidx ? 'Ship' : 'Crew', idx == shipidx ? 'Ship' : crewcategories[item.symbol].slice(0, 1).toUpperCase() + crewcategories[item.symbol].slice(1));
         }
     });
 
