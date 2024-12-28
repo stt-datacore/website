@@ -672,7 +672,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         let oppo_counter = 0;
 
         let aps_num = 0;
-        let oppo_aps_num = 0;
+        let oppo_aps_num = work_opponent ? 1 / work_opponent.attacks_per_second : 0;
 
         for (let inc = 1; inc <= time; inc++) {
             sec = Math.round((inc / rate) * 100) / 100;

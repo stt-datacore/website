@@ -200,7 +200,7 @@ const ShipCrewWorker = {
                         if (d < 0) {
                             accepted = true;
                             results.push(attack);
-                            if (d < 0) last_high = attack;
+                            last_high = attack;
                         }
                     }
 
