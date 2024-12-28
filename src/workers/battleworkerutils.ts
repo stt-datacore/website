@@ -665,6 +665,9 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
     let at_second = 0;
     let attack_time_check = 100 - (opponent_variance ?? 0);
 
+    let attack_counter = 0;
+    let oppo_counter = 0;
+
     for (let inc = 1; inc <= time; inc++) {
         sec = Math.round((inc / rate) * 100) / 100;
 
@@ -793,86 +796,141 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             if (shields > origshield) shields = origshield;
         }
 
-        if (inc % rate === 0) {
-            if (work_opponent) {
-                if (!oppo_powerInfo) {
-                    attack_inc += (work_opponent.attacks_per_second * 100);
+        if (attack_counter >= 1 / powerInfo.computed.attacks_per_second) {
+            let number = attack_counter / (1 / powerInfo.computed.attacks_per_second);
+            attack_counter = 0;
+
+            if (fbb_mode || !oppo_cloaked) {
+                let mul = oppos?.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
+                mul = 1 - (mul / 100);
+
+                let actual_attack = (powerInfo.computed.active.attack * (!oppo_powerInfo ? 1 : hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion)));
+                let outgoing_damage = (actual_attack * mul) * number;
+
+                if (oppo_shields > 0) {
+                    oppo_shields -= outgoing_damage;
+                    if (oppo_shields < 0) {
+                        oppo_hull += oppo_shields;
+                        oppo_shields = 0;
+                    }
                 }
                 else {
-                    attack_inc += (oppo_powerInfo!.computed.attacks_per_second * rate) * 100;
+                    oppo_hull -= outgoing_damage;
                 }
             }
-            else {
-                attack_inc += (powerInfo.computed.attacks_per_second * rate) * 100;
-            }
+        }
 
-            my_attack_inc += (powerInfo.computed.attacks_per_second * rate) * 100;
+        if (work_opponent && oppo_counter >= 1 / work_opponent.attacks_per_second) {
+            let number = oppo_counter / (1 / work_opponent.attacks_per_second);
+            oppo_counter = 0;
 
-            if (attack_inc >= 100) {
-                if (fbb_mode || !cloaked) {
-                    let mul = currents.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
-                    mul = 1 - (mul / 100);
-                    if (work_opponent) {
-                        if (!oppo_powerInfo) {
-                            oppoattack = (work_opponent.attack * (attack_inc / 100) * hitChance(work_opponent.accuracy, powerInfo.computed.active.evasion));
-                        }
-                        else {
-                            oppoattack = (oppo_powerInfo!.computed.active.attack * (attack_inc / 100) * hitChance(oppo_powerInfo!.computed.active.accuracy, powerInfo.computed.active.evasion));
-                        }
-                    }
+            if (fbb_mode || !oppo_cloaked) {
+                let mul = currents.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
+                mul = 1 - (mul / 100);
+                if (!oppo_powerInfo) {
+                    oppoattack = (work_opponent.attack * hitChance(work_opponent.accuracy, powerInfo.computed.active.evasion));
+                }
+                else {
+                    oppoattack = (oppo_powerInfo.computed.active.attack * hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion));
+                }
 
-                    let incoming_damage = 0;
-                    let outgoing_damage = 0;
+                let incoming_damage = (oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul * number;
 
-                    let actual_attack = standard_attack * rate;
-                    outgoing_damage = (attack_inc / attack_time_check) * (((actual_attack - (actual_attack * (fbb_mode ? defense : 0))) * mul));
-
-                    if (!oppoattack) {
-                        incoming_damage = outgoing_damage;
-                    }
-                    else {
-                        incoming_damage = (attack_inc / attack_time_check) * (((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul));
-                    }
-
-                    if (shields > 0) {
-                        shields -= incoming_damage;
-                        if (shields < 0) {
-                            hull += shields;
-                            shields = 0;
-                        }
-                    }
-                    else {
-                        hull -= incoming_damage;
+                if (shields > 0) {
+                    shields -= incoming_damage;
+                    if (shields < 0) {
+                        hull += shields;
+                        shields = 0;
                     }
                 }
-                attack_inc = 0;
-            }
-
-            if (my_attack_inc >= 100) {
-                if (fbb_mode || !oppo_cloaked) {
-                    let mul = oppos?.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
-                    mul = 1 - (mul / 100);
-
-                    let outgoing_damage = 0;
-                    let actual_attack = standard_attack * rate;
-
-                    outgoing_damage = (my_attack_inc / attack_time_check) * (((actual_attack - (actual_attack * (fbb_mode ? defense : 0))) * mul));
-
-                    if (oppo_shields > 0) {
-                        oppo_shields -= outgoing_damage;
-                        if (oppo_shields < 0) {
-                            oppo_hull += oppo_shields;
-                            oppo_shields = 0;
-                        }
-                    }
-                    else {
-                        oppo_hull -= outgoing_damage;
-                    }
+                else {
+                    hull -= incoming_damage;
                 }
-                my_attack_inc = 0;
             }
+            attack_inc = 0;
 
         }
+
+        // if (inc % rate === 0) {
+        //     if (work_opponent) {
+        //         if (!oppo_powerInfo) {
+        //             attack_inc += (work_opponent.attacks_per_second * 100);
+        //         }
+        //         else {
+        //             attack_inc += (oppo_powerInfo!.computed.attacks_per_second * rate) * 100;
+        //         }
+        //     }
+        //     else {
+        //         attack_inc += (powerInfo.computed.attacks_per_second * rate) * 100;
+        //     }
+
+        //     my_attack_inc += (powerInfo.computed.attacks_per_second * rate) * 100;
+
+        //     if (attack_inc >= 100) {
+        //         if (fbb_mode || !cloaked) {
+        //             let mul = currents.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
+        //             mul = 1 - (mul / 100);
+        //             if (work_opponent) {
+        //                 if (!oppo_powerInfo) {
+        //                     oppoattack = (work_opponent.attack * (attack_inc / 100) * hitChance(work_opponent.accuracy, powerInfo.computed.active.evasion));
+        //                 }
+        //                 else {
+        //                     oppoattack = (oppo_powerInfo!.computed.active.attack * (attack_inc / 100) * hitChance(oppo_powerInfo!.computed.active.accuracy, powerInfo.computed.active.evasion));
+        //                 }
+        //             }
+
+        //             let incoming_damage = 0;
+        //             let outgoing_damage = 0;
+
+        //             let actual_attack = standard_attack * rate;
+        //             outgoing_damage = (attack_inc / attack_time_check) * (((actual_attack - (actual_attack * (fbb_mode ? defense : 0))) * mul));
+
+        //             if (!oppoattack) {
+        //                 incoming_damage = outgoing_damage;
+        //             }
+        //             else {
+        //                 incoming_damage = (attack_inc / attack_time_check) * (((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul));
+        //             }
+
+        //             if (shields > 0) {
+        //                 shields -= incoming_damage;
+        //                 if (shields < 0) {
+        //                     hull += shields;
+        //                     shields = 0;
+        //                 }
+        //             }
+        //             else {
+        //                 hull -= incoming_damage;
+        //             }
+        //         }
+        //         attack_inc = 0;
+        //     }
+
+        //     if (my_attack_inc >= 100) {
+        //         if (fbb_mode || !oppo_cloaked) {
+        //             let mul = oppos?.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
+        //             mul = 1 - (mul / 100);
+
+        //             let outgoing_damage = 0;
+        //             let actual_attack = standard_attack * rate;
+
+        //             outgoing_damage = (my_attack_inc / attack_time_check) * (((actual_attack - (actual_attack * (fbb_mode ? defense : 0))) * mul));
+
+        //             if (oppo_shields > 0) {
+        //                 oppo_shields -= outgoing_damage;
+        //                 if (oppo_shields < 0) {
+        //                     oppo_hull += oppo_shields;
+        //                     oppo_shields = 0;
+        //                 }
+        //             }
+        //             else {
+        //                 oppo_hull -= outgoing_damage;
+        //             }
+        //         }
+        //         my_attack_inc = 0;
+        //     }
+
+        // }
 
         if (hull <= 0) {
             if (ignoreDefeat) {
@@ -906,6 +964,9 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             attacks[attacks.length - 1].win = true;
             break;
         }
+
+        attack_counter += r_inc;
+        oppo_counter += r_inc;
     }
 
     ship = undefined;

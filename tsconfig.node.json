@@ -6,6 +6,7 @@
         "moduleResolution": "Node",
         "outDir": "./build",
         "strict": true,
+        "sourceMap": true,
         "esModuleInterop": true,
         "noImplicitAny": false,
         "skipLibCheck": true,
