@@ -30,11 +30,11 @@ const ShipInfoPage = () => {
 			return;
 		}
 		setShipKey(ship_key);
-	});
+	}, []);
 
 	return <DataPageLayout pageTitle={t('pages.ship_info')} demands={['ship_schematics', 'battle_stations']}>
 		<div>
-			{!!shipKey && <ShipViewer ship={shipKey} />}
+			{!!shipKey && <ShipViewer ship={shipKey} setShip={setShipKey} />}
 			{!shipKey && globalContext.core.spin(t('spinners.default'))}
 
 			{/* <ShipProfile /> */}
@@ -45,12 +45,13 @@ const ShipInfoPage = () => {
 
 interface ShipViewerProps {
 	ship: string,
+	setShip: (value: string) => void;
 }
 
 const ShipViewer = (props: ShipViewerProps) => {
 	const context = React.useContext(GlobalContext);
 	const { t } = context.localized;
-	const { ship: shipKey } = props;
+	const { ship: shipKey, setShip: setShipKey } = props;
 	const { playerShips, playerData } = context.player;
 	const { crew: coreCrew } = context.core;
 	const [ships, setShips] = React.useState<Ship[]>(loadShips());
@@ -133,7 +134,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 				pageId={'shipInfo'}
 				setCrewStations={setCrewStations}
 				ship={ship}
-				setShip={setInputShip}
+				setShip={(ship) => ship ? setShipKey(ship.symbol) : null}
 				showLineupManager={false}
 				/>
 		</div>
