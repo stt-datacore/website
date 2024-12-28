@@ -1,4 +1,4 @@
-import { ShipWorkerConfig, ShipWorkerItem } from "../../model/worker";
+import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerTransportItem } from "../../model/worker";
 import React from "react";
 import { compareShipResults } from "../../utils/shiputils";
 import { IMultiWorkerContext, IMultiWorkerConfig, IMultiWorkerState, IMultiWorkerStatus } from "../../model/worker";
@@ -9,7 +9,7 @@ export interface ShipMultiWorkerProps {
     children: JSX.Element;
 }
 
-export interface ShipMultiWorkerStatus extends IMultiWorkerStatus<ShipWorkerItem> {
+export interface ShipMultiWorkerStatus extends IMultiWorkerStatus<ShipWorkerTransportItem> {
 }
 
 export interface IShipMultiWorkerContext extends IMultiWorkerContext {

@@ -7,7 +7,7 @@ import { StatsSorter } from "./statssorter";
 import { shipStatSortConfig  } from "../utils/crewutils";
 import CONFIG from "../components/CONFIG";
 import { PlayerContextData } from "../context/playercontext";
-import { ShipWorkerItem } from "../model/worker";
+import { ShipWorkerItem, ShipWorkerTransportItem } from "../model/worker";
 
 export function exportShipFields(): ExportField[] {
 	return [
@@ -227,17 +227,13 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
  * @param seat Optional. Get only crew for the specified seat (skill). If the seat doesn't exist on the ship, an empty array is returned.
  * @returns An array of all crew.
  */
-export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)[], onlyTriggers: boolean = false, seats?: BaseSkillFields[] | string[] | undefined) {
+export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)[], boss?: Ship, onlyTriggers: boolean = false, seats?: BaseSkillFields[] | string[] | undefined) {
 	// first, get only the crew with the specified traits.
 	console.log("Find Potential Crew For " + ship.name);
 	if (seats?.length && !seats.some((seat) => ship.battle_stations?.some(bs => bs.skill === seat))) return [];
 
 	let bscrew = allCrew.filter((crew: PlayerCrew | CrewMember) => {
 		if (crew.max_rarity > ship.rarity) return false;
-		if ("rarity" in crew) {
-			if (crew.rarity > ship.rarity) return false;
-		}
-
 		if (seats?.length) {
 			return (seats?.some((seat) => crew.base_skills && crew.base_skills[seat] !== undefined));
 		}
@@ -356,8 +352,8 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 	return results;
 }
 
-export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true, ignoreSeats = false, opponent = false): Ship | false {
-	if (opponent && !crewStations?.length && ship.battle_stations?.some(bs => bs.crew)) {
+export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true, ignoreSeats = false, readBattleStations = false): Ship | false {
+	if (readBattleStations && !crewStations?.length && ship.battle_stations?.some(bs => bs.crew)) {
 		crewStations = ship.battle_stations.map(bs => bs.crew);
 	}
 
@@ -420,7 +416,7 @@ export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | u
 }
 
 
-export function compareShipResults(a: ShipWorkerItem, b: ShipWorkerItem, fbb_mode: boolean) {
+export function compareShipResults(a: ShipWorkerTransportItem | ShipWorkerItem, b: ShipWorkerTransportItem | ShipWorkerItem, fbb_mode: boolean) {
 	if (fbb_mode) {
 		let r = 0;
 		let aa: number;

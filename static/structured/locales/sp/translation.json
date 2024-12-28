@@ -854,7 +854,6 @@
         }
     },
     "global": {
-        "reserved": "Reservado",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
@@ -972,6 +971,7 @@
         "quarter_short": "T",
         "quest": "Búsqueda",
         "recommend_crew": "Recomendar tripulantes",
+        "reserved": "Reservado",
         "reset": "Restablecer",
         "rows_per_page": "Filas por página",
         "running": "Ejecutando",
@@ -1737,9 +1737,9 @@
             "ignore_skill": "Ignora las habilidades",
             "iterations": "Iteraciones",
             "max_init": "Tiempo máximo de inicio",
-            "min_init": "Tiempo mínimo de inicio",
             "max_iterations": "Iteraciones máx.",
             "max_workers": "Máx. trabajadores",
+            "min_init": "Tiempo mínimo de inicio",
             "ranking_method": "Método de clasificación",
             "rate": "Tasa",
             "rate_msg": "Debe ser un número entre 1 y 10",
@@ -1779,6 +1779,13 @@
         },
         "initialize": "Iniciar",
         "level": "{{base.level}}",
+        "lineup": {
+            "export": "Exportar Lista",
+            "header": "Guardar, exportar e importar configuraciones de batalla personalizadas.",
+            "import": "Importar Lista",
+            "select": "Seleccionar lista",
+            "title": "Listas de puentes personalizadas"
+        },
         "max_attack": "Ataque mín.",
         "max_level": "Nivel máximo",
         "min_attack": "Ataque máx.",
@@ -1797,6 +1804,16 @@
         },
         "skirmish": "{{event_type.skirmish}}",
         "skirmish_metric": "Métrica de Escaramuza",
+        "tabs": {
+            "opponent": {
+                "heading": "Configurar el puente de batalla del oponente",
+                "title": "Buque oponente"
+            },
+            "player": {
+                "heading": "Configura tu puente de batalla.",
+                "title": "Buque del jugador"
+            }
+        },
         "trigger": "Activación",
         "triggers": "Activadores",
         "unlimited": "Ilimitado",

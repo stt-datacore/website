@@ -436,7 +436,7 @@ export interface ShipWorkerItem {
     rate: number;
     battle_mode: BattleMode;
     ship: Ship,
-    crew: CrewMember[]
+    crew: CrewMember[];
     attack: number;
     min_attack: number;
     max_attack: number;
@@ -450,7 +450,27 @@ export interface ShipWorkerItem {
     win?: boolean;
 }
 
-export interface ShipWorkerResults extends IWorkerResults<ShipWorkerItem> {
+export interface ShipWorkerTransportItem {
+    id: number;
+    rate: number;
+    battle_mode: BattleMode;
+    ship: number,
+    crew: number[];
+    attack: number;
+    min_attack: number;
+    max_attack: number;
+    battle_time: number;
+    weighted_attack: number;
+    arena_metric: number;
+    fbb_metric: number;
+    skirmish_metric: number;
+    percentile: number;
+    attacks?: AttackInstant[];
+    win?: boolean;
+}
+
+
+export interface ShipWorkerResults extends IWorkerResults<ShipWorkerTransportItem> {
     total_iterations: bigint;
     run_time: number;
 }

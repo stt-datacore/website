@@ -845,7 +845,6 @@
         }
     },
     "global": {
-        "reserved": "Reserved",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
@@ -962,6 +961,7 @@
         "quarter_short": "Q",
         "quest": "Quest",
         "recommend_crew": "Recommend Crew",
+        "reserved": "Reserved",
         "reset": "Reset",
         "rows_per_page": "Rows per page",
         "running": "Running",
@@ -1722,9 +1722,9 @@
             "ignore_skill": "Ignore skills",
             "iterations": "Iterations",
             "max_init": "Max init time",
-            "min_init": "Min init time",
             "max_iterations": "Max iterations",
             "max_workers": "Max workers",
+            "min_init": "Min init time",
             "ranking_method": "Ranking Method",
             "rate": "Rate",
             "rate_msg": "Must be a number between 1 and 10",
@@ -1764,6 +1764,13 @@
         },
         "initialize": "Initialize",
         "level": "{{base.level}}",
+        "lineup": {
+            "export": "Export Lineups",
+            "header": "Save, export, and import custom battle configurations.",
+            "import": "Import Lineups",
+            "select": "Select Lineup",
+            "title": "Custom Bridge Lineups"
+        },
         "max_attack": "Max. Attack",
         "max_level": "Max Level",
         "min_attack": "Min. Attack",
@@ -1782,6 +1789,16 @@
         },
         "skirmish": "{{event_type.skirmish}}",
         "skirmish_metric": "Skirmish Metric",
+        "tabs": {
+            "opponent": {
+                "heading": "Configure opponent battle bridge.",
+                "title": "Opponent Ship"
+            },
+            "player": {
+                "heading": "Configure your battle bridge.",
+                "title": "Player Ship"
+            }
+        },
         "trigger": "Trigger",
         "triggers": "Triggers",
         "unlimited": "Unlimited",

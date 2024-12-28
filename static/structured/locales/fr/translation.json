@@ -853,7 +853,6 @@
         }
     },
     "global": {
-        "reserved": "Réservé",
         "aborted": "Terminé",
         "admiral": "Avorté",
         "advanced_settings": "Réglages Avancés",
@@ -972,6 +971,7 @@
         "quarter_short": "T",
         "quest": "Quête",
         "recommend_crew": "Recommander des équipiers",
+        "reserved": "Réservé",
         "reset": "Réinitialiser",
         "rows_per_page": "Lignes par page",
         "running": "En cours d'exécution",
@@ -1737,9 +1737,9 @@
             "ignore_skill": "Ignorer les compétences",
             "iterations": "Itérations",
             "max_init": "Temps d'initialisation maximum",
-            "min_init": "Temps d'initialisation minimum",
             "max_iterations": "Itérations max.",
             "max_workers": "Max. ouvriers",
+            "min_init": "Temps d'initialisation minimum",
             "ranking_method": "Méthode de classement",
             "rate": "Taux",
             "rate_msg": "Doit être un nombre compris entre 1 et 10",
@@ -1779,6 +1779,13 @@
         },
         "initialize": "Initialise",
         "level": "{{base.level}}",
+        "lineup": {
+            "export": "Exporter la liste",
+            "header": "Enregistrer, exporter et importer des configurations de combat personnalisées.",
+            "import": "Importer la liste",
+            "select": "Sélectionner la liste",
+            "title": "Listes de pont personnalisées"
+        },
         "max_attack": "Attaque max.",
         "max_level": "Niveau maximum",
         "min_attack": "Attaque min.",
@@ -1797,6 +1804,16 @@
         },
         "skirmish": "{{event_type.skirmish}}",
         "skirmish_metric": "Métrique d'escarmouche",
+        "tabs": {
+            "opponent": {
+                "heading": "Configurer le pont de combat adverse.",
+                "title": "Vaisseau adverse"
+            },
+            "player": {
+                "heading": "Configurez votre pont de combat.",
+                "title": "Vaisseau du joueur"
+            }
+        },
         "trigger": "Déclencheur",
         "triggers": "Déclencheurs",
         "unlimited": "Illimité",

@@ -96,7 +96,7 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 	}
 
 	initData() {
-		const hp = !!this.context.player.playerData;
+		const hp = !!this.context.player.playerData?.player?.character?.crew?.length;
 		if (hp !== this.hasPlayer) {
 			this.inited = false;
 			this.hasPlayer = hp;
@@ -295,10 +295,6 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
-		const setActiveShip = (ship: Ship | null | undefined) => {
-			this.setState({...this.state, activeShip: ship});
-		}
-
 		const navToShip = (ship: Ship) => {
 			navigate('/ship_info?ship='+ship.symbol);
 		}
@@ -328,7 +324,7 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 
 					<ShipAbilityPicker ship={true} selectedAbilities={this.state.abilityFilter} setSelectedAbilities={(value) => this.setAbilityFilter(value as string[])} />
 					<TraitPicker ship={true} selectedTraits={this.state.traitFilter} setSelectedTraits={(value) => this.setTraitFilter(value as string[])} />
-					{!!this.context.player.playerData && <ShipOwnership selectedValue={this.state.ownership} setSelectedValue={this.setOwnedFilter} />}
+					{!!this.hasPlayer && <ShipOwnership selectedValue={this.state.ownership} setSelectedValue={this.setOwnedFilter} />}
 				</div>
 				<div>
 				<Input
@@ -345,7 +341,7 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 				</Input>
 				</div>
 			</div>}
-			{!this.props.event_ships?.length &&
+			{!this.props.event_ships?.length && !!this.hasPlayer &&
 			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '1em', margin: '1em 0'}}>
 				<Checkbox label={t('ship.show.only_in_use')} checked={this.state.onlyUsed ?? false} onChange={(e, { checked }) => this.setOnlyUsed(checked as boolean)} />
 			</div>}

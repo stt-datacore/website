@@ -1,11 +1,11 @@
-import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults, AttackInstant, MultiShipWorkerConfig } from "../model/worker";
+import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults, AttackInstant, MultiShipWorkerConfig, ShipWorkerTransportItem } from "../model/worker";
 import { CrewMember } from "../model/crew";
 import { getComboCountBig, getPermutations } from "../utils/misc";
 import { compareShipResults } from "../utils/shiputils";
 import { canSeatAll, iterateBattle } from "./battleworkerutils";
 
 const ShipCrewWorker = {
-    calc: (options: ShipWorkerConfig, reportProgress: (data: { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: ShipWorkerItem }) => boolean = () => true) => {
+    calc: (options: ShipWorkerConfig, reportProgress: (data: { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: ShipWorkerTransportItem }) => boolean = () => true) => {
         return new Promise<ShipWorkerResults>(async (resolve, reject) => {
             const {
                 event_crew,
@@ -14,12 +14,9 @@ const ShipCrewWorker = {
                 ship,
                 battle_mode,
                 opponents,
-                action_types,
-                ability_types,
                 defense,
                 offense,
                 ignore_skill,
-                verbose,
                 max_iterations,
                 simulate,
                 ranking_method,
@@ -52,7 +49,7 @@ const ShipCrewWorker = {
             let start_index = (options.start_index ?? 0n);
             let i = 0n;
             let progress = -1n;
-            const results = [] as ShipWorkerItem[];
+            const results = [] as ShipWorkerTransportItem[];
 
             const processBattleRun = (attacks: AttackInstant[], crew_set: CrewMember[]) => {
                 let result_crew = [] as CrewMember[];
@@ -123,21 +120,21 @@ const ShipCrewWorker = {
                     min_attack,
                     max_attack,
                     battle_time,
-                    crew: result_crew,
+                    crew: result_crew.map(c => c.id),
                     percentile: 0,
-                    ship: attacks[0].ship,
+                    ship: attacks[0].ship.id,
                     weighted_attack,
                     skirmish_metric,
                     arena_metric,
                     fbb_metric,
                     attacks: get_attacks ? attacks : undefined,
                     win
-                } as ShipWorkerItem;
+                } as ShipWorkerTransportItem;
             }
 
             const time = options.max_duration || (battle_mode.startsWith('fbb') ? 180 : 30);
 
-            var last_high: ShipWorkerItem | null = null;
+            var last_high: ShipWorkerTransportItem | null = null;
             var errors = false;
 
             const fbb_mode = battle_mode.startsWith('fbb');
@@ -160,21 +157,9 @@ const ShipCrewWorker = {
                 return (xseen.every(x => x) && yseen.every(y => y));
             });
 
-            // let cbs = [] as string[];
-            // for (let i = 0; i < c; i++) {
-            //     for (let j = 0; j < c; j++) {
-            //         cbs.push(`${i}_${j}`);
-            //     }
-            // }
-
-
             getPermutations(workCrew, seats, count, true, start_index, (set) => {
                 i++;
                 if (errors) return false;
-                // let test = ['torres_caretaker_crew', 'kirk_chances_crew', 'crusher_j_vox_crew', 'tucker_desert_crew'];
-                // if (set.every(s => test.includes(s.symbol))) {
-                //     console.log("Inspect");
-                // }
                 if (!(i % 100n)) {
                     let p = ((i * 100n) / count);
 

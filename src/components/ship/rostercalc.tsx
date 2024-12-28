@@ -18,7 +18,7 @@ import { CrewDropDown } from "../base/crewdropdown";
 import { ShipMultiWorkerContext, ShipMultiWorkerStatus } from "./shipmultiworker";
 import AdvancedCrewPowerPopup from "./advancedpower";
 import CONFIG from "../CONFIG";
-import { ShipWorkerConfig, ShipWorkerItem } from "../../model/worker";
+import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerTransportItem } from "../../model/worker";
 
 export interface RosterCalcProps {
     pageId: string;
@@ -441,6 +441,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             width: isMobile ? '100%' : '70%'
         }}>
             {true && <div style={{ display: 'flex', textAlign: 'center', width: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '1em', marginBottom: '1em' }}>
+                <h3>{ship.name}</h3>
                 {progressMsg ? (running ? globalContext.core.spin(progressMsg || t('spinners.default')) : progressMsg) : t('global.idle')}
             </div>}
             {true && <div style={{ display: 'inline', textAlign: 'left', width: '100%' }}>
@@ -996,16 +997,16 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
             if (result.data.result.items.length === 1 && suggestions?.length && suggestions.length > 1) {
                 let r = result.data.result.items[0];
-                let sug = suggestions.findIndex(f => f.crew.every((cr1, idx) => r.crew.findIndex(cr2 => cr2.id === cr1.id) === idx))
+                let sug = suggestions.findIndex(f => f.crew.every((cr1, idx) => r.crew.findIndex(cr2 => cr2 === cr1.id) === idx))
                 if (sug !== -1) {
-                    suggestions[sug] = r;
+                    suggestions[sug] = fromTransport(r);
                     setSugWait(sug);
                     setSuggestions([...suggestions]);
                     return;
                 }
             }
             setSugWait(0);
-            setSuggestions(result.data.result.items);
+            setSuggestions(result.data.result.items.map(i => fromTransport(i)));
         }
         else if (result.data.inProgress && result.data.result.count) {
             setProgressMsg(
@@ -1020,7 +1021,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             )
         }
         else if (result.data.inProgress && result.data.result.result) {
-            resultCache.push(result.data.result.result);
+            resultCache.push(fromTransport(result.data.result.result));
             let new_cache = resultCache.concat().sort((a, b) => compareShipResults(a, b, fbb_mode));
             setSuggestion(undefined);
             setTimeout(() => {
@@ -1214,5 +1215,15 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         });
 
         return results;
+    }
+
+    function fromTransport(input: ShipWorkerTransportItem): ShipWorkerItem {
+        //if (!crew?.length || !ships?.length) return undefined;
+        const result = {
+            ...input,
+            crew: input.crew.map(id => crew.find(c => c.id === id)!)!,
+            ship: ships.find(s => s.id === input.ship)!
+        }
+        return result;
     }
 }

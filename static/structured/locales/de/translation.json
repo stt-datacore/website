@@ -845,7 +845,6 @@
         }
     },
     "global": {
-        "reserved": "Reserviert",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
@@ -962,6 +961,7 @@
         "quarter_short": "Q",
         "quest": "Quest",
         "recommend_crew": "Crew empfehlen",
+        "reserved": "Reserviert",
         "reset": "Zurücksetzen",
         "rows_per_page": "Zeilen pro Seite",
         "running": "Läuft",
@@ -1724,9 +1724,9 @@
             "ignore_skill": "Ignorieren Sie die Fähigkeiten",
             "iterations": "Iterationen",
             "max_init": "Maximale Initialisierungszeit",
-            "min_init": "Minimale Initialisierungszeit",
             "max_iterations": "Max. Iterationen",
             "max_workers": "Max. Anzahl Arbeiter",
+            "min_init": "Minimale Initialisierungszeit",
             "ranking_method": "Rangfolgemethode",
             "rate": "Rate",
             "rate_msg": "Muss eine Zahl zwischen 1 und 10 sein",
@@ -1766,6 +1766,13 @@
         },
         "initialize": "Initialisierungszeit",
         "level": "{{base.level}}",
+        "lineup": {
+            "export": "Liste exportieren",
+            "header": "Benutzerdefinierte Kampfkonfigurationen speichern, exportieren und importieren.",
+            "import": "Liste importieren",
+            "select": "Liste auswählen",
+            "title": "Benutzerdefinierte Listen für Schiffsbrücken"
+        },
         "max_attack": "Max. Angriffs",
         "max_level": "Höchstlevel",
         "min_attack": "Min. Angriffs",
@@ -1784,6 +1791,16 @@
         },
         "skirmish": "{{event_type.skirmish}}",
         "skirmish_metric": "Scharmützel Metrisch",
+        "tabs": {
+            "opponent": {
+                "heading": "Gegnerische Kampfbrücke konfigurieren.",
+                "title": "Gegnerisches Schiff"
+            },
+            "player": {
+                "heading": "Konfigurieren Sie Ihre Kampfbrücke.",
+                "title": "Spielerschiff"
+            }
+        },
         "trigger": "Auslöser",
         "triggers": "Auslöseren",
         "unlimited": "Unbegrenzt",
