@@ -160,7 +160,7 @@ const ShipCrewWorker = {
             getPermutations(workCrew, seats, count, true, start_index, (set) => {
                 i++;
                 if (errors) return false;
-                if (!(i % 100n)) {
+                if ((i % 100n) == 0n) {
                     let p = ((i * 100n) / count);
 
                     if (p !== progress) {
@@ -197,10 +197,10 @@ const ShipCrewWorker = {
                     }
                     else {
                         let d = compareShipResults(attack, last_high, fbb_mode);
-                        if (d < 0 || attack.win) {
+                        if (d < 0) {
                             accepted = true;
                             results.push(attack);
-                            last_high = attack;
+                            if (d < 0) last_high = attack;
                         }
                     }
 

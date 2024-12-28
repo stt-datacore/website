@@ -32,13 +32,13 @@ export interface ShipMultiWorkerState extends IMultiWorkerState {
     fbb_mode: boolean;
 }
 
-export interface ShipMultiWorkerConfig extends IMultiWorkerConfig<ShipWorkerConfig, ShipWorkerItem> {
+export interface ShipMultiWorkerConfig extends IMultiWorkerConfig<ShipWorkerConfig, ShipWorkerTransportItem> {
     fbb_mode: boolean;
 }
 
 export const ShipMultiWorkerContext = React.createContext(DefaultMultiWorkerContextData);
 
-export class ShipMultiWorker extends MultiWorkerBase<ShipMultiWorkerProps,  ShipMultiWorkerState, ShipMultiWorkerConfig, ShipWorkerConfig, ShipWorkerItem> {
+export class ShipMultiWorker extends MultiWorkerBase<ShipMultiWorkerProps,  ShipMultiWorkerState, ShipMultiWorkerConfig, ShipWorkerConfig, ShipWorkerTransportItem> {
     constructor(props: ShipMultiWorkerProps) {
         super(props);
     }

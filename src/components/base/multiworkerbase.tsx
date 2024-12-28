@@ -180,7 +180,7 @@ export abstract class MultiWorkerBase<TProps extends MultiWorkerProps, TState ex
             this.count = bigcount;
             this.progress = bigprogress;
             this.accepted = bigaccepted;
-            this.percent = Number(((bigprogress * 100n) / bigcount).toString());
+            this.percent = this.count ? Number(((bigprogress * 100n) / bigcount).toString()) : 0;
         }
 
         private workerMessage = (message: any): void => {
@@ -226,6 +226,8 @@ export abstract class MultiWorkerBase<TProps extends MultiWorkerProps, TState ex
                 }
 
                 if (!this.onItem(msg)) return;
+                this.updateBigCounts();
+
                 this.lastResult = msg.data.result.result;
 
                 this.callback({
