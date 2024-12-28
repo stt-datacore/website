@@ -9,7 +9,8 @@ const STATIC_PATH = `${__dirname}/../../static/structured/`;
 
 type ShipCompat = {
     score: number,
-    trigger: boolean
+    trigger: boolean,
+    seat: boolean
 };
 
 interface Score {
@@ -74,6 +75,17 @@ function processShips(): void {
 
 function processCrewShipStats() {
 
+    const Triggers = {
+        0: 'None',
+		1: 'Position',
+		2: 'Cloak',
+		4: 'Boarding',
+    }
+    const printTrigger = (c: CrewMember) => {
+        if (!c.action.ability?.condition) return '';
+        else return Triggers[c.action.ability.condition];
+    }
+
     const ignoreDefeat = false;
 
     const offense = 0.528;
@@ -98,7 +110,9 @@ function processCrewShipStats() {
 	const shipCompatibility = (ship: Ship, crew: CrewMember) => {
 		let compat = 0;
         let trigger = false;
+        let seat = false;
 		if (ship.battle_stations?.some(bs => crew.skill_order.includes(bs.skill))) {
+            seat = true;
 			if (crew.action.ability?.condition) {
 				compat += 0.25;
 			}
@@ -112,7 +126,7 @@ function processCrewShipStats() {
                 trigger = true;
 			}
 		}
-		return { score: compat, trigger };
+		return { score: compat, trigger, seat } as ShipCompat;
 	}
 
 	const characterizeCrew = (crew: CrewMember) => {
@@ -442,7 +456,7 @@ function processCrewShipStats() {
     const shipscores = [] as Score[];
     const crewscores = [] as Score[];
 
-    const processRuns = (trigger_compat: boolean) => {
+    const processRuns = (trigger_compat: boolean, seat_compat: boolean, ship_only_dmg: boolean) => {
 
         shipscores.length = 0;
         crewscores.length = 0;
@@ -482,6 +496,7 @@ function processCrewShipStats() {
                     z++;
                     if (run.crew !== c) continue;
                     if (trigger_compat && (run.compatibility.trigger === true && run.compatibility.score !== 1)) continue;
+                    if (seat_compat && !run.compatibility.seat) continue;
 
                     indexes.push(z);
 
@@ -551,7 +566,9 @@ function processCrewShipStats() {
                 for (let run of runs) {
                     z++;
                     if (run.ship !== s) continue;
+                    if (ship_only_dmg && run.type === 'defense') continue;
                     if (trigger_compat && (run.compatibility.trigger === true && run.compatibility.score !== 1)) continue;
+                    if (seat_compat && !run.compatibility.seat) continue;
 
                     indexes.push(z);
 
@@ -595,6 +612,7 @@ function processCrewShipStats() {
         //     score.arena /= score.arena_count;
         //     score.fbb /= score.fbb_count;
         // });
+        console.log("Finding maximums...");
 
         const scoremax_arena = scores.map(cs => cs.arena_max).reduce((p, n) => p < n ? n : p, 0);
         const scoremax_fbb = scores.map(cs => cs.fbb_max).reduce((p, n) => p < n ? n : p, 0);
@@ -644,10 +662,14 @@ function processCrewShipStats() {
             }
         }
 
+        console.log("Computing scores...");
+
         scores.forEach((score) => {
             let c = (crew.find(f => f.symbol === score.symbol) || ships.find(f => f.symbol === score.symbol))!;
             computeScore(score, c);
         });
+
+        console.log("Normalizing scores...");
 
         normalizeScores(scores);
     }
@@ -663,7 +685,7 @@ function processCrewShipStats() {
     // compileScore(defs_1);
 
     console.log("\nTabulating Results ...");
-    processRuns(true);
+    processRuns(true, true, true);
 
     const offs_2 = crewscores.filter(cs => crewcategories[cs.symbol] === 'offense');
     const defs_2 = crewscores.filter(cs => crewcategories[cs.symbol] === 'defense');
@@ -707,12 +729,12 @@ function processCrewShipStats() {
                 `${item.fbb_final}`.padEnd(5, ' '),
                 idx == shipidx ? 'Ship' : 'Crew',
                 idx == shipidx ? 'Ship' : tc(crewcategories[item.symbol]).padEnd(7, " "),
-                `${triggered ? 'Tigger' : ''}`
+                `${c ? printTrigger(c) : ''}`
             );
 
             if (item.kind === 'ship') {
-                console.log(" ".padEnd(40, " "), arena_crew.map(c => c.name).join(", ").padEnd(40, " "));
-                console.log(" ".padEnd(40, " "), fbb_crew.map(c => c.name).join(", ").padEnd(40, " "));
+                console.log(" ".padEnd(40, " "), arena_crew.map(c => c.name + ` ${printTrigger(c)}`).join(", ").padEnd(40, " "));
+                console.log(" ".padEnd(40, " "), fbb_crew.map(c => c.name + ` ${printTrigger(c)}`).join(", ").padEnd(40, " "));
             }
             else {
                 console.log(" ".padEnd(40, " "), arena_ship?.name?.padEnd(20, " "));
