@@ -3,7 +3,7 @@ import { CrewMember } from "../src/model/crew";
 import { Ship, Schematics, BattleStations, BattleStation } from "../src/model/ship";
 import { AttackInstant, ShipWorkerItem } from "../src/model/worker";
 import { mergeShips } from "../src/utils/shiputils";
-import { iterateBattle } from "../src/workers/battleworkerutils";
+import { ChargeAction, iterateBattle } from "../src/workers/battleworkerutils";
 
 const Commander = [[1, 2], [1, 2]]
 const Captain = [[3, 4], [1, 2, 3, 4]]
@@ -45,7 +45,9 @@ interface Score {
     arena_max_ship: string,
     fbb_max_ship: string,
     arena_max_staff: string[],
-    fbb_max_staff: string[]
+    fbb_max_staff: string[],
+    fbb_win_count: number,
+    arena_win_count: number
 }
 
 interface BattleRun {
@@ -110,10 +112,10 @@ function processCrewShipStats() {
 
 	const unm_boss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":5200000000,"evasion":0,"attack":700000,"accuracy":120000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 6, antimatter: 0, level: 10};
 	const nm_boss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":3700000000,"evasion":0,"attack":570000,"accuracy":105000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 5, antimatter: 0, level: 10};
-	const brutal_boss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":1150000000,"evasion":0,"attack":225000,"accuracy":80000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 4, antimatter: 0, level: 10};
-	const hard_boss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":20000000,"evasion":0,"attack":45000,"accuracy":15000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 3, antimatter: 0, level: 10};
-	const normal_boss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":160000000,"evasion":0,"attack":92000,"accuracy":35000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 2, antimatter: 0, level: 10}
-	const easy_boss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":20000000,"evasion":0,"attack":45000,"accuracy":15000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 1, antimatter: 0, level: 10}
+	const brutal_boss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":1150000000,"evasion":0,"attack":225000,"accuracy":80000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 4, antimatter: 0, level: 10}
+	const hard_boss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":220000000,"evasion":0,"attack":206000,"accuracy":70000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 3, antimatter: 0, level: 10};
+	const normal_boss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":160000000,"evasion":0,"attack":92000,"accuracy":35000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 2, antimatter: 0, level: 10};
+	const easy_boss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":20000000,"evasion":0,"attack":45000,"accuracy":15000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 1, antimatter: 0, level: 10};
 	const all_bosses = [easy_boss, normal_boss, hard_boss, brutal_boss, nm_boss, unm_boss];
 
 	const runStart = new Date();
@@ -186,55 +188,12 @@ function processCrewShipStats() {
 	let ship_schematics = JSON.parse(fs.readFileSync(STATIC_PATH + 'ship_schematics.json', 'utf-8')) as Schematics[];
 	let crew = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf-8')) as CrewMember[];
 
-    let mboom = crew.filter(f => f.action.ability?.type === 1 && !f.action.limit && !f.action.ability?.condition).sort((a, b) => b.action.ability!.amount - a.action.ability!.amount || a.action.bonus_type - b.action.bonus_type || b.action.bonus_amount - a.action.bonus_amount);
-    let mcrit = crew.filter(f => f.action.ability?.type === 5 && !f.action.limit && !f.action.ability?.condition).sort((a, b) => b.action.ability!.amount - a.action.ability!.amount || a.action.bonus_type - b.action.bonus_type || b.action.bonus_amount - a.action.bonus_amount);
-    let mhr = crew.filter(f => f.action.bonus_type !== 0 && f.action.ability?.type === 2 && !f.action.limit && !f.action.ability?.condition).sort((a, b) => b.action.ability!.amount - a.action.ability!.amount || a.action.bonus_type - b.action.bonus_type || b.action.bonus_amount - a.action.bonus_amount);
-
-    const makeStaff = (ship: Ship, staff: CrewMember[], fbb: boolean, c: CrewMember, add_crew = false) => {
-        let boom = mboom.filter(f => f.max_rarity <= c.max_rarity && shipCompatibility(ship, c).score === 1).slice(0, 1);
-        let crit = mcrit.filter(f => f.max_rarity <= c.max_rarity && shipCompatibility(ship, c).score === 1).slice(0, 2);
-        let hr = mhr.filter(f => f.max_rarity <= c.max_rarity && shipCompatibility(ship, c).score === 1).slice(0, 2);
-
-        if (add_crew) {
-            staff.push(c);
-        }
-
-        if (fbb) {
-            if (add_crew && c.action?.ability?.type === 2) {
-                let dmg = hr.slice(0, 1).concat(boom.concat(crit));
-                let min = Math.min(ship.battle_stations!.length - (add_crew ? 1 : 0), dmg.length);
-                if (min) {
-                    for (let i = 0; i < min; i++) {
-                        staff.push(dmg[i]);
-                    }
-                }
-            }
-            else {
-                let dmg = hr.concat(boom.concat(crit));
-                let min = Math.min(ship.battle_stations!.length - (add_crew ? 1 : 0), dmg.length);
-                if (min) {
-                    for (let i = 0; i < min; i++) {
-                        staff.push(dmg[i]);
-                    }
-                }
-            }
-        }
-        else {
-            let dmg = boom.concat(crit);
-            let min = Math.min(ship.battle_stations!.length - (add_crew ? 1 : 0), dmg.length);
-            if (min) {
-                for (let i = 0; i < min; i++) {
-                    staff.push(dmg[i]);
-                }
-            }
-        }
-    };
-
-    console.log(mboom[0].name, mboom[1].name);
-    console.log(mcrit[0].name, mcrit[1].name);
-    console.log(mhr[0].name, mhr[1].name);
+    // let boompool = crew.filter(f => f.action.ability?.type === 1 && !f.action.limit && !f.action.ability?.condition).sort((a, b) => b.action.ability!.amount - a.action.ability!.amount || a.action.bonus_type - b.action.bonus_type || b.action.bonus_amount - a.action.bonus_amount);
+    // let critpool = crew.filter(f => f.action.ability?.type === 5 && !f.action.limit && !f.action.ability?.condition).sort((a, b) => b.action.ability!.amount - a.action.ability!.amount || a.action.bonus_type - b.action.bonus_type || b.action.bonus_amount - a.action.bonus_amount);
+    let hrpool = crew.filter(f => f.action.bonus_type !== 0 && f.action.ability?.type === 2 && !f.action.limit && !f.action.ability?.condition).sort((a, b) => b.action.ability!.amount - a.action.ability!.amount || a.action.bonus_type - b.action.bonus_type || b.action.bonus_amount - a.action.bonus_amount);
 
     let ships = mergeShips(ship_schematics.filter(sc => highestLevel(sc.ship) == (sc.ship.max_level ?? sc.ship.level) + 1 && (sc.ship.battle_stations?.length)), []);
+    let origShips = JSON.parse(JSON.stringify(ships)) as Ship[];
 	ships = ships.sort((a, b) => shipnum(b) - shipnum(a)); //.slice(0, 10);
 
     const allruns = [] as BattleRun[];
@@ -316,7 +275,7 @@ function processCrewShipStats() {
 		} as ShipWorkerItem;
 	}
 
-    const runBattles = (ship: Ship, testcrew: CrewMember | CrewMember[], allruns: BattleRun[], runidx: number, no_arena = false, no_fbb = false, opponent?: Ship) => {
+    const runBattles = (ship: Ship, testcrew: CrewMember | CrewMember[], allruns: BattleRun[], runidx: number, no_arena = false, no_fbb = false, opponent?: Ship, every_boss = false) => {
         if (!Array.isArray(testcrew)) testcrew = [testcrew];
 
         const c = testcrew[0];
@@ -360,26 +319,35 @@ function processCrewShipStats() {
             let bosses = getBosses(ship, c);
             if (bosses?.length) {
                 bosses.sort((a, b) => b.id - a.id);
+                if (!every_boss) bosses = bosses.slice(0, 1);
 
-                if (staff.length === 1) {
-                    if (c.action.ability?.type === 2) {
-                        for (let i = 1; i < ship.battle_stations!.length && i < 2; i++) {
-                            staff.push(c);
+                bosses.forEach((boss) => {
+                    let newstaff = [...staff];
+
+                    if (newstaff.length === 1) {
+                        if (c.action.ability?.type === 2) {
+                            for (let i = 1; i < ship.battle_stations!.length && i < 2; i++) {
+                                newstaff.push(c);
+                            }
+                        }
+                        else if (crewtype !== 'defense') {
+                            let compathr = hrpool.filter(
+                                ff => ff.max_rarity <= boss.id &&
+                                (
+                                    ff.action.bonus_type !== c.action.bonus_type ||
+                                    ff.action.bonus_amount < c.action.bonus_amount
+                                )
+                            );
+                            if (!compathr?.length) compathr = hrpool;
+                            for (let i = 1; i < ship.battle_stations!.length && i < 3 && i < compathr.length; i++) {
+                                newstaff.push(compathr[i-1]);
+                            }
                         }
                     }
-                    else if (crewtype !== 'defense') {
-                        let zdr = mhr.filter(ff => ff.max_rarity <= bosses[0].id && ff.action.bonus_amount < c.action.bonus_amount);
-                        if (!zdr?.length) zdr = mhr;
-                        for (let i = 1; i < ship.battle_stations!.length && i < 3 && i < zdr.length; i++) {
-                            staff.push(zdr[i-1]);
-                        }
-                    }
-                }
 
-                bosses.slice(0, 1).forEach((boss) => {
-                    result = iterateBattle(10, true, ship, staff, boss, defense, offense, undefined, undefined, undefined, undefined, undefined, true, ignoreDefeat);
+                    result = iterateBattle(10, true, ship, newstaff, boss, defense, offense, undefined, undefined, undefined, undefined, undefined, true, ignoreDefeat);
                     if (result.length) {
-                        let attack = processBattleRun(result, staff);
+                        let attack = processBattleRun(result, newstaff);
                         if (attack) {
                             let time = attack.battle_time;
                             let dmg = attack.attack;
@@ -480,6 +448,8 @@ function processCrewShipStats() {
                             fbb_max_ship: '',
                             arena_max_staff: [],
                             fbb_max_staff: [],
+                            fbb_win_count: 0,
+                            arena_win_count: 0
                         }
                         crewscores.push(score);
                     }
@@ -501,6 +471,7 @@ function processCrewShipStats() {
                             }
                             score.arena += run.damage;
                             score.arena_count++;
+                            if (run.win) score.arena_win_count++;
                         }
                         else {
                             if (run.damage > score.fbb_max) {
@@ -510,6 +481,7 @@ function processCrewShipStats() {
                             }
                             score.fbb += run.damage;
                             score.fbb_count++;
+                            if (run.win) score.fbb_win_count++;
                         }
                     }
                     if (mode === 0) {
@@ -551,8 +523,10 @@ function processCrewShipStats() {
                         arena_max_ship: '',
                         fbb_max_ship: '',
                         arena_max_staff: [],
-                        fbb_max_staff: []
-                    }
+                        fbb_max_staff: [],
+                        fbb_win_count: 0,
+                        arena_win_count: 0
+                }
                     shipscores.push(score);
                 }
                 const indexes = [] as number[];
@@ -579,6 +553,7 @@ function processCrewShipStats() {
                         }
                         score.arena += run.damage;
                         score.arena_count++;
+                        if (run.win) score.arena_win_count++;
                     }
                     else {
                         if (run.damage > score.fbb_max) {
@@ -593,6 +568,7 @@ function processCrewShipStats() {
                         }
                         score.fbb += run.damage;
                         score.fbb_count++;
+                        if (run.win) score.fbb_win_count++;
                     }
                 }
                 if (!indexes.length) return;
@@ -612,7 +588,7 @@ function processCrewShipStats() {
         });
     }
 
-    const compileScore = (scores: Score[]) => {
+    const compileScore = (scores: Score[], pass2 = false) => {
         // scores.forEach((score) => {
         //     score.arena /= score.arena_count;
         //     score.fbb /= score.fbb_count;
@@ -632,6 +608,8 @@ function processCrewShipStats() {
             let a_fbb = 0;
             let b_arena = 0;
             let b_fbb = 0;
+            let c_arena = 0;
+            let c_fbb = 0;
 
             a_arena = (score.arena_max / scoremax_arena) * 100;
             a_fbb = (score.fbb_max / scoremax_fbb) * 100;
@@ -639,8 +617,18 @@ function processCrewShipStats() {
             b_arena = (score.arena / summax_arena) * 100;
             b_fbb = (score.fbb / summax_fbb) * 100;
 
-            score.fbb_final = (a_fbb + b_fbb) / 2;
-            score.arena_final = (a_arena + b_arena) / 2;
+            if (!pass2) {
+
+                score.fbb_final = (a_fbb + b_fbb) / 2;
+                score.arena_final = (a_arena + b_arena) / 2;
+            }
+            else {
+                if (score.fbb_count) c_fbb = (score.fbb_win_count / score.fbb_count) * 100;
+                if (score.arena_count) c_arena = (score.arena_win_count / score.arena_count) * 100;
+
+                score.fbb_final = (a_fbb + b_fbb + (c_fbb * 3)) / 5;
+                score.arena_final = (a_arena + b_arena + (c_arena * 3)) / 5;
+            }
 
             score.overall_final = (score.arena_final + score.fbb_final) / 2;
         }
@@ -704,8 +692,8 @@ function processCrewShipStats() {
     compileScore(ship_2);
 
     const getStaffedShip = (ship: string | Ship, fbb: boolean) => {
-        let data = typeof ship === 'string' ? ships.find(f => f.symbol === ship) : ship;
-        if (!data?.battle_stations?.length) return data;
+        let data = typeof ship === 'string' ? origShips.find(f => f.symbol === ship) : origShips.find(f => f.symbol === ship.symbol);
+        if (!data?.battle_stations?.length) return undefined;
         data = { ...data } as Ship;
         if (data.name === 'Breen Command Warship') {
             console.log("Break");
@@ -737,10 +725,25 @@ function processCrewShipStats() {
             (!cc.action.ability?.condition || conds.includes(cc.action.ability.condition)) &&
             cc.skill_order.some(sko => skills.includes(sko)));
 
-        let dmg = offs_2.map(c2 => cs.find(csf => csf.symbol === c2.symbol)).filter(f => !!f);
-        let repair = defs_2.map(c2 => cs.find(csf => csf.symbol === c2.symbol)).filter(f => !!f);
+        let dmg = offs_2.map(c2 => cs.find(csf => csf.symbol === c2.symbol)).filter(f => !!f && (!fbb || !f.action.limit)) as CrewMember[];
+        let repair = defs_2.map(c2 => cs.find(csf => csf.symbol === c2.symbol)).filter(f => !!f && (!fbb || !f.action.limit)) as CrewMember[];
 
         let filtered = dmg.concat(repair);
+
+        filtered.sort((a, b) => {
+            let r = 0;
+            if (a.action.ability?.type === b.action.ability?.type && a.action.ability?.type === 2 && a.action.ability?.amount === b.action.ability?.amount) {
+                r = ((a.action.cooldown + a.action.duration) - (b.action.cooldown + b.action.duration));
+            }
+            if (!r) r = a.action.bonus_type - b.action.bonus_type ||
+                b.action.bonus_amount - a.action.bonus_amount ||
+                a.action.initial_cooldown - b.action.initial_cooldown ||
+                (a.action.ability?.type ?? 99) - (b.action.ability?.type ?? 99) ||
+                (b.action.ability?.amount ?? 0) - (a.action.ability?.amount ?? 0);
+
+            return r;
+
+        });
 
         let used = [] as string[];
         let ct = 0;
@@ -798,10 +801,14 @@ function processCrewShipStats() {
             if (pass == 1) {
                 if (filled === full) break;
                 ignore_skill = true;
+                ct = 0;
             }
 
             for (let bs of data.battle_stations) {
+                if (bs.crew) continue;
+
                 let d1 = filtered.find(f => {
+                    if (f.action.ability?.condition && !pass) return false;
                     if (((!ignore_skill && !f.skill_order.includes(bs.skill)) || used.includes(f.symbol))) return false;
                     if (f.action.ability?.type === 1 && boom < need_boom) {
                         boom++;
@@ -857,31 +864,33 @@ function processCrewShipStats() {
     for (let ship of fbb_p2) {
         console.log(`Running FBB on ${ship.name} (${count++} / ${ships.length})...`);
         let crew = ship.battle_stations!.map(m => m.crew!);
-        runidx = runBattles(ship, crew, allruns, runidx, true, false);
+        runidx = runBattles(ship, crew, allruns, runidx, true, false, undefined, true);
     }
 
     console.log("Score Ships, Pass 2...");
     allruns.splice(runidx);
 
-    // arenaruns.length = 0;
-    // arenaruns.length = runidx;
-    // fbbruns.length = 0;
-    // fbbruns.length = runidx;
+    arenaruns.length = 0;
+    arenaruns.length = runidx;
+    fbbruns.length = 0;
+    fbbruns.length = runidx;
 
     fc = 0;
     ac = 0;
 
     for (let run of allruns) {
         if (run.battle === 'fbb') {
-            fbbruns.push(run);
+            fbbruns[fc++] = run;
+            //fbbruns.push(run);
         }
         else if (run.battle === 'arena') {
-            arenaruns.push(run);
+            arenaruns[ac++] = run;
+            //arenaruns.push(run);
         }
     }
 
-    // fbbruns.splice(fc);
-    // arenaruns.splice(ac);
+    fbbruns.splice(fc);
+    arenaruns.splice(ac);
 
     allruns.length = 0;
 
@@ -892,7 +901,7 @@ function processCrewShipStats() {
 
     const ship_3 = shipscores.filter(ss => ss.arena && ss.fbb);
 
-    compileScore(ship_3);
+    compileScore(ship_3, true);
 
     const shipidx = 2;
 

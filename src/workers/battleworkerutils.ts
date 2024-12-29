@@ -810,7 +810,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 let number = attack_counter / aps_num;
                 attack_counter = 0;
 
-                if (fbb_mode || !oppo_cloaked) {
+                if (fbb_mode || (!oppo_cloaked && !cloaked)) {
                     let mul = oppos?.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
                     mul = 1 - (mul / 100);
 
@@ -834,7 +834,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 let number = oppo_counter / oppo_aps_num;
                 oppo_counter = 0;
 
-                if (fbb_mode || !oppo_cloaked) {
+                if (fbb_mode || (!oppo_cloaked && !cloaked)) {
                     let mul = currents.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
                     mul = 1 - (mul / 100);
                     if (!oppo_powerInfo) {
