@@ -359,6 +359,7 @@ function processCrewShipStats() {
             // Test FBB
             let bosses = getBosses(ship, c);
             if (bosses?.length) {
+                bosses.sort((a, b) => b.id - a.id);
 
                 if (staff.length === 1) {
                     if (c.action.ability?.type === 2) {
@@ -367,13 +368,13 @@ function processCrewShipStats() {
                         }
                     }
                     else if (crewtype !== 'defense') {
-                        for (let i = 1; i < ship.battle_stations!.length && i < 3; i++) {
-                            staff.push(mhr[i-1]);
+                        let ahr = mhr.filter(f => f.max_rarity <= bosses[0].id);
+                        for (let i = 1; i < ship.battle_stations!.length && i < 3 && i < ahr.length; i++) {
+                            staff.push(ahr[i-1]);
                         }
                     }
                 }
 
-                bosses.sort((a, b) => b.id - a.id);
                 bosses.slice(0, 1).forEach((boss) => {
                     result = iterateBattle(10, true, ship, staff, boss, defense, offense, undefined, undefined, undefined, undefined, undefined, true, ignoreDefeat);
                     if (result.length) {
@@ -382,7 +383,7 @@ function processCrewShipStats() {
                             let time = attack.battle_time;
                             let dmg = attack.attack;
 
-                            if (c.action.limit) dmg *= (time / 180);
+                            // if (c.action.limit) dmg *= (time / 180);
 
                             allruns[runidx++] = {
                                 crew: c,
@@ -448,7 +449,6 @@ function processCrewShipStats() {
     const crewscores = [] as Score[];
 
     const processRuns = (trigger_compat: boolean, seat_compat: boolean, ship_only_dmg: boolean, ship_only = false) => {
-
         shipscores.length = 0;
         crewscores.length = 0;
 
@@ -772,10 +772,11 @@ function processCrewShipStats() {
     runidx = 0;
 
     console.log("Run Ships, Pass 2...");
+    count = 1;
 
     for (let ship of arena_p2) {
         let crew = ship.battle_stations!.map(m => m.crew!);
-        console.log(`Playing arena on ${ship.name} against all ${ship.rarity}* ships (${count++} / ${ships.length})...`);
+        console.log(`Playing arena on ${ship.name} against all compatible ships (${count++} / ${ships.length})...`);
         for (let ship2 of arena_p2) {
             if (ship == ship2) continue;
             let league = getLeague(ship);
@@ -783,6 +784,8 @@ function processCrewShipStats() {
             runidx = runBattles(ship, crew, allruns, runidx, false, true, ship2);
         }
     }
+
+    count = 1;
 
     for (let ship of fbb_p2) {
         console.log(`Running FBB on ${ship.name} (${count++} / ${ships.length})...`);
@@ -793,30 +796,30 @@ function processCrewShipStats() {
     console.log("Score Ships, Pass 2...");
     allruns.splice(runidx);
 
-    arenaruns.length = 0;
-    arenaruns.length = runidx;
-    fbbruns.length = 0;
-    fbbruns.length = runidx;
+    // arenaruns.length = 0;
+    // arenaruns.length = runidx;
+    // fbbruns.length = 0;
+    // fbbruns.length = runidx;
 
     fc = 0;
     ac = 0;
 
     for (let run of allruns) {
         if (run.battle === 'fbb') {
-            fbbruns[fc++] = run;
+            fbbruns.push(run);
         }
         else if (run.battle === 'arena') {
-            arenaruns[ac++] = run;
+            arenaruns.push(run);
         }
     }
 
-    fbbruns.splice(fc);
-    arenaruns.splice(ac);
+    // fbbruns.splice(fc);
+    // arenaruns.splice(ac);
 
     allruns.length = 0;
 
     arenaruns.sort((a, b) => a.win != b.win ? a.win ? -1 : 1 : b.damage - a.damage || b.duration - a.duration || b.compatibility.score - a.compatibility.score);
-    fbbruns.sort((a, b) => a.win != b.win ? a.win ? -1 : 1 : b.damage - a.damage || b.duration - a.duration || b.compatibility.score - a.compatibility.score);
+    fbbruns.sort((a, b) => b.damage - a.damage || b.duration - a.duration || b.compatibility.score - a.compatibility.score);
 
     processRuns(true, true, true, true);
 
