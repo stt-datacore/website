@@ -840,9 +840,12 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                     let mul = oppos?.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
                     mul = 1 - (mul / 100);
 
-                    let actual_attack = standard_attack = (powerInfo.computed.active.attack * (!oppo_powerInfo ? 1 : hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion)));
+                    let actual_attack = (standard_attack * (!oppo_powerInfo ? 1 : hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion)));
                     let outgoing_damage = (actual_attack * mul) * number;
                     hitoppo(outgoing_damage);
+                }
+                else {
+                    standard_attack = base_attack = max_attack = 0;
                 }
             }
             else {
