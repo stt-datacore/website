@@ -367,8 +367,10 @@ function processCrewShipStats() {
                         }
                     }
                     else if (crewtype !== 'defense') {
-                        for (let i = 1; i < ship.battle_stations!.length && i < 3; i++) {
-                            staff.push(mhr[i-1]);
+                        let zdr = mhr.filter(ff => ff.action.bonus_amount < c.action.bonus_amount);
+                        if (!zdr?.length) zdr = mhr;
+                        for (let i = 1; i < ship.battle_stations!.length && i < 3 && i < zdr.length; i++) {
+                            staff.push(zdr[i-1]);
                         }
                     }
                 }
@@ -739,27 +741,93 @@ function processCrewShipStats() {
         let dmg = offs_2.map(c2 => cs.find(csf => csf.symbol === c2.symbol)).filter(f => !!f);
         let repair = defs_2.map(c2 => cs.find(csf => csf.symbol === c2.symbol)).filter(f => !!f);
 
+        let filtered = dmg.concat(repair);
+
         let used = [] as string[];
         let ct = 0;
-        let half = Math.floor(data.battle_stations.length / 2);
+        let full = data.battle_stations.length;
+        let filled = 0;
+        let need_crit = 0;
+        let need_boom = 0;
+        let need_hr = 0;
+        let crit = 0;
+        let boom = 0;
+        let hr = 0;
 
-        for (let bs of data.battle_stations) {
-            if (fbb && ct >= half) {
-                let r1 = repair.find(f => f.skill_order.includes(bs.skill) && !used.includes(f.symbol));
-                if (r1) {
-                    bs.crew = r1;
-                    used.push(r1.symbol);
-                }
+        if (full === 1) {
+            if (fbb) {
+                need_hr = 1;
             }
             else {
-                let d1 = dmg.find(f => f.skill_order.includes(bs.skill) && !used.includes(f.symbol));
+                need_boom = 1;
+            }
+        }
+        else if (full === 2) {
+            if (fbb) {
+                need_hr = 2;
+            }
+            else {
+                need_boom = 1;
+                need_crit = 1;
+            }
+        }
+        else if (full === 3) {
+            if (fbb) {
+                need_hr = 2;
+                need_boom = 1;
+            }
+            else {
+                need_boom = 2;
+                need_crit = 1;
+            }
+        }
+        else if (full === 4) {
+            if (fbb) {
+                need_boom = 1;
+                need_crit = 1;
+                need_hr = 2;
+            }
+            else {
+                need_boom = 3;
+                need_crit = 1;
+            }
+        }
+
+        let ignore_skill = false;
+
+        for (let pass = 0; pass < 2; pass++) {
+            if (pass == 1) {
+                if (filled === full) break;
+                ignore_skill = true;
+            }
+
+            for (let bs of data.battle_stations) {
+                let d1 = filtered.find(f => {
+                    if (((!ignore_skill && !f.skill_order.includes(bs.skill)) || used.includes(f.symbol))) return false;
+                    if (f.action.ability?.type === 1 && boom < need_boom) {
+                        boom++;
+                        return true;
+                    }
+                    else if (f.action.ability?.type === 5 && crit < need_crit) {
+                        crit++;
+                        return true;
+                    }
+                    else if (f.action.ability?.type === 2 && hr < need_hr) {
+                        hr++;
+                        return true;
+                    }
+                    return false;
+                });
                 if (d1) {
+                    filled++;
                     bs.crew = d1;
                     used.push(d1.symbol);
                 }
+
+                ct++;
             }
-            ct++;
         }
+
         return data;
     }
 
