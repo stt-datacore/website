@@ -335,7 +335,7 @@ export interface IterateBattleConfig {
     simulate?: boolean;
 }
 
-export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false, opponent_variance = 4, ignoreSeats = false, ignoreDefeat = false) {
+export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false, opponent_variance = 0.25, ignoreSeats = false, ignoreDefeat = false) {
     try {
         let ship = setupShip(input_ship, crew, false, ignoreSeats) || undefined;
         let work_opponent = opponent ? setupShip(opponent, [], false, ignoreSeats, true) || undefined : setupShip(input_ship, [...crew], false, ignoreSeats, true) || undefined;
@@ -671,8 +671,11 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         let oppo_counter = 0;
 
         let aps_num = 0;
-        let oppo_aps_num = work_opponent ? 1 / work_opponent.attacks_per_second : 0;
-        oppo_aps_num -= ((oppo_aps_num * (1 / (opponent_variance / 2))));
+
+        let oppo_aps_num = 0;
+
+        let oppvar = (work_opponent?.attacks_per_second ?? 1) + ((work_opponent?.attacks_per_second ?? 1) * opponent_variance);
+        oppo_aps_num = work_opponent ? 1 / oppvar : 0;
 
         const hitoppo = (damage: number) => {
             if (oppo_shields > 0) {
@@ -785,8 +788,8 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                     if (oppo_activation) {
                         o_at_second = sec;
                         oppo_powerInfo = getInstantPowerInfo(work_opponent!, oppos ?? [], ship, 0);
-                        oppo_aps_num = 1 / powerInfo.computed.attacks_per_second;
-                        oppo_aps_num -= ((oppo_aps_num * (1 / (opponent_variance / 2))));
+                        let oppvar = (oppo_powerInfo.computed.attacks_per_second ?? 1) + ((oppo_powerInfo.computed.attacks_per_second ?? 1) * opponent_variance);
+                        oppo_aps_num = work_opponent ? 1 / oppvar : 0;
 
                         if (oppo_activation !== true) {
                             oppo_immediates.push({
@@ -804,9 +807,9 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
             if (work_opponent && !oppo_powerInfo && oppos) {
                 oppo_powerInfo = getInstantPowerInfo(work_opponent!, oppos ?? [], ship, 0);
-                oppo_aps_num = 1 / powerInfo.computed.attacks_per_second;
-                oppo_aps_num -= ((oppo_aps_num * (1 / (opponent_variance / 2))));
-            }
+                let oppvar = (oppo_powerInfo.computed.attacks_per_second ?? 1) + ((oppo_powerInfo.computed.attacks_per_second ?? 1) * opponent_variance);
+                oppo_aps_num = work_opponent ? 1 / oppvar : 0;
+    }
 
             let base_attack = powerInfo.computed.attack.base;
             let standard_attack = powerInfo.computed.attack.with_bonus_and_chance;
