@@ -151,7 +151,7 @@ function processShips(): void {
 
 const shipnum = (ship: Ship) => (ship.hull - (ship.attack * ship.attacks_per_second)) / (ship.hull + (ship.attack * ship.attacks_per_second));
 
-function processCrewShipStats(rate = 10) {
+function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
     const Triggers = {
         0: 'None',
@@ -493,10 +493,10 @@ function processCrewShipStats(rate = 10) {
 		} as ShipWorkerItem & { opponent: Ship };
 	}
 
-    const flat_arena = ships.map(ship => processBattleRun(iterateBattle(rate, false, ship, [], undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true), [], ship)!);
-    const flat_fbb = ships.map(ship => getBosses(ship).map((boss) => processBattleRun(iterateBattle(rate, true, ship, [], boss, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true), [], boss)!)).flat();
+    const flat_arena = ships.map(ship => processBattleRun(iterateBattle(rate, false, ship, [], undefined, undefined, undefined, undefined, undefined, undefined, undefined, arena_variance, true), [], ship)!);
+    const flat_fbb = ships.map(ship => getBosses(ship).map((boss) => processBattleRun(iterateBattle(rate, true, ship, [], boss, undefined, undefined, undefined, undefined, undefined, undefined, fbb_variance, true), [], boss)!)).flat();
 
-    const runBattles = (ship: Ship, testcrew: CrewMember | CrewMember[], allruns: BattleRun[], runidx: number, no_arena = false, no_fbb = false, opponent?: Ship, every_boss = false, division?: number) => {
+    const runBattles = (ship: Ship, testcrew: CrewMember | CrewMember[], allruns: BattleRun[], runidx: number, no_arena = false, no_fbb = false, opponent?: Ship, every_boss = false, division?: number, ignore_defeat?: 'fbb' | 'arena' | 'all') => {
         if (!Array.isArray(testcrew)) testcrew = [testcrew];
 
         const c = testcrew[0];
@@ -510,7 +510,7 @@ function processCrewShipStats(rate = 10) {
         // Test Arena
         if (!no_arena) {
             let fa = flat_arena.find(fa => fa.ship.symbol === ship.symbol)!
-            result = iterateBattle(rate, false, ship, staff, opponent, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true, ignoreDefeat);
+            result = iterateBattle(rate, false, ship, staff, opponent, undefined, undefined, undefined, undefined, undefined, undefined, arena_variance, true, !!ignore_defeat && ignore_defeat !== 'fbb');
             if (result.length) {
                 result[0].ship = ship;
                 let attack = processBattleRun(result, staff, opponent);
@@ -569,7 +569,7 @@ function processCrewShipStats(rate = 10) {
                         }
                     }
 
-                    result = iterateBattle(rate, true, ship, newstaff, boss, defense, offense, undefined, undefined, undefined, undefined, undefined, true, ignoreDefeat);
+                    result = iterateBattle(rate, true, ship, newstaff, boss, defense, offense, undefined, undefined, undefined, undefined, fbb_variance, true, !!ignore_defeat && ignore_defeat !== 'arena');
                     if (result.length) {
                         let attack = processBattleRun(result, newstaff, boss);
                         if (attack) {
@@ -606,7 +606,7 @@ function processCrewShipStats(rate = 10) {
 	for (let ship of ships) {
 		console.log(`Testing crew on ${ship.name} (${count++} / ${ships.length})...`);
         for (let c of crew) {
-            runidx = runBattles(ship, c, allruns, runidx);
+            runidx = runBattles(ship, c, allruns, runidx, false, false, undefined, false, undefined, 'arena');
 		}
 	}
 
@@ -640,7 +640,7 @@ function processCrewShipStats(rate = 10) {
 
     const processRuns = (trigger_compat: boolean, seat_compat: boolean, ship_only = false) => {
         shipscores.length = 0;
-        crewscores.length = 0;
+        if (!ship_only) crewscores.length = 0;
 
         const scoreRun = (runs: BattleRun[], mode: number, scores: Score[], score_type: 'crew' | 'ship') => {
             if (mode === 0) {
@@ -726,7 +726,36 @@ function processCrewShipStats(rate = 10) {
         });
     }
 
-    const compileScore = (scores: Score[], pass2 = false) => {
+    const normalizeScores = (scores: Score[]) => {
+        let max = 0;
+        if (!scores.length) return;
+
+        scores.sort((a, b) => b.arena_final - a.arena_final);
+        max = scores[0].arena_final;
+        for (let score of scores) {
+            score.arena_final = Math.round((score.arena_final / max) * 1000) / 100;
+        }
+
+        scores.sort((a, b) => b.fbb_final - a.fbb_final);
+        max = scores[0].fbb_final;
+        for (let score of scores) {
+            score.fbb_final = Math.round((score.fbb_final / max) * 1000) / 100;
+        }
+
+        // Compute overall from normalized component scores
+        scores.forEach((score) => {
+            score.overall_final = (score.fbb_final + score.arena_final) / 2;
+        });
+
+        // Normalize overall score
+        scores.sort((a, b) => b.overall_final - a.overall_final);
+        max = scores[0].overall_final;
+        for (let score of scores) {
+            score.overall_final = Math.round((score.overall_final / max) * 1000) / 100;
+        }
+    }
+
+    const processScores = (scores: Score[], pass2 = false) => {
 
         const getLikeScores = (score: Score, mode: 'arena' | 'fbb') => {
             return scores;
@@ -744,16 +773,17 @@ function processCrewShipStats(rate = 10) {
         }
 
         const topA = (scores: Scoreable[][], mode: 'arena' | 'fbb') => {
-            if (mode === 'fbb') {
-                return scores.map(s => s.map(ss => ss.damage).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
-            }
-            else {
-                let result = scores.map(s => s.map(ss => ss.win_count).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
-                if (!result) {
-                    result = scores.map(s => s.map(ss => ss.duration).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
-                }
-                return result;
-            }
+            return 1;
+            // if (mode === 'fbb') {
+            //     return scores.map(s => s.map(ss => ss.damage).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
+            // }
+            // else {
+            //     let result = scores.map(s => s.map(ss => ss.win_count).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
+            //     if (!result) {
+            //         result = scores.map(s => s.map(ss => ss.duration).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
+            //     }
+            //     return result;
+            // }
         }
 
         const topB = (scores: Scoreable[][], mode: 'arena' | 'fbb') => {
@@ -777,17 +807,18 @@ function processCrewShipStats(rate = 10) {
         }
 
         const myA = (top: number, scores: Scoreable[], mode: 'arena' | 'fbb') => {
-            if (mode === 'fbb') {
-                return scores.map(ss => ss.damage).reduce((p, n) => p + n, 0);
-            }
-            else {
-                if (top) {
-                    return scores.map(ss => ss.win_count).reduce((p, n) => p + n, 0);
-                }
-                else {
-                    return scores.map(ss => ss.duration).reduce((p, n) => p + n, 0);
-                }
-            }
+            return 0;
+            // if (mode === 'fbb') {
+            //     return scores.map(ss => ss.damage).reduce((p, n) => p + n, 0);
+            // }
+            // else {
+            //     if (top) {
+            //         return scores.map(ss => ss.win_count).reduce((p, n) => p + n, 0);
+            //     }
+            //     else {
+            //         return scores.map(ss => ss.duration).reduce((p, n) => p + n, 0);
+            //     }
+            // }
         }
 
         const myB = (top: number, scores: Scoreable[], mode: 'arena' | 'fbb') => {
@@ -877,48 +908,21 @@ function processCrewShipStats(rate = 10) {
             }
         }
 
-        const normalizeScores = (scores: Score[]) => {
-            let max = 0;
-            if (!scores.length) return;
-
-            scores.sort((a, b) => b.arena_final - a.arena_final);
-            max = scores[0].arena_final;
-            for (let score of scores) {
-                score.arena_final = Math.round((score.arena_final / max) * 1000) / 100;
-            }
-
-            scores.sort((a, b) => b.fbb_final - a.fbb_final);
-            max = scores[0].fbb_final;
-            for (let score of scores) {
-                score.fbb_final = Math.round((score.fbb_final / max) * 1000) / 100;
-            }
-
-            // Compute overall from normalized component scores
-            scores.forEach((score) => {
-                score.overall_final = (score.fbb_final + score.arena_final) / 2;
-            });
-
-            // Normalize overall score
-            scores.sort((a, b) => b.overall_final - a.overall_final);
-            max = scores[0].overall_final;
-            for (let score of scores) {
-                score.overall_final = Math.round((score.overall_final / max) * 1000) / 100;
-            }
-        }
-
         scores.forEach((score) => {
             if (!pass2) {
                 // We want the strongest FBB boss
                 score.fbb_data.sort((a, b) => b.group - a.group).slice(0, 1);
 
-                // TODO : Think more about how to score arena?
-
-                // We want the weakest Arena division
-                // Weaker crew can sit in stronger divisions,
-                // but stronger crew cannot sit in weaker divisions
-                // therefore there is a discrepency with the amount
-                // of available battles to score by.
+                // // We want the weakest Arena division
                 score.arena_data.sort((a, b) => a.group - b.group).slice(0, 1);
+
+                // // TODO : Think more about how to score arena?
+
+                // // Weaker crew can sit in stronger divisions,
+                // // but stronger crew cannot sit in weaker divisions
+                // // therefore there is a discrepency with the amount
+                // // of available battles to score by.
+                // score.arena_data.sort((a, b) => a.group - b.group).slice(0, 1);
             }
             let c = (crew.find(f => f.symbol === score.symbol) || ships.find(f => f.symbol === score.symbol))!;
             computeScore(score, c);
@@ -945,11 +949,11 @@ function processCrewShipStats(rate = 10) {
     const ship_2 = shipscores.filter(ss => ss.arena_data.some(ad => ad.damage) && ss.fbb_data.some(fd => fd.damage));
 
     console.log("Scoring Offense ...");
-    compileScore(offs_2);
+    processScores(offs_2);
     console.log("Scoring Defense ...");
-    compileScore(defs_2);
+    processScores(defs_2);
     console.log("Scoring Ships ...");
-    compileScore(ship_2);
+    processScores(ship_2);
 
     console.log("Mapping best crew to ships...");
 
@@ -1013,7 +1017,29 @@ function processCrewShipStats(rate = 10) {
 
     const ship_3 = shipscores.filter(ss => ss.arena_data.some(ad => ad.damage) && ss.fbb_data.some(fd => fd.damage));
 
-    compileScore(ship_3, true);
+    processScores(ship_3, true);
+
+    // console.log("Factoring ship grades into final crew grades.");
+    // // Got the good crew, got the good ships from the good crew,
+    // // now let's bump the good crew higher if their ships are higher
+
+    // crewscores.forEach((score) => {
+    //     let fbb = ship_3.findIndex(f => f.symbol === score.fbb_data[0].max_ship);
+    //     let arena = ship_3.findIndex(f => f.symbol === score.arena_data[0].max_ship);
+
+    //     if (fbb != -1)
+    //         score.fbb_final += (score.fbb_final * ((ship_3.length - fbb) / ship_3.length));
+    //     if (arena != -1)
+    //         score.arena_final += (score.arena_final * ((ship_3.length - arena) / ship_3.length));
+
+    //     score.overall_final = (score.fbb_final + score.arena_final) / 2;
+    // });
+
+    // offs_2.sort((a, b) => b.overall_final - a.overall_final);
+    // defs_2.sort((a, b) => b.overall_final - a.overall_final);
+
+    // normalizeScores(offs_2);
+    // normalizeScores(defs_2);
 
     const shipidx = 2;
 
