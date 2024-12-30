@@ -364,7 +364,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         let oppo_shield_regen = (work_opponent?.shield_regen ?? ship.shield_regen) / rate;
 
         const attacks = [] as AttackInstant[];
-        crew.forEach(c => c.action.crew = c.id!);
+        crew.forEach(c => c?.action && c.id ? c.action.crew = c.id! : null);
         if (work_opponent) oppo_crew?.forEach(c => c.action.crew = c.id!);
 
         let allactions = JSON.parse(JSON.stringify([...ship.actions ?? [], ...crew.map(c => c.action)])) as ChargeAction[];
@@ -849,6 +849,11 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
             if (attack_counter >= aps_num) {
                 let number = attack_counter / aps_num;
+
+                standard_attack *= number;
+                base_attack *= number;
+                max_attack *= number;
+
                 attack_counter = 0;
 
                 if (((fbb_mode || !oppo_cloaked) && !cloaked)) {
@@ -856,7 +861,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                     mul = 1 - (mul / 100);
 
                     let actual_attack = (standard_attack * (!oppo_powerInfo ? 1 : hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion)));
-                    let outgoing_damage = (actual_attack * mul) * number;
+                    let outgoing_damage = (actual_attack * mul);
                     hitoppo(outgoing_damage);
                 }
                 else {

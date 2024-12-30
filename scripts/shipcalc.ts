@@ -499,9 +499,7 @@ function processCrewShipStats() {
         const crewtype = characterizeCrew(c) < 0 ? 'defense' : 'offense';
         const compat = shipCompatibility(ship, c);
         const staff = testcrew;
-        if (staff.some(s => s.symbol === '"chapel_ensign_crew"')) {
-            console.log("break");
-        }
+
         battle_mode = 'arena';
         let result: AttackInstant[] = [];
         // Test Arena
