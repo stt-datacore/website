@@ -262,7 +262,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 		return bosses;
 	}
 
-	const getStaffedShip = (ship: string | Ship, fbb: boolean) => {
+	const getStaffedShip = (ship: string | Ship, fbb: boolean, offs?: Score[], defs?: Score[], c?: CrewMember) => {
         let data = typeof ship === 'string' ? origShips.find(f => f.symbol === ship) : origShips.find(f => f.symbol === ship.symbol);
         if (!data?.battle_stations?.length) return undefined;
         data = { ...data } as Ship;
@@ -286,20 +286,31 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         let conds = data?.actions?.map(mp => mp.status).filter(f => f) as number[];
         let skills = data.battle_stations?.map(b => b.skill);
         let cs = crew.filter(cc =>
-            (!cloak_min || cc.action.initial_cooldown >= cloak_min) &&
+            (c && c.symbol === cc.symbol) ||
+            ((!cloak_min || cc.action.initial_cooldown >= cloak_min) &&
             (
                 (fbb && cc.max_rarity <= boss!.id) ||
                 (!fbb && league[1].includes(cc.max_rarity))
             ) &&
             (!cc.action.ability?.condition || conds.includes(cc.action.ability.condition)) &&
-            cc.skill_order.some(sko => skills.includes(sko)));
+            cc.skill_order.some(sko => skills.includes(sko)))
+        );
 
-        let dmg = offs_2.map(c2 => cs.find(csf => csf.symbol === c2.symbol)).filter(f => !!f && (!fbb || !f.action.limit)) as CrewMember[];
-        let repair = defs_2.map(c2 => cs.find(csf => csf.symbol === c2.symbol)).filter(f => !!f && (!fbb || !f.action.limit)) as CrewMember[];
+        let filtered: CrewMember[] = [];
 
-        let filtered = dmg.concat(repair);
+        if (offs && defs) {
+            let dmg = offs.map(c2 => cs.find(csf => csf.symbol === c2.symbol)).filter(f => !!f && (!fbb || !f.action.limit)) as CrewMember[];
+            let repair = defs.map(c2 => cs.find(csf => csf.symbol === c2.symbol)).filter(f => !!f && (!fbb || !f.action.limit)) as CrewMember[];
+
+            filtered = dmg.concat(repair);
+        }
+        else {
+            filtered = [...cs];
+        }
 
         filtered.sort((a, b) => {
+            if (c && c.symbol === a.symbol) return -1;
+            if (c && c.symbol === b.symbol) return 1;
             let r = 0;
             if (a.action.ability?.type === b.action.ability?.type && a.action.ability?.type === 2 && a.action.ability?.amount === b.action.ability?.amount) {
                 r = ((a.action.cooldown + a.action.duration) - (b.action.cooldown + b.action.duration));
@@ -324,6 +335,9 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         let crit = 0;
         let boom = 0;
         let hr = 0;
+
+        let nopower = 99;
+        let notype = 0;
 
         if (full === 1) {
             if (fbb) {
@@ -364,6 +378,22 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
             }
         }
 
+        if (c) {
+            if (c.action.ability?.type === 2) {
+                need_hr -= 1;
+            }
+            else if (c.action.ability?.type === 1) {
+                need_boom -= 1;
+            }
+            else if (c.action.ability?.type === 5) {
+                need_crit -= 1;
+            }
+            if (c.action.bonus_type === 0) {
+                nopower = c.action.bonus_amount;
+                notype = c.action.bonus_type;
+            }
+        }
+
         let ignore_skill = false;
 
         for (let pass = 0; pass < 4; pass++) {
@@ -383,6 +413,12 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 let d1 = filtered.find(f => {
                     if (f.action.ability?.condition && !pass) return false;
                     if (((!ignore_skill && !f.skill_order.includes(bs.skill)) || used.includes(f.symbol))) return false;
+                    if (c && c.symbol === f.symbol) return true;
+                    if (c && pass === 0) {
+                        if (f.action.bonus_type === notype) {
+                            if (f.action.bonus_amount > nopower) return  false;
+                        }
+                    }
                     if (f.action.ability?.type === 1 && (boom < need_boom || pass > 1)) {
                         boom++;
                         return true;
@@ -503,7 +539,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
         const crewtype = characterizeCrew(c) < 0 ? 'defense' : 'offense';
         const compat = shipCompatibility(ship, c);
-        const staff = testcrew;
+        let staff = testcrew; // testcrew.length > 1 ? testcrew : getStaffedShip(ship, false, undefined, undefined, c)?.battle_stations?.map(bs => bs.crew!) || testcrew;
 
         battle_mode = 'arena';
         let result: AttackInstant[] = [];
@@ -547,6 +583,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 bosses.forEach((boss) => {
                     let fb = flat_fbb.find(fa => fa.ship.symbol === ship.symbol && fa.opponent.id === boss.id)!
                     let newstaff = [...staff];
+                    //let newstaff = testcrew.length > 1 ? [...testcrew] : getStaffedShip(ship, true, undefined, undefined, c)?.battle_stations?.map(bs => bs.crew!) || [...testcrew];
 
                     if (newstaff.length === 1) {
                         if (c.action.ability?.type === 2) {
@@ -576,7 +613,10 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                             let time = attack.battle_time;
                             let dmg = attack.attack; // - fb.attack;
 
-                            // if (c.action.limit) dmg *= (time / 180);
+                            if (c.action.limit) {
+                                let cd = c.action.initial_cooldown + ((c.action.duration + c.action.cooldown) * (c.action.limit));
+                                dmg = dmg - (dmg * ((time - cd) / 180))
+                            }
 
                             allruns[runidx++] = {
                                 crew: c,
@@ -606,7 +646,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 	for (let ship of ships) {
 		console.log(`Testing crew on ${ship.name} (${count++} / ${ships.length})...`);
         for (let c of crew) {
-            runidx = runBattles(ship, c, allruns, runidx);
+            runidx = runBattles(ship, c, allruns, runidx, false, false, undefined, false, undefined, undefined);
 		}
 	}
 
@@ -912,10 +952,10 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         scores.forEach((score) => {
             if (!pass2) {
                 // We want the strongest FBB boss
-                score.fbb_data.sort((a, b) => b.group - a.group).slice(0, 1);
+                score.fbb_data.sort((a, b) => b.group - a.group); //.slice(0, 1);
 
                 // // We want the weakest Arena division
-                score.arena_data.sort((a, b) => a.group - b.group).slice(0, 1);
+                score.arena_data.sort((a, b) => a.group - b.group); //.slice(0, 1);
 
                 // // TODO : Think more about how to score arena?
 
@@ -958,8 +998,8 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
     console.log("Mapping best crew to ships...");
 
-    let arena_p2 = ships.map(sh => getStaffedShip(sh, false)).filter(f => !!f);
-    let fbb_p2 = ships.map(sh => getStaffedShip(sh, true)).filter(f => !!f);
+    let arena_p2 = ships.map(sh => getStaffedShip(sh, false, offs_2, defs_2)).filter(f => !!f);
+    let fbb_p2 = ships.map(sh => getStaffedShip(sh, true, offs_2, defs_2)).filter(f => !!f);
 
     allruns.length = (arena_p2.length + fbb_p2.length) * (arena_p2.length + fbb_p2.length) * 3;
     runidx = 0;
@@ -1024,30 +1064,40 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
     // Got the good crew, got the good ships from the good crew,
     // now let's bump the good crew higher if their ships are higher
 
-    for (let ss of ship_3) {
-        let arenas = origruns.filter((r, i) => r.ship?.symbol === ss.symbol && r.battle === 'arena');
-        let fbbs = origruns.filter((r, i) => r.ship?.symbol === ss.symbol && r.battle === 'fbb');
+    let max = crewscores.length;
+    let cidx = max;
+
+    for (let cs of crewscores) {
+        let arenas = origruns.filter((r, i) => r.battle === 'arena' && r.crew.symbol === cs.symbol);
+        let fbbs = origruns.filter((r, i) => r.battle === 'arena' && r.crew.symbol === cs.symbol);
 
         arenas.sort((a, b) => (a.win !== b.win) ? (a.win ? -1 : 1) : b.damage - a.damage || b.duration - a.duration);
-
         fbbs.sort((a, b) => b.damage - a.damage || b.duration - a.duration);
-        let maxb = fbbs[0].damage;
 
-        for (let cs of crewscores) {
-            let maxa = arenas.findIndex(f => f.crew.symbol === cs.symbol);
-            let ab = arenas.find(f => f.crew.symbol === cs.symbol);
-            let fb = fbbs.find(f => f.crew.symbol === cs.symbol);
+        let alen = arenas.length;
+        let amax = max + alen;
+        let idxa = ship_3.findIndex(f => f.symbol === arenas[0].ship.symbol) + 1;
 
-            if (ab) {
-                let aff = ((maxa / arenas.length)) * (ab.win ? 2 : 1);
-                cs.arena_final += (aff * ss.arena_final);
-            }
+        if (idxa) {
+            let part1 = (ship_3.length - idxa) / ship_3.length;
+            let part2 = (cidx / max);
+            let part3 = Math.round(((part1 + part2) / amax) * 100) / 10;
 
-            if (fb) {
-                let bff = (fb.damage / maxb);
-                cs.fbb_final += (bff * ss.fbb_final);
-            }
+            cs.arena_final = (cs.arena_final + part3) / 2;
         }
+
+        let blen = fbbs.length;
+        let bmax = max + blen;
+        let idxb = ship_3.findIndex(f => f.symbol === fbbs[0].ship.symbol) + 1;
+
+        if (idxb) {
+            let part1 = (ship_3.length - idxb) / ship_3.length;
+            let part2 = (cidx / max);
+            let part3 = Math.round(((part1 + part2) / bmax) * 100) / 10;
+            cs.fbb_final = (cs.fbb_final + part3) / 2;
+        }
+
+        cidx--;
     }
 
     crewscores.forEach((cs) => {
@@ -1113,4 +1163,4 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 }
 
 processShips();
-processCrewShipStats();
+processCrewShipStats(10, 0, 0.2);
