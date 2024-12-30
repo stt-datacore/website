@@ -340,6 +340,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         let ship = setupShip(input_ship, crew, false, ignoreSeats) || undefined;
         let work_opponent = opponent ? setupShip(opponent, [], false, ignoreSeats, true) || undefined : setupShip(input_ship, [...crew], false, ignoreSeats, true) || undefined;
         let oppo_crew = work_opponent?.battle_stations?.map(m => m.crew).filter(f => !!f) as CrewMember[];
+        if (!fbb_mode) opponent_variance = 0;
 
         defense ??= 0;
         offense ??= 0;
@@ -657,6 +658,10 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         let action = null as null | ChargeAction;
         let o_action = null as null | ChargeAction;
 
+        let instant_now = 0;
+        let instant_now_min = 0;
+        let instant_now_max = 0;
+
         let o_actidx = 0;
         let oppo_cnt = oppos?.length ?? 0;
         let oppo_activated = false;
@@ -671,7 +676,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         let oppo_counter = 0;
 
         let aps_num = 0;
-
         let oppo_aps_num = 0;
 
         let oppvar = (work_opponent?.attacks_per_second ?? 1) + ((work_opponent?.attacks_per_second ?? 1) * opponent_variance);
@@ -816,7 +820,12 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             let max_attack = powerInfo.computed.attack.with_bonus;
 
             if (immediates.length) {
+                instant_now_min = instant_now_max = instant_now = 0;
+
                 for (let imm of immediates) {
+                    instant_now += imm.standard;
+                    instant_now_min += imm.base;
+                    instant_now_max += imm.max;
                     hitoppo(imm.standard);
                 }
 
@@ -899,11 +908,13 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 hull,
                 shields,
                 second: sec,
-                attack: cloaked ? 0 : standard_attack,
-                min_attack: cloaked ? 0 : base_attack,
-                max_attack: cloaked ? 0 : max_attack,
+                attack: (cloaked ? 0 : standard_attack) + instant_now,
+                min_attack: (cloaked ? 0 : base_attack) + instant_now_min,
+                max_attack: (cloaked ? 0 : max_attack) + instant_now_max,
                 ship
             });
+
+            instant_now_min = instant_now_max = instant_now = 0;
 
             if (oppo_hull <= 0) {
                 attacks[attacks.length - 1].win = true;
