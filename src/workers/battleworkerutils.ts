@@ -817,7 +817,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 oppo_powerInfo = getInstantPowerInfo(work_opponent!, oppos ?? [], ship, 0);
                 let oppvar = (oppo_powerInfo.computed.attacks_per_second ?? 1) + ((oppo_powerInfo.computed.attacks_per_second ?? 1) * opponent_variance);
                 oppo_aps_num = work_opponent ? 1 / oppvar : 0;
-    }
+            }
 
             let base_attack = powerInfo.computed.attack.base;
             let standard_attack = powerInfo.computed.attack.with_bonus_and_chance;
@@ -844,11 +844,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 }
 
                 oppo_immediates.length = 0;
-            }
-
-            if (shields < origshield && shields > 0) {
-                shields += shield_regen;
-                if (shields > origshield) shields = origshield;
             }
 
             if (attack_counter >= aps_num) {
@@ -893,6 +888,16 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                     let incoming_damage = Math.ceil((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul * number);
                     hitme(incoming_damage);
                 }
+            }
+
+            if (shields < origshield && shields > 0) {
+                shields += shield_regen;
+                if (shields > origshield) shields = origshield;
+            }
+
+            if (oppo_shields < oppo_origshield && oppo_shields > 0) {
+                oppo_shields += oppo_shield_regen;
+                if (oppo_shields > oppo_origshield) oppo_shields = oppo_origshield;
             }
 
             if (hull <= 0) {
