@@ -24,18 +24,22 @@ type ShipCompat = {
     seat: boolean
 };
 
-interface ScoreTotal {
+interface Scoreable {
     group: number,
     average_index: number,
     count: number,
     final: number;
-    max_ship: string,
-    max_staff: string[],
     max: number,
     median_index: number,
     win_count: number,
     damage: number;
+    duration: number;
+}
 
+
+interface ScoreTotal extends Scoreable {
+    max_ship: string,
+    max_staff: string[],
 }
 
 interface Score {
@@ -109,7 +113,8 @@ function addScore(score: Score, type: 'fbb' | 'arena', group: number) {
         max: 0,
         median_index: 0,
         win_count: 0,
-        damage: 0
+        damage: 0,
+        duration: 0,
     } as ScoreTotal;
 
     if (type === 'fbb') {
@@ -190,7 +195,9 @@ function processCrewShipStats() {
     let ships = mergeShips(ship_schematics.filter(sc => highestLevel(sc.ship) == (sc.ship.max_level ?? sc.ship.level) + 1 && (sc.ship.battle_stations?.length)), []);
     const origShips = JSON.parse(JSON.stringify(ships)) as Ship[];
 
-	ships = ships.sort((a, b) => shipnum(b) - shipnum(a)); //.slice(0, 10);
+	ships = ships
+                .sort((a, b) => shipnum(b) - shipnum(a))
+                //.slice(0, 5)
 
 	const shipCompatibility = (ship: Ship, crew: CrewMember) => {
 		let compat = 0;
@@ -412,7 +419,7 @@ function processCrewShipStats() {
 	let ignore_skill = true;
 	let battle_mode = 'arena';
 
-	const processBattleRun = (attacks: AttackInstant[], crew_set: CrewMember[]) => {
+	const processBattleRun = (attacks: AttackInstant[], crew_set: CrewMember[], opponent?: Ship) => {
         if (!attacks?.length) return null;
 		// let lastIdx = attacks.findLastIndex(a => a.actions.some(act => (act as any).comes_from === 'crew'));
         // attacks = attacks.slice(0, lastIdx + 1);
@@ -475,10 +482,14 @@ function processCrewShipStats() {
 			skirmish_metric,
 			arena_metric,
 			fbb_metric,
+            opponent: opponent ?? attacks[0].ship,
             win
 			//attacks: get_attacks ? attacks : undefined
-		} as ShipWorkerItem;
+		} as ShipWorkerItem & { opponent: Ship };
 	}
+
+    const flat_arena = ships.map(ship => processBattleRun(iterateBattle(10, false, ship, [], undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true), [], ship)!);
+    const flat_fbb = ships.map(ship => getBosses(ship).map((boss) => processBattleRun(iterateBattle(10, true, ship, [], boss, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true), [], boss)!)).flat();
 
     const runBattles = (ship: Ship, testcrew: CrewMember | CrewMember[], allruns: BattleRun[], runidx: number, no_arena = false, no_fbb = false, opponent?: Ship, every_boss = false, division?: number) => {
         if (!Array.isArray(testcrew)) testcrew = [testcrew];
@@ -488,18 +499,21 @@ function processCrewShipStats() {
         const crewtype = characterizeCrew(c) < 0 ? 'defense' : 'offense';
         const compat = shipCompatibility(ship, c);
         const staff = testcrew;
-
+        if (staff.some(s => s.symbol === '"chapel_ensign_crew"')) {
+            console.log("break");
+        }
         battle_mode = 'arena';
         let result: AttackInstant[] = [];
         // Test Arena
         if (!no_arena) {
+            let fa = flat_arena.find(fa => fa.ship.symbol === ship.symbol)!
             result = iterateBattle(10, false, ship, staff, opponent, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true, ignoreDefeat);
             if (result.length) {
                 result[0].ship = ship;
-                let attack = processBattleRun(result, staff);
+                let attack = processBattleRun(result, staff, opponent);
                 if (attack) {
                     let time = attack.battle_time;
-                    let dmg = attack.attack;
+                    let dmg = attack.attack; // - fa.attack;
                     division ??= ship.rarity === 5 ? 3 : ship.rarity > 2 ? 2 : 1
                     allruns[runidx++] = {
                         crew: c,
@@ -528,6 +542,7 @@ function processCrewShipStats() {
                 if (!every_boss) bosses = bosses.slice(0, 1);
 
                 bosses.forEach((boss) => {
+                    let fb = flat_fbb.find(fa => fa.ship.symbol === ship.symbol && fa.opponent.id === boss.id)!
                     let newstaff = [...staff];
 
                     if (newstaff.length === 1) {
@@ -553,10 +568,10 @@ function processCrewShipStats() {
 
                     result = iterateBattle(10, true, ship, newstaff, boss, defense, offense, undefined, undefined, undefined, undefined, undefined, true, ignoreDefeat);
                     if (result.length) {
-                        let attack = processBattleRun(result, newstaff);
+                        let attack = processBattleRun(result, newstaff, boss);
                         if (attack) {
                             let time = attack.battle_time;
-                            let dmg = attack.attack;
+                            let dmg = attack.attack; // - fb.attack;
 
                             // if (c.action.limit) dmg *= (time / 180);
 
@@ -568,7 +583,7 @@ function processCrewShipStats() {
                                 duration: time,
                                 type: crewtype,
                                 battle: 'fbb',
-                                seated: staff.map(i => i.symbol),
+                                seated: newstaff.map(i => i.symbol),
                                 win: !!attack.win,
                                 compatibility: compat,
                                 limit: c.action?.limit ?? 0
@@ -617,27 +632,26 @@ function processCrewShipStats() {
 
     allruns.length = 0;
 
-    arenaruns.sort((a, b) => a.win != b.win ? a.win ? -1 : 1 : b.damage - a.damage || b.duration - a.duration || b.compatibility.score - a.compatibility.score);
-    fbbruns.sort((a, b) => a.win != b.win ? a.win ? -1 : 1 : b.damage - a.damage || b.duration - a.duration || b.compatibility.score - a.compatibility.score);
-
     const shipscores = [] as Score[];
     const crewscores = [] as Score[];
 
-    const processRuns = (trigger_compat: boolean, seat_compat: boolean, ship_only_dmg: boolean, ship_only = false) => {
+    const processRuns = (trigger_compat: boolean, seat_compat: boolean, ship_only = false) => {
         shipscores.length = 0;
         crewscores.length = 0;
 
         const scoreRun = (runs: BattleRun[], mode: number, scores: Score[], score_type: 'crew' | 'ship') => {
-            (score_type === 'crew' ? crew : ships).forEach((item: CrewMember | Ship) => {
-                let score = scores.find(cs => cs.symbol === item.symbol);
+            if (mode === 0) {
+                runs.sort((a, b) => a.win != b.win ? a.win ? -1 : 1 : b.damage - a.damage || b.duration - a.duration || b.compatibility.score - a.compatibility.score);
+            }
+            else {
+                runs.sort((a, b) => b.damage - a.damage || b.duration - a.duration || b.compatibility.score - a.compatibility.score);
+            }
 
-                if (!score) {
-                    score = createScore(score_type, item.symbol);
-                    scores.push(score);
-                }
+            (score_type === 'crew' ? crew : ships).forEach((item: CrewMember | Ship) => {
 
                 const indexes = {} as { [div: string]: number[] };
                 let z = -1;
+                let score: Score | undefined = undefined;
 
                 const seen = [
                     [] as number[],
@@ -657,6 +671,13 @@ function processCrewShipStats() {
                     if (trigger_compat && (run.compatibility.trigger === true && run.compatibility.score !== 1)) continue;
                     if (seat_compat && !run.compatibility.seat) continue;
 
+                    score = scores.find(cs => cs.symbol === item.symbol);
+
+                    if (!score) {
+                        score = createScore(score_type, item.symbol);
+                        scores.push(score);
+                    }
+
                     const div_id = mode ? (run.boss?.id ?? 0) : run.division ?? 0;
                     indexes[div_id] ??= [];
                     indexes[div_id].push(z);
@@ -667,12 +688,21 @@ function processCrewShipStats() {
                     if (run.damage > scoreset.max) {
                         scoreset.max = run.damage;
                         scoreset.max_ship = run.ship.symbol;
-                        scoreset.max_staff = [run.crew.symbol]
+                        if (run.seated?.length) {
+                            scoreset.max_staff = [...run.seated]
+                        }
+                        else {
+                            scoreset.max_staff = [run.crew.symbol]
+                        }
                     }
+                    scoreset.duration += run.duration;
                     scoreset.damage += run.damage;
                     scoreset.count++;
                     if (run.win) scoreset.win_count++;
                 }
+
+                if (!score) return;
+
                 seen[mode].forEach((group) => {
                     if (!indexes[group].length) return;
 
@@ -694,14 +724,108 @@ function processCrewShipStats() {
     }
 
     const compileScore = (scores: Score[], pass2 = false) => {
-        const scoremax_arena = scores.map(cs => cs.arena_data.map(a => a.max).reduce((p, n) => p > n ? p : n, 0)).reduce((p, n) => p < n ? n : p, 0);
-        const scoremax_fbb = scores.map(cs => cs.fbb_data.map(a => a.max).reduce((p, n) => p > n ? p : n, 0)).reduce((p, n) => p < n ? n : p, 0);
 
-        const summax_arena = scores.map(cs => cs.arena_data.map(a => a.damage).reduce((p, n) => p > n ? p : n, 0)).reduce((p, n) => p < n ? n : p, 0);
-        const summax_fbb = scores.map(cs => cs.fbb_data.map(a => a.damage).reduce((p, n) => p > n ? p : n, 0)).reduce((p, n) => p < n ? n : p, 0);
+        const getLikeScores = (score: Score, mode: 'arena' | 'fbb') => {
+            return scores;
+            // return scores.filter(s => {
+            //     if (mode === 'fbb') {
+            //         if (s.fbb_data.length !== score.fbb_data.length) return false;
+            //         if (!s.fbb_data.every(data1 => score.fbb_data.some(data2 => data1.group === data2.group))) return false;
+            //     }
+            //     else {
+            //         if (s.arena_data.length !== score.arena_data.length) return false;
+            //         if (!s.arena_data.every(data1 => score.arena_data.some(data2 => data1.group === data2.group))) return false;
+            //     }
+            //     return true;
+            // });
+        }
+
+        const topA = (scores: Scoreable[][], mode: 'arena' | 'fbb') => {
+            if (mode === 'fbb') {
+                return scores.map(s => s.map(ss => ss.damage).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
+            }
+            else {
+                let result = scores.map(s => s.map(ss => ss.win_count).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
+                if (!result) {
+                    result = scores.map(s => s.map(ss => ss.duration).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
+                }
+                return result;
+            }
+        }
+
+        const topB = (scores: Scoreable[][], mode: 'arena' | 'fbb') => {
+            if (mode === 'fbb') {
+                return scores.map(s => s.map(ss => ss.damage).reduce((p, n) => p > n ? p : n, 0)).reduce((p, n) => p > n ? p : n, 0);
+            }
+            else {
+                return scores.map(s => s.map(ss => ss.average_index).reduce((p, n) => p + n, 0) / s.length).reduce((p, n) => p > n ? p : n, 0);
+            }
+        }
+
+        const topC = (scores: Scoreable[][], mode: 'arena' | 'fbb') => {
+            let result = scores.map(s => s.map(ss => ss.win_count).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
+            if (result) return result;
+            if (mode === 'fbb') {
+                return scores.map(s => s.map(ss => ss.damage).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
+            }
+            else {
+                return scores.map(s => s.map(ss => ss.duration).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
+            }
+        }
+
+        const myA = (top: number, scores: Scoreable[], mode: 'arena' | 'fbb') => {
+            if (mode === 'fbb') {
+                return scores.map(ss => ss.damage).reduce((p, n) => p + n, 0);
+            }
+            else {
+                if (top) {
+                    return scores.map(ss => ss.win_count).reduce((p, n) => p + n, 0);
+                }
+                else {
+                    return scores.map(ss => ss.duration).reduce((p, n) => p + n, 0);
+                }
+            }
+        }
+
+        const myB = (top: number, scores: Scoreable[], mode: 'arena' | 'fbb') => {
+            if (mode === 'fbb') {
+                return scores.map(ss => ss.damage).reduce((p, n) => p > n ? p : n, 0);
+            }
+            else {
+                return (scores.map(ss => ss.average_index).reduce((p, n) => p + n, 0) / scores.length);
+            }
+        }
+
+        const myC = (top: number, scores: Scoreable[], mode: 'arena' | 'fbb') => {
+            let result = scores.map(ss => ss.win_count).reduce((p, n) => p + n, 0);
+            if (result) return result;
+
+            if (mode === 'fbb') {
+                scores.map(ss => ss.damage).reduce((p, n) => p + n, 0);
+            }
+            else {
+                scores.map(ss => ss.duration).reduce((p, n) => p + n, 0);
+            }
+        }
+
 
         const computeScore = <T extends { symbol: string, name?: string }>(score: Score, c: T) => {
+            const ls_arena = getLikeScores(score, 'arena').map(cs => cs.arena_data);
+            const ls_fbb = getLikeScores(score, 'fbb').map(cs => cs.fbb_data);
+
+            const arena_mul = 1;
+            const fbb_mul = 1;
+
+            const a_top_arena = topA(ls_arena, 'arena');
+            const a_top_fbb = topA(ls_fbb, 'fbb');
+
+            const b_top_arena = topB(ls_arena, 'arena');
+            const b_top_fbb = topB(ls_fbb, 'fbb');
+
             score.name = c.name!;
+            if (score.name === "First Clerk Leeta") {
+                console.log("Break here");
+            }
 
             let a_arena = 0;
             let a_fbb = 0;
@@ -710,34 +834,43 @@ function processCrewShipStats() {
             let c_arena = 0;
             let c_fbb = 0;
 
-            let arena_max = score.arena_data.map(a => a.max).reduce((p, n) => p > n ? p : n, 0)
-            let fbb_max = score.fbb_data.map(a => a.max).reduce((p, n) => p > n ? p : n, 0)
+            let my_arena_a = myA(a_top_arena, score.arena_data, 'arena');
+            let my_fbb_a = myA(a_top_fbb, score.fbb_data, 'fbb');
 
-            let arena_sum = score.arena_data.map(a => a.damage).reduce((p, n) => p > n ? p : n, 0);
-            let fbb_sum = score.fbb_data.map(a => a.damage).reduce((p, n) => p > n ? p : n, 0);
+            let my_arena_b = myB(b_top_arena, score.arena_data, 'arena');
+            let my_fbb_b = myB(b_top_fbb, score.fbb_data, 'fbb');
 
-            a_arena = (arena_max / scoremax_arena) * 100;
-            a_fbb = (fbb_max / scoremax_fbb) * 100;
+            a_arena = (my_arena_a / a_top_arena) * 100;
+            a_fbb = (my_fbb_a / a_top_fbb) * 100;
 
-            b_arena = (arena_sum / summax_arena) * 100;
-            b_fbb = (fbb_sum / summax_fbb) * 100;
+            b_arena = (my_arena_b / b_top_arena) * 100;
+            b_fbb = (my_fbb_b / b_top_fbb) * 100;
+
+            a_arena *= arena_mul;
+            a_fbb *= fbb_mul;
+
+            b_arena *= arena_mul;
+            a_fbb *= fbb_mul;
 
             if (!pass2) {
-
                 score.fbb_final = (a_fbb + b_fbb) / 2;
                 score.arena_final = (a_arena + b_arena) / 2;
             }
             else {
-                let arena_c = score.arena_data.map(d => d.count).reduce((p, n) => p + n, 0);
-                let fbb_c = score.fbb_data.map(d => d.count).reduce((p, n) => p + n, 0);
-                let arena_wc = score.arena_data.map(d => d.win_count).reduce((p, n) => p + n, 0);
-                let fbb_wc = score.fbb_data.map(d => d.win_count).reduce((p, n) => p + n, 0);
+                const c_top_arena = topC(ls_arena, 'arena');
+                const c_top_fbb = topC(ls_fbb, 'fbb');
 
-                if (arena_wc) c_arena = (arena_wc / arena_c) * 100;
-                if (fbb_wc) c_fbb = (fbb_wc / fbb_c) * 100;
+                let my_arena_c = myC(c_top_arena, score.arena_data, 'arena');
+                let my_fbb_c = myC(c_top_fbb, score.fbb_data, 'fbb');
 
-                score.fbb_final = (a_fbb + b_fbb + (c_fbb * 3)) / 5;
-                score.arena_final = (a_arena + b_arena + (c_arena * 3)) / 5;
+                if (my_arena_c) c_arena = (my_arena_c / c_top_arena) * 100;
+                if (my_fbb_c) c_fbb = (my_fbb_c / c_top_fbb) * 100;
+
+                c_arena *= arena_mul;
+                c_fbb *= fbb_mul;
+
+                score.fbb_final = (a_fbb + b_fbb + c_fbb) / 3;
+                score.arena_final = (a_arena + b_arena + c_arena) / 3;
             }
 
             score.overall_final = (score.arena_final + score.fbb_final) / 2;
@@ -787,7 +920,7 @@ function processCrewShipStats() {
     // compileScore(defs_1);
 
     console.log("\nTabulating Results ...");
-    processRuns(true, true, true);
+    processRuns(true, true);
 
     const offs_2 = crewscores.filter(cs => crewcategories[cs.symbol] === 'offense');
     const defs_2 = crewscores.filter(cs => crewcategories[cs.symbol] === 'defense');
@@ -858,10 +991,7 @@ function processCrewShipStats() {
 
     allruns.length = 0;
 
-    arenaruns.sort((a, b) => a.win != b.win ? a.win ? -1 : 1 : b.damage - a.damage || b.duration - a.duration || b.compatibility.score - a.compatibility.score);
-    fbbruns.sort((a, b) => b.damage - a.damage || b.duration - a.duration || b.compatibility.score - a.compatibility.score);
-
-    processRuns(true, true, true, true);
+    processRuns(true, true, true);
 
     const ship_3 = shipscores.filter(ss => ss.arena_data.some(ad => ad.damage) && ss.fbb_data.some(fd => fd.damage));
 
@@ -886,10 +1016,11 @@ function processCrewShipStats() {
             let c = crew.find(f => f.symbol === item.symbol);
             if (c && c.action.ability?.condition) triggered = true;
 
-            let arena_crew = crew.filter(f => item.arena_data[0].max_staff.includes(f.symbol));
-            let fbb_crew = crew.filter(f => item.fbb_data[0].max_staff.includes(f.symbol));
-            let arena_ship = ships.find(f => f.symbol === item.arena_data[0].max_ship);
-            let fbb_ship = ships.find(f => f.symbol === item.fbb_data[0].max_ship);
+            let arena_crew = crew.filter(f => item.arena_data?.length && item.arena_data[0].max_staff.includes(f.symbol));
+            let fbb_crew = crew.filter(f => item.fbb_data?.length && item.fbb_data[0].max_staff.includes(f.symbol));
+            let arena_ship = ships.find(f => item.arena_data?.length && f.symbol === item.arena_data[0].max_ship);
+            let fbb_ship = ships.find(f => item.fbb_data?.length && f.symbol === item.fbb_data[0].max_ship);
+            if (!arena_crew || !fbb_crew || !arena_ship || !fbb_ship) return;
 
             console.log(
                 item.name.padEnd(40, " "),
