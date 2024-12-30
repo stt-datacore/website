@@ -23,7 +23,7 @@ const ShipCrewWorker = {
                 fixed_activation_delay } = options;
 
             const opponent = opponents?.length ? opponents[0] : undefined;
-            const opponent_variance = options.opponent_variance ?? 0.25;
+            const opponent_variance = options.opponent_variance;
 
             const starttime = new Date();
 

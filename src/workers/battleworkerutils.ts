@@ -335,12 +335,16 @@ export interface IterateBattleConfig {
     simulate?: boolean;
 }
 
-export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false, opponent_variance = 0.25, ignoreSeats = false, ignoreDefeat = false) {
+export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false, opponent_variance?: number, ignoreSeats = false, ignoreDefeat = false) {
     try {
         let ship = setupShip(input_ship, crew, false, ignoreSeats) || undefined;
         let work_opponent = opponent ? setupShip(opponent, [], false, ignoreSeats, true) || undefined : setupShip(input_ship, [...crew], false, ignoreSeats, true) || undefined;
         let oppo_crew = work_opponent?.battle_stations?.map(m => m.crew).filter(f => !!f) as CrewMember[];
-        if (!fbb_mode) opponent_variance = 0;
+
+        if (!fbb_mode) opponent_variance ??= 0.1;
+        if (fbb_mode) opponent_variance ??= 0.2;
+
+        opponent_variance ??= 0;
 
         defense ??= 0;
         offense ??= 0;
@@ -850,9 +854,9 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             if (attack_counter >= aps_num) {
                 let number = attack_counter / aps_num;
 
-                standard_attack *= number;
-                base_attack *= number;
-                max_attack *= number;
+                standard_attack = Math.ceil(standard_attack * number);
+                base_attack = Math.ceil(base_attack * number);
+                max_attack = Math.ceil(max_attack * number);
 
                 attack_counter = 0;
 
@@ -861,7 +865,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                     mul = 1 - (mul / 100);
 
                     let actual_attack = (standard_attack * (!oppo_powerInfo ? 1 : hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion)));
-                    let outgoing_damage = (actual_attack * mul);
+                    let outgoing_damage = Math.ceil(actual_attack * mul);
                     hitoppo(outgoing_damage);
                 }
                 else {
@@ -886,7 +890,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                         oppoattack = (oppo_attack * hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion));
                     }
 
-                    let incoming_damage = (oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul * number;
+                    let incoming_damage = Math.ceil((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul * number);
                     hitme(incoming_damage);
                 }
             }
