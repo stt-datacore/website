@@ -197,7 +197,7 @@ function processCrewShipStats() {
 
 	ships = ships
                 .sort((a, b) => shipnum(b) - shipnum(a))
-                //.slice(0, 5)
+                //.slice(0, 15)
 
 	const shipCompatibility = (ship: Ship, crew: CrewMember) => {
 		let compat = 0;
@@ -266,9 +266,7 @@ function processCrewShipStats() {
         let data = typeof ship === 'string' ? origShips.find(f => f.symbol === ship) : origShips.find(f => f.symbol === ship.symbol);
         if (!data?.battle_stations?.length) return undefined;
         data = { ...data } as Ship;
-        if (data.name === 'Breen Command Warship') {
-            console.log("Break");
-        }
+
         let league = getLeague(data);
         let boss = fbb ? getBosses(data).sort((a, b) => b.id - a.id)[0] : undefined;
 
@@ -368,29 +366,36 @@ function processCrewShipStats() {
 
         let ignore_skill = false;
 
-        for (let pass = 0; pass < 2; pass++) {
-            if (pass == 1) {
+        for (let pass = 0; pass < 4; pass++) {
+            if (pass == 1 || pass == 3) {
                 if (filled === full) break;
                 ignore_skill = true;
-                ct = 0;
+            }
+            else {
+                if (filled === full) break;
+                ignore_skill = false;
             }
 
+            ct = 0;
             for (let bs of data.battle_stations) {
                 if (bs.crew) continue;
 
                 let d1 = filtered.find(f => {
                     if (f.action.ability?.condition && !pass) return false;
                     if (((!ignore_skill && !f.skill_order.includes(bs.skill)) || used.includes(f.symbol))) return false;
-                    if (f.action.ability?.type === 1 && boom < need_boom) {
+                    if (f.action.ability?.type === 1 && (boom < need_boom || pass > 1)) {
                         boom++;
                         return true;
                     }
-                    else if (f.action.ability?.type === 5 && crit < need_crit) {
+                    else if (f.action.ability?.type === 5 && (crit < need_crit || pass > 1)) {
                         crit++;
                         return true;
                     }
-                    else if (f.action.ability?.type === 2 && hr < need_hr) {
+                    else if (f.action.ability?.type === 2 && (hr < need_hr || pass > 1)) {
                         hr++;
+                        return true;
+                    }
+                    else if (pass === 3) {
                         return true;
                     }
                     return false;
