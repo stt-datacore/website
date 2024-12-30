@@ -151,7 +151,7 @@ function processShips(): void {
 
 const shipnum = (ship: Ship) => (ship.hull - (ship.attack * ship.attacks_per_second)) / (ship.hull + (ship.attack * ship.attacks_per_second));
 
-function processCrewShipStats() {
+function processCrewShipStats(rate = 10) {
 
     const Triggers = {
         0: 'None',
@@ -493,8 +493,8 @@ function processCrewShipStats() {
 		} as ShipWorkerItem & { opponent: Ship };
 	}
 
-    const flat_arena = ships.map(ship => processBattleRun(iterateBattle(10, false, ship, [], undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true), [], ship)!);
-    const flat_fbb = ships.map(ship => getBosses(ship).map((boss) => processBattleRun(iterateBattle(10, true, ship, [], boss, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true), [], boss)!)).flat();
+    const flat_arena = ships.map(ship => processBattleRun(iterateBattle(rate, false, ship, [], undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true), [], ship)!);
+    const flat_fbb = ships.map(ship => getBosses(ship).map((boss) => processBattleRun(iterateBattle(rate, true, ship, [], boss, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true), [], boss)!)).flat();
 
     const runBattles = (ship: Ship, testcrew: CrewMember | CrewMember[], allruns: BattleRun[], runidx: number, no_arena = false, no_fbb = false, opponent?: Ship, every_boss = false, division?: number) => {
         if (!Array.isArray(testcrew)) testcrew = [testcrew];
@@ -510,7 +510,7 @@ function processCrewShipStats() {
         // Test Arena
         if (!no_arena) {
             let fa = flat_arena.find(fa => fa.ship.symbol === ship.symbol)!
-            result = iterateBattle(10, false, ship, staff, opponent, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true, ignoreDefeat);
+            result = iterateBattle(rate, false, ship, staff, opponent, undefined, undefined, undefined, undefined, undefined, undefined, undefined, true, ignoreDefeat);
             if (result.length) {
                 result[0].ship = ship;
                 let attack = processBattleRun(result, staff, opponent);
@@ -569,7 +569,7 @@ function processCrewShipStats() {
                         }
                     }
 
-                    result = iterateBattle(10, true, ship, newstaff, boss, defense, offense, undefined, undefined, undefined, undefined, undefined, true, ignoreDefeat);
+                    result = iterateBattle(rate, true, ship, newstaff, boss, defense, offense, undefined, undefined, undefined, undefined, undefined, true, ignoreDefeat);
                     if (result.length) {
                         let attack = processBattleRun(result, newstaff, boss);
                         if (attack) {
@@ -875,8 +875,6 @@ function processCrewShipStats() {
                 score.fbb_final = (a_fbb + b_fbb + c_fbb) / 3;
                 score.arena_final = (a_arena + b_arena + c_arena) / 3;
             }
-
-            score.overall_final = (score.arena_final + score.fbb_final) / 2;
         }
 
         const normalizeScores = (scores: Score[]) => {
@@ -895,6 +893,12 @@ function processCrewShipStats() {
                 score.fbb_final = Math.round((score.fbb_final / max) * 1000) / 100;
             }
 
+            // Compute overall from normalized component scores
+            scores.forEach((score) => {
+                score.overall_final = (score.fbb_final + score.arena_final) / 2;
+            });
+
+            // Normalize overall score
             scores.sort((a, b) => b.overall_final - a.overall_final);
             max = scores[0].overall_final;
             for (let score of scores) {
@@ -903,8 +907,19 @@ function processCrewShipStats() {
         }
 
         scores.forEach((score) => {
-            score.fbb_data.sort((a, b) => b.group - a.group);
-            score.arena_data.sort((a, b) => b.group - a.group);
+            if (!pass2) {
+                // We want the strongest FBB boss
+                score.fbb_data.sort((a, b) => b.group - a.group).slice(0, 1);
+
+                // TODO : Think more about how to score arena?
+
+                // We want the weakest Arena division
+                // Weaker crew can sit in stronger divisions,
+                // but stronger crew cannot sit in weaker divisions
+                // therefore there is a discrepency with the amount
+                // of available battles to score by.
+                score.arena_data.sort((a, b) => a.group - b.group).slice(0, 1);
+            }
             let c = (crew.find(f => f.symbol === score.symbol) || ships.find(f => f.symbol === score.symbol))!;
             computeScore(score, c);
         });
