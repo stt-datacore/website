@@ -426,8 +426,17 @@ export interface AttackInstant {
   attack: number;
   min_attack: number;
   max_attack: number;
+  boarding_damage_per_second: number;
+  opponent_boarding_damage_per_second: number;
   ship: Ship;
   win?: boolean;
+  opponent_hull: number;
+  opponent_shields: number;
+  opponent_attack: number;
+  opponent_min_attack: number;
+  opponent_max_attack: number;
+  cloaked: boolean;
+  opponent_cloaked: boolean;
 }
 
 
