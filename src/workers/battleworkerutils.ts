@@ -957,20 +957,22 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 }
             }
 
+            let a_cloaked = !fbb_mode && (cloaked || oppo_cloaked);
+
             attacks.push({
                 actions: currents.filter(f => f !== false) as ShipAction[],
                 hull,
                 shields,
                 second: sec,
-                attack: (cloaked || oppo_cloaked ? 0 : standard_attack + instant_now),
-                min_attack: (cloaked || oppo_cloaked ? 0 : base_attack + instant_now_min),
-                max_attack: (cloaked || oppo_cloaked ? 0 : max_attack + instant_now_max),
+                attack: (a_cloaked ? 0 : standard_attack + instant_now),
+                min_attack: (a_cloaked ? 0 : base_attack + instant_now_min),
+                max_attack: (a_cloaked ? 0 : max_attack + instant_now_max),
                 ship,
                 opponent_hull: oppo_hull,
                 opponent_shields: oppo_shields,
-                opponent_attack: (cloaked || oppo_cloaked ? 0 : oppo_standard_attack + o_instant_now),
-                opponent_min_attack: (cloaked || oppo_cloaked ? 0 : oppo_base_attack + o_instant_now_min),
-                opponent_max_attack: (cloaked || oppo_cloaked ? 0 : oppo_max_attack + o_instant_now_max),
+                opponent_attack: (a_cloaked ? 0 : oppo_standard_attack + o_instant_now),
+                opponent_min_attack: (a_cloaked ? 0 : oppo_base_attack + o_instant_now_min),
+                opponent_max_attack: (a_cloaked ? 0 : oppo_max_attack + o_instant_now_max),
                 boarding_damage_per_second: boarding_sec,
                 opponent_boarding_damage_per_second: o_boarding_sec,
                 cloaked,
