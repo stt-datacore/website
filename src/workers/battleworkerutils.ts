@@ -727,6 +727,8 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
         for (let inc = 1; inc <= time; inc++) {
             sec = Math.round((inc / rate) * 100) / 100;
+            o_instant_now_min = o_instant_now_max = o_instant_now = 0;
+            instant_now_min = instant_now_max = instant_now = 0;
 
             ca = 0;
             activated = false;
@@ -850,8 +852,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             let oppo_max_attack = oppo_powerInfo?.computed.attack.with_bonus ?? work_opponent.attack;
 
             if (immediates.length) {
-                instant_now_min = instant_now_max = instant_now = 0;
-
                 for (let imm of immediates) {
                     instant_now += imm.standard;
                     instant_now_min += imm.base;
@@ -865,8 +865,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             let oppo_attack = oppo_powerInfo?.computed.attack.with_bonus_and_chance ?? work_opponent?.attack ?? 0;
 
             if (oppo_immediates.length) {
-                o_instant_now_min = o_instant_now_max = o_instant_now = 0;
-
                 for (let imm of oppo_immediates) {
                     o_instant_now += imm.standard;
                     o_instant_now_min += imm.base;
@@ -978,8 +976,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 cloaked,
                 opponent_cloaked: oppo_cloaked
             });
-
-            instant_now_min = instant_now_max = instant_now = 0;
 
             if (oppo_hull <= 0) {
                 attacks[attacks.length - 1].win = true;
