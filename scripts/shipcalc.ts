@@ -888,7 +888,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
             //     return scores.map(ss => ss[damage_key]).reduce((p, n) => p > n ? p : n, 0);
             // }
             // else {
-                return (scores.map(ss => ss.average_index).reduce((p, n) => p + n, 0)) / scores.length;
+                return top - ((scores.map(ss => ss.average_index).reduce((p, n) => p + n, 0)) / scores.length);
             //}
         }
 
@@ -951,6 +951,8 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 score.fbb_final = (my_fbb + my_fbbwin) / 2;
                 score.arena_final = (my_arena + my_arenawin) / 2;
             }
+
+            score.overall_final = (score.arena_final + score.fbb_final) / 2;
         }
 
         scores.forEach((score) => {
