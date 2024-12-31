@@ -469,8 +469,8 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
     }
 
     const allruns = [] as BattleRun[];
-    allruns.length = (ships.length * crew.length * 6);
-
+    allruns.length = (ships.length * crew.length * 12);
+    console.log(`Alloc ${allruns.length} items`);
     const crewcategories = {} as {[key: string]: 'defense' | 'offense' }
     crew.forEach((c) => crewcategories[c.symbol] = characterizeCrew(c) < 0 ? 'defense' : 'offense');
 
@@ -578,7 +578,6 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 if (attack) {
                     let time = attack.battle_time;
                     let dmg = attack.attack; // - fa.attack;
-
                     allruns[runidx++] = {
                         crew: c,
                         ship: ship,
@@ -640,10 +639,13 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                             let time = attack.battle_time;
                             let dmg = attack.attack;
 
-                            // if (c.action.limit) {
-                            //     let exp = (c.action.limit * (c.action.cooldown + c.action.duration)) + c.action.initial_cooldown;
-                            //     dmg *= (exp / 180);
-                            // }
+                            if (c.action.limit) {
+                                let exp = (c.action.limit * c.action.duration) +
+                                          ((c.action.limit - 1) * c.action.cooldown) +
+                                          c.action.initial_cooldown;
+
+                                dmg *= (exp / 180);
+                            }
 
                             allruns[runidx++] = {
                                 crew: c,
@@ -671,13 +673,47 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
     console.log(`Frame Rate: ${rate} per second.`)
 	let count = 1;
 
-	for (let ship of ships) {
-		console.log(`Testing crew on ${ship.name} (${count++} / ${ships.length})...`);
+    let cship = ships.length;
+
+    const nextOpponent = (division: number, i: number) => {
+        let j = i + 1;
+        while (j < cship) {
+            let oppo = ships[j];
+            if (getShipDivision(oppo.rarity) === division) return oppo;
+            j++;
+        }
+        j = 0;
+        while (j < i) {
+            let oppo = ships[j];
+            if (getShipDivision(oppo.rarity) === division) return oppo;
+            j++;
+        }
+        return undefined;
+    }
+
+    for (let i = 0; i < cship; i++) {
+        let ship = ships[i];
+        let opponent = nextOpponent(getShipDivision(ship.rarity), i);
+        console.log(`Run all crew on ${ship.name} (FBB & Arena; Opponent: ${opponent?.name || 'NONE'}) (${count++} / ${ships.length * 2})...`);
+
         for (let c of crew) {
-            runidx = runBattles(ship, c, allruns, runidx);
+            if (opponent?.battle_stations?.length) {
+                opponent.battle_stations[0].crew = c;
+            }
+            runidx = runBattles(ship, c, allruns, runidx, false, false, opponent);
 		}
-        //if (count > 5) break;
-	}
+
+        if (opponent) {
+            console.log(`Run all crew on ${opponent.name} (Arena Only; Opponent: ${ship?.name}) (${count++} / ${ships.length * 2})...`);
+            for (let c of crew) {
+                if (opponent?.battle_stations?.length) {
+                    opponent.battle_stations[0].crew = c;
+                }
+                runidx = runBattles(opponent, c, allruns, runidx, false, true, ship);
+            }
+        }
+
+    }
 
     console.log("Filtering runs into arena and fbb buckets ...");
 
@@ -847,7 +883,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         });
 
         const getLikeScores = (score: Score, mode: 'arena' | 'fbb') => {
-            return scores;
+            return scores.filter(s => true);
             // return scores.filter(s => {
             //     if (mode === 'fbb') {
             //         if (s.fbb_data.length !== score.fbb_data.length) return false;
@@ -861,46 +897,44 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
             // });
         }
 
-        const damage_key = "total_damage";
-
         const getTopScore = (scores: Scoreable[][], mode: 'arena' | 'fbb') => {
-            // if (mode === 'fbb') {
-            //     return scores.map(s => s.map(ss => ss[damage_key]).reduce((p, n) => p > n ? p : n, 0)).reduce((p, n) => p > n ? p : n, 0);
-            // }
-            // else {
-                return scores.map(s => s.map(ss => ss.average_index).reduce((p, n) => p + n, 0) / scores.length).reduce((p, n) => p > n ? p : n, 0);
-            //}
+            if (mode === 'fbb') {
+                return scores.map(s => s.map(ss => ss.total_damage * ss.group).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
+            }
+            else {
+                return scores.map(s => !s.length ? 0 : s.map(ss => ss.average_index).reduce((p, n) => p + n, 0) / s.length).reduce((p, n) => p > n ? p : n, 0);
+            }
         }
 
         const getWinScore = (scores: Scoreable[][], mode: 'arena' | 'fbb') => {
-            let result = scores.map(s => s.map(ss => ss.win_count).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
+            let result = scores.map(s => s.map(ss => ss.win_count * ss.group).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
             if (result) return result;
             if (mode === 'fbb') {
-                return scores.map(s => s.map(ss => ss[damage_key]).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
+                return scores.map(s => s.map(ss => ss.total_damage * ss.group).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
             }
             else {
-                return scores.map(s => s.map(ss => ss.duration).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
+                return scores.map(s => s.map(ss => ss.duration * ss.group).reduce((p, n) => p + n, 0)).reduce((p, n) => p > n ? p : n, 0);
             }
         }
 
         const getMyScore = (top: number, scores: Scoreable[], mode: 'arena' | 'fbb') => {
-            // if (mode === 'fbb') {
-            //     return scores.map(ss => ss[damage_key]).reduce((p, n) => p > n ? p : n, 0);
-            // }
-            // else {
-                return (scores.map(ss => ss.average_index).reduce((p, n) => p + n, 0)) / scores.length;
-            //}
+            if (mode === 'fbb') {
+                return scores.map(ss => ss.total_damage * ss.group).reduce((p, n) => p + n, 0);
+            }
+            else {
+                return top - (!scores.length ? top : (scores.map(ss => ss.average_index).reduce((p, n) => p + n, 0)) / scores.length);
+            }
         }
 
         const getMyWinScore = (top: number, scores: Scoreable[], mode: 'arena' | 'fbb') => {
-            let result = scores.map(ss => ss.win_count).reduce((p, n) => p + n, 0);
+            let result = scores.map(ss => ss.win_count * ss.group).reduce((p, n) => p + n, 0);
             if (result) return result;
 
             if (mode === 'fbb') {
-                scores.map(ss => ss[damage_key]).reduce((p, n) => p + n, 0);
+                scores.map(ss => ss.total_damage * ss.group).reduce((p, n) => p + n, 0);
             }
             else {
-                scores.map(ss => ss.duration).reduce((p, n) => p + n, 0);
+                scores.map(ss => ss.duration * ss.group).reduce((p, n) => p + n, 0);
             }
         }
 
@@ -955,8 +989,8 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
         scores.forEach((score) => {
             if (!pass2) {
-                // score.fbb_data = score.fbb_data.sort((a, b) => b.group - a.group).slice(0, 1);
-                // score.arena_data = score.arena_data.sort((a, b) => a.group - b.group).slice(0, 1);
+
+                score.fbb_data = score.fbb_data.sort((a, b) => b.group - a.group); //.slice(0, 1);
 
                 // TODO : Think more about how to score arena?
 
@@ -964,6 +998,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 // but stronger crew cannot sit in weaker divisions
                 // therefore there is a discrepency with the amount
                 // of available battles to score by.
+                score.arena_data = score.arena_data.sort((a, b) => a.group - b.group); //.slice(0, 1);
             }
             let c = (crew.find(f => f.symbol === score.symbol) || ships.find(f => f.symbol === score.symbol))!;
             computeScore(score, c);
@@ -1150,4 +1185,4 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 }
 
 processShips();
-processCrewShipStats(5, 0, 0);
+processCrewShipStats(10, 0, 0);

@@ -727,6 +727,8 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
         for (let inc = 1; inc <= time; inc++) {
             sec = Math.round((inc / rate) * 100) / 100;
+            o_instant_now_min = o_instant_now_max = o_instant_now = 0;
+            instant_now_min = instant_now_max = instant_now = 0;
 
             ca = 0;
             activated = false;
@@ -850,8 +852,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             let oppo_max_attack = oppo_powerInfo?.computed.attack.with_bonus ?? work_opponent.attack;
 
             if (immediates.length) {
-                instant_now_min = instant_now_max = instant_now = 0;
-
                 for (let imm of immediates) {
                     instant_now += imm.standard;
                     instant_now_min += imm.base;
@@ -865,8 +865,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             let oppo_attack = oppo_powerInfo?.computed.attack.with_bonus_and_chance ?? work_opponent?.attack ?? 0;
 
             if (oppo_immediates.length) {
-                o_instant_now_min = o_instant_now_max = o_instant_now = 0;
-
                 for (let imm of oppo_immediates) {
                     o_instant_now += imm.standard;
                     o_instant_now_min += imm.base;
@@ -964,22 +962,20 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 hull,
                 shields,
                 second: sec,
-                attack: (cloaked || oppo_cloaked ? 0 : standard_attack) + instant_now,
-                min_attack: (cloaked || oppo_cloaked ? 0 : base_attack) + instant_now_min,
-                max_attack: (cloaked || oppo_cloaked ? 0 : max_attack) + instant_now_max,
+                attack: (cloaked || oppo_cloaked ? 0 : standard_attack + instant_now),
+                min_attack: (cloaked || oppo_cloaked ? 0 : base_attack + instant_now_min),
+                max_attack: (cloaked || oppo_cloaked ? 0 : max_attack + instant_now_max),
                 ship,
                 opponent_hull: oppo_hull,
                 opponent_shields: oppo_shields,
-                opponent_attack: (oppo_cloaked || oppo_cloaked ? 0 : oppo_standard_attack) + o_instant_now,
-                opponent_min_attack: (oppo_cloaked || oppo_cloaked ? 0 : oppo_base_attack) + o_instant_now_min,
-                opponent_max_attack: (oppo_cloaked || oppo_cloaked ? 0 : oppo_max_attack) + o_instant_now_max,
+                opponent_attack: (cloaked || oppo_cloaked ? 0 : oppo_standard_attack + o_instant_now),
+                opponent_min_attack: (cloaked || oppo_cloaked ? 0 : oppo_base_attack + o_instant_now_min),
+                opponent_max_attack: (cloaked || oppo_cloaked ? 0 : oppo_max_attack + o_instant_now_max),
                 boarding_damage_per_second: boarding_sec,
                 opponent_boarding_damage_per_second: o_boarding_sec,
                 cloaked,
                 opponent_cloaked: oppo_cloaked
             });
-
-            instant_now_min = instant_now_max = instant_now = 0;
 
             if (oppo_hull <= 0) {
                 attacks[attacks.length - 1].win = true;
