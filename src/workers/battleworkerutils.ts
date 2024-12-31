@@ -957,7 +957,11 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 }
             }
 
-            let a_cloaked = !fbb_mode && (cloaked || oppo_cloaked);
+            // To count outgoing damage
+            let a_cloaked = cloaked;
+
+            // To count incoming damage
+            let b_cloaked = !fbb_mode && (cloaked || oppo_cloaked);
 
             attacks.push({
                 actions: currents.filter(f => f !== false) as ShipAction[],
@@ -970,9 +974,9 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 ship,
                 opponent_hull: oppo_hull,
                 opponent_shields: oppo_shields,
-                opponent_attack: (a_cloaked ? 0 : oppo_standard_attack + o_instant_now),
-                opponent_min_attack: (a_cloaked ? 0 : oppo_base_attack + o_instant_now_min),
-                opponent_max_attack: (a_cloaked ? 0 : oppo_max_attack + o_instant_now_max),
+                opponent_attack: (b_cloaked ? 0 : oppo_standard_attack + o_instant_now),
+                opponent_min_attack: (b_cloaked ? 0 : oppo_base_attack + o_instant_now_min),
+                opponent_max_attack: (b_cloaked ? 0 : oppo_max_attack + o_instant_now_max),
                 boarding_damage_per_second: boarding_sec,
                 opponent_boarding_damage_per_second: o_boarding_sec,
                 cloaked,
