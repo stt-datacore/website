@@ -197,10 +197,12 @@ const ShipCrewWorker = {
                     }
                     else {
                         let d = compareShipResults(attack, last_high, fbb_mode);
-                        if (d < 0) {
+                        if (d < 0 || (attack.win && !fbb_mode)) {
                             accepted = true;
                             results.push(attack);
-                            last_high = attack;
+                            if (attack > last_high) {
+                                last_high = attack;
+                            }
                         }
                     }
 

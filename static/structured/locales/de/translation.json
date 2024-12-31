@@ -845,6 +845,8 @@
         }
     },
     "global": {
+        "win": "Gewinnen",
+        "lose": "Verlieren",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",

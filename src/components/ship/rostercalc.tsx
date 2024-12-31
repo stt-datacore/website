@@ -867,7 +867,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 <div style={{ gridArea: 'metric' }}>
                     {t('ship.attack')}{': '}<br />{Math.round(sug.attack).toLocaleString()}
                 </div>
-                <div style={{gridArea: 'standard', display: 'flex', justifyContent: 'center'}}>
+                <div style={{gridArea: 'standard', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', gap: '1em'}}>
                     {fbb_mode &&
                         <>
                             <b>*</b> {t('ship.fbb_metric')}{': '}<br />{Math.round(sug.fbb_metric).toLocaleString()}
@@ -883,6 +883,14 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             <b>*</b> {t('ship.skirmish_metric')}{': '}<br />{Math.round(sug.skirmish_metric).toLocaleString()}
                         </>
                     }
+                    {!fbb_mode && <div>
+                        <p>
+                            {t('global.win')}{': '}<br />
+                            <span style={{color: sug.win ? 'lightgreen' : undefined, fontWeight: sug.win ? 'bold' : undefined}}>
+                                {t(`global.${sug.win ? 'yes' : 'no'}`)}
+                            </span>
+                        </p>
+                    </div>}
                 </div>
             </div>
         </div>

@@ -845,6 +845,8 @@
         }
     },
     "global": {
+        "win": "Win",
+        "lose": "Lose",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",

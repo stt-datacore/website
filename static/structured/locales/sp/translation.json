@@ -854,6 +854,8 @@
         }
     },
     "global": {
+        "win": "Ganar",
+        "lose": "Perder",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",

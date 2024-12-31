@@ -443,6 +443,10 @@ export function compareShipResults(a: ShipWorkerTransportItem | ShipWorkerItem, 
 		return r;
 	}
 	else {
+		if (a.win !== b.win) {
+			if (a.win) return -1;
+			else if (b.win) return 1;
+		}
 		let r = 0;
 		let aa: number;
 		let ba: number;

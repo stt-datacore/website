@@ -853,6 +853,8 @@
         }
     },
     "global": {
+        "win": "Gagner",
+        "lose": "Perdre",
         "aborted": "Terminé",
         "admiral": "Avorté",
         "advanced_settings": "Réglages Avancés",
