@@ -481,6 +481,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         <h4>{t('ship.battle_mode')}</h4>
                         <Dropdown
                             fluid
+                            disabled={running}
                             scrolling
                             selection
                             value={battleMode}
@@ -493,6 +494,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     <div style={{ display: 'inline', width: '30%' }}>
                         <h4>{t('ship.power_depth')}</h4>
                         <Dropdown
+                            disabled={running}
                             fluid
                             scrolling
                             selection
@@ -504,6 +506,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     <div style={{ display: 'inline', width: '30%' }}>
                         <h4>{t('global.min_rarity')}</h4>
                         <Dropdown
+                            disabled={running}
                             fluid
                             scrolling
                             selection
@@ -550,6 +553,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     <div style={{ display: 'inline', width: '30%' }}>
                         <h4>{t('ship.calc.max_init')}</h4>
                         <Dropdown
+                            disabled={running}
                             fluid
                             scrolling
                             selection
@@ -561,6 +565,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     <div style={{ display: 'inline', width: '30%' }}>
                         <h4>{t('ship.calc.min_init')}</h4>
                         <Dropdown
+                            disabled={running}
                             fluid
                             scrolling
                             selection
@@ -573,6 +578,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     <div style={{ display: 'inline', width: '30%' }}>
                         <h4>{t('ship.opponent_variance')}</h4>
                         <Dropdown
+                            disabled={running}
                             fluid
                             scrolling
                             selection
