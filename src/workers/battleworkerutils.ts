@@ -298,7 +298,7 @@ export function getInstantPowerInfo(ship: Ship, actions: (ShipAction | false)[],
     let o_o_attack = {
         base: o_attack * o_hit_chance * ship_mul,
         with_bonus: (o_attack + (o_attack * o_crit_bonus)) * ship_mul,
-        with_bonus_and_chance: (o_attack + (o_attack * o_crit_bonus * o_crit_chance)) * ship_mul * o_hit_chance
+        with_bonus_and_chance: ((o_attack + (o_attack * o_crit_bonus * (o_crit_chance))) * ship_mul * o_hit_chance)
     }
 
     return {

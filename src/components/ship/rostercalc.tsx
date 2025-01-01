@@ -71,6 +71,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [simulate, setSimulate] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/simulate`, false, { rememberForever: true });
     const [iterations, setIterations] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/simulation_iterations`, 100, { rememberForever: true });
     const [rate, setRate] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/rate`, 1, { rememberForever: true });
+    const [variance, setVariance] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/variance`, 0.2, { rememberForever: true });
     const [fixedActivationDelay, setFixedActivationDelay] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/fixedActivationDelay`, 0.6, { rememberForever: true });
     const [maxInitTime, setMaxInitTime] = useStateWithStorage<number | undefined>(`${pageId}/${ship.symbol}/maxInitTime`, undefined, { rememberForever: true });
     const [minInitTime, setMinInitTime] = useStateWithStorage<number | undefined>(`${pageId}/${ship.symbol}/minInitTime`, undefined, { rememberForever: true });
@@ -224,6 +225,16 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             </div>
         })
     }
+
+    const variances = [] as DropdownItemProps[];
+
+    [0, 0.05, 0.1, 0.15, 0.2].forEach((variance) => {
+        variances.push({
+            key: `variance_${variance}`,
+            value: variance,
+            text: `${t('global.n_%', { n: Math.round(variance * 100) })}`
+        })
+    })
 
     const rates = [] as DropdownItemProps[];
     [1, 2, 5, 10, 50, 100].forEach((rate) => {
@@ -525,7 +536,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     {t('ship.depth_hr_warn')}
                 </div>
 
-                {['skirmish', 'pvp'].includes(battleMode) &&
+
                 <div style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -535,7 +546,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     gap: '1em',
                     marginTop: '1em'
                 }}>
-
+                    {['skirmish', 'pvp'].includes(battleMode) && <>
                     <div style={{ display: 'inline', width: '30%' }}>
                         <h4>{t('ship.calc.max_init')}</h4>
                         <Dropdown
@@ -556,6 +567,18 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             value={minInitTime ?? 'none'}
                             onChange={(e, { value }) => setMinInitTime(value === 'none' ? undefined : value as number)}
                             options={max_init_times}
+                        />
+                    </div></>}
+
+                    <div style={{ display: 'inline', width: '30%' }}>
+                        <h4>{t('ship.opponent_variance')}</h4>
+                        <Dropdown
+                            fluid
+                            scrolling
+                            selection
+                            value={variance}
+                            onChange={(e, { value }) => setVariance(value as number)}
+                            options={variances}
                         />
                     </div>
 
@@ -586,7 +609,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             />
                     </div>
                     </>}
-                </div>}
+                </div>
                 <div style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -947,6 +970,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 activation_offsets: activationOffsets,
                 simulate: false,
                 fixed_activation_delay: fixedActivationDelay,
+                opponent_variance: variance,
                 rate
             } as ShipWorkerConfig;
 

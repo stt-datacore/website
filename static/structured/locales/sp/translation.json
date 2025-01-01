@@ -854,8 +854,6 @@
         }
     },
     "global": {
-        "win": "Ganar",
-        "lose": "Perder",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
@@ -944,12 +942,14 @@
         "load_defaults": "Cargar predeterminadas",
         "loading_ellipses": "Cargando ...",
         "loading_please_wait_ellipses": "Cargando. Espere por favor...",
+        "lose": "Perder",
         "max": "Máximo",
         "max_rarity": "Rareza máx.",
         "member": "Miembro",
         "min": "Mínimo",
         "min_rarity": "Rareza mín.",
         "missing_colon": "Desaparecido:",
+        "n_%": "{{n}}%",
         "n_available": "{{n}} disponible",
         "n_results": "{{n}} resultados",
         "n_x": "{{n}} {{x}}",
@@ -997,6 +997,7 @@
         "uncheck_all": "Desmarcar todo",
         "view_options": "Ver las opciones",
         "viewing_stats_for_x": "Visualización de estadísticas para {{x}}",
+        "win": "Ganar",
         "work_in_progress": {
             "heading": "Esta página es un trabajo en progreso. Algunas funciones y características pueden no funcionar, estar rotas, faltar, estar incompletas o cambiar en cualquier momento.",
             "title": "¡Trabajo en progreso!"
@@ -1792,6 +1793,7 @@
         "max_level": "Nivel máximo",
         "min_attack": "Ataque máx.",
         "offset_adds_warn": "* Las compensaciones de activación se suman al tiempo de carga inicial de la tripulante actual.",
+        "opponent_variance": "Variación del oponente",
         "power_depth": "Profundidad del nivel de potencia",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {

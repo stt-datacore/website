@@ -853,8 +853,6 @@
         }
     },
     "global": {
-        "win": "Gagner",
-        "lose": "Perdre",
         "aborted": "Terminé",
         "admiral": "Avorté",
         "advanced_settings": "Réglages Avancés",
@@ -943,12 +941,14 @@
         "load_defaults": "Charger les défauts",
         "loading_ellipses": "Chargement ...",
         "loading_please_wait_ellipses": "Chargement. S'il vous plaît, attendez...",
+        "lose": "Perdre",
         "max": "Max",
         "max_rarity": "Rareté max.",
         "member": "Membre",
         "min": "Min",
         "min_rarity": "Rareté min.",
         "missing_colon": "Manquant :",
+        "n_%": "{{n}} %",
         "n_available": "{{n}} disponible",
         "n_results": "{{n}} résultats",
         "n_total_x": "{{n}} {{x}} au total",
@@ -997,6 +997,7 @@
         "uncheck_all": "Décochez tout",
         "view_options": "Voir les options",
         "viewing_stats_for_x": "Affichage des statistiques pour {{x}}",
+        "win": "Gagner",
         "work_in_progress": {
             "heading": "Cette page est un travail en cours. Certaines fonctions et fonctionnalités peuvent être non fonctionnelles, cassées, manquantes, incomplètes ou modifiées à tout moment.",
             "title": "Travail en cours !"
@@ -1792,6 +1793,7 @@
         "max_level": "Niveau maximum",
         "min_attack": "Attaque min.",
         "offset_adds_warn": "* Les compensations d'activation s'ajoutent au temps de recharge initial de l'équipier actuel.",
+        "opponent_variance": "Variation de l'adversaire",
         "power_depth": "Profondeur du niveau de puissance",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {

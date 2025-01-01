@@ -845,8 +845,6 @@
         }
     },
     "global": {
-        "win": "Gewinnen",
-        "lose": "Verlieren",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
@@ -935,12 +933,14 @@
         "load_defaults": "Standards laden",
         "loading_ellipses": "Wird geladen ...",
         "loading_please_wait_ellipses": "Laden, bitte warten...",
+        "lose": "Verlieren",
         "max": "Maximal",
         "max_rarity": "Max. Seltenheit",
         "member": "Mitglied",
         "min": "Mindestwert",
         "min_rarity": "Min. Seltenheit",
         "missing_colon": "Fehlen :",
+        "n_%": "{{n}} %",
         "n_available": "{{n}} verfügbar",
         "n_results": "{{n}} Ergebnisse",
         "n_total_x": "{{n}} {{x}} insgesamt",
@@ -987,6 +987,7 @@
         "uncheck_all": "Deaktivieren Sie alle",
         "view_options": "Optionen anzeigen",
         "viewing_stats_for_x": "Statistiken für {{x}} anzeigen",
+        "win": "Gewinnen",
         "work_in_progress": {
             "heading": "Diese Seite befindet sich in Bearbeitung. Einige Funktionen und Features sind möglicherweise nicht funktionsfähig, defekt, fehlen, sind unvollständig oder ändern sich jederzeit.",
             "title": "In Arbeit!"
@@ -1779,6 +1780,7 @@
         "max_level": "Höchstlevel",
         "min_attack": "Min. Angriffs",
         "offset_adds_warn": "* Aktivierungs-Offsets werden zur anfänglichen Abkühlungszeit der aktuellen Crew hinzugefügt.",
+        "opponent_variance": "Gegnervarianz",
         "power_depth": "Tiefe des Leistungsniveaus",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {

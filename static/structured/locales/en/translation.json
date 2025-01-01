@@ -845,8 +845,6 @@
         }
     },
     "global": {
-        "win": "Win",
-        "lose": "Lose",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
@@ -935,12 +933,14 @@
         "load_defaults": "Load Defaults",
         "loading_ellipses": "Loading ...",
         "loading_please_wait_ellipses": "Loading. Please wait...",
+        "lose": "Lose",
         "max": "Max",
         "max_rarity": "Max. rarity",
         "member": "Member",
         "min": "Min",
         "min_rarity": "Min. rarity",
         "missing_colon": "Missing:",
+        "n_%": "{{n}}%",
         "n_available": "{{n}} available",
         "n_results": "{{n}} results",
         "n_total_x": "{{n}} total {{x}}",
@@ -987,6 +987,7 @@
         "uncheck_all": "Uncheck all",
         "view_options": "View Options",
         "viewing_stats_for_x": "Viewing stats for {{x}}",
+        "win": "Win",
         "work_in_progress": {
             "heading": " This page is a work in progress. Some functions and features may be non-functional, broken, missing, incomplete, or change at any time.",
             "title": "Work In Progress!"
@@ -1777,6 +1778,7 @@
         "max_level": "Max Level",
         "min_attack": "Min. Attack",
         "offset_adds_warn": "* Activation offsets add to the current crew's initial cooldown time.",
+        "opponent_variance": "Opponent variance",
         "power_depth": "Power level depth",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {
