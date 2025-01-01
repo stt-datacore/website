@@ -1377,7 +1377,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
             let fbb_crew = crew.filter(f => item.fbb_data?.length && item.fbb_data[0].max_staff.includes(f.symbol));
             let arena_ship = ships.find(f => item.arena_data?.length && f.symbol === item.arena_data[0].max_ship);
             let fbb_ship = ships.find(f => item.fbb_data?.length && f.symbol === item.fbb_data[0].max_ship);
-            if (!arena_crew || !fbb_crew || !arena_ship || !fbb_ship || !c) return;
+            if (!arena_crew || !fbb_crew || !arena_ship || !fbb_ship) return;
 
             printAndLog(
                 item.name.padEnd(40, " "),
