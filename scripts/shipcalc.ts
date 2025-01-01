@@ -271,7 +271,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 	}
 
 	const getBosses = (ship?: Ship, crew?: CrewMember) => {
-		let bosses = [] as Ship[];
+		const bosses = [] as Ship[];
 		all_bosses.forEach((boss, idx) => {
 			let rarity = boss.id - 1;
 			if (ship) {
@@ -283,12 +283,12 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 				if (rarity === 0 && ship.rarity > 2) return;
 			}
 			if (crew) {
-				if (boss.id === 0 && ![1, 2].includes(crew.max_rarity)) return;
-                if (boss.id === 1 && ![1, 2, 3].includes(crew.max_rarity)) return;
-                if (boss.id === 2 && ![1, 2, 3, 4].includes(crew.max_rarity)) return;
+				if (boss.id === 1 && ![1, 2].includes(crew.max_rarity)) return;
+                if (boss.id === 2 && ![1, 2, 3].includes(crew.max_rarity)) return;
                 if (boss.id === 3 && ![1, 2, 3, 4].includes(crew.max_rarity)) return;
-                if (boss.id === 4 && ![1, 2, 3, 4, 5].includes(crew.max_rarity)) return;
+                if (boss.id === 4 && ![1, 2, 3, 4].includes(crew.max_rarity)) return;
                 if (boss.id === 5 && ![1, 2, 3, 4, 5].includes(crew.max_rarity)) return;
+                if (boss.id === 6 && ![1, 2, 3, 4, 5].includes(crew.max_rarity)) return;
 			}
 			bosses.push(boss);
 		});
@@ -931,14 +931,10 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         _calc("arena_final");
         _calc("fbb_final");
 
-        const arena_maxes = {} as { [group: string]: number }
-        const fbb_maxes = {} as { [group: string]: number }
-
         // Compute overall from normalized component scores
         scores.forEach((score) => {
             score.overall_final = (score.fbb_final + score.arena_final) / 2;
             [score.fbb_data, score.arena_data].forEach(data => {
-                data.sort((a, b) => a.group - b.group);
                 data.forEach((unit, idx) => {
                     unit.final = Math.round(unit.final * 100) / 100;
                 });
@@ -1023,6 +1019,9 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         }
 
         const computeScore = <T extends { symbol: string, name?: string }>(score: Score, c: T) => {
+
+            score.arena_data.sort((a, b) => b.group - a.group);
+            score.fbb_data.sort((a, b) => b.group - a.group);
 
             let a_groups = score.arena_data.map(m => m.group);
             let b_groups = score.fbb_data.map(m => m.group);
@@ -1298,7 +1297,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         }
     });
 
-    fs.writeFileSync("./report.txt", buffer.join("\n"));
+    fs.writeFileSync("./battle_run_report.txt", buffer.join("\n"));
 
 	const runEnd = new Date();
 

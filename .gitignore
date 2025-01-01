@@ -30,4 +30,4 @@ src/model/**/*.js
 src/utils/**/*.js
 
 battle_run_cache.json
-report.txt
+battle_run_report.txt
