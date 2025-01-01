@@ -444,8 +444,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         let cloaked = false;
         let oppo_cloaked = false;
 
-        let oppoattack = 0;
-
         const resetAction = (action: ChargeAction) => {
             if (action.orig_ability_amount && action.ability) {
                 action.ability.amount = action.orig_ability_amount;
@@ -890,6 +888,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
                     let actual_attack = (standard_attack * (!oppo_powerInfo ? 1 : hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion)));
                     let outgoing_damage = Math.ceil(actual_attack * mul);
+
                     hitoppo(outgoing_damage);
                 }
                 else {
@@ -904,19 +903,30 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 let number = oppo_counter / oppo_aps_num;
                 oppo_counter = 0;
 
+                oppo_standard_attack = Math.ceil(oppo_standard_attack * number);
+                oppo_base_attack = Math.ceil(oppo_base_attack * number);
+                oppo_max_attack = Math.ceil(oppo_max_attack * number);
+
                 if (fbb_mode || (!oppo_cloaked && !cloaked)) {
                     let mul = currents.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
                     mul = 1 - (mul / 100);
+                    let oppoattack = 0;
                     if (!oppo_powerInfo) {
-                        oppoattack = (work_opponent.attack * hitChance(work_opponent.accuracy, powerInfo.computed.active.evasion));
+                        oppoattack = (oppo_standard_attack * hitChance(work_opponent.accuracy, powerInfo.computed.active.evasion));
                     }
                     else {
-                        oppoattack = (oppo_attack * hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion));
+                        oppoattack = (oppo_standard_attack * hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion));
                     }
 
-                    let incoming_damage = Math.ceil((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul * number);
+                    let incoming_damage = Math.ceil((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul);
                     hitme(incoming_damage);
                 }
+                else {
+                    oppo_standard_attack = oppo_base_attack = oppo_max_attack = 0;
+                }
+            }
+            else {
+                oppo_standard_attack = oppo_base_attack = oppo_max_attack = 0;
             }
 
             // Apply boarding damage
