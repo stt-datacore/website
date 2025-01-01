@@ -31,3 +31,4 @@ src/utils/**/*.js
 
 battle_run_cache.json
 battle_run_report.txt
+battle_run_report.json

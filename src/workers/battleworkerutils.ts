@@ -2,6 +2,7 @@ import { AttackInstant } from "../model/worker";
 import { CrewMember } from "../model/crew";
 import { ShipAction, Ship } from "../model/ship";
 import { setupShip } from "../utils/shiputils";
+import { getPermutations } from "../utils/misc";
 
 export interface PowerStat {
     attack: number;
@@ -860,8 +861,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 immediates.length = 0;
             }
 
-            let oppo_attack = oppo_powerInfo?.computed.attack.with_bonus_and_chance ?? work_opponent?.attack ?? 0;
-
             if (oppo_immediates.length) {
                 for (let imm of oppo_immediates) {
                     o_instant_now += imm.standard;
@@ -1011,6 +1010,32 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         console.log(e);
         return [];
     }
+}
+
+export function generateSeatCombos(count: number) {
+    let c = count;
+    let cbs = [] as number[][];
+    for (let i = 0; i < c; i++) {
+        for (let j = 0; j < c; j++) {
+            cbs.push([i, j]);
+        }
+    }
+
+    const allseat = getPermutations<number[], number[]>(cbs, c).filter((f) => {
+        let xseen = [] as boolean[];
+        let yseen = [] as boolean[];
+        for (let i = 0; i < count; i++) {
+            xseen.push(false);
+            yseen.push(false);
+        }
+        for (let [x, y] of f) {
+            xseen[x] = true;
+            yseen[y] = true;
+        }
+        return (xseen.every(x => x) && yseen.every(y => y));
+    });
+
+    return allseat;
 }
 
 export function canSeatAll(precombined: number[][][], ship: Ship, crew: CrewMember[], ignore_skill: boolean): CrewMember[][] | false {

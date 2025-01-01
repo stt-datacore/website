@@ -39,13 +39,16 @@ interface Scoreable {
     final: number;
     max_damage: number,
     min_damage: number,
+    max_compat: number,
+    min_compat: number,
+    average_compat: number
     average_damage: number,
     median_index: number,
     win_count: number,
     total_damage: number;
     duration: number;
+    total_compat: number;
 }
-
 
 interface ScoreTotal extends Scoreable {
     max_ship: string,
@@ -142,12 +145,16 @@ function addScore(score: Score, type: 'fbb' | 'arena', group: number) {
         median_index: 0,
         win_count: 0,
         total_damage: 0,
+        total_compat: 0,
         duration: 0,
         min_ship: '',
         min_staff: [],
         min_damage: 0,
         average_damage: 0,
-        original_indices: []
+        original_indices: [],
+        min_compat: 0,
+        max_compat: 0,
+        average_compat: 0
     } as ScoreTotal;
 
     if (type === 'fbb') {
@@ -924,6 +931,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                     else {
                         scoreset.max_staff = [run.crew.symbol]
                     }
+                    scoreset.max_compat = run.compatibility.score;
                 }
                 if (!scoreset.min_damage || run.damage < scoreset.min_damage) {
                     scoreset.min_damage = run.damage;
@@ -934,7 +942,9 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                     else {
                         scoreset.min_staff = [run.crew.symbol]
                     }
+                    scoreset.min_compat = run.compatibility.score;
                 }
+                scoreset.total_compat += run.compatibility.score;
                 scoreset.duration += run.duration;
                 scoreset.total_damage += run.damage;
                 scoreset.count++;
@@ -1026,10 +1036,12 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
             score.fbb_data.sort((a, b) => b.group - a.group);
             score.arena_data.forEach((data) => {
                 data.average_damage = data.total_damage / data.count;
+                data.average_compat = data.total_compat / data.count;
             });
 
             score.fbb_data.forEach((data) => {
                 data.average_damage = data.total_damage / data.count;
+                data.average_compat = data.total_compat / data.count;
             });
         });
 
@@ -1365,7 +1377,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
             let fbb_crew = crew.filter(f => item.fbb_data?.length && item.fbb_data[0].max_staff.includes(f.symbol));
             let arena_ship = ships.find(f => item.arena_data?.length && f.symbol === item.arena_data[0].max_ship);
             let fbb_ship = ships.find(f => item.fbb_data?.length && f.symbol === item.fbb_data[0].max_ship);
-            if (!arena_crew || !fbb_crew || !arena_ship || !fbb_ship) return;
+            if (!arena_crew || !fbb_crew || !arena_ship || !fbb_ship || !c) return;
 
             printAndLog(
                 item.name.padEnd(40, " "),
@@ -1386,15 +1398,17 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 printAndLog(" ".padEnd(40, " "), fbb_ship?.name?.padEnd(20, " "));
             }
             item.arena_data.forEach((group) => {
-                printAndLog(" ".padEnd(40, " "), `A${group.group}: ${group.final}`);
+                printAndLog(" ".padEnd(40, " "), `A${group.group}: ${group.final} (Max Dmg: ${Math.ceil(group.max_damage).toLocaleString()}, Avg Dmg: ${Math.ceil(group.average_damage).toLocaleString()}, ${group.count} Runs)`);
             });
             item.fbb_data.forEach((group) => {
-                printAndLog(" ".padEnd(40, " "), `B${group.group}: ${group.final}`);
+                printAndLog(" ".padEnd(40, " "), `B${group.group}: ${group.final} (Max Dmg: ${Math.ceil(group.max_damage).toLocaleString()}, Avg Dmg: ${Math.ceil(group.average_damage).toLocaleString()}, ${group.count} Runs)`);
             });
         }
     });
 
+    console.log("Writing report and raw scores...");
     fs.writeFileSync("./battle_run_report.txt", buffer.join("\n"));
+    fs.writeFileSync("./battle_run_report.json", JSON.stringify(offs_2.concat(defs_2).concat(ship_3)));
 
 	const runEnd = new Date();
 
