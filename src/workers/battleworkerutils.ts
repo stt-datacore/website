@@ -532,7 +532,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
             if (!action.ability?.condition || currents.some(act => typeof act !== 'boolean' && act.status === action.ability?.condition)) {
 
-                if (powerInfo && (!action.ability || action.ability?.type === 0)) {
+                if (action.comes_from === 'crew' && powerInfo && (!action.ability || action.ability?.type === 0)) {
                     let anum = 0;
                     let cnum = 0;
 

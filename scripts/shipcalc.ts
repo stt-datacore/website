@@ -1088,7 +1088,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 return scores.map(ss => ss.total_damage).reduce((p, n) => p > n ? p : n, 0);
             }
             else {
-                return scores.map(ss => ss.average_index).reduce((p, n) => p > n ? p : n, 0);
+                return arenaruns.length;
             }
         }
 
@@ -1108,7 +1108,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 return score.total_damage;
             }
             else {
-                return top - score.average_index;
+                return arenaruns.length - score.average_index;
             }
         }
 
@@ -1273,6 +1273,9 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
     for (let ship of arena_p2) {
         let crew = ship.battle_stations!.map(m => m.crew!);
         console.log(`Playing arena on ${ship.name} against all compatible ships (${count++} / ${ships.length})...`);
+        if (ship.name === "IKS Negh'Var") {
+            console.log("IKS Negh'Var Here");
+        }
         let division = getShipDivision(ship.rarity);
         for (let ship2 of arena_p2) {
             if (ship == ship2) continue;
