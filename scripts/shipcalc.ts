@@ -330,7 +330,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         let boss = fbb ? getBosses(data).sort((a, b) => b.id - a.id)[0] : undefined;
 
         data.battle_stations = JSON.parse(JSON.stringify(data.battle_stations)) as BattleStation[];
-
+        let dataskills = data.battle_stations.map(m => m.skill).filter(f => !!f);
         let cloak_min = 0;
         let cloak = data.actions?.find(act => act.status === 2);
 
@@ -473,7 +473,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
                 let d1 = filtered.find(f => {
                     if (f.action.ability?.condition && !pass) return false;
-                    if (((!ignore_skill && !f.skill_order.includes(bs.skill)) || used.includes(f.symbol))) return false;
+                    if (((!ignore_skill && !f.skill_order.some(s => dataskills.includes(s))) || used.includes(f.symbol))) return false;
                     if (c && c.symbol === f.symbol) return true;
                     if (c && pass === 0) {
                         if (f.action.bonus_type === notype) {
@@ -1270,9 +1270,9 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
     console.log("Mapping best crew to ships...");
 
-    let arena_p2 = ships.map(sh => getStaffedShip(sh, false, offs_2, defs_2, undefined, true)).filter(f => !!f)
+    let arena_p2 = ships.map(sh => getStaffedShip(sh, false, offs_2, defs_2, undefined, false)).filter(f => !!f)
         //.concat(ships.map(sh => getStaffedShip(sh, false, offs_2, defs_2, undefined, true)).filter(f => !!f));
-    let fbb_p2 = ships.map(sh => getStaffedShip(sh, true, offs_2, defs_2, undefined, true)).filter(f => !!f)
+    let fbb_p2 = ships.map(sh => getStaffedShip(sh, true, offs_2, defs_2, undefined, false)).filter(f => !!f)
         //.concat(ships.map(sh => getStaffedShip(sh, true, offs_2, defs_2, undefined, true)).filter(f => !!f));
 
     allruns.length = (arena_p2.length + fbb_p2.length) * (arena_p2.length + fbb_p2.length) * 6;
