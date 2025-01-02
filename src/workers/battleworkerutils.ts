@@ -907,24 +907,26 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             let oppo_max_attack = oppo_powerInfo?.computed.attack.with_bonus ?? work_opponent.attack;
 
             if (immediates.length) {
-                for (let imm of immediates) {
-                    instant_now += imm.standard;
-                    instant_now_min += imm.base;
-                    instant_now_max += imm.max;
-                    hitoppo(imm.standard);
+                if (!cloaked && !oppo_cloaked) {
+                    for (let imm of immediates) {
+                        instant_now += imm.standard;
+                        instant_now_min += imm.base;
+                        instant_now_max += imm.max;
+                        hitoppo(imm.standard);
+                    }
                 }
-
                 immediates.length = 0;
             }
 
             if (oppo_immediates.length) {
-                for (let imm of oppo_immediates) {
-                    o_instant_now += imm.standard;
-                    o_instant_now_min += imm.base;
-                    o_instant_now_max += imm.max;
-                    hitme(imm.standard);
+                if (!cloaked && !oppo_cloaked) {
+                    for (let imm of oppo_immediates) {
+                        o_instant_now += imm.standard;
+                        o_instant_now_min += imm.base;
+                        o_instant_now_max += imm.max;
+                        hitme(imm.standard);
+                    }
                 }
-
                 oppo_immediates.length = 0;
             }
 
