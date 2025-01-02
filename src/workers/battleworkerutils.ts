@@ -987,14 +987,14 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             }
 
             // Apply boarding damage
-            if (!oppo_cloaked && c_boarding && !powerInfo.computed.baked_in_boarding) {
+            if (c_boarding && !powerInfo.computed.baked_in_boarding) {
                 hitoppo(c_boarding);
                 standard_attack += c_boarding;
                 base_attack += c_boarding;
                 max_attack += c_boarding;
             }
 
-            if (!cloaked && o_c_boarding && !oppo_powerInfo?.computed.baked_in_boarding) {
+            if (o_c_boarding && !oppo_powerInfo?.computed.baked_in_boarding) {
                 hitme(o_c_boarding);
                 oppo_standard_attack += o_c_boarding;
                 oppo_base_attack += o_c_boarding;
@@ -1041,15 +1041,15 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 hull,
                 shields,
                 second: sec,
-                attack: (a_cloaked ? 0 : standard_attack + instant_now),
-                min_attack: (a_cloaked ? 0 : base_attack + instant_now_min),
-                max_attack: (a_cloaked ? 0 : max_attack + instant_now_max),
+                attack: (standard_attack + instant_now),
+                min_attack: (base_attack + instant_now_min),
+                max_attack: (max_attack + instant_now_max),
                 ship,
                 opponent_hull: oppo_hull,
                 opponent_shields: oppo_shields,
-                opponent_attack: (b_cloaked ? 0 : oppo_standard_attack + o_instant_now),
-                opponent_min_attack: (b_cloaked ? 0 : oppo_base_attack + o_instant_now_min),
-                opponent_max_attack: (b_cloaked ? 0 : oppo_max_attack + o_instant_now_max),
+                opponent_attack: (oppo_standard_attack + o_instant_now),
+                opponent_min_attack: (oppo_base_attack + o_instant_now_min),
+                opponent_max_attack: (oppo_max_attack + o_instant_now_max),
                 boarding_damage_per_second: boarding_sec,
                 opponent_boarding_damage_per_second: o_boarding_sec,
                 cloaked,

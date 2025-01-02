@@ -5,6 +5,8 @@ import { AttackInstant, ShipWorkerItem } from "../src/model/worker";
 import { mergeShips } from "../src/utils/shiputils";
 import { ChargeAction, iterateBattle } from "../src/workers/battleworkerutils";
 
+const CACHE_VERSION = 2;
+
 function getShipDivision(rarity: number) {
     return rarity === 5 ? 3 : rarity >= 3 && rarity <= 4 ? 2 : 1;
 }
@@ -104,7 +106,8 @@ interface BattleRunCache {
     limit: number,
     battle: 'arena' | 'fbb',
     type: 'defense' | 'offense',
-    win: boolean
+    win: boolean,
+    version: number
 }
 
 function createScore(kind: 'crew' | 'ship', symbol: string) {
@@ -320,7 +323,9 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         let data = typeof ship === 'string' ? origShips.find(f => f.symbol === ship) : origShips.find(f => f.symbol === ship.symbol);
         if (!data?.battle_stations?.length) return undefined;
         data = { ...data } as Ship;
-
+        if (ship === 'kdf_neghvar_iks_ship') {
+            console.log("break");
+        }
         let division = getShipDivision(data.rarity);
         let boss = fbb ? getBosses(data).sort((a, b) => b.id - a.id)[0] : undefined;
 
@@ -516,6 +521,11 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         else {
             console.log("Loading battle run cache...");
             cached = JSON.parse(fs.readFileSync(cacheFile, 'utf-8'));
+            if (cached.length && !cached[0].version || cached[0].version < CACHE_VERSION) {
+                console.log("Purging outdated battle run cache...");
+                fs.unlinkSync(cacheFile);
+                cached = [].slice();
+            }
         }
     }
 
@@ -525,7 +535,8 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
             crew: run.crew.symbol,
             ship: run.ship.symbol,
             boss: run.boss?.id,
-            opponent: run.opponent?.symbol
+            opponent: run.opponent?.symbol,
+            version: CACHE_VERSION
         }));
         if (save) {
             fs.writeFileSync(cacheFile, JSON.stringify(result));
@@ -1259,10 +1270,10 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
     console.log("Mapping best crew to ships...");
 
-    let arena_p2 = ships.map(sh => getStaffedShip(sh, false, offs_2, defs_2)).filter(f => !!f)
-        .concat(ships.map(sh => getStaffedShip(sh, false, offs_2, defs_2, undefined, true)).filter(f => !!f));
-    let fbb_p2 = ships.map(sh => getStaffedShip(sh, true, offs_2, defs_2)).filter(f => !!f)
-        .concat(ships.map(sh => getStaffedShip(sh, true, offs_2, defs_2, undefined, true)).filter(f => !!f));
+    let arena_p2 = ships.map(sh => getStaffedShip(sh, false, offs_2, defs_2, undefined, true)).filter(f => !!f)
+        //.concat(ships.map(sh => getStaffedShip(sh, false, offs_2, defs_2, undefined, true)).filter(f => !!f));
+    let fbb_p2 = ships.map(sh => getStaffedShip(sh, true, offs_2, defs_2, undefined, true)).filter(f => !!f)
+        //.concat(ships.map(sh => getStaffedShip(sh, true, offs_2, defs_2, undefined, true)).filter(f => !!f));
 
     allruns.length = (arena_p2.length + fbb_p2.length) * (arena_p2.length + fbb_p2.length) * 6;
     runidx = 0;
