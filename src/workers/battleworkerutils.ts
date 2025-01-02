@@ -442,6 +442,17 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         const currents = allactions.map(m => false as false | ShipAction);
         const oppos = oppo_actions?.map(m => false as false | ShipAction);
 
+        const native_grants = allactions.map(m => m.status).filter(f => f !== undefined) ?? [];
+        const o_native_grants = oppo_actions?.map(m => m.status).filter(f => f !== undefined) ?? [];
+
+        allactions.forEach((action) => {
+            if (action.ability?.condition && !native_grants.includes(action.ability.condition)) delete action.ability;
+        });
+
+        oppo_actions?.forEach((action) => {
+            if (action.ability?.condition && !o_native_grants.includes(action.ability.condition)) delete action.ability;
+        });
+
         let cloaked = false;
         let oppo_cloaked = false;
 
@@ -511,6 +522,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
         const activate = (action: ChargeAction, actidx: number, oppo = false) => {
             let immediate = false as boolean | number;
+
             if (action.status === 4) {
                 if ((oppo && cloaked) || (!oppo && oppo_cloaked)) {
                     processChargePhases(action, actidx, oppo);
@@ -519,6 +531,37 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             }
 
             if (!action.ability?.condition || currents.some(act => typeof act !== 'boolean' && act.status === action.ability?.condition)) {
+
+                if (powerInfo && (!action.ability || action.ability?.type === 0)) {
+                    let anum = 0;
+                    let cnum = 0;
+
+                    if (action.bonus_type === 0 && (!action.ability || action.ability.type === 0)) {
+                        cnum = powerInfo?.condensed.base.attack;
+                        if (action.ability?.type === 0) {
+                            anum = action.bonus_amount + action.ability.amount;
+                        }
+                        else {
+                            anum = action.bonus_amount;
+                        }
+                    }
+                    else if (!action.ability) {
+                        if (action.bonus_type === 1) {
+                            cnum = powerInfo?.condensed.base.evasion;
+                            anum = action.bonus_amount;
+                        }
+                        else if (action.bonus_type === 2) {
+                            cnum = powerInfo?.condensed.base.accuracy;
+                            anum = action.bonus_amount;
+                        }
+                    }
+
+                    if (cnum >= anum) {
+                        processChargePhases(action, actidx, oppo);
+                        return false;
+                    }
+                }
+
                 if (action.ability?.type === 1) {
                     immediate = (action.ability.amount / 100);
                 }
@@ -614,16 +657,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
                 if (immediate === false) immediate = true;
                 if (oppo) {
-                    if (oppo_cloaked && action.status !== 2) {
-                        oppo_actions?.forEach((o, i) => {
-                            if (o) {
-                                if (o.status === 2) {
-                                    deactivate(o, i, oppo);
-                                }
-                            }
-                        });
-                    }
-
                     oppos![actidx] = action;
                     oppo_cloaked = action.status === 2;
                     o_uses![actidx]++;
@@ -632,16 +665,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                     o_active![actidx] = true;
                 }
                 else {
-                    if (cloaked && action.status !== 2) {
-                        allactions?.forEach((o, i) => {
-                            if (o) {
-                                if (o.status === 2) {
-                                    deactivate(o, i, oppo);
-                                }
-                            }
-                        });
-                    }
-
                     currents[actidx] = action;
                     cloaked = action.status === 2;
                     uses[actidx]++;
@@ -962,12 +985,18 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             }
 
             // Apply boarding damage
-            if (c_boarding && !powerInfo.computed.baked_in_boarding) {
+            if (!oppo_cloaked && c_boarding && !powerInfo.computed.baked_in_boarding) {
                 hitoppo(c_boarding);
+                standard_attack += c_boarding;
+                base_attack += c_boarding;
+                max_attack += c_boarding;
             }
 
-            if (o_c_boarding && !oppo_powerInfo?.computed.baked_in_boarding) {
+            if (!cloaked && o_c_boarding && !oppo_powerInfo?.computed.baked_in_boarding) {
                 hitme(o_c_boarding);
+                oppo_standard_attack += o_c_boarding;
+                oppo_base_attack += o_c_boarding;
+                oppo_max_attack += o_c_boarding;
             }
 
             // Apply shield regeneration
@@ -1091,82 +1120,9 @@ export function canSeatAll(precombined: number[][][], ship: Ship, crew: CrewMemb
         return false;
     }).filter(f => !!f) as CrewMember[][];
 
-    // let possibles = getPermutations(precombined, c, undefined, false, 0n, (set) => {
-    //     let mpn = {} as { [key: string]: CrewMember };
-    //     let mpc = {} as { [key: string]: boolean };
-    //     let yseen = {};
-    //     let z = 0;
-    //     for (let [x, y] of set) {
-    //         if (yseen[y] || mpn[x] || mpc[crew[y].id!]) continue;
-    //         if ((ignore_skill || crew[y].skill_order.includes(ship.battle_stations![x].skill))) {
-    //             yseen[y] = true;
-    //             mpn[x] = crew[y];
-    //             mpc[crew[y].id!] = true;
-    //             z++;
-    //         }
-    //     }
-    //     if (z === c) return Object.values(mpn);
-    //     else return false;
-    // }).filter(f => !!f);
-
     if (possibles?.length) {
         return possibles;
     }
-    // let bl = ship.battle_stations.length;
-    // let bat = ship.battle_stations.map(sta => sta.skill);
-
-    // crew.sort((a, b) => {
-    //     let ac = bat.filter(skill => a.skill_order.includes(skill)).length;
-    //     let bc = bat.filter(skill => b.skill_order.includes(skill)).length;
-    //     let r = ac - bc;
-    //     if (r) return r;
-    //     ac = bat.findIndex(skill => a.skill_order.includes(skill));
-    //     bc = bat.findIndex(skill => b.skill_order.includes(skill));
-    //     r = ac - bc;
-    //     if (r) return r;
-    //     return a.name.localeCompare(b.name);
-    // });
-
-    // for (let a = 0; a < 2; a++) {
-    //     if (a) crew = [...crew].reverse();
-    //     for (let i = 0; i < bl; i++) {
-    //         let j = i;
-    //         let p = 0;
-    //         let tt = {} as { [key: string]: CrewMember };
-    //         while (true) {
-    //             if (!tt[j] && (ignore_skill || (crew[p].skill_order.some(so => ship.battle_stations![j].skill === so)))) {
-    //                 tt[j] = crew[p];
-    //             }
-    //             p++;
-    //             if (p >= crew.length) break;
-    //             j++;
-    //             if (j >= bl) j = 0;
-    //             if (j === i) break;
-    //         }
-
-    //         if (Object.keys(tt).length === crew.length) {
-    //             let sorted = Object.values(tt);
-    //             const swapgood = (a: number, b: number) => {
-    //                 if (ignore_skill || (sorted[a].skill_order.includes(bat[b]) && sorted[b].skill_order.includes(bat[a]))) {
-    //                     let c = sorted[a];
-    //                     sorted[a] = sorted[b];
-    //                     sorted[b] = c;
-    //                 }
-    //             }
-    //             for (let i = 0; i < bl; i++) {
-    //                 for (let j = 0; j < bl; j++) {
-    //                     if (i === j) continue;
-    //                     let a = i < j ? i : j;
-    //                     let b = j > i ? j : i;
-    //                     if (sorted[a].action.ability?.type === 1 && [0, 5].includes(sorted[b].action.ability?.type ?? -1)) {
-    //                         swapgood(a, b);
-    //                     }
-    //                 }
-    //             }
-    //             return sorted;
-    //         }
-    //     }
-    // }
 
     return false;
 }

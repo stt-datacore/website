@@ -443,11 +443,15 @@ export function compareShipResults(a: ShipWorkerTransportItem | ShipWorkerItem, 
 		return r;
 	}
 	else {
+		let r = 0;
 		if (a.win !== b.win) {
 			if (a.win) return -1;
 			else if (b.win) return 1;
 		}
-		let r = 0;
+		else if (a.win && b.win) {
+			r = a.battle_time - b.battle_time;
+			if (r) return r;
+		}
 		let aa: number;
 		let ba: number;
 		aa = a.arena_metric;

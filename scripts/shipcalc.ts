@@ -890,9 +890,9 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         const scoreRun = (runs: BattleRun[], mode: number, scores: Score[], score_type: 'crew' | 'ship') => {
             if (mode === 0) {
                 runs.sort((a, b) => {
-                    if (pass_2) {
-                        return (a.win != b.win) ? (a.win ? -1 : 1) : (a.duration - b.duration);
-                    }
+                    // if (pass_2) {
+                    //     return (a.win != b.win) ? (a.win ? -1 : 1) : (a.duration - b.duration);
+                    // }
                     if (a.type !== b.type) {
                         return (a.win != b.win) ? (a.win ? -1 : 1) : (b.damage - a.damage || a.duration - b.duration || b.compatibility.score - a.compatibility.score);
                     }
@@ -1150,22 +1150,23 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 my_arena = (my_arena_score / topscore_arena) * 100;
                 my_arena *= arena_mul;
 
-                if (!pass2) {
-                    raw_score.final = my_arena;
-                }
-                else {
-                    const maxwins_arena = getWinScore(ls_arena, 'arena');
-                    let mywins_arena = getMyWinScore(maxwins_arena, raw_score, 'arena');
+                raw_score.final = my_arena;
+                // if (!pass2) {
+                //     raw_score.final = my_arena;
+                // }
+                // else {
+                //     const maxwins_arena = getWinScore(ls_arena, 'arena');
+                //     let mywins_arena = getMyWinScore(maxwins_arena, raw_score, 'arena');
 
-                    if (maxwins_arena && mywins_arena) {
-                        my_arenawin = (mywins_arena / maxwins_arena) * 100;
-                        my_arenawin *= arena_mul;
-                        raw_score.final = (my_arena + my_arenawin) / 2;
-                    }
-                    else {
-                        raw_score.final = my_arena;
-                    }
-                }
+                //     if (maxwins_arena && mywins_arena) {
+                //         my_arenawin = (mywins_arena / maxwins_arena) * 100;
+                //         my_arenawin *= arena_mul;
+                //         raw_score.final = (my_arena + my_arenawin) / 2;
+                //     }
+                //     else {
+                //         raw_score.final = my_arena;
+                //     }
+                // }
             }
 
             for (let bg of b_groups) {
