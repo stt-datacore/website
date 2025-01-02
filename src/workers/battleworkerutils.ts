@@ -643,6 +643,9 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 if (action.ability?.type === 6) {
                     oppo_shield_regen -= (action.ability.amount / rate);
                 }
+                if (action.status === 2) {
+                    oppo_cloaked = false;
+                }
                 o_state_time![actidx] = 0;
                 o_active![actidx] = false;
                 oppos![actidx] = false;
@@ -650,6 +653,9 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             else {
                 if (action.ability?.type === 6) {
                     shield_regen -= (action.ability.amount / rate);
+                }
+                if (action.status === 2) {
+                    cloaked = false;
                 }
                 state_time[actidx] = 0;
                 active[actidx] = false;

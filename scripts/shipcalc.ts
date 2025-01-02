@@ -883,13 +883,18 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
     const shipscores = [] as Score[];
     const crewscores = [] as Score[];
 
-    const createScoreData = (trigger_compat: boolean, seat_compat: boolean, ship_only = false) => {
+    const createScoreData = (trigger_compat: boolean, seat_compat: boolean, pass_2 = false) => {
         shipscores.length = 0;
-        if (!ship_only) crewscores.length = 0;
+        if (!pass_2) crewscores.length = 0;
 
         const scoreRun = (runs: BattleRun[], mode: number, scores: Score[], score_type: 'crew' | 'ship') => {
             if (mode === 0) {
-                runs.sort((a, b) => (a.win != b.win) ? (a.win ? -1 : 1) : (b.damage - a.damage || b.duration - a.duration || b.compatibility.score - a.compatibility.score));
+                if (pass_2) {
+                    runs.sort((a, b) => (a.win != b.win) ? (a.win ? -1 : 1) : (b.damage - a.damage || b.duration - a.duration || b.compatibility.score - a.compatibility.score));
+                }
+                else {
+                    runs.sort((a, b) => (a.win != b.win) ? (a.win ? -1 : 1) : (a.duration - b.duration || b.damage - a.damage || b.compatibility.score - a.compatibility.score));
+                }
             }
             else {
                 runs.sort((a, b) => b.damage - a.damage || b.duration - a.duration || b.compatibility.score - a.compatibility.score);
@@ -972,7 +977,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         }
 
         [arenaruns, fbbruns].forEach((runs, mode) => {
-            if (!ship_only) {
+            if (!pass_2) {
                 scoreRun(runs, mode, crewscores, 'crew');
             }
             scoreRun(runs, mode, shipscores, 'ship');
@@ -1095,7 +1100,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 return score.total_damage;
             }
             else {
-                return score.average_index;
+                return top - score.average_index;
             }
         }
 
@@ -1112,7 +1117,9 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         }
 
         const computeScore = <T extends { symbol: string, name?: string }>(score: Score, c: T) => {
-
+            if (c.name === "IKS Negh'Var") {
+                console.log("break");
+            }
             score.arena_data = score.arena_data.sort((a, b) => b.group - a.group).slice(0, 1);
             score.fbb_data = score.fbb_data.sort((a, b) => b.group - a.group).slice(0, 1);
 
@@ -1193,7 +1200,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         if (!totals?.original_indices?.length) return undefined;
 
         const runs = [...new Set(totals.original_indices.map(i => origruns[i])) ];
-        runs.sort((a, b) => battle === 'arena' && a.win != b.win ? (a.win ? -1 : 1) : b.damage - a.damage || b.duration - a.duration)
+        runs.sort((a, b) => battle === 'arena' && a.win != b.win ? (a.win ? -1 : 1) : a.duration - b.duration || b.damage - a.damage)
         const shipscore = {} as {[key: string]: number };
         const shipcount = {} as {[key: string]: number };
         const shipdmg = {} as {[key: string]: number };
@@ -1368,8 +1375,23 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         console.log(...params);
     }
 
-    let keldon = origruns.filter(f => f.crew.symbol === 'uhura_red_crew' && f.ship.symbol === 'car_keldon_ship' && f.battle === 'arena');
-    keldon.sort((a, b) => b.damage - a.damage);
+    let red = offs_2.slice().sort((a, b) => {
+        let r = 0;
+
+        if (b.arena_data.length && a.arena_data.length) {
+            r = b.arena_data[0].average_index - a.arena_data[0].average_index;
+        }
+        else if (a.arena_data.length) {
+            return -1;
+        }
+        else if (b.arena_data.length) {
+            return 1;
+        }
+
+        return r;
+    });
+
+    let blue = red.slice().reverse();
 
     [offs_2, defs_2, ship_3].forEach((scores, idx) => {
         printAndLog(" ");
