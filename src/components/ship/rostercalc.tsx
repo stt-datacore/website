@@ -1026,12 +1026,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         result: ShipMultiWorkerStatus
     ) {
         if (!result.data.inProgress && result.data.result.items?.length) {
-            setProgressMsg(t('ship.calc.calc_summary', {
-                message: t('global.completed'),
-                count: `${result.data.result.total_iterations?.toLocaleString()}`,
-                time: formatRunTime(Math.round(result.data.result.run_time ?? 0), t),
-                accepted: `${result.data.result.items?.length.toLocaleString()}`
-            }));
 
             if (result.data.result.items.length === 1 && suggestions?.length && suggestions.length > 1) {
                 let r = result.data.result.items[0];
@@ -1040,9 +1034,22 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     suggestions[sug] = fromTransport(r);
                     setSugWait(sug);
                     setSuggestions([...suggestions]);
+                    setProgressMsg(t('ship.calc.calc_summary', {
+                        message: t('global.completed'),
+                        count: `${result.data.result.total_iterations?.toLocaleString()}`,
+                        time: formatRunTime(Math.round(result.data.result.run_time ?? 0), t),
+                        accepted: `${suggestions?.length.toLocaleString()}`
+                    }));
+
                     return;
                 }
             }
+            setProgressMsg(t('ship.calc.calc_summary', {
+                message: t('global.completed'),
+                count: `${result.data.result.total_iterations?.toLocaleString()}`,
+                time: formatRunTime(Math.round(result.data.result.run_time ?? 0), t),
+                accepted: `${result.data.result.items?.length.toLocaleString()}`
+            }));
             setSugWait(0);
             setSuggestions(result.data.result.items.map(i => fromTransport(i)));
         }
@@ -1053,7 +1060,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         percent: `${result.data.result.percent?.toLocaleString()}`,
                         count: `${result.data.result.count?.toLocaleString()}`,
                         progress: `${result.data.result.progress?.toLocaleString()}`,
-                        accepted: `${result.data.result.accepted?.toLocaleString()}`
+                        accepted: `${suggestions?.length.toLocaleString()}`
                     }
                 )
             )
