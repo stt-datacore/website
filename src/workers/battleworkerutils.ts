@@ -614,6 +614,16 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
                 if (immediate === false) immediate = true;
                 if (oppo) {
+                    if (oppo_cloaked && action.status !== 2) {
+                        oppo_actions?.forEach((o, i) => {
+                            if (o) {
+                                if (o.status === 2) {
+                                    deactivate(o, i, oppo);
+                                }
+                            }
+                        });
+                    }
+
                     oppos![actidx] = action;
                     oppo_cloaked = action.status === 2;
                     o_uses![actidx]++;
@@ -622,6 +632,16 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                     o_active![actidx] = true;
                 }
                 else {
+                    if (cloaked && action.status !== 2) {
+                        allactions?.forEach((o, i) => {
+                            if (o) {
+                                if (o.status === 2) {
+                                    deactivate(o, i, oppo);
+                                }
+                            }
+                        });
+                    }
+
                     currents[actidx] = action;
                     cloaked = action.status === 2;
                     uses[actidx]++;
