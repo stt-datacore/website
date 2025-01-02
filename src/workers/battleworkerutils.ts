@@ -511,6 +511,13 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
         const activate = (action: ChargeAction, actidx: number, oppo = false) => {
             let immediate = false as boolean | number;
+            if (action.status === 4) {
+                if ((oppo && cloaked) || (!oppo && oppo_cloaked)) {
+                    processChargePhases(action, actidx, oppo);
+                    return false;
+                }
+            }
+
             if (!action.ability?.condition || currents.some(act => typeof act !== 'boolean' && act.status === action.ability?.condition)) {
                 if (action.ability?.type === 1) {
                     immediate = (action.ability.amount / 100);
