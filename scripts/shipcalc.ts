@@ -889,12 +889,20 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
         const scoreRun = (runs: BattleRun[], mode: number, scores: Score[], score_type: 'crew' | 'ship') => {
             if (mode === 0) {
-                if (pass_2) {
-                    runs.sort((a, b) => (a.win != b.win) ? (a.win ? -1 : 1) : (b.damage - a.damage || b.duration - a.duration || b.compatibility.score - a.compatibility.score));
-                }
-                else {
-                    runs.sort((a, b) => (a.win != b.win) ? (a.win ? -1 : 1) : (a.duration - b.duration || b.damage - a.damage || b.compatibility.score - a.compatibility.score));
-                }
+                runs.sort((a, b) => {
+                    if (pass_2) {
+                        return (a.win != b.win) ? (a.win ? -1 : 1) : (a.duration - b.duration);
+                    }
+                    if (a.type !== b.type) {
+                        return (a.win != b.win) ? (a.win ? -1 : 1) : (b.damage - a.damage || a.duration - b.duration || b.compatibility.score - a.compatibility.score);
+                    }
+                    if (a.type === 'defense') {
+                        return (a.win != b.win) ? (a.win ? -1 : 1) : (b.damage - a.damage || b.duration - a.duration || b.compatibility.score - a.compatibility.score);
+                    }
+                    else {
+                        return (a.win != b.win) ? (a.win ? -1 : 1) : (a.duration - b.duration || b.damage - a.damage || b.compatibility.score - a.compatibility.score);
+                    }
+                });
             }
             else {
                 runs.sort((a, b) => b.damage - a.damage || b.duration - a.duration || b.compatibility.score - a.compatibility.score);
@@ -1117,9 +1125,9 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         }
 
         const computeScore = <T extends { symbol: string, name?: string }>(score: Score, c: T) => {
-            if (c.name === "IKS Negh'Var") {
-                console.log("break");
-            }
+            // if (c.name === "IKS Negh'Var") {
+            //     console.log("break");
+            // }
             score.arena_data = score.arena_data.sort((a, b) => b.group - a.group).slice(0, 1);
             score.fbb_data = score.fbb_data.sort((a, b) => b.group - a.group).slice(0, 1);
 
