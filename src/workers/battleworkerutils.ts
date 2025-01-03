@@ -343,10 +343,10 @@ export interface IterateBattleConfig {
     simulate?: boolean;
 }
 
-export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false, opponent_variance?: number, ignoreSeats = false, ignoreDefeat = false) {
+export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false, opponent_variance?: number, ignoreSeats = false, ignoreDefeat = false, ignorePassives = false) {
     try {
-        let ship = setupShip(input_ship, crew, false, ignoreSeats) || undefined;
-        let work_opponent = opponent ? setupShip(opponent, [], false, ignoreSeats, true) as Ship : setupShip(input_ship, [...crew], false, ignoreSeats, true) as Ship;
+        let ship = setupShip(input_ship, crew, false, ignoreSeats, false, ignorePassives) || undefined;
+        let work_opponent = opponent ? setupShip(opponent, [], false, ignoreSeats, true, ignorePassives) as Ship : setupShip(input_ship, [...crew], false, ignoreSeats, true, ignorePassives) as Ship;
         let oppo_crew = work_opponent?.battle_stations?.map(m => m.crew).filter(f => !!f) as CrewMember[];
 
         opponent_variance ??= 0.2;
@@ -533,30 +533,45 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             if (!action.ability?.condition || currents.some(act => typeof act !== 'boolean' && act.status === action.ability?.condition)) {
 
                 if (action.comes_from === 'crew' && powerInfo && (!action.ability || action.ability?.type === 0)) {
-                    let anum = 0;
-                    let cnum = 0;
+                    let proposed_boost = 0;
+                    let current_base = 0;
+                    let current_total = 0;
+                    let notype = true;
 
                     if (action.bonus_type === 0 && (!action.ability || action.ability.type === 0)) {
-                        cnum = powerInfo?.condensed.base.attack;
+                        current_base = powerInfo?.condensed.base.attack;
+                        current_total = powerInfo?.condensed.active.attack;
                         if (action.ability?.type === 0) {
-                            anum = action.bonus_amount + action.ability.amount;
+                            proposed_boost = action.bonus_amount + action.ability.amount;
+                            notype = false;
                         }
                         else {
-                            anum = action.bonus_amount;
+                            proposed_boost = action.bonus_amount;
                         }
                     }
                     else if (!action.ability) {
                         if (action.bonus_type === 1) {
-                            cnum = powerInfo?.condensed.base.evasion;
-                            anum = action.bonus_amount;
+                            current_base = powerInfo?.condensed.base.evasion;
+                            current_total = powerInfo?.condensed.active.evasion;
+                            proposed_boost = action.bonus_amount;
                         }
                         else if (action.bonus_type === 2) {
-                            cnum = powerInfo?.condensed.base.accuracy;
-                            anum = action.bonus_amount;
+                            current_base = powerInfo?.condensed.base.accuracy;
+                            current_total = powerInfo?.condensed.active.accuracy;
+                            proposed_boost = action.bonus_amount;
                         }
                     }
+                    if (notype) {
+                        if (oppo && oppos?.some(s => s && s.bonus_type === action.bonus_type)) {
+                            proposed_boost = 0;
+                        }
+                        else if (!oppo && currents?.some(s => s && s.bonus_type === action.bonus_type)) {
+                            proposed_boost = 0;
+                        }
+                    }
+                    let current_boost = current_total - current_base;
 
-                    if (cnum >= anum) {
+                    if (proposed_boost <= current_boost) {
                         processChargePhases(action, actidx, oppo);
                         return false;
                     }
@@ -755,6 +770,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         oppo_aps_num = work_opponent ? 1 / oppvar : 0;
 
         const hitoppo = (damage: number) => {
+            if (hull <= 0) return;
             if (oppo_shields > 0) {
                 oppo_shields -= damage;
                 if (oppo_shields < 0) {
@@ -768,6 +784,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         }
 
         const hitme = (damage: number) => {
+            if (oppo_hull <= 0) return;
             if (shields > 0) {
                 shields -= damage;
                 if (shields < 0) {

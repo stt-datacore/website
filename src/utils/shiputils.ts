@@ -352,7 +352,7 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 	return results;
 }
 
-export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true, ignoreSeats = false, readBattleStations = false): Ship | false {
+export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true, ignoreSeats = false, readBattleStations = false, ignorePassives = false): Ship | false {
 	if (readBattleStations && !crewStations?.length && ship.battle_stations?.some(bs => bs.crew)) {
 		crewStations = ship.battle_stations.map(bs => bs.crew);
 	}
@@ -394,13 +394,15 @@ export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | u
 		newship.evasion ??= 0;
 		newship.accuracy ??= 0;
 
-		if (crew.skill_order.includes(ship.battle_stations[x].skill) ||
-			(ignoreSeats && crew.skill_order.some(sk => ship.battle_stations?.some(bs => bs.skill == sk))))
-		{
-			newship.crit_bonus += crew.ship_battle.crit_bonus ?? 0;
-			newship.crit_chance += crew.ship_battle.crit_chance ?? 0;
-			newship.evasion += crew.ship_battle.evasion ?? 0;
-			newship.accuracy += crew.ship_battle.accuracy ?? 0;
+		if (!ignorePassives) {
+			if (crew.skill_order.includes(ship.battle_stations[x].skill) ||
+				(ignoreSeats && crew.skill_order.some(sk => ship.battle_stations?.some(bs => bs.skill == sk))))
+			{
+				newship.crit_bonus += crew.ship_battle.crit_bonus ?? 0;
+				newship.crit_chance += crew.ship_battle.crit_chance ?? 0;
+				newship.evasion += crew.ship_battle.evasion ?? 0;
+				newship.accuracy += crew.ship_battle.accuracy ?? 0;
+			}
 		}
 
 		newship.actions ??= [];
