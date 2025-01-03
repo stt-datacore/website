@@ -754,6 +754,7 @@
         },
         "gauntlet": "Gantelet",
         "gauntlets": "Gantelets",
+        "hide_best_crew": "Masquer les meilleurs niveaux d'équipage pour le gantelet actuel...",
         "hide_opponents": "Masquer les adversaires",
         "import": {
             "click_here": "Appuyez ici pour télécharger vos données",
@@ -818,6 +819,7 @@
                 "title": "Le gantelet d'hier"
             }
         },
+        "show_best_crew": "Afficher les meilleurs niveaux d'équipage pour le gantelet actuel...",
         "show_buffs_heading": "Afficher les effets",
         "show_top_crew": "Afficher les meilleurs membres d'équipage",
         "skills_and_pairs": "Compétences et paires",

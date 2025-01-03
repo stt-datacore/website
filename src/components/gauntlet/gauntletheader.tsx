@@ -3,7 +3,7 @@ import { GauntletContext } from "./dataprovider";
 import { GlobalContext } from "../../context/globalcontext";
 import { Gauntlet, GauntletViewMode } from "../../model/gauntlets";
 import moment from "moment";
-import { Accordion, Dropdown, Message } from "semantic-ui-react";
+import { Accordion, AccordionPanel, Button, Dropdown, Icon, Label, Message } from "semantic-ui-react";
 import { gradeToColor, skillToShort } from "../../utils/crewutils";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import ItemDisplay from "../itemdisplay";
@@ -11,6 +11,8 @@ import { randomCrew } from "../../context/datacontext";
 import { CrewMember } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
 import { AvatarView } from "../item_presenters/avatarview";
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
+import { getCrewCrit } from "../../utils/gauntlet";
 
 
 
@@ -20,22 +22,54 @@ export interface GauntletHeaderProps {
 
 export const GauntletHeader = (props: GauntletHeaderProps) => {
     const gauntletContext = React.useContext(GauntletContext);
-    const { viewMode, setViewMode, pane, setConfig, config } = gauntletContext;
+    const { viewMode, setViewMode, pane, setConfig, config, featuredGauntlet } = gauntletContext;
     const { gauntlet } = props;
     const globalContext = React.useContext(GlobalContext);
 
     const { t, TRAIT_NAMES } = globalContext.localized;
 
     const featuredCrew = globalContext.core.crew.find((crew) => crew.symbol === gauntlet.jackpot_crew);
+
+    const [buckets, setBuckets] = React.useState<CrewMember[][]>([]);
+    const [fopen, setFopen] = React.useState(false);
+
+    React.useEffect(() => {
+        const buckets = [[], [], []] as CrewMember[][];
+        const seen = [] as string[];
+
+        if (featuredGauntlet?.allCrew) {
+            for (let crew of featuredGauntlet.allCrew) {
+                if (seen.includes(crew.symbol)) continue;
+                seen.push(crew.symbol);
+                if (crew.ranks.gauntletRank <= 10) {
+                    if (buckets[0].length < 5) {
+                        buckets[0].push(crew);
+                    }
+                }
+                else if (crew.ranks.gauntletRank <= 20) {
+                    if (buckets[1].length < 10) {
+                        buckets[1].push(crew);
+                    }
+                }
+                else if (crew.ranks.gauntletRank <= 50) {
+                    if (buckets[2].length < 10) {
+                        buckets[2].push(crew);
+                    }
+                }
+            }
+            setBuckets(buckets);
+        }
+    }, [featuredGauntlet]);
+
     let jp = [] as CrewMember[];
 
     if (pane === 'browse') {
         jp = globalContext.core.crew.filter((crew) => {
             return crew.traits_hidden.includes("exclusive_gauntlet");
         })
-        .sort((a, b) => {
-            return a.date_added.getTime() - b.date_added.getTime();
-        });
+            .sort((a, b) => {
+                return a.date_added.getTime() - b.date_added.getTime();
+            });
     }
     else if (pane === 'live' && gauntlet) {
         let pc = gauntlet.contest_data?.selected_crew?.map(c => globalContext.player.playerData?.player.character.crew.find(f => f.symbol === c.archetype_symbol) as PlayerCrew);
@@ -91,6 +125,9 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
         )
     }
 
+    const flexCol = OptionsPanelFlexColumn;
+    const flexRow = OptionsPanelFlexRow;
+
     return <React.Fragment>
         <div style={{
             display: "flex",
@@ -118,7 +155,11 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                     />
                 </div>
             }
-            {pane !== 'browse' && <div><h2 style={{ margin: 0, padding: 0 }}>{featuredCrew?.name}</h2><i>{t('gauntlet.jackpot_crew_for_date', { date: prettyDate })}</i></div>}
+            {pane !== 'browse' &&
+                <div>
+                    <h2 style={{ margin: 0, padding: 0 }}>{featuredCrew?.name || ''}</h2>
+                    <i>{t('gauntlet.jackpot_crew_for_date', { date: prettyDate })}</i>
+                </div>}
 
             {!!jackpots?.length && pane === 'browse' &&
                 <Accordion
@@ -154,14 +195,14 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                                                         alignItems: "center",
                                                         textAlign: "center"
                                                     }}>
-                                                        <AvatarView
-                                                            mode='crew'
-                                                            key={"jackpot" + jcrew.symbol}
-                                                            size={64}
-                                                            targetGroup='gauntletsHover'
-                                                            symbol={jcrew?.symbol}
-                                                            showMaxRarity={true}
-                                                        />
+                                                    <AvatarView
+                                                        mode='crew'
+                                                        key={"jackpot" + jcrew.symbol}
+                                                        size={64}
+                                                        targetGroup='gauntletsHover'
+                                                        symbol={jcrew?.symbol}
+                                                        showMaxRarity={true}
+                                                    />
                                                     <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.5em 0 0 0" }}>{jcrew.name}</i>
                                                     <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.25em 0 0 0" }}>({moment(jcrew.date_added).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("D MMM YYYY")})</i>
                                                 </div>
@@ -172,9 +213,68 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                         }
                     }]}
                 />}
-
-
         </div>
+
+
+        {!!featuredGauntlet &&
+            <>
+                <Accordion>
+                    <Accordion.Title onClick={() => setFopen(!fopen)}>
+                        <Button>
+                            <div style={{...flexRow, justifyContent: 'flex-start', alignItems: 'center', gap: '0.5em'}}>
+                            <Icon name={fopen ? 'caret down' : 'caret right'} />
+                            <span style={{fontWeight: 'bold'}}>
+                                {!fopen && t('gauntlet.show_best_crew')}
+                                {fopen && t('gauntlet.hide_best_crew')}
+                            </span>
+                            </div>
+                        </Button>
+                    </Accordion.Title>
+                    <Accordion.Content active={fopen}>
+                        <>
+                        {buckets.map((bucket, idx) => {
+                            let title = undefined as JSX.Element | undefined;
+                            if (idx === 0) {
+                                title = <h2>{t('base.bigbook_tier')} {idx + 1} (1 - 10)</h2>;
+                            }
+                            else if (idx === 1) {
+                                title = <h3>{t('base.bigbook_tier')} {idx + 1} (11 - 20)</h3>;
+                            }
+                            else {
+                                title = <h4>{t('base.bigbook_tier')} {idx + 1} (21 - 50)</h4>;
+                            }
+                            return (<div
+                                className="ui segment"
+                                key={`bucket_${idx}`}
+                                style={{ ...flexCol, flexWrap: 'wrap', gap: '1em', textAlign: 'center' }}>
+                                {title}
+                                <div style={{ ...flexRow, flexWrap: 'wrap', gap: '1em', maxWidth: '50vw', justifyContent: 'space-between' }}>
+                                    {bucket.map((c) => {
+                                        const crit = getCrewCrit(c, featuredGauntlet);
+                                        const height = idx === 0 ? 96 : idx === 1 ? 64 : 48
+                                        return (
+                                            <div style={{ ...flexCol, width: '10em', height: `calc(5em + ${height}px)`, alignItems: 'center', justifyContent: 'flex-start' }}
+                                                key={`bucket_${idx}_${c.symbol}`}>
+                                                <AvatarView
+                                                    mode='crew'
+                                                    item={c}
+                                                    targetGroup='gauntletsHover'
+                                                    size={height}
+                                                    showMaxRarity={true}
+                                                />
+                                                <i>{c.name}</i> <Label color={crit >= 65 ? 'purple' : crit >= 45 ? 'blue' : crit >= 25 ? 'green' : undefined}>{t('global.n_%', { n: crit })}</Label>
+                                            </div>)
+                                    })}
+                                </div>
+
+                            </div>)
+                            })}
+                        </>
+                    </Accordion.Content>
+                </Accordion>
+
+
+            </>}
 
         <div style={{
             display: "flex",

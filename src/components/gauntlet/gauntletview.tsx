@@ -35,7 +35,7 @@ export const GauntletView = (props: GauntletViewProps) => {
     const [initialized, setInitialized] = React.useState(false);
     const [requestRun, setRequestRun] = React.useState(false);
     const { runWorker: internalRunWorker, running, cancel } = workerContext;
-    const { config, pane, viewMode, tops, setConfig } = gauntletContext;
+    const { config, pane, viewMode, tops, setConfig, setFeaturedGauntlet } = gauntletContext;
     const { textFilter, filter, buffMode, range_max, settings } = config;
     const { playerData } = globalContext.player;
     const { t } = globalContext.localized;
@@ -105,6 +105,7 @@ export const GauntletView = (props: GauntletViewProps) => {
     function workerResults(response: any) {
         console.log("Gauntlet Worker Results");
         setGauntlet(response.data.result.gauntlet);
+        setFeaturedGauntlet(response.data.result.gauntlet);
         setBonusCache(response.data.result.bonusCache);
         setEquipmentCache(response.data.result.equipmentCache);
         setInitialized(true);

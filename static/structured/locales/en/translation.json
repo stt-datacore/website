@@ -746,6 +746,7 @@
         },
         "gauntlet": "Gauntlet",
         "gauntlets": "Gauntlets",
+        "hide_best_crew": "Hide best crew tiers for current gauntlet ...",
         "hide_opponents": "Hide opponents",
         "import": {
             "click_here": "Click here to upload your data",
@@ -810,6 +811,7 @@
                 "title": "Yesterday's Gauntlet"
             }
         },
+        "show_best_crew": "Show best crew tiers for current gauntlet ...",
         "show_buffs_heading": "Show Buffs",
         "show_top_crew": "Show top crew",
         "skills_and_pairs": "Skills & Pairs",
