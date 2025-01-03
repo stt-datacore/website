@@ -770,7 +770,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         oppo_aps_num = work_opponent ? 1 / oppvar : 0;
 
         const hitoppo = (damage: number) => {
-            if (hull <= 0) return;
+            if (hull <= 0 || oppo_hull <= 0) return 0;
             if (oppo_shields > 0) {
                 oppo_shields -= damage;
                 if (oppo_shields < 0) {
@@ -781,10 +781,11 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             else {
                 oppo_hull -= damage;
             }
+            return damage;
         }
 
         const hitme = (damage: number) => {
-            if (oppo_hull <= 0) return;
+            if (hull <= 0 || oppo_hull <= 0) return 0;
             if (shields > 0) {
                 shields -= damage;
                 if (shields < 0) {
@@ -795,6 +796,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             else {
                 hull -= damage;
             }
+            return damage;
         }
 
         for (let inc = 1; inc <= time; inc++) {
@@ -929,7 +931,11 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                         instant_now += imm.standard;
                         instant_now_min += imm.base;
                         instant_now_max += imm.max;
-                        hitoppo(imm.standard);
+                        instant_now = hitoppo(instant_now);
+                        if (!instant_now) {
+                            instant_now_max = 0;
+                            instant_now_min = 0;
+                        }
                     }
                 }
                 immediates.length = 0;
@@ -941,7 +947,11 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                         o_instant_now += imm.standard;
                         o_instant_now_min += imm.base;
                         o_instant_now_max += imm.max;
-                        hitme(imm.standard);
+                        o_instant_now = hitme(o_instant_now);
+                        if (!o_instant_now) {
+                            o_instant_now_max = 0;
+                            o_instant_now_min = 0;
+                        }
                     }
                 }
                 oppo_immediates.length = 0;
@@ -963,7 +973,10 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                     let actual_attack = (standard_attack * (!oppo_powerInfo ? 1 : hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion)));
                     let outgoing_damage = Math.ceil(actual_attack * mul);
 
-                    hitoppo(outgoing_damage);
+                    outgoing_damage = hitoppo(outgoing_damage);
+                    if (!outgoing_damage) {
+                        standard_attack = base_attack = max_attack = 0;
+                    }
                 }
                 else {
                     standard_attack = base_attack = max_attack = 0;
@@ -993,7 +1006,10 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                     }
 
                     let incoming_damage = Math.ceil((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul);
-                    hitme(incoming_damage);
+                    incoming_damage = hitme(incoming_damage);
+                    if (!incoming_damage) {
+                        oppo_standard_attack = oppo_base_attack = oppo_max_attack = 0;
+                    }
                 }
                 else {
                     oppo_standard_attack = oppo_base_attack = oppo_max_attack = 0;
@@ -1005,17 +1021,21 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
             // Apply boarding damage
             if (c_boarding && !powerInfo.computed.baked_in_boarding) {
-                hitoppo(c_boarding);
-                standard_attack += c_boarding;
-                base_attack += c_boarding;
-                max_attack += c_boarding;
+                c_boarding = hitoppo(c_boarding);
+                if (c_boarding) {
+                    standard_attack += c_boarding;
+                    base_attack += c_boarding;
+                    max_attack += c_boarding;
+                }
             }
 
             if (o_c_boarding && !oppo_powerInfo?.computed.baked_in_boarding) {
-                hitme(o_c_boarding);
-                oppo_standard_attack += o_c_boarding;
-                oppo_base_attack += o_c_boarding;
-                oppo_max_attack += o_c_boarding;
+                o_c_boarding = hitme(o_c_boarding);
+                if (o_c_boarding) {
+                    oppo_standard_attack += o_c_boarding;
+                    oppo_base_attack += o_c_boarding;
+                    oppo_max_attack += o_c_boarding;
+                }
             }
 
             // Apply shield regeneration
@@ -1046,12 +1066,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                     break;
                 }
             }
-
-            // To count outgoing damage
-            let a_cloaked = cloaked;
-
-            // To count incoming damage
-            let b_cloaked = !fbb_mode && (cloaked || oppo_cloaked);
 
             attacks.push({
                 actions: currents.filter(f => f !== false) as ShipAction[],
