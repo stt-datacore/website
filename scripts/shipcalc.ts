@@ -5,7 +5,7 @@ import { AttackInstant, ShipWorkerItem } from "../src/model/worker";
 import { mergeShips } from "../src/utils/shiputils";
 import { ChargeAction, iterateBattle } from "../src/workers/battleworkerutils";
 
-const CACHE_VERSION = 4.1;
+const CACHE_VERSION = 4.2;
 
 function getShipDivision(rarity: number) {
     return rarity === 5 ? 3 : rarity >= 3 && rarity <= 4 ? 2 : 1;
@@ -244,7 +244,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
     const critpool = crew.filter(f => f.action.ability?.type === 5 && !f.action.limit && !f.action.ability?.condition).sort((a, b) => b.action.ability!.amount - a.action.ability!.amount || a.action.bonus_type - b.action.bonus_type || b.action.bonus_amount - a.action.bonus_amount || a.action.cycle_time - b.action.cycle_time);
     const hrpool = crew.filter(f => f.action.ability?.type === 2 && !f.action.limit && !f.action.ability?.condition).sort((a, b) => b.action.ability!.amount - a.action.ability!.amount || a.action.bonus_type - b.action.bonus_type || b.action.bonus_amount - a.action.bonus_amount || a.action.cycle_time - b.action.cycle_time);
 
-    let ships = mergeShips(ship_schematics.filter(sc => highestLevel(sc.ship) == (sc.ship.max_level ?? sc.ship.level) + 1 && (sc.ship.battle_stations?.length)), []);
+    let ships = mergeShips(ship_schematics.filter(sc => highestLevel(sc.ship) == (sc.ship.max_level ?? sc.ship.level) + 1 && (sc.ship.battle_stations?.length)), [], true);
     const origShips = JSON.parse(JSON.stringify(ships)) as Ship[];
 
 	ships = ships
@@ -373,6 +373,8 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 if (c && c.symbol === a.symbol) return -1;
                 if (c && c.symbol === b.symbol) return 1;
                 let r = 0;
+                r = b.max_rarity - a.max_rarity;
+                if (r) return r;
                 if (a.action.ability?.type === b.action.ability?.type && a.action.ability?.type === 2 && a.action.ability?.amount === b.action.ability?.amount) {
                     r = ((a.action.cooldown + a.action.duration) - (b.action.cooldown + b.action.duration));
                 }
@@ -1272,6 +1274,9 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         count = 1;
         for (let ship of fbb_p2) {
             console.log(`Running FBB on ${ship.name} (${count++} / ${ships.length})...`);
+            if (ship.name === 'U.S.S. Constellation NCC-1017') {
+                console.log("U.S.S. Constellation NCC-1017 Here");
+            }
             let crew = ship.battle_stations!.map(m => m.crew!);
             runidx = runBattles(ship, crew, allruns, runidx, true, false, undefined);
         }

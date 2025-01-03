@@ -138,8 +138,9 @@ export function highestLevel(ship: Ship) {
 	return highest;
 }
 
-export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[] {
+export function mergeShips(ship_schematics: Schematics[], ships: Ship[], max_buffs = false): Ship[] {
 	let newShips: Ship[] = [];
+	let power = 1 + (max_buffs ? 0.16 : 0);
 	ship_schematics = JSON.parse(JSON.stringify(ship_schematics));
 	ship_schematics.forEach((schematic) => {
 		let unowned_id = -1;
@@ -178,9 +179,11 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[]): Ship[]
 				let h = highestLevel(schematic.ship);
 				if (schematic.ship.max_level && h === schematic.ship.max_level + 1 && schematic.ship.levels[`${h}`].hull) {
 					schematic.ship = { ... schematic.ship, ...schematic.ship.levels[`${h}`] };
-					schematic.ship.attack = schematic.ship.levels![`${h}`].attack_power;
-					schematic.ship.accuracy = schematic.ship.levels![`${h}`].accuracy_power;
-					schematic.ship.evasion = schematic.ship.levels![`${h}`].evasion_power;
+					schematic.ship.attack = schematic.ship.levels![`${h}`].attack_power * power;
+					schematic.ship.accuracy = schematic.ship.levels![`${h}`].accuracy_power * power;
+					schematic.ship.evasion = schematic.ship.levels![`${h}`].evasion_power * power;
+					schematic.ship.hull *= power;
+					schematic.ship.shields *= power;
 				}
 			}
 			schematic.ship.id = unowned_id--;

@@ -22,6 +22,8 @@ export interface IGauntletContext {
     setTops: (value: number) => void;
     tops: number;
     setSettings: (settings: GauntletSettings) => void;
+    setFeaturedGauntlet: (value?: Gauntlet) => void;
+    featuredGauntlet?: Gauntlet;
 }
 
 const DefaultUserPrefs: GauntletUserPrefs = {
@@ -51,6 +53,7 @@ const DefaultGauntletContext: IGauntletContext = {
     setPane: () => false,
     setTops: () => false,
     refreshApiGauntlet: () => false,
+    setFeaturedGauntlet: () => false
 }
 
 export const GauntletContext = React.createContext(DefaultGauntletContext);
@@ -80,6 +83,7 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
     const [config, internalSetConfig] = React.useState<GauntletUserPrefs>({ ...savedConfig });
     const [viewMode, internalSetViewMode] = React.useState<GauntletViewMode>(savedView);
     const [tops, internalSetTops] = React.useState<number>(savedTops);
+    const [featuredGauntlet, setFeaturedGauntlet] = React.useState<Gauntlet | undefined>(undefined);
 
     const [apiGauntlet, setApiGauntlet] = React.useState<Gauntlet | undefined>(undefined);
 
@@ -132,6 +136,8 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
         setViewMode,
         setConfig,
         setSettings,
+        setFeaturedGauntlet,
+        featuredGauntlet,
         config: {
             ...config,
             settings

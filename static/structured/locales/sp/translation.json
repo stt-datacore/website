@@ -754,6 +754,7 @@
         },
         "gauntlet": "Reto",
         "gauntlets": "Retos",
+        "hide_best_crew": "Ocultar los mejores niveles de tripulación para el reto actual...",
         "hide_opponents": "Quitar oponentes",
         "import": {
             "click_here": "Toca aquí para cargar tus datos",
@@ -819,6 +820,7 @@
                 "title": "El reto de ayer"
             }
         },
+        "show_best_crew": "Mostrar los mejores niveles de tripulación para el reto actual...",
         "show_buffs_heading": "Mostrar Efectos",
         "show_top_crew": "Mostrar a los mejores tripulantes",
         "skills_and_pairs": "Habilidades y pares",

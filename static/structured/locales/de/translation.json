@@ -746,6 +746,7 @@
         },
         "gauntlet": "Herausforderung",
         "gauntlets": "Herausforderungen",
+        "hide_best_crew": "Beste Crewstufen für aktuelle Herausforderung ausblenden ...",
         "hide_opponents": "Gegner entfernen",
         "import": {
             "click_here": "Tippen Sie hier, um Ihre Daten hochzuladen",
@@ -810,6 +811,7 @@
                 "title": "Gesterne Herausforderung"
             }
         },
+        "show_best_crew": "Beste Crewstufen für aktuelle Herausforderung anzeigen ...",
         "show_buffs_heading": "Buffs anzeigen",
         "show_top_crew": "Top-Crew anzeigen",
         "skills_and_pairs": "Fähigkeiten & Paare",
