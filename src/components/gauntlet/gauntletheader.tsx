@@ -261,7 +261,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                                                     item={c}
                                                     targetGroup='gauntletsHover'
                                                     size={height}
-                                                    showMaxRarity={true}
+                                                    //showMaxRarity={true}
                                                 />
                                                 <i>{c.name}</i> <Label color={crit >= 65 ? 'purple' : crit >= 45 ? 'blue' : crit >= 25 ? 'green' : undefined}>{t('global.n_%', { n: crit })}</Label>
                                             </div>)
