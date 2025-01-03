@@ -13,6 +13,7 @@ import { PlayerCrew } from "../../model/player";
 import { AvatarView } from "../item_presenters/avatarview";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
 import { getCrewCrit } from "../../utils/gauntlet";
+import { useStateWithStorage } from "../../utils/storage";
 
 
 
@@ -31,7 +32,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
     const featuredCrew = globalContext.core.crew.find((crew) => crew.symbol === gauntlet.jackpot_crew);
 
     const [buckets, setBuckets] = React.useState<CrewMember[][]>([]);
-    const [fopen, setFopen] = React.useState(false);
+    const [featuredOpen, setFeaturedOpen] = useStateWithStorage('gauntlet_featured_open', false, { rememberForever: true });
 
     React.useEffect(() => {
         const buckets = [[], [], []] as CrewMember[][];
@@ -216,21 +217,21 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
         </div>
 
 
-        {!!featuredGauntlet &&
+        {!!featuredGauntlet && pane !== 'browse' &&
             <>
                 <Accordion>
-                    <Accordion.Title onClick={() => setFopen(!fopen)}>
+                    <Accordion.Title onClick={() => setFeaturedOpen(!featuredOpen)}>
                         <Button>
                             <div style={{...flexRow, justifyContent: 'flex-start', alignItems: 'center', gap: '0.5em'}}>
-                            <Icon name={fopen ? 'caret down' : 'caret right'} />
+                            <Icon name={featuredOpen ? 'caret down' : 'caret right'} />
                             <span style={{fontWeight: 'bold'}}>
-                                {!fopen && t('gauntlet.show_best_crew')}
-                                {fopen && t('gauntlet.hide_best_crew')}
+                                {!featuredOpen && t('gauntlet.show_best_crew')}
+                                {featuredOpen && t('gauntlet.hide_best_crew')}
                             </span>
                             </div>
                         </Button>
                     </Accordion.Title>
-                    <Accordion.Content active={fopen}>
+                    <Accordion.Content active={featuredOpen}>
                         <>
                         {buckets.map((bucket, idx) => {
                             let title = undefined as JSX.Element | undefined;
