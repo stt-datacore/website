@@ -230,12 +230,12 @@ export class IAmPicardHelper extends Helper {
 		const worker = new UnifiedWorker();
 		worker.addEventListener('message', message => {
 			if (!message.data.inProgress) {
-				let finalResult = {
+				let finalResult: CalcResult = {
 					estimate: message.data.result,
 					entries: entries,
 					aggregates: aggregates,
 					startAM: config.startAm
-				} as CalcResult;
+				};
 				if (!inProgress) {
 					this.perf.end = performance.now();
 					this.calcState = CalculatorState.Done;

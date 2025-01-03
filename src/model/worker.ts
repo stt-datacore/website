@@ -128,7 +128,7 @@ export interface Calculation {
     telemetrySent?: boolean;
 }
 
-export interface CalcResult extends Calculation {
+export interface CalcResult {
     estimate: Estimate;
     entries: CalcResultEntry[];
     aggregates: Aggregates;
@@ -192,7 +192,7 @@ export interface JohnJayBest {
     key: string;
     crew: JJBestCrewEntry[];
     traits: number[];
-    skills: BaseSkills;
+    skills: Aggregates;
     estimate: Estimate;
 }
 

@@ -61,13 +61,13 @@ export class USSJohnJayHelper extends Helper {
 			return {
 				entries: best.crew.map((crew, entryId) => ({
 					slotId: entryId,
-					choice: this.consideredCrew.find(c => c.id === crew.id) ?? {} as IVoyageCrew,
+					choice: this.consideredCrew.find(c => c.id === crew.id)!,
 					hasTrait: best.traits[entryId]
 				})),
 				estimate: best.estimate,
 				aggregates: best.skills,
-				startAM: best.estimate.antimatter
-			} as CalcResult;
+				startAM: best.estimate.antimatter!
+			};
 		});
 	}
 }
