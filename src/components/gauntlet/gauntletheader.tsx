@@ -217,66 +217,6 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
         </div>
 
 
-        {!!featuredGauntlet && pane !== 'browse' &&
-            <>
-                <Accordion>
-                    <Accordion.Title onClick={() => setFeaturedOpen(!featuredOpen)}>
-                        <Button>
-                            <div style={{...flexRow, justifyContent: 'flex-start', alignItems: 'center', gap: '0.5em'}}>
-                            <Icon name={featuredOpen ? 'caret down' : 'caret right'} />
-                            <span style={{fontWeight: 'bold'}}>
-                                {!featuredOpen && t('gauntlet.show_best_crew')}
-                                {featuredOpen && t('gauntlet.hide_best_crew')}
-                            </span>
-                            </div>
-                        </Button>
-                    </Accordion.Title>
-                    <Accordion.Content active={featuredOpen}>
-                        <>
-                        {buckets.map((bucket, idx) => {
-                            let title = undefined as JSX.Element | undefined;
-                            if (idx === 0) {
-                                title = <h2>{t('base.bigbook_tier')} {idx + 1} (1 - 10)</h2>;
-                            }
-                            else if (idx === 1) {
-                                title = <h3>{t('base.bigbook_tier')} {idx + 1} (11 - 20)</h3>;
-                            }
-                            else {
-                                title = <h4>{t('base.bigbook_tier')} {idx + 1} (21 - 50)</h4>;
-                            }
-                            return (<div
-                                className="ui segment"
-                                key={`bucket_${idx}`}
-                                style={{ ...flexCol, flexWrap: 'wrap', gap: '1em', textAlign: 'center' }}>
-                                {title}
-                                <div style={{ ...flexRow, flexWrap: 'wrap', gap: '1em', maxWidth: '50vw', justifyContent: 'space-between' }}>
-                                    {bucket.map((c) => {
-                                        const crit = getCrewCrit(c, featuredGauntlet);
-                                        const height = idx === 0 ? 96 : idx === 1 ? 64 : 48
-                                        return (
-                                            <div style={{ ...flexCol, width: '10em', height: `calc(5em + ${height}px)`, alignItems: 'center', justifyContent: 'flex-start' }}
-                                                key={`bucket_${idx}_${c.symbol}`}>
-                                                <AvatarView
-                                                    mode='crew'
-                                                    item={c}
-                                                    targetGroup='gauntletsHover'
-                                                    size={height}
-                                                    //showMaxRarity={true}
-                                                />
-                                                <i>{c.name}</i> <Label color={crit >= 65 ? 'purple' : crit >= 45 ? 'blue' : crit >= 25 ? 'green' : undefined}>{t('global.n_%', { n: crit })}</Label>
-                                            </div>)
-                                    })}
-                                </div>
-
-                            </div>)
-                            })}
-                        </>
-                    </Accordion.Content>
-                </Accordion>
-
-
-            </>}
-
         <div style={{
             display: "flex",
             flexDirection: "column",
@@ -416,6 +356,8 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
             </div>
         </div>
 
+        {renderFeaturedGauntlet()}
+
         <div style={{ margin: "0.75em 0", fontSize: "10pt" }}>
             <i>{t('gauntlet.note_owned_crew_power_calc_msg')}</i>
         </div>
@@ -431,5 +373,70 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
 
     function getRangeMax() {
         return config.range_max;
+    }
+
+    function renderFeaturedGauntlet() {
+        return !!featuredGauntlet && pane !== 'browse' && (
+            <>
+                <Accordion>
+                    <Accordion.Title onClick={() => setFeaturedOpen(!featuredOpen)}>
+                        <Button>
+                            <div style={{...flexRow, justifyContent: 'flex-start', alignItems: 'center', gap: '0.5em'}}>
+                            <Icon name={featuredOpen ? 'caret down' : 'caret right'} />
+                            <span style={{fontWeight: 'bold'}}>
+                                {!featuredOpen && t('gauntlet.show_best_crew')}
+                                {featuredOpen && t('gauntlet.hide_best_crew')}
+                            </span>
+                            </div>
+                        </Button>
+                    </Accordion.Title>
+                    <Accordion.Content active={featuredOpen}>
+                        <>
+                        {buckets.map((bucket, idx) => {
+                            let title = undefined as JSX.Element | undefined;
+                            if (idx === 0) {
+                                title = <h2>{t('base.bigbook_tier')} {idx + 1} (1 - 10)</h2>;
+                            }
+                            else if (idx === 1) {
+                                title = <h3>{t('base.bigbook_tier')} {idx + 1} (11 - 20)</h3>;
+                            }
+                            else {
+                                title = <h4>{t('base.bigbook_tier')} {idx + 1} (21 - 50)</h4>;
+                            }
+                            return (<div
+                                className="ui segment"
+                                key={`bucket_${idx}`}
+                                style={{ ...flexCol, flexWrap: 'wrap', gap: '1em', textAlign: 'center' }}>
+                                {title}
+                                <div style={{ ...flexRow, flexWrap: 'wrap', gap: '1em', maxWidth: '50vw', justifyContent: 'space-between'}}>
+                                    {bucket.map((c) => {
+                                        const crit = getCrewCrit(c, featuredGauntlet);
+                                        const height = idx === 0 ? 96 : idx === 1 ? 64 : 52
+                                        return (
+                                            <div style={{ ...flexCol, width: '10em', height: `calc(9em + ${height}px)`, alignItems: 'center', justifyContent: 'flex-start'}}
+                                                key={`bucket_${idx}_${c.symbol}`}>
+                                                <Label color='violet' style={{
+                                                    zIndex: '100',
+                                                    borderRadius: '16px',
+                                                    marginBottom: '0.5em'
+                                                }}>#{c.ranks.gauntletRank}</Label>
+                                                <AvatarView
+                                                    mode='crew'
+                                                    item={c}
+                                                    targetGroup='gauntletsHover'
+                                                    size={height}
+                                                    //showMaxRarity={true}
+                                                />
+                                                <i>{c.name}</i> <Label color={crit >= 65 ? 'purple' : crit >= 45 ? 'blue' : crit >= 25 ? 'green' : undefined}>{t('global.n_%', { n: crit })}</Label>
+                                            </div>)
+                                    })}
+                                </div>
+
+                            </div>)
+                            })}
+                        </>
+                    </Accordion.Content>
+                </Accordion>
+            </>) || <></>
     }
 }
