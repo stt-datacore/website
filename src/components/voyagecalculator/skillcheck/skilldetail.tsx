@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-	Button,
 	Icon,
 	Image,
 	Message,
@@ -8,96 +7,15 @@ import {
 	Table
 } from 'semantic-ui-react';
 
-import { PlayerCrew } from '../../../model/player';
-import { Skill } from '../../../model/crew';
 import { IVoyageCalcConfig } from '../../../model/voyage';
 import { GlobalContext } from '../../../context/globalcontext';
 import { formatTime } from '../../../utils/voyageutils';
 
 import CONFIG from '../../CONFIG';
-import { IDataGridSetup, IEssentialData } from '../../dataset_presenters/model';
-import { DataPicker, DataPickerLoading } from '../../dataset_presenters/datapicker';
 import { NumericDiff } from '../../dataset_presenters/elements/numericdiff';
 
-import { ILineupEditorTrigger } from '../lineupeditor/lineupeditor';
 import { IProspectiveConfig } from '../lineupeditor/model';
-import { voySkillScore } from '../utils';
-
-export interface ISkillData extends IEssentialData {
-	skill: string;
-	score: number;
-	percent_total: number;
-	fail_point: number;
-	crew_count: number;
-	best_proficiency: number;
-	paired_skills: string[];
-};
-
-type SkillCheckProps = {
-	voyageConfig: IVoyageCalcConfig;
-	dismissModal: () => void;
-	launchLineupEditor?: (trigger: ILineupEditorTrigger) => void;
-};
-
-export const SkillCheck = (props: SkillCheckProps) => {
-	const { voyageConfig, dismissModal, launchLineupEditor } = props;
-
-	const [data, setData] = React.useState<ISkillData[] | undefined>(undefined);
-
-	React.useEffect(() => {
-		const data: ISkillData[] = getSkillData(voyageConfig);
-		setData([...data]);
-	}, [voyageConfig]);
-
-	if (!data) return <DataPickerLoading />;
-
-	const gridSetup: IDataGridSetup = {
-		gridProps: {
-			centered: true,
-			columns: 3,
-			stackable: true
-		},
-		renderGridColumn: (datum: IEssentialData) => (
-			<SkillDetail
-				voyageConfig={voyageConfig}
-				currentData={datum as ISkillData}
-			/>
-		),
-		defaultSort: { id: 'score', firstSort: 'descending' }
-	};
-
-	return (
-		<DataPicker
-			id='skillcheck'
-			data={data}
-			closePicker={dismissModal}
-			title='Lineup Skill Check'
-			renderActions={renderActions}
-			gridSetup={gridSetup}
-		/>
-	);
-
-	function renderActions(): JSX.Element {
-		return (
-			<React.Fragment>
-				{launchLineupEditor && (
-					<Button /* Edit lineup */
-						content='Edit lineup'
-						icon='pencil'
-						onClick={() => {
-							launchLineupEditor({ view: 'crewpicker' });
-							dismissModal();
-						}}
-					/>
-				)}
-				<Button	/* Close */
-					content='Close'
-					onClick={dismissModal}
-				/>
-			</React.Fragment>
-		);
-	}
-};
+import { ISkillData } from './skilldata';
 
 type SkillDetailProps = {
 	voyageConfig: IVoyageCalcConfig | IProspectiveConfig;
@@ -248,54 +166,3 @@ export const SkillDetail = (props: SkillDetailProps) => {
 		);
 	}
 };
-
-export function getSkillData(voyageConfig: IVoyageCalcConfig | IProspectiveConfig): ISkillData[] {
-	const data: ISkillData[] = [];
-
-	const assignedCrew: PlayerCrew[] = [];
-	voyageConfig.crew_slots.forEach(cs => {
-		if (cs.crew) assignedCrew.push(cs.crew);
-	});
-
-	const totalScore: number = Object.keys(voyageConfig.skill_aggregates)
-		.reduce((prev, curr) => prev + voySkillScore(voyageConfig.skill_aggregates[curr]), 0);
-
-	Object.keys(voyageConfig.skill_aggregates).forEach((skill, idx) => {
-		const voyScore: number = voySkillScore(voyageConfig.skill_aggregates[skill]);
-		const percentTotal: number = voyScore / totalScore * 100;
-		const failPoint: number = ((0.0449*voyScore)+34.399)/60; // In hours
-
-		const skilledCrew: PlayerCrew[] = assignedCrew.filter(ac => Object.keys(ac.base_skills).includes(skill));
-
-		let bestProficiency: number = 0;
-		skilledCrew.forEach(sc => {
-			// Crew in voyage history config have no skills prop
-			if ('skills' in sc) {
-				let score: number = (sc.skills[skill] as Skill).range_max;
-				if (score > bestProficiency) bestProficiency = score;
-			}
-		});
-
-		const pairedSkills: string[] = [];
-		CONFIG.SKILLS_SHORT.map(s => s.name)
-			.filter(s => s !== skill)
-			.forEach(skillB => {
-				const skilledPair: PlayerCrew[] = skilledCrew.filter(sc => Object.keys(sc.base_skills).includes(skillB));
-				if (skilledPair.length > 0) pairedSkills.push(skillB);
-			});
-
-		data.push({
-			id: idx,
-			name: CONFIG.SKILLS[skill],
-			skill,
-			score: voyScore,
-			percent_total: percentTotal,
-			fail_point: failPoint,
-			crew_count: skilledCrew.length,
-			best_proficiency: bestProficiency,
-			paired_skills: pairedSkills
-		});
-	});
-
-	return data;
-}

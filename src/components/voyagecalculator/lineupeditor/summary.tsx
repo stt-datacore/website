@@ -21,7 +21,8 @@ import { CrewLabel } from '../../dataset_presenters/elements/crewlabel';
 import { NumericDiff } from '../../dataset_presenters/elements/numericdiff';
 import ItemDisplay from '../../itemdisplay';
 
-import { getSkillData, ISkillData, SkillDetail } from '../lineupviewer/skillcheck';
+import { getSkillData, ISkillData } from '../skillcheck/skilldata';
+import { SkillDetail } from '../skillcheck/skilldetail';
 
 import { IControlVoyage, IProspectiveConfig, IProspectiveCrewSlot } from './model';
 import { EditorContext } from './context';

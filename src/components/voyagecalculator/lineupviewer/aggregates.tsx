@@ -7,9 +7,9 @@ import {
 
 import { GlobalContext } from '../../../context/globalcontext';
 import CONFIG from '../../CONFIG';
+import { SkillCheckModal } from '../skillcheck/modal';
 import { getCrewVP, POPUP_DELAY, voySkillScore } from '../utils';
 import { LayoutContext, ViewerContext } from './context';
-import { SkillCheck } from './skillcheck';
 
 export const Aggregates = () => {
 	const { t } = React.useContext(GlobalContext).localized;
@@ -41,7 +41,7 @@ export const Aggregates = () => {
 				</div>
 			}
 			{skillCheckOpen && (
-				<SkillCheck
+				<SkillCheckModal
 					voyageConfig={voyageConfig}
 					dismissModal={() => setSkillCheckOpen(false)}
 					launchLineupEditor={launchLineupEditor}
