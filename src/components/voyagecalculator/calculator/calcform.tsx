@@ -86,7 +86,7 @@ export const CalculatorForm = () => {
 		<React.Fragment>
 			<div ref={topAnchor} />
 			{/* <BestShipCard voyageConfig={voyageConfig} bestShip={bestShip} /> */}
-			<ResultsGroup requests={requests} results={results} setResults={setResults} />
+			<ResultsGroup requests={requests} setRequests={setRequests} results={results} setResults={setResults} />
 			<div style={{ marginTop: '1em' }}>
 				{requests.length > 0 && <Header as='h3'>Options</Header>}
 				<Form>

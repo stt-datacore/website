@@ -15,6 +15,7 @@ import { ResultPane } from "./results";
 
 export type ResultsGroupProps = {
 	requests: Helper[];
+	setRequests: (requests: Helper[]) => void;
 	results: Calculation[];
 	setResults: (results: Calculation[]) => void;
 };
@@ -26,7 +27,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
 	const { voyageConfig } = calculatorContext;
 
-	const { requests, results, setResults } = props;
+	const { requests, setRequests, results, setResults } = props;
 
 	const [trackerId, setTrackerId] = React.useState<number>(NEW_TRACKER_ID);
 
@@ -122,6 +123,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 					trackState={result.trackState ?? 0} trackResult={trackResult}
 					confidenceState={result.confidenceState ?? 0} estimateResult={estimateResult}
 					dismissResult={dismissResult}
+					addCustomResult={addCustomResult}
 					roster={availableRoster}
 				/>
 			);
@@ -310,6 +312,13 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 
 	function dismissResult(resultIndex: number): void {
 		results.splice(resultIndex, 1);
+		setResults([...results]);
+	}
+
+	function addCustomResult(request: Helper, calculation: Calculation): void {
+		requests.push(request);
+		setRequests([...requests]);
+		results.push(calculation);
 		setResults([...results]);
 	}
 

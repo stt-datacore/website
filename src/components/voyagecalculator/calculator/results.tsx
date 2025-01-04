@@ -1,9 +1,10 @@
 import React from 'react';
 import { Helper } from '../helpers/Helper';
-import { CalcResult, Estimate } from '../../../model/worker';
+import { Aggregates, CalcResult, Calculation, Estimate, VoyageConsideration } from '../../../model/worker';
 import { Tab, Button, SemanticICONS, Message, Popup, Icon, Image } from 'semantic-ui-react';
 import { GlobalContext } from '../../../context/globalcontext';
 import { Voyage } from '../../../model/player';
+import { Ship } from '../../../model/ship';
 import { IVoyageCalcConfig, IVoyageCrew } from '../../../model/voyage';
 import { formatTime } from '../../../utils/voyageutils';
 import { HistoryContext } from '../../voyagehistory/context';
@@ -16,6 +17,7 @@ import { VPGraphAccordion } from '../vpgraph';
 import { LineupViewerAccordion } from '../lineupviewer/lineup_accordion';
 import { QuipmentProspectAccordion } from '../quipment/quipmentprospects';
 import { OptionsPanelFlexColumn } from '../../stats/utils';
+import { ILineupEditorTrigger, LineupEditor } from '../lineupeditor/lineupeditor';
 
 export type ResultPaneProps = {
 	result: CalcResult | undefined;
@@ -30,6 +32,7 @@ export type ResultPaneProps = {
 	trackResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate) => void;
 	estimateResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, numSums: number) => void;
 	dismissResult: (resultIndex: number) => void;
+	addCustomResult: (request: Helper, calculation: Calculation) => void;
 	roster: IVoyageCrew[];
 };
 
@@ -46,8 +49,11 @@ export const ResultPane = (props: ResultPaneProps) => {
 		trackState, trackResult,
 		confidenceState, estimateResult,
 		dismissResult,
+		addCustomResult,
 		roster
 	} = props;
+
+	const [editorTrigger, setEditorTrigger] = React.useState<ILineupEditorTrigger | undefined>(undefined);
 
 	const request = requests.find(r => r.id === requestId);
 	if (!request) return (<></>);
@@ -97,6 +103,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 				</React.Fragment>
 			);
 		}
+		if (!request.calculator) return <></>;
 		const inputs: string[] = Object.entries(request.calcOptions).map(entry => entry[0]+': '+entry[1]);
 		inputs.unshift('considered crew: '+request.consideredCrew.length);
 		return (
@@ -146,6 +153,12 @@ export const ResultPane = (props: ResultPaneProps) => {
 									}
 								/>
 								<Popup position='top center'
+									content={<>Edit lineup</>}
+									trigger={
+										<Button icon='pencil' onClick={() => setEditorTrigger({ view: 'crewpicker' })} />
+									}
+								/>
+								<Popup position='top center'
 									content={<>Dismiss this recommendation</>}
 									trigger={
 										<Button icon='ban' onClick={() => dismissResult(resultIndex)} />
@@ -176,6 +189,15 @@ export const ResultPane = (props: ResultPaneProps) => {
 						roster={roster}
 						rosterType={rosterType}
 						initialExpand={true}
+						launchLineupEditor={(trigger: ILineupEditorTrigger) => setEditorTrigger(trigger)}
+					/>
+					<LineupEditor
+						id={`${requestId}-${resultIndex}/lineupeditor`}
+						trigger={editorTrigger}
+						cancelTrigger={() => setEditorTrigger(undefined)}
+						ship={request.bestShip.ship}
+						control={{ config: voyageConfig, estimate: result.estimate }}
+						commitVoyage={createResultFromEdit}
 					/>
 					<QuipmentProspectAccordion
 						voyageConfig={voyageConfig}
@@ -190,4 +212,34 @@ export const ResultPane = (props: ResultPaneProps) => {
 			</Tab.Pane>
 		</React.Fragment>
 	);
+
+	function createResultFromEdit(voyageConfig: IVoyageCalcConfig, ship: Ship, estimate: Estimate): void {
+		const requestId: string = 'request-' + Date.now();
+		const customRequest = {
+			id: requestId,
+			voyageConfig,
+			consideredCrew: calculatorContext.crew,
+			bestShip: {
+				ship,
+				archetype_id: ship.archetype_id!
+			} as VoyageConsideration
+		} as Helper;
+		const customResult: Calculation = {
+			id: `${requestId}-result`,
+			requestId: requestId,
+			name: formatTime(estimate.refills[0].result, t),
+			calcState: CalculatorState.Done,
+			result: {
+				entries: voyageConfig.crew_slots.map((cs, entryId) => ({
+					slotId: entryId,
+					choice: cs.crew as IVoyageCrew,
+					hasTrait: 0
+				})),
+				estimate,
+				aggregates: voyageConfig.skill_aggregates as Aggregates,
+				startAM: voyageConfig.max_hp
+			}
+		};
+		addCustomResult(customRequest, customResult);
+	}
 };

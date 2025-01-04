@@ -9,12 +9,15 @@ import { GlobalContext } from '../../../context/globalcontext';
 import CONFIG from '../../CONFIG';
 import { getCrewVP, POPUP_DELAY, voySkillScore } from '../utils';
 import { LayoutContext, ViewerContext } from './context';
+import { SkillCheck } from './skillcheck';
 
 export const Aggregates = () => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { voyageConfig, ship, shipData, assignments } = React.useContext(ViewerContext);
+	const { voyageConfig, ship, shipData, assignments, launchLineupEditor } = React.useContext(ViewerContext);
 	const { layout } = React.useContext(LayoutContext);
 	const landscape = layout === 'grid-cards' || layout === 'grid-icons';
+
+	const [skillCheckOpen, setSkillCheckOpen] = React.useState<boolean>(false);
 
 	return (
 		<React.Fragment>
@@ -37,6 +40,13 @@ export const Aggregates = () => {
 					</div>
 				</div>
 			}
+			{skillCheckOpen && (
+				<SkillCheck
+					voyageConfig={voyageConfig}
+					dismissModal={() => setSkillCheckOpen(false)}
+					launchLineupEditor={launchLineupEditor}
+				/>
+			)}
 		</React.Fragment>
 	);
 
@@ -98,10 +108,11 @@ export const Aggregates = () => {
 
 	function renderAggregateTable(skills: string[]): JSX.Element {
 		return (
-			<Table collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto' }}>
+			<Table collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto', cursor: 'pointer' }} onClick={() => setSkillCheckOpen(true)}>
 				<Table.Body>
 					{skills.map((entry, idx) => {
 						const agg = voyageConfig.skill_aggregates[entry];
+						// Running voyage (i.e. Voyage)
 						if (typeof(agg) === 'number') {
 							return (
 								<Table.Row key={idx}>
@@ -115,6 +126,7 @@ export const Aggregates = () => {
 									</Table.Cell>
 								</Table.Row>
 							);
+						// Calculated voyage (i.e. IVoyageCalcConfig)
 						} else {
 							const score = Math.floor(voySkillScore(agg));
 							return (
@@ -125,11 +137,9 @@ export const Aggregates = () => {
 										{voyageConfig.skills.secondary_skill === entry && <Icon name='star' color='grey' />}
 									</Table.Cell>
 									<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
-										<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{score}</span>}>
-											<Popup.Content>
-												{agg.core + ' +(' + agg.range_min + '-' + agg.range_max + ')'}
-											</Popup.Content>
-										</Popup>
+										<span style={{ fontWeight: 'bolder' }}>
+											{score}
+										</span>
 									</Table.Cell>
 									<Table.Cell className='iconic' textAlign='center'>
 										<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${entry}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
