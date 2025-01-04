@@ -34,14 +34,14 @@ export const processBattleRun = (id: number, battle_mode: BattleMode, attacks: A
         }
     });
 
-    const attack = attacks.reduce((p, n) => p + n.attack, 0);
-    const min_attack = attacks.reduce((p, n) => p + n.min_attack, 0);
-    const max_attack = attacks.reduce((p, n) => p + n.max_attack, 0);
-    const battle_time = attacks.reduce((p, n) => p > n.second ? p : n.second, 0);
+    const attack = Math.ceil(attacks.reduce((p, n) => p + n.attack, 0));
+    const min_attack = Math.ceil(attacks.reduce((p, n) => p + n.min_attack, 0));
+    const max_attack = Math.ceil(attacks.reduce((p, n) => p + n.max_attack, 0));
+    const battle_time = Math.ceil(attacks.reduce((p, n) => p > n.second ? p : n.second, 0));
 
     let weighted_attack = 0;
 
-    weighted_attack = attacks.reduce((p, n) => (p + (!n.second ? 0 : (n.attack / n.second))), 0);
+    weighted_attack = Math.ceil(attacks.reduce((p, n) => (p + (!n.second ? 0 : (n.attack / n.second))), 0));
 
     let highest_attack = 0;
     let high_attack_second = 0;
@@ -53,7 +53,7 @@ export const processBattleRun = (id: number, battle_mode: BattleMode, attacks: A
         }
     });
 
-    let arena_metric = (highest_attack / high_attack_second);
+    let arena_metric = Math.ceil(highest_attack / high_attack_second);
     let skirmish_metric = weighted_attack;
     let fbb_metric = attack;
 

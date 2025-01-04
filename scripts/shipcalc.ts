@@ -252,12 +252,12 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
     const shipscores = [] as Score[];
     const crewscores = [] as Score[];
 
-    const createScoreData = (trigger_compat: boolean, seat_compat: boolean, pass_2 = false) => {
+    const createScoreData = (trigger_compat: boolean, seat_compat: boolean, bypass_crew = false) => {
         shipscores.length = 0;
-        if (!pass_2) crewscores.length = 0;
+        if (!bypass_crew) crewscores.length = 0;
 
-        const scoreRun = (runs: BattleRunBase[], is_fbb: number, scores: Score[], score_type: 'crew' | 'ship') => {
-            if (is_fbb === 0 && score_type === 'crew') {
+        const scoreRun = (runs: BattleRunBase[], is_fbb: boolean, scores: Score[], score_type: 'crew' | 'ship') => {
+            if (!is_fbb && score_type === 'crew') {
                 runs.sort((a, b) => {
                     if (a.type !== b.type) {
                         if (a.type === 'defense') return 1;
@@ -271,12 +271,13 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                     }
                 });
             }
-            else if (is_fbb === 0 && score_type === 'ship') {
+            else if (!is_fbb && score_type === 'ship') {
                 runs.sort((a, b) => {
+                    //return (b.compatibility.score - a.compatibility.score || b.damage - a.damage || a.duration - b.duration);
                     return (a.win != b.win) ? (a.win ? -1 : 1) : (b.compatibility.score - a.compatibility.score || b.damage - a.damage || a.duration - b.duration);
                 });
             }
-            else if (is_fbb === 1) {
+            else if (is_fbb) {
                 runs.sort((a, b) => b.compatibility.score - a.compatibility.score || b.damage - a.damage || b.duration - a.duration);
             }
 
@@ -370,15 +371,15 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
             });
         }
 
-        [arenaruns, fbbruns].forEach((runs, mode) => {
-            if (!pass_2) {
-                if (!mode) console.log("Creating arena crew score sets...");
-                if (mode) console.log("Creating FBB crew score sets...");
-                scoreRun(runs, mode, crewscores, 'crew');
+        [arenaruns, fbbruns].forEach((runs, idx) => {
+            if (!bypass_crew) {
+                if (!idx) console.log("Creating arena crew score sets...");
+                if (idx) console.log("Creating FBB crew score sets...");
+                scoreRun(runs, !!idx, crewscores, 'crew');
             }
-            if (!mode) console.log("Creating arena ship score sets...");
-            if (mode) console.log("Creating FBB ship score sets...");
-            scoreRun(runs, mode, shipscores, 'ship');
+            if (!idx) console.log("Creating arena ship score sets...");
+            if (idx) console.log("Creating FBB ship score sets...");
+            scoreRun(runs, !!idx, shipscores, 'ship');
         });
     }
 
@@ -438,7 +439,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         _calc("overall_final");
     }
 
-    const processScores = (scores: Score[], score_defense = false) => {
+    const processScores = (scores: Score[], score_mode: 'defense' | 'offense' | 'ship') => {
         scores.forEach((score) => {
             score.arena_data.sort((a, b) => a.group - b.group);
             score.fbb_data.sort((a, b) => b.group - a.group);
@@ -475,8 +476,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
         const getTopScore = (scores: Scoreable[], mode: 'arena' | 'fbb') => {
             if (mode === 'fbb') {
-                if (score_defense) {
-                    //return arenaruns.length;
+                if (score_mode === 'defense') {
                     return scores.map(ss => ss.duration * ss.total_damage).reduce((p, n) => p > n ? p : n, 0);
                 }
                 else {
@@ -501,7 +501,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
         const getMyScore = (top: number, score: Scoreable, mode: 'arena' | 'fbb') => {
             if (mode === 'fbb') {
-                if (score_defense) {
+                if (score_mode === 'defense') {
                     //return arenaruns.length - score.average_index;
                     return score.duration * score.total_damage;
                 }
@@ -527,10 +527,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         }
 
         const computeScore = <T extends Ship | CrewMember>(score: Score, c: T) => {
-            // if (c.name === "IKS Negh'Var") {
-            //     console.log("break");
-            // }
-            score.arena_data = score.arena_data.sort((a, b) => a.group - b.group).slice(0, 1);
+            score.arena_data = score.arena_data.sort((a, b) => b.group - a.group).slice(0, 1);
             score.fbb_data = score.fbb_data.sort((a, b) => b.group - a.group).slice(0, 1);;
 
             let a_groups = score.arena_data.map(m => m.group);
@@ -539,51 +536,49 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
             for (let ag of a_groups) {
                 const raw_score = score.arena_data.find(f => f.group === ag)!;
                 const ls_arena = getLikeScores(score, 'arena', ag);
-                const arena_mul = 1;
                 const topscore_arena = getTopScore(ls_arena, 'arena');
 
                 score.name = c.name!;
 
-                let my_arena = 0;
-                let my_arenawin = 0;
-
                 let my_arena_score = getMyScore(topscore_arena, raw_score, 'arena');
 
-                my_arena = (my_arena_score / topscore_arena) * 100;
-                my_arena *= arena_mul;
+                let my_arena = (my_arena_score / topscore_arena) * 100;
+                raw_score.final = my_arena * raw_score.average_compat;
+                if ("action" in c) {
+                    if (!c.action.ability) {
+                        raw_score.final *= 0.25;
+                    }
+                }
 
-                const maxwins_arena = getWinScore(ls_arena, 'arena');
-                let mywins_arena = getMyWinScore(maxwins_arena, raw_score, 'arena');
+                // const maxwins_arena = getWinScore(ls_arena, 'arena');
+                // let mywins_arena = getMyWinScore(maxwins_arena, raw_score, 'arena');
 
-                // if (maxwins_arena && mywins_arena) {
-                //     my_arenawin = (mywins_arena / maxwins_arena) * 100;
-                //     my_arenawin *= arena_mul;
-                //     raw_score.final = (my_arena + my_arenawin) / 2;
+                // if (score_mode === 'offense' && maxwins_arena && mywins_arena) {
+                //     let my_arenawin = (mywins_arena / maxwins_arena);
+                //     raw_score.final = my_arena * my_arenawin;
                 // }
                 // else {
-                    raw_score.final = my_arena;
-                //}
+                //     raw_score.final = my_arena;
+                // }
             }
 
             for (let bg of b_groups) {
                 const raw_score = score.fbb_data.find(f => f.group === bg)!;
                 const ls_fbb = getLikeScores(score, 'fbb', bg);
-                const fbb_mul = 1;
                 const topscore_fbb = getTopScore(ls_fbb, 'fbb');
 
                 score.name = c.name!;
 
-                let my_fbb = 0;
-                let my_fbbwin = 0;
-
                 let my_fbb_score = getMyScore(topscore_fbb, raw_score, 'fbb');
+                let my_fbb = (my_fbb_score / topscore_fbb) * 100;
 
-                my_fbb = (my_fbb_score / topscore_fbb) * 100;
-                my_fbb *= fbb_mul;
-
-                raw_score.final = my_fbb;
+                raw_score.final = my_fbb * raw_score.average_compat;
+                if ("action" in c) {
+                    if (!c.action.ability) {
+                        raw_score.final *= 0.25;
+                    }
+                }
             }
-
             score.arena_final = score.arena_data.map(ad => ad.final * ad.group).reduce((p, n) => p + n, 0) / score.arena_data.length;
             score.fbb_final = score.fbb_data.map(ad => ad.final * ad.group).reduce((p, n) => p + n, 0) / score.fbb_data.length;
         }
@@ -596,48 +591,48 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         normalizeScores(scores);
     }
 
-    const getShips = (crew: string | Score, scores: Score[], battle: 'arena' | 'fbb', group: number) => {
-        const score = typeof crew === 'string' ? scores.find(cs => cs.symbol === crew) : crew;
-        if (!score) {
-            return undefined;
-        }
-        const totals = getScore(score, battle, group);
-        if (!totals?.original_indices?.length) return undefined;
+    // const getShips = (crew: string | Score, scores: Score[], battle: 'arena' | 'fbb', group: number) => {
+    //     const score = typeof crew === 'string' ? scores.find(cs => cs.symbol === crew) : crew;
+    //     if (!score) {
+    //         return undefined;
+    //     }
+    //     const totals = getScore(score, battle, group);
+    //     if (!totals?.original_indices?.length) return undefined;
 
-        const runs = [...new Set(totals.original_indices.map(i => origruns[i]))];
-        runs.sort((a, b) => battle === 'arena' && a.win != b.win ? (a.win ? -1 : 1) : a.duration - b.duration || b.damage - a.damage)
-        const shipscore = {} as { [key: string]: number };
-        const shipcount = {} as { [key: string]: number };
-        const shipdmg = {} as { [key: string]: number };
-        const shipcrew = {} as { [key: string]: string[] };
-        runs.forEach((run, idx) => {
-            let key = run.ship.symbol;
-            shipscore[key] ??= 0;
-            shipcount[key] ??= 0;
-            shipdmg[key] ??= 0;
-            shipdmg[key] += run.damage;
-            shipcrew[key] ??= [];
-            shipcrew[key] = shipcrew[key].concat(run.seated);
-            shipscore[key] += idx + 1;
-            shipcount[key]++;
-        });
-        const results: SymbolScore[] = Object.keys(shipscore).map((ship) => {
-            return ({
-                symbol: ship,
-                score: (shipscore[ship] / shipcount[ship]),
-                count: shipcount[ship],
-                division: group,
-                crew: shipcrew[ship],
-                damage: shipdmg[ship]
-            });
-        });
-        results.sort((a, b) => b.score - a.score || b.count - a.count);
-        const max = results[0].score;
-        results.forEach((r) => {
-            r.score = Math.round((r.score / max) * 1000) / 100;
-        });
-        return results;
-    }
+    //     const runs = [...new Set(totals.original_indices.map(i => origruns[i]))];
+    //     runs.sort((a, b) => battle === 'arena' && a.win != b.win ? (a.win ? -1 : 1) : a.duration - b.duration || b.damage - a.damage)
+    //     const shipscore = {} as { [key: string]: number };
+    //     const shipcount = {} as { [key: string]: number };
+    //     const shipdmg = {} as { [key: string]: number };
+    //     const shipcrew = {} as { [key: string]: string[] };
+    //     runs.forEach((run, idx) => {
+    //         let key = run.ship.symbol;
+    //         shipscore[key] ??= 0;
+    //         shipcount[key] ??= 0;
+    //         shipdmg[key] ??= 0;
+    //         shipdmg[key] += run.damage;
+    //         shipcrew[key] ??= [];
+    //         shipcrew[key] = shipcrew[key].concat(run.seated);
+    //         shipscore[key] += idx + 1;
+    //         shipcount[key]++;
+    //     });
+    //     const results: SymbolScore[] = Object.keys(shipscore).map((ship) => {
+    //         return ({
+    //             symbol: ship,
+    //             score: (shipscore[ship] / shipcount[ship]),
+    //             count: shipcount[ship],
+    //             division: group,
+    //             crew: shipcrew[ship],
+    //             damage: shipdmg[ship]
+    //         });
+    //     });
+    //     results.sort((a, b) => b.score - a.score || b.count - a.count);
+    //     const max = results[0].score;
+    //     results.forEach((r) => {
+    //         r.score = Math.round((r.score / max) * 1000) / 100;
+    //     });
+    //     return results;
+    // }
 
     console.log("\nTabulating Results ...");
     createScoreData(false, false);
@@ -647,11 +642,11 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
     const ship_2 = shipscores.filter(ss => ss.arena_data.some(ad => ad.total_damage) && ss.fbb_data.some(fd => fd.total_damage));
 
     console.log("Scoring Offense ...");
-    processScores(offs_2);
+    processScores(offs_2, 'offense');
     console.log("Scoring Defense ...");
-    processScores(defs_2, true);
+    processScores(defs_2, 'defense');
     console.log("Scoring Ships ...");
-    processScores(ship_2);
+    processScores(ship_2, 'ship');
 
     console.log("Mapping best crew to ships...");
 
@@ -766,7 +761,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
     const ship_3 = shipscores.filter(ss => ss.arena_data.some(ad => ad.total_damage) && ss.fbb_data.some(fd => fd.total_damage));
 
-    processScores(ship_3);
+    processScores(ship_3, 'ship');
 
     console.log("Factoring ship grades into final crew grades.");
 
@@ -838,12 +833,11 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 printAndLog(" ".padEnd(40, " "), fbb_ship?.name?.padEnd(20, " "));
             }
             item.arena_data.forEach((group) => {
-                printAndLog(" ".padEnd(40, " "), `A${group.group}: ${group.final} (Max Dmg: ${Math.ceil(group.max_damage).toLocaleString()}, Avg Dmg: ${Math.ceil(group.average_damage).toLocaleString()}, ${group.count} Runs)`);
+                printAndLog(" ".padEnd(40, " "), `A${group.group}: ${group.final} (Max Dmg: ${Math.ceil(group.max_damage).toLocaleString()}, Avg Dmg: ${Math.ceil(group.average_damage).toLocaleString()}, ${group.count} Runs, Win Rate: ${Math.ceil((group.win_count / group.count) * 100)}%)`);
             });
             item.fbb_data.forEach((group) => {
                 if (idx === 1) {
                     printAndLog(" ".padEnd(40, " "), `B${group.group}: ${group.final} (Max Dmg: ${Math.ceil(group.max_damage).toLocaleString()}, Avg Dmg: ${Math.ceil(group.average_damage).toLocaleString()}, ${group.count} Runs, Avg Dur: ${Math.ceil(group.duration / group.count)}s )`);
-
                 }
                 else {
                     printAndLog(" ".padEnd(40, " "), `B${group.group}: ${group.final} (Max Dmg: ${Math.ceil(group.max_damage).toLocaleString()}, Avg Dmg: ${Math.ceil(group.average_damage).toLocaleString()}, ${group.count} Runs)`);
