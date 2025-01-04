@@ -129,7 +129,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 					trackState={result.trackState ?? 0} trackResult={trackResult}
 					confidenceState={result.confidenceState ?? 0} estimateResult={estimateResult}
 					dismissResult={dismissResult}
-					addCustomResult={addCustomResult}
+					addEditedResult={addResult}
 					idleRoster={idleRoster}
 				/>
 			);
@@ -321,7 +321,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		setResults([...results]);
 	}
 
-	function addCustomResult(request: IVoyageRequest, result: IVoyageResult): void {
+	function addResult(request: IVoyageRequest, result: IVoyageResult): void {
 		requests.push(request);
 		setRequests([...requests]);
 		results.push(result);

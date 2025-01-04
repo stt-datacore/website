@@ -41,7 +41,7 @@ export type ResultPaneProps = {
 	trackResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate) => void;
 	estimateResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, numSums: number) => void;
 	dismissResult: (resultIndex: number) => void;
-	addCustomResult: (request: IVoyageRequest, result: IVoyageResult) => void;
+	addEditedResult: (request: IVoyageRequest, result: IVoyageResult) => void;
 	idleRoster: IVoyageCrew[];
 };
 
@@ -58,7 +58,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 		trackState, trackResult,
 		confidenceState, estimateResult,
 		dismissResult,
-		addCustomResult,
+		addEditedResult,
 		idleRoster
 	} = props;
 
@@ -227,7 +227,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 
 	function createResultFromEdit(voyageConfig: IVoyageCalcConfig, ship: Ship, estimate: Estimate): void {
 		const requestId: string = 'request-' + Date.now();
-		const customRequest: IVoyageRequest = {
+		const editedRequest: IVoyageRequest = {
 			id: requestId,
 			type: 'edit',
 			voyageConfig,
@@ -236,7 +236,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 				archetype_id: ship.archetype_id!
 			} as IBestVoyageShip
 		};
-		const customResult: IVoyageResult = {
+		const editedResult: IVoyageResult = {
 			id: `${requestId}-result`,
 			requestId: requestId,
 			name: formatTime(estimate.refills[0].result, t),
@@ -252,6 +252,6 @@ export const ResultPane = (props: ResultPaneProps) => {
 				startAM: voyageConfig.max_hp
 			}
 		};
-		addCustomResult(customRequest, customResult);
+		addEditedResult(editedRequest, editedResult);
 	}
 };
