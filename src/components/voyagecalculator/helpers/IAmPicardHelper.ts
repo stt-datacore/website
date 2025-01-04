@@ -1,7 +1,7 @@
 import '../../../typings/worker';
 import { UnifiedWorker } from '../../../typings/worker';
-import { VoyageDescription } from '../../../model/player';
-import { Aggregates, AggregateSkill, IProposalEntry as VoyageSlotEntry, IResultProposal, IVoyageCalcConfig, IVoyageEventContent } from '../../../model/voyage';
+import { Aggregates, AggregateSkill, VoyageDescription } from '../../../model/player';
+import { IProposalEntry as VoyageSlotEntry, IResultProposal, IVoyageCalcConfig, IVoyageEventContent } from '../../../model/voyage';
 import { VoyageStatsConfig, ExportCrew, GameWorkerOptions } from '../../../model/worker';
 import CONFIG from '../../CONFIG';
 import { CalculatorState } from './calchelpers';

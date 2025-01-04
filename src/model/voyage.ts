@@ -1,7 +1,7 @@
 import { Helper } from '../components/voyagecalculator/helpers/Helper';
 import { VPDetails } from '../utils/voyagevp';
-import { BaseSkills, PlayerSkill, Skill } from './crew';
-import { CrewSlot, PlayerCrew, VoyageCrewSlot, VoyageSkills } from './player';
+import { BaseSkills } from './crew';
+import { Aggregates, CrewSlot, PlayerCrew, VoyageCrewSlot, VoyageSkills } from './player';
 import { Ship } from './ship';
 
 // Voyage calculator require crew.skills
@@ -108,19 +108,6 @@ export interface IProposalEntry {
 	hasTrait: boolean | number;
 };
 
-export interface Aggregates {
-	command_skill: AggregateSkill;
-	science_skill: AggregateSkill;
-	security_skill: AggregateSkill;
-	engineering_skill: AggregateSkill;
-	diplomacy_skill: AggregateSkill;
-	medicine_skill: AggregateSkill;
-};
-
-export interface AggregateSkill extends Skill {
-	skill: PlayerSkill | string;
-};
-
 // Not used anywhere?
 // export interface CalcConfig {
 // 	estimate: number;
@@ -147,7 +134,7 @@ export interface ITrackedVoyage {
 	ship_trait: string;
 	ship: string;
 	max_hp: number;
-	skill_aggregates: BaseSkills;
+	skill_aggregates: Aggregates;
 	estimate: ITrackedFlatEstimate;
 	created_at: number;	// Date.now() | voyage.created_at
 	checkpoint: ITrackedCheckpoint;

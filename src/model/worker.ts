@@ -1,6 +1,6 @@
 import { BossBattlesRoot, BossEffect } from "./boss";
 import { BaseSkills, CrewMember, Skill } from "./crew";
-import { CompactCrew, PlayerCrew, PlayerData } from "./player";
+import { Aggregates, CompactCrew, PlayerCrew, PlayerData } from "./player";
 import { BattleMode, Ship, ShipAction, ShipRankingMethod } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
 import { EquipmentCommon, EquipmentItem } from "./equipment";
@@ -10,7 +10,7 @@ import { MissionChallenge, MissionTraitBonus, QuestFilterConfig } from "./missio
 import { IEphemeralData } from "../context/playercontext";
 import { IPolestar } from "../components/retrieval/model";
 import { RetrievalCost } from "../utils/retrieval";
-import { Aggregates, Estimate } from "./voyage";
+import { Estimate } from "./voyage";
 
 export interface WorkerConfigBase<T> {
     max_results?: number

@@ -3,7 +3,7 @@
 import { Ship } from "./ship";
 import { BossBattlesRoot, Energy } from "./boss";
 import { CaptainsBridgeRoot } from "./bridge";
-import { BaseSkills, ComputedSkill, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, Skill } from "./crew";
+import { BaseSkills, ComputedSkill, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, PlayerSkill, Skill } from "./crew";
 import { ShipAction, ShipBonus } from "./ship";
 import { EquipmentItem } from "./equipment";
 import { Collection, Icon } from "./game-elements";
@@ -1114,7 +1114,7 @@ export interface Voyage {
   recalled_at: string
   completed_at: any
   voyage_duration: number
-  skill_aggregates: BaseSkills
+  skill_aggregates: Aggregates
   seconds_between_dilemmas: number
   seconds_since_last_dilemma: number
   first_leave: boolean
@@ -1136,6 +1136,19 @@ export interface EncounterVoyage extends Voyage {
     fast_forward_boost?: {
         estimated_hp: number;
     }
+}
+
+export interface Aggregates {
+	command_skill: AggregateSkill;
+	science_skill: AggregateSkill;
+	security_skill: AggregateSkill;
+	engineering_skill: AggregateSkill;
+	diplomacy_skill: AggregateSkill;
+	medicine_skill: AggregateSkill;
+}
+
+export interface AggregateSkill extends Skill {
+	skill: PlayerSkill | string;
 }
 
 export interface PendingRewards {
