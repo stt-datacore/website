@@ -359,6 +359,7 @@ export interface ShipWorkerItem {
     percentile: number;
     attacks?: AttackInstant[];
     win?: boolean;
+    reference_battle?: boolean;
 }
 
 export interface ShipWorkerTransportItem {
