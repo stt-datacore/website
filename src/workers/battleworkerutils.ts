@@ -1049,23 +1049,6 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 if (oppo_shields > oppo_origshield) oppo_shields = oppo_origshield;
             }
 
-            // Check for end of battle
-            if (hull <= 0) {
-                if (ignoreDefeat) {
-                    let br = false;
-                    let cu = uses.length;
-                    for (let i = 0; i < cu; i++) {
-                        if (max_uses[i] && max_uses[i] <= uses[i]) {
-                            br = true;
-                            break;
-                        }
-                    }
-                    if (br) break;
-                }
-                else {
-                    break;
-                }
-            }
 
             attacks.push({
                 actions: currents.filter(f => f !== false) as ShipAction[],
@@ -1087,9 +1070,30 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 opponent_cloaked: oppo_cloaked
             });
 
-            if (oppo_hull <= 0) {
-                attacks[attacks.length - 1].win = true;
-                break;
+            if (oppo_hull <= 0 || hull <= 0) {
+                attacks[attacks.length - 1].win = hull >= oppo_hull;
+                if (oppo_hull <= 0) {
+                    break;
+                }
+
+                // Check for end of battle
+                if (hull <= 0) {
+                    if (ignoreDefeat) {
+                        let br = false;
+                        let cu = uses.length;
+
+                        for (let i = 0; i < cu; i++) {
+                            if (max_uses[i] && max_uses[i] <= uses[i]) {
+                                br = true;
+                                break;
+                            }
+                        }
+                        if (br) break;
+                    }
+                    else {
+                        break;
+                    }
+                }
             }
 
             attack_counter += r_inc;
