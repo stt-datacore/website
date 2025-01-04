@@ -1,9 +1,8 @@
 import { Voyage, VoyageCrewSlot } from '../../model/player';
-import { IVoyageCalcConfig, IVoyageHistory, ITrackedVoyage, ITrackedCheckpoint, ITrackedAssignmentsByCrew, ITrackedDataRecord, IFullPayloadAssignment } from '../../model/voyage';
-import { Estimate } from '../../model/worker';
+import { Estimate, IVoyageCalcConfig, IVoyageHistory, ITrackedVoyage, ITrackedCheckpoint, ITrackedAssignmentsByCrew, ITrackedDataRecord, IFullPayloadAssignment } from '../../model/voyage';
+import { UnifiedWorker } from '../../typings/worker';
 import CONFIG from '../CONFIG';
 import { flattenEstimate } from '../../utils/voyageutils';
-import { UnifiedWorker } from '../../typings/worker';
 
 export const NEW_VOYAGE_ID = 0;
 export const NEW_TRACKER_ID = 0;

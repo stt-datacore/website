@@ -6,8 +6,8 @@ DataCore(<VoyageTool>): input from UI =>
 				DataCore(<VoyageTool>) { updateUI } : void
 */
 
-import { IVoyageCrew, IVoyageInputConfig } from '../model/voyage';
-import { Estimate, JohnJayBest, Refill } from '../model/worker';
+import { Estimate, IVoyageCrew, IVoyageInputConfig, Refill } from '../model/voyage';
+import { JohnJayBest } from '../model/worker';
 
 import { calcVoyageVP } from '../utils/voyagevp';
 

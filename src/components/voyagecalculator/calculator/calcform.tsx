@@ -1,18 +1,29 @@
-import { Link } from "gatsby";
-import React from "react";
-import { DropdownItemProps, Header, Form, Select, Button, Message, Checkbox } from "semantic-ui-react";
-import { Helper } from "../helpers/Helper";
-import { GlobalContext } from "../../../context/globalcontext";
-import { IVoyageRequest, IVoyageCrew } from "../../../model/voyage";
-import { Calculation, VoyageConsideration, CalcResult } from "../../../model/worker";
-import { formatTime, BuffStatTable } from "../../../utils/voyageutils";
-import CONFIG from "../../CONFIG";
-import { CalculatorContext } from "../context";
-import { CalculatorState, CALCULATORS } from "../helpers/calchelpers";
-import { getShipTraitBonus } from "../utils";
-import { CrewOptions } from "./crewoptions";
-import { ResultsGroup } from "./resultsgroup";
-import { UserPrefsContext } from "./userprefs";
+import React from 'react';
+import {
+	Button,
+	Checkbox,
+	DropdownItemProps,
+	Form,
+	Header,
+	Message,
+	Select
+} from 'semantic-ui-react';
+import { Link } from 'gatsby';
+
+import { IBestVoyageShip, IResultProposal, IVoyageCrew, IVoyageRequest, IVoyageResult } from '../../../model/voyage';
+import { GlobalContext } from '../../../context/globalcontext';
+import { formatTime, BuffStatTable } from '../../../utils/voyageutils';
+
+import CONFIG from '../../CONFIG';
+
+import { CalculatorContext } from '../context';
+import { getShipTraitBonus } from '../utils';
+import { Helper } from '../helpers/Helper';
+import { CalculatorState, CALCULATORS } from '../helpers/calchelpers';
+
+import { CrewOptions } from './crewoptions';
+import { ResultsGroup } from './resultsgroup';
+import { UserPrefsContext } from './userprefs';
 
 export const CalculatorForm = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -25,14 +36,14 @@ export const CalculatorForm = () => {
 	const [consideredCrew, setConsideredCrew] = React.useState<IVoyageCrew[]>([]);
 
 	const [requests, setRequests] = React.useState<IVoyageRequest[]>([]);
-	const [results, setResults] = React.useState<Calculation[]>([]);
+	const [results, setResults] = React.useState<IVoyageResult[]>([]);
 
 	const bestShip = React.useMemo(() => {
-		let bestShip: VoyageConsideration | undefined;
-		const consideredShips: VoyageConsideration[] = [];
+		let bestShip: IBestVoyageShip | undefined;
+		const consideredShips: IBestVoyageShip[] = [];
 		calculatorContext.ships.filter(ship => ship.owned).forEach(ship => {
 			const shipBonus: number = getShipTraitBonus(voyageConfig, ship);
-			const entry: VoyageConsideration = {
+			const entry: IBestVoyageShip = {
 				ship: ship,
 				score: ship.antimatter + shipBonus,
 				traited: shipBonus > 0,
@@ -183,7 +194,7 @@ export const CalculatorForm = () => {
 		scrollToAnchor();
 	}
 
-	function handleResults(requestId: string, reqResults: CalcResult[], calcState: number): void {
+	function handleResults(requestId: string, reqResults: IResultProposal[], calcState: number): void {
 		reqResults.forEach((reqResult, idx) => {
 			// Update existing pane with results
 			if (idx === 0) {
@@ -194,7 +205,7 @@ export const CalculatorForm = () => {
 							result.name = formatTime(reqResult.estimate.refills[0].result, t);
 							result.calcState = CalculatorState.Done;
 						}
-						result.result = reqResult;
+						result.proposal = reqResult;
 					}
 					return [...prevResults];
 				});
@@ -209,7 +220,7 @@ export const CalculatorForm = () => {
 					requestId,
 					name: formatTime(reqResult.estimate.refills[0].result, t),
 					calcState: CalculatorState.Done,
-					result: reqResult
+					proposal: reqResult
 				}]);
 			}
 		});
@@ -228,7 +239,7 @@ export const CalculatorForm = () => {
 		});
 	}
 
-	function sendCalcResultTelemetry(result: CalcResult, requestId: string): void {
+	function sendCalcResultTelemetry(result: IResultProposal, requestId: string): void {
 		if (!result) return;
 
 		const request = requests.find(r => r.id === requestId);

@@ -1,5 +1,5 @@
 import React from "react";
-import { Estimate } from "../../../model/worker";
+import { Estimate } from "../../../model/voyage";
 import { GlobalContext } from "../../../context/globalcontext";
 import { ResponsiveLineCanvas } from "@nivo/line";
 import { DEFAULT_MOBILE_WIDTH } from "../../hovering/hoverstat";

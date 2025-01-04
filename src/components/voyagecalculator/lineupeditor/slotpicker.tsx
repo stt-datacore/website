@@ -8,7 +8,7 @@ import {
 
 import { Skill } from '../../../model/crew';
 import { PlayerCrew } from '../../../model/player';
-import { Estimate } from '../../../model/worker';
+import { Estimate } from '../../../model/voyage';
 import { GlobalContext } from '../../../context/globalcontext';
 import { formatTime } from '../../../utils/voyageutils';
 

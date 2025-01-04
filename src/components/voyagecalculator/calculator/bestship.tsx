@@ -1,12 +1,15 @@
-import React from "react";
-import { GlobalContext } from "../../../context/globalcontext";
-import { Card, Image } from "semantic-ui-react";
-import { IVoyageInputConfig } from "../../../model/voyage";
-import { VoyageConsideration } from "../../../model/worker";
+import React from 'react';
+import {
+	Card,
+	Image
+} from 'semantic-ui-react';
+
+import { IBestVoyageShip, IVoyageInputConfig } from '../../../model/voyage';
+import { GlobalContext } from '../../../context/globalcontext';
 
 export type BestShipCardProps = {
 	voyageConfig: IVoyageInputConfig;
-	bestShip: VoyageConsideration | undefined;
+	bestShip: IBestVoyageShip | undefined;
 };
 
 // BestShipCard to be deprecated. The game should automatically select the best ship for your voyage

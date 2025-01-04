@@ -1,26 +1,35 @@
 import React from 'react';
-import { Helper } from '../helpers/Helper';
-import { Aggregates, CalcResult, Calculation, Estimate, VoyageConsideration } from '../../../model/worker';
-import { Tab, Button, SemanticICONS, Message, Popup, Icon, Image } from 'semantic-ui-react';
-import { GlobalContext } from '../../../context/globalcontext';
+import {
+	Button,
+	Icon,
+	Image,
+	Message,
+	Popup,
+	SemanticICONS,
+	Tab
+} from 'semantic-ui-react';
+
+import { Estimate, IBestVoyageShip, IResultProposal, IVoyageCalcConfig, IVoyageCrew, IVoyageRequest, IVoyageResult } from '../../../model/voyage';
 import { Voyage } from '../../../model/player';
 import { Ship } from '../../../model/ship';
-import { IVoyageRequest, IVoyageCalcConfig, IVoyageCrew } from '../../../model/voyage';
+import { GlobalContext } from '../../../context/globalcontext';
 import { formatTime } from '../../../utils/voyageutils';
+
+import { OptionsPanelFlexColumn } from '../../stats/utils';
 import { HistoryContext } from '../../voyagehistory/context';
 import { SyncState } from '../../voyagehistory/utils';
-import { CIVASMessage } from '../civas';
+
 import { CalculatorContext } from '../context';
+import { CIVASMessage } from '../civas';
 import { CalculatorState } from '../helpers/calchelpers';
-import VoyageStatsAccordion from '../stats/stats_accordion';
-import { VPGraphAccordion } from '../vpgraph';
+import { ILineupEditorTrigger, LineupEditor } from '../lineupeditor/lineupeditor';
 import { LineupViewerAccordion } from '../lineupviewer/lineup_accordion';
 import { QuipmentProspectAccordion } from '../quipment/quipmentprospects';
-import { OptionsPanelFlexColumn } from '../../stats/utils';
-import { ILineupEditorTrigger, LineupEditor } from '../lineupeditor/lineupeditor';
+import VoyageStatsAccordion from '../stats/stats_accordion';
+import { VPGraphAccordion } from '../vpgraph';
 
 export type ResultPaneProps = {
-	result: CalcResult | undefined;
+	result: IResultProposal | undefined;
 	resultIndex: number;
 	requests: IVoyageRequest[];
 	requestId: string;
@@ -32,8 +41,8 @@ export type ResultPaneProps = {
 	trackResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate) => void;
 	estimateResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, numSums: number) => void;
 	dismissResult: (resultIndex: number) => void;
-	addCustomResult: (request: IVoyageRequest, calculation: Calculation) => void;
-	roster: IVoyageCrew[];
+	addCustomResult: (request: IVoyageRequest, result: IVoyageResult) => void;
+	idleRoster: IVoyageCrew[];
 };
 
 export const ResultPane = (props: ResultPaneProps) => {
@@ -50,7 +59,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 		confidenceState, estimateResult,
 		dismissResult,
 		addCustomResult,
-		roster
+		idleRoster
 	} = props;
 
 	const [editorTrigger, setEditorTrigger] = React.useState<ILineupEditorTrigger | undefined>(undefined);
@@ -182,14 +191,14 @@ export const ResultPane = (props: ResultPaneProps) => {
 						configSource={configSource}
 						voyageData={voyageConfig as Voyage}
 						estimate={result.estimate}
-						roster={roster}
+						roster={idleRoster}
 						rosterType={rosterType}
 					/>
 					<LineupViewerAccordion
 						configSource={configSource}
 						voyageConfig={voyageConfig}
 						ship={request.bestShip.ship}
-						roster={roster}
+						roster={idleRoster}
 						rosterType={rosterType}
 						initialExpand={true}
 						launchLineupEditor={(trigger: ILineupEditorTrigger) => setEditorTrigger(trigger)}
@@ -225,21 +234,21 @@ export const ResultPane = (props: ResultPaneProps) => {
 			bestShip: {
 				ship,
 				archetype_id: ship.archetype_id!
-			} as VoyageConsideration
+			} as IBestVoyageShip
 		};
-		const customResult: Calculation = {
+		const customResult: IVoyageResult = {
 			id: `${requestId}-result`,
 			requestId: requestId,
 			name: formatTime(estimate.refills[0].result, t),
 			calcState: CalculatorState.Done,
-			result: {
+			proposal: {
 				entries: voyageConfig.crew_slots.map((cs, entryId) => ({
 					slotId: entryId,
 					choice: cs.crew as IVoyageCrew,
 					hasTrait: 0
 				})),
 				estimate,
-				aggregates: voyageConfig.skill_aggregates as Aggregates,
+				aggregates: voyageConfig.skill_aggregates,
 				startAM: voyageConfig.max_hp
 			}
 		};

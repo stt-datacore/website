@@ -1,15 +1,8 @@
 import { Helper } from '../components/voyagecalculator/helpers/Helper';
-import { BaseSkills } from './crew';
+import { VPDetails } from '../utils/voyagevp';
+import { BaseSkills, PlayerSkill, Skill } from './crew';
 import { CrewSlot, PlayerCrew, VoyageCrewSlot, VoyageSkills } from './player';
-import { VoyageConsideration } from './worker';
-
-export interface IVoyageRequest {
-	id: string;
-	type: 'calculation' | 'edit' | 'custom';
-	voyageConfig: IVoyageInputConfig;
-	bestShip: VoyageConsideration;
-	calcHelper?: Helper;
-};
+import { Ship } from './ship';
 
 // Voyage calculator require crew.skills
 export interface IVoyageCrew extends PlayerCrew {
@@ -49,9 +42,98 @@ export interface IVoyageEventContent {
 export interface IVoyageCalcConfig extends IVoyageInputConfig {
 	state: string;
 	max_hp: number;
-	skill_aggregates: BaseSkills;
+	skill_aggregates: Aggregates;
 	crew_slots: VoyageCrewSlot[];
 };
+
+export interface IVoyageRequest {
+	id: string;
+	type: 'calculation' | 'edit' | 'custom';
+	voyageConfig: IVoyageInputConfig;
+	bestShip: IBestVoyageShip;
+	calcHelper?: Helper;
+};
+
+export interface IBestVoyageShip {
+	ship: Ship;
+	score: number;
+	traited: boolean;
+	bestIndex: number;
+	archetype_id: number;
+};
+
+export interface IVoyageResult {
+	id: string;
+	requestId: string;
+	name: string;
+	calcState: number;
+	proposal?: IResultProposal;
+	trackState?: number;
+	confidenceState?: number;
+	errorMessage?: string;
+	telemetrySent?: boolean;
+};
+
+export interface IResultProposal {
+	estimate: Estimate;
+	entries: IProposalEntry[];
+	aggregates: Aggregates;
+	startAM: number;
+};
+
+export interface Estimate {
+	refills: Refill[];
+	dilhr20: number;
+	refillshr20: number;
+	final: boolean;
+	deterministic?: boolean;
+	antimatter?: number;
+	vpDetails?: VPDetails;
+};
+
+export interface Refill {
+	all: number[];
+	result: number;
+	safeResult: number;
+	saferResult: number;
+	moonshotResult: number;
+	lastDil: number;
+	dilChance: number;
+	refillCostResult: number;
+};
+
+export interface IProposalEntry {
+	slotId: number;
+	choice: PlayerCrew;
+	hasTrait: boolean | number;
+};
+
+export interface Aggregates {
+	command_skill: AggregateSkill;
+	science_skill: AggregateSkill;
+	security_skill: AggregateSkill;
+	engineering_skill: AggregateSkill;
+	diplomacy_skill: AggregateSkill;
+	medicine_skill: AggregateSkill;
+};
+
+export interface AggregateSkill extends Skill {
+	skill: PlayerSkill | string;
+};
+
+// Not used anywhere?
+// export interface CalcConfig {
+// 	estimate: number;
+// 	minimum: number;
+// 	moonshot: number;
+// 	antimatter: number;
+// 	dilemma: {
+// 		hour: number;
+// 		chance: number;
+// 	};
+// 	refills?: Refill[];
+// 	confidence?: number;
+// };
 
 export interface IVoyageHistory {
 	voyages: ITrackedVoyage[];
@@ -553,3 +635,16 @@ export const AntimatterSeatMap =  [
     }
 ];
 
+// CalculatorProps and AllData can be removed;
+// 	interfaces were deprecated when voyagecalc moved out of the single-file component
+// export interface CalculatorProps {
+//     playerData: PlayerData;
+//     allCrew: PlayerCrew[];
+// }
+// export interface AllData extends CalculatorProps {
+//     allShips?: Ship[];
+//     playerShips?: Ship[];
+//     useInVoyage?: boolean;
+//     bossData?: BossBattlesRoot;
+//     buffConfig?: BuffStatTable;
+// }

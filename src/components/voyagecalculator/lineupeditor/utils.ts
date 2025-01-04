@@ -1,8 +1,7 @@
 import { BaseSkills } from '../../../model/crew';
 import { PlayerCrew } from '../../../model/player';
 import { Ship } from '../../../model/ship';
-import { IVoyageInputConfig } from '../../../model/voyage';
-import { Estimate } from '../../../model/worker';
+import { Estimate, IVoyageInputConfig } from '../../../model/voyage';
 import { UnifiedWorker } from '../../../typings/worker';
 import { getCrewTraitBonus, getShipTraitBonus } from '../utils';
 import { IProspectiveConfig, IProspectiveCrewSlot } from './model';

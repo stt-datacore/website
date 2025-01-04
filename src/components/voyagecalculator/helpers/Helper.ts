@@ -1,14 +1,14 @@
+import { IBestVoyageShip, IResultProposal, IVoyageInputConfig, IVoyageCrew } from '../../../model/voyage';
+import { GameWorkerOptions } from '../../../model/worker';
 import { UnifiedWorker } from '../../../typings/worker';
-import { IVoyageInputConfig, IVoyageCrew } from '../../../model/voyage';
-import { CalcResult, GameWorkerOptions, VoyageConsideration } from '../../../model/worker';
 import { CalculatorState } from './calchelpers';
 
 export type HelperProps = {
 	voyageConfig: IVoyageInputConfig;
-	bestShip: VoyageConsideration;
+	bestShip: IBestVoyageShip;
 	consideredCrew: IVoyageCrew[];
 	calcOptions: GameWorkerOptions;
-	resultsCallback: (requestId: string, reqResults: CalcResult[], calcState: number) => void
+	resultsCallback: (requestId: string, reqResults: IResultProposal[], calcState: number) => void
 	errorCallback?: (requestId: string, errorMessage: string) => void
 };
 
@@ -18,9 +18,9 @@ export abstract class Helper {
 	abstract readonly calcOptions: GameWorkerOptions;
 
 	readonly voyageConfig: IVoyageInputConfig;
-	readonly bestShip: VoyageConsideration;
+	readonly bestShip: IBestVoyageShip;
 	readonly consideredCrew: IVoyageCrew[];
-	readonly resultsCallback: (requestId: string, reqResults: CalcResult[], calcState: number) => void;
+	readonly resultsCallback: (requestId: string, reqResults: IResultProposal[], calcState: number) => void;
 	readonly errorCallback: (requestId: string, error: any) => void;
 
 	calcWorker: UnifiedWorker | undefined = undefined;

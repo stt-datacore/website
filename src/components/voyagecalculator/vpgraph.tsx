@@ -8,7 +8,7 @@ import {
 } from 'semantic-ui-react';
 
 import { IVoyageCalcConfig } from '../../model/voyage';
-import { Estimate } from '../../model/worker';
+import { Estimate } from "../../model/voyage";
 
 type VPGraphProps = {
 	voyageConfig: IVoyageCalcConfig;

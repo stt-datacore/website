@@ -1,7 +1,6 @@
 import { BaseSkills } from '../../../model/crew';
 import { CrewSlot, PlayerCrew } from '../../../model/player';
-import { IVoyageCalcConfig, IVoyageInputConfig } from '../../../model/voyage';
-import { Estimate } from '../../../model/worker';
+import { Estimate, IVoyageCalcConfig, IVoyageInputConfig } from '../../../model/voyage';
 
 export interface IControlVoyage {
 	config: IVoyageCalcConfig;

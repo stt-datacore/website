@@ -9,8 +9,7 @@ import CONFIG from '../../CONFIG';
 
 import { PlayerCrew } from '../../../model/player';
 import { Ship } from '../../../model/ship';
-import { IVoyageCalcConfig } from '../../../model/voyage';
-import { Estimate } from '../../../model/worker';
+import { Estimate, IVoyageCalcConfig } from '../../../model/voyage';
 
 import { CalculatorContext } from '../context';
 

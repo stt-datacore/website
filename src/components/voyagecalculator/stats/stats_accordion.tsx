@@ -3,7 +3,8 @@ import { Accordion, Message, Dimmer, Loader, Icon, Segment, SemanticICONS } from
 
 import { UnifiedWorker as Worker } from '../../../typings/worker';
 import { PlayerCrew, PlayerData, Voyage } from '../../../model/player';
-import { Estimate, ExtendedVoyageStatsConfig, VoyageStatsConfig } from '../../../model/worker';
+import { ExtendedVoyageStatsConfig, VoyageStatsConfig } from '../../../model/worker';
+import { Estimate } from "../../../model/voyage";
 import { CrewMember } from '../../../model/crew';
 import { GlobalContext } from '../../../context/globalcontext';
 import { VoyageStatsEstimate, VoyageStatsEstimateTitle } from './statsestimate';

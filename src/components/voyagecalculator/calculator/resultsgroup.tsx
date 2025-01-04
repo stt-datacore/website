@@ -1,23 +1,29 @@
-import React from "react";
-import { Calculation, Estimate } from "../../../model/worker";
-import { Helper } from "../helpers/Helper";
-import { Popup, Header, Tab } from "semantic-ui-react";
-import { GlobalContext } from "../../../context/globalcontext";
-import { IVoyageCrew, IVoyageCalcConfig, ITrackedVoyage, IFullPayloadAssignment, IVoyageRequest } from "../../../model/voyage";
-import { UnifiedWorker } from "../../../typings/worker";
-import { flattenEstimate, formatTime } from "../../../utils/voyageutils";
-import { HistoryContext } from "../../voyagehistory/context";
-import { NEW_TRACKER_ID, createTrackableVoyage, createTrackableCrew, SyncState, deleteTrackedData, removeVoyageFromHistory, postTrackedData, addVoyageToHistory, addCrewToHistory } from "../../voyagehistory/utils";
-import { CalculatorContext } from "../context";
-import { CalculatorState } from "../helpers/calchelpers";
-import { ErrorPane } from "./errorpane";
-import { ResultPane } from "./results";
+import React from 'react';
+import {
+	Header,
+	Popup,
+	Tab
+} from 'semantic-ui-react';
+
+import { Estimate, IFullPayloadAssignment, IVoyageCalcConfig, IVoyageCrew, IVoyageRequest, IVoyageResult, ITrackedVoyage } from '../../../model/voyage';
+import { UnifiedWorker } from '../../../typings/worker';
+import { GlobalContext } from '../../../context/globalcontext';
+import { flattenEstimate, formatTime } from '../../../utils/voyageutils';
+
+import { HistoryContext } from '../../voyagehistory/context';
+import { NEW_TRACKER_ID, createTrackableVoyage, createTrackableCrew, SyncState, deleteTrackedData, removeVoyageFromHistory, postTrackedData, addVoyageToHistory, addCrewToHistory } from '../../voyagehistory/utils';
+
+import { CalculatorContext } from '../context';
+import { CalculatorState } from '../helpers/calchelpers';
+
+import { ErrorPane } from './errorpane';
+import { ResultPane } from './results';
 
 export type ResultsGroupProps = {
 	requests: IVoyageRequest[];
 	setRequests: (requests: IVoyageRequest[]) => void;
-	results: Calculation[];
-	setResults: (results: Calculation[]) => void;
+	results: IVoyageResult[];
+	setResults: (results: IVoyageResult[]) => void;
 };
 
 export const ResultsGroup = (props: ResultsGroupProps) => {
@@ -34,7 +40,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 	const analyses: string[] = [];
 
 	// In-game voyage crew picker ignores frozen crew, active shuttlers, and active voyagers
-	const availableRoster: IVoyageCrew[] = calculatorContext.crew.filter(
+	const idleRoster: IVoyageCrew[] = calculatorContext.crew.filter(
 		c => c.immortal <= 0 && c.active_status !== 2 && c.active_status !== 3
 	);
 
@@ -67,12 +73,12 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		vp_per_min: 0
 	};
 	results.forEach(result => {
-		if (result.calcState === CalculatorState.Done && result.result) {
+		if (result.calcState === CalculatorState.Done && result.proposal) {
 			const values = {
-				...flattenEstimate(result.result.estimate),
-				antimatter: result.result.estimate.antimatter ?? 0,
-				total_vp: result.result.estimate.vpDetails?.total_vp ?? 0,
-				vp_per_min: result.result.estimate.vpDetails?.vp_per_min ?? 0
+				...flattenEstimate(result.proposal.estimate),
+				antimatter: result.proposal.estimate.antimatter ?? 0,
+				total_vp: result.proposal.estimate.vpDetails?.total_vp ?? 0,
+				vp_per_min: result.proposal.estimate.vpDetails?.vp_per_min ?? 0
 			};
 			Object.keys(bestValues).forEach((valueKey) => {
 				if (valueKey === 'dilemma') {
@@ -89,8 +95,8 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 	});
 	results.forEach(result => {
 		let analysis: string = '';
-		if (result.calcState === CalculatorState.Done && result.result) {
-			const recommended: string[] = getRecommendedList(result.result.estimate, bestValues);
+		if (result.calcState === CalculatorState.Done && result.proposal) {
+			const recommended: string[] = getRecommendedList(result.proposal.estimate, bestValues);
 			if (results.length === 1)
 				analysis = 'Recommended for all criteria';
 			else {
@@ -116,7 +122,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 				);
 			}
 			return (
-				<ResultPane result={result.result} resultIndex={resultIndex}
+				<ResultPane result={result.proposal} resultIndex={resultIndex}
 					requests={requests} requestId={result.requestId}
 					calcState={result.calcState} abortCalculation={abortCalculation}
 					analysis={analyses[resultIndex]}
@@ -124,7 +130,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 					confidenceState={result.confidenceState ?? 0} estimateResult={estimateResult}
 					dismissResult={dismissResult}
 					addCustomResult={addCustomResult}
-					roster={availableRoster}
+					idleRoster={idleRoster}
 				/>
 			);
 		}
@@ -214,8 +220,8 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		if (request && request.calcHelper) {
 			request.calcHelper.abort();
 			const result = results.find(prev => prev.id === requestId);
-			if (result && result.result) {
-				result.name = formatTime(result.result.estimate.refills[0].result, t);
+			if (result && result.proposal) {
+				result.name = formatTime(result.proposal.estimate.refills[0].result, t);
 				result.calcState = CalculatorState.Done;
 			}
 			else {
@@ -298,7 +304,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 				const estimate = message.data.result;
 				const result = results[resultIndex];
 				result.name = formatTime(estimate.refills[0].result, t);
-				if (result.result) result.result.estimate = estimate;
+				if (result.proposal) result.proposal.estimate = estimate;
 				result.confidenceState = 2;
 				setResults([...results]);
 			}
@@ -315,10 +321,10 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		setResults([...results]);
 	}
 
-	function addCustomResult(request: IVoyageRequest, calculation: Calculation): void {
+	function addCustomResult(request: IVoyageRequest, result: IVoyageResult): void {
 		requests.push(request);
 		setRequests([...requests]);
-		results.push(calculation);
+		results.push(result);
 		setResults([...results]);
 	}
 

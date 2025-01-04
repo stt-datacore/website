@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Estimate } from '../../../model/worker';
+import { Estimate } from '../../../model/voyage';
 import { IProspectiveConfig, IProspectiveCrewSlot } from './model';
 
 export interface IEditorContext {

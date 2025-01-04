@@ -1,5 +1,5 @@
 import React from "react";
-import { Estimate } from "../../../model/worker"
+import { Estimate } from "../../../model/voyage";
 import { GlobalContext } from "../../../context/globalcontext";
 import { isMobile } from "react-device-detect";
 import { Table } from "semantic-ui-react";

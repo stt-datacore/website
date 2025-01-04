@@ -1,11 +1,11 @@
 import '../../../typings/worker';
 import { UnifiedWorker } from '../../../typings/worker';
-import CONFIG from '../../CONFIG';
-import { CalcResult, Aggregates, CalcResultEntry as VoyageSlotEntry, VoyageStatsConfig, AggregateSkill, ExportCrew, GameWorkerOptions } from '../../../model/worker';
-import { CalculatorState } from './calchelpers';
-import { HelperProps, Helper } from "./Helper";
 import { VoyageDescription } from '../../../model/player';
-import { IVoyageCalcConfig, IVoyageEventContent } from '../../../model/voyage';
+import { Aggregates, AggregateSkill, IProposalEntry as VoyageSlotEntry, IResultProposal, IVoyageCalcConfig, IVoyageEventContent } from '../../../model/voyage';
+import { VoyageStatsConfig, ExportCrew, GameWorkerOptions } from '../../../model/worker';
+import CONFIG from '../../CONFIG';
+import { CalculatorState } from './calchelpers';
+import { HelperProps, Helper } from './Helper';
 
 // This code is heavily inspired from IAmPicard's work and released under the GPL-V3 license. Huge thanks for all his contributions!
 
@@ -230,7 +230,7 @@ export class IAmPicardHelper extends Helper {
 		const worker = new UnifiedWorker();
 		worker.addEventListener('message', message => {
 			if (!message.data.inProgress) {
-				let finalResult: CalcResult = {
+				let finalResult: IResultProposal = {
 					estimate: message.data.result,
 					entries: entries,
 					aggregates: aggregates,
@@ -240,7 +240,7 @@ export class IAmPicardHelper extends Helper {
 					this.perf.end = performance.now();
 					this.calcState = CalculatorState.Done;
 				}
-				// Array of ICalcResults is expected by callbacks
+				// Array of IResultProposals is expected by callbacks
 				this.resultsCallback(this.id, [finalResult], inProgress ? CalculatorState.InProgress : CalculatorState.Done);
 			}
 		});

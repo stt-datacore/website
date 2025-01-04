@@ -1,9 +1,9 @@
 import '../../../typings/worker';
 import { UnifiedWorker } from '../../../typings/worker';
-import { IVoyageCrew } from '../../../model/voyage';
-import { CalcResult, GameWorkerOptions, JohnJayBest } from '../../../model/worker';
+import { IResultProposal } from "../../../model/voyage";
+import { GameWorkerOptions, JohnJayBest } from '../../../model/worker';
 import { CalculatorState } from './calchelpers';
-import { HelperProps, Helper } from "./Helper";
+import { HelperProps, Helper } from './Helper';
 
 export class USSJohnJayHelper extends Helper {
 	readonly calculator: string;
@@ -54,7 +54,7 @@ export class USSJohnJayHelper extends Helper {
 		this.calcWorker = worker;
 	}
 
-	_messageToResults(bests: JohnJayBest[]): CalcResult[] {
+	_messageToResults(bests: JohnJayBest[]): IResultProposal[] {
 		return bests.map((best, bestId) => {
 			return {
 				entries: best.crew.map((crew, entryId) => ({
