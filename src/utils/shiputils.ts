@@ -368,9 +368,7 @@ export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | u
 	let new_bs = ship.battle_stations.map(m => ({...m, crew: undefined } as BattleStation));
 	let old_bs = ship.battle_stations;
 
-	ship.battle_stations = new_bs;
-
-	let newship = JSON.parse(JSON.stringify(ship)) as Ship;
+	let newship = JSON.parse(JSON.stringify({...ship, battle_stations: new_bs })) as Ship;
 
 	newship.battle_stations = new_bs.map((bs, idx) => {
 		bs.crew = old_bs[idx].crew;
@@ -410,7 +408,7 @@ export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | u
 
 		newship.actions ??= [];
 		crew.action.source = crew.name;
-		ship.battle_stations[x].crew = crew;
+		newship.battle_stations[x].crew = crew;
 
 		if (crew.id !== undefined) crew.action.crew = crew.id;
 		if (pushAction) newship.actions.push(crew.action);

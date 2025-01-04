@@ -69,6 +69,8 @@ export interface ScoreTotal extends Scoreable {
     min_ship: string,
     min_staff: string[],
     original_indices: number[];
+    compat: string[];
+    incompat: string[]
 }
 
 export interface Score {
@@ -88,7 +90,24 @@ export interface Score {
     overall: number;
 }
 
-export interface BattleRun {
+export interface BattleRunBase {
+    crew: any;
+    ship: Ship;
+    boss?: Ship;
+    division?: number;
+    opponent?: Ship;
+    damage: number;
+    duration: number;
+    seated: string[];
+    compatibility: ShipCompat,
+    limit: number,
+    battle: 'arena' | 'fbb',
+    type: 'defense' | 'offense',
+    win: boolean,
+    reference_battle?: boolean;
+}
+
+export interface BattleRun extends BattleRunBase {
     crew: CrewMember;
     ship: Ship;
     boss?: Ship;
@@ -101,7 +120,13 @@ export interface BattleRun {
     limit: number,
     battle: 'arena' | 'fbb',
     type: 'defense' | 'offense',
-    win: boolean
+    win: boolean,
+    reference_battle: false;
+}
+
+export interface BattleRunRef extends BattleRunBase {
+    crew: undefined,
+    reference_battle: true;
 }
 
 export interface BattleRunCache {
@@ -118,7 +143,8 @@ export interface BattleRunCache {
     battle: 'arena' | 'fbb',
     type: 'defense' | 'offense',
     win: boolean,
-    version: number
+    version: number,
+    reference_battle: boolean;
 }
 
 export function createScore(kind: 'crew' | 'ship', symbol: string) {
@@ -170,7 +196,9 @@ export function addScore(score: Score, type: 'fbb' | 'arena', group: number) {
         original_indices: [],
         min_compat: 0,
         max_compat: 0,
-        average_compat: 0
+        average_compat: 0,
+        compat: [],
+        incompat: []
     } as ScoreTotal;
 
     if (type === 'fbb') {
