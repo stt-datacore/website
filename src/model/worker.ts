@@ -68,11 +68,6 @@ export interface IMultiWorkerContext {
 }
 
 
-export interface GameWorkerOptionsList {
-    key: number;
-    value: number;
-    text: string;
-}
 export interface VoyageStatsConfig {
     others?: number[];
     numSims: number;

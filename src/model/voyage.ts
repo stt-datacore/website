@@ -108,20 +108,6 @@ export interface IProposalEntry {
 	hasTrait: boolean | number;
 };
 
-// Not used anywhere?
-// export interface CalcConfig {
-// 	estimate: number;
-// 	minimum: number;
-// 	moonshot: number;
-// 	antimatter: number;
-// 	dilemma: {
-// 		hour: number;
-// 		chance: number;
-// 	};
-// 	refills?: Refill[];
-// 	confidence?: number;
-// };
-
 export interface IVoyageHistory {
 	voyages: ITrackedVoyage[];
 	crew: ITrackedAssignmentsByCrew;
@@ -621,17 +607,3 @@ export const AntimatterSeatMap =  [
         ]
     }
 ];
-
-// CalculatorProps and AllData can be removed;
-// 	interfaces were deprecated when voyagecalc moved out of the single-file component
-// export interface CalculatorProps {
-//     playerData: PlayerData;
-//     allCrew: PlayerCrew[];
-// }
-// export interface AllData extends CalculatorProps {
-//     allShips?: Ship[];
-//     playerShips?: Ship[];
-//     useInVoyage?: boolean;
-//     bossData?: BossBattlesRoot;
-//     buffConfig?: BuffStatTable;
-// }
