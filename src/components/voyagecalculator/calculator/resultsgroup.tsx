@@ -35,6 +35,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 
 	const { requests, setRequests, results, setResults } = props;
 
+	const [activeIndex, setActiveIndex] = React.useState<number>(0);
 	const [trackerId, setTrackerId] = React.useState<number>(NEW_TRACKER_ID);
 
 	const analyses: string[] = [];
@@ -44,8 +45,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		c => c.immortal <= 0 && c.active_status !== 2 && c.active_status !== 3
 	);
 
-	if (results.length === 0)
-		return (<></>);
+	if (results.length === 0) return <></>;
 
 	// Compare best values among ALL results
 	interface IBestValues {
@@ -135,6 +135,18 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 			);
 		}
 	}));
+
+	return (
+		<React.Fragment>
+			<Header as='h3'>Recommended Lineups</Header>
+			<Tab
+				menu={{ pointing: true }}
+				panes={panes}
+				activeIndex={activeIndex}
+				onTabChange={(e, { activeIndex }) => { setActiveIndex(activeIndex as number); console.log(activeIndex); }}
+			/>
+		</React.Fragment>
+	);
 
 	function renderMenuItem(name: string, analysis: string): JSX.Element {
 		if (analysis !== '') {
@@ -319,6 +331,10 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 	function dismissResult(resultIndex: number): void {
 		results.splice(resultIndex, 1);
 		setResults([...results]);
+
+		// Focus on newest remaining result, if any
+		if (activeIndex >= results.length)
+			setActiveIndex(Math.max(results.length - 1, 0));
 	}
 
 	function addResult(request: IVoyageRequest, result: IVoyageResult): void {
@@ -326,12 +342,8 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		setRequests([...requests]);
 		results.push(result);
 		setResults([...results]);
-	}
 
-	return (
-		<React.Fragment>
-			<Header as='h3'>Recommended Lineups</Header>
-			<Tab menu={{ pointing: true }} panes={panes} />
-		</React.Fragment>
-	);
+		// Focus on newest result
+		setActiveIndex(results.length - 1);
+	}
 };
