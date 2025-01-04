@@ -6,10 +6,6 @@ import { EquipmentItem, EquipmentItemSource, IDemand } from '../src/model/equipm
 import { BaseSkills, ComputedSkill, CrewMember, EquipmentSlot, QuipmentScores, Ranks, Skill, SkillQuipmentScores } from '../src/model/crew';
 import { Mission } from '../src/model/missions';
 import { BattleStations, Schematics, Ship } from '../src/model/ship';
-import { iterateBattle } from '../src/workers/battleworkerutils';
-import { set } from 'lodash-es';
-import { AttackInstant, ShipWorkerItem } from '../src/model/worker';
-import { mergeShips } from '../src/utils/shiputils';
 
 function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[]) => U[] | false) {
     var current_iter = 0n;
