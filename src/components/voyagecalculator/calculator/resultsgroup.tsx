@@ -3,7 +3,7 @@ import { Calculation, Estimate } from "../../../model/worker";
 import { Helper } from "../helpers/Helper";
 import { Popup, Header, Tab } from "semantic-ui-react";
 import { GlobalContext } from "../../../context/globalcontext";
-import { IVoyageCrew, IVoyageCalcConfig, ITrackedVoyage, IFullPayloadAssignment } from "../../../model/voyage";
+import { IVoyageCrew, IVoyageCalcConfig, ITrackedVoyage, IFullPayloadAssignment, IVoyageRequest } from "../../../model/voyage";
 import { UnifiedWorker } from "../../../typings/worker";
 import { flattenEstimate, formatTime } from "../../../utils/voyageutils";
 import { HistoryContext } from "../../voyagehistory/context";
@@ -14,8 +14,8 @@ import { ErrorPane } from "./errorpane";
 import { ResultPane } from "./results";
 
 export type ResultsGroupProps = {
-	requests: Helper[];
-	setRequests: (requests: Helper[]) => void;
+	requests: IVoyageRequest[];
+	setRequests: (requests: IVoyageRequest[]) => void;
 	results: Calculation[];
 	setResults: (results: Calculation[]) => void;
 };
@@ -210,9 +210,9 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 	}
 
 	function abortCalculation(requestId: string): void {
-		const request = requests.find(r => r.id === requestId);
-		if (request) {
-			request.abort();
+		const request: IVoyageRequest | undefined = requests.find(r => r.id === requestId);
+		if (request && request.calcHelper) {
+			request.calcHelper.abort();
 			const result = results.find(prev => prev.id === requestId);
 			if (result && result.result) {
 				result.name = formatTime(result.result.estimate.refills[0].result, t);
@@ -315,7 +315,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		setResults([...results]);
 	}
 
-	function addCustomResult(request: Helper, calculation: Calculation): void {
+	function addCustomResult(request: IVoyageRequest, calculation: Calculation): void {
 		requests.push(request);
 		setRequests([...requests]);
 		results.push(calculation);

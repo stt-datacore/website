@@ -6,14 +6,12 @@ import { CalculatorState } from './calchelpers';
 import { HelperProps, Helper } from "./Helper";
 
 export class USSJohnJayHelper extends Helper {
-	readonly id: string;
 	readonly calculator: string;
 	readonly calcName: string;
 	readonly calcOptions: GameWorkerOptions;
 
 	constructor(props: HelperProps, calculator: string = 'mvam') {
 		super(props);
-		this.id = 'request-' + Date.now();
 		this.calculator = calculator;
 		this.calcName = calculator === 'idic' ? 'Infinite Diversity' : 'Multi-vector Assault';
 		this.calcOptions = {
@@ -22,7 +20,7 @@ export class USSJohnJayHelper extends Helper {
 		};
 	}
 
-	start(): void {
+	start(requestId: string): void {
 		this.perf.start = performance.now();
 		this.calcState = CalculatorState.InProgress;
 
@@ -43,12 +41,12 @@ export class USSJohnJayHelper extends Helper {
 				this.perf.end = performance.now();
 				if (message.data.result.error) {
 					this.calcState = CalculatorState.Error;
-					this.errorCallback(this.id, message.data.result.error);
+					this.errorCallback(requestId, message.data.result.error);
 				}
 				else {
 					const results = this._messageToResults(message.data.result);
 					this.calcState = CalculatorState.Done;
-					this.resultsCallback(this.id, results, CalculatorState.Done);
+					this.resultsCallback(requestId, results, CalculatorState.Done);
 				}
 			}
 		});

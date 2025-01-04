@@ -1,5 +1,15 @@
+import { Helper } from '../components/voyagecalculator/helpers/Helper';
 import { BaseSkills } from './crew';
 import { CrewSlot, PlayerCrew, VoyageCrewSlot, VoyageSkills } from './player';
+import { VoyageConsideration } from './worker';
+
+export interface IVoyageRequest {
+	id: string;
+	type: 'calculation' | 'edit' | 'custom';
+	voyageConfig: IVoyageInputConfig;
+	bestShip: VoyageConsideration;
+	calcHelper?: Helper;
+};
 
 // Voyage calculator require crew.skills
 export interface IVoyageCrew extends PlayerCrew {

@@ -3,7 +3,7 @@ import React from "react";
 import { DropdownItemProps, Header, Form, Select, Button, Message, Checkbox } from "semantic-ui-react";
 import { Helper } from "../helpers/Helper";
 import { GlobalContext } from "../../../context/globalcontext";
-import { IVoyageCrew } from "../../../model/voyage";
+import { IVoyageRequest, IVoyageCrew } from "../../../model/voyage";
 import { Calculation, VoyageConsideration, CalcResult } from "../../../model/worker";
 import { formatTime, BuffStatTable } from "../../../utils/voyageutils";
 import CONFIG from "../../CONFIG";
@@ -24,7 +24,7 @@ export const CalculatorForm = () => {
 
 	const [consideredCrew, setConsideredCrew] = React.useState<IVoyageCrew[]>([]);
 
-	const [requests, setRequests] = React.useState<Helper[]>([]);
+	const [requests, setRequests] = React.useState<IVoyageRequest[]>([]);
 	const [results, setResults] = React.useState<Calculation[]>([]);
 
 	const bestShip = React.useMemo(() => {
@@ -66,8 +66,8 @@ export const CalculatorForm = () => {
 		return function cleanup() {
 			// Cancel active calculations when leaving page
 			requests.forEach(request => {
-				if (request.calcState === CalculatorState.InProgress)
-					request.abort();
+				if (request.calcHelper?.calcState === CalculatorState.InProgress)
+					request.calcHelper.abort();
 			});
 		}
 	}, []);
@@ -159,15 +159,23 @@ export const CalculatorForm = () => {
 
 		CALCULATORS.helpers.forEach(helper => {
 			if (helper.id === userPrefs.calculator || userPrefs.calculator === 'all') {
-				const request = helper.helper(helperConfig);
+				const requestId: string = 'request-' + Date.now();
+				const calcHelper: Helper = helper.helper(helperConfig);
+				const request: IVoyageRequest = {
+					id: requestId,
+					type: 'calculation',
+					voyageConfig,
+					bestShip,
+					calcHelper
+				};
 				requests.push(request);
 				results.push({
-					id: request.id,
-					requestId: request.id,
+					id: requestId,
+					requestId,
 					name: 'Calculating...',
 					calcState: CalculatorState.InProgress
 				});
-				request.start();
+				calcHelper.start(requestId);
 			}
 		});
 		setRequests([...requests]);
@@ -225,10 +233,11 @@ export const CalculatorForm = () => {
 
 		const request = requests.find(r => r.id === requestId);
 		if (!request) return;
+		if (!request.calcHelper) return;
 
 		if (configSource !== 'player') return;
 		if (voyageConfig.voyage_type !== 'dilemma') return;
-		if (request.calcOptions.strategy === 'peak-antimatter') return;
+		if (request.calcHelper.calcOptions.strategy === 'peak-antimatter') return;
 
 		const estimatedDuration = result.estimate.refills[0].result*60*60;
 
@@ -260,7 +269,7 @@ export const CalculatorForm = () => {
 		const telemetryData = {
 			voyagers: result.entries.map(entry => entry.choice.symbol),
 			estimatedDuration,
-			calculator: request.calculator,
+			calculator: request.calcHelper.calculator,
 			am_traits: request.voyageConfig.crew_slots.map(cs => cs.trait),
 			ship_trait: request.voyageConfig.ship_trait,
 			... request.voyageConfig.skills,

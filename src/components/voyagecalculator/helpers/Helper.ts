@@ -13,7 +13,6 @@ export type HelperProps = {
 };
 
 export abstract class Helper {
-	abstract readonly id: string;
 	abstract readonly calculator: string;
 	abstract readonly calcName: string;
 	abstract readonly calcOptions: GameWorkerOptions;
@@ -40,7 +39,7 @@ export abstract class Helper {
 			throw ('Voyage calculator cannot start without required parameters!');
 	}
 
-	abstract start(): void;
+	abstract start(requestId: string): void;
 
 	abort(): void {
 		if (this.calcWorker)

@@ -5,7 +5,7 @@ import { Tab, Button, SemanticICONS, Message, Popup, Icon, Image } from 'semanti
 import { GlobalContext } from '../../../context/globalcontext';
 import { Voyage } from '../../../model/player';
 import { Ship } from '../../../model/ship';
-import { IVoyageCalcConfig, IVoyageCrew } from '../../../model/voyage';
+import { IVoyageRequest, IVoyageCalcConfig, IVoyageCrew } from '../../../model/voyage';
 import { formatTime } from '../../../utils/voyageutils';
 import { HistoryContext } from '../../voyagehistory/context';
 import { SyncState } from '../../voyagehistory/utils';
@@ -22,7 +22,7 @@ import { ILineupEditorTrigger, LineupEditor } from '../lineupeditor/lineupeditor
 export type ResultPaneProps = {
 	result: CalcResult | undefined;
 	resultIndex: number;
-	requests: Helper[];
+	requests: IVoyageRequest[];
 	requestId: string;
 	calcState: number;
 	abortCalculation: (requestId: string) => void;
@@ -32,7 +32,7 @@ export type ResultPaneProps = {
 	trackResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate) => void;
 	estimateResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, numSums: number) => void;
 	dismissResult: (resultIndex: number) => void;
-	addCustomResult: (request: Helper, calculation: Calculation) => void;
+	addCustomResult: (request: IVoyageRequest, calculation: Calculation) => void;
 	roster: IVoyageCrew[];
 };
 
@@ -87,12 +87,16 @@ export const ResultPane = (props: ResultPaneProps) => {
 	};
 	if (result.entries) {
 		result.entries.forEach(entry => {
-			const crew: IVoyageCrew | undefined = request.consideredCrew.find(c => c.id === entry.choice.id);
+			const crew: IVoyageCrew | undefined =
+				(request.calcHelper?.consideredCrew ?? calculatorContext.crew).find(c =>
+					c.id === entry.choice.id
+				);
 			if (crew) voyageConfig.crew_slots[entry.slotId].crew = crew;
 		});
 	}
 
 	const renderCalculatorMessage = () => {
+		if (!request.calcHelper) return <></>;
 		if (calcState !== CalculatorState.Done) {
 			return (
 				<React.Fragment>
@@ -103,13 +107,12 @@ export const ResultPane = (props: ResultPaneProps) => {
 				</React.Fragment>
 			);
 		}
-		if (!request.calculator) return <></>;
-		const inputs: string[] = Object.entries(request.calcOptions).map(entry => entry[0]+': '+entry[1]);
-		inputs.unshift('considered crew: '+request.consideredCrew.length);
+		const inputs: string[] = Object.entries(request.calcHelper.calcOptions).map(entry => entry[0]+': '+entry[1]);
+		inputs.unshift('considered crew: '+request.calcHelper.consideredCrew.length);
 		return (
 			<React.Fragment>
-				Calculated by <b>{request.calcName}</b> calculator ({inputs.join(', ')}){` `}
-				in {((request.perf.end-request.perf.start)/1000).toFixed(2)} seconds!
+				Calculated by <b>{request.calcHelper.calcName}</b> calculator ({inputs.join(', ')}){` `}
+				in {((request.calcHelper.perf.end-request.calcHelper.perf.start)/1000).toFixed(2)} seconds!
 			</React.Fragment>
 		);
 	};
@@ -215,15 +218,15 @@ export const ResultPane = (props: ResultPaneProps) => {
 
 	function createResultFromEdit(voyageConfig: IVoyageCalcConfig, ship: Ship, estimate: Estimate): void {
 		const requestId: string = 'request-' + Date.now();
-		const customRequest = {
+		const customRequest: IVoyageRequest = {
 			id: requestId,
+			type: 'edit',
 			voyageConfig,
-			consideredCrew: calculatorContext.crew,
 			bestShip: {
 				ship,
 				archetype_id: ship.archetype_id!
 			} as VoyageConsideration
-		} as Helper;
+		};
 		const customResult: Calculation = {
 			id: `${requestId}-result`,
 			requestId: requestId,
