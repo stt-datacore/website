@@ -550,16 +550,16 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                     }
                 }
 
-                // const maxwins_arena = getWinScore(ls_arena, 'arena');
-                // let mywins_arena = getMyWinScore(maxwins_arena, raw_score, 'arena');
+                const maxwins_arena = getWinScore(ls_arena, 'arena');
+                let mywins_arena = getMyWinScore(maxwins_arena, raw_score, 'arena');
 
-                // if (score_mode === 'offense' && maxwins_arena && mywins_arena) {
-                //     let my_arenawin = (mywins_arena / maxwins_arena);
-                //     raw_score.final = my_arena * my_arenawin;
-                // }
-                // else {
-                //     raw_score.final = my_arena;
-                // }
+                if (score_mode === 'offense' && maxwins_arena && mywins_arena) {
+                    let my_arenawin = (mywins_arena / maxwins_arena);
+                    raw_score.final = my_arena * my_arenawin;
+                }
+                else {
+                    raw_score.final = my_arena;
+                }
             }
 
             for (let bg of b_groups) {
