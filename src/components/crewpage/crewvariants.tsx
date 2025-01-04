@@ -9,6 +9,7 @@ import ItemDisplay from '../../components/itemdisplay';
 import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
 import { crewVariantIgnore, getShortNameFromTrait, getVariantTraits } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
+import { AvatarView } from '../item_presenters/avatarview';
 
 type CrewVariantsProps = {
 	short_name: string;
@@ -64,7 +65,7 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 			}
 		});
 
-		const shortNameGroup = globalContext.core.crew.filter(ac => (ac.short_name === short_name))
+		const shortNameGroup = globalContext.core.crew.filter(ac => (ac.short_name === short_name && short_name !== 'Burnham'))
 			.map(cp => JSON.parse(JSON.stringify(cp)) as CrewMember)
 			.filter(fc => !sn_var?.trait_variants.some(tv => tv.symbol === fc.symbol));
 
@@ -121,17 +122,13 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 				<Grid centered padded>
 					{group.trait_variants.map(variant => (
 						<Grid.Column key={variant.symbol} textAlign='center' mobile={8} tablet={5} computer={4}>
-							<CrewTarget
+							<AvatarView
+								mode='crew'
+								size={128}
 								targetGroup='variants'
-								inputItem={variant}
-							>
-								<ItemDisplay
-									src={`${process.env.GATSBY_ASSETS_URL}${variant.imageUrlPortrait}`}
-									size={128}
-									maxRarity={variant.max_rarity}
-									rarity={variant.max_rarity}
+								item={variant}
+								useDirect={true}
 							/>
-							</CrewTarget>
 							<div><Link to={`/crew/${variant.symbol}/`}>{variant.name}</Link></div>
 						</Grid.Column>
 					))}

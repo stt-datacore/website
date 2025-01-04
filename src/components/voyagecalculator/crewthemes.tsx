@@ -210,8 +210,8 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			}
 		}
 
-		let traits = [ ... new Set(globalContext.core.crew.map(c => c.traits_named).flat()) ].sort();
-		console.log(traits);
+		// let traits = [ ... new Set(globalContext.core.crew.map(c => c.traits_named).flat()) ].sort();
+		// console.log(traits);
 
 
 		const customThemes = [
@@ -299,7 +299,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			{
 				key: 'bottomcrew',
 				name: 'Bottom of the Barrel',
-				description: 'Crew who are ranked Tier 10 by Big Book or graded F by CAB',
+				description: 'Crew who are graded F by CAB',
 				keywords: ['ranking'],
 				category: 'Ranking',
 				filter: (crew: IVoyageCrew) => crew.cab_ov_grade === 'F'
@@ -379,6 +379,22 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				keywords: ['quipment'],
 				category: 'Quipment',
 				filter: (crew: IVoyageCrew) => !crew.immortal || !(crew.q_bits >= 1300)
+			},
+			{
+				key: 'quipstress',
+				name: 'The Clique',
+				description: 'Include only quippable crew (1 to 4 slots)',
+				keywords: ['quipment'],
+				category: 'Quipment',
+				filter: (crew: IVoyageCrew) => crew.q_bits >= 100
+			},
+			{
+				key: 'quipbreakit',
+				name: 'Break The Machine',
+				description: 'Include only max quippable crew (4 slots)',
+				keywords: ['quipment'],
+				category: 'Quipment',
+				filter: (crew: IVoyageCrew) => crew.q_bits >= 1300
 			},
 			{
 				key: 'lightside',

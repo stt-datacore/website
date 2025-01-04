@@ -24,3 +24,11 @@ schema.graphql
 .vscode/
 .config/
 .prettierrc
+
+# By-products of converting precalculate into TS
+src/model/**/*.js
+src/utils/**/*.js
+
+battle_run_cache.json
+battle_run_report.txt
+battle_run_report.json

@@ -155,7 +155,7 @@ export const seatCrew = (primedCrew: IPrimedCrew[], voyagerScoresMaster: IVoyage
 		assignments[slot] = {
 			...seeker,
 			slot,
-			isIdeal: seeker.trait_slots[slot] === 1
+			isIdeal: seeker.trait_slots[slot] > 0 && seeker.trait_slots[slot] === seeker.ideal_trait_value
 		};
 	}
 };

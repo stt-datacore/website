@@ -1,6 +1,6 @@
 import React from 'react';
 import { Header, Card, Label, Image, Message } from 'semantic-ui-react';
-import { GameEvent } from '../../model/player';
+import { GameEvent, TranslateMethod } from '../../model/player';
 import { getIconPath, getRarityColor } from '../../utils/assets';
 import { getEventData } from '../../utils/events';
 import CrewCard, { CrewCardBrief } from './crew_card';
@@ -16,8 +16,8 @@ const contentTypeMap = {
 	voyage: 'Voyage'
 };
 
-function getEventType(contentTypes: string[]) {
-	const mappedTypes = contentTypes.map(type => contentTypeMap[type]);
+function getEventType(contentTypes: string[], t?: TranslateMethod) {
+	const mappedTypes = contentTypes.map(type => t ? t(`event_type.${type}`) : contentTypeMap[type]);
 	const items = new Set(mappedTypes);
 	return [...items].join(' / ');
 }
@@ -43,10 +43,10 @@ function sortCrew(crewArray: PlayerCrew[]) {
 	return groups.flat();
 }
 
-function EventInformationTab(props: { eventData: GameEvent }) {
-	const { eventData } = props;
+function EventInformationTab(props: { eventData: GameEvent, lastEvent?: GameEvent }) {
+	const { eventData, lastEvent } = props;
 	const context = React.useContext(GlobalContext);
-	const { t } = context.localized;
+	const { t, TRAIT_NAMES } = context.localized;
 
 	const { crew: allCrew } = context.core;
 
@@ -65,7 +65,7 @@ function EventInformationTab(props: { eventData: GameEvent }) {
 		content_types,
 	} = eventData;
 
-	const currEvent = getEventData(eventData, crewData, allShips);
+	const currEvent = getEventData(eventData, crewData, allShips, lastEvent);
 
 	const bonus = currEvent?.bonus;
 	const featured = currEvent?.featured;
@@ -85,7 +85,7 @@ function EventInformationTab(props: { eventData: GameEvent }) {
 					key: skill,
 					imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`
 				})),
-			traits: crew.traits_named,
+			traits: crew.traits.map(t => TRAIT_NAMES[t]),
 		} as CrewCardBrief;
 	});
 	const bonusCrew = crewData.filter(crew => bonus?.includes(crew.symbol) && !featured?.includes(crew.symbol));
@@ -95,7 +95,7 @@ function EventInformationTab(props: { eventData: GameEvent }) {
 			<Card fluid raised>
 				<Card.Content>
 					<Card.Header>{name}</Card.Header>
-					<Card.Meta>{getEventType(content_types)}</Card.Meta>
+					<Card.Meta>{getEventType(content_types, t)}</Card.Meta>
 					<Card.Description>{description}</Card.Description>
 				</Card.Content>
 				<Card.Content extra>
@@ -104,15 +104,15 @@ function EventInformationTab(props: { eventData: GameEvent }) {
 						<Message warning>{t('events_common.skirmish_guess_warning')}</Message>}
 				</Card.Content>
 			</Card>
-			<Header as="h3">Featured Crew</Header>
+			<Header as="h3">{t('event_info.featured_crew')}</Header>
 			<Card.Group>
 				{featuredCrewData?.map(crew => (
 					<CrewCard key={crew.key} crew={crew} sysCrew={crewMap[crew.symbol]} />
 				))}
 			</Card.Group>
-			<Header as="h3">Bonus Crew</Header>
+			<Header as="h3">{t('event_info.bonus_crew')}</Header>
 			{bonusCrew.length === 0 && (
-				<p>Bonus crew not yet determined for this event.</p>
+				<p>{t('event_info.bonus_crew_not_determined')}</p>
 			)}
 			{sortCrew(bonusCrew as PlayerCrew[]).map(crew => (
 				<Label key={`crew_${crew.symbol}`} color="black" style={{ marginBottom: '5px' }}>
