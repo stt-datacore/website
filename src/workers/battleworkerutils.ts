@@ -1071,7 +1071,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             });
 
             if (oppo_hull <= 0 || hull <= 0) {
-                attacks[attacks.length - 1].win = hull >= oppo_hull;
+                attacks[attacks.length - 1].win = hull > 0; // oppo_hull;
                 if (oppo_hull <= 0) {
                     break;
                 }

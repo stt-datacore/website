@@ -3,7 +3,7 @@ import { AllBosses, BattleRun, BattleRunCache } from './scoring';
 import { CrewMember } from '../../src/model/crew';
 import { Ship } from '../../src/model/ship';
 
-export const CACHE_VERSION = 4.7;
+export const CACHE_VERSION = 4.8;
 
 export function readBattleCache(cacheFile: string, purge_outdated = true) {
     let cached = [] as BattleRunCache[];
