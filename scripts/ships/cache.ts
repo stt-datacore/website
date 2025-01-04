@@ -1,9 +1,9 @@
 import fs from 'fs';
-import { AllBosses, BattleRun, BattleRunCache } from './scoring';
+import { AllBosses, BattleRun, BattleRunBase, BattleRunCache } from './scoring';
 import { CrewMember } from '../../src/model/crew';
 import { Ship } from '../../src/model/ship';
 
-export const CACHE_VERSION = 4.8;
+export const CACHE_VERSION = 5.1;
 
 export function readBattleCache(cacheFile: string, purge_outdated = true) {
     let cached = [] as BattleRunCache[];
@@ -27,14 +27,15 @@ export function readBattleCache(cacheFile: string, purge_outdated = true) {
 }
 
 
-export function battleRunsToCache(runs: BattleRun[], cacheFile?: string): BattleRunCache[] {
+export function battleRunsToCache(runs: BattleRunBase[], cacheFile?: string): BattleRunCache[] {
     const result = runs.map(run => ({
         ...run,
-        crew: run.crew.symbol,
+        crew: run.crew?.symbol ?? '',
         ship: run.ship.symbol,
         boss: run.boss?.id,
         opponent: run.opponent?.symbol,
-        version: CACHE_VERSION
+        version: CACHE_VERSION,
+        reference_battle: !!run.reference_battle
     }));
     if (cacheFile) {
         fs.writeFileSync(cacheFile, JSON.stringify(result));
@@ -42,10 +43,10 @@ export function battleRunsToCache(runs: BattleRun[], cacheFile?: string): Battle
     return result;
 }
 
-export function cacheToBattleRuns(ships: Ship[], crew: CrewMember[], cached: BattleRunCache[]): BattleRun[] {
+export function cacheToBattleRuns(ships: Ship[], crew: CrewMember[], cached: BattleRunCache[]): BattleRunBase[] {
     return cached.map(run => ({
         ...run,
-        crew: crew.find(c => c.symbol === run.crew)!,
+        crew: run.crew ? crew.find(c => c.symbol === run.crew) : undefined,
         ship: ships.find(c => c.symbol === run.ship)!,
         boss: run.boss && (run.boss as any) !== 'undefined' ? AllBosses.find(c => c.id === run.boss) : undefined,
         opponent: run.opponent ? ships.find(c => c.symbol === run.opponent) : undefined
