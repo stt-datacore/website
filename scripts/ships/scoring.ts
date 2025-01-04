@@ -287,22 +287,34 @@ export const getStaffedShip = (ships: Ship[], crew: CrewMember[], ship: string |
             if (others[0].ability?.type === 10) oppo_time = Math.min(typical_cd - others[0].ability.amount, oppo_time);
         }
     }
-    if ((!cloak_time || prefer_oppo_time) && oppo_time) cloak_time = oppo_time;
 
     let conds = data?.actions?.map(mp => mp.status).filter(f => f) as number[];
     let skills = data.battle_stations?.map(b => b.skill);
 
-    let cs = crew.filter(cc =>
-        (c && c.symbol === cc.symbol) ||
-        ((
-            ((!cloak_time || cc.action.initial_cooldown >= cloak_time)) &&
-        (
-            (fbb && cc.max_rarity <= boss!.id) ||
-            (!fbb && getCrewDivisions(cc.max_rarity).includes(division))
-        ) &&
-        (!cc.action.ability?.condition || conds.includes(cc.action.ability.condition)) &&
-        cc.skill_order.some(sko => skills.includes(sko))))
-    );
+    let cs = [] as CrewMember[];
+    let filt = 0;
+    while (cs.length < skills.length) {
+        if (filt && prefer_oppo_time) prefer_oppo_time = false;
+        else if (filt && cloak_time) cloak_time = 0;
+        else if (filt) {
+            cs = crew;
+            break;
+        }
+        filt++;
+
+        cs = crew.filter(cc =>
+            (c && c.symbol === cc.symbol) ||
+            ((
+                ((!prefer_oppo_time && (!cloak_time || cc.action.initial_cooldown >= cloak_time)) ||
+                (prefer_oppo_time && (!oppo_time || cc.action.initial_cooldown <= oppo_time))) &&
+            (
+                (fbb && cc.max_rarity <= boss!.id) ||
+                (!fbb && getCrewDivisions(cc.max_rarity).includes(division))
+            ) &&
+            (!cc.action.ability?.condition || conds.includes(cc.action.ability.condition)) &&
+            cc.skill_order.some(sko => skills.includes(sko))))
+        );
+    }
 
     let filtered: CrewMember[] = [];
 
