@@ -2,7 +2,7 @@ import { CrewMember } from "../../src/model/crew";
 import { BattleMode, BattleStation, Ship } from "../../src/model/ship";
 import { AttackInstant, ShipWorkerItem } from "../../src/model/worker";
 import { iterateBattle } from "../../src/workers/battleworkerutils";
-import { BattleRun, characterizeCrew, shipCompatibility, getShipDivision, getCrewDivisions, getBosses, MaxDefense, MaxOffense, BattleRunBase } from "./scoring";
+import { BattleRun, characterizeCrew, shipCompatibility, getShipDivision, getCrewDivisions, getBosses, MaxDefense, MaxOffense, BattleRunBase, getMaxTime } from "./scoring";
 
 export function getCleanShipCopy(ship: Ship) {
     ship = JSON.parse(JSON.stringify(ship)) as Ship;
@@ -170,8 +170,12 @@ export const runBattles = (
                         }
                     }
                 }
-
-                result = iterateBattle(rate, true, ship, newstaff, boss, MaxDefense, MaxOffense, undefined, undefined, undefined, undefined, fbb_variance, true, ignore_defeat_fbb, ignore_passives);
+                let maxtime = 180;
+                // if (c) {
+                //     maxtime = getMaxTime(c);
+                //     if (maxtime !== 180) return;
+                // }
+                result = iterateBattle(rate, true, ship, newstaff, boss, MaxDefense, MaxOffense, maxtime, undefined, undefined, undefined, fbb_variance, true, ignore_defeat_fbb, ignore_passives);
                 if (result.length) {
                     let attack = processBattleRun(current_id++, battle_mode, result, newstaff, rate, boss, true, reference_battle);
                     if (attack) {

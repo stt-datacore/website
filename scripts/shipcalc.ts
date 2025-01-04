@@ -273,8 +273,8 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
             }
             else if (!is_fbb && score_type === 'ship') {
                 runs.sort((a, b) => {
-                    //return (b.compatibility.score - a.compatibility.score || b.damage - a.damage || a.duration - b.duration);
-                    return (a.win != b.win) ? (a.win ? -1 : 1) : (b.compatibility.score - a.compatibility.score || b.damage - a.damage || a.duration - b.duration);
+                    return (b.compatibility.score - a.compatibility.score || b.damage - a.damage || a.duration - b.duration);
+                    //return (a.win != b.win) ? (a.win ? -1 : 1) : (b.compatibility.score - a.compatibility.score || b.damage - a.damage || a.duration - b.duration);
                 });
             }
             else if (is_fbb) {

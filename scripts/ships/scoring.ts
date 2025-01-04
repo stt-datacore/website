@@ -29,6 +29,15 @@ export function getCrewDivisions(rarity: number) {
     else return [1, 2, 3];
 }
 
+export function getMaxTime(crew: CrewMember) {
+    if (!crew.action.limit) return 180;
+    let t = crew.action.initial_cooldown;
+    t += (crew.action.limit * crew.action.duration);
+    if (crew.action.limit > 1) {
+        t += ((crew.action.limit - 1) * crew.action.cooldown);
+    }
+    return t;
+}
 
 export interface SymbolScore {
     symbol: string,
