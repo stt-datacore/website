@@ -19,6 +19,19 @@ import { CalculatorState } from '../helpers/calchelpers';
 import { ErrorPane } from './errorpane';
 import { ResultPane } from './results';
 
+interface IBestValues {
+	median: number;
+	minimum: number;
+	moonshot: number;
+	dilemma: {
+		hour: number;
+		chance: number;
+	};
+	antimatter: number;
+	total_vp: number;
+	vp_per_min: number;
+};
+
 export type ResultsGroupProps = {
 	requests: IVoyageRequest[];
 	setRequests: (requests: IVoyageRequest[]) => void;
@@ -38,76 +51,68 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 	const [activeIndex, setActiveIndex] = React.useState<number>(0);
 	const [trackerId, setTrackerId] = React.useState<number>(NEW_TRACKER_ID);
 
-	const analyses: string[] = [];
-
 	// In-game voyage crew picker ignores frozen crew, active shuttlers, and active voyagers
-	const idleRoster: IVoyageCrew[] = calculatorContext.crew.filter(
-		c => c.immortal <= 0 && c.active_status !== 2 && c.active_status !== 3
-	);
+	const idleRoster = React.useMemo<IVoyageCrew[]>(() => {
+		return calculatorContext.crew.filter(
+			c => c.immortal <= 0 && c.active_status !== 2 && c.active_status !== 3
+		);
+	}, [calculatorContext.crew]);
+
+	const analyses = React.useMemo<string[]>(() => {
+		const analyses: string[] = [];
+		// Compare best values among ALL results
+		const bestValues: IBestValues = {
+			median: 0,
+			minimum: 0,
+			moonshot: 0,
+			dilemma: {
+				hour: 0,
+				chance: 0
+			},
+			antimatter: 0,
+			total_vp: 0,
+			vp_per_min: 0
+		};
+		results.forEach(result => {
+			if (result.calcState === CalculatorState.Done && result.proposal) {
+				const values = {
+					...flattenEstimate(result.proposal.estimate),
+					antimatter: result.proposal.estimate.antimatter ?? 0,
+					total_vp: result.proposal.estimate.vpDetails?.total_vp ?? 0,
+					vp_per_min: result.proposal.estimate.vpDetails?.vp_per_min ?? 0
+				};
+				Object.keys(bestValues).forEach((valueKey) => {
+					if (valueKey === 'dilemma') {
+						if (values.dilemma.hour > bestValues.dilemma.hour
+							|| (values.dilemma.hour === bestValues.dilemma.hour && values.dilemma.chance > bestValues.dilemma.chance)) {
+								bestValues.dilemma = values.dilemma;
+						}
+					}
+					else if (values[valueKey] > bestValues[valueKey]) {
+						bestValues[valueKey] = values[valueKey];
+					}
+				});
+			}
+		});
+		results.forEach(result => {
+			let analysis: string = '';
+			if (result.calcState === CalculatorState.Done && result.proposal) {
+				const recommended: string[] = getRecommendedList(result.proposal.estimate, bestValues);
+				if (results.length === 1)
+					analysis = 'Recommended for all criteria';
+				else {
+					if (recommended.length > 0)
+						analysis = ' Recommended for ' + recommended.map((method) => getRecommendedValue(method, bestValues)).join(', ');
+					else
+						analysis = ' Proposed alternative';
+				}
+			}
+			analyses.push(analysis);
+		});
+		return analyses;
+	}, [results]);
 
 	if (results.length === 0) return <></>;
-
-	// Compare best values among ALL results
-	interface IBestValues {
-		median: number;
-		minimum: number;
-		moonshot: number;
-		dilemma: {
-			hour: number;
-			chance: number;
-		};
-		antimatter: number;
-		total_vp: number;
-		vp_per_min: number;
-	};
-	const bestValues: IBestValues = {
-		median: 0,
-		minimum: 0,
-		moonshot: 0,
-		dilemma: {
-			hour: 0,
-			chance: 0
-		},
-		antimatter: 0,
-		total_vp: 0,
-		vp_per_min: 0
-	};
-	results.forEach(result => {
-		if (result.calcState === CalculatorState.Done && result.proposal) {
-			const values = {
-				...flattenEstimate(result.proposal.estimate),
-				antimatter: result.proposal.estimate.antimatter ?? 0,
-				total_vp: result.proposal.estimate.vpDetails?.total_vp ?? 0,
-				vp_per_min: result.proposal.estimate.vpDetails?.vp_per_min ?? 0
-			};
-			Object.keys(bestValues).forEach((valueKey) => {
-				if (valueKey === 'dilemma') {
-					if (values.dilemma.hour > bestValues.dilemma.hour
-						|| (values.dilemma.hour === bestValues.dilemma.hour && values.dilemma.chance > bestValues.dilemma.chance)) {
-							bestValues.dilemma = values.dilemma;
-					}
-				}
-				else if (values[valueKey] > bestValues[valueKey]) {
-					bestValues[valueKey] = values[valueKey];
-				}
-			});
-		}
-	});
-	results.forEach(result => {
-		let analysis: string = '';
-		if (result.calcState === CalculatorState.Done && result.proposal) {
-			const recommended: string[] = getRecommendedList(result.proposal.estimate, bestValues);
-			if (results.length === 1)
-				analysis = 'Recommended for all criteria';
-			else {
-				if (recommended.length > 0)
-					analysis = ' Recommended for ' + recommended.map((method) => getRecommendedValue(method, bestValues)).join(', ');
-				else
-					analysis = ' Proposed alternative';
-			}
-		}
-		analyses.push(analysis);
-	});
 
 	const panes = results.map((result, resultIndex) => ({
 		menuItem: { key: result.id, content: renderMenuItem(result.name, analyses[resultIndex]) },
@@ -115,14 +120,15 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 			if (result.calcState === CalculatorState.Error) {
 				return (
 					<ErrorPane
-						errorMessage={result.errorMessage} resultIndex={resultIndex}
+						resultId={result.id} errorMessage={result.errorMessage}
 						requests={requests} requestId={result.requestId}
 						dismissResult={dismissResult}
 					/>
 				);
 			}
 			return (
-				<ResultPane result={result.proposal} resultIndex={resultIndex}
+				<ResultPane
+					resultId={result.id} proposal={result.proposal}
 					requests={requests} requestId={result.requestId}
 					calcState={result.calcState} abortCalculation={abortCalculation}
 					analysis={analyses[resultIndex]}
@@ -143,7 +149,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 				menu={{ pointing: true }}
 				panes={panes}
 				activeIndex={activeIndex}
-				onTabChange={(e, { activeIndex }) => { setActiveIndex(activeIndex as number); console.log(activeIndex); }}
+				onTabChange={(e, { activeIndex }) => setActiveIndex(activeIndex as number)}
 			/>
 		</React.Fragment>
 	);
@@ -244,7 +250,10 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		}
 	}
 
-	function trackResult(resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate): void {
+	function trackResult(resultId: string, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate): void {
+		const result: IVoyageResult | undefined = results.find(result => result.id === resultId);
+		if (!result) return;
+
 		// First remove previous tracked voyage and associated crew assignments
 		//	(in case user tracks a different recommendation from same request)
 		const trackableVoyage: ITrackedVoyage = createTrackableVoyage(
@@ -261,7 +270,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 							addVoyageToHistory(history, newRemoteId, trackableVoyage);
 							addCrewToHistory(history, newRemoteId, trackableCrew);
 							setHistory({...history});
-							updateTrackedResults(resultIndex, newRemoteId);
+							updateTrackedResults(resultId, newRemoteId);
 						}
 						else {
 							throw('Failed trackResult -> postTrackedData');
@@ -282,7 +291,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 			addVoyageToHistory(history, newLocalId, trackableVoyage);
 			addCrewToHistory(history, newLocalId, trackableCrew);
 			setHistory({...history});
-			updateTrackedResults(resultIndex, newLocalId);
+			updateTrackedResults(resultId, newLocalId);
 		}
 		else {
 			setMessageId('voyage.history_msg.invalid_sync_state');
@@ -290,15 +299,17 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		}
 	}
 
-	function updateTrackedResults(resultIndex: number, trackerId: number): void {
-		results.forEach((result, idx) => {
-			result.trackState = idx === resultIndex ? 1 : 0;
+	function updateTrackedResults(resultId: string, trackerId: number): void {
+		results.forEach(result => {
+			result.trackState = result.id === resultId ? 1 : 0;
 		});
 		setResults([...results]);
 		setTrackerId(trackerId);
 	}
 
-	function estimateResult(resultIndex: number, voyageConfig: IVoyageCalcConfig, numSims: number): void {
+	function estimateResult(resultId: string, voyageConfig: IVoyageCalcConfig, numSims: number): void {
+		const result: IVoyageResult | undefined = results.find(result => result.id === resultId);
+		if (!result) return;
 		const config = {
 			startAm: voyageConfig.max_hp,
 			ps: voyageConfig.skill_aggregates[voyageConfig.skills['primary_skill']],
@@ -314,7 +325,6 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		worker.addEventListener('message', message => {
 			if (!message.data.inProgress) {
 				const estimate = message.data.result;
-				const result = results[resultIndex];
 				result.name = formatTime(estimate.refills[0].result, t);
 				if (result.proposal) result.proposal.estimate = estimate;
 				result.confidenceState = 2;
@@ -322,13 +332,15 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 			}
 		});
 		worker.postMessage(VoyageEstConfig);
-		const result = results[resultIndex];
 		result.name = 'Calculating...';
 		result.confidenceState = 1;
 		setResults([...results]);
 	}
 
-	function dismissResult(resultIndex: number): void {
+	function dismissResult(resultId: string): void {
+		const resultIndex: number = results.findIndex(result => result.id === resultId);
+		if (resultIndex < 0) return;
+
 		results.splice(resultIndex, 1);
 		setResults([...results]);
 

@@ -1139,16 +1139,12 @@ export interface EncounterVoyage extends Voyage {
 }
 
 export interface Aggregates {
-	command_skill: AggregateSkill;
-	science_skill: AggregateSkill;
-	security_skill: AggregateSkill;
-	engineering_skill: AggregateSkill;
-	diplomacy_skill: AggregateSkill;
-	medicine_skill: AggregateSkill;
-}
-
-export interface AggregateSkill extends Skill {
-	skill: PlayerSkill | string;
+	command_skill: Skill;
+	science_skill: Skill;
+	security_skill: Skill;
+	engineering_skill: Skill;
+	diplomacy_skill: Skill;
+	medicine_skill: Skill;
 }
 
 export interface PendingRewards {

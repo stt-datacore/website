@@ -3,15 +3,15 @@ import { Message, Button, Popup, Tab } from "semantic-ui-react";
 import { IVoyageRequest } from "../../../model/voyage";
 
 export type ErrorPaneProps = {
+	resultId: string;
 	errorMessage?: string;
-	resultIndex: number;
 	requests: IVoyageRequest[];
 	requestId: string;
-	dismissResult: (resultIndex: number) => void;
+	dismissResult: (resultId: string) => void;
 };
 
 export const ErrorPane = (props: ErrorPaneProps) => {
-	const { errorMessage, resultIndex, requests, requestId, dismissResult } = props;
+	const { resultId, errorMessage, requests, requestId, dismissResult } = props;
 
 	const request = requests.find(r => r.id === requestId);
 	if (!request) return (<></>);
@@ -35,7 +35,7 @@ export const ErrorPane = (props: ErrorPaneProps) => {
 							<Popup position='top center'
 								content={<>Dismiss this recommendation</>}
 								trigger={
-									<Button icon='ban' onClick={() => dismissResult(resultIndex)} />
+									<Button icon='ban' onClick={() => dismissResult(resultId)} />
 								}
 							/>
 						</Button.Group>

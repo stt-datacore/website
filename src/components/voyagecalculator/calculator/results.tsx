@@ -29,8 +29,8 @@ import VoyageStatsAccordion from '../stats/stats_accordion';
 import { VPGraphAccordion } from '../vpgraph';
 
 export type ResultPaneProps = {
-	result: IResultProposal | undefined;
-	resultIndex: number;
+	resultId: string;
+	proposal: IResultProposal | undefined;
 	requests: IVoyageRequest[];
 	requestId: string;
 	calcState: number;
@@ -38,9 +38,9 @@ export type ResultPaneProps = {
 	analysis: string;
 	trackState: number;
 	confidenceState: number;
-	trackResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate) => void;
-	estimateResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, numSums: number) => void;
-	dismissResult: (resultIndex: number) => void;
+	trackResult: (resultId: string, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate) => void;
+	estimateResult: (resultId: string, voyageConfig: IVoyageCalcConfig, numSums: number) => void;
+	dismissResult: (resultId: string) => void;
 	addEditedResult: (request: IVoyageRequest, result: IVoyageResult) => void;
 	idleRoster: IVoyageCrew[];
 };
@@ -51,7 +51,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
 	const { configSource, rosterType } = calculatorContext;
 	const {
-		result, resultIndex,
+		resultId, proposal,
 		requests, requestId,
 		calcState, abortCalculation,
 		analysis,
@@ -67,7 +67,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 	const request = requests.find(r => r.id === requestId);
 	if (!request) return (<></>);
 
-	if (!result) {
+	if (!proposal) {
 		return (
 			<Tab.Pane>
 				<div style={{ textAlign: 'center' }}>
@@ -85,8 +85,8 @@ export const ResultPane = (props: ResultPaneProps) => {
 	const voyageConfig: IVoyageCalcConfig = {
 		...request.voyageConfig,
 		state: 'pending',
-		max_hp: result.startAM,
-		skill_aggregates: result.aggregates,
+		max_hp: proposal.startAM,
+		skill_aggregates: proposal.aggregates,
 		crew_slots: request.voyageConfig.crew_slots.map(slot => {
 			return ({
 				...slot,
@@ -94,8 +94,8 @@ export const ResultPane = (props: ResultPaneProps) => {
 			});
 		})
 	};
-	if (result.entries) {
-		result.entries.forEach(entry => {
+	if (proposal.entries) {
+		proposal.entries.forEach(entry => {
 			const crew: IVoyageCrew | undefined =
 				(request.calcHelper?.consideredCrew ?? calculatorContext.crew).find(c =>
 					c.id === entry.choice.id
@@ -135,12 +135,12 @@ export const ResultPane = (props: ResultPaneProps) => {
 					<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', rowGap: '1em' }}>
 						<div>
 							{tfmt('voyage.estimate.estimate_time', {
-								time: <b>{formatTime(result.estimate.refills[0].result, t)}</b>
+								time: <b>{formatTime(proposal.estimate.refills[0].result, t)}</b>
 							})}
 							{` `}
 							{t('voyage.estimate.expected_range', {
-								a: formatTime(result.estimate.refills[0].saferResult, t),
-								b: formatTime(result.estimate.refills[0].moonshotResult, t)
+								a: formatTime(proposal.estimate.refills[0].saferResult, t),
+								b: formatTime(proposal.estimate.refills[0].moonshotResult, t)
 							})}
 							{analysis !== '' && (<div style={{ marginTop: '1em' }}>{analysis}</div>)}
 						</div>
@@ -150,7 +150,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 									<Popup position='top center'
 										content={<>Track this recommendation</>}
 										trigger={
-											<Button icon onClick={() => trackResult(resultIndex, voyageConfig, request.bestShip.ship.symbol, result.estimate)} disabled={syncState === SyncState.ReadOnly}>
+											<Button icon onClick={() => trackResult(resultId, voyageConfig, request.bestShip.ship.symbol, proposal.estimate)} disabled={syncState === SyncState.ReadOnly}>
 												<Icon name={iconTrack[trackState]} color={trackState === 1 ? 'green' : undefined} />
 											</Button>
 										}
@@ -159,7 +159,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 								<Popup position='top center'
 									content={<>Get more confident estimate</>}
 									trigger={
-										<Button icon onClick={() => { if (confidenceState !== 1) estimateResult(resultIndex, voyageConfig, 30000); }}>
+										<Button icon onClick={() => { if (confidenceState !== 1) estimateResult(resultId, voyageConfig, 30000); }}>
 											<Icon name={iconConfidence[confidenceState]} color={confidenceState === 2 ? 'green' : undefined} />
 										</Button>
 									}
@@ -173,7 +173,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 								<Popup position='top center'
 									content={<>Dismiss this recommendation</>}
 									trigger={
-										<Button icon='ban' onClick={() => dismissResult(resultIndex)} />
+										<Button icon='ban' onClick={() => dismissResult(resultId)} />
 									}
 								/>
 							</Button.Group>
@@ -184,13 +184,13 @@ export const ResultPane = (props: ResultPaneProps) => {
 			<Tab.Pane>
 				<div style={{...flexCol, alignItems: 'stretch', gap: '0.5em'}}>
 
-					{result.estimate.vpDetails && (
-						<VPGraphAccordion voyageConfig={voyageConfig} estimate={result.estimate} />
+					{proposal.estimate.vpDetails && (
+						<VPGraphAccordion voyageConfig={voyageConfig} estimate={proposal.estimate} />
 					)}
 					<VoyageStatsAccordion
 						configSource={configSource}
 						voyageData={voyageConfig as Voyage}
-						estimate={result.estimate}
+						estimate={proposal.estimate}
 						roster={idleRoster}
 						rosterType={rosterType}
 					/>
@@ -203,12 +203,12 @@ export const ResultPane = (props: ResultPaneProps) => {
 						initialExpand={true}
 						launchLineupEditor={(trigger: ILineupEditorTrigger) => setEditorTrigger(trigger)}
 					/>
-					<LineupEditor
-						id={`${requestId}-${resultIndex}/lineupeditor`}
+					<LineupEditor key={resultId}
+						id={`${resultId}/lineupeditor`}
 						trigger={editorTrigger}
 						cancelTrigger={() => setEditorTrigger(undefined)}
 						ship={request.bestShip.ship}
-						control={{ config: voyageConfig, estimate: result.estimate }}
+						control={{ config: voyageConfig, estimate: proposal.estimate }}
 						commitVoyage={createResultFromEdit}
 					/>
 					<QuipmentProspectAccordion
@@ -219,7 +219,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 					</div>
 				</div>
 				{calcState === CalculatorState.Done && (
-					<CIVASMessage voyageConfig={voyageConfig} estimate={result.estimate} />
+					<CIVASMessage voyageConfig={voyageConfig} estimate={proposal.estimate} />
 				)}
 			</Tab.Pane>
 		</React.Fragment>

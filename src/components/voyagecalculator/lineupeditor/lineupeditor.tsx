@@ -177,6 +177,7 @@ export const LineupEditor = (props: LineupEditorProps) => {
 	function saveVoyage(): void {
 		if (!ship || !prospectiveEstimate) return;
 		commitVoyage(prospectiveConfig as IVoyageCalcConfig, ship, prospectiveEstimate);
+		resetVoyage();
 		dismissEditor();
 	}
 
