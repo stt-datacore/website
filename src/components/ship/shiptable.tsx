@@ -12,6 +12,7 @@ import { isMobile } from 'react-device-detect';
 import { getShipsInUse, mergeShips } from '../../utils/shiputils';
 import CONFIG from '../CONFIG';
 import { TinyStore } from '../../utils/tiny';
+import { formatRank } from './utils';
 
 type ShipTableProps = {
 	event_ships?: string[];
@@ -299,7 +300,9 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 			navigate('/ship_info?ship='+ship.symbol);
 		}
 
+		const withranks = data.some(s => s.ranks);
 		// Pagination
+
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 
 		return (<div>
@@ -365,6 +368,27 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 						>
 							{t('ship.ship')}
 						</Table.HeaderCell>
+						{withranks && <>
+							<Table.HeaderCell
+								sorted={column === 'ranks.overall' ? direction ?? undefined  : undefined}
+								onClick={() => this._handleSort('ranks.overall')}
+								>
+								{t('rank_names.ship_rank')}
+							</Table.HeaderCell>
+							<Table.HeaderCell
+								sorted={column === 'ranks.arena' ? direction ?? undefined  : undefined}
+								onClick={() => this._handleSort('ranks.arena')}
+								>
+
+								{t('rank_names.arena_rank')}
+							</Table.HeaderCell>
+							<Table.HeaderCell
+								sorted={column === 'ranks.fbb' ? direction ?? undefined  : undefined}
+								onClick={() => this._handleSort('ranks.fbb')}
+								>
+								{t('rank_names.fbb_rank')}
+							</Table.HeaderCell>
+						</>}
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'antimatter' ? direction ?? undefined  : undefined}
@@ -440,6 +464,11 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 									<div style={{ gridArea: 'usages', fontWeight: 'bold'}}>{this.printUsage(ship)}</div>
 								</div>
 							</Table.Cell>
+							{withranks && <>
+								<Table.Cell>{formatRank('ship', ship.ranks?.overall, t)}</Table.Cell>
+								<Table.Cell>{formatRank('ship', ship.ranks?.arena, t)}</Table.Cell>
+								<Table.Cell>{formatRank('ship', ship.ranks?.fbb, t)}</Table.Cell>
+							</>}
 							<Table.Cell>{ship.antimatter}</Table.Cell>
 							<Table.Cell>{ship.accuracy}</Table.Cell>
 							<Table.Cell>{ship.attack} ({ship.attacks_per_second}/s)</Table.Cell>

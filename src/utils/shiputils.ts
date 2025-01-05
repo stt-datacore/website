@@ -8,6 +8,7 @@ import { shipStatSortConfig  } from "../utils/crewutils";
 import CONFIG from "../components/CONFIG";
 import { PlayerContextData } from "../context/playercontext";
 import { ShipWorkerItem, ShipWorkerTransportItem } from "../model/worker";
+import { getBosses, getCrewDivisions, getShipDivision } from "../../scripts/ships/scoring";
 
 export function exportShipFields(): ExportField[] {
 	return [
@@ -230,13 +231,19 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[], max_buf
  * @param seat Optional. Get only crew for the specified seat (skill). If the seat doesn't exist on the ship, an empty array is returned.
  * @returns An array of all crew.
  */
-export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)[], onlyTriggers: boolean = false, seats?: BaseSkillFields[] | string[] | undefined) {
+export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)[], onlyTriggers: boolean = false, seats?: BaseSkillFields[] | string[] | undefined, fbb?: number) {
 	// first, get only the crew with the specified traits.
 	console.log("Find Potential Crew For " + ship.name);
 	if (seats?.length && !seats.some((seat) => ship.battle_stations?.some(bs => bs.skill === seat))) return [];
 
 	let bscrew = allCrew.filter((crew: PlayerCrew | CrewMember) => {
-		if (crew.max_rarity > ship.rarity) return false;
+		if (fbb) {
+			let boss = getBosses(ship, crew).find(f => f.id === fbb);
+			if (!boss) return false;
+		}
+		else {
+			if (!getCrewDivisions(crew.max_rarity).includes(getShipDivision(ship.rarity))) return false;
+		}
 		if (seats?.length) {
 			return (seats?.some((seat) => crew.base_skills && crew.base_skills[seat] !== undefined));
 		}

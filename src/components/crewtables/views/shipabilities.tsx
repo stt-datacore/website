@@ -18,49 +18,13 @@ import { TranslateMethod } from '../../../model/player';
 import { GlobalContext } from '../../../context/globalcontext';
 import { CrewMember } from '../../../model/crew';
 import { OptionsPanelFlexRow } from '../../stats/utils';
+import { formatRank } from '../../ship/utils';
 
 const isWindow = typeof window !== 'undefined';
 
-export function getShipTableConfig(t: TranslateMethod) {
-	return [
-		{
-			width: 1, column: 'ranks.ship.overall', title: t('rank_names.ship_rank'),
-			customCompare: (a: CrewMember, b: CrewMember) => {
-				if (!a.ranks.ship && !b.ranks.ship) return 0;
-				else if (!a.ranks.ship) return 1;
-				else if (!b.ranks.ship) return -1;
-				let r = a.ranks.ship.overall - b.ranks.ship.overall;
-				if (!r) r = a.ranks.ship.kind.localeCompare(b.ranks.ship.kind);
-				return r;
-			},
-			reverse: true
-		},
-		{
-			width: 1, column: 'ranks.ship.arena', title: t('rank_names.arena_rank'),
-			customCompare: (a: CrewMember, b: CrewMember) => {
-				if (!a.ranks.ship && !b.ranks.ship) return 0;
-				else if (!a.ranks.ship) return 1;
-				else if (!b.ranks.ship) return -1;
-				let r = a.ranks.ship.arena - b.ranks.ship.arena;
-				if (!r) r = a.ranks.ship.kind.localeCompare(b.ranks.ship.kind);
-				if (!r) r = a.ranks.ship.overall - b.ranks.ship.overall;
-				return r;
-			},
-			reverse: true
-		},
-		{
-			width: 1, column: 'ranks.ship.fbb', title: t('rank_names.fbb_rank'),
-			customCompare: (a: CrewMember, b: CrewMember) => {
-				if (!a.ranks.ship && !b.ranks.ship) return 0;
-				else if (!a.ranks.ship) return 1;
-				else if (!b.ranks.ship) return -1;
-				let r = a.ranks.ship.fbb - b.ranks.ship.fbb;
-				if (!r) r = a.ranks.ship.kind.localeCompare(b.ranks.ship.kind);
-				if (!r) r = a.ranks.ship.overall - b.ranks.ship.overall;
-				return r;
-			},
-			reverse: true
-		},
+export function getShipTableConfig(t: TranslateMethod, withranks: boolean) {
+	const colConfig = [
+
 		{ width: 1, column: 'action.bonus_type', title: t('ship.boosts') },
 		{ width: 1, column: 'action.bonus_amount', title: t('ship.amount'), reverse: true, tiebreakers: ['action.bonus_type'] },
 		{ width: 1, column: 'action.penalty.type', title: t('ship.handicap'), tiebreakers: ['action.penalty.amount'] },
@@ -77,29 +41,77 @@ export function getShipTableConfig(t: TranslateMethod) {
 		{ width: 1, column: 'ship_battle.crit_chance', title: t('ship.crit_rating'), reverse: true },
 		{ width: 1, column: 'ship_battle.evasion', title: t('ship.evasion'), reverse: true }
 	] as ITableConfigRow[];
+
+	if (withranks) {
+		colConfig.unshift(
+			{
+				width: 1, column: 'ranks.ship.overall', title: t('rank_names.ship_rank'),
+				customCompare: (a: CrewMember, b: CrewMember) => {
+					if (!a.ranks.ship && !b.ranks.ship) return 0;
+					else if (!a.ranks.ship) return 1;
+					else if (!b.ranks.ship) return -1;
+					let r = a.ranks.ship.overall - b.ranks.ship.overall;
+					if (!r) r = a.ranks.ship.kind.localeCompare(b.ranks.ship.kind);
+					return r;
+				},
+				reverse: true
+			},
+			{
+				width: 1, column: 'ranks.ship.arena', title: t('rank_names.arena_rank'),
+				customCompare: (a: CrewMember, b: CrewMember) => {
+					if (!a.ranks.ship && !b.ranks.ship) return 0;
+					else if (!a.ranks.ship) return 1;
+					else if (!b.ranks.ship) return -1;
+					let r = a.ranks.ship.arena - b.ranks.ship.arena;
+					if (!r) r = a.ranks.ship.kind.localeCompare(b.ranks.ship.kind);
+					if (!r) r = a.ranks.ship.overall - b.ranks.ship.overall;
+					return r;
+				},
+				reverse: true
+			},
+			{
+				width: 1, column: 'ranks.ship.fbb', title: t('rank_names.fbb_rank'),
+				customCompare: (a: CrewMember, b: CrewMember) => {
+					if (!a.ranks.ship && !b.ranks.ship) return 0;
+					else if (!a.ranks.ship) return 1;
+					else if (!b.ranks.ship) return -1;
+					let r = a.ranks.ship.fbb - b.ranks.ship.fbb;
+					if (!r) r = a.ranks.ship.kind.localeCompare(b.ranks.ship.kind);
+					if (!r) r = a.ranks.ship.overall - b.ranks.ship.overall;
+					return r;
+				},
+				reverse: true
+			}
+		)
+	}
+
+	return colConfig;
 }
 
 type CrewCellProps = {
 	crew: IRosterCrew;
+	withranks: boolean;
 };
 
 export const CrewShipCells = (props: CrewCellProps) => {
-	const { crew } = props;
+	const { crew, withranks } = props;
 	const { t } = React.useContext(GlobalContext).localized;
 	if (crew.action.ability !== undefined && crew.action.ability_text === undefined) {
 		crew.action.ability_text = crew.action.ability ? getShipBonus(t, crew) : '';
 	}
 	return (
 		<React.Fragment>
-			<Table.Cell textAlign='center'>
-				{!!crew.ranks.ship && formatRank(crew.ranks.ship?.kind, crew.ranks.ship.overall)}
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				{!!crew.ranks.ship && formatRank(crew.ranks.ship?.kind, crew.ranks.ship.arena)}
-			</Table.Cell>
-			<Table.Cell textAlign='center'>
-				{!!crew.ranks.ship && formatRank(crew.ranks.ship?.kind, crew.ranks.ship.fbb)}
-			</Table.Cell>
+			{withranks && <>
+				<Table.Cell textAlign='center'>
+					{!!crew.ranks.ship && formatRank(crew.ranks.ship?.kind, crew.ranks.ship.overall, t)}
+				</Table.Cell>
+				<Table.Cell textAlign='center'>
+					{!!crew.ranks.ship && formatRank(crew.ranks.ship?.kind, crew.ranks.ship.arena, t)}
+				</Table.Cell>
+				<Table.Cell textAlign='center'>
+					{!!crew.ranks.ship && formatRank(crew.ranks.ship?.kind, crew.ranks.ship.fbb, t)}
+				</Table.Cell>
+			</>}
 			<Table.Cell textAlign='center'>
 				<b>{CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}</b>
 			</Table.Cell>
@@ -148,20 +160,6 @@ export const CrewShipCells = (props: CrewCellProps) => {
 		</React.Fragment>
 	);
 
-	function formatRank(kind: string, rank: number) {
-		const flexRow = OptionsPanelFlexRow;
-		kind = kind.slice(0, 1).toLowerCase();
-		let clr = ''
-		if (kind === 'd') clr = 'dodgerblue';
-		else clr = 'lightcoral';
-
-		return <div style={{...flexRow, justifyContent: 'space-between'}}>
-			<span style={{color: clr, fontWeight: 'bold'}}>{t(`rank_names.advantage.${kind}`)}</span>
-			<span style={{color: gradeToColor(rank / 10) || undefined}}>{rank.toFixed(2)}</span>
-		</div>
-
-
-	}
 };
 
 export type ShipAdvantage = 'offense' | 'defense';

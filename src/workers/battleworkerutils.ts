@@ -168,6 +168,9 @@ export function getInstantPowerInfo(ship: Ship, actions: (ShipAction | false)[],
 
     let c_crit_chance = ship.crit_chance;
     let c_crit_bonus = ship.crit_bonus;
+    let s_crit_chance = ship.crit_chance;
+    let s_crit_bonus = ship.crit_bonus;
+
     let c_b_attack = getShipNumber(o_attack);
     let c_b_evasion = getShipNumber(o_evasion);
     let c_b_accuracy = getShipNumber(o_accuracy);
@@ -196,7 +199,8 @@ export function getInstantPowerInfo(ship: Ship, actions: (ShipAction | false)[],
             all_from.push({
                 type: 4,
                 action: action.symbol,
-                bonus: action.ability.amount
+                bonus: action.ability.amount,
+                aspect: 'ability'
             });
         }
         else if (action.ability?.type === 5) {
@@ -204,9 +208,19 @@ export function getInstantPowerInfo(ship: Ship, actions: (ShipAction | false)[],
             all_from.push({
                 type: 5,
                 action: action.symbol,
-                bonus: action.ability.amount
+                bonus: action.ability.amount,
+                aspect: 'ability'
             });
         }
+        else if (action.ability?.type === 1) {
+            all_from.push({
+                type: 1,
+                action: action.symbol,
+                bonus: action.ability.amount,
+                aspect: 'ability'
+            });
+        }
+
         if (action.bonus_type === 0) {
             if (action.ability?.type === 0) {
                 if (c_a_attack < action.bonus_amount + action.ability.amount) {
@@ -307,10 +321,12 @@ export function getInstantPowerInfo(ship: Ship, actions: (ShipAction | false)[],
     o_accuracy += boost[2];
 
     for (let i = 0; i < 3; i++) {
+        if (!comes_from[i]) continue;
         all_from.push({
             type: i,
             bonus: boost[i],
-            action: comes_from[i]
+            action: comes_from[i],
+            aspect: 'power'
         });
     }
 
@@ -334,6 +350,20 @@ export function getInstantPowerInfo(ship: Ship, actions: (ShipAction | false)[],
         with_bonus: (o_attack + (o_attack * o_crit_bonus)) * ship_mul,
         with_bonus_and_chance: ((o_attack + (o_attack * o_crit_bonus * (o_crit_chance))) * ship_mul * o_hit_chance)
     }
+
+    all_from.forEach((info) => {
+        if (info.aspect === 'power') return;
+        if (info.type === 4) {
+            let a = getCritChance(s_crit_chance) / 100;
+            let n = getCritChance(s_crit_chance + info.bonus) / 100;
+            info.bonus = (n - a) * o_attack;
+        }
+        else if (info.type === 5) {
+            let a = Math.floor(s_crit_bonus / 100) * 100;
+            let n = Math.floor((s_crit_bonus + info.bonus) / 100) * 100;
+            info.bonus = (n - a) * o_attack;
+        }
+    });
 
     return {
         condensed: {
@@ -755,8 +785,8 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             }
         }
 
-        let immediates = [] as { base: number, max: number, standard: number }[];
-        let oppo_immediates = [] as { base: number, max: number, standard: number }[];
+        let immediates = [] as { base: number, max: number, standard: number, action: string }[];
+        let oppo_immediates = [] as { base: number, max: number, standard: number, action: string }[];
         let activation = 0 as number | boolean;
         let oppo_activation = 0 as number | boolean;
         let ca = 0;
@@ -877,7 +907,8 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                         immediates.push({
                             base: (powerInfo.computed.attack.base * activation),
                             max: (powerInfo.computed.attack.with_bonus * activation),
-                            standard: (powerInfo.computed.attack.with_bonus_and_chance * activation)
+                            standard: (powerInfo.computed.attack.with_bonus_and_chance * activation),
+                            action: action.symbol
                         });
                     }
 
@@ -933,7 +964,8 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                             oppo_immediates.push({
                                 base: (oppo_powerInfo.computed.attack.base * oppo_activation),
                                 max: (oppo_powerInfo.computed.attack.with_bonus * oppo_activation),
-                                standard: (oppo_powerInfo.computed.attack.with_bonus_and_chance * oppo_activation)
+                                standard: (oppo_powerInfo.computed.attack.with_bonus_and_chance * oppo_activation),
+                                action: o_action.symbol
                             });
                         }
 
@@ -962,6 +994,14 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             if (immediates.length) {
                 if (!cloaked && !oppo_cloaked) {
                     for (let imm of immediates) {
+                        if (powerInfo?.computed.comes_from?.length) {
+                            powerInfo.computed.comes_from = powerInfo.computed.comes_from.map((cf => {
+                                if (cf.action === imm.action && cf.aspect === 'ability') {
+                                    return { ...cf, bonus: imm.standard };
+                                }
+                                return cf;
+                            }));
+                        }
                         instant_now += imm.standard;
                         instant_now_min += imm.base;
                         instant_now_max += imm.max;
@@ -978,6 +1018,14 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             if (oppo_immediates.length) {
                 if (!cloaked && !oppo_cloaked) {
                     for (let imm of oppo_immediates) {
+                        if (oppo_powerInfo?.computed.comes_from?.length) {
+                            oppo_powerInfo.computed.comes_from = oppo_powerInfo.computed.comes_from.map((cf => {
+                                if (cf.action === imm.action && cf.aspect === 'ability') {
+                                    return { ...cf, bonus: imm.standard };
+                                }
+                                return cf;
+                            }));
+                        }
                         o_instant_now += imm.standard;
                         o_instant_now_min += imm.base;
                         o_instant_now_max += imm.max;

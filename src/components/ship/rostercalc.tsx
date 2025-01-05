@@ -408,9 +408,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         let ships = getShipsInUse(globalContext.player);
                         const f = ships.find(f => f.ship.symbol === ship.symbol && f.battle_mode === bmode && f.rarity === rarity);
                         if (f) {
-                            setCrewStations(f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew));
+                            setBattleMode(bmode);
                             setTimeout(() => {
-                                setBattleMode(bmode);
+                                setCrewStations(f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew));
                             });
                         }
                     }
@@ -420,7 +420,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 }
             }
         }
-    }, []);
+    }, [ship]);
 
     React.useEffect(() => {
         if (!activeSuggestion) return;

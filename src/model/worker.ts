@@ -16,6 +16,7 @@ export type ComesFrom = {
     type: number;
     action: string;
     bonus: number;
+    aspect: 'ability' | 'power';
 }
 
 
