@@ -102,6 +102,8 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 							<div>
 								<Button	/* Save as new recommendation */
 									content='Save as new recommendation'
+									color={isValidConfig ? 'green' : undefined}
+									size='large'
 									disabled={!isValidConfig}
 									onClick={() => saveVoyage()}
 								/>
@@ -139,6 +141,13 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 	}
 };
 
+interface IComparisonRow {
+	field: string;
+	title: string;
+	renderValue?: (value: number) => JSX.Element;
+	condition: boolean;
+};
+
 type EstimatesComparedProps = {
 	current: Estimate;
 	baseline: Estimate;
@@ -150,13 +159,6 @@ const EstimatesCompared = (props: EstimatesComparedProps) => {
 
 	const renderAsTime = (value: number) => <>{formatTime(value, t)}</>;
 	const renderAsPercent = (value: number) => <>{Math.round(value)}%</>;
-
-	interface IComparisonRow {
-		field: string;
-		title: string;
-		renderValue: (value: number) => JSX.Element;
-		condition: boolean;
-	};
 
 	const rows: IComparisonRow[] = [
 		{	/* Estimate */
@@ -220,16 +222,11 @@ type BonusesComparedProps = {
 const BonusesCompared = (props: BonusesComparedProps) => {
 	const { current, baseline } = props;
 
-	interface IComparisonRow {
-		field: string;
-		title: string;
-		condition: boolean;
-	};
-
 	const rows: IComparisonRow[] = [
-		{	/* Estimate */
+		{	/* Antimatter */
 			field: 'max_hp',
 			title: 'Antimatter',
+			renderValue: renderAm,
 			condition: true
 		}
 	];
@@ -249,6 +246,7 @@ const BonusesCompared = (props: BonusesComparedProps) => {
 									baselineValue: baseline[row.field],
 									showCurrentValue: true
 								}}
+								customRender={row.renderValue}
 								showNoChange
 								justifyContent='right'
 							/>
@@ -338,19 +336,13 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 	}
 
 	function renderBonus(crewSlot: IProspectiveCrewSlot): JSX.Element {
-		const renderAm = (value: number) => (
-			<React.Fragment>
-				{value} <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
-			</React.Fragment>
-		);
-
 		const controlCrew: PlayerCrew | undefined = control?.config.crew_slots.find(cs => cs.symbol === crewSlot.symbol)?.crew;
 		const controlBonus: number = controlCrew ? getCrewTraitBonus(prospectiveConfig, controlCrew, crewSlot.trait) : 0;
 
 		const editedSlot: boolean = !crewSlot.crew || (!!controlCrew && controlCrew.id !== crewSlot.crew.id);
 
 		if (!editedSlot)
-			return renderAm(controlBonus);
+			return controlBonus > 0 ? renderAm(controlBonus) : <></>;
 
 		const editedBonus: number = crewSlot.crew ? getCrewTraitBonus(prospectiveConfig, crewSlot.crew, crewSlot.trait) : 0;
 
@@ -419,3 +411,11 @@ const ProspectiveSkillCheck = (props: ProspectiveSkillCheckProps) => {
 		);
 	}
 };
+
+function renderAm(value: number): JSX.Element {
+	return (
+		<React.Fragment>
+			{value} <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+		</React.Fragment>
+	);
+}

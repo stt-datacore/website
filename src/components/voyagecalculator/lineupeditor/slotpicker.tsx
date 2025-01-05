@@ -349,54 +349,58 @@ const GridAlternateSlot = (props: GridAlternateSlotProps) => {
 
 	function renderDiffsAsTable(): JSX.Element {
 		return (
-			<div style={{ overflowX: 'auto' }}>
-				<Table striped compact unstackable>
-					<Table.Body>
-						<Table.Row>
-							<Table.Cell textAlign='center'>
-								<b>Voyage</b>
-							</Table.Cell>
-							<Table.Cell textAlign='center'>
-								<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
-							</Table.Cell>
-							<Table.Cell textAlign='center'>
-								<b>Estimate</b>
-							</Table.Cell>
-						</Table.Row>
-						<Table.Row>
-							<Table.Cell textAlign='center'>
-								<NumericDiff diff={alternateSlot[`diff_voyage_total`]} showNoChange />
-							</Table.Cell>
-							<Table.Cell textAlign='center'>
-								<NumericDiff diff={alternateSlot[`diff_antimatter`]} showNoChange />
-							</Table.Cell>
-							<Table.Cell textAlign='center'>
-								{renderEstimate(alternateSlot)}
-							</Table.Cell>
-						</Table.Row>
-					</Table.Body>
-				</Table>
-				<Table striped compact unstackable>
-					<Table.Body>
-						<Table.Row>
-							{diffSkills.map(skill => (
-								<Table.Cell key={skill} textAlign='center'>
-									<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
-									{calculatorContext.voyageConfig.skills.primary_skill === skill && <Icon name='star' color='yellow' />}
-									{calculatorContext.voyageConfig.skills.secondary_skill === skill && <Icon name='star' color='grey' />}
+			<React.Fragment>
+				<div style={{ overflowX: 'auto' }}>
+					<Table striped compact unstackable>
+						<Table.Body>
+							<Table.Row>
+								<Table.Cell textAlign='center'>
+									<b>Voyage</b>
 								</Table.Cell>
-							))}
-						</Table.Row>
-						<Table.Row>
-							{diffSkills.map(skill => (
-								<Table.Cell key={skill} textAlign='center'>
-									<NumericDiff diff={alternateSlot[`diff_${skill}`]} showNoChange />
+								<Table.Cell textAlign='center'>
+									<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 								</Table.Cell>
-							))}
-						</Table.Row>
-					</Table.Body>
-				</Table>
-			</div>
+								<Table.Cell textAlign='center'>
+									<b>Estimate</b>
+								</Table.Cell>
+							</Table.Row>
+							<Table.Row>
+								<Table.Cell textAlign='center'>
+									<NumericDiff diff={alternateSlot[`diff_voyage_total`]} showNoChange />
+								</Table.Cell>
+								<Table.Cell textAlign='center'>
+									<NumericDiff diff={alternateSlot[`diff_antimatter`]} showNoChange />
+								</Table.Cell>
+								<Table.Cell textAlign='center'>
+									{renderEstimate(alternateSlot)}
+								</Table.Cell>
+							</Table.Row>
+						</Table.Body>
+					</Table>
+				</div>
+				<div style={{ overflowX: 'auto' }}>
+					<Table striped compact unstackable>
+						<Table.Body>
+							<Table.Row>
+								{diffSkills.map(skill => (
+									<Table.Cell key={skill} textAlign='center'>
+										<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+										{calculatorContext.voyageConfig.skills.primary_skill === skill && <Icon name='star' color='yellow' />}
+										{calculatorContext.voyageConfig.skills.secondary_skill === skill && <Icon name='star' color='grey' />}
+									</Table.Cell>
+								))}
+							</Table.Row>
+							<Table.Row>
+								{diffSkills.map(skill => (
+									<Table.Cell key={skill} textAlign='center'>
+										<NumericDiff diff={alternateSlot[`diff_${skill}`]} showNoChange />
+									</Table.Cell>
+								))}
+							</Table.Row>
+						</Table.Body>
+					</Table>
+				</div>
+			</React.Fragment>
 		);
 	}
 };
