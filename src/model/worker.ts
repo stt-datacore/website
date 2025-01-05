@@ -12,6 +12,13 @@ import { VPDetails } from "../utils/voyagevp";
 import { IPolestar } from "../components/retrieval/model";
 import { RetrievalCost } from "../utils/retrieval";
 
+export type ComesFrom = {
+    type: number;
+    action: string;
+    bonus: number;
+}
+
+
 export interface WorkerConfigBase<T> {
     max_results?: number
     max_iterations?: bigint;
@@ -437,6 +444,7 @@ export interface AttackInstant {
   opponent_max_attack: number;
   cloaked: boolean;
   opponent_cloaked: boolean;
+  comes_from: ComesFrom[]
 }
 
 

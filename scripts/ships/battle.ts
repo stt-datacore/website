@@ -1,8 +1,19 @@
 import { CrewMember } from "../../src/model/crew";
 import { BattleMode, BattleStation, Ship } from "../../src/model/ship";
-import { AttackInstant, ShipWorkerItem } from "../../src/model/worker";
+import { AttackInstant, ComesFrom, ShipWorkerItem } from "../../src/model/worker";
 import { iterateBattle } from "../../src/workers/battleworkerutils";
 import { BattleRun, characterizeCrew, shipCompatibility, getShipDivision, getCrewDivisions, getBosses, MaxDefense, MaxOffense, BattleRunBase, getMaxTime } from "./scoring";
+
+export interface UpTimeRecord {
+    action: string;
+    uptime: number;
+}
+
+export interface ScoringBattleRun extends ShipWorkerItem {
+    opponent: Ship;
+    uptimes: UpTimeRecord[];
+    action_powers: {[key:string]: ComesFrom[] }
+}
 
 export function getCleanShipCopy(ship: Ship) {
     ship = JSON.parse(JSON.stringify(ship)) as Ship;
@@ -46,18 +57,42 @@ export const processBattleRun = (id: number, battle_mode: BattleMode, attacks: A
     let highest_attack = 0;
     let high_attack_second = 0;
 
+    const actionIdx = {} as {[key:string]: number}
+
+    const actionPower = {} as {[key:string]: ComesFrom[] }
+
     attacks.forEach((attack) => {
+        if (attack.comes_from.length) {
+            for (let from of attack.comes_from) {
+
+                actionPower[from.action] ??= [];
+                actionPower[from.action].push(from);
+            }
+        }
+        if (attack.actions?.length) {
+            for (let act of attack.actions) {
+                actionIdx[act.symbol] ??= 0;
+                actionIdx[act.symbol]++;
+            }
+        }
         if (attack.max_attack > highest_attack) {
             highest_attack = attack.max_attack;
             high_attack_second = attack.second;
         }
+    });
+    const uptimes = [] as UpTimeRecord[];
+    Object.entries(actionIdx).forEach(([action, uptime]) => {
+        uptimes.push({
+            action,
+            uptime: uptime / rate
+        });
     });
 
     let arena_metric = Math.ceil(highest_attack / high_attack_second);
     let skirmish_metric = weighted_attack;
     let fbb_metric = attack;
 
-    return {
+    const result: ScoringBattleRun = {
         id,
         rate,
         battle_mode,
@@ -74,9 +109,13 @@ export const processBattleRun = (id: number, battle_mode: BattleMode, attacks: A
         fbb_metric,
         opponent: opponent ?? attacks[0].ship,
         win,
-        reference_battle
+        reference_battle,
+        uptimes,
+        action_powers: actionPower
         //attacks: get_attacks ? attacks : undefined
-    } as ShipWorkerItem & { opponent: Ship };
+    };
+
+    return result;
 }
 
 export const runBattles = (

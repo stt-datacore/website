@@ -3,6 +3,7 @@ import { CrewMember } from "../model/crew";
 import { ShipAction, Ship } from "../model/ship";
 import { setupShip } from "../utils/shiputils";
 import { getPermutations } from "../utils/misc";
+import { ComesFrom } from "../model/worker";
 
 export interface PowerStat {
     attack: number;
@@ -33,6 +34,7 @@ export interface InstantPowerInfo {
         },
         boarding_damage_per_sec: number;
         baked_in_boarding: boolean;
+        comes_from: ComesFrom[];
     }
     grants: number[]
 }
@@ -181,7 +183,9 @@ export function getInstantPowerInfo(ship: Ship, actions: (ShipAction | false)[],
         evasion: c_b_evasion,
         accuracy: c_b_accuracy
     };
-
+    let comes_from = ['', '', ''];
+    let boost = [0, 0, 0];
+    let all_from = [] as ComesFrom[];
     let c = actions.length;
     let action: ShipAction;
     for (let i = 0; i < c; i++) {
@@ -189,28 +193,43 @@ export function getInstantPowerInfo(ship: Ship, actions: (ShipAction | false)[],
         else action = actions[i] as ShipAction;
         if (action.ability?.type === 4) {
             c_crit_chance += action.ability.amount;
+            all_from.push({
+                type: 4,
+                action: action.symbol,
+                bonus: action.ability.amount
+            });
         }
         else if (action.ability?.type === 5) {
             c_crit_bonus += action.ability.amount;
+            all_from.push({
+                type: 5,
+                action: action.symbol,
+                bonus: action.ability.amount
+            });
         }
         if (action.bonus_type === 0) {
             if (action.ability?.type === 0) {
                 if (c_a_attack < action.bonus_amount + action.ability.amount) {
                     c_a_attack = action.bonus_amount + action.ability.amount;
+                    comes_from[0] = action.symbol;
                 }
             }
             else if (c_a_attack < action.bonus_amount) {
                 c_a_attack = action.bonus_amount;
+                comes_from[0] = action.symbol;
             }
+
         }
         else if (action.bonus_type === 1) {
             if (c_a_evasion < action.bonus_amount) {
                 c_a_evasion = action.bonus_amount;
+                comes_from[1] = action.symbol;
             }
         }
         else if (action.bonus_type === 2) {
             if (c_a_accuracy < action.bonus_amount) {
                 c_a_accuracy = action.bonus_amount;
+                comes_from[2] = action.symbol;
             }
         }
 
@@ -221,6 +240,7 @@ export function getInstantPowerInfo(ship: Ship, actions: (ShipAction | false)[],
         if (action.ability?.type === 8) {
             board_damage += (action.ability.amount / 100);
         }
+
         if (action.penalty) {
             if (action.penalty.type === 0) {
                 if (c_p_attack < action.bonus_amount) {
@@ -277,9 +297,22 @@ export function getInstantPowerInfo(ship: Ship, actions: (ShipAction | false)[],
     }
 
     // use the ship's base numbers as reported by the game, and add the power table reference for the active boosts.
-    o_attack += (PowerTable[c_a_attack] - PowerTable[c_b_attack]);
-    o_evasion += (PowerTable[c_a_evasion] - PowerTable[c_b_evasion]);
-    o_accuracy += (PowerTable[c_a_accuracy] - PowerTable[c_b_accuracy]);
+    boost[0] = (PowerTable[c_a_attack] - PowerTable[c_b_attack]);
+    o_attack += boost[0];
+
+    boost[1] = (PowerTable[c_a_evasion] - PowerTable[c_b_evasion]);
+    o_evasion += boost[1];
+
+    boost[2] = (PowerTable[c_a_accuracy] - PowerTable[c_b_accuracy])
+    o_accuracy += boost[2];
+
+    for (let i = 0; i < 3; i++) {
+        all_from.push({
+            type: i,
+            bonus: boost[i],
+            action: comes_from[i]
+        });
+    }
 
     let o_crit_chance = getCritChance(c_crit_chance) / 100;
     c_crit_bonus = Math.floor(c_crit_bonus / 100) * 100;
@@ -323,7 +356,8 @@ export function getInstantPowerInfo(ship: Ship, actions: (ShipAction | false)[],
             crit_chance: o_crit_chance,
             attacks_per_second: c_speed,
             boarding_damage_per_sec: c_board,
-            baked_in_boarding: !!baked_in_boarding
+            baked_in_boarding: !!baked_in_boarding,
+            comes_from: all_from
         },
         grants
     };
@@ -1067,7 +1101,8 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                 boarding_damage_per_second: boarding_sec,
                 opponent_boarding_damage_per_second: o_boarding_sec,
                 cloaked,
-                opponent_cloaked: oppo_cloaked
+                opponent_cloaked: oppo_cloaked,
+                comes_from: powerInfo?.computed.comes_from ?? []
             });
 
             if (oppo_hull <= 0 || hull <= 0) {
@@ -1083,6 +1118,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
                         let cu = uses.length;
 
                         for (let i = 0; i < cu; i++) {
+                            if (allactions[i].comes_from === 'ship') continue;
                             if (max_uses[i] && max_uses[i] <= uses[i]) {
                                 br = true;
                                 break;
