@@ -212,11 +212,34 @@ export interface Nickname {
     creator?: string;
 }
 
+export interface ShipRanks {
+    overall: number,
+    arena: number,
+    fbb: number,
+    kind: 'offense' | 'defense' | 'ship',
+    divisions: {
+        fbb: {
+            1?: number,
+            2?: number,
+            3?: number,
+            4?: number,
+            5?: number,
+            6?: number
+        },
+        arena: {
+            1?: number,
+            2?: number,
+            3?: number
+        }
+    }
+}
+
 export interface Ranks {
     voyRank: number;
     gauntletRank: number;
     chronCostRank: number;
     traitRank: number;
+    ship?: ShipRanks;
     B_SEC?: number;
     A_SEC?: number;
     V_CMD_SEC?: number;

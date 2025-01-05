@@ -6,21 +6,61 @@ import CONFIG from '../../../components/CONFIG';
 
 import { RarityFilter } from '../../../components/crewtables/commonoptions';
 
-import { ShipSkillRanking, ShipStatMap, createShipStatMap, getShipBonus, getSkills, mapToRankings } from '../../../utils/crewutils';
+import { ShipSkillRanking, ShipStatMap, createShipStatMap, getShipBonus, getSkills, gradeToColor, mapToRankings } from '../../../utils/crewutils';
 import { Ship } from '../../../model/ship';
 import { ShipPickerFilter, findPotentialCrew, printTriggers } from '../../../utils/shiputils';
-import { AbilityUses, BonusPicker, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker, TriggerPicker } from '../../../components/crewtables/shipoptions';
+import { AbilityUses, AdvantagePicker, BonusPicker, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker, TriggerPicker } from '../../../components/crewtables/shipoptions';
 import { DEFAULT_MOBILE_WIDTH } from '../../../components/hovering/hoverstat';
 
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
 import { TranslateMethod } from '../../../model/player';
 import { GlobalContext } from '../../../context/globalcontext';
+import { CrewMember } from '../../../model/crew';
+import { OptionsPanelFlexRow } from '../../stats/utils';
 
 const isWindow = typeof window !== 'undefined';
 
 export function getShipTableConfig(t: TranslateMethod) {
 	return [
+		{
+			width: 1, column: 'ranks.ship.overall', title: t('rank_names.ship_rank'),
+			customCompare: (a: CrewMember, b: CrewMember) => {
+				if (!a.ranks.ship && !b.ranks.ship) return 0;
+				else if (!a.ranks.ship) return 1;
+				else if (!b.ranks.ship) return -1;
+				let r = a.ranks.ship.overall - b.ranks.ship.overall;
+				if (!r) r = a.ranks.ship.kind.localeCompare(b.ranks.ship.kind);
+				return r;
+			},
+			reverse: true
+		},
+		{
+			width: 1, column: 'ranks.ship.arena', title: t('rank_names.arena_rank'),
+			customCompare: (a: CrewMember, b: CrewMember) => {
+				if (!a.ranks.ship && !b.ranks.ship) return 0;
+				else if (!a.ranks.ship) return 1;
+				else if (!b.ranks.ship) return -1;
+				let r = a.ranks.ship.arena - b.ranks.ship.arena;
+				if (!r) r = a.ranks.ship.kind.localeCompare(b.ranks.ship.kind);
+				if (!r) r = a.ranks.ship.overall - b.ranks.ship.overall;
+				return r;
+			},
+			reverse: true
+		},
+		{
+			width: 1, column: 'ranks.ship.fbb', title: t('rank_names.fbb_rank'),
+			customCompare: (a: CrewMember, b: CrewMember) => {
+				if (!a.ranks.ship && !b.ranks.ship) return 0;
+				else if (!a.ranks.ship) return 1;
+				else if (!b.ranks.ship) return -1;
+				let r = a.ranks.ship.fbb - b.ranks.ship.fbb;
+				if (!r) r = a.ranks.ship.kind.localeCompare(b.ranks.ship.kind);
+				if (!r) r = a.ranks.ship.overall - b.ranks.ship.overall;
+				return r;
+			},
+			reverse: true
+		},
 		{ width: 1, column: 'action.bonus_type', title: t('ship.boosts') },
 		{ width: 1, column: 'action.bonus_amount', title: t('ship.amount'), reverse: true, tiebreakers: ['action.bonus_type'] },
 		{ width: 1, column: 'action.penalty.type', title: t('ship.handicap'), tiebreakers: ['action.penalty.amount'] },
@@ -51,6 +91,15 @@ export const CrewShipCells = (props: CrewCellProps) => {
 	}
 	return (
 		<React.Fragment>
+			<Table.Cell textAlign='center'>
+				{!!crew.ranks.ship && formatRank(crew.ranks.ship?.kind, crew.ranks.ship.overall)}
+			</Table.Cell>
+			<Table.Cell textAlign='center'>
+				{!!crew.ranks.ship && formatRank(crew.ranks.ship?.kind, crew.ranks.ship.arena)}
+			</Table.Cell>
+			<Table.Cell textAlign='center'>
+				{!!crew.ranks.ship && formatRank(crew.ranks.ship?.kind, crew.ranks.ship.fbb)}
+			</Table.Cell>
 			<Table.Cell textAlign='center'>
 				<b>{CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}</b>
 			</Table.Cell>
@@ -98,7 +147,24 @@ export const CrewShipCells = (props: CrewCellProps) => {
 			</Table.Cell>
 		</React.Fragment>
 	);
+
+	function formatRank(kind: string, rank: number) {
+		const flexRow = OptionsPanelFlexRow;
+		kind = kind.slice(0, 1).toLowerCase();
+		let clr = ''
+		if (kind === 'd') clr = 'dodgerblue';
+		else clr = 'lightcoral';
+
+		return <div style={{...flexRow, justifyContent: 'space-between'}}>
+			<span style={{color: clr, fontWeight: 'bold'}}>{t(`rank_names.advantage.${kind}`)}</span>
+			<span style={{color: gradeToColor(rank / 10) || undefined}}>{rank.toFixed(2)}</span>
+		</div>
+
+
+	}
 };
+
+export type ShipAdvantage = 'offense' | 'defense';
 
 interface ShipAbilitiesConfig {
 	selectedShip?: Ship;
@@ -109,6 +175,7 @@ interface ShipAbilitiesConfig {
 	triggerOnly?: boolean;
 	selectedUses?: number[];
 	selectedBonuses?: number[];
+	selectedAdvantage?: ShipAdvantage;
 }
 
 type ShipAbilitiesFilterProps = {
@@ -128,7 +195,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 	const [shipPickerFilter, setShipPickerFilter] = React.useState({} as ShipPickerFilter);
 	const [shipFilters, setShipFilters] = React.useState<ShipAbilitiesConfig>({});
 
-	const { selectedBonuses, selectedShip, selectedTriggers, selectedSeats, selectedAbilities, selectedRankings, triggerOnly, selectedUses } = shipFilters;
+	const { selectedBonuses, selectedShip, selectedTriggers, selectedSeats, selectedAbilities, selectedRankings, triggerOnly, selectedUses, selectedAdvantage } = shipFilters;
 
 	const [availableSeats, setAvailableSeats] = React.useState([] as string[]);
 	const [availableAbilities, setAvailableAbilities] = React.useState([] as string[]);
@@ -149,6 +216,10 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 
 	const filterByShipAbility = (crew: IRosterCrew) => {
 		if (shipCrew && !shipCrew.some(cm => cm === crew.symbol)) return false;
+
+		if (selectedAdvantage && selectedAdvantage !== crew.ranks.ship?.kind) {
+			return false;
+		}
 
 		if (selectedUses?.length) {
 			if (!selectedUses.some(su => su === crew.action.limit || (su === 0 && crew.action.limit === undefined))) return false;
@@ -379,6 +450,11 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 					<div style={{display: "flex", flexDirection:"row", alignItems: "center", margin: 0}}>
 						<TriggerPicker selectedTriggers={selectedTriggers} setSelectedTriggers={(item) => setShipFilters({ ... shipFilters, selectedTriggers: item as string[] })} />
 					</div>}
+					<div style={{display: "flex", flexDirection:"row", alignItems: "center", marginLeft:"1em"}}>
+						<AdvantagePicker selectedAdvantage={selectedAdvantage}
+							setSelectedAdvantage={(value) => setShipFilters({...shipFilters, selectedAdvantage: value })}
+							/>
+					</div>
 				</div>
 
 				<div style={{

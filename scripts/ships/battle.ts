@@ -210,10 +210,10 @@ export const runBattles = (
                     }
                 }
                 let maxtime = 180;
-                // if (c) {
-                //     maxtime = getMaxTime(c);
-                //     if (maxtime !== 180) return;
-                // }
+                if (c) {
+                    maxtime = getMaxTime(c);
+                    if (maxtime !== 180) return;
+                }
                 result = iterateBattle(rate, true, ship, newstaff, boss, MaxDefense, MaxOffense, maxtime, undefined, undefined, undefined, fbb_variance, true, ignore_defeat_fbb, ignore_passives);
                 if (result.length) {
                     let attack = processBattleRun(current_id++, battle_mode, result, newstaff, rate, boss, true, reference_battle);

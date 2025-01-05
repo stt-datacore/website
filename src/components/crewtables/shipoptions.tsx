@@ -8,6 +8,7 @@ import CONFIG from "../CONFIG";
 import { getIconByKey } from "../item_presenters/shipskill";
 import { ShipSkillRanking } from "../../utils/crewutils";
 import { GlobalContext } from "../../context/globalcontext";
+import { ShipAdvantage } from "./views/shipabilities";
 
 export type AbilityUsesProps = {
     uses: number[];
@@ -502,3 +503,48 @@ export const ShipOwnership = (props: ShipOwnershipProps) => {
 };
 
 
+
+export type AdvantagePickerProps = {
+	selectedAdvantage?: ShipAdvantage;
+	setSelectedAdvantage: (value?: ShipAdvantage) => void;
+	altTitle?: string;
+};
+
+export const AdvantagePicker = (props: AdvantagePickerProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
+	const { selectedAdvantage, setSelectedAdvantage } = props;
+
+	const [advantage, setAdvantage] = React.useState(selectedAdvantage);
+
+    const advantageOptions = ['offense', 'defense'].map((u) => {
+        return {
+            key: u,
+            text: t(`rank_names.advantage.${u}`),
+			value: u,
+        }
+    }) ?? Object.keys(CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE).slice(0, 3).map((dt) => {
+		return {
+			key: Number.parseInt(dt),
+			value: Number.parseInt(dt),
+			text: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[dt]
+		}
+	});
+
+	React.useEffect(() => {
+		setSelectedAdvantage(advantage);
+	}, [advantage])
+
+	return (
+		<Form.Field>
+			<Dropdown
+				placeholder={props.altTitle ?? t('rank_names.advantage.select')}
+				clearable
+				selection
+				options={advantageOptions}
+				value={selectedAdvantage ?? []}
+				onChange={(e, { value }) => setAdvantage(value as ShipAdvantage | undefined)}
+				closeOnChange
+			/>
+		</Form.Field>
+	);
+};

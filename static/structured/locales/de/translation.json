@@ -1440,7 +1440,18 @@
         "gauntlet_rank": "Herausforderungsrang",
         "quipment_score": "Rüstzeug Werte",
         "trait_rank": "Eigenschaftsrang",
-        "voyage_rank": "Reiserang"
+        "voyage_rank": "Reiserang",
+        "ship_rank": "Schiffsrang",
+        "fbb_rank": "Flottenboss",
+        "arena_rank": "Arena",
+        "rank": "Rang",
+        "advantage": {
+            "select": "Wählen Sie einen Vorteil",
+            "offense": "Angriff (Genauigkeit/Schaden)",
+            "defense": "Verteidigung (Reparatur/Ausweichen)",
+            "o": "A",
+            "d": "V"
+        }
     },
     "ranking_method": {
         "delta_t": "Delta T",
