@@ -183,38 +183,38 @@ export const runBattles = (
             bosses.sort((a, b) => b.id - a.id);
             bosses.forEach((boss) => {
                 let newstaff = [...staff];
-                const ignore_defeat_fbb = crewtype === 'offense';
+                const ignore_defeat_fbb = false; //crewtype === 'offense';
 
                 battle_mode = `fbb_${boss.id - 1}` as BattleMode;
 
-                // if (newstaff.length === 1) {
-                //     if (c?.action.ability?.type === 2) {
-                //         // newstaff.push(c);
-                //     }
-                //     else if (crewtype !== 'defense') {
-                //         let compathr = hrpool.filter(
-                //             ff => ff.max_rarity <= boss.id
-                //             &&
-                //             (
-                //                 ff.action.bonus_type !== c?.action.bonus_type ||
-                //                 ff.action.bonus_amount < c?.action.bonus_amount
-                //             )
-                //         );
-                //         if (compathr?.length) {
-                //             let olen = newstaff.length;
-                //             for (let i = olen; i < ship.battle_stations!.length && i < olen + 2 && i < compathr.length; i++) {
-                //                 newstaff.push(compathr[i-1]);
-                //             }
-                //         }
-                //     }
-                // }
+                if (newstaff.length === 1) {
+                    if (c?.action.ability?.type === 2) {
+                        // newstaff.push(c);
+                    }
+                    else if (crewtype !== 'defense') {
+                        let compathr = hrpool.filter(
+                            ff => ff.max_rarity <= boss.id
+                            &&
+                            (
+                                ff.action.bonus_type !== c?.action.bonus_type ||
+                                ff.action.bonus_amount < c?.action.bonus_amount
+                            )
+                        );
+                        if (compathr?.length) {
+                            let olen = newstaff.length;
+                            for (let i = olen; i < ship.battle_stations!.length && i < olen + 2 && i < compathr.length; i++) {
+                                newstaff.push(compathr[i-1]);
+                            }
+                        }
+                    }
+                }
 
                 let maxtime = 180;
 
-                // if (c) {
-                //     maxtime = getMaxTime(c);
-                //     if (maxtime !== 180) return;
-                // }
+                if (c) {
+                    maxtime = getMaxTime(c);
+                    //if (maxtime !== 180) return;
+                }
 
                 result = iterateBattle(rate, true, ship, newstaff, boss, MaxDefense, MaxOffense, maxtime, undefined, undefined, undefined, fbb_variance, true, ignore_defeat_fbb, ignore_passives);
 
