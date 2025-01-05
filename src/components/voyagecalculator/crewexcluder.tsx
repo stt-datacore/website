@@ -111,7 +111,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		if (selectedEvent && phase) {
 			const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 			if (activeEvent) {
-				const rosterCrew = (globalContext.player.playerData?.player.character.crew ?? globalContext.core.crew)
+				const rosterCrew = props.rosterCrew
 					.filter(f => !!considerFrozen || (f.id && f.id > 0))
 					.filter((c) => activeEvent.bonus.indexOf(c.symbol) >= 0)
 					.map(m => (oneCrewCopy(m) as IEventScoredCrew));
