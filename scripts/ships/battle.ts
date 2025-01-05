@@ -210,10 +210,10 @@ export const runBattles = (
                     }
                 }
                 let maxtime = 180;
-                if (c) {
-                    maxtime = getMaxTime(c);
-                    if (maxtime !== 180) return;
-                }
+                // if (c) {
+                //     maxtime = getMaxTime(c);
+                //     if (maxtime !== 180) return;
+                // }
                 result = iterateBattle(rate, true, ship, newstaff, boss, MaxDefense, MaxOffense, maxtime, undefined, undefined, undefined, fbb_variance, true, ignore_defeat_fbb, ignore_passives);
                 if (result.length) {
                     let attack = processBattleRun(current_id++, battle_mode, result, newstaff, rate, boss, true, reference_battle);
@@ -221,13 +221,10 @@ export const runBattles = (
                         let time = attack.battle_time;
                         let dmg = attack.attack;
 
-                        // if (c?.action.limit) {
-                        //     let exp = (c.action.limit * c.action.duration) +
-                        //               ((c.action.limit - 1) * c.action.cooldown) +
-                        //               c.action.initial_cooldown;
-
-                        //     dmg *= (exp / 180);
-                        // }
+                        if (c?.action.limit) {
+                            let exp = getMaxTime(c);
+                            dmg *= (exp / 180);
+                        }
 
                         allruns[runidx++] = {
                             crew: c,
