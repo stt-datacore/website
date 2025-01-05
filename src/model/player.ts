@@ -3,14 +3,13 @@
 import { Ship } from "./ship";
 import { BossBattlesRoot, Energy } from "./boss";
 import { CaptainsBridgeRoot } from "./bridge";
-import { BaseSkills, ComputedSkill, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, Skill } from "./crew";
+import { BaseSkills, ComputedSkill, CapAchiever, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, Skill } from "./crew";
 import { ShipAction, ShipBonus } from "./ship";
 import { EquipmentItem } from "./equipment";
 import { Collection, Icon } from "./game-elements";
 import { ShuttleAdventure } from "./shuttle";
-import { ArchetypeRoot17, ArchetypeRoot20 } from "./archetype";
-import { IEventData } from "./events";
 import { IVoyageEventContent } from "./voyage";
+import { ArchetypeRoot20 } from "./archetype";
 
 export const ISM_ID = 14152;
 
@@ -675,10 +674,6 @@ export interface NodeMatches {
   [key: string]: NodeMatch;
 }
 
-export interface CapAchiever {
-  name: string
-  date: number
-}
 
 export interface PlayerEquipmentItem extends BuffBase {
   id?: number

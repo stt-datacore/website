@@ -28,10 +28,11 @@ type ValidField =
 	'ship_ability' |
 	'short_name' |
 	'skills' |
-	'traits';
+	'traits' |
+	'cap_achiever';
 
 const defaultFields = [
-'flavor',
+	'flavor',
 	'skills',
 	'fuses',
 	'ship_ability',
@@ -42,7 +43,8 @@ const defaultFields = [
 	'collections',
 	'nicknames',
 	'cross_fuses',
-	'date_added'
+	'date_added',
+	'cap_achiever'
 ] as ValidField[];
 
 export interface IFieldOverride {
@@ -67,6 +69,12 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 
 	const fields = props.fields ?? defaultFields;
 	const elements = [] as JSX.Element[];
+	if (!crew.cap_achiever && myCrew) {
+		let fc = myCrew.find(f => f.symbol === crew.symbol);
+		if (fc?.cap_achiever) {
+			crew.cap_achiever = fc.cap_achiever;
+		}
+	}
 	fields.forEach(field => {
 		const fieldOverride = props.fieldOverrides?.find(fo => fo.field === field);
 		if (fieldOverride) {
@@ -84,6 +92,9 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 
 			if (field === 'date_added')
 				elements.push(<DateAdded key={field} crew={crew} />);
+
+			if (field === 'cap_achiever')
+				elements.push(<CapAchiever key={field} crew={crew} />);
 
 			// crew_flavor_text id required for cypress test!
 			if (field === 'flavor' && crew.flavor)
@@ -194,6 +205,19 @@ const DateAdded = (props: { crew: CrewMember }) => {
 	return (
 		<p>
 			<b>{t('base.release_date')}: </b>{new Date(crew.date_added).toLocaleDateString()} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
+		</p>
+	);
+};
+
+
+const CapAchiever = (props: { crew: CrewMember }) => {
+	const { crew } = props;
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
+	if (!crew.cap_achiever) return <></>
+	return (
+		<p>
+			<b>{t('base.cap_achiever')}: </b>{crew.cap_achiever.name} ({new Date(crew.cap_achiever.date * 1000).toLocaleDateString()})
 		</p>
 	);
 };

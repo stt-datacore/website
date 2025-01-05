@@ -44,6 +44,11 @@ export interface QuipmentScores {
 
 }
 
+export interface CapAchiever {
+    name: string
+    date: number
+}
+
 /**
  * The is the crew roster model from crew.json
  *
@@ -99,7 +104,6 @@ export interface CrewMember extends QuipmentScores {
     kwipment_expiration: number[][] | number[];
     q_bits: number;
     skill_order: string[];
-
     /** Used internally, not part of incoming data */
     pickerId?: number;
     pairs?: Skill[][];
@@ -107,6 +111,7 @@ export interface CrewMember extends QuipmentScores {
     price?: number;
     sell_count?: number;
     post_bigbook_epoch: boolean;
+    cap_achiever?: CapAchiever;
 }
 
 export interface EquipmentSlot {
