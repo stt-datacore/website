@@ -358,6 +358,22 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                     }
                     scoreset.max_compat = run.compatibility.score;
                 }
+                if (run.duration >= scoreset.max_duration) {
+                    let process = true;
+                    if (run.duration === scoreset.max_duration) {
+                        process = run.damage > scoreset.max_damage;
+                    }
+                    if (process) {
+                        scoreset.max_duration = run.duration;
+                        scoreset.max_duration_ship = run.ship.symbol;
+                        if (run.seated?.length) {
+                            scoreset.max_duration_staff = [...run.seated]
+                        }
+                        else {
+                            scoreset.max_duration_staff = [run.crew.symbol]
+                        }
+                    }
+                }
                 if (!scoreset.min_damage || run.damage < scoreset.min_damage) {
                     scoreset.min_damage = run.damage;
                     scoreset.min_ship = run.ship.symbol;
@@ -407,7 +423,9 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
     const normalizeScores = (scores: Score[]) => {
         let max = 0;
+        let z = 0;
         if (!scores.length) return;
+        let changes = true;
 
         const _calc = (key: string) => {
             scores.sort((a, b) => b[key] - a[key]);
@@ -416,6 +434,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 score[key] = Math.round((score[key] / max) * 1000) / 100;
             }
         }
+
         _calc("arena_final");
         _calc("fbb_final");
 
@@ -423,7 +442,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         const fbb_max = {} as { [key: string]: number };
         // Compute overall from normalized component scores
         scores.forEach((score) => {
-            score.overall_final = (score.fbb_final + score.arena_final) / 2;
+            score.overall_final = (score.fbb_final + score.arena_final);
 
             [score.arena_data, score.fbb_data].forEach((data, idx) => {
                 data.forEach((unit) => {
@@ -616,12 +635,24 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
             score.fbb_final = scorefbb.map(m => m.final + (m.final / (7 - m.group))).reduce((p, n) => p + n, 0) / scorefbb.length;
         }
 
+        const overallMap = {} as {[key: string]: string[]};
+        const arenaMap = {} as {[key: string]: string[]};
+        const fbbMap = {} as {[key: string]: string[]};
+
         scores.forEach((score) => {
             let c = (crew.find(f => f.symbol === score.symbol) || ships.find(f => f.symbol === score.symbol))!;
             computeScore(score, c);
         });
-
         normalizeScores(scores);
+
+        scores.forEach((score) => {
+            overallMap[score.overall_final] ??= [];
+            overallMap[score.overall_final].push(score.symbol);
+            arenaMap[score.arena_final] ??= [];
+            arenaMap[score.arena_final].push(score.symbol);
+            fbbMap[score.fbb_final] ??= [];
+            fbbMap[score.fbb_final].push(score.symbol);
+        });
     }
 
     // const getShips = (crew: string | Score, scores: Score[], battle: 'arena' | 'fbb', group: number) => {
@@ -857,6 +888,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
             let fbb_crew = crew.filter(f => item.fbb_data?.length && item.fbb_data[0].max_staff.includes(f.symbol));
             let arena_ship = ships.find(f => item.arena_data?.length && f.symbol === item.arena_data[0].max_ship);
             let fbb_ship = ships.find(f => item.fbb_data?.length && f.symbol === item.fbb_data[0].max_ship);
+            let fbb_ship2 = ships.find(f => item.fbb_data?.length && f.symbol === item.fbb_data[0].max_duration_ship);
             if (!arena_crew || !fbb_crew || !arena_ship || !fbb_ship) return;
 
             printAndLog(
@@ -874,8 +906,9 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 printAndLog(" ".padEnd(40, " "), fbb_crew.map(c => c.name + `${printTrigger(c)}`).join(", "));
             }
             else {
-                printAndLog(" ".padEnd(40, " "), arena_ship?.name?.padEnd(20, " "));
-                printAndLog(" ".padEnd(40, " "), fbb_ship?.name?.padEnd(20, " "));
+                printAndLog(" ".padEnd(40, " "), arena_ship?.name?.padEnd(20, " "), " - Max Damage Arena Ship");
+                printAndLog(" ".padEnd(40, " "), fbb_ship?.name?.padEnd(20, " "), " - Max Damage FBB Ship");
+                printAndLog(" ".padEnd(40, " "), fbb_ship2?.name?.padEnd(20, " "), " - Max Duration FBB Ship", `(Max Dur: ${Math.ceil(item.fbb_data[0].max_duration)}s)`);
             }
             item.arena_data.forEach((group) => {
                 printAndLog(" ".padEnd(40, " "), `A${group.group}: ${group.final} (Max Dmg: ${Math.ceil(group.max_damage).toLocaleString()}, Avg Dmg: ${Math.ceil(group.average_damage).toLocaleString()}, ${group.count} Runs, Win Rate: ${Math.ceil((group.win_count / group.count) * 100)}%)`);
