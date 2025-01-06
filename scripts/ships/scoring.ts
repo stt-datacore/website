@@ -66,6 +66,7 @@ export interface Scoreable {
     average_compat: number
     average_damage: number,
     median_index: number,
+    min_index: number,
     win_count: number,
     total_damage: number;
     duration: number;
@@ -213,7 +214,8 @@ export function addScore(score: Score, type: 'fbb' | 'arena', group: number) {
         incompat: [],
         max_duration: 0,
         max_duration_ship: '',
-        max_duration_staff: []
+        max_duration_staff: [],
+        min_index: 0
     } as ScoreTotal;
 
     if (type === 'fbb') {

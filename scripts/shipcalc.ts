@@ -346,6 +346,9 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                         scoreset.incompat = [...new Set([...scoreset.incompat, run.ship.symbol])]
                     }
                 }
+                if (!scoreset.min_index || scoreset.min_index < z) {
+                    scoreset.min_index = z;
+                }
 
                 if (run.damage > scoreset.max_damage) {
                     scoreset.max_damage = run.damage;
@@ -525,7 +528,8 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 }
             }
             else {
-                return arenaruns.length;
+                let high = scores.map(score => arenaruns.length - ((score.median_index + score.average_index) / 2)).reduce((p, n) => p == -1 || p > n ? n : p, -1);
+                return arenaruns.length - high;
             }
         }
 
@@ -551,7 +555,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 }
             }
             else {
-                return arenaruns.length - Math.floor((score.median_index + score.average_index) * 0.5);
+                return arenaruns.length - ((score.median_index + score.average_index) / 2);
             }
         }
 
