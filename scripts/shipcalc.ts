@@ -510,7 +510,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 }
             }
             else {
-                return arenaruns.length - Math.floor((score.median_index + score.average_index) / 2);
+                return arenaruns.length - score.average_index; //Math.floor((score.median_index + score.average_index) / 2);
             }
         }
 
