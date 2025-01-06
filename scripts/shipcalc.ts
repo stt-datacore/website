@@ -77,7 +77,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         let m = cached.map(m => m.crew)
         let n = crew.map(m => m.symbol);
         m = m.filter((c, i) => m.findIndex(cc => cc === c) === i);
-        n = n.filter((c, i) => m.findIndex(cc => cc === c) === i && !m.includes(c));
+        n = n.filter((c, i) => n.findIndex(cc => cc === c) === i && !m.includes(c));
         if (n.length) {
             runqueue = n.map(s => crew.find(c => c.symbol === s)!);
             if (runqueue.length) {
