@@ -228,6 +228,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 
 	const quipment = getQuipmentAsItemWithBonus(globalContext.core.items);
 
+	const shipranks = globalContext.core.crew.some(c => c.ranks.ship);
+
 	const getActiveBuffs = () => {
 		if (buffMode === 'none' || !buffMode) return undefined;
 
@@ -261,8 +263,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					crewFilters={crewFilters}
 					setCrewFilters={setCrewFilters}
 				/>,
-			tableConfig: getShipTableConfig(t),
-			renderTableCells: (crew: IRosterCrew) => <CrewShipCells crew={crew} />
+			tableConfig: getShipTableConfig(t, shipranks),
+			renderTableCells: (crew: IRosterCrew) => <CrewShipCells withranks={shipranks} crew={crew} />
 		},
 		{
 			id: 'g_ranks',

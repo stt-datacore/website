@@ -31,6 +31,7 @@
         "best_pair": "Mejor pareja",
         "bigbook_tier": "Piso",
         "cab_power": "CAB",
+        "cap_achiever": "Primero en Llegar al Máximo",
         "collection": "Coleccione",
         "collection_fmt": "1 coleccione",
         "collections": "Colecciones",
@@ -1451,7 +1452,11 @@
         "gauntlet_rank": "Rango de Reto",
         "quipment_score": "Puntuación del Quipo",
         "trait_rank": "Rango del rasgo",
-        "voyage_rank": "Rango de Viaje"
+        "voyage_rank": "Rango de Viaje",
+        "ship_rank": "Rango del Buque",
+        "fbb_rank": "Jefe",
+        "arena_rank": "Arena",
+        "rank": "Rango"
     },
     "ranking_method": {
         "delta_t": "Delta T",
@@ -1462,7 +1467,14 @@
         "lean_over": "Medio",
         "moonshot": "Disparo a la Luna",
         "potential_maximum": "Máximo potencial",
-        "standard": "Estándar"
+        "standard": "Estándar",
+        "advantage": {
+            "select": "Seleccione una ventaja",
+            "offense": "Ofensa (Precisión/Daño)",
+            "defense": "Defensa (Reparación/Evasión)",
+            "o": "O",
+            "d": "D"
+        }
     },
     "retrieval": {
         "allow_unowned": "Permitir tripulación sin propietario",

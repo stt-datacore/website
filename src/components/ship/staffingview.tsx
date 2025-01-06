@@ -309,7 +309,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 		const inputShip = ship;
 
 		let newCrew: (PlayerCrew | CrewMember)[] = getCrew().filter((crew) => ignoreSkills || getSkills(crew).includes(skill)) ?? [];
-		if (inputShip) newCrew = findPotentialCrew(inputShip, newCrew, boss);
+		if (inputShip) newCrew = findPotentialCrew(inputShip, newCrew, false, undefined, boss?.id);
 
 		setCurrentStation(index);
 		setCurrentStationCrew(newCrew);

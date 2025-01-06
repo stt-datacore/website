@@ -12,6 +12,14 @@ import { IPolestar } from "../components/retrieval/model";
 import { RetrievalCost } from "../utils/retrieval";
 import { Estimate } from "./voyage";
 
+export type ComesFrom = {
+    type: number;
+    action: string;
+    bonus: number;
+    aspect: 'ability' | 'power';
+}
+
+
 export interface WorkerConfigBase<T> {
     max_results?: number
     max_iterations?: bigint;
@@ -339,6 +347,7 @@ export interface AttackInstant {
   opponent_max_attack: number;
   cloaked: boolean;
   opponent_cloaked: boolean;
+  comes_from: ComesFrom[]
 }
 
 

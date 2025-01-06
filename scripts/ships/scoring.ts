@@ -1,4 +1,4 @@
-import { CrewMember } from "../../src/model/crew";
+import { CrewMember, ShipRanks } from "../../src/model/crew";
 import { BattleStation, Ship } from "../../src/model/ship";
 
 
@@ -29,6 +29,15 @@ export function getCrewDivisions(rarity: number) {
     else return [1, 2, 3];
 }
 
+export function getMaxTime(crew: CrewMember) {
+    if (!crew.action.limit) return 180;
+    let t = crew.action.initial_cooldown;
+    t += (crew.action.limit * crew.action.duration);
+    if (crew.action.limit > 1) {
+        t += ((crew.action.limit - 1) * crew.action.cooldown);
+    }
+    return t;
+}
 
 export interface SymbolScore {
     symbol: string,
@@ -520,5 +529,53 @@ export const getStaffedShip = (ships: Ship[], crew: CrewMember[], ship: string |
     }
 
     return data;
+}
+
+export function createBlankShipScore(kind: 'offense' | 'defense' | 'ship' = 'offense') {
+    return {
+        kind,
+        overall: 0,
+        arena: 0,
+        fbb: 0,
+        divisions: {
+            fbb: {},
+            arena: {}
+        }
+    } as ShipRanks;
+}
+
+export function scoreToShipScore(score: Score, kind: 'offense' | 'defense' | 'ship'): ShipRanks {
+
+    if (Number.isNaN(score.overall_final) || score.fbb_final == Infinity) {
+        score.overall_final = 0;
+    }
+    if (Number.isNaN(score.arena_final) || score.fbb_final == Infinity) {
+        score.arena_final = 0;
+    }
+    if (Number.isNaN(score.fbb_final) || score.fbb_final == Infinity) {
+        score.fbb_final = 0;
+    }
+    const result = {
+        kind,
+        overall: score.overall_final,
+        arena: score.arena_final,
+        fbb: score.fbb_final,
+        divisions: {
+            fbb: {},
+            arena: {}
+        }
+    }
+
+    score.arena_data.forEach((obj, idx) => {
+        if (Number.isNaN(obj.final) || obj.final == Infinity) obj.final = 0;
+        result.divisions.arena[obj.group] = obj.final;
+    });
+
+    score.fbb_data.forEach((obj, idx) => {
+        result.divisions.fbb[obj.group] = obj.final;
+        if (Number.isNaN(obj.final) || obj.final == Infinity) obj.final = 0;
+    });
+
+    return result;
 }
 

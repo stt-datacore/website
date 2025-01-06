@@ -31,6 +31,7 @@
         "best_pair": "Best Pair",
         "bigbook_tier": "Tier",
         "cab_power": "CAB",
+        "cap_achiever": "First to Max",
         "collection": "Collection",
         "collection_fmt": "1 collection",
         "collections": "Collections",
@@ -1440,7 +1441,18 @@
         "gauntlet_rank": "Gauntlet Rank",
         "quipment_score": "Quipment Score",
         "trait_rank": "Trait Rank",
-        "voyage_rank": "Voyage Rank"
+        "voyage_rank": "Voyage Rank",
+        "ship_rank": "Ship Rank",
+        "fbb_rank": "Boss",
+        "arena_rank": "Arena",
+        "rank": "Rank",
+        "advantage": {
+            "select": "Select an advantage",
+            "offense": "Offense (Accuracy/Damage)",
+            "defense": "Defense (Repair/Evasion)",
+            "o": "O",
+            "d": "D"
+        }
     },
     "ranking_method": {
         "delta_t": "Delta T",

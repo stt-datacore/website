@@ -1,8 +1,19 @@
 import { CrewMember } from "../../src/model/crew";
 import { BattleMode, BattleStation, Ship } from "../../src/model/ship";
-import { AttackInstant, ShipWorkerItem } from "../../src/model/worker";
+import { AttackInstant, ComesFrom, ShipWorkerItem } from "../../src/model/worker";
 import { iterateBattle } from "../../src/workers/battleworkerutils";
-import { BattleRun, characterizeCrew, shipCompatibility, getShipDivision, getCrewDivisions, getBosses, MaxDefense, MaxOffense, BattleRunBase } from "./scoring";
+import { BattleRun, characterizeCrew, shipCompatibility, getShipDivision, getCrewDivisions, getBosses, MaxDefense, MaxOffense, BattleRunBase, getMaxTime } from "./scoring";
+
+export interface UpTimeRecord {
+    action: string;
+    uptime: number;
+}
+
+export interface ScoringBattleRun extends ShipWorkerItem {
+    opponent: Ship;
+    uptimes: UpTimeRecord[];
+    action_powers: {[key:string]: ComesFrom[] }
+}
 
 export function getCleanShipCopy(ship: Ship) {
     ship = JSON.parse(JSON.stringify(ship)) as Ship;
@@ -46,18 +57,41 @@ export const processBattleRun = (id: number, battle_mode: BattleMode, attacks: A
     let highest_attack = 0;
     let high_attack_second = 0;
 
+    const actionIdx = {} as {[key:string]: number}
+
+    const actionPower = {} as {[key:string]: ComesFrom[] }
+
     attacks.forEach((attack) => {
+        if (attack.comes_from.length) {
+            for (let from of attack.comes_from) {
+                actionPower[from.action] ??= [];
+                actionPower[from.action].push(from);
+            }
+        }
+        if (attack.actions?.length) {
+            for (let act of attack.actions) {
+                actionIdx[act.symbol] ??= 0;
+                actionIdx[act.symbol]++;
+            }
+        }
         if (attack.max_attack > highest_attack) {
             highest_attack = attack.max_attack;
             high_attack_second = attack.second;
         }
+    });
+    const uptimes = [] as UpTimeRecord[];
+    Object.entries(actionIdx).forEach(([action, uptime]) => {
+        uptimes.push({
+            action,
+            uptime: uptime / rate
+        });
     });
 
     let arena_metric = Math.ceil(highest_attack / high_attack_second);
     let skirmish_metric = weighted_attack;
     let fbb_metric = attack;
 
-    return {
+    const result: ScoringBattleRun = {
         id,
         rate,
         battle_mode,
@@ -74,9 +108,13 @@ export const processBattleRun = (id: number, battle_mode: BattleMode, attacks: A
         fbb_metric,
         opponent: opponent ?? attacks[0].ship,
         win,
-        reference_battle
+        reference_battle,
+        uptimes,
+        action_powers: actionPower
         //attacks: get_attacks ? attacks : undefined
-    } as ShipWorkerItem & { opponent: Ship };
+    };
+
+    return result;
 }
 
 export const runBattles = (
@@ -103,7 +141,6 @@ export const runBattles = (
     const crew_divisions = c ? getCrewDivisions(c.max_rarity) : [ship_division];
 
     const ignore_defeat_arena = false;
-    const ignore_defeat_fbb = false;
 
     let staff = testcrew;
 
@@ -146,45 +183,51 @@ export const runBattles = (
             bosses.sort((a, b) => b.id - a.id);
             bosses.forEach((boss) => {
                 let newstaff = [...staff];
+                const ignore_defeat_fbb = crewtype === 'offense';
 
                 battle_mode = `fbb_${boss.id - 1}` as BattleMode;
 
-                if (newstaff.length === 1) {
-                    if (c?.action.ability?.type === 2) {
-                        // newstaff.push(c);
-                    }
-                    else if (crewtype !== 'defense') {
-                        let compathr = hrpool.filter(
-                            ff => ff.max_rarity <= boss.id
-                            &&
-                            (
-                                ff.action.bonus_type !== c?.action.bonus_type ||
-                                ff.action.bonus_amount < c?.action.bonus_amount
-                            )
-                        );
-                        if (compathr?.length) {
-                            let olen = newstaff.length;
-                            for (let i = olen; i < ship.battle_stations!.length && i < olen + 2 && i < compathr.length; i++) {
-                                newstaff.push(compathr[i-1]);
-                            }
-                        }
-                    }
-                }
+                // if (newstaff.length === 1) {
+                //     if (c?.action.ability?.type === 2) {
+                //         // newstaff.push(c);
+                //     }
+                //     else if (crewtype !== 'defense') {
+                //         let compathr = hrpool.filter(
+                //             ff => ff.max_rarity <= boss.id
+                //             &&
+                //             (
+                //                 ff.action.bonus_type !== c?.action.bonus_type ||
+                //                 ff.action.bonus_amount < c?.action.bonus_amount
+                //             )
+                //         );
+                //         if (compathr?.length) {
+                //             let olen = newstaff.length;
+                //             for (let i = olen; i < ship.battle_stations!.length && i < olen + 2 && i < compathr.length; i++) {
+                //                 newstaff.push(compathr[i-1]);
+                //             }
+                //         }
+                //     }
+                // }
 
-                result = iterateBattle(rate, true, ship, newstaff, boss, MaxDefense, MaxOffense, undefined, undefined, undefined, undefined, fbb_variance, true, ignore_defeat_fbb, ignore_passives);
+                let maxtime = 180;
+
+                // if (c) {
+                //     maxtime = getMaxTime(c);
+                //     if (maxtime !== 180) return;
+                // }
+
+                result = iterateBattle(rate, true, ship, newstaff, boss, MaxDefense, MaxOffense, maxtime, undefined, undefined, undefined, fbb_variance, true, ignore_defeat_fbb, ignore_passives);
+
                 if (result.length) {
                     let attack = processBattleRun(current_id++, battle_mode, result, newstaff, rate, boss, true, reference_battle);
                     if (attack) {
                         let time = attack.battle_time;
                         let dmg = attack.attack;
 
-                        if (c?.action.limit) {
-                            let exp = (c.action.limit * c.action.duration) +
-                                      ((c.action.limit - 1) * c.action.cooldown) +
-                                      c.action.initial_cooldown;
-
-                            dmg *= (exp / 180);
-                        }
+                        // if (c?.action.limit) {
+                        //     let exp = getMaxTime(c);
+                        //     dmg *= (exp / 180);
+                        // }
 
                         allruns[runidx++] = {
                             crew: c,

@@ -44,6 +44,11 @@ export interface QuipmentScores {
 
 }
 
+export interface CapAchiever {
+    name: string
+    date: number
+}
+
 /**
  * The is the crew roster model from crew.json
  *
@@ -99,7 +104,6 @@ export interface CrewMember extends QuipmentScores {
     kwipment_expiration: number[][] | number[];
     q_bits: number;
     skill_order: string[];
-
     /** Used internally, not part of incoming data */
     pickerId?: number;
     pairs?: Skill[][];
@@ -107,6 +111,7 @@ export interface CrewMember extends QuipmentScores {
     price?: number;
     sell_count?: number;
     post_bigbook_epoch: boolean;
+    cap_achiever?: CapAchiever;
 }
 
 export interface EquipmentSlot {
@@ -207,11 +212,34 @@ export interface Nickname {
     creator?: string;
 }
 
+export interface ShipRanks {
+    overall: number,
+    arena: number,
+    fbb: number,
+    kind: 'offense' | 'defense' | 'ship',
+    divisions: {
+        fbb: {
+            1?: number,
+            2?: number,
+            3?: number,
+            4?: number,
+            5?: number,
+            6?: number
+        },
+        arena: {
+            1?: number,
+            2?: number,
+            3?: number
+        }
+    }
+}
+
 export interface Ranks {
     voyRank: number;
     gauntletRank: number;
     chronCostRank: number;
     traitRank: number;
+    ship?: ShipRanks;
     B_SEC?: number;
     A_SEC?: number;
     V_CMD_SEC?: number;
