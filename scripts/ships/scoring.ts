@@ -367,6 +367,8 @@ export const getStaffedShip = (ships: Ship[], crew: CrewMember[], ship: string |
 
     if (!no_sort) {
         filtered.sort((a, b) => {
+            if (c && c.symbol === a.symbol) return -1;
+            if (c && c.symbol === b.symbol) return 1;
 
             if (a.action?.ability?.type === 1 && b.action?.ability?.type === 1) {
                 let amet = (a.action.ability.amount / a.action.initial_cooldown) * a.action.bonus_amount;
@@ -380,8 +382,6 @@ export const getStaffedShip = (ships: Ship[], crew: CrewMember[], ship: string |
                 return 1;
             }
 
-            if (c && c.symbol === a.symbol) return -1;
-            if (c && c.symbol === b.symbol) return 1;
             let r = 0;
             r = b.max_rarity - a.max_rarity;
             if (r) return r;
@@ -389,6 +389,12 @@ export const getStaffedShip = (ships: Ship[], crew: CrewMember[], ship: string |
                 r = ((a.action.cooldown + a.action.duration) - (b.action.cooldown + b.action.duration));
             }
             if (opponent) {
+                if (a.action.ability && a.action.ability?.type === b.action?.ability?.type) {
+                    let amet = (a.action.ability.amount / a.action.initial_cooldown) * a.action.bonus_amount;
+                    let bmet = (b.action.ability.amount / b.action.initial_cooldown) * b.action.bonus_amount;
+                    r =  bmet - amet;
+                }
+
                 if (!r) r = a.action.initial_cooldown - b.action.initial_cooldown ||
                     (a.action.ability?.type ?? 99) - (b.action.ability?.type ?? 99) ||
                     (b.action.ability?.amount ?? 0) - (a.action.ability?.amount ?? 0) ||
