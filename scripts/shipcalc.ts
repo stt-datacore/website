@@ -267,14 +267,14 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                         return (b.compatibility.score - a.compatibility.score || b.duration - a.duration || b.damage - a.damage);
                     }
                     else {
-                        return (a.win != b.win) ? (a.win ? -1 : 1) : (b.compatibility.score - a.compatibility.score || a.duration - b.duration || b.damage - a.damage);
+                        return (a.win != b.win) ? (a.win ? -1 : 1) : (b.compatibility.score - a.compatibility.score || ((b.damage / b.duration) - (a.damage / a.duration)));
                     }
                 });
             }
             else if (!is_fbb && score_type === 'ship') {
                 runs.sort((a, b) => {
-                    return (b.compatibility.score - a.compatibility.score || b.damage - a.damage || a.duration - b.duration);
-                    //return (a.win != b.win) ? (a.win ? -1 : 1) : (b.compatibility.score - a.compatibility.score || b.damage - a.damage || a.duration - b.duration);
+                    //return (b.compatibility.score - a.compatibility.score || b.damage - a.damage || a.duration - b.duration);
+                    return (a.win != b.win) ? (a.win ? -1 : 1) : (b.compatibility.score - a.compatibility.score || b.damage - a.damage || a.duration - b.duration);
                 });
             }
             else if (is_fbb) {
@@ -510,7 +510,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 }
             }
             else {
-                return arenaruns.length - score.average_index; //Math.floor((score.median_index + score.average_index) / 2);
+                return arenaruns.length - Math.floor((score.median_index + score.average_index) * 0.5);
             }
         }
 
@@ -580,9 +580,16 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 }
             }
 
-            scorearena.sort((a, b) => a.group - b.group);
-            scorefbb.sort((a, b) => a.group - b.group);
-
+            if (score_mode === 'ship') {
+                scorearena = scorearena.sort((a, b) => b.group - a.group).slice(0, 1);
+                scorefbb = scorefbb.sort((a, b) => b.group - a.group).slice(0, 1);
+                // score.arena_data = scorearena;
+                // score.fbb_data = scorefbb;
+            }
+            else {
+                scorearena.sort((a, b) => a.group - b.group);
+                scorefbb.sort((a, b) => a.group - b.group);
+            }
             score.arena_final = scorearena.map(m => m.final + (m.final / (4 - m.group))).reduce((p, n) => p + n, 0) / scorearena.length;
             score.fbb_final = scorefbb.map(m => m.final + (m.final / (7 - m.group))).reduce((p, n) => p + n, 0) / scorefbb.length;
         }
