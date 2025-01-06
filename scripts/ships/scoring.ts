@@ -593,3 +593,240 @@ export function scoreToShipScore(score: Score, kind: 'offense' | 'defense' | 'sh
     return result;
 }
 
+export function normalizeScores(scores: Score[]) {
+    let max = 0;
+    let z = 0;
+    if (!scores.length) return;
+    let changes = true;
+
+    const _calc = (key: string) => {
+        scores.sort((a, b) => b[key] - a[key]);
+        max = scores[0][key];
+        for (let score of scores) {
+            score[key] = Math.round((score[key] / max) * 1000) / 100;
+        }
+    }
+
+    _calc("arena_final");
+    _calc("fbb_final");
+
+    const arena_max = {} as { [key: string]: number };
+    const fbb_max = {} as { [key: string]: number };
+    // Compute overall from normalized component scores
+    scores.forEach((score) => {
+        score.overall_final = (score.fbb_final + score.arena_final);
+
+        [score.arena_data, score.fbb_data].forEach((data, idx) => {
+            data.forEach((unit) => {
+                if (idx == 0) {
+                    arena_max[unit.group] ??= 0;
+                    if (arena_max[unit.group] < unit.final) {
+                        arena_max[unit.group] = unit.final;
+                    }
+                }
+                else {
+                    fbb_max[unit.group] ??= 0;
+                    if (fbb_max[unit.group] < unit.final) {
+                        fbb_max[unit.group] = unit.final;
+                    }
+                }
+            });
+        });
+    });
+
+    scores.forEach((score) => {
+        [score.arena_data, score.fbb_data].forEach((data, idx) => {
+            data.forEach((unit) => {
+                if (idx === 0) {
+                    unit.final = Math.round((unit.final / arena_max[unit.group]) * 1000) / 100;
+                }
+                else {
+                    unit.final = Math.round((unit.final / fbb_max[unit.group]) * 1000) / 100;
+                }
+
+            });
+        });
+    });
+
+    // Normalize overall score
+    _calc("overall_final");
+}
+
+export function processScores(
+    crew: CrewMember[],
+    ships: Ship[],
+    scores: Score[], score_mode: 'defense' | 'offense' | 'ship', arena_length: number) {
+    scores.forEach((score) => {
+        score.arena_data.sort((a, b) => a.group - b.group);
+        score.fbb_data.sort((a, b) => b.group - a.group);
+        score.arena_data.forEach((data) => {
+            data.average_damage = data.total_damage / data.count;
+            data.average_compat = data.total_compat / data.count;
+        });
+
+        score.fbb_data.forEach((data) => {
+            data.average_damage = data.total_damage / data.count;
+            data.average_compat = data.total_compat / data.count;
+        });
+    });
+
+    const getLikeScores = (score: Score, mode: 'arena' | 'fbb', group: number) => {
+        let results = scores.filter(s => {
+            if (score.kind != s.kind) return false;
+            if (mode === 'arena') {
+                return s.arena_data.some(a => a.group === group);
+            }
+            else {
+                return s.fbb_data.some(a => a.group === group);
+            }
+        });
+        return results.map(s => {
+            if (mode === 'arena') {
+                return s.arena_data.find(f => f.group === group)!
+            }
+            else {
+                return s.fbb_data.find(f => f.group === group)!
+            }
+        });
+    }
+
+    const getTopScore = (scores: Scoreable[], mode: 'arena' | 'fbb') => {
+        if (mode === 'fbb') {
+            if (score_mode === 'defense') {
+                return scores.map(ss => ss.duration * ss.total_damage).reduce((p, n) => p > n ? p : n, 0);
+            }
+            else {
+                return scores.map(ss => ss.total_damage).reduce((p, n) => p > n ? p : n, 0);
+            }
+        }
+        else {
+            let high = scores.map(score => arena_length - ((score.median_index + score.average_index) / 2)).reduce((p, n) => p == -1 || p > n ? n : p, -1);
+            return arena_length - high;
+        }
+    }
+
+    const getWinScore = (scores: Scoreable[], mode: 'arena' | 'fbb') => {
+        let result = scores.map(ss => ss.win_count).reduce((p, n) => p > n ? p : n, 0);
+        if (result) return result;
+        if (mode === 'fbb') {
+            return scores.map(ss => ss.total_damage).reduce((p, n) => p > n ? p : n, 0);
+        }
+        else {
+            return scores.map(ss => ss.duration).reduce((p, n) => p > n ? p : n, 0);
+        }
+    }
+
+    const getMyScore = (top: number, score: Scoreable, mode: 'arena' | 'fbb') => {
+        if (mode === 'fbb') {
+            if (score_mode === 'defense') {
+                //return arenaruns.length - score.average_index;
+                return score.duration * score.total_damage;
+            }
+            else {
+                return score.total_damage;
+            }
+        }
+        else {
+            return arena_length - ((score.median_index + score.average_index) / 2);
+        }
+    }
+
+    const getMyWinScore = (top: number, score: Scoreable, mode: 'arena' | 'fbb') => {
+        let result = score.win_count;
+        if (top) return result;
+
+        if (mode === 'fbb') {
+            return score.total_damage;
+        }
+        else {
+            return score.duration;
+        }
+    }
+
+    const computeScore = <T extends Ship | CrewMember>(score: Score, c: T) => {
+        let scorearena = score.arena_data.sort((a, b) => a.group - b.group);
+        let scorefbb = score.fbb_data.sort((a, b) => b.group - a.group);
+
+        let a_groups = scorearena.map(m => m.group);
+        let b_groups = scorefbb.map(m => m.group);
+
+        for (let ag of a_groups) {
+            const raw_score = score.arena_data.find(f => f.group === ag)!;
+            const ls_arena = getLikeScores(score, 'arena', ag);
+            const topscore_arena = getTopScore(ls_arena, 'arena');
+
+            score.name = c.name!;
+
+            let my_arena_score = getMyScore(topscore_arena, raw_score, 'arena');
+
+            let my_arena = (my_arena_score / topscore_arena) * 100;
+            raw_score.final = my_arena * raw_score.average_compat;
+            if ("action" in c) {
+                if (!c.action.ability) {
+                    raw_score.final *= 0.25;
+                }
+            }
+
+            // const maxwins_arena = getWinScore(ls_arena, 'arena');
+            // let mywins_arena = getMyWinScore(maxwins_arena, raw_score, 'arena');
+
+            // if (score_mode === 'offense' && maxwins_arena && mywins_arena) {
+            //     let my_arenawin = (mywins_arena / maxwins_arena);
+            //     raw_score.final = my_arena * my_arenawin;
+            // }
+            // else {
+            //     raw_score.final = my_arena;
+            // }
+        }
+
+        for (let bg of b_groups) {
+            const raw_score = score.fbb_data.find(f => f.group === bg)!;
+            const ls_fbb = getLikeScores(score, 'fbb', bg);
+            const topscore_fbb = getTopScore(ls_fbb, 'fbb');
+
+            score.name = c.name!;
+
+            let my_fbb_score = getMyScore(topscore_fbb, raw_score, 'fbb');
+            let my_fbb = (my_fbb_score / topscore_fbb) * 100;
+
+            raw_score.final = my_fbb * raw_score.average_compat;
+            if ("action" in c) {
+                if (!c.action.ability) {
+                    raw_score.final *= 0.25;
+                }
+            }
+        }
+
+        if (score_mode === 'ship') {
+            scorearena = scorearena.sort((a, b) => b.group - a.group).slice(0, 1);
+            scorefbb = scorefbb.sort((a, b) => b.group - a.group).slice(0, 1);
+            // score.arena_data = scorearena;
+            // score.fbb_data = scorefbb;
+        }
+        else {
+            scorearena.sort((a, b) => a.group - b.group);
+            scorefbb.sort((a, b) => a.group - b.group);
+        }
+        score.arena_final = scorearena.map(m => m.final + (m.final / (4 - m.group))).reduce((p, n) => p + n, 0) / scorearena.length;
+        score.fbb_final = scorefbb.map(m => m.final + (m.final / (7 - m.group))).reduce((p, n) => p + n, 0) / scorefbb.length;
+    }
+
+    const overallMap = {} as {[key: string]: string[]};
+    const arenaMap = {} as {[key: string]: string[]};
+    const fbbMap = {} as {[key: string]: string[]};
+
+    scores.forEach((score) => {
+        let c = (crew.find(f => f.symbol === score.symbol) || ships.find(f => f.symbol === score.symbol))!;
+        computeScore(score, c);
+    });
+    normalizeScores(scores);
+
+    scores.forEach((score) => {
+        overallMap[score.overall_final] ??= [];
+        overallMap[score.overall_final].push(score.symbol);
+        arenaMap[score.arena_final] ??= [];
+        arenaMap[score.arena_final].push(score.symbol);
+        fbbMap[score.fbb_final] ??= [];
+        fbbMap[score.fbb_final].push(score.symbol);
+    });
+}

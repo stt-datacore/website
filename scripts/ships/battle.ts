@@ -186,7 +186,6 @@ export const runBattles = (
                 const ignore_defeat_fbb = false; //crewtype === 'offense';
 
                 battle_mode = `fbb_${boss.id - 1}` as BattleMode;
-
                 if (newstaff.length === 1) {
                     if (c?.action.ability?.type === 2) {
                         // newstaff.push(c);
