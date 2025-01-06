@@ -353,6 +353,7 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 					baselineValue: controlBonus,
 					showCurrentValue: true
 				}}
+				showNoChange
 				customRender={renderAm}
 				justifyContent='right'
 			/>
