@@ -49,7 +49,7 @@ Last Updated: 2025-01-07
 
 9. Governing Law
 
-- These Terms are governed by the laws of [your country/state], without regard to conflict of law principles.
+- These Terms are governed by the laws of the United States of America, without regard to conflict of law principles.
 
 10. Contact Information
 
