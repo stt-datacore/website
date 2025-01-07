@@ -15,6 +15,6 @@ export function formatRank(kind: string, rank: number | undefined, t: TranslateM
 
     return <div style={{...flexRow, justifyContent: 'space-between'}}>
         <span style={{color: clr, fontWeight: 'bold'}}>{t(`rank_names.advantage.${kind}`)}</span>
-        <span style={{color: gradeToColor(rank / 100) || undefined}}>{rank.toFixed(2)}</span>
+        <span style={{color: gradeToColor(rank / 10) || undefined}}>{rank.toFixed(2)}</span>
     </div>
 }
