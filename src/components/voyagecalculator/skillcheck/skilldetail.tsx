@@ -98,7 +98,7 @@ export const SkillDetail = (props: SkillDetailProps) => {
 					</Table.Body>
 				</Table>
 			</Segment>
-			<Message attached>
+			<Message attached='bottom'>
 				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
 					<div>Paired skills:</div>
 					<div>

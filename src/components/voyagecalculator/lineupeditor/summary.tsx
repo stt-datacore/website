@@ -112,7 +112,7 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 					</div>
 				</Message>
 				{control && isEdited && (
-					<Segment attached>
+					<Segment attached='bottom'>
 						<p>Compared to the existing recommendation:</p>
 						<Grid columns={2} stackable>
 							<Grid.Column>

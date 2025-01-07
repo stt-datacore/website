@@ -341,7 +341,7 @@ const GridAlternateSlot = (props: GridAlternateSlotProps) => {
 					</div>
 				</Message.Header>
 			</Message>
-			<Segment attached>
+			<Segment attached='bottom'>
 				{renderDiffsAsTable()}
 			</Segment>
 		</React.Fragment>
