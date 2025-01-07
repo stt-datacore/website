@@ -129,7 +129,7 @@ export const DataPicker = (props: DataPickerProps) => {
 								<Icon name='cog' /> Options
 							</Message.Header>
 						</Message>
-						<Segment attached>
+						<Segment attached='bottom'>
 							{props.renderOptions(dataPickerState)}
 						</Segment>
 					</div>
