@@ -307,10 +307,6 @@ const AlternatePickerOptions = (props: AlternatePickerOptionsProps) => {
 					value={filters.availability}
 					onChange={(e, { value }) => setFilters({...filters, availability: value as string})}
 				/>
-				<RarityFilter
-					rarityFilter={filters.rarity}
-					setRarityFilter={(rarityFilter: number[]) => setFilters({...filters, rarity: rarityFilter})}
-				/>
 				<EventCrewFilter
 					value={filters.event}
 					setValue={(eventFilter: string) => setFilters({...filters, event: eventFilter})}
@@ -321,11 +317,17 @@ const AlternatePickerOptions = (props: AlternatePickerOptionsProps) => {
 					setValue={(quippedFilter: string) => setFilters({...filters, quipped: quippedFilter})}
 				/>
 			</Form.Group>
-			<Form.Group widths='equal'>
+			<Form.Group>
+				<RarityFilter
+					rarityFilter={filters.rarity}
+					setRarityFilter={(rarityFilter: number[]) => setFilters({...filters, rarity: rarityFilter})}
+				/>
 				<SkillToggler
 					value={filters.skills}
 					setValue={(skills: string[]) => setFilters({...filters, skills})}
 				/>
+			</Form.Group>
+			<Form.Group>
 				<Form.Field	/* Show skill values in table: */
 					inline
 				>
