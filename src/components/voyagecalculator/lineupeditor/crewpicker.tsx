@@ -1,8 +1,6 @@
 import React from 'react';
 import {
 	Button,
-	Dropdown,
-	DropdownItemProps,
 	Form,
 	Icon
 } from 'semantic-ui-react';
@@ -18,6 +16,7 @@ import { IDataGridSetup, IDataTableColumn, IDataTableSetup, IEssentialData } fro
 import { DataPicker, DataPickerLoading } from '../../dataset_presenters/datapicker';
 import { CrewLabel } from '../../dataset_presenters/elements/crewlabel';
 import { CrewPortrait } from '../../dataset_presenters/elements/crewportrait';
+import { AvailabilityCrewFilter, crewMatchesAvailabilityFilter } from '../../dataset_presenters/options/availabilitycrewfilter';
 import { crewMatchesEventFilter, EventCrewFilter } from '../../dataset_presenters/options/eventcrewfilter';
 import { crewMatchesQuippedFilter, QuippedCrewFilter } from '../../dataset_presenters/options/quippedcrewfilter';
 import { crewMatchesSkillFilter, SkillToggler } from '../../dataset_presenters/options/skilltoggler';
@@ -66,6 +65,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 
 	const [filters, setFilters] = useStateWithStorage<IPickerFilters>(`${id}/alternatepicker/filters`, {...defaultFilters});
 	const [skillMode, setSkillMode] = useStateWithStorage<'voyage' | 'proficiency'>(`${id}/alternatepicker/skillMode`, 'voyage');
+	const [prospectMode, setProspectMode] = useStateWithStorage<boolean>(`${id}/alternatepicker/prospectMode`, false);
 
 	const [data, setData] = React.useState<IAlternateCrewData[] | undefined>(undefined);
 
@@ -108,7 +108,8 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		const filteredIds: Set<number> = new Set<number>();
 		data?.forEach(crew => {
 			const canShowCrew: boolean =
-				(filters.rarity.length === 0 || filters.rarity.includes(crew.max_rarity))
+				(!prospectMode || (crew.assigned_slot >= 0 && crew.assigned_slot < 12))
+					&& (filters.rarity.length === 0 || filters.rarity.includes(crew.max_rarity))
 					&& (crewMatchesSkillFilter(crew, filters.skills))
 					&& (crewMatchesAvailabilityFilter(crew, filters.availability))
 					&& (crewMatchesEventFilter(crew, filters.event, calculatorContext.events))
@@ -116,7 +117,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 			if (!canShowCrew) filteredIds.add(crew.id);
 		});
 		return filteredIds;
-	}, [data, filters]);
+	}, [data, filters, prospectMode]);
 
 	if (!data) return <DataPickerLoading />;
 
@@ -210,6 +211,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 			<AlternatePickerOptions
 				filters={filters} setFilters={setFilters}
 				skillMode={skillMode} setSkillMode={setSkillMode}
+				prospectMode={prospectMode} setProspectMode={setProspectMode}
 			/>
 		);
 	}
@@ -265,15 +267,6 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		}
 		return <></>;
 	}
-
-	function crewMatchesAvailabilityFilter(crew: IAlternateCrewData, availabilityFilter: string): boolean {
-		if (availabilityFilter === '') return true;
-		if (availabilityFilter === 'not:frozen' && crew.immortal <= 0) return true;
-		if (availabilityFilter === 'not:active' && crew.active_status === 0) return true;
-		if (availabilityFilter === 'is:idle' && crew.immortal <= 0 && crew.active_status === 0) return true;
-		if (availabilityFilter === 'is:prospective' && crew.assigned_slot >= 0 && crew.assigned_slot < 12) return true;
-		return false;
-	}
 };
 
 type AlternatePickerOptionsProps = {
@@ -281,55 +274,46 @@ type AlternatePickerOptionsProps = {
 	setFilters: (filters: IPickerFilters) => void;
 	skillMode: 'voyage' | 'proficiency';
 	setSkillMode: (skillMode: 'voyage' | 'proficiency') => void;
+	prospectMode: boolean;
+	setProspectMode: (prospectMode: boolean) => void;
 };
 
 const AlternatePickerOptions = (props: AlternatePickerOptionsProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
-	const { filters, setFilters, skillMode, setSkillMode } = props;
-
-	const availabilityOptions: DropdownItemProps = [
-		{ key: 'all', value: '', text: 'Show all crew' },	/* Show all crew */
-		{ key: 'not:frozen', value: 'not:frozen', text: 'Hide frozen crew' },	/* Hide frozen crew */
-		{ key: 'not:active', value: 'not:active', text: 'Hide active crew' },	/* Hide active crew */
-		{ key: 'is:idle', value: 'is:idle', text: 'Only show idle crew' },	/* Only show idle crew */
-		{ key: 'is:prospective', value: 'is:prospective', text: 'Only show prospective voyagers' }	/* Only show prospective voyagers */
-	];
+	const { filters, setFilters, skillMode, setSkillMode, prospectMode, setProspectMode } = props;
 
 	return (
 		<Form>
 			<Form.Group widths='equal'>
-				<Form.Field	/* Filter by availability */
-					placeholder='Filter by availability'
-					control={Dropdown}
-					selection
-					clearable
-					options={availabilityOptions}
+				<AvailabilityCrewFilter
 					value={filters.availability}
-					onChange={(e, { value }) => setFilters({...filters, availability: value as string})}
+					setValue={(value: string) => setFilters({...filters, availability: value})}
+					rosterCrew={calculatorContext.crew}
 				/>
 				<EventCrewFilter
 					value={filters.event}
-					setValue={(eventFilter: string) => setFilters({...filters, event: eventFilter})}
+					setValue={(value: string) => setFilters({...filters, event: value})}
 					events={calculatorContext.events}
 				/>
 				<QuippedCrewFilter
 					value={filters.quipped}
-					setValue={(quippedFilter: string) => setFilters({...filters, quipped: quippedFilter})}
+					setValue={(value: string) => setFilters({...filters, quipped: value})}
 				/>
 			</Form.Group>
-			<Form.Group>
+			<Form.Group widths='equal'>
 				<RarityFilter
 					rarityFilter={filters.rarity}
-					setRarityFilter={(rarityFilter: number[]) => setFilters({...filters, rarity: rarityFilter})}
+					setRarityFilter={(value: number[]) => setFilters({...filters, rarity: value})}
 				/>
 				<SkillToggler
 					value={filters.skills}
-					setValue={(skills: string[]) => setFilters({...filters, skills})}
+					setValue={(value: string[]) => setFilters({...filters, skills: value})}
 				/>
 			</Form.Group>
-			<Form.Group>
+			<Form.Group style={{ justifyContent: 'space-between' }}>
 				<Form.Field	/* Show skill values in table: */
 					inline
+					width={8}
 				>
 					<label>Show skill values in table:</label>
 					<Button.Group>
@@ -344,6 +328,26 @@ const AlternatePickerOptions = (props: AlternatePickerOptionsProps) => {
 							onClick={() => setSkillMode('proficiency')}
 						/>
 					</Button.Group>
+				</Form.Field>
+				<Form.Field>
+					<Button	/* Only show prospective voyagers */
+						content='Only show prospective voyagers'
+						color={prospectMode ? 'blue' : undefined}
+						onClick={() => {
+							if (!prospectMode) setFilters({...defaultFilters});
+							setProspectMode(!prospectMode);
+						}}
+					/>
+				</Form.Field>
+				<Form.Field>
+					<Button	/* Reset */
+						content='Reset'
+						onClick={() => {
+							setFilters({...defaultFilters});
+							setSkillMode('voyage');
+							setProspectMode(false);
+						}}
+					/>
 				</Form.Field>
 			</Form.Group>
 		</Form>
