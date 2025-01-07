@@ -128,6 +128,8 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
         let calclen = ships.length * 4;
 
+
+
         for (let i = 0; i < cship; i++) {
             const ship = ships[i];
             const opponent = nextOpponent(getShipDivision(ship.rarity), i);

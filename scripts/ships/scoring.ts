@@ -251,11 +251,24 @@ export const characterizeCrew = (crew: CrewMember) => {
     else return 1;
 }
 
-export const shipCompatibility = (ship: Ship, crew: CrewMember) => {
+export const shipCompatibility = (ship: Ship, crew: CrewMember, used_seats?: string[]) => {
     let compat = 0;
     let trigger = false;
     let seat = false;
-    if (ship.battle_stations?.some(bs => crew.skill_order.includes(bs.skill))) {
+    if (!ship.battle_stations) return { score: 1, trigger: false, seat: false };
+
+    let bs = [...ship.battle_stations];
+
+    if (used_seats) {
+        for (let u of used_seats) {
+            let x = bs.findIndex(b => b.skill === u);
+            if (x >= 0) {
+                bs.splice(x, 1);
+            }
+        }
+    }
+
+    if (bs.some(bs => crew.skill_order.includes(bs.skill))) {
         seat = true;
         if (crew.action.ability?.condition) {
             compat += 0.25;
@@ -264,6 +277,7 @@ export const shipCompatibility = (ship: Ship, crew: CrewMember) => {
             compat += 1;
         }
     }
+
     if (crew.action.ability?.condition) {
         if (ship.actions?.some(a => a.status == crew.action.ability?.condition)) {
             compat += 0.75;
@@ -700,7 +714,7 @@ export function processScores(
             }
         }
         else {
-            let high = scores.map(score => arena_length - ((score.median_index + score.average_index) / 2)).reduce((p, n) => p == -1 || p > n ? n : p, -1);
+            let high = scores.map(score => arena_length - score.average_index).reduce((p, n) => p == -1 || p > n ? n : p, -1);
             return arena_length - high;
         }
     }
@@ -727,7 +741,7 @@ export function processScores(
             }
         }
         else {
-            return arena_length - ((score.median_index + score.average_index) / 2);
+            return arena_length - score.average_index;
         }
     }
 
