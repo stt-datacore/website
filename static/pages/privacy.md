@@ -35,9 +35,9 @@ Datacore ("we," "us," or "our") is a fan-driven companion tool for the mobile ga
 
     - We do not sell or share your data with third parties. Your data may be shared only in the following cases:
 
-    - If required by law or to comply with legal obligations.
+        - If required by law or to comply with legal obligations.
 
-    - To protect our rights, property, or safety, and that of our users.
+        - To protect our rights, property, or safety, and that of our users.
 
 4. Data Storage and Retention
 
