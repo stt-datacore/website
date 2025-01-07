@@ -37,7 +37,8 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
     const ship_schematics = JSON.parse(fs.readFileSync(STATIC_PATH + 'ship_schematics.json', 'utf-8')) as Schematics[];
     const crew = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf-8')) as CrewMember[];
 
-    let runqueue = [] as CrewMember[];
+    let newcrew = [] as CrewMember[];
+    let newships = [] as Ship[];
 
     const boompool = crew.filter(f => f.action.ability?.type === 1 && !f.action.limit && !f.action.ability?.condition).sort((a, b) => b.action.ability!.amount - a.action.ability!.amount || a.action.bonus_type - b.action.bonus_type || b.action.bonus_amount - a.action.bonus_amount || a.action.cycle_time - b.action.cycle_time);
     const critpool = crew.filter(f => f.action.ability?.type === 5 && !f.action.limit && !f.action.ability?.condition).sort((a, b) => b.action.ability!.amount - a.action.ability!.amount || a.action.bonus_type - b.action.bonus_type || b.action.bonus_amount - a.action.bonus_amount || a.action.cycle_time - b.action.cycle_time);
@@ -74,14 +75,29 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
     let cached = readBattleCache(cacheFile, process.argv.includes("--fresh"))
 
     if (cached?.length) {
-        let m = cached.map(m => m.crew)
-        let n = crew.map(m => m.symbol);
-        m = m.filter((c, i) => m.findIndex(cc => cc === c) === i);
-        n = n.filter((c, i) => n.findIndex(cc => cc === c) === i && !m.includes(c));
-        if (n.length) {
-            runqueue = n.map(s => crew.find(c => c.symbol === s)!);
-            if (runqueue.length) {
-                console.log(`Updating cache with ${runqueue.length} new crew...`);
+        console.log("Checking for new crew...");
+        let c_crew = [ ... new Set(cached.map(m => m.crew)) ];
+        let g_crew = crew.map(m => m.symbol);
+
+        g_crew = g_crew.filter((c, i) => g_crew.findIndex(cc => cc === c) === i && !c_crew.includes(c));
+
+        if (g_crew.length) {
+            newcrew = g_crew.map(s => crew.find(c => c.symbol === s)!);
+            if (newcrew.length) {
+                console.log(`Updating cache with ${newcrew.length} new crew...`);
+            }
+        }
+        console.log("Checking for new ships...");
+
+        let c_ships = [ ... new Set(cached.map(m => m.ship)) ];
+        let g_ships = ships.map(m => m.symbol);
+
+        g_ships = g_ships.filter((c, i) => g_ships.findIndex(cc => cc === c) === i && !c_ships.includes(c));
+
+        if (g_ships.length) {
+            newships = g_ships.map(s => ships.find(c => c.symbol === s)!);
+            if (newships.length) {
+                console.log(`Updating cache with ${newships.length} new ships...`);
             }
         }
     }
@@ -92,6 +108,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
     let current_id = 1;
 
     let count = 1;
+
     let cship = ships.length;
 
     const nextOpponent = (division: number, i: number) => {
@@ -112,8 +129,9 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
         return undefined;
     }
 
-    if (!cached?.length || runqueue.length) {
-        const workcrew = runqueue.length ? runqueue : crew;
+    if (!cached?.length || newcrew.length || newships.length) {
+        const workcrew = newcrew.length ? newcrew : crew;
+        const workships = newships.length ? newships : ships;
 
         if (cached.length) {
             allruns = cacheToBattleRuns(ships, crew, cached);
@@ -128,10 +146,13 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
         let calclen = ships.length * 4;
 
-
-
         for (let i = 0; i < cship; i++) {
             const ship = ships[i];
+            const ws = workships.length && workships.some(ws => ws.symbol === ship.symbol);
+            if (workships.length && !ws && !newcrew.length) continue;
+
+            const shipcrew = ws ? crew : workcrew;
+
             const opponent = nextOpponent(getShipDivision(ship.rarity), i);
 
             let runres = runBattles(current_id, rate, getCleanShipCopy(ship), [], allruns, runidx, hrpool, false, false, undefined, false, arena_variance, fbb_variance, true);
@@ -144,7 +165,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
             console.log(`Run all crew on ${ship.name} (FBB Only) (${count++} / ${calclen})...`);
 
-            for (let c of workcrew) {
+            for (let c of shipcrew) {
                 work_ship = getCleanShipCopy(ship);
                 let runres = runBattles(current_id, rate, work_ship, c, allruns, runidx, hrpool, true, false, undefined, false, arena_variance, fbb_variance);
 
@@ -154,7 +175,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
             console.log(`Run all crew on ${ship.name} (Arena Only; Opponent: SELF) (${count++} / ${calclen})...`);
 
-            for (let c of workcrew) {
+            for (let c of shipcrew) {
                 work_ship = getCleanShipCopy(ship);
                 let runres = runBattles(current_id, rate, work_ship, c, allruns, runidx, hrpool, false, true, undefined, false, arena_variance, fbb_variance);
 
@@ -172,7 +193,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
                 current_id = runres.current_id;
             }
 
-            for (let c of workcrew) {
+            for (let c of shipcrew) {
                 work_ship = getCleanShipCopy(ship);
                 if (opponent) work_oppo = getCleanShipCopy(opponent);
                 if (work_oppo?.battle_stations?.length) {
@@ -186,7 +207,7 @@ function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance = 0) {
 
             if (opponent) {
                 console.log(`Run all crew on ${opponent.name} (Arena Only; Opponent: ${work_ship?.name}) (${count++} / ${calclen})...`);
-                for (let c of workcrew) {
+                for (let c of shipcrew) {
                     work_ship = getCleanShipCopy(ship);
                     work_oppo = getCleanShipCopy(opponent);
                     if (work_ship?.battle_stations?.length) {
