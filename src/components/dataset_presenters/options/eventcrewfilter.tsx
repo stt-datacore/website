@@ -17,9 +17,6 @@ type EventCrewFilterProps = {
 export const EventCrewFilter = (props: EventCrewFilterProps) => {
 	const { value, setValue, events } = props;
 
-	const [selectedEvent, setSelectedEvent] = React.useState<string>(value !== '' ? value.split(',')[0] : '') ;
-	const [selectedBonus, setSelectedBonus] = React.useState<string>(value !== '' ? value.split(',')[1] : '');
-
 	const eventOptions = React.useMemo<DropdownItemProps[]>(() => {
 		const eventTypes = {
 			'gather' : 'Galaxy',
@@ -49,20 +46,6 @@ export const EventCrewFilter = (props: EventCrewFilterProps) => {
 		return eventOptions;
 	}, [events]);
 
-	React.useEffect(() => {
-		if (selectedEvent === '')
-			setSelectedBonus('');
-		else
-			setSelectedBonus('is:bonus');
-	}, [selectedEvent]);
-
-	React.useEffect(() => {
-		if (selectedBonus === '')
-			setValue('');
-		else
-			setValue(`${selectedEvent},${selectedBonus}`);
-	}, [selectedBonus]);
-
 	if (events.length === 0) return <></>;
 
 	const bonusOptions: DropdownItemProps[] = [
@@ -88,6 +71,10 @@ export const EventCrewFilter = (props: EventCrewFilterProps) => {
 		}
 	];
 
+	let eventValue: string = '';
+	let bonusValue: string = '';
+	if (value !== '') [eventValue, bonusValue] = value.split(',');
+
 	return (
 		<React.Fragment>
 			<Form.Field	/* Filter by event */
@@ -96,17 +83,17 @@ export const EventCrewFilter = (props: EventCrewFilterProps) => {
 				selection
 				clearable
 				options={eventOptions}
-				value={selectedEvent}
-				onChange={(e, { value }) => setSelectedEvent(value as string)}
+				value={eventValue}
+				onChange={(e, { value }) => setValue(`${value as string},is:bonus`)}
 			/>
-			{selectedEvent !== '' && (
+			{eventValue !== '' && (
 				<Form.Field	/* Filter by bonus */
 					placeholder='Filter by bonus'
 					control={Dropdown}
 					selection
 					options={bonusOptions}
-					value={selectedBonus}
-					onChange={(e, { value }) => setSelectedBonus(value as string)}
+					value={bonusValue}
+					onChange={(e, { value }) => setValue(`${eventValue},${value as string}`)}
 				/>
 			)}
 		</React.Fragment>
