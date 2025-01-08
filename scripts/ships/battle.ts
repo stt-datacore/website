@@ -1,8 +1,8 @@
 import { CrewMember } from "../../src/model/crew";
-import { BattleMode, BattleStation, Ship } from "../../src/model/ship";
+import { BattleMode, Ship } from "../../src/model/ship";
 import { AttackInstant, ComesFrom, ShipWorkerItem } from "../../src/model/worker";
 import { iterateBattle } from "../../src/workers/battleworkerutils";
-import { BattleRun, characterizeCrew, shipCompatibility, getShipDivision, getCrewDivisions, getBosses, MaxDefense, MaxOffense, BattleRunBase, getMaxTime } from "./scoring";
+import { characterizeCrew, shipCompatibility, getShipDivision, getCrewDivisions, getBosses, MaxDefense, MaxOffense, BattleRunBase, getMaxTime } from "./scoring";
 
 export interface UpTimeRecord {
     action: string;
@@ -24,6 +24,27 @@ export function getCleanShipCopy(ship: Ship) {
     }
     return ship;
 }
+
+export function nextOpponent(ships: Ship[], division: number, i: number) {
+    let cship = ships.length;
+    let j = i + 1;
+    while (j < cship) {
+        let oppo = ships[j];
+        if (getShipDivision(oppo.rarity) === division) return oppo;
+        j++;
+    }
+    j = i - 1;
+    let x = 0;
+    while (j > -1) {
+        let oppo = ships[j];
+        if (getShipDivision(oppo.rarity) === division) x++;
+        if (x == 2) return oppo;
+        j--;
+    }
+    return undefined;
+}
+
+
 
 export const processBattleRun = (id: number, battle_mode: BattleMode, attacks: AttackInstant[], crew_set: CrewMember[], rate: number, opponent?: Ship, ignore_skill = false, reference_battle?: boolean) => {
     if (!attacks?.length) return null;
@@ -117,6 +138,11 @@ export const processBattleRun = (id: number, battle_mode: BattleMode, attacks: A
     return result;
 }
 
+export interface RunRes {
+    current_id: number,
+    runidx: number
+}
+
 export const runBattles = (
     current_id: number,
     rate: number,
@@ -131,7 +157,7 @@ export const runBattles = (
     ignore_passives = false,
     arena_variance = 0.2,
     fbb_variance = 0.2,
-    reference_battle?: boolean) => {
+    reference_battle?: boolean): RunRes => {
     if (!Array.isArray(testcrew)) testcrew = [testcrew];
 
     const c = testcrew.length ? testcrew[0] : undefined;

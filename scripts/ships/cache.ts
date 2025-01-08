@@ -1,9 +1,9 @@
 import fs from 'fs';
-import { AllBosses, BattleRun, BattleRunBase, BattleRunCache } from './scoring';
+import { AllBosses, BattleRunBase, BattleRunCache } from './scoring';
 import { CrewMember } from '../../src/model/crew';
 import { Ship } from '../../src/model/ship';
 
-export const CACHE_VERSION = 5.91;
+export const CACHE_VERSION = 5.92;
 
 export function readBattleCache(cacheFile: string, purge_outdated = true) {
     let cached = [] as BattleRunCache[];

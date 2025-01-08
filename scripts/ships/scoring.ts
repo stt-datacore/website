@@ -160,6 +160,18 @@ export interface BattleRunCache {
     reference_battle: boolean;
 }
 
+export type ScoreDataConfig = {
+    crew: CrewMember[],
+    ships: Ship[],
+    arenaruns: BattleRunBase[],
+    fbbruns: BattleRunBase[],
+    crewscores: Score[],
+    shipscores: Score[],
+    trigger_compat: boolean,
+    seat_compat: boolean,
+    bypass_crew?: boolean
+}
+
 export function createScore(kind: 'crew' | 'ship', symbol: string) {
     return {
         kind,
@@ -844,3 +856,151 @@ export function processScores(
         fbbMap[score.fbb_final].push(score.symbol);
     });
 }
+
+export const createScoreData = (config: ScoreDataConfig) => {
+    const { crew, ships, trigger_compat, seat_compat, bypass_crew, crewscores, shipscores, fbbruns, arenaruns } = config;
+
+    shipscores.length = 0;
+    if (!bypass_crew) crewscores.length = 0;
+
+    const scoreRun = (runs: BattleRunBase[], is_fbb: boolean, scores: Score[], score_type: 'crew' | 'ship') => {
+        if (!is_fbb && score_type === 'crew') {
+            runs.sort((a, b) => {
+                if (a.type !== b.type) {
+                    if (a.type === 'defense') return 1;
+                    else return -1;
+                }
+                if (a.type === 'defense') {
+                    return (b.compatibility.score - a.compatibility.score || b.duration - a.duration || b.damage - a.damage);
+                }
+                else {
+                    return (a.win != b.win) ? (a.win ? -1 : 1) : (b.compatibility.score - a.compatibility.score || ((b.damage / b.duration) - (a.damage / a.duration)));
+                }
+            });
+        }
+        else if (!is_fbb && score_type === 'ship') {
+            runs.sort((a, b) => {
+                //return (b.compatibility.score - a.compatibility.score || b.damage - a.damage || a.duration - b.duration);
+                return (a.win != b.win) ? (a.win ? -1 : 1) : (b.compatibility.score - a.compatibility.score || b.damage - a.damage || a.duration - b.duration);
+            });
+        }
+        else if (is_fbb) {
+            runs.sort((a, b) => b.compatibility.score - a.compatibility.score || b.damage - a.damage || b.duration - a.duration);
+        }
+
+        let z = -1;
+        let score: Score | undefined = undefined;
+        const indexes = {} as { [symbol: string]: { [div: string]: number[] } };
+
+        for (let run of runs) {
+            z++;
+            if (trigger_compat && (run.compatibility.trigger === true && run.compatibility.score !== 1)) continue;
+            if (seat_compat && !run.compatibility.seat) continue;
+
+            let item: CrewMember | Ship;
+            if (score_type === 'crew') {
+                item = crew.find(f => f.symbol === run.crew.symbol)!;
+            }
+            else {
+                item = ships.find(f => f.symbol === run.ship.symbol)!;
+            }
+
+            score = scores.find(cs => cs.symbol === item.symbol);
+
+            if (!score) {
+                score = createScore(score_type, item.symbol);
+                scores.push(score);
+            }
+
+            const div_id = is_fbb ? (run.boss?.id ?? 0) : run.division ?? 0;
+
+            indexes[item.symbol] ??= {}
+            indexes[item.symbol][div_id] ??= [];
+            indexes[item.symbol][div_id].push(z);
+
+            const scoreset = getScore(score, is_fbb ? 'fbb' : 'arena', div_id);
+            scoreset.original_indices.push(z);
+
+            if (run.compatibility.score === 1) {
+                if (score_type === 'crew') {
+                    scoreset.compat = [...new Set([...scoreset.compat, run.ship.symbol])]
+                }
+            }
+            else {
+                if (score_type === 'crew') {
+                    scoreset.incompat = [...new Set([...scoreset.incompat, run.ship.symbol])]
+                }
+            }
+            if (!scoreset.min_index || scoreset.min_index < z) {
+                scoreset.min_index = z;
+            }
+
+            if (run.damage > scoreset.max_damage) {
+                scoreset.max_damage = run.damage;
+                scoreset.max_ship = run.ship.symbol;
+                if (run.seated?.length) {
+                    scoreset.max_staff = [...run.seated]
+                }
+                else {
+                    scoreset.max_staff = [run.crew.symbol]
+                }
+                scoreset.max_compat = run.compatibility.score;
+            }
+            if (run.duration > scoreset.max_duration) {
+                scoreset.max_duration = run.duration;
+                scoreset.max_duration_ship = run.ship.symbol;
+                if (run.seated?.length) {
+                    scoreset.max_duration_staff = [...run.seated]
+                }
+                else {
+                    scoreset.max_duration_staff = [run.crew.symbol]
+                }
+            }
+            if (!scoreset.min_damage || run.damage < scoreset.min_damage) {
+                scoreset.min_damage = run.damage;
+                scoreset.min_ship = run.ship.symbol;
+                if (run.seated?.length) {
+                    scoreset.min_staff = [...run.seated]
+                }
+                else {
+                    scoreset.min_staff = [run.crew.symbol]
+                }
+                scoreset.min_compat = run.compatibility.score;
+            }
+
+            scoreset.total_compat += run.compatibility.score;
+            scoreset.duration += run.duration;
+            scoreset.total_damage += run.damage;
+            scoreset.count++;
+
+            if (run.win) scoreset.win_count++;
+        }
+
+        Object.entries(indexes).forEach(([symbol, groups]) => {
+            Object.entries(groups).forEach(([group, values]) => {
+                if (!values.length) return;
+                score = scores.find(cs => cs.symbol === symbol);
+                if (score) {
+                    const scoreset = getScore(score, is_fbb ? 'fbb' : 'arena', Number(group));
+                    if (values.length > 2) {
+                        scoreset.median_index = values[Math.floor(values.length / 2)];
+                    }
+                    scoreset.average_index = values.reduce((p, n) => p + n, 0) / values.length;
+                }
+            });
+        });
+    }
+
+    [arenaruns, fbbruns].forEach((runs, idx) => {
+        if (!bypass_crew) {
+            if (!idx) console.log("Creating arena crew score sets...");
+            if (idx) console.log("Creating FBB crew score sets...");
+            scoreRun(runs, !!idx, crewscores, 'crew');
+        }
+        if (!idx) console.log("Creating arena ship score sets...");
+        if (idx) console.log("Creating FBB ship score sets...");
+        scoreRun(runs, !!idx, shipscores, 'ship');
+    });
+
+}
+
