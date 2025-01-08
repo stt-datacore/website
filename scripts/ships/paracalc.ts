@@ -31,7 +31,7 @@ async function calculateShip(config: ShipCalcConfig) {
         let i = ship_idx;
 
         const allruns = [] as BattleRunBase[];
-        allruns.length = 5 * ship_crew.length;
+        allruns.length = 9 * ship_crew.length;
         const ship = ships[i];
 
         const shipcrew = ship_crew;
@@ -46,6 +46,12 @@ async function calculateShip(config: ShipCalcConfig) {
         let work_ship = undefined as Ship | undefined
 
         console.log(`Run all crew on ${ship.name} (FBB Only)...`);
+
+        work_ship = getCleanShipCopy(ship);
+        runres = runBattles(current_id, rate, work_ship, [], allruns, runidx, hrpool, false, false, undefined, false, arena_variance, fbb_variance, true);
+
+        runidx = runres.runidx;
+        current_id = runres.current_id;
 
         for (let c of shipcrew) {
             work_ship = getCleanShipCopy(ship);
