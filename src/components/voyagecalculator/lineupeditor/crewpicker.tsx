@@ -285,20 +285,24 @@ const AlternatePickerOptions = (props: AlternatePickerOptionsProps) => {
 	return (
 		<Form>
 			<Form.Group widths='equal'>
-				<AvailabilityCrewFilter
-					value={filters.availability}
-					setValue={(value: string) => setFilters({...filters, availability: value})}
-					rosterCrew={calculatorContext.crew}
-				/>
+				{calculatorContext.rosterType === 'myCrew' && (
+					<AvailabilityCrewFilter
+						value={filters.availability}
+						setValue={(value: string) => setFilters({...filters, availability: value})}
+						rosterCrew={calculatorContext.crew}
+					/>
+				)}
 				<EventCrewFilter
 					value={filters.event}
 					setValue={(value: string) => setFilters({...filters, event: value})}
 					events={calculatorContext.events}
 				/>
-				<QuippedCrewFilter
-					value={filters.quipped}
-					setValue={(value: string) => setFilters({...filters, quipped: value})}
-				/>
+				{calculatorContext.rosterType === 'myCrew' && (
+					<QuippedCrewFilter
+						value={filters.quipped}
+						setValue={(value: string) => setFilters({...filters, quipped: value})}
+					/>
+				)}
 			</Form.Group>
 			<Form.Group widths='equal'>
 				<RarityFilter
@@ -310,7 +314,7 @@ const AlternatePickerOptions = (props: AlternatePickerOptionsProps) => {
 					setValue={(value: string[]) => setFilters({...filters, skills: value})}
 				/>
 			</Form.Group>
-			<Form.Group style={{ justifyContent: 'space-between' }}>
+			<Form.Group style={{ justifyContent: 'space-between', marginBottom: '0' }}>
 				<Form.Field	/* Show skill values in table: */
 					inline
 					width={8}
