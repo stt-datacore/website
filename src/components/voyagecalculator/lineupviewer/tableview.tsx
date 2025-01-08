@@ -97,6 +97,8 @@ export const TableView = () => {
 														partialItem={true}
 														size={32}
 														style={{ verticalAlign: 'middle' }}
+														ignorePlayer={rosterType !== 'myCrew'}
+														hideRarity={rosterType !== 'myCrew'}
 													/>
 												</span>
 											}

@@ -105,6 +105,8 @@ export const GridView = () => {
 										size={48}
 										item={crew}
 										partialItem={true}
+										ignorePlayer={rosterType !== 'myCrew'}
+										hideRarity={rosterType !== 'myCrew'}
 									/>
 								</div>
 							}>

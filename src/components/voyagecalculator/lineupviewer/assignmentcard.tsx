@@ -28,7 +28,7 @@ export type AssignmentCardProps = {
 export const AssignmentCard = (props: AssignmentCardProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { TRAIT_NAMES, t } = globalContext.localized;
-	const { voyageConfig } = React.useContext(ViewerContext);
+	const { voyageConfig, rosterType } = React.useContext(ViewerContext);
 	const { assignment: { crew, name, trait, bestRank }, showSkills } = props;
 
 	return (
@@ -51,6 +51,8 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 					item={crew}
 					partialItem={voyageConfig.state === 'pending'}
 					size={96}
+					ignorePlayer={rosterType !== 'myCrew'}
+					hideRarity={rosterType !== 'myCrew'}
 				/>
 			</div>
 			<div style={{ marginBottom: '2em' }}>
