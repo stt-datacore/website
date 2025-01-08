@@ -10,7 +10,7 @@ import { qbitsToSlots } from '../../../utils/crewutils';
 
 type QuippedCrewFilterProps = {
 	value: string;
-	setValue: (eventFilter: string) => void;
+	setValue: (quippedFilter: string) => void;
 };
 
 export const QuippedCrewFilter = (props: QuippedCrewFilterProps) => {
@@ -21,15 +21,15 @@ export const QuippedCrewFilter = (props: QuippedCrewFilterProps) => {
 			value: '',
 			text: 'Show all crew'
 		},
-		{	/* Hide quipped crew */
-			key: 'not:quipped',
-			value: 'not:quipped',
-			text: 'Hide quipped crew'
-		},
 		{	/* Only show quipped crew */
 			key: 'is:quipped',
 			value: 'is:quipped',
 			text: 'Only show quipped crew'
+		},
+		{	/* Hide quipped crew */
+			key: 'not:quipped',
+			value: 'not:quipped',
+			text: 'Hide quipped crew'
 		},
 		{	/* Only show crew with unlocked quipment slots */
 			key: 'is:quippable',
