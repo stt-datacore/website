@@ -114,7 +114,6 @@ async function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance 
 
     if (!cached?.length || newcrew.length || newships.length) {
         const workcrew = newcrew.length ? newcrew : crew;
-        const workships = newships.length ? newships : ships;
 
         if (cached.length) {
             allruns = cacheToBattleRuns(ships, crew, cached);
@@ -138,8 +137,8 @@ async function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance 
             const bidx = Math.floor(x / bucketsize);
             let buckets = shipBuckets[bidx];
             let promises = buckets.map((ship, idx2) => new Promise<CalcRes>((resolve, reject) => {
-                const ws = workships.length && workships.some(ws => ws.symbol === ship.symbol);
-                if (workships.length && !ws && !newcrew.length) return;
+                const ws = newships.length && newships.some(ws => ws.symbol === ship.symbol);
+                if (newships.length && !ws && !newcrew.length) return;
                 const shipcrew = ws ? crew : workcrew;
                 const config: ShipCalcConfig = {
                     ships,
