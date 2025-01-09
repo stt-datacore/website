@@ -84,7 +84,7 @@ export const EventCrewFilter = (props: EventCrewFilterProps) => {
 				clearable
 				options={eventOptions}
 				value={eventValue}
-				onChange={(e, { value }) => setValue(`${value as string},is:bonus`)}
+				onChange={(e, { value }) => setValue(value !== '' ? `${value as string},is:bonus` : '')}
 			/>
 			{eventValue !== '' && (
 				<Form.Field	/* Filter by bonus */
