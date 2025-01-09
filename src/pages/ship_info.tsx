@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { mergeShips, setupShip } from '../utils/shiputils';
-import { Ship } from '../model/ship';
+import { BattleMode, Ship } from '../model/ship';
 import { PlayerCrew } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { GlobalContext } from '../context/globalcontext';
@@ -12,6 +12,7 @@ import { ShipRosterCalc } from '../components/ship/rostercalc';
 import { useStateWithStorage } from '../utils/storage';
 import { ShipMultiWorker } from '../components/ship/shipmultiworker';
 import { ShipStaffingView } from '../components/ship/staffingview';
+import { Step } from 'semantic-ui-react';
 
 const ShipInfoPage = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -58,12 +59,20 @@ const ShipViewer = (props: ShipViewerProps) => {
 	const [inputShip, setInputShip] = React.useState<Ship>();
 	const [ship, setShip] = React.useState<Ship>();
 	const [crew, setCrew] = React.useState<(PlayerCrew | CrewMember)[] | undefined>(undefined);
+
 	const [crewStations, setCrewStations] = React.useState<(PlayerCrew | CrewMember | undefined)[]>([]);
+
+	const [opponentStations, setOpponentStations] = useStateWithStorage<(PlayerCrew | CrewMember | undefined)[]>(`ship_info/opponent_stations`, [], { rememberForever: true });
+	const [opponentShip, setOpponentShip] = useStateWithStorage<Ship | undefined>('ship_info/opponent_ship', undefined, { rememberForever: true });
 
 	const [considerFrozen, setConsiderFrozen] = useStateWithStorage('ship_info/considerFrozen', false);
 	const [considerUnowned, setConsiderUnowned] = useStateWithStorage('ship_info/considerFrozen', false);
     const [ignoreSkills, setIgnoreSkills] = useStateWithStorage<boolean>(`ship_info/ignoreSkills`, false);
     const [onlyImmortal, setOnlyImmortal] = useStateWithStorage<boolean>(`ship_info/onlyImmortal`, false);
+
+	const [useOpponents, setUseOpponents] = React.useState<BattleMode | false>(false);
+
+	const [activeTabIndex, setActiveTabIndex] = React.useState<number>(0);
 
 	React.useEffect(() => {
 		if (inputShip && crewStations?.length && inputShip.battle_stations?.length === crewStations.length) {
@@ -81,6 +90,12 @@ const ShipViewer = (props: ShipViewerProps) => {
 	React.useEffect(() => {
 		setCrew(getCrew());
 	}, [playerData, coreCrew, considerFrozen, considerUnowned])
+
+	React.useEffect(() => {
+		if (!useOpponents && activeTabIndex > 0) {
+			setActiveTabIndex(0);
+		}
+	}, [useOpponents]);
 
 	React.useEffect(() => {
 		if (ships?.length && shipKey) {
@@ -107,6 +122,10 @@ const ShipViewer = (props: ShipViewerProps) => {
 			{!!inputShip && !!crew && <WorkerProvider>
 				<ShipMultiWorker>
 					<ShipRosterCalc
+						opponentShip={opponentShip}
+						opponentStations={opponentStations}
+						useOpponents={useOpponents}
+						setUseOpponents={setUseOpponents}
 						considerFrozen={considerFrozen}
 						considerUnowned={considerUnowned}
 						crew={crew}
@@ -124,6 +143,24 @@ const ShipViewer = (props: ShipViewerProps) => {
 				</ShipMultiWorker>
 			</WorkerProvider>}
 
+			{!!useOpponents && <>
+				<Step.Group style={{width: "70%"}}>
+				<Step active={activeTabIndex === 0} onClick={() => setActiveTabIndex(0)}>
+					<Step.Content>
+						<Step.Title>{t('ship.tabs.player.title')}</Step.Title>
+						<Step.Description>{t('ship.tabs.player.header')}</Step.Description>
+					</Step.Content>
+				</Step>
+				<Step active={activeTabIndex === 1} onClick={() => setActiveTabIndex(1)}>
+					<Step.Content>
+						<Step.Title>{t('ship.tabs.opponent.title')}</Step.Title>
+						<Step.Description>{t('ship.tabs.opponent.header')}</Step.Description>
+					</Step.Content>
+				</Step>
+			</Step.Group>
+
+			</>}
+			{activeTabIndex === 0 &&
 			<ShipStaffingView
 				considerFrozen={considerFrozen}
 				considerUnowned={considerUnowned}
@@ -136,7 +173,22 @@ const ShipViewer = (props: ShipViewerProps) => {
 				ship={ship}
 				setShip={(ship) => ship ? setShipKey(ship.symbol) : null}
 				showLineupManager={false}
-				/>
+				/>}
+
+			{activeTabIndex === 1 &&
+			<ShipStaffingView
+				considerFrozen={considerFrozen}
+				considerUnowned={considerUnowned}
+				crewStations={opponentStations}
+				ignoreSkills={ignoreSkills}
+				isOpponent={true}
+				onlyImmortal={onlyImmortal}
+				pageId={'shipInfo'}
+				setCrewStations={setOpponentStations}
+				ship={opponentShip}
+				setShip={(ship) => setOpponentShip(ship)}
+				showLineupManager={true}
+				/>}
 		</div>
 	</>)
 

@@ -1,7 +1,7 @@
 
 import * as fs from 'fs';
 import { EventInstance, EventLeaderboard } from '../src/model/events';
-import { GameEvent, Reward } from '../src/model/player';
+import { GameEvent } from '../src/model/player';
 import { CrewMember } from '../src/model/crew';
 import { getEventStats } from '../src/utils/event_stats';
 
