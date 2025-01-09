@@ -13,6 +13,7 @@ import { getShipsInUse, mergeShips } from '../../utils/shiputils';
 import CONFIG from '../CONFIG';
 import { TinyStore } from '../../utils/tiny';
 import { formatRank } from './utils';
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 
 type ShipTableProps = {
 	event_ships?: string[];
@@ -265,6 +266,8 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 	}
 
 	render() {
+		const flexRow = OptionsPanelFlexRow;
+		const flexCol = OptionsPanelFlexColumn;
 		const { localized } = this.context;
 		const { t, SHIP_TRAIT_NAMES } = localized;
 		const trait_names = localized.SHIP_TRAIT_NAMES;
@@ -370,12 +373,14 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 						</Table.HeaderCell>
 						{withranks && <>
 							<Table.HeaderCell
+								width={1}
 								sorted={column === 'ranks.overall' ? direction ?? undefined  : undefined}
 								onClick={() => this._handleSort('ranks.overall')}
 								>
 								{t('rank_names.ship_rank')}
 							</Table.HeaderCell>
 							<Table.HeaderCell
+								width={1}
 								sorted={column === 'ranks.arena' ? direction ?? undefined  : undefined}
 								onClick={() => this._handleSort('ranks.arena')}
 								>
@@ -383,6 +388,7 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 								{t('rank_names.arena_rank')}
 							</Table.HeaderCell>
 							<Table.HeaderCell
+								width={1}
 								sorted={column === 'ranks.fbb' ? direction ?? undefined  : undefined}
 								onClick={() => this._handleSort('ranks.fbb')}
 								>
@@ -465,9 +471,21 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 								</div>
 							</Table.Cell>
 							{withranks && <>
-								<Table.Cell>{formatRank('ship', ship.ranks?.overall, t)}</Table.Cell>
-								<Table.Cell>{formatRank('ship', ship.ranks?.arena, t)}</Table.Cell>
-								<Table.Cell>{formatRank('ship', ship.ranks?.fbb, t)}</Table.Cell>
+								<Table.Cell>
+									<div style={{display: 'flex'}}>
+										{formatRank('ship', ship.ranks?.overall, t)}
+									</div>
+								</Table.Cell>
+								<Table.Cell>
+									<div style={{display: 'flex'}}>
+										{formatRank('ship', ship.ranks?.arena, t)}
+									</div>
+								</Table.Cell>
+								<Table.Cell>
+									<div style={{display: 'flex'}}>
+										{formatRank('ship', ship.ranks?.fbb, t)}
+									</div>
+								</Table.Cell>
 							</>}
 							<Table.Cell>{ship.antimatter}</Table.Cell>
 							<Table.Cell>{ship.accuracy}</Table.Cell>
