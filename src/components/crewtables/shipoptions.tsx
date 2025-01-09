@@ -49,6 +49,7 @@ export const AbilityUses = (props: AbilityUsesProps) => {
 
 
 export type ShipPickerProps = {
+	clearable?: boolean;
 	filter?: ShipPickerFilter;
     playerData?: PlayerData;
 	pool?: Ship[];
@@ -58,7 +59,7 @@ export type ShipPickerProps = {
 
 export const ShipPicker = (props: ShipPickerProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { selectedShip, setSelectedShip, filter } = props;
+	const { clearable, selectedShip, setSelectedShip, filter } = props;
 
     const [availableShips, setAvailableShips] = React.useState<Ship[] | undefined>(props.pool);
     const [filteredShips, setFilteredShips] = React.useState<Ship[] | undefined>(props.pool);
@@ -105,7 +106,7 @@ export const ShipPicker = (props: ShipPickerProps) => {
 			<Dropdown
                 search
                 selection
-                clearable
+                clearable={clearable}
                 fluid
 				placeholder={placeholder}
 				options={poolList}
