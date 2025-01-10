@@ -678,6 +678,39 @@ export function normalizeScores(scores: Score[]) {
     _calc("overall_final");
 }
 
+
+export function getCompatibleShips(crew: CrewMember, ships: Ship[], mode: 'fbb' | 'arena') {
+    return ships.filter(ship => {
+        if (shipCompatibility(ship, crew).score !== 1) return false;
+        if (mode === 'fbb') {
+            const bosses = getBosses(ship, crew)
+            if (!bosses?.length) return false;
+        }
+        else if (mode === 'arena') {
+            const div_1 = getCrewDivisions(crew.max_rarity);
+            const div_2 = getShipDivision(ship.rarity);
+            if (!div_1.includes(div_2)) return false;
+        }
+        return true;
+    });
+}
+
+export function getCompatibleCrew(ship: Ship, roster: CrewMember[], mode: 'fbb' | 'arena') {
+    return roster.filter(crew => {
+        if (shipCompatibility(ship, crew).score !== 1) return false;
+        if (mode === 'fbb') {
+            const bosses = getBosses(ship, crew)
+            if (!bosses?.length) return false;
+        }
+        else if (mode === 'arena') {
+            const div_1 = getCrewDivisions(crew.max_rarity);
+            const div_2 = getShipDivision(ship.rarity);
+            if (!div_1.includes(div_2)) return false;
+        }
+        return true;
+    });
+}
+
 export function processScores(
     crew: CrewMember[],
     ships: Ship[],
