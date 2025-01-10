@@ -35,6 +35,10 @@ export interface RosterCalcProps {
     setConsiderUnowned: (value: boolean) => void;
     ignoreSkills: boolean;
     setIgnoreSkills: (value: boolean) => void;
+    useOpponents: BattleMode | false;
+    setUseOpponents: (value: BattleMode | false) => void;
+    opponentStations: (PlayerCrew | CrewMember | undefined)[],
+    opponentShip?: Ship
 }
 
 interface BattleConfig {
@@ -53,7 +57,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     //const { running, runWorker, cancel } = workerContext;
     const { t, tfmt } = globalContext.localized;
     const [sugWait, setSugWait] = React.useState<number | undefined>();
-    const { ships, crew, crewStations, setCrewStations, pageId, considerFrozen, ignoreSkills, setIgnoreSkills, setConsiderFrozen, considerUnowned, setConsiderUnowned, onlyImmortal, setOnlyImmortal } = props;
+    const { ships, crew, opponentStations, opponentShip, setUseOpponents, crewStations, setCrewStations, pageId, considerFrozen, ignoreSkills, setIgnoreSkills, setConsiderFrozen, considerUnowned, setConsiderUnowned, onlyImmortal, setOnlyImmortal } = props;
     const shipIdx = props.shipIdx ?? 0;
     const ship = ships[shipIdx];
     const [windowLoaded, setWindowLoaded] = React.useState(false);
@@ -324,15 +328,20 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
     }, [hideGraph]);
 
-
-
     React.useEffect(() => {
         const newconfig = { ...battleConfig };
+
         if (globalContext.player.playerData) {
-            let bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_boss_ship_attack');
-            newconfig.defense = bs?.value;
-            bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_player_ship_attack');
-            newconfig.offense = bs?.value;
+            if (battleMode.startsWith('fbb')) {
+                let bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_boss_ship_attack');
+                newconfig.defense = bs?.value;
+                bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_player_ship_attack');
+                newconfig.offense = bs?.value;
+            }
+            else {
+                newconfig.defense = 0;
+                newconfig.offense = 0;
+            }
         }
         if (battleMode.startsWith('fbb')) {
             let rarity = Number.parseInt(battleMode.slice(4));
@@ -344,7 +353,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             newconfig.opponent = boss;
         }
         else {
-            newconfig.opponent = undefined;
+            newconfig.opponent = createOpponent();
         }
 
         setBattleConfig(newconfig);
@@ -367,8 +376,13 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 }
             }
         }
-
-    }, [battleMode]);
+        if (!battleMode.startsWith('fbb')) {
+            setUseOpponents(battleMode);
+        }
+        else {
+            setUseOpponents(false);
+        }
+    }, [battleMode, opponentShip, opponentStations]);
 
     React.useEffect(() => {
         if (currentEvent) {
@@ -452,7 +466,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             width: isMobile ? '100%' : '70%'
         }}>
             {true && <div style={{ display: 'flex', textAlign: 'center', width: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '1em', marginBottom: '1em' }}>
-                <h3>{ship.name}</h3>
+                <h3>{ship.name}{!!opponentShip && <> v. {opponentShip.name}</>}</h3>
                 {progressMsg ? (running ? globalContext.core.spin(progressMsg || t('spinners.default')) : progressMsg) : t('global.idle')}
             </div>}
             {true && <div style={{ display: 'inline', textAlign: 'left', width: '100%' }}>
@@ -1270,5 +1284,18 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             ship: ships.find(s => s.id === input.ship)!
         }
         return result;
+    }
+
+    function createOpponent() {
+        if (!opponentShip?.battle_stations?.length || !opponentStations?.length || !opponentStations.some(f => f)) return undefined;
+
+        const newShip = JSON.parse(JSON.stringify(opponentShip)) as Ship;
+        const c = newShip.battle_stations!.length;
+        for (let i = 0; i < c; i++) {
+            if (opponentStations[i]) {
+                newShip.battle_stations![i].crew = opponentStations[i];
+            }
+        }
+        return newShip;
     }
 }

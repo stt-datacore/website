@@ -834,7 +834,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         oppo_aps_num = work_opponent ? 1 / oppvar : 0;
 
         const hitoppo = (damage: number) => {
-            if (hull <= 0 || oppo_hull <= 0) return 0;
+            if ((hull <= 0 || oppo_hull <= 0) && !ignoreDefeat) return 0;
             if (oppo_shields > 0) {
                 oppo_shields -= damage;
                 if (oppo_shields < 0) {
@@ -849,7 +849,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         }
 
         const hitme = (damage: number) => {
-            if (hull <= 0 || oppo_hull <= 0) return 0;
+            if ((hull <= 0 || oppo_hull <= 0) && !ignoreDefeat) return 0;
             if (shields > 0) {
                 shields -= damage;
                 if (shields < 0) {

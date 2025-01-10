@@ -66,9 +66,19 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 		setCrew(getCrew());
 	}, [playerData, coreCrew, considerFrozen, considerUnowned])
 
+	React.useEffect(() => {
+		if (ship?.battle_stations) {
+			crewStations.length = ship.battle_stations.length;
+			setCrewStations([...crewStations]);
+		}
+		else {
+			setCrewStations([]);
+		}
+	}, [ship]);
+
 	const flexCol = OptionsPanelFlexColumn;
 
-    if (!ship || !crew) return context.core.spin(t('spinners.default'));
+    if ((!ship && !isOpponent) || !crew) return context.core.spin(t('spinners.default'));
 
     return (
         <React.Fragment>
@@ -84,7 +94,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 			alignItems: "center"
 		}}>
             <div style={{width: '70%'}}>
-            {!!ships?.length && <ShipPicker pool={ships} selectedShip={ship} setSelectedShip={navigateToShip} />}
+            {!!ships?.length && <ShipPicker clearable={isOpponent} pool={ships} selectedShip={ship} setSelectedShip={navigateToShip} />}
             </div>
 			<h3>{t('ship.battle_stations')}</h3>
 
@@ -96,8 +106,8 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				padding: 0,
 				marginBottom: '2em'
 			}}>
-				{ship.battle_stations?.map((bs, idx) => (
-					<div key={`ship_battle_station_${idx}_${bs.skill}`} style={flexCol}>
+				{!!ship && ship.battle_stations?.map((bs, idx) => (
+					<div key={`${isOpponent ? 'opponent_' : ''}ship_battle_station_${idx}_${bs.skill}`} style={flexCol}>
 						<CrewPicker
 							renderCrewCaption={renderCrewCaption}
 							// isOpen={modalOpen}
@@ -124,11 +134,11 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				))}
 			</div>
 
-			<div>
+			{!!ship && <div>
 				<Button disabled={crewStations.every(cs => !cs)} onClick={(e) => clearStation()}>{t('global.clear_all')}</Button>
-			</div>
+			</div>}
 
-			<ShipPresenter hover={false} ship={ship} showIcon={true} storeName='shipProfile' />
+			{!!ship && <ShipPresenter hover={false} ship={ship} showIcon={true} storeName='shipProfile' />}
 		</div>
 
         </React.Fragment>
@@ -201,6 +211,9 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 					<span style={{ lineHeight: "1.3em" }}>
 						{getShipBonus(t, crew.action, undefined, true)}
 					</span>
+				</div>
+				<div>
+					{crew.action.initial_cooldown}s {crew.action.duration}s {crew.action.cooldown}s
 				</div>
 			</div>)
 	}
@@ -331,9 +344,15 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 	}
 
     function navigateToShip(ship?: Ship) {
-        if (!ship) return;
-        let url = `/ship_info/?ship=${ship.symbol}`;
-        navigate(url);
-        setShip(ship);
+		setShip(ship);
+        // if (!ship) return;
+		// if (isOpponent) {
+		// 	setShip(ship);
+		// }
+		// else {
+		// 	let url = `/ship_info/?ship=${ship.symbol}`;
+		// 	navigate(url);
+		// 	setShip(ship);
+		// }
     }
 }
