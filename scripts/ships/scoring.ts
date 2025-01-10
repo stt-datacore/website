@@ -862,7 +862,9 @@ export const createScoreData = (config: ScoreDataConfig) => {
 
     shipscores.length = 0;
     if (!bypass_crew) crewscores.length = 0;
-
+    // const defnum = (s: BattleRunBase) => {
+    //     return s.duration * s.damage;
+    // }
     const scoreRun = (runs: BattleRunBase[], is_fbb: boolean, scores: Score[], score_type: 'crew' | 'ship') => {
         if (!is_fbb && score_type === 'crew') {
             runs.sort((a, b) => {
