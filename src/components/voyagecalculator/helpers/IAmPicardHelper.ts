@@ -1,6 +1,7 @@
 import '../../../typings/worker';
 import { UnifiedWorker } from '../../../typings/worker';
-import { Aggregates, AggregateSkill, VoyageDescription } from '../../../model/player';
+import { Skill } from '../../../model/crew';
+import { Aggregates, VoyageDescription } from '../../../model/player';
 import { IProposalEntry as VoyageSlotEntry, IResultProposal, IVoyageCalcConfig, IVoyageEventContent } from '../../../model/voyage';
 import { VoyageStatsConfig, ExportCrew, GameWorkerOptions } from '../../../model/worker';
 import CONFIG from '../../CONFIG';
@@ -10,14 +11,12 @@ import { HelperProps, Helper } from './Helper';
 // This code is heavily inspired from IAmPicard's work and released under the GPL-V3 license. Huge thanks for all his contributions!
 
 export class IAmPicardHelper extends Helper {
-	readonly id: string;
 	readonly calculator: string;
 	readonly calcName: string;
 	readonly calcOptions: GameWorkerOptions;
 
 	constructor(props: HelperProps) {
 		super(props);
-		this.id = 'request-' + Date.now();
 		this.calculator = 'iampicard';
 		this.calcName = 'Original';
 		this.calcOptions = {
@@ -26,7 +25,7 @@ export class IAmPicardHelper extends Helper {
 		};
 	}
 
-	start(): void {
+	start(requestId: string): void {
 		this.perf.start = performance.now();
 		this.calcState = CalculatorState.InProgress;
 
@@ -65,11 +64,11 @@ export class IAmPicardHelper extends Helper {
 					// ignore marginal gains (under 5 minutes)
 					if (score > bestScore + 1 / 12) {
 						bestScore = score;
-						this._finaliseIAPEstimate(result, true);
+						this._finaliseIAPEstimate(requestId, result, true);
 					}
 					// Done
 				} else {
-					this._finaliseIAPEstimate(result, false);
+					this._finaliseIAPEstimate(requestId, result, false);
 				}
 			}
 		});
@@ -178,12 +177,12 @@ export class IAmPicardHelper extends Helper {
 		return dataToExport;
 	}
 
-	_finaliseIAPEstimate(result: DataView, inProgress: boolean = false): void {
+	_finaliseIAPEstimate(requestId: string, result: DataView, inProgress: boolean = false): void {
 
 		let entries = [] as VoyageSlotEntry[];
 		let aggregates = {} as Aggregates;
 
-		Object.keys(CONFIG.SKILLS).forEach(s => aggregates[s] = { skill: s, core: 0, range_min: 0, range_max: 0 } as AggregateSkill
+		Object.keys(CONFIG.SKILLS).forEach(s => aggregates[s] = { skill: s, core: 0, range_min: 0, range_max: 0 } as Skill
 		);
 
 		let config = {
@@ -241,7 +240,7 @@ export class IAmPicardHelper extends Helper {
 					this.calcState = CalculatorState.Done;
 				}
 				// Array of IResultProposals is expected by callbacks
-				this.resultsCallback(this.id, [finalResult], inProgress ? CalculatorState.InProgress : CalculatorState.Done);
+				this.resultsCallback(requestId, [finalResult], inProgress ? CalculatorState.InProgress : CalculatorState.Done);
 			}
 		});
 		worker.postMessage(VoyageEstConfig);
