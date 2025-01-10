@@ -102,7 +102,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 		if (crewVP === 0) return <></>;
 		return (
 			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '.3em' }}>
-				<span>+{crewVP}</span>
+				<span>+{t('global.n_%', { n: crewVP * 100 })}</span>
 				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1em' }} className='invertibleIcon' />
 			</div>
 		);
