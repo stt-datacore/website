@@ -44,7 +44,7 @@ export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
     const droprate = 140;
 
     const max = RampUpMap[RampUpMap.length - 1];
-    const minutes = Math.floor(seconds / 60);
+    const minutes = seconds / 60;
 
     let multiplier = 0;
     let encounter = 0;
