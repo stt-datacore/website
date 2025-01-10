@@ -53,13 +53,13 @@ export const Aggregates = () => {
 
 	function renderVPRow(): JSX.Element {
 		if (voyageConfig.voyage_type !== 'encounter') return <></>;
-		const totalVP: number = assignments.reduce((prev, curr) => prev + getCrewVP(voyageConfig, curr.crew), 50);
+		const totalVP: number = Math.round(assignments.reduce((prev, curr) => prev + getCrewVP(voyageConfig, curr.crew), 0) * 100);
 		return (
 			<Table.Row>
 				<Table.Cell>Base Event VP</Table.Cell>
 				<Table.Cell className='iconic' style={{width: '2.2em'}}>&nbsp;</Table.Cell>
 				<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
-					<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{totalVP}</span>}>
+					<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>+{t('global.n_%', { n: totalVP })}</span>}>
 						<Popup.Content>
 							VP calculations are based on assumptions from the test voyage event and may not be accurate for this event or events going forward.
 						</Popup.Content>
