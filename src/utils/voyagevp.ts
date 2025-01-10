@@ -15,10 +15,10 @@ const RampUpMap: RampUpEntry[] = [
     { start: 90, challenges: 4, passive: 25 },
     { start: 120, challenges: 5, passive: 32 },
     { start: 240, challenges: 5, passive: 39 },
-    { start: 360, challenges: 5, passive: 45 },
-    { start: 480, challenges: 5, passive: 52 },
-    { start: 600, challenges: 5, passive: 59 },
-    { start: 720, challenges: 6, passive: 65 },
+    { start: 360, challenges: 5, passive: 46 },
+    { start: 480, challenges: 5, passive: 53 },
+    { start: 600, challenges: 5, passive: 60 },
+    { start: 720, challenges: 6, passive: 67 },
    ];
 
 export interface VPDetails {
