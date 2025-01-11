@@ -75,9 +75,9 @@ export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
     const secmax = max.start * 60;
     const secdiv = 120 * 60;
 
-    for (let sec = 0; sec <= dropmax; sec += droprate) {
+    for (let sec = droprate; sec <= dropmax; sec += droprate) {
         if (sec >= secmax) {
-            let cpasv = Math.ceil((sec - secmax) / secdiv);
+            let cpasv = Math.floor((sec - secmax) / secdiv);
             passive += Math.floor(passiveMul * (max.passive + (cpasv * 7)));
         }
         else {
