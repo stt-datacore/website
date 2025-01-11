@@ -77,11 +77,11 @@ export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
 
     for (let sec = 0; sec <= dropmax; sec += droprate) {
         if (sec >= secmax) {
-            let cpasv = Math.floor((sec - secmax) / secdiv);
+            let cpasv = Math.ceil((sec - secmax) / secdiv);
             passive += Math.floor(passiveMul * (max.passive + (cpasv * 7)));
         }
         else {
-            let fi = RampUpMap.findIndex(f => (f.start * 60) > sec) - 1;
+            let fi = RampUpMap.findIndex(f => (f.start * 60) > sec);
             if (fi < 0) continue;
             let f = RampUpMap[fi];
             passive += Math.floor(passiveMul * f.passive);
