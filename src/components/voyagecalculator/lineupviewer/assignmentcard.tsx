@@ -19,6 +19,7 @@ import { getCrewTraitBonus, getCrewVP, POPUP_DELAY, voySkillScore } from '../uti
 import { IAssignment } from './model';
 import { ViewerContext } from './context';
 import { CrewFinder } from './crewfinder';
+import { QuipmentPopover } from '../quipment/quipmentpopover';
 
 export type AssignmentCardProps = {
 	assignment: IAssignment;
@@ -67,17 +68,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 				<div style={{display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: 'center', gap: '1em'}}>
 					{isQuipped(crew) && (
 						<div style={{paddingBottom: "0.1em"}}>
-							<Popup wide
-								content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => typeof q === 'number' ? q : q[1]), globalContext.core.items, crew.kwipment_prospects, t)}
-								mouseEnterDelay={POPUP_DELAY}
-								trigger={
-									<div style={{ cursor: 'help', display: 'flex', alignItems: 'center', flexWrap: 'nowrap' }}>
-										<img src={`${process.env.GATSBY_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ marginLeft: "0.25em", marginRight: "0.25em", height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
-										{!!crew.kwipment_prospects && <Icon name='add' size='tiny' />}
-									</div>
-								}
-							/>
-
+							<QuipmentPopover crew={crew} />
 						</div>
 					)}
 					{renderCrewVP()}
@@ -101,7 +92,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 		const crewVP: number = getCrewVP(voyageConfig, crew);
 		if (crewVP === 0) return <></>;
 		return (
-			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '.3em' }}>
+			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '.3em', flexWrap: 'nowrap' }}>
 				<span>+{t('global.n_%', { n: crewVP * 100 })}</span>
 				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1em' }} className='invertibleIcon' />
 			</div>

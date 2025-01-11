@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { CompletionState, TranslateMethod } from "../../model/player";
+import { CompletionState, PlayerCrew, TranslateMethod } from "../../model/player";
 import { Dropdown, Header, Rating } from "semantic-ui-react";
 import { isImmortal, printImmoText } from "../../utils/crewutils";
 import { TinyStore } from "../../utils/tiny";
@@ -16,9 +16,10 @@ import CONFIG from "../CONFIG";
 import { ItemBonusInfo, combineBonuses, formatDuration, getItemBonuses } from "../../utils/itemutils";
 import { printRequiredTraits } from "../items/itemstable";
 import { OptionsPanelFlexColumn } from "../stats/utils";
+import { CrewItemsView } from "./crew_items";
 
 
-export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[], prospect?: boolean, t?: TranslateMethod) {
+export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[], prospect?: boolean, t?: TranslateMethod, crew?: PlayerCrew) {
     if (!kwipment || kwipment.every(k => !k)) return <></>;
     let quip = items.filter(f => kwipment.some(q => !!q && q.toString() === f.kwipment_id?.toString()));
     let bonuses = [] as ItemBonusInfo[];
@@ -26,7 +27,18 @@ export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[], 
         bonuses.push(getItemBonuses(q));
     }
     let combined = combineBonuses(bonuses.map(b => b.bonuses));
-    return renderBonuses(combined, undefined, undefined, prospect, t);
+    if (crew) {
+        return (
+            <>
+                <CrewItemsView crew={crew} quipment={true} />
+                {renderBonuses(combined, undefined, undefined, prospect, t)}
+            </>
+        )
+    }
+    else {
+        return renderBonuses(combined, undefined, undefined, prospect, t);
+    }
+
 }
 
 export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: string, margin?: string, prospect?: boolean, t?: TranslateMethod) {
