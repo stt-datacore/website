@@ -71,10 +71,10 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 								content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => typeof q === 'number' ? q : q[1]), globalContext.core.items, crew.kwipment_prospects, t)}
 								mouseEnterDelay={POPUP_DELAY}
 								trigger={
-									<span style={{ cursor: 'help' }}>
+									<div style={{ cursor: 'help', display: 'flex', alignItems: 'center', flexWrap: 'nowrap' }}>
 										<img src={`${process.env.GATSBY_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ marginLeft: "0.25em", marginRight: "0.25em", height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 										{!!crew.kwipment_prospects && <Icon name='add' size='tiny' />}
-									</span>
+									</div>
 								}
 							/>
 

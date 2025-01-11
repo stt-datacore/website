@@ -164,7 +164,7 @@ export const CalculatorForm = () => {
 				results.push({
 					id: request.id,
 					requestId: request.id,
-					name: 'Calculating...',
+					name: t('spinners.calculating'),
 					calcState: CalculatorState.InProgress
 				});
 				request.start();

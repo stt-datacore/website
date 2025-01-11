@@ -91,12 +91,14 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		if (result.calcState === CalculatorState.Done && result.result) {
 			const recommended: string[] = getRecommendedList(result.result.estimate, bestValues);
 			if (results.length === 1)
-				analysis = 'Recommended for all criteria';
+				analysis = t('voyage.estimate.analysis.all_criteria');
 			else {
 				if (recommended.length > 0)
-					analysis = ' Recommended for ' + recommended.map((method) => getRecommendedValue(method, bestValues)).join(', ');
+					analysis = ' ' + t('voyage.estimate.analysis.recommended_for_mode', {
+						mode: recommended.map((method) => getRecommendedValue(method, bestValues)).join(', ')
+					});
 				else
-					analysis = ' Proposed alternative';
+					analysis = ' ' + t('voyage.estimate.analysis.proposed_alternative');
 			}
 		}
 		analyses.push(analysis);
@@ -173,33 +175,37 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 
 	function getRecommendedValue(method: string, bestValues: IBestValues): string {
 		let sortName = '', sortValue: string | number = '';
+		sortName = t(`voyage.estimate.recommendations.${method}`);
 		switch (method) {
 			case 'median':
-				sortName = 'estimated runtime';
+				//sortName = t(`voyage.estimate.recommendations.${method}`);
 				sortValue = formatTime(bestValues.median, t);
 				break;
 			case 'minimum':
-				sortName = 'guaranteed minimum';
+				//sortName = 'guaranteed minimum';
 				sortValue = formatTime(bestValues.minimum, t);
 				break;
 			case 'moonshot':
-				sortName = 'moonshot';
+				//sortName = 'moonshot';
 				sortValue = formatTime(bestValues.moonshot, t);
 				break;
 			case 'dilemma':
-				sortName = 'dilemma chance';
-				sortValue = Math.round(bestValues.dilemma.chance)+'% to reach '+bestValues.dilemma.hour+'h';
+				//sortName = 'dilemma chance';
+				sortValue = t('voyage.estimate.recommendations.n%_to_reach_h', {
+					n: Math.round(bestValues.dilemma.chance),
+					h: bestValues.dilemma.hour
+				});
 				break;
 			case 'antimatter':
-				sortName = 'starting antimatter';
+				//sortName = 'starting antimatter';
 				sortValue = bestValues.antimatter;
 				break;
 			case 'total_vp':
-				sortName = 'projected VP';
+				//sortName = 'projected VP';
 				sortValue = bestValues.total_vp.toLocaleString();
 				break;
 			case 'vp_per_min':
-				sortName = 'projected VP per minute';
+				//sortName = 'projected VP per minute';
 				sortValue = Math.floor(bestValues.vp_per_min);
 				break;
 		}
@@ -303,7 +309,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		});
 		worker.postMessage(VoyageEstConfig);
 		const result = results[resultIndex];
-		result.name = 'Calculating...';
+		result.name = t('spinners.default');
 		result.confidenceState = 1;
 		setResults([...results]);
 	}
@@ -315,7 +321,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 
 	return (
 		<React.Fragment>
-			<Header as='h3'>Recommended Lineups</Header>
+			<Header as='h3'>{t('voyage.estimate.recommended_lineups')}</Header>
 			<Tab menu={{ pointing: true }} panes={panes} />
 		</React.Fragment>
 	);
