@@ -241,17 +241,17 @@ export const getOptCrew = (col: CollectionGroup, costMode: 'normal' | 'sale', se
             if (a.favorite) return -1;
             else return 1;
         }
-        if (col.collection.crew?.find(f => f === a.symbol)) x++;
-        if (col.collection.crew?.find(f => f === b.symbol)) y++;
+        // if (col.collection.crew?.find(f => f === a.symbol)) x++;
+        // if (col.collection.crew?.find(f => f === b.symbol)) y++;
 
-        for (let i = 0; i < cols.length; i++) {
-            if (cols[i].crew.find(fc => fc.symbol === a.symbol)) {
-                x++;
-            }
-            if (cols[i].crew.find(fc => fc.symbol === b.symbol)) {
-                y++;
-            }
-        }
+        // for (let i = 0; i < cols.length; i++) {
+        //     if (cols[i].crew.find(fc => fc.symbol === a.symbol)) {
+        //         x++;
+        //     }
+        //     if (cols[i].crew.find(fc => fc.symbol === b.symbol)) {
+        //         y++;
+        //     }
+        // }
         let r = 0; // y - x;
         if (!r) {
             r = starCost([a], undefined, costMode === 'sale') - starCost([b], undefined, costMode === 'sale');
