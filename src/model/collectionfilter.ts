@@ -31,8 +31,8 @@ export interface ComboCostMap {
 export interface CollectionGroup {
 	name: string;
 	maps: CollectionMap[];
-	uniqueCrew: PlayerCrew[];
-	commonCrew: PlayerCrew[];
+	combinedUnique: PlayerCrew[];
+	crewInCommon: PlayerCrew[];
 	collection: PlayerCollection;
 	nonfullfilling?: number;
 	nonfullfillingRatio?: number;

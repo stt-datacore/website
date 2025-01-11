@@ -70,7 +70,7 @@ export const CollectionPrefs = (props: CollectionPrefsProps) => {
     });
 
     React.useEffect(() => {
-        let crewprep = colOptimized.map((col) => col.uniqueCrew).flat();
+        let crewprep = colOptimized.map((col) => col.combinedUnique).flat();
         crewprep = crewprep.filter((fc, idx) => crewprep.findIndex(fi => fi.symbol === fc.symbol) === idx)
             .sort((a, b) => a.name.localeCompare(b.name));
 
