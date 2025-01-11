@@ -103,7 +103,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 		{
 			width: 3,
 			column: 'immortalRewards.length',
-			title: <span>{t('collections.columsn.immortal_rewards')} <Popup trigger={<Icon name='help' />} content='Rewards you can claim if you immortalize this crew right now' /></span>,
+			title: <span>{t('collections.columns.immortal_rewards')} <Popup trigger={<Icon name='help' />} content='Rewards you can claim if you immortalize this crew right now' /></span>,
 			reverse: true,
 			customCompare: !!mapFilter?.rewardFilter?.length ? compareCrewRewards : undefined
 		}
