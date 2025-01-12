@@ -23,7 +23,7 @@ import ItemDisplay from '../../itemdisplay';
 
 import { getSkillData, ISkillData } from '../skillcheck/skilldata';
 import { SkillDetail } from '../skillcheck/skilldetail';
-import { getCrewTraitBonus, getCrewVP } from '../utils';
+import { getCrewTraitBonus, getCrewEventBonus } from '../utils';
 
 import { IControlVoyage, IProspectiveConfig, IProspectiveCrewSlot } from './model';
 import { EditorContext } from './context';
@@ -191,6 +191,25 @@ const ToplinesCompared = (props: ToplinesComparedProps) => {
 		);
 	}
 
+	if (currentConfig.voyage_type === 'encounter') {
+		toplines.push(
+			{	/* Projected VP */
+				key: 'projected_vp',
+				title: 'Projected VP',
+				currentValue: currentEstimate.vpDetails?.total_vp ?? 0,
+				baselineValue: baselineEstimate.vpDetails?.total_vp ?? 0,
+				renderValue: renderVP
+			},
+			{	/* Event crew bonus */
+				key: 'event_bonus',
+				title: 'Event crew bonus',
+				currentValue: Math.round(currentConfig.crew_slots.reduce((prev, curr) => prev + (curr.crew ? getCrewEventBonus(currentConfig, curr.crew) : 0), 0) * 100),
+				baselineValue: Math.round(baselineConfig.crew_slots.reduce((prev, curr) => prev + getCrewEventBonus(baselineConfig, curr.crew), 0) * 100),
+				renderValue: renderAsPercent
+			}
+		);
+	}
+
 	toplines.push(
 		{	/* Antimatter */
 			key: 'max_hp',
@@ -200,25 +219,6 @@ const ToplinesCompared = (props: ToplinesComparedProps) => {
 			renderValue: renderAntimatter
 		}
 	);
-
-	if (currentConfig.voyage_type === 'encounter') {
-		toplines.push(
-			{	/* Base Event VP */
-				key: 'base_vp',
-				title: 'Base Event VP',
-				currentValue: Math.round(currentConfig.crew_slots.reduce((prev, curr) => prev + (curr.crew ? getCrewVP(currentConfig, curr.crew) : 0), 0) * 100),
-				baselineValue: Math.round(baselineConfig.crew_slots.reduce((prev, curr) => prev + getCrewVP(baselineConfig, curr.crew), 0) * 100),
-				renderValue: renderAsPercent
-			},
-			{	/* Projected VP */
-				key: 'projected_vp',
-				title: 'Projected VP',
-				currentValue: currentEstimate.vpDetails?.total_vp ?? 0,
-				baselineValue: baselineEstimate.vpDetails?.total_vp ?? 0,
-				renderValue: renderVP
-			}
-		);
-	}
 
 	const maxRows: number = Math.round(toplines.length / 2);
 	const tables: IToplines[][] = [

@@ -5,7 +5,7 @@ import {
 	Tab
 } from 'semantic-ui-react';
 
-import { Estimate, IFullPayloadAssignment, IVoyageCalcConfig, IVoyageCrew, IVoyageRequest, IVoyageResult, ITrackedVoyage } from '../../../model/voyage';
+import { Estimate, IFullPayloadAssignment, IVoyageCalcConfig, IVoyageCrew, IVoyageRequest, IVoyageResult, ITrackedVoyage, IResultProposal } from '../../../model/voyage';
 import { UnifiedWorker } from '../../../typings/worker';
 import { GlobalContext } from '../../../context/globalcontext';
 import { flattenEstimate, formatTime } from '../../../utils/voyageutils';
@@ -29,7 +29,7 @@ interface IBestValues {
 	};
 	antimatter: number;
 	total_vp: number;
-	vp_per_min: number;
+	event_crew_bonus: number;
 };
 
 export type ResultsGroupProps = {
@@ -71,15 +71,15 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 			},
 			antimatter: 0,
 			total_vp: 0,
-			vp_per_min: 0
+			event_crew_bonus: 0
 		};
 		results.forEach(result => {
 			if (result.calcState === CalculatorState.Done && result.proposal) {
 				const values = {
 					...flattenEstimate(result.proposal.estimate),
-					antimatter: result.proposal.estimate.antimatter ?? 0,
+					antimatter: result.proposal.startAM,
 					total_vp: result.proposal.estimate.vpDetails?.total_vp ?? 0,
-					vp_per_min: result.proposal.estimate.vpDetails?.vp_per_min ?? 0
+					event_crew_bonus: result.proposal.eventCrewBonus ?? 0
 				};
 				Object.keys(bestValues).forEach((valueKey) => {
 					if (valueKey === 'dilemma') {
@@ -97,7 +97,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		results.forEach(result => {
 			let analysis: string = '';
 			if (result.calcState === CalculatorState.Done && result.proposal) {
-				const recommended: string[] = getRecommendedList(result.proposal.estimate, bestValues);
+				const recommended: string[] = getRecommendedList(result.proposal, bestValues);
 				if (results.length === 1)
 					analysis = 'Recommended for all criteria';
 				else {
@@ -168,13 +168,13 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		}
 	}
 
-	function getRecommendedList(estimate: Estimate, bestValues: IBestValues): string[] {
+	function getRecommendedList(proposal: IResultProposal, bestValues: IBestValues): string[] {
 		const recommended: string[] = [];
 		const values = {
-			...flattenEstimate(estimate),
-			antimatter: estimate.antimatter ?? 0,
-			total_vp: estimate.vpDetails?.total_vp ?? 0,
-			vp_per_min: estimate.vpDetails?.vp_per_min ?? 0
+			...flattenEstimate(proposal.estimate),
+			antimatter: proposal.startAM,
+			total_vp: proposal.estimate.vpDetails?.total_vp ?? 0,
+			event_crew_bonus: proposal.eventCrewBonus
 		};
 		Object.keys(bestValues).forEach(method => {
 			let canRecommend: boolean = false;
@@ -184,7 +184,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 						&& bestValues.dilemma.chance === values.dilemma.chance;
 				}
 			}
-			else if ((method === 'total_vp' || method === 'vp_per_min')) {
+			else if ((method === 'total_vp' || method === 'event_crew_bonus')) {
 				if (voyageConfig.voyage_type === 'encounter') {
 					canRecommend = bestValues[method] === values[method];
 				}
@@ -228,9 +228,9 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 				//sortName = 'projected VP';
 				sortValue = bestValues.total_vp.toLocaleString();
 				break;
-			case 'vp_per_min':
-				//sortName = 'projected VP per minute';
-				sortValue = Math.floor(bestValues.vp_per_min);
+			case 'event_crew_bonus':
+				sortName = 'event crew bonus';
+				sortValue = `+${t('global.n_%', { n: Math.round((bestValues.event_crew_bonus ?? 0) * 100) })}`;
 				break;
 		}
 		if (sortValue !== '') sortValue = ' ('+sortValue+')';

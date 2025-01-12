@@ -1,10 +1,11 @@
 import '../../../typings/worker';
 import { UnifiedWorker } from '../../../typings/worker';
 import { Skill } from '../../../model/crew';
-import { Aggregates, VoyageDescription } from '../../../model/player';
+import { Aggregates, PlayerCrew, VoyageDescription } from '../../../model/player';
 import { IProposalEntry as VoyageSlotEntry, IResultProposal, IVoyageCalcConfig, IVoyageEventContent } from '../../../model/voyage';
 import { VoyageStatsConfig, ExportCrew, GameWorkerOptions } from '../../../model/worker';
 import CONFIG from '../../CONFIG';
+import { getCrewEventBonus } from '../utils';
 import { CalculatorState } from './calchelpers';
 import { HelperProps, Helper } from './Helper';
 
@@ -190,6 +191,8 @@ export class IAmPicardHelper extends Helper {
 			startAm: this.bestShip.score
 		} as VoyageStatsConfig;
 
+		let eventCrewBonus: number = 0;
+
 		for (let i = 0; i < 12; i++) {
 			let crew = this.consideredCrew.find(c => c.id === result.getInt32(4 + i * 4, true));
 			if (!crew)
@@ -211,6 +214,8 @@ export class IAmPicardHelper extends Helper {
 				config.startAm += 25;
 
 			entries.push(entry);
+
+			eventCrewBonus += getCrewEventBonus(this.voyageConfig, crew as PlayerCrew);
 		}
 
 		const { primary_skill, secondary_skill } = this.voyageConfig.skills;
@@ -233,7 +238,8 @@ export class IAmPicardHelper extends Helper {
 					estimate: message.data.result,
 					entries: entries,
 					aggregates: aggregates,
-					startAM: config.startAm
+					startAM: config.startAm,
+					eventCrewBonus
 				};
 				if (!inProgress) {
 					this.perf.end = performance.now();

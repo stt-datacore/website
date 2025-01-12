@@ -9,9 +9,9 @@ import {
 	Tab
 } from 'semantic-ui-react';
 
-import { Estimate, IBestVoyageShip, IResultProposal, IVoyageCalcConfig, IVoyageCrew, IVoyageRequest, IVoyageResult } from '../../../model/voyage';
 import { Voyage } from '../../../model/player';
 import { Ship } from '../../../model/ship';
+import { Estimate, IBestVoyageShip, IProposalEntry, IResultProposal, IVoyageCalcConfig, IVoyageCrew, IVoyageRequest, IVoyageResult } from '../../../model/voyage';
 import { GlobalContext } from '../../../context/globalcontext';
 import { formatTime } from '../../../utils/voyageutils';
 
@@ -26,7 +26,7 @@ import { ILineupEditorTrigger, LineupEditor } from '../lineupeditor/lineupeditor
 import { LineupViewerAccordion } from '../lineupviewer/lineup_accordion';
 import { QuipmentProspectAccordion } from '../quipment/quipmentprospects';
 import VoyageStatsAccordion from '../stats/stats_accordion';
-import { VPGraphAccordion } from '../vpgraph';
+import { getCrewEventBonus, getCrewTraitBonus } from '../utils';
 
 export type ResultPaneProps = {
 	resultId: string;
@@ -134,15 +134,28 @@ export const ResultPane = (props: ResultPaneProps) => {
 				<Message attached>
 					<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', rowGap: '1em' }}>
 						<div>
-							{tfmt('voyage.estimate.estimate_time', {
-								time: <b>{formatTime(proposal.estimate.refills[0].result, t)}</b>
-							})}
-							{` `}
-							{t('voyage.estimate.expected_range', {
-								a: formatTime(proposal.estimate.refills[0].saferResult, t),
-								b: formatTime(proposal.estimate.refills[0].moonshotResult, t)
-							})}
-							{analysis !== '' && (<div style={{ marginTop: '1em' }}>{analysis}</div>)}
+							<div>
+								{tfmt('voyage.estimate.estimate_time', {
+									time: <b>{formatTime(proposal.estimate.refills[0].result, t)}</b>
+								})}
+								{` `}
+								{t('voyage.estimate.expected_range', {
+									a: formatTime(proposal.estimate.refills[0].saferResult, t),
+									b: formatTime(proposal.estimate.refills[0].moonshotResult, t)
+								})}
+							</div>
+							{proposal.estimate.vpDetails && (
+								<div>
+									{t('voyage.estimate.projected_vp')}: <b>{proposal.estimate.vpDetails.total_vp.toLocaleString()}</b>
+									{` `}<img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />;
+									{` `}event crew bonus: <b>+{t('global.n_%', { n: Math.round((proposal.eventCrewBonus ?? 0) * 100) })}</b>
+								</div>
+							)}
+							{analysis !== '' && (
+								<div style={{ marginTop: '1em' }}>
+									{analysis}
+								</div>
+							)}
 						</div>
 						<div>
 							<Button.Group>
@@ -183,10 +196,6 @@ export const ResultPane = (props: ResultPaneProps) => {
 			)}
 			<Tab.Pane>
 				<div style={{...flexCol, alignItems: 'stretch', gap: '0.5em'}}>
-
-					{proposal.estimate.vpDetails && (
-						<VPGraphAccordion voyageConfig={voyageConfig} estimate={proposal.estimate} />
-					)}
 					<VoyageStatsAccordion
 						configSource={configSource}
 						voyageData={voyageConfig as Voyage}
@@ -236,20 +245,32 @@ export const ResultPane = (props: ResultPaneProps) => {
 				archetype_id: ship.archetype_id!
 			} as IBestVoyageShip
 		};
+		const entries: IProposalEntry[] = [];
+		let crewTraitBonus: number = 0, eventCrewBonus: number = 0;
+		voyageConfig.crew_slots.forEach((cs, slotId) => {
+			const crew: IVoyageCrew = cs.crew;
+			if (crew) {
+				const traitBonus: number = getCrewTraitBonus(voyageConfig, crew, cs.trait);
+				crewTraitBonus += traitBonus;
+				eventCrewBonus += getCrewEventBonus(voyageConfig, crew);
+				entries.push({
+					slotId,
+					choice: crew,
+					hasTrait: traitBonus > 0
+				});
+			}
+		});
 		const editedResult: IVoyageResult = {
 			id: `${requestId}-result`,
 			requestId: requestId,
 			name: formatTime(estimate.refills[0].result, t),
 			calcState: CalculatorState.Done,
 			proposal: {
-				entries: voyageConfig.crew_slots.map((cs, entryId) => ({
-					slotId: entryId,
-					choice: cs.crew as IVoyageCrew,
-					hasTrait: 0
-				})),
+				entries,
 				estimate,
 				aggregates: voyageConfig.skill_aggregates,
-				startAM: voyageConfig.max_hp
+				startAM: voyageConfig.max_hp,
+				eventCrewBonus
 			}
 		};
 		addEditedResult(editedRequest, editedResult);

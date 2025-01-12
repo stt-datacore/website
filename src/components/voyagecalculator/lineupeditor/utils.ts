@@ -4,7 +4,7 @@ import { Ship } from '../../../model/ship';
 import { Estimate, IVoyageInputConfig } from '../../../model/voyage';
 import { UnifiedWorker } from '../../../typings/worker';
 import { calcVoyageVP } from '../../../utils/voyagevp';
-import { getCrewTraitBonus, getCrewVP, getShipTraitBonus } from '../utils';
+import { getCrewTraitBonus, getCrewEventBonus, getShipTraitBonus } from '../utils';
 import { IProspectiveConfig, IProspectiveCrewSlot } from './model';
 
 export function getProspectiveConfig(voyageConfig: IVoyageInputConfig, ship: Ship | undefined, crewSlots: IProspectiveCrewSlot[]): IProspectiveConfig {
@@ -57,7 +57,7 @@ export function promiseEstimateFromConfig(voyageConfig: IProspectiveConfig, reso
 				const seconds: number = estimate.refills[0].result*60*60;
 				const bonuses: number[] = [];
 				voyageConfig.crew_slots.forEach(cs => {
-					if (cs.crew) bonuses.push(getCrewVP(voyageConfig, cs.crew));
+					if (cs.crew) bonuses.push(getCrewEventBonus(voyageConfig, cs.crew));
 				});
 				estimate.vpDetails = calcVoyageVP(seconds, bonuses);
 			}

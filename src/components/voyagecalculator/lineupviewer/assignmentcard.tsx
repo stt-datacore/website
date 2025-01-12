@@ -1,7 +1,6 @@
 import React from 'react';
 import {
 	Card,
-	Icon,
 	Label,
 	Popup
 } from 'semantic-ui-react';
@@ -14,7 +13,7 @@ import CONFIG from '../../CONFIG';
 import { AvatarView } from '../../item_presenters/avatarview';
 import { renderKwipmentBonus } from '../../item_presenters/item_presenter';
 
-import { getCrewTraitBonus, getCrewVP, POPUP_DELAY, voySkillScore } from '../utils';
+import { getCrewTraitBonus, getCrewEventBonus, POPUP_DELAY, voySkillScore } from '../utils';
 
 import { IAssignment } from './model';
 import { ViewerContext } from './context';
@@ -91,7 +90,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 	);
 
 	function renderCrewVP(): JSX.Element {
-		const crewVP: number = getCrewVP(voyageConfig, crew);
+		const crewVP: number = getCrewEventBonus(voyageConfig, crew);
 		if (crewVP === 0) return <></>;
 		return (
 			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '.3em', flexWrap: 'nowrap' }}>

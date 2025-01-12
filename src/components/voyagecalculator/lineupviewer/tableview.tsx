@@ -12,7 +12,7 @@ import { isQuipped } from '../../../utils/crewutils';
 import { AvatarView } from '../../item_presenters/avatarview';
 import { renderKwipmentBonus } from '../../item_presenters/item_presenter';
 
-import { getCrewTraitBonus, getCrewVP, POPUP_DELAY } from '../utils';
+import { getCrewTraitBonus, getCrewEventBonus, POPUP_DELAY } from '../utils';
 
 import { LayoutContext, ViewerContext } from './context';
 import { Aggregates } from './aggregates';
@@ -158,7 +158,7 @@ export const TableView = () => {
 
 	function renderVPBonus(crew: PlayerCrew): JSX.Element {
 		if (voyageConfig.voyage_type !== 'encounter') return <></>;
-		const crewVP: number = getCrewVP(voyageConfig, crew);
+		const crewVP: number = getCrewEventBonus(voyageConfig, crew);
 		if (crewVP === 0) return <></>;
 		let bonusText = `+${crewVP} VP`;
 		return (

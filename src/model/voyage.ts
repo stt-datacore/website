@@ -79,6 +79,7 @@ export interface IResultProposal {
 	entries: IProposalEntry[];
 	aggregates: Aggregates;
 	startAM: number;
+	eventCrewBonus: number;
 };
 
 export interface Estimate {

@@ -57,7 +57,7 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 					else if (strategy === 'peak-antimatter')
 						methods = ['antimatter'];
 					else if (strategy === 'peak-vp')
-						methods = ['vpm'];
+						methods = ['total_vp'];
 					sortLineups(datacoreSorter, lineups, estimates, methods)
 						.then(sorted => {
 							output(JSON.parse(JSON.stringify(sorted)), false);
@@ -91,7 +91,7 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 		}
 		const chewableConfig = {
 			ps, ss, others,
-			startAm: input.bestShip.score + lineup.antimatter,
+			startAm: bestShip.score + lineup.antimatter,
 			prof: lineup.proficiency,
 			noExtends: false, // Set to true to show estimate with no refills
 			numSims: 5000
@@ -102,7 +102,7 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 		return new Promise((resolve, reject) => {
 			const estimate: Estimate = chewable(chewableConfig, () => false);
 			// Add antimatter prop here to allow for post-sorting by AM
-			estimate.antimatter = input.bestShip.score + lineup.antimatter;
+			estimate.antimatter = bestShip.score + lineup.antimatter;
 			// Add vpDetails prop here to allow for post-sorting by VP details
 			if (voyage_description.voyage_type === 'encounter') {
 				const seconds: number = estimate.refills[0].result*60*60;
@@ -170,10 +170,10 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 				bScore = bEstimate.result;
 			}
 		}
-		// Highest VP/minute
-		else if (method === 'vpm') {
-			aScore = a.estimate.vpDetails?.vp_per_min ?? 0;
-			bScore = b.estimate.vpDetails?.vp_per_min ?? 0;
+		// Highest VP
+		else if (method === 'vp') {
+			aScore = a.estimate.vpDetails?.total_vp ?? 0;
+			bScore = b.estimate.vpDetails?.total_vp ?? 0;
 			// If VP is the same, use the one with the better median result
 			if (aScore === bScore) {
 				compareCloseTimes = true;

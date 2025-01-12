@@ -8,7 +8,7 @@ import {
 import { GlobalContext } from '../../../context/globalcontext';
 import CONFIG from '../../CONFIG';
 import { SkillCheckModal } from '../skillcheck/modal';
-import { getCrewVP, POPUP_DELAY, voySkillScore } from '../utils';
+import { getCrewEventBonus, POPUP_DELAY, voySkillScore } from '../utils';
 import { LayoutContext, ViewerContext } from './context';
 
 export const Aggregates = () => {
@@ -56,7 +56,7 @@ export const Aggregates = () => {
 		return (
 			<Table collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto' }}>
 				<Table.Body>
-					{renderVPRow()}
+					{/* {renderVPRow()} */}
 					{renderAntimatterRow()}
 				</Table.Body>
 			</Table>
@@ -65,7 +65,7 @@ export const Aggregates = () => {
 
 	function renderVPRow(): JSX.Element {
 		if (voyageConfig.voyage_type !== 'encounter') return <></>;
-		const totalVP: number = Math.round(assignments.reduce((prev, curr) => prev + getCrewVP(voyageConfig, curr.crew), 0) * 100);
+		const totalVP: number = Math.round(assignments.reduce((prev, curr) => prev + getCrewEventBonus(voyageConfig, curr.crew), 0) * 100);
 		return (
 			<Table.Row>
 				<Table.Cell>{t('voyage.estimate.base_event_vp')}</Table.Cell>
