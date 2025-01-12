@@ -753,6 +753,7 @@
             "second_pair": "{{quipment_ranks.second_pair}}",
             "third_pair": "{{quipment_ranks.third_pair}}"
         },
+        "elevated_note": "Haga clic en esta columna para ver una tabla de todos los retos de alta crítica.",
         "gauntlet": "Reto",
         "gauntlets": "Retos",
         "hide_best_crew": "Ocultar los mejores niveles de tripulación para el reto actual...",

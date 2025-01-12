@@ -753,6 +753,7 @@
             "second_pair": "{{quipment_ranks.second_pair}}",
             "third_pair": "{{quipment_ranks.third_pair}}"
         },
+        "elevated_note": "Cliquez sur cette colonne pour voir un tableau de tous les gantelets à haut degré de critique.",
         "gauntlet": "Gantelet",
         "gauntlets": "Gantelets",
         "hide_best_crew": "Masquer les meilleurs niveaux d'équipage pour le gantelet actuel...",

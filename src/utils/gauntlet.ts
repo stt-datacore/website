@@ -908,3 +908,11 @@ export function getCrewCrit(crew: PlayerCrew | CrewMember | GauntletContestCrew,
 		return 5 + (20 * gauntlet.contest_data!.traits.filter(f => crew.traits.includes(f)).length)
 	}
 }
+
+export function printGauntlet(gauntlet: Gauntlet, TRAIT_NAMES: TraitNames) {
+	return (gauntlet.contest_data?.traits.map(t => TRAIT_NAMES[t]).join("/") + "/" + skillToShort(gauntlet.contest_data?.featured_skill ?? ""));
+}
+
+export function getCritColor(crit: number) {
+	return crit >= 65 ? 'purple' : crit >= 45 ? 'blue' : crit >= 25 ? 'green' : undefined;
+}
