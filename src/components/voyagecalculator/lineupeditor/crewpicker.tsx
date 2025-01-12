@@ -8,6 +8,8 @@ import {
 import { Skill } from '../../../model/crew';
 import { PlayerCrew } from '../../../model/player';
 import { GlobalContext } from '../../../context/globalcontext';
+import { oneCrewCopy } from '../../../utils/crewutils';
+import { getItemWithBonus, ItemWithBonus } from '../../../utils/itemutils';
 import { useStateWithStorage } from '../../../utils/storage';
 
 import CONFIG from '../../CONFIG';
@@ -22,6 +24,8 @@ import { crewMatchesQuippedFilter, QuippedCrewFilter } from '../../dataset_prese
 import { crewMatchesSkillFilter, SkillToggler } from '../../dataset_presenters/options/skilltoggler';
 
 import { CalculatorContext } from '../context';
+import { UserPrefsContext } from '../calculator/userprefs';
+import { applyQuipmentProspect } from '../quipment/utils';
 
 import { EditorContext } from './context';
 
@@ -58,8 +62,10 @@ type AlternateCrewPickerProps = {
 };
 
 export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
+	const globalContext = React.useContext(GlobalContext);
 	const { t } = React.useContext(GlobalContext).localized;
 	const calculatorContext = React.useContext(CalculatorContext);
+	const { qpConfig } = React.useContext(UserPrefsContext);
 	const { id, prospectiveConfig, sortedSkills, renderActions, dismissEditor } = React.useContext(EditorContext);
 	const { setAlternate } = props;
 
@@ -69,9 +75,33 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 
 	const [data, setData] = React.useState<IAlternateCrewData[] | undefined>(undefined);
 
+	// Alternate picker crew options are intentionally independent of calculator crew options,
+	// 	so theoretically there should be a front-facing option to toggle quipment prospects for use here
+	//	without overriding the qpConfig preferences of the calculator crew options.
+	//	For simplicity, the alternate picker silently respect the calculator qpConfig preferences instead.
+	const qpEnabled = React.useMemo<boolean>(() => {
+		return qpConfig.enabled;
+	}, [qpConfig]);
+
 	React.useEffect(() => {
 		const assignedCrewIds: number[] = prospectiveConfig.crew_slots.filter(cs => cs.crew).map(cs => cs.crew!.id);
-		const data: IAlternateCrewData[] = JSON.parse(JSON.stringify(calculatorContext.crew));
+
+		const quipment: ItemWithBonus[] = qpEnabled ? globalContext.core.items.filter(f => f.type === 14).map(m => getItemWithBonus(m)) : [];
+
+		const data: IAlternateCrewData[] = calculatorContext.crew.map(crew => {
+			if (qpEnabled) {
+				return applyQuipmentProspect(
+						crew,
+						quipment,
+						globalContext.player.buffConfig,
+						{
+							voyageConfig: prospectiveConfig,
+							qpConfig
+						}
+				) as IAlternateCrewData;
+			}
+			return oneCrewCopy(crew) as IAlternateCrewData;
+		});
 		data.forEach(crew => {
 			const assignedSlot: number = assignedCrewIds.indexOf(crew.id);
 			crew.assigned_slot = assignedSlot >= 0 ? assignedSlot : 100; // Unassigned crew get a high slot # for sorting purposes
@@ -102,7 +132,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 			crew.voyage_total = primaryScore + secondaryScore + otherScore;
 		});
 		setData([...data]);
-	}, [calculatorContext, prospectiveConfig.crew_slots, skillMode]);
+	}, [calculatorContext, qpEnabled, prospectiveConfig.crew_slots, skillMode]);
 
 	const filteredIds = React.useMemo<Set<number>>(() => {
 		const filteredIds: Set<number> = new Set<number>();
