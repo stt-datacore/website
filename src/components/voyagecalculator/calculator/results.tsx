@@ -81,28 +81,19 @@ export const ResultPane = (props: ResultPaneProps) => {
 	const iconTrack: SemanticICONS[] = ['flag outline', 'flag'];
 	const iconConfidence: SemanticICONS[] = ['hourglass outline', 'hourglass half', 'hourglass end'];
 
-	// Create new voyageConfig based on input and calc results
+	// Create new voyageConfig based on input and proposal
 	const voyageConfig: IVoyageCalcConfig = {
 		...request.voyageConfig,
 		state: 'pending',
 		max_hp: proposal.startAM,
 		skill_aggregates: proposal.aggregates,
-		crew_slots: request.voyageConfig.crew_slots.map(slot => {
+		crew_slots: request.voyageConfig.crew_slots.map((slot, slotId) => {
 			return ({
 				...slot,
-				crew: {} as IVoyageCrew
+				crew: proposal.entries[slotId].choice
 			});
 		})
 	};
-	if (proposal.entries) {
-		proposal.entries.forEach(entry => {
-			const crew: IVoyageCrew | undefined =
-				(request.calcHelper?.consideredCrew ?? calculatorContext.crew).find(c =>
-					c.id === entry.choice.id
-				);
-			if (crew) voyageConfig.crew_slots[entry.slotId].crew = crew;
-		});
-	}
 
 	const renderCalculatorMessage = () => {
 		if (!request.calcHelper) return <></>;

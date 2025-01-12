@@ -82,6 +82,7 @@ export const LineupEditor = (props: LineupEditorProps) => {
 		sortedSkills,
 		getConfigFromCrewSlots,
 		getRuntimeDiff,
+		editLineup: () => setActiveView('crewpicker'),
 		renderActions,
 		dismissEditor
 	};

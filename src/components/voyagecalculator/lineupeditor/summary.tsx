@@ -36,7 +36,7 @@ type ProspectiveSummaryProps = {
 
 export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
-	const { prospectiveConfig, prospectiveEstimate, renderActions, dismissEditor } = React.useContext(EditorContext);
+	const { prospectiveConfig, prospectiveEstimate, editLineup, renderActions, dismissEditor } = React.useContext(EditorContext);
 	const { control, saveVoyage, resetVoyage } = props;
 
 	const isEdited = React.useMemo<boolean>(() => {
@@ -98,8 +98,8 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 								<p><Icon name='exclamation triangle' color='yellow' /> Please assign crew to all voyage seats.</p>
 							)}
 						</div>
-						{isEdited && (
-							<div>
+						<div>
+							{isEdited && (
 								<Button	/* Save as new recommendation */
 									content='Save as new recommendation'
 									color={isValidConfig ? 'green' : undefined}
@@ -107,8 +107,15 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 									disabled={!isValidConfig}
 									onClick={() => saveVoyage()}
 								/>
-							</div>
-						)}
+							)}
+							{!isEdited && (
+								<Button	/* Edit lineup */
+									icon='pencil'
+									content='Edit lineup'
+									onClick={() => editLineup()}
+								/>
+							)}
+						</div>
 					</div>
 				</Message>
 				{control && isEdited && (
@@ -120,7 +127,12 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 							baselineConfig={control.config}
 							baselineEstimate={control.estimate}
 						/>
-						<div style={{ marginTop: '1em', textAlign: 'right' }}>
+						<div style={{ marginTop: '2em', display: 'flex', justifyContent: 'flex-end', columnGap: '1em' }}>
+							<Button	/* Edit lineup */
+								icon='pencil'
+								content='Edit lineup'
+								onClick={() => editLineup()}
+							/>
 							<Button	/* Reset to existing recommendation */
 								content='Reset to existing recommendation'
 								onClick={() => resetVoyage()}
