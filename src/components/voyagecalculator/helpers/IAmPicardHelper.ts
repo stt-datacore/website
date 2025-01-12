@@ -2,8 +2,9 @@ import '../../../typings/worker';
 import { UnifiedWorker } from '../../../typings/worker';
 import { Skill } from '../../../model/crew';
 import { Aggregates, PlayerCrew, VoyageDescription } from '../../../model/player';
-import { IProposalEntry as VoyageSlotEntry, IResultProposal, IVoyageCalcConfig, IVoyageEventContent } from '../../../model/voyage';
+import { IProposalEntry as VoyageSlotEntry, IResultProposal, IVoyageCalcConfig, IVoyageEventContent, Estimate } from '../../../model/voyage';
 import { VoyageStatsConfig, ExportCrew, GameWorkerOptions } from '../../../model/worker';
+import { calcVoyageVP } from '../../../utils/voyagevp';
 import CONFIG from '../../CONFIG';
 import { getCrewEventBonus } from '../utils';
 import { CalculatorState } from './calchelpers';
@@ -191,7 +192,7 @@ export class IAmPicardHelper extends Helper {
 			startAm: this.bestShip.score
 		} as VoyageStatsConfig;
 
-		let eventCrewBonus: number = 0;
+		const eventCrewBonuses: number[] = [];
 
 		for (let i = 0; i < 12; i++) {
 			let crew = this.consideredCrew.find(c => c.id === result.getInt32(4 + i * 4, true));
@@ -215,7 +216,7 @@ export class IAmPicardHelper extends Helper {
 
 			entries.push(entry);
 
-			eventCrewBonus += getCrewEventBonus(this.voyageConfig, crew as PlayerCrew);
+			eventCrewBonuses.push(getCrewEventBonus(this.voyageConfig, crew as PlayerCrew));
 		}
 
 		const { primary_skill, secondary_skill } = this.voyageConfig.skills;
@@ -234,12 +235,18 @@ export class IAmPicardHelper extends Helper {
 		const worker = new UnifiedWorker();
 		worker.addEventListener('message', message => {
 			if (!message.data.inProgress) {
+				const estimate: Estimate = message.data.result;
+				// Add vpDetails prop here to allow for post-sorting by VP details
+				if (this.voyageConfig.voyage_type === 'encounter') {
+					const seconds: number = estimate.refills[0].result*60*60;
+					estimate.vpDetails = calcVoyageVP(seconds, eventCrewBonuses);
+				}
 				let finalResult: IResultProposal = {
-					estimate: message.data.result,
+					estimate: estimate,
 					entries: entries,
 					aggregates: aggregates,
 					startAM: config.startAm,
-					eventCrewBonus
+					eventCrewBonus: eventCrewBonuses.reduce((prev, curr) => prev + curr, 0)
 				};
 				if (!inProgress) {
 					this.perf.end = performance.now();
