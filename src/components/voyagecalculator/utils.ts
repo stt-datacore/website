@@ -59,13 +59,13 @@ export function getCrewVP(voyageConfig: IVoyageInputConfig, crew: PlayerCrew): n
 		const content: IVoyageEventContent | undefined = voyageConfig.event_content;
 		if (content) {
 			if (content.featured_crews.includes(crew.symbol)) {
-				crewVP = 10;
+				crewVP = 0.3;
 			}
 			else {
 				if (content.antimatter_bonus_crew_traits.some(bonusTrait => {
 					return crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait);
 				})) {
-					crewVP = 5;
+					crewVP = .15;
 				}
 			}
 		}

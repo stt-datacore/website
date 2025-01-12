@@ -1434,25 +1434,25 @@
         "three_skills": "Three Skills"
     },
     "rank_names": {
+        "advantage": {
+            "d": "D",
+            "defense": "Defense (Repair/Evasion)",
+            "o": "O",
+            "offense": "Offense (Accuracy/Damage)",
+            "select": "Select an advantage"
+        },
+        "arena_rank": "Arena",
         "bigbook_tier": "Big Book Tier",
         "cab_grade": "CAB Grade",
         "cab_rank": "CAB Rank",
         "cab_rating": "CAB Rating",
+        "fbb_rank": "Boss",
         "gauntlet_rank": "Gauntlet Rank",
         "quipment_score": "Quipment Score",
-        "trait_rank": "Trait Rank",
-        "voyage_rank": "Voyage Rank",
-        "ship_rank": "Ship Rank",
-        "fbb_rank": "Boss",
-        "arena_rank": "Arena",
         "rank": "Rank",
-        "advantage": {
-            "select": "Select an advantage",
-            "offense": "Offense (Accuracy/Damage)",
-            "defense": "Defense (Repair/Evasion)",
-            "o": "O",
-            "d": "D"
-        }
+        "ship_rank": "Ship Rank",
+        "trait_rank": "Trait Rank",
+        "voyage_rank": "Voyage Rank"
     },
     "ranking_method": {
         "delta_t": "Delta T",
@@ -1921,6 +1921,7 @@
         }
     },
     "spinners": {
+        "calculating": "Calculating...",
         "calculating_voyage_estimate": "Calculating estimate. Please wait...",
         "cite_opt": "Loading citation optimizer...",
         "default": "Loading data...",
@@ -2059,6 +2060,12 @@
         "encounter_traits": "Encounter crit traits",
         "estimate": {
             "1_refill": "1 Refill",
+            "analysis": {
+                "all_criteria": "Recommended for all criteria",
+                "proposed_alternative": "Proposed alternative",
+                "recommended_for_mode": "Recommended for {{mode}}"
+            },
+            "base_event_vp": "Base Event VP",
             "calculated_by_name_time": "Calculated by {{calculator_name}} in {{time}} seconds!",
             "dilemma_chance": "Chance of {{time}}h dilemma: {{chance}}%",
             "estimate": "Estimate",
@@ -2073,6 +2080,18 @@
             "n_refills": "{{n}} Refills",
             "no_refills": "No Refills",
             "one_refill": "One Refill",
+            "projected_vp": "Projected VP",
+            "recommendations": {
+                "antimatter": "starting antimatter",
+                "dilemma": "dilemma chance",
+                "median": "estimated runtime",
+                "minimum": "guaranteed minimum",
+                "moonshot": "moonshot",
+                "n%_to_reach_h": "{{n}}% to reach {{h}}h",
+                "total_vp": "projected VP",
+                "vp_per_min": "projected VP per minute"
+            },
+            "recommended_lineups": "Recommended Lineups",
             "second_refill": "Second Refill",
             "title": "Voyage estimate",
             "two_refills": "Two Refills",

@@ -1445,25 +1445,25 @@
         "three_skills": "Trois Compétences"
     },
     "rank_names": {
+        "advantage": {
+            "d": "D",
+            "defense": "Défense (Réparation/Évasion)",
+            "o": "O",
+            "offense": "Attaque (Précision/Dégâts)",
+            "select": "Sélectionnez un avantage"
+        },
+        "arena_rank": "Arena",
         "bigbook_tier": "Étage Big Book",
         "cab_grade": "Catégorie CAB",
         "cab_rank": "Rang CAB",
         "cab_rating": "Cote CAB",
+        "fbb_rank": "Boss",
         "gauntlet_rank": "Rang Gantelet",
         "quipment_score": "Rang de Quipement",
-        "trait_rank": "Rang du trait",
-        "voyage_rank": "Rang Voyage",
-        "ship_rank": "Rang du vaisseau",
-        "fbb_rank": "Boss",
-        "arena_rank": "Arena",
         "rank": "Rang",
-        "advantage": {
-            "select": "Sélectionnez un avantage",
-            "offense": "Attaque (Précision/Dégâts)",
-            "defense": "Défense (Réparation/Évasion)",
-            "o": "O",
-            "d": "D"
-        }
+        "ship_rank": "Rang du vaisseau",
+        "trait_rank": "Rang du trait",
+        "voyage_rank": "Rang Voyage"
     },
     "ranking_method": {
         "delta_t": "Delta T",
@@ -1936,6 +1936,7 @@
         }
     },
     "spinners": {
+        "calculating": "Calcul...",
         "calculating_voyage_estimate": "Calcul de l'estimation. S'il vous plaît, attendez...",
         "cite_opt": "Chargement l'Optimiseur des mentions honorable...",
         "default": "Chargement des données...",
@@ -2074,6 +2075,12 @@
         "encounter_traits": "Traits critiques de rencontre",
         "estimate": {
             "1_refill": "1 recharge",
+            "analysis": {
+                "all_criteria": "Recommandé pour tous les critères",
+                "proposed_alternative": "Alternative proposée",
+                "recommended_for_mode": "Recommandé pour {{mode}}"
+            },
+            "base_event_vp": "VP de base pour l'événement",
             "calculated_by_name_time": "Calculé par {{calculator_name}} en {{time}} secondes !",
             "dilemma_chance": "Chance d'un dilemme dans {{time}}h : {{chance}} %",
             "estimate": "Estimation",
@@ -2088,6 +2095,18 @@
             "n_refills": "{{n}} recharges",
             "no_refills": "Aucune recharge",
             "one_refill": "Une recharge",
+            "projected_vp": "PV projeté",
+            "recommendations": {
+                "antimatter": "antimatière de départ",
+                "dilemma": "chance de dilemme",
+                "median": "durée d'exécution estimée",
+                "minimum": "minimum garanti",
+                "moonshot": "moonshot",
+                "n%_to_reach_h": "{{n}}% pour atteindre {{h}}h",
+                "total_vp": "PV projeté",
+                "vp_per_min": "PV projeté par minute"
+            },
+            "recommended_lineups": "Compositions recommandées",
             "second_refill": "Deuxième recharge",
             "title": "Estimation du voyage",
             "two_refills": "Deux recharges",

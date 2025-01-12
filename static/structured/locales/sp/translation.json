@@ -1445,20 +1445,27 @@
         "three_skills": "Tres Habilidades"
     },
     "rank_names": {
+        "arena_rank": "Arena",
         "bigbook_tier": "Piso de Big Book",
         "cab_grade": "Grado CAB",
         "cab_rank": "Rango de CAB",
         "cab_rating": "Clasificación de CAB",
+        "fbb_rank": "Jefe",
         "gauntlet_rank": "Rango de Reto",
         "quipment_score": "Puntuación del Quipo",
-        "trait_rank": "Rango del rasgo",
-        "voyage_rank": "Rango de Viaje",
+        "rank": "Rango",
         "ship_rank": "Rango del Buque",
-        "fbb_rank": "Jefe",
-        "arena_rank": "Arena",
-        "rank": "Rango"
+        "trait_rank": "Rango del rasgo",
+        "voyage_rank": "Rango de Viaje"
     },
     "ranking_method": {
+        "advantage": {
+            "d": "D",
+            "defense": "Defensa (Reparación/Evasión)",
+            "o": "O",
+            "offense": "Ofensa (Precisión/Daño)",
+            "select": "Seleccione una ventaja"
+        },
         "delta_t": "Delta T",
         "early_boom": "Máximo Más Temprano",
         "guaranteed_minimum": "Mínimo garantizado",
@@ -1467,14 +1474,7 @@
         "lean_over": "Medio",
         "moonshot": "Disparo a la Luna",
         "potential_maximum": "Máximo potencial",
-        "standard": "Estándar",
-        "advantage": {
-            "select": "Seleccione una ventaja",
-            "offense": "Ofensa (Precisión/Daño)",
-            "defense": "Defensa (Reparación/Evasión)",
-            "o": "O",
-            "d": "D"
-        }
+        "standard": "Estándar"
     },
     "retrieval": {
         "allow_unowned": "Permitir tripulación sin propietario",
@@ -1936,6 +1936,7 @@
         }
     },
     "spinners": {
+        "calculating": "Cálculo...",
         "calculating_voyage_estimate": "Calculando presupuesto. Por favor espere...",
         "cite_opt": "Cargando Distinción de Honor Optimizador...",
         "default": "Cargando datos...",
@@ -2074,6 +2075,12 @@
         "encounter_traits": "Rasgos críticos de encuentro",
         "estimate": {
             "1_refill": "1 recarga",
+            "analysis": {
+                "all_criteria": "Recomendado para todos los criterios",
+                "proposed_alternative": "Alternativa propuesta",
+                "recommended_for_mode": "Recomendado para {{mode}}"
+            },
+            "base_event_vp": "PV base para el evento",
             "calculated_by_name_time": "¡Calculado por {{calculator_name}} en {{time}} segundos!",
             "dilemma_chance": "Probabilidad de dilema de {{time}}h: {{chance}}%",
             "estimate": "Estimado",
@@ -2088,6 +2095,18 @@
             "n_refills": "{{n}} recargas",
             "no_refills": "Sin recargas",
             "one_refill": "Una recarga",
+            "projected_vp": "PV proyectado",
+            "recommendations": {
+                "antimatter": "antimateria inicial",
+                "dilemma": "posibilidad de dilema",
+                "median": "tiempo de ejecución estimado",
+                "minimum": "mínimo garantizado",
+                "moonshot": "lanzamiento a la luna",
+                "n%_to_reach_h": "{{n}}% para alcanzar las {{h}}h",
+                "total_vp": "PV proyectado",
+                "vp_per_min": "PV proyectado por minuto"
+            },
+            "recommended_lineups": "Alineaciones recomendadas",
             "second_refill": "Segunda recarga",
             "title": "Estimación de viaje",
             "two_refills": "Dos recargas",

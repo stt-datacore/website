@@ -206,21 +206,17 @@ export const getOptCrew = (col: CollectionGroup, costMode: 'normal' | 'sale', se
     let crewmap: PlayerCrew[];
     let cols = getOptCols(col, combo);
     if (!combo) {
-        crewmap = col.uniqueCrew;
+        crewmap = col.combinedUnique;
     }
     else {
-        crewmap = col.uniqueCrew; // cols.map(c => c.crew).flat().concat(col.uniqueCrew);
-        //crewmap = crewmap.filter((cz, idx) => crewmap.findIndex(cfi => cfi.symbol === cz.symbol) === idx);
-        // if (combo === 'Healthy Discourse / A New Challenger Approaches / Convergence Day') {
-        //     console.log("here");
-        // }
+        crewmap = col.combinedUnique;
         crewmap = findOptCombo(col, combo)?.crew.map(ncrew => crewmap.find(cr => cr.symbol === ncrew) as PlayerCrew) as PlayerCrew[];
 
         let max = cols.map(c => c.collection.needed ?? 0).reduce((p, n) => p + n, 0);
         max = col.collection.needed ?? 0;
 
         if (crewmap.length < max) {
-            let leftover = col.uniqueCrew.filter(fc => !crewmap.some(cm => cm.symbol === fc.symbol));
+            let leftover = col.combinedUnique.filter(fc => !crewmap.some(cm => cm.symbol === fc.symbol));
             crewmap = crewmap.concat(leftover.slice(0, max - crewmap.length));
         }
     }
@@ -245,20 +241,26 @@ export const getOptCrew = (col: CollectionGroup, costMode: 'normal' | 'sale', se
             if (a.favorite) return -1;
             else return 1;
         }
-        if (col.collection.crew?.find(f => f === a.symbol)) x++;
-        if (col.collection.crew?.find(f => f === b.symbol)) y++;
+        // if (col.collection.crew?.find(f => f === a.symbol)) x++;
+        // if (col.collection.crew?.find(f => f === b.symbol)) y++;
 
-        for (let i = 0; i < cols.length; i++) {
-            if (cols[i].crew.find(fc => fc.symbol === a.symbol)) {
-                x++;
-            }
-            if (cols[i].crew.find(fc => fc.symbol === b.symbol)) {
-                y++;
-            }
-        }
-        let r = y - x;
+        // for (let i = 0; i < cols.length; i++) {
+        //     if (cols[i].crew.find(fc => fc.symbol === a.symbol)) {
+        //         x++;
+        //     }
+        //     if (cols[i].crew.find(fc => fc.symbol === b.symbol)) {
+        //         y++;
+        //     }
+        // }
+        let r = 0; // y - x;
         if (!r) {
             r = starCost([a], undefined, costMode === 'sale') - starCost([b], undefined, costMode === 'sale');
+        }
+        if (!r) {
+            r = b.level - a.level;
+            if (!r) {
+                r = a.max_rarity - b.max_rarity;
+            }
         }
         return r;
     });

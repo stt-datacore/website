@@ -166,9 +166,9 @@ export const CalculatorForm = () => {
 				};
 				requests.push(request);
 				results.push({
-					id: requestId,
-					requestId,
-					name: 'Calculating...',
+					id: request.id,
+					requestId: request.id,
+					name: t('spinners.calculating'),
 					calcState: CalculatorState.InProgress
 				});
 				calcHelper.start(requestId);

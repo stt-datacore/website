@@ -11,6 +11,9 @@ import { Ship } from '../model/ship';
 import { TraitNames } from '../model/traits';
 
 export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allShips?: Ship[], lastEvent?: GameEvent): IEventData | undefined {
+
+	if (!activeEvent?.phases?.length) return undefined;
+
 	const result: IEventData = {
 		symbol: activeEvent.symbol,
 		name: activeEvent.name,
@@ -21,7 +24,7 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 		seconds_to_end: activeEvent.seconds_to_end,
 
 		// We can get event image more definitively by fetching from events/instance_id.json rather than player data
-		image: activeEvent.phases[0].splash_image.file.slice(1).replace(/\//g, '_') + '.png',
+		image: activeEvent?.phases[0].splash_image.file.slice(1).replace(/\//g, '_') + '.png',
 
 		// Bonus crew by symbol
 		featured: [],
@@ -161,7 +164,7 @@ export function guessCurrentEventId(allEvents: EventInstance[]): number {
 	// Otherwise use ultimate event
 	//	Note: DataCore autosyncs events at ~1PM ET every day, so there might be some lag on Wednesday
 	const currentIndex = ((estDay === 3 && estHour >= 12) || estDay > 3 || estDay === 0 || (estDay === 1 && estHour < 12)) ? 2 : 1; // start < 24*60*60 ? 2 : 1;
-	return allEvents[allEvents.length-currentIndex].instance_id;
+	return allEvents[allEvents.length-currentIndex]?.instance_id || 0;
 }
 
 // Get seconds to event start, end from current time
@@ -216,7 +219,8 @@ export async function getRecentEvents(allCrew: CrewMember[], allEvents: EventIns
 	let lastEvent = undefined as GameEvent | undefined;
 
 	while (recentEvents.length < 2) {
-		const eventId = allEvents[allEvents.length-index].instance_id;
+		const eventId = allEvents[allEvents.length-index]?.instance_id || 0;
+		if (!eventId) break;
 		const response = await fetch('/structured/events/'+eventId+'.json');
 		const json = await response.json();
 		const eventData = getEventData(json, allCrew, allShips, lastEvent) as IEventData;

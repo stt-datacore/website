@@ -181,7 +181,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 
 	return (
         !context.core.items?.length &&
-            <div className='ui medium centered text active inline loader'>Loading data...</div>
+            <div className='ui medium centered text active inline loader'>{t('spinners.default')}</div>
         ||context.core.items?.length &&
             <div style={{...flexCol, gap: 0}}>
             {!!crew.kwipment_prospects && quip && <Label color='blue'><i>{t('voyage.quipment.title')}</i></Label> }
