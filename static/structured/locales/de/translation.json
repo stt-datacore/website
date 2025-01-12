@@ -745,6 +745,7 @@
             "second_pair": "{{quipment_ranks.second_pair}}",
             "third_pair": "{{quipment_ranks.third_pair}}"
         },
+        "elevated_note": "Klicken Sie auf diese Spalte, um eine Tabelle aller High-Crit-Herausforderungen anzuzeigen.",
         "gauntlet": "Herausforderung",
         "gauntlets": "Herausforderungen",
         "hide_best_crew": "Beste Crewstufen für aktuelle Herausforderung ausblenden ...",
