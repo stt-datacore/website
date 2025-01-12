@@ -249,7 +249,7 @@ export const AvatarView = (props: AvatarViewProps) => {
                 crew.immortal = CompletionState.DisplayAsImmortalUnowned;
                 crew.rarity = crew.max_rarity;
             }
-            else if (crew.immortal && crewBackground === 'rich') {
+            if ((showMaxRarity || crew.immortal) && crewBackground === 'rich') {
                 let kwip = substitute_kwipment ?? crew.kwipment;
                 if (kwip?.length === 4 && kwip?.every((qs) => typeof qs === 'number' ? !!qs : !!qs[1])) {
                     imgStyle.backgroundImage = `url(${process.env.GATSBY_ASSETS_URL}collection_vault_vault_item_bg_postimmortalized_256.png)`;
