@@ -11,7 +11,7 @@ import {
 } from 'semantic-ui-react';
 
 import { PlayerCrew } from '../../../model/player';
-import { Estimate } from '../../../model/voyage';
+import { Estimate, IVoyageCalcConfig } from '../../../model/voyage';
 import { GlobalContext } from '../../../context/globalcontext';
 import { formatTime } from '../../../utils/voyageutils';
 
@@ -23,10 +23,10 @@ import ItemDisplay from '../../itemdisplay';
 
 import { getSkillData, ISkillData } from '../skillcheck/skilldata';
 import { SkillDetail } from '../skillcheck/skilldetail';
+import { getCrewTraitBonus, getCrewVP } from '../utils';
 
 import { IControlVoyage, IProspectiveConfig, IProspectiveCrewSlot } from './model';
 import { EditorContext } from './context';
-import { getCrewTraitBonus } from '../utils';
 
 type ProspectiveSummaryProps = {
 	control: IControlVoyage | undefined;
@@ -114,20 +114,12 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 				{control && isEdited && (
 					<Segment attached='bottom'>
 						<p>Compared to the existing recommendation:</p>
-						<Grid columns={2} stackable>
-							<Grid.Column>
-								<EstimatesCompared
-									current={prospectiveEstimate}
-									baseline={control.estimate}
-								/>
-							</Grid.Column>
-							<Grid.Column>
-								<BonusesCompared
-									current={prospectiveConfig}
-									baseline={control.config}
-								/>
-							</Grid.Column>
-						</Grid>
+						<ToplinesCompared
+							currentConfig={prospectiveConfig}
+							currentEstimate={prospectiveEstimate}
+							baselineConfig={control.config}
+							baselineEstimate={control.estimate}
+						/>
 						<div style={{ marginTop: '1em', textAlign: 'right' }}>
 							<Button	/* Reset to existing recommendation */
 								content='Reset to existing recommendation'
@@ -141,120 +133,129 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 	}
 };
 
-interface IComparisonRow {
-	field: string;
+interface IToplines {
+	key: string;
 	title: string;
+	currentValue: number;
+	baselineValue: number;
 	renderValue?: (value: number) => JSX.Element;
-	condition: boolean;
 };
 
-type EstimatesComparedProps = {
-	current: Estimate;
-	baseline: Estimate;
+type ToplinesComparedProps = {
+	currentConfig: IProspectiveConfig;
+	currentEstimate: Estimate;
+	baselineConfig: IVoyageCalcConfig;
+	baselineEstimate: Estimate;
 };
 
-const EstimatesCompared = (props: EstimatesComparedProps) => {
+const ToplinesCompared = (props: ToplinesComparedProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { current, baseline } = props;
+	const { currentConfig, currentEstimate, baselineConfig, baselineEstimate } = props;
 
 	const renderAsTime = (value: number) => <>{formatTime(value, t)}</>;
 	const renderAsPercent = (value: number) => <>{Math.round(value)}%</>;
 
-	const rows: IComparisonRow[] = [
+	const toplines: IToplines[] = [
 		{	/* Estimate */
-			field: 'result',
+			key: 'result',
 			title: 'Estimate',
-			renderValue: renderAsTime,
-			condition: true
+			currentValue: currentEstimate.refills[0].result,
+			baselineValue: baselineEstimate.refills[0].result,
+			renderValue: renderAsTime
 		},
 		{	/* Guaranteed minimum */
-			field: 'saferResult',
+			key: 'saferResult',
 			title: 'Guaranteed minimum',
-			renderValue: renderAsTime,
-			condition: true
+			currentValue: currentEstimate.refills[0].saferResult,
+			baselineValue: baselineEstimate.refills[0].saferResult,
+			renderValue: renderAsTime
 		},
 		{	/* Moonshot */
-			field: 'moonshotResult',
+			key: 'moonshotResult',
 			title: 'Moonshot',
-			renderValue: renderAsTime,
-			condition: true
-		},
-		{	/* LAST_DILh chance */
-			field: 'dilChance',
-			title: `${current.refills[0].lastDil}h chance`,
-			renderValue: renderAsPercent,
-			condition: current.refills[0].lastDil === baseline.refills[0].lastDil
+			currentValue: currentEstimate.refills[0].moonshotResult,
+			baselineValue: baselineEstimate.refills[0].moonshotResult,
+			renderValue: renderAsTime
 		}
 	];
 
-	return (
-		<Table striped>
-			<Table.Body>
-				{rows.filter(row => row.condition).map(row => (
-					<Table.Row key={row.field}>
-						<Table.Cell>
-							{row.title}:
-						</Table.Cell>
-						<Table.Cell textAlign='right'>
-							<NumericDiff
-								compare={{
-									currentValue: current.refills[0][row.field],
-									baselineValue: baseline.refills[0][row.field],
-									showCurrentValue: true
-								}}
-								customRender={row.renderValue}
-								showNoChange
-								justifyContent='right'
-							/>
-						</Table.Cell>
-					</Table.Row>
-				))}
-			</Table.Body>
-		</Table>
-	);
-};
+	if (currentEstimate.refills[0].lastDil === baselineEstimate.refills[0].lastDil) {
+		toplines.push(
+			{	/* LAST_DILh chance */
+				key: 'dilChance',
+				title: `${currentEstimate.refills[0].lastDil}h chance`,
+				currentValue: currentEstimate.refills[0].dilChance,
+				baselineValue: baselineEstimate.refills[0].dilChance,
+				renderValue: renderAsPercent
+			}
+		);
+	}
 
-type BonusesComparedProps = {
-	current: IProspectiveConfig;
-	baseline: IProspectiveConfig;
-};
-
-const BonusesCompared = (props: BonusesComparedProps) => {
-	const { current, baseline } = props;
-
-	const rows: IComparisonRow[] = [
+	toplines.push(
 		{	/* Antimatter */
-			field: 'max_hp',
+			key: 'max_hp',
 			title: 'Antimatter',
-			renderValue: renderAm,
-			condition: true
+			currentValue: currentConfig.max_hp,
+			baselineValue: baselineConfig.max_hp,
+			renderValue: renderAntimatter
 		}
+	);
+
+	if (currentConfig.voyage_type === 'encounter') {
+		toplines.push(
+			{	/* Base Event VP */
+				key: 'base_vp',
+				title: 'Base Event VP',
+				currentValue: Math.round(currentConfig.crew_slots.reduce((prev, curr) => prev + (curr.crew ? getCrewVP(currentConfig, curr.crew) : 0), 0) * 100),
+				baselineValue: Math.round(baselineConfig.crew_slots.reduce((prev, curr) => prev + getCrewVP(baselineConfig, curr.crew), 0) * 100),
+				renderValue: renderAsPercent
+			},
+			{	/* Projected VP */
+				key: 'projected_vp',
+				title: 'Projected VP',
+				currentValue: currentEstimate.vpDetails?.total_vp ?? 0,
+				baselineValue: baselineEstimate.vpDetails?.total_vp ?? 0,
+				renderValue: renderVP
+			}
+		);
+	}
+
+	const maxRows: number = Math.round(toplines.length / 2);
+	const tables: IToplines[][] = [
+		toplines.slice(0, maxRows),
+		toplines.slice(maxRows)
 	];
 
 	return (
-		<Table striped>
-			<Table.Body>
-				{rows.filter(row => row.condition).map(row => (
-					<Table.Row key={row.field}>
-						<Table.Cell>
-							{row.title}:
-						</Table.Cell>
-						<Table.Cell textAlign='right'>
-							<NumericDiff
-								compare={{
-									currentValue: current[row.field],
-									baselineValue: baseline[row.field],
-									showCurrentValue: true
-								}}
-								customRender={row.renderValue}
-								showNoChange
-								justifyContent='right'
-							/>
-						</Table.Cell>
-					</Table.Row>
-				))}
-			</Table.Body>
-		</Table>
+		<Grid columns={2} stackable>
+			{tables.map((table, idx) => (
+				<Grid.Column key={idx}>
+					<Table striped>
+						<Table.Body>
+							{table.map(row => (
+								<Table.Row key={row.key}>
+									<Table.Cell>
+										{row.title}:
+									</Table.Cell>
+									<Table.Cell textAlign='right'>
+										<NumericDiff
+											compare={{
+												currentValue: row.currentValue,
+												baselineValue: row.baselineValue,
+												showCurrentValue: true
+											}}
+											customRender={row.renderValue}
+											showNoChange
+											justifyContent='right'
+										/>
+									</Table.Cell>
+								</Table.Row>
+							))}
+						</Table.Body>
+					</Table>
+				</Grid.Column>
+			))}
+		</Grid>
 	);
 };
 
@@ -342,7 +343,7 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 		const editedSlot: boolean = !crewSlot.crew || (!!controlCrew && controlCrew.id !== crewSlot.crew.id);
 
 		if (!editedSlot)
-			return controlBonus > 0 ? renderAm(controlBonus) : <></>;
+			return controlBonus > 0 ? renderAntimatter(controlBonus) : <></>;
 
 		const editedBonus: number = crewSlot.crew ? getCrewTraitBonus(prospectiveConfig, crewSlot.crew, crewSlot.trait) : 0;
 
@@ -354,7 +355,7 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 					showCurrentValue: true
 				}}
 				showNoChange
-				customRender={renderAm}
+				customRender={renderAntimatter}
 				justifyContent='right'
 			/>
 		);
@@ -413,10 +414,18 @@ const ProspectiveSkillCheck = (props: ProspectiveSkillCheckProps) => {
 	}
 };
 
-function renderAm(value: number): JSX.Element {
+function renderAntimatter(value: number): JSX.Element {
 	return (
 		<React.Fragment>
 			{value} <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+		</React.Fragment>
+	);
+}
+
+function renderVP(value: number): JSX.Element {
+	return (
+		<React.Fragment>
+			{value.toLocaleString()} <img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 		</React.Fragment>
 	);
 }
