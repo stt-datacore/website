@@ -25,6 +25,7 @@ import { CalculatorState } from '../helpers/calchelpers';
 import { ILineupEditorTrigger, LineupEditor } from '../lineupeditor/lineupeditor';
 import { LineupViewerAccordion } from '../lineupviewer/lineup_accordion';
 import { QuipmentProspectAccordion } from '../quipment/quipmentprospects';
+import { SkillCheckAccordion } from '../skillcheck/accordion';
 import VoyageStatsAccordion from '../stats/stats_accordion';
 import { getCrewEventBonus, getCrewTraitBonus } from '../utils';
 
@@ -210,6 +211,10 @@ export const ResultPane = (props: ResultPaneProps) => {
 						ship={request.bestShip.ship}
 						control={{ config: voyageConfig, estimate: proposal.estimate }}
 						commitVoyage={createResultFromEdit}
+					/>
+					<SkillCheckAccordion
+						voyageConfig={voyageConfig}
+						launchLineupEditor={(trigger: ILineupEditorTrigger) => setEditorTrigger(trigger)}
 					/>
 					<QuipmentProspectAccordion
 						voyageConfig={voyageConfig}

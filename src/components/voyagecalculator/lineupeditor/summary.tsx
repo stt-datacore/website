@@ -15,18 +15,16 @@ import { Estimate, IVoyageCalcConfig } from '../../../model/voyage';
 import { GlobalContext } from '../../../context/globalcontext';
 import { formatTime } from '../../../utils/voyageutils';
 
-import { IDataGridSetup, IEssentialData } from '../../dataset_presenters/model';
-import { DataGrid } from '../../dataset_presenters/datagrid';
 import { CrewLabel } from '../../dataset_presenters/elements/crewlabel';
 import { NumericDiff } from '../../dataset_presenters/elements/numericdiff';
 import ItemDisplay from '../../itemdisplay';
 
-import { getSkillData, ISkillData } from '../skillcheck/skilldata';
-import { SkillDetail } from '../skillcheck/skilldetail';
 import { getCrewTraitBonus, getCrewEventBonus } from '../utils';
+import { SkillCheck } from '../skillcheck/skillcheck';
 
 import { IControlVoyage, IProspectiveConfig, IProspectiveCrewSlot } from './model';
 import { EditorContext } from './context';
+import { ProficiencyCheck } from '../skillcheck/proficiencycheck';
 
 type ProspectiveSummaryProps = {
 	control: IControlVoyage | undefined;
@@ -70,6 +68,7 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 				{renderTopLines()}
 				<ProspectiveCrewSlots control={control} />
 				<ProspectiveSkillCheck control={isEdited ? control : undefined} />
+				{prospectiveConfig.voyage_type === 'encounter' &&  <ProspectiveProficiency />}
 			</Modal.Content>
 			<Modal.Actions>
 				{renderActions()}
@@ -281,7 +280,7 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 
 	return (
 		<React.Fragment>
-			<Header as='h3'>Prospective Lineup</Header>
+			<Header as='h4'>Prospective Lineup</Header>
 			<Grid columns={2} centered stackable>
 				<Grid.Column>
 					{renderSimpleTable(prospectiveConfig.crew_slots.slice(0, 6))}
@@ -381,49 +380,30 @@ type ProspectiveSkillCheckProps = {
 const ProspectiveSkillCheck = (props: ProspectiveSkillCheckProps) => {
 	const { prospectiveConfig } = React.useContext(EditorContext);
 	const { control } = props;
-
-	const data = React.useMemo<ISkillData[]>(() => {
-		return getSkillData(prospectiveConfig);
-	}, [prospectiveConfig]);
-
-	const controlData = React.useMemo<ISkillData[] | undefined>(() => {
-		if (!control) return;
-		return getSkillData(control.config);
-	}, [control]);
-
-	const gridSetup: IDataGridSetup = {
-		gridProps: {
-			centered: true,
-			columns: 3,
-			stackable: true
-		},
-		renderGridColumn: (datum: IEssentialData) => renderSkill(datum as ISkillData),
-		defaultSort: { id: 'score', firstSort: 'descending' }
-	};
-
 	return (
 		<React.Fragment>
-			<Header as='h3'>Prospective Skill Check</Header>
-			<DataGrid
-				id='prospectiveskillcheck'
-				data={data}
-				setup={gridSetup}
+			<Header as='h4'>Prospective Skill Check</Header>
+			<SkillCheck
+				id='prospective/skillcheck'
+				voyageConfig={prospectiveConfig}
+				baselineConfig={control?.config}
 			/>
 		</React.Fragment>
 	);
+};
 
-	function renderSkill(skillData: ISkillData): JSX.Element {
-		const controlSkillData: ISkillData | undefined = controlData?.find(od =>
-			od.skill === skillData.skill
-		);
-		return (
-			<SkillDetail
+const ProspectiveProficiency = () => {
+	const { prospectiveConfig } = React.useContext(EditorContext);
+
+	return (
+		<React.Fragment>
+			<Header as='h4'>Prospective Proficiency</Header>
+			<ProficiencyCheck
+				id='prospective/proficiencycheck'
 				voyageConfig={prospectiveConfig}
-				currentData={skillData}
-				baselineData={controlSkillData}
 			/>
-		);
-	}
+		</React.Fragment>
+	);
 };
 
 function renderAntimatter(value: number): JSX.Element {

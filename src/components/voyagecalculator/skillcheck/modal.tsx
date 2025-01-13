@@ -1,17 +1,14 @@
 import React from 'react';
 import {
-	Button
+	Button,
+	Header,
+	Modal
 } from 'semantic-ui-react';
 
 import { IVoyageCalcConfig } from '../../../model/voyage';
-
-import { IDataGridSetup, IEssentialData } from '../../dataset_presenters/model';
-import { DataPicker, DataPickerLoading } from '../../dataset_presenters/datapicker';
-
 import { ILineupEditorTrigger } from '../lineupeditor/lineupeditor';
-
-import { SkillDetail } from './skilldetail';
-import { getSkillData, ISkillData } from './skilldata';
+import { ProficiencyCheck } from './proficiencycheck';
+import { SkillCheck } from './skillcheck';
 
 type SkillCheckModalProps = {
 	voyageConfig: IVoyageCalcConfig;
@@ -22,39 +19,36 @@ type SkillCheckModalProps = {
 export const SkillCheckModal = (props: SkillCheckModalProps) => {
 	const { voyageConfig, dismissModal, launchLineupEditor } = props;
 
-	const [data, setData] = React.useState<ISkillData[] | undefined>(undefined);
-
-	React.useEffect(() => {
-		const data: ISkillData[] = getSkillData(voyageConfig);
-		setData([...data]);
-	}, [voyageConfig]);
-
-	if (!data) return <DataPickerLoading />;
-
-	const gridSetup: IDataGridSetup = {
-		gridProps: {
-			centered: true,
-			columns: 3,
-			stackable: true
-		},
-		renderGridColumn: (datum: IEssentialData) => (
-			<SkillDetail
-				voyageConfig={voyageConfig}
-				currentData={datum as ISkillData}
-			/>
-		),
-		defaultSort: { id: 'score', firstSort: 'descending' }
-	};
-
 	return (
-		<DataPicker
-			id='skillcheck'
-			data={data}
-			closePicker={dismissModal}
-			title='Lineup Skill Check'
-			renderActions={renderActions}
-			gridSetup={gridSetup}
-		/>
+		<Modal
+			open={true}
+			onClose={() => dismissModal()}
+			centered={false}
+		>
+			<Modal.Header	/* Lineup Skill Check */>
+				Lineup Skill Check
+			</Modal.Header>
+			<Modal.Content scrolling>
+				<SkillCheck
+					id='result/skillcheck'
+					voyageConfig={voyageConfig}
+				/>
+				{voyageConfig.voyage_type === 'encounter' && (
+					<React.Fragment>
+						<Header as='h4'>
+							Proficiency
+						</Header>
+						<ProficiencyCheck
+							id='result/proficiencycheck'
+							voyageConfig={voyageConfig}
+						/>
+					</React.Fragment>
+				)}
+			</Modal.Content>
+			<Modal.Actions>
+				{renderActions()}
+			</Modal.Actions>
+		</Modal>
 	);
 
 	function renderActions(): JSX.Element {

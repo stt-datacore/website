@@ -5,6 +5,11 @@ export interface IEssentialData {
 	name: string;
 };
 
+export interface IEssentialMatrixData extends IEssentialData {
+	rowId: string;
+	columnId: string;
+};
+
 export interface IDataGridSetup {
 	gridProps?: StrictGridProps;
 	renderGridColumn?: (datum: IEssentialData, isSelected: boolean) => JSX.Element;
@@ -24,6 +29,20 @@ export interface IDataTableColumn {
 	align?: 'left' | 'right' | 'center';
 	sortField?: IDataSortField;
 	renderCell: (datum: IEssentialData, isSelected: boolean) => JSX.Element;
+};
+
+export interface IDataMatrixSetup {
+	tableProps?: StrictTableProps;
+	rows: IDataMatrixField[];
+	columns: IDataMatrixField[];
+	renderCell?: (datum: IEssentialMatrixData, isSelected: boolean) => JSX.Element;
+	permutate?: boolean;	// Allow combos to be shown in permutation
+};
+
+export interface IDataMatrixField {
+	id: string;
+	title: string | JSX.Element;
+	align?: 'left' | 'right' | 'center';
 };
 
 export interface IDataSortField {

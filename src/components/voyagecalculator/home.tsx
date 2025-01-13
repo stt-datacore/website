@@ -30,6 +30,7 @@ import { createCheckpoint, defaultHistory, getTrackedData, InitState, NEW_VOYAGE
 import { LineupViewerAccordion } from './lineupviewer/lineup_accordion';
 import { StatsRewardsAccordion } from './rewards/rewards_accordion';
 import { OptionsPanelFlexColumn } from '../stats/utils';
+import { SkillCheckAccordion } from './skillcheck/accordion';
 
 export const VoyageHome = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -575,6 +576,9 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 					ship={ship}
 					roster={myCrew}
 					rosterType={'myCrew'}
+				/>
+				<SkillCheckAccordion
+					voyageConfig={runningVoyage}
 				/>
 				<StatsRewardsAccordion
 					voyage={runningVoyage}
