@@ -1,21 +1,12 @@
 import React from "react";
-import { GlobalContext } from "../../../context/globalcontext";
+import { GlobalContext } from "../../context/globalcontext";
 import { Modal, Checkbox, Dropdown, Button } from "semantic-ui-react";
-import { OptionsPanelFlexRow, OptionsPanelFlexColumn } from "../../stats/utils";
+import { OptionsPanelFlexRow, OptionsPanelFlexColumn } from "../stats/utils";
+import { QuipmentProspectConfig, QuipmentProspectMode, VoyageSkillPreferenceMode } from "./provider";
 
-export type QuipmentProspectMode = 'best' | 'best_2' | 'all';
-export type VoyageSkillPreferenceMode = 'none' | 'voyage' | 'voyage_1' | 'voyage_2';
-
-export type QuipmentProspectConfig = {
-	mode: QuipmentProspectMode;
-	enabled: boolean;
-    current: boolean;
-	voyage: VoyageSkillPreferenceMode;
-    slots: number;
-    calc: 'all' | 'core' | 'proficiency'
-}
 
 export interface QuipmentProspectProps {
+    hideVoyageOptions?: boolean;
     config: QuipmentProspectConfig;
     setConfig: (value: QuipmentProspectConfig) => void;
 }
@@ -24,7 +15,7 @@ export const QuipmentProspectsOptions = (props: QuipmentProspectProps) => {
     const globalContext = React.useContext(GlobalContext);
 
     const { t } = globalContext.localized;
-    const { config, setConfig } = props;
+    const { config, setConfig, hideVoyageOptions } = props;
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
 
     const flexRow = OptionsPanelFlexRow;
@@ -95,7 +86,7 @@ export const QuipmentProspectsOptions = (props: QuipmentProspectProps) => {
                                     }}
                                     />
                             </div>
-                            <div style={{...flexCol, alignItems: 'flex-start', gap: '1em'}}>
+                            {!hideVoyageOptions && <div style={{...flexCol, alignItems: 'flex-start', gap: '1em'}}>
                                 <b>{t('voyage.quipment.voyage_prefs')}</b>
                                 <Dropdown
                                     disabled={!config.enabled}
@@ -107,7 +98,7 @@ export const QuipmentProspectsOptions = (props: QuipmentProspectProps) => {
                                         setConfig({...config, voyage: value as VoyageSkillPreferenceMode || 'none' })
                                     }}
                                     />
-                            </div>
+                            </div>}
                         </div>
                         <div style={{...flexRow, gap: '2em', flexWrap: 'wrap'}}>
                             <div style={{...flexCol, alignItems: 'flex-start', gap: '1em'}}>

@@ -25,7 +25,6 @@ import { crewMatchesSkillFilter, SkillToggler } from '../../dataset_presenters/o
 
 import { CalculatorContext } from '../context';
 import { UserPrefsContext } from '../calculator/userprefs';
-import { applyQuipmentProspect } from '../quipment/utils';
 
 import { EditorContext } from './context';
 
@@ -65,7 +64,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = React.useContext(GlobalContext).localized;
 	const calculatorContext = React.useContext(CalculatorContext);
-	const { qpConfig } = React.useContext(UserPrefsContext);
+	const { qpConfig, applyQp } = React.useContext(UserPrefsContext);
 	const { id, prospectiveConfig, sortedSkills, renderActions, dismissEditor } = React.useContext(EditorContext);
 	const { setAlternate } = props;
 
@@ -85,20 +84,9 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 
 	React.useEffect(() => {
 		const assignedCrewIds: number[] = prospectiveConfig.crew_slots.filter(cs => cs.crew).map(cs => cs.crew!.id);
-
-		const quipment: ItemWithBonus[] = qpEnabled ? globalContext.core.items.filter(f => f.type === 14).map(m => getItemWithBonus(m)) : [];
-
 		const data: IAlternateCrewData[] = calculatorContext.crew.map(crew => {
 			if (qpEnabled) {
-				return applyQuipmentProspect(
-						crew,
-						quipment,
-						globalContext.player.buffConfig,
-						{
-							voyageConfig: prospectiveConfig,
-							qpConfig
-						}
-				) as IAlternateCrewData;
+				return applyQp(crew, prospectiveConfig) as IAlternateCrewData;
 			}
 			return oneCrewCopy(crew) as IAlternateCrewData;
 		});
