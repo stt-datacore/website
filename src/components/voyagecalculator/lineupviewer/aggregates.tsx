@@ -7,7 +7,6 @@ import {
 
 import { GlobalContext } from '../../../context/globalcontext';
 import CONFIG from '../../CONFIG';
-import { SkillCheckModal } from '../skillcheck/modal';
 import { getCrewEventBonus, POPUP_DELAY, voySkillScore } from '../utils';
 import { LayoutContext, ViewerContext } from './context';
 
@@ -16,8 +15,6 @@ export const Aggregates = () => {
 	const { voyageConfig, ship, shipData, assignments, launchLineupEditor } = React.useContext(ViewerContext);
 	const { layout } = React.useContext(LayoutContext);
 	const landscape = layout === 'grid-cards' || layout === 'grid-icons';
-
-	const [skillCheckOpen, setSkillCheckOpen] = React.useState<boolean>(false);
 
 	return (
 		<React.Fragment>
@@ -42,13 +39,6 @@ export const Aggregates = () => {
 					</div>
 				</div>
 			}
-			{skillCheckOpen && (
-				<SkillCheckModal
-					voyageConfig={voyageConfig}
-					dismissModal={() => setSkillCheckOpen(false)}
-					launchLineupEditor={launchLineupEditor}
-				/>
-			)}
 		</React.Fragment>
 	);
 
@@ -110,7 +100,7 @@ export const Aggregates = () => {
 
 	function renderAggregateTable(skills: string[]): JSX.Element {
 		return (
-			<Table collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto', cursor: 'pointer' }} onClick={() => setSkillCheckOpen(true)}>
+			<Table collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto' }}>
 				<Table.Body>
 					{skills.map((entry, idx) => {
 						const agg = voyageConfig.skill_aggregates[entry];

@@ -18,8 +18,8 @@ import CONFIG from '../../CONFIG';
 import { getShipTraitBonus, voySkillScore } from '../utils';
 import { ILineupEditorTrigger } from '../lineupeditor/lineupeditor';
 
-import { ILayoutContext, IViewerContext, LayoutContext, ViewerContext } from './context';
 import { ISkillsRankings, IAssignment, ISkillsRank, IShipData } from './model';
+import { ILayoutContext, IViewerContext, LayoutContext, ViewerContext } from './context';
 import { GridView } from './gridview';
 import { LayoutPicker } from './layoutpicker';
 import { TableView } from './tableview';
@@ -31,7 +31,6 @@ type LineupViewerProps = {
 	roster?: PlayerCrew[];
 	rosterType?: 'allCrew' | 'myCrew';
 	initialExpand?: boolean;
-	launchLineupEditor?: (trigger: ILineupEditorTrigger) => void;
 };
 
 export const LineupViewerAccordion = (props: LineupViewerProps) => {
@@ -64,7 +63,6 @@ export const LineupViewerAccordion = (props: LineupViewerProps) => {
 							ship={ship}
 							roster={roster}
 							rosterType={rosterType}
-							launchLineupEditor={props.launchLineupEditor}
 						/>
 					</Segment>
 				)}
@@ -77,7 +75,7 @@ export const LineupViewer = (props: LineupViewerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
 	const { t } = globalContext.localized;
-	const { configSource, voyageConfig, ship, roster, rosterType, launchLineupEditor } = props;
+	const { configSource, voyageConfig, ship, roster, rosterType } = props;
 
 	const findBestRank: boolean = configSource === 'player';
 
@@ -125,8 +123,7 @@ export const LineupViewer = (props: LineupViewerProps) => {
 		rosterType,
 		ship,
 		shipData,
-		assignments,
-		launchLineupEditor
+		assignments
 	};
 
 	return (
