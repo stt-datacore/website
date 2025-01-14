@@ -1,22 +1,42 @@
-import React from "react";
-import { Calculation, Estimate } from "../../../model/worker";
-import { Helper } from "../helpers/Helper";
-import { Popup, Header, Tab } from "semantic-ui-react";
-import { GlobalContext } from "../../../context/globalcontext";
-import { IVoyageCrew, IVoyageCalcConfig, ITrackedVoyage, IFullPayloadAssignment } from "../../../model/voyage";
-import { UnifiedWorker } from "../../../typings/worker";
-import { flattenEstimate, formatTime } from "../../../utils/voyageutils";
-import { HistoryContext } from "../../voyagehistory/context";
-import { NEW_TRACKER_ID, createTrackableVoyage, createTrackableCrew, SyncState, deleteTrackedData, removeVoyageFromHistory, postTrackedData, addVoyageToHistory, addCrewToHistory } from "../../voyagehistory/utils";
-import { CalculatorContext } from "../context";
-import { CalculatorState } from "../helpers/calchelpers";
-import { ErrorPane } from "./errorpane";
-import { ResultPane } from "./results";
+import React from 'react';
+import {
+	Header,
+	Popup,
+	Tab
+} from 'semantic-ui-react';
+
+import { Estimate, IFullPayloadAssignment, IVoyageCalcConfig, IVoyageCrew, IVoyageRequest, IVoyageResult, ITrackedVoyage, IResultProposal } from '../../../model/voyage';
+import { UnifiedWorker } from '../../../typings/worker';
+import { GlobalContext } from '../../../context/globalcontext';
+import { flattenEstimate, formatTime } from '../../../utils/voyageutils';
+
+import { HistoryContext } from '../../voyagehistory/context';
+import { NEW_TRACKER_ID, createTrackableVoyage, createTrackableCrew, SyncState, deleteTrackedData, removeVoyageFromHistory, postTrackedData, addVoyageToHistory, addCrewToHistory } from '../../voyagehistory/utils';
+
+import { CalculatorContext } from '../context';
+import { CalculatorState } from '../helpers/calchelpers';
+
+import { ErrorPane } from './errorpane';
+import { ResultPane } from './results';
+
+interface IBestValues {
+	median: number;
+	minimum: number;
+	moonshot: number;
+	dilemma: {
+		hour: number;
+		chance: number;
+	};
+	antimatter: number;
+	total_vp: number;
+	event_crew_bonus: number;
+};
 
 export type ResultsGroupProps = {
-	requests: Helper[];
-	results: Calculation[];
-	setResults: (results: Calculation[]) => void;
+	requests: IVoyageRequest[];
+	setRequests: (requests: IVoyageRequest[]) => void;
+	results: IVoyageResult[];
+	setResults: (results: IVoyageResult[]) => void;
 };
 
 export const ResultsGroup = (props: ResultsGroupProps) => {
@@ -26,83 +46,73 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
 	const { voyageConfig } = calculatorContext;
 
-	const { requests, results, setResults } = props;
+	const { requests, setRequests, results, setResults } = props;
 
+	const [activeIndex, setActiveIndex] = React.useState<number>(0);
 	const [trackerId, setTrackerId] = React.useState<number>(NEW_TRACKER_ID);
 
-	const analyses: string[] = [];
-
 	// In-game voyage crew picker ignores frozen crew, active shuttlers, and active voyagers
-	const availableRoster: IVoyageCrew[] = calculatorContext.crew.filter(
-		c => c.immortal <= 0 && c.active_status !== 2 && c.active_status !== 3
-	);
+	const idleRoster = React.useMemo<IVoyageCrew[]>(() => {
+		return calculatorContext.crew.filter(
+			c => c.immortal <= 0 && c.active_status !== 2 && c.active_status !== 3
+		);
+	}, [calculatorContext.crew]);
 
-	if (results.length === 0)
-		return (<></>);
-
-	// Compare best values among ALL results
-	interface IBestValues {
-		median: number;
-		minimum: number;
-		moonshot: number;
-		dilemma: {
-			hour: number;
-			chance: number;
+	const analyses = React.useMemo<string[]>(() => {
+		const analyses: string[] = [];
+		// Compare best values among ALL results
+		const bestValues: IBestValues = {
+			median: 0,
+			minimum: 0,
+			moonshot: 0,
+			dilemma: {
+				hour: 0,
+				chance: 0
+			},
+			antimatter: 0,
+			total_vp: 0,
+			event_crew_bonus: 0
 		};
-		antimatter: number;
-		total_vp: number;
-		vp_per_min: number;
-	};
-	const bestValues: IBestValues = {
-		median: 0,
-		minimum: 0,
-		moonshot: 0,
-		dilemma: {
-			hour: 0,
-			chance: 0
-		},
-		antimatter: 0,
-		total_vp: 0,
-		vp_per_min: 0
-	};
-	results.forEach(result => {
-		if (result.calcState === CalculatorState.Done && result.result) {
-			const values = {
-				...flattenEstimate(result.result.estimate),
-				antimatter: result.result.estimate.antimatter ?? 0,
-				total_vp: result.result.estimate.vpDetails?.total_vp ?? 0,
-				vp_per_min: result.result.estimate.vpDetails?.vp_per_min ?? 0
-			};
-			Object.keys(bestValues).forEach((valueKey) => {
-				if (valueKey === 'dilemma') {
-					if (values.dilemma.hour > bestValues.dilemma.hour
-						|| (values.dilemma.hour === bestValues.dilemma.hour && values.dilemma.chance > bestValues.dilemma.chance)) {
-							bestValues.dilemma = values.dilemma;
+		results.forEach(result => {
+			if (result.calcState === CalculatorState.Done && result.proposal) {
+				const values = {
+					...flattenEstimate(result.proposal.estimate),
+					antimatter: result.proposal.startAM,
+					total_vp: result.proposal.estimate.vpDetails?.total_vp ?? 0,
+					event_crew_bonus: result.proposal.eventCrewBonus ?? 0
+				};
+				Object.keys(bestValues).forEach((valueKey) => {
+					if (valueKey === 'dilemma') {
+						if (values.dilemma.hour > bestValues.dilemma.hour
+							|| (values.dilemma.hour === bestValues.dilemma.hour && values.dilemma.chance > bestValues.dilemma.chance)) {
+								bestValues.dilemma = values.dilemma;
+						}
 					}
-				}
-				else if (values[valueKey] > bestValues[valueKey]) {
-					bestValues[valueKey] = values[valueKey];
-				}
-			});
-		}
-	});
-	results.forEach(result => {
-		let analysis: string = '';
-		if (result.calcState === CalculatorState.Done && result.result) {
-			const recommended: string[] = getRecommendedList(result.result.estimate, bestValues);
-			if (results.length === 1)
-				analysis = t('voyage.estimate.analysis.all_criteria');
-			else {
-				if (recommended.length > 0)
-					analysis = ' ' + t('voyage.estimate.analysis.recommended_for_mode', {
-						mode: recommended.map((method) => getRecommendedValue(method, bestValues)).join(', ')
-					});
-				else
-					analysis = ' ' + t('voyage.estimate.analysis.proposed_alternative');
+					else if (values[valueKey] > bestValues[valueKey]) {
+						bestValues[valueKey] = values[valueKey];
+					}
+				});
 			}
-		}
-		analyses.push(analysis);
-	});
+		});
+		results.forEach(result => {
+			let analysis: string = '';
+			if (result.calcState === CalculatorState.Done && result.proposal) {
+				const recommended: string[] = getRecommendedList(result.proposal, bestValues);
+				if (results.length === 1)
+					analysis = 'Recommended for all criteria';
+				else {
+					if (recommended.length > 0)
+						analysis = ' Recommended for ' + recommended.map((method) => getRecommendedValue(method, bestValues)).join(', ');
+					else
+						analysis = ' Proposed alternative';
+				}
+			}
+			analyses.push(analysis);
+		});
+		return analyses;
+	}, [results]);
+
+	if (results.length === 0) return <></>;
 
 	const panes = results.map((result, resultIndex) => ({
 		menuItem: { key: result.id, content: renderMenuItem(result.name, analyses[resultIndex]) },
@@ -110,25 +120,39 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 			if (result.calcState === CalculatorState.Error) {
 				return (
 					<ErrorPane
-						errorMessage={result.errorMessage} resultIndex={resultIndex}
+						resultId={result.id} errorMessage={result.errorMessage}
 						requests={requests} requestId={result.requestId}
 						dismissResult={dismissResult}
 					/>
 				);
 			}
 			return (
-				<ResultPane result={result.result} resultIndex={resultIndex}
+				<ResultPane
+					resultId={result.id} proposal={result.proposal}
 					requests={requests} requestId={result.requestId}
 					calcState={result.calcState} abortCalculation={abortCalculation}
 					analysis={analyses[resultIndex]}
 					trackState={result.trackState ?? 0} trackResult={trackResult}
 					confidenceState={result.confidenceState ?? 0} estimateResult={estimateResult}
 					dismissResult={dismissResult}
-					roster={availableRoster}
+					addEditedResult={addResult}
+					idleRoster={idleRoster}
 				/>
 			);
 		}
 	}));
+
+	return (
+		<React.Fragment>
+			<Header as='h3'>Recommended Lineups</Header>
+			<Tab
+				menu={{ pointing: true }}
+				panes={panes}
+				activeIndex={activeIndex}
+				onTabChange={(e, { activeIndex }) => setActiveIndex(activeIndex as number)}
+			/>
+		</React.Fragment>
+	);
 
 	function renderMenuItem(name: string, analysis: string): JSX.Element {
 		if (analysis !== '') {
@@ -144,13 +168,13 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		}
 	}
 
-	function getRecommendedList(estimate: Estimate, bestValues: IBestValues): string[] {
+	function getRecommendedList(proposal: IResultProposal, bestValues: IBestValues): string[] {
 		const recommended: string[] = [];
 		const values = {
-			...flattenEstimate(estimate),
-			antimatter: estimate.antimatter ?? 0,
-			total_vp: estimate.vpDetails?.total_vp ?? 0,
-			vp_per_min: estimate.vpDetails?.vp_per_min ?? 0
+			...flattenEstimate(proposal.estimate),
+			antimatter: proposal.startAM,
+			total_vp: proposal.estimate.vpDetails?.total_vp ?? 0,
+			event_crew_bonus: proposal.eventCrewBonus
 		};
 		Object.keys(bestValues).forEach(method => {
 			let canRecommend: boolean = false;
@@ -160,7 +184,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 						&& bestValues.dilemma.chance === values.dilemma.chance;
 				}
 			}
-			else if ((method === 'total_vp' || method === 'vp_per_min')) {
+			else if ((method === 'total_vp' || method === 'event_crew_bonus')) {
 				if (voyageConfig.voyage_type === 'encounter') {
 					canRecommend = bestValues[method] === values[method];
 				}
@@ -204,9 +228,9 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 				//sortName = 'projected VP';
 				sortValue = bestValues.total_vp.toLocaleString();
 				break;
-			case 'vp_per_min':
-				//sortName = 'projected VP per minute';
-				sortValue = Math.floor(bestValues.vp_per_min);
+			case 'event_crew_bonus':
+				sortName = 'event crew bonus';
+				sortValue = `+${t('global.n_%', { n: Math.round((bestValues.event_crew_bonus ?? 0) * 100) })}`;
 				break;
 		}
 		if (sortValue !== '') sortValue = ' ('+sortValue+')';
@@ -214,12 +238,12 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 	}
 
 	function abortCalculation(requestId: string): void {
-		const request = requests.find(r => r.id === requestId);
-		if (request) {
-			request.abort();
+		const request: IVoyageRequest | undefined = requests.find(r => r.id === requestId);
+		if (request && request.calcHelper) {
+			request.calcHelper.abort();
 			const result = results.find(prev => prev.id === requestId);
-			if (result && result.result) {
-				result.name = formatTime(result.result.estimate.refills[0].result, t);
+			if (result && result.proposal) {
+				result.name = formatTime(result.proposal.estimate.refills[0].result, t);
 				result.calcState = CalculatorState.Done;
 			}
 			else {
@@ -230,7 +254,10 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		}
 	}
 
-	function trackResult(resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate): void {
+	function trackResult(resultId: string, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate): void {
+		const result: IVoyageResult | undefined = results.find(result => result.id === resultId);
+		if (!result) return;
+
 		// First remove previous tracked voyage and associated crew assignments
 		//	(in case user tracks a different recommendation from same request)
 		const trackableVoyage: ITrackedVoyage = createTrackableVoyage(
@@ -247,7 +274,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 							addVoyageToHistory(history, newRemoteId, trackableVoyage);
 							addCrewToHistory(history, newRemoteId, trackableCrew);
 							setHistory({...history});
-							updateTrackedResults(resultIndex, newRemoteId);
+							updateTrackedResults(resultId, newRemoteId);
 						}
 						else {
 							throw('Failed trackResult -> postTrackedData');
@@ -268,7 +295,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 			addVoyageToHistory(history, newLocalId, trackableVoyage);
 			addCrewToHistory(history, newLocalId, trackableCrew);
 			setHistory({...history});
-			updateTrackedResults(resultIndex, newLocalId);
+			updateTrackedResults(resultId, newLocalId);
 		}
 		else {
 			setMessageId('voyage.history_msg.invalid_sync_state');
@@ -276,15 +303,17 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		}
 	}
 
-	function updateTrackedResults(resultIndex: number, trackerId: number): void {
-		results.forEach((result, idx) => {
-			result.trackState = idx === resultIndex ? 1 : 0;
+	function updateTrackedResults(resultId: string, trackerId: number): void {
+		results.forEach(result => {
+			result.trackState = result.id === resultId ? 1 : 0;
 		});
 		setResults([...results]);
 		setTrackerId(trackerId);
 	}
 
-	function estimateResult(resultIndex: number, voyageConfig: IVoyageCalcConfig, numSims: number): void {
+	function estimateResult(resultId: string, voyageConfig: IVoyageCalcConfig, numSims: number): void {
+		const result: IVoyageResult | undefined = results.find(result => result.id === resultId);
+		if (!result) return;
 		const config = {
 			startAm: voyageConfig.max_hp,
 			ps: voyageConfig.skill_aggregates[voyageConfig.skills['primary_skill']],
@@ -300,29 +329,37 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		worker.addEventListener('message', message => {
 			if (!message.data.inProgress) {
 				const estimate = message.data.result;
-				const result = results[resultIndex];
 				result.name = formatTime(estimate.refills[0].result, t);
-				if (result.result) result.result.estimate = estimate;
+				if (result.proposal) result.proposal.estimate = estimate;
 				result.confidenceState = 2;
 				setResults([...results]);
 			}
 		});
 		worker.postMessage(VoyageEstConfig);
-		const result = results[resultIndex];
 		result.name = t('spinners.default');
 		result.confidenceState = 1;
 		setResults([...results]);
 	}
 
-	function dismissResult(resultIndex: number): void {
+	function dismissResult(resultId: string): void {
+		const resultIndex: number = results.findIndex(result => result.id === resultId);
+		if (resultIndex < 0) return;
+
 		results.splice(resultIndex, 1);
 		setResults([...results]);
+
+		// Focus on newest remaining result, if any
+		if (activeIndex >= results.length)
+			setActiveIndex(Math.max(results.length - 1, 0));
 	}
 
-	return (
-		<React.Fragment>
-			<Header as='h3'>{t('voyage.estimate.recommended_lineups')}</Header>
-			<Tab menu={{ pointing: true }} panes={panes} />
-		</React.Fragment>
-	);
+	function addResult(request: IVoyageRequest, result: IVoyageResult): void {
+		requests.push(request);
+		setRequests([...requests]);
+		results.push(result);
+		setResults([...results]);
+
+		// Focus on newest result
+		setActiveIndex(results.length - 1);
+	}
 };

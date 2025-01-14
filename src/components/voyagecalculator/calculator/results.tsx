@@ -1,36 +1,49 @@
 import React from 'react';
-import { Helper } from '../helpers/Helper';
-import { CalcResult, Estimate } from '../../../model/worker';
-import { Tab, Button, SemanticICONS, Message, Popup, Icon, Image } from 'semantic-ui-react';
-import { GlobalContext } from '../../../context/globalcontext';
+import {
+	Button,
+	Icon,
+	Image,
+	Message,
+	Popup,
+	SemanticICONS,
+	Tab
+} from 'semantic-ui-react';
+
 import { Voyage } from '../../../model/player';
-import { IVoyageCalcConfig, IVoyageCrew } from '../../../model/voyage';
+import { Ship } from '../../../model/ship';
+import { Estimate, IBestVoyageShip, IProposalEntry, IResultProposal, IVoyageCalcConfig, IVoyageCrew, IVoyageRequest, IVoyageResult } from '../../../model/voyage';
+import { GlobalContext } from '../../../context/globalcontext';
 import { formatTime } from '../../../utils/voyageutils';
+
+import { OptionsPanelFlexColumn } from '../../stats/utils';
 import { HistoryContext } from '../../voyagehistory/context';
 import { SyncState } from '../../voyagehistory/utils';
-import { CIVASMessage } from '../civas';
+
 import { CalculatorContext } from '../context';
+import { CIVASMessage } from '../civas';
 import { CalculatorState } from '../helpers/calchelpers';
-import VoyageStatsAccordion from '../stats/stats_accordion';
-import { VPGraphAccordion } from '../vpgraph';
+import { ILineupEditorTrigger, LineupEditor } from '../lineupeditor/lineupeditor';
 import { LineupViewerAccordion } from '../lineupviewer/lineup_accordion';
 import { QuipmentProspectAccordion } from '../quipment/quipmentprospects';
-import { OptionsPanelFlexColumn } from '../../stats/utils';
+import { SkillCheckAccordion } from '../skillcheck/accordion';
+import VoyageStatsAccordion from '../stats/stats_accordion';
+import { getCrewEventBonus, getCrewTraitBonus } from '../utils';
 
 export type ResultPaneProps = {
-	result: CalcResult | undefined;
-	resultIndex: number;
-	requests: Helper[];
+	resultId: string;
+	proposal: IResultProposal | undefined;
+	requests: IVoyageRequest[];
 	requestId: string;
 	calcState: number;
 	abortCalculation: (requestId: string) => void;
 	analysis: string;
 	trackState: number;
 	confidenceState: number;
-	trackResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate) => void;
-	estimateResult: (resultIndex: number, voyageConfig: IVoyageCalcConfig, numSums: number) => void;
-	dismissResult: (resultIndex: number) => void;
-	roster: IVoyageCrew[];
+	trackResult: (resultId: string, voyageConfig: IVoyageCalcConfig, shipSymbol: string, estimate: Estimate) => void;
+	estimateResult: (resultId: string, voyageConfig: IVoyageCalcConfig, numSums: number) => void;
+	dismissResult: (resultId: string) => void;
+	addEditedResult: (request: IVoyageRequest, result: IVoyageResult) => void;
+	idleRoster: IVoyageCrew[];
 };
 
 export const ResultPane = (props: ResultPaneProps) => {
@@ -39,20 +52,23 @@ export const ResultPane = (props: ResultPaneProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
 	const { configSource, rosterType } = calculatorContext;
 	const {
-		result, resultIndex,
+		resultId, proposal,
 		requests, requestId,
 		calcState, abortCalculation,
 		analysis,
 		trackState, trackResult,
 		confidenceState, estimateResult,
 		dismissResult,
-		roster
+		addEditedResult,
+		idleRoster
 	} = props;
+
+	const [editorTrigger, setEditorTrigger] = React.useState<ILineupEditorTrigger | undefined>(undefined);
 
 	const request = requests.find(r => r.id === requestId);
 	if (!request) return (<></>);
 
-	if (!result) {
+	if (!proposal) {
 		return (
 			<Tab.Pane>
 				<div style={{ textAlign: 'center' }}>
@@ -66,27 +82,22 @@ export const ResultPane = (props: ResultPaneProps) => {
 	const iconTrack: SemanticICONS[] = ['flag outline', 'flag'];
 	const iconConfidence: SemanticICONS[] = ['hourglass outline', 'hourglass half', 'hourglass end'];
 
-	// Create new voyageConfig based on input and calc results
+	// Create new voyageConfig based on input and proposal
 	const voyageConfig: IVoyageCalcConfig = {
 		...request.voyageConfig,
 		state: 'pending',
-		max_hp: result.startAM,
-		skill_aggregates: result.aggregates,
-		crew_slots: request.voyageConfig.crew_slots.map(slot => {
+		max_hp: proposal.startAM,
+		skill_aggregates: proposal.aggregates,
+		crew_slots: request.voyageConfig.crew_slots.map((slot, slotId) => {
 			return ({
 				...slot,
-				crew: {} as IVoyageCrew
+				crew: proposal.entries[slotId].choice
 			});
 		})
 	};
-	if (result.entries) {
-		result.entries.forEach(entry => {
-			const crew: IVoyageCrew | undefined = request.consideredCrew.find(c => c.id === entry.choice.id);
-			if (crew) voyageConfig.crew_slots[entry.slotId].crew = crew;
-		});
-	}
 
 	const renderCalculatorMessage = () => {
+		if (!request.calcHelper) return <></>;
 		if (calcState !== CalculatorState.Done) {
 			return (
 				<React.Fragment>
@@ -97,12 +108,12 @@ export const ResultPane = (props: ResultPaneProps) => {
 				</React.Fragment>
 			);
 		}
-		const inputs: string[] = Object.entries(request.calcOptions).map(entry => entry[0]+': '+entry[1]);
-		inputs.unshift('considered crew: '+request.consideredCrew.length);
+		const inputs: string[] = Object.entries(request.calcHelper.calcOptions).map(entry => entry[0]+': '+entry[1]);
+		inputs.unshift('considered crew: '+request.calcHelper.consideredCrew.length);
 		return (
 			<React.Fragment>
-				Calculated by <b>{request.calcName}</b> calculator ({inputs.join(', ')}){` `}
-				in {((request.perf.end-request.perf.start)/1000).toFixed(2)} seconds!
+				Calculated by <b>{request.calcHelper.calcName}</b> calculator ({inputs.join(', ')}){` `}
+				in {((request.calcHelper.perf.end-request.calcHelper.perf.start)/1000).toFixed(2)} seconds!
 			</React.Fragment>
 		);
 	};
@@ -115,15 +126,28 @@ export const ResultPane = (props: ResultPaneProps) => {
 				<Message attached>
 					<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', rowGap: '1em' }}>
 						<div>
-							{tfmt('voyage.estimate.estimate_time', {
-								time: <b>{formatTime(result.estimate.refills[0].result, t)}</b>
-							})}
-							{` `}
-							{t('voyage.estimate.expected_range', {
-								a: formatTime(result.estimate.refills[0].saferResult, t),
-								b: formatTime(result.estimate.refills[0].moonshotResult, t)
-							})}
-							{analysis !== '' && (<div style={{ marginTop: '1em' }}>{analysis}</div>)}
+							<div>
+								{tfmt('voyage.estimate.estimate_time', {
+									time: <b>{formatTime(proposal.estimate.refills[0].result, t)}</b>
+								})}
+								{` `}
+								{t('voyage.estimate.expected_range', {
+									a: formatTime(proposal.estimate.refills[0].saferResult, t),
+									b: formatTime(proposal.estimate.refills[0].moonshotResult, t)
+								})}
+							</div>
+							{proposal.estimate.vpDetails && (
+								<div>
+									{t('voyage.estimate.projected_vp')}: <b>{proposal.estimate.vpDetails.total_vp.toLocaleString()}</b>
+									{` `}<img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />;
+									{` `}event crew bonus: <b>+{t('global.n_%', { n: Math.round((proposal.eventCrewBonus ?? 0) * 100) })}</b>
+								</div>
+							)}
+							{analysis !== '' && (
+								<div style={{ marginTop: '1em' }}>
+									{analysis}
+								</div>
+							)}
 						</div>
 						<div>
 							<Button.Group>
@@ -131,7 +155,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 									<Popup position='top center'
 										content={<>Track this recommendation</>}
 										trigger={
-											<Button icon onClick={() => trackResult(resultIndex, voyageConfig, request.bestShip.ship.symbol, result.estimate)} disabled={syncState === SyncState.ReadOnly}>
+											<Button icon onClick={() => trackResult(resultId, voyageConfig, request.bestShip.ship.symbol, proposal.estimate)} disabled={syncState === SyncState.ReadOnly}>
 												<Icon name={iconTrack[trackState]} color={trackState === 1 ? 'green' : undefined} />
 											</Button>
 										}
@@ -140,15 +164,21 @@ export const ResultPane = (props: ResultPaneProps) => {
 								<Popup position='top center'
 									content={<>Get more confident estimate</>}
 									trigger={
-										<Button icon onClick={() => { if (confidenceState !== 1) estimateResult(resultIndex, voyageConfig, 30000); }}>
+										<Button icon onClick={() => { if (confidenceState !== 1) estimateResult(resultId, voyageConfig, 30000); }}>
 											<Icon name={iconConfidence[confidenceState]} color={confidenceState === 2 ? 'green' : undefined} />
 										</Button>
 									}
 								/>
 								<Popup position='top center'
+									content={<>Edit lineup</>}
+									trigger={
+										<Button icon='pencil' onClick={() => setEditorTrigger({ view: 'crewpicker' })} />
+									}
+								/>
+								<Popup position='top center'
 									content={<>Dismiss this recommendation</>}
 									trigger={
-										<Button icon='ban' onClick={() => dismissResult(resultIndex)} />
+										<Button icon='ban' onClick={() => dismissResult(resultId)} />
 									}
 								/>
 							</Button.Group>
@@ -158,24 +188,33 @@ export const ResultPane = (props: ResultPaneProps) => {
 			)}
 			<Tab.Pane>
 				<div style={{...flexCol, alignItems: 'stretch', gap: '0.5em'}}>
-
-					{result.estimate.vpDetails && (
-						<VPGraphAccordion voyageConfig={voyageConfig} estimate={result.estimate} />
-					)}
 					<VoyageStatsAccordion
 						configSource={configSource}
 						voyageData={voyageConfig as Voyage}
-						estimate={result.estimate}
-						roster={roster}
+						estimate={proposal.estimate}
+						roster={idleRoster}
 						rosterType={rosterType}
 					/>
 					<LineupViewerAccordion
 						configSource={configSource}
 						voyageConfig={voyageConfig}
 						ship={request.bestShip.ship}
-						roster={roster}
+						roster={idleRoster}
 						rosterType={rosterType}
 						initialExpand={true}
+						launchLineupEditor={(trigger: ILineupEditorTrigger) => setEditorTrigger(trigger)}
+					/>
+					<LineupEditor key={resultId}
+						id={`${resultId}/lineupeditor`}
+						trigger={editorTrigger}
+						cancelTrigger={() => setEditorTrigger(undefined)}
+						ship={request.bestShip.ship}
+						control={{ config: voyageConfig, estimate: proposal.estimate }}
+						commitVoyage={createResultFromEdit}
+					/>
+					<SkillCheckAccordion
+						voyageConfig={voyageConfig}
+						launchLineupEditor={(trigger: ILineupEditorTrigger) => setEditorTrigger(trigger)}
 					/>
 					<QuipmentProspectAccordion
 						voyageConfig={voyageConfig}
@@ -185,9 +224,51 @@ export const ResultPane = (props: ResultPaneProps) => {
 					</div>
 				</div>
 				{calcState === CalculatorState.Done && (
-					<CIVASMessage voyageConfig={voyageConfig} estimate={result.estimate} />
+					<CIVASMessage voyageConfig={voyageConfig} estimate={proposal.estimate} />
 				)}
 			</Tab.Pane>
 		</React.Fragment>
 	);
+
+	function createResultFromEdit(voyageConfig: IVoyageCalcConfig, ship: Ship, estimate: Estimate): void {
+		const requestId: string = 'request-' + Date.now();
+		const editedRequest: IVoyageRequest = {
+			id: requestId,
+			type: 'edit',
+			voyageConfig,
+			bestShip: {
+				ship,
+				archetype_id: ship.archetype_id!
+			} as IBestVoyageShip
+		};
+		const entries: IProposalEntry[] = [];
+		let crewTraitBonus: number = 0, eventCrewBonus: number = 0;
+		voyageConfig.crew_slots.forEach((cs, slotId) => {
+			const crew: IVoyageCrew = cs.crew;
+			if (crew) {
+				const traitBonus: number = getCrewTraitBonus(voyageConfig, crew, cs.trait);
+				crewTraitBonus += traitBonus;
+				eventCrewBonus += getCrewEventBonus(voyageConfig, crew);
+				entries.push({
+					slotId,
+					choice: crew,
+					hasTrait: traitBonus > 0
+				});
+			}
+		});
+		const editedResult: IVoyageResult = {
+			id: `${requestId}-result`,
+			requestId: requestId,
+			name: formatTime(estimate.refills[0].result, t),
+			calcState: CalculatorState.Done,
+			proposal: {
+				entries,
+				estimate,
+				aggregates: voyageConfig.skill_aggregates,
+				startAM: voyageConfig.max_hp,
+				eventCrewBonus
+			}
+		};
+		addEditedResult(editedRequest, editedResult);
+	}
 };

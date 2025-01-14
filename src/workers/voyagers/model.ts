@@ -1,5 +1,5 @@
 import { BaseSkills, PlayerSkill, Skill } from '../../model/crew';
-import { Estimate } from '../../model/worker';
+import { Estimate } from "../../model/voyage";
 
 export interface IAssemblerOptions {
 	strategy?: string;

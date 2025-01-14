@@ -1,23 +1,24 @@
 import '../../../typings/worker';
 import { UnifiedWorker } from '../../../typings/worker';
+import { Skill } from '../../../model/crew';
+import { Aggregates, PlayerCrew, VoyageDescription } from '../../../model/player';
+import { IProposalEntry as VoyageSlotEntry, IResultProposal, IVoyageCalcConfig, IVoyageEventContent, Estimate } from '../../../model/voyage';
+import { VoyageStatsConfig, ExportCrew, GameWorkerOptions } from '../../../model/worker';
+import { calcVoyageVP } from '../../../utils/voyagevp';
 import CONFIG from '../../CONFIG';
-import { CalcResult, Aggregates, CalcResultEntry as VoyageSlotEntry, VoyageStatsConfig, AggregateSkill, ExportCrew, GameWorkerOptions } from '../../../model/worker';
+import { getCrewEventBonus } from '../utils';
 import { CalculatorState } from './calchelpers';
-import { HelperProps, Helper } from "./Helper";
-import { VoyageDescription } from '../../../model/player';
-import { IVoyageCalcConfig, IVoyageEventContent } from '../../../model/voyage';
+import { HelperProps, Helper } from './Helper';
 
 // This code is heavily inspired from IAmPicard's work and released under the GPL-V3 license. Huge thanks for all his contributions!
 
 export class IAmPicardHelper extends Helper {
-	readonly id: string;
 	readonly calculator: string;
 	readonly calcName: string;
 	readonly calcOptions: GameWorkerOptions;
 
 	constructor(props: HelperProps) {
 		super(props);
-		this.id = 'request-' + Date.now();
 		this.calculator = 'iampicard';
 		this.calcName = 'Original';
 		this.calcOptions = {
@@ -26,7 +27,7 @@ export class IAmPicardHelper extends Helper {
 		};
 	}
 
-	start(): void {
+	start(requestId: string): void {
 		this.perf.start = performance.now();
 		this.calcState = CalculatorState.InProgress;
 
@@ -65,11 +66,11 @@ export class IAmPicardHelper extends Helper {
 					// ignore marginal gains (under 5 minutes)
 					if (score > bestScore + 1 / 12) {
 						bestScore = score;
-						this._finaliseIAPEstimate(result, true);
+						this._finaliseIAPEstimate(requestId, result, true);
 					}
 					// Done
 				} else {
-					this._finaliseIAPEstimate(result, false);
+					this._finaliseIAPEstimate(requestId, result, false);
 				}
 			}
 		});
@@ -178,18 +179,20 @@ export class IAmPicardHelper extends Helper {
 		return dataToExport;
 	}
 
-	_finaliseIAPEstimate(result: DataView, inProgress: boolean = false): void {
+	_finaliseIAPEstimate(requestId: string, result: DataView, inProgress: boolean = false): void {
 
 		let entries = [] as VoyageSlotEntry[];
 		let aggregates = {} as Aggregates;
 
-		Object.keys(CONFIG.SKILLS).forEach(s => aggregates[s] = { skill: s, core: 0, range_min: 0, range_max: 0 } as AggregateSkill
+		Object.keys(CONFIG.SKILLS).forEach(s => aggregates[s] = { skill: s, core: 0, range_min: 0, range_max: 0 } as Skill
 		);
 
 		let config = {
 			numSims: inProgress ? 200 : 5000,
 			startAm: this.bestShip.score
 		} as VoyageStatsConfig;
+
+		const eventCrewBonuses: number[] = [];
 
 		for (let i = 0; i < 12; i++) {
 			let crew = this.consideredCrew.find(c => c.id === result.getInt32(4 + i * 4, true));
@@ -212,6 +215,8 @@ export class IAmPicardHelper extends Helper {
 				config.startAm += 25;
 
 			entries.push(entry);
+
+			eventCrewBonuses.push(getCrewEventBonus(this.voyageConfig, crew as PlayerCrew));
 		}
 
 		const { primary_skill, secondary_skill } = this.voyageConfig.skills;
@@ -230,18 +235,25 @@ export class IAmPicardHelper extends Helper {
 		const worker = new UnifiedWorker();
 		worker.addEventListener('message', message => {
 			if (!message.data.inProgress) {
-				let finalResult: CalcResult = {
-					estimate: message.data.result,
+				const estimate: Estimate = message.data.result;
+				// Add vpDetails prop here to allow for post-sorting by VP details
+				if (this.voyageConfig.voyage_type === 'encounter') {
+					const seconds: number = estimate.refills[0].result*60*60;
+					estimate.vpDetails = calcVoyageVP(seconds, eventCrewBonuses);
+				}
+				let finalResult: IResultProposal = {
+					estimate: estimate,
 					entries: entries,
 					aggregates: aggregates,
-					startAM: config.startAm
+					startAM: config.startAm,
+					eventCrewBonus: eventCrewBonuses.reduce((prev, curr) => prev + curr, 0)
 				};
 				if (!inProgress) {
 					this.perf.end = performance.now();
 					this.calcState = CalculatorState.Done;
 				}
-				// Array of ICalcResults is expected by callbacks
-				this.resultsCallback(this.id, [finalResult], inProgress ? CalculatorState.InProgress : CalculatorState.Done);
+				// Array of IResultProposals is expected by callbacks
+				this.resultsCallback(requestId, [finalResult], inProgress ? CalculatorState.InProgress : CalculatorState.Done);
 			}
 		});
 		worker.postMessage(VoyageEstConfig);

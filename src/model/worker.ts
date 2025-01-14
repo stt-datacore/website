@@ -1,6 +1,6 @@
 import { BossBattlesRoot, BossEffect } from "./boss";
-import { BaseSkills, CrewMember, PlayerSkill, Skill } from "./crew";
-import { CompactCrew, Player, PlayerCrew, PlayerData } from "./player";
+import { BaseSkills, CrewMember, Skill } from "./crew";
+import { Aggregates, CompactCrew, PlayerCrew, PlayerData } from "./player";
 import { BattleMode, Ship, ShipAction, ShipRankingMethod } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
 import { EquipmentCommon, EquipmentItem } from "./equipment";
@@ -8,9 +8,9 @@ import { Collection } from "./game-elements";
 import { ICoreData } from "../context/coremodel";
 import { MissionChallenge, MissionTraitBonus, QuestFilterConfig } from "./missions";
 import { IEphemeralData } from "../context/playercontext";
-import { VPDetails } from "../utils/voyagevp";
 import { IPolestar } from "../components/retrieval/model";
 import { RetrievalCost } from "../utils/retrieval";
+import { Estimate } from "./voyage";
 
 export type ComesFrom = {
     type: number;
@@ -76,11 +76,6 @@ export interface IMultiWorkerContext {
 }
 
 
-export interface GameWorkerOptionsList {
-    key: number;
-    value: number;
-    text: string;
-}
 export interface VoyageStatsConfig {
     others?: number[];
     numSims: number;
@@ -101,99 +96,6 @@ export interface GameWorkerOptions {
     proficiency?: number;
     searchDepth?: number;
     extendsTarget?: number;
-}
-
-export interface CalculatorProps {
-    playerData: PlayerData;
-    allCrew: PlayerCrew[];
-}
-
-export interface AllData extends CalculatorProps {
-    allShips?: Ship[];
-    playerShips?: Ship[];
-    useInVoyage?: boolean;
-    bossData?: BossBattlesRoot;
-    buffConfig?: BuffStatTable;
-}
-
-export interface VoyageConsideration {
-    ship: Ship;
-    score: number;
-    traited: boolean;
-    bestIndex: number;
-    archetype_id: number;
-}
-
-export interface Calculation {
-    id: string;
-    requestId: string;
-    name: string;
-    calcState: number;
-    result?: CalcResult;
-    trackState?: number;
-    confidenceState?: number;
-    errorMessage?: string;
-    telemetrySent?: boolean;
-}
-
-export interface CalcResult {
-    estimate: Estimate;
-    entries: CalcResultEntry[];
-    aggregates: Aggregates;
-    startAM: number;
-}
-
-export interface Estimate {
-    refills: Refill[];
-    dilhr20: number;
-    refillshr20: number;
-    final: boolean;
-    deterministic?: boolean;
-    antimatter?: number;
-	vpDetails?: VPDetails;
-}
-
-export interface Refill {
-    all: number[];
-    result: number;
-    safeResult: number;
-    saferResult: number;
-    moonshotResult: number;
-    lastDil: number;
-    dilChance: number;
-    refillCostResult: number;
-}
-
-export interface CalcResultEntry {
-    slotId: number;
-    choice: PlayerCrew;
-    hasTrait: boolean | number;
-}
-
-export interface Aggregates {
-    command_skill: AggregateSkill;
-    science_skill: AggregateSkill;
-    security_skill: AggregateSkill;
-    engineering_skill: AggregateSkill;
-    diplomacy_skill: AggregateSkill;
-    medicine_skill: AggregateSkill;
-}
-
-export interface AggregateSkill extends Skill {
-    skill: PlayerSkill | string;
-}
-
-export interface CalcConfig {
-    estimate: number;
-    minimum: number;
-    moonshot: number;
-    antimatter: number;
-    dilemma: {
-        hour: number;
-        chance: number;
-    };
-    refills?: Refill[];
-    confidence?: number;
 }
 
 export interface JohnJayBest {

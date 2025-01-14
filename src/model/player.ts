@@ -1109,7 +1109,7 @@ export interface Voyage {
   recalled_at: string
   completed_at: any
   voyage_duration: number
-  skill_aggregates: BaseSkills
+  skill_aggregates: Aggregates
   seconds_between_dilemmas: number
   seconds_since_last_dilemma: number
   first_leave: boolean
@@ -1131,6 +1131,15 @@ export interface EncounterVoyage extends Voyage {
     fast_forward_boost?: {
         estimated_hp: number;
     }
+}
+
+export interface Aggregates {
+	command_skill: Skill;
+	science_skill: Skill;
+	security_skill: Skill;
+	engineering_skill: Skill;
+	diplomacy_skill: Skill;
+	medicine_skill: Skill;
 }
 
 export interface PendingRewards {
