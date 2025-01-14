@@ -5,10 +5,12 @@ import {
 	Image,
 	Label,
 	Message,
+	Popup,
 	Segment,
 	Table
 } from 'semantic-ui-react';
 
+import { Skill } from '../../../model/crew';
 import { PlayerCrew } from '../../../model/player';
 import { IVoyageCalcConfig } from '../../../model/voyage';
 import { GlobalContext } from '../../../context/globalcontext';
@@ -19,6 +21,7 @@ import { DataGrid } from '../../dataset_presenters/datagrid';
 import { DataMatrix } from '../../dataset_presenters/datamatrix';
 import { CrewLabel } from '../../dataset_presenters/elements/crewlabel';
 
+import { POPUP_DELAY } from '../utils';
 import { IProspectiveConfig } from '../lineupeditor/model';
 
 import { gauntletScore, getSkillPairData, ISkillPairData } from './skilldata';
@@ -155,12 +158,19 @@ const ProficiencyMatrix = (props: ProficiencyMatrixProps) => {
 					/>
 				</div>
 				<div>
-					<Label>
-						<div style={{ display: 'flex', alignItems: 'center', gap: '.2em' }}>
-							<img src='/media/gauntlet.png' style={{ height: '1em' }} className='invertibleIcon' />
-							<span>{gauntletScore(bestCrew, datum.rowId, datum.columnId)}</span>
-						</div>
-					</Label>
+					<CrewExpectedRange
+						crew={bestCrew}
+						skillA={datum.rowId}
+						skillB={datum.columnId}
+						trigger={(
+							<Label style={{ cursor: 'help' }}>
+								<div style={{ display: 'flex', alignItems: 'center', gap: '.2em' }}>
+									<img src='/media/gauntlet.png' style={{ height: '1em' }} className='invertibleIcon' />
+									{gauntletScore(bestCrew, datum.rowId, datum.columnId)}
+								</div>
+							</Label>
+						)}
+					/>
 					<CrewCritTraits
 						crew={bestCrew}
 						critTraits={voyageConfig.event_content?.encounter_traits ?? []}
@@ -258,7 +268,16 @@ const ProficiencyGrid = (props: ProficiencyGridProps) => {
 									</Table.Cell>
 								)}
 								<Table.Cell textAlign='center'>
-									{gauntletScore(crew, datum.rowId, datum.columnId)}
+									<CrewExpectedRange
+										crew={crew}
+										skillA={datum.rowId}
+										skillB={datum.columnId}
+										trigger={(
+											<span style={{ cursor: 'help' }}>
+												{gauntletScore(crew, datum.rowId, datum.columnId)}
+											</span>
+										)}
+									/>
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
 									<CrewCritTraits
@@ -326,4 +345,36 @@ const CrewCritTraits = (props: CrewCritTraitsProps) => {
 			))}
 		</span>
 	)
+};
+
+type CrewExpectedRangeProps = {
+	crew: PlayerCrew;
+	skillA: string;
+	skillB: string;
+	trigger: JSX.Element;
+};
+
+const CrewExpectedRange = (props: CrewExpectedRangeProps) => {
+	const { crew, skillA, skillB, trigger } = props;
+
+	const a: Skill | undefined = crew.skills[skillA];
+	const b: Skill | undefined = crew.skills[skillB];
+
+	let minScore: number = (a?.range_min ?? 0) * 3;
+	if (skillA !== skillB) minScore += (b?.range_min ?? 0) * 3;
+
+	let maxScore: number = (a?.range_max ?? 0) * 3;
+	if (skillA !== skillB) maxScore += (b?.range_max ?? 0) * 3;
+
+	return (
+		<Popup
+			mouseEnterDelay={POPUP_DELAY}
+			position='bottom center'
+			trigger={trigger}
+		>
+			<Popup.Content>
+				Expected range: {minScore} - {maxScore}
+			</Popup.Content>
+		</Popup>
+	);
 };
