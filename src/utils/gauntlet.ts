@@ -84,47 +84,46 @@ export const DefaultAdvancedGauntletSettings = {
 
 
 
-export function getBernardsNumber<T extends CrewMember>(a: T, gauntlet?: Gauntlet, apairs?: Skill[][] | Skill[], settings?: GauntletSettings) {
-	let atrait = gauntlet?.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
+export function getBernardsNumber<T extends CrewMember>(crew: T, gauntlet?: Gauntlet, player_pairs?: Skill[][] | Skill[], settings?: GauntletSettings) {
+	let trait_mul = gauntlet?.prettyTraits?.filter(t => crew.traits_named.includes(t)).length ?? 0;
 	settings ??= DefaultAdvancedGauntletSettings;
 
-	if (atrait >= 3) atrait = settings.crit65;
-	else if (atrait >= 2) atrait = settings.crit45;
-	else if (atrait >= 1) atrait = settings.crit25;
-	else atrait = settings.crit5;
+	// Weighted; Weights defined in advanced settings.
+	if (trait_mul >= 3) trait_mul = settings.crit65;
+	else if (trait_mul >= 2) trait_mul = settings.crit45;
+	else if (trait_mul >= 1) trait_mul = settings.crit25;
+	else trait_mul = settings.crit5;
 
-	apairs ??= getPlayerPairs(a, atrait, settings.minWeight, settings.maxWeight);
+	player_pairs ??= getPlayerPairs(crew, trait_mul, settings.minWeight, settings.maxWeight);
 
-	let cn = 0;
-	let w = 0;
+	let bernardsNumber = 0;
+	let count = 0;
 
-	if (apairs?.length && ("length" in apairs[0])) {
-		const skills = [apairs[0][0], apairs[0][1], apairs.length > 1 ? apairs[1][1] : { core: 0, range_min: 0, range_max: 0 }];
+	if (player_pairs?.length && ("length" in player_pairs[0])) {
+		const skills = [player_pairs[0][0], player_pairs[0][1], player_pairs.length > 1 ? player_pairs[1][1] : { core: 0, range_min: 0, range_max: 0 }];
 
 		for (let skill of skills) {
 			if (skill.range_max === 0) continue;
-			let dn = (skill.range_max + skill.range_min) / 2;
-			if (dn) {
-				cn += dn;
-				w++;
+			let dmg_num = (skill.range_max + skill.range_min) / 2;
+			if (dmg_num) {
+				bernardsNumber += dmg_num;
+				count++;
 			}
 		}
-		if (apairs.length === 1) cn /= 2;
+		if (player_pairs.length === 1) bernardsNumber /= 2;
 	}
-	else if (apairs?.length && !("length" in apairs[0])) {
-		for (let skill of apairs as Skill[]) {
+	else if (player_pairs?.length && !("length" in player_pairs[0])) {
+		for (let skill of player_pairs as Skill[]) {
 			if (skill.range_max === 0) continue;
-			let dn = (skill.range_max + skill.range_min) / 2;
-			if (dn) {
-				cn += dn;
-				w++;
+			let dmg_num = (skill.range_max + skill.range_min) / 2;
+			if (dmg_num) {
+				bernardsNumber += dmg_num;
+				count++;
 			}
 		}
 	}
 
-	//cn /= w;
-
-	return cn;
+	return bernardsNumber;
 }
 
 export function discoverPairs(crew: (PlayerCrew | CrewMember)[], featuredSkill?: string) {
