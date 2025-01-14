@@ -3,6 +3,7 @@ import {
 	Button,
 	Icon,
 	Image,
+	Label,
 	Message,
 	Segment,
 	Table
@@ -21,6 +22,14 @@ import { CrewLabel } from '../../dataset_presenters/elements/crewlabel';
 import { IProspectiveConfig } from '../lineupeditor/model';
 
 import { gauntletScore, getSkillPairData, ISkillPairData } from './skilldata';
+
+export interface IProficiencyContext {
+	voyageConfig: IVoyageCalcConfig | IProspectiveConfig;
+	sortedSkills: string[];
+	data: ISkillPairData[];
+};
+
+const ProficiencyContext = React.createContext<IProficiencyContext>({} as IProficiencyContext);
 
 type ProficiencyCheckProps = {
 	id: string;
@@ -47,55 +56,51 @@ export const ProficiencyCheck = (props: ProficiencyCheckProps) => {
 		return getSkillPairData(voyageConfig, sortedSkills);
 	}, [voyageConfig]);
 
+	const proficiencyContext: IProficiencyContext = {
+		voyageConfig,
+		sortedSkills,
+		data
+	};
+
 	return (
-		<React.Fragment>
-			<div>
-				The numbers listed are, in order:
-				<ol>
-					<li>The sum of a crew's average proficiency after 3 contests per skill</li>
-					<li>The number of contests per skill pair</li>
-					<li>The potential number of crit bonuses per contest</li>
-				</ol>
-			</div>
-			<div style={{ margin: '1em 0' }}>
-				Toggle layout:{` `}
-				<Button.Group>
-					<Button icon='expand' color={layout === 'matrix' ? 'blue' : undefined} onClick={() => setLayout('matrix')} />
-					<Button icon='compress' color={layout === 'halfmatrix' ? 'blue' : undefined} onClick={() => setLayout('halfmatrix')} />
-					<Button icon='block layout' color={layout === 'grid' ? 'blue' : undefined} onClick={() => setLayout('grid')} />
-				</Button.Group>
-			</div>
-			{(layout === 'matrix' || layout === 'halfmatrix') && (
-				<ProficiencyMatrix
-					id={`${id}/matrix`}
-					voyageConfig={voyageConfig}
-					data={data}
-					sortedSkills={sortedSkills}
-					halfMatrix={layout === 'halfmatrix'}
-				/>
-			)}
-			{layout === 'grid' && (
-				<ProficiencyGrid
-					id={`${id}/grid`}
-					voyageConfig={voyageConfig}
-					data={data}
-					sortedSkills={sortedSkills}
-				/>
-			)}
-		</React.Fragment>
+		<ProficiencyContext.Provider value={proficiencyContext}>
+			<React.Fragment>
+				<div>
+					The skill score is the crew's max proficiency for that skill. The gauntlet score is the sum of the crew's average proficiency after 3 rolls per skill.{` `}
+					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_shipability_overcharge.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' /> represents the number of potential crit bonuses per roll.
+				</div>
+				<div style={{ margin: '1em 0' }}>
+					Toggle layout:{` `}
+					<Button.Group>
+						<Button icon='expand' color={layout === 'matrix' ? 'blue' : undefined} onClick={() => setLayout('matrix')} />
+						<Button icon='compress' color={layout === 'halfmatrix' ? 'blue' : undefined} onClick={() => setLayout('halfmatrix')} />
+						<Button icon='block layout' color={layout === 'grid' ? 'blue' : undefined} onClick={() => setLayout('grid')} />
+					</Button.Group>
+				</div>
+				{(layout === 'matrix' || layout === 'halfmatrix') && (
+					<ProficiencyMatrix
+						id={`${id}/matrix`}
+						halfMatrix={layout === 'halfmatrix'}
+					/>
+				)}
+				{layout === 'grid' && (
+					<ProficiencyGrid
+						id={`${id}/grid`}
+					/>
+				)}
+			</React.Fragment>
+		</ProficiencyContext.Provider>
 	);
 };
 
 type ProficiencyMatrixProps = {
 	id: string;
-	voyageConfig: IVoyageCalcConfig | IProspectiveConfig;
-	data: ISkillPairData[];
-	sortedSkills: string[];
 	halfMatrix: boolean;
 };
 
 const ProficiencyMatrix = (props: ProficiencyMatrixProps) => {
-	const { id, voyageConfig, data, sortedSkills, halfMatrix } = props;
+	const { voyageConfig, sortedSkills, data } = React.useContext(ProficiencyContext);
+	const { id, halfMatrix } = props;
 
 	const fields: IDataMatrixField[] = sortedSkills.map(skill => {
 		return {
@@ -125,7 +130,7 @@ const ProficiencyMatrix = (props: ProficiencyMatrixProps) => {
 	function renderSkillHeader(skill: string): JSX.Element {
 		return (
 			<React.Fragment>
-				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 				{voyageConfig.skills.primary_skill === skill && <Icon name='star' color='yellow' />}
 				{voyageConfig.skills.secondary_skill === skill && <Icon name='star' color='grey' />}
 			</React.Fragment>
@@ -138,15 +143,24 @@ const ProficiencyMatrix = (props: ProficiencyMatrixProps) => {
 		const imageUrlPortrait: string = bestCrew.imageUrlPortrait ?? `${bestCrew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
 		return (
 			<React.Fragment>
-				<div><img width={36} src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`} /></div>
-				{bestCrew.name}
-				<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', columnGap: '.5em' }}>
-					<span>
-						{gauntletScore(bestCrew, datum.rowId, datum.columnId)}
-					</span>
-					<span>
-						{getContestCount(bestCrew, datum.rowId, datum.columnId)}
-					</span>
+				<div style={{ display: 'flex', justifyContent: 'center' }}>
+					<Image src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`} style={{ height: '36px' }} />
+				</div>
+				<div>{bestCrew.name}</div>
+				<div>
+					<CrewProficiencies
+						crew={bestCrew}
+						skillA={datum.rowId}
+						skillB={datum.columnId}
+					/>
+				</div>
+				<div>
+					<Label>
+						<div style={{ display: 'flex', alignItems: 'center', gap: '.2em' }}>
+							<img src='/media/gauntlet.png' style={{ height: '1em' }} className='invertibleIcon' />
+							<span>{gauntletScore(bestCrew, datum.rowId, datum.columnId)}</span>
+						</div>
+					</Label>
 					<CrewCritTraits
 						crew={bestCrew}
 						critTraits={voyageConfig.event_content?.encounter_traits ?? []}
@@ -159,18 +173,16 @@ const ProficiencyMatrix = (props: ProficiencyMatrixProps) => {
 
 type ProficiencyGridProps = {
 	id: string;
-	voyageConfig: IVoyageCalcConfig | IProspectiveConfig;
-	data: ISkillPairData[];
-	sortedSkills: string[];
 };
 
 const ProficiencyGrid = (props: ProficiencyGridProps) => {
-	const { id, voyageConfig, data } = props;
+	const { voyageConfig, data } = React.useContext(ProficiencyContext);
+	const { id } = props;
 
 	const gridSetup: IDataGridSetup = {
 		gridProps: {
 			centered: true,
-			columns: 3,
+			columns: 2,
 			stackable: true
 		},
 		renderGridColumn: (datum: IEssentialData) => renderGridColumn(datum as ISkillPairData),
@@ -206,32 +218,89 @@ const ProficiencyGrid = (props: ProficiencyGridProps) => {
 	}
 
 	function renderCoverageTable(datum: ISkillPairData): JSX.Element {
+		const singleSkill: boolean = datum.rowId === datum.columnId;
 		return (
-			<Table striped compact unstackable>
-				<Table.Body>
-					{datum.coverage.map(crew => (
-						<Table.Row key={crew.id}>
-							<Table.Cell>
-								<CrewLabel crew={crew} />
-							</Table.Cell>
-							<Table.Cell textAlign='right'>
-								{gauntletScore(crew, datum.rowId, datum.columnId)}
-							</Table.Cell>
-							<Table.Cell textAlign='center'>
-								{getContestCount(crew, datum.rowId, datum.columnId)}
-							</Table.Cell>
-							<Table.Cell textAlign='center'>
-								<CrewCritTraits
-									crew={crew}
-									critTraits={voyageConfig.event_content?.encounter_traits ?? []}
-								/>
-							</Table.Cell>
+			<div style={{ overflowX: 'auto' }}>
+				<Table striped compact unstackable>
+					<Table.Header>
+						<Table.Row>
+							<Table.HeaderCell>
+								Crew
+							</Table.HeaderCell>
+							<Table.HeaderCell textAlign='center'>
+								<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${datum.rowId}.png`} style={{ height: '1em' }} className='invertibleIcon' />
+							</Table.HeaderCell>
+							{!singleSkill && (
+								<Table.HeaderCell textAlign='center'>
+									<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${datum.columnId}.png`} style={{ height: '1em' }} className='invertibleIcon' />
+								</Table.HeaderCell>
+							)}
+							<Table.HeaderCell textAlign='center'>
+								<img src='/media/gauntlet.png' style={{ height: '1em' }} className='invertibleIcon' />
+							</Table.HeaderCell>
+							<Table.HeaderCell textAlign='center'>
+								<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_shipability_overcharge.png`} style={{ height: '1em' }} className='invertibleIcon' />
+							</Table.HeaderCell>
 						</Table.Row>
-					))}
-				</Table.Body>
-			</Table>
+					</Table.Header>
+					<Table.Body>
+						{datum.coverage.map(crew => (
+							<Table.Row key={crew.id}>
+								<Table.Cell>
+									<CrewLabel crew={crew} />
+								</Table.Cell>
+								<Table.Cell textAlign='center'>
+									{crew.skills[datum.rowId]?.range_max ?? ''}
+								</Table.Cell>
+								{!singleSkill && (
+									<Table.Cell textAlign='center'>
+										{crew.skills[datum.columnId]?.range_max ?? ''}
+									</Table.Cell>
+								)}
+								<Table.Cell textAlign='center'>
+									{gauntletScore(crew, datum.rowId, datum.columnId)}
+								</Table.Cell>
+								<Table.Cell textAlign='center'>
+									<CrewCritTraits
+										crew={crew}
+										critTraits={voyageConfig.event_content?.encounter_traits ?? []}
+									/>
+								</Table.Cell>
+							</Table.Row>
+						))}
+					</Table.Body>
+				</Table>
+			</div>
 		);
 	}
+};
+
+type CrewProficienciesProps = {
+	crew: PlayerCrew;
+	skillA: string;
+	skillB: string;
+};
+
+const CrewProficiencies = (props: CrewProficienciesProps) => {
+	const { crew, skillA, skillB } = props;
+	const skills: string[] = [];
+	if (Object.keys(crew.base_skills).includes(skillA))
+		skills.push(skillA);
+	if (skillA !== skillB && Object.keys(crew.base_skills).includes(skillB))
+		skills.push(skillB);
+
+	return (
+		<Label.Group>
+			{skills.map(skill => (
+				<Label key={skill}>
+					<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.2em' }}>
+						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em' }} className='invertibleIcon' />
+						<span>{crew.skills[skill].range_max}</span>
+					</div>
+				</Label>
+			))}
+		</Label.Group>
+	);
 };
 
 type CrewCritTraitsProps = {
@@ -246,7 +315,7 @@ const CrewCritTraits = (props: CrewCritTraitsProps) => {
 	const crewCritTraits: string[] = critTraits.filter(critTrait => crew.traits.includes(critTrait));
 
 	return (
-		<span>
+		<span style={{ whiteSpace: 'nowrap' }}>
 			{crewCritTraits.map(trait => (
 				<img key={trait}
 					title={TRAIT_NAMES[trait]}
@@ -258,12 +327,3 @@ const CrewCritTraits = (props: CrewCritTraitsProps) => {
 		</span>
 	)
 };
-
-function getContestCount(crew: PlayerCrew, skillA: string, skillB): number {
-	let contests: number = 0;
-	if (Object.keys(crew.base_skills).includes(skillA))
-		contests += 3;
-	if (skillA !== skillB && Object.keys(crew.base_skills).includes(skillB))
-		contests += 3;
-	return contests;
-}
