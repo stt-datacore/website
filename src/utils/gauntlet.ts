@@ -377,7 +377,7 @@ function testFilterCrew(crew: PlayerCrew, filter: FilterProps, context: Gauntlet
 					return true;
 				case 'fe':
 					if (!hasPlayer) return true;
-					return !!crew.have && crew.level === 100 && crew.equipment?.length === 4;
+					return !!crew.have && crew.immortal === -1; //level === 100 && crew.equipment?.length === 4;
 				case 'nofe':
 				case 'nofemax':
 					if (!hasPlayer) return true;
