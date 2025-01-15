@@ -6,7 +6,7 @@ DataCore(<VoyageTool>): input from UI =>
 
 Calculator Worker(): results =>
 	Unified Worker(): results as message =>
-		Calculator Helper(): ICalcResults =>
+		Calculator Helper(): IResultProposals =>
 			DataCore(<VoyageTool>) { updateUI } : void
 */
 

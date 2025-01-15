@@ -1,7 +1,6 @@
 import React from 'react';
 import {
 	Card,
-	Icon,
 	Label,
 	Popup
 } from 'semantic-ui-react';
@@ -14,11 +13,12 @@ import CONFIG from '../../CONFIG';
 import { AvatarView } from '../../item_presenters/avatarview';
 import { renderKwipmentBonus } from '../../item_presenters/item_presenter';
 
-import { getCrewTraitBonus, getCrewVP, POPUP_DELAY, voySkillScore } from '../utils';
+import { getCrewTraitBonus, getCrewEventBonus, POPUP_DELAY, voySkillScore } from '../utils';
 
 import { IAssignment } from './model';
 import { ViewerContext } from './context';
 import { CrewFinder } from './crewfinder';
+import { QuipmentPopover } from '../quipment/quipmentpopover';
 
 export type AssignmentCardProps = {
 	assignment: IAssignment;
@@ -28,7 +28,7 @@ export type AssignmentCardProps = {
 export const AssignmentCard = (props: AssignmentCardProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { TRAIT_NAMES, t } = globalContext.localized;
-	const { voyageConfig } = React.useContext(ViewerContext);
+	const { voyageConfig, rosterType } = React.useContext(ViewerContext);
 	const { assignment: { crew, name, trait, bestRank }, showSkills } = props;
 
 	return (
@@ -51,6 +51,8 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 					item={crew}
 					partialItem={voyageConfig.state === 'pending'}
 					size={96}
+					ignorePlayer={rosterType !== 'myCrew'}
+					hideRarity={rosterType !== 'myCrew'}
 				/>
 			</div>
 			<div style={{ marginBottom: '2em' }}>
@@ -67,17 +69,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 				<div style={{display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: 'center', gap: '1em'}}>
 					{isQuipped(crew) && (
 						<div style={{paddingBottom: "0.1em"}}>
-							<Popup wide
-								content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => typeof q === 'number' ? q : q[1]), globalContext.core.items, crew.kwipment_prospects, t)}
-								mouseEnterDelay={POPUP_DELAY}
-								trigger={
-									<span style={{ cursor: 'help' }}>
-										<img src={`${process.env.GATSBY_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ marginLeft: "0.25em", marginRight: "0.25em", height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
-										{!!crew.kwipment_prospects && <Icon name='add' size='tiny' />}
-									</span>
-								}
-							/>
-
+							<QuipmentPopover crew={crew} />
 						</div>
 					)}
 					{renderCrewVP()}
@@ -98,10 +90,10 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 	);
 
 	function renderCrewVP(): JSX.Element {
-		const crewVP: number = getCrewVP(voyageConfig, crew);
+		const crewVP: number = getCrewEventBonus(voyageConfig, crew);
 		if (crewVP === 0) return <></>;
 		return (
-			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '.3em' }}>
+			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '.3em', flexWrap: 'nowrap' }}>
 				<span>+{t('global.n_%', { n: crewVP * 100 })}</span>
 				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1em' }} className='invertibleIcon' />
 			</div>

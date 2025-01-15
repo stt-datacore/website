@@ -7,8 +7,8 @@ import {
 	SemanticICONS
 } from 'semantic-ui-react';
 
-import { IVoyageCalcConfig } from '../../model/voyage';
-import { Estimate } from '../../model/worker';
+import { Estimate, IVoyageCalcConfig } from '../../model/voyage';
+import { GlobalContext } from '../../context/globalcontext';
 
 type VPGraphProps = {
 	voyageConfig: IVoyageCalcConfig;
@@ -17,7 +17,7 @@ type VPGraphProps = {
 
 export const VPGraphAccordion = (props: VPGraphProps) => {
 	const { voyageConfig, estimate } = props;
-
+	const { t } = React.useContext(GlobalContext).localized;
 	const [isActive, setIsActive] = React.useState<boolean>(false);
 
 	if (!estimate.vpDetails) return <></>;
@@ -29,7 +29,7 @@ export const VPGraphAccordion = (props: VPGraphProps) => {
 				onClick={() => setIsActive(!isActive)}
 			>
 				<Icon name={isActive ? 'caret down' : 'caret right' as SemanticICONS} />
-				Projected VP: {estimate.vpDetails.total_vp.toLocaleString()} <span style={{ margin: '0 .5em' }}>/</span> {Math.floor(estimate.vpDetails.vp_per_min)} per minute
+				{t('voyage.estimate.projected_vp')}: {estimate.vpDetails.total_vp.toLocaleString()} <span style={{ margin: '0 .5em' }}>/</span> {Math.floor(estimate.vpDetails.vp_per_min)} per minute
 			</Accordion.Title>
 			<Accordion.Content active={isActive}>
 				{isActive && renderContent()}

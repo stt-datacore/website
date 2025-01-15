@@ -8,12 +8,12 @@ import {
     ComboCostMap,
 } from "../model/collectionfilter";
 import { PlayerCollection, PlayerCrew } from "../model/player";
-import { makeAllCombos } from "../utils/misc";
+import { getPermutations, makeAllCombos } from "../utils/misc";
 
 function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: PlayerCollection[]) {
     let cname = colOptimized.collection.name;
     let mneeded = colOptimized.collection.needed ?? 0;
-    let tc = colOptimized.uniqueCrew;
+    let tc = colOptimized.combinedUnique;
     let isect = [...new Set(tc.map(c => c.collections)?.flat())];
 
     const pc = playerCollections.filter(col => !!col.needed && isect.includes(col.name));
@@ -376,8 +376,8 @@ const CollectionOptimizer = {
                         return {
                             name: key,
                             maps: linkScores[key],
-                            uniqueCrew: unique,
-                            commonCrew: common,
+                            combinedUnique: unique,
+                            crewInCommon: common,
                             collection: col?.collection,
                             neededStars: neededStars(unique),
                             uniqueCost: starCost(unique, undefined, costMode === "sale"),
@@ -385,8 +385,8 @@ const CollectionOptimizer = {
                     })
                     .filter((g) => !!g.maps?.length && g.maps.some((gm) => gm.completes))
                     .sort((a, b) => {
-                        let dista = a.uniqueCrew.length - a.commonCrew.length;
-                        let distb = b.uniqueCrew.length - b.commonCrew.length;
+                        let dista = a.combinedUnique.length - a.crewInCommon.length;
+                        let distb = b.combinedUnique.length - b.crewInCommon.length;
                         let r = 0;
 
                         a.nonfullfilling = dista;
@@ -419,14 +419,66 @@ const CollectionOptimizer = {
                     });
 
                 const createCombos = (col: CollectionGroup): ColComboMap[] => {
+                    const mneed = col.collection.needed!;
+
                     let result = makeOptimizedCombos(col, playerCollections);
                     //let result = makeAllCombos(names);
 
                     const colNeeded = col.collection.needed ?? 0;
 
-                    let exact = [] as ColComboMap[];
-                    let over = [] as ColComboMap[];
-                    let under = [] as ColComboMap[];
+                    const exact = [] as ColComboMap[];
+                    const over = [] as ColComboMap[];
+                    const under = [] as ColComboMap[];
+                    const cml = col.maps.length;
+
+                    // for (let i = cml; i >= 1; i--) {
+                    //     getPermutations(col.maps, i, undefined, true, undefined, (cols) => {
+                    //         if (!cols.every(c => c.collection.needed! <= mneed)) return false;
+                    //         let test = cols.map(m => m.collection.name);
+                    //         //if (isSupersetSeen(test)) return false;
+
+                    //         const colCounts = {} as { [key: string]: { count: number, need: number, crew: string[] } };
+
+                    //         if (cols?.length) {
+                    //             let good = [] as CollectionMap[];
+
+                    //             let allcrew = cols.map(c => c.crew).flat();
+                    //             allcrew = allcrew.filter((f, i) => f && allcrew.findIndex(f2 => f2 && f2.symbol === f.symbol) === i);
+                    //             for (let crew of allcrew) {
+                    //                 let cfound = cols.filter(f => f.crew.find(fc => fc.symbol === crew.symbol)) ?? [];
+                    //                 for (let ckey of cfound) {
+                    //                     if (good.findIndex(d => d.collection.name === ckey.collection.name) !== -1) continue;
+                    //                     colCounts[ckey.collection.name] ??= { count: 0, need: ckey.collection.needed ?? 0, crew: [] };
+                    //                     colCounts[ckey.collection.name].count++;
+                    //                     colCounts[ckey.collection.name].crew.push(crew.symbol);
+
+                    //                     if (colCounts[ckey.collection.name].count === colCounts[ckey.collection.name].need) {
+                    //                         if (!good.includes(ckey)) good.push(ckey);
+                    //                     }
+                    //                 }
+                    //             }
+                    //         }
+                    //         const foundCols = Object.keys(colCounts);
+                    //         if (foundCols.length === test.length) {
+                    //             let crewnames = Object.values(colCounts).map(v => v.crew).flat();
+                    //             crewnames = crewnames.filter((cn, idx) => crewnames.findIndex(cn2 => cn2 === cn) === idx);
+                    //             let total = crewnames.length;
+
+                    //             if (total) {
+                    //                 if (total === colNeeded) {
+                    //                     exact.push({ names: test, count: total, crew: crewnames, exact: true });
+                    //                 } else if (total > colNeeded) {
+                    //                     over.push({ names: test, count: total, crew: crewnames, exact: false });
+                    //                 } else {
+                    //                     under.push({ names: test, count: total, crew: crewnames, exact: false });
+                    //                 }
+                    //             }
+                    //             //supersets.push(test);
+                    //         }
+                    //         return cols;
+                    //     });
+
+                    // }
 
                     for (let test of result) {
                         let cols = test.map((tc) =>
@@ -696,8 +748,17 @@ const CollectionOptimizer = {
                         else {
                             bcost = 0;
                         }
-                        return acost - bcost;
+                        let r = acost - bcost;
 
+                        if (!r && a.combos && b.combos) {
+                            r = a.combos[0].crew.length - b.combos[0].crew.length;
+                            if (!r) {
+                                let atotal = a.combos[0].crew.map(c => collectionCrew.find(f => f.symbol === c && !f.immortal)).map(cl => cl?.level ?? 0).reduce((p, n) => p + n, 0);
+                                let btotal = b.combos[0].crew.map(c => collectionCrew.find(f => f.symbol === c && !f.immortal)).map(cl => cl?.level ?? 0).reduce((p, n) => p + n, 0);
+                                r = btotal - atotal;
+                            }
+                        }
+                        return r;
                     });
                 }
                 else if (!filterProps.mapFilter.rewardFilter?.length) {
@@ -761,7 +822,7 @@ const CollectionOptimizer = {
                         col.combos = newcombos;
                         col.comboCost = newcombocost;
 
-                        if (!col.uniqueCrew?.some(f => searches.includes(f.name))) return false;
+                        if (!col.combinedUnique?.some(f => searches.includes(f.name))) return false;
                     }
 
                     col.combos.forEach((combo) => {

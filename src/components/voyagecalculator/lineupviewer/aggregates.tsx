@@ -7,12 +7,12 @@ import {
 
 import { GlobalContext } from '../../../context/globalcontext';
 import CONFIG from '../../CONFIG';
-import { getCrewVP, POPUP_DELAY, voySkillScore } from '../utils';
+import { getCrewEventBonus, POPUP_DELAY, voySkillScore } from '../utils';
 import { LayoutContext, ViewerContext } from './context';
 
 export const Aggregates = () => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { voyageConfig, ship, shipData, assignments } = React.useContext(ViewerContext);
+	const { voyageConfig, ship, shipData, assignments, launchLineupEditor } = React.useContext(ViewerContext);
 	const { layout } = React.useContext(LayoutContext);
 	const landscape = layout === 'grid-cards' || layout === 'grid-icons';
 
@@ -21,7 +21,9 @@ export const Aggregates = () => {
 			{!landscape &&
 				<React.Fragment>
 					<div style={{ marginBottom: '1em' }}>
-						{renderCrewBonusesTable()}
+						<div style={{margin:'auto'}}>
+							{renderCrewBonusesTable()}
+						</div>
 					</div>
 					{renderAggregateTable(['command_skill', 'diplomacy_skill', 'engineering_skill', 'security_skill', 'medicine_skill', 'science_skill'])}
 				</React.Fragment>
@@ -44,7 +46,7 @@ export const Aggregates = () => {
 		return (
 			<Table collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto' }}>
 				<Table.Body>
-					{renderVPRow()}
+					{/* {renderVPRow()} */}
 					{renderAntimatterRow()}
 				</Table.Body>
 			</Table>
@@ -53,10 +55,10 @@ export const Aggregates = () => {
 
 	function renderVPRow(): JSX.Element {
 		if (voyageConfig.voyage_type !== 'encounter') return <></>;
-		const totalVP: number = Math.round(assignments.reduce((prev, curr) => prev + getCrewVP(voyageConfig, curr.crew), 0) * 100);
+		const totalVP: number = Math.round(assignments.reduce((prev, curr) => prev + getCrewEventBonus(voyageConfig, curr.crew), 0) * 100);
 		return (
 			<Table.Row>
-				<Table.Cell>Base Event VP</Table.Cell>
+				<Table.Cell>{t('voyage.estimate.base_event_vp')}</Table.Cell>
 				<Table.Cell className='iconic' style={{width: '2.2em'}}>&nbsp;</Table.Cell>
 				<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
 					<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>+{t('global.n_%', { n: totalVP })}</span>}>
@@ -102,6 +104,7 @@ export const Aggregates = () => {
 				<Table.Body>
 					{skills.map((entry, idx) => {
 						const agg = voyageConfig.skill_aggregates[entry];
+						// Running voyage (i.e. Voyage)
 						if (typeof(agg) === 'number') {
 							return (
 								<Table.Row key={idx}>
@@ -115,6 +118,7 @@ export const Aggregates = () => {
 									</Table.Cell>
 								</Table.Row>
 							);
+						// Calculated voyage (i.e. IVoyageCalcConfig)
 						} else {
 							const score = Math.floor(voySkillScore(agg));
 							return (
@@ -125,11 +129,9 @@ export const Aggregates = () => {
 										{voyageConfig.skills.secondary_skill === entry && <Icon name='star' color='grey' />}
 									</Table.Cell>
 									<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
-										<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{score}</span>}>
-											<Popup.Content>
-												{agg.core + ' +(' + agg.range_min + '-' + agg.range_max + ')'}
-											</Popup.Content>
-										</Popup>
+										<span style={{ fontWeight: 'bolder' }}>
+											{score}
+										</span>
 									</Table.Cell>
 									<Table.Cell className='iconic' textAlign='center'>
 										<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${entry}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />

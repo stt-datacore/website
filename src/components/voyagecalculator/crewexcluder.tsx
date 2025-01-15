@@ -11,6 +11,7 @@ import { computeEventBest } from '../../utils/events';
 import { GlobalContext } from '../../context/globalcontext';
 import { oneCrewCopy } from '../../utils/crewutils';
 import CONFIG from '../CONFIG';
+import { QuipmentPopover } from './quipment/quipmentpopover';
 
 interface ISelectOption {
 	key: string;
@@ -236,6 +237,9 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		return (
 			<Label key={crew.id} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center' }}>
 				<Image spaced='right' src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+				{crew.kwipment?.some(q => q || q[1]) &&
+					<QuipmentPopover ignoreProspects={true} crew={crew} showQuipment={true} />
+				}
 				{crew.name}
 				<Icon name='delete' onClick={() => deExcludeCrewId(crew.id)} />
 			</Label>

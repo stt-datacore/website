@@ -1,5 +1,8 @@
+import { Helper } from '../components/voyagecalculator/helpers/Helper';
+import { VPDetails } from '../utils/voyagevp';
 import { BaseSkills } from './crew';
-import { CrewSlot, PlayerCrew, VoyageCrewSlot, VoyageSkills } from './player';
+import { Aggregates, CrewSlot, PlayerCrew, VoyageCrewSlot, VoyageSkills } from './player';
+import { Ship } from './ship';
 
 // Voyage calculator require crew.skills
 export interface IVoyageCrew extends PlayerCrew {
@@ -39,8 +42,71 @@ export interface IVoyageEventContent {
 export interface IVoyageCalcConfig extends IVoyageInputConfig {
 	state: string;
 	max_hp: number;
-	skill_aggregates: BaseSkills;
+	skill_aggregates: Aggregates;
 	crew_slots: VoyageCrewSlot[];
+};
+
+export interface IVoyageRequest {
+	id: string;
+	type: 'calculation' | 'edit' | 'custom';
+	voyageConfig: IVoyageInputConfig;
+	bestShip: IBestVoyageShip;
+	calcHelper?: Helper;
+};
+
+export interface IBestVoyageShip {
+	ship: Ship;
+	score: number;
+	traited: boolean;
+	bestIndex: number;
+	archetype_id: number;
+};
+
+export interface IVoyageResult {
+	id: string;
+	requestId: string;
+	name: string;
+	calcState: number;
+	proposal?: IResultProposal;
+	trackState?: number;
+	confidenceState?: number;
+	errorMessage?: string;
+	telemetrySent?: boolean;
+};
+
+export interface IResultProposal {
+	estimate: Estimate;
+	entries: IProposalEntry[];
+	aggregates: Aggregates;
+	startAM: number;
+	eventCrewBonus: number;
+};
+
+export interface Estimate {
+	refills: Refill[];
+	dilhr20: number;
+	refillshr20: number;
+	final: boolean;
+	deterministic?: boolean;
+	antimatter?: number;
+	vpDetails?: VPDetails;
+};
+
+export interface Refill {
+	all: number[];
+	result: number;
+	safeResult: number;
+	saferResult: number;
+	moonshotResult: number;
+	lastDil: number;
+	dilChance: number;
+	refillCostResult: number;
+};
+
+export interface IProposalEntry {
+	slotId: number;
+	choice: PlayerCrew;
+	hasTrait: boolean | number;
 };
 
 export interface IVoyageHistory {
@@ -55,7 +121,7 @@ export interface ITrackedVoyage {
 	ship_trait: string;
 	ship: string;
 	max_hp: number;
-	skill_aggregates: BaseSkills;
+	skill_aggregates: Aggregates;
 	estimate: ITrackedFlatEstimate;
 	created_at: number;	// Date.now() | voyage.created_at
 	checkpoint: ITrackedCheckpoint;
@@ -542,4 +608,3 @@ export const AntimatterSeatMap =  [
         ]
     }
 ];
-

@@ -9,8 +9,7 @@ import {
 import { CrewMember } from '../../model/crew';
 import { Voyage } from '../../model/player';
 import { Ship } from '../../model/ship';
-import { IFullPayloadAssignment, ITrackedCheckpoint, ITrackedVoyage, IVoyageCalcConfig, IVoyageInputConfig } from '../../model/voyage';
-import { Estimate } from '../../model/worker';
+import { Estimate, IFullPayloadAssignment, ITrackedCheckpoint, ITrackedVoyage, IVoyageCalcConfig, IVoyageInputConfig } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';
 import { formatTime } from '../../utils/voyageutils';
@@ -288,7 +287,7 @@ const RunningTracker = (props: RunningTrackerProps) => {
 				const trackableVoyage: ITrackedVoyage = createTrackableVoyage(
 					voyage as IVoyageCalcConfig, ship.symbol, initial, NEW_TRACKER_ID, voyage, checkpoint
 				);
-				const trackableCrew: IFullPayloadAssignment[] = createTrackableCrew(voyage, NEW_TRACKER_ID);
+				const trackableCrew: IFullPayloadAssignment[] = createTrackableCrew(voyage as IVoyageCalcConfig, NEW_TRACKER_ID);
 				if (syncState === SyncState.RemoteReady) {
 					postTrackedData(dbid, trackableVoyage, trackableCrew).then(result => {
 						if (result.status < 300 && result.trackerId && result.inputId === NEW_TRACKER_ID) {

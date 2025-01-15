@@ -12,7 +12,7 @@ import { isQuipped } from '../../../utils/crewutils';
 import { AvatarView } from '../../item_presenters/avatarview';
 import { renderKwipmentBonus } from '../../item_presenters/item_presenter';
 
-import { getCrewTraitBonus, getCrewVP, POPUP_DELAY } from '../utils';
+import { getCrewTraitBonus, getCrewEventBonus, POPUP_DELAY } from '../utils';
 
 import { LayoutContext, ViewerContext } from './context';
 import { Aggregates } from './aggregates';
@@ -85,10 +85,14 @@ export const TableView = () => {
 						const { crew, name, trait, bestRank } = assignment;
 						return (
 							<Table.Row key={idx}>
-								<Table.Cell width={5}>{name}</Table.Cell>
+								<Table.Cell width={5}>
+									<div style={{width: '11em'}}>
+										{name}
+									</div>
+								</Table.Cell>
 								<Table.Cell width={7}>
 									<Popup mouseEnterDelay={POPUP_DELAY} trigger={
-										<div style={{ cursor: 'help', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+										<div style={{ cursor: 'help', display: 'flex', flexDirection: 'row', alignItems: 'center', width: '15em' }}>
 											{!compact &&
 												<span style={{ paddingRight: '.3em' }}>
 													<AvatarView
@@ -97,6 +101,8 @@ export const TableView = () => {
 														partialItem={true}
 														size={32}
 														style={{ verticalAlign: 'middle' }}
+														ignorePlayer={rosterType !== 'myCrew'}
+														hideRarity={rosterType !== 'myCrew'}
 													/>
 												</span>
 											}
@@ -111,7 +117,7 @@ export const TableView = () => {
 								<Table.Cell width={2} className='iconic' style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
 									{voyageConfig.state === 'pending' && <CrewFinder crew={crew} bestRank={bestRank} />}
 								</Table.Cell>
-								<Table.Cell width={1} className='iconic' style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
+								<Table.Cell width={2} className='iconic' style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
 									<div style={{display:'flex', flexDirection:'row', gap: "0.5em", alignItems: "center", justifyContent: "right", marginRight: "0.5em"}}>
 										{isQuipped(crew) &&
 										<>
@@ -152,7 +158,7 @@ export const TableView = () => {
 
 	function renderVPBonus(crew: PlayerCrew): JSX.Element {
 		if (voyageConfig.voyage_type !== 'encounter') return <></>;
-		const crewVP: number = getCrewVP(voyageConfig, crew);
+		const crewVP: number = getCrewEventBonus(voyageConfig, crew);
 		if (crewVP === 0) return <></>;
 		let bonusText = `+${crewVP} VP`;
 		return (

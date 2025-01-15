@@ -5,18 +5,9 @@ import { GlobalContext } from '../../../context/globalcontext';
 import { useStateWithStorage } from '../../../utils/storage';
 import { CalculatorContext } from '../context';
 
-import { QuipmentProspectConfig } from '../quipment/options';
+import { DefaultQuipmentConfig, QPConfigProvider, QPContext, QuipmentProspectConfig } from '../../qpconfig/provider';
 import { IUserPrefsContext, UserPrefsContext } from './userprefs';
 import { CalculatorForm } from './calcform';
-
-const DefaultQuipmentConfig: QuipmentProspectConfig = {
-	mode: 'best',
-	voyage: 'voyage',
-	current: false,
-	enabled: false,
-	slots: 0,
-	calc: 'all'
-};
 
 export const Calculator = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -24,16 +15,18 @@ export const Calculator = () => {
 	const { voyage_type } = React.useContext(CalculatorContext).voyageConfig;
 
 	return (
-		<React.Fragment>
-			{playerData && (
-				<PlayerCalculator
-					key={voyage_type}
-					dbid={`${playerData.player.dbid}`}
-					voyageType={voyage_type}
-				/>
-			)}
-			{!playerData && <NonPlayerCalculator />}
-		</React.Fragment>
+		<QPConfigProvider>
+			<React.Fragment>
+				{playerData && (
+					<PlayerCalculator
+						key={voyage_type}
+						dbid={`${playerData.player.dbid}`}
+						voyageType={voyage_type}
+					/>
+				)}
+				{!playerData && <NonPlayerCalculator />}
+			</React.Fragment>
+		</QPConfigProvider>
 	);
 };
 
@@ -43,6 +36,9 @@ type PlayerCalculatorProps = {
 };
 
 const PlayerCalculator = (props: PlayerCalculatorProps) => {
+	const qpContext = React.useContext(QPContext);
+	const { useQPConfig } = qpContext;
+
 	const voyageTypePath: string = props.voyageType === 'encounter' ? '/encounter' : '';
 	const defaultCalculator: string = props.voyageType === 'encounter' ? 'ussjohnjay-mvam' : 'iampicard';
 
@@ -61,17 +57,14 @@ const PlayerCalculator = (props: PlayerCalculatorProps) => {
 		true,
 		{ rememberForever: true }
 	);
-	const [qpConfig, setQPConfig] = useStateWithStorage<QuipmentProspectConfig>(
-		`${props.dbid}/${voyageTypePath}/voyage_quipment_prospect_config`,
-		DefaultQuipmentConfig,
-		{ rememberForever: true }
-	);
+
+	const [qpConfig, setQPConfig, applyQp] = useQPConfig(`${props.dbid}/voyage`);
 
 	const userPrefs: IUserPrefsContext = {
 		calculator, setCalculator,
 		calcOptions, setCalcOptions,
 		telemetryOptIn, setTelemetryOptIn,
-		qpConfig, setQPConfig
+		qpConfig, setQPConfig, applyQp
 	};
 
 	return (
@@ -84,16 +77,20 @@ const PlayerCalculator = (props: PlayerCalculatorProps) => {
 };
 
 const NonPlayerCalculator = () => {
+	const qpContext = React.useContext(QPContext);
+	const { useQPConfig } = qpContext;
+
 	const [calculator, setCalculator] = React.useState<string>('iampicard');
 	const [calcOptions, setCalcOptions] = React.useState<GameWorkerOptions>({} as GameWorkerOptions);
 	const [telemetryOptIn, setTelemetryOptIn] = React.useState<boolean>(false);
-	const [qpConfig, setQPConfig] = React.useState<QuipmentProspectConfig>(DefaultQuipmentConfig);
+	//const [qpConfig, setQPConfig] = React.useState<QuipmentProspectConfig>(DefaultQuipmentConfig);
+	const [qpConfig, setQPConfig, applyQp] = useQPConfig(`voyage`);
 
 	const userPrefs: IUserPrefsContext = {
 		calculator, setCalculator,
 		calcOptions, setCalcOptions,
 		telemetryOptIn, setTelemetryOptIn,
-		qpConfig, setQPConfig
+		qpConfig, setQPConfig, applyQp
 	};
 
 	return (

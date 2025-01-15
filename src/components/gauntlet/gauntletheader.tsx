@@ -10,9 +10,9 @@ import ItemDisplay from "../itemdisplay";
 import { randomCrew } from "../../context/datacontext";
 import { CrewMember } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
-import { AvatarView } from "../item_presenters/avatarview";
+import { AvatarView, BasicItem } from "../item_presenters/avatarview";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
-import { getCrewCrit } from "../../utils/gauntlet";
+import { getCrewCrit, getCritColor, printGauntlet } from "../../utils/gauntlet";
 import { useStateWithStorage } from "../../utils/storage";
 
 
@@ -163,57 +163,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                 </div>}
 
             {!!jackpots?.length && pane === 'browse' &&
-                <Accordion
-                    style={{ margin: "1em 0em" }}
-                    defaultActiveIndex={undefined}
-                    panels={[{
-                        index: 0,
-                        key: 'browse_exclusive_panel',
-                        title: t('gauntlet.browse_gauntlet_exclusives'),
-                        content: {
-                            content: <>
-                                <div style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    flexWrap: "wrap",
-                                    justifyContent: "flex-start",
-                                    alignItems: "left"
-                                }}>
-                                    {jackpots.sort((a, b) => b.date_added.getTime() - a.date_added.getTime())
-                                        .map((jcrew) => {
-                                            const crit = 0; // ((prettyTraits?.filter(t => jcrew.traits_named.includes(t))?.length ?? 0) * 20 + 5);
-
-                                            return (
-                                                <div
-                                                    key={`jackpot+${jcrew.symbol}`}
-                                                    style={{
-                                                        margin: "1em",
-                                                        padding: 0,
-                                                        width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "72px" : "96px",
-                                                        display: "flex",
-                                                        flexDirection: "column",
-                                                        justifyContent: "flex-start",
-                                                        alignItems: "center",
-                                                        textAlign: "center"
-                                                    }}>
-                                                    <AvatarView
-                                                        mode='crew'
-                                                        key={"jackpot" + jcrew.symbol}
-                                                        size={64}
-                                                        targetGroup='gauntletsHover'
-                                                        symbol={jcrew?.symbol}
-                                                        showMaxRarity={true}
-                                                    />
-                                                    <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.5em 0 0 0" }}>{jcrew.name}</i>
-                                                    <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.25em 0 0 0" }}>({moment(jcrew.date_added).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("D MMM YYYY")})</i>
-                                                </div>
-                                            )
-                                        })}
-                                </div>
-                            </>
-                        }
-                    }]}
-                />}
+                renderJackpots()}
         </div>
 
 
@@ -233,64 +183,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                         {prettyDate}
                     </h3>
                     {!!jackpots?.length && pane === 'live' &&
-                        <Accordion
-                            style={{ margin: "1em 0em" }}
-                            defaultActiveIndex={undefined}
-                            panels={[{
-                                index: 0,
-                                key: 'bracket_id_panel',
-                                title: `Bracket Id: ${gauntlet.bracket_id}`,
-                                content: {
-                                    content: <>
-                                        <div style={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            flexWrap: "wrap",
-                                            justifyContent: "space-between",
-                                        }}>
-                                            {jackpots.sort((a, b) => a.name.localeCompare(b.name))
-                                                .map((jcrew) => {
-                                                    const crit = ((prettyTraits?.filter(t => jcrew?.traits_named?.includes(t))?.length ?? 0) * 20 + 5);
-                                                    return (
-                                                        <div style={{
-                                                            margin: "1em",
-                                                            padding: 0,
-                                                            width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "72px" : "96px",
-                                                            display: "flex",
-                                                            flexDirection: "column",
-                                                            justifyContent: "flex-start",
-                                                            alignItems: "center",
-                                                            textAlign: "center"
-                                                        }}
-                                                        >
-                                                            <AvatarView
-                                                                mode='crew'
-                                                                key={"jackpot" + jcrew.symbol}
-                                                                size={64}
-                                                                targetGroup='gauntletsHover'
-                                                                symbol={jcrew?.symbol}
-                                                            />
-                                                            {/* <ItemDisplay
-                                                                key={"jackpot" + jcrew.symbol}
-                                                                size={64}
-                                                                maxRarity={jcrew.max_rarity}
-                                                                rarity={jcrew.max_rarity}
-                                                                src={`${process.env.GATSBY_ASSETS_URL}${jcrew.imageUrlPortrait}`}
-                                                                allCrew={globalContext.core.crew}
-                                                                playerData={globalContext.player.playerData}
-                                                                targetGroup='gauntletsHover'
-                                                                itemSymbol={jcrew?.symbol}
-                                                            /> */}
-                                                            <i style={{ color: undefined, margin: "0.5em 0 0 0" }}>{jcrew.name}</i>
-                                                            <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.5em 0 0 0" }}>{crit}%</i>
-                                                        </div>
-                                                    )
-                                                })}
-                                        </div>
-                                    </>
-                                }
-                            }]}
-                        />}
+                        renderLiveRoster()}
 
                 </div>
 
@@ -328,7 +221,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
             }}>
                 <h2 style={{ fontSize: "2em", margin: "0.25em 0" }}>
 
-                    {gauntlet.state !== "POWER" && (gauntlet.contest_data?.traits.map(t => TRAIT_NAMES[t]).join("/") + "/" + skillToShort(gauntlet.contest_data?.featured_skill ?? ""))}
+                    {gauntlet.state !== "POWER" && (printGauntlet(gauntlet, TRAIT_NAMES))}
                     {gauntlet.state === "POWER" && t('gauntlet.base_power')}
 
                 </h2>
@@ -423,11 +316,12 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                                                 <AvatarView
                                                     mode='crew'
                                                     item={c}
+                                                    crewBackground="rich"
                                                     targetGroup='gauntletsHover'
                                                     size={height}
                                                     //showMaxRarity={true}
                                                 />
-                                                <i>{c.name}</i> <Label color={crit >= 65 ? 'purple' : crit >= 45 ? 'blue' : crit >= 25 ? 'green' : undefined}>{t('global.n_%', { n: crit })}</Label>
+                                                <i>{c.name}</i> <Label color={getCritColor(crit)}>{t('global.n_%', { n: crit })}</Label>
                                             </div>)
                                     })}
                                 </div>
@@ -438,5 +332,118 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                     </Accordion.Content>
                 </Accordion>
             </>) || <></>
+    }
+
+    function renderLiveRoster() {
+        if (!jackpots?.length) return <></>
+        const myjcrew = globalContext.player.playerData?.player.character.crew.filter(f => jackpots.some(j => j.id === f.id))
+        return (
+        <Accordion
+            style={{ margin: "1em 0em" }}
+            defaultActiveIndex={undefined}
+            panels={[{
+                index: 0,
+                key: 'bracket_id_panel',
+                title: `Bracket Id: ${gauntlet.bracket_id}`,
+                content: {
+                    content: <>
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            flexWrap: "wrap",
+                            justifyContent: "space-between",
+                        }}>
+                            {myjcrew?.sort((a, b) => a.name.localeCompare(b.name))
+                                .map((jcrew) => {
+                                    const crit = ((prettyTraits?.filter(t => jcrew?.traits_named?.includes(t))?.length ?? 0) * 20 + 5);
+                                    return (
+                                        <div style={{
+                                            margin: "1em",
+                                            padding: 0,
+                                            width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "72px" : "96px",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            justifyContent: "flex-start",
+                                            alignItems: "center",
+                                            textAlign: "center"
+                                        }}
+                                        >
+                                            <AvatarView
+                                                mode='crew'
+                                                key={"jackpot" + jcrew.symbol}
+                                                size={64}
+                                                targetGroup='gauntletsHover'
+                                                item={jcrew}
+                                                crewBackground="rich"
+                                                symbol={jcrew?.symbol}
+                                            />
+                                            <i style={{ color: undefined, margin: "0.5em 0 0 0" }}>{jcrew.name}</i>
+                                            <Label color={getCritColor(crit)}>{t('global.n_%', { n: crit })}</Label>
+                                        </div>
+                                    )
+                                })}
+                        </div>
+                    </>
+                }
+            }]}
+        />
+        )
+    }
+
+    function renderJackpots() {
+        if (!jackpots?.length) return <></>
+
+        return (<Accordion
+            style={{ margin: "1em 0em" }}
+            defaultActiveIndex={undefined}
+            panels={[{
+                index: 0,
+                key: 'browse_exclusive_panel',
+                title: t('gauntlet.browse_gauntlet_exclusives'),
+                content: {
+                    content: <>
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            flexWrap: "wrap",
+                            justifyContent: "flex-start",
+                            alignItems: "left"
+                        }}>
+                            {jackpots.sort((a, b) => (b.date_added && a.date_added ? b.date_added.getTime() - a.date_added.getTime() : 0))
+                                .map((jcrew) => {
+                                    const crit = 0; // ((prettyTraits?.filter(t => jcrew.traits_named.includes(t))?.length ?? 0) * 20 + 5);
+
+                                    return (
+                                        <div
+                                            key={`jackpot+${jcrew.symbol}`}
+                                            style={{
+                                                margin: "1em",
+                                                padding: 0,
+                                                width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "72px" : "96px",
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                justifyContent: "flex-start",
+                                                alignItems: "center",
+                                                textAlign: "center"
+                                            }}>
+                                            <AvatarView
+                                                crewBackground="rich"
+                                                mode='crew'
+                                                key={"jackpot" + jcrew.symbol}
+                                                size={64}
+                                                item={jcrew}
+                                                targetGroup='gauntletsHover'
+                                                showMaxRarity={true}
+                                            />
+                                            <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.5em 0 0 0" }}>{jcrew.name}</i>
+                                            <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.25em 0 0 0" }}>({moment(jcrew.date_added).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("D MMM YYYY")})</i>
+                                        </div>
+                                    )
+                                })}
+                        </div>
+                    </>
+                }
+            }]}
+        />)
     }
 }

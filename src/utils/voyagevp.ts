@@ -6,19 +6,19 @@ export interface RampUpEntry {
 }
 
 const RampUpMap: RampUpEntry[] = [
-    { start: 1, challenges: 3, passive: 1 },
-    { start: 5, challenges: 3, passive: 2 },
-    { start: 15, challenges: 3, passive: 3 },
-    { start: 30, challenges: 4, passive: 6 },
-    { start: 45, challenges: 4, passive: 12 },
-    { start: 60, challenges: 4, passive: 18 },
-    { start: 90, challenges: 4, passive: 25 },
-    { start: 120, challenges: 5, passive: 32 },
-    { start: 240, challenges: 5, passive: 39 },
-    { start: 360, challenges: 5, passive: 45 },
-    { start: 480, challenges: 5, passive: 52 },
-    { start: 600, challenges: 5, passive: 59 },
-    { start: 720, challenges: 6, passive: 65 },
+    { start: 1, challenges: 3, passive: 2 },
+    { start: 5, challenges: 3, passive: 3 },
+    { start: 15, challenges: 3, passive: 6 },
+    { start: 30, challenges: 4, passive: 12 },
+    { start: 45, challenges: 4, passive: 18 },
+    { start: 60, challenges: 4, passive: 25 },
+    { start: 90, challenges: 4, passive: 32 },
+    { start: 120, challenges: 5, passive: 39 },
+    { start: 240, challenges: 5, passive: 46 },
+    { start: 360, challenges: 5, passive: 53 },
+    { start: 480, challenges: 5, passive: 60 },
+    { start: 600, challenges: 5, passive: 67 },
+    { start: 720, challenges: 6, passive: 74 },
    ];
 
 export interface VPDetails {
@@ -31,7 +31,7 @@ export interface VPDetails {
 }
 
 export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
-    const passiveMul = Math.floor(bonuses.reduce((p, n) => p + n) + 1);
+    const passiveMul = Math.ceil(bonuses.reduce((p, n) => (p) + (n * 100), 0) + 100) / 100;
     const vpdetails = {
         seconds,
         total_drops: 0,
@@ -44,7 +44,7 @@ export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
     const droprate = 140;
 
     const max = RampUpMap[RampUpMap.length - 1];
-    const minutes = Math.floor(seconds / 60);
+    const minutes = seconds / 60;
 
     let multiplier = 0;
     let encounter = 0;
@@ -75,10 +75,10 @@ export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
     const secmax = max.start * 60;
     const secdiv = 120 * 60;
 
-    for (let sec = 0; sec < dropmax; sec += droprate) {
+    for (let sec = droprate; sec <= dropmax; sec += droprate) {
         if (sec >= secmax) {
             let cpasv = Math.floor((sec - secmax) / secdiv);
-            passive += passiveMul * (max.passive + (cpasv * 7));
+            passive += Math.floor(passiveMul * (max.passive + (cpasv * 7)));
         }
         else {
             let fi = RampUpMap.findIndex(f => (f.start * 60) > sec) - 1;

@@ -11,7 +11,7 @@ import { OptionsPanelFlexColumn } from "../../stats/utils";
 import { CalculatorContext } from "../context";
 import { CrewExcluder } from "../crewexcluder";
 import { CrewThemes } from "../crewthemes";
-import { QuipmentProspectsOptions } from "../quipment/options";
+import { QuipmentProspectsOptions } from "../../qpconfig/options";
 import { UserPrefsContext } from "./userprefs";
 
 export type CrewOptionsProps = {
