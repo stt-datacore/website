@@ -8,16 +8,20 @@ import {
 import { Estimate, IFullPayloadAssignment, IVoyageCalcConfig, IVoyageCrew, IVoyageRequest, IVoyageResult, ITrackedVoyage, IResultProposal } from '../../../model/voyage';
 import { UnifiedWorker } from '../../../typings/worker';
 import { GlobalContext } from '../../../context/globalcontext';
+import { oneCrewCopy } from '../../../utils/crewutils';
 import { flattenEstimate, formatTime } from '../../../utils/voyageutils';
+import { calcVoyageVP } from '../../../utils/voyagevp';
 
 import { HistoryContext } from '../../voyagehistory/context';
 import { NEW_TRACKER_ID, createTrackableVoyage, createTrackableCrew, SyncState, deleteTrackedData, removeVoyageFromHistory, postTrackedData, addVoyageToHistory, addCrewToHistory } from '../../voyagehistory/utils';
 
 import { CalculatorContext } from '../context';
+import { getCrewEventBonus } from '../utils';
 import { CalculatorState } from '../helpers/calchelpers';
 
 import { ErrorPane } from './errorpane';
 import { ResultPane } from './results';
+import { UserPrefsContext } from './userprefs';
 
 interface IBestValues {
 	median: number;
@@ -45,13 +49,25 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 	const { dbid, history, setHistory, syncState, setMessageId } = React.useContext(HistoryContext);
 	const calculatorContext = React.useContext(CalculatorContext);
 	const { voyageConfig } = calculatorContext;
+	const { qpConfig, applyQp } = React.useContext(UserPrefsContext);
 
 	const { requests, setRequests, results, setResults } = props;
 
 	const [activeIndex, setActiveIndex] = React.useState<number>(0);
 	const [trackerId, setTrackerId] = React.useState<number>(NEW_TRACKER_ID);
 
+	// Full roster (pre-filtering but post-QP) is needed by lineup editor
+	const fullRoster = React.useMemo<IVoyageCrew[]>(() => {
+		return calculatorContext.crew.map(crew => {
+			if (qpConfig.enabled) {
+				return applyQp(crew, voyageConfig) as IVoyageCrew;
+			}
+			return oneCrewCopy(crew) as IVoyageCrew;
+		});
+	}, [calculatorContext.crew, qpConfig]);
+
 	// In-game voyage crew picker ignores frozen crew, active shuttlers, and active voyagers
+	//	Must be based on non-QP full roster for crew finder to sort properly
 	const idleRoster = React.useMemo<IVoyageCrew[]>(() => {
 		return calculatorContext.crew.filter(
 			c => c.immortal <= 0 && c.active_status !== 2 && c.active_status !== 3
@@ -136,6 +152,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 					confidenceState={result.confidenceState ?? 0} estimateResult={estimateResult}
 					dismissResult={dismissResult}
 					addEditedResult={addResult}
+					fullRoster={fullRoster}
 					idleRoster={idleRoster}
 				/>
 			);
@@ -329,6 +346,14 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		worker.addEventListener('message', message => {
 			if (!message.data.inProgress) {
 				const estimate = message.data.result;
+				// Add vpDetails to estimate
+				if (voyageConfig.voyage_type === 'encounter') {
+					const eventCrewBonuses: number[] = voyageConfig.crew_slots.map(cs =>
+						getCrewEventBonus(voyageConfig, cs.crew)
+					);
+					const seconds: number = estimate.refills[0].result*60*60;
+					estimate.vpDetails = calcVoyageVP(seconds, eventCrewBonuses);
+				}
 				result.name = formatTime(estimate.refills[0].result, t);
 				if (result.proposal) result.proposal.estimate = estimate;
 				result.confidenceState = 2;

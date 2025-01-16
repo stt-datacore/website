@@ -51,6 +51,7 @@ export interface IVoyageRequest {
 	type: 'calculation' | 'edit' | 'custom';
 	voyageConfig: IVoyageInputConfig;
 	bestShip: IBestVoyageShip;
+	consideredCrew: IVoyageCrew[];
 	calcHelper?: any;
 };
 

@@ -19,7 +19,7 @@ export const ErrorPane = (props: ErrorPaneProps) => {
 	const renderInputOptions = () => {
 		if (!request.calcHelper) return <></>;
 		const inputs = Object.entries(request.calcHelper.calcOptions).map(entry => entry[0]+': '+entry[1]);
-		inputs.unshift('considered crew: '+request.calcHelper.consideredCrew.length);
+		inputs.unshift('considered crew: '+request.consideredCrew.length);
 		return (<>{inputs.join(', ')}</>);
 	};
 

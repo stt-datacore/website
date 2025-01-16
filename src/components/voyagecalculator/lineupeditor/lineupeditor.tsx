@@ -5,11 +5,11 @@ import {
 	Loader
 } from 'semantic-ui-react';
 
-import CONFIG from '../../CONFIG';
-
 import { PlayerCrew } from '../../../model/player';
 import { Ship } from '../../../model/ship';
-import { Estimate, IVoyageCalcConfig } from '../../../model/voyage';
+import { Estimate, IVoyageCalcConfig, IVoyageCrew } from '../../../model/voyage';
+
+import CONFIG from '../../CONFIG';
 
 import { CalculatorContext } from '../context';
 
@@ -31,13 +31,14 @@ type LineupEditorProps = {
 	trigger: ILineupEditorTrigger | undefined;
 	cancelTrigger: () => void;
 	ship?: Ship;
+	roster: IVoyageCrew[];
 	control?: IControlVoyage;
-	commitVoyage: (config: IVoyageCalcConfig, ship: Ship, estimate: Estimate) => void;
+	commitVoyage: (config: IVoyageCalcConfig, estimate: Estimate) => void;
 };
 
 export const LineupEditor = (props: LineupEditorProps) => {
 	const { voyageConfig } = React.useContext(CalculatorContext);
-	const { trigger, cancelTrigger, ship, control, commitVoyage } = props;
+	const { trigger, cancelTrigger, ship, roster, control, commitVoyage } = props;
 
 	const [prospectiveCrewSlots, setProspectiveCrewSlots] = React.useState<IProspectiveCrewSlot[] | undefined>(control?.config.crew_slots);
 	const [prospectiveEstimate, setProspectiveEstimate] = React.useState<Estimate | undefined>(control?.estimate);
@@ -92,6 +93,7 @@ export const LineupEditor = (props: LineupEditorProps) => {
 			<React.Fragment>
 				{activeView === 'crewpicker' && (
 					<AlternateCrewPicker
+						roster={roster}
 						setAlternate={seekSeatForAlternate}
 					/>
 				)}
@@ -176,8 +178,8 @@ export const LineupEditor = (props: LineupEditorProps) => {
 	}
 
 	function saveVoyage(): void {
-		if (!ship || !prospectiveEstimate) return;
-		commitVoyage(prospectiveConfig as IVoyageCalcConfig, ship, prospectiveEstimate);
+		if (!prospectiveEstimate) return;
+		commitVoyage(prospectiveConfig as IVoyageCalcConfig, prospectiveEstimate);
 		resetVoyage();
 		dismissEditor();
 	}

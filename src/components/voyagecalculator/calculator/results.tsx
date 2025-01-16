@@ -10,8 +10,7 @@ import {
 } from 'semantic-ui-react';
 
 import { Voyage } from '../../../model/player';
-import { Ship } from '../../../model/ship';
-import { Estimate, IBestVoyageShip, IProposalEntry, IResultProposal, IVoyageCalcConfig, IVoyageCrew, IVoyageRequest, IVoyageResult } from '../../../model/voyage';
+import { Estimate, IProposalEntry, IResultProposal, IVoyageCalcConfig, IVoyageCrew, IVoyageRequest, IVoyageResult } from '../../../model/voyage';
 import { GlobalContext } from '../../../context/globalcontext';
 import { formatTime } from '../../../utils/voyageutils';
 
@@ -21,13 +20,13 @@ import { SyncState } from '../../voyagehistory/utils';
 
 import { CalculatorContext } from '../context';
 import { CIVASMessage } from '../civas';
+import { getCrewEventBonus, getCrewTraitBonus } from '../utils';
 import { CalculatorState } from '../helpers/calchelpers';
 import { ILineupEditorTrigger, LineupEditor } from '../lineupeditor/lineupeditor';
 import { LineupViewerAccordion } from '../lineupviewer/lineup_accordion';
 import { QuipmentProspectAccordion } from '../quipment/quipmentprospects';
 import { SkillCheckAccordion } from '../skillcheck/accordion';
 import VoyageStatsAccordion from '../stats/stats_accordion';
-import { getCrewEventBonus, getCrewTraitBonus } from '../utils';
 
 export type ResultPaneProps = {
 	resultId: string;
@@ -44,6 +43,7 @@ export type ResultPaneProps = {
 	dismissResult: (resultId: string) => void;
 	addEditedResult: (request: IVoyageRequest, result: IVoyageResult) => void;
 	idleRoster: IVoyageCrew[];
+	fullRoster: IVoyageCrew[];
 };
 
 export const ResultPane = (props: ResultPaneProps) => {
@@ -60,7 +60,8 @@ export const ResultPane = (props: ResultPaneProps) => {
 		confidenceState, estimateResult,
 		dismissResult,
 		addEditedResult,
-		idleRoster
+		idleRoster,
+		fullRoster
 	} = props;
 
 	const [editorTrigger, setEditorTrigger] = React.useState<ILineupEditorTrigger | undefined>(undefined);
@@ -109,7 +110,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 			);
 		}
 		const inputs: string[] = Object.entries(request.calcHelper.calcOptions).map(entry => entry[0]+': '+entry[1]);
-		inputs.unshift('considered crew: '+request.calcHelper.consideredCrew.length);
+		inputs.unshift('considered crew: '+request.consideredCrew.length);
 		return (
 			<React.Fragment>
 				Calculated by <b>{request.calcHelper.calcName}</b> calculator ({inputs.join(', ')}){` `}
@@ -202,15 +203,15 @@ export const ResultPane = (props: ResultPaneProps) => {
 						roster={idleRoster}
 						rosterType={rosterType}
 						initialExpand={true}
-						launchLineupEditor={(trigger: ILineupEditorTrigger) => setEditorTrigger(trigger)}
 					/>
 					<LineupEditor key={resultId}
 						id={`${resultId}/lineupeditor`}
 						trigger={editorTrigger}
 						cancelTrigger={() => setEditorTrigger(undefined)}
 						ship={request.bestShip.ship}
+						roster={fullRoster}
 						control={{ config: voyageConfig, estimate: proposal.estimate }}
-						commitVoyage={createResultFromEdit}
+						commitVoyage={(voyageConfig: IVoyageCalcConfig, estimate: Estimate) => createResultFromEdit(request, voyageConfig, estimate)}
 					/>
 					<SkillCheckAccordion
 						voyageConfig={voyageConfig}
@@ -230,16 +231,14 @@ export const ResultPane = (props: ResultPaneProps) => {
 		</React.Fragment>
 	);
 
-	function createResultFromEdit(voyageConfig: IVoyageCalcConfig, ship: Ship, estimate: Estimate): void {
+	function createResultFromEdit(request: IVoyageRequest, voyageConfig: IVoyageCalcConfig, estimate: Estimate): void {
 		const requestId: string = 'request-' + Date.now();
 		const editedRequest: IVoyageRequest = {
 			id: requestId,
 			type: 'edit',
-			voyageConfig,
-			bestShip: {
-				ship,
-				archetype_id: ship.archetype_id!
-			} as IBestVoyageShip
+			voyageConfig: request.voyageConfig,
+			bestShip: request.bestShip,
+			consideredCrew: fullRoster
 		};
 		const entries: IProposalEntry[] = [];
 		let crewTraitBonus: number = 0, eventCrewBonus: number = 0;
