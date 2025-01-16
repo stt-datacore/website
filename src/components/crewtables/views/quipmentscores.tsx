@@ -6,6 +6,7 @@ import { Table } from "semantic-ui-react";
 import { QuipmentScores } from "../../../model/crew";
 import { gradeToColor, numberToGrade, qbitsToSlots, skillToShort } from "../../../utils/crewutils";
 import { TranslateMethod } from "../../../model/player";
+import { GlobalContext } from "../../../context/globalcontext";
 
 
 
@@ -48,6 +49,7 @@ export const getQuipmentTableConfig = (t: TranslateMethod, excludeQBits?: boolea
 }
 
 export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
+    const { t } = React.useContext(GlobalContext).localized;
     const { excludeGrade, excludeSpecialty, excludeQBits, excludeSkills, crew, top } = props;
 
     const quipment_score = crew.quipment_score ?? 0;
@@ -103,11 +105,11 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
                 crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
                 }>
                 <div>
-                    {crew.immortal !== -1 ? 'N/A' : crew.q_bits}
+                    {crew.immortal !== -1 ? 'N/A' : crew.q_bits.toLocaleString()}
                 </div>
                 {crew.immortal === -1 &&
                 <div style={{fontSize:"0.8em"}}>
-                    ({qbslots} Slot{qbslots != 1 ? 's' : ''})
+                    ({t('base.n_slots', { n: `${qbslots}`})})
                 </div>}
             </div> || <>N/A</>}
         </Table.Cell>}

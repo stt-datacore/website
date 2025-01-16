@@ -51,7 +51,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     const mostRecentDate = new Date(
         continuum_missions[continuum_missions.length - 1].discover_date
     );
-    
+
     const missionId = continuum_missions[continuum_missions.length - 1].id;
     const missionUrl = `/structured/continuum/${missionId}.json`;
 
@@ -69,7 +69,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             for (let i = 0; i < mission.quests.length; i++) {
                 if (mission.quests[i]) {
                     b[i] = remoteQuests.some(rq => rq.id === (mission.quests as Quest[])[i].id);
-                }                
+                }
             }
             return b;
         }
@@ -90,7 +90,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         }
 
         if (remoteQuests.length) {
-            if (value.quests) {                
+            if (value.quests) {
                 for (let rem of remoteQuests) {
                     let f = value.quests?.findIndex(q => q.id === rem.id);
                     if (f !== -1) {
@@ -120,7 +120,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     const [missionConfig, setMissionConfig] = useStateWithStorage<QuestFilterConfig>('continuum/missionConfig', { mastery: 0, idleOnly: true, showAllSkills: false, includeCurrentQp: true }, { rememberForever: true });
     const [activeConfig, setActiveConfig] = React.useState<QuestFilterConfig>(missionConfig);
-      
+
     const [internalSolverResults, internalSetSolverResults] = React.useState<QuestSolverCacheItem[]>([]);
 
     const getCurrentKey = () => {
@@ -230,7 +230,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 f.q_bits ??= 0;
                 if (!f.immortal) return false;
                 if (!considerFrozen && f.immortal > 0) return false;
-                if (qpOnly && f.q_bits < 100) return false; 
+                if (qpOnly && f.q_bits < 100) return false;
                 return true;
             }).sort((a, b) => a.immortal - b.immortal);
 
@@ -248,7 +248,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 return a.name.localeCompare(b.name);
             })
 
-            setMissionPool(crew);            
+            setMissionPool(crew);
             setSelCrew(selCrew?.filter(f => crew?.some(c => c.id === f)));
         }
     }, [missionConfig, context]);
@@ -276,7 +276,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
     React.useEffect(() => {
         if (!!mission?.quests?.length) {
-            setQuestId(undefined);            
+            setQuestId(undefined);
             setTimeout(() => setQuestId(questId ?? 0));
         }
     }, [mission]);
@@ -319,7 +319,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                             });
                         }
                         else if (fremote && mission?.quests) {
-                            result.quests[i] = fremote.quest;                            
+                            result.quests[i] = fremote.quest;
                         }
                     }
                 }
@@ -360,7 +360,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
 
         let rq = [ ...remoteQuests ];
         let fi = rq.findIndex(f => f.id === quest.id);
-        
+
         if (fi !== -1) {
             rq[fi].quest.challenges = quest.challenges;
             rq[fi].quest = quest;
@@ -386,7 +386,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     }, [mission, quest, remoteQuests]);
 
     /* Render */
-    
+
     const solverResults = getSolverResults()?.result;
     const boardFail = solverResults?.failed?.filter(fid => quest?.challenges?.find(ch => ch.id === fid)?.children?.length === 0)?.length === quest?.challenges?.filter(ch => !ch.children?.length)?.length;
 
@@ -512,7 +512,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     }, [missionConfig, quest, highlighted]);
 
     return (
-        <>        
+        <>
             <div>
                 <Notification
                     header={t('global.work_in_progress.title')}
@@ -526,7 +526,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                 />
 
                 <QuestImportComponent
-                    currentHasRemote={currentHasRemote}                    
+                    currentHasRemote={currentHasRemote}
                     setQuest={setRemoteQuest}
                     quest={quest}
                     questId={quest?.id}
@@ -584,7 +584,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                             justifyContent: "center",
                             textAlign: "center"
                         }}>
-                            
+
                             <div style={{
                                 display: "flex",
                                 flexDirection: "row",
@@ -606,7 +606,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                         textAlign: "center"
                                     }}
                                 >
-                                    
+
                                 <ItemDisplay
                                         src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
                                         size={64}
@@ -617,7 +617,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                         />
                                     <i style={{marginTop: "0.25em"}}>{crew.name}</i>
                                 </div>
-                            })                            
+                            })
                             }
                             </div>
                             <CrewDropDown pool={missionPool}
@@ -632,9 +632,9 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                 multiple={true}
                                 maxSelection={3}
                                 />
-                            
+
                         </div>
-                        
+
                         <div style={{ justifyContent: "center", alignItems: "center", display: "flex", flexDirection: "column" }}>
                             <QuestSolverComponent
                                 setResults={setSolverResults}

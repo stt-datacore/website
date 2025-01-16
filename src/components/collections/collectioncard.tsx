@@ -5,7 +5,7 @@ import { Progress, Icon, Image } from "semantic-ui-react";
 
 import { BuffBase, PlayerCollection, Reward } from "../../model/player";
 import { CiteInventory, makeCiteNeeds } from "../../utils/collectionutils";
-import { formatColString } from "./overview";
+import { CollectionsContext, formatColString } from "./context";
 import { RewardsGrid } from "../crewtables/rewards";
 
 export interface CollectionCardProps {
@@ -21,6 +21,9 @@ export interface CollectionCardProps {
 
 export const CollectionCard = (props: CollectionCardProps) => {
     const context = React.useContext(GlobalContext);
+    const colContext = React.useContext(CollectionsContext);
+    const { modalInstance, setModalInstance } = colContext;
+    const { t } = context.localized;
     const { style, ownedCites } = props;
 
     const {
@@ -30,7 +33,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
         setMapFilter,
         setSearchFilter,
     } = props;
-    
+
     const { collection } = col;
 
     const honorQ = ownedCites?.map(o => {
@@ -40,13 +43,13 @@ export const CollectionCard = (props: CollectionCardProps) => {
             }
             else {
                 return o.quantity * o.cost;
-            }            
+            }
         }
         return 0;
     }).reduce((p, n) => p + n, 0) ?? 0;
 
     const neededCost = Math.max((collection.neededCost ?? 0) - honorQ, 0);
-    const allStars = !col.neededStars;
+    const allStars = !col.neededStars?.some(star => !!star);
 
     if (!collection?.totalRewards || !collection.milestone) return <></>;
     const rewards =
@@ -90,11 +93,12 @@ export const CollectionCard = (props: CollectionCardProps) => {
                 />
                 <h2
                     onClick={(e) => {
-                        setSearchFilter("");
-                        setMapFilter({
-                            ...(mapFilter ?? {}),
-                            collectionsFilter: [collection.id],
-                        });
+                        setModalInstance({ collection, pageId: 'collections/card' });
+                        // setSearchFilter("");
+                        // setMapFilter({
+                        //     ...(mapFilter ?? {}),
+                        //     collectionsFilter: [collection.id],
+                        // });
                     }}
                     style={{
                         textDecoration: "underline",
@@ -113,17 +117,17 @@ export const CollectionCard = (props: CollectionCardProps) => {
                 </i>
                 <hr style={{ width: "16em" }}></hr>
                 <i style={{ fontSize: "0.9em" }}>
-                    {collection.needed} needed for rewards:
+                    {t('collections.n_needed_for_rewards', { n: `${collection.needed}`})}
                 </i>
                 <div style={{ margin: "0.5em 0 0.5em 0" }}>
                     <RewardsGrid wrap={true} rewards={rewards} />
                 </div>
                 {!props.brief && <React.Fragment>
                     <i style={{ fontSize: "0.9em" }}>
-                    {collection.owned} / {collection.crew?.length} Owned
+                    {t('items.n_owned', { n: `${collection.owned} / ${collection.crew?.length}`})}
                 </i>
                 <i style={{ fontSize: "0.9em" }}>
-                    Progress to next:{" "}
+                    {t('collections.progress_to_next')}:{" "}
                     {typeof collection?.milestone?.goal === "number" &&
                         collection?.milestone?.goal > 0
                         ? `${collection.progress} / ${collection.milestone.goal}`
@@ -133,7 +137,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
                 {crewhave >= crewneed && (!!neededCost || !allStars) && (
                     <div style={{ marginTop: "0.5em" }}>
                         <i style={{ fontSize: "0.9em" }}>
-                            Citation cost to next:
+                            {t('collections.citation_cost_to_next')}:
                             <img
                                 src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
                                 style={{ width: "16px", verticalAlign: "text-bottom" }}
@@ -187,9 +191,9 @@ export const CollectionCard = (props: CollectionCardProps) => {
                             color: "lightgreen",
                         }}
                     >
-                        {allStars && <>All crew required to reach the next milestone are already fully fused.</>}
-                        {!allStars && <>All remaining required fuses are covered by honorable citations you already own.</>}
-                        
+                        {allStars && <>{t('collections.alerts.crew_already_fused')}</>}
+                        {!allStars && <>{t('collections.alerts.fuses_covered_by_cites')}</>}
+
                     </i>
                 )}
 
@@ -198,11 +202,10 @@ export const CollectionCard = (props: CollectionCardProps) => {
                         className="ui segment"
                         style={{ color: "salmon", textAlign: "center", margin: "0.5em" }}
                     >
-                        You need to recruit {crewneed - crewhave} more crew to reach the
-                        next goal.
+                        {t('collections.alerts.crew_recruit_need_n', { n: `${crewneed - crewhave}`})}
                     </i>
                 )}
-                
+
                 </React.Fragment>}
             </div>
         </>

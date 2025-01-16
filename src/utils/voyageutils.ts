@@ -1,7 +1,9 @@
 import CONFIG from '../components/CONFIG';
 import { CrewMember, BaseSkills, Skill } from '../model/crew';
 import { AllBuffsCapHash, Player, PlayerCrew, TranslateMethod } from '../model/player';
-import { Estimate } from '../model/worker';
+import { AntimatterSeatMap } from '../model/voyage';
+import { Estimate } from "../model/voyage";
+import { skillSum } from './crewutils';
 
 export const formatTime = (time: number, t?: TranslateMethod): string => {
 
@@ -161,3 +163,96 @@ export function guessSkillsFromCrew<T extends CrewMember>(voyage: RawVoyageRecor
 
     return skills.slice(0, 2).map(sk => sk.skill as string);
 }
+
+export function lookupAMSeatsByTrait(trait: string) {
+    for (let ln of AntimatterSeatMap) {
+        if (ln.name == trait) {
+            return ln.skills;
+        }
+    }
+    return [];
+}
+
+export function lookupAMTraitsBySeat(skill: string) {
+    const results = [] as string[];
+	for (let ln of AntimatterSeatMap) {
+		if (ln.skills.includes(skill)) {
+			results.push(ln.name);
+		}
+	}
+	return results;
+}
+
+export interface SkillRarityReport<T extends CrewMember> {
+	skill: string;
+	position: number;
+	count: number;
+	score: number;
+	crew?: T[],
+	aggregate?: number;
+	data?: any;
+}
+
+export function getSkillOrderStats<T extends CrewMember>(
+	config: {
+		roster: T[],
+		returnCrew?: boolean,
+		computeAggregate?: boolean,
+		max?: number
+	}
+) {
+	const { roster, returnCrew, computeAggregate } = config;
+	const results: SkillRarityReport<T>[] = [];
+	const skills = Object.keys(CONFIG.SKILLS);
+
+	for (let skill of skills) {
+		for (let i = 0; i < 3; i++) {
+			let rf = roster.filter(f => f.skill_order.length > i && f.skill_order[i] == skill);
+			results.push({
+				skill,
+				count: rf.length,
+				position: i,
+				score: 0,
+				crew: returnCrew ? rf : undefined
+			});
+		}
+	}
+
+	const max = config.max || roster.length;
+
+	for (let i = 0; i < 3; i++) {
+		let pc = results.filter(f => f.position === i);
+		if (pc.length) {
+			pc.sort((a, b) => a.count - b.count);
+			pc.forEach((p) => p.score = p.count / max);
+			if (computeAggregate && returnCrew) {
+				for (let item of pc) {
+					item.aggregate = item.crew!.map(c => skillSum(Object.values(c.base_skills))).reduce((p, n) => p > n ? p : n, 0);
+				}
+			}
+		}
+	}
+
+	results.sort((a, b) => {
+		let r = 0;
+		if (!r) r = a.position - b.position;
+		if (!r) r = a.count - b.count;
+		if (!r) r = a.skill.localeCompare(b.skill);
+		return r;
+	});
+
+	return results;
+}
+
+export function getSkillOrderScore(crew: CrewMember, reports: SkillRarityReport<CrewMember>[]) {
+	let results = 0;
+	crew.skill_order.forEach((skill, index) => {
+		let data = reports.find(f => f.skill === skill && f.position === index);
+		if (data) {
+			results += (1 - data.score) * (index + 1);
+		}
+	});
+	//results /= crew.skill_order.length;
+	return results;
+}
+

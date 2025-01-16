@@ -38,40 +38,51 @@ interface ICrewArchetype {
 	};
 };
 
-interface IGameStrings {
+export interface TranslationData {
+	name: string;
+}
+
+export interface FlavorTranslationData extends TranslationData {
+	flavor: string;
+}
+
+export interface CollectionTranslationData extends TranslationData {
+	description: string;
+}
+
+export interface ShipTranslationData extends FlavorTranslationData {
+	actions: Action[];
+}
+
+
+export type GameStringHash<T extends TranslationData> = { [symbol: string]: T }
+
+interface ITraitStrings {
+	TRAIT_NAMES: TraitNames;
+	SHIP_TRAIT_NAMES: ShipTraitNames;
+};
+
+
+interface IGameStrings extends ITraitStrings {
 	TRAIT_NAMES: TraitNames;
 	SHIP_TRAIT_NAMES: ShipTraitNames;
 	CREW_ARCHETYPES: {
 		[symbol: string]: ICrewArchetype;
 	};
-	SHIP_ARCHETYPES: {
-		[symbol: string]: {
-			name: string;
-			flavor: string;
-			actions: Action[];
-		};
-	};
-	COLLECTIONS: {
-		[fakeSymbol: string]: {
-			name: string;
-			description: string;
-		};
-	};
-	ITEM_ARCHETYPES: {
-		[symbol: string]: {
-			name: string;
-			flavor: string;
-		};
-	};
+	SHIP_ARCHETYPES: GameStringHash<ShipTranslationData>;
+	COLLECTIONS: GameStringHash<CollectionTranslationData>;
+	ITEM_ARCHETYPES: GameStringHash<FlavorTranslationData>;
 };
 
 export interface ILocalizedData extends IGameStrings {
+	english: ITraitStrings;
 	language: SupportedLanguage;
 	setPreferredLanguage: (value: SupportedLanguage | undefined) => void;
 	translateCore: () => TranslatedCore;
 	translatePlayer: () => PlayerContextData;
 	t: TranslateMethod,
-	tfmt: JSXTranslateMethod
+	tfmt: JSXTranslateMethod,
+	//col: (key: string | number) => string;
 };
 
 const defaultGameStrings: IGameStrings = {
@@ -86,6 +97,7 @@ const defaultGameStrings: IGameStrings = {
 export const DefaultLocalizedData: ILocalizedData = {
 	language: 'en',
 	...defaultGameStrings,
+	english: defaultGameStrings,
 	setPreferredLanguage: () => false,
 	translateCore: () => { return {}; },
 	translatePlayer: () => { return {} as PlayerContextData; },
@@ -138,6 +150,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	const [fallbackMap, setFallbackMap] = React.useState<{[key: string]: string}>({});
 
 	const [gameStrings, setGameStrings] = React.useState<IGameStrings>(defaultGameStrings);
+	const [englishStrings, setEnglishStrings] = React.useState<ITraitStrings>(defaultGameStrings);
 
 	// // Localized strings sent to UI
 	// const [webStringMap, setWebStringMap] = useStateWithStorage<{[key: string]: string}>('localized/webstrings', {});
@@ -175,6 +188,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	const localizedData: ILocalizedData = {
 		...gameStrings,
+		english: englishStrings,
 		language,
 		setPreferredLanguage,
 		translateCore,
@@ -205,6 +219,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 		const translationResponse: Response = await fetch(`/structured/translation_${newLanguage}.json`);
 		const translationJson: TranslationSet = await translationResponse.json();
+
+		const englishResponse = newLanguage == 'en' ? undefined : await fetch(`/structured/translation_en.json`);
+		const englishJson: TranslationSet = englishResponse ? await englishResponse.json() : translationJson;
 
 		let newFallbackMap = null as any;
 
@@ -267,13 +284,18 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			ITEM_ARCHETYPES: itemArchetypes
 		};
 
+		const englishStrings: ITraitStrings = {
+			TRAIT_NAMES: englishJson.trait_names,
+			SHIP_TRAIT_NAMES: englishJson.ship_trait_names
+		};
+
 		if (newFallbackMap) {
 			setFallbackMap(makeWebstringMap(newFallbackMap));
 		}
 
 		setWebStringMap(makeWebstringMap(webStringsJson));
 		setGameStrings({...translatedGameStrings});
-
+		setEnglishStrings({...englishStrings});
 		setLanguage(newLanguage);
 	}
 
@@ -471,7 +493,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		return current;
 	}
 
-	function t(v: string, opts?: { [key: string]: string }) {
+	function t(v: string, opts?: { [key: string]: string | number }) {
 		opts ??= {};
 		if ("__gender" in opts && !!opts["__gender"] && typeof opts["__gender"] === 'string') {
 			let newkey = `${v}_${opts["__gender"]}`;
@@ -489,7 +511,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 					if (part.startsWith("{{") && part.endsWith("}}")) {
 						let key = part.slice(2, part.length - 2);
 						if (key in opts) {
-							finals.push(opts[key]);
+							finals.push(`${opts[key]}`);
 						}
 						else if (key in webStringMap) {
 							finals.push(webStringMap[key]);
@@ -511,7 +533,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		}
 	}
 
-	function tfmt(v: string, opts?: { [key: string]: string | JSX.Element }): JSX.Element {
+	function tfmt(v: string, opts?: { [key: string]: string | JSX.Element | number }): JSX.Element {
 		opts ??= {};
 		if ("__gender" in opts && !!opts["__gender"] && typeof opts["__gender"] === 'string') {
 			let newkey = `${v}_${opts["__gender"]}`;

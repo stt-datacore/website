@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Icon } from 'semantic-ui-react';
+import { Button, Checkbox, Form, Icon, Label, Step } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
@@ -9,12 +9,20 @@ import { IRetrievalContext, RetrievalContext } from './context';
 import { RetrievalCrew } from './crew';
 import { PolestarFilterModal } from './polestarfilter';
 import { PolestarProspectsModal } from './polestarprospects';
+import { MutualView } from './mutualview';
+import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import CONFIG from '../CONFIG';
+import { MarketAggregation } from '../../model/celestial';
+import { CelestialMarket } from './celestialmarket';
+import { GapTable } from '../gaptable';
 
 export const RetrievalKeystones = () => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
 
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[] | undefined>(undefined);
+	const [market, setMarket] = React.useState<MarketAggregation>({});
 
 	React.useEffect(() => {
 		const allKeystones = JSON.parse(JSON.stringify(globalContext.core.keystones)) as IKeystone[];
@@ -52,15 +60,25 @@ export const RetrievalKeystones = () => {
 		});
 
 		setAllKeystones([...allKeystones]);
+		reloadMarket();
 	}, []);
 
 	if (!allKeystones)
-		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> Loading...</div>);
+		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> {t('spinners.default')}</div>);
 
-	if (playerData)
-		return <KeystonesPlayer allKeystones={allKeystones} dbid={`${playerData.player.dbid}`} />;
+	return <ModePicker market={market} reloadMarket={reloadMarket} allKeystones={allKeystones} dbid={`${playerData?.player.dbid}`} />;
 
-	return <KeystonesNonPlayer allKeystones={allKeystones} />;
+	function reloadMarket() {
+		fetch('https://datacore.app/api/celestial-market')
+			.then((response) => response.json())
+			.then(market => {
+				setMarket(market);
+			})
+			.catch((e) => {
+				console.log(e);
+				if (!market) setMarket({});
+			});
+	}
 };
 
 const polestarTailorDefaults: IPolestarTailors = {
@@ -78,24 +96,107 @@ const crewFilterDefaults: ICrewFilters = {
 	collection: ''
 };
 
+type ModePickerMode = 'keystones' | 'mutual' | 'market';
+
+type ModePickerProps = {
+	allKeystones: IKeystone[];
+	dbid: string;
+	market: MarketAggregation;
+	reloadMarket: () => void;
+}
+
+const ModePicker = (props: ModePickerProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { playerData } = globalContext.player;
+	const { t } = globalContext.localized;
+	const { allKeystones, market, reloadMarket } = props;
+	//const dbid = props.dbid ? props.dbid?.toString() + '/' : '';
+	const dbid = props.dbid ? props.dbid?.toString() : '';
+	const [mode, setMode] = useStateWithStorage<ModePickerMode>(`${dbid}keystone_modePicker`, 'keystones');
+	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
+	React.useEffect(() => {
+		if (!playerData && mode === 'mutual') {
+			setMode('keystones');
+		}
+	}, [playerData, mode]);
+
+	return <>
+			<Step.Group fluid>
+				<Step style={{width: isMobile ? '100%' : '33%'}} key={`keystone_normal`} active={mode === 'keystones'} onClick={() => setMode('keystones')}>
+					<Step.Content>
+						<Step.Title>{t('retrieval.modes.retrieval')}</Step.Title>
+						<Step.Description>{t('retrieval.modes.retrieval_desc')}</Step.Description>
+					</Step.Content>
+				</Step>
+				{!!playerData && <Step style={{width: isMobile ? '100%' : '33%'}}  key={`keystone_mutual`} active={mode === 'mutual'} onClick={() => setMode('mutual')}>
+					<Step.Content>
+						<Step.Title>{t('retrieval.modes.mutual_polestar_calculator')}</Step.Title>
+						<Step.Description>{t('retrieval.modes.mutual_polestar_calculator_desc')}</Step.Description>
+					</Step.Content>
+				</Step>}
+				<Step style={{width: isMobile ? '100%' : '33%'}}  key={`celestial_market`} active={mode === 'market'} onClick={() => setMode('market')}>
+					<Step.Content>
+						<Step.Title>{t('retrieval.market.title')}
+							<Label as='a' corner='right' onClick={() => reloadMarket()}>
+								<Icon name='refresh' style={{ cursor: 'pointer' }} />
+							</Label>
+						</Step.Title>
+						<Step.Description>{t('retrieval.market.description')}</Step.Description>
+					</Step.Content>
+				</Step>
+            </Step.Group>
+
+			{!!playerData && <KeystonesPlayer market={market} reloadMarket={reloadMarket} mode={mode} dbid={dbid} allKeystones={allKeystones} />}
+			{!playerData && <KeystonesNonPlayer market={market} reloadMarket={reloadMarket} mode={mode} allKeystones={allKeystones} />}
+
+	</>
+}
+
 type KeystonesPlayerProps = {
 	allKeystones: IKeystone[];
 	dbid: string;
+	mode: ModePickerMode;
+	market: MarketAggregation;
+	reloadMarket: () => void;
 };
 
 const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { ITEM_ARCHETYPES, language, TRAIT_NAMES, t } = globalContext.localized;
 	const { playerData } = globalContext.player;
-
+	const { dbid, mode, market, reloadMarket } = props;
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[]>([]);
 	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[]>([]);
 
-	const [polestarTailors, setPolestarTailors] = useStateWithStorage<IPolestarTailors>(props.dbid+'retrieval/tailors', polestarTailorDefaults, { rememberForever: true });
-	const [crewFilters, setCrewFilters] = useStateWithStorage<ICrewFilters>(props.dbid+'retrieval/filters', crewFilterDefaults, { rememberForever: true });
-	const [wishlist, setWishlist] = useStateWithStorage<string[]>(props.dbid+'retrieval/wishlist', [], { rememberForever: true });
+	const [polestarTailors, setPolestarTailors] = useStateWithStorage<IPolestarTailors>(dbid+'retrieval/tailors', polestarTailorDefaults, { rememberForever: true });
+	const [crewFilters, setCrewFilters] = useStateWithStorage<ICrewFilters>(dbid+'retrieval/filters', crewFilterDefaults, { rememberForever: true });
+
+	const [wishlist, setWishlist] = useStateWithStorage<string[]>(dbid+'retrieval/wishlist', [], { rememberForever: true });
+	const [autoWish, setAutoWish] = useStateWithStorage<boolean>(dbid+'retrieval/auto_wishlist', false, { rememberForever: true });
+	const [autoWishes, setAutoWishes] = React.useState<string[]>([]);
 
 	React.useEffect(() => {
 		const allKeystones = JSON.parse(JSON.stringify(props.allKeystones)) as IKeystone[];
+		allKeystones.forEach((keystone) => {
+			if (ITEM_ARCHETYPES[keystone.symbol]) {
+				keystone.name = ITEM_ARCHETYPES[keystone.symbol].name;
+				keystone.flavor = ITEM_ARCHETYPES[keystone.symbol].flavor;
+				if (keystone.symbol.endsWith("_crate")) return;
+				if (keystone.symbol.startsWith("rarity_")) {
+					let r = Number(keystone.symbol.replace("rarity_", "").replace("_keystone", ""));
+					keystone.short_name = CONFIG.RARITIES[r].name;
+				}
+				else if (keystone.symbol.endsWith("_skill_keystone")) {
+					let skill = keystone.symbol.replace("_keystone", "");
+					keystone.short_name = CONFIG.SKILLS[skill];
+				}
+				else {
+					let trait = keystone.symbol.replace("_keystone", "");
+					keystone.short_name = TRAIT_NAMES[trait];
+				}
+			}
+		});
 
 		// Count owned constellations
 		const constellations = allKeystones.filter(k => k.type !== 'keystone') as IConstellation[];
@@ -127,15 +228,28 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 		});
 
 		setAllKeystones([...allKeystones]);
-	}, [props.allKeystones, playerData]);
+	}, [props.allKeystones, playerData, language]);
+
+	React.useEffect(() => {
+		if (playerData && autoWish) {
+			let autocrew = [...new Set(playerData.player.character.crew.filter(f => f.favorite).map(c => c.symbol))].sort();
+			setAutoWishes(autocrew);
+			return;
+		}
+		setAutoWishes([]);
+	}, [autoWish, playerData]);
 
 	const retrievalContext: IRetrievalContext = {
 		allKeystones,
+		autoWishes,
 		rosterCrew, setRosterCrew,
 		polestarTailors, setPolestarTailors,
 		getCrewFilter, setCrewFilter,
 		resetForm,
-		wishlist, setWishlist
+		wishlist,
+		setWishlist,
+		market,
+		reloadMarket
 	};
 
 	return (
@@ -146,7 +260,17 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 					<PolestarProspectsModal />
 				</Form.Group>
 			</Form>
-			<RetrievalCrew />
+			<Checkbox
+				style={{margin: '0.5em 0 1em 0'}}
+				label={t('retrieval.assume_in_game_favorites')}
+				type='checkbox'
+				checked={autoWish}
+				onChange={(e, { checked }) => setAutoWish(!!checked)}
+				/>
+			{/* {mode === 'keystones' && <GapTable />} */}
+			{mode === 'keystones' && <RetrievalCrew />}
+			{mode === 'mutual' && <MutualView dbid={dbid} />}
+			{mode === 'market' && <CelestialMarket dbid={dbid} />}
 		</RetrievalContext.Provider>
 	);
 
@@ -166,10 +290,14 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 
 type KeystonesNonPlayerProps = {
 	allKeystones: IKeystone[];
+	market: MarketAggregation;
+	mode: ModePickerMode;
+	reloadMarket: () => void;
 };
 
 const KeystonesNonPlayer = (props: KeystonesNonPlayerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { market, reloadMarket, mode } = props;
 	const { playerData } = globalContext.player;
 
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[]>([]);
@@ -201,16 +329,20 @@ const KeystonesNonPlayer = (props: KeystonesNonPlayerProps) => {
 
 	const retrievalContext: IRetrievalContext = {
 		allKeystones,
+		autoWishes: [],
 		rosterCrew, setRosterCrew,
 		polestarTailors, setPolestarTailors,
 		getCrewFilter, setCrewFilter,
 		resetForm,
-		wishlist, setWishlist
+		wishlist, setWishlist,
+		market,
+		reloadMarket
 	};
 
 	return (
 		<RetrievalContext.Provider value={retrievalContext}>
-			<RetrievalCrew />
+			{mode === 'keystones' && <RetrievalCrew />}
+			{mode === 'market' && <CelestialMarket />}
 		</RetrievalContext.Provider>
 	);
 

@@ -21,12 +21,11 @@ export interface SkillQuipmentScores {
     trait_limited: number;
 };
 
-export interface PowerLot {
-    power: Skill[];
-    lot: { [key: string]: EquipmentItem[] };
-    power_by_skill?: { [key: string]: Skill };
-    crew_power: number;
-    crew_by_skill: { [key: string]: Skill };
+export interface QuippedPower {
+    skill_quipment: { [key: string]: EquipmentItem[] };
+    skills_hash: BaseSkills;
+    aggregate_power: number;
+    aggregate_by_skill: { [key: string]: number };
 }
 
 export interface QuipmentScores {
@@ -37,12 +36,17 @@ export interface QuipmentScores {
     quipment_grades?: SkillQuipmentScores;
     voyage_quotient?: number;
     voyage_quotients?: SkillQuipmentScores;
-    q_lots?: PowerLot;
-    q_best_one_two_lots?: PowerLot;
-    q_best_two_three_lots?: PowerLot;
-    q_best_one_three_lots?: PowerLot;
-    q_best_three_lots?: PowerLot;
+    best_quipment?: QuippedPower;
+    best_quipment_1_2?: QuippedPower;
+    best_quipment_2_3?: QuippedPower;
+    best_quipment_1_3?: QuippedPower;
+    best_quipment_3?: QuippedPower;
 
+}
+
+export interface CapAchiever {
+    name: string
+    date: number
 }
 
 /**
@@ -99,11 +103,15 @@ export interface CrewMember extends QuipmentScores {
     kwipment: number[][] | number[];
     kwipment_expiration: number[][] | number[];
     q_bits: number;
-
+    skill_order: string[];
     /** Used internally, not part of incoming data */
     pickerId?: number;
     pairs?: Skill[][];
-    skill_order: string[];
+
+    price?: number;
+    sell_count?: number;
+    post_bigbook_epoch: boolean;
+    cap_achiever?: CapAchiever;
 }
 
 export interface EquipmentSlot {
@@ -162,14 +170,14 @@ export interface Skill {
     core: number;
     range_min: number;
     range_max: number;
-    skill?: PlayerSkill | string;
+    skill: PlayerSkill | string;
 }
 
 export interface ComputedSkill {
     core: number;
     min: number;
     max: number;
-    skill?: PlayerSkill | string;
+    skill: PlayerSkill | string;
 }
 
 export interface SkillsSummary {
@@ -185,13 +193,6 @@ export interface SkillsSummary {
     };
     tenAverage: number;
     maxPct: number;
-}
-
-export interface ComputedSkill {
-    core: number;
-    min: number;
-    max: number;
-    skill?: string;
 }
 
 export interface SkillData {
@@ -211,10 +212,34 @@ export interface Nickname {
     creator?: string;
 }
 
+export interface ShipRanks {
+    overall: number,
+    arena: number,
+    fbb: number,
+    kind: 'offense' | 'defense' | 'ship',
+    divisions: {
+        fbb: {
+            1?: number,
+            2?: number,
+            3?: number,
+            4?: number,
+            5?: number,
+            6?: number
+        },
+        arena: {
+            1?: number,
+            2?: number,
+            3?: number
+        }
+    }
+}
+
 export interface Ranks {
     voyRank: number;
     gauntletRank: number;
     chronCostRank: number;
+    traitRank: number;
+    ship?: ShipRanks;
     B_SEC?: number;
     A_SEC?: number;
     V_CMD_SEC?: number;

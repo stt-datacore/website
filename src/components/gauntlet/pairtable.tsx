@@ -4,7 +4,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { GauntletPairCard } from "./paircard";
 import { Gauntlet, PairGroup } from "../../model/gauntlets";
 import { Skill } from "../../model/crew";
-import { PlayerBuffMode } from "../../model/player";
+import { GauntletPlayerBuffMode, PlayerBuffMode } from "../../model/player";
 import CONFIG from "../CONFIG";
 
 
@@ -12,7 +12,7 @@ export interface GauntletPairTableProps {
     pairGroup: PairGroup;
     currContest: boolean;
     gauntlet: Gauntlet;
-    boostMode: PlayerBuffMode;
+    boostMode: GauntletPlayerBuffMode;
     onlyActiveRound?: boolean;
 }
 
@@ -67,15 +67,15 @@ export const GauntletPairTable = (props: GauntletPairTableProps) => {
             }}>
             {pairGroup.pair.map((p, ik) => {
                 return (
-                    <div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
-                        <img key={ik} src={getSkillUrl(p)} style={{ height: "1em", maxWidth: "1em", marginLeft: "0.25em", marginRight: "0.25em" }} /> {skillToShort(shortToSkill(p, true)!)} {ik === 0 && <span>&nbsp;/&nbsp;</span>}
+                    <div key={ik} style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
+                        <img src={getSkillUrl(p)} style={{ height: "1em", maxWidth: "1em", marginLeft: "0.25em", marginRight: "0.25em" }} /> {skillToShort(shortToSkill(p, true)!)} {ik === 0 && <span>&nbsp;/&nbsp;</span>}
                     </div>
                 )
             })}
         </div>
         {pairGroup.crew.map((crew) => (
             <GauntletPairCard
-                key={`pairCardCrew_${crew.symbol}_${pairGroup.pair.join("_")}`}
+                key={`pairCardCrew_${crew.id}_${pairGroup.pair.join("_")}`}
                 crew={crew}
                 gauntlet={gauntlet}
                 pair={pairGroup.pair}
