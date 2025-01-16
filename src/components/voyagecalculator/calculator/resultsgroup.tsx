@@ -18,6 +18,8 @@ import { CalculatorState } from '../helpers/calchelpers';
 
 import { ErrorPane } from './errorpane';
 import { ResultPane } from './results';
+import { calcVoyageVP } from '../../../utils/voyagevp';
+import { getCrewEventBonus } from '../utils';
 
 interface IBestValues {
 	median: number;
@@ -329,6 +331,14 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		worker.addEventListener('message', message => {
 			if (!message.data.inProgress) {
 				const estimate = message.data.result;
+				// Add vpDetails to estimate
+				if (voyageConfig.voyage_type === 'encounter') {
+					const eventCrewBonuses: number[] = voyageConfig.crew_slots.map(cs =>
+						getCrewEventBonus(voyageConfig, cs.crew)
+					);
+					const seconds: number = estimate.refills[0].result*60*60;
+					estimate.vpDetails = calcVoyageVP(seconds, eventCrewBonuses);
+				}
 				result.name = formatTime(estimate.refills[0].result, t);
 				if (result.proposal) result.proposal.estimate = estimate;
 				result.confidenceState = 2;

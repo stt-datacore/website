@@ -202,7 +202,6 @@ export const ResultPane = (props: ResultPaneProps) => {
 						roster={idleRoster}
 						rosterType={rosterType}
 						initialExpand={true}
-						launchLineupEditor={(trigger: ILineupEditorTrigger) => setEditorTrigger(trigger)}
 					/>
 					<LineupEditor key={resultId}
 						id={`${resultId}/lineupeditor`}
