@@ -56,8 +56,8 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 						methods = ['moonshot'];
 					else if (strategy === 'peak-antimatter')
 						methods = ['antimatter'];
-					else if (strategy === 'peak-vp')
-						methods = ['total_vp'];
+					else if (strategy === 'peak-vp' || strategy === 'featured-vp')
+						methods = ['vp'];
 					sortLineups(datacoreSorter, lineups, estimates, methods)
 						.then(sorted => {
 							output(JSON.parse(JSON.stringify(sorted)), false);

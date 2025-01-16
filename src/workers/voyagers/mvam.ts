@@ -378,6 +378,13 @@ export const MultiVectorAssault = (
 			return b.traitValue - a.traitValue;
 		};
 		const favorVP = (a: IVoyagerScore, b: IVoyagerScore) => {
+			if (options.strategy === 'featured-vp') {
+				if (a.eventScore !== b.eventScore) {
+					if (a.eventScore === 0.30) return -1;
+					if (b.eventScore === 0.30) return 1;
+				}
+				return b.score - a.score;
+			}
 			if (a.eventScore === b.eventScore)
 				return b.score - a.score;
 			return b.eventScore - a.eventScore;
@@ -405,7 +412,7 @@ export const MultiVectorAssault = (
 		// 	options.strategy === 'peak-antimatter' ? favorAntimatter :
 		// 		(options.strategy === 'peak-vp' ? favorVP : favorScore)
 		// );
-		boostedScores.sort(options.strategy === 'peak-vp' ? favorVP : favorScore);
+		boostedScores.sort(['peak-vp', 'featured-vp'].includes(options.strategy ?? '') ? favorVP : favorScore);
 		return seatCrew(primedRoster, boostedScores, !!options.debugCallback);
 	}
 
