@@ -13,7 +13,7 @@ import { formatTime } from '../../../utils/voyageutils';
 
 import { CalculatorContext } from '../context';
 import { getShipTraitBonus } from '../utils';
-import { Helper } from '../helpers/Helper';
+import { Helper, HelperProps } from '../helpers/Helper';
 import { CalculatorState, CALCULATORS } from '../helpers/calchelpers';
 
 import { CrewOptions } from './crewoptions';
@@ -147,8 +147,8 @@ export const CalculatorForm = () => {
 	function startCalculation(): void {
 		if (!voyageConfig || !bestShip || !consideredCrew || !userPrefs.calcOptions) return;
 
-		const helperConfig = {
-			voyageConfig, bestShip, consideredCrew, calcOptions: userPrefs.calcOptions,
+		const helperConfig: HelperProps = {
+			calcOptions: userPrefs.calcOptions,
 			resultsCallback: handleCalcResults,
 			errorCallback: handleCalcError
 		};
@@ -162,6 +162,7 @@ export const CalculatorForm = () => {
 					type: 'calculation',
 					voyageConfig,
 					bestShip,
+					consideredCrew,
 					calcHelper
 				};
 				requests.push(request);
@@ -171,7 +172,7 @@ export const CalculatorForm = () => {
 					name: t('spinners.calculating'),
 					calcState: CalculatorState.InProgress
 				});
-				calcHelper.start(requestId);
+				calcHelper.start(request);
 			}
 		});
 		setRequests([...requests]);

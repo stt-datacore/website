@@ -1,7 +1,7 @@
 import '../../../typings/worker';
 import { UnifiedWorker } from '../../../typings/worker';
 import { PlayerCrew } from '../../../model/player';
-import { IProposalEntry, IResultProposal, IVoyageCrew } from '../../../model/voyage';
+import { IProposalEntry, IResultProposal, IVoyageCrew, IVoyageRequest } from '../../../model/voyage';
 import { GameWorkerOptions, JohnJayBest } from '../../../model/worker';
 import { getCrewTraitBonus, getCrewEventBonus } from '../utils';
 import { CalculatorState } from './calchelpers';
@@ -22,14 +22,14 @@ export class USSJohnJayHelper extends Helper {
 		};
 	}
 
-	start(requestId: string): void {
+	start(request: IVoyageRequest): void {
 		this.perf.start = performance.now();
 		this.calcState = CalculatorState.InProgress;
 
 		const USSJohnJayConfig = {
-			voyage_description: this.voyageConfig,
-			bestShip: this.bestShip,
-			roster: this.consideredCrew,
+			voyage_description: request.voyageConfig,
+			bestShip: request.bestShip,
+			roster: request.consideredCrew,
 			options: {
 				...this.calcOptions,
 				assembler: this.calculator
@@ -43,12 +43,12 @@ export class USSJohnJayHelper extends Helper {
 				this.perf.end = performance.now();
 				if (message.data.result.error) {
 					this.calcState = CalculatorState.Error;
-					this.errorCallback(requestId, message.data.result.error);
+					this.errorCallback(request.id, message.data.result.error);
 				}
 				else {
-					const results = this._messageToResults(message.data.result);
+					const results = this._messageToResults(request, message.data.result);
 					this.calcState = CalculatorState.Done;
-					this.resultsCallback(requestId, results, CalculatorState.Done);
+					this.resultsCallback(request.id, results, CalculatorState.Done);
 				}
 			}
 		});
@@ -56,15 +56,15 @@ export class USSJohnJayHelper extends Helper {
 		this.calcWorker = worker;
 	}
 
-	_messageToResults(bests: JohnJayBest[]): IResultProposal[] {
+	_messageToResults(request: IVoyageRequest, bests: JohnJayBest[]): IResultProposal[] {
 		return bests.map(best => {
 			const entries: IProposalEntry[] = [];
 			let crewTraitBonus: number = 0, eventCrewBonus: number = 0;
-			this.voyageConfig.crew_slots.forEach((cs, slotId) => {
-				const crew: IVoyageCrew | undefined = this.consideredCrew.find(c => c.id === best.crew[slotId].id);
+			request.voyageConfig.crew_slots.forEach((cs, slotId) => {
+				const crew: IVoyageCrew | undefined = request.consideredCrew.find(c => c.id === best.crew[slotId].id);
 				if (crew) {
-					crewTraitBonus += getCrewTraitBonus(this.voyageConfig, crew as PlayerCrew, cs.trait);
-					eventCrewBonus += getCrewEventBonus(this.voyageConfig, crew as PlayerCrew);
+					crewTraitBonus += getCrewTraitBonus(request.voyageConfig, crew as PlayerCrew, cs.trait);
+					eventCrewBonus += getCrewEventBonus(request.voyageConfig, crew as PlayerCrew);
 					entries.push({
 						slotId,
 						choice: crew,
@@ -76,7 +76,7 @@ export class USSJohnJayHelper extends Helper {
 				entries,
 				estimate: best.estimate,
 				aggregates: best.skills,
-				startAM: this.bestShip.score + crewTraitBonus,
+				startAM: request.bestShip.score + crewTraitBonus,
 				eventCrewBonus
 			};
 		});

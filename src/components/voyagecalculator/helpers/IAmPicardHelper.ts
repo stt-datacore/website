@@ -2,7 +2,7 @@ import '../../../typings/worker';
 import { UnifiedWorker } from '../../../typings/worker';
 import { Skill } from '../../../model/crew';
 import { Aggregates, PlayerCrew, VoyageDescription } from '../../../model/player';
-import { IProposalEntry as VoyageSlotEntry, IResultProposal, IVoyageCalcConfig, IVoyageEventContent, Estimate } from '../../../model/voyage';
+import { IProposalEntry as VoyageSlotEntry, IResultProposal, IVoyageCalcConfig, IVoyageEventContent, Estimate, IVoyageRequest } from '../../../model/voyage';
 import { VoyageStatsConfig, ExportCrew, GameWorkerOptions } from '../../../model/worker';
 import { calcVoyageVP } from '../../../utils/voyagevp';
 import CONFIG from '../../CONFIG';
@@ -27,11 +27,11 @@ export class IAmPicardHelper extends Helper {
 		};
 	}
 
-	start(requestId: string): void {
+	start(request: IVoyageRequest): void {
 		this.perf.start = performance.now();
 		this.calcState = CalculatorState.InProgress;
 
-		const voyageConfig: IVoyageCalcConfig = JSON.parse(JSON.stringify(this.voyageConfig));
+		const voyageConfig: IVoyageCalcConfig = JSON.parse(JSON.stringify(request.voyageConfig));
 
 		// For limited support of encounter voyages:
 		//	Set crew traits to first event bonus trait
@@ -46,13 +46,13 @@ export class IAmPicardHelper extends Helper {
 		const IAmPicardConfig = {
 			searchDepth: this.calcOptions.searchDepth,
 			extendsTarget: this.calcOptions.extendsTarget,
-			shipAM: this.bestShip.score,
+			shipAM: request.bestShip.score,
 			skillPrimaryMultiplier: 3.5,
 			skillSecondaryMultiplier: 2.5,
 			skillMatchingMultiplier: 1.1,
 			traitScoreBoost: 200,
 			voyage_description: voyageConfig,
-			roster: this.consideredCrew
+			roster: request.consideredCrew
 		};
 
 		let bestScore = 0;
@@ -66,11 +66,11 @@ export class IAmPicardHelper extends Helper {
 					// ignore marginal gains (under 5 minutes)
 					if (score > bestScore + 1 / 12) {
 						bestScore = score;
-						this._finaliseIAPEstimate(requestId, result, true);
+						this._finaliseIAPEstimate(request, result, true);
 					}
 					// Done
 				} else {
-					this._finaliseIAPEstimate(requestId, result, false);
+					this._finaliseIAPEstimate(request, result, false);
 				}
 			}
 		});
@@ -179,7 +179,7 @@ export class IAmPicardHelper extends Helper {
 		return dataToExport;
 	}
 
-	_finaliseIAPEstimate(requestId: string, result: DataView, inProgress: boolean = false): void {
+	_finaliseIAPEstimate(request: IVoyageRequest, result: DataView, inProgress: boolean = false): void {
 
 		let entries = [] as VoyageSlotEntry[];
 		let aggregates = {} as Aggregates;
@@ -189,20 +189,20 @@ export class IAmPicardHelper extends Helper {
 
 		let config = {
 			numSims: inProgress ? 200 : 5000,
-			startAm: this.bestShip.score
+			startAm: request.bestShip.score
 		} as VoyageStatsConfig;
 
 		const eventCrewBonuses: number[] = [];
 
 		for (let i = 0; i < 12; i++) {
-			let crew = this.consideredCrew.find(c => c.id === result.getInt32(4 + i * 4, true));
+			let crew = request.consideredCrew.find(c => c.id === result.getInt32(4 + i * 4, true));
 			if (!crew)
 				continue;
 
 			let entry = {
 				slotId: i,
 				choice: crew,
-				hasTrait: crew?.traits.includes(this.voyageConfig.crew_slots[i].trait)
+				hasTrait: crew?.traits.includes(request.voyageConfig.crew_slots[i].trait)
 			} as VoyageSlotEntry;
 
 			for (let skill in CONFIG.SKILLS) {
@@ -216,10 +216,10 @@ export class IAmPicardHelper extends Helper {
 
 			entries.push(entry);
 
-			eventCrewBonuses.push(getCrewEventBonus(this.voyageConfig, crew as PlayerCrew));
+			eventCrewBonuses.push(getCrewEventBonus(request.voyageConfig, crew as PlayerCrew));
 		}
 
-		const { primary_skill, secondary_skill } = this.voyageConfig.skills;
+		const { primary_skill, secondary_skill } = request.voyageConfig.skills;
 		config.ps = aggregates[primary_skill];
 		config.ss = aggregates[secondary_skill];
 
@@ -237,7 +237,7 @@ export class IAmPicardHelper extends Helper {
 			if (!message.data.inProgress) {
 				const estimate: Estimate = message.data.result;
 				// Add vpDetails prop here to allow for post-sorting by VP details
-				if (this.voyageConfig.voyage_type === 'encounter') {
+				if (request.voyageConfig.voyage_type === 'encounter') {
 					const seconds: number = estimate.refills[0].result*60*60;
 					estimate.vpDetails = calcVoyageVP(seconds, eventCrewBonuses);
 				}
@@ -253,7 +253,7 @@ export class IAmPicardHelper extends Helper {
 					this.calcState = CalculatorState.Done;
 				}
 				// Array of IResultProposals is expected by callbacks
-				this.resultsCallback(requestId, [finalResult], inProgress ? CalculatorState.InProgress : CalculatorState.Done);
+				this.resultsCallback(request.id, [finalResult], inProgress ? CalculatorState.InProgress : CalculatorState.Done);
 			}
 		});
 		worker.postMessage(VoyageEstConfig);
