@@ -90,7 +90,7 @@ export const estimateLineups = (
 				}
 			}
 
-			if (options.strategy === 'peak-vp') {
+			if (options.strategy === 'peak-vp' || options.strategy === 'featured-vp') {
 				considered.sort((a, b) => {
 					if (a.vp === b.vp) {
 						if (a.coverage === b.coverage) {
