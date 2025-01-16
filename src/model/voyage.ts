@@ -1,4 +1,4 @@
-import { Helper } from '../components/voyagecalculator/helpers/Helper';
+// import { Helper } from '../components/voyagecalculator/helpers/Helper';
 import { VPDetails } from '../utils/voyagevp';
 import { BaseSkills } from './crew';
 import { Aggregates, CrewSlot, PlayerCrew, VoyageCrewSlot, VoyageSkills } from './player';
@@ -51,7 +51,7 @@ export interface IVoyageRequest {
 	type: 'calculation' | 'edit' | 'custom';
 	voyageConfig: IVoyageInputConfig;
 	bestShip: IBestVoyageShip;
-	calcHelper?: Helper;
+	calcHelper?: any;
 };
 
 export interface IBestVoyageShip {
