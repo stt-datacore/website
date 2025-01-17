@@ -23,7 +23,7 @@ export interface GauntletHeaderProps {
 
 export const GauntletHeader = (props: GauntletHeaderProps) => {
     const gauntletContext = React.useContext(GauntletContext);
-    const { viewMode, setViewMode, pane, setConfig, config, featuredGauntlet } = gauntletContext;
+    const { viewMode, setViewMode, pane, setConfig, config, featuredGauntlet, pairGroups } = gauntletContext;
     const { gauntlet } = props;
     const globalContext = React.useContext(GlobalContext);
 
@@ -42,25 +42,40 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
             for (let crew of featuredGauntlet.allCrew) {
                 if (seen.includes(crew.symbol)) continue;
                 seen.push(crew.symbol);
-                if (crew.ranks.gauntletRank <= 10) {
+                //if (crew.ranks.gauntletRank <= 10) {
                     if (buckets[0].length < 5) {
-                        buckets[0].push(crew);
+                        if ((pairGroups && pairGroups.some(pg => [0].includes(pg.crew.findIndex(fi => fi.id === crew.id))))
+                            || getCrewCrit(crew, featuredGauntlet) >= 45
+                            // || crew.ranks.gauntletRank <= 10
+                        )
+
+                            buckets[0].push(crew);
                     }
-                }
-                else if (crew.ranks.gauntletRank <= 20) {
-                    if (buckets[1].length < 10) {
-                        buckets[1].push(crew);
+                //}
+                //else if (crew.ranks.gauntletRank <= 20) {
+                    else if (buckets[1].length < 10) {
+                        if ((pairGroups && pairGroups.some(pg => [1, 2].includes(pg.crew.findIndex(fi => fi.id === crew.id))))
+                            || getCrewCrit(crew, featuredGauntlet) >= 45
+                            // || crew.ranks.gauntletRank <= 10
+                        )
+
+                            buckets[1].push(crew);
                     }
-                }
-                else if (crew.ranks.gauntletRank <= 50) {
-                    if (buckets[2].length < 10) {
-                        buckets[2].push(crew);
+                //}
+                //else if (crew.ranks.gauntletRank <= 50) {
+                    else if (buckets[2].length < 10) {
+                        if ((pairGroups && pairGroups.some(pg => [3, 4, 5].includes(pg.crew.findIndex(fi => fi.id === crew.id))))
+                            || getCrewCrit(crew, featuredGauntlet) >= 45
+                            // || crew.ranks.gauntletRank <= 10
+                        )
+
+                            buckets[2].push(crew);
                     }
-                }
+                //}
             }
             setBuckets(buckets);
         }
-    }, [featuredGauntlet]);
+    }, [featuredGauntlet, pairGroups]);
 
     let jp = [] as CrewMember[];
 
@@ -288,18 +303,18 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                         {buckets.map((bucket, idx) => {
                             let title = undefined as JSX.Element | undefined;
                             if (idx === 0) {
-                                title = <h2>{t('base.bigbook_tier')} {idx + 1} (1 - 10)</h2>;
+                                title = <h2>{t('base.bigbook_tier')} {idx + 1}</h2>;
                             }
                             else if (idx === 1) {
-                                title = <h3>{t('base.bigbook_tier')} {idx + 1} (11 - 20)</h3>;
+                                title = <h3>{t('base.bigbook_tier')} {idx + 1}</h3>;
                             }
                             else {
-                                title = <h4>{t('base.bigbook_tier')} {idx + 1} (21 - 50)</h4>;
+                                title = <h4>{t('base.bigbook_tier')} {idx + 1}</h4>;
                             }
                             return (<div
                                 className="ui segment"
                                 key={`bucket_${idx}`}
-                                style={{ ...flexCol, flexWrap: 'wrap', gap: '1em', textAlign: 'center' }}>
+                                style={{ ...flexCol, borderRadius: '16px', flexWrap: 'wrap', gap: '1em', textAlign: 'center' }}>
                                 {title}
                                 <div style={{ ...flexRow, flexWrap: 'wrap', gap: '1em', maxWidth: '50vw', justifyContent: 'space-between'}}>
                                     {bucket.map((c) => {
