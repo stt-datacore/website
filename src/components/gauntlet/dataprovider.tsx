@@ -1,5 +1,5 @@
 import React from "react";
-import { Gauntlet, GauntletViewMode, Opponent } from "../../model/gauntlets";
+import { Gauntlet, GauntletViewMode, Opponent, PairGroup } from "../../model/gauntlets";
 import { DefaultAdvancedGauntletSettings, GauntletPane, GauntletSettings, GauntletUserPrefs } from "../../utils/gauntlet";
 import { GlobalContext } from "../../context/globalcontext";
 import { useStateWithStorage } from "../../utils/storage";
@@ -24,6 +24,8 @@ export interface IGauntletContext {
     setSettings: (settings: GauntletSettings) => void;
     setFeaturedGauntlet: (value?: Gauntlet) => void;
     featuredGauntlet?: Gauntlet;
+    pairGroups?: PairGroup[];
+    setPairGroups: (value?: PairGroup[]) => void;
 }
 
 const DefaultUserPrefs: GauntletUserPrefs = {
@@ -47,13 +49,15 @@ const DefaultGauntletContext: IGauntletContext = {
     uniqueGauntlets: [],
     config: { ...DefaultUserPrefs },
     tops: 100,
+    pairGroups: [],
     setConfig: () => false,
     setViewMode: () => false,
     setSettings: () => false,
     setPane: () => false,
     setTops: () => false,
     refreshApiGauntlet: () => false,
-    setFeaturedGauntlet: () => false
+    setFeaturedGauntlet: () => false,
+    setPairGroups: () => false,
 }
 
 export const GauntletContext = React.createContext(DefaultGauntletContext);
@@ -89,8 +93,7 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
 
     const [gauntlets, setGauntlets] = React.useState<Gauntlet[]>(globalContext.core.gauntlets);
     const [uniqueGauntlets, setUniqueGauntlets] = React.useState<Gauntlet[]>(globalContext.core.gauntlets);
-    const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker>();
-    const [initialized, setInitialized] = React.useState(false);
+    const [pairGroups, setPairGroups] = React.useState<PairGroup[] | undefined>(undefined);
 
     React.useEffect(() => {
         refreshApiGauntlet();
@@ -138,6 +141,8 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
         setSettings,
         setFeaturedGauntlet,
         featuredGauntlet,
+        pairGroups,
+        setPairGroups,
         config: {
             ...config,
             settings
