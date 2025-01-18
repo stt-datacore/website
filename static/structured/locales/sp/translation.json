@@ -426,6 +426,7 @@
         }
     },
     "crew_views": {
+        "n_missions_to_next": "{{n}} misiones para la siguiente",
         "advanced_analysis": "Análisis Avanzado",
         "base": "Mostrar habilidades básicas",
         "crew_utility": "Mostrar utilidad para la tripulación",

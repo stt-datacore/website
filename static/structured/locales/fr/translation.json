@@ -426,6 +426,7 @@
         }
     },
     "crew_views": {
+        "n_missions_to_next": "{{n}} missions à suivre",
         "advanced_analysis": "Analyse Avancée",
         "base": "Afficher les compétences principles",
         "crew_utility": "Afficher d'utilité de l'équipier",

@@ -209,7 +209,18 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                         equipment={item} />
                 ))}
             </div>
-            {!!next && <div style={{textAlign: 'center', margin: '0 0.5em', fontSize: '0.8em'}}><Progress size='tiny' total={next} value={next - toNext} style={{marginBottom: '0px'}} />({next - toNext}/{next})</div>}
+            {!!next &&
+                <div style={{textAlign: 'center', margin: '0 0.5em', fontSize: '0.8em'}}>
+                <Progress
+                    progress={false}
+                    success={false}
+                    autoSuccess={false}
+                    size='tiny'
+                    total={next}
+                    value={next - toNext}
+                    style={{marginBottom: '0px'}} />
+                ({next - toNext}/{next})
+                </div>}
             </div>
         || <></>
 

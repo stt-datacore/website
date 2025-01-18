@@ -842,6 +842,16 @@ export function qbitsToSlots(q_bits: number | undefined) {
 	return 4;
 }
 
+export function missionsToNext(q_bits: number | undefined) {
+	// 100/250/500/1300
+	q_bits ??= 0;
+	if (q_bits < 100) return Math.ceil((100 - q_bits) / 25);
+	else if (q_bits < 200) return Math.ceil((200 - q_bits) / 25);
+	else if (q_bits < 500) return Math.ceil((500 - q_bits) / 25);
+	else if (q_bits < 1300) return Math.ceil((1300 - q_bits) / 25);
+	return 0;
+}
+
 export function countQuippedSlots(crew: PlayerCrew) {
 	if (crew.kwipment) {
 		let quips = crew.kwipment.map((q : number | number[] | undefined) => {

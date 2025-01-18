@@ -4,7 +4,7 @@ import { ITableConfigRow } from "../../searchabletable";
 import CONFIG from "../../CONFIG";
 import { Table } from "semantic-ui-react";
 import { QuipmentScores } from "../../../model/crew";
-import { gradeToColor, numberToGrade, qbitsToSlots, skillToShort } from "../../../utils/crewutils";
+import { gradeToColor, missionsToNext, numberToGrade, qbitsToSlots, skillToShort } from "../../../utils/crewutils";
 import { TranslateMethod } from "../../../model/player";
 import { GlobalContext } from "../../../context/globalcontext";
 
@@ -62,6 +62,8 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
     const tr_grade = trait_score / top_trait;
     const qbslots = crew.q_bits === undefined ? 4 : qbitsToSlots(crew.q_bits);
 
+    const to_next = crew.q_bits >= 1300 ? 0 : missionsToNext(crew.q_bits);
+
     return <React.Fragment>
         {!excludeGrade && <Table.Cell>
             <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: "0.5em"}}>
@@ -100,7 +102,7 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
                 </div>
             </Table.Cell>
         })}
-        {!excludeQBits && <Table.Cell>
+        {!excludeQBits && <Table.Cell style={{textAlign: 'center'}}>
            {qbslots !== undefined && <div title={
                 crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
                 }>
@@ -111,6 +113,11 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
                 <div style={{fontSize:"0.8em"}}>
                     ({t('base.n_slots', { n: `${qbslots}`})})
                 </div>}
+                {!!to_next && crew.immortal === -1 &&
+                <div style={{fontSize:"0.8em"}}>
+                    ({t('crew_views.n_missions_to_next', { n: to_next })})
+                </div>
+                }
             </div> || <>N/A</>}
         </Table.Cell>}
     </React.Fragment>

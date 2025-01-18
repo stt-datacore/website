@@ -418,6 +418,7 @@
         }
     },
     "crew_views": {
+        "n_missions_to_next": "{{n}} Missionen bis zur nächsten",
         "advanced_analysis": "Erweiterte Analyse",
         "base": "Grundlegende Fähigkeiten zeigen",
         "crew_utility": "Crew-Nützlichkeitstool anzeigen",

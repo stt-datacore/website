@@ -431,6 +431,7 @@
             "title": "Prospective Crew"
         },
         "quipment": "Show quipment scores",
+        "n_missions_to_next": "{{n}} missions to next",
         "ship": "Show ship abilities",
         "view_big_book": "View {{crew}} on Big Book",
         "voyage": "Show voyage ranks"
