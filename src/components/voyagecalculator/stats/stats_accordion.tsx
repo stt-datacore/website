@@ -105,8 +105,8 @@ export class VoyageStatsAccordion extends Component<VoyageStatsProps, VoyageStat
 			let nextHour = Math.ceil(this.config.elapsedSeconds / 3600);
 			if (nextHour % 2) nextHour++;
 
-			if (nextHour >= 18 && (this.config?.selectedTime === undefined || this.config.selectedTime <= nextHour)) {
-				this.config.selectedTime = nextHour + 4;
+			if (nextHour >= 16 && (this.config?.selectedTime === undefined || this.config.selectedTime <= nextHour)) {
+				this.config.selectedTime = nextHour + 6;
 			}
 
 			if (this.config?.selectedTime !== undefined) {

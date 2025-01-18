@@ -7,6 +7,7 @@ import { IShipData, IAssignment } from './model';
 import { ILineupEditorTrigger } from '../lineupeditor/lineupeditor';
 
 export interface IViewerContext {
+	configSource?: 'player' | 'custom';
 	voyageConfig: IVoyageCalcConfig | Voyage;
 	rosterType?: 'allCrew' | 'myCrew';
 	ship?: Ship;

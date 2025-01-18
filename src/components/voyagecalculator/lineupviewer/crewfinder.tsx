@@ -22,19 +22,19 @@ export const CrewFinder = (props: CrewFinderProps) => {
 
 	if (crew.immortal > 0) {
 		popup = {
-			content: t('voyage.crew_finder.unfreeze_crew'),
+			content: t('voyage.crew_finder_hints.unfreeze_crew'),
 			trigger: <div style={{textAlign: 'center' }}><Icon name='snowflake' /></div>
 		};
 	}
 	else if (crew.active_status === 2) {
 		popup = {
-			content: t('voyage.crew_finder.on_shuttle'),
+			content: t('voyage.crew_finder_hints.on_shuttle'),
 			trigger: <div style={{textAlign: 'center' }}><Icon name='space shuttle' /></div>
 		};
 	}
 	else if (crew.active_status === 3) {
 		popup = {
-			content: t('voyage.crew_finder.on_voyage'),
+			content: t('voyage.crew_finder_hints.on_voyage'),
 			trigger: <div style={{textAlign: 'center' }}><Icon name='rocket' /></div>
 		};
 	}

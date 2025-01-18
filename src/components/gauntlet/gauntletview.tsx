@@ -35,7 +35,7 @@ export const GauntletView = (props: GauntletViewProps) => {
     const [initialized, setInitialized] = React.useState(false);
     const [requestRun, setRequestRun] = React.useState(false);
     const { runWorker: internalRunWorker, running, cancel } = workerContext;
-    const { config, pane, viewMode, tops, setConfig, setFeaturedGauntlet } = gauntletContext;
+    const { config, pane, viewMode, tops, setConfig, setFeaturedGauntlet, pairGroups, setPairGroups } = gauntletContext;
     const { textFilter, filter, buffMode, range_max, settings } = config;
     const { playerData } = globalContext.player;
     const { t } = globalContext.localized;
@@ -55,6 +55,16 @@ export const GauntletView = (props: GauntletViewProps) => {
             searchCrew: getTextCrew()
         })
     }, [textFilter])
+
+    React.useEffect(() => {
+        if (gauntlet) {
+            const pairgroups = getPairGroups(gauntlet.searchCrew ?? [], gauntlet, config.settings, config.hideOpponents, config.onlyActiveRound, gauntlet.contest_data?.featured_skill, tops, config.filter?.maxResults)
+            setPairGroups(pairgroups);
+        }
+        else {
+            setPairGroups(undefined);
+        }
+    }, [gauntlet]);
 
     React.useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -103,6 +113,7 @@ export const GauntletView = (props: GauntletViewProps) => {
     </React.Fragment>
 
     function workerResults(response: any) {
+
         console.log("Gauntlet Worker Results");
         setGauntlet(response.data.result.gauntlet);
         setFeaturedGauntlet(response.data.result.gauntlet);
@@ -152,7 +163,7 @@ export const GauntletView = (props: GauntletViewProps) => {
     }
 
     function renderPairTableView() {
-        if (!gauntlet) return <></>;
+        if (!gauntlet || !pairGroups) return <></>;
         return <div style={{
             margin: 0,
             marginTop: "0em",
@@ -162,7 +173,7 @@ export const GauntletView = (props: GauntletViewProps) => {
             justifyContent: "space-between",
             flexWrap: "wrap"
         }}>
-            {getPairGroups(gauntlet.searchCrew ?? [], gauntlet, config.settings, config.hideOpponents, config.onlyActiveRound, gauntlet.contest_data?.featured_skill, tops, config.filter?.maxResults)
+            {pairGroups
                 .map((pairGroup, pk) => {
                     return (<GauntletPairTable gauntlet={gauntlet}
                         key={"pairGroup_" + pk}
