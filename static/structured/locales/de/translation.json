@@ -1001,6 +1001,7 @@
     },
     "obtained": {
         "long": {
+            "Launch": "Spielstart",
             "BossBattle": "Kapitänsbrücke",
             "Collection": "Sammlungs-Meilenstein",
             "Event": "Ereignis",
@@ -1016,6 +1017,7 @@
             "WebStore": "Web Store"
         },
         "short": {
+            "Launch": "Spielstart",
             "BossBattle": "Brücke",
             "Collection": "Sammlung",
             "Event": "Ereignis",

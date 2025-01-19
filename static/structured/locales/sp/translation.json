@@ -1010,6 +1010,7 @@
     },
     "obtained": {
         "long": {
+            "Launch": "Lanzamiento del juego",
             "BossBattle": "Puente del Capitán",
             "Collection": "Hito de Colecciones",
             "Event": "Evento",
@@ -1025,6 +1026,7 @@
             "WebStore": "Tienda Virtual"
         },
         "short": {
+            "Launch": "Lanzamiento",
             "BossBattle": "Puente",
             "Collection": "Colecciones",
             "Event": "Evento",
