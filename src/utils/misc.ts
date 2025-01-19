@@ -105,6 +105,8 @@ export function appelate(text: string) {
 	let curr: string = "";
 	let cpos = 0;
 
+	text = text.toLowerCase();
+
 	const match = new RegExp(/[A-Za-z0-9']/);
 
 	for (let ch of text) {
