@@ -1289,6 +1289,7 @@
     },
     "obtained": {
         "long": {
+            "Achievement": "Logro",
             "Continuum": "Continuo",
             "Launch": "Lanzamiento del juego",
             "BossBattle": "Puente del Capitán",
@@ -1308,6 +1309,7 @@
             "WebStore": "Tienda Virtual"
         },
         "short": {
+            "Achievement": "Logro",
             "Continuum": "Continuum",
             "Launch": "Lanzamiento",
             "BossBattle": "Puente",

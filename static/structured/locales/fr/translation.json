@@ -1289,6 +1289,7 @@
     },
     "obtained": {
         "long": {
+            "Achievement": "Réalisation",
             "Continuum": "Continuum",
             "Launch": "Lancement du jeu",
             "BossBattle": "Pont du Capitaine",
@@ -1308,6 +1309,7 @@
             "WebStore": "Magasin en ligne"
         },
         "short": {
+            "Achievement": "Réalisation",
             "Continuum": "Continuum",
             "Launch": "Lancement",
             "BossBattle": "Pont",

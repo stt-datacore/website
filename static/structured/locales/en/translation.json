@@ -1278,6 +1278,7 @@
     },
     "obtained": {
         "long": {
+            "Achievement": "Achievement",
             "Continuum": "Continuum",
             "Launch": "Game Launch",
             "BossBattle": "Captain's Bridge",
@@ -1297,6 +1298,7 @@
             "WebStore": "Web Store"
         },
         "short": {
+            "Achievement": "Achievement",
             "Continuum": "Continuum",
             "Launch": "Launch",
             "BossBattle": "Bridge",

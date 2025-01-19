@@ -1277,6 +1277,7 @@
     },
     "obtained": {
         "long": {
+            "Achievement": "Leistung",
             "Continuum": "Kontinuum",
             "Launch": "Spielstart",
             "BossBattle": "Kapitänsbrücke",
@@ -1296,6 +1297,7 @@
             "WebStore": "Web Store"
         },
         "short": {
+            "Achievement": "Leistung",
             "Continuum": "Kontinuum",
             "Launch": "Spielstart",
             "BossBattle": "Brücke",
