@@ -1011,6 +1011,7 @@
     },
     "obtained": {
         "long": {
+            "Launch": "Lancement du jeu",
             "BossBattle": "Pont du Capitaine",
             "Collection": "Étape des Collections",
             "Event": "Événement",
@@ -1020,12 +1021,13 @@
             "Gauntlet": "Gantelet Exclusif",
             "Honor Hall": "Hall de l'honneur",
             "Mega": "Méga Récurrent",
-            "Missions": "Mission du Conseil Principal",
+            "Missions": "Mission du Plateau Principal",
             "Pack/Giveaway": "Pack/Concours",
             "Voyage": "Voyage Exclusif",
             "WebStore": "Magasin en ligne"
         },
         "short": {
+            "Launch": "Lancement",
             "BossBattle": "Pont",
             "Collection": "Collection",
             "Event": "Événement",
