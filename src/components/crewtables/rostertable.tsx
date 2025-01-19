@@ -32,6 +32,7 @@ import { PowerMode, QuipmentToolsFilter } from './filters/quipmenttools';
 import { calcQLots } from '../../utils/equipment';
 import { CrewBuffModes } from './commonoptions';
 import { UnifiedWorker } from '../../typings/worker';
+import { ObtainedFilter } from './filters/crewobtained';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -426,6 +427,17 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			form:
 				<CrewOwnershipFilter
 					key='filter_allcrew_ownership'
+					pageId={pageId}
+					crewFilters={crewFilters}
+					setCrewFilters={setCrewFilters}
+				/>
+		},
+		{
+			id: 'obtained',
+			available: (['allCrew'].includes(rosterType)),
+			form:
+				<ObtainedFilter
+					key='filter_allcrew_obtained'
 					pageId={pageId}
 					crewFilters={crewFilters}
 					setCrewFilters={setCrewFilters}

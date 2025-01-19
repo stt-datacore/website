@@ -426,6 +426,7 @@
         }
     },
     "crew_views": {
+        "n_missions_to_next": "{{n}} misiones para la siguiente",
         "advanced_analysis": "Análisis Avanzado",
         "base": "Mostrar habilidades básicas",
         "crew_utility": "Mostrar utilidad para la tripulación",
@@ -1288,10 +1289,15 @@
     },
     "obtained": {
         "long": {
+            "Achievement": "Logro",
+            "Continuum": "Continuo",
+            "Launch": "Lanzamiento del juego",
             "BossBattle": "Puente del Capitán",
             "Collection": "Hito de Colecciones",
             "Event": "Evento",
             "Event/Pack/Giveaway": "Evento/Paquete/Sorteo",
+            "Pack": "Paquete",
+            "Giveaway": "Sorteo",
             "Faction": "Tienda des Facciones",
             "Fuse": "Fusión Exclusiva",
             "Gauntlet": "Reto Exclusivo",
@@ -1303,10 +1309,15 @@
             "WebStore": "Tienda Virtual"
         },
         "short": {
+            "Achievement": "Logro",
+            "Continuum": "Continuum",
+            "Launch": "Lanzamiento",
             "BossBattle": "Puente",
             "Collection": "Colecciones",
             "Event": "Evento",
             "Event/Pack/Giveaway": "Evento/Paquete/Sorteo",
+            "Pack": "Paquete",
+            "Giveaway": "Sorteo",
             "Faction": "Faccione",
             "Fuse": "Fusión",
             "Gauntlet": "Reto",

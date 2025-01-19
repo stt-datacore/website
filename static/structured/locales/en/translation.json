@@ -431,6 +431,7 @@
             "title": "Prospective Crew"
         },
         "quipment": "Show quipment scores",
+        "n_missions_to_next": "{{n}} missions to next",
         "ship": "Show ship abilities",
         "view_big_book": "View {{crew}} on Big Book",
         "voyage": "Show voyage ranks"
@@ -1277,10 +1278,15 @@
     },
     "obtained": {
         "long": {
+            "Achievement": "Achievement",
+            "Continuum": "Continuum",
+            "Launch": "Game Launch",
             "BossBattle": "Captain's Bridge",
             "Collection": "Collection Milestone",
             "Event": "Event",
             "Event/Pack/Giveaway": "Event/Pack/Giveaway",
+            "Pack": "Pack",
+            "Giveaway": "Giveaway",
             "Faction": "Faction Store",
             "Fuse": "Exclusive Fusion",
             "Gauntlet": "Gauntlet Exclusive",
@@ -1292,10 +1298,15 @@
             "WebStore": "Web Store"
         },
         "short": {
+            "Achievement": "Achievement",
+            "Continuum": "Continuum",
+            "Launch": "Launch",
             "BossBattle": "Bridge",
             "Collection": "Collection",
             "Event": "Event",
             "Event/Pack/Giveaway": "Event/Pack/Giveaway",
+            "Pack": "Pack",
+            "Giveaway": "Giveaway",
             "Faction": "Faction",
             "Fuse": "Fusion",
             "Gauntlet": "Gauntlet",
