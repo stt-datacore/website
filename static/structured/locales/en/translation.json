@@ -1278,6 +1278,7 @@
     },
     "obtained": {
         "long": {
+            "Launch": "Game Launch",
             "BossBattle": "Captain's Bridge",
             "Collection": "Collection Milestone",
             "Event": "Event",
@@ -1293,6 +1294,7 @@
             "WebStore": "Web Store"
         },
         "short": {
+            "Launch": "Launch",
             "BossBattle": "Bridge",
             "Collection": "Collection",
             "Event": "Event",
