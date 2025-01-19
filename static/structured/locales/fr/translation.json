@@ -1289,11 +1289,14 @@
     },
     "obtained": {
         "long": {
+            "Continuum": "Continuum",
             "Launch": "Lancement du jeu",
             "BossBattle": "Pont du Capitaine",
             "Collection": "Étape des Collections",
             "Event": "Événement",
             "Event/Pack/Giveaway": "Événement/Pack/Concours",
+            "Pack": "Pack",
+            "Giveaway": "Concours",
             "Faction": "Magasin des Factions",
             "Fuse": "Fusion Exclusif",
             "Gauntlet": "Gantelet Exclusif",
@@ -1305,11 +1308,14 @@
             "WebStore": "Magasin en ligne"
         },
         "short": {
+            "Continuum": "Continuum",
             "Launch": "Lancement",
             "BossBattle": "Pont",
             "Collection": "Collection",
             "Event": "Événement",
             "Event/Pack/Giveaway": "Événement/Pack/Concours",
+            "Pack": "Pack",
+            "Giveaway": "Concours",
             "Faction": "Faction",
             "Fuse": "Fusion",
             "Gauntlet": "Gantelet",

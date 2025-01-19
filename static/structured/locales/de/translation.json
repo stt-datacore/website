@@ -1277,11 +1277,14 @@
     },
     "obtained": {
         "long": {
+            "Continuum": "Kontinuum",
             "Launch": "Spielstart",
             "BossBattle": "Kapitänsbrücke",
             "Collection": "Sammlungs-Meilenstein",
             "Event": "Ereignis",
             "Event/Pack/Giveaway": "Ereignis/Paket/Giveaway",
+            "Pack": "Paket",
+            "Giveaway": "Giveaway",
             "Faction": "Fraktions-Store",
             "Fuse": "Exklusiv Fusion",
             "Gauntlet": "Herausforderung Exklusiv",
@@ -1293,11 +1296,14 @@
             "WebStore": "Web Store"
         },
         "short": {
+            "Continuum": "Kontinuum",
             "Launch": "Spielstart",
             "BossBattle": "Brücke",
             "Collection": "Sammlung",
             "Event": "Ereignis",
             "Event/Pack/Giveaway": "Ereignis/Paket/Giveaway",
+            "Pack": "Paket",
+            "Giveaway": "Giveaway",
             "Faction": "Fraktions",
             "Fuse": "Fusion",
             "Gauntlet": "Herausforderung",
