@@ -18,7 +18,7 @@ export async function loadOfferCrew(crewList: CrewMember[], offerName?: string, 
     let result = [] as OfferCrew[];
 
     if (offerName) {
-        offers = offers?.filter(f => f.primary_content[0].title.includes(offerName.toUpperCase()));
+        offers = offers?.filter(f => f.primary_content[0].title.toUpperCase().includes(offerName.toUpperCase()));
     }
 
     offers?.forEach((offer) => {
@@ -42,9 +42,9 @@ function getDropInfo(offer: Offer): DropInfo[] {
         cost: offer.primary_content[0].cost?.amount ?? 0,
         currency: offer.primary_content[0].cost?.currency ?? ''
     }] as DropInfo[];
-    
+
     let droptexts = [offer.primary_content[0].info_text!];
-    
+
     if (offer.secondary_content?.length && offer.secondary_content[0].info_text) {
         droptexts.push(offer.secondary_content[0].info_text);
         result.push({

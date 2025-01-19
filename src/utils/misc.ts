@@ -102,6 +102,7 @@ export function simplejson2csv<T>(data: T[], fields: ExportField[], delimeter = 
  * @returns
  */
 export function appelate(text: string) {
+	text = text.toLowerCase();
 	let curr: string = "";
 	let cpos = 0;
 
