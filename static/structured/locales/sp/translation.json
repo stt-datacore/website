@@ -1010,11 +1010,14 @@
     },
     "obtained": {
         "long": {
+            "Continuum": "Continuo",
             "Launch": "Lanzamiento del juego",
             "BossBattle": "Puente del Capitán",
             "Collection": "Hito de Colecciones",
             "Event": "Evento",
             "Event/Pack/Giveaway": "Evento/Paquete/Sorteo",
+            "Pack": "Paquete",
+            "Giveaway": "Sorteo",
             "Faction": "Tienda des Facciones",
             "Fuse": "Fusión Exclusiva",
             "Gauntlet": "Reto Exclusivo",
@@ -1026,11 +1029,14 @@
             "WebStore": "Tienda Virtual"
         },
         "short": {
+            "Continuum": "Continuum",
             "Launch": "Lanzamiento",
             "BossBattle": "Puente",
             "Collection": "Colecciones",
             "Event": "Evento",
             "Event/Pack/Giveaway": "Evento/Paquete/Sorteo",
+            "Pack": "Paquete",
+            "Giveaway": "Sorteo",
             "Faction": "Faccione",
             "Fuse": "Fusión",
             "Gauntlet": "Reto",

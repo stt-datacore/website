@@ -1002,11 +1002,14 @@
     },
     "obtained": {
         "long": {
+            "Continuum": "Continuum",
             "Launch": "Game Launch",
             "BossBattle": "Captain's Bridge",
             "Collection": "Collection Milestone",
             "Event": "Event",
             "Event/Pack/Giveaway": "Event/Pack/Giveaway",
+            "Pack": "Pack",
+            "Giveaway": "Giveaway",
             "Faction": "Faction Store",
             "Fuse": "Exclusive Fusion",
             "Gauntlet": "Gauntlet Exclusive",
@@ -1018,11 +1021,14 @@
             "WebStore": "Web Store"
         },
         "short": {
+            "Continuum": "Continuum",
             "Launch": "Launch",
             "BossBattle": "Bridge",
             "Collection": "Collection",
             "Event": "Event",
             "Event/Pack/Giveaway": "Event/Pack/Giveaway",
+            "Pack": "Pack",
+            "Giveaway": "Giveaway",
             "Faction": "Faction",
             "Fuse": "Fusion",
             "Gauntlet": "Gauntlet",
