@@ -17,12 +17,7 @@ import { DataGrid } from './datagrid';
 import { IDataGridSetup } from './model';
 import { DataTable } from './datatable';
 import { IDataTableSetup } from './model';
-import { IVoyageCrew } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
-import CONFIG from '../CONFIG';
-import { AvatarView } from '../item_presenters/avatarview';
-import { OptionsPanelFlexRow } from '../stats/utils';
-import { ISpotReplacement } from '../voyagecalculator/lineupeditor/context';
 
 type DataPickerProps = {
 	id: string;
