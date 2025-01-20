@@ -119,14 +119,15 @@ async function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance 
             allruns = cacheToBattleRuns(ships, crew, cached);
             runidx = allruns.length;
         }
+        else {
+            runidx = 0;
+        }
 
         console.log("Calculate crew and ship battle scores...");
         console.log(`Frame Rate: ${rate} per second.`)
 
         allruns.length = (ships.length * crew.length * 18);
         console.log(`Alloc ${allruns.length} items.`);
-
-        runidx = 0;
 
         const bucketsize = os.cpus().length / 2;
         const shipBuckets = makeBuckets(ships, bucketsize);
