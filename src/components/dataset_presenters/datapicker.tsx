@@ -94,7 +94,7 @@ export const DataPicker = (props: DataPickerProps) => {
 			centered={false}
 		>
 			<Modal.Header>
-				{searchTitle ? searchTitle : ''}
+				{searchTitle && props.search ? searchTitle : ''}
 				{renderModalHeader()}
 			</Modal.Header>
 			<Modal.Content scrolling>
