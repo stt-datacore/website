@@ -55,7 +55,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
 	const calculatorContext = React.useContext(CalculatorContext);
-	const { id, prospectiveConfig, sortedSkills, getConfigFromCrewSlots, getRuntimeDiff, renderActions, dismissEditor } = React.useContext(EditorContext);
+	const { id, prospectiveConfig, sortedSkills, getConfigFromCrewSlots, getRuntimeDiff, renderActions, dismissEditor, setReplacement, replacement } = React.useContext(EditorContext);
 	const { alternateCrew, setAlternateVoyage } = props;
 
 	const [data, setData] = React.useState<IAlternateSlotData[] | undefined>(undefined);
@@ -70,6 +70,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 
 		const data: IAlternateSlotData[] = [];
 		prospectiveConfig.crew_slots.forEach((crewSlot, slotId) => {
+			if (replacement && replacement.seat !== crewSlot.symbol) return;
 			if (crewSlot.crew?.id !== alternateCrew.id && Object.keys(alternateCrew.skills).includes(crewSlot.skill)) {
 				const altCrewSlots: IProspectiveCrewSlot[] = JSON.parse(JSON.stringify(crewSlots));
 				altCrewSlots[slotId].crew = alternateCrew;
@@ -115,6 +116,17 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 		});
 		setData([...data]);
 	}, [estimates]);
+
+	React.useEffect(() => {
+		if (data && estimates?.length) {
+			if (replacement?.crew) {
+				setTimeout(() => {
+					setReplacement(undefined);
+					handleSelectedIds(new Set([CONFIG.VOYAGE_CREW_SLOTS.indexOf(replacement.seat)]), true);
+				});
+			}
+		}
+	}, [data, estimates]);
 
 	if (!data) return <DataPickerLoading />;
 

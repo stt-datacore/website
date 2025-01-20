@@ -34,7 +34,7 @@ type ProspectiveSummaryProps = {
 
 export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
-	const { prospectiveConfig, prospectiveEstimate, editLineup, renderActions, dismissEditor } = React.useContext(EditorContext);
+	const { prospectiveConfig, prospectiveEstimate, editLineup, renderActions, dismissEditor, setReplacement } = React.useContext(EditorContext);
 	const { control, saveVoyage, resetVoyage } = props;
 
 	const isEdited = React.useMemo<boolean>(() => {
@@ -66,7 +66,7 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 			</Modal.Header>
 			<Modal.Content scrolling>
 				{renderTopLines()}
-				<ProspectiveCrewSlots control={control} />
+				<ProspectiveCrewSlots control={control} click={replaceClick} />
 				<ProspectiveSkillCheck control={isEdited ? control : undefined} />
 				{prospectiveConfig.voyage_type === 'encounter' &&  <ProspectiveProficiency />}
 			</Modal.Content>
@@ -75,6 +75,20 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 			</Modal.Actions>
 		</Modal>
 	);
+
+	function replaceClick(cs: IProspectiveCrewSlot) {
+		if (!cs.crew) {
+			setReplacement(undefined);
+			setTimeout(() => editLineup());
+		}
+		else {
+			setReplacement({
+				crew: cs.crew,
+				seat: cs.symbol
+			});
+			setTimeout(() => editLineup());
+		}
+	}
 
 	function renderTopLines(): JSX.Element {
 		if (!prospectiveEstimate) return <></>;
@@ -272,11 +286,12 @@ const ToplinesCompared = (props: ToplinesComparedProps) => {
 
 type ProspectiveCrewSlotsProps = {
 	control: IControlVoyage | undefined;
+	click?: (slot: IProspectiveCrewSlot) => void;
 };
 
 const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 	const { prospectiveConfig } = React.useContext(EditorContext);
-	const { control } = props;
+	const { control, click } = props;
 
 	return (
 		<React.Fragment>
@@ -302,7 +317,9 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 								<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${cs.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 							</Table.Cell>
 							<Table.Cell>
-								{renderCrew(cs)}
+								<div style={{ cursor: click ? 'pointer' : undefined}} onClick={() => click ? click(cs) : null}>
+									{renderCrew(cs)}
+								</div>
 							</Table.Cell>
 							<Table.Cell textAlign='right'>
 								{cs.crew && renderBonus(cs)}

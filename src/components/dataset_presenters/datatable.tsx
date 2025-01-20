@@ -44,6 +44,14 @@ export const DataTable = (props: DataTableProps) => {
 		return data;
 	}, [props.data, sortField, sortDirection]);
 
+	React.useEffect(() => {
+		if (props.setup?.defaultSort?.immediateOverride) {
+			delete props.setup.defaultSort.immediateOverride;
+			setSortField(props.setup.defaultSort);
+			setSortDirection(props.setup.defaultSort.firstSort ?? 'ascending');
+		}
+	}, [props.setup.defaultSort]);
+
 	// Pagination
 	const rowsPerPage: number = setup.rowsPerPage ?? 10;
 	const totalPages: number = Math.ceil(data.length / rowsPerPage);

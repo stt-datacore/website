@@ -62,7 +62,7 @@ type AlternateCrewPickerProps = {
 export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const calculatorContext = React.useContext(CalculatorContext);
-	const { id, prospectiveConfig, sortedSkills, renderActions, dismissEditor } = React.useContext(EditorContext);
+	const { id, prospectiveConfig, sortedSkills, renderActions, dismissEditor, replacement } = React.useContext(EditorContext);
 	const { roster, setAlternate } = props;
 
 	const [filters, setFilters] = useStateWithStorage<IPickerFilters>(`${id}/alternatepicker/filters`, {...defaultFilters});
@@ -176,25 +176,58 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 
 	const tableSetup: IDataTableSetup = {
 		columns,
-		rowsPerPage: 12
+		rowsPerPage: 12,
 	};
+	if (replacement) {
+	 	let skill = CONFIG.getSlotSkill(replacement.seat);
+		tableSetup.defaultSort = replacement ? {
+			id: `scored_${skill}`,
+			firstSort: 'descending',
+			immediateOverride: true
+		} : undefined
+		const replacingData = data.filter(f => f.skill_order.includes(skill) && f.id !== replacement.crew.id);
+		return (
+			<>
+			<DataPicker	/* Search for alternate voyage crew by name */
+				replacing={replacement}
+				id={`${id}/alternatepicker/datapicker`}
+				data={replacingData}
+				closePicker={handleSelectedReplacement}
+				selection
+				closeOnChange
+				preFilteredIds={filteredIds}
+				search
+				searchPlaceholder='Search for alternate voyage crew by name'
+				renderOptions={renderOptions}
+				renderActions={renderActions}
+				gridSetup={gridSetup}
+				tableSetup={tableSetup}
+			/>
+			</>
+		);
 
-	return (
-		<DataPicker	/* Search for alternate voyage crew by name */
-			id={`${id}/alternatepicker/datapicker`}
-			data={data}
-			closePicker={handleSelectedIds}
-			selection
-			closeOnChange
-			preFilteredIds={filteredIds}
-			search
-			searchPlaceholder='Search for alternate voyage crew by name'
-			renderOptions={renderOptions}
-			renderActions={renderActions}
-			gridSetup={gridSetup}
-			tableSetup={tableSetup}
-		/>
-	);
+	}
+	else {
+		return (
+			<>
+			<DataPicker	/* Search for alternate voyage crew by name */
+				id={`${id}/alternatepicker/datapicker`}
+				data={data}
+				closePicker={handleSelectedIds}
+				selection
+				closeOnChange
+				preFilteredIds={filteredIds}
+				search
+				searchPlaceholder='Search for alternate voyage crew by name'
+				renderOptions={renderOptions}
+				renderActions={renderActions}
+				gridSetup={gridSetup}
+				tableSetup={tableSetup}
+			/>
+			</>
+		);
+
+	}
 
 	function handleSelectedIds(selectedIds: Set<number>, affirmative: boolean): void {
 		if (!affirmative) dismissEditor();
@@ -208,6 +241,18 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		}
 	}
 
+	function handleSelectedReplacement(selectedIds: Set<number>, affirmative: boolean): void {
+		if (!affirmative || !replacement) dismissEditor();
+		if (selectedIds.size > 0) {
+			const alternateId: number = [...selectedIds][0];
+			const alternateCrew: PlayerCrew | undefined = data?.find(datum =>
+				datum.id === alternateId
+			);
+			if (alternateCrew)
+
+				setAlternate(alternateCrew);
+		}
+	}
 	function renderOptions(): JSX.Element {
 		return (
 			<AlternatePickerOptions

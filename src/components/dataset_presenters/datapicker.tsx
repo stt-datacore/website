@@ -17,6 +17,12 @@ import { DataGrid } from './datagrid';
 import { IDataGridSetup } from './model';
 import { DataTable } from './datatable';
 import { IDataTableSetup } from './model';
+import { IVoyageCrew } from '../../model/voyage';
+import { GlobalContext } from '../../context/globalcontext';
+import CONFIG from '../CONFIG';
+import { AvatarView } from '../item_presenters/avatarview';
+import { OptionsPanelFlexRow } from '../stats/utils';
+import { ISpotReplacement } from '../voyagecalculator/lineupeditor/context';
 
 type DataPickerProps = {
 	id: string;
@@ -34,9 +40,13 @@ type DataPickerProps = {
 	renderActions?: (dataPickerState: IDataPickerState) => JSX.Element;
 	gridSetup?: IDataGridSetup;
 	tableSetup?: IDataTableSetup;
+	replacing?: ISpotReplacement
 };
 
 export const DataPicker = (props: DataPickerProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
+	const { replacing } = props;
 	// Reset selected ids on each reload, parent should maintain persistent state of selected ids
 	const [pendingSelectedIds, setPendingSelectedIds] = React.useState<Set<number>>(new Set<number>());
 
@@ -83,6 +93,7 @@ export const DataPicker = (props: DataPickerProps) => {
 			centered={false}
 		>
 			<Modal.Header>
+				{renderReplacing()}
 				{renderModalHeader()}
 			</Modal.Header>
 			<Modal.Content scrolling>
@@ -97,6 +108,16 @@ export const DataPicker = (props: DataPickerProps) => {
 	function textMatch(fieldValue: string, userQuery: string): boolean {
 		return fieldValue.toLowerCase().replace(/[^a-z0-9]/g, '')
 			.indexOf(userQuery.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
+	}
+
+	function renderReplacing() {
+		const flexRow = OptionsPanelFlexRow;
+		if (!replacing) return <></>;
+		return (
+			<h3 style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', alignItems: 'center'}}>
+				Replace <AvatarView mode='crew' item={replacing.crew} size={32} /> {replacing.crew.name} as <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${CONFIG.getSlotSkill(replacing.seat)}.png`} style={{height: '16px'}} /> {t(`voyage.seats.${replacing.seat}`)}:
+			</h3>)
+
 	}
 
 	function renderModalHeader(): JSX.Element {
@@ -153,7 +174,7 @@ export const DataPicker = (props: DataPickerProps) => {
 						data={data}
 						setup={props.gridSetup}
 						selectedIds={pendingSelectedIds}
-						handleClick={props.selection ? toggleDatum : undefined}
+						handleClick={props.selection ? (replacing ? selectAndClose : toggleDatum) : undefined}
 						handleDblClick={props.selection ? selectAndClose : undefined}
 					/>
 				)}
@@ -163,7 +184,7 @@ export const DataPicker = (props: DataPickerProps) => {
 						data={data}
 						setup={props.tableSetup}
 						selectedIds={pendingSelectedIds}
-						handleClick={props.selection ? toggleDatum : undefined}
+						handleClick={props.selection ? (replacing ? selectAndClose : toggleDatum) : undefined}
 						handleDblClick={props.selection ? selectAndClose : undefined}
 					/>
 				)}

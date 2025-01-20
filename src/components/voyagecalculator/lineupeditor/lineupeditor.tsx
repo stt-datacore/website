@@ -14,7 +14,7 @@ import CONFIG from '../../CONFIG';
 import { CalculatorContext } from '../context';
 
 import { IControlVoyage, IProspectiveConfig, IProspectiveCrewSlot } from './model';
-import { EditorContext, IEditorContext } from './context';
+import { EditorContext, IEditorContext, ISpotReplacement } from './context';
 import { AlternateCrewPicker } from './crewpicker';
 import { AlternateSlotPicker } from './slotpicker';
 import { ProspectiveSummary } from './summary';
@@ -43,9 +43,11 @@ export const LineupEditor = (props: LineupEditorProps) => {
 	const [prospectiveCrewSlots, setProspectiveCrewSlots] = React.useState<IProspectiveCrewSlot[] | undefined>(control?.config.crew_slots);
 	const [prospectiveEstimate, setProspectiveEstimate] = React.useState<Estimate | undefined>(control?.estimate);
 	const [activeView, setActiveView] = React.useState<LineupEditorViews | undefined>(undefined);
+	const [replacement, setReplacement] = React.useState<ISpotReplacement | undefined>(undefined);
 	const [alternateCrew, setAlternateCrew] = React.useState<PlayerCrew | undefined>(undefined);
 
 	React.useEffect(() => {
+		setReplacement(undefined);
 		setActiveView(trigger?.view);
 	}, [trigger]);
 
@@ -81,6 +83,8 @@ export const LineupEditor = (props: LineupEditorProps) => {
 		prospectiveConfig,
 		prospectiveEstimate,
 		sortedSkills,
+		replacement,
+		setReplacement,
 		getConfigFromCrewSlots,
 		getRuntimeDiff,
 		editLineup: () => setActiveView('crewpicker'),

@@ -50,6 +50,7 @@ export interface IDataSortField {
 	firstSort?: 'ascending' | 'descending';
 	stringValue?: boolean;
 	customSort?: (a: IEssentialData, b: IEssentialData, sortDirection: 'ascending' | 'descending') => number;
+	immediateOverride?: boolean;
 };
 
 export interface IDataPickerState {
