@@ -61,6 +61,7 @@ export const SkillDetail = (props: SkillDetailProps) => {
 					{currentData.name}
 					{voyageConfig.skills.primary_skill === currentData.skill && <Icon name='star' color='yellow' style={{ marginLeft: '.5em' }} />}
 					{voyageConfig.skills.secondary_skill === currentData.skill && <Icon name='star' color='grey' style={{ marginLeft: '.5em' }} />}
+					{props.highlighted && <Icon name='check' style={{marginLeft: '0.2em'}} />}
 					<Image floated='right' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${currentData.skill}.png`} style={{ height: '1.5em' }} />
 				</Message.Header>
 			</Message>
