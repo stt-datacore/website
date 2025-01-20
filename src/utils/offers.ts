@@ -1,5 +1,5 @@
 import { CrewMember } from "../model/crew";
-import { DropInfo, DropRate, Offer, OfferCrew } from "../model/offers";
+import { DropInfo, Offer, OfferCrew } from "../model/offers";
 
 async function loadOffers(): Promise<Offer[] | undefined> {
 
