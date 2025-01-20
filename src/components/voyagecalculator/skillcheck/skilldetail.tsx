@@ -21,6 +21,7 @@ type SkillDetailProps = {
 	voyageConfig: IVoyageCalcConfig | IProspectiveConfig;
 	currentData: ISkillData;
 	baselineData?: ISkillData;
+	highlighted?: boolean;
 };
 
 export const SkillDetail = (props: SkillDetailProps) => {
@@ -55,7 +56,7 @@ export const SkillDetail = (props: SkillDetailProps) => {
 
 	return (
 		<React.Fragment>
-			<Message attached>
+			<Message attached style={{backgroundColor: props.highlighted ? 'forestgreen' : undefined }}>
 				<Message.Header>
 					{currentData.name}
 					{voyageConfig.skills.primary_skill === currentData.skill && <Icon name='star' color='yellow' style={{ marginLeft: '.5em' }} />}

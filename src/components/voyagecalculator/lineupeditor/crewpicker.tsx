@@ -25,6 +25,7 @@ import { crewMatchesSkillFilter, SkillToggler } from '../../dataset_presenters/o
 import { CalculatorContext } from '../context';
 
 import { EditorContext } from './context';
+import { gradeToColor } from '../../../utils/crewutils';
 
 interface IAlternateCrewData extends PlayerCrew {
 	assigned_slot: number;
@@ -167,9 +168,9 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 				firstSort: 'descending'
 			},
 			renderCell: (datum: IEssentialData) => (
-				<React.Fragment>
-					{datum[`scored_${skill}`] > 0 ? Math.floor(datum[`scored_${skill}`]): ''}
-				</React.Fragment>
+					<React.Fragment>
+						{datum[`scored_${skill}`] > 0 ? Math.floor(datum[`scored_${skill}`]): ''}
+					</React.Fragment>
 			)
 		});
 	});
@@ -268,11 +269,14 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 	}
 
 	function renderSkillHeader(skill: string): JSX.Element {
+		const n = prospectiveConfig.crew_slots.filter(f => f.crew?.skill_order.includes(skill))?.length || 0;
+
 		return (
 			<React.Fragment>
 				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 				{calculatorContext.voyageConfig.skills.primary_skill === skill && <Icon name='star' color='yellow' />}
 				{calculatorContext.voyageConfig.skills.secondary_skill === skill && <Icon name='star' color='grey' />}
+				{!!n && <sup style={{ fontSize: '0.9em', fontWeight: 'bold', margin: '0 0.5em', color: n < 2 ? 'tomato' : n <= 3 ? 'orange' : undefined}}>{n}</sup>}
 			</React.Fragment>
 		);
 	}

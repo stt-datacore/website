@@ -37,6 +37,8 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 	const { prospectiveConfig, prospectiveEstimate, editLineup, renderActions, dismissEditor, setReplacement } = React.useContext(EditorContext);
 	const { control, saveVoyage, resetVoyage } = props;
 
+	const [highlightedSkill, setHighlightedSkill] = React.useState<string | undefined>(undefined);
+
 	const isEdited = React.useMemo<boolean>(() => {
 		if (!control) return false;
 		let isEdited: boolean = false;
@@ -66,8 +68,16 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 			</Modal.Header>
 			<Modal.Content scrolling>
 				{renderTopLines()}
-				<ProspectiveCrewSlots control={control} click={replaceClick} />
-				<ProspectiveSkillCheck control={isEdited ? control : undefined} />
+				<ProspectiveCrewSlots
+					highlightedSkill={highlightedSkill}
+					control={control}
+					click={replaceClick}
+					/>
+				<ProspectiveSkillCheck
+					control={isEdited ? control : undefined}
+					highlightedSkill={highlightedSkill}
+					setHighlightedSkill={setHighlightedSkill}
+					/>
 				{prospectiveConfig.voyage_type === 'encounter' &&  <ProspectiveProficiency />}
 			</Modal.Content>
 			<Modal.Actions>
@@ -287,11 +297,12 @@ const ToplinesCompared = (props: ToplinesComparedProps) => {
 type ProspectiveCrewSlotsProps = {
 	control: IControlVoyage | undefined;
 	click?: (slot: IProspectiveCrewSlot) => void;
+	highlightedSkill?: string;
 };
 
 const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 	const { prospectiveConfig } = React.useContext(EditorContext);
-	const { control, click } = props;
+	const { control, click, highlightedSkill } = props;
 
 	return (
 		<React.Fragment>
@@ -311,8 +322,21 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 		return (
 			<Table striped unstackable compact>
 				<Table.Body>
-					{crewSlots.map(cs => (
-						<Table.Row key={cs.name}>
+					{crewSlots.map((cs, csIdx) => {
+						let bg: string | undefined = undefined;
+						if (cs.crew && highlightedSkill) {
+							if (cs.crew.skill_order.includes(highlightedSkill)) {
+								if (csIdx % 2) {
+									bg = 'forestgreen';
+								}
+								else {
+									bg = 'darkgreen';
+								}
+
+							}
+						}
+						return (
+						<Table.Row key={cs.name} style={{backgroundColor: bg}}>
 							<Table.Cell textAlign='center'>
 								<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${cs.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 							</Table.Cell>
@@ -325,7 +349,7 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 								{cs.crew && renderBonus(cs)}
 							</Table.Cell>
 						</Table.Row>
-					))}
+					)})}
 				</Table.Body>
 			</Table>
 		);
@@ -392,15 +416,19 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 
 type ProspectiveSkillCheckProps = {
 	control: IControlVoyage | undefined;
+	highlightedSkill?: string;
+	setHighlightedSkill: (value?: string) => void;
 };
 
 const ProspectiveSkillCheck = (props: ProspectiveSkillCheckProps) => {
 	const { prospectiveConfig } = React.useContext(EditorContext);
-	const { control } = props;
+	const { control, highlightedSkill, setHighlightedSkill } = props;
 	return (
 		<React.Fragment>
 			<Header as='h4'>Prospective Skill Check</Header>
 			<SkillCheck
+				highlightedSkill={highlightedSkill}
+				setHighlightedSkill={setHighlightedSkill}
 				id='prospective/skillcheck'
 				voyageConfig={prospectiveConfig}
 				baselineConfig={control?.config}

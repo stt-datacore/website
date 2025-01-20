@@ -1,6 +1,7 @@
 import React from 'react';
 import {
 	Button,
+	Checkbox,
 	Dimmer,
 	Loader
 } from 'semantic-ui-react';
@@ -14,17 +15,17 @@ import CONFIG from '../../CONFIG';
 import { CalculatorContext } from '../context';
 
 import { IControlVoyage, IProspectiveConfig, IProspectiveCrewSlot } from './model';
-import { EditorContext, IEditorContext, ISpotReplacement } from './context';
+import { EditorContext, IEditorContext, ISpotReplacement, LineupEditorViews } from './context';
 import { AlternateCrewPicker } from './crewpicker';
 import { AlternateSlotPicker } from './slotpicker';
 import { ProspectiveSummary } from './summary';
 import { getProspectiveConfig } from './utils';
+import { useStateWithStorage } from '../../../utils/storage';
+import { GlobalContext } from '../../../context/globalcontext';
 
 export interface ILineupEditorTrigger {
 	view: LineupEditorViews;
 };
-
-type LineupEditorViews = 'crewpicker' | 'slotpicker' | 'summary';
 
 type LineupEditorProps = {
 	id: string;
@@ -37,18 +38,32 @@ type LineupEditorProps = {
 };
 
 export const LineupEditor = (props: LineupEditorProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { playerData } = globalContext.player;
+	const { t } = globalContext.localized;
+
+	const dbidPrefix = (() => {
+		if (playerData) {
+			return playerData.player.dbid.toString() + "/";
+		}
+		return '/';
+	})();
+
 	const { voyageConfig } = React.useContext(CalculatorContext);
 	const { trigger, cancelTrigger, ship, roster, control, commitVoyage } = props;
 
 	const [prospectiveCrewSlots, setProspectiveCrewSlots] = React.useState<IProspectiveCrewSlot[] | undefined>(control?.config.crew_slots);
 	const [prospectiveEstimate, setProspectiveEstimate] = React.useState<Estimate | undefined>(control?.estimate);
+
 	const [activeView, setActiveView] = React.useState<LineupEditorViews | undefined>(undefined);
+	const [defaultView, setDefaultView] = useStateWithStorage<LineupEditorViews | undefined>(`${dbidPrefix}/default_voyage_editor_view`, undefined, { rememberForever: !!dbidPrefix });
+
 	const [replacement, setReplacement] = React.useState<ISpotReplacement | undefined>(undefined);
 	const [alternateCrew, setAlternateCrew] = React.useState<PlayerCrew | undefined>(undefined);
 
 	React.useEffect(() => {
 		setReplacement(undefined);
-		setActiveView(trigger?.view);
+		setActiveView(defaultView || trigger?.view);
 	}, [trigger]);
 
 	const prospectiveConfig = React.useMemo<IProspectiveConfig>(() => {
@@ -84,12 +99,14 @@ export const LineupEditor = (props: LineupEditorProps) => {
 		prospectiveEstimate,
 		sortedSkills,
 		replacement,
+		defaultView,
 		setReplacement,
 		getConfigFromCrewSlots,
 		getRuntimeDiff,
 		editLineup: () => setActiveView('crewpicker'),
 		renderActions,
-		dismissEditor
+		dismissEditor,
+		setDefaultView
 	};
 
 	return (
@@ -135,6 +152,19 @@ export const LineupEditor = (props: LineupEditorProps) => {
 	function renderActions(): JSX.Element {
 		return (
 			<React.Fragment>
+				<Checkbox
+					style={{margin: "0 1em"}}
+					checked={defaultView === activeView}
+					onChange={(e, { checked }) => {
+						if (checked) {
+							setDefaultView(activeView);
+						}
+						else {
+							setDefaultView(undefined);
+						}
+					}}
+					label={t('global.set_as_default_view')}
+					/>
 				{activeView !== 'summary' && (
 					<Button	/* View prospective voyage */
 						title='View prospective voyage'
