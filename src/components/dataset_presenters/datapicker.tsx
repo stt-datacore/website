@@ -17,7 +17,6 @@ import { DataGrid } from './datagrid';
 import { IDataGridSetup } from './model';
 import { DataTable } from './datatable';
 import { IDataTableSetup } from './model';
-import { GlobalContext } from '../../context/globalcontext';
 
 type DataPickerProps = {
 	id: string;
@@ -40,8 +39,6 @@ type DataPickerProps = {
 };
 
 export const DataPicker = (props: DataPickerProps) => {
-	const globalContext = React.useContext(GlobalContext);
-	const { t } = globalContext.localized;
 	const { searchTitle, clickAction } = props;
 	// Reset selected ids on each reload, parent should maintain persistent state of selected ids
 	const [pendingSelectedIds, setPendingSelectedIds] = React.useState<Set<number>>(new Set<number>());
