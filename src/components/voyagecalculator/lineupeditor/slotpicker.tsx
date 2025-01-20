@@ -119,7 +119,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 
 	React.useEffect(() => {
 		if (data && estimates?.length) {
-			if (replacement?.crew) {
+			if (replacement?.seat) {
 				setTimeout(() => {
 					setReplacement(undefined);
 					handleSelectedIds(new Set([CONFIG.VOYAGE_CREW_SLOTS.indexOf(replacement.seat)]), true);

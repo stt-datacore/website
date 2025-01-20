@@ -26,6 +26,8 @@ import { CalculatorContext } from '../context';
 
 import { EditorContext } from './context';
 import { gradeToColor } from '../../../utils/crewutils';
+import { OptionsPanelFlexRow } from '../../stats/utils';
+import { AvatarView } from '../../item_presenters/avatarview';
 
 interface IAlternateCrewData extends PlayerCrew {
 	assigned_slot: number;
@@ -186,11 +188,12 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 			firstSort: 'descending',
 			immediateOverride: true
 		} : undefined
-		const replacingData = data.filter(f => f.skill_order.includes(skill) && f.id !== replacement.crew.id);
+		const replacingData = data.filter(f => f.skill_order.includes(skill) && (!replacement.crew || f.id !== replacement.crew.id));
 		return (
 			<>
 			<DataPicker	/* Search for alternate voyage crew by name */
-				replacing={replacement}
+				searchTitle={renderReplacement()}
+				clickAction={'select'}
 				id={`${id}/alternatepicker/datapicker`}
 				data={replacingData}
 				closePicker={handleSelectedReplacement}
@@ -250,7 +253,6 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 				datum.id === alternateId
 			);
 			if (alternateCrew)
-
 				setAlternate(alternateCrew);
 		}
 	}
@@ -279,6 +281,23 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 				{!!n && <sup style={{ fontSize: '0.9em', fontWeight: 'bold', margin: '0 0.5em', color: gradeToColor(Math.min(4, n) / 4, true) || undefined}}>{n}</sup>}
 			</React.Fragment>
 		);
+	}
+
+	function renderReplacement() {
+		const flexRow = OptionsPanelFlexRow;
+		if (!replacement) return <></>;
+		if (replacement.crew) {
+			return (
+				<h3 style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', alignItems: 'center'}}>
+					Replace <AvatarView mode='crew' item={replacement.crew} size={32} /> {replacement.crew.name} as <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${CONFIG.getSlotSkill(replacement.seat)}.png`} style={{height: '16px'}} /> {t(`voyage.seats.${replacement.seat}`)}:
+				</h3>)
+		}
+		else {
+			return (
+				<h3 style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', alignItems: 'center'}}>
+					Select staff for <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${CONFIG.getSlotSkill(replacement.seat)}.png`} style={{height: '16px'}} /> {t(`voyage.seats.${replacement.seat}`)}:
+				</h3>)
+		}
 	}
 
 	function renderCrewAssignment(crew: IAlternateCrewData): JSX.Element {

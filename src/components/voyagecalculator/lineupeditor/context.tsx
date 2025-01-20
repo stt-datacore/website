@@ -6,7 +6,7 @@ import { IProspectiveConfig, IProspectiveCrewSlot } from './model';
 export type LineupEditorViews = 'crewpicker' | 'slotpicker' | 'summary';
 
 export interface ISpotReplacement {
-	crew: IVoyageCrew,
+	crew?: IVoyageCrew,
 	seat: string
 }
 

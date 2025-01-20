@@ -88,17 +88,11 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 	);
 
 	function replaceClick(cs: IProspectiveCrewSlot) {
-		if (!cs.crew) {
-			setReplacement(undefined);
-			setTimeout(() => editLineup());
-		}
-		else {
-			setReplacement({
-				crew: cs.crew,
-				seat: cs.symbol
-			});
-			setTimeout(() => editLineup());
-		}
+		setReplacement({
+			crew: cs.crew,
+			seat: cs.symbol
+		});
+		setTimeout(() => editLineup());
 	}
 
 	function renderTopLines(): JSX.Element {
