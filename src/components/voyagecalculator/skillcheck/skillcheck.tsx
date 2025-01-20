@@ -17,12 +17,12 @@ type SkillCheckProps = {
 	id: string;
 	voyageConfig: IVoyageCalcConfig | IProspectiveConfig;
 	baselineConfig?: IVoyageCalcConfig;
-	highlightedSkill?: string;
-	setHighlightedSkill: (value?: string) => void;
+	highlightedSkills: string[];
+	setHighlightedSkills: (value: string[]) => void;
 };
 
 export const SkillCheck = (props: SkillCheckProps) => {
-	const { id, voyageConfig, baselineConfig, highlightedSkill, setHighlightedSkill } = props;
+	const { id, voyageConfig, baselineConfig, highlightedSkills, setHighlightedSkills } = props;
 
 	const data = React.useMemo<ISkillData[]>(() => {
 		return getSkillData(voyageConfig);
@@ -56,21 +56,20 @@ export const SkillCheck = (props: SkillCheckProps) => {
 			od.skill === skillData.skill
 		);
 		return (
-			<div style={{cursor: 'pointer'}} onClick={() => {
-				if (highlightedSkill !== skillData.skill) {
-					setHighlightedSkill(skillData.skill);
-				}
-				else {
-					setHighlightedSkill(undefined);
-				}
-			}}>
 			<SkillDetail
-				highlighted={highlightedSkill === skillData.skill}
+				highlighted={highlightedSkills.includes(skillData.skill)}
+				setHighlighted={(value) => {
+					if (value) {
+						setHighlightedSkills([...highlightedSkills, skillData.skill])
+					}
+					else {
+						setHighlightedSkills(highlightedSkills.filter(f => f !== skillData.skill))
+					}
+				}}
 				voyageConfig={voyageConfig}
 				currentData={skillData}
 				baselineData={baselineSkillData}
 			/>
-			</div>
 		);
 	}
 };

@@ -22,12 +22,13 @@ type SkillDetailProps = {
 	currentData: ISkillData;
 	baselineData?: ISkillData;
 	highlighted?: boolean;
+	setHighlighted: (value?: boolean) => void;
 };
 
 export const SkillDetail = (props: SkillDetailProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { voyageConfig, currentData, baselineData } = props;
-
+	const { voyageConfig, currentData, baselineData, setHighlighted, highlighted } = props;
+	const [proficiencyMode, setProficiencyMode] = React.useState(false);
 	const renderAsTime = (value: number) => <>{formatTime(value, t)}</>;
 
 	interface ISkillDetailRow {
@@ -56,12 +57,21 @@ export const SkillDetail = (props: SkillDetailProps) => {
 
 	return (
 		<React.Fragment>
-			<Message attached style={{backgroundColor: props.highlighted ? 'forestgreen' : undefined }}>
+			<Message attached style={{backgroundColor: highlighted ? 'forestgreen' : undefined, cursor: 'pointer' }}
+				onClick={() => {
+					if (highlighted) {
+						setHighlighted(undefined);
+					}
+					else {
+						setHighlighted(true);
+					}
+				}}
+				>
 				<Message.Header>
 					{currentData.name}
 					{voyageConfig.skills.primary_skill === currentData.skill && <Icon name='star' color='yellow' style={{ marginLeft: '.5em' }} />}
 					{voyageConfig.skills.secondary_skill === currentData.skill && <Icon name='star' color='grey' style={{ marginLeft: '.5em' }} />}
-					{props.highlighted && <Icon name='check' style={{marginLeft: '0.2em'}} />}
+					{highlighted && <Icon name='check' style={{marginLeft: '0.2em'}} />}
 					<Image floated='right' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${currentData.skill}.png`} style={{ height: '1.5em' }} />
 				</Message.Header>
 			</Message>
@@ -89,12 +99,13 @@ export const SkillDetail = (props: SkillDetailProps) => {
 								</Table.Cell>
 							</Table.Row>
 						))}
-						<Table.Row>
+						<Table.Row style={{cursor: 'pointer'}} onClick={() => setProficiencyMode(!proficiencyMode)}>
 							<Table.Cell>
-								Best proficiency:
+								{!proficiencyMode && <>Best proficiency:</>}
+								{proficiencyMode && <>Best minimum:</>}
 							</Table.Cell>
 							<Table.Cell textAlign='right'>
-								{renderProficiency()}
+								{renderProficiency(proficiencyMode)}
 							</Table.Cell>
 						</Table.Row>
 					</Table.Body>
@@ -118,15 +129,21 @@ export const SkillDetail = (props: SkillDetailProps) => {
 		return <b>{currentValue}</b>;
 	}
 
-	function renderProficiency(): JSX.Element {
+	function renderProficiency(proficiencyMode: boolean): JSX.Element {
 		// Voyage history does not have reliable proficiency values for individual crew
-		if (currentData.best_proficiency === 0) return <>N/A</>;
-		if (!baselineData) return <b>{currentData.best_proficiency}</b>;
+
+		const number = proficiencyMode ? currentData.best_minimum : currentData.best_proficiency;
+
+		if (number === 0) return <>N/A</>;
+		if (!baselineData) return <b>{number}</b>;
+
+		const base_number = proficiencyMode ? baselineData.best_minimum : baselineData.best_proficiency;
+
 		return (
 			<NumericDiff
 				compare={{
-					currentValue: currentData.best_proficiency,
-					baselineValue: baselineData.best_proficiency,
+					currentValue: number,
+					baselineValue: base_number,
 					showCurrentValue: true
 				}}
 				justifyContent='flex-end'

@@ -13,6 +13,7 @@ export interface ISkillData extends IEssentialData {
 	fail_point: number;
 	crew_count: number;
 	best_proficiency: number;
+	best_minimum: number;
 	paired_skills: string[];
 };
 
@@ -34,14 +35,20 @@ export function getSkillData(voyageConfig: IVoyageCalcConfig | IProspectiveConfi
 
 		const skilledCrew: PlayerCrew[] = assignedCrew.filter(ac => Object.keys(ac.base_skills).includes(skill));
 
-		let bestProficiency: number = 0;
-		skilledCrew.forEach(sc => {
-			// Crew in voyage history config have no skills prop
-			if ('skills' in sc) {
-				const score: number = (sc.skills[skill] as Skill).range_max;
-				if (score > bestProficiency) bestProficiency = score;
-			}
-		});
+		const { bestMinimum, bestProficiency } = (() => {
+			let bestProficiency: number = 0;
+			let bestMinimum: number = 0;
+			skilledCrew.forEach(sc => {
+				// Crew in voyage history config have no skills prop
+				if ('skills' in sc) {
+					const score: number = (sc.skills[skill] as Skill).range_max;
+					const minscore: number = (sc.skills[skill] as Skill).range_min;
+					if (score > bestProficiency) bestProficiency = score;
+					if (minscore > bestMinimum) bestMinimum = minscore;
+				}
+			});
+			return { bestMinimum, bestProficiency }
+		})();
 
 		const pairedSkills: string[] = [];
 		Object.keys(CONFIG.SKILLS)
@@ -60,6 +67,7 @@ export function getSkillData(voyageConfig: IVoyageCalcConfig | IProspectiveConfi
 			fail_point: failPoint,
 			crew_count: skilledCrew.length,
 			best_proficiency: bestProficiency,
+			best_minimum: bestMinimum,
 			paired_skills: pairedSkills
 		});
 	});
