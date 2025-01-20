@@ -25,6 +25,7 @@ import { SkillCheck } from '../skillcheck/skillcheck';
 import { IControlVoyage, IProspectiveConfig, IProspectiveCrewSlot } from './model';
 import { EditorContext } from './context';
 import { ProficiencyCheck } from '../skillcheck/proficiencycheck';
+import { AvatarView } from '../../item_presenters/avatarview';
 
 type ProspectiveSummaryProps = {
 	control: IControlVoyage | undefined;
@@ -332,7 +333,6 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 								else {
 									bg = 'darkgreen';
 								}
-
 							}
 						}
 						return (
@@ -372,19 +372,18 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 						<Icon name='exclamation triangle' color='yellow' size='large' /> (Unassigned)
 					</React.Fragment>
 				)}
+				{!!highlightedSkill && crewSlot.crew?.skill_order.includes(highlightedSkill) && <Icon name='check' />}
 			</div>
 		);
 	}
 
 	function renderCrewAvatar(crew: PlayerCrew): JSX.Element {
-		const imageUrlPortrait: string = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
 		return (
-			<ItemDisplay
-				src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
+			<AvatarView
+				mode='crew'
 				size={32}
-				maxRarity={crew.max_rarity}
-				rarity={crew.rarity}
-			/>
+				item={crew}
+				/>
 		);
 	}
 
