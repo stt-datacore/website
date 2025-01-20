@@ -16,7 +16,7 @@ import CONFIG from '../../CONFIG';
 import { IDataGridSetup, IDataTableColumn, IDataTableSetup, IEssentialData } from '../../dataset_presenters/model';
 import { DataPicker, DataPickerLoading } from '../../dataset_presenters/datapicker';
 import { NumericDiff } from '../../dataset_presenters/elements/numericdiff';
-import ItemDisplay from '../../itemdisplay';
+import { AvatarView } from '../../item_presenters/avatarview';
 
 import { CalculatorContext } from '../context';
 import { getCrewTraitBonus, voySkillScore } from '../utils';
@@ -55,7 +55,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
 	const calculatorContext = React.useContext(CalculatorContext);
-	const { id, prospectiveConfig, sortedSkills, getConfigFromCrewSlots, getRuntimeDiff, renderActions, dismissEditor, setReplacement, replacement } = React.useContext(EditorContext);
+	const { id, prospectiveConfig, sortedSkills, getConfigFromCrewSlots, getRuntimeDiff, renderActions, dismissEditor } = React.useContext(EditorContext);
 	const { alternateCrew, setAlternateVoyage } = props;
 
 	const [data, setData] = React.useState<IAlternateSlotData[] | undefined>(undefined);
@@ -70,7 +70,6 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 
 		const data: IAlternateSlotData[] = [];
 		prospectiveConfig.crew_slots.forEach((crewSlot, slotId) => {
-			if (replacement && replacement.seat !== crewSlot.symbol) return;
 			if (crewSlot.crew?.id !== alternateCrew.id && Object.keys(alternateCrew.skills).includes(crewSlot.skill)) {
 				const altCrewSlots: IProspectiveCrewSlot[] = JSON.parse(JSON.stringify(crewSlots));
 				altCrewSlots[slotId].crew = alternateCrew;
@@ -116,17 +115,6 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 		});
 		setData([...data]);
 	}, [estimates]);
-
-	React.useEffect(() => {
-		if (data && estimates?.length) {
-			if (replacement?.seat) {
-				setTimeout(() => {
-					setReplacement(undefined);
-					handleSelectedIds(new Set([CONFIG.VOYAGE_CREW_SLOTS.indexOf(replacement.seat)]), true);
-				});
-			}
-		}
-	}, [data, estimates]);
 
 	if (!data) return <DataPickerLoading />;
 
@@ -288,23 +276,11 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 	function renderCrewSwap(alternateCrew: PlayerCrew, slottedCrew: PlayerCrew | undefined): JSX.Element {
 		return (
 			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-				{slottedCrew && renderCrewAvatar(slottedCrew)}
+				{slottedCrew && <AvatarView mode='crew' item={slottedCrew} size={40} />}
 				{!slottedCrew && <Icon name='exclamation triangle' color='yellow' size='big' />}
 				<Icon name='arrow right' />
-				{renderCrewAvatar(alternateCrew)}
+				<AvatarView mode='crew' item={alternateCrew} size={40} />
 			</div>
-		);
-	}
-
-	function renderCrewAvatar(crew: PlayerCrew): JSX.Element {
-		const imageUrlPortrait: string = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
-		return (
-			<ItemDisplay
-				src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
-				size={40}
-				maxRarity={crew.max_rarity}
-				rarity={crew.rarity}
-			/>
 		);
 	}
 

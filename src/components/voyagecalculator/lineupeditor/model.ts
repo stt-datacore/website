@@ -16,3 +16,8 @@ export interface IProspectiveConfig extends IVoyageInputConfig {
 export interface IProspectiveCrewSlot extends CrewSlot {
 	crew?: PlayerCrew;
 };
+
+export interface ICrewSlotTargeting {
+	slot: IProspectiveCrewSlot;
+	cancel: () => void;
+};

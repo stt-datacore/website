@@ -173,7 +173,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 								<Popup position='top center'
 									content={<>Edit lineup</>}
 									trigger={
-										<Button icon='pencil' onClick={() => setEditorTrigger({ view: 'crewpicker' })} />
+										<Button icon='pencil' onClick={() => setEditorTrigger({ view: 'summary' })} />
 									}
 								/>
 								<Popup position='top center'

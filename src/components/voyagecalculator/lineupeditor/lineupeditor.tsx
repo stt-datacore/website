@@ -1,27 +1,26 @@
 import React from 'react';
 import {
 	Button,
-	Checkbox,
 	Dimmer,
 	Loader
 } from 'semantic-ui-react';
 
-import { PlayerCrew } from '../../../model/player';
 import { Ship } from '../../../model/ship';
 import { Estimate, IVoyageCalcConfig, IVoyageCrew } from '../../../model/voyage';
+import { GlobalContext } from '../../../context/globalcontext';
 
 import CONFIG from '../../CONFIG';
 
 import { CalculatorContext } from '../context';
 
 import { IControlVoyage, IProspectiveConfig, IProspectiveCrewSlot } from './model';
-import { EditorContext, IEditorContext, ISpotReplacement, LineupEditorViews } from './context';
+import { EditorContext, IEditorContext } from './context';
 import { AlternateCrewPicker } from './crewpicker';
 import { AlternateSlotPicker } from './slotpicker';
 import { ProspectiveSummary } from './summary';
-import { getProspectiveConfig } from './utils';
-import { useStateWithStorage } from '../../../utils/storage';
-import { GlobalContext } from '../../../context/globalcontext';
+import { getProspectiveConfig, promiseEstimateFromConfig } from './utils';
+
+type LineupEditorViews = 'crewpicker' | 'slotpicker' | 'summary';
 
 export interface ILineupEditorTrigger {
 	view: LineupEditorViews;
@@ -39,15 +38,7 @@ type LineupEditorProps = {
 
 export const LineupEditor = (props: LineupEditorProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { playerData } = globalContext.player;
 	const { t } = globalContext.localized;
-
-	const dbidPrefix = (() => {
-		if (playerData) {
-			return playerData.player.dbid.toString() + "/";
-		}
-		return '/';
-	})();
 
 	const { voyageConfig } = React.useContext(CalculatorContext);
 	const { trigger, cancelTrigger, ship, roster, control, commitVoyage } = props;
@@ -56,14 +47,12 @@ export const LineupEditor = (props: LineupEditorProps) => {
 	const [prospectiveEstimate, setProspectiveEstimate] = React.useState<Estimate | undefined>(control?.estimate);
 
 	const [activeView, setActiveView] = React.useState<LineupEditorViews | undefined>(undefined);
-	const [defaultView, setDefaultView] = useStateWithStorage<LineupEditorViews | undefined>(`${dbidPrefix}/default_voyage_editor_view`, undefined, { rememberForever: !!dbidPrefix });
 
-	const [replacement, setReplacement] = React.useState<ISpotReplacement | undefined>(undefined);
-	const [alternateCrew, setAlternateCrew] = React.useState<PlayerCrew | undefined>(undefined);
+	const [slotTarget, setSlotTarget] = React.useState<IProspectiveCrewSlot | undefined>(undefined);
+	const [alternateCrew, setAlternateCrew] = React.useState<IVoyageCrew | undefined>(undefined);
 
 	React.useEffect(() => {
-		setReplacement(undefined);
-		setActiveView(defaultView || trigger?.view);
+		setActiveView(trigger?.view);
 	}, [trigger]);
 
 	const prospectiveConfig = React.useMemo<IProspectiveConfig>(() => {
@@ -98,15 +87,11 @@ export const LineupEditor = (props: LineupEditorProps) => {
 		prospectiveConfig,
 		prospectiveEstimate,
 		sortedSkills,
-		replacement,
-		defaultView,
-		setReplacement,
 		getConfigFromCrewSlots,
 		getRuntimeDiff,
-		editLineup: () => setActiveView('crewpicker'),
+		seekAlternateCrew,
 		renderActions,
-		dismissEditor,
-		setDefaultView
+		dismissEditor
 	};
 
 	return (
@@ -115,7 +100,8 @@ export const LineupEditor = (props: LineupEditorProps) => {
 				{activeView === 'crewpicker' && (
 					<AlternateCrewPicker
 						roster={roster}
-						setAlternate={seekSeatForAlternate}
+						targeting={slotTarget ? { slot: slotTarget, cancel: () => setSlotTarget(undefined) } : undefined}
+						setAlternate={seekSlotForAlternate}
 					/>
 				)}
 				{activeView === 'slotpicker' && alternateCrew && (
@@ -152,24 +138,12 @@ export const LineupEditor = (props: LineupEditorProps) => {
 	function renderActions(): JSX.Element {
 		return (
 			<React.Fragment>
-				<Checkbox
-					style={{margin: "0 1em"}}
-					checked={defaultView === activeView}
-					onChange={(e, { checked }) => {
-						if (checked) {
-							setDefaultView(activeView);
-						}
-						else {
-							setDefaultView(undefined);
-						}
-					}}
-					label={t('global.set_as_default_view')}
-					/>
 				{activeView !== 'summary' && (
 					<Button	/* View prospective voyage */
 						title='View prospective voyage'
 						icon='vcard'
 						onClick={() => {
+							setSlotTarget(undefined);
 							setAlternateCrew(undefined);
 							setActiveView('summary');
 						}}
@@ -180,6 +154,7 @@ export const LineupEditor = (props: LineupEditorProps) => {
 						title='Search for alternate crew'
 						icon='search'
 						onClick={() => {
+							setSlotTarget(undefined);
 							setAlternateCrew(undefined);
 							setActiveView('crewpicker');
 						}}
@@ -195,18 +170,40 @@ export const LineupEditor = (props: LineupEditorProps) => {
 
 	function dismissEditor(): void {
 		setActiveView(undefined);
+		setSlotTarget(undefined);
 		setAlternateCrew(undefined);
 		cancelTrigger();
 	}
 
-	function seekSeatForAlternate(alternateCrew: PlayerCrew): void {
-		setAlternateCrew(alternateCrew);
-		setActiveView('slotpicker');
+	function seekAlternateCrew(crewSlot?: IProspectiveCrewSlot): void {
+		setSlotTarget(crewSlot);
+		setActiveView('crewpicker');
+	}
+
+	function seekSlotForAlternate(alternateCrew: IVoyageCrew): void {
+		if (slotTarget) {
+			const altCrewSlots: IProspectiveCrewSlot[] = JSON.parse(JSON.stringify(prospectiveCrewSlots));
+			const altCrewSlot: IProspectiveCrewSlot | undefined = altCrewSlots.find(cs => cs.symbol === slotTarget.symbol);
+			if (altCrewSlot) altCrewSlot.crew = alternateCrew;
+			const altConfig: IProspectiveConfig = getConfigFromCrewSlots(altCrewSlots);
+			promiseEstimateFromConfig(
+				altConfig,
+				(estimate: Estimate) => {
+					updateProspectiveVoyage(altConfig, estimate);
+				}
+			);
+			setActiveView(undefined);
+		}
+		else {
+			setAlternateCrew(alternateCrew);
+			setActiveView('slotpicker');
+		}
 	}
 
 	function updateProspectiveVoyage(config: IProspectiveConfig, estimate: Estimate): void {
 		setProspectiveCrewSlots(config.crew_slots);
 		setProspectiveEstimate(estimate);
+		setSlotTarget(undefined);
 		setAlternateCrew(undefined);
 		setActiveView('summary');
 	}
