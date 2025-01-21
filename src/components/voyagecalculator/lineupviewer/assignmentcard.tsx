@@ -1,6 +1,7 @@
 import React from 'react';
 import {
 	Card,
+	Icon,
 	Label,
 	Popup
 } from 'semantic-ui-react';
@@ -93,6 +94,12 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 				}}>
 				{name}
 			</Label>
+			{!!highlight &&
+			<Label corner='left'>
+			<Icon name='check' style={{margin: '0'}} />
+			</Label>
+			}
+
 		</Card>
 	);
 

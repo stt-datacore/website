@@ -1,6 +1,7 @@
 import React from 'react';
 import {
 	Grid,
+	Icon,
 	Popup,
 	Table
 } from 'semantic-ui-react';
@@ -100,7 +101,7 @@ export const TableView = () => {
 												/>
 											)}
 											<div style={{ whiteSpace: 'nowrap', overflowX: 'hidden', textOverflow: 'ellipsis' }}>
-												<b>{crew.name}</b>
+												<b>{crew.name}</b>{!!highlight && <Icon name='check' style={{margin: '0 0.5em'}} />}
 											</div>
 										</div>
 									}>
