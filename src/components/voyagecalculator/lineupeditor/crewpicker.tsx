@@ -248,7 +248,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 				{calculatorContext.voyageConfig.skills.primary_skill === skill && <Icon name='star' color='yellow' />}
 				{calculatorContext.voyageConfig.skills.secondary_skill === skill && <Icon name='star' color='grey' />}
-				{!!n && <sup style={{ fontSize: '0.9em', fontWeight: 'bold', margin: '0 0.5em', color: gradeToColor(Math.min(4, n) / 4, true) || undefined}}>{n}</sup>}
+				{!!n && <sup style={{ fontSize: '0.9em', fontWeight: 'bold', margin: '0 0.5em' }}>{n}</sup>}
 			</span>
 		);
 	}
