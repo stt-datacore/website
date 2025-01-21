@@ -2,13 +2,14 @@ import React from 'react';
 import {
 	Button,
 	Form,
-	Icon
+	Icon,
+	Message
 } from 'semantic-ui-react';
 
 import { Skill } from '../../../model/crew';
-import { PlayerCrew } from '../../../model/player';
 import { IVoyageCrew } from '../../../model/voyage';
 import { GlobalContext } from '../../../context/globalcontext';
+import { gradeToColor } from '../../../utils/crewutils';
 import { useStateWithStorage } from '../../../utils/storage';
 
 import CONFIG from '../../CONFIG';
@@ -21,15 +22,15 @@ import { AvailabilityCrewFilter, crewMatchesAvailabilityFilter } from '../../dat
 import { crewMatchesEventFilter, EventCrewFilter } from '../../dataset_presenters/options/eventcrewfilter';
 import { crewMatchesQuippedFilter, QuippedCrewFilter } from '../../dataset_presenters/options/quippedcrewfilter';
 import { crewMatchesSkillFilter, SkillToggler } from '../../dataset_presenters/options/skilltoggler';
+import { AvatarView } from '../../item_presenters/avatarview';
+import { OptionsPanelFlexRow } from '../../stats/utils';
 
 import { CalculatorContext } from '../context';
 
+import { ICrewSlotTargeting } from './model';
 import { EditorContext } from './context';
-import { gradeToColor } from '../../../utils/crewutils';
-import { OptionsPanelFlexRow } from '../../stats/utils';
-import { AvatarView } from '../../item_presenters/avatarview';
 
-interface IAlternateCrewData extends PlayerCrew {
+interface IAlternateCrewData extends IVoyageCrew {
 	assigned_slot: number;
 	status: number;
 	voyage_total: number;
@@ -59,14 +60,15 @@ const defaultFilters: IPickerFilters = {
 
 type AlternateCrewPickerProps = {
 	roster: IVoyageCrew[];
-	setAlternate: (alternateCrew: PlayerCrew) => void;
+	targeting: ICrewSlotTargeting | undefined;
+	setAlternate: (alternateCrew: IVoyageCrew) => void;
 };
 
 export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const calculatorContext = React.useContext(CalculatorContext);
-	const { id, prospectiveConfig, sortedSkills, renderActions, dismissEditor, replacement } = React.useContext(EditorContext);
-	const { roster, setAlternate } = props;
+	const { id, prospectiveConfig, sortedSkills, renderActions, dismissEditor } = React.useContext(EditorContext);
+	const { roster, targeting, setAlternate } = props;
 
 	const [filters, setFilters] = useStateWithStorage<IPickerFilters>(`${id}/alternatepicker/filters`, {...defaultFilters});
 	const [skillMode, setSkillMode] = useStateWithStorage<'voyage' | 'proficiency'>(`${id}/alternatepicker/skillMode`, 'voyage');
@@ -91,9 +93,9 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 				if (crewSkill) {
 					const proficiency: number = (crewSkill.range_min + crewSkill.range_max) / 2;
 					const voyageScore: number = crewSkill.core + proficiency;
-					if (skill === calculatorContext.voyageConfig.skills.primary_skill)
+					if (skill === prospectiveConfig.skills.primary_skill)
 						primaryScore = voyageScore;
-					else if (skill === calculatorContext.voyageConfig.skills.secondary_skill)
+					else if (skill === prospectiveConfig.skills.secondary_skill)
 						secondaryScore = voyageScore;
 					else
 						otherScore += voyageScore;
@@ -107,7 +109,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 			crew.voyage_total = primaryScore + secondaryScore + otherScore;
 		});
 		setData([...data]);
-	}, [roster, prospectiveConfig.crew_slots, skillMode]);
+	}, [roster, prospectiveConfig, skillMode]);
 
 	const filteredIds = React.useMemo<Set<number>>(() => {
 		const filteredIds: Set<number> = new Set<number>();
@@ -118,11 +120,74 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 					&& (crewMatchesSkillFilter(crew, filters.skills))
 					&& (crewMatchesAvailabilityFilter(crew, filters.availability))
 					&& (crewMatchesEventFilter(crew, filters.event, calculatorContext.events))
-					&& (crewMatchesQuippedFilter(crew, filters.quipped));
+					&& (crewMatchesQuippedFilter(crew, filters.quipped))
+					&& (crewMatchesSlotTarget(crew));
 			if (!canShowCrew) filteredIds.add(crew.id);
 		});
 		return filteredIds;
-	}, [data, filters, prospectMode]);
+	}, [data, filters, prospectMode, targeting]);
+
+	const tableSetup = React.useMemo<IDataTableSetup>(() => {
+		const columns: IDataTableColumn[] = [
+			{	/* Prospective voyage seat */
+				id: 'slot',
+				title: <Icon name='vcard' title='Prospective voyage seat' />,
+				align: 'center',
+				sortField: { id: 'assigned_slot' },
+				renderCell: (datum: IEssentialData) => renderCrewAssignment(datum as IAlternateCrewData)
+			},
+			{
+				id: 'name',
+				title: 'Crew',
+				sortField: { id: 'name', stringValue: true },
+				renderCell: (datum: IEssentialData) => <CrewLabel crew={datum as IAlternateCrewData} />
+			},
+			{
+				id: 'status',
+				title: 'Status',
+				align: 'center',
+				sortField: { id: 'status' },
+				renderCell: (datum: IEssentialData) => renderCrewStatus(datum as IAlternateCrewData)
+			},
+			{
+				id: 'voyage',
+				title: 'Voyage',
+				align: 'center',
+				sortField: { id: 'voyage_total', firstSort: 'descending' },
+				renderCell: (datum: IEssentialData) => <>{Math.floor((datum as IAlternateCrewData).voyage_total)}</>
+			}
+		];
+
+		sortedSkills.forEach(skill => {
+			columns.push({
+				id: skill,
+				title: renderSkillHeader(skill),
+				align: 'center',
+				sortField: {
+					id: `scored_${skill}`,
+					firstSort: 'descending'
+				},
+				renderCell: (datum: IEssentialData) => (
+					<React.Fragment>
+						{datum[`scored_${skill}`] > 0 ? Math.floor(datum[`scored_${skill}`]): ''}
+					</React.Fragment>
+				)
+			});
+		});
+
+		const tableSetup: IDataTableSetup = {
+			columns,
+			rowsPerPage: 12,
+		};
+		if (targeting) {
+			tableSetup.defaultSort = {
+				id: `scored_${targeting.slot.skill}`,
+				firstSort: 'descending',
+				immediateOverride: true
+			};
+		}
+		return tableSetup;
+	}, [sortedSkills, targeting]);
 
 	if (!data) return <DataPickerLoading />;
 
@@ -130,114 +195,29 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		renderGridColumn: renderGridCrew
 	};
 
-	const columns: IDataTableColumn[] = [
-		{	/* Prospective voyage seat */
-			id: 'slot',
-			title: <Icon name='vcard' title='Prospective voyage seat' />,
-			align: 'center',
-			sortField: { id: 'assigned_slot' },
-			renderCell: (datum: IEssentialData) => renderCrewAssignment(datum as IAlternateCrewData)
-		},
-		{
-			id: 'name',
-			title: 'Crew',
-			sortField: { id: 'name', stringValue: true },
-			renderCell: (datum: IEssentialData) => <CrewLabel crew={datum as IAlternateCrewData} />
-		},
-		{
-			id: 'status',
-			title: 'Status',
-			align: 'center',
-			sortField: { id: 'status' },
-			renderCell: (datum: IEssentialData) => renderCrewStatus(datum as IAlternateCrewData)
-		},
-		{
-			id: 'voyage',
-			title: 'Voyage',
-			align: 'center',
-			sortField: { id: 'voyage_total', firstSort: 'descending' },
-			renderCell: (datum: IEssentialData) => <>{Math.floor((datum as IAlternateCrewData).voyage_total)}</>
-		}
-	];
-
-	sortedSkills.forEach(skill => {
-		columns.push({
-			id: skill,
-			title: renderSkillHeader(skill),
-			align: 'center',
-			sortField: {
-				id: `scored_${skill}`,
-				firstSort: 'descending'
-			},
-			renderCell: (datum: IEssentialData) => (
-					<React.Fragment>
-						{datum[`scored_${skill}`] > 0 ? Math.floor(datum[`scored_${skill}`]): ''}
-					</React.Fragment>
-			)
-		});
-	});
-
-	const tableSetup: IDataTableSetup = {
-		columns,
-		rowsPerPage: 12,
-	};
-	if (replacement) {
-	 	let skill = CONFIG.getSlotSkill(replacement.seat);
-		tableSetup.defaultSort = replacement ? {
-			id: `scored_${skill}`,
-			firstSort: 'descending',
-			immediateOverride: true
-		} : undefined
-		const replacingData = data.filter(f => f.skill_order.includes(skill) && (!replacement.crew || f.id !== replacement.crew.id));
-		return (
-			<>
-			<DataPicker	/* Search for alternate voyage crew by name */
-				searchTitle={renderReplacement()}
-				clickAction={'select'}
-				id={`${id}/alternatepicker/datapicker`}
-				data={replacingData}
-				closePicker={handleSelectedReplacement}
-				selection
-				closeOnChange
-				preFilteredIds={filteredIds}
-				search
-				searchPlaceholder='Search for alternate voyage crew by name'
-				renderOptions={renderOptions}
-				renderActions={renderActions}
-				gridSetup={gridSetup}
-				tableSetup={tableSetup}
-			/>
-			</>
-		);
-
-	}
-	else {
-		return (
-			<>
-			<DataPicker	/* Search for alternate voyage crew by name */
-				id={`${id}/alternatepicker/datapicker`}
-				data={data}
-				closePicker={handleSelectedIds}
-				selection
-				closeOnChange
-				preFilteredIds={filteredIds}
-				search
-				searchPlaceholder='Search for alternate voyage crew by name'
-				renderOptions={renderOptions}
-				renderActions={renderActions}
-				gridSetup={gridSetup}
-				tableSetup={tableSetup}
-			/>
-			</>
-		);
-
-	}
+	return (
+		<DataPicker	/* Search for alternate voyage crew by name */
+			id={`${id}/alternatepicker/datapicker`}
+			data={data}
+			closePicker={handleSelectedIds}
+			selection
+			closeOnChange
+			preFilteredIds={filteredIds}
+			search
+			searchPlaceholder='Search for alternate voyage crew by name'
+			renderOptions={renderOptions}
+			renderPreface={targeting ? renderReplacement : undefined}
+			renderActions={renderActions}
+			gridSetup={gridSetup}
+			tableSetup={tableSetup}
+		/>
+	);
 
 	function handleSelectedIds(selectedIds: Set<number>, affirmative: boolean): void {
 		if (!affirmative) dismissEditor();
 		if (selectedIds.size > 0) {
 			const alternateId: number = [...selectedIds][0];
-			const alternateCrew: PlayerCrew | undefined = data?.find(datum =>
+			const alternateCrew: IVoyageCrew | undefined = data?.find(datum =>
 				datum.id === alternateId
 			);
 			if (alternateCrew)
@@ -245,23 +225,13 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		}
 	}
 
-	function handleSelectedReplacement(selectedIds: Set<number>, affirmative: boolean): void {
-		if (!affirmative || !replacement) dismissEditor();
-		if (selectedIds.size > 0) {
-			const alternateId: number = [...selectedIds][0];
-			const alternateCrew: PlayerCrew | undefined = data?.find(datum =>
-				datum.id === alternateId
-			);
-			if (alternateCrew)
-				setAlternate(alternateCrew);
-		}
-	}
 	function renderOptions(): JSX.Element {
 		return (
 			<AlternatePickerOptions
 				filters={filters} setFilters={setFilters}
 				skillMode={skillMode} setSkillMode={setSkillMode}
 				prospectMode={prospectMode} setProspectMode={setProspectMode}
+				targeting={targeting}
 			/>
 		);
 	}
@@ -274,30 +244,28 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		const n = prospectiveConfig.crew_slots.filter(f => f.crew?.skill_order.includes(skill))?.length || 0;
 
 		return (
-			<React.Fragment>
-				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+			<span title={`Your prospective voyage has ${n} crew with this skill`}>
+				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 				{calculatorContext.voyageConfig.skills.primary_skill === skill && <Icon name='star' color='yellow' />}
 				{calculatorContext.voyageConfig.skills.secondary_skill === skill && <Icon name='star' color='grey' />}
 				{!!n && <sup style={{ fontSize: '0.9em', fontWeight: 'bold', margin: '0 0.5em', color: gradeToColor(Math.min(4, n) / 4, true) || undefined}}>{n}</sup>}
-			</React.Fragment>
+			</span>
 		);
 	}
 
-	function renderReplacement() {
+	function renderReplacement(): JSX.Element {
 		const flexRow = OptionsPanelFlexRow;
-		if (!replacement) return <></>;
-		if (replacement.crew) {
-			return (
-				<h3 style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', alignItems: 'center'}}>
-					Replace <AvatarView mode='crew' item={replacement.crew} size={32} /> {replacement.crew.name} as <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${CONFIG.getSlotSkill(replacement.seat)}.png`} style={{height: '16px'}} /> {t(`voyage.seats.${replacement.seat}`)}:
-				</h3>)
-		}
-		else {
-			return (
-				<h3 style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', alignItems: 'center'}}>
-					Select staff for <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${CONFIG.getSlotSkill(replacement.seat)}.png`} style={{height: '16px'}} /> {t(`voyage.seats.${replacement.seat}`)}:
-				</h3>)
-		}
+		if (!targeting) return <></>;
+		return (
+			<div style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', alignItems: 'center'}}>
+				{targeting.slot.crew && (
+					<>Select a crew to replace <AvatarView mode='crew' item={targeting.slot.crew} size={32} /> {targeting.slot.crew.name} as <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`} style={{height: '16px'}} /> {t(`voyage.seats.${targeting.slot.symbol}`)}:</>
+				)}
+				{!targeting.slot.crew && (
+					<>Select a crew for <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`} style={{height: '16px'}} /> {t(`voyage.seats.${targeting.slot.symbol}`)}:</>
+				)}
+			</div>
+		);
 	}
 
 	function renderCrewAssignment(crew: IAlternateCrewData): JSX.Element {
@@ -307,7 +275,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 			'engineering_skill', 'science_skill', 'medicine_skill'
 		];
 		const skillSlot: number = Math.floor(crew.assigned_slot/2);
-		return <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${slottedSkills[skillSlot]}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+		return <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${slottedSkills[skillSlot]}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 	}
 
 	function renderCrewStatus(crew: IAlternateCrewData): JSX.Element {
@@ -337,6 +305,10 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		}
 		return <></>;
 	}
+
+	function crewMatchesSlotTarget(crew: IAlternateCrewData): boolean {
+		return (!targeting || (Object.keys(crew.skills).includes(targeting.slot.skill) && (!targeting.slot.crew || targeting.slot.crew.id !== crew.id)));
+	}
 };
 
 type AlternatePickerOptionsProps = {
@@ -346,11 +318,13 @@ type AlternatePickerOptionsProps = {
 	setSkillMode: (skillMode: 'voyage' | 'proficiency') => void;
 	prospectMode: boolean;
 	setProspectMode: (prospectMode: boolean) => void;
+	targeting: ICrewSlotTargeting | undefined;
 };
 
 const AlternatePickerOptions = (props: AlternatePickerOptionsProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const calculatorContext = React.useContext(CalculatorContext);
-	const { filters, setFilters, skillMode, setSkillMode, prospectMode, setProspectMode } = props;
+	const { filters, setFilters, skillMode, setSkillMode, prospectMode, setProspectMode, targeting } = props;
 
 	return (
 		<Form>
@@ -419,11 +393,23 @@ const AlternatePickerOptions = (props: AlternatePickerOptionsProps) => {
 						onClick={() => {
 							setFilters({...defaultFilters});
 							setSkillMode('voyage');
-							setProspectMode(false);
 						}}
 					/>
 				</Form.Field>
 			</Form.Group>
+			{targeting && (
+				<Message>
+					<Icon name='info circle' />
+					<span style={{ marginRight: '1em' }}>
+						Only showing viable <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon'/> {t(`voyage.seats.${targeting.slot.symbol}`)} alternates
+					</span>
+					<Button	/* Cancel */
+						content='Cancel'
+						onClick={() => { targeting.cancel(); }}
+						compact
+					/>
+				</Message>
+			)}
 		</Form>
 	);
 };

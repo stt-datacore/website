@@ -17,15 +17,14 @@ import { formatTime } from '../../../utils/voyageutils';
 
 import { CrewLabel } from '../../dataset_presenters/elements/crewlabel';
 import { NumericDiff } from '../../dataset_presenters/elements/numericdiff';
-import ItemDisplay from '../../itemdisplay';
+import { AvatarView } from '../../item_presenters/avatarview';
 
 import { getCrewTraitBonus, getCrewEventBonus } from '../utils';
 import { SkillCheck } from '../skillcheck/skillcheck';
+import { ProficiencyCheck } from '../skillcheck/proficiencycheck';
 
 import { IControlVoyage, IProspectiveConfig, IProspectiveCrewSlot } from './model';
 import { EditorContext } from './context';
-import { ProficiencyCheck } from '../skillcheck/proficiencycheck';
-import { AvatarView } from '../../item_presenters/avatarview';
 
 type ProspectiveSummaryProps = {
 	control: IControlVoyage | undefined;
@@ -35,7 +34,7 @@ type ProspectiveSummaryProps = {
 
 export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
-	const { prospectiveConfig, prospectiveEstimate, editLineup, renderActions, dismissEditor, setReplacement } = React.useContext(EditorContext);
+	const { prospectiveConfig, prospectiveEstimate, seekAlternateCrew, renderActions, dismissEditor } = React.useContext(EditorContext);
 	const { control, saveVoyage, resetVoyage } = props;
 
 	const [highlightedSkills, setHighlightedSkills] = React.useState<string[]>([]);
@@ -72,13 +71,13 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 				<ProspectiveCrewSlots
 					highlightedSkills={highlightedSkills}
 					control={control}
-					click={replaceClick}
-					/>
+					onClick={(cs: IProspectiveCrewSlot) => seekAlternateCrew(cs)}
+				/>
 				<ProspectiveSkillCheck
 					control={isEdited ? control : undefined}
 					highlightedSkills={highlightedSkills}
 					setHighlightedSkills={setHighlightedSkills}
-					/>
+				/>
 				{prospectiveConfig.voyage_type === 'encounter' &&  <ProspectiveProficiency />}
 			</Modal.Content>
 			<Modal.Actions>
@@ -86,14 +85,6 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 			</Modal.Actions>
 		</Modal>
 	);
-
-	function replaceClick(cs: IProspectiveCrewSlot) {
-		setReplacement({
-			crew: cs.crew,
-			seat: cs.symbol
-		});
-		setTimeout(() => editLineup());
-	}
 
 	function renderTopLines(): JSX.Element {
 		if (!prospectiveEstimate) return <></>;
@@ -126,13 +117,6 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 									onClick={() => saveVoyage()}
 								/>
 							)}
-							{!isEdited && (
-								<Button	/* Edit lineup */
-									icon='pencil'
-									content='Edit lineup'
-									onClick={() => editLineup()}
-								/>
-							)}
 						</div>
 					</div>
 				</Message>
@@ -146,11 +130,6 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 							baselineEstimate={control.estimate}
 						/>
 						<div style={{ marginTop: '2em', display: 'flex', justifyContent: 'flex-end', columnGap: '1em' }}>
-							<Button	/* Edit lineup */
-								icon='pencil'
-								content='Edit lineup'
-								onClick={() => editLineup()}
-							/>
 							<Button	/* Reset to existing recommendation */
 								content='Reset to existing recommendation'
 								onClick={() => resetVoyage()}
@@ -291,17 +270,25 @@ const ToplinesCompared = (props: ToplinesComparedProps) => {
 
 type ProspectiveCrewSlotsProps = {
 	control: IControlVoyage | undefined;
-	click?: (slot: IProspectiveCrewSlot) => void;
+	onClick: (slot: IProspectiveCrewSlot) => void;
 	highlightedSkills: string[];
 };
 
 const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
-	const { prospectiveConfig } = React.useContext(EditorContext);
-	const { control, click, highlightedSkills } = props;
+	const { prospectiveConfig, seekAlternateCrew } = React.useContext(EditorContext);
+	const { control, onClick, highlightedSkills } = props;
 
 	return (
 		<React.Fragment>
 			<Header as='h4'>Prospective Lineup</Header>
+			<p>
+				<Button	/* Search for alternate crew */
+					icon='search'
+					content='Search for alternate crew'
+					onClick={() => seekAlternateCrew()}
+				/>
+				{` `} or tap any crew below to view alternate crew for that seat.
+			</p>
 			<Grid columns={2} centered stackable>
 				<Grid.Column>
 					{renderSimpleTable(prospectiveConfig.crew_slots.slice(0, 6))}
@@ -315,7 +302,7 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 
 	function renderSimpleTable(crewSlots: IProspectiveCrewSlot[]): JSX.Element {
 		return (
-			<Table striped unstackable compact>
+			<Table selectable striped unstackable compact>
 				<Table.Body>
 					{crewSlots.map((cs, csIdx) => {
 						let bg: string | undefined = undefined;
@@ -330,20 +317,23 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 							}
 						}
 						return (
-						<Table.Row key={cs.name} style={{backgroundColor: bg}}>
-							<Table.Cell textAlign='center'>
-								<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${cs.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
-							</Table.Cell>
-							<Table.Cell>
-								<div style={{ cursor: click ? 'pointer' : undefined}} onClick={() => click ? click(cs) : null}>
+							<Table.Row
+								key={cs.name}
+								style={{ cursor: 'pointer', backgroundColor: bg }}
+								onClick={() => onClick(cs)}
+							>
+								<Table.Cell textAlign='center'>
+									<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${cs.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+								</Table.Cell>
+								<Table.Cell>
 									{renderCrew(cs)}
-								</div>
-							</Table.Cell>
-							<Table.Cell textAlign='right'>
-								{cs.crew && renderBonus(cs)}
-							</Table.Cell>
-						</Table.Row>
-					)})}
+								</Table.Cell>
+								<Table.Cell textAlign='right'>
+									{cs.crew && renderBonus(cs)}
+								</Table.Cell>
+							</Table.Row>
+						)
+					})}
 				</Table.Body>
 			</Table>
 		);
@@ -356,7 +346,7 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 			<div style={{ display: 'flex', alignItems: 'center' }}>
 				{editedSlot && controlCrew && (
 					<React.Fragment>
-						{renderCrewAvatar(controlCrew)}
+						<AvatarView mode='crew' item={controlCrew} size={32} />
 						<Icon name='arrow right' />
 					</React.Fragment>
 				)}
@@ -368,16 +358,6 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 				)}
 				{!!highlightedSkills.length && highlightedSkills.every(skill => crewSlot.crew?.skill_order.includes(skill)) && <Icon name='check' />}
 			</div>
-		);
-	}
-
-	function renderCrewAvatar(crew: PlayerCrew): JSX.Element {
-		return (
-			<AvatarView
-				mode='crew'
-				size={32}
-				item={crew}
-				/>
 		);
 	}
 

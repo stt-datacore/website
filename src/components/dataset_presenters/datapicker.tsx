@@ -34,12 +34,9 @@ type DataPickerProps = {
 	renderActions?: (dataPickerState: IDataPickerState) => JSX.Element;
 	gridSetup?: IDataGridSetup;
 	tableSetup?: IDataTableSetup;
-	clickAction?: 'toggle' | 'select'
-	searchTitle?: string | JSX.Element;
 };
 
 export const DataPicker = (props: DataPickerProps) => {
-	const { searchTitle, clickAction } = props;
 	// Reset selected ids on each reload, parent should maintain persistent state of selected ids
 	const [pendingSelectedIds, setPendingSelectedIds] = React.useState<Set<number>>(new Set<number>());
 
@@ -86,7 +83,6 @@ export const DataPicker = (props: DataPickerProps) => {
 			centered={false}
 		>
 			<Modal.Header>
-				{searchTitle && props.search ? searchTitle : ''}
 				{renderModalHeader()}
 			</Modal.Header>
 			<Modal.Content scrolling>
@@ -157,7 +153,7 @@ export const DataPicker = (props: DataPickerProps) => {
 						data={data}
 						setup={props.gridSetup}
 						selectedIds={pendingSelectedIds}
-						handleClick={props.selection ? (clickAction === 'select' ? selectAndClose : toggleDatum) : undefined}
+						handleClick={props.selection ? toggleDatum : undefined}
 						handleDblClick={props.selection ? selectAndClose : undefined}
 					/>
 				)}
@@ -167,7 +163,7 @@ export const DataPicker = (props: DataPickerProps) => {
 						data={data}
 						setup={props.tableSetup}
 						selectedIds={pendingSelectedIds}
-						handleClick={props.selection ? (clickAction === 'select' ? selectAndClose : toggleDatum) : undefined}
+						handleClick={props.selection ? toggleDatum : undefined}
 						handleDblClick={props.selection ? selectAndClose : undefined}
 					/>
 				)}
