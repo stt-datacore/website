@@ -1,11 +1,65 @@
 import fs from 'fs';
 import { ComputedSkill, CrewMember, Ranks } from '../src/model/crew';
 import { calculateMaxBuffs } from '../src/utils/voyageutils';
-import { applyCrewBuffs, skillSum } from '../src/utils/crewutils';
+import { applyCrewBuffs, getVariantTraits, numberToGrade, skillSum } from '../src/utils/crewutils';
 import { Collection } from '../src/model/game-elements';
 import { getAllStatBuffs } from '../src/utils/collectionutils';
 
 const STATIC_PATH = `${__dirname}/../../static/structured/`;
+
+interface MainCast {
+    tos: string[];
+    tng: string[];
+    ds9: string[];
+    voy: string[];
+    ent: string[];
+    dsc: string[];
+    snw: string[];
+    low: string[];
+}
+
+function castCount(crew: CrewMember, roster: CrewMember[], maincast: MainCast) {
+    let variants = getVariantTraits(crew);
+    variants = [ ...new Set(Object.values(maincast).map((m: string[]) => m.filter(f => variants.includes(f))).flat()) ];
+    let count = roster.filter(c => c.traits_hidden.some(th => variants.includes(th))).length;
+    return count;
+}
+
+function skillRare(crew: CrewMember, roster: CrewMember[]) {
+    if (crew.skill_order.length !== 3) {
+        return 1;
+    }
+
+    let s1 = crew.skill_order[0];
+    let s2 = crew.skill_order[1];
+    let s3 = crew.skill_order[2];
+    let primes = [s1, s2];
+    let ro = roster.filter(c => {
+        if (c.skill_order.length !== 3) return false;
+        let n1 = c.skill_order[0];
+        let n2 = c.skill_order[1];
+        let n3 = c.skill_order[2];
+        let primes2 = [n1, n2];
+        if (s3 === n3 && primes.every(p => primes2.includes(p))) return true;
+        return false;
+    });
+    return ro.length / roster.length;
+}
+
+function tertRare(crew: CrewMember, roster: CrewMember[]) {
+    if (crew.skill_order.length !== 3) {
+        return 1;
+    }
+
+    let s3 = crew.skill_order[2];
+    let ro = roster.filter(c => {
+        if (c.skill_order.length !== 3) return false;
+        let n3 = c.skill_order[2];
+        if (s3 === n3) return true;
+        return false;
+    });
+    return ro.length / roster.length;
+}
 
 
 function makeTraitRanks(roster: CrewMember[]) {
@@ -41,10 +95,11 @@ function collectionScore(c: CrewMember, collections: Collection[]) {
 }
 
 function score() {
+    const maincast = JSON.parse(fs.readFileSync(STATIC_PATH + 'maincast.json', 'utf-8')) as MainCast;
     const collections = JSON.parse(fs.readFileSync(STATIC_PATH + 'collections.json', 'utf-8')) as Collection[];
     const buffcap = JSON.parse(fs.readFileSync(STATIC_PATH + 'all_buffs.json', 'utf-8'));
     const maxbuffs = calculateMaxBuffs(buffcap);
-    const crew = JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf-8')) as CrewMember[];
+    const crew = (JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf-8')) as CrewMember[]);
 
     function makeResults(mode: 'core' | 'proficiency' | 'all') {
         let results = [] as { symbol: string, score: number, rarity: number }[]
@@ -62,19 +117,22 @@ function score() {
         results.sort((a, b) => b.score - a.score);
         let max = results[0].score;
         for (let r of results) {
-            r.score = Number(((r.score / max) * 100).toFixed(2));
+            r.score = Number(((r.score / max) * 10).toFixed(2));
         }
         return results;
     }
 
     let results = makeResults('all')
     let voyage = results;
+    console.log("Voyage")
     console.log(results.slice(0, 20));
     results = makeResults('proficiency')
     let gauntlet = results;
+    console.log("Gauntlet")
     console.log(results.slice(0, 20));
     results = makeResults('core')
     let shuttle = results;
+    console.log("Shuttle")
     console.log(results.slice(0, 20));
     results = [].slice();
     makeTraitRanks(crew);
@@ -86,6 +144,7 @@ function score() {
         });
     }
     results.sort((a, b) => b.score - a.score);
+    console.log("Traits")
     console.log(results.slice(0, 20));
     let traits = results;
 
@@ -100,37 +159,107 @@ function score() {
     results.sort((a, b) => b.score - a.score);
     let max = results[0].score;
     for (let r of results) {
-        r.score = Number(((r.score / max) * 100).toFixed(2));
+        r.score = Number(((r.score / max) * 10).toFixed(2));
     }
 
+    console.log("Stat-Boosting Collections")
     console.log(results.slice(0, 20));
     let cols = results;
     results = [].slice();
 
     for (let c of crew) {
-        let g = gauntlet.find(f => f.symbol === c.symbol)!.score;
-        let v = voyage.find(f => f.symbol === c.symbol)!.score * 5;
-        let s = shuttle.find(f => f.symbol === c.symbol)!.score;
-        let t = traits.find(f => f.symbol === c.symbol)!.score;
-        let co = cols.find(f => f.symbol === c.symbol)!.score * 2;
-        let sh = c.ranks.ship!.overall;
-
-        let scores = [g, v, s, t, co, sh];
         results.push({
             symbol: c.symbol,
             rarity: c.max_rarity,
-            score: scores.reduce((p, n) => p + n, 0) / scores.length
+            score: skillRare(c, crew)
+        });
+    }
+
+    results.sort((a, b) => a.score - b.score);
+
+    max = results[results.length - 1].score;
+    for (let r of results) {
+        r.score = Number(((1 - (r.score / max)) * 10).toFixed(2));
+    }
+    console.log("Skill-Order Rarity")
+    console.log(results.slice(0, 20));
+    let skillrare = results;
+
+    results = [].slice();
+
+    for (let c of crew) {
+        results.push({
+            symbol: c.symbol,
+            rarity: c.max_rarity,
+            score: tertRare(c, crew)
+        });
+    }
+
+    results.sort((a, b) => a.score - b.score);
+
+    max = results[results.length - 1].score;
+    for (let r of results) {
+        r.score = Number(((1 - (r.score / max)) * 10).toFixed(2));
+    }
+    console.log("Tertiary Rarity")
+    console.log(results.slice(0, 20));
+    let tertrare = results;
+
+    results = [].slice();
+
+    for (let c of crew) {
+        results.push({
+            symbol: c.symbol,
+            rarity: c.max_rarity,
+            score: castCount(c, crew, maincast)
         });
     }
 
     results.sort((a, b) => b.score - a.score);
+
     max = results[0].score;
     for (let r of results) {
-        r.score = Number(((r.score / max) * 100).toFixed(2));
+        r.score = Number((((r.score / max)) * 10).toFixed(2));
+    }
+    console.log("Main cast score")
+    console.log(results.slice(0, 20));
+    let mains = results;
+    results = [].slice();
+
+    for (let c of crew) {
+        let mc = mains.find(f => f.symbol === c.symbol)!.score * 0.25;
+        let sr = skillrare.find(f => f.symbol === c.symbol)!.score * 2;
+        let tr = tertrare.find(f => f.symbol === c.symbol)!.score * 0.3;
+        let g = gauntlet.find(f => f.symbol === c.symbol)!.score;
+        let v = voyage.find(f => f.symbol === c.symbol)!.score * 10;
+        let s = shuttle.find(f => f.symbol === c.symbol)!.score;
+        let t = traits.find(f => f.symbol === c.symbol)!.score * 0.5;
+        let co = cols.find(f => f.symbol === c.symbol)!.score * 0.5;
+        let sh = c.ranks.ship!.overall;
+
+        let scores = [v, t, co, sr, tr, mc, Math.max(g, s, sh)];
+        results.push({
+            symbol: c.symbol,
+            rarity: c.max_rarity,
+            score: (scores.reduce((p, n) => p + n, 0) / scores.length)
+        });
     }
 
-    console.log(results.slice(0, 20));
+    results = results.sort((a, b) => b.score - a.score).filter(f => f.rarity == 5);
+    max = results[0].score;
+    let min = results[results.length - 1].score;
+    max -= min;
+    for (let r of results) {
+        r.score = Number((((r.score - min) / max) * 10).toFixed(2));
+    }
 
+    console.log("Final scoring:");
 
+    results.slice(0, 50).forEach((result, idx) => {
+        let c = crew.find(f => f.symbol === result.symbol)!;
+        let tier = 0;
+        console.log(`${c.name.padEnd(40, ' ')}`, `Score ${result.score}`.padEnd(15, ' '), `Grade: ${numberToGrade(result.score / 10)}`);
+    });
+    console.log(`Results: ${results.length}`)
 }
 score();
