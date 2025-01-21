@@ -22,7 +22,7 @@ export const SkillCheckAccordion = (props: SkillCheckAccordionProps) => {
 	const { voyageConfig, launchLineupEditor } = props;
 
 	const [isActive, setIsActive] = React.useState<boolean>(false);
-
+	const [highlightedSkills, setHighlightedSkills] = React.useState<string[]>([]);
 	return (
 		<Accordion>
 			<Accordion.Title
@@ -36,6 +36,8 @@ export const SkillCheckAccordion = (props: SkillCheckAccordionProps) => {
 				{isActive && (
 					<Segment>
 						<SkillCheck
+							highlightedSkills={highlightedSkills}
+							setHighlightedSkills={setHighlightedSkills}
 							id='result/skillcheck'
 							voyageConfig={voyageConfig}
 						/>
