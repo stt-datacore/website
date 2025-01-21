@@ -161,7 +161,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 			id: 'antimatter',
 			title: <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
 			align: 'center',
-			sortField: { id: 'diff_estimate', firstSort: 'descending' },
+			sortField: { id: 'diff_antimatter', firstSort: 'descending' },
 			renderCell: (datum: IEssentialData) => <NumericDiff diff={datum[`diff_antimatter`]} />
 		},
 		{
