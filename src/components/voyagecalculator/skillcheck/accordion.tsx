@@ -40,8 +40,6 @@ export const SkillCheckAccordion = (props: SkillCheckAccordionProps) => {
 							setHighlightedSkills={setHighlightedSkills}
 							id='result/skillcheck'
 							voyageConfig={voyageConfig}
-							highlightedSkills={[]}
-							setHighlightedSkills={() => {}}
 						/>
 						{voyageConfig.voyage_type === 'encounter' && (
 							<React.Fragment>
