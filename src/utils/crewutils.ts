@@ -1290,7 +1290,7 @@ export function getSkills(item: PlayerCrew | CrewMember | CompactCrew | BaseSkil
 		bskills = item;
 	}
 	if (!bskills) return [];
-	return Object.keys(bskills);
+	return Object.keys(bskills).filter(skill => bskills[skill] && (bskills[skill].core > 0 || bskills[skill].range_max > 0));
 	// if (bskills?.command_skill !== undefined && (bskills.command_skill.core > 0 || bskills.command_skill.range_max > 0)) sk.push("command_skill");
 	// if (bskills?.science_skill !== undefined && (bskills.science_skill.core > 0 || bskills.science_skill.range_max > 0)) sk.push("science_skill");
 	// if (bskills?.security_skill !== undefined && (bskills.security_skill.core > 0 || bskills.security_skill.range_max > 0)) sk.push("security_skill");
