@@ -393,6 +393,7 @@ const AlternatePickerOptions = (props: AlternatePickerOptionsProps) => {
 						onClick={() => {
 							setFilters({...defaultFilters});
 							setSkillMode('voyage');
+							setProspectMode(false);
 						}}
 					/>
 				</Form.Field>
