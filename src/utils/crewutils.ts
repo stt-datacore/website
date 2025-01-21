@@ -1279,7 +1279,7 @@ export function printImmoText(immo: number | CompletionState, item?: string, imm
 }
 
 export function getSkills(item: PlayerCrew | CrewMember | CompactCrew | BaseSkills): string[] {
-	let sk: string[] = [];
+	//let sk: string[] = [];
 
 	let bskills: BaseSkills | undefined = undefined;
 
@@ -1289,15 +1289,16 @@ export function getSkills(item: PlayerCrew | CrewMember | CompactCrew | BaseSkil
 	else {
 		bskills = item;
 	}
-
-	if (bskills?.command_skill !== undefined && (bskills.command_skill.core > 0 || bskills.command_skill.range_max > 0)) sk.push("command_skill");
-	if (bskills?.science_skill !== undefined && (bskills.science_skill.core > 0 || bskills.science_skill.range_max > 0)) sk.push("science_skill");
-	if (bskills?.security_skill !== undefined && (bskills.security_skill.core > 0 || bskills.security_skill.range_max > 0)) sk.push("security_skill");
-	if (bskills?.engineering_skill !== undefined && (bskills.engineering_skill.core > 0 || bskills.engineering_skill.range_max > 0)) sk.push("engineering_skill");
-	if (bskills?.diplomacy_skill !== undefined && (bskills.diplomacy_skill.core > 0 || bskills.diplomacy_skill.range_max > 0)) sk.push("diplomacy_skill");
-	if (bskills?.medicine_skill !== undefined && (bskills.medicine_skill.core > 0 || bskills.medicine_skill.range_max > 0)) sk.push("medicine_skill");
-
-	return sk;
+	if (!bskills) return [];
+	return Object.keys(bskills);
+	// if (bskills?.command_skill !== undefined && (bskills.command_skill.core > 0 || bskills.command_skill.range_max > 0)) sk.push("command_skill");
+	// if (bskills?.science_skill !== undefined && (bskills.science_skill.core > 0 || bskills.science_skill.range_max > 0)) sk.push("science_skill");
+	// if (bskills?.security_skill !== undefined && (bskills.security_skill.core > 0 || bskills.security_skill.range_max > 0)) sk.push("security_skill");
+	// if (bskills?.engineering_skill !== undefined && (bskills.engineering_skill.core > 0 || bskills.engineering_skill.range_max > 0)) sk.push("engineering_skill");
+	// if (bskills?.diplomacy_skill !== undefined && (bskills.diplomacy_skill.core > 0 || bskills.diplomacy_skill.range_max > 0)) sk.push("diplomacy_skill");
+	// if (bskills?.medicine_skill !== undefined && (bskills.medicine_skill.core > 0 || bskills.medicine_skill.range_max > 0)) sk.push("medicine_skill");
+	// if (bskills) sk.sort((a, b) => skillSum(bskills[b] as Skill) - skillSum(bskills[a] as Skill))
+	// return sk;
 }
 
 

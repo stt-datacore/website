@@ -17,7 +17,7 @@ import { CrewFinder } from './crewfinder';
 
 export const GridView = () => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { voyageConfig, rosterType, ship, shipData, assignments } = React.useContext(ViewerContext);
+	const { voyageConfig, rosterType, ship, shipData, assignments, highlightedSkills } = React.useContext(ViewerContext);
 	const { layout } = React.useContext(LayoutContext);
 
 	return (

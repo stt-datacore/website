@@ -16,13 +16,21 @@ import { SkillCheck } from './skillcheck';
 type SkillCheckAccordionProps = {
 	voyageConfig: IVoyageCalcConfig;
 	launchLineupEditor?: (trigger: ILineupEditorTrigger) => void;
+	highlightedSkills?: string[];
+	setHighlightedSkills?: (value: string[]) => void
 };
 
 export const SkillCheckAccordion = (props: SkillCheckAccordionProps) => {
 	const { voyageConfig, launchLineupEditor } = props;
-
 	const [isActive, setIsActive] = React.useState<boolean>(false);
-	const [highlightedSkills, setHighlightedSkills] = React.useState<string[]>([]);
+
+	const [highlightedSkills, setHighlightedSkills] = React.useMemo(() => {
+		if (props.highlightedSkills && props.setHighlightedSkills) {
+			return [props.highlightedSkills, props.setHighlightedSkills];
+		}
+		else return [[], () => false];
+	}, [props.highlightedSkills, props.setHighlightedSkills]);
+
 	return (
 		<Accordion>
 			<Accordion.Title

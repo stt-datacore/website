@@ -28,8 +28,10 @@ export type AssignmentCardProps = {
 export const AssignmentCard = (props: AssignmentCardProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { TRAIT_NAMES, t } = globalContext.localized;
-	const { voyageConfig, rosterType } = React.useContext(ViewerContext);
+	const { voyageConfig, rosterType, highlightedSkills } = React.useContext(ViewerContext);
 	const { assignment: { crew, name, trait, bestRank }, showSkills } = props;
+
+	const highlight = (highlightedSkills?.length && highlightedSkills.every(hs => crew?.skill_order?.includes(hs)))
 
 	return (
 		<Card style={{
@@ -83,7 +85,12 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 					/>
 				)}
 			</div>
-			<Label attached='bottom' style={{ whiteSpace: 'wrap', overflow: 'wrap' }}>
+			<Label attached='bottom'
+				style={{
+					whiteSpace: 'wrap',
+					overflow: 'wrap',
+					backgroundColor: !highlight ? undefined : 'forestgreen'
+				}}>
 				{name}
 			</Label>
 		</Card>

@@ -13,6 +13,7 @@ export interface IViewerContext {
 	ship?: Ship;
 	shipData: IShipData;
 	assignments: IAssignment[];
+	highlightedSkills?: string[];
 	launchLineupEditor?: (trigger: ILineupEditorTrigger) => void;
 };
 

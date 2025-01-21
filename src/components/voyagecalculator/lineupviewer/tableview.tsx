@@ -22,7 +22,7 @@ import { CrewFinder } from './crewfinder';
 export const TableView = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { TRAIT_NAMES, t } = globalContext.localized;
-	const { configSource, voyageConfig, rosterType, ship, assignments } = React.useContext(ViewerContext);
+	const { configSource, voyageConfig, rosterType, ship, assignments, highlightedSkills } = React.useContext(ViewerContext);
 	const { layout } = React.useContext(LayoutContext);
 
 	const compact = layout === 'table-compact';
@@ -75,8 +75,11 @@ export const TableView = () => {
 				<Table.Body>
 					{seated.map((assignment, idx) => {
 						const { crew, name, trait, bestRank } = assignment;
+						const highlight = (highlightedSkills?.length && highlightedSkills.every(hs => crew?.skill_order?.includes(hs)))
 						return (
-							<Table.Row key={idx}>
+							<Table.Row key={idx} style={{
+								backgroundColor: !highlight ? undefined : (idx % 2 ? 'forestgreen' : 'darkgreen')
+							}}>
 								<Table.Cell width={configSource === 'player' ? 4 : 5}>
 									<div style={{ whiteSpace: 'nowrap', overflowX: 'hidden', textOverflow: 'ellipsis' }}>
 										{name}
