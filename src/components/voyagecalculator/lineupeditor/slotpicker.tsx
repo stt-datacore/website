@@ -16,7 +16,7 @@ import CONFIG from '../../CONFIG';
 import { IDataGridSetup, IDataTableColumn, IDataTableSetup, IEssentialData } from '../../dataset_presenters/model';
 import { DataPicker, DataPickerLoading } from '../../dataset_presenters/datapicker';
 import { NumericDiff } from '../../dataset_presenters/elements/numericdiff';
-import ItemDisplay from '../../itemdisplay';
+import { AvatarView } from '../../item_presenters/avatarview';
 
 import { CalculatorContext } from '../context';
 import { getCrewTraitBonus, voySkillScore } from '../utils';
@@ -161,7 +161,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 			id: 'antimatter',
 			title: <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
 			align: 'center',
-			sortField: { id: 'diff_estimate', firstSort: 'descending' },
+			sortField: { id: 'diff_antimatter', firstSort: 'descending' },
 			renderCell: (datum: IEssentialData) => <NumericDiff diff={datum[`diff_antimatter`]} />
 		},
 		{
@@ -276,23 +276,11 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 	function renderCrewSwap(alternateCrew: PlayerCrew, slottedCrew: PlayerCrew | undefined): JSX.Element {
 		return (
 			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-				{slottedCrew && renderCrewAvatar(slottedCrew)}
+				{slottedCrew && <AvatarView mode='crew' item={slottedCrew} size={40} />}
 				{!slottedCrew && <Icon name='exclamation triangle' color='yellow' size='big' />}
 				<Icon name='arrow right' />
-				{renderCrewAvatar(alternateCrew)}
+				<AvatarView mode='crew' item={alternateCrew} size={40} />
 			</div>
-		);
-	}
-
-	function renderCrewAvatar(crew: PlayerCrew): JSX.Element {
-		const imageUrlPortrait: string = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
-		return (
-			<ItemDisplay
-				src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
-				size={40}
-				maxRarity={crew.max_rarity}
-				rarity={crew.rarity}
-			/>
 		);
 	}
 

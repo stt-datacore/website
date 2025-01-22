@@ -850,6 +850,7 @@
         }
     },
     "global": {
+        "set_as_default_view": "Als Standardansicht festlegen",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",

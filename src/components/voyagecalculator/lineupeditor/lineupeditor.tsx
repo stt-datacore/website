@@ -5,9 +5,9 @@ import {
 	Loader
 } from 'semantic-ui-react';
 
-import { PlayerCrew } from '../../../model/player';
 import { Ship } from '../../../model/ship';
 import { Estimate, IVoyageCalcConfig, IVoyageCrew } from '../../../model/voyage';
+import { GlobalContext } from '../../../context/globalcontext';
 
 import CONFIG from '../../CONFIG';
 
@@ -18,13 +18,13 @@ import { EditorContext, IEditorContext } from './context';
 import { AlternateCrewPicker } from './crewpicker';
 import { AlternateSlotPicker } from './slotpicker';
 import { ProspectiveSummary } from './summary';
-import { getProspectiveConfig } from './utils';
+import { getProspectiveConfig, promiseEstimateFromConfig } from './utils';
+
+type LineupEditorViews = 'crewpicker' | 'slotpicker' | 'summary';
 
 export interface ILineupEditorTrigger {
 	view: LineupEditorViews;
 };
-
-type LineupEditorViews = 'crewpicker' | 'slotpicker' | 'summary';
 
 type LineupEditorProps = {
 	id: string;
@@ -37,13 +37,19 @@ type LineupEditorProps = {
 };
 
 export const LineupEditor = (props: LineupEditorProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
+
 	const { voyageConfig } = React.useContext(CalculatorContext);
 	const { trigger, cancelTrigger, ship, roster, control, commitVoyage } = props;
 
 	const [prospectiveCrewSlots, setProspectiveCrewSlots] = React.useState<IProspectiveCrewSlot[] | undefined>(control?.config.crew_slots);
 	const [prospectiveEstimate, setProspectiveEstimate] = React.useState<Estimate | undefined>(control?.estimate);
+
 	const [activeView, setActiveView] = React.useState<LineupEditorViews | undefined>(undefined);
-	const [alternateCrew, setAlternateCrew] = React.useState<PlayerCrew | undefined>(undefined);
+
+	const [slotTarget, setSlotTarget] = React.useState<IProspectiveCrewSlot | undefined>(undefined);
+	const [alternateCrew, setAlternateCrew] = React.useState<IVoyageCrew | undefined>(undefined);
 
 	React.useEffect(() => {
 		setActiveView(trigger?.view);
@@ -83,7 +89,7 @@ export const LineupEditor = (props: LineupEditorProps) => {
 		sortedSkills,
 		getConfigFromCrewSlots,
 		getRuntimeDiff,
-		editLineup: () => setActiveView('crewpicker'),
+		seekAlternateCrew,
 		renderActions,
 		dismissEditor
 	};
@@ -94,7 +100,8 @@ export const LineupEditor = (props: LineupEditorProps) => {
 				{activeView === 'crewpicker' && (
 					<AlternateCrewPicker
 						roster={roster}
-						setAlternate={seekSeatForAlternate}
+						targeting={slotTarget ? { slot: slotTarget, cancel: () => setSlotTarget(undefined) } : undefined}
+						setAlternate={seekSlotForAlternate}
 					/>
 				)}
 				{activeView === 'slotpicker' && alternateCrew && (
@@ -136,6 +143,7 @@ export const LineupEditor = (props: LineupEditorProps) => {
 						title='View prospective voyage'
 						icon='vcard'
 						onClick={() => {
+							setSlotTarget(undefined);
 							setAlternateCrew(undefined);
 							setActiveView('summary');
 						}}
@@ -146,6 +154,7 @@ export const LineupEditor = (props: LineupEditorProps) => {
 						title='Search for alternate crew'
 						icon='search'
 						onClick={() => {
+							setSlotTarget(undefined);
 							setAlternateCrew(undefined);
 							setActiveView('crewpicker');
 						}}
@@ -161,18 +170,43 @@ export const LineupEditor = (props: LineupEditorProps) => {
 
 	function dismissEditor(): void {
 		setActiveView(undefined);
+		setSlotTarget(undefined);
 		setAlternateCrew(undefined);
 		cancelTrigger();
 	}
 
-	function seekSeatForAlternate(alternateCrew: PlayerCrew): void {
-		setAlternateCrew(alternateCrew);
-		setActiveView('slotpicker');
+	function seekAlternateCrew(crewSlot?: IProspectiveCrewSlot): void {
+		setSlotTarget(crewSlot);
+		setActiveView('crewpicker');
+	}
+
+	function seekSlotForAlternate(alternateCrew: IVoyageCrew): void {
+		if (slotTarget) {
+			const altCrewSlots: IProspectiveCrewSlot[] = JSON.parse(JSON.stringify(prospectiveCrewSlots));
+			// Unseat alternate crew from current seat first, if already seated
+			const currentSlot: IProspectiveCrewSlot | undefined = altCrewSlots.find(cs => cs.crew?.id === alternateCrew.id);
+			if (currentSlot) currentSlot.crew = undefined;
+			const altCrewSlot: IProspectiveCrewSlot | undefined = altCrewSlots.find(cs => cs.symbol === slotTarget.symbol);
+			if (altCrewSlot) altCrewSlot.crew = alternateCrew;
+			const altConfig: IProspectiveConfig = getConfigFromCrewSlots(altCrewSlots);
+			promiseEstimateFromConfig(
+				altConfig,
+				(estimate: Estimate) => {
+					updateProspectiveVoyage(altConfig, estimate);
+				}
+			);
+			setActiveView(undefined);
+		}
+		else {
+			setAlternateCrew(alternateCrew);
+			setActiveView('slotpicker');
+		}
 	}
 
 	function updateProspectiveVoyage(config: IProspectiveConfig, estimate: Estimate): void {
 		setProspectiveCrewSlots(config.crew_slots);
 		setProspectiveEstimate(estimate);
+		setSlotTarget(undefined);
 		setAlternateCrew(undefined);
 		setActiveView('summary');
 	}

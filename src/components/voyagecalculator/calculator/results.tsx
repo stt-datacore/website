@@ -65,7 +65,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 	} = props;
 
 	const [editorTrigger, setEditorTrigger] = React.useState<ILineupEditorTrigger | undefined>(undefined);
-
+	const [highlightedSkills, setHighlightedSkills] = React.useState<string[]>([]);
 	const request = requests.find(r => r.id === requestId);
 	if (!request) return (<></>);
 
@@ -173,7 +173,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 								<Popup position='top center'
 									content={<>Edit lineup</>}
 									trigger={
-										<Button icon='pencil' onClick={() => setEditorTrigger({ view: 'crewpicker' })} />
+										<Button icon='pencil' onClick={() => setEditorTrigger({ view: 'summary' })} />
 									}
 								/>
 								<Popup position='top center'
@@ -197,6 +197,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 						rosterType={rosterType}
 					/>
 					<LineupViewerAccordion
+						highlightedSkills={highlightedSkills}
 						configSource={configSource}
 						voyageConfig={voyageConfig}
 						ship={request.bestShip.ship}
@@ -214,6 +215,8 @@ export const ResultPane = (props: ResultPaneProps) => {
 						commitVoyage={(voyageConfig: IVoyageCalcConfig, estimate: Estimate) => createResultFromEdit(request, voyageConfig, estimate)}
 					/>
 					<SkillCheckAccordion
+						highlightedSkills={highlightedSkills}
+						setHighlightedSkills={setHighlightedSkills}
 						voyageConfig={voyageConfig}
 						launchLineupEditor={(trigger: ILineupEditorTrigger) => setEditorTrigger(trigger)}
 					/>

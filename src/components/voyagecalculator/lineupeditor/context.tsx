@@ -10,7 +10,7 @@ export interface IEditorContext {
 	sortedSkills: string[];
 	getConfigFromCrewSlots: (crewSlots: IProspectiveCrewSlot[]) => IProspectiveConfig;
 	getRuntimeDiff: (altRuntime: number) => number;
-	editLineup: () => void;
+	seekAlternateCrew: (crewSlot?: IProspectiveCrewSlot) => void;
 	renderActions: () => JSX.Element;
 	dismissEditor: () => void;
 };

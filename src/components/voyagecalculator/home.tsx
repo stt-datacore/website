@@ -523,6 +523,7 @@ type PlayerVoyageProps = {
 
 const PlayerVoyage = (props: PlayerVoyageProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const [highlightedSkills, setHighlightedSkills] = React.useState<string[]>([]);
 	const { playerData, ephemeral } = globalContext.player;
 	const { configSource, voyageConfig, eventData, runningShipIds } = props;
 
@@ -545,7 +546,11 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 		);
 	}
 
-	const myCrew: IVoyageCrew[] = rosterizeMyCrew(playerData.player.character.crew, ephemeral.activeCrew, ephemeral.voyage);
+	// Memoize this since we're adding a hook, above.
+	const myCrew: IVoyageCrew[] = React.useMemo(() => {
+		return rosterizeMyCrew(playerData.player.character.crew, ephemeral.activeCrew, ephemeral.voyage);
+	}, [playerData, ephemeral.activeCrew, ephemeral.voyage]);
+
 	const ship: Ship | undefined = playerData.player.character.ships.find(s => s.id === running.ship_id);
 
 	// Active details to pass independently to CIVAS
@@ -572,12 +577,15 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 					initialExpand={!recalled}
 				/>
 				<LineupViewerAccordion
+					highlightedSkills={highlightedSkills}
 					voyageConfig={runningVoyage}
 					ship={ship}
 					roster={myCrew}
 					rosterType={'myCrew'}
 				/>
 				<SkillCheckAccordion
+					highlightedSkills={highlightedSkills}
+					setHighlightedSkills={setHighlightedSkills}
 					voyageConfig={runningVoyage}
 				/>
 				<StatsRewardsAccordion
