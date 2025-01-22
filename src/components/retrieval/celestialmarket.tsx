@@ -62,7 +62,7 @@ export const CelestialMarket = (props: { dbid?: string }) => {
     }, [playerData, allKeystones, autoWishes]);
 
     React.useEffect(() => {
-        if (typeFilter === 'constellations' && ['needed', 'needed_unique'].includes(ownedFilter || '')) {
+        if (ownedFilter !== undefined && typeFilter === 'constellations' && ['needed', 'needed_unique'].includes(ownedFilter || '')) {
             setOwnedFilter(undefined);
             return;
         }
@@ -156,7 +156,7 @@ export const CelestialMarket = (props: { dbid?: string }) => {
             config={marketTable}
             filterRow={(listing, filter) => filterText(listing, filter)}
         />
-        <PopularCrew allListings={allListings} />
+        {/* <PopularCrew allListings={allListings} /> */}
     </div>)
 
 
@@ -345,11 +345,11 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
     const [popularCrew, setPopularCrew] = React.useState<PolestarCrew[]>([]);
     const [includeHfs, setIncludeHfs] = React.useState(false);
     const TRAIT_NAMES = JSON.parse(JSON.stringify(globalContext.localized.TRAIT_NAMES));
-    const [rarities, setRarities] = useStateWithStorage(`popular_rarity_filter`, [5] as number[], { rememberForever: true });
+    const [rarities, setRarities] = useStateWithStorage(`popular_rarity_filter`, [5] as number[]);
     const [top, setTop] = useStateWithStorage(`popular_keystone_top`, 10, { rememberForever: true });
-    const [minPolestars, setMinPolestars] = useStateWithStorage(`popular_keystone_min_polestars`, 3, { rememberForever: true });
-    const [cabOv, setCabOv] = useStateWithStorage(`popular_keystone_cab_ov`, 4, { rememberForever: true });
-    const [mode, setMode] = useStateWithStorage<PopularityMode>(`popular_mode`, 'sold_last_day', { rememberForever: true });
+    const [minPolestars, setMinPolestars] = useStateWithStorage(`popular_keystone_min_polestars`, 3);
+    const [cabOv, setCabOv] = useStateWithStorage(`popular_keystone_cab_ov`, 14);
+    const [mode, setMode] = useStateWithStorage<PopularityMode>(`popular_mode`, 'sold_last_day');
     const topOptions = [] as DropdownItemProps[];
 
     [5, 10, 15, 20, 30, 50, 100].map((n) => {
