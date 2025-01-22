@@ -1,4 +1,5 @@
 import { SupportedLanguage } from "../context/localizedcontext";
+import { shortToSkill } from "../utils/crewutils";
 
 export interface Rarity {
 	name: string;
@@ -249,6 +250,13 @@ export default class CONFIG {
 		"MED",
 		"MED"
 	]
+
+	static readonly getSlotSkill = (slot: string, short?: boolean) => {
+		let sidx = CONFIG.VOYAGE_CREW_SLOTS.findIndex(fi => fi === slot);
+		if (sidx === -1) return '';
+		if (short) return CONFIG.VOYAGE_SLOT_SKILLS[sidx];
+		else return shortToSkill(CONFIG.VOYAGE_SLOT_SKILLS[sidx])!;
+	}
 
 	static readonly CITATION_COST = [0, 500, 4500, 18000, 50000];
 

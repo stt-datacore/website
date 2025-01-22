@@ -22,6 +22,7 @@ import { ILayoutContext, IViewerContext, LayoutContext, ViewerContext } from './
 import { GridView } from './gridview';
 import { LayoutPicker } from './layoutpicker';
 import { TableView } from './tableview';
+import { getSkills } from '../../../utils/crewutils';
 
 type LineupViewerProps = {
 	configSource?: 'player' | 'custom';
@@ -30,13 +31,14 @@ type LineupViewerProps = {
 	roster?: PlayerCrew[];
 	rosterType?: 'allCrew' | 'myCrew';
 	initialExpand?: boolean;
+	highlightedSkills?: string[];
 };
 
 export const LineupViewerAccordion = (props: LineupViewerProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 
 	const [isActive, setIsActive] = React.useState<boolean>(false);
-	const { configSource, voyageConfig, ship, roster, rosterType, initialExpand: externActive } = props;
+	const { configSource, voyageConfig, ship, roster, rosterType, initialExpand: externActive, highlightedSkills } = props;
 
 	React.useEffect(() => {
 		if (externActive !== undefined) {
@@ -62,6 +64,7 @@ export const LineupViewerAccordion = (props: LineupViewerProps) => {
 							ship={ship}
 							roster={roster}
 							rosterType={rosterType}
+							highlightedSkills={highlightedSkills}
 						/>
 					</Segment>
 				)}
@@ -74,7 +77,7 @@ export const LineupViewer = (props: LineupViewerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
 	const { t } = globalContext.localized;
-	const { configSource, voyageConfig, ship, roster, rosterType } = props;
+	const { configSource, voyageConfig, ship, roster, rosterType, highlightedSkills } = props;
 
 	const findBestRank: boolean = configSource === 'player';
 
@@ -92,6 +95,7 @@ export const LineupViewer = (props: LineupViewerProps) => {
 	const usedCrew: number[] = [];
 	const assignments: IAssignment[] = Object.values(CONFIG.VOYAGE_CREW_SLOTS).map(entry => {
 		const { crew, trait, skill } = (Object.values(voyageConfig.crew_slots).find(slot => slot.symbol === entry) as VoyageCrewSlot);
+		crew.skill_order = getSkills(crew);
 		const name = t(`voyage.seats.${entry}`)
 		const bestRank: ISkillsRank | undefined = findBestRank ? getBestRank(crew, skill, usedCrew) : undefined;
 		if (!crew.imageUrlPortrait)
@@ -123,7 +127,8 @@ export const LineupViewer = (props: LineupViewerProps) => {
 		rosterType,
 		ship,
 		shipData,
-		assignments
+		assignments,
+		highlightedSkills
 	};
 
 	return (

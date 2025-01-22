@@ -859,6 +859,7 @@
         }
     },
     "global": {
+        "set_as_default_view": "Establecer como vista predeterminada",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
