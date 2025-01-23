@@ -61,14 +61,15 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 					}
 				/>
 				<StatLabel
-					title={t('global.reserved')}
+					title={t('rank_names.datacore_grade')}
 					size='jumbo'
 					value={<div
 						style={{
 							fontWeight: "bold",
+							color: gradeToColor(crew.ranks.scores.overall_grade) ?? undefined,
 						}}
 					>
-						-
+						{crew.ranks.scores.overall_grade}
 					</div>}
 				/>
 				<StatLabel title={t('rank_names.voyage_rank')}

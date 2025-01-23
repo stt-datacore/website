@@ -1197,15 +1197,15 @@ export class CrewPresenter extends React.Component<
                                 }}
                             >
                                 <StatLabel
-                                    title={t('global.reserved')}
+                                    title={t('rank_names.datacore_grade')}
                                     value={
                                         <div
                                             style={{
                                                 fontWeight: "bold",
-                                                color: gradeToColor(crew.bigbook_tier) ?? undefined,
+                                                color: gradeToColor(crew.ranks.scores.overall_grade) ?? undefined,
                                             }}
                                         >
-                                            -
+                                            {crew.ranks.scores.overall_grade}
                                         </div>
                                     }
                                 />
