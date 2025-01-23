@@ -230,31 +230,37 @@ export function score() {
     results = [].slice();
 
     for (let c of origCrew) {
-        let mc = mains.find(f => f.symbol === c.symbol)!.score * 0.25;
+        let cast = mains.find(f => f.symbol === c.symbol)!.score;
 
-        let sr = skillrare.find(f => f.symbol === c.symbol)!.score;
-        c.ranks.scores.skillRarity = sr;
+        let skrare = skillrare.find(f => f.symbol === c.symbol)!.score;
+        c.ranks.scores.skillRarity = skrare;
 
-        sr *= 2;
-        let tr = tertrare.find(f => f.symbol === c.symbol)!.score;
+        let trare = tertrare.find(f => f.symbol === c.symbol)!.score;
 
-        c.ranks.scores.tertiaryRarity = tr;
-        tr *= 0.3;
+        c.ranks.scores.tertiaryRarity = trare;
 
-        let g = gauntlet.find(f => f.symbol === c.symbol)!.score;
-        let v = voyage.find(f => f.symbol === c.symbol)!.score * 10;
-        let s = shuttle.find(f => f.symbol === c.symbol)!.score;
-        let t = traits.find(f => f.symbol === c.symbol)!.score;
+        let gaunt = gauntlet.find(f => f.symbol === c.symbol)!.score;
+        let voy = voyage.find(f => f.symbol === c.symbol)!.score;
+        let shut = shuttle.find(f => f.symbol === c.symbol)!.score;
+        let trait = traits.find(f => f.symbol === c.symbol)!.score;
 
-        //c.ranks.traitRank = t;
-        t *= 0.5;
 
-        let co = cols.find(f => f.symbol === c.symbol)!.score;
-        c.ranks.scores.collections = co;
-        co *= 0.5;
+        let colscore = cols.find(f => f.symbol === c.symbol)!.score;
+        c.ranks.scores.collections = colscore;
 
-        let sh = c.ranks.scores.ship.overall;
-        let scores = [v, t, co, sr, tr, mc, Math.max(g, s, sh)];
+        let ship = c.ranks.scores.ship.overall;
+        let pot = (Math.max(shut, ship) + ((shut + ship))) / 2;
+
+        pot *= 2;
+        voy *= 7;
+        gaunt *= 2;
+        cast *= 0.25;
+        skrare *= 2;
+        trare *= 0.3;
+        trait *= 0.5;
+        colscore *= 0.5;
+
+        let scores = [gaunt, voy, trait, colscore, skrare, trare, cast, pot];
 
         results.push({
             symbol: c.symbol,
@@ -263,7 +269,7 @@ export function score() {
         });
     }
 
-    results = normalize(results, false, true);
+    results = normalize(results, false, false);
 
     if (DEBUG) console.log("Final scoring:");
     origCrew.forEach((c) => {
@@ -291,4 +297,3 @@ export function score() {
     if (DEBUG) console.log(`Results: ${results.length}`);
     fs.writeFileSync(STATIC_PATH + 'crew.json', JSON.stringify(origCrew));
 }
-score();

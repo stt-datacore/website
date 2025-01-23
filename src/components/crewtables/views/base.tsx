@@ -22,7 +22,17 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 	tableConfig.push(
 		// { width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier'), tiebreakers: ['cab_ov_rank'], tiebreakers_reverse: [false] },
 		{ width: 1, column: 'cab_ov', title: <span>{t('base.cab_power')} <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
-		{ width: 1, column: 'ranks.scores.overall', title: t('rank_names.datacore_rating'), tiebreakers: ['cab_ov_rank'], tiebreakers_reverse: [false] },
+		{
+			width: 1, column: 'blank', title: t('rank_names.datacore_rating'), reverse: true,
+			customCompare: (a: IRosterCrew, b: IRosterCrew) => {
+				if (a.ranks.scores?.overall === undefined && b.ranks.scores?.overall === undefined) return 0;
+				else if (a.ranks.scores?.overall === undefined) return 1;
+				else if (b.ranks.scores?.overall === undefined) return -1;
+				let r = a.ranks.scores.overall - b.ranks.scores.overall;
+				if (!r) r = (b.cab_ov_rank ?? 0) - (a.cab_ov_rank ?? 0);
+				return r;
+			}
+		 },
 	);
 	if (tableType !== 'offers') {
 		tableConfig.push({ width: 1, column: 'ranks.voyRank', title: <span>{t('base.voyage')} <VoyageExplanation /></span> })
@@ -138,7 +148,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 		tiny.setRapid("search", "skill_order:" + sko);
 	};
 	const qbslots = qbitsToSlots(crew.q_bits);
-	const tierColor = crew.ranks.scores?.overall ? gradeToColor(crew.ranks.scores.overall / 10) ?? undefined : undefined;
+	const tierColor = crew.ranks.scores?.overall ? gradeToColor(crew.ranks.scores.overall / 100) ?? undefined : undefined;
 	const gradeColor = gradeToColor(crew.cab_ov_grade) ?? undefined;
 	return (
 		<React.Fragment>
@@ -150,7 +160,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<small><span style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>{rarityLabels[crew.max_rarity]}</span><br />{crew.cab_ov_rank ? "#" + crew.cab_ov_rank : "?" }</small>
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
-				<b style={{color: tierColor}}>{crew.ranks.scores?.overall}</b>
+				<b style={{color: tierColor}}>{crew.ranks.scores?.overall ?? 0}</b>
 			</Table.Cell>
 			{tableType !== 'offers' &&
 			<Table.Cell textAlign='center'>

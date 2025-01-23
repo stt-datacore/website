@@ -1090,9 +1090,9 @@ export function numberToGrade(value: number, noneText?: string) {
 }
 
 
-export function gradeToColor(grade: string | number, dryzero?: boolean): string | null {
+export function gradeToColor(grade: string | number, dryzero?: boolean): string | undefined {
 
-	if (gradeColorsDisabled || (!grade && dryzero)) return null;
+	if (gradeColorsDisabled || (!grade && dryzero)) return undefined;
 
 	if (typeof grade === 'number' && grade < 1 && grade >= 0) {
 
@@ -1149,7 +1149,7 @@ export function gradeToColor(grade: string | number, dryzero?: boolean): string 
 
 
 	}
-	return null;
+	return undefined;
 }
 
 export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_skill: Skill): ComputedSkill {
