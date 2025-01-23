@@ -322,15 +322,15 @@ export function score() {
         let ship = c.ranks.scores.ship.overall;
         let pot = 0; //(Math.max(voy, shut, gaunt, ship, colscore, trait, trare, skrare, cast, pcs)) * 0.5;
 
-        gaunt *= 1.5;
+        gaunt *= 1.59;
         voy *= 7;
-        ship *= 1.5;
-        cast *= 0.25;
+        ship *= 1.25;
+        cast *= 0.15;
         skrare *= 2;
-        trare *= 0.3;
+        trare *= 1;
         trait *= 0.5;
         colscore *= 0.5;
-        pcs *= 0.25;
+        pcs *= 0.15;
 
         let scores = [pcs, gaunt, voy, ship, shut, trait, colscore, skrare, trare, cast, pot];
 
