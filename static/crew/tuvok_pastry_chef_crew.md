@@ -1,7 +1,7 @@
 ---
 name: Pastry Chef Tuvok
 rarity: 5
-series: tng
+series: voy
 memory_alpha:
 bigbook_tier: -1
 in_portal:
