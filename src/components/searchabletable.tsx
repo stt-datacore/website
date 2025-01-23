@@ -269,7 +269,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 	// Sorting by pre-calculated ranks should filter out crew without matching skills
 	//	Otherwise crew without skills show up first (because 0 comes before 1)
-	if (sortColumn.slice(0, 5) === 'ranks' && sortColumn.slice(0, 10) !== 'ranks.ship') {
+	if (sortColumn.slice(0, 5) === 'ranks' && sortColumn.slice(0, 12) !== 'ranks.scores') {
 		const rank = column?.split('.')[1];
 		if (rank) data = data.filter(row => row.ranks[rank] > 0);
 	}

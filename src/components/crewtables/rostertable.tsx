@@ -229,7 +229,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 
 	const quipment = getQuipmentAsItemWithBonus(globalContext.core.items);
 
-	const shipranks = globalContext.core.crew.some(c => c.ranks.ship);
+	const shipranks = globalContext.core.crew.some(c => c.ranks.scores.ship);
 
 	const getActiveBuffs = () => {
 		if (buffMode === 'none' || !buffMode) return undefined;
