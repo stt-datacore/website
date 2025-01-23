@@ -1,9 +1,13 @@
 import fs from 'fs';
 import { ComputedSkill, CrewMember, Ranks, RankScoring } from '../src/model/crew';
-import { calculateMaxBuffs } from '../src/utils/voyageutils';
+import { calculateMaxBuffs, lookupAMSeatsByTrait } from '../src/utils/voyageutils';
 import { applyCrewBuffs, getVariantTraits, numberToGrade, skillSum } from '../src/utils/crewutils';
 import { Collection } from '../src/model/game-elements';
 import { getAllStatBuffs } from '../src/utils/collectionutils';
+import { EquipmentItem } from '../src/model/equipment';
+import { calcQLots } from '../src/utils/equipment';
+import { getItemWithBonus } from '../src/utils/itemutils';
+import { AntimatterSeatMap } from '../src/model/voyage';
 
 const STATIC_PATH = `${__dirname}/../../static/structured/`;
 const DEBUG = true;
@@ -123,6 +127,10 @@ type RarityScore = { symbol: string, score: number, rarity: number };
 
 export function score() {
     const maincast = JSON.parse(fs.readFileSync(STATIC_PATH + 'maincast.json', 'utf-8')) as MainCast;
+    const items = JSON.parse(fs.readFileSync(STATIC_PATH + 'items.json', 'utf-8')) as EquipmentItem[];
+    const quipment = items.filter(f => f.type === 14).map(item => getItemWithBonus(item));
+    items.length = 0;
+
     const collections = JSON.parse(fs.readFileSync(STATIC_PATH + 'collections.json', 'utf-8')) as Collection[];
     const buffcap = JSON.parse(fs.readFileSync(STATIC_PATH + 'all_buffs.json', 'utf-8'));
     const maxbuffs = calculateMaxBuffs(buffcap);
@@ -208,10 +216,29 @@ export function score() {
     }
     results.sort((a, b) => b.score - a.score);
     let traits = results;
+
     if (DEBUG) console.log("Traits")
     if (DEBUG) console.log(traits.slice(0, 20));
 
     results = [].slice();
+
+    for (let c of crew) {
+        calcQLots(c, quipment, maxbuffs, true);
+
+        results.push({
+            symbol: c.symbol,
+            rarity: c.max_rarity,
+            score: c.best_quipment!.aggregate_power
+        });
+    }
+
+    let quips = normalize(results);
+
+    if (DEBUG) console.log("Quipment Score")
+    if (DEBUG) console.log(quips.slice(0, 20));
+
+    results = [].slice();
+
     for (let c of crew) {
         results.push({
             symbol: c.symbol,
@@ -279,6 +306,21 @@ export function score() {
         results.push({
             symbol: c.symbol,
             rarity: c.max_rarity,
+            score: c.traits.map(m => lookupAMSeatsByTrait(m)).flat().length
+        });
+    }
+
+    let amseats = normalize(results);
+
+    if (DEBUG) console.log("Antimatter Seats")
+    if (DEBUG) console.log(amseats.slice(0, 20));
+
+    results = [].slice();
+
+    for (let c of crew) {
+        results.push({
+            symbol: c.symbol,
+            rarity: c.max_rarity,
             score: castCount(c, crew, maincast)
         });
     }
@@ -300,9 +342,11 @@ export function score() {
 
         c.ranks.scores.tertiaryRarity = trare;
 
+        let quip = quips.find(f => f.symbol === c.symbol)!.score;
         let gaunt = gauntlet.find(f => f.symbol === c.symbol)!.score;
         let voy = voyage.find(f => f.symbol === c.symbol)!.score;
         let shut = shuttle.find(f => f.symbol === c.symbol)!.score;
+        let amseat = amseats.find(f => f.symbol === c.symbol)!.score;
 
         // let gauntm = gauntmuch.find(f => f.symbol === c.symbol)!.score;
         // let voym = voymuch.find(f => f.symbol === c.symbol)!.score;
@@ -331,8 +375,10 @@ export function score() {
         trait *= 0.5;
         colscore *= 0.5;
         pcs *= 0.15;
+        quip *= 0.85;
+        amseat *= 0.5;
 
-        let scores = [pcs, gaunt, voy, ship, shut, trait, colscore, skrare, trare, cast, pot];
+        let scores = [amseat, pcs, gaunt, voy, ship, shut, trait, colscore, skrare, trare, cast, pot, quip];
 
         results.push({
             symbol: c.symbol,
@@ -341,7 +387,7 @@ export function score() {
         });
     }
 
-    results = normalize(results, false, false);
+    results = normalize(results, false, true);
 
     if (DEBUG) console.log("Final scoring:");
     origCrew.forEach((c) => {
