@@ -367,6 +367,7 @@ export function score() {
         let pot = 0; //(Math.max(voy, shut, gaunt, ship, colscore, trait, trare, skrare, cast, pcs)) * 0.5;
 
         gaunt *= 1.59;
+        shut *= 1;
         voy *= 7;
         ship *= 1.25;
         cast *= 0.15;
