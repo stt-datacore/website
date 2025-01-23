@@ -352,9 +352,9 @@ export function score() {
         // let voym = voymuch.find(f => f.symbol === c.symbol)!.score;
         // let shutm = shuttlemuch.find(f => f.symbol === c.symbol)!.score;
 
-        // voy = (voy + voym) / 2;
-        // gaunt = (gaunt + gauntm) / 2;
-        // shut = (shut + shutm) / 2;
+        // voy = Math.max(voy, voym);
+        // gaunt = Math.max(gaunt, gauntm);
+        // shut = Math.max(shut, shutm);
 
         let trait = traits.find(f => f.symbol === c.symbol)!.score;
 
@@ -408,12 +408,26 @@ export function score() {
     for (let r = 1; r <= 5; r++) {
         let filtered = results.filter(f => f.rarity === r)!;
         filtered.sort((a, b) => b.score - a.score);
-        let max = filtered[0].score;
+        let max1 = filtered[0].score;
+        let max2 = filtered.length;
         let rank = 1;
         for (let rec of filtered) {
-            rec.score = Number(((rec.score / max) * 100).toFixed(4));
+            let newscore1 = Number(((rec.score / max1) * 100).toFixed(4));
+            let newscore2 = Number(((1 - (rank / max2)) * 100).toFixed(4));
+            rec.score = (newscore1 + newscore2) / 2;
+            rank++;
+        }
+        normalize(filtered);
+    }
+
+    for (let r = 1; r <= 5; r++) {
+        let filtered = results.filter(f => f.rarity === r)!;
+        filtered.sort((a, b) => b.score - a.score);
+        let rank = 1;
+        for (let rec of filtered) {
             let c = origCrew.find(fc => fc.symbol === rec.symbol);
             if (c) {
+                c.ranks.scores.rarity = rec.score;
                 c.ranks.scores.overall_grade = numberToGrade(rec.score / 100);
                 c.ranks.scores.overall_rank = rank++;
             }
