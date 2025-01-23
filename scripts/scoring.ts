@@ -1,11 +1,12 @@
 import fs from 'fs';
-import { ComputedSkill, CrewMember, Ranks } from '../src/model/crew';
+import { ComputedSkill, CrewMember, Ranks, RankScoring } from '../src/model/crew';
 import { calculateMaxBuffs } from '../src/utils/voyageutils';
 import { applyCrewBuffs, getVariantTraits, numberToGrade, skillSum } from '../src/utils/crewutils';
 import { Collection } from '../src/model/game-elements';
 import { getAllStatBuffs } from '../src/utils/collectionutils';
 
 const STATIC_PATH = `${__dirname}/../../static/structured/`;
+const DEBUG = true;
 
 interface MainCast {
     tos: string[];
@@ -62,7 +63,7 @@ function tertRare(crew: CrewMember, roster: CrewMember[]) {
 }
 
 
-function makeTraitRanks(roster: CrewMember[]) {
+function traitScoring(roster: CrewMember[]) {
 	roster = [ ...roster ];
 
 	const traitCount = {} as { [key: string]: number };
@@ -74,13 +75,14 @@ function makeTraitRanks(roster: CrewMember[]) {
 	});
 	roster.forEach((crew) => {
 		crew.ranks ??= {} as Ranks;
+        crew.ranks.scores ??= {} as RankScoring;
 		let traitsum = crew.traits.map(t => traitCount[t]).reduce((p, n) => p + n, 0);
-		crew.ranks.traitRank = (1 / traitsum) / crew.traits.length;
+		crew.ranks.scores.trait = (1 / traitsum) / crew.traits.length;
 	});
 
-	roster.sort((a, b) => a.ranks.traitRank - b.ranks.traitRank);
-    let max = roster[roster.length - 1].ranks.traitRank;
-	roster.forEach((crew, idx) => crew.ranks.traitRank = Number(((1 - (crew.ranks.traitRank / max)) * 100).toFixed(2)));
+	roster.sort((a, b) => a.ranks.scores.trait - b.ranks.scores.trait);
+    let max = roster[roster.length - 1].ranks.scores.trait;
+	roster.forEach((crew, idx) => crew.ranks.scores.trait = Number((((1 - crew.ranks.scores.trait / max)) * 100).toFixed(4)));
 }
 
 function collectionScore(c: CrewMember, collections: Collection[]) {
@@ -94,59 +96,75 @@ function collectionScore(c: CrewMember, collections: Collection[]) {
     //return n + c.collection_ids.length;
 }
 
-function score() {
+type RarityScore = { symbol: string, score: number, rarity: number };
+
+export function score() {
     const maincast = JSON.parse(fs.readFileSync(STATIC_PATH + 'maincast.json', 'utf-8')) as MainCast;
     const collections = JSON.parse(fs.readFileSync(STATIC_PATH + 'collections.json', 'utf-8')) as Collection[];
     const buffcap = JSON.parse(fs.readFileSync(STATIC_PATH + 'all_buffs.json', 'utf-8'));
     const maxbuffs = calculateMaxBuffs(buffcap);
     const crew = (JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf-8')) as CrewMember[]);
+    const origCrew = JSON.parse(JSON.stringify(crew)) as CrewMember[];
+
+    function normalize(results: RarityScore[], inverse?: boolean, min_balance?: boolean) {
+        results = results.slice();
+        results.sort((a, b) => b.score - a.score);
+        let max = results[0].score;
+        let min = min_balance ? (results[results.length - 1].score) : 0;
+        max -= min;
+        for (let r of results) {
+            if (inverse) {
+                r.score = Number((((1 - (r.score - min) / max)) * 100).toFixed(4));
+            }
+            else {
+                r.score = Number((((r.score - min) / max) * 100).toFixed(4));
+            }
+        }
+        results.sort((a, b) => b.score - a.score);
+        return results;
+    }
 
     function makeResults(mode: 'core' | 'proficiency' | 'all') {
-        let results = [] as { symbol: string, score: number, rarity: number }[]
-
+        let results = [] as RarityScore[]
         for (let c of crew) {
             applyCrewBuffs(c, maxbuffs);
             let skills = c.skill_order.map(skill => c[skill] as ComputedSkill);
             results.push({
                 symbol: c.symbol,
+                rarity: c.max_rarity,
                 score: skillSum(skills, mode),
-                rarity: c.max_rarity
             });
         }
-
-        results.sort((a, b) => b.score - a.score);
-        let max = results[0].score;
-        for (let r of results) {
-            r.score = Number(((r.score / max) * 10).toFixed(2));
-        }
-        return results;
+        return normalize(results);
     }
 
     let results = makeResults('all')
     let voyage = results;
-    console.log("Voyage")
-    console.log(results.slice(0, 20));
+    if (DEBUG) console.log("Voyage")
+    if (DEBUG) console.log(voyage.slice(0, 20));
     results = makeResults('proficiency')
     let gauntlet = results;
-    console.log("Gauntlet")
-    console.log(results.slice(0, 20));
+    if (DEBUG) console.log("Gauntlet")
+    if (DEBUG) console.log(gauntlet.slice(0, 20));
     results = makeResults('core')
     let shuttle = results;
-    console.log("Shuttle")
-    console.log(results.slice(0, 20));
+    if (DEBUG) console.log("Shuttle")
+    if (DEBUG) console.log(shuttle.slice(0, 20));
     results = [].slice();
-    makeTraitRanks(crew);
+
+    traitScoring(crew);
+
     for (let c of crew) {
         results.push({
             symbol: c.symbol,
             rarity: c.max_rarity,
-            score: c.ranks.traitRank
+            score: c.ranks.scores.trait
         });
     }
     results.sort((a, b) => b.score - a.score);
-    console.log("Traits")
-    console.log(results.slice(0, 20));
     let traits = results;
+    if (DEBUG) console.log("Traits")
+    if (DEBUG) console.log(traits.slice(0, 20));
 
     results = [].slice();
     for (let c of crew) {
@@ -156,54 +174,43 @@ function score() {
             score: collectionScore(c, collections)
         });
     }
-    results.sort((a, b) => b.score - a.score);
-    let max = results[0].score;
-    for (let r of results) {
-        r.score = Number(((r.score / max) * 10).toFixed(2));
+
+    let cols = normalize(results);
+    if (DEBUG) console.log("Stat-Boosting Collections")
+    if (DEBUG) console.log(cols.slice(0, 20));
+
+    results = [].slice();
+    let buckets = [[], [], [], [], [], []] as CrewMember[][];
+    for (let c of crew) {
+        buckets[c.max_rarity].push(c);
     }
 
-    console.log("Stat-Boosting Collections")
-    console.log(results.slice(0, 20));
-    let cols = results;
+    for (let c of crew) {
+        results.push({
+            symbol: c.symbol,
+            rarity: c.max_rarity,
+            score: skillRare(c, buckets[c.max_rarity])
+        });
+    }
+
+    let skillrare = normalize(results, true);
+
+    if (DEBUG) console.log("Skill-Order Rarity")
+    if (DEBUG) console.log(skillrare.slice(0, 20));
+
     results = [].slice();
 
     for (let c of crew) {
         results.push({
             symbol: c.symbol,
             rarity: c.max_rarity,
-            score: skillRare(c, crew)
+            score: tertRare(c, buckets[c.max_rarity])
         });
     }
+    let tertrare = normalize(results, true);
 
-    results.sort((a, b) => a.score - b.score);
-
-    max = results[results.length - 1].score;
-    for (let r of results) {
-        r.score = Number(((1 - (r.score / max)) * 10).toFixed(2));
-    }
-    console.log("Skill-Order Rarity")
-    console.log(results.slice(0, 20));
-    let skillrare = results;
-
-    results = [].slice();
-
-    for (let c of crew) {
-        results.push({
-            symbol: c.symbol,
-            rarity: c.max_rarity,
-            score: tertRare(c, crew)
-        });
-    }
-
-    results.sort((a, b) => a.score - b.score);
-
-    max = results[results.length - 1].score;
-    for (let r of results) {
-        r.score = Number(((1 - (r.score / max)) * 10).toFixed(2));
-    }
-    console.log("Tertiary Rarity")
-    console.log(results.slice(0, 20));
-    let tertrare = results;
+    if (DEBUG) console.log("Tertiary Rarity")
+    if (DEBUG) console.log(tertrare.slice(0, 20));
 
     results = [].slice();
 
@@ -215,29 +222,40 @@ function score() {
         });
     }
 
-    results.sort((a, b) => b.score - a.score);
+    let mains = normalize(results);
 
-    max = results[0].score;
-    for (let r of results) {
-        r.score = Number((((r.score / max)) * 10).toFixed(2));
-    }
-    console.log("Main cast score")
-    console.log(results.slice(0, 20));
-    let mains = results;
+    if (DEBUG) console.log("Main cast score")
+    if (DEBUG) console.log(mains.slice(0, 20));
+
     results = [].slice();
 
-    for (let c of crew) {
+    for (let c of origCrew) {
         let mc = mains.find(f => f.symbol === c.symbol)!.score * 0.25;
-        let sr = skillrare.find(f => f.symbol === c.symbol)!.score * 2;
-        let tr = tertrare.find(f => f.symbol === c.symbol)!.score * 0.3;
+
+        let sr = skillrare.find(f => f.symbol === c.symbol)!.score;
+        c.ranks.scores.skillRarity = sr;
+
+        sr *= 2;
+        let tr = tertrare.find(f => f.symbol === c.symbol)!.score;
+
+        c.ranks.scores.tertiaryRarity = tr;
+        tr *= 0.3;
+
         let g = gauntlet.find(f => f.symbol === c.symbol)!.score;
         let v = voyage.find(f => f.symbol === c.symbol)!.score * 10;
         let s = shuttle.find(f => f.symbol === c.symbol)!.score;
-        let t = traits.find(f => f.symbol === c.symbol)!.score * 0.5;
-        let co = cols.find(f => f.symbol === c.symbol)!.score * 0.5;
-        let sh = c.ranks.ship!.overall;
+        let t = traits.find(f => f.symbol === c.symbol)!.score;
 
+        //c.ranks.traitRank = t;
+        t *= 0.5;
+
+        let co = cols.find(f => f.symbol === c.symbol)!.score;
+        c.ranks.scores.collections = co;
+        co *= 0.5;
+
+        let sh = c.ranks.scores.ship.overall;
         let scores = [v, t, co, sr, tr, mc, Math.max(g, s, sh)];
+
         results.push({
             symbol: c.symbol,
             rarity: c.max_rarity,
@@ -245,21 +263,32 @@ function score() {
         });
     }
 
-    results = results.sort((a, b) => b.score - a.score).filter(f => f.rarity == 5);
-    max = results[0].score;
-    let min = results[results.length - 1].score;
-    max -= min;
-    for (let r of results) {
-        r.score = Number((((r.score - min) / max) * 10).toFixed(2));
-    }
+    results = normalize(results, false, true);
 
-    console.log("Final scoring:");
+    if (DEBUG) console.log("Final scoring:");
+    origCrew.forEach((c) => {
+        c.ranks.scores ??= {} as RankScoring;
 
-    results.slice(0, 50).forEach((result, idx) => {
-        let c = crew.find(f => f.symbol === result.symbol)!;
-        let tier = 0;
-        console.log(`${c.name.padEnd(40, ' ')}`, `Score ${result.score}`.padEnd(15, ' '), `Grade: ${numberToGrade(result.score / 10)}`);
+        let ranks = results.find(f => f.symbol === c.symbol);
+        if (ranks) {
+            c.ranks.scores.overall = ranks.score;
+            c.ranks.scores.overall_grade = numberToGrade(ranks.score / 100);
+        }
+        else {
+            c.ranks.scores.overall = -1;
+            c.ranks.scores.overall_grade = "?";
+        }
     });
-    console.log(`Results: ${results.length}`)
+
+    if (DEBUG) {
+        results.forEach((result, idx) => {
+            let c = origCrew.find(f => f.symbol === result.symbol)!;
+            if (idx < 50) {
+                console.log(`${c.name.padEnd(40, ' ')}`, `Score ${result.score}`.padEnd(15, ' '), `Grade: ${numberToGrade(result.score / 100)}`);
+            }
+        });
+    }
+    if (DEBUG) console.log(`Results: ${results.length}`);
+    fs.writeFileSync(STATIC_PATH + 'crew.json', JSON.stringify(origCrew));
 }
 score();

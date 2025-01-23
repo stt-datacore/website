@@ -1446,6 +1446,8 @@
         "three_skills": "Drei Fähigkeiten"
     },
     "rank_names": {
+        "datacore_rating": "Datacore-Bewertung",
+        "datacore_grade": "Datacore-Klasse",
         "advantage": {
             "d": "V",
             "defense": "Verteidigung (Reparatur/Ausweichen)",

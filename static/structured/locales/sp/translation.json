@@ -1458,6 +1458,8 @@
         "three_skills": "Tres Habilidades"
     },
     "rank_names": {
+        "datacore_rating": "Clasificación de Datacore",
+        "datacore_grade": "Grado Datacore",
         "arena_rank": "Arena",
         "bigbook_tier": "Piso de Big Book",
         "cab_grade": "Grado CAB",

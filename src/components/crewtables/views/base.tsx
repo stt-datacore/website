@@ -6,7 +6,7 @@ import CONFIG from '../../../components/CONFIG';
 import { IRosterCrew, RosterType } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
 import CABExplanation from '../../explanations/cabexplanation';
-import { gradeToColor, printPortalStatus, qbitsToSlots, qbProgressToNext, skillSum, skillToShort } from '../../../utils/crewutils';
+import { formatTierLabel, gradeToColor, printPortalStatus, qbitsToSlots, qbProgressToNext, skillSum, skillToShort } from '../../../utils/crewutils';
 import { TinyStore } from '../../../utils/tiny';
 import VoyageExplanation from '../../explanations/voyexplanation';
 import { PlayerCrew } from '../../../model/player';
@@ -22,7 +22,7 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 	tableConfig.push(
 		// { width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier'), tiebreakers: ['cab_ov_rank'], tiebreakers_reverse: [false] },
 		{ width: 1, column: 'cab_ov', title: <span>{t('base.cab_power')} <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
-		// { width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier'), tiebreakers: ['cab_ov_rank'], tiebreakers_reverse: [false] },
+		{ width: 1, column: 'ranks.scores.overall', title: t('rank_names.datacore_rating'), tiebreakers: ['cab_ov_rank'], tiebreakers_reverse: [false] },
 	);
 	if (tableType !== 'offers') {
 		tableConfig.push({ width: 1, column: 'ranks.voyRank', title: <span>{t('base.voyage')} <VoyageExplanation /></span> })
@@ -138,7 +138,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 		tiny.setRapid("search", "skill_order:" + sko);
 	};
 	const qbslots = qbitsToSlots(crew.q_bits);
-	//const tierColor = crew.bigbook_tier ? gradeToColor(crew.bigbook_tier) ?? undefined : undefined;
+	const tierColor = crew.ranks.scores?.overall ? gradeToColor(crew.ranks.scores.overall / 10) ?? undefined : undefined;
 	const gradeColor = gradeToColor(crew.cab_ov_grade) ?? undefined;
 	return (
 		<React.Fragment>
@@ -146,12 +146,12 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<b style={{color: tierColor}}>{formatTierLabel(crew)}</b>
 			</Table.Cell> */}
 			<Table.Cell textAlign='center'>
-				<b style={{color:gradeColor}}>{crew.cab_ov}</b><br />
-				<small><span  style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>{rarityLabels[crew.max_rarity]}</span><br />{crew.cab_ov_rank ? "#" + crew.cab_ov_rank : "?" }</small>
+				<b style={{color: gradeColor}}>{crew.cab_ov}</b><br />
+				<small><span style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>{rarityLabels[crew.max_rarity]}</span><br />{crew.cab_ov_rank ? "#" + crew.cab_ov_rank : "?" }</small>
 			</Table.Cell>
-			{/* <Table.Cell textAlign='center'>
-				<b style={{color: tierColor}}>{formatTierLabel(crew)}</b>
-			</Table.Cell> */}
+			<Table.Cell textAlign='center'>
+				<b style={{color: tierColor}}>{crew.ranks.scores?.overall}</b>
+			</Table.Cell>
 			{tableType !== 'offers' &&
 			<Table.Cell textAlign='center'>
 				<div style={{cursor:"pointer"}} onClick={(e) => navToSearch(crew)} title={crew.skill_order.map(sk => skillToShort(sk)).reduce((p, n) => p ? `${p}/${n}` : n)}>

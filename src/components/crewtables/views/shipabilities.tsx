@@ -45,39 +45,39 @@ export function getShipTableConfig(t: TranslateMethod, withranks: boolean) {
 	if (withranks) {
 		colConfig.unshift(
 			{
-				width: 1, column: 'ranks.ship.overall', title: t('rank_names.ship_rank'),
+				width: 1, column: 'ranks.scores.ship.overall', title: t('rank_names.ship_rank'),
 				customCompare: (a: CrewMember, b: CrewMember) => {
-					if (!a.ranks.ship && !b.ranks.ship) return 0;
-					else if (!a.ranks.ship) return 1;
-					else if (!b.ranks.ship) return -1;
-					let r = a.ranks.ship.overall - b.ranks.ship.overall;
-					if (!r) r = a.ranks.ship.kind.localeCompare(b.ranks.ship.kind);
+					if (!a.ranks.scores.ship && !b.ranks.scores.ship) return 0;
+					else if (!a.ranks.scores.ship) return 1;
+					else if (!b.ranks.scores.ship) return -1;
+					let r = a.ranks.scores.ship.overall - b.ranks.scores.ship.overall;
+					if (!r) r = a.ranks.scores.ship.kind.localeCompare(b.ranks.scores.ship.kind);
 					return r;
 				},
 				reverse: true
 			},
 			{
-				width: 1, column: 'ranks.ship.arena', title: t('rank_names.arena_rank'),
+				width: 1, column: 'ranks.scores.ship.arena', title: t('rank_names.arena_rank'),
 				customCompare: (a: CrewMember, b: CrewMember) => {
-					if (!a.ranks.ship && !b.ranks.ship) return 0;
-					else if (!a.ranks.ship) return 1;
-					else if (!b.ranks.ship) return -1;
-					let r = a.ranks.ship.arena - b.ranks.ship.arena;
-					if (!r) r = a.ranks.ship.kind.localeCompare(b.ranks.ship.kind);
-					if (!r) r = a.ranks.ship.overall - b.ranks.ship.overall;
+					if (!a.ranks.scores.ship && !b.ranks.scores.ship) return 0;
+					else if (!a.ranks.scores.ship) return 1;
+					else if (!b.ranks.scores.ship) return -1;
+					let r = a.ranks.scores.ship.arena - b.ranks.scores.ship.arena;
+					if (!r) r = a.ranks.scores.ship.kind.localeCompare(b.ranks.scores.ship.kind);
+					if (!r) r = a.ranks.scores.ship.overall - b.ranks.scores.ship.overall;
 					return r;
 				},
 				reverse: true
 			},
 			{
-				width: 1, column: 'ranks.ship.fbb', title: t('rank_names.fbb_rank'),
+				width: 1, column: 'ranks.scores.ship.fbb', title: t('rank_names.fbb_rank'),
 				customCompare: (a: CrewMember, b: CrewMember) => {
-					if (!a.ranks.ship && !b.ranks.ship) return 0;
-					else if (!a.ranks.ship) return 1;
-					else if (!b.ranks.ship) return -1;
-					let r = a.ranks.ship.fbb - b.ranks.ship.fbb;
-					if (!r) r = a.ranks.ship.kind.localeCompare(b.ranks.ship.kind);
-					if (!r) r = a.ranks.ship.overall - b.ranks.ship.overall;
+					if (!a.ranks.scores.ship && !b.ranks.scores.ship) return 0;
+					else if (!a.ranks.scores.ship) return 1;
+					else if (!b.ranks.scores.ship) return -1;
+					let r = a.ranks.scores.ship.fbb - b.ranks.scores.ship.fbb;
+					if (!r) r = a.ranks.scores.ship.kind.localeCompare(b.ranks.scores.ship.kind);
+					if (!r) r = a.ranks.scores.ship.overall - b.ranks.scores.ship.overall;
 					return r;
 				},
 				reverse: true
@@ -103,13 +103,13 @@ export const CrewShipCells = (props: CrewCellProps) => {
 		<React.Fragment>
 			{withranks && <>
 				<Table.Cell textAlign='center'>
-					{!!crew.ranks.ship && formatRank(crew.ranks.ship?.kind, crew.ranks.ship.overall, t)}
+					{!!crew.ranks.scores.ship && formatRank(crew.ranks.scores.ship?.kind, crew.ranks.scores.ship.overall, t)}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					{!!crew.ranks.ship && formatRank(crew.ranks.ship?.kind, crew.ranks.ship.arena, t)}
+					{!!crew.ranks.scores.ship && formatRank(crew.ranks.scores.ship?.kind, crew.ranks.scores.ship.arena, t)}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					{!!crew.ranks.ship && formatRank(crew.ranks.ship?.kind, crew.ranks.ship.fbb, t)}
+					{!!crew.ranks.scores.ship && formatRank(crew.ranks.scores.ship?.kind, crew.ranks.scores.ship.fbb, t)}
 				</Table.Cell>
 			</>}
 			<Table.Cell textAlign='center'>
@@ -215,7 +215,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 	const filterByShipAbility = (crew: IRosterCrew) => {
 		if (shipCrew && !shipCrew.some(cm => cm === crew.symbol)) return false;
 
-		if (selectedAdvantage && selectedAdvantage !== crew.ranks.ship?.kind) {
+		if (selectedAdvantage && selectedAdvantage !== crew.ranks.scores.ship?.kind) {
 			return false;
 		}
 

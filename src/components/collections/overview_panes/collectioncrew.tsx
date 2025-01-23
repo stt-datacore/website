@@ -16,7 +16,8 @@ export const CollectionCrew = (props: { collection: Collection }) => {
     if (!crew) return <></>
     crew.sort((a, b) => {
         let r = b.max_rarity - a.max_rarity;
-        //if (!r) r = a.bigbook_tier - b.bigbook_tier;
+        if (b.ranks.scores && a.ranks.scores)
+            if (!r) r = b.ranks.scores.overall - a.ranks.scores.overall;
         if (!r) r = a.cab_ov_rank - b.cab_ov_rank;
         if (!r) r = ((new Date(b.date_added)).getTime()) - ((new Date(a.date_added)).getTime());
         return r;

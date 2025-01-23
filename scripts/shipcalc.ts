@@ -2,7 +2,7 @@ import fs from 'fs';
 import os from 'os';
 import { Worker, isMainThread, workerData, parentPort } from 'node:worker_threads';
 
-import { CrewMember, ShipRanks } from "../src/model/crew";
+import { CrewMember, RankScoring, ShipScores } from "../src/model/crew";
 import { Ship, Schematics } from "../src/model/ship";
 import { highestLevel, mergeShips } from "../src/utils/shiputils";
 import { exit } from 'process';
@@ -12,6 +12,7 @@ import { getCleanShipCopy, nextOpponent, runBattles } from './ships/battle';
 import { battleRunsToCache, cacheToBattleRuns, readBattleCache } from './ships/cache';
 import { makeBuckets } from './ships/util';
 import { CalcRes, ShipCalcConfig } from './ships/paracalc';
+import { score } from './scoring';
 
 const STATIC_PATH = `${__dirname}/../../static/structured/`;
 
@@ -438,8 +439,8 @@ async function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance 
         console.log(...params);
     }
 
-    const crewRanksOut = {} as {[key: string]: ShipRanks }
-    const shipRanksOut = {} as {[key: string]: ShipRanks }
+    const crewRanksOut = {} as {[key: string]: ShipScores }
+    const shipRanksOut = {} as {[key: string]: ShipScores }
 
     [offs_2, defs_2, ship_3].forEach((scores, idx) => {
         printAndLog(" ");
@@ -533,7 +534,8 @@ async function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance 
     Object.entries(crewRanksOut).forEach(([symbol, ranks]) => {
         const c = crewFresh.find(f => f.symbol === symbol);
         if (c) {
-            c.ranks.ship = ranks;
+            c.ranks.scores ??= {} as RankScoring;
+            c.ranks.scores.ship = ranks;
         }
     });
 
@@ -545,9 +547,10 @@ async function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance 
     });
 
     for (let c of crewFresh) {
-        if (!c.ranks.ship) {
+        c.ranks.scores ??= {} as RankScoring;
+        if (!c.ranks.scores.ship) {
             const t = characterizeCrew(c);
-            c.ranks.ship = createBlankShipScore(t < 0 ? 'defense' : 'offense');
+            c.ranks.scores.ship = createBlankShipScore(t < 0 ? 'defense' : 'offense');
         }
     }
 
@@ -570,5 +573,6 @@ async function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance 
 (async () => {
     processShips();
     await processCrewShipStats(10, 0, 0);
+    score();
 })();
 

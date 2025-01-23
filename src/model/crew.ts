@@ -212,7 +212,7 @@ export interface Nickname {
     creator?: string;
 }
 
-export interface ShipRanks {
+export interface ShipScores {
     overall: number,
     arena: number,
     fbb: number,
@@ -234,12 +234,25 @@ export interface ShipRanks {
     }
 }
 
+export interface RankScoring {
+    ship: ShipScores;
+    trait: number;
+    voyage: number;
+    gauntlet: number;
+    shuttle: number;
+    overall: number;
+    overall_grade: string;
+    skillRarity: number;
+    tertiaryRarity: number;
+    collections: number;
+}
+
 export interface Ranks {
     voyRank: number;
     gauntletRank: number;
     chronCostRank: number;
     traitRank: number;
-    ship?: ShipRanks;
+    scores: RankScoring;
     B_SEC?: number;
     A_SEC?: number;
     V_CMD_SEC?: number;

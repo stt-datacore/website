@@ -1458,6 +1458,8 @@
         "three_skills": "Trois Compétences"
     },
     "rank_names": {
+        "datacore_rating": "Cote Datacore",
+        "datacore_grade": "Catégorie Datacore",
         "advantage": {
             "d": "D",
             "defense": "Défense (Réparation/Évasion)",

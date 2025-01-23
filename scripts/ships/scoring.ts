@@ -1,4 +1,4 @@
-import { CrewMember, ShipRanks } from "../../src/model/crew";
+import { CrewMember, ShipScores } from "../../src/model/crew";
 import { BattleStation, Ship } from "../../src/model/ship";
 
 
@@ -581,10 +581,10 @@ export function createBlankShipScore(kind: 'offense' | 'defense' | 'ship' = 'off
             fbb: {},
             arena: {}
         }
-    } as ShipRanks;
+    } as ShipScores;
 }
 
-export function scoreToShipScore(score: Score, kind: 'offense' | 'defense' | 'ship'): ShipRanks {
+export function scoreToShipScore(score: Score, kind: 'offense' | 'defense' | 'ship'): ShipScores {
 
     if (Number.isNaN(score.overall_final) || score.fbb_final == Infinity) {
         score.overall_final = 0;

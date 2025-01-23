@@ -1,4 +1,4 @@
-import { CrewMember, ShipRanks } from "./crew";
+import { CrewMember, ShipScores } from "./crew";
 import { Icon } from "./game-elements";
 import { CompletionState, PlayerCrew } from "./player";
 
@@ -89,7 +89,7 @@ export interface Ship extends ShipBonus {
   immortal?: CompletionState | number;
   score?: number;
   levels?: ShipLevels;
-  ranks?: ShipRanks;
+  ranks?: ShipScores;
 }
 
 

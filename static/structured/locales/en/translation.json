@@ -1454,6 +1454,8 @@
             "offense": "Offense (Accuracy/Damage)",
             "select": "Select an advantage"
         },
+        "datacore_rating": "Datacore Rating",
+        "datacore_grade": "Datacore Grade",
         "arena_rank": "Arena",
         "bigbook_tier": "Big Book Tier",
         "cab_grade": "CAB Grade",
