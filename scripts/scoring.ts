@@ -19,6 +19,19 @@ interface MainCast {
     low: string[];
 }
 
+function manyMuch(crew: CrewMember, type: "G" | "B" | "V") {
+    let many = 0;
+    let much = 0;
+    Object.entries(crew.ranks).forEach(([key, value]) => {
+        if (typeof value !== 'number') return;
+        if (!key.startsWith(`${type}_`)) return;
+        many++;
+        much += value;
+    });
+
+    return many/much;
+}
+
 function castCount(crew: CrewMember, roster: CrewMember[], maincast: MainCast) {
     let variants = getVariantTraits(crew);
     variants = [ ...new Set(Object.values(maincast).map((m: string[]) => m.filter(f => variants.includes(f))).flat()) ];
@@ -125,14 +138,26 @@ export function score() {
     }
 
     function makeResults(mode: 'core' | 'proficiency' | 'all') {
-        let results = [] as RarityScore[]
+        let results = [] as RarityScore[];
+        let bb: 'B' | 'V' | 'G' = 'V';
+        switch (mode) {
+            case 'core':
+                bb = 'B';
+                break;
+            case 'proficiency':
+                bb = 'G';
+                break;
+            default:
+                bb = 'V';
+                break;
+        }
         for (let c of crew) {
             applyCrewBuffs(c, maxbuffs);
             let skills = c.skill_order.map(skill => c[skill] as ComputedSkill);
             results.push({
                 symbol: c.symbol,
                 rarity: c.max_rarity,
-                score: skillSum(skills, mode),
+                score: skillSum(skills, mode) + manyMuch(c, bb),
             });
         }
         return normalize(results);
@@ -181,7 +206,7 @@ export function score() {
 
     results = [].slice();
     let buckets = [[], [], [], [], [], []] as CrewMember[][];
-    for (let c of crew) {
+    for (let c of origCrew) {
         buckets[c.max_rarity].push(c);
     }
 
@@ -249,18 +274,18 @@ export function score() {
         c.ranks.scores.collections = colscore;
 
         let ship = c.ranks.scores.ship.overall;
-        let pot = (Math.max(shut, ship) + ((shut + ship))) / 2;
+        let pot = (Math.max(voy, shut, gaunt, ship));
 
-        pot *= 2;
+        gaunt *= 1.5;
         voy *= 7;
-        gaunt *= 2;
+        ship *= 1.5;
         cast *= 0.25;
         skrare *= 2;
         trare *= 0.3;
         trait *= 0.5;
         colscore *= 0.5;
 
-        let scores = [gaunt, voy, trait, colscore, skrare, trare, cast, pot];
+        let scores = [gaunt, voy, ship, shut, trait, colscore, skrare, trare, cast, pot];
 
         results.push({
             symbol: c.symbol,
@@ -278,13 +303,29 @@ export function score() {
         let ranks = results.find(f => f.symbol === c.symbol);
         if (ranks) {
             c.ranks.scores.overall = ranks.score;
-            c.ranks.scores.overall_grade = numberToGrade(ranks.score / 100);
+
         }
         else {
             c.ranks.scores.overall = -1;
+            c.ranks.scores.overall_rank = -1;
             c.ranks.scores.overall_grade = "?";
         }
     });
+
+    for (let r = 1; r <= 5; r++) {
+        let filtered = results.filter(f => f.rarity === r)!;
+        filtered.sort((a, b) => b.score - a.score);
+        let max = filtered[0].score;
+        let rank = 1;
+        for (let rec of filtered) {
+            rec.score = Number(((rec.score / max) * 100).toFixed(4));
+            let c = origCrew.find(fc => fc.symbol === rec.symbol);
+            if (c) {
+                c.ranks.scores.overall_grade = numberToGrade(rec.score / 100);
+                c.ranks.scores.overall_rank = rank++;
+            }
+        }
+    }
 
     if (DEBUG) {
         results.forEach((result, idx) => {
@@ -296,4 +337,8 @@ export function score() {
     }
     if (DEBUG) console.log(`Results: ${results.length}`);
     fs.writeFileSync(STATIC_PATH + 'crew.json', JSON.stringify(origCrew));
+}
+
+if (process.argv[1].includes('scoring')) {
+    score();
 }

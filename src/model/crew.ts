@@ -241,6 +241,7 @@ export interface RankScoring {
     gauntlet: number;
     shuttle: number;
     overall: number;
+    overall_rank: number;
     overall_grade: string;
     skillRarity: number;
     tertiaryRarity: number;
