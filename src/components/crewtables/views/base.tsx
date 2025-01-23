@@ -160,7 +160,8 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<small><span style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>{rarityLabels[crew.max_rarity]}</span><br />{crew.cab_ov_rank ? "#" + crew.cab_ov_rank : "?" }</small>
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
-				<b style={{color: tierColor}}>{crew.ranks.scores?.overall ?? 0}</b>
+				<b style={{color: tierColor}}>{crew.ranks.scores?.overall ?? 0}</b><br />
+				<small><span style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>{rarityLabels[crew.max_rarity]}</span><br />{crew.ranks.scores?.overall_rank ? "#" + crew.ranks.scores.overall_rank : "?" }</small>
 			</Table.Cell>
 			{tableType !== 'offers' &&
 			<Table.Cell textAlign='center'>

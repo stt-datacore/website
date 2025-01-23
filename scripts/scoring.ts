@@ -29,7 +29,17 @@ function manyMuch(crew: CrewMember, type: "G" | "B" | "V") {
         much += value;
     });
 
-    return many/much;
+    return many + (many/much);
+}
+
+function potentialCols(crew: CrewMember[]) {
+    const rc = crew.map(c => c.traits).flat().sort();
+    const tr = {} as {[key:string]:number};
+    for (let r of rc) {
+        tr[r] ??= 0;
+        tr[r]++;
+    }
+    return Object.entries(tr).map(([key, value]) => value >= 25 && value <= 200 ? key : undefined).filter(f => f) as string[];
 }
 
 function castCount(crew: CrewMember, roster: CrewMember[], maincast: MainCast) {
@@ -118,6 +128,7 @@ export function score() {
     const maxbuffs = calculateMaxBuffs(buffcap);
     const crew = (JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf-8')) as CrewMember[]);
     const origCrew = JSON.parse(JSON.stringify(crew)) as CrewMember[];
+    const pcols = potentialCols(crew);
 
     function normalize(results: RarityScore[], inverse?: boolean, min_balance?: boolean) {
         results = results.slice();
@@ -137,7 +148,7 @@ export function score() {
         return results;
     }
 
-    function makeResults(mode: 'core' | 'proficiency' | 'all') {
+    function makeResults(mode: 'core' | 'proficiency' | 'all', mm?: boolean) {
         let results = [] as RarityScore[];
         let bb: 'B' | 'V' | 'G' = 'V';
         switch (mode) {
@@ -157,24 +168,33 @@ export function score() {
             results.push({
                 symbol: c.symbol,
                 rarity: c.max_rarity,
-                score: skillSum(skills, mode) + manyMuch(c, bb),
+                score: mm ? manyMuch(c, bb) : skillSum(skills, mode),
             });
         }
         return normalize(results);
     }
 
     let results = makeResults('all')
+    let voymuch = makeResults('all', true);
     let voyage = results;
     if (DEBUG) console.log("Voyage")
     if (DEBUG) console.log(voyage.slice(0, 20));
+    if (DEBUG) console.log("Voyage Many/Much")
+    if (DEBUG) console.log(voymuch.slice(0, 20));
     results = makeResults('proficiency')
+    let gauntmuch = makeResults('proficiency', true)
     let gauntlet = results;
     if (DEBUG) console.log("Gauntlet")
     if (DEBUG) console.log(gauntlet.slice(0, 20));
+    if (DEBUG) console.log("Gauntlet Many/Much")
+    if (DEBUG) console.log(gauntmuch.slice(0, 20));
     results = makeResults('core')
+    let shuttlemuch = makeResults('core', true)
     let shuttle = results;
     if (DEBUG) console.log("Shuttle")
     if (DEBUG) console.log(shuttle.slice(0, 20));
+    if (DEBUG) console.log("Shuttle Many/Much")
+    if (DEBUG) console.log(shuttlemuch.slice(0, 20));
     results = [].slice();
 
     traitScoring(crew);
@@ -243,6 +263,22 @@ export function score() {
         results.push({
             symbol: c.symbol,
             rarity: c.max_rarity,
+            score: c.traits.filter(f => pcols.includes(f)).length
+        });
+    }
+
+    let pcolscores = normalize(results);
+
+    if (DEBUG) console.log("Potential Collection Score")
+    if (DEBUG) console.log(pcolscores.slice(0, 20));
+
+
+    results = [].slice();
+
+    for (let c of crew) {
+        results.push({
+            symbol: c.symbol,
+            rarity: c.max_rarity,
             score: castCount(c, crew, maincast)
         });
     }
@@ -267,16 +303,26 @@ export function score() {
         let gaunt = gauntlet.find(f => f.symbol === c.symbol)!.score;
         let voy = voyage.find(f => f.symbol === c.symbol)!.score;
         let shut = shuttle.find(f => f.symbol === c.symbol)!.score;
+
+        // let gauntm = gauntmuch.find(f => f.symbol === c.symbol)!.score;
+        // let voym = voymuch.find(f => f.symbol === c.symbol)!.score;
+        // let shutm = shuttlemuch.find(f => f.symbol === c.symbol)!.score;
+
+        // voy = (voy + voym) / 2;
+        // gaunt = (gaunt + gauntm) / 2;
+        // shut = (shut + shutm) / 2;
+
         let trait = traits.find(f => f.symbol === c.symbol)!.score;
 
-
         let colscore = cols.find(f => f.symbol === c.symbol)!.score;
+        let pcs = pcolscores.find(f => f.symbol === c.symbol)!.score;
+
         c.ranks.scores.collections = colscore;
 
         let ship = c.ranks.scores.ship.overall;
-        let pot = (Math.max(voy, shut, gaunt, ship));
+        let pot = 0; //(Math.max(voy, shut, gaunt, ship, colscore, trait, trare, skrare, cast, pcs)) * 0.5;
 
-        gaunt *= 1.5;
+        gaunt *= 1.25;
         voy *= 7;
         ship *= 1.5;
         cast *= 0.25;
@@ -284,8 +330,9 @@ export function score() {
         trare *= 0.3;
         trait *= 0.5;
         colscore *= 0.5;
+        pcs *= 0.25;
 
-        let scores = [gaunt, voy, ship, shut, trait, colscore, skrare, trare, cast, pot];
+        let scores = [pcs, gaunt, voy, ship, shut, trait, colscore, skrare, trare, cast, pot];
 
         results.push({
             symbol: c.symbol,
