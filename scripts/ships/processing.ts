@@ -1,7 +1,6 @@
 import fs from 'fs';
 import { Ship, Schematics, BattleStations } from "../../src/model/ship";
 
-
 const STATIC_PATH = `${__dirname}/../../../static/structured/`;
 
 export function highestLevel(ship: Ship) {

@@ -1,5 +1,4 @@
-import os from 'os';
-import { Worker, isMainThread, workerData, parentPort } from 'node:worker_threads';
+import { isMainThread, workerData, parentPort } from 'node:worker_threads';
 
 import { CrewMember } from "../../src/model/crew";
 import { Ship } from "../../src/model/ship";

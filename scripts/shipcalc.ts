@@ -1,14 +1,14 @@
 import fs from 'fs';
 import os from 'os';
-import { Worker, isMainThread, workerData, parentPort } from 'node:worker_threads';
+import { Worker } from 'node:worker_threads';
 
 import { CrewMember, RankScoring, ShipScores } from "../src/model/crew";
 import { Ship, Schematics } from "../src/model/ship";
 import { highestLevel, mergeShips } from "../src/utils/shiputils";
 import { exit } from 'process';
 import { processShips } from './ships/processing';
-import { Score, getShipDivision, createScore, getScore, characterizeCrew, shipnum, getStaffedShip, BattleRunBase, scoreToShipScore, createBlankShipScore, processScores, ScoreDataConfig, createScoreData, AllBosses, normalizeScores } from './ships/scoring';
-import { getCleanShipCopy, nextOpponent, runBattles } from './ships/battle';
+import { Score, getShipDivision, characterizeCrew, shipnum, getStaffedShip, BattleRunBase, scoreToShipScore, createBlankShipScore, processScores, ScoreDataConfig, createScoreData, AllBosses } from './ships/scoring';
+import { runBattles } from './ships/battle';
 import { battleRunsToCache, cacheToBattleRuns, readBattleCache } from './ships/cache';
 import { makeBuckets } from './ships/util';
 import { CalcRes, ShipCalcConfig } from './ships/paracalc';

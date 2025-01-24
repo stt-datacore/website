@@ -5,7 +5,7 @@ import ExcelJS from 'exceljs';
 import { EquipmentItem, EquipmentItemSource, IDemand } from '../src/model/equipment';
 import { BaseSkills, ComputedSkill, CrewMember, EquipmentSlot, QuipmentScores, Ranks, Skill, SkillQuipmentScores } from '../src/model/crew';
 import { Mission } from '../src/model/missions';
-import { BattleStations, Schematics, Ship } from '../src/model/ship';
+import { BattleStations, Schematics } from '../src/model/ship';
 
 function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[]) => U[] | false) {
     var current_iter = 0n;

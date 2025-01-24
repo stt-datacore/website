@@ -1,7 +1,6 @@
 import { CrewMember, ShipScores } from "../../src/model/crew";
 import { BattleStation, Ship } from "../../src/model/ship";
 
-
 export const OFFENSE_ABILITIES = [0, 1, 4, 5, 7, 8, 10, 12];
 export const DEFENSE_ABILITIES = [2, 3, 6, 9, 10, 11];
 
