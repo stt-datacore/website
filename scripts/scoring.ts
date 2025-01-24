@@ -11,7 +11,7 @@ import { TraitNames } from '../src/model/traits';
 import { potentialCols } from '../src/components/stats/utils';
 
 const STATIC_PATH = `${__dirname}/../../static/structured/`;
-const DEBUG = true;
+const DEBUG = process.argv.includes('--debug');
 
 interface MainCast {
     tos: string[];
