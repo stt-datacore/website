@@ -72,7 +72,7 @@ function potentialCols(crew: CrewMember[]) {
         tr[r] ??= 0;
         tr[r]++;
     }
-    return Object.entries(tr).map(([key, value]) => value >= 25 && value <= 150 ? key : undefined).filter(f => f) as string[];
+    return Object.entries(tr).map(([key, value]) => value >= 25 && value <= 200 ? key : undefined).filter(f => f) as string[];
 }
 
 function castCount(crew: CrewMember, roster: CrewMember[], maincast: MainCast) {
@@ -428,7 +428,7 @@ export function score() {
         amseat *= 0.5;
         velo *= 0.2;
 
-        let scores = [amseat, pcs, gaunt, voy, ship, shut, trait, colscore, skrare, trare, cast, pot, quip, velo];
+        let scores = [amseat, pcs, gaunt, voy, ship, shut, trait, colscore, skrare, trare, cast, quip, velo];
 
         results.push({
             symbol: c.symbol,
