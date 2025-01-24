@@ -1,20 +1,17 @@
 import React from "react"
 import { GlobalContext } from "../../../context/globalcontext"
 import { ITableConfigRow, SearchableTable } from "../../searchabletable";
-import { EpochDiff } from "../model";
 import { Checkbox, Table } from "semantic-ui-react";
-import { approxDate, dateToEpoch, formatElapsedDays, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
+import { approxDate, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow, potentialCols, SpecialCols } from "../utils";
 import 'moment/locale/fr';
 import 'moment/locale/de';
 import 'moment/locale/es';
-import moment from "moment";
 import { AvatarView } from "../../item_presenters/avatarview";
 import { CrewMember } from "../../../model/crew";
 import { omniSearchFilter } from "../../../utils/omnisearch";
 import { useStateWithStorage } from "../../../utils/storage";
-import { getVariantTraits } from "../../../utils/crewutils";
+import { getVariantTraits, gradeToColor } from "../../../utils/crewutils";
 import { getIconPath } from "../../../utils/assets";
-
 
 interface TraitStats {
     trait: string,
@@ -30,38 +27,31 @@ interface TraitStats {
     retro?: number,
 }
 
-const SpecialCols = {
-    original: 34,
-    dsc: 20,
-    ent: 66,
-    voy: 74,
-    q: 31,
-    evsuit: 38,
-    ageofsail: 37,
-    exclusive_gauntlet: 32,
-    low: 54,
-    tas: 54,
-    vst: 54,
-    crew_max_rarity_3: 16,
-    crew_max_rarity_2: 15,
-    crew_max_rarity_1: 14,
-    niners: 29,
-};
-
 export const TraitStatsTable = () => {
 
     const globalContext = React.useContext(GlobalContext);
-    const { t, TRAIT_NAMES, COLLECTIONS } = globalContext.localized;
+    const { t, tfmt, TRAIT_NAMES, COLLECTIONS } = globalContext.localized;
     const { crew, collections, keystones } = globalContext.core;
     const [stats, setStats] = React.useState<TraitStats[]>([]);
     const [excludeLaunch, setExcludeLaunch] = useStateWithStorage<boolean>('stat_trends/traits/exclude_launch', false, { rememberForever: true });
     const [showHidden, setShowHidden] = useStateWithStorage<boolean>('stat_trends/traits/show_hidden', false, { rememberForever: true });
     const [showVisible, setShowVisible] = useStateWithStorage<boolean>('stat_trends/traits/show_visible', true, { rememberForever: true });
+    const [onlyPotential, setOnlyPotential] = useStateWithStorage<boolean>('stat_trends/traits/only_potential', false, { rememberForever: true });
     const [hideOne, setHideOne] = useStateWithStorage<boolean>('stat_trends/traits/hide_one', false, { rememberForever: true });
     const [showVariantTraits, setShowVariantTraits] = useStateWithStorage<boolean>('stat_trends/traits/show_variant_traits', true, { rememberForever: true });
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;
 
+    const potential = (() => {
+        let potential = potentialCols(crew, collections, TRAIT_NAMES);
+        //potential.forEach((p) => p.count = Math.abs(p.count - 50))
+        potential.sort((a, b) => b.count - a.count);
+        let max = potential[0].count;
+        for (let p of potential) {
+            p.count = Number((((p.count / max)) * 10).toFixed(2));
+        }
+        return potential;
+    })();
 
     const calcReleaseVague = (min: number, max: number) => {
         let d = new Date(GameEpoch);
@@ -158,6 +148,8 @@ export const TraitStatsTable = () => {
         [ntraits, htraits].forEach((traitset, idx) => {
             const hidden = idx === 1;
             traitset.forEach((trait) => {
+                let potrec = potential.find(f => f.trait === trait);
+                if (onlyPotential && !potrec) return;
                 let tcrew = work.filter(c => (!hidden ? c.traits : c.traits_hidden).includes(trait))
                 if (!tcrew.length) return;
                 if (hideOne && tcrew.length === 1) return;
@@ -226,7 +218,6 @@ export const TraitStatsTable = () => {
                     newtrait.retro = 0;
                     newtrait.first_appearance = newtrait.first_crew.date_added;
                 }
-
                 if (!excludeLaunch || newtrait.first_appearance.getTime() !== GameEpoch.getTime()) {
                     outstats.push(newtrait);
                 }
@@ -234,8 +225,9 @@ export const TraitStatsTable = () => {
         });
 
         setStats(outstats);
-    }, [crew, showHidden, showVariantTraits, hideOne, showVisible, excludeLaunch]);
+    }, [crew, showHidden, showVariantTraits, hideOne, showVisible, excludeLaunch, onlyPotential]);
 
+    const potreckey = t('stat_trends.traits.potential_collection_score_n', { n: '' });
     const tableConfig = [
         { width: 1, column: 'trait', title: t('stat_trends.trait_columns.trait') },
         {
@@ -249,7 +241,23 @@ export const TraitStatsTable = () => {
                 return 0;
             }
         },
-        { width: 1, column: 'collection', title: t('stat_trends.trait_columns.collection') },
+        {
+            width: 1,
+            column: 'collection',
+            title: t('stat_trends.trait_columns.collection'),
+            customCompare: (a: TraitStats, b: TraitStats) => {
+                let f1 = potential.find(f => f.trait === a.trait_raw)
+                let f2 = potential.find(f => f.trait === b.trait_raw)
+                if (f1 && f2) {
+                    return f1.count - f2.count
+                }
+                else if (f1 && !b.collection) return 1;
+                else if (f1 && b.collection) return -1;
+                else if (f2 && !a.collection) return -1;
+                else if (f2 && a.collection) return 1;
+                return a.collection.localeCompare(b.collection);
+            }
+        },
         {
             width: 1,
             column: 'first_appearance',
@@ -294,6 +302,10 @@ export const TraitStatsTable = () => {
         <div style={{...flexCol, alignItems: 'stretch', justifyContent: 'flex-start', width: '100%', overflowX: 'auto' }}>
             <div style={flexRow}>
                 <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start', gap: '1em', margin: '1em 0'}}>
+                    <Checkbox label={t('stat_trends.traits.only_show_potential_collections')}
+                        checked={onlyPotential}
+                        onChange={(e, { checked }) => setOnlyPotential(!!checked) }
+                    />
                     <Checkbox label={t('stat_trends.traits.show_visible')}
                         checked={showVisible}
                         onChange={(e, { checked }) => setShowVisible(!!checked) }
@@ -340,6 +352,7 @@ export const TraitStatsTable = () => {
     function renderTableRow(item: TraitStats, idx: any) {
         const fcrew = item.first_crew;
         const lcrew = item.latest_crew;
+        const pc = potential.find(f => f.trait === item.trait_raw);
 
         return <Table.Row key={`traitSetIdx_${idx}`}>
                 <Table.Cell>
@@ -354,7 +367,14 @@ export const TraitStatsTable = () => {
                     {!item.hidden && t('global.no')}
                 </Table.Cell>}
                 <Table.Cell>
-                    {item.collection}
+                    <div>
+                        {!!pc && tfmt('stat_trends.traits.potential_collection_score_n', {
+                            n: <div style={{color: gradeToColor(pc.count / 10)}}>
+                                {pc.count}
+                            </div>
+                        })}
+                        {!pc && item.collection}
+                    </div>
                 </Table.Cell>
                 <Table.Cell>
                     {/* {moment(item.first_appearance).utc(false).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("MMM D, y")} */}

@@ -2041,7 +2041,9 @@
             "retroactively_added_to_n_crew": "Ajouté rétroactivement à 5 équipiers",
             "show_hidden": "Afficher les traits cachés",
             "show_variant_traits": "Afficher les caractéristiques des variantes d'équipage",
-            "show_visible": "Afficher les traits visibles"
+            "show_visible": "Afficher les traits visibles",
+            "potential_collection_score_n": "Score de collecte potentiel : {{n}}",
+            "only_show_potential_collections": "Afficher uniquement les collections potentielles"
         }
     },
     "tool_roster_picker": {

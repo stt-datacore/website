@@ -1,7 +1,9 @@
 import { BaseSkills, CrewMember } from "../../model/crew";
+import { Collection } from "../../model/game-elements";
 import { TranslateMethod } from "../../model/player";
+import { TraitNames } from "../../model/traits";
 import { AntimatterSeatMap } from "../../model/voyage";
-import { skillSum } from "../../utils/crewutils";
+import { getVariantTraits, skillSum } from "../../utils/crewutils";
 import CONFIG from "../CONFIG";
 import { EpochDiff, GraphSeries, Highs, SkillFilterConfig, SkillOrderDebut, SkillOrderDebutCrew, EpochItem, StatsDataSets } from "./model";
 import convert from 'color-convert';
@@ -19,6 +21,26 @@ export const SkillColors = {
     "engineering_skill": "#FFA500",
     "diplomacy_skill": "#9370DB"
 }
+
+
+export const SpecialCols = {
+    original: 34,
+    dsc: 20,
+    ent: 66,
+    voy: 74,
+    q: 31,
+    evsuit: 38,
+    ageofsail: 37,
+    exclusive_gauntlet: 32,
+    low: 54,
+    tas: 54,
+    vst: 54,
+    crew_max_rarity_3: 16,
+    crew_max_rarity_2: 15,
+    crew_max_rarity_1: 14,
+    niners: 29,
+};
+
 
 export function getRGBSkillColors() {
     const output = { ... SkillColors };
@@ -700,4 +722,24 @@ export function fillGaps(data: EpochItem[]) {
     }
 
     data.sort((a, b) => a.epoch_day - b.epoch_day || a.skills.join().localeCompare(b.skills.join()));
+}
+
+
+export function potentialCols(crew: CrewMember[], cols: Collection[], TRAIT_NAMES: TraitNames) {
+    const rc = crew.map(c => {
+        let vt = getVariantTraits(c);
+        let traits1 = c.traits.filter((trait) => {
+            let col = cols.find(f => f.description?.includes(">" + (TRAIT_NAMES[trait]) + "<"))
+            if (col) return false;
+            return true;
+        });
+        let traits2 = c.traits_hidden.filter((trait) => !SpecialCols[trait] && !vt.includes(trait))
+        return traits1.concat(traits2);
+    }).flat().sort();
+    const tr = {} as {[key:string]:number};
+    for (let r of rc) {
+        tr[r] ??= 0;
+        tr[r]++;
+    }
+    return Object.entries(tr).map(([key, value]) => value >= 25 && value <= 200 ? { trait: key, count: value } : undefined).filter(f => f !== undefined);
 }

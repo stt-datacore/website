@@ -2026,7 +2026,9 @@
             "retroactively_added_to_n_crew": "Retroactively added to {{n}} crew",
             "show_hidden": "Show hidden traits",
             "show_variant_traits": "Show crew variant traits",
-            "show_visible": "Show visible traits"
+            "show_visible": "Show visible traits",
+            "potential_collection_score_n": "Potential Collection Score: {{n}}",
+            "only_show_potential_collections": "Only show potential collections"
         }
     },
     "tool_roster_picker": {

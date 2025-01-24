@@ -9,6 +9,7 @@ import { calcQLots } from '../src/utils/equipment';
 import { getItemWithBonus } from '../src/utils/itemutils';
 import { AntimatterSeatMap } from '../src/model/voyage';
 import { TraitNames } from '../src/model/traits';
+import { potentialCols } from '../src/components/stats/utils';
 
 const STATIC_PATH = `${__dirname}/../../static/structured/`;
 const DEBUG = true;
@@ -52,14 +53,14 @@ function velocity(crew: CrewMember, roster: CrewMember[]) {
         return skillSum(roster[0].skill_order.map(skill => roster[0].base_skills[skill] as Skill))
     }
     for (let i = 1; i < c; i++) {
-        let diff = roster[i].date_added.getTime() - roster[i - 1].date_added.getTime();
+        let tdiff = roster[i].date_added.getTime() - roster[i - 1].date_added.getTime();
         let pdiff = skillSum(roster[i].skill_order.map(skill => roster[i].base_skills[skill] as Skill)) - skillSum(roster[i - 1].skill_order.map(skill => roster[i - 1].base_skills[skill] as Skill));
-        if (diff === 0) {
+        if (tdiff === 0) {
             highint.push(Math.abs(pdiff));
             continue;
         }
         if (pdiff > 0) {
-            highint.push(pdiff / diff);
+            highint.push(pdiff / tdiff);
         }
     }
 
@@ -83,25 +84,6 @@ const SpecialCols = {
     crew_max_rarity_1: 14,
     niners: 29,
 };
-
-function potentialCols(crew: CrewMember[], cols: Collection[], TRAIT_NAMES: TraitNames) {
-    const rc = crew.map(c => {
-        let vt = getVariantTraits(c);
-        let traits1 = c.traits.filter((trait) => {
-            let col = cols.find(f => f.description?.includes(">" + (TRAIT_NAMES[trait]) + "<"))
-            if (col) return false;
-            return true;
-        });
-        let traits2 = c.traits_hidden.filter((trait) => !SpecialCols[trait] && !vt.includes(trait))
-        return traits1.concat(traits2);
-    }).flat().sort();
-    const tr = {} as {[key:string]:number};
-    for (let r of rc) {
-        tr[r] ??= 0;
-        tr[r]++;
-    }
-    return Object.entries(tr).map(([key, value]) => value >= 25 && value <= 200 ? { trait: key, count: value } : undefined).filter(f => f !== undefined);
-}
 
 function castCount(crew: CrewMember, roster: CrewMember[], maincast: MainCast) {
     let variants = getVariantTraits(crew);
@@ -364,11 +346,11 @@ export function score() {
         tcolnorm.push({
             symbol: pc.trait,
             rarity: 5,
-            score: Math.abs(pc.count - 60)
+            score: pc.count
         });
     }
 
-    tcolnorm = normalize(tcolnorm, true);
+    tcolnorm = normalize(tcolnorm);
 
     if (DEBUG) console.log("Potential Collections")
     if (DEBUG) console.log(tcolnorm);
@@ -424,17 +406,17 @@ export function score() {
     results = [].slice();
 
     for (let c of origCrew) {
-        let cast = mains.find(f => f.symbol === c.symbol)!.score;
-        let skrare = skillrare.find(f => f.symbol === c.symbol)!.score;
-        let trare = tertrare.find(f => f.symbol === c.symbol)!.score;
+        let maincast_n = mains.find(f => f.symbol === c.symbol)!.score;
+        let sk_rare_n = skillrare.find(f => f.symbol === c.symbol)!.score;
+        let tert_rare_n = tertrare.find(f => f.symbol === c.symbol)!.score;
 
-        c.ranks.scores.main_cast = cast;
-        c.ranks.scores.skill_rarity = skrare;
-        c.ranks.scores.tertiary_rarity = trare;
+        c.ranks.scores.main_cast = maincast_n;
+        c.ranks.scores.skill_rarity = sk_rare_n;
+        c.ranks.scores.tertiary_rarity = tert_rare_n;
 
-        let gaunt = gauntlet.find(f => f.symbol === c.symbol)!.score;
-        let voy = voyage.find(f => f.symbol === c.symbol)!.score;
-        let shut = shuttle.find(f => f.symbol === c.symbol)!.score;
+        let gauntlet_n = gauntlet.find(f => f.symbol === c.symbol)!.score;
+        let voyage_n = voyage.find(f => f.symbol === c.symbol)!.score;
+        let shuttle_n = shuttle.find(f => f.symbol === c.symbol)!.score;
         // let gauntm = gauntmuch.find(f => f.symbol === c.symbol)!.score;
         // let voym = voymuch.find(f => f.symbol === c.symbol)!.score;
         // let shutm = shuttlemuch.find(f => f.symbol === c.symbol)!.score;
@@ -442,58 +424,58 @@ export function score() {
         // voy = Math.max(voy, voym);
         // gaunt = Math.max(gaunt, gauntm);
         // shut = Math.max(shut, shutm);
-        c.ranks.scores.gauntlet = gaunt;
-        c.ranks.scores.voyage = voy;
-        c.ranks.scores.shuttle = shut;
+        c.ranks.scores.gauntlet = gauntlet_n;
+        c.ranks.scores.voyage = voyage_n;
+        c.ranks.scores.shuttle = shuttle_n;
 
-        let amseat = amseats.find(f => f.symbol === c.symbol)!.score;
-        let quip = quips.find(f => f.symbol === c.symbol)!.score;
+        let amseat_n = amseats.find(f => f.symbol === c.symbol)!.score;
+        let quip_n = quips.find(f => f.symbol === c.symbol)!.score;
 
-        c.ranks.scores.quipment = quip;
-        c.ranks.scores.am_seating = amseat;
+        c.ranks.scores.quipment = quip_n;
+        c.ranks.scores.am_seating = amseat_n;
 
-        let trait = traits.find(f => f.symbol === c.symbol)!.score;
-        let colscore = cols.find(f => f.symbol === c.symbol)!.score;
-        let pcs = pcolscores.find(f => f.symbol === c.symbol)!.score;
-        let velo = velocities.find(f => f.symbol === c.symbol)!.score;
+        let trait_n = traits.find(f => f.symbol === c.symbol)!.score;
+        let colscore_n = cols.find(f => f.symbol === c.symbol)!.score;
+        let pcs_n = pcolscores.find(f => f.symbol === c.symbol)!.score;
+        let velocity_n = velocities.find(f => f.symbol === c.symbol)!.score;
 
-        c.ranks.scores.trait = trait;
-        c.ranks.scores.collections = colscore;
-        c.ranks.scores.potential_cols = pcs;
-        c.ranks.scores.velocity = velo;
+        c.ranks.scores.trait = trait_n;
+        c.ranks.scores.collections = colscore_n;
+        c.ranks.scores.potential_cols = pcs_n;
+        c.ranks.scores.velocity = velocity_n;
 
-        let ship = c.ranks.scores.ship.overall;
+        let ship_n = c.ranks.scores.ship.overall;
 
         //let pot = 0; //(Math.max(voy, shut, gaunt, ship, colscore, trait, trare, skrare, cast, pcs)) * 0.5;
 
-        amseat *= 0.5;
-        cast *= 0.15;
-        colscore *= 0.5;
-        gaunt *= 1.59;
-        pcs *= 0.15;
-        quip *= 0.85;
-        ship *= 1.25;
-        shut *= 1;
-        skrare *= 2;
-        trait *= 0.5;
-        trare *= 1;
-        velo *= 0.2;
-        voy *= 7;
+        amseat_n *= 0.5;
+        maincast_n *= 0.15;
+        colscore_n *= 0.5;
+        gauntlet_n *= 1.59;
+        pcs_n *= 0.15;
+        quip_n *= 0.85;
+        ship_n *= 1.25;
+        shuttle_n *= 1;
+        sk_rare_n *= 2;
+        trait_n *= 0.5;
+        tert_rare_n *= 1;
+        velocity_n *= 0.2;
+        voyage_n *= 7;
 
         let scores = [
-            amseat,
-            cast,
-            colscore,
-            gaunt,
-            pcs,
-            quip,
-            ship,
-            shut,
-            skrare,
-            trait,
-            trare,
-            velo,
-            voy,
+            amseat_n,
+            maincast_n,
+            colscore_n,
+            gauntlet_n,
+            pcs_n,
+            quip_n,
+            ship_n,
+            shuttle_n,
+            sk_rare_n,
+            trait_n,
+            tert_rare_n,
+            velocity_n,
+            voyage_n,
         ];
 
         results.push({

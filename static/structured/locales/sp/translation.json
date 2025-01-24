@@ -2041,7 +2041,9 @@
             "retroactively_added_to_n_crew": "Agregado retroactivamente a {{n}} tripulantes",
             "show_hidden": "Mostrar rasgos ocultos",
             "show_variant_traits": "Mostrar rasgos de variantes de la tripulación",
-            "show_visible": "Mostrar rasgos visibles"
+            "show_visible": "Mostrar rasgos visibles",
+            "potential_collection_score_n": "Puntuación de colección potencial: {{n}}",
+            "only_show_potential_collections": "Mostrar solo colecciones potenciales"
         }
     },
     "tool_roster_picker": {

@@ -2028,7 +2028,9 @@
             "retroactively_added_to_n_crew": "Nachträglich zu {{n}} Crewmitgliedern hinzugefügt",
             "show_hidden": "Versteckte Merkmale anzeigen",
             "show_variant_traits": "Variantenmerkmale der Crew anzeigen",
-            "show_visible": "Sichtbare Merkmale anzeigen"
+            "show_visible": "Sichtbare Merkmale anzeigen",
+            "potential_collection_score_n": "Möglicher Sammlungswert: {{n}}",
+            "only_show_potential_collections": "Nur potentielle Sammlungen anzeigen"
         }
     },
     "tool_roster_picker": {
