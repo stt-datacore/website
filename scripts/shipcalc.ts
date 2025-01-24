@@ -130,7 +130,7 @@ async function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance 
         allruns.length = (ships.length * crew.length * 18);
         console.log(`Alloc ${allruns.length} items.`);
 
-        const bucketsize = os.cpus().length / 2;
+        const bucketsize = Math.floor(os.cpus().length / 2) || 1;
         const shipBuckets = makeBuckets(ships, bucketsize);
 
         cship = ships.length;
