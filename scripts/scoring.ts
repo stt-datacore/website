@@ -455,7 +455,7 @@ export function score() {
         quip_n *= 0.85;
         ship_n *= 1.25;
         shuttle_n *= 1.1;
-        sk_rare_n *= 2.5;
+        sk_rare_n *= 2;
         trait_n *= 0.5;
         tert_rare_n *= 1;
         velocity_n *= 0.2;
