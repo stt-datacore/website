@@ -10,19 +10,19 @@ import { gradeToColor } from '../../../utils/crewutils';
 
 const RankFields = [
     "overall",
+    "rarity_overall",
     "voyage",
     "shuttle",
     "gauntlet",
     "ship",
     "quipment",
-    "skill_rarity",
-    "am_seating",
     "collections",
+    "trait",
     "main_cast",
     "potential_cols",
-    "rarity_overall",
+    "skill_rarity",
+    "am_seating",
     "tertiary_rarity",
-    "trait",
     "velocity",
 ]
 
@@ -64,12 +64,12 @@ export const CrewDataCoreRankCells = (props: CrewRankCellsProps) => {
 			{RankFields.slice(1).map(field => {
                 let val = 0;
                 if (field === 'ship')
-                    val = crew.ranks.scores.ship.overall;
+                    val = Number((crew.ranks.scores.ship.overall * 10).toFixed(2));
                 else
-                    val = Number(((crew.ranks.scores[field] / 10)).toFixed(2));
+                    val = Number(((crew.ranks.scores[field])).toFixed(2));
                 if (typeof val !== 'number') return <></>
                 return (<Table.Cell key={`scores.${field}`} textAlign='center'>
-                    <span style={{color: gradeToColor(val / 10)}}>
+                    <span style={{color: gradeToColor(val / 100)}}>
 					    {val}
                     </span>
 				</Table.Cell>)

@@ -7,7 +7,6 @@ import { getAllStatBuffs } from '../src/utils/collectionutils';
 import { EquipmentItem } from '../src/model/equipment';
 import { calcQLots } from '../src/utils/equipment';
 import { getItemWithBonus } from '../src/utils/itemutils';
-import { AntimatterSeatMap } from '../src/model/voyage';
 import { TraitNames } from '../src/model/traits';
 import { potentialCols } from '../src/components/stats/utils';
 
@@ -336,7 +335,7 @@ export function score() {
         });
     }
 
-    let velocities = normalize(results, true);
+    let velocities = normalize(results);
 
     if (DEBUG) console.log("Velocity")
     if (DEBUG) console.log(velocities.slice(0, 20));
