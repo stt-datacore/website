@@ -8,6 +8,7 @@ import { EquipmentItem } from '../src/model/equipment';
 import { calcQLots } from '../src/utils/equipment';
 import { getItemWithBonus } from '../src/utils/itemutils';
 import { AntimatterSeatMap } from '../src/model/voyage';
+import { TraitNames } from '../src/model/traits';
 
 const STATIC_PATH = `${__dirname}/../../static/structured/`;
 const DEBUG = true;
@@ -65,14 +66,41 @@ function velocity(crew: CrewMember, roster: CrewMember[]) {
     return highint.reduce((p, n) => p + n, 0);
 }
 
-function potentialCols(crew: CrewMember[]) {
-    const rc = crew.map(c => c.traits).flat().sort();
+const SpecialCols = {
+    original: 34,
+    dsc: 20,
+    ent: 66,
+    voy: 74,
+    q: 31,
+    evsuit: 38,
+    ageofsail: 37,
+    exclusive_gauntlet: 32,
+    low: 54,
+    tas: 54,
+    vst: 54,
+    crew_max_rarity_3: 16,
+    crew_max_rarity_2: 15,
+    crew_max_rarity_1: 14,
+    niners: 29,
+};
+
+function potentialCols(crew: CrewMember[], cols: Collection[], TRAIT_NAMES: TraitNames) {
+    const rc = crew.map(c => {
+        let vt = getVariantTraits(c);
+        let traits1 = c.traits.filter((trait) => {
+            let col = cols.find(f => f.description?.includes(">" + (TRAIT_NAMES[trait]) + "<"))
+            if (col) return false;
+            return true;
+        });
+        let traits2 = c.traits_hidden.filter((trait) => !SpecialCols[trait] && !vt.includes(trait))
+        return traits1.concat(traits2);
+    }).flat().sort();
     const tr = {} as {[key:string]:number};
     for (let r of rc) {
         tr[r] ??= 0;
         tr[r]++;
     }
-    return Object.entries(tr).map(([key, value]) => value >= 25 && value <= 200 ? key : undefined).filter(f => f) as string[];
+    return Object.entries(tr).map(([key, value]) => value >= 25 && value <= 200 ? { trait: key, count: value } : undefined).filter(f => f !== undefined);
 }
 
 function castCount(crew: CrewMember, roster: CrewMember[], maincast: MainCast) {
@@ -161,11 +189,12 @@ export function score() {
     items.length = 0;
 
     const collections = JSON.parse(fs.readFileSync(STATIC_PATH + 'collections.json', 'utf-8')) as Collection[];
+    const TRAIT_NAMES = JSON.parse(fs.readFileSync(STATIC_PATH + 'translation_en.json', 'utf-8')).trait_names as TraitNames;
     const buffcap = JSON.parse(fs.readFileSync(STATIC_PATH + 'all_buffs.json', 'utf-8'));
     const maxbuffs = calculateMaxBuffs(buffcap);
     const crew = (JSON.parse(fs.readFileSync(STATIC_PATH + 'crew.json', 'utf-8')) as CrewMember[]);
     const origCrew = JSON.parse(JSON.stringify(crew)) as CrewMember[];
-    const pcols = potentialCols(crew);
+    const pcols = potentialCols(crew, collections, TRAIT_NAMES);
 
     function normalize(results: RarityScore[], inverse?: boolean, min_balance?: boolean) {
         results = results.slice();
@@ -330,14 +359,30 @@ export function score() {
     if (DEBUG) console.log("Velocity")
     if (DEBUG) console.log(velocities.slice(0, 20));
 
+    let tcolnorm = [] as RarityScore[];
+    for (let pc of pcols) {
+        tcolnorm.push({
+            symbol: pc.trait,
+            rarity: 5,
+            score: Math.abs(pc.count - 60)
+        });
+    }
+
+    tcolnorm = normalize(tcolnorm, true);
+
+    if (DEBUG) console.log("Potential Collections")
+    if (DEBUG) console.log(tcolnorm);
 
     results = [].slice();
 
     for (let c of crew) {
+        let tcols = tcolnorm.filter(f => c.traits.includes(f.symbol) || c.traits_hidden.includes(f.symbol));
+        let n = tcols.map(tc => tc.score).reduce((p, n) => p + n, 0);
+
         results.push({
             symbol: c.symbol,
             rarity: c.max_rarity,
-            score: c.traits.filter(f => pcols.includes(f)).length
+            score: n
         });
     }
 
@@ -345,7 +390,6 @@ export function score() {
 
     if (DEBUG) console.log("Potential Collection Score")
     if (DEBUG) console.log(pcolscores.slice(0, 20));
-
 
     results = [].slice();
 
@@ -423,7 +467,7 @@ export function score() {
         trare *= 1;
         trait *= 0.5;
         colscore *= 0.5;
-        pcs *= 0.25;
+        pcs *= 0.15;
         quip *= 0.85;
         amseat *= 0.5;
         velo *= 0.2;
