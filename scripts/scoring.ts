@@ -164,6 +164,9 @@ function collectionScore(c: CrewMember, collections: Collection[]) {
 type RarityScore = { symbol: string, score: number, rarity: number };
 
 export function score() {
+
+    console.log("Scoring crew...");
+
     const maincast = JSON.parse(fs.readFileSync(STATIC_PATH + 'maincast.json', 'utf-8')) as MainCast;
     const items = JSON.parse(fs.readFileSync(STATIC_PATH + 'items.json', 'utf-8')) as EquipmentItem[];
     const quipment = items.filter(f => f.type === 14).map(item => getItemWithBonus(item));
@@ -541,6 +544,7 @@ export function score() {
     }
     if (DEBUG) console.log(`Results: ${results.length}`);
     fs.writeFileSync(STATIC_PATH + 'crew.json', JSON.stringify(origCrew));
+    console.log("Done.");
 }
 
 if (process.argv[1].includes('scoring')) {
