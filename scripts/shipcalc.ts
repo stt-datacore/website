@@ -573,6 +573,5 @@ async function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance 
 (async () => {
     processShips();
     await processCrewShipStats(10, 0, 0);
-    score();
 })();
 
