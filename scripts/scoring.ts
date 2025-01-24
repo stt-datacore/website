@@ -341,7 +341,7 @@ export function score() {
         });
     }
 
-    let pcolscores = normalize(results);
+    let pcolscores = normalize(results, false, true);
 
     if (DEBUG) console.log("Potential Collection Score")
     if (DEBUG) console.log(pcolscores.slice(0, 20));
@@ -423,7 +423,7 @@ export function score() {
         trare *= 1;
         trait *= 0.5;
         colscore *= 0.5;
-        pcs *= 0.15;
+        pcs *= 0.25;
         quip *= 0.85;
         amseat *= 0.5;
         velo *= 0.2;
