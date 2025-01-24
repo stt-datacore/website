@@ -464,7 +464,7 @@ export function score() {
         for (let rec of filtered) {
             let newscore1 = Number(((rec.score / max1) * 100).toFixed(4));
             let newscore2 = Number(((1 - (rank / max2)) * 100).toFixed(4));
-            rec.score = (newscore1 + newscore2) / 2;
+            rec.score = (newscore1 + newscore1 + newscore2) / 3;
             rank++;
         }
         normalize(filtered);
