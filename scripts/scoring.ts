@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { ComputedSkill, CrewMember, Ranks, RankScoring } from '../src/model/crew';
+import { ComputedSkill, CrewMember, Ranks, RankScoring, Skill } from '../src/model/crew';
 import { calculateMaxBuffs, lookupAMSeatsByTrait } from '../src/utils/voyageutils';
 import { applyCrewBuffs, getVariantTraits, numberToGrade, skillSum } from '../src/utils/crewutils';
 import { Collection } from '../src/model/game-elements';
@@ -36,6 +36,35 @@ function manyMuch(crew: CrewMember, type: "G" | "B" | "V") {
     return many + (many/much);
 }
 
+function velocity(crew: CrewMember, roster: CrewMember[]) {
+    roster = [...roster].filter(f => f.skill_order.join(",") === crew.skill_order.join(","));
+    let highint = [] as number[];
+    crew.date_added = new Date(crew.date_added);
+    roster.forEach((r => r.date_added = new Date(r.date_added)));
+
+    roster.sort((a, b) => {
+        return a.date_added.getTime() - b.date_added.getTime();
+    }).filter(f => f.date_added.getTime() >= crew.date_added.getTime());
+
+    let c = roster.length;
+    if (c === 1) {
+        return skillSum(roster[0].skill_order.map(skill => roster[0].base_skills[skill] as Skill))
+    }
+    for (let i = 1; i < c; i++) {
+        let diff = roster[i].date_added.getTime() - roster[i - 1].date_added.getTime();
+        let pdiff = skillSum(roster[i].skill_order.map(skill => roster[i].base_skills[skill] as Skill)) - skillSum(roster[i - 1].skill_order.map(skill => roster[i - 1].base_skills[skill] as Skill));
+        if (diff === 0) {
+            highint.push(Math.abs(pdiff));
+            continue;
+        }
+        if (pdiff > 0) {
+            highint.push(pdiff / diff);
+        }
+    }
+
+    return highint.reduce((p, n) => p + n, 0);
+}
+
 function potentialCols(crew: CrewMember[]) {
     const rc = crew.map(c => c.traits).flat().sort();
     const tr = {} as {[key:string]:number};
@@ -43,7 +72,7 @@ function potentialCols(crew: CrewMember[]) {
         tr[r] ??= 0;
         tr[r]++;
     }
-    return Object.entries(tr).map(([key, value]) => value >= 25 && value <= 200 ? key : undefined).filter(f => f) as string[];
+    return Object.entries(tr).map(([key, value]) => value >= 25 && value <= 150 ? key : undefined).filter(f => f) as string[];
 }
 
 function castCount(crew: CrewMember, roster: CrewMember[], maincast: MainCast) {
@@ -279,10 +308,28 @@ export function score() {
             score: tertRare(c, buckets[c.max_rarity])
         });
     }
+
     let tertrare = normalize(results, true);
 
     if (DEBUG) console.log("Tertiary Rarity")
     if (DEBUG) console.log(tertrare.slice(0, 20));
+
+    results = [].slice();
+
+    for (let c of crew) {
+
+        results.push({
+            symbol: c.symbol,
+            rarity: c.max_rarity,
+            score: velocity(c, buckets[c.max_rarity])
+        });
+    }
+
+    let velocities = normalize(results, true);
+
+    if (DEBUG) console.log("Velocity")
+    if (DEBUG) console.log(velocities.slice(0, 20));
+
 
     results = [].slice();
 
@@ -360,10 +407,11 @@ export function score() {
 
         let colscore = cols.find(f => f.symbol === c.symbol)!.score;
         let pcs = pcolscores.find(f => f.symbol === c.symbol)!.score;
-
+        let velo = velocities.find(f => f.symbol === c.symbol)!.score;
         c.ranks.scores.collections = colscore;
 
         let ship = c.ranks.scores.ship.overall;
+
         let pot = 0; //(Math.max(voy, shut, gaunt, ship, colscore, trait, trare, skrare, cast, pcs)) * 0.5;
 
         gaunt *= 1.59;
@@ -378,8 +426,9 @@ export function score() {
         pcs *= 0.15;
         quip *= 0.85;
         amseat *= 0.5;
+        velo *= 0.2;
 
-        let scores = [amseat, pcs, gaunt, voy, ship, shut, trait, colscore, skrare, trare, cast, pot, quip];
+        let scores = [amseat, pcs, gaunt, voy, ship, shut, trait, colscore, skrare, trare, cast, pot, quip, velo];
 
         results.push({
             symbol: c.symbol,
