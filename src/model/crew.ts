@@ -235,18 +235,23 @@ export interface ShipScores {
 }
 
 export interface RankScoring {
-    ship: ShipScores;
-    trait: number;
-    voyage: number;
-    gauntlet: number;
-    shuttle: number;
-    overall: number;
-    rarity: number;
-    overall_rank: number;
-    overall_grade: string;
-    skillRarity: number;
-    tertiaryRarity: number;
+    am_seating: number;
     collections: number;
+    gauntlet: number;
+    main_cast: number;
+    overall_grade: string;
+    overall_rank: number;
+    overall: number;
+    potential_cols: number;
+    quipment: number;
+    rarity_overall: number;
+    ship: ShipScores;
+    shuttle: number;
+    skill_rarity: number;
+    tertiary_rarity: number;
+    trait: number;
+    velocity: number;
+    voyage: number;
 }
 
 export interface Ranks {

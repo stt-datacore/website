@@ -425,20 +425,16 @@ export function score() {
 
     for (let c of origCrew) {
         let cast = mains.find(f => f.symbol === c.symbol)!.score;
-
         let skrare = skillrare.find(f => f.symbol === c.symbol)!.score;
-        c.ranks.scores.skillRarity = skrare;
-
         let trare = tertrare.find(f => f.symbol === c.symbol)!.score;
 
-        c.ranks.scores.tertiaryRarity = trare;
+        c.ranks.scores.main_cast = cast;
+        c.ranks.scores.skill_rarity = skrare;
+        c.ranks.scores.tertiary_rarity = trare;
 
-        let quip = quips.find(f => f.symbol === c.symbol)!.score;
         let gaunt = gauntlet.find(f => f.symbol === c.symbol)!.score;
         let voy = voyage.find(f => f.symbol === c.symbol)!.score;
         let shut = shuttle.find(f => f.symbol === c.symbol)!.score;
-        let amseat = amseats.find(f => f.symbol === c.symbol)!.score;
-
         // let gauntm = gauntmuch.find(f => f.symbol === c.symbol)!.score;
         // let voym = voymuch.find(f => f.symbol === c.symbol)!.score;
         // let shutm = shuttlemuch.find(f => f.symbol === c.symbol)!.score;
@@ -446,33 +442,59 @@ export function score() {
         // voy = Math.max(voy, voym);
         // gaunt = Math.max(gaunt, gauntm);
         // shut = Math.max(shut, shutm);
+        c.ranks.scores.gauntlet = gaunt;
+        c.ranks.scores.voyage = voy;
+        c.ranks.scores.shuttle = shut;
+
+        let amseat = amseats.find(f => f.symbol === c.symbol)!.score;
+        let quip = quips.find(f => f.symbol === c.symbol)!.score;
+
+        c.ranks.scores.quipment = quip;
+        c.ranks.scores.am_seating = amseat;
 
         let trait = traits.find(f => f.symbol === c.symbol)!.score;
-
         let colscore = cols.find(f => f.symbol === c.symbol)!.score;
         let pcs = pcolscores.find(f => f.symbol === c.symbol)!.score;
         let velo = velocities.find(f => f.symbol === c.symbol)!.score;
+
+        c.ranks.scores.trait = trait;
         c.ranks.scores.collections = colscore;
+        c.ranks.scores.potential_cols = pcs;
+        c.ranks.scores.velocity = velo;
 
         let ship = c.ranks.scores.ship.overall;
 
-        let pot = 0; //(Math.max(voy, shut, gaunt, ship, colscore, trait, trare, skrare, cast, pcs)) * 0.5;
+        //let pot = 0; //(Math.max(voy, shut, gaunt, ship, colscore, trait, trare, skrare, cast, pcs)) * 0.5;
 
-        gaunt *= 1.59;
-        shut *= 1;
-        voy *= 7;
-        ship *= 1.25;
+        amseat *= 0.5;
         cast *= 0.15;
-        skrare *= 2;
-        trare *= 1;
-        trait *= 0.5;
         colscore *= 0.5;
+        gaunt *= 1.59;
         pcs *= 0.15;
         quip *= 0.85;
-        amseat *= 0.5;
+        ship *= 1.25;
+        shut *= 1;
+        skrare *= 2;
+        trait *= 0.5;
+        trare *= 1;
         velo *= 0.2;
+        voy *= 7;
 
-        let scores = [amseat, pcs, gaunt, voy, ship, shut, trait, colscore, skrare, trare, cast, quip, velo];
+        let scores = [
+            amseat,
+            cast,
+            colscore,
+            gaunt,
+            pcs,
+            quip,
+            ship,
+            shut,
+            skrare,
+            trait,
+            trare,
+            velo,
+            voy,
+        ];
 
         results.push({
             symbol: c.symbol,
@@ -521,7 +543,7 @@ export function score() {
         for (let rec of filtered) {
             let c = origCrew.find(fc => fc.symbol === rec.symbol);
             if (c) {
-                c.ranks.scores.rarity = rec.score;
+                c.ranks.scores.rarity_overall = rec.score;
                 c.ranks.scores.overall_grade = numberToGrade(rec.score / 100);
                 c.ranks.scores.overall_rank = rank++;
             }
