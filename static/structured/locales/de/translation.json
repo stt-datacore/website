@@ -1446,8 +1446,8 @@
         "three_skills": "Drei Fähigkeiten"
     },
     "rank_names": {
-        "datacore_rating": "Datacore-Bewertung",
-        "datacore_grade": "Datacore-Klasse",
+        "datacore_rating": "DataCore-Bewertung",
+        "datacore_grade": "DataCore-Klasse",
         "advantage": {
             "d": "V",
             "defense": "Verteidigung (Reparatur/Ausweichen)",
@@ -1464,9 +1464,29 @@
         "gauntlet_rank": "Herausforderungsrang",
         "quipment_score": "Rüstzeug Werte",
         "rank": "Rang",
+        "scoring": "Ranglisten und Punktzahlen",
         "ship_rank": "Schiffsrang",
         "trait_rank": "Eigenschaftsrang",
-        "voyage_rank": "Reiserang"
+        "voyage_rank": "Reiserang",
+        "scores": {
+            "am_seating": "Antimaterie-Sitze",
+            "collections": "Stat-Boosting-Sammlungen",
+            "gauntlet": "Herausforderung",
+            "main_cast": "Hauptbesetzung",
+            "overall_grade": "Gesamtnote",
+            "overall_rank": "Gesamtrang",
+            "overall": "Gesamt",
+            "potential_cols": "Potenzielle Sammlungen",
+            "quipment": "Rüstzeug",
+            "rarity_overall": "Gesamt (Im Seltenheit)",
+            "ship": "Schiffsfähigkeit",
+            "shuttle": "Basis",
+            "skill_rarity": "Seltenheit der Fertigkeit",
+            "tertiary_rarity": "Seltenheit der tertiären Fertigkeit",
+            "trait": "Eigenschaften",
+            "velocity": "Geschwindigkeit",
+            "voyage": "Reise"
+        }
     },
     "ranking_method": {
         "delta_t": "Delta T",

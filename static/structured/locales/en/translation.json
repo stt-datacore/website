@@ -1454,8 +1454,8 @@
             "offense": "Offense (Accuracy/Damage)",
             "select": "Select an advantage"
         },
-        "datacore_rating": "Datacore Rating",
-        "datacore_grade": "Datacore Grade",
+        "datacore_rating": "DataCore Rating",
+        "datacore_grade": "DataCore Grade",
         "arena_rank": "Arena",
         "bigbook_tier": "Big Book Tier",
         "cab_grade": "CAB Grade",
@@ -1465,9 +1465,29 @@
         "gauntlet_rank": "Gauntlet Rank",
         "quipment_score": "Quipment Score",
         "rank": "Rank",
+        "scoring": "Rankings and Scores",
         "ship_rank": "Ship Rank",
         "trait_rank": "Trait Rank",
-        "voyage_rank": "Voyage Rank"
+        "voyage_rank": "Voyage Rank",
+        "scores": {
+            "am_seating": "Antimatter Seats",
+            "collections": "Stat-Boosting Collections",
+            "gauntlet": "Gauntlet",
+            "main_cast": "Main Cast",
+            "overall_grade": "Overall Grade",
+            "overall_rank": "Overall Rank",
+            "overall": "Overall",
+            "potential_cols": "Potential Collections",
+            "quipment": "Quipment",
+            "rarity_overall": "Overall (In-Rarity)",
+            "ship": "Ship Ability",
+            "shuttle": "Base",
+            "skill_rarity": "Skill Rarity",
+            "tertiary_rarity": "Tertiary Skill Rarity",
+            "trait": "Traits",
+            "velocity": "Velocity",
+            "voyage": "Voyage"
+        }
     },
     "ranking_method": {
         "delta_t": "Delta T",

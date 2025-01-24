@@ -1458,8 +1458,8 @@
         "three_skills": "Trois Compétences"
     },
     "rank_names": {
-        "datacore_rating": "Cote Datacore",
-        "datacore_grade": "Catégorie Datacore",
+        "datacore_rating": "Cote DataCore",
+        "datacore_grade": "Catégorie DataCore",
         "advantage": {
             "d": "D",
             "defense": "Défense (Réparation/Évasion)",
@@ -1476,9 +1476,29 @@
         "gauntlet_rank": "Rang Gantelet",
         "quipment_score": "Rang de Quipement",
         "rank": "Rang",
+        "scoring": "Classements et scores",
         "ship_rank": "Rang du vaisseau",
         "trait_rank": "Rang du trait",
-        "voyage_rank": "Rang Voyage"
+        "voyage_rank": "Rang Voyage",
+        "scores": {
+            "am_seating": "Sièges antimatière",
+            "collections": "Collections améliorant les statistiques",
+            "gauntlet": "Gantelet",
+            "main_cast": "Casting principal",
+            "overall_grade": "Note générale",
+            "overall_rank": "Rang général",
+            "overall": "Global",
+            "potential_cols": "Collections potentielles",
+            "quipment": "Quipement",
+            "rarity_overall": "Global (dans rareté)",
+            "ship": "Capacité du vaisseau",
+            "shuttle": "Base",
+            "skill_rarity": "Rareté de la compétence",
+            "tertiary_rarity": "Rareté de la compétence tertiaire",
+            "trait": "Traits",
+            "velocity": "Vitesse",
+            "voyage": "Voyage"
+        }
     },
     "ranking_method": {
         "delta_t": "Delta T",

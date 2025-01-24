@@ -1458,8 +1458,8 @@
         "three_skills": "Tres Habilidades"
     },
     "rank_names": {
-        "datacore_rating": "Clasificación de Datacore",
-        "datacore_grade": "Grado Datacore",
+        "datacore_rating": "Clasificación de DataCore",
+        "datacore_grade": "Grado DataCore",
         "arena_rank": "Arena",
         "bigbook_tier": "Piso de Big Book",
         "cab_grade": "Grado CAB",
@@ -1469,9 +1469,29 @@
         "gauntlet_rank": "Rango de Reto",
         "quipment_score": "Puntuación del Quipo",
         "rank": "Rango",
+        "scoring": "Clasificaciones y puntuaciones",
         "ship_rank": "Rango del Buque",
         "trait_rank": "Rango del rasgo",
-        "voyage_rank": "Rango de Viaje"
+        "voyage_rank": "Rango de Viaje",
+        "scores": {
+            "am_seating": "Asientos de antimateria",
+            "collections": "Colecciones que mejoran las estadísticas",
+            "gauntlet": "Reto",
+            "main_cast": "Elenco principal",
+            "overall_grade": "Grado general",
+            "overall_rank": "Rango general",
+            "overall": "General",
+            "potential_cols": "Colecciones potenciales",
+            "quipment": "Quipo",
+            "rarity_overall": "General (en rareza)",
+            "ship": "Habilidad de buque",
+            "shuttle": "Base",
+            "skill_rarity": "Rareza de la habilidad",
+            "tertiary_rarity": "Rareza de la habilidad terciaria",
+            "trait": "Rasgos",
+            "velocity": "Velocidad",
+            "voyage": "Viaje"
+        }
     },
     "ranking_method": {
         "advantage": {

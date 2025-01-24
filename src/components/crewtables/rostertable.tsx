@@ -33,6 +33,7 @@ import { calcQLots } from '../../utils/equipment';
 import { CrewBuffModes } from './commonoptions';
 import { UnifiedWorker } from '../../typings/worker';
 import { ObtainedFilter } from './filters/crewobtained';
+import { CrewDataCoreRankCells, getDataCoreRanksTableConfig } from './views/datacoreranks';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -286,6 +287,13 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			})}</p>,
 			tableConfig: getRanksTableConfig('voyage'),
 			renderTableCells: (crew: IRosterCrew) => <CrewRankCells crew={crew} prefix='V_' />
+		},
+		{
+			id: 'dc_ranks',
+			available: true,
+			optionText: t('rank_names.scoring'),
+			tableConfig: getDataCoreRanksTableConfig(t),
+			renderTableCells: (crew: IRosterCrew) => <CrewDataCoreRankCells crew={crew} />
 		},
 		{
 			id: 'qp_score',
