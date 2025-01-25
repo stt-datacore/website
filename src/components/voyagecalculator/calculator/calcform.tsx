@@ -87,8 +87,6 @@ export const CalculatorForm = () => {
 	});
 	calculators.push({ key: 'all', value: 'all', text: 'All calculators (slower)' });
 
-	if (!bestShip) return (<></>);
-
 	return (
 		<React.Fragment>
 			<div ref={topAnchor} />
@@ -119,7 +117,7 @@ export const CalculatorForm = () => {
 							/>
 						))}
 					</Form.Group>
-					<Button fluid size='big' color='green' onClick={() => startCalculation()} disabled={consideredCrew.length < 12}>
+					<Button fluid size='big' color='green' onClick={() => startCalculation()} disabled={!bestShip || consideredCrew.length < 12}>
 						{t('global.recommend_crew')}
 					</Button>
 				</Form>
