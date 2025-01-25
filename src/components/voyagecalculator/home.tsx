@@ -527,6 +527,12 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 	const { playerData, ephemeral } = globalContext.player;
 	const { configSource, voyageConfig, eventData, runningShipIds } = props;
 
+	// Memoize this since we're adding a hook, above.
+	const myCrew: IVoyageCrew[] = React.useMemo(() => {
+		if (!playerData || !ephemeral) return [];
+		return rosterizeMyCrew(playerData.player.character.crew, ephemeral.activeCrew, ephemeral.voyage);
+	}, [playerData, ephemeral?.activeCrew, ephemeral?.voyage]);
+
 	if (!playerData || !ephemeral)
 		return <></>;
 
@@ -545,11 +551,6 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 			/>
 		);
 	}
-
-	// Memoize this since we're adding a hook, above.
-	const myCrew: IVoyageCrew[] = React.useMemo(() => {
-		return rosterizeMyCrew(playerData.player.character.crew, ephemeral.activeCrew, ephemeral.voyage);
-	}, [playerData, ephemeral.activeCrew, ephemeral.voyage]);
 
 	const ship: Ship | undefined = playerData.player.character.ships.find(s => s.id === running.ship_id);
 
