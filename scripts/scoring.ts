@@ -9,6 +9,7 @@ import { calcQLots } from '../src/utils/equipment';
 import { getItemWithBonus } from '../src/utils/itemutils';
 import { TraitNames } from '../src/model/traits';
 import { potentialCols } from '../src/components/stats/utils';
+import { GameEvent } from '../src/model/player';
 
 const STATIC_PATH = `${__dirname}/../../static/structured/`;
 const DEBUG = process.argv.includes('--debug');
@@ -22,6 +23,105 @@ interface MainCast {
     dsc: string[];
     snw: string[];
     low: string[];
+}
+
+function eventToDate(instanceId: number) {
+    let num = instanceId;
+    let anchor_id = 458;
+    let anchor_date = new Date('2025-01-23T12:00:00')
+    if (num < 381) num++;
+    anchor_date.setDate(anchor_date.getDate() - (7 * (anchor_id - num)));
+    return anchor_date;
+}
+
+function compileEventCrew(crew: CrewMember[]) {
+    const max_diff = 31;
+    const STATIC_PATH = `${__dirname}/../website/static/structured/events`;
+    let eventCrew = [] as string[];
+    let megas = [] as string[];
+
+    let lastDate = undefined as Date | undefined;
+    let firstnum = 0;
+
+    fs.readdirSync(`${STATIC_PATH}`).sort((a, b) => {
+        try {
+            let [an, ] = a.split('.');
+            let [bn, ] = b.split('.');
+            return Number(an) - Number(bn);
+        }
+        catch {
+            return a.localeCompare(b);
+        }
+    }).forEach((file, idx) => {
+        let [fnum, ext] = file.split('.');
+        let num = Number(fnum);
+        if (idx === 0) firstnum = num;
+        const ed = eventToDate(num);
+        const etime = ed.getTime();
+        const event = JSON.parse(fs.readFileSync(`${STATIC_PATH}/${file}`, 'utf8')) as GameEvent;
+        let ddtime = null as null | Date;
+
+        const checkdate = (c) => {
+            if (c?.date_added) {
+                if (typeof c.date_added === 'string') {
+                    c.date_added = new Date(c.date_added);
+                }
+                const gtime = ddtime?.getTime() ?? etime;
+                const ctime = c.date_added.getTime();
+                if (Math.abs(gtime - ctime) > (max_diff * 24 * 60 * 60 * 1000)) return false;
+            }
+            return true;
+        }
+
+        let evcrew = event.threshold_rewards.filter((r) => r.points !== 25000).map((tr, tidx) => tr.rewards.filter(trr => {
+            if (trr.type === 1) {
+                if (crew) {
+                    let c = crew.find(f => f.symbol === trr.symbol);
+
+                    if (c) {
+                        return checkdate(c);
+                    }
+                }
+                return true;
+            }
+            return false;
+        }).map(trr => trr.symbol)).flat().filter(f => f !== undefined);
+
+        evcrew = evcrew.concat(event.ranked_brackets.map(tr => tr.rewards.filter(trr => {
+            if (trr.type === 1) {
+                if (crew) {
+                    let c = crew.find(f => f.symbol === trr.symbol);
+                    return checkdate(c);
+                }
+                return true;
+            }
+            return false;
+        }).map(trr => trr.symbol)).flat().filter(f => f !== undefined));
+
+        megas = megas.concat(event.threshold_rewards.filter(r => r.points === 25000).map(tr => tr.rewards.filter(trr => {
+            return (trr.type === 1);
+        }).map(trr => trr.symbol)).flat().filter(f => f !== undefined));
+
+        eventCrew = eventCrew.concat(evcrew);
+
+        if (event.discovered) {
+            let d = new Date(event.discovered);
+            if (!lastDate || d.getTime() > lastDate.getTime()) {
+                lastDate = d;
+            }
+        }
+    });
+
+    if (firstnum === 0) {
+        return null;
+    }
+
+    eventCrew = [ ... new Set(eventCrew)];
+    megas = [ ... new Set(megas)];
+
+    let cutOff = eventToDate(firstnum);
+
+    return { eventCrew, cutOff, megas, lastDate };
 }
 
 function manyMuch(crew: CrewMember, type: "G" | "B" | "V") {
