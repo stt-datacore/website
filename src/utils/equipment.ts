@@ -480,6 +480,7 @@ export function calcQLots<T extends CrewMember>(
 			let qbon = goodQuip[i];
 			let keys = Object.keys(qbon.bonusInfo.bonuses).filter(f => f in crew.base_skills && Object.keys(crew.base_skills[f]).some(val => crew.base_skills[f][val]));
 			for (let key of keys) {
+				if (!crew.skill_order.includes(key)) continue;
 				if (!skills.includes(key)) skills.push(key);
 				final_best.skill_quipment[key] ??= [];
 				if (seen.includes(qbon)) continue;
@@ -491,6 +492,7 @@ export function calcQLots<T extends CrewMember>(
 		let item_buffs = Object.values(final_best.skill_quipment).map(items => items.map(item => Object.values((goodQuip.find(f => f.item === item) as ItemWithBonus).bonusInfo.bonuses)).flat()).flat()
 
 		for (let skill of item_buffs) {
+			if (!crew.skill_order.includes(skill.skill)) continue;
 			if (!final_best.skills_hash[skill.skill!]) {
 				final_best.skills_hash[skill.skill!] = { ... crewSkills[skill.skill!] };
 			}
