@@ -6,8 +6,7 @@
         "sulu",
         "chekov",
         "uhura",
-        "scott",
-        "chapel"
+        "scott"
     ],
     "tng": [
         "picard",
@@ -17,8 +16,7 @@
         "troi",
         "worf",
         "crusher",
-        "wesley",
-        "guinan"
+        "wesley"
     ],
     "ds9": [
         "sisko",
@@ -27,7 +25,9 @@
         "obrien",
         "worf",
         "bashir",
-        "dax"
+        "dax",
+        "quark",
+        "garak"
     ],
     "voy": [
         "janeway",
