@@ -506,6 +506,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				setViewIsReady(false);
 				view.worker(preparedCrew).then((result) => {
 					setPreparedCrew(result);
+					const f = result.find(ff => ff.symbol === 'black_admiral_crew');
+					console.log(f);
 					setViewIsReady(true);
 				});
 			}

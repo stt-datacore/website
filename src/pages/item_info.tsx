@@ -203,6 +203,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 					crew.data = crews[symbol].join(", ");
 				}
 			}
+			if (crew && !this.context.player.playerData) crew.rarity = crew.max_rarity;
 			return crew;
 		});
 

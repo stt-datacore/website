@@ -1455,7 +1455,8 @@
         "specialty": "Especialidad",
         "tertiary": "Terciario",
         "third_pair": "Tercer par",
-        "three_skills": "Tres Habilidades"
+        "three_skills": "Tres Habilidades",
+        "top_quipment": "Quipo de primera"
     },
     "rank_names": {
         "arena_rank": "Arena",
