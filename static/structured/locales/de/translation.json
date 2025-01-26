@@ -1443,7 +1443,8 @@
         "specialty": "Spezialwertung",
         "tertiary": "Tertiär",
         "third_pair": "Drittes Paar",
-        "three_skills": "Drei Fähigkeiten"
+        "three_skills": "Drei Fähigkeiten",
+        "top_quipment": "Top-Rüstzeug"
     },
     "rank_names": {
         "datacore_rating": "DataCore-Bewertung",

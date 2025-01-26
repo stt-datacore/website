@@ -1444,7 +1444,8 @@
         "specialty": "Specialty",
         "tertiary": "Tertiary",
         "third_pair": "Third Pair",
-        "three_skills": "Three Skills"
+        "three_skills": "Three Skills",
+        "top_quipment": "Top Quipment"
     },
     "rank_names": {
         "advantage": {

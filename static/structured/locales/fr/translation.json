@@ -1455,7 +1455,8 @@
         "specialty": "Spécialité",
         "tertiary": "Tertiaire",
         "third_pair": "Troisième Paire",
-        "three_skills": "Trois Compétences"
+        "three_skills": "Trois Compétences",
+        "top_quipment": "Quipement de pointe"
     },
     "rank_names": {
         "datacore_rating": "Cote DataCore",

@@ -1066,14 +1066,14 @@ class ItemsTable extends Component<ItemsTableProps, ItemsTableState> {
 						});
 					} else {
 						output.push(
-							<div>{t("equippable_by", { crew: found.length.toString() })}</div>
+							<div>{t("items.equippable_by", { crew: found.length.toString() })}</div>
 						);
-						flavor += t("equippable_by", { crew: found.length.toString() });
+						flavor += t("items.equippable_by", { crew: found.length.toString() });
 					}
 				} else {
 					output.push(
 						<div>
-							{tfmt("equippable_by", {
+							{tfmt("items.equippable_by", {
 								crew: found
 									.map((crew) => (
 										<Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>
@@ -1087,7 +1087,7 @@ class ItemsTable extends Component<ItemsTableProps, ItemsTableState> {
 						</div>
 					);
 
-					flavor += t("equippable_by", {
+					flavor += t("items.equippable_by", {
 						crew: [...found.map((f) => f.symbol)].join(", "),
 					});
 				}

@@ -91,6 +91,17 @@ export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean |
                 return -1;
             }
         }
+        else if (combo_id === 4) {
+            if (a.best_quipment_top && b.best_quipment_top) {
+                return a.best_quipment_top.aggregate_power - b.best_quipment_top.aggregate_power;
+            }
+            else if (a.best_quipment_top) {
+                return 1;
+            }
+            else if (b.best_quipment_top) {
+                return -1;
+            }
+        }
 
         return 0;
     };
@@ -114,7 +125,7 @@ export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean |
         });
     }
     else if (pstMode === 2) {
-        ['first_pair', 'second_pair', 'third_pair', 'three_skills'].forEach((skill, idx) => {
+        ['first_pair', 'second_pair', 'third_pair', 'three_skills', 'top_quipment'].forEach((skill, idx) => {
             config.push({
                 width: 1,
                 column: 'pairs_' + skill,
@@ -178,6 +189,9 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
                 }
                 else if (skill === 3 && crew.best_quipment_3) {
                     lot = crew.best_quipment_3;
+                }
+                else if (skill === 4 && crew.best_quipment_top) {
+                    lot = crew.best_quipment_top;
                 }
                 else {
                     return <></>;
@@ -248,7 +262,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
                     {printCell(idx)}
                 </Table.Cell>)
         })}
-        {pstMode === 2 && ['first_pair', 'second_pair', 'third_pair', 'three_skills'].map((skill, idx) => {
+        {pstMode === 2 && ['first_pair', 'second_pair', 'third_pair', 'three_skills', 'top_quipment'].map((skill, idx) => {
             return (
                 <Table.Cell key={`qpbest_${idx}_${skill}_${crew.id}`}>
                     {printCell(idx)}

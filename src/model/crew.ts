@@ -41,7 +41,7 @@ export interface QuipmentScores {
     best_quipment_2_3?: QuippedPower;
     best_quipment_1_3?: QuippedPower;
     best_quipment_3?: QuippedPower;
-
+    best_quipment_top?: QuippedPower;
 }
 
 export interface CapAchiever {

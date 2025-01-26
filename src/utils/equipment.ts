@@ -456,6 +456,53 @@ export function calcQLots<T extends CrewMember>(
 	const q_lots = {} as { [key: string]: EquipmentItem[] };
 	const q_power = {} as { [key: string]: Skill };
 
+	const calcBestQuipment = (
+		crew: CrewMember,
+		as_max_qbits?: boolean,
+		max_slots?: number
+	) => {
+		const q_bits = as_max_qbits ? 1300 : crew.q_bits;
+		const qbslots = qbitsToSlots(q_bits);
+		const slots = max_slots ? (max_slots === 4 ? 4 : Math.min(qbslots, max_slots)) : qbslots;
+		const skills = [] as string[];
+		const goodQuip = crewQuipment.slice(0, slots);
+		const c = goodQuip.length;
+		let x = 0;
+
+		const final_best = {
+			skill_quipment: {},
+			skills_hash: {},
+			aggregate_power: 0,
+			aggregate_by_skill: {}
+		} as QuippedPower;
+		let seen = [] as ItemWithBonus[];
+		for (let i = 0; i < c; i++) {
+			let qbon = goodQuip[i];
+			let keys = Object.keys(qbon.bonusInfo.bonuses).filter(f => f in crew.base_skills && Object.keys(crew.base_skills[f]).some(val => crew.base_skills[f][val]));
+			for (let key of keys) {
+				if (!skills.includes(key)) skills.push(key);
+				final_best.skill_quipment[key] ??= [];
+				if (seen.includes(qbon)) continue;
+				final_best.skill_quipment[key].push(qbon.item);
+				seen.push(qbon);
+			}
+		}
+
+		let item_buffs = Object.values(final_best.skill_quipment).map(items => items.map(item => Object.values((goodQuip.find(f => f.item === item) as ItemWithBonus).bonusInfo.bonuses)).flat()).flat()
+
+		for (let skill of item_buffs) {
+			if (!final_best.skills_hash[skill.skill!]) {
+				final_best.skills_hash[skill.skill!] = { ... crewSkills[skill.skill!] };
+			}
+
+			final_best.skills_hash[skill.skill!].core += skill.core;
+			final_best.skills_hash[skill.skill!].range_max += skill.range_max;
+			final_best.skills_hash[skill.skill!].range_min += skill.range_min;
+		}
+
+		return final_best;
+	}
+
 	const calcBestCombo = (
 		combo_size: 2 | 3,
 		crew: CrewMember,
@@ -566,7 +613,11 @@ export function calcQLots<T extends CrewMember>(
 			}
 			else if (outskills.length === 3) {
 				let values = Object.values(skillbalance).map(m => m.value).sort();
-				value = (values.reduce((p, n) => p ? p + n : n, 0)) - Math.abs(values.reduce((p, n) => p ? p - n : n, 0));
+				let d1 = Math.abs(value[0] - value[1]);
+				let d2 = Math.abs(value[1] - value[2]);
+				let d3 = Math.abs(value[0] - value[2]);
+				let dd = (d1 + d2 + d3) / 3;
+				value = (values.reduce((p, n) => p ? p + n : n, 0) - dd);
 			}
 			balance_diff.push({
 				value,
@@ -696,6 +747,7 @@ export function calcQLots<T extends CrewMember>(
 	delete crew.best_quipment_1_3;
 	delete crew.best_quipment_2_3;
 	delete crew.best_quipment_3;
+	delete crew.best_quipment_top;
 
 	if (crew.skill_order.length >= 2) {
 		crew.best_quipment_1_2 = calcBestCombo(2, crew, max_qbits, max_slots, [0, 1]);
@@ -709,6 +761,14 @@ export function calcQLots<T extends CrewMember>(
 		addCrewPower(crew.best_quipment_1_3);
 		addCrewPower(crew.best_quipment_2_3);
 		addCrewPower(crew.best_quipment_3);
+	}
+
+	try {
+		crew.best_quipment_top = calcBestQuipment(crew, max_qbits, max_slots);
+		addCrewPower(crew.best_quipment_top);
+	}
+	catch (e) {
+		console.log(e);
 	}
 
 	return crew;
