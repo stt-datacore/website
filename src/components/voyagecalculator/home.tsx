@@ -196,7 +196,8 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		}
 	}, [historyInitState]);
 
-	if (historyInitState < InitState.Initialized)
+	// Only show throbber if no existing active view
+	if (!activeView && historyInitState < InitState.Initialized)
 		return <Loader active inline='centered' content='Loading voyage tool...' />;
 
 	const historyContext: IHistoryContext = {
