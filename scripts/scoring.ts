@@ -1,12 +1,12 @@
 import fs from 'fs';
 import { ComputedSkill, CrewMember, Ranks, RankScoring, Skill } from '../src/model/crew';
-import { calculateMaxBuffs, lookupAMSeatsByTrait } from '../src/utils/voyageutils';
+import { BuffStatTable, calculateMaxBuffs, lookupAMSeatsByTrait } from '../src/utils/voyageutils';
 import { applyCrewBuffs, getVariantTraits, numberToGrade, skillSum } from '../src/utils/crewutils';
 import { Collection } from '../src/model/game-elements';
 import { getAllStatBuffs } from '../src/utils/collectionutils';
 import { EquipmentItem } from '../src/model/equipment';
 import { calcQLots } from '../src/utils/equipment';
-import { getItemWithBonus } from '../src/utils/itemutils';
+import { getItemWithBonus, ItemWithBonus } from '../src/utils/itemutils';
 import { TraitNames } from '../src/model/traits';
 import { potentialCols } from '../src/components/stats/utils';
 import { GameEvent } from '../src/model/player';
@@ -32,6 +32,18 @@ function eventToDate(instanceId: number) {
     if (num < 381) num++;
     anchor_date.setDate(anchor_date.getDate() - (7 * (anchor_id - num)));
     return anchor_date;
+}
+
+function scoreQuipment(crew: CrewMember, quipment: ItemWithBonus[], buffs: BuffStatTable) {
+    calcQLots(crew, quipment, buffs, true, undefined, 'all');
+    // Q missions:
+    let qpower = Object.values(crew.best_quipment!.aggregate_by_skill).reduce((p, n) => p > n ? p : n, 0);
+    // Voyage:
+    let vpower = [crew.best_quipment_1_2!, crew.best_quipment_1_3!, crew.best_quipment_2_3!, crew.best_quipment_3!].map(q => !q ? 0 : q.aggregate_power).reduce((p, n) => p > n ? p : n, 0);
+    calcQLots(crew, quipment, buffs, true, undefined, 'proficiency');
+    let gpower = [crew.best_quipment_1_2!, crew.best_quipment_1_3!, crew.best_quipment_2_3!, crew.best_quipment_3!].map(q => !q ? 0 : q.aggregate_power).reduce((p, n) => p > n ? p : n, 0);
+
+    return {qpower, vpower, gpower, avg: (qpower+vpower+gpower) / 3};
 }
 
 function compileEventCrew(crew: CrewMember[]) {
@@ -365,12 +377,12 @@ export function score() {
     results = [].slice();
 
     for (let c of crew) {
-        calcQLots(c, quipment, maxbuffs, true);
+        let data = scoreQuipment(c, quipment, maxbuffs);
 
         results.push({
             symbol: c.symbol,
             rarity: c.max_rarity,
-            score: c.best_quipment!.aggregate_power
+            score: data.avg
         });
     }
 
