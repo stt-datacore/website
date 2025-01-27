@@ -21,9 +21,23 @@ export interface SkillQuipmentScores {
     trait_limited: number;
 };
 
+export interface QuipSkill extends Skill {
+    reference?: boolean;
+}
+
+export interface QuippedSkills extends BaseSkills {
+    security_skill?: QuipSkill;
+    command_skill?: QuipSkill;
+    diplomacy_skill?: QuipSkill;
+    medicine_skill?: QuipSkill;
+    science_skill?: QuipSkill;
+    engineering_skill?: QuipSkill;
+
+}
+
 export interface QuippedPower {
     skill_quipment: { [key: string]: EquipmentItem[] };
-    skills_hash: BaseSkills;
+    skills_hash: QuippedSkills;
     aggregate_power: number;
     aggregate_by_skill: { [key: string]: number };
 }

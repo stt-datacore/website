@@ -449,7 +449,9 @@ export function calcQLots<T extends CrewMember>(
 			if (r) return r;
 			let ar = skillSum(abon.map(ab => a.bonusInfo.bonuses[ab]), cmode);
 			let br = skillSum(bbon.map(bb => b.bonusInfo.bonuses[bb]), cmode);
-			return br - ar;
+			r = br - ar;
+			if (!r) r = crew.skill_order.indexOf(abon[0]) - crew.skill_order.indexOf(bbon[0]);
+			return r;
 		});
 
 	const skills = crew.skill_order;
@@ -490,16 +492,23 @@ export function calcQLots<T extends CrewMember>(
 		}
 
 		let item_buffs = Object.values(final_best.skill_quipment).map(items => items.map(item => Object.values((goodQuip.find(f => f.item === item) as ItemWithBonus).bonusInfo.bonuses)).flat()).flat()
+		for (let sk of crew.skill_order) {
+			let skills = item_buffs.filter(ib => ib.skill === sk);
+			if (skills.length) {
+				for (let skill of skills) {
+					if (!final_best.skills_hash[skill.skill!]) {
+						final_best.skills_hash[skill.skill!] = { ... crewSkills[skill.skill!] };
+					}
 
-		for (let skill of item_buffs) {
-			if (!crew.skill_order.includes(skill.skill)) continue;
-			if (!final_best.skills_hash[skill.skill!]) {
-				final_best.skills_hash[skill.skill!] = { ... crewSkills[skill.skill!] };
+					final_best.skills_hash[skill.skill!].core += skill.core;
+					final_best.skills_hash[skill.skill!].range_max += skill.range_max;
+					final_best.skills_hash[skill.skill!].range_min += skill.range_min;
+				}
 			}
-
-			final_best.skills_hash[skill.skill!].core += skill.core;
-			final_best.skills_hash[skill.skill!].range_max += skill.range_max;
-			final_best.skills_hash[skill.skill!].range_min += skill.range_min;
+			else if (!final_best.skills_hash[sk]) {
+				final_best.skills_hash[sk] = { ... crewSkills[sk] };
+				final_best.skills_hash[sk].reference = true;
+			}
 		}
 
 		return final_best;

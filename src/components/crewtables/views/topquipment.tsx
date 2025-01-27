@@ -3,7 +3,7 @@ import { IRosterCrew } from "../model";
 import { ITableConfigRow } from "../../searchabletable";
 import CONFIG from "../../CONFIG";
 import { Table } from "semantic-ui-react";
-import { QuippedPower, QuipmentScores, Skill, BaseSkills } from "../../../model/crew";
+import { QuippedPower, QuipmentScores, Skill, BaseSkills, QuipSkill } from "../../../model/crew";
 import { applySkillBuff, powerSum, skillSum, skillToShort } from "../../../utils/crewutils";
 import { CrewItemsView } from "../../item_presenters/crew_items";
 import CrewStat from "../../crewstat";
@@ -233,11 +233,11 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
                 skill_name={skill}
                 data={lot.skills_hash[skill]} />
             ||
-            !!lot.skills_hash && Object.values(lot.skills_hash).sort((a, b) => lot.aggregate_by_skill[b] - lot.aggregate_by_skill[a]).map((ps) =>
+            !!lot.skills_hash && Object.values(lot.skills_hash).sort((a, b) => lot.aggregate_by_skill[b] - lot.aggregate_by_skill[a]).map((ps: QuipSkill) =>
                 <CrewStat
                     key={`power_skill-${ps.skill}_${crew.id}`}
                     quipmentMode={true}
-                    style={{fontSize: "0.8em"}}
+                    style={{fontSize: "0.8em", opacity: ps.reference ? '0.5' : undefined}}
                     skill_name={ps.skill as string}
                     data={ps} />
             )}
