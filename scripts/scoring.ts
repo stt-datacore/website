@@ -14,7 +14,7 @@ import { GameEvent } from '../src/model/player';
 const STATIC_PATH = `${__dirname}/../../static/structured/`;
 const DEBUG = process.argv.includes('--debug');
 
-type QPowers = { symbol: string, qpower: number, vpower: number, gpower: number, avg: number };
+type QPowers = { symbol: string, qpower: number, bpower: number, gpower: number, avg: number };
 
 interface MainCast {
     tos: string[];
@@ -38,19 +38,21 @@ function eventToDate(instanceId: number) {
 
 function scoreQuipment(crew: CrewMember, quipment: ItemWithBonus[], buffs: BuffStatTable): QPowers {
     calcQLots(crew, quipment, buffs, true, undefined, 'all');
-    // Q missions:
+    // Aggregate:
     let qpower = Object.values(crew.best_quipment!.aggregate_by_skill).reduce((p, n) => p > n ? p : n, 0);
-    // Voyage:
-    let vpower = [crew.best_quipment_1_2!, crew.best_quipment_1_3!, crew.best_quipment_2_3!, crew.best_quipment_3!].map(q => !q ? 0 : q.aggregate_power).reduce((p, n) => p > n ? p : n, 0);
+    calcQLots(crew, quipment, buffs, true, undefined, 'core');
+    // Base:
+    let bpower = [crew.best_quipment_1_2!, crew.best_quipment_1_3!, crew.best_quipment_2_3!, crew.best_quipment_3!].map(q => !q ? 0 : q.aggregate_power).reduce((p, n) => p > n ? p : n, 0);
+    // Proficiency:
     calcQLots(crew, quipment, buffs, true, undefined, 'proficiency');
     let gpower = [crew.best_quipment_1_2!, crew.best_quipment_1_3!, crew.best_quipment_2_3!, crew.best_quipment_3!].map(q => !q ? 0 : q.aggregate_power).reduce((p, n) => p > n ? p : n, 0);
 
-    return { qpower, vpower, gpower, avg: 0, symbol: crew.symbol };
+    return { qpower, bpower, gpower, avg: 0, symbol: crew.symbol };
 }
 
 
 function normalizeQPowers(qpowers: QPowers[]) {
-    ["qpower", "vpower", "gpower"].forEach((power) => {
+    ["qpower", "bpower", "gpower"].forEach((power) => {
         qpowers.sort((a, b) => b[power] - a[power])
         let max = qpowers[0][power];
         for (let p of qpowers) {
@@ -59,7 +61,7 @@ function normalizeQPowers(qpowers: QPowers[]) {
     });
 
     for (let p of qpowers) {
-        p.avg = ((p.gpower * 1) + (p.vpower * 2) + (p.qpower * 1)) / 4;
+        p.avg = ((p.gpower * 1) + (p.bpower * 1) + (p.qpower * 1)) / 3;
     }
 
     qpowers.sort((a, b) => b.avg - a.avg);
