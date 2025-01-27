@@ -14,6 +14,8 @@ import { GameEvent } from '../src/model/player';
 const STATIC_PATH = `${__dirname}/../../static/structured/`;
 const DEBUG = process.argv.includes('--debug');
 
+type QPowers = { symbol: string, qpower: number, vpower: number, gpower: number, avg: number };
+
 interface MainCast {
     tos: string[];
     tng: string[];
@@ -34,7 +36,7 @@ function eventToDate(instanceId: number) {
     return anchor_date;
 }
 
-function scoreQuipment(crew: CrewMember, quipment: ItemWithBonus[], buffs: BuffStatTable) {
+function scoreQuipment(crew: CrewMember, quipment: ItemWithBonus[], buffs: BuffStatTable): QPowers {
     calcQLots(crew, quipment, buffs, true, undefined, 'all');
     // Q missions:
     let qpower = Object.values(crew.best_quipment!.aggregate_by_skill).reduce((p, n) => p > n ? p : n, 0);
@@ -43,98 +45,115 @@ function scoreQuipment(crew: CrewMember, quipment: ItemWithBonus[], buffs: BuffS
     calcQLots(crew, quipment, buffs, true, undefined, 'proficiency');
     let gpower = [crew.best_quipment_1_2!, crew.best_quipment_1_3!, crew.best_quipment_2_3!, crew.best_quipment_3!].map(q => !q ? 0 : q.aggregate_power).reduce((p, n) => p > n ? p : n, 0);
 
-    return {qpower, vpower, gpower, avg: (qpower+vpower+gpower) / 3};
+    return { qpower, vpower, gpower, avg: 0, symbol: crew.symbol };
 }
 
-function compileEventCrew(crew: CrewMember[]) {
-    const max_diff = 31;
-    const STATIC_PATH = `${__dirname}/../website/static/structured/events`;
-    let eventCrew = [] as string[];
-    let megas = [] as string[];
 
-    let lastDate = undefined as Date | undefined;
-    let firstnum = 0;
-
-    fs.readdirSync(`${STATIC_PATH}`).sort((a, b) => {
-        try {
-            let [an, ] = a.split('.');
-            let [bn, ] = b.split('.');
-            return Number(an) - Number(bn);
-        }
-        catch {
-            return a.localeCompare(b);
-        }
-    }).forEach((file, idx) => {
-        let [fnum, ext] = file.split('.');
-        let num = Number(fnum);
-        if (idx === 0) firstnum = num;
-        const ed = eventToDate(num);
-        const etime = ed.getTime();
-        const event = JSON.parse(fs.readFileSync(`${STATIC_PATH}/${file}`, 'utf8')) as GameEvent;
-        let ddtime = null as null | Date;
-
-        const checkdate = (c) => {
-            if (c?.date_added) {
-                if (typeof c.date_added === 'string') {
-                    c.date_added = new Date(c.date_added);
-                }
-                const gtime = ddtime?.getTime() ?? etime;
-                const ctime = c.date_added.getTime();
-                if (Math.abs(gtime - ctime) > (max_diff * 24 * 60 * 60 * 1000)) return false;
-            }
-            return true;
-        }
-
-        let evcrew = event.threshold_rewards.filter((r) => r.points !== 25000).map((tr, tidx) => tr.rewards.filter(trr => {
-            if (trr.type === 1) {
-                if (crew) {
-                    let c = crew.find(f => f.symbol === trr.symbol);
-
-                    if (c) {
-                        return checkdate(c);
-                    }
-                }
-                return true;
-            }
-            return false;
-        }).map(trr => trr.symbol)).flat().filter(f => f !== undefined);
-
-        evcrew = evcrew.concat(event.ranked_brackets.map(tr => tr.rewards.filter(trr => {
-            if (trr.type === 1) {
-                if (crew) {
-                    let c = crew.find(f => f.symbol === trr.symbol);
-                    return checkdate(c);
-                }
-                return true;
-            }
-            return false;
-        }).map(trr => trr.symbol)).flat().filter(f => f !== undefined));
-
-        megas = megas.concat(event.threshold_rewards.filter(r => r.points === 25000).map(tr => tr.rewards.filter(trr => {
-            return (trr.type === 1);
-        }).map(trr => trr.symbol)).flat().filter(f => f !== undefined));
-
-        eventCrew = eventCrew.concat(evcrew);
-
-        if (event.discovered) {
-            let d = new Date(event.discovered);
-            if (!lastDate || d.getTime() > lastDate.getTime()) {
-                lastDate = d;
-            }
+function normalizeQPowers(qpowers: QPowers[]) {
+    ["qpower", "vpower", "gpower"].forEach((power) => {
+        qpowers.sort((a, b) => b[power] - a[power])
+        let max = qpowers[0][power];
+        for (let p of qpowers) {
+            p[power] = Number(((p[power] / max) * 100).toFixed(2))
         }
     });
 
-    if (firstnum === 0) {
-        return null;
+    for (let p of qpowers) {
+        p.avg = ((p.gpower * 1) + (p.vpower * 2) + (p.qpower * 1)) / 4;
     }
 
-    eventCrew = [ ... new Set(eventCrew)];
-    megas = [ ... new Set(megas)];
-
-    let cutOff = eventToDate(firstnum);
-
-    return { eventCrew, cutOff, megas, lastDate };
+    qpowers.sort((a, b) => b.avg - a.avg);
 }
+
+// function compileEventCrew(crew: CrewMember[]) {
+//     const max_diff = 31;
+//     const STATIC_PATH = `${__dirname}/../website/static/structured/events`;
+//     let eventCrew = [] as string[];
+//     let megas = [] as string[];
+
+//     let lastDate = undefined as Date | undefined;
+//     let firstnum = 0;
+
+//     fs.readdirSync(`${STATIC_PATH}`).sort((a, b) => {
+//         try {
+//             let [an, ] = a.split('.');
+//             let [bn, ] = b.split('.');
+//             return Number(an) - Number(bn);
+//         }
+//         catch {
+//             return a.localeCompare(b);
+//         }
+//     }).forEach((file, idx) => {
+//         let [fnum, ext] = file.split('.');
+//         let num = Number(fnum);
+//         if (idx === 0) firstnum = num;
+//         const ed = eventToDate(num);
+//         const etime = ed.getTime();
+//         const event = JSON.parse(fs.readFileSync(`${STATIC_PATH}/${file}`, 'utf8')) as GameEvent;
+//         let ddtime = null as null | Date;
+
+//         const checkdate = (c) => {
+//             if (c?.date_added) {
+//                 if (typeof c.date_added === 'string') {
+//                     c.date_added = new Date(c.date_added);
+//                 }
+//                 const gtime = ddtime?.getTime() ?? etime;
+//                 const ctime = c.date_added.getTime();
+//                 if (Math.abs(gtime - ctime) > (max_diff * 24 * 60 * 60 * 1000)) return false;
+//             }
+//             return true;
+//         }
+
+//         let evcrew = event.threshold_rewards.filter((r) => r.points !== 25000).map((tr, tidx) => tr.rewards.filter(trr => {
+//             if (trr.type === 1) {
+//                 if (crew) {
+//                     let c = crew.find(f => f.symbol === trr.symbol);
+
+//                     if (c) {
+//                         return checkdate(c);
+//                     }
+//                 }
+//                 return true;
+//             }
+//             return false;
+//         }).map(trr => trr.symbol)).flat().filter(f => f !== undefined);
+
+//         evcrew = evcrew.concat(event.ranked_brackets.map(tr => tr.rewards.filter(trr => {
+//             if (trr.type === 1) {
+//                 if (crew) {
+//                     let c = crew.find(f => f.symbol === trr.symbol);
+//                     return checkdate(c);
+//                 }
+//                 return true;
+//             }
+//             return false;
+//         }).map(trr => trr.symbol)).flat().filter(f => f !== undefined));
+
+//         megas = megas.concat(event.threshold_rewards.filter(r => r.points === 25000).map(tr => tr.rewards.filter(trr => {
+//             return (trr.type === 1);
+//         }).map(trr => trr.symbol)).flat().filter(f => f !== undefined));
+
+//         eventCrew = eventCrew.concat(evcrew);
+
+//         if (event.discovered) {
+//             let d = new Date(event.discovered);
+//             if (!lastDate || d.getTime() > lastDate.getTime()) {
+//                 lastDate = d;
+//             }
+//         }
+//     });
+
+//     if (firstnum === 0) {
+//         return null;
+//     }
+
+//     eventCrew = [ ... new Set(eventCrew)];
+//     megas = [ ... new Set(megas)];
+
+//     let cutOff = eventToDate(firstnum);
+
+//     return { eventCrew, cutOff, megas, lastDate };
+// }
 
 function manyMuch(crew: CrewMember, type: "G" | "B" | "V") {
     let many = 0;
@@ -376,13 +395,20 @@ export function score() {
 
     results = [].slice();
 
+    let qpowers = [] as QPowers[];
     for (let c of crew) {
         let data = scoreQuipment(c, quipment, maxbuffs);
+        qpowers.push(data);
+    }
 
+    normalizeQPowers(qpowers);
+
+    for (let qpc of qpowers) {
+        let c = crew.find(f => f.symbol === qpc.symbol)!
         results.push({
             symbol: c.symbol,
             rarity: c.max_rarity,
-            score: data.avg
+            score: qpc.avg
         });
     }
 
