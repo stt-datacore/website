@@ -33,9 +33,10 @@ jobs:
                 cd website
                 git config user.name github-actions
                 git config user.email github-actions@github.com
-                git fetch --no-tags --prune --no-recurse-submodules --depth=1 origin beta sync-beta-mods
-                git checkout --detach origin/beta
-                git merge -X theirs --no-commit origin/sync-beta-mods
+                git fetch --depth 1 origin sync-beta-mods
+                git checkout origin/beta
+                git merge -X theirs --no-commit --no-ff origin/sync-beta-mods
+                git commit -m "Automated merge of sync-beta-mods into beta"
                 git push origin HEAD:beta
               # uses: devmasx/merge-branch@master
               # with:
