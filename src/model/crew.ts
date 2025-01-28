@@ -256,6 +256,7 @@ export interface RankScoring {
     overall_grade: string;
     overall_rank: number;
     overall: number;
+    tuvix: number;
     potential_cols: number;
     quipment: number;
     rarity_overall: number;

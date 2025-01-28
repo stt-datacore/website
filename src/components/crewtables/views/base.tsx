@@ -23,12 +23,23 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 		// { width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier'), tiebreakers: ['cab_ov_rank'], tiebreakers_reverse: [false] },
 		{ width: 1, column: 'cab_ov', title: <span>{t('base.cab_power')} <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
 		{
-			width: 1, column: 'blank', title: t('rank_names.datacore_rating'), reverse: true,
+			width: 1, column: 'ranks.scores.overall', title: t('rank_names.datascore'), reverse: true,
 			customCompare: (a: IRosterCrew, b: IRosterCrew) => {
 				if (a.ranks.scores?.overall === undefined && b.ranks.scores?.overall === undefined) return 0;
 				else if (a.ranks.scores?.overall === undefined) return 1;
 				else if (b.ranks.scores?.overall === undefined) return -1;
 				let r = a.ranks.scores.overall - b.ranks.scores.overall;
+				if (!r) r = (b.cab_ov_rank ?? 0) - (a.cab_ov_rank ?? 0);
+				return r;
+			}
+		 },
+		 {
+			width: 1, column: 'ranks.scores.tuvix', title: t('rank_names.tuvix'), reverse: true,
+			customCompare: (a: IRosterCrew, b: IRosterCrew) => {
+				if (a.ranks.scores?.tuvix === undefined && b.ranks.scores?.tuvix === undefined) return 0;
+				else if (a.ranks.scores?.tuvix === undefined) return 1;
+				else if (b.ranks.scores?.tuvix === undefined) return -1;
+				let r = a.ranks.scores.tuvix - b.ranks.scores.tuvix;
 				if (!r) r = (b.cab_ov_rank ?? 0) - (a.cab_ov_rank ?? 0);
 				return r;
 			}
@@ -148,6 +159,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 		tiny.setRapid("search", "skill_order:" + sko);
 	};
 	const qbslots = qbitsToSlots(crew.q_bits);
+	const tuvixColor = crew.ranks.scores?.tuvix ? gradeToColor(crew.ranks.scores.tuvix / 100) ?? undefined : undefined;
 	const datacoreColor = crew.ranks.scores?.overall ? gradeToColor(crew.ranks.scores.overall / 100) ?? undefined : undefined;
 	const dcGradeColor = crew.ranks.scores?.overall_grade ? gradeToColor(crew.ranks.scores.overall_grade) ?? undefined : undefined;
 	const gradeColor = gradeToColor(crew.cab_ov_grade) ?? undefined;
@@ -160,13 +172,34 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 			</Table.Cell> */}
 			<Table.Cell textAlign='center'>
 				<b style={{color: cabColor}}>{crew.cab_ov}</b><br />
-				<small><span style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>{rarityLabels[crew.max_rarity]}</span><br />{crew.cab_ov_rank ? "#" + crew.cab_ov_rank : "?" }</small>
-				<small style={{color: gradeColor}}>&nbsp;&nbsp;&nbsp;&nbsp;{crew.cab_ov_grade ? crew.cab_ov_grade : "?" }</small>
+				<small>
+					<span style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>
+						{rarityLabels[crew.max_rarity]}
+					</span>
+					<br />
+					{crew.cab_ov_rank ? "#" + crew.cab_ov_rank : "?" }
+				</small>
+				<small style={{color: gradeColor}}>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					{crew.cab_ov_grade ? crew.cab_ov_grade : "?" }
+				</small>
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
 				<b style={{color: datacoreColor}}>{crew.ranks.scores?.overall ?? 0}</b><br />
-				<small><span style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>{rarityLabels[crew.max_rarity]}</span><br />{crew.ranks.scores?.overall_rank ? "#" + crew.ranks.scores.overall_rank : "?" }</small>
-				<small style={{color: dcGradeColor}}>&nbsp;&nbsp;&nbsp;&nbsp;{crew.ranks.scores?.overall_grade ? crew.ranks.scores?.overall_grade : "?" }</small>
+				<small>
+					<span style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>
+						{rarityLabels[crew.max_rarity]}
+					</span>
+					<br />
+					{crew.ranks.scores?.overall_rank ? "#" + crew.ranks.scores.overall_rank : "?" }
+				</small>
+				<small style={{color: dcGradeColor}}>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					{crew.ranks.scores?.overall_grade ? crew.ranks.scores?.overall_grade : "?" }
+				</small>
+			</Table.Cell>
+			<Table.Cell textAlign='center'>
+				<b style={{color: tuvixColor}}>{crew.ranks.scores?.tuvix ?? 0}</b><br />
 			</Table.Cell>
 			{tableType !== 'offers' &&
 			<Table.Cell textAlign='center'>

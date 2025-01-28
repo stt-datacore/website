@@ -629,31 +629,29 @@ export function score() {
 
     results = normalize(results, false, true);
 
-    if (DEBUG) console.log("Final scoring:");
     origCrew.forEach((c) => {
         c.ranks.scores ??= {} as RankScoring;
-
         let ranks = results.find(f => f.symbol === c.symbol);
         if (ranks) {
             c.ranks.scores.overall = ranks.score;
-
         }
         else {
             c.ranks.scores.overall = -1;
             c.ranks.scores.overall_rank = -1;
             c.ranks.scores.overall_grade = "?";
         }
+
     });
 
     for (let r = 1; r <= 5; r++) {
         let filtered = results.filter(f => f.rarity === r)!;
         filtered.sort((a, b) => b.score - a.score);
-        let max1 = filtered[0].score;
-        let max2 = filtered.length;
+        let score_max = filtered[0].score;
+        let len_max = filtered.length;
         let rank = 1;
         for (let rec of filtered) {
-            let newscore1 = Number(((rec.score / max1) * 100).toFixed(4));
-            let newscore2 = Number(((1 - (rank / max2)) * 100).toFixed(4));
+            let newscore1 = Number(((rec.score / score_max) * 100).toFixed(4));
+            let newscore2 = Number(((1 - (rank / len_max)) * 100).toFixed(4));
             rec.score = (newscore1 + newscore1 + newscore2) / 3;
             rank++;
         }
@@ -673,6 +671,30 @@ export function score() {
             }
         }
     }
+
+    let tuvix = [] as RarityScore[]
+
+    for (let c of origCrew) {
+        tuvix.push({
+            symbol: c.symbol,
+            rarity: c.max_rarity,
+            score: ((Number(c.cab_ov) / 16) + (c.ranks.scores.overall / 100)) / 2
+        });
+    }
+
+    tuvix = normalize(tuvix);
+
+    for (let c of origCrew) {
+        let tf = tuvix.find(ff => ff.symbol === c.symbol)!;
+        if (!tf) continue;
+        c.ranks.scores.tuvix = tf.score;
+    }
+
+    if (DEBUG) console.log("Tuvix")
+    if (DEBUG) console.log(tuvix.slice(0, 20));
+
+    if (DEBUG) console.log("Final scoring:");
+
 
     if (DEBUG) {
         results.forEach((result, idx) => {

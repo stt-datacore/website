@@ -1455,6 +1455,8 @@
             "offense": "Offense (Accuracy/Damage)",
             "select": "Select an advantage"
         },
+        "datascore": "DataScore",
+        "tuvix": "Tuvix",
         "datacore_rating": "DataCore Rating",
         "datacore_grade": "DataCore Grade",
         "arena_rank": "Arena",

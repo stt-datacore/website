@@ -1447,6 +1447,8 @@
         "top_quipment": "Top-Rüstzeug"
     },
     "rank_names": {
+        "datascore": "DataScore",
+        "tuvix": "Tuvix",
         "datacore_rating": "DataCore-Bewertung",
         "datacore_grade": "DataCore-Klasse",
         "advantage": {

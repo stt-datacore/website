@@ -1459,6 +1459,8 @@
         "top_quipment": "Quipement de pointe"
     },
     "rank_names": {
+        "datascore": "DataScore",
+        "tuvix": "Tuvix",
         "datacore_rating": "Cote DataCore",
         "datacore_grade": "Catégorie DataCore",
         "advantage": {
