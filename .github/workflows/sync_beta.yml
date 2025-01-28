@@ -13,7 +13,7 @@ jobs:
         name: Merge pr or master branches into beta
         runs-on: ubuntu-latest
         if: |
-          github.ref_name == 'master' ||
+          github.ref_name == 'sync-beta-mods' ||
           (github.event.pull_request.draft == false &&
           github.event.pull_request.mergeable == true &&
           github.event.pull_request.head.repo.fork == false &&
