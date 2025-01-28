@@ -33,10 +33,10 @@ jobs:
                 cd website
                 git config user.name github-actions
                 git config user.email github-actions@github.com
-                git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +refs/heads/sync-beta-mods*:refs/remotes/origin/sync-beta-mods* +refs/tags/sync-beta-mods*:refs/tags/sync-beta-mods*
-                git merge -X theirs origin/sync-beta-mods
-                git push
-
+                git fetch origin beta sync-beta-mods
+                git checkout --detach origin/beta
+                git merge -X theirs --no-commit origin/sync-beta-mods
+                git push origin HEAD:beta
               # uses: devmasx/merge-branch@master
               # with:
               #   type: now
