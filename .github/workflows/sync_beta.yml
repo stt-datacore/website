@@ -30,10 +30,12 @@ jobs:
 
             - name: Merge into Beta
               run: |
+                cd website
                 git config user.name github-actions
                 git config user.email github-actions@github.com
-                git merge -X theirs --no-edit master
+                git merge -X theirs --no-edit origin/master
                 git push
+
               # uses: devmasx/merge-branch@master
               # with:
               #   type: now
