@@ -34,7 +34,7 @@ jobs:
                 git config user.name github-actions
                 git config user.email github-actions@github.com
                 git checkout beta
-                git merge -X theirs --no-edit origin/sync-beta-mods
+                git merge -X theirs --no-edit sync-beta-mods
                 git push
 
               # uses: devmasx/merge-branch@master
