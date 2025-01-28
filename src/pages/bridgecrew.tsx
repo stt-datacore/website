@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Header, Dropdown, Grid, Rating, Divider, Form, Segment, Image } from 'semantic-ui-react';
 import { Link } from 'gatsby';
-import * as marked from 'marked';
+import marked from 'marked';
 
 import { CrewMember } from '../model/crew';
 import DataPageLayout from '../components/page/datapagelayout';
@@ -16,28 +16,19 @@ type BridgeCrewPageState = {
 	entries: any[];
 };
 
-type BridgePeopleListItem = {
-	key: string,
-	value: string,
-	imageUrlFullBody: string,
-	image: { avatar: true, src: string },
-	text: string,
-	max_rarity: number;
-}
-
 class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState> {
 	state = {
 		peopleList: [],
 		currentSelectedItems: [],
-		allcrew: [] as CrewMember[],
-		entries: [] as { crew?: CrewMember }[],
+		allcrew: [],
+		entries: [],
 	};
 
 	async componentDidMount() {
 		let response = await fetch('/structured/crew.json');
 		const allcrew = await response.json();
 
-		let peopleList = [] as BridgePeopleListItem[];
+		let peopleList = [];
 		allcrew.forEach(crew => {
 			peopleList.push({
 				key: crew.symbol,
@@ -46,7 +37,7 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 				image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}` },
 				text: `${crew.short_name} (${crew.name})`,
 				max_rarity: crew.max_rarity
-			} as BridgePeopleListItem);
+			});
 		});
 		peopleList = peopleList.sort((a, b) => a.text.localeCompare(b.text)),
 
@@ -96,7 +87,7 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 				<div style={{ height: '500px', overflow: 'hidden', textAlign: 'center', padding: '25px', backgroundColor: '#203147', border: '2px solid lightblue' }}>
 					<Header as='h3'>Bridge Crew</Header>
 					{this.state.entries.map((entry, idx) => (
-							<img src={`${process.env.GATSBY_ASSETS_URL}${entry.crew?.imageUrlFullBody}`} style={{ height: '725px', margin: '0 -6.5%' }} />
+							<img src={`${process.env.GATSBY_ASSETS_URL}${entry.crew.imageUrlFullBody}`} style={{ height: '725px', margin: '0 -6.5%' }} />
 					))}
 				</div>
 				</React.Fragment>
@@ -106,7 +97,7 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 
 	_selectionChanged(value: any) {
 		let params = new URLSearchParams();
-		let entries = [] as { crew?: CrewMember }[]
+		let entries = [];
 		for (let symbol of value) {
 			let bcrew = this.state.allcrew.find(bc => bc.symbol === symbol);
 			if (!bcrew) {

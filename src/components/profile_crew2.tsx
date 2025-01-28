@@ -46,7 +46,7 @@ type ProfileCrewMobileState = {
 
 class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMobileState> {
 	static contextType = GlobalContext;
-	declare context: React.ContextType<typeof GlobalContext>;
+	context!: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: ProfileCrewMobileProps) {
 		super(props);
@@ -168,7 +168,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 	_onChange(option: string) {
 		const sortSettings = {
 			'Default Sort': {
-				column: 'cab_ov'
+				column: 'bigbook_tier'
 			},
 			'Crew Level': {
 				column: 'level'

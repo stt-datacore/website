@@ -89,7 +89,7 @@ export interface ShipSkillProps extends PresenterPluginProps<Ship | PlayerCrew |
 
 export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, ShipSkillProps, PresenterPluginState> {
     static contextType = GlobalContext;
-    declare context: React.ContextType<typeof GlobalContext>;
+    context!: React.ContextType<typeof GlobalContext>;
 
     static title = "Ship Ability";
 

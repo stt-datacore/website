@@ -1,13 +1,15 @@
 import React from 'react';
 import { GlobalContext } from '../../context/globalcontext';
-import { PlayerCollection } from '../../model/player';
+import { PlayerCollection, BuffBase, Reward } from '../../model/player';
 import { CollectionsContext } from './context';
-import { Checkbox, Pagination, Table, Grid, Dropdown } from 'semantic-ui-react';
+import { Image, Icon, Checkbox, Pagination, Table, Grid, Dropdown, Progress } from 'semantic-ui-react';
+import { RewardPicker, RewardsGrid } from '../crewtables/rewards';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import { formatColString } from './overview';
 import { useStateWithStorage } from '../../utils/storage';
 import CollectionsCrewCard from './crewcard';
 import { CollectionMap } from '../../model/collectionfilter';
-import { getOwnedCites } from '../../utils/collectionutils';
+import { getOwnedCites, makeCiteNeeds } from '../../utils/collectionutils';
 import { CollectionCard } from './collectioncard';
 import { RewardFilter } from './rewardfilter';
 
@@ -21,7 +23,6 @@ export interface GroupTableProps {
 export const CollectionGroupTable = (props: GroupTableProps) => {
     const colContext = React.useContext(CollectionsContext);
     const context = React.useContext(GlobalContext);
-	const { t } = context.localized;
     const { workerRunning, playerCollections, colGroups } = props;
     const { favorited, setFavorited, hardFilter, setHardFilter, costMode, setCostMode, setShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
@@ -32,7 +33,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 
 	const [groupPage, setGroupPage] = React.useState(1);
 	const [groupPageCount, setGroupPageCount] = React.useState(1);
-
+	
     const addToSearchFilter = (value: string) => {
 		if (searchFilter?.length) {
 			setSearchFilter(searchFilter + "; " + value);
@@ -51,29 +52,65 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 	}
 	let crewprep = colGroups.map((col) => col.crew).flat();
 	const allCrew = crewprep.filter((fc, idx) => crewprep.findIndex(fi => fi.symbol === fc.symbol) === idx).sort((a, b) => a.name.localeCompare(b.name));
-
-	const renderCollectionGroups = (colMap: CollectionMap[]) => {
+	
+	//const rewards =
+	const renderCollectionGroups = (colMap: CollectionMap[]) => {		
 		return (<div style={{
 			display: "flex",
 			flexDirection: "column",
 			justifyContent: "stretch"
 		}}>
-			{!workerRunning &&
+			{!mapFilter?.collectionsFilter?.length && !searchFilter?.length &&
+				<i className='ui segment' style={{color:"goldenrod", fontWeight: 'bold', margin: "0.5em 0"}}>
+					The grouped collection view shows only owned crew if the collections list is not filtered.
+				</i>}
+
+			<div style={{
+				display: "flex",
+				flexDirection: 
+					window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
+				alignItems:
+					window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'flex-start' : 'center',
+				justifyContent: "flex-start"			
+			}}>
+				
+				<RewardFilter 
+					hardFilter={hardFilter}		
+					setHardFilter={setHardFilter}
+					narrow={narrow}
+					grouped={short}
+					setGrouped={setShort}
+					searchFilter={searchFilter}
+					setSearchFilter={setSearchFilter}
+					collectionSource={playerCollections}
+					crewSource={allCrew}
+					selection={mapFilter?.rewardFilter}
+					setSelection={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
+				/>
+
+				<div style={{display: 'grid', gridTemplateAreas: "'a b' 'c d'"}}>
+					<Checkbox style={{margin: "0.5em 1em", gridArea: 'a'}} label={"Honor Sale Pricing"} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />
+					<Checkbox style={{margin: "0.5em 1em", gridArea: 'c'}} label={"Prioritize Favorite Crew"} checked={favorited} onChange={(e, { checked }) => setFavorited(!!checked)} />
+				</div>
+
+			</div>
+
+			{!workerRunning && 
 			<>
-			{!!colMap?.length &&
+			{!!colMap?.length && 			
 			<div style={{display:"flex",
-						flexDirection:
-							window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
-						alignItems: "center"
+						flexDirection: 
+							window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row', 
+						alignItems: "center"						
 						}}>
 			<Pagination style={{
-				margin: "1em 0 1em 0"
+				margin: "1em 0 1em 0"				
 				}} totalPages={pageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />
 			<div style={{margin:"0 0.5em", padding: 0}}>
-			{t('global.rows_per_page')}:
-			<Dropdown
+			Items Per Page:
+			<Dropdown 
 				style={{margin: "0.5em"}}
-				placeholder={t('global.rows_per_page')}
+				placeholder={"Items Per Page"}
 				value={pageSize}
 				onChange={(e, { value }) => setPageSize(value as number)}
 				options={[1,2,5,10].map(x => {
@@ -93,12 +130,12 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 
 						const collection = col.collection;
 						if (!collection?.totalRewards || !collection.milestone) return <></>;
-
+				
 						return (<Table.Row key={"colgroup" + idx}>
-							<Table.Cell width={4} style={{verticalAlign:"top"}}>
+							<Table.Cell width={4} style={{verticalAlign:"top"}}>						
 
-								<CollectionCard
-									ownedCites={ownedCites}
+								<CollectionCard 
+									ownedCites={ownedCites} 
 									mapFilter={mapFilter}
 									setMapFilter={setMapFilter}
 									searchFilter={searchFilter}
@@ -107,14 +144,14 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 
 							</Table.Cell>
 							<Table.Cell style={{verticalAlign:"top"}}>
-
+								
 							<Grid doubling columns={3} textAlign='center' >
 									{col.crew.map((crew, ccidx) => (
-										<CollectionsCrewCard
-											highlightIfNeeded
-											crew={crew}
-											collection={collection}
-											index={ccidx}
+										<CollectionsCrewCard 
+											highlightIfNeeded 
+											crew={crew} 
+											collection={collection} 
+											index={ccidx} 
 											onClick={(e, item) => addToSearchFilter(item.name)} />
 									))}
 								</Grid>
@@ -124,18 +161,18 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 					)}
 				</Table.Body>
 			</Table>
-			{!!colMap?.length &&
+			{!!colMap?.length && 			
 			<div style={{display:"flex",
-			flexDirection:
-				window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row',
-			alignItems: "center"
+			flexDirection: 
+				window.innerWidth < DEFAULT_MOBILE_WIDTH ? 'column' : 'row', 
+			alignItems: "center"						
 			}}>
 			<Pagination style={{margin: "1em 0 1em 0"}} totalPages={pageCount} activePage={groupPage} onPageChange={(e, { activePage }) => setGroupPage(activePage as number) } />
 			<div style={{margin:"0 0.5em", padding: 0}}>
-			{t('global.rows_per_page')}:
-			<Dropdown
+			Items Per Page:
+			<Dropdown 
 				style={{margin: "0.5em"}}
-				placeholder={t('global.rows_per_page')}
+				placeholder={"Items Per Page"}
 				value={pageSize}
 				onChange={(e, { value }) => setPageSize(value as number)}
 				options={[1,2,5,10].map(x => {
@@ -155,7 +192,7 @@ export const CollectionGroupTable = (props: GroupTableProps) => {
 		</div>)
 
 	}
-
+    
     return renderCollectionGroups(colGroups);
 }
 

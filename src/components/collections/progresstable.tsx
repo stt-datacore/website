@@ -5,7 +5,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import { Filter } from '../../model/game-elements';
 import { PlayerCollection } from '../../model/player';
 import { useStateWithStorage } from '../../utils/storage';
-import { makeRewards, RewardsGrid } from '../crewtables/rewards';
+import { rewardOptions, RewardsGrid } from '../crewtables/rewards';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 
 export interface ProgressTableProps {
@@ -17,7 +17,7 @@ export interface ProgressTableProps {
 export const ProgressTable = (props: ProgressTableProps) => {
 	const { workerRunning, playerCollections, filterCrewByCollection } = props;
 	const context = React.useContext(GlobalContext);
-	const { t } = context.localized;
+
 	const [rewardFilter, setRewardFilter] = useStateWithStorage<string | undefined>('collectionstool/rewardFilter', undefined);
 	const [showMaxed, setShowMaxed] = useStateWithStorage('collectionstool/showMaxed', false);
 
@@ -26,15 +26,14 @@ export const ProgressTable = (props: ProgressTableProps) => {
 		{ width: 1, column: 'owned', title: 'Total Owned', reverse: true },
 		{ width: 1, column: 'progressPct', title: 'Progress', reverse: true },
 		{ width: 1, column: 'needed', title: 'Needed', tiebreakers: ['neededPct'] },
-		{ width: 3, column: 'totalRewards', title: <span>{t('collections.milestone_rewards')} <Popup trigger={<Icon name='help' />} content={t('collections.milestone_rewards_desc')} /></span>, reverse: true }
+		{ width: 3, column: 'totalRewards', title: <span>Milestone Rewards <Popup trigger={<Icon name='help' />} content='Rewards you can claim after immortalizing the needed number of crew to reach the next milestone' /></span>, reverse: true }
 	];
 
 	// Rewards will test value against literal symbol string, except when prefixed by:
 	//	= Regular expression against symbol, * Special test case
-	const rewardOptions = makeRewards(t);
-
+	
 	if (workerRunning) {
-		return context.core.spin(t('spinners.default'));
+		return context.core.spin("Calculating Collection Progress...");
 	}
 	return (
 		<React.Fragment>
@@ -43,7 +42,7 @@ export const ProgressTable = (props: ProgressTableProps) => {
 					<Form.Group inline>
 						<Form.Field
 							control={Dropdown}
-							placeholder={t('hints.filter_by_reward')}
+							placeholder='Filter by reward'
 							selection
 							clearable
 							options={rewardOptions}
@@ -52,7 +51,7 @@ export const ProgressTable = (props: ProgressTableProps) => {
 						/>
 						<Form.Field
 							control={Checkbox}
-							label={t('collections.options.show_maxed_collections')}
+							label='Show maxed collections'
 							checked={showMaxed}
 							onChange={(e, { checked }) => setShowMaxed(checked)}
 						/>
@@ -67,7 +66,7 @@ export const ProgressTable = (props: ProgressTableProps) => {
 				filterRow={(collection, filter) => showCollectionRow(collection, filter)}
 				explanation={
 					<div>
-						<p>{t('collections.options.search_by_name_or_trait')}</p>
+						<p>Search for collections by name or trait.</p>
 					</div>
 				}
 			/>

@@ -3,12 +3,14 @@ import { IRosterCrew } from "../model";
 import { ITableConfigRow } from "../../searchabletable";
 import CONFIG from "../../CONFIG";
 import { Table } from "semantic-ui-react";
-import { QuippedPower, QuipmentScores, Skill, BaseSkills, QuipSkill } from "../../../model/crew";
+import { PowerLot, QuipmentScores, Skill } from "../../../model/crew";
 import { applySkillBuff, powerSum, skillSum, skillToShort } from "../../../utils/crewutils";
 import { CrewItemsView } from "../../item_presenters/crew_items";
 import CrewStat from "../../crewstat";
 import { QuipmentScoreCells } from "./quipmentscores";
 import { ItemWithBonus } from "../../../utils/itemutils";
+import { appelate } from "../../../utils/misc";
+import { GlobalContext } from "../../../context/globalcontext";
 import { BuffStatTable } from "../../../utils/voyageutils";
 import { TranslateMethod } from "../../../model/player";
 
@@ -26,84 +28,126 @@ export interface TopQuipmentScoreProps {
 
 export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean | 2 | 3, excludeQBits: boolean, powerMode: 'all' | 'core' | 'proficiency', buffConfig?: BuffStatTable) => {
     const config = [] as ITableConfigRow[];
+    //config.push({ width: 1, column: 'quipment_score', title: t('quipment_ranks.overall'), reverse: true });
+    //if (pstMode) config.push({ width: 1, column: 'quipment_scores.trait_limited', title: t('quipment_ranks.specialty'), reverse: true });
     if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: t('base.qp'), reverse: true });
 
-    const qpComp = (a: IRosterCrew, b: IRosterCrew, skill: string) => {
-        if (!a.best_quipment!.aggregate_by_skill[skill]) return -1;
-        else if (!b.best_quipment!.aggregate_by_skill[skill]) return 1;
-        else return a.best_quipment!.aggregate_by_skill[skill] - b.best_quipment!.aggregate_by_skill[skill];
-    };
+    // config.push({
+    //     width: 1,
+    //     column: 'vqx',
+    //     title: <span>Exclusion Score</span>,
+    //     reverse: true,
+    //     customCompare: (a: IRosterCrew, b: IRosterCrew) => {
+    //         let r = 0;
+    //         r = a.max_rarity - b.max_rarity;
+    //         if (r) return r;
+    //         const va = a.voyage_quotient ?? 1;
+    //         const ta = (top[a.max_rarity - 1].voyage_quotient ? top[a.max_rarity - 1].voyage_quotient : 1) ?? 0;
+    //         const ga = 1 - (ta / va);
 
-    const skoComp = (a: IRosterCrew, b: IRosterCrew, skill_idx: number) => {
-        if (skill_idx >= a.skill_order.length) {
-            return -1;
-        }
-        else if (skill_idx >= b.skill_order.length) {
-            return 1;
+    //         const vb = b.voyage_quotient ?? 1;
+    //         const tb = (top[b.max_rarity - 1].voyage_quotient ? top[b.max_rarity - 1].voyage_quotient : 1) ?? 0;
+    //         const gb = 1 - (tb / vb);
+
+    //         r = ga - gb;
+    //         return r;
+    //     }
+    // });
+
+    const qpComp = (a: IRosterCrew, b: IRosterCrew, skill: string | number, multi_mode?: boolean) => {
+        if (!!multi_mode && typeof skill === 'number') {
+            let m = skill;
+            switch(m) {
+                case 0:
+                    if (a.q_best_one_two_lots && b.q_best_one_two_lots) {
+                        return a.q_best_one_two_lots.crew_power - b.q_best_one_two_lots.crew_power;
+                        //return skillSum(a.q_best_one_two_lots.power, powerMode) - skillSum(b.q_best_one_two_lots.power, powerMode);
+                    }
+                    else if (a.q_best_one_two_lots) {
+                        return 1;
+                    }
+                    else if (b.q_best_one_two_lots) {
+                        return -1;
+                    }
+                    return 0;
+                case 1:
+                    if (a.q_best_one_three_lots && b.q_best_one_three_lots) {
+                        return a.q_best_one_three_lots.crew_power - b.q_best_one_three_lots.crew_power;
+                        //return skillSum(a.q_best_one_three_lots.power, powerMode) - skillSum(b.q_best_one_three_lots.power, powerMode);
+                    }
+                    else if (a.q_best_one_three_lots) {
+                        return 1;
+                    }
+                    else if (b.q_best_one_three_lots) {
+                        return -1;
+                    }
+                    return 0;
+                case 2:
+                    if (a.q_best_two_three_lots && b.q_best_two_three_lots) {
+                        return a.q_best_two_three_lots.crew_power - b.q_best_two_three_lots.crew_power;
+                        //return skillSum(a.q_best_two_three_lots.power, powerMode) - skillSum(b.q_best_two_three_lots.power, powerMode);
+                    }
+                    else if (a.q_best_two_three_lots) {
+                        return 1;
+                    }
+                    else if (b.q_best_two_three_lots) {
+                        return -1;
+                    }
+                    return 0;
+                case 3:
+                    if (a.q_best_three_lots && b.q_best_three_lots) {
+                        return a.q_best_three_lots.crew_power - b.q_best_three_lots.crew_power;
+                        //return skillSum(a.q_best_three_lots.power, powerMode) - skillSum(b.q_best_three_lots.power, powerMode);
+                    }
+                    else if (a.q_best_three_lots) {
+                        return 1;
+                    }
+                    else if (b.q_best_three_lots) {
+                        return -1;
+                    }
+                    return 0;
+                default:
+                    return 0;
+            }
         }
         else {
-            return a.best_quipment!.aggregate_by_skill[a.skill_order[skill_idx]] - b.best_quipment!.aggregate_by_skill[b.skill_order[skill_idx]];
-        }
-    };
+            let askname = undefined as string | undefined;
+            let bskname = undefined as string | undefined;
 
-    const multiComp = (a: IRosterCrew, b: IRosterCrew, combo_id: number) => {
-        if (combo_id === 0) {
-            if (a.best_quipment_1_2 && b.best_quipment_1_2) {
-                return a.best_quipment_1_2.aggregate_power - b.best_quipment_1_2.aggregate_power;
+            if (typeof skill === 'number') {
+                if (skill < a.skill_order.length) {
+                    askname = a.skill_order[skill];
+                }
+                if (skill < b.skill_order.length) {
+                    bskname = b.skill_order[skill];
+                }
             }
-            else if (a.best_quipment_1_2) {
-                return 1;
+            else {
+                askname = bskname = skill;
             }
-            else if (b.best_quipment_1_2) {
-                return -1;
-            }
-        }
-        else if (combo_id === 1) {
-            if (a.best_quipment_1_3 && b.best_quipment_1_3) {
-                return a.best_quipment_1_3.aggregate_power - b.best_quipment_1_3.aggregate_power;
-            }
-            else if (a.best_quipment_1_3) {
-                return 1;
-            }
-            else if (b.best_quipment_1_3) {
-                return -1;
-            }
-        }
-        else if (combo_id === 2) {
-            if (a.best_quipment_2_3 && b.best_quipment_2_3) {
-                return a.best_quipment_2_3.aggregate_power - b.best_quipment_2_3.aggregate_power;
-            }
-            else if (a.best_quipment_2_3) {
-                return 1;
-            }
-            else if (b.best_quipment_2_3) {
-                return -1;
-            }
-        }
-        else if (combo_id === 3) {
-            if (a.best_quipment_3 && b.best_quipment_3) {
-                return a.best_quipment_3.aggregate_power - b.best_quipment_3.aggregate_power;
-            }
-            else if (a.best_quipment_3) {
-                return 1;
-            }
-            else if (b.best_quipment_3) {
-                return -1;
-            }
-        }
-        else if (combo_id === 4) {
-            if (a.best_quipment_top && b.best_quipment_top) {
-                return a.best_quipment_top.aggregate_power - b.best_quipment_top.aggregate_power;
-            }
-            else if (a.best_quipment_top) {
-                return 1;
-            }
-            else if (b.best_quipment_top) {
-                return -1;
-            }
-        }
 
-        return 0;
+            if ((askname && a.q_lots?.power && a.q_lots.power.some(s => s.skill === askname))
+                && (bskname && b.q_lots?.power && b.q_lots.power.some(s => s.skill === bskname))) {
+                // let askill = a.q_lots.power.find(f => f.skill === askname) as Skill;
+                // let bskill = b.q_lots.power.find(f => f.skill === bskname) as Skill;
+                let askill = (a.q_lots.power_by_skill as object)[askname];
+                let bskill = (b.q_lots.power_by_skill as object)[bskname];
+
+                let at = skillSum(askill, powerMode);
+                let bt = skillSum(bskill, powerMode);
+
+                return at - bt;
+            }
+            else if (askname && a.q_lots?.power && a.q_lots.power.some(s => s.skill === askname)) {
+                return 1;
+            }
+            else if (bskname && b.q_lots?.power && b.q_lots.power.some(s => s.skill === bskname)) {
+                return -1;
+            }
+            else {
+                return 0;
+            }
+        }
     };
 
     if (pstMode === true) {
@@ -119,13 +163,13 @@ export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean |
                 </div>
                 </div>,
                 reverse: true,
-                customCompare: (a: IRosterCrew, b: IRosterCrew) => skoComp(a, b, idx)
+                customCompare: (a: IRosterCrew, b: IRosterCrew) => qpComp(a, b, idx)
             });
 
         });
     }
     else if (pstMode === 2) {
-        ['first_pair', 'second_pair', 'third_pair', 'three_skills', 'top_quipment'].forEach((skill, idx) => {
+        ['first_pair', 'second_pair', 'third_pair', 'three_skills'].forEach((skill, idx) => {
             config.push({
                 width: 1,
                 column: 'pairs_' + skill,
@@ -137,7 +181,7 @@ export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean |
                 </div>
                 </div>,
                 reverse: true,
-                customCompare: (a: IRosterCrew, b: IRosterCrew) => multiComp(a, b, idx)
+                customCompare: (a: IRosterCrew, b: IRosterCrew) => qpComp(a, b, idx, true)
             });
         });
     }
@@ -168,33 +212,73 @@ export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean |
 }
 
 export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
-    const { pstMode, excludeQBits, targetGroup, top, allslots, crew } = props;
+    const { pstMode, quipment, excludeQBits, targetGroup, top, allslots, crew, slots, buffConfig } = props;
+
     const q_bits = allslots ? 1300 : crew.q_bits;
+
+    let q_lots = crew.q_lots ?? {} as PowerLot;
+
+    if (pstMode === 2) {
+
+    }
+
+    const q_power = crew.q_lots?.power ?? [];
     const skills = Object.keys(CONFIG.SKILLS);
 
-    let q_lots = crew.best_quipment ?? {} as QuippedPower;
+    const printCell = (skill: string | number, multi_mode?: boolean) => {
+        let power_sum = undefined as { [key: string]: Skill } | undefined;
+        let lot: PowerLot | undefined = q_lots ?? { lot: {} };
 
-    const printCell = (skill: string | number) => {
-        let lot: QuippedPower | undefined = q_lots;
         if (typeof skill === 'number') {
-            if (pstMode === 2) {
-                if (skill === 0 && crew.best_quipment_1_2) {
-                    lot = crew.best_quipment_1_2;
+            if (multi_mode) {
+                lot = undefined;
+                if (skill === 0 && crew.q_best_one_two_lots) {
+                    power_sum = powerSum(crew.q_best_one_two_lots.power);
+                    lot = crew.q_best_one_two_lots;
                 }
-                else if (skill === 1 && crew.best_quipment_1_3) {
-                    lot = crew.best_quipment_1_3;
+                // else if (skill === 0 && crew.q_lots) {
+                //     skill = crew.skill_order[0];
+                //     lot = crew.q_lots;
+                // }
+                else if (skill === 1 && crew.q_best_one_three_lots) {
+                    power_sum = powerSum(crew.q_best_one_three_lots.power);
+                    lot = crew.q_best_one_three_lots;
                 }
-                else if (skill === 2 && crew.best_quipment_2_3) {
-                    lot = crew.best_quipment_2_3;
+                else if (skill === 2 && crew.q_best_two_three_lots) {
+                    power_sum = powerSum(crew.q_best_two_three_lots.power);
+                    lot = crew.q_best_two_three_lots;
                 }
-                else if (skill === 3 && crew.best_quipment_3) {
-                    lot = crew.best_quipment_3;
+                else if (skill === 3 && crew.q_best_three_lots) {
+                    power_sum = powerSum(crew.q_best_three_lots.power);
+                    lot = crew.q_best_three_lots;
                 }
-                else if (skill === 4 && crew.best_quipment_top) {
-                    lot = crew.best_quipment_top;
-                }
-                else {
+
+                if (!lot && typeof skill !== 'string') {
                     return <></>;
+                }
+                else if (power_sum) {
+                    Object.keys(power_sum).forEach((skill) => {
+                        if (!(skill in crew.base_skills) && !!power_sum) {
+                            delete power_sum[skill];
+                        }
+                    });
+
+                    Object.values(power_sum).forEach((skill) => {
+                        if (skill.skill && skill.skill in crew.base_skills) {
+                            if (buffConfig) {
+                                let buffed = applySkillBuff(buffConfig, skill.skill, crew.base_skills[skill.skill]);
+                                skill.core += buffed.core;
+                                skill.range_max += buffed.max;
+                                skill.range_min += buffed.min;
+                            }
+                            else {
+                                skill.core += crew.base_skills[skill.skill].core;
+                                skill.range_max += crew.base_skills[skill.skill].range_max;
+                                skill.range_min += crew.base_skills[skill.skill].range_min;
+                            }
+                        }
+                    });
+
                 }
             }
             else {
@@ -203,15 +287,13 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
             }
         }
 
-        if (!crew.best_quipment) return <></>;
-
-        if (typeof skill === 'string') {
-            lot = { ... lot };
-            lot.skill_quipment = {};
-            lot.skill_quipment[skill] = crew.best_quipment.skill_quipment[skill];
+        if (typeof skill === 'string' && crew.q_lots?.power_by_skill) {
+            lot = { ...crew.q_lots };
+            lot.lot = {};
+            lot.lot[skill] = crew.q_lots.lot[skill];
         }
 
-        return !!lot?.skill_quipment && <div style={{
+        return !!lot?.lot && <div style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -220,7 +302,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
         }}>
             <CrewItemsView
                 vertical={!pstMode}
-                crew={{ ...crew, q_bits, kwipment_expiration: [], kwipment: Object.values(lot.skill_quipment).flat().map(q => Number(q.kwipment_id) as number) }}
+                crew={{ ...crew, q_bits, kwipment_expiration: [], kwipment: Object.values(lot.lot).flat().map(q => Number(q.kwipment_id) as number) }}
                 targetGroup={targetGroup}
                 itemSize={32}
                 locked
@@ -231,41 +313,56 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
                 quipmentMode={true}
                 style={{fontSize: "0.8em"}}
                 skill_name={skill}
-                data={lot.skills_hash[skill]} />
+                data={lot.power_by_skill ? lot.power_by_skill[skill] : lot.power.find(f => f.skill === skill)} />
             ||
-            !!lot.skills_hash && Object.values(lot.skills_hash).sort((a, b) => lot.aggregate_by_skill[b] - lot.aggregate_by_skill[a]).map((ps: QuipSkill) =>
+            !!power_sum && Object.values(power_sum).sort((a, b) => skillSum(b) - skillSum(a)).map((ps) =>
                 <CrewStat
-                    key={`power_skill-${ps.skill}_${crew.id}`}
+                    key={'power_skill_' + ps.skill}
                     quipmentMode={true}
-                    style={{fontSize: "0.8em", opacity: ps.reference ? '0.5' : undefined}}
+                    style={{fontSize: "0.8em"}}
                     skill_name={ps.skill as string}
                     data={ps} />
             )}
         </div>
     }
 
+    const voyQ = crew.voyage_quotient ?? 1;
+    const topQ = top.voyage_quotient ? top.voyage_quotient : 0;
+    const printQ = voyQ;
+    const qGrade = 1 - (topQ / voyQ);
     return <React.Fragment>
         <QuipmentScoreCells excludeGrade={true} excludeSpecialty={!pstMode} top={top} crew={crew} excludeSkills={true} excludeQBits={excludeQBits} />
-        {!pstMode && skills.map((skill, idx) => {
+        {/* <Table.Cell>
+            <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                <div style={{color: gradeToColor(qGrade) ?? undefined}} >
+                    {numberToGrade(qGrade)}
+                </div>
+                <div style={{fontStyle: 'italic', fontSize: "0.85em", textAlign: 'center', fontStretch: 'condensed'}}>
+                    (#{crew.ranks.voyRank} in Voyages)
+                </div>
+            </div>
+        </Table.Cell> */}
+        {!pstMode && skills.map((skill) => {
+
             if (!(skill in crew.base_skills)) {
-                return <Table.Cell key={`qpbest_${idx}_${skill}_${crew.id}`}></Table.Cell>
+                return <Table.Cell></Table.Cell>
             }
             return (
-                <Table.Cell key={`qpbest_${idx}_${skill}_${crew.id}`}>
+                <Table.Cell key={skill + "_vqntqp"}>
                     {printCell(skill)}
                 </Table.Cell>)
         })}
         {pstMode === true && ['primary', 'secondary', 'tertiary'].map((skill, idx) => {
 
             return (
-                <Table.Cell key={`qpbest_${idx}_${skill}_${crew.id}`}>
+                <Table.Cell key={skill + "_vqntqp"}>
                     {printCell(idx)}
                 </Table.Cell>)
         })}
-        {pstMode === 2 && ['first_pair', 'second_pair', 'third_pair', 'three_skills', 'top_quipment'].map((skill, idx) => {
+        {pstMode === 2 && ['first_pair', 'second_pair', 'third_pair', 'three_skills'].map((skill, idx) => {
             return (
-                <Table.Cell key={`qpbest_${idx}_${skill}_${crew.id}`}>
-                    {printCell(idx)}
+                <Table.Cell key={skill + "_vqntqp"}>
+                    {printCell(idx, true)}
                 </Table.Cell>)
         })}
     </React.Fragment>

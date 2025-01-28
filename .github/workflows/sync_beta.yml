@@ -24,7 +24,7 @@ jobs:
               uses: actions/checkout@v4
               with:
                 repository: stt-datacore/website
-                ref: sync-beta-mods
+                ref: beta
                 token: ${{ secrets.GITHUB_TOKEN }}
                 path: website
 
@@ -33,10 +33,11 @@ jobs:
                 cd website
                 git config user.name github-actions
                 git config user.email github-actions@github.com
-                git checkout beta
-                git merge -X theirs --no-edit sync-beta-mods
-                git push
-
+                git fetch --depth 1 origin sync-beta-mods
+                git checkout origin/beta
+                git merge -X theirs --no-commit --no-ff --allow-unrelated-histories origin/sync-beta-mods
+                git commit -m "Automated merge of sync-beta-mods into beta"
+                git push origin HEAD:beta
               # uses: devmasx/merge-branch@master
               # with:
               #   type: now

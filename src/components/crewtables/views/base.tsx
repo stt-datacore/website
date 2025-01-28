@@ -1,101 +1,43 @@
 import React from 'react';
-import { Label, Table } from 'semantic-ui-react';
+import { Table } from 'semantic-ui-react';
 
 import CONFIG from '../../../components/CONFIG';
 
 import { IRosterCrew, RosterType } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
 import CABExplanation from '../../explanations/cabexplanation';
-import { gradeToColor, printPortalStatus, qbitsToSlots, qbProgressToNext, skillSum, skillToShort } from '../../../utils/crewutils';
+import { formatTierLabel, gradeToColor, printPortalStatus, qbitsToSlots, qbProgressToNext, skillToShort } from '../../../utils/crewutils';
 import { TinyStore } from '../../../utils/tiny';
 import VoyageExplanation from '../../explanations/voyexplanation';
 import { PlayerCrew } from '../../../model/player';
-import { ComputedSkill, CrewMember } from '../../../model/crew';
+import { CrewMember } from '../../../model/crew';
 import { GlobalContext } from '../../../context/globalcontext';
 import { TranslateMethod } from '../../../model/player';
-import { appelate } from '../../../utils/misc';
-import CrewStat from '../../crewstat';
-import { printFancyPortal } from '../../base/utils';
 
 export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) => {
 	const tableConfig = [] as ITableConfigRow[];
 	tableConfig.push(
 		// { width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier'), tiebreakers: ['cab_ov_rank'], tiebreakers_reverse: [false] },
 		{ width: 1, column: 'cab_ov', title: <span>{t('base.cab_power')} <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
-		// { width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier'), tiebreakers: ['cab_ov_rank'], tiebreakers_reverse: [false] },
+
 	);
 	if (tableType !== 'offers') {
 		tableConfig.push({ width: 1, column: 'ranks.voyRank', title: <span>{t('base.voyage')} <VoyageExplanation /></span> })
 	}
 	else {
-		tableConfig.push(
-			{
-				width: 1,
-				column: 'skills',
-				title: t('base.skills'),
-				reverse: true,
-				customCompare: (a: IRosterCrew, b: IRosterCrew) => {
-					return skillSum(a.skill_order.map(sko => a[sko] as ComputedSkill)) - skillSum(b.skill_order.map(sko => b[sko] as ComputedSkill))
-				}
-			}
-		)
-		tableConfig.push({
-			width: 4,
-			pseudocolumns: ['offer', 'cost'],
-			column: 'offer',
-			title: t('base.offers'),
-			translatePseudocolumn: (field) => {
-				if (field === 'offer') return t('global.name');
-				if (field === 'cost') return t('retrieval.price.price');
-				return field;
-			},
-			customCompare: (a: IRosterCrew, b: IRosterCrew, config) => {
-				if (!a.offers && !b.offers) return 0;
-				else if (!a.offers) return 1;
-				else if (!b.offers) return -1;
-				else {
-					if (config.field === 'offer') {
-						return a.offers[0].name.localeCompare(b.offers[0].name);
-					}
-					else if (config.field === 'cost') {
-						let afiat = (a.offers.some(offer => offer.drop_info.some(di => di.currency === 'fiat')));
-						let bfiat = (b.offers.some(offer => offer.drop_info.some(di => di.currency === 'fiat')));
-						if (afiat === bfiat) {
-							return a.offers[0].drop_info[0].cost - b.offers[0].drop_info[0].cost;
-						}
-						else if (afiat) {
-							return 1;
-						}
-						else if (bfiat) {
-							return -1;
-						}
-
-					}
-					return 0;
-				}
-			}
-		});
-		tableConfig.push(
-			{
-				width: 1,
-				column: 'in_portal',
-				title: t('base.in_portal'),
-				customCompare: (a: PlayerCrew | CrewMember, b: PlayerCrew | CrewMember) => {
-					return printPortalStatus(a, t, true, true, false, true).localeCompare(printPortalStatus(b, t, true, true, false, true));
-				}
-			}
-		)
+		tableConfig.push({ width: 1, column: 'cost_text', title: t('base.offer_cost') })
+		tableConfig.push({ width: 1, column: 'offer', title: t('base.offers') })
 	}
 
-	if (tableType !== 'offers') {
-		CONFIG.SKILLS_SHORT.forEach((skill) => {
-			tableConfig.push({
-				width: 1,
-				column: `${skill.name}.core`,
-				title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
-				reverse: true
-			});
+	CONFIG.SKILLS_SHORT.forEach((skill) => {
+		tableConfig.push({
+			width: 1,
+			column: `${skill.name}.core`,
+			title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
+			reverse: true
 		});
+	});
+	if (tableType !== 'offers') {
 		tableConfig.push(
 			{
 				width: 1,
@@ -149,9 +91,6 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<b style={{color:gradeColor}}>{crew.cab_ov}</b><br />
 				<small><span  style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>{rarityLabels[crew.max_rarity]}</span><br />{crew.cab_ov_rank ? "#" + crew.cab_ov_rank : "?" }</small>
 			</Table.Cell>
-			{/* <Table.Cell textAlign='center'>
-				<b style={{color: tierColor}}>{formatTierLabel(crew)}</b>
-			</Table.Cell> */}
 			{tableType !== 'offers' &&
 			<Table.Cell textAlign='center'>
 				<div style={{cursor:"pointer"}} onClick={(e) => navToSearch(crew)} title={crew.skill_order.map(sk => skillToShort(sk)).reduce((p, n) => p ? `${p}/${n}` : n)}>
@@ -159,23 +98,15 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 					{crew.ranks.voyTriplet && <small>{CONFIG.TRIPLET_TEXT} #{crew.ranks.voyTriplet.rank}</small>}
 				</div>
 			</Table.Cell>}
-			{tableType === 'offers' && <>
+			{tableType === 'offers' &&
 			<Table.Cell textAlign='center' width={1}>
-				{crew.skill_order.map(skill => {
-
-					return <div key={`crew_${crew.symbol}_sko_${skill}`}>
-						<CrewStat data={crew[skill] as any} skill_name={skill} scale={0.8} />
-					</div>
-				})}
-			</Table.Cell>
-			<Table.Cell textAlign='center' width={1}>
-				{renderOffers(crew)}
-			</Table.Cell>
-			<Table.Cell>
-				<b title={printPortalStatus(crew, t, true, true, true)}>{printFancyPortal(crew, t, true)}</b>
-			</Table.Cell>
-			</>}
-			{tableType !== 'offers' && CONFIG.SKILLS_SHORT.map(skill =>
+				<b>{crew.cost_text}</b>
+			</Table.Cell>}
+			{tableType === 'offers' &&
+			<Table.Cell textAlign='center' width={3}>
+				<b>{crew.offer}</b>
+			</Table.Cell>}
+			{CONFIG.SKILLS_SHORT.map(skill =>
 				crew[skill.name].core > 0 ? (
 					<Table.Cell key={skill.name} textAlign='center'>
 						<b>{crew[skill.name].core}</b>
@@ -211,61 +142,4 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 			</Table.Cell>
 		</React.Fragment>
 	);
-
-	function renderOffers(crew: IRosterCrew) {
-		const labelStyle: React.CSSProperties = {
-			display: 'flex',
-			flexDirection: 'row',
-			alignItems: 'center',
-			justifyContent: 'center',
-			gap: '0.5em'
-		};
-		const divStyle: React.CSSProperties = {
-			display: 'flex',
-			flexDirection: 'row',
-			alignItems: 'center',
-			width: '100%',
-			justifyContent: 'space-between',
-			gap: '0.5em'
-		};
-
-		return (<div style={{
-			height: '100%',
-			fontWeight: 'bold',
-			display: 'flex',
-			flexDirection: 'column',
-			alignItems: 'center',
-			justifyContent: 'space-between',
-			gap: '1em',
-			textAlign: 'left'
-		}}>
-			{crew.offers?.map((offer) => {
-			return offer.drop_info.map(di => {
-				if (di.currency === 'fiat') {
-					return (<div key={`offer_cost_${di.cost}_${di.currency}`} style={divStyle}>
-							<span>{appelate(offer.name)}</span>
-							<Label style={{...labelStyle, backgroundColor: 'darkgreen'}}>
-								{di.cost}
-							</Label>
-						</div>)
-				}
-				else {
-					return (
-					<div key={`offer_cost_${di.cost}_${di.currency}`} style={divStyle}>
-						<span>{appelate(offer.name)}</span>
-						<div
-							className='ui label'
-							style={labelStyle}
-						>
-						{di.cost}
-						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} style={{height: '16px', padding: '0.5em 0'}} />
-						</div>
-					</div>
-					)
-				}
-			});
-		})}
-		</div>
-	)
-	}
 };

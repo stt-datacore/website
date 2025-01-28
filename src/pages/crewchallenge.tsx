@@ -47,8 +47,6 @@ class GameRules {
 	constructor() {
 		this.guesses = DEFAULT_GUESSES;
 		this.excludedCrew = [];
-		this.series = [];
-		this.rarities = [];
 	}
 };
 

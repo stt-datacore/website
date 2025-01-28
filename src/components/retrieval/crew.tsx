@@ -6,7 +6,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import { RarityFilter, CrewTraitFilter } from '../../components/crewtables/commonoptions';
 
 import { ActionableState, IPolestar, IRosterCrew, RetrievableState } from './model';
-import { getComboCost, RetrievalContext } from './context';
+import { RetrievalContext } from './context';
 import { RetrievalCrewTable } from './crewtable';
 import { filterTraits } from './utils';
 
@@ -15,7 +15,7 @@ export const RetrievalCrew = () => {
 	const { t } = globalContext.localized;
 	const { collections } = globalContext.core;
 	const { playerData } = globalContext.player;
-	const { market, allKeystones, rosterCrew, setRosterCrew, polestarTailors, getCrewFilter, setCrewFilter, resetForm, wishlist, autoWishes } = React.useContext(RetrievalContext);
+	const { allKeystones, rosterCrew, setRosterCrew, polestarTailors, getCrewFilter, setCrewFilter, resetForm, wishlist } = React.useContext(RetrievalContext);
 
 	const addedPolestars = polestarTailors.added;
 	const disabledPolestars = polestarTailors.disabled;
@@ -39,7 +39,7 @@ export const RetrievalCrew = () => {
 		}).finally(() => {
 			setIsPreparing(false);
 		});
-	}, [market, allKeystones, disabledPolestars, addedPolestars]);
+	}, [allKeystones, disabledPolestars, addedPolestars]);
 
 	// Apply crew filters here
 	React.useEffect(() => {
@@ -52,7 +52,7 @@ export const RetrievalCrew = () => {
 			ownedFilter === '' ||
 			(ownedFilter === 'owned' && c.highest_owned_rarity > 0) ||
 			(ownedFilter === 'unowned' && c.highest_owned_rarity === 0) ||
-			(ownedFilter === 'wishlist' && (wishlist.includes(c.symbol) || autoWishes.includes(c.symbol)))
+			(ownedFilter === 'wishlist' && wishlist.includes(c.symbol))
 		).filter(c =>
 			ownedFilter === 'unowned' ||
 				!hideFullyFused ||
@@ -63,7 +63,7 @@ export const RetrievalCrew = () => {
 		).filter(c => {
 			if (traitFilter.length === 0) return true;
 			if (minTraitMatches >= traitFilter.length)
-				return traitFilter.every(trait => c.traits.includes(trait) || c.traits_hidden.includes(trait));
+				return traitFilter.every(trait => c.traits.includes(trait));
 			else if (minTraitMatches === 2) {
 				let matches = 0;
 				traitFilter.forEach(trait => {
@@ -78,34 +78,34 @@ export const RetrievalCrew = () => {
 			return collection?.crew?.includes(c.symbol);
 		});
 		setFilteredCrew([...filtered]);
-	}, [rosterCrew, retrievableFilter, ownedFilter, hideFullyFused, rarityFilter, traitFilter, minTraitMatches, collectionFilter, wishlist, autoWishes]);
+	}, [rosterCrew, retrievableFilter, ownedFilter, hideFullyFused, rarityFilter, traitFilter, minTraitMatches, collectionFilter, wishlist]);
 
 	const retrievableFilterOptions = [
-		{ key: 'none', value: '', text: t('retrieval.crew.show_all_crew') },
-		{ key: 'retrievable', value: 'retrievable', text: t('retrieval.crew.show_all_uniquely_retrievable') }
+		{ key: 'none', value: '', text: 'Show all crew' },
+		{ key: 'retrievable', value: 'retrievable', text: 'Show all uniquely retrievable crew' }
 	];
 	if (playerData) {
 		retrievableFilterOptions.push(
-			{ key: 'actionable', value: 'actionable', text: t('retrieval.crew.show_retrievable_crew') }
+			{ key: 'actionable', value: 'actionable', text: 'Only show crew I can retrieve'}
 		);
 	}
 
 	const ownedFilterOptions = [
-		{ key: 'none', value: '', text: t('options.crew_status.none') },
-		{ key: 'owned', value: 'owned', text: t('crew_ownership.owned') },
-		{ key: 'unowned', value: 'unowned', text: t('crew_ownership.unowned') },
-		{ key: 'wishlist', value: 'wishlist', text: t('crew_ownership.wishlist') }
+		{ key: 'none', value: '', text: 'Show all crew' },
+		{ key: 'owned', value: 'owned', text: 'Only show owned crew'},
+		{ key: 'unowned', value: 'unowned', text: 'Only show unowned crew' },
+		{ key: 'wishlist', value: 'wishlist', text: 'Only show crew on my wishlist' }
 	];
 
 	const collectionFilterOptions = [
-		{ key: 'none', value: '', text: t('global.any'), content: <span>{t('global.any')}</span> }
+		{ key: 'none', value: '', text: 'None or any', content: <span>None or any</span> }
 	];
 	collections.sort((a, b) => a.name.localeCompare(b.name)).forEach(collection => {
 		const playerProgress = (collection: Collection) => {
 			if (!playerData) return <></>;
 			const cryoCollection = playerData.player.character.cryo_collections.find(cc => cc.name === collection.name);
 			if (cryoCollection) {
-				if (!cryoCollection.milestone.goal) return <>({t('global.max')?.toUpperCase() ?? 'MAX'})</>;
+				if (!cryoCollection.milestone.goal) return <>(MAX)</>;
 				return (
 					<span style={{ whiteSpace: 'nowrap' }}>
 						({cryoCollection.progress} / {cryoCollection.milestone.goal})
@@ -125,14 +125,14 @@ export const RetrievalCrew = () => {
 	});
 
 	if (rosterCrew.length === 0)
-		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> {t('spinners.default')}</div>);
+		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> Loading...</div>);
 
 	return (
 		<React.Fragment>
 			<Form>
 				<Form.Group inline>
 					<Form.Field
-						placeholder={t('hints.filter_by_retrieval_options')}
+						placeholder='Filter by retrieval options'
 						control={Dropdown}
 						clearable
 						selection
@@ -143,7 +143,7 @@ export const RetrievalCrew = () => {
 					{playerData &&
 						<React.Fragment>
 							<Form.Field
-								placeholder={t('hints.filter_by_owned_status')}
+								placeholder='Filter by owned status'
 								control={Dropdown}
 								clearable
 								selection
@@ -154,7 +154,7 @@ export const RetrievalCrew = () => {
 							{ownedFilter !== 'unowned' && (
 								<Form.Field
 									control={Checkbox}
-									label={t('retrieval.hide_fully_fused_crew')}
+									label='Hide fully-fused crew'
 									checked={hideFullyFused}
 									onChange={(e, { checked }) => setCrewFilter('hideFullyFused', checked as boolean)}
 								/>
@@ -174,7 +174,7 @@ export const RetrievalCrew = () => {
 						setMinTraitMatches={(minTraitMatches: number) => setCrewFilter('minTraitMatches', minTraitMatches)}
 					/>
 					<Form.Field
-						placeholder={t('hints.filter_by_collections')}
+						placeholder='Filter by collection'
 						control={Dropdown}
 						search
 						clearable
@@ -183,7 +183,7 @@ export const RetrievalCrew = () => {
 						value={collectionFilter}
 						onChange={(e, { value }) => setCrewFilter('collection', value as string)}
 					/>
-					<Button onClick={resetForm}>{t('global.reset')}</Button>
+					<Button onClick={resetForm}>Reset</Button>
 					<Loader inline active={isPreparing} />
 				</Form.Group>
 			</Form>
@@ -271,26 +271,9 @@ export const RetrievalCrew = () => {
 						const cryoCollection = playerData.player.character.cryo_collections.find(cc => cc.name === collectionName);
 						return cryoCollection?.milestone.goal;
 					});
-
-					if (market) {
-						const pricemap = [] as { total: number, index: number, sell_count: number }[];
-						crew.unique_polestar_combos?.forEach((combo, index) => {
-							pricemap.push({ ...getComboCost(combo, allKeystones, market), index });
-						});
-
-						if (pricemap.length) {
-							pricemap.sort((a, b) => a.total - b.total);
-							crew.price = pricemap[0].total;
-							pricemap.sort((a, b) => a.sell_count - b.sell_count);
-							crew.sell_count = pricemap[0].sell_count;
-						}
-						else {
-							crew.price = 0;
-							crew.sell_count = 0;
-						}
-					}
 				}
 			});
+
 			resolve(rosterCrew);
 		});
 	}

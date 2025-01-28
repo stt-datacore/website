@@ -52,9 +52,8 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
         let adv = event.content.gather_pools.map(p => p.adventures).flat();
         let newadv = [...adventures];
         adv.forEach((adv) => {
-            newadv.push(adv);
+            if (!newadv.some(ad => ad.id === adv.id)) newadv.push(adv);
         });
-        newadv = newadv.reverse();
         newadv = newadv.filter((f, idx) => newadv.findIndex(fi => fi.id === f.id) === idx)
         setAdventures(newadv);
     }, [ephemeral, cachedItems]);
@@ -114,7 +113,7 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
             if (demand.item_sources?.length) {
                 demand.item_sources.forEach((source) => {
                     if (source.type === 1) return;
-                    let csource = newsources.find(f => f.source.name === source.name && f.source.mastery === source.mastery);
+                    let csource = newsources.find(f => f.source.name === source.name);
                     if (csource) {
                         const fitem = csource.items.find(f => f.symbol === demand.symbol);
                         if (fitem) {
@@ -184,6 +183,7 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
     function mergeCache(item: EquipmentItem) {
         let eitem = findEventItem(item.symbol);
         if (!eitem) addItemToCache(item);
+        else item = items.find(i => i.symbol === eitem)!;
 
         return item;
     }
@@ -298,33 +298,6 @@ const GatherTable = (props: GatherTableProps) => {
 
     }
 
-    // function superRareToVP(phase: number, count: number) {
-    //     interface SRTable {
-    //         min: number;
-    //         max: number;
-    //         points: number;
-    //     }
-
-    //     const Phase1Table = [
-    //         { min: 1, max: 1, points: 125 },
-    //         { min: 2, max: 4, points: 415 },
-    //         { min: 5, max: 7, points: 735 },
-    //         { min: 8, max: 12, points: 1365 },
-    //         { min: 13, max: 17, points: 2135 },
-    //         { min: 18, max: 22, points: 2950 },
-    //         { min: 23, max: 27, points: 3945 },
-    //         { min: 28, max: 0, points: 4850 },
-    //     ] as SRTable[];
-
-    //     const Phase2Table = [
-    //         { min: 1, max: 3, points: 735 },
-    //         { min: 4, max: 6, points: 1365 },
-    //         { min: 7, max: 11, points: 2135 },
-    //         { min: 12, max: 16, points: 2950 },
-    //         { min: 17, max: 21, points: 3945 },
-    //         { min: 22, max: 0, points: 4850 },
-    //     ] as SRTable[];
-    // }
 }
 
 

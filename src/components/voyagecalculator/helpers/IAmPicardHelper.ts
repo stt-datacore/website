@@ -1,58 +1,44 @@
 import '../../../typings/worker';
 import { UnifiedWorker } from '../../../typings/worker';
-import { Skill } from '../../../model/crew';
-import { Aggregates, PlayerCrew, VoyageDescription } from '../../../model/player';
-import { IProposalEntry as VoyageSlotEntry, IResultProposal, IVoyageCalcConfig, IVoyageEventContent, Estimate, IVoyageRequest } from '../../../model/voyage';
-import { VoyageStatsConfig, ExportCrew, GameWorkerOptions } from '../../../model/worker';
-import { calcVoyageVP } from '../../../utils/voyagevp';
 import CONFIG from '../../CONFIG';
-import { getCrewEventBonus } from '../utils';
+import { CalcResult, Aggregates, CalcResultEntry as VoyageSlotEntry, VoyageStatsConfig, AggregateSkill, ExportCrew, GameWorkerOptions } from '../../../model/worker';
 import { CalculatorState } from './calchelpers';
-import { HelperProps, Helper } from './Helper';
+import { HelperProps, Helper } from "./Helper";
+import { VoyageDescription } from '../../../model/player';
 
 // This code is heavily inspired from IAmPicard's work and released under the GPL-V3 license. Huge thanks for all his contributions!
 
 export class IAmPicardHelper extends Helper {
+	readonly id: string;
 	readonly calculator: string;
 	readonly calcName: string;
-	readonly calcOptions: GameWorkerOptions;
+	readonly calcOptions: any;
 
 	constructor(props: HelperProps) {
 		super(props);
+		this.id = 'request-' + Date.now();
 		this.calculator = 'iampicard';
 		this.calcName = 'Original';
 		this.calcOptions = {
 			searchDepth: props.calcOptions.searchDepth ?? 6,
 			extendsTarget: props.calcOptions.extendsTarget ?? 0
-		};
+		} as GameWorkerOptions;
 	}
 
-	start(request: IVoyageRequest): void {
+	start(): void {
 		this.perf.start = performance.now();
 		this.calcState = CalculatorState.InProgress;
-
-		const voyageConfig: IVoyageCalcConfig = JSON.parse(JSON.stringify(request.voyageConfig));
-
-		// For limited support of encounter voyages:
-		//	Set crew traits to first event bonus trait
-		//	Maybe artificially inflate skill scores for featured crew here?
-		if (voyageConfig.voyage_type === 'encounter' && voyageConfig.event_content) {
-			const content: IVoyageEventContent = voyageConfig.event_content!;
-			voyageConfig.crew_slots.forEach(slot => {
-				slot.trait = content.antimatter_bonus_crew_traits[0];
-			});
-		}
 
 		const IAmPicardConfig = {
 			searchDepth: this.calcOptions.searchDepth,
 			extendsTarget: this.calcOptions.extendsTarget,
-			shipAM: request.bestShip.score,
+			shipAM: this.bestShip.score,
 			skillPrimaryMultiplier: 3.5,
 			skillSecondaryMultiplier: 2.5,
 			skillMatchingMultiplier: 1.1,
 			traitScoreBoost: 200,
-			voyage_description: voyageConfig,
-			roster: request.consideredCrew
+			voyage_description: this.voyageConfig,
+			roster: this.consideredCrew
 		};
 
 		let bestScore = 0;
@@ -66,11 +52,11 @@ export class IAmPicardHelper extends Helper {
 					// ignore marginal gains (under 5 minutes)
 					if (score > bestScore + 1 / 12) {
 						bestScore = score;
-						this._finaliseIAPEstimate(request, result, true);
+						this._finaliseIAPEstimate(result, true);
 					}
 					// Done
 				} else {
-					this._finaliseIAPEstimate(request, result, false);
+					this._finaliseIAPEstimate(result, false);
 				}
 			}
 		});
@@ -179,30 +165,28 @@ export class IAmPicardHelper extends Helper {
 		return dataToExport;
 	}
 
-	_finaliseIAPEstimate(request: IVoyageRequest, result: DataView, inProgress: boolean = false): void {
+	_finaliseIAPEstimate(result: DataView, inProgress: boolean = false): void {
 
 		let entries = [] as VoyageSlotEntry[];
 		let aggregates = {} as Aggregates;
 
-		Object.keys(CONFIG.SKILLS).forEach(s => aggregates[s] = { skill: s, core: 0, range_min: 0, range_max: 0 } as Skill
+		Object.keys(CONFIG.SKILLS).forEach(s => aggregates[s] = { skill: s, core: 0, range_min: 0, range_max: 0 } as AggregateSkill
 		);
 
 		let config = {
 			numSims: inProgress ? 200 : 5000,
-			startAm: request.bestShip.score
+			startAm: this.bestShip.score
 		} as VoyageStatsConfig;
 
-		const eventCrewBonuses: number[] = [];
-
 		for (let i = 0; i < 12; i++) {
-			let crew = request.consideredCrew.find(c => c.id === result.getInt32(4 + i * 4, true));
+			let crew = this.consideredCrew.find(c => c.id === result.getInt32(4 + i * 4, true));
 			if (!crew)
 				continue;
 
 			let entry = {
 				slotId: i,
 				choice: crew,
-				hasTrait: crew?.traits.includes(request.voyageConfig.crew_slots[i].trait)
+				hasTrait: crew?.traits.includes(this.voyageConfig.crew_slots[i].trait)
 			} as VoyageSlotEntry;
 
 			for (let skill in CONFIG.SKILLS) {
@@ -215,11 +199,9 @@ export class IAmPicardHelper extends Helper {
 				config.startAm += 25;
 
 			entries.push(entry);
-
-			eventCrewBonuses.push(getCrewEventBonus(request.voyageConfig, crew as PlayerCrew));
 		}
 
-		const { primary_skill, secondary_skill } = request.voyageConfig.skills;
+		const { primary_skill, secondary_skill } = this.voyageConfig.skills;
 		config.ps = aggregates[primary_skill];
 		config.ss = aggregates[secondary_skill];
 
@@ -235,25 +217,18 @@ export class IAmPicardHelper extends Helper {
 		const worker = new UnifiedWorker();
 		worker.addEventListener('message', message => {
 			if (!message.data.inProgress) {
-				const estimate: Estimate = message.data.result;
-				// Add vpDetails prop here to allow for post-sorting by VP details
-				if (request.voyageConfig.voyage_type === 'encounter') {
-					const seconds: number = estimate.refills[0].result*60*60;
-					estimate.vpDetails = calcVoyageVP(seconds, eventCrewBonuses);
-				}
-				let finalResult: IResultProposal = {
-					estimate: estimate,
+				let finalResult = {
+					estimate: message.data.result,
 					entries: entries,
 					aggregates: aggregates,
-					startAM: config.startAm,
-					eventCrewBonus: eventCrewBonuses.reduce((prev, curr) => prev + curr, 0)
-				};
+					startAM: config.startAm
+				} as CalcResult;
 				if (!inProgress) {
 					this.perf.end = performance.now();
 					this.calcState = CalculatorState.Done;
 				}
-				// Array of IResultProposals is expected by callbacks
-				this.resultsCallback(request.id, [finalResult], inProgress ? CalculatorState.InProgress : CalculatorState.Done);
+				// Array of ICalcResults is expected by callbacks
+				this.resultsCallback(this.id, [finalResult], inProgress ? CalculatorState.InProgress : CalculatorState.Done);
 			}
 		});
 		worker.postMessage(VoyageEstConfig);

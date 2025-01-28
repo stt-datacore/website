@@ -4,14 +4,12 @@ import DataPageLayout from '../components/page/datapagelayout';
 
 import { RetrievalEnergy } from '../components/retrieval/energy';
 import { RetrievalKeystones } from '../components/retrieval/keystones';
-import { GlobalContext } from '../context/globalcontext';
 
 const RetrievalPage = () => {
-	const { t } = React.useContext(GlobalContext).localized;
 	return (
 		<DataPageLayout
-			pageTitle={t('menu.tools.crew_retrieval')}
-			pageDescription={t('retrieval.description')}
+			pageTitle='Crew Retrieval'
+			pageDescription='Find the best options for adding crew to your roster via crew retrieval.'
 			playerPromptType='recommend'
 			demands={['keystones', 'collections']}
 		>

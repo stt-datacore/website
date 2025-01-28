@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Form, Dropdown, Pagination, Message, Header, DropdownItemProps } from 'semantic-ui-react';
+import { Table, Form, Dropdown, Pagination, Message } from 'semantic-ui-react';
 
 import { ITrackedVoyage, ITrackedCheckpoint } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
@@ -8,34 +8,18 @@ import { formatTime } from '../../utils/voyageutils';
 
 import { HistoryContext } from './context';
 import { VoyageModal } from './voyagemodal';
-import { deleteTrackedData, removeVoyageFromHistory, SyncState } from './utils';
+import { removeVoyageFromHistory } from './utils';
 
-interface ITableState {
-	data: ITrackedVoyage[];
-	column: string;
-	direction: 'ascending' | 'descending' | undefined;
+type VoyagesTableProps = {
+	activeVoyageId: number;
 };
 
-interface ITableAction {
-	type: string;
-	data?: ITrackedVoyage[];
-	column?: string;
-	direction?: 'ascending' | 'descending';
-};
-
-interface ITableColumn {
-	column: string;
-	title: string;
-	align?: 'left' | 'center' | 'right';
-	firstSort?: 'ascending' | 'descending';
-};
-
-export const VoyagesTable = () => {
+export const VoyagesTable = (props: VoyagesTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { ephemeral } = globalContext.player;
 	const { t } = globalContext.localized;
 	const { SHIP_TRAIT_NAMES } = globalContext.localized;
-	const { dbid, history, setHistory, syncState, setMessageId } = React.useContext(HistoryContext);
+	const { history, setHistory } = React.useContext(HistoryContext);
+	const { activeVoyageId } = props;
 
 	const [activeVoyage, setActiveVoyage] = React.useState<ITrackedVoyage | undefined>(undefined);
 	const [state, dispatch] = React.useReducer(reducer, {
@@ -47,15 +31,19 @@ export const VoyagesTable = () => {
 
 	const [skillFilter, setSkillFilter] = React.useState<string>('');
 	const [revivalFilter, setRevivalFilter] = React.useState<string>('');
-	const [paginationPage, setPaginationPage] = React.useState<number>(1);
+	const [paginationPage, setPaginationPage] = React.useState(1);
 
 	React.useEffect(() => {
 		dispatch({ type: 'UPDATE_DATA', data: history.voyages });
 	}, [history]);
 
-	if (history.voyages.length === 0) return <></>;
+	interface IDropdownOption {
+		key: string;
+		value: string;
+		text: string;
+	};
 
-	const skillOptions: DropdownItemProps[] = [
+	const skillOptions = [
 		{ key: 'all', value: '', text: 'Show all voyages' },
 		{ key: 'cmd', value: 'command_skill', text: 'Only show voyages with command' },
 		{ key: 'dip', value: 'diplomacy_skill', text: 'Only show voyages with diplomacy' },
@@ -63,36 +51,43 @@ export const VoyagesTable = () => {
 		{ key: 'med', value: 'medicine_skill', text: 'Only show voyages with medicine' },
 		{ key: 'sci', value: 'science_skill', text: 'Only show voyages with science' },
 		{ key: 'sec', value: 'security_skill', text: 'Only show voyages with security' }
-	];
+	] as IDropdownOption[];
 
-	const revivalOptions: DropdownItemProps[] = [
+	const revivalOptions = [
 		{ key: 'all', value: '', text: 'Show all voyages' },
 		{ key: 'hide', value: 'hide', text: 'Hide revived voyages' },
 		{ key: 'revived', value: 'revived', text: 'Only show revived voyages' }
-	];
+	] as IDropdownOption[];
 
-	const tableConfig: ITableColumn[] = [
-		{ column: 'created_at', title: 'Date', align: 'left', firstSort: 'descending' },
+	interface ICustomRow {
+		column: string;
+		title: string;
+		align: 'left' | 'center' | 'right' | undefined;
+		descendFirst?: boolean;
+	};
+
+	const tableConfig = [
+		{ column: 'created_at', title: 'Date', align: 'left', descendFirst: true },
 		{ column: 'skills.primary_skill', title: 'Primary' },
 		{ column: 'skills.secondary_skill', title: 'Secondary' },
 		{ column: '_shipTrait', title: 'Ship Trait' },
-		{ column: 'max_hp', title: 'Antimatter', firstSort: 'descending' },
-		{ column: 'estimate.median', title: 'Initial Estimate', firstSort: 'descending' },
-		{ column: 'checkpoint.estimate.median', title: 'Last Estimate', firstSort: 'descending' }
-	];
+		{ column: 'max_hp', title: 'Antimatter', descendFirst: true },
+		{ column: 'estimate.median', title: 'Initial Estimate', descendFirst: true },
+		{ column: 'checkpoint.estimate.median', title: 'Last Estimate', descendFirst: true }
+	] as ICustomRow[];
 
 	// Filter
-	const filteredData: ITrackedVoyage[] = data.filter(row => {
+	const filteredData = data.filter(row => {
 		if (skillFilter && !([row.skills.primary_skill, row.skills.secondary_skill].includes(skillFilter))) return false;
 		if (revivalFilter === 'hide' && row.revivals > 0) return false;
 		if (revivalFilter === 'revived' && row.revivals === 0) return false;
 		return true;
-	});
+	}) as ITrackedVoyage[];
 
 	// Pagination
-	const rowsPerPage: number = 10;
-	const totalPages: number = Math.ceil(filteredData.length / rowsPerPage);
-	const pagedData: ITrackedVoyage[] = filteredData.slice(rowsPerPage * (paginationPage - 1), rowsPerPage * paginationPage);
+	const rowsPerPage = 10;
+	const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+	const pagedData = filteredData.slice(rowsPerPage * (paginationPage - 1), rowsPerPage * paginationPage) as ITrackedVoyage[];
 
 	return (
 		<React.Fragment>
@@ -125,11 +120,7 @@ export const VoyagesTable = () => {
 							<Table.HeaderCell key={idx}
 								textAlign={cell.align ?? 'center'}
 								sorted={column === cell.column ? direction : undefined}
-								onClick={() => dispatch({
-									type: 'CHANGE_SORT',
-									column: cell.column,
-									direction: state.column === cell.column ? (state.direction === 'ascending' ? 'descending' : 'ascending') : (cell.firstSort ?? 'ascending')
-								})}
+								onClick={() => dispatch({ type: 'CHANGE_SORT', column: cell.column, descendFirst: cell.descendFirst })}
 							>
 								{cell.title}
 							</Table.HeaderCell>
@@ -151,24 +142,31 @@ export const VoyagesTable = () => {
 					</Table.Row>
 				</Table.Footer>
 			</Table>
+			<Message style={{ margin: '1em 0' }}>
+				<Message.Content>
+					<Message.Header>Tips</Message.Header>
+					<p>Once you start tracking a voyage, update your player data while your voyage is running to automatically track your current runtime and estimate.</p>
+					<p>You may want to check on the voyage in-game shortly before importing your player data to DataCore. Your remaining antimatter only gets updated in your player data when the displayed voyage runtime is updated in-game, which may lead to stale estimates on DataCore.</p>
+					<p>Because voyages can be recalled at any time, we use <i>last estimates</i> (rather than actual voyage runtimes) as a more consistent metric to compare voyage lengths. We recommend updating your player data after recalling a voyage to keep track of your recall time and to get a final last estimate.</p>
+					<p>Voyage history does not synchronize across multiple devices. You can only update a voyage estimate on the device where you initially tracked it.</p>
+				</Message.Content>
+			</Message>
 			{activeVoyage &&
 				<VoyageModal voyage={activeVoyage}
 					onClose={() => setActiveVoyage(undefined)}
 					onRemove={() => removeTrackedVoyage(activeVoyage.tracker_id)}
 				/>
 			}
-			<HistoryTips />
 		</React.Fragment>
 	);
 
 	function renderTableRow(row: ITrackedVoyage): JSX.Element {
-		const dtCreated: Date = new Date(row.created_at);
-		const isRunning: boolean = row.voyage_id > 0 && !!ephemeral?.voyage.find(v => v.id === row.voyage_id);
+		const dtCreated = new Date(row.created_at);
 		return (
 			<Table.Row key={row.tracker_id} onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 				<Table.Cell>
 					{dtCreated.toLocaleDateString()}
-					{isRunning && <><br/>Running Voyage</>}
+					{activeVoyageId > 0 && row.voyage_id === activeVoyageId && <><br/>Active Voyage</>}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					{CONFIG.SKILLS[row.skills.primary_skill]}
@@ -194,7 +192,7 @@ export const VoyagesTable = () => {
 	}
 
 	function renderLastEstimate(checkpoint: ITrackedCheckpoint): JSX.Element {
-		let estimateType: string = 'estimated';
+		let estimateType = 'estimated';
 		if (['completed', 'recalled'].includes(checkpoint.state))
 			estimateType = 'recalled';
 		else if (checkpoint.state === 'failed')
@@ -211,37 +209,15 @@ export const VoyagesTable = () => {
 	}
 
 	function removeTrackedVoyage(trackerId: number): void {
-		if (syncState === SyncState.RemoteReady) {
-			deleteTrackedData(dbid, trackerId).then((success: boolean) => {
-				if (success) {
-					removeVoyageFromHistory(history, trackerId);
-					setHistory({...history});
-					setActiveVoyage(undefined);
-				}
-				else {
-					throw('Failed removeTrackedVoyage -> deleteTrackedData');
-				}
-			}).catch(e => {
-				setMessageId('voyage.history_msg.failed_to_delete');
-				console.log(e);
-			});
-		}
-		else if (syncState === SyncState.LocalOnly) {
-			removeVoyageFromHistory(history, trackerId);
-			setHistory({...history});
-			setActiveVoyage(undefined);
-		}
-		else {
-			setMessageId('voyage.history_msg.invalid_sync_state');
-			console.log(`Failed removeTrackedVoyage (invalid syncState: ${syncState})`);
-		}
+		removeVoyageFromHistory(history, trackerId);
+		setHistory({...history});
+		setActiveVoyage(undefined);
 	}
 
-	function reducer(state: ITableState, action: ITableAction): ITableState {
+	function reducer(state: any, action: any): any {
 		switch (action.type) {
 			case 'UPDATE_DATA':
-				if (!action.data) return state;
-				const updatedData: ITrackedVoyage[] = action.data.slice();
+				const updatedData = action.data.slice();
 				sorter(updatedData, 'created_at', 'descending');
 				return {
 					column: 'created_at',
@@ -249,13 +225,16 @@ export const VoyagesTable = () => {
 					direction: 'descending'
 				};
 			case 'CHANGE_SORT':
-				if (!action.column) return state;
-				const sortableData: ITrackedVoyage[] = state.data.slice();
-				const direction: 'ascending' | 'descending' = action.direction ?? 'ascending';
-				sorter(sortableData, action.column, direction);
+				let direction = action.descendFirst ? 'descending' : 'ascending';
+				// Reverse sort
+				if (state.column === action.column) {
+					direction = state.direction === 'ascending' ? 'descending' : 'ascending';
+				}
+				const data = state.data.slice();
+				sorter(data, action.column, direction);
 				return {
 					column: action.column,
-					data: sortableData,
+					data: data,
 					direction
 				};
 			default:
@@ -263,11 +242,11 @@ export const VoyagesTable = () => {
 		}
 	}
 
-	function sorter(data: ITrackedVoyage[], column: string, direction: 'ascending' | 'descending'): void {
+	function sorter(data: ITrackedVoyage[], column: string, direction: string): void {
 		const sortBy = (comps: ((a: ITrackedVoyage, b: ITrackedVoyage) => number)[]) => {
 			data.sort((a, b) => {
 				const tests = comps.slice();
-				let test: number = 0;
+				let test = 0;
 				while (tests.length > 0 && test === 0) {
 					let shtest = tests.shift();
 					test = shtest ? shtest(a, b) : 0;
@@ -307,17 +286,4 @@ export const VoyagesTable = () => {
 		sortBy([compareNumberColumn, compareDateDesc]);
 		return;
 	}
-};
-
-const HistoryTips = () => {
-	return (
-		<Message style={{ margin: '1em 0' }}>
-			<Message.Content>
-				<Message.Header>Tips</Message.Header>
-				<p>Once you start tracking a voyage, update your player data while your voyage is running to automatically track your current runtime and estimate.</p>
-				<p>You may want to check on the voyage in-game shortly before importing your player data to DataCore. Your remaining antimatter only gets updated in your player data when the displayed voyage runtime is updated in-game, which may lead to stale estimates on DataCore.</p>
-				<p>Because voyages can be recalled at any time, we use last estimates (rather than actual voyage runtimes) as a more consistent metric to compare voyage lengths. We recommend updating your player data after recalling a voyage to keep track of your recall time and to get a final last estimate.</p>
-			</Message.Content>
-		</Message>
-	);
 };

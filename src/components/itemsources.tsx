@@ -28,7 +28,7 @@ interface ItemSourcesState {
 
 class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 	static contextType = GlobalContext;
-	declare context: React.ContextType<typeof GlobalContext>;
+	context!: React.ContextType<typeof GlobalContext>;
 
 	private readonly tiny: TinyStore;
 
@@ -117,7 +117,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 								mission_symbol={entry.mission_symbol}
 								cost={entry.cost ?? 0}
 								avg_cost={entry.avg_cost}
-								name={getEpName(entry.mission_symbol ?? '') || entry.name}
+								name={getEpName(entry.mission_symbol ?? '')}
 								chance_grade={entry.chance_grade}
 								mastery={entry.mastery ?? 0}
 							/>
@@ -144,7 +144,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 								mission_symbol={entry.mission_symbol}
 								cost={entry.cost ?? 0}
 								avg_cost={entry.avg_cost}
-								name={getEpName(entry.mission_symbol ?? '') || entry.name}
+								name={getEpName(entry.mission_symbol ?? '')}
 								chance_grade={entry.chance_grade}
 								mastery={entry.mastery ?? 0}
 							/>

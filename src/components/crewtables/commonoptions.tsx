@@ -54,8 +54,6 @@ type CrewTraitFilterProps = {
 	setTraitFilter: (traitFilter: string[]) => void;
 	minTraitMatches: number;
 	setMinTraitMatches: (minTraitMatches: number) => void;
-	allowed?: string[];
-	hideTwoPlus?: boolean;
 };
 
 export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
@@ -63,12 +61,9 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 	const [traitOptions, setTraitOptions] = React.useState<TraitOptions[] | undefined>(undefined);
 	const globalContext = React.useContext(GlobalContext);
 	const { TRAIT_NAMES } = globalContext.localized;
-	const { allowed } = props;
 
 	React.useEffect(() => {
-		const options = Object.keys(TRAIT_NAMES)
-			.filter(trait => !allowed?.length || allowed.includes(trait))
-			.map(trait => {
+		const options = Object.keys(TRAIT_NAMES).map(trait => {
 			return {
 				key: trait,
 				value: trait,
@@ -76,21 +71,14 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 				//content: <div style={{display:'flex', alignItems: 'center'}}><img style={{height:'24px',margin: '0.25em'}} src={`${process.env.GATSBY_ASSETS_URL}items_keystones_${trait}.png`} />{TRAIT_NAMES[trait]}</div>
 			} as TraitOptions;
 		}).sort((a, b) => a.text.localeCompare(b.text));
-		[ ...CONFIG.SERIES].reverse().forEach(series => {
-			options.unshift({
-				key: series,
-				value: series,
-				text: t(`series.${series}`)
-			})
-		});
 		setTraitOptions([...options]);
-	}, [allowed]);
+	}, []);
 
 	if (!traitOptions) return (<></>);
 
 	const minMatchOptions = [
 		{ key: '1+', value: 1, text: t('options.trait_match.any') },
-		{ key: '2+', value: props.traitFilter.length > 2 && !props.hideTwoPlus ? 2 : 0, text: t('options.trait_match.match_two_plus') },
+		{ key: '2+', value: props.traitFilter.length > 2 ? 2 : 0, text: t('options.trait_match.match_two_plus') },
 		{ key: 'all', value: props.traitFilter.length, text: t('options.trait_match.match_all') }
 	];
 
@@ -98,7 +86,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 		<React.Fragment>
 			<Form.Field>
 				<Dropdown
-					placeholder={t('hints.filter_by_trait_or_series')}
+					placeholder={t('hints.filter_by_trait')}
 					clearable
 					multiple
 					search

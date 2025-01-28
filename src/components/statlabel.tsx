@@ -8,8 +8,7 @@ const isWindow = typeof window !== 'undefined';
 export type StatLabelProps = {
 	title: string | JSX.Element;
 	value: number | string | JSX.Element;
-	size?: 'small' | 'medium' | 'large' | 'jumbo',
-	style?: React.CSSProperties
+	size?: 'small' | 'medium' | 'large' | 'jumbo'
 };
 
 export class StatLabel extends Component<StatLabelProps> {
@@ -76,8 +75,7 @@ export class StatLabel extends Component<StatLabelProps> {
 					marginRight: 0,
 					fontSize: getFontSize(),
 					padding: getPadding(),
-					marginTop: 0,
-					...this.props.style }}>
+					marginTop: 0 }}>
 				{title}
 				<div>
 					<Label.Detail>{<div style={{fontSize: size === 'jumbo' && isWindow && window.innerWidth >= DEFAULT_MOBILE_WIDTH ? '2em' : undefined}}> {value}</div>}</Label.Detail>

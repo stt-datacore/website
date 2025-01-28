@@ -12,7 +12,7 @@ type ProfileOtherState = {
 
 class ProfileOther extends Component<ProfileOtherProps, ProfileOtherState> {
 	static contextType = GlobalContext;
-	declare context: React.ContextType<typeof GlobalContext>;
+	context!: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: ProfileOtherProps) {
 		super(props);

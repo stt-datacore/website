@@ -1,6 +1,6 @@
 import React from "react";
 import { CrewMember } from "../../model/crew";
-import { BattleMode, DefaultAdvancedCrewPower, Ship, ShipRankingMethod } from "../../model/ship";
+import { BattleMode, DefaultAdvancedCrewPower, Ship, ShipRankingMethod, ShipWorkerConfig, ShipWorkerItem } from "../../model/ship";
 import { Accordion, Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Label, SemanticICONS } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { WorkerContext } from "../../context/workercontext";
@@ -15,10 +15,9 @@ import { getEventData } from "../../utils/events";
 import { IEventData } from "../eventplanner/model";
 import { crewCopy, getHighest, prepareOne } from "../../utils/crewutils";
 import { CrewDropDown } from "../base/crewdropdown";
-import { ShipMultiWorkerContext, ShipMultiWorkerStatus } from "./shipmultiworker";
+import { MultiWorkerContext, ShipMultiWorkerStatus } from "./shipmultiworker";
 import AdvancedCrewPowerPopup from "./advancedpower";
 import CONFIG from "../CONFIG";
-import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerTransportItem } from "../../model/worker";
 
 export interface RosterCalcProps {
     pageId: string;
@@ -35,10 +34,6 @@ export interface RosterCalcProps {
     setConsiderUnowned: (value: boolean) => void;
     ignoreSkills: boolean;
     setIgnoreSkills: (value: boolean) => void;
-    useOpponents: BattleMode | false;
-    setUseOpponents: (value: BattleMode | false) => void;
-    opponentStations: (PlayerCrew | CrewMember | undefined)[],
-    opponentShip?: Ship
 }
 
 interface BattleConfig {
@@ -52,12 +47,12 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { playerShips } = globalContext.player;
     const workerContext = React.useContext(WorkerContext);
-    const multiWorker = React.useContext(ShipMultiWorkerContext);
+    const multiWorker = React.useContext(MultiWorkerContext);
     const { running, runWorker, cancel } = multiWorker;
     //const { running, runWorker, cancel } = workerContext;
     const { t, tfmt } = globalContext.localized;
     const [sugWait, setSugWait] = React.useState<number | undefined>();
-    const { ships, crew, opponentStations, opponentShip, setUseOpponents, crewStations, setCrewStations, pageId, considerFrozen, ignoreSkills, setIgnoreSkills, setConsiderFrozen, considerUnowned, setConsiderUnowned, onlyImmortal, setOnlyImmortal } = props;
+    const { ships, crew, crewStations, setCrewStations, pageId, considerFrozen, ignoreSkills, setIgnoreSkills, setConsiderFrozen, considerUnowned, setConsiderUnowned, onlyImmortal, setOnlyImmortal } = props;
     const shipIdx = props.shipIdx ?? 0;
     const ship = ships[shipIdx];
     const [windowLoaded, setWindowLoaded] = React.useState(false);
@@ -75,10 +70,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [simulate, setSimulate] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/simulate`, false, { rememberForever: true });
     const [iterations, setIterations] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/simulation_iterations`, 100, { rememberForever: true });
     const [rate, setRate] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/rate`, 1, { rememberForever: true });
-    const [variance, setVariance] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/variance`, 0.2, { rememberForever: true });
     const [fixedActivationDelay, setFixedActivationDelay] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/fixedActivationDelay`, 0.6, { rememberForever: true });
     const [maxInitTime, setMaxInitTime] = useStateWithStorage<number | undefined>(`${pageId}/${ship.symbol}/maxInitTime`, undefined, { rememberForever: true });
-    const [minInitTime, setMinInitTime] = useStateWithStorage<number | undefined>(`${pageId}/${ship.symbol}/minInitTime`, undefined, { rememberForever: true });
     const [maxIter, setMaxIter] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/maxIter`, 3000000, { rememberForever: true });
     const [activationOffsets, setActivationOffsets] = useStateWithStorage<number[]>(`${pageId}/${ship.symbol}/activationOffsets`, ship.battle_stations!.map(m => 0), { rememberForever: true });
     const [advancedPowerOpen, setAdvancedPowerOpen] = React.useState<boolean>(false);
@@ -230,16 +223,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         })
     }
 
-    const variances = [] as DropdownItemProps[];
-
-    [0, 0.05, 0.1, 0.15, 0.2].forEach((variance) => {
-        variances.push({
-            key: `variance_${variance}`,
-            value: variance,
-            text: `${t('global.n_%', { n: Math.round(variance * 100) })}`
-        })
-    })
-
     const rates = [] as DropdownItemProps[];
     [1, 2, 5, 10, 50, 100].forEach((rate) => {
         rates.push({
@@ -263,7 +246,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         value: 'none',
         text: t('global.none')
     });
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 11; i++) {
         max_init_times.push({
             key: `init_${i}`,
             value: i,
@@ -328,20 +311,15 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
     }, [hideGraph]);
 
+
+
     React.useEffect(() => {
         const newconfig = { ...battleConfig };
-
         if (globalContext.player.playerData) {
-            if (battleMode.startsWith('fbb')) {
-                let bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_boss_ship_attack');
-                newconfig.defense = bs?.value;
-                bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_player_ship_attack');
-                newconfig.offense = bs?.value;
-            }
-            else {
-                newconfig.defense = 0;
-                newconfig.offense = 0;
-            }
+            let bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_boss_ship_attack');
+            newconfig.defense = bs?.value;
+            bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_player_ship_attack');
+            newconfig.offense = bs?.value;
         }
         if (battleMode.startsWith('fbb')) {
             let rarity = Number.parseInt(battleMode.slice(4));
@@ -353,9 +331,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             newconfig.opponent = boss;
         }
         else {
-            newconfig.opponent = createOpponent();
+            newconfig.opponent = undefined;
         }
-
         setBattleConfig(newconfig);
 
         if (battleMode === 'skirmish') {
@@ -376,13 +353,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 }
             }
         }
-        if (!battleMode.startsWith('fbb')) {
-            setUseOpponents(battleMode);
-        }
-        else {
-            setUseOpponents(false);
-        }
-    }, [battleMode, opponentShip, opponentStations]);
+
+    }, [battleMode]);
 
     React.useEffect(() => {
         if (currentEvent) {
@@ -422,9 +394,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         let ships = getShipsInUse(globalContext.player);
                         const f = ships.find(f => f.ship.symbol === ship.symbol && f.battle_mode === bmode && f.rarity === rarity);
                         if (f) {
-                            setBattleMode(bmode);
+                            setCrewStations(f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew));
                             setTimeout(() => {
-                                setCrewStations(f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew));
+                                setBattleMode(bmode);
                             });
                         }
                     }
@@ -434,7 +406,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 }
             }
         }
-    }, [ship]);
+    }, []);
 
     React.useEffect(() => {
         if (!activeSuggestion) return;
@@ -466,7 +438,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             width: isMobile ? '100%' : '70%'
         }}>
             {true && <div style={{ display: 'flex', textAlign: 'center', width: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '1em', marginBottom: '1em' }}>
-                <h3>{ship.name}{!!opponentShip && <> v. {opponentShip.name}</>}</h3>
                 {progressMsg ? (running ? globalContext.core.spin(progressMsg || t('spinners.default')) : progressMsg) : t('global.idle')}
             </div>}
             {true && <div style={{ display: 'inline', textAlign: 'left', width: '100%' }}>
@@ -495,7 +466,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         <h4>{t('ship.battle_mode')}</h4>
                         <Dropdown
                             fluid
-                            disabled={running}
                             scrolling
                             selection
                             value={battleMode}
@@ -508,7 +478,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     <div style={{ display: 'inline', width: '30%' }}>
                         <h4>{t('ship.power_depth')}</h4>
                         <Dropdown
-                            disabled={running}
                             fluid
                             scrolling
                             selection
@@ -520,7 +489,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     <div style={{ display: 'inline', width: '30%' }}>
                         <h4>{t('global.min_rarity')}</h4>
                         <Dropdown
-                            disabled={running}
                             fluid
                             scrolling
                             selection
@@ -553,7 +521,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     {t('ship.depth_hr_warn')}
                 </div>
 
-
+                {['skirmish', 'pvp'].includes(battleMode) &&
                 <div style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -563,42 +531,15 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     gap: '1em',
                     marginTop: '1em'
                 }}>
-                    {['skirmish', 'pvp'].includes(battleMode) && <>
                     <div style={{ display: 'inline', width: '30%' }}>
                         <h4>{t('ship.calc.max_init')}</h4>
                         <Dropdown
-                            disabled={running}
                             fluid
                             scrolling
                             selection
                             value={maxInitTime ?? 'none'}
                             onChange={(e, { value }) => setMaxInitTime(value === 'none' ? undefined : value as number)}
                             options={max_init_times}
-                        />
-                    </div>
-                    <div style={{ display: 'inline', width: '30%' }}>
-                        <h4>{t('ship.calc.min_init')}</h4>
-                        <Dropdown
-                            disabled={running}
-                            fluid
-                            scrolling
-                            selection
-                            value={minInitTime ?? 'none'}
-                            onChange={(e, { value }) => setMinInitTime(value === 'none' ? undefined : value as number)}
-                            options={max_init_times}
-                        />
-                    </div></>}
-
-                    <div style={{ display: 'inline', width: '30%' }}>
-                        <h4>{t('ship.opponent_variance')}</h4>
-                        <Dropdown
-                            disabled={running}
-                            fluid
-                            scrolling
-                            selection
-                            value={variance}
-                            onChange={(e, { value }) => setVariance(value as number)}
-                            options={variances}
                         />
                     </div>
 
@@ -629,7 +570,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             />
                     </div>
                     </>}
-                </div>
+                </div>}
                 <div style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -910,7 +851,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 <div style={{ gridArea: 'metric' }}>
                     {t('ship.attack')}{': '}<br />{Math.round(sug.attack).toLocaleString()}
                 </div>
-                <div style={{gridArea: 'standard', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', gap: '1em'}}>
+                <div style={{gridArea: 'standard', display: 'flex', justifyContent: 'center'}}>
                     {fbb_mode &&
                         <>
                             <b>*</b> {t('ship.fbb_metric')}{': '}<br />{Math.round(sug.fbb_metric).toLocaleString()}
@@ -926,14 +867,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             <b>*</b> {t('ship.skirmish_metric')}{': '}<br />{Math.round(sug.skirmish_metric).toLocaleString()}
                         </>
                     }
-                    {!fbb_mode && <div>
-                        <p>
-                            {t('global.win')}{': '}<br />
-                            <span style={{color: sug.win ? 'lightgreen' : undefined, fontWeight: sug.win ? 'bold' : undefined}}>
-                                {t(`global.${sug.win ? 'yes' : 'no'}`)}
-                            </span>
-                        </p>
-                    </div>}
                 </div>
             </div>
         </div>
@@ -990,7 +923,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 activation_offsets: activationOffsets,
                 simulate: false,
                 fixed_activation_delay: fixedActivationDelay,
-                opponent_variance: variance,
                 rate
             } as ShipWorkerConfig;
 
@@ -1039,33 +971,29 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         //result: { data: { result: { ships?: ShipWorkerItem[], run_time?: number, total_iterations?: number, format?: string, options?: any, result?: ShipWorkerItem }, inProgress: boolean } }
         result: ShipMultiWorkerStatus
     ) {
-        if (!result.data.inProgress && result.data.result.items?.length) {
-
-            if (result.data.result.items.length === 1 && suggestions?.length && suggestions.length > 1) {
-                let r = result.data.result.items[0];
-                let sug = suggestions.findIndex(f => f.crew.every((cr1, idx) => r.crew.findIndex(cr2 => cr2 === cr1.id) === idx))
-                if (sug !== -1) {
-                    suggestions[sug] = fromTransport(r);
-                    setSugWait(sug);
-                    setSuggestions([...suggestions]);
-                    setProgressMsg(t('ship.calc.calc_summary', {
-                        message: t('global.completed'),
-                        count: `${result.data.result.total_iterations?.toLocaleString()}`,
-                        time: formatRunTime(Math.round(result.data.result.run_time ?? 0), t),
-                        accepted: `${suggestions?.length.toLocaleString()}`
-                    }));
-
-                    return;
-                }
-            }
+        if (!result.data.inProgress && result.data.result.ships?.length) {
             setProgressMsg(t('ship.calc.calc_summary', {
                 message: t('global.completed'),
                 count: `${result.data.result.total_iterations?.toLocaleString()}`,
                 time: formatRunTime(Math.round(result.data.result.run_time ?? 0), t),
-                accepted: `${result.data.result.items?.length.toLocaleString()}`
+                accepted: `${result.data.result.ships?.length.toLocaleString()}`
             }));
+
+            if (result.data.result.ships.length === 1 && suggestions?.length && suggestions.length > 1) {
+                let r = result.data.result.ships[0];
+                let sug = suggestions.findIndex(f => f.crew.every((cr1, idx) => r.crew.findIndex(cr2 => cr2.id === cr1.id) === idx))
+                if (sug !== -1) {
+                    suggestions[sug] = r;
+                    setSugWait(sug);
+                    setSuggestions([...suggestions]);
+                    return;
+                }
+            }
             setSugWait(0);
-            setSuggestions(result.data.result.items.map(i => fromTransport(i)));
+            setSuggestions(result.data.result.ships);
+        }
+        else if (result.data.inProgress && result.data.result.format) {
+            setProgressMsg(t(result.data.result.format, result.data.result.options));
         }
         else if (result.data.inProgress && result.data.result.count) {
             setProgressMsg(
@@ -1074,13 +1002,13 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         percent: `${result.data.result.percent?.toLocaleString()}`,
                         count: `${result.data.result.count?.toLocaleString()}`,
                         progress: `${result.data.result.progress?.toLocaleString()}`,
-                        accepted: `${suggestions?.length.toLocaleString()}`
+                        accepted: `${result.data.result.accepted?.toLocaleString()}`
                     }
                 )
             )
         }
         else if (result.data.inProgress && result.data.result.result) {
-            resultCache.push(fromTransport(result.data.result.result));
+            resultCache.push(result.data.result.result);
             let new_cache = resultCache.concat().sort((a, b) => compareShipResults(a, b, fbb_mode));
             setSuggestion(undefined);
             setTimeout(() => {
@@ -1111,9 +1039,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             if (onlyImmortal && ("immortal" in crew && !crew.immortal)) return false;
             if (!fbb_mode && maxInitTime !== undefined) {
                 if (crew.action.initial_cooldown > maxInitTime) return false;
-            }
-            if (!fbb_mode && minInitTime !== undefined) {
-                if (crew.action.initial_cooldown < minInitTime) return false;
             }
             if (!ignoreSkills && !crew.skill_order.some(skill => ship.battle_stations?.some(bs => bs.skill === skill))) return false;
             if (crew.action.ability?.condition && !ship.actions?.some(act => act.status === crew.action.ability?.condition)) return false;
@@ -1274,28 +1199,5 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         });
 
         return results;
-    }
-
-    function fromTransport(input: ShipWorkerTransportItem): ShipWorkerItem {
-        //if (!crew?.length || !ships?.length) return undefined;
-        const result = {
-            ...input,
-            crew: input.crew.map(id => crew.find(c => c.id === id)!)!,
-            ship: ships.find(s => s.id === input.ship)!
-        }
-        return result;
-    }
-
-    function createOpponent() {
-        if (!opponentShip?.battle_stations?.length || !opponentStations?.length || !opponentStations.some(f => f)) return undefined;
-
-        const newShip = JSON.parse(JSON.stringify(opponentShip)) as Ship;
-        const c = newShip.battle_stations!.length;
-        for (let i = 0; i < c; i++) {
-            if (opponentStations[i]) {
-                newShip.battle_stations![i].crew = opponentStations[i];
-            }
-        }
-        return newShip;
     }
 }

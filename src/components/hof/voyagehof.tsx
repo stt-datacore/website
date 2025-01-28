@@ -22,7 +22,7 @@ import { VoyageStatsForPeriod } from "./periodstats";
 
 class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
     static contextType = GlobalContext;
-    declare context: React.ContextType<typeof GlobalContext>;
+    context!: React.ContextType<typeof GlobalContext>;
 
     private readonly tiny = TinyStore.getStore('voyagehof');
 

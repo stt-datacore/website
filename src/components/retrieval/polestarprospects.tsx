@@ -7,22 +7,17 @@ import ItemDisplay from '../../components/itemdisplay';
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 
 import { ActionableState, IConstellation, IPolestar } from './model';
-import { printISM, RetrievalContext } from './context';
+import { RetrievalContext } from './context';
 import { ConstellationPolestars, PolestarConstellations } from './constellations';
 import { filterTraits } from './utils';
-import { MarketAggregation } from '../../model/celestial';
-import { GlobalContext } from '../../context/globalcontext';
-import { CrewHoverStat } from '../hovering/crewhoverstat';
-import { AvatarView } from '../item_presenters/avatarview';
 
 interface IPolestarData extends IPolestar {
 	loaned: number;
 };
 
 export const PolestarProspectsModal = () => {
-	const { allKeystones, rosterCrew, polestarTailors, setPolestarTailors, market } = React.useContext(RetrievalContext);
-	const globalContext = React.useContext(GlobalContext);
-	const { t, tfmt, ITEM_ARCHETYPES } = globalContext.localized;
+	const { allKeystones, rosterCrew, polestarTailors, setPolestarTailors } = React.useContext(RetrievalContext);
+
 	const addedPolestars = polestarTailors.added;
 
 	const [modalIsOpen, setModalIsOpen] = React.useState<boolean>(false);
@@ -56,43 +51,6 @@ export const PolestarProspectsModal = () => {
 	}, [modalIsOpen]);
 
 	const buttonColor = addedPolestars.length > 0 ? 'blue' : undefined;
-	const polestarTable: ITableConfigRow[] = [
-		{ width: 2, column: 'name', title: t('retrieval.prospects.columns.name') },
-		{ width: 1, column: 'crew_count', title: t('retrieval.prospects.columns.crew_count'), reverse: true },
-		{ width: 1, column: 'crate_count', title: t('retrieval.prospects.columns.crate_count'), reverse: true },
-		{ width: 1, column: 'scan_odds', title: t('retrieval.prospects.columns.scan_odds'), reverse: true },
-		{ width: 1, column: 'owned_best_odds', title: t('retrieval.prospects.columns.owned_best_odds'), reverse: true },
-		{ width: 1, column: 'owned', title: t('retrieval.prospects.columns.owned'), reverse: true },
-		{ width: 2, column: 'loaned', title: t('retrieval.prospects.columns.added'), reverse: true }
-	];
-
-	const getPrice = (id: number) => {
-		if (!market) return 0;
-		return market[id]?.low ?? 0;
-	}
-
-	if (market) {
-		polestarTable.push(
-			{
-				width: 2,
-				column: 'price',
-				title: t('global.item_types.ism'),
-				reverse: true,
-				pseudocolumns: ['sell_count', 'price'],
-				customCompare: (a: IPolestarData, b: IPolestarData, config) => {
-					if (config.field === 'sell_count') {
-						let r = market[a.id].sell_count - market[b.id].sell_count;
-						return r;
-					}
-					else {
-						let r = getPrice(a.id) - getPrice(b.id);
-						if (!r) r = market[a.id].sell_count - market[b.id].sell_count;
-						return r;
-					}
-				}
-			},
-		)
-	}
 
 	return (
 		<Modal
@@ -102,13 +60,13 @@ export const PolestarProspectsModal = () => {
 			trigger={<Button color={buttonColor}><Icon name='add' />{addedPolestars.length}</Button>}
 			size='large'
 		>
-			<Modal.Header>{t('retrieval.prospects.add_prospective_polestars')}</Modal.Header>
+			<Modal.Header>Add Prospective Polestars</Modal.Header>
 			<Modal.Content scrolling>
 				{renderContent()}
 			</Modal.Content>
 			<Modal.Actions>
-				{activePolestar !== '' && <Button icon='backward' content={t('retrieval.prospects.return_to_polestars')} onClick={() => setActivePolestar('')} />}
-				<Button onClick={() => setModalIsOpen(false)}>{t('global.close')}</Button>
+				{activePolestar !== '' && <Button icon='backward' content='Return to polestars' onClick={() => setActivePolestar('')} />}
+				<Button onClick={() => setModalIsOpen(false)}>Close</Button>
 			</Modal.Actions>
 		</Modal>
 	);
@@ -123,12 +81,21 @@ export const PolestarProspectsModal = () => {
 	}
 
 	function renderPolestarFinder(): JSX.Element {
+		const polestarTable: ITableConfigRow[] = [
+			{ width: 2, column: 'name', title: 'Polestar' },
+			{ width: 1, column: 'crew_count', title: 'Crew in Portal', reverse: true },
+			{ width: 1, column: 'crate_count', title: 'Constellation Chance', reverse: true },
+			{ width: 1, column: 'scan_odds', title: 'Scan Chance', reverse: true },
+			{ width: 1, column: 'owned_best_odds', title: 'Best Chance', reverse: true },
+			{ width: 1, column: 'owned', title: 'Owned', reverse: true },
+			{ width: 1, column: 'loaned', title: 'Added', reverse: true }
+		];
 
 		const constellationList = [
-			{ key: 'none', value: '', text: t('retrieval.prospects.show_all_polestars') }
+			{ key: 'none', value: '', text: 'Show all polestars' }
 		];
 		ownedConstellations.forEach(c => {
-			constellationList.push({ key: c.symbol, value: c.symbol, text: ITEM_ARCHETYPES[c.symbol]?.name ?? c.name });
+			constellationList.push({ key: c.symbol, value: c.symbol, text: c.name });
 		});
 
 		const allPolestars = allKeystones.filter(k => k.type === 'keystone') as IPolestar[];
@@ -149,7 +116,7 @@ export const PolestarProspectsModal = () => {
 			<React.Fragment>
 				{constellationList.length > 0 && (
 					<Dropdown
-						placeholder={t('retrieval.prospects.filter_by_owned')}
+						placeholder='Filter polestars by owned constellation'
 						style={{ minWidth: '20em' }}
 						selection
 						clearable
@@ -167,14 +134,14 @@ export const PolestarProspectsModal = () => {
 						filterRow={(polestar, filter) => filterText(polestar, filter)}
 						explanation={
 							<div>
-								<p>{t('retrieval.prospects.search_polestars')}</p>
+								<p>Search for polestars by name.</p>
 							</div>
 						}
 					/>
 					<p>
-						<i>{t('retrieval.prospects.columns.crate_count')}</i>: {t('retrieval.prospects.definitions.crate_count')}
-						<br /><i>{t('retrieval.prospects.columns.scan_odds')}</i>: {t('retrieval.prospects.definitions.scan_odds')}
-						<br /><i>{t('retrieval.prospects.columns.owned_best_odds')}</i>: {t('retrieval.prospects.definitions.owned_best_odds')}
+						<i>Constellation Chance</i>: your chance of acquiring any constellation with the polestar from a successful scan.
+						<br /><i>Scan Chance</i>: your overall chance of acquiring the polestar from a successful scan.
+						<br /><i>Best Chance</i>: your best chance of acquiring the polestar from a constellation in your inventory.
 					</p>
 				</div>
 			</React.Fragment>
@@ -211,9 +178,7 @@ export const PolestarProspectsModal = () => {
 		return (
 			<Table.Row key={polestar.symbol}
 				style={{ cursor: activePolestar !== polestar.symbol ? 'zoom-in' : 'zoom-out' }}
-				onClick={() => {
-					setActivePolestar(activePolestar !== polestar.symbol ? polestar.symbol : '')
-				}}
+				onClick={() => setActivePolestar(activePolestar !== polestar.symbol ? polestar.symbol : '')}
 			>
 				<Table.Cell>
 					<div
@@ -240,14 +205,6 @@ export const PolestarProspectsModal = () => {
 				<Table.Cell textAlign='center'>
 					<ProspectInventory polestar={polestar.symbol} loaned={polestar.loaned} updateProspect={updateProspect} />
 				</Table.Cell>
-				{market &&
-					<Table.Cell textAlign='center'>
-						<div style={{display: 'flex', gap: '0.25em', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-							<span>{t('global.n_available', { n: (market[polestar.id]?.sell_count ?? 0).toLocaleString() })}</span>
-							{printISM(getPrice(polestar.id), t)}
-						</div>
-					</Table.Cell>
-				}
 			</Table.Row>
 		);
 	}
@@ -257,11 +214,11 @@ export const PolestarProspectsModal = () => {
 
 		const constellation = allKeystones.find(k => k.symbol === activeConstellation) as IConstellation | undefined;
 		if (!constellation) return <></>;
-		const cname = ITEM_ARCHETYPES[constellation.symbol]?.name ?? constellation.name;
+
 		const unownedPolestars = data.filter(p => p.owned === 0);
 
 		if (unownedPolestars.length === 0)
-			return (<Message>{t('retrieval.prospects.crate.already_owned', { crate: cname })}</Message>);
+			return (<Message>You already own all polestars in the {constellation.name}.</Message>);
 
 		return (
 			<Message>
@@ -286,14 +243,13 @@ export const PolestarProspectsModal = () => {
 				<Table celled striped unstackable compact='very'>
 					<Table.Header>
 						<Table.Row>
-							{polestarTable.map((column, idx) => {
-								if (!idx) {
-									return <Table.HeaderCell key={`polestar_detail_header_${column.title}`}>{column.title}</Table.HeaderCell>
-								}
-								else {
-									return <Table.HeaderCell key={`polestar_detail_header_${column.title}`} textAlign='center'>{column.title}</Table.HeaderCell>
-								}
-							})}
+							<Table.HeaderCell>Polestar</Table.HeaderCell>
+							<Table.HeaderCell textAlign='center'>Crew in Portal</Table.HeaderCell>
+							<Table.HeaderCell textAlign='center'>Constellation Chance</Table.HeaderCell>
+							<Table.HeaderCell textAlign='center'>Scan Chance</Table.HeaderCell>
+							<Table.HeaderCell textAlign='center'>Best Chance</Table.HeaderCell>
+							<Table.HeaderCell textAlign='center'>Owned</Table.HeaderCell>
+							<Table.HeaderCell textAlign='center'>Added</Table.HeaderCell>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
@@ -327,32 +283,29 @@ export const PolestarProspectsModal = () => {
 		if (unlockableCrew.length === 0)
 			return (
 				<p>
-					{polestar.owned > 0 ? t('retrieval.you_own_n_of_the_polestar', { n: `${polestar.owned}`, polestar: polestar.name }) + ' ' : ''}
-					{polestar.owned > 0 && t('retrieval.prospects.acquisition.more_not_guaranteed')}
-					{polestar.owned <= 0 && t('retrieval.prospects.acquisition.not_guaranteed')}
+					{polestar.owned > 0 ? `You own ${polestar.owned} of the ${polestar.name}. ` : ''}
+					Acquiring{polestar.owned > 0 ? ` more of ` : ` `}this polestar will not unlock guaranteed retrievals for any new crew.
 				</p>
 			);
 
 		return (
 			<React.Fragment>
-	 			<p>{tfmt('retrieval.prospects.acquisition.acquire_to_retrieve_colon', { polestar: <b>{polestar.name}</b> })}</p>
+	 			<p>Acquire the <b>{polestar.name}</b> to unlock guaranteed retrievals for the following crew:</p>
 	 			<Grid centered padded stackable>
 	 				{unlockableCrew.sort((a, b) => a.name.localeCompare(b.name)).map((crew, cdx) => (
 	 					<Grid.Column key={crew.symbol} width={2} textAlign='center'>
 							<span style={{ display: 'inline-block' }}>
-								<AvatarView
-									mode='crew'
+								<ItemDisplay
+									src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
 									size={64}
-									item={crew}
-									partialItem={true}
-									targetGroup='polestar_prospect_modal'
+									maxRarity={crew.max_rarity}
+									rarity={crew.highest_owned_rarity ?? 0}
 								/>
 							</span>
 	 						<div>{crew.name}</div>
 	 					</Grid.Column>
 	 				))}
 	 			</Grid>
-				<CrewHoverStat targetGroup='polestar_prospect_modal' modalPositioning />
 			</React.Fragment>
 		)
 	}

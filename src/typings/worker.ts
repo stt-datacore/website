@@ -1,6 +1,6 @@
 
 export class UnifiedWorker {
-
+    
     private instance: Worker | undefined = undefined;
 
     private ensureWorker() {
@@ -8,7 +8,7 @@ export class UnifiedWorker {
             this.instance = new Worker(new URL('../workers/unified-worker.js', import.meta.url));
         }
     }
-
+    
     addEventListener(event: keyof WorkerEventMap, method: (data: any) => void) {
         this.ensureWorker();
         this.instance?.addEventListener(event, method);
@@ -24,8 +24,8 @@ export class UnifiedWorker {
         this.instance?.postMessage(data);
     }
 
-    terminate() {
+    terminate() {        
         this.instance?.terminate();
     }
-
+  
 }

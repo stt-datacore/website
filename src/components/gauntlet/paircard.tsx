@@ -1,20 +1,18 @@
 import React from 'react';
 import { Skill, ComputedSkill, CrewMember } from '../../model/crew';
 import { Gauntlet, Opponent } from '../../model/gauntlets';
-import { PlayerCrew, CompletionState, PlayerBuffMode, GauntletPlayerBuffMode } from '../../model/player';
+import { PlayerCrew, CompletionState, PlayerBuffMode } from '../../model/player';
 import { shortToSkill, gradeToColor, getPairScore, getCrewPairScore, dynamicRangeColor, isImmortal, getPlayerPairs } from '../../utils/crewutils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import ItemDisplay from '../itemdisplay';
 import { GlobalContext } from '../../context/globalcontext';
 import { Link } from 'gatsby';
-import { AvatarView } from '../item_presenters/avatarview';
-import { getIconPath } from '../../utils/assets';
 
 export interface PairCardProps {
     crew: CrewMember | PlayerCrew;
     gauntlet: Gauntlet;
     pair: string[];
-    boostMode: GauntletPlayerBuffMode;
+    boostMode: PlayerBuffMode;
     onlyActiveRound?: boolean;
 }
 
@@ -65,6 +63,7 @@ export const formatPair = (pair: Skill[], style?: React.CSSProperties, debuff?: 
     )
 }
 
+
 export function whyNoPortal(crew: PlayerCrew | CrewMember) {
     if (crew.obtained?.toLowerCase().includes("gauntlet")) return "Unowned (Gauntlet Exclusive)";
     else if (crew.obtained?.toLowerCase().includes("voyage")) return "Unowned (Voyage Exclusive)";
@@ -74,6 +73,7 @@ export function whyNoPortal(crew: PlayerCrew | CrewMember) {
         return "Unowned (Not in Portal)";
 
 }
+
 
 export const GauntletPairCard = (props: PairCardProps) => {
 
@@ -97,13 +97,14 @@ export const GauntletPairCard = (props: PairCardProps) => {
 
     const roundPair = gauntlet?.contest_data?.secondary_skill ? [gauntlet?.contest_data?.primary_skill, gauntlet?.contest_data?.secondary_skill] : []
     const isRound = !onlyActiveRound || (skills.every(s => roundPair.some(e => s === e)));
-    const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.crew_id === crew.id && "isSelected" in crew);
+    const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol);
     const isOpponent = "isOpponent" in crew && crew.isOpponent;
+
 
     let tempicon = "";
 
     if (inMatch && context.player.playerData) {
-        tempicon = getIconPath(context.player.playerData.player.character.crew_avatar.portrait, true);
+        tempicon = context.player.playerData.player.character.crew_avatar.portrait.file;
     }
 
     const myIcon = tempicon;
@@ -112,6 +113,9 @@ export const GauntletPairCard = (props: PairCardProps) => {
 
     if (isOpponent) {
         tempoppo = gauntlet.opponents?.find(o => o.player_id === Number.parseInt(crew?.ssId ?? "0"));
+        if (tempoppo?.icon?.file && !tempoppo.icon.file.includes(".png")) {
+            tempoppo.icon.file = tempoppo.icon.file.replace("/crew_icons/", "crew_icons_") + ".png";
+        }
     }
 
     const opponent = tempoppo;
@@ -122,7 +126,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
     if (pstr in crew.ranks) {
         rnk = crew.ranks[pstr] as number;
     }
-
+    
     let spair = pair?.map(p => shortToSkill(p) as string);
     const pairs = crew.pairs ?? getPlayerPairs(crew);
 
@@ -152,10 +156,33 @@ export const GauntletPairCard = (props: PairCardProps) => {
         }
     }
 
+    // for (let skill of skills) {
+    //     if (boostMode === 'player' && "skills" in crew && skill && skill in crew.skills) {
+    //         let cp = JSON.parse(JSON.stringify(crew.skills[skill] as Skill));
+    //         cp.skill = skill;
+    //         crewpair.push(cp);
+    //     }
+    //     else if (boostMode !== 'none' && skill && skill in crew && ((crew[skill] as ComputedSkill).core)) {
+    //         let cp = JSON.parse(JSON.stringify(crew[skill] as ComputedSkill)) as ComputedSkill;
+    //         cp.skill = skill;
+    //         crewpair.push({
+    //             core: cp.core,
+    //             range_max: cp.max,
+    //             range_min: cp.min,
+    //             skill: skill
+    //         });
+    //     }
+    //     else if (skill && skill in crew.base_skills) {
+    //         let cp = JSON.parse(JSON.stringify(crew.base_skills[skill] as Skill)) as Skill;
+    //         cp.skill = skill;
+    //         crewpair.push(cp);
+    //     }
+    // }
+
     return (
         <div
             className="ui segment"
-            key={`${crew.id}_${crew.symbol}+${opponent?.player_id}`}
+            key={crew.symbol + pstr + (opponent?.name ?? "")}
             title={crew.name
                 + (("isDisabled" in crew && crew.isDisabled) ? " (Disabled)" : "")
                 + (("isDebuffed" in crew && crew.isDebuffed) ? " (Reduced Power)" : "")
@@ -194,7 +221,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
                                 alignItems: "center"
                             }}>
                                 {opponent?.name}
-                                <img className="ui" style={{ margin: "4px 8px", borderRadius: "3px", height: "16px" }} src={`${process.env.GATSBY_ASSETS_URL}${opponent?.icon?.file ? getIconPath(opponent.icon, true) : 'crew_portraits_cm_empty_sm.png'}`} />
+                                <img className="ui" style={{ margin: "4px 8px", borderRadius: "3px", height: "16px" }} src={`${process.env.GATSBY_ASSETS_URL}${opponent?.icon.file}`} />
                             </div>
                             <span>
                                 [{opponent?.level}]
@@ -250,16 +277,17 @@ export const GauntletPairCard = (props: PairCardProps) => {
                     >{rnk}</div>
                 </div>
                 <div style={{ margin: 0, marginRight: "0.25em", width: "68px" }}>
-                    <AvatarView
-                        partialItem={true}
-                        passDirect={inMatch || isOpponent}
-                        mode='crew'
+                    <ItemDisplay
                         crewBackground='rich'
+                        playerData={context.player.playerData}
+                        itemSymbol={crew.symbol}
                         targetGroup='gauntletsHover'
-                        symbol={crew.symbol}
-                        item={crew}
+                        allCrew={context.core.crew}
+                        src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+                        rarity={"rarity" in crew ? crew.rarity : crew.max_rarity}
+                        maxRarity={crew.max_rarity}
                         size={64}
-                        />
+                    />
                 </div>
                 <div style={{
                     display: "flex",
@@ -271,7 +299,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
                     <div style={{
                         display: 'flex',
                         flexDirection: 'column',
-                        alignItems: 'center',
+                        alignItems: 'center', 
                         justifyContent: 'center',
                         margin: "0"
                     }}>
@@ -349,7 +377,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
                             {!crew.in_portal && <i title={whyNoPortal(crew)} className='lock icon' />}
                         </span>}
                 </div>
-            </div>
+            </div>            
         </div>)
 
 }

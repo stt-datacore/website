@@ -13,13 +13,7 @@ type CrewStatProps = {
 
 class CrewStat extends PureComponent<CrewStatProps> {
 	render() {
-		let stats = { ...this.props.data };
-		if ("min" in stats) {
-			stats.range_min = stats['min'] as number;
-		}
-		if ("max" in stats) {
-			stats.range_max = stats['max'] as number;
-		}
+		const stats = this.props.data;
 		const scale = this.props.scale || 1;
 		const { proficiencies, quipmentMode, vertical } = this.props;
 
@@ -60,7 +54,7 @@ class CrewStat extends PureComponent<CrewStatProps> {
 						<div style={{ gridArea: 'crits', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: `${1 * scale}em` }} />
 							<span style={{ fontWeight: 'bolder', fontSize: `${scale}em` }}>
-								{stats.core! + stats.range_min!}-{stats.core! + stats.range_max!}
+								{stats.core + stats.range_min}-{stats.core + stats.range_max}
 							</span>
 						</div>}
 

@@ -9,7 +9,6 @@ import ItemDisplay from '../itemdisplay';
 import { BossCrew, NodeMatch, NodeRarity, Optimizer, PossibleCombo, RarityStyle, SolveStatus, Solver, SolverNode, SolverTrait, TraitRarities } from '../../model/boss';
 import { GlobalContext } from '../../context/globalcontext';
 import { TinyShipSkill } from '../item_presenters/shipskill';
-import { AvatarView } from '../item_presenters/avatarview';
 
 interface ISolveOption {
 	key: number;
@@ -176,27 +175,17 @@ export const MarkCrew = (props: MarkCrewProps) => {
 	);
 
 	function renderCard(): JSX.Element {
-		// const imageUrlPortrait: string = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
+		const imageUrlPortrait: string = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
 
 		return (
 			<Grid.Column key={crew.symbol} textAlign='center'>
-				<span
-					style={{ display: 'inline-block', cursor: 'pointer' }}
-					// onClick={() => trySolve(false)}
-					>
-					{/* <ItemDisplay
+				<span style={{ display: 'inline-block', cursor: 'pointer' }} onClick={() => trySolve(false)}>
+					<ItemDisplay
 						src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
 						size={60}
 						maxRarity={crew.max_rarity}
 						rarity={crew.highest_owned_rarity ?? 0}
-					/> */}
-					<AvatarView
-						onClick={() => trySolve(false)}
-						mode='crew'
-						item={crew}
-						passDirect={true}
-						size={60}
-						/>
+					/>
 				</span>
 				<div>
 					<span style={{ cursor: 'pointer' }} onClick={() => trySolve(false)}>

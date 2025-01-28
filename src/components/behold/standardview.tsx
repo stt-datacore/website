@@ -47,14 +47,14 @@ export const StandardView = (props: StandardViewProps) => {
 						crew={crew}
 						fields={['ranks', 'crew_demands', 'cross_fuses', 'date_added']}
 					/>
-					{/* <div style={{ marginTop: '1em' }}>
+					<div style={{ marginTop: '1em' }}>
 						{crew.markdownContent && <div dangerouslySetInnerHTML={{ __html: marked.parse(crew.markdownContent) }} style={{ fontSize: '1.1em' }} />}
 						<div style={{ marginTop: '1em', textAlign: 'right' }}>
 							<a href={`https://www.bigbook.app/crew/${crew.symbol}`} target='_blank'>
 								View {crew.name} on Big Book
 							</a>
 						</div>
-					</div> */}
+					</div>
 					<div style={{ marginTop: '1em', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
 						{false && <Button onClick={() => addProspects([crew.symbol])}>
 							<Icon name='add user' color='green' />

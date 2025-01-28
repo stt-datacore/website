@@ -4,10 +4,6 @@ import { Form, Dropdown, Checkbox, DropdownItemProps } from 'semantic-ui-react';
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
 import { ItemWithBonus } from '../../../utils/itemutils';
 import { GlobalContext } from '../../../context/globalcontext';
-import { QuestDropDown } from '../../missions/questdropdown';
-import { Mission, Quest } from '../../../model/missions';
-import { useStateWithStorage } from '../../../utils/storage';
-import { ContinuumMission } from '../../../model/continuum';
 
 export type PowerMode = 'all' | 'core' | 'proficiency';
 
@@ -23,20 +19,16 @@ type QuipmentToolsFilterProps = {
     setPstMode: (value: boolean | 2 | 3) => void;
 	powerMode: PowerMode;
 	setPowerMode: (value: PowerMode) => void;
-	questFilter?: string[];
-	setQuestFilter: (value?: string[]) => void;
 	altTitle?: string;
     hideForm?: boolean;
 	immortalOnly?: boolean;
 };
 
 export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
-	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
+	const { immortalOnly, maxxed, quipment, hideForm, crewFilters, setCrewFilters, slots, setSlots, pstMode, setPstMode, powerMode, setPowerMode } = props;
 
-	const { t, tfmt } = globalContext.localized;
-	const { questFilter, setQuestFilter, hideForm, crewFilters, setCrewFilters, slots, setSlots, pstMode, setPstMode, powerMode, setPowerMode } = props;
 	const [slotFilter, setSlotFilter] = React.useState<string>(slots ? `slot${slots}` : 'slot0');
-	const [mission, setMission] = useStateWithStorage('quipmentTools_mission', undefined as ContinuumMission | undefined);
 
 	const slotFilterOptions = [
 		{ key: 'slot0', value: 'slot0', text: t('quipment_dropdowns.slots.natural') },
@@ -47,9 +39,13 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 	];
 
 	const filterCrew = (crew: IRosterCrew) => {
-		let skills = mission?.quests?.filter(f => questFilter?.includes(f.symbol))?.map(m => m.challenges?.map(c => c.skill)).flat();
-		if (!!skills?.length && !skills?.includes(crew.skill_order[0])) return false;
 		return true;
+        // if (!immortalOnly || crew.immortal === undefined || crew.immortal !== 0) {
+		// 	return true;
+		// }
+		// else {
+		// 	return false;
+		// }
 	};
 
 	React.useEffect(() => {
@@ -65,16 +61,6 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
         }
 		setCrewFilters([...crewFilters]);
 	}, [slotFilter]);
-
-    // React.useEffect(() => {
-	// 	const { continuum_missions } = globalContext.core;
-	// 	if (continuum_missions.length) {
-	// 		const current = continuum_missions[continuum_missions.length - 1];
-	// 		setTimeout(() => {
-	// 			fetchContinuum(current);
-	// 		});
-	// 	}
-    // }, []);
 
     if (hideForm) {
         return <></>;
@@ -129,7 +115,7 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 				closeOnChange
 			/>
 			<Dropdown
-				placeholder={'Skill mode'}
+				placeholder={'Skill mode'}				
 				selection
 				multiple={false}
 				options={contentOptions}
@@ -146,48 +132,7 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 				onChange={(e, { value }) => setPowerMode(value as PowerMode)}
 				closeOnChange
 			/>
-
-			{/* <QuestDropDown
-				selection={questFilter?.length ? questFilter[0] : undefined}
-				setSelection={(v) => setQuestFilter(v ? [v as string] : undefined)}
-				mission={mission}
-				customRender={(quest) => {
-					const skills = [ ...new Set(quest.challenges?.map(m => m.skill) ?? [])];
-					return <div style={{
-						display: 'grid',
-						gridTemplateAreas: `'name' 'skill'`,
-						gridTemplateColumns: 'auto',
-						gridTemplateRows: '1em auto',
-						gap: '0.25em'
-					}}>
-						<div style={{gridArea:'name'}}>
-							{quest.name}
-						</div>
-						<div style={{
-							display: 'flex',
-							flexDirection: 'row',
-							alignItems: 'center',
-							justifyContent: 'flex-start',
-							gap: '0.5em',
-							//color: green ? 'lightgreen' : undefined,
-							gridArea: 'skill'}}>
-							{skills.map((skill) => <img key={`skill_img_quest_picker_${skill}`} style={{height: "16px"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} />)}
-						</div>
-					</div>
-				}}
-				/> */}
-
+				
 		</Form.Field>
 	);
-
-
-    function fetchContinuum(mission: ContinuumMission) {
-        const missionUrl = `/structured/continuum/${mission.id}.json`;
-        fetch(missionUrl)
-            .then((response) => response.json())
-            .then((result: ContinuumMission) => {
-                setMission(result);
-            });
-    }
-
 };

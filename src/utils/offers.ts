@@ -1,5 +1,5 @@
 import { CrewMember } from "../model/crew";
-import { DropInfo, Offer, OfferCrew } from "../model/offers";
+import { DropInfo, DropRate, Offer, OfferCrew } from "../model/offers";
 
 async function loadOffers(): Promise<Offer[] | undefined> {
 
@@ -23,11 +23,8 @@ export async function loadOfferCrew(crewList: CrewMember[], offerName?: string, 
 
     offers?.forEach((offer) => {
         if (!offer.primary_content[0].info_text) return;
-        let crew = offer.primary_content[0].offer.obtain.map(m => m.spec).filter(f => f.endsWith("_crew")).map(m => crewList.find(fcm => fcm.symbol === m)).filter(fc => !!fc);
-        if (!crew?.length) {
-            let split = offer.primary_content[0].info_text.split(/\<[#A-Fa-f0-9]+\>/).map(sp => sp.replace(/\<\/[#A-Za-z0-9]+\>.*/, '').replace(/\n.*/g, '').trim());
-            crew = crewList.filter(f => split.includes(f.name) || (f.name_english && split.includes(f.name_english)));
-        }
+        let split = offer.primary_content[0].info_text.split(/\<[#A-Fa-f0-9]+\>/).map(sp => sp.replace(/\<\/[#A-Za-z0-9]+\>.*/, '').replace(/\n.*/g, '').trim());
+        let crew = crewList.filter(f => split.includes(f.name) || (f.name_english && split.includes(f.name_english)));
         result.push({
             name: offer.primary_content[0].title,
             crew,
@@ -40,30 +37,14 @@ export async function loadOfferCrew(crewList: CrewMember[], offerName?: string, 
 }
 
 function getDropInfo(offer: Offer): DropInfo[] {
-    if (!offer.primary_content?.length || !offer.primary_content[0].info_text) return [];
-    const BundleTable = [
-        { name: 'offer_t60', cost: 99.99 },
-        { name: 'offer_t50', cost: 49.99 },
-        { name: 'offer_t25', cost: 24.99 },
-        { name: 'offer_t10', cost: 9.99 },
-        { name: 'offer_t5', cost: 4.99 },
-    ];
-
     let result = [{
         count: offer.primary_content[0].count,
         cost: offer.primary_content[0].cost?.amount ?? 0,
         currency: offer.primary_content[0].cost?.currency ?? ''
     }] as DropInfo[];
-
-    if (result[0].cost === 0 && !!offer.primary_content[0].offer.currency_bundle) {
-        let bt = BundleTable.find(f => f.name === offer.primary_content[0].offer.currency_bundle);
-        if (bt) {
-            result[0].cost = bt.cost;
-            result[0].currency = 'fiat';
-        }
-    }
+    
     let droptexts = [offer.primary_content[0].info_text!];
-
+    
     if (offer.secondary_content?.length && offer.secondary_content[0].info_text) {
         droptexts.push(offer.secondary_content[0].info_text);
         result.push({
@@ -71,20 +52,10 @@ function getDropInfo(offer: Offer): DropInfo[] {
             cost: offer.secondary_content[0].cost?.amount ?? 0,
             currency: offer.secondary_content[0].cost?.currency ?? ''
         } as DropInfo);
-        if (result[1].cost === 0 && !!offer.secondary_content[0].offer.currency_bundle) {
-            let bt = BundleTable.find(f => f.name === offer.secondary_content![0].offer.currency_bundle);
-            if (bt) {
-                result[1].cost = bt.cost;
-                result[1].currency = 'fiat';
-            }
-        }
-        if (result[1].cost === result[0].cost && result[1].currency === result[0].currency) {
-            result.splice(1);
-            droptexts.splice(1);
-        }
     }
 
     droptexts.forEach((info_text, idx) => {
+
         let drops = info_text!.split("DROP RATES:");
         let info = result[idx];
         info.drop_rates = [];
@@ -118,6 +89,5 @@ function getDropInfo(offer: Offer): DropInfo[] {
             }
         }
     });
-
     return result;
 }

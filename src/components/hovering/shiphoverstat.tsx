@@ -27,13 +27,13 @@ export interface ShipTargetState extends HoverStatTargetState {
 
 export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProps, ShipTargetState> {
     static contextType = GlobalContext;
-    declare context: React.ContextType<typeof GlobalContext>;
+    context!: React.ContextType<typeof GlobalContext>;
 
     constructor(props: ShipTargetProps){
-        super(props);
-        this.tiny.subscribe(this.propertyChanged);
+        super(props);        
+        this.tiny.subscribe(this.propertyChanged);                
     }
-
+    
     protected get showPlayerBuffs(): boolean {
         return this.tiny.getValue<boolean>('buff', true) ?? false;
     }
@@ -64,7 +64,7 @@ export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProp
             const { targetId } = this.state;
             if (this.current === targetId) {
                 this.tiny.setRapid('displayItem', this.prepareDisplayItem(this.props.inputItem ?? undefined));
-            }
+            }            
         }
     };
 
@@ -76,7 +76,7 @@ export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProp
         const applyBuffs = this.showPlayerBuffs;
         const showImmortal = this.showImmortalized;
 
-        if (dataIn) {
+        if (dataIn) {            
             let item: Ship = dataIn as Ship;
             let cm: Ship | undefined = undefined;
 
@@ -94,18 +94,18 @@ export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProp
             }
 
             return item;
-
-        }
+         
+        }        
         return dataIn;
     }
-
+    
     componentDidUpdate(): void {
         if (this.props.inputItem) {
             const url = `${process.env.GATSBY_ASSETS_URL}${this.props.inputItem.icon?.file.slice(1).replace('/', '_')}.png`;
             if (isWindow) window.setTimeout(() => {
                 for (let i = 0; i < 1; i++) {
                     let img = new Image();
-                    img.src = url;
+                    img.src = url;                    
                 }
             });
         }
@@ -118,15 +118,15 @@ export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProp
 
 export class ShipHoverStat extends HoverStat<Ship, ShipHoverStatProps, ShipHoverStatState> {
     static contextType = GlobalContext;
-    declare context: React.ContextType<typeof GlobalContext>;
+    context!: React.ContextType<typeof GlobalContext>;
 
     constructor(props: ShipHoverStatProps) {
-        super(props);
+        super(props);        
         this.state = {
             ... this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
-        }
-    }
+        }        
+    }    
 
     protected checkBorder = (ship?: Ship, setState?: boolean) => {
         ship ??= this.state.displayItem ?? undefined;
@@ -159,7 +159,7 @@ export class ShipHoverStat extends HoverStat<Ship, ShipHoverStatProps, ShipHover
     protected set showImmortalized(value: boolean) {
         this.tiny.setValue<boolean>('immo', value, true);
     }
-
+    
     protected get showShipAbility(): boolean {
         return this.tiny.getValue<boolean>('ship', true) ?? false;
     }
@@ -172,40 +172,40 @@ export class ShipHoverStat extends HoverStat<Ship, ShipHoverStatProps, ShipHover
         if (this.checkBorder()) {
             window.setTimeout(() => this.checkBorder(undefined, true));
         }
-
+        
         const { targetGroup } = this.props;
         const { mobileWidth, displayItem, touchToggled } = this.state;
 
-        const compact = true;
+        const compact = true;    
 
         if (!displayItem) {
             // console.log("Deactivating empty popover");
             this.cancelled = false;
             this.deactivate();
-        }
-
+        } 
+        
         const navClick = () => {
             if (!displayItem) return;
-            navigate('/ship_info?ship=' + displayItem.symbol);
+            navigate('/ship_info?ship=' + displayItem.symbol);            
         }
 
         const onClose = () => {
             this.deactivate();
         }
 
-        return displayItem ? (<ShipPresenter
+        return displayItem ? (<ShipPresenter 
                         mobileWidth={mobileWidth}
-                        close={() => onClose()}
-                        openShip={(ship) => navClick()}
-                        hover={true}
-                        storeName={targetGroup}
+                        close={() => onClose()} 
+                        openShip={(ship) => navClick()} 
+                        hover={true} 
+                        storeName={targetGroup} 
                         touched={touchToggled}
                         ship={displayItem} />) : <></>
-
+        
     }
 
     protected get canActivate(): boolean {
         return true; // return !!this.props.ship;
     }
-
+    
 }

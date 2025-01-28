@@ -1,7 +1,7 @@
 import React from 'react';
 import { Step, Icon } from 'semantic-ui-react';
 
-import { CompactCrew, PlayerCrew, Voyage } from '../../model/player';
+import { CompactCrew, PlayerCrew } from '../../model/player';
 import { Ship } from '../../model/ship';
 import { IVoyageCrew } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
@@ -9,17 +9,17 @@ import CONFIG from '../../components/CONFIG';
 import { applyCrewBuffs } from '../../utils/crewutils';
 
 type RosterPickerProps = {
-	configSource: 'player' | 'custom';
 	rosterType: 'allCrew' | 'myCrew';
 	setRosterType: (rosterType: 'allCrew' | 'myCrew') => void;
 	setRosterCrew: (rosterCrew: PlayerCrew[]) => void;
 	setRosterShips: (rosterShips: Ship[]) => void;
+	voySymbol: string;
 };
 
 export const RosterPicker = (props: RosterPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, playerShips, ephemeral } = globalContext.player;
-	const { configSource, rosterType, setRosterType, setRosterCrew, setRosterShips } = props;
+	const { rosterType, setRosterType, setRosterCrew, setRosterShips, voySymbol } = props;
 
 	const [allCrew, setAllCrew] = React.useState<IVoyageCrew[] | undefined>(undefined);
 	const [myCrew, setMyCrew] = React.useState<IVoyageCrew[] | undefined>(undefined);
@@ -28,11 +28,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 	React.useEffect(() => {
 		const rosterType = playerData ? 'myCrew' : 'allCrew';
-		let inUse = [] as number[];
-		if (ephemeral?.voyage && configSource === 'player') {
-			inUse = ephemeral.voyage.map(m => m.ship_id).filter(f => f);
-		}
-		initializeRoster(rosterType, true, inUse);
+		initializeRoster(rosterType, true);
 		setRosterType(rosterType);
 	}, [playerData]);
 
@@ -40,7 +36,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		initializeRoster(rosterType);
 	}, [rosterType]);
 
-	if (!playerData || configSource === 'player')
+	if (!playerData)
 		return (<></>);
 
 	return (
@@ -62,9 +58,9 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		</Step.Group>
 	);
 
-	function initializeRoster(rosterType: string, forceReload: boolean = false, shipsInUse?: number[]): void {
-		let rosterCrew: IVoyageCrew[] = [];
-		let rosterShips: Ship[] = [];
+	function initializeRoster(rosterType: string, forceReload: boolean = false): void {
+		let rosterCrew = [] as IVoyageCrew[];
+		let rosterShips = [] as Ship[];
 
 		if (rosterType === 'myCrew' && playerData) {
 			if (myCrew && myShips && !forceReload) {
@@ -72,14 +68,11 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				setRosterShips([...myShips]);
 				return;
 			}
-			rosterCrew = rosterizeMyCrew(playerData.player.character.crew, ephemeral?.activeCrew ?? [], ephemeral?.voyage ?? []);
+			rosterCrew = rosterizeMyCrew(playerData.player.character.crew, ephemeral?.activeCrew ?? []);
 			setMyCrew([...rosterCrew]);
 			setRosterCrew([...rosterCrew]);
 
 			rosterShips = rosterizeMyShips(playerShips ?? []);
-			if (shipsInUse?.length) {
-				rosterShips = rosterShips.filter(f => !shipsInUse.includes(f.id));
-			}
 			setMyShips([...rosterShips]);
 			setRosterShips([...rosterShips]);
 		}
@@ -89,8 +82,9 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				setRosterShips([...allShips]);
 				return;
 			}
+			let crewmanId = 1;
 			globalContext.core.crew.forEach(crew => {
-				const crewman: IVoyageCrew = JSON.parse(JSON.stringify(crew)) as IVoyageCrew;
+				const crewman = JSON.parse(JSON.stringify(crew)) as IVoyageCrew;
 				crewman.id = crewman.archetype_id;
 
 				const buffedSkills = globalContext.maxBuffs ? applyCrewBuffs(crewman, globalContext.maxBuffs) : undefined;
@@ -142,13 +136,21 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	}
 };
 
-export function rosterizeMyCrew(myCrew: PlayerCrew[], activeCrew: CompactCrew[], activeVoyages: Voyage[]): IVoyageCrew[] {
-	const rosterCrew: IVoyageCrew[] = [];
+export function rosterizeMyCrew(myCrew: PlayerCrew[], activeCrew: CompactCrew[]): IVoyageCrew[] {
+	const rosterCrew = [] as IVoyageCrew[];
 
-	let fakeDupeId: number = myCrew.reduce((prev, curr) => Math.min(prev, curr.id), 0) - 1;
+	// Create fake ids for active crew based on rarity, level, and equipped status
+	const activeCrewIds = activeCrew.map(ac => {
+		return {
+			id: ac.id,
+			active_status: ac.active_status
+		};
+	});
 
+	let crewmanId = 1;
 	myCrew.forEach(crew => {
-		const crewman: IVoyageCrew = JSON.parse(JSON.stringify(crew)) as IVoyageCrew;
+		const crewman = JSON.parse(JSON.stringify(crew)) as IVoyageCrew;
+		//crewman.id = crewmanId++;
 
 		// Voyage calculator looks for skills, range_min, range_max properties
 		crewman.skills = {};
@@ -162,33 +164,18 @@ export function rosterizeMyCrew(myCrew: PlayerCrew[], activeCrew: CompactCrew[],
 			}
 		});
 
-		// Re-attach active properties
+		// Re-attach active_status property
 		crewman.active_status = 0;
 		if (crew.immortal <= 0) {
-			const active: CompactCrew | undefined = activeCrew.find(ac => ac.id === crewman.id);
+			const activeCrewId = crew.id;
+			const active = activeCrewIds.find(ac => ac.id === activeCrewId);
 			if (active) {
 				crewman.active_status = active.active_status ?? 0;
-				crewman.active_id = active.active_id;
-				const voyage: Voyage | undefined = activeVoyages.find(av => av.id === active.active_id);
-				if (voyage) crewman.active_voyage_type = voyage.voyage_type;
+				active.id = 0;	// Clear this id so that dupes are counted properly
 			}
 		}
 
-		// Add each frozen dupe as its own entry in roster
-		if (crew.immortal > 1) {
-			const dupeCrew: IVoyageCrew = JSON.parse(JSON.stringify(crewman)) as IVoyageCrew;
-			const frozenDupes: number = crew.immortal;
-			for (let i = 0; i < frozenDupes; i++) {
-				rosterCrew.push({
-					...dupeCrew,
-					id: i === 0 ? crew.id : fakeDupeId--,
-					immortal: 1
-				})
-			}
-		}
-		else {
-			rosterCrew.push(crewman);
-		}
+		rosterCrew.push(crewman);
 	});
 
 	return rosterCrew;

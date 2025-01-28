@@ -16,18 +16,17 @@ export interface CrewPickerProperties {
     plain?: boolean;
     showRarity?: boolean;
     custom?: (crew: PlayerCrew | CrewMember) => JSX.Element;
-    archetypeId?: boolean;
 }
 
 export const CrewDropDown = (props: CrewPickerProperties) => {
-    const { archetypeId, showRarity, custom, pool, multiple, setSelection, style, placeholder, maxSelection, fluid, plain } = props;
+    const { showRarity, custom, pool, multiple, setSelection, style, placeholder, maxSelection, fluid, plain } = props;
     const [crewChoices, setCrewChoices] = React.useState([] as DropdownItemProps[]);
 
     const selection = !!props.selection && typeof props.selection !== 'number' && !props.multiple ? props.selection[0] : props.selection;
 
     React.useEffect(() => {
         const newChoices = [] as DropdownItemProps[];
-
+        
         pool.forEach((c) => {
             const crewKey = c.symbol + "_" + (c.id?.toString() ?? '_');
             let rarity = c.max_rarity;
@@ -37,7 +36,7 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
             }
             newChoices.push({
                 key: crewKey,
-                value: archetypeId ? c.archetype_id : c.id,
+                value: c.id,
                 text: c.name,
                 content: (
                     <React.Fragment>
@@ -67,7 +66,7 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
                                     alignItems: 'center'
                                 }}
                             >
-                                {"immortal" in c && c.immortal > 0 &&
+                                {"immortal" in c && c.immortal > 0 && 
                                 <Icon name={'snowflake'} size={'small'} />}
                                 {c.name}
                             </div>
@@ -83,9 +82,9 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
                                 <div style={{alignSelf: 'right'}}>
                                     {c.q_bits} ({qbitsToSlots(c.q_bits)})
                                 </div>}
-                                {!plain && custom && custom(c)}
+                                {!plain && custom && custom(c)}                                
                             </div>
-
+                            
                         </div>
                     </React.Fragment>
                 )
@@ -95,25 +94,11 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
         setCrewChoices(newChoices);
     }, [pool])
 
-    if (!pool.length || !pool.every(p => p.id || (archetypeId && p.archetype_id))) {
+    if (!pool.length || !pool.every(p => p.id)) {
         return <></>;
     }
 
-    return <Dropdown
-        style={style}
-        search
-        selection
-        clearable
-        fluid={fluid}
-        multiple={multiple}
-        placeholder={placeholder ?? "Search for a crew member..."}
-        labeled
-        options={crewChoices}
-        value={selection}
-        onChange={(e, { value }) => internalSetSelection(value as number[] | number | undefined)}
-    />
-
-    function internalSetSelection(value: number[] | number | undefined) {
+    const internalSetSelection = (value: number[] | number | undefined) => {
         if (typeof value === 'number') {
             value = [value];
         }
@@ -123,4 +108,17 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
         setSelection(value);
     }
 
+    return <Dropdown 
+        style={style}
+        search 
+        selection        
+        clearable
+        fluid={fluid}
+        multiple={multiple}
+        placeholder={placeholder ?? "Search for a crew member..."}
+        labeled
+        options={crewChoices}
+        value={selection}
+        onChange={(e, { value }) => internalSetSelection(value as number[] | number | undefined)}
+    />
 };

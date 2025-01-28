@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Popup } from 'semantic-ui-react';
-import TinyColor from 'tinycolor2';
+import * as TinyColor from 'tinycolor2';
 
 import { Link } from 'gatsby';
 

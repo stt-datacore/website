@@ -36,8 +36,6 @@ type PlayerShareNotificationsProps = {
 	dbid: string;
 	activePanel: string | undefined;
 	setActivePanel: (activePanel: string | undefined) => void;
-	setDbidHash: (value?: string) => void;
-	dbidHash?: string;
 };
 
 export const PlayerShareNotifications = (props: PlayerShareNotificationsProps) => {
@@ -45,7 +43,7 @@ export const PlayerShareNotifications = (props: PlayerShareNotificationsProps) =
 	const { t, tfmt } = globalContext.localized;
 	const { playerData, sessionStates, updateSessionState } = globalContext.player;
 	const uploadState = sessionStates?.profileUpload ?? ProfileUploadState.Idle;
-	const { dbid, activePanel, setActivePanel, dbidHash, setDbidHash } = props;
+	const { dbid, activePanel, setActivePanel } = props;
 
 	const [nagPrefLoaded, setNagPrefLoaded] = React.useState(false);
 	const [showShareNagPref, setShowShareNagPref] = useStateWithStorage(dbid + '/tools/showShare', true, { rememberForever: true, onInitialize: () => setNagPrefLoaded(true) });
@@ -82,8 +80,6 @@ export const PlayerShareNotifications = (props: PlayerShareNotificationsProps) =
 			}
 			<PlayerProfileUploader
 				dbid={dbid}
-				setDbidHash={setDbidHash}
-				dbidHash={dbidHash}
 				activePanel={activePanel}
 				setActivePanel={setActivePanel}
 			/>
@@ -93,7 +89,6 @@ export const PlayerShareNotifications = (props: PlayerShareNotificationsProps) =
 
 type PlayerSharePanelProps = {
 	requestDismiss: () => void;
-	dbidHash?: string;
 };
 
 export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
@@ -101,7 +96,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 	const { t, tfmt } = globalContext.localized;
 	const { playerData, sessionStates, updateSessionState } = globalContext.player;
 	const uploadState = sessionStates?.profileUpload ?? ProfileUploadState.Idle;
-	const { requestDismiss, dbidHash } = props;
+	const { requestDismiss } = props;
 
     const dbid = playerData?.player.dbid ?? '';
 
@@ -110,7 +105,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 	const [dbidCopied, setDBIDCopied] = React.useState(false);
     if (!playerData) return (<></>);
 
-	const PROFILE_LINK = typeof window !== 'undefined' ? window.location.origin + (!!dbidHash ? `/profile?hash=${dbidHash}` : `/profile?dbid=${dbid}`) : (!!dbidHash ? `${process.env.GATSBY_DATACORE_URL}profile/?hash=${dbidHash}` : `${process.env.GATSBY_DATACORE_URL}profile/?dbid=${dbid}`);
+	const PROFILE_LINK = typeof window !== 'undefined' ? window.location.origin + `/profile?dbid=${dbid}` : `${process.env.GATSBY_DATACORE_URL}profile/?dbid=${dbid}`;
 	const isUploading = uploadState === ProfileUploadState.AutoUpdate || uploadState === ProfileUploadState.ManualUpdate;
 
 	return (
@@ -127,7 +122,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 						<p>{t('share_profile.share.header')}</p>
 						<p style={{ margin: '1.25em 0', textAlign: 'center' }}>
 							<span style={{ fontWeight: 'bold', fontSize: '1.25em', marginRight: '1em' }}>
-								<Link to={!!dbidHash ? `/profile?hash=${dbidHash}` : `/profile?dbid=${dbid}`}>{PROFILE_LINK}</Link>
+								<Link to={`/profile?dbid=${dbid}`}>{PROFILE_LINK}</Link>
 							</span>
 							<Popup
 								content={t('clipboard.copied_exclaim')}
@@ -245,9 +240,7 @@ type PlayerProfileUploaderProps = {
 	dbid: string;
 	activePanel: string | undefined;
 	setActivePanel: (activePanel: string | undefined) => void;
-	setDbidHash: (value: string) => void;
-	dbidHash?: string;
-}
+};
 
 const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 	const globalContext = React.useContext(GlobalContext);
@@ -255,7 +248,7 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 	const { strippedPlayerData, sessionStates, updateSessionState } = globalContext.player;
 	const uploadState = sessionStates?.profileUpload ?? ProfileUploadState.Idle;
 	const { dbid, activePanel, setActivePanel } = props;
-	const { dbidHash, setDbidHash } = props;
+
 	const [showResponse, setShowResponse] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
 
@@ -285,7 +278,7 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 						</p>
 					}
 					icon='share alternate'
-					onClick={() => navigate(!!dbidHash ? `/profile?hash=${dbidHash}` : `/profile?dbid=${dbid}`)}
+					onClick={() => navigate(`/profile?dbid=${dbid}`)}
 					onDismiss={() => { setShowResponse(false); if (activePanel === 'share') setActivePanel(undefined); }}
 				/>
 			}
@@ -332,23 +325,20 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 	}
 
 	function continueUpload(): void {
-		let jsonBody = JSON.stringify(strippedPlayerData);
+		let jsonBody = JSON.stringify({
+			dbid: strippedPlayerData?.player.dbid,
+			player_data: strippedPlayerData
+		});
 
-		fetch(`${process.env.GATSBY_DATACORE_URL}api/postProfile`, {
+		fetch(`${process.env.GATSBY_DATACORE_URL}api/post_profile`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: jsonBody
-
-		})
-		.then((response) => response.json())
-		.then((data) => {
+		}).then(() => {
 			// if (uploadState === ProfileUploadState.ManualUpdate)
 			// 	if (typeof window !== 'undefined') window.open(profileLink, '_blank');
-			if (data.hash && !!setDbidHash) {
-				setDbidHash(data.hash as string);
-			}
 			if (updateSessionState) updateSessionState('profileUpload', ProfileUploadState.Success);
 			setErrorMessage(undefined);
 		}).catch((error: any) => {

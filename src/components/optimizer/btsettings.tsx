@@ -1,7 +1,9 @@
 import React from 'react';
 import { Modal, Input, Button } from 'semantic-ui-react';
 import { GlobalContext } from '../../context/globalcontext';
+import { OptionsBase } from '../base/optionsmodal_base';
 import { BetaTachyonSettings } from '../../model/worker';
+import { BetaTachyonPresets } from './btpresets';
 
 interface InternalSettings {
     name?: string,
@@ -25,16 +27,14 @@ interface InternalSettings {
     score: number | string,
     // Power Rank Within Skill Order
     triplet: number | string,
-    // Magic Number
+    // Magic Number    
     magic: number | string,
     // Retrieval Odds
     retrieval: number | string,
     // Quipment Score
     quipment: number | string,
     // Voyage Group Sparsity
-    groupSparsity: number | string,
-    // Rareness
-    rareness: number | string
+    groupSparsity: number | string
 }
 
 export interface BetaTachyonSettingsConfig {
@@ -43,8 +43,8 @@ export interface BetaTachyonSettingsConfig {
 	defaultOptions: BetaTachyonSettings;
 }
 
-export interface BetaTachyonSettingsProps {
-    config: BetaTachyonSettingsConfig;
+export interface BetaTachyonSettingsProps {	
+    config: BetaTachyonSettingsConfig;    
 	renderTrigger?: () => JSX.Element;
 	setIsOpen: (value: boolean) => void;
 	isOpen: boolean;
@@ -66,7 +66,6 @@ export function settingsToPermalink(settings: BetaTachyonSettings) {
     params.set("magic", settings.magic.toString());
     params.set("quip", settings.quipment.toString());
     params.set("gs", settings.groupSparsity.toString());
-    params.set("rn", settings.rareness.toString());
 
     if (settings.name) {
         params.set('name', settings.name);
@@ -82,7 +81,7 @@ export function settingsToPermalink(settings: BetaTachyonSettings) {
 
 export function permalinkToSettings() {
     if (!globalThis.window) return undefined;
-    let params = new URLSearchParams(globalThis.window.location.search);
+    let params = new URLSearchParams(globalThis.window.location.search);    
     if (!params.size) return undefined;
 
     let newConfig = {
@@ -101,14 +100,13 @@ export function permalinkToSettings() {
         retrieval: Number.parseFloat(params.get("odds") ?? DefaultBetaTachyonSettings.retrieval.toString()),
         quipment: Number.parseFloat(params.get("quip") ?? DefaultBetaTachyonSettings.quipment.toString()),
         groupSparsity: Number.parseFloat(params.get("gs") ?? DefaultBetaTachyonSettings.groupSparsity.toString()),
-        rareness: Number.parseFloat(params.get("rn") ?? DefaultBetaTachyonSettings.rareness.toString()),
     } as BetaTachyonSettings;
 
     Object.keys(DefaultBetaTachyonSettings).forEach(k => {
         if (k !== 'name') {
             if (newConfig[k] === undefined || Number.isNaN(newConfig[k])) {
                 newConfig[k] = DefaultBetaTachyonSettings[k];
-            }
+            }    
         }
     });
 
@@ -118,48 +116,48 @@ export function permalinkToSettings() {
 }
 
 export const DefaultBetaTachyonSettings = {
-    // Magic number
-    magic: 10,
+    // Voyages Improved
+    improved: 1,
     // Base Power Score
     power: 3,
+    // Effort To Max
+    citeEffort: 0.75,
+    // Antimatter Traits
+    antimatter: 0.1,
+    // In Portal Now
+    portal: 1.5,
+    // In Portal Ever
+    never: 3,
+    // Stat-Boosting Collections Increased
+    collections: 2,
     // Skill-Order Rarity
     skillRare: 2,
     // Overall Roster Power Rank
     score: 1,
     // Power Rank Within Skill Order
     triplet: 3,
-    // Rareness
-    rareness: 1,
-    // Effort To Max
-    citeEffort: 0.75,
-    // Antimatter Traits
-    antimatter: 0.1,
-    // Stat-Boosting Collections Increased
-    collections: 2,
-    // In Portal Now
-    portal: 1.5,
-    // In Portal Ever
-    never: 3,
+    // Magic number
+    magic: 10,
     // Retrieval odds
     retrieval: 3,
     // Quipment Score
     quipment: 0.5,
-    // Voyages Improved
-    improved: 1,
     // Voyage Group Sparsity
     groupSparsity: 2,
 } as BetaTachyonSettings;
 
-const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
+const BetaTachyonSettingsPopup = <T extends OptionsBase>(props: BetaTachyonSettingsProps) => {
 	const context = React.useContext(GlobalContext);
     const { t, tfmt } = context.localized;
-	const { config } = props;
+	const { config } = props;    
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 	const inputRef = React.createRef<Input>();
+
+    const [workConf, setWorkConf] = React.useState(config);
     const [innerSettings, setInnerSettings] = React.useState<InternalSettings>({ ... DefaultBetaTachyonSettings, ... config.current });
 
     const [showCopied, setShowCopied] = React.useState(false);
-
+    
     // if (typeof window !== 'undefined' && document.location.search) {
     //     let parm = new URLSearchParams();
     //     if (parm.get("pmc")?.length) {
@@ -202,19 +200,19 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
 			<Modal.Actions>
                 <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end'}}>
                     <div style={{ display: 'flex', gap: "0.5em", flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'flex-end'}}>
-                        <Button
+                        <Button 
                             style={{alignSelf: "flex-start"}}
                             content={t('global.permalink')}
                             icon={showCopied ? 'green chain' : 'chain'}
-
+                            
                             onClick={() => copyPermalink()} />
-
+                            
                         <Button style={{alignSelf: "flex-end"}} content={t('global.load_default_settings')} onClick={() => setCurrent(DefaultBetaTachyonSettings)} />
                     </div>
                     <div style={{ display: 'flex', gap: "0.5em", flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'flex-end'}}>
                         {/* <BetaTachyonPresets activeSettings={innerSettingsToSettings()} setActiveSettings={setCurrent} /> */}
                         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'flex-end'}}>
-                            <Button
+                            <Button 
                                     style={{alignSelf: "flex-end"}}
                                     color='blue'
                                     content={t('global.save')}
@@ -225,10 +223,10 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
                     </div>
                 </div>
 			</Modal.Actions>
-		</Modal>
+		</Modal>		
 	);
 
-    function renderGrid(): JSX.Element {
+    function renderGrid(): JSX.Element {                       
 
         const rowStyle = {
             display: "flex",
@@ -251,29 +249,166 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
             padding: "0.5em 1em"
         }
 
-        return (
-            <div style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "stretch",
-                alignItems: "center",
-                textAlign: 'left',
-                overflowY: 'auto',
-                maxHeight: '40em'
-            }}>
-                {Object.keys(DefaultBetaTachyonSettings).map((key) => {
-                    return (<div style={rowStyle} key={`bt_setting_${key}`}>
-                        <div style={textStyle}>{t(`cite_opt.btp.settings.${key}`)}:</div>
-                        <Input
-                            style={inputStyle}
-                            placeholder="Value"
-                            value={innerSettings[key]}
-                            onChange={(e, { value }) => setCurrent({ ... innerSettings, [key]: value })}>
-                        </Input>
-                    </div>)
-                })}
+        return <div style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "stretch",
+            alignItems: "center",
+            textAlign: 'left',
+            overflowY: 'auto',
+            maxHeight: '40em'
+        }}>
+                <div style={rowStyle}>
+                    <div style={textStyle}>{t('global.name')} ({t('global.optional')}):</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.name}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, name: value })}>
+                    </Input>                        
+                </div>
+               
+                <div style={rowStyle}>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.magic')}:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.magic}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, magic: value })}>
+                    </Input>                        
+                </div>
+               
+                <div style={rowStyle}>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.improved')}:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.improved}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, improved: value })}>
+                    </Input>                        
+                </div>
+               
+                <div style={rowStyle}>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.groupSparsity')}:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.groupSparsity}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, groupSparsity: value })}>
+                    </Input>                        
+                </div>
+               
+                <div style={rowStyle}>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.power')}:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.power}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, power: value })}>
+                    </Input>                        
+                </div>
+               
+                <div style={rowStyle}>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.citeEffort')}:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.citeEffort}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, citeEffort: value })}>
+                    </Input>                        
+                </div>
+               
+                <div style={rowStyle}>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.antimatter')}:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.antimatter}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, antimatter: value })}>
+                    </Input>                        
+                </div>
+               
+                <div style={rowStyle}>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.quipment')}:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.quipment}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, quipment: value })}>
+                    </Input>                        
+                </div>
+               
+                <div style={rowStyle}>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.portal')}:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.portal}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, portal: value })}>
+                    </Input>                        
+                </div>
+               
+                <div style={rowStyle}>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.never')}:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.never}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, never: value })}>
+                    </Input>                        
+                </div>
+               
+                <div style={rowStyle}>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.retrieval')}:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.retrieval}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, retrieval: value })}>
+                    </Input>                        
+                </div>
+    
+                <div style={rowStyle}>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.collections')}:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.collections}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, collections: value })}>
+                    </Input>                        
+                </div>
+               
+                <div style={rowStyle}>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.skillRare')}:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.skillRare}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, skillRare: value })}>
+                    </Input>                        
+                </div>
+    
+                <div style={rowStyle}>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.score')}:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.score}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, score: value })}>
+                    </Input>                        
+                </div>
+
+                <div style={rowStyle}>
+                    <div style={textStyle}>{t('cite_opt.btp.settings.triplet')}:</div>
+                    <Input
+                        style={inputStyle}
+                        placeholder="Value"
+                        value={innerSettings.triplet}
+                        onChange={(e, { value }) => setCurrent({ ... innerSettings, triplet: value })}>
+                    </Input>                        
+                </div>
+        
             </div>
-        )
     }
 
     function copyPermalink() {
@@ -294,7 +429,7 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
 
 	function renderDefaultTrigger(): JSX.Element {
 		return (
-        <Button>
+        <Button>            
             {t('global.advanced_settings')}
         </Button>
 		);
@@ -316,10 +451,9 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
             retrieval: Number.parseFloat(innerSettings.retrieval as string),
             quipment: Number.parseFloat(innerSettings.quipment as string),
             groupSparsity: Number.parseFloat(innerSettings.groupSparsity as string),
-            rareness: Number.parseFloat(innerSettings.rareness as string),
         } as BetaTachyonSettings;
     }
-	function confirmSelection(): void {
+	function confirmSelection(): void {		
 		config.setCurrent(innerSettingsToSettings());
         setModalIsOpen(false);
 	}

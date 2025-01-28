@@ -19,9 +19,9 @@ export const DEFAULT_BEHOLD_OPTIONS = {
 
 export class BeholdOptionsModal extends OptionsModal<BeholdModalOptions> {
 	static contextType = GlobalContext;
-	declare context: React.ContextType<typeof GlobalContext>;
+	context!: React.ContextType<typeof GlobalContext>;
 	state: { isDefault: boolean; isDirty: boolean; options: any; modalIsOpen: boolean; };
-	declare props: any;
+	props: any;
 
     protected getOptionGroups(): OptionGroup[] {
 		const { t } = this.context.localized;
@@ -85,7 +85,7 @@ export class BeholdOptionsModal extends OptionsModal<BeholdModalOptions> {
 
 	constructor(props: OptionsModalProps<BeholdModalOptions>) {
 		super(props);
-
+	
 		this.state = {
 			isDefault: false,
 			isDirty: false,

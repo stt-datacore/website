@@ -5,12 +5,10 @@ import { NumericOptions } from '../../model/game-elements';
 import { GlobalContext } from '../../context/globalcontext';
 
 import { IPolestar, IRosterCrew, ActionableState } from './model';
-import { RetrievalContext, sortCombosByCost } from './context';
+import { RetrievalContext } from './context';
 import { CombosPlanner } from './combosplanner';
 import { CombosGrid } from './combosgrid';
 import { filterTraits } from './utils';
-import { factorial } from '../../utils/misc';
-import { useStateWithStorage } from '../../utils/storage';
 
 interface IFuseGroups {
 	[key: string]: number[][];
@@ -22,11 +20,10 @@ type CombosModalProps = {
 
 export const CombosModal = (props: CombosModalProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
-	const { allKeystones, polestarTailors, wishlist, setWishlist, autoWishes, market } = React.useContext(RetrievalContext);
+	const { allKeystones, polestarTailors, wishlist, setWishlist } = React.useContext(RetrievalContext);
 	const { crew } = props;
-	const dbid = playerData ? `${playerData.player.dbid}/` : '';
+
 	const addedPolestars = polestarTailors.added;
 	const disabledPolestars = polestarTailors.disabled;
 
@@ -43,7 +40,6 @@ export const CombosModal = (props: CombosModalProps) => {
 	const [groupIndex, setGroupIndex] = React.useState<number>(0);
 
 	const [actionableOnlyMode, setActionableOnlyMode] = React.useState<boolean>(true);
-	const [alwaysShowPrice, setAlwaysShowPrice] = useStateWithStorage(`retrieval/always_show_polestars`, false, { rememberForever: true })
 
 	// Calc algo is always set to short now, but deep algo code should still work, if the option is ever needed
 	const [algo, setAlgo] = React.useState<string>('');
@@ -64,7 +60,7 @@ export const CombosModal = (props: CombosModalProps) => {
 			onClose={() => setModalIsOpen(false)}
 			onOpen={() => setModalIsOpen(true)}
 			trigger={renderTrigger()}
-			size='small'
+			size='tiny'
 		>
 			<Modal.Header>
 				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -78,22 +74,17 @@ export const CombosModal = (props: CombosModalProps) => {
 			</Modal.Content>
 			<Modal.Actions>
 				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-					<div style={{display: 'flex', flexDirection:'column', alignItems: 'flex-start', gap: '0.5em', justifyContent: 'flex-start'}}>
+					<div>
 						{showModeToggler && (
 							<Checkbox
-								label={t('retrieval.hide_combos_with_unowned_polestars')}
+								label='Hide combos with unowned polestars'
 								checked={actionableOnlyMode}
 								onChange={(e, { checked }) => setActionableOnlyMode(checked as boolean)}
 							/>
 						)}
-						<Checkbox
-							label={t('retrieval.price.all')}
-							checked={alwaysShowPrice}
-							onChange={(e, { checked }) => setAlwaysShowPrice(checked as boolean)}
-						/>
 					</div>
 					<Button onClick={() => setModalIsOpen(false)}>
-						{t('global.close')}
+						Close
 					</Button>
 				</div>
 			</Modal.Actions>
@@ -103,13 +94,13 @@ export const CombosModal = (props: CombosModalProps) => {
 	function renderTrigger(): JSX.Element {
 		if (playerData) {
 			if (crew.actionable === ActionableState.PostTailor)
-				return <Button compact color='blue'>{t('global.view_options')}</Button>;
+				return <Button compact color='blue'>View options</Button>;
 			else if (crew.actionable === ActionableState.PreTailor)
-				return <Button compact color='orange'>{t('retrieval.polestars_needed')}</Button>;
+				return <Button compact color='orange'>Polestars needed</Button>;
 			else if (crew.actionable === ActionableState.Viable)
-				return <Button compact color='yellow'>{t('retrieval.polestars_needed')}</Button>;
+				return <Button compact color='yellow'>Polestars needed</Button>;
 		}
-		return <Button compact>{t('global.view_options')}</Button>;
+		return <Button compact>View options</Button>;
 	}
 
 	function renderSubhead(): JSX.Element {
@@ -119,7 +110,7 @@ export const CombosModal = (props: CombosModalProps) => {
 			if (!actionableOnlyMode || (crew.actionable !== ActionableState.Now && crew.actionable !== ActionableState.PostTailor)) {
 				return (
 					<div style={{ fontSize: '1rem', fontWeight: 'normal' }}>
-						{t('retrieval.showing_all_potential')}
+						Showing <b>ALL POTENTIAL</b> retrieval options
 					</div>
 				);
 			}
@@ -137,7 +128,7 @@ export const CombosModal = (props: CombosModalProps) => {
 				let groupOptions: NumericOptions[] = [];
 				if (fuseIndex > 1) {
 					groupOptions = groups.map((group, groupId) => {
-						return { key: groupId, value: groupId, text: t('retrieval.option_n', { n: `${(groupId+1)}` }) };
+						return { key: groupId, value: groupId, text: 'Option '+(groupId+1) };
 					});
 					// Only show first 200 options
 					if (groupOptions.length > 200)
@@ -146,8 +137,7 @@ export const CombosModal = (props: CombosModalProps) => {
 
 				return (
 					<div style={{ fontSize: '1rem', fontWeight: 'normal' }}>
-						{fuseIndex > 1 && <>{t('retrieval.use_all_combos_below_to_retrieve')}</>}
-						{fuseIndex <= 1 && <>{t('retrieval.use_any_combo_below_to_retrieve')}</>}
+						Use <b>{fuseIndex > 1 ? 'ALL combos' : 'any combo'}</b> below to retrieve
 						{fuseOptions.length > 1 && (
 							<Dropdown
 								style={{ marginLeft: '1em' }}
@@ -174,7 +164,7 @@ export const CombosModal = (props: CombosModalProps) => {
 
 		return (
 			<div style={{ fontSize: '1rem', fontWeight: 'normal' }}>
-				{t('retrieval.use_any_combo_below_to_retrieve')}
+				Use <b>any combo</b> below to retrieve
 			</div>
 		);
 	}
@@ -182,27 +172,13 @@ export const CombosModal = (props: CombosModalProps) => {
 	function renderWishlist(): JSX.Element {
 		if (!playerData) return <></>;
 		const onWishlist = wishlist.includes(crew.symbol);
-		const autoWish = autoWishes.includes(crew.symbol) && !wishlist.includes(crew.symbol);
-
-		let content = '';
-
-		if (autoWish && !onWishlist) {
-			content = `${t('retrieval.wishlist.add')} (${t('retrieval.wishlist.auto')})`;
-		}
-		else if (onWishlist) {
-			content = `${t('retrieval.wishlist.remove')}`;
-		}
-		else {
-			content = `${t('retrieval.wishlist.add')}`;
-		}
-
 		return (
 			<Popup
-				content={content}
+				content={onWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
 				trigger={(
 					<Icon
-						name={onWishlist || autoWish ? 'heart' : 'heart outline'}
-						color={onWishlist && !autoWish ? 'pink' : undefined}
+						name={onWishlist ? 'heart' : 'heart outline'}
+						color={onWishlist ? 'pink' : undefined}
 						onClick={toggleWishlist}
 						style={{ cursor: 'pointer' }}
 					/>
@@ -231,7 +207,7 @@ export const CombosModal = (props: CombosModalProps) => {
 						<Message>
 							<CombosPlanner uniqueCombos={uniqueCombos} />
 						</Message>
-						<CombosGrid alwaysShowPrice={alwaysShowPrice} combos={uniqueCombos} fuseIndex={fuseIndex} />
+						<CombosGrid combos={uniqueCombos} fuseIndex={fuseIndex} />
 					</React.Fragment>
 				);
 			}
@@ -263,12 +239,12 @@ export const CombosModal = (props: CombosModalProps) => {
 							)}
 						</Message>
 					)}
-					<CombosGrid alwaysShowPrice={alwaysShowPrice} combos={combos} fuseIndex={fuseIndex} />
+					<CombosGrid combos={combos} fuseIndex={fuseIndex} />
 				</React.Fragment>
 			);
 		}
 
-		return <CombosGrid alwaysShowPrice={alwaysShowPrice} combos={uniqueCombos} fuseIndex={1} />;
+		return <CombosGrid combos={uniqueCombos} fuseIndex={1} />;
 	}
 
 	function preCalculateCombos(): void {
@@ -297,9 +273,6 @@ export const CombosModal = (props: CombosModalProps) => {
 			);
 
 			const [tailoredCount, tailoredCombos] = getCombos(crew, tailoredPolestars);
-			tailoredCombos.sort((a, b) => {
-				return a.map(aa => aa.symbol).join().localeCompare(b.map(aa => aa.symbol).join())
-			})
 			if (tailoredCombos && tailoredCombos.length > 0) {
 				let fuseGroups: IFuseGroups;
 				if (algo === 'deep')
@@ -342,6 +315,14 @@ export const CombosModal = (props: CombosModalProps) => {
 		result = factorial(n) / (factorial(n - r) * factorial(r));
 		if (result < n) result = n * 5;
 		return [result, combos];
+	}
+
+	function factorial(number: number) {
+		let result = 1;
+		for (let i = 1; i <= number; i++) {
+			result *= i;
+		}
+		return result;
 	}
 
 	interface ComboTrack {
@@ -400,15 +381,15 @@ export const CombosModal = (props: CombosModalProps) => {
 
 			for (let n = 0; n < duplications.length; n++) {
 				comboout[f].push([duplications[n]]);
-				// let ps = combos[duplications[n]].map(z => { return { id: z?.id, quantity: quantify(z), used: 1 } as ComboTrack });
+				let ps = combos[duplications[n]].map(z => { return { id: z?.id, quantity: quantify(z), used: 1 } as ComboTrack });
 
 				let cc = 1;
 				seen[n] = true;
 
 				for (let y = 0; y < duplications.length; y++) {
 					if (seen[y]) continue;
-					// let xs = combos[duplications[y]].map(z => { return { id: z?.id, quantity: quantify(z), used: 1 } as ComboTrack });
-					//if (!dingCT(ps, xs)) break;
+					let xs = combos[duplications[y]].map(z => { return { id: z?.id, quantity: quantify(z), used: 1 } as ComboTrack });
+					if (!dingCT(ps, xs)) continue;
 
 					comboout[f][option].push(duplications[y]);
 					seen[y] = true;
@@ -456,24 +437,6 @@ export const CombosModal = (props: CombosModalProps) => {
 			})
 			result[key] = numres;
 		}
-		Object.keys(result).forEach((key) => {
-			if (key === 'x1') return;
-			result[key] = result[key].filter((group => {
-				let counts = {} as any;
-				let no = false;
-				group.forEach((cidx) => {
-					let combo = combos[cidx];
-					for (let i of combo) {
-						counts[i.symbol] ??= 0;
-						counts[i.symbol]++;
-						if (counts[i.symbol] > i.owned) {
-							no = true;
-						}
-					}
-				});
-				return !no;
-			}));
-		});
 		return result;
 	}
 

@@ -1,8 +1,6 @@
 import { CrewMember } from "./crew";
 import { MilestoneBuff, Reward } from "./player";
 
-export const POST_BIGBOOK_EPOCH = new Date('2024-12-24T00:00:00Z');
-
 export type Variant = {
   name: string;
   trait_variants: CrewMember[];
@@ -38,7 +36,6 @@ export interface KeystoneBase {
   short_name: string;
   flavor: string;
   icon: Icon;
-  imageUrl?: string;
   rarity?: number;
   filter?: PolestarFilter;
   crew_archetype_id?: number;
@@ -105,7 +102,6 @@ export interface ConstellationMap {
 
 export interface Collection {
   id: number;
-  type_id?: number
   name: string;
   crew?: string[];
   description?: string;

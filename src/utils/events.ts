@@ -4,58 +4,35 @@ import { CompletionState, Content, GameEvent, Shuttle } from '../model/player';
 import { IBestCombos, IEventCombos, IEventData, IEventPair, IEventScoredCrew, IEventSkill, IRosterCrew } from '../components/eventplanner/model';
 import { EventInstance } from '../model/events';
 import CONFIG from '../components/CONFIG';
-import { applySkillBuff, crewCopy, getShortNameFromTrait, getVariantTraits } from './crewutils';
+import { applySkillBuff, crewCopy } from './crewutils';
 import { BuffStatTable } from './voyageutils';
 import { IDefaultGlobal } from '../context/globalcontext';
 import { Ship } from '../model/ship';
-import { TraitNames } from '../model/traits';
 
-export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allShips?: Ship[], lastEvent?: GameEvent): IEventData | undefined {
+export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allShips?: Ship[]): IEventData | undefined {
+	const result = {} as IEventData;
+	result.symbol = activeEvent.symbol;
+	result.name = activeEvent.name;
+	result.description = activeEvent.description;
+	result.bonus_text = activeEvent.bonus_text;
+	result.content_types = activeEvent.content_types;
+	result.seconds_to_start = activeEvent.seconds_to_start;
+	result.seconds_to_end = activeEvent.seconds_to_end;
 
-	if (!activeEvent?.phases?.length) return undefined;
+	// We can get event image more definitively by fetching from events/instance_id.json rather than player data
+	result.image = activeEvent.phases[0].splash_image.file.slice(1).replace(/\//g, '_') + '.png';
 
-	const result: IEventData = {
-		symbol: activeEvent.symbol,
-		name: activeEvent.name,
-		description: activeEvent.description,
-		bonus_text: activeEvent.bonus_text,
-		content_types: activeEvent.content_types,
-		seconds_to_start: activeEvent.seconds_to_start,
-		seconds_to_end: activeEvent.seconds_to_end,
+	result.featured = [];
+	result.bonus = [];
 
-		// We can get event image more definitively by fetching from events/instance_id.json rather than player data
-		image: activeEvent?.phases[0].splash_image.file.slice(1).replace(/\//g, '_') + '.png',
-
-		// Bonus crew by symbol
-		featured: [],
-		bonus: [],
-
-		// Bonus ships by symbol
-		featured_ships: [],
-		bonus_ships: []
-	};
-
-	// activeContent holds details about the active phase of a started event or the first phase of an unstarted event
-	let activeContent: Content | undefined = undefined;
-
-	// Content from autosynced events is an array of activeContents, taken at various sync times
-	//	Assume the last content here is the most recent content
-	if (Array.isArray(activeEvent.content)) {
-		if (activeEvent.content.length > 0)
-			activeContent = activeEvent.content[activeEvent.content.length - 1];
-	}
-	else {
-		activeContent = activeEvent.content;
-	}
-
-	if (!activeContent) return result;
-
-	result.activeContent = activeContent;
-
-	// Standardize lists of bonus crew and ships
+	// Content is active phase of started event or first phase of unstarted event
 	//	This may not catch all bonus crew in hybrids, e.g. "dirty" shuttles while in phase 2 skirmish
-	if (activeContent.content_type === 'shuttles' && activeContent.shuttles) {
-		activeContent.shuttles.forEach((shuttle: Shuttle) => {
+	const activePhase = (Array.isArray(activeEvent.content) ? activeEvent.content[activeEvent.content.length-1] : activeEvent.content) as Content;
+
+	if (!activePhase) return result;
+
+	if (activePhase.content_type === 'shuttles' && activePhase.shuttles) {
+		activePhase.shuttles.forEach((shuttle: Shuttle) => {
 			for (let symbol in shuttle.crew_bonuses) {
 				if (!result.bonus.includes(symbol)) {
 					result.bonus.push(symbol);
@@ -64,27 +41,27 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 			}
 		});
 	}
-	else if (activeContent.content_type === 'gather' && activeContent.crew_bonuses) {
-		for (let symbol in activeContent.crew_bonuses) {
+	else if (activePhase.content_type === 'gather' && activePhase.crew_bonuses) {
+		for (let symbol in activePhase.crew_bonuses) {
 			if (!result.bonus.includes(symbol)) {
 				result.bonus.push(symbol);
-				if (activeContent.crew_bonuses[symbol] === 10) result.featured.push(symbol);
+				if (activePhase.crew_bonuses[symbol] === 10) result.featured.push(symbol);
 			}
 		}
 	}
-	else if (activeContent.content_type === 'skirmish') {
-		if (activeContent.bonus_crew) {
-			for (let i = 0; i < activeContent.bonus_crew.length; i++) {
-				let symbol = activeContent.bonus_crew[i];
+	else if (activePhase.content_type === 'skirmish') {
+		if (activePhase.bonus_crew) {
+			for (let i = 0; i < activePhase.bonus_crew.length; i++) {
+				let symbol = activePhase.bonus_crew[i];
 				if (!result.bonus.includes(symbol)) {
 					result.bonus.push(symbol);
 					result.featured.push(symbol);
 				}
 			}
 		}
-		// Skirmish uses content.bonus_traits to identify smaller bonus event crew
-		if (activeContent.bonus_traits) {
-			activeContent.bonus_traits.forEach(trait => {
+		// Skirmish uses activePhase.bonus_traits to identify smaller bonus event crew
+		if (activePhase.bonus_traits) {
+			activePhase.bonus_traits.forEach(trait => {
 				const perfectTraits = allCrew.filter(crew => crew.traits.includes(trait) || crew.traits_hidden.includes(trait));
 				perfectTraits.forEach(crew => {
 					if (!result.bonus.includes(crew.symbol)) {
@@ -93,42 +70,88 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 				});
 			});
 		}
-
-		if (activeContent.event_ships && allShips) {
-			result.featured_ships = activeContent.event_ships.map(sId => allShips.find(ship => ship.archetype_id === sId)!.symbol);
-		}
 	}
-	else if (activeContent.content_type === 'voyage') {
-		result.bonus = activeContent.featured_crews?.slice () ?? [];
-		result.featured = activeContent.featured_crews?.slice () ?? [];
+	else if (activePhase.content_type === 'voyage') {
 
-		// Voyages use content.antimatter_bonus_crew_traits to identify smaller bonus event crew
-		activeContent.antimatter_bonus_crew_traits?.forEach(bonusTrait => {
-			allCrew.filter(crew =>
-				crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait)
-			).forEach(crew => {
-				if (!result.bonus.includes(crew.symbol))
-					result.bonus.push(crew.symbol);
-			});
-		});
+		result.bonus_detail = [];
 
-		if (allShips?.length) {
-			result.bonus_ships = activeContent.featured_ships?.slice() ?? [];
-			result.featured_ships = activeContent.featured_ships?.slice() ?? [];
-			activeContent.antimatter_bonus_ship_traits?.forEach(bonusTrait => {
-				allShips.filter(ship =>
-					ship.traits?.includes(bonusTrait) || ship.traits_hidden?.includes(bonusTrait)
-				).forEach(ship => {
-					if (!result.bonus_ships.includes(ship.symbol))
-						result.bonus_ships.push(ship.symbol);
+		if (activePhase.featured_crews) {
+			for (let i = 0; i < activePhase.featured_crews.length; i++) {
+				let symbol = activePhase.featured_crews[i];
+				if (!result.bonus.includes(symbol)) {
+					result.bonus.push(symbol);
+					result.featured.push(symbol);
+				}
+			}
+		}
+		// Voyages uses activePhase.antimatter_bonus_crew_traits to identify smaller bonus event crew
+		if (activePhase.antimatter_bonus_crew_traits) {
+			activePhase.antimatter_bonus_crew_traits.forEach((trait, idx) => {
+				const perfectTraits = allCrew.filter(crew => crew.traits.includes(trait) || crew.traits_hidden.includes(trait));
+				perfectTraits.forEach(crew => {
+					if (!result.bonus.includes(crew.symbol)) {
+						result.bonus.push(crew.symbol);
+					}
+					let detail = result.bonus_detail?.find(f => f.symbol === crew.symbol);
+					if (detail) {
+						detail.amount += activePhase.antimatter_bonus_per_crew_trait!;
+					}
+					else {
+						result.bonus_detail?.push({
+							symbol: crew.symbol,
+							amount: activePhase.antimatter_bonus_per_crew_trait!
+						});
+					}
 				});
 			});
+		}
+
+		result.featured.forEach((symbol) => {
+			let detail = result.bonus_detail?.find(f => f.symbol === symbol);
+			if (detail) {
+				detail.amount = activePhase.antimatter_bonus_for_featured_crew!
+			}
+			else {
+				result.bonus_detail?.push({
+					symbol,
+					amount: activePhase.antimatter_bonus_for_featured_crew!
+				});
+			}
+		})
+
+		if (allShips?.length) {
+			result.bonus_ship ??= [];
+			result.featured_ship ??= [];
+			if (activePhase.featured_ships) {
+				for (let i = 0; i < activePhase.featured_ships.length; i++) {
+					let symbol = activePhase.featured_ships[i];
+					if (!result.bonus_ship.includes(symbol)) {
+						result.bonus_ship.push(symbol);
+						result.featured_ship.push(symbol);
+					}
+				}
+			}
+			// Voyages uses activePhase.antimatter_bonus_crew_traits to identify smaller bonus event crew
+			if (activePhase.antimatter_bonus_ship_traits) {
+				result.bonus_ship_traits = [...activePhase.antimatter_bonus_ship_traits];
+				activePhase.antimatter_bonus_ship_traits.forEach(trait => {
+					const perfectTraits = allShips.filter(ship => ship.traits?.includes(trait) || ship.traits_hidden?.includes(trait));
+					perfectTraits.forEach(crew => {
+						if (!result.bonus_ship?.includes(crew.symbol)) {
+							result.bonus_ship?.push(crew.symbol);
+						}
+					});
+				});
+			}
+
+			result.primary_skill = activePhase.primary_skill;
+			result.secondary_skill = activePhase.secondary_skill;
 		}
 	}
 
 	// Guess featured crew when not explicitly listed in event data (e.g. pre-start skirmish or hybrid w/ phase 1 skirmish)
 	if (result.bonus.length === 0) {
-		const { bonus, featured } = guessBonusCrew(activeEvent, allCrew, lastEvent);
+		const { bonus, featured } = guessBonusCrew(activeEvent, allCrew);
 		result.bonus = bonus;
 		result.featured = featured;
 		result.bonusGuessed = true;
@@ -164,7 +187,7 @@ export function guessCurrentEventId(allEvents: EventInstance[]): number {
 	// Otherwise use ultimate event
 	//	Note: DataCore autosyncs events at ~1PM ET every day, so there might be some lag on Wednesday
 	const currentIndex = ((estDay === 3 && estHour >= 12) || estDay > 3 || estDay === 0 || (estDay === 1 && estHour < 12)) ? 2 : 1; // start < 24*60*60 ? 2 : 1;
-	return allEvents[allEvents.length-currentIndex]?.instance_id || 0;
+	return allEvents[allEvents.length-currentIndex].instance_id;
 }
 
 // Get seconds to event start, end from current time
@@ -216,15 +239,11 @@ export async function getRecentEvents(allCrew: CrewMember[], allEvents: EventIns
 	const currentEventId = guessCurrentEventId(allEvents);
 
 	let index = 1;
-	let lastEvent = undefined as GameEvent | undefined;
-
 	while (recentEvents.length < 2) {
-		const eventId = allEvents[allEvents.length-index]?.instance_id || 0;
-		if (!eventId) break;
+		const eventId = allEvents[allEvents.length-index].instance_id;
 		const response = await fetch('/structured/events/'+eventId+'.json');
 		const json = await response.json();
-		const eventData = getEventData(json, allCrew, allShips, lastEvent) as IEventData;
-		lastEvent = json;
+		const eventData = getEventData(json, allCrew, allShips) as IEventData;
 		if (eventId === currentEventId) {
 			eventData.seconds_to_start = start;
 			eventData.seconds_to_end = end;
@@ -241,11 +260,10 @@ export async function getRecentEvents(allCrew: CrewMember[], allEvents: EventIns
 	return recentEvents;
 }
 
-function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent?: GameEvent): { bonus: string[], featured: string[] } {
+function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[]): { bonus: string[], featured: string[] } {
 	const bonus = [] as string[];
 	const featured = [] as string[];
-	const leLegend = lastEvent?.ranked_brackets[0].rewards.find(f => f.type === 1 && f.rarity === 5);
-	const leSuperRare = activeEvent?.ranked_brackets[0].rewards.find(f => f.type === 1 && f.rarity === 4);
+
 	for (let threshold of activeEvent.threshold_rewards) {
 		for (let reward of threshold.rewards) {
 			if (allCrew.some(c => c.symbol === reward.symbol && c.max_rarity === 5)) {
@@ -272,32 +290,8 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent
 			const testName = trait.trim();
 			const perfectName = allCrew.find(crew => (crew.name_english ?? crew.name) === testName);
 			if (perfectName) {
-				let altPass = false;
-				if (leLegend) {
-					const altLegend = allCrew.find(crew => leLegend.symbol === crew.symbol && getVariantTraits(crew).some(trait => perfectName.traits_hidden.includes(trait)));
-					if (altLegend) {
-						altPass = true;
-						if (!featured.includes(altLegend.symbol))
-							featured.push(altLegend.symbol);
-						if (!bonus.includes(altLegend.symbol))
-							bonus.push(altLegend.symbol);
-					}
-				}
-				if (!altPass && leSuperRare) {
-					const altSuperRare = allCrew.find(crew => leSuperRare.symbol === crew.symbol && getVariantTraits(crew).some(trait => perfectName.traits_hidden.includes(trait)));
-					if (altSuperRare) {
-						altPass = true;
-						if (!featured.includes(altSuperRare.symbol))
-							featured.push(altSuperRare.symbol);
-						if (!bonus.includes(altSuperRare.symbol))
-							bonus.push(altSuperRare.symbol);
-					}
-				}
-
-				if (!altPass) {
-					if (!featured.includes(perfectName.symbol))
-						featured.push(perfectName.symbol);
-				}
+				if (!featured.includes(perfectName.symbol))
+					featured.push(perfectName.symbol);
 
 				if (!bonus.includes(perfectName.symbol))
 					bonus.push(perfectName.symbol);
@@ -312,18 +306,27 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent
 							bonus.push(crew.symbol);
 					});
 				}
+				// Otherwise try matching last name only (e.g. J. Archer should be Archer)
 				else {
+					if (/\s/.test(testName)) {
+						const imperfectTrait = testName.replace(/^.+\s/, '').toLowerCase();
+						const imperfectTraits = allCrew.filter(crew => crew.traits.includes(imperfectTrait) || crew.traits_hidden.includes(imperfectTrait));
+						imperfectTraits.forEach(crew => {
+							if (!bonus.includes(crew.symbol))
+								bonus.push(crew.symbol);
+						});
+					}
 					// Plural of trait
-					if (testTrait.endsWith('s')) {
+					else if (testTrait.endsWith('s')) {
 						const imperfectTrait = testTrait.slice(0, testTrait.length - 1);
-						const imperfectTraits = allCrew.filter(crew => crew.traits.some(trait => trait.replace(/_/g, '') === imperfectTrait) || crew.traits_hidden.some(trait => trait.replace(/_/g, '') === imperfectTrait));
+						const imperfectTraits = allCrew.filter(crew => crew.traits.includes(imperfectTrait) || crew.traits_hidden.includes(imperfectTrait));
 						imperfectTraits.forEach(crew => {
 							if (!bonus.includes(crew.symbol))
 								bonus.push(crew.symbol);
 						});
 					}
 					// Timelines originals
-					else if (testTrait === 'sttoriginals') {
+					else if (testTrait === 'stt originals') {
 						const imperfectTrait = 'original';
 						const imperfectTraits = allCrew.filter(crew => crew.traits.includes(imperfectTrait) || crew.traits_hidden.includes(imperfectTrait));
 						imperfectTraits.forEach(crew => {
@@ -331,26 +334,8 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent
 								bonus.push(crew.symbol);
 						});
 					}
-					// Otherwise try matching last name only (e.g. J. Archer should be Archer)
-					else if (/\s/.test(testName)) {
-						const imperfectTrait = testName.replace(/^.+\s/, '').toLowerCase();
-						const imperfectTraits = allCrew.filter(crew => {
-							if (crew.traits.includes(imperfectTrait) || crew.traits_hidden.includes(imperfectTrait)) return true;
-							let c = getVariantTraits(crew).map((trait) => getShortNameFromTrait(trait, crew));
-							if (c.some(s => s === testName)) return true;
-							return false;
-						});
-						imperfectTraits.forEach(crew => {
-							if (!bonus.includes(crew.symbol))
-								bonus.push(crew.symbol);
-						});
-					}
 				}
 			}
-			if (leLegend && !featured.includes(leLegend.symbol!)) featured.push(leLegend.symbol!);
-			if (leLegend && !bonus.includes(leLegend.symbol!)) bonus.push(leLegend.symbol!);
-			if (leSuperRare && !featured.includes(leSuperRare.symbol!)) featured.push(leSuperRare.symbol!);
-			if (leSuperRare && !bonus.includes(leSuperRare.symbol!)) bonus.push(leSuperRare.symbol!);
 			// Identify featured from matching featured_crew
 			//	These usually include the event's legendary ranked reward, so check against the bonus crew we identified above
 			activeEvent.featured_crew.forEach(crew => {
@@ -394,33 +379,10 @@ export function calculateGalaxyChance(skillValue: number) : number {
 }
 
 function getBonus(crew: IEventScoredCrew, eventData: IEventData, low: number, high: number, detail?: boolean) {
-	if (detail) {
-		let amount: number = 0;
-		const activeContent: Content | undefined = eventData.activeContent;
-		if (activeContent) {
-			if (activeContent.featured_crews?.includes(crew.symbol)) {
-				amount = activeContent.antimatter_bonus_for_featured_crew ?? high;
-			}
-			else {
-				if (activeContent.antimatter_bonus_crew_traits?.some(trait => (crew.traits.includes(trait) || crew.traits_hidden.includes(trait)))) {
-					amount = (activeContent.antimatter_bonus_per_crew_trait ?? low);
-				}
-				// activeContent.antimatter_bonus_crew_traits?.forEach(trait => {
-				// 	if (crew.traits.includes(trait) || crew.traits_hidden.includes(trait)) {
-				// 		amount += (activeContent.antimatter_bonus_per_crew_trait ?? low);
-				// 	}
-				// });
-			}
-		}
-		else {
-			if (eventData.featured.includes(crew.symbol))
-				amount = high;
-			else if (eventData.bonus.includes(crew.symbol))
-				amount = low;
-		}
-		return amount;
+	if (detail && eventData.bonus_detail) {
+		let detail = eventData.bonus_detail.find(f => f.symbol === crew.symbol);
+		if (detail) return detail.amount;
 	}
-
 	if (eventData.featured.includes(crew.symbol) || (eventData.bonus.includes(crew.symbol) && eventData.bonusGuessed && (new Date()).getTime() - (new Date(crew.date_added)).getTime() < (14 * 24 * 60 * 60 * 1000))) {
 		return high;
 	}
@@ -453,18 +415,10 @@ export function computeEventBest(
 		}
 	}
 
-	const getVoyScore = (crew: IRosterCrew, skill: string) => {
-		return crew[skill].core + (crew[skill].min + crew[skill].max) / 2;
-	};
-
 	const getPairScore = (crew: IRosterCrew, primary: string, secondary: string) => {
 		if (phaseType === 'shuttles') {
 			if (secondary) return crew[primary].core+(crew[secondary].core/4);
 			return crew[primary].core;
-		}
-		else if (phaseType === 'voyage') {
-			if (secondary) return getVoyScore(crew, primary) + getVoyScore(crew, secondary);
-			return getVoyScore(crew, primary);
 		}
 		if (secondary) return (crew[primary].core+crew[secondary].core)/2;
 		return crew[primary].core/2;
@@ -478,7 +432,7 @@ export function computeEventBest(
 				if (phaseType === 'gather') crew.bonus = getBonus(crew, eventData, 5, 10);
 				else if (phaseType === 'shuttles') crew.bonus = getBonus(crew, eventData, 2, 3);
 				else if (phaseType === 'skirmish') crew.bonus = getBonus(crew, eventData, 1.5, 2);
-				else if (phaseType === 'voyage') crew.bonus = getBonus(crew, eventData, 50, 150, true);
+				else if (phaseType === 'voyage') crew.bonus = getBonus(crew, eventData, 50, 100, true);
 			}
 			if (crew.bonus > 1 || showPotential) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
@@ -505,9 +459,8 @@ export function computeEventBest(
 		let bestSkill: IEventSkill = { score: 0, skill: '' };
 		for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
 			const firstSkill = CONFIG.SKILLS_SHORT[first];
-			const firstSkillScore: number = phaseType === 'voyage' ? getVoyScore(crew, firstSkill.name) : crew[firstSkill.name].core;
 			const single = {
-				score: firstSkillScore,
+				score: crew[firstSkill.name].core,
 				skillA: firstSkill.name
 			};
 			combos[firstSkill.name] = single.score;
@@ -549,20 +502,7 @@ export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventDa
 
 	// Get event data from recently uploaded playerData
 	if (ephemeral?.events) {
-		let _lev = undefined as GameEvent | undefined;
-
-		if (ephemeral.events.length > 1 && ephemeral.events[0].seconds_to_start === 0) {
-			_lev = ephemeral.events[0];
-		}
-		else {
-			let lasts = globalContext.core.event_instances.filter(f => !ephemeral.events.some(e => e.instance_id === f.instance_id)).sort((a, b) => b.instance_id - a.instance_id);
-			if (lasts.length) {
-				const lastResp = await fetch(`/structured/events/${lasts[0].instance_id}.json`);
-				_lev = await lastResp.json() as GameEvent;
-			}
-		}
-		const lastEvent = _lev;
-		const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew, globalContext.core.ship_schematics.map(m => m.ship), lastEvent))
+		const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew, globalContext.core.ship_schematics.map(m => m.ship)))
 			.filter(ev => ev !== undefined).map(ev => ev as IEventData)
 			.filter(ev => ev.seconds_to_end > 0)
 			.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);
@@ -570,44 +510,6 @@ export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventDa
 	}
 	// Otherwise guess event from autosynced events
 	else {
-		return await getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.ships);
+		return await getRecentEvents(globalContext.core.crew, globalContext.core.event_instances);
 	}
 }
-
-export function guessEncounterTraits(gameEvent: GameEvent, english: TraitNames): string[] {
-	const traits: string[] = [];
-	const searchText = "Three of the following traits are randomly chosen for each Encounter:";
-	let ei: number = gameEvent.rules.indexOf(searchText);
-	if (ei !== -1) {
-		let en: number = gameEvent.rules.indexOf(".", ei + searchText.length);
-		if (en !== -1) {
-			const namedTraits: string[] = gameEvent.rules.slice(ei + searchText.length, en).split(",").map(s => s.trim());
-			Object.entries(english).forEach(([trait, text]) => {
-				if (namedTraits.includes(text)) traits.push(trait);
-			});
-		}
-	}
-	return traits;
-}
-
-export function guessEncounterTimes(gameEvent: GameEvent, as: 'minutes' | 'seconds'): number[] {
-	const values: number[] = [];
-	const searchText = "Voyage Encounters take place at the following points in time:";
-	let ei: number = gameEvent.rules.indexOf(searchText);
-	if (ei !== -1) {
-		let en: number = gameEvent.rules.indexOf("and", ei + searchText.length);
-		if (en !== -1) {
-			const namedTimes: string[] = gameEvent.rules.slice(ei + searchText.length, en).split(",").map(s => s.trim()).filter(s => s);
-			namedTimes.forEach((time) => {
-				let parts = time.split(" ");
-				let value = Number(parts[0]);
-				if (parts[1].toLocaleLowerCase().includes("hour")) value *= 60;
-				if (as == 'seconds') value *= 60;
-				values.push(value);
-			})
-		}
-	}
-	return values;
-}
-
-

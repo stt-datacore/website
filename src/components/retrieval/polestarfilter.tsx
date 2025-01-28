@@ -3,11 +3,9 @@ import { Button, Checkbox, Grid, Icon, Modal } from 'semantic-ui-react';
 
 import { IPolestar } from './model';
 import { RetrievalContext } from './context';
-import { GlobalContext } from '../../context/globalcontext';
 
 export const PolestarFilterModal = () => {
 	const { allKeystones, polestarTailors, setPolestarTailors } = React.useContext(RetrievalContext);
-	const { t } = React.useContext(GlobalContext).localized;
 
 	const disabledPolestars = polestarTailors.disabled;
 
@@ -36,17 +34,17 @@ export const PolestarFilterModal = () => {
 	};
 	const grouped: IPolestarGroup[] = [
 		{
-			title: t('base.rarity'),
+			title: 'Rarity',
 			polestars: [],
 			anyDisabled: false
 		},
 		{
-			title: t('base.skills'),
+			title: 'Skills',
 			polestars: [],
 			anyDisabled: false
 		},
 		{
-			title: t('base.traits'),
+			title: 'Traits',
 			polestars: [],
 			anyDisabled: false
 		},
@@ -72,7 +70,7 @@ export const PolestarFilterModal = () => {
 			trigger={<Button color={buttonColor}><Icon name='filter' />{selectedPolestars} / {ownedPolestars.length}</Button>}
 			size='large'
 		>
-			<Modal.Header>{t('retrieval.filter_owned_polestars')}</Modal.Header>
+			<Modal.Header>Filter Owned Polestars</Modal.Header>
 			<Modal.Content scrolling>
 				<Grid columns={4} stackable padded>
 					{createFilterCheckboxes()}
@@ -80,7 +78,7 @@ export const PolestarFilterModal = () => {
 			</Modal.Content>
 			<Modal.Actions>
 				<Button onClick={() => setModalIsOpen(false)}>
-					{t('global.close')}
+					Close
 				</Button>
 			</Modal.Actions>
 		</Modal>
@@ -113,13 +111,13 @@ export const PolestarFilterModal = () => {
 		)
 	}
 
-	function filterCheckboxGroupHeader(title: string): JSX.Element {
-		const group = grouped.find(group => group.title === title);
+	function filterCheckboxGroupHeader(t: string): JSX.Element {
+		const group = grouped.find(group => group.title === t);
 		if (!group) return <></>;
-		const groupLink = <Button style={{ marginLeft: '1em' }} size='mini' onClick={() => checkGroup(title, group.anyDisabled)}>{group.anyDisabled ? t('global.check_all') : t('global.uncheck_all')}</Button>;
+		const groupLink = <Button style={{ marginLeft: '1em' }} size='mini' onClick={() => checkGroup(t, group.anyDisabled)}>{group.anyDisabled ? 'Check' : 'Uncheck'} All</Button>;
 		return (
-			<Grid.Column largeScreen={16} mobile={4} key={title}>
-				<strong>{title}</strong> {groupLink}
+			<Grid.Column largeScreen={16} mobile={4} key={t}>
+				<strong>{t}</strong> {groupLink}
 			</Grid.Column>
 		)
 	}

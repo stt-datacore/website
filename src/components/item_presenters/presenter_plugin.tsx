@@ -1,6 +1,6 @@
 import React from "react";
 
-export interface IPresenterPlugIn<T> {
+export interface IPresenterPlugIn<T> { 
     props: T;
 }
 
@@ -27,10 +27,10 @@ export abstract class PresenterPluginBase<TContext> extends React.Component<Pres
 }
 
 export abstract class PresenterPlugin<TContext, TProps extends PresenterPluginProps<TContext>, TState extends PresenterPluginState>
-    extends PresenterPluginBase<TContext>
+    extends PresenterPluginBase<TContext> 
     implements IPresenterPlugIn<TProps>
     {
-    declare props: TProps;
+    props!: TProps;
     constructor(props: TProps)
     {
         super(props);

@@ -7,7 +7,9 @@ import { Fleet, Member } from '../../model/fleet';
 import { EventInstance } from '../../model/events';
 import { TinyStore } from '../../utils/tiny';
 import { FleetResponse } from '../../model/fleet';
+import { Faction } from '../../model/player';
 import { StaticFaction } from '../../model/shuttle';
+import { formatColString } from '../collections/overview';
 import { ColorName } from './colorname';
 import { appelate, printShortDistance } from '../../utils/misc';
 import { exportMembers } from '../../utils/fleet';
@@ -33,11 +35,11 @@ const rankOrder = ['Admiral', 'Squadron Leader', 'Officer', 'Member'];
 
 class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	static contextType = GlobalContext;
-	declare context: React.ContextType<typeof GlobalContext>;
+	context!: React.ContextType<typeof GlobalContext>;
 
-	private _tiny?: TinyStore;
-
-	protected get tiny(): TinyStore | undefined {
+	private _tiny: TinyStore;
+	
+	protected get tiny(): TinyStore {
 		return this._tiny;
 	}
 
@@ -50,7 +52,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			events: undefined,
 			access_token: undefined,
 			username: '',
-			password: '',
+			password: '',		
 			//errorTitle: "Fleet Info Returning Soon!!",
 			//errorMessage: "Fleet info will be returning soon, after some server upgrades. Watch this space!"
 		};
@@ -58,17 +60,19 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	}
 
 	componentDidMount() {
+
 		const { playerData } = this.context.player;
+		
 		if (!playerData) return;
-
-		const tiny = this._tiny = TinyStore.getStore(`fleet_info_dbid_${playerData.player.dbid}`);
-
+	
+		this._tiny = TinyStore.getStore(`fleet_info_dbid_${playerData.player.dbid}`);
+	
 		this.setState({
 			fleet_id: playerData.player.fleet.id,
 			fleet_data: undefined,
 			factions: this.context.core.factions,
 			events: this.context.core.event_instances,
-			access_token: tiny.getValue<string | undefined>('access_token', undefined)
+			access_token: this.tiny.getValue<string | undefined>('access_token', undefined)
 		});
 
 		this.refreshData();
@@ -104,7 +108,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			if (member.daily_meta_progress?.goal === -1) {
 				member.daily_meta_progress.goal = 0;
 			}
-
+			
 			member.rank = appelate(member.rank);
 		});
 
@@ -159,7 +163,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 		if (!access_token || !playerData) {
 			return;
 		}
-
+	
 		let fleet_id = playerData.player.fleet.id;
 		this.setState({ ... this.state, fleet_id });
 
@@ -172,7 +176,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			})
 			.then(response => response.json())
 			.then((fleetData: FleetResponse) => {
-				this.tiny?.setValue('access_token', fleetData.access_token, true);
+				this.tiny.setValue('access_token', fleetData.access_token, true);				
 				this.setState({ fleet_data: fleetData.fleet, access_token: fleetData.access_token });
 			})
 			.catch(err => {
@@ -212,7 +216,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 
 	private clearToken() {
 		this.setState({ ... this.state, username: '', password: '', access_token: undefined });
-		this.tiny?.removeValue("access_token");
+		this.tiny.removeValue("access_token");
 	}
 
 	private sortClick(field: string) {
@@ -234,7 +238,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	render() {
 		const { sortDirection, sortField, fleet_id, errorMessage, errorTitle, fleet_data, factions, events, access_token, username, password } = this.state;
 		const { playerData } = this.context.player;
-
+		
 		if (!playerData) return <></>;
 
 		if (!access_token) {
@@ -265,24 +269,24 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 						<p>
 							This will grant you an access token to view your fleet information that should stay current for quite a while (or until you clear your browser data.)
 						</p>
-						<p>
+						<p>						
 							This token does not enable automatically getting player data! That process is too expensive, and the player can't be known beforehand, anyway.
-						</p>
+						</p>						 
 					</b>
 					<h4>Username:</h4>
 					<Input
-						size='large'
+						size='large' 						
 						id={`u${playerData.player.dbid}_username`}
 						value={username}
-						onChange={(e, { value }) => this.setState({ ... this.state, username: value })}
+						onChange={(e, { value }) => this.setState({ ... this.state, username: value })} 
 						/>
 					<h4>Password:</h4>
-					<Input
-						size='large'
+					<Input						
+						size='large' 						
 						id={`u${playerData.player.dbid}_password`}
 						type='password'
 						value={password}
-						onChange={(e, { value }) => this.setState({ ... this.state, password: value })}
+						onChange={(e, { value }) => this.setState({ ... this.state, password: value })} 
 						/>
 					<br />
 					<Button onClick={(e) => this.signinClick()}>Sign In</Button>
@@ -421,50 +425,50 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			<Table celled selectable sortable striped collapsing unstackable compact="very">
 				<Table.Header>
 					<Table.Row>
-						<Table.HeaderCell
-							sorted={sortField === 'name' ? sortDirection : undefined}
+						<Table.HeaderCell 							
+							sorted={sortField === 'name' ? sortDirection : undefined} 
 							width={2}
 							onClick={(e) => this.sortClick('name')}
 							>
 							Name
 						</Table.HeaderCell>
-						<Table.HeaderCell
-							sorted={sortField === 'event_rank' ? sortDirection : undefined}
+						<Table.HeaderCell 
+							sorted={sortField === 'event_rank' ? sortDirection : undefined} 
 							width={1}
 							onClick={(e) => this.sortClick('event_rank')}
 							>
 							Event Rank
 						</Table.HeaderCell>
-						<Table.HeaderCell
-							sorted={sortField === 'squadron_event_rank' ? sortDirection : undefined}
+						<Table.HeaderCell 
+							sorted={sortField === 'squadron_event_rank' ? sortDirection : undefined} 
 							width={1}
 							onClick={(e) => this.sortClick('squadron_event_rank')}
 							>
 							Squad Rank
 						</Table.HeaderCell>
-						<Table.HeaderCell
-							sorted={sortField === 'squad' ? sortDirection : undefined}
+						<Table.HeaderCell 
+							sorted={sortField === 'squad' ? sortDirection : undefined} 
 							width={2}
 							onClick={(e) => this.sortClick('squad')}
 							>
 							Squadron
 						</Table.HeaderCell>
-						<Table.HeaderCell
-							sorted={sortField === 'rank' ? sortDirection : undefined}
+						<Table.HeaderCell 
+							sorted={sortField === 'rank' ? sortDirection : undefined} 
 							width={1}
 							onClick={(e) => this.sortClick('rank')}
 							>
 							Rank
 						</Table.HeaderCell>
-						<Table.HeaderCell
-							sorted={sortField === 'daily_activity' ? sortDirection : undefined}
+						<Table.HeaderCell 
+							sorted={sortField === 'daily_activity' ? sortDirection : undefined} 
 							width={1}
 							onClick={(e) => this.sortClick('daily_activity')}
 							>
 							Dailies
 						</Table.HeaderCell>
-						<Table.HeaderCell
-							sorted={sortField === 'last_active' ? sortDirection : undefined}
+						<Table.HeaderCell 
+							sorted={sortField === 'last_active' ? sortDirection : undefined} 
 							width={1}
 							onClick={(e) => this.sortClick('last_active')}
 							>
@@ -508,11 +512,11 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 									</div>
 								</div>
 							</Table.Cell>
-							<Table.Cell>{member.event_rank}</Table.Cell>
-							<Table.Cell>{member.squadron_event_rank}</Table.Cell>
+							<Table.Cell>{member.event_rank}</Table.Cell>							
+							<Table.Cell>{member.squadron_event_rank}</Table.Cell>							
 							<Table.Cell><ColorName text={member.squad} /></Table.Cell>
 							<Table.Cell>{member.rank}</Table.Cell>
-							<Table.Cell>
+							<Table.Cell>								
 								{member.daily_meta_progress?.progress} / {member.daily_meta_progress?.goal}
 								<br/>({member.daily_activity})
 							</Table.Cell>

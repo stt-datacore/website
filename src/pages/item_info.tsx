@@ -60,7 +60,7 @@ const ItemInfoPage = () => {
 
 class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoComponentState> {
 	static contextType = GlobalContext;
-	declare context: React.ContextType<typeof GlobalContext>;
+	context!: React.ContextType<typeof GlobalContext>;
 
 	private inited: boolean = false;
 	private readonly tiny = TinyStore.getStore('item_info');
@@ -203,7 +203,6 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 					crew.data = crews[symbol].join(", ");
 				}
 			}
-			if (crew && !this.context.player.playerData) crew.rarity = crew.max_rarity;
 			return crew;
 		});
 

@@ -10,11 +10,10 @@ export interface PlayerBadgeProps {
     playerData: PlayerData;
     style?: React.CSSProperties;
     t: TranslateMethod;
-    openPlayerPanel?: () => void
 }
 
 export const PlayerBadge = (props: PlayerBadgeProps) => {
-    const { playerData, style, t, openPlayerPanel } = props;
+    const { playerData, style, t } = props;
     if (!playerData) return <></>;
 
     let portrait = `${process.env.GATSBY_ASSETS_URL}${playerData?.player?.character?.crew_avatar
@@ -31,7 +30,7 @@ export const PlayerBadge = (props: PlayerBadgeProps) => {
 
     const avatar = portrait;
 
-    return <Item.Group style={{...style, cursor: openPlayerPanel ? 'pointer' : undefined }} onClick={() => openPlayerPanel ? openPlayerPanel() : null}>
+    return <Item.Group style={style}>
         <Item>
 
             <div style={{display: 'inline', textAlign: 'center'}}>

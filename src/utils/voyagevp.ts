@@ -1,25 +1,26 @@
 
-export interface RampUpEntry {
+export interface DropMapEntry {
     start: number;
-    challenges: number;
-    passive: number;
+    end: number;
+    shown: number;
+    actual: number;
+    drops: number;
+    encounter: number;
+    opponents: number;
 }
 
-const RampUpMap: RampUpEntry[] = [
-    { start: 1, challenges: 3, passive: 2 },
-    { start: 5, challenges: 3, passive: 3 },
-    { start: 15, challenges: 3, passive: 6 },
-    { start: 30, challenges: 4, passive: 12 },
-    { start: 45, challenges: 4, passive: 18 },
-    { start: 60, challenges: 4, passive: 25 },
-    { start: 90, challenges: 4, passive: 32 },
-    { start: 120, challenges: 5, passive: 39 },
-    { start: 240, challenges: 5, passive: 46 },
-    { start: 360, challenges: 5, passive: 53 },
-    { start: 480, challenges: 5, passive: 60 },
-    { start: 600, challenges: 5, passive: 67 },
-    { start: 720, challenges: 6, passive: 74 },
-   ];
+const DropMap = [
+    { start: 0, end: 30, shown: 1, actual: 1, drops: 12, encounter: 100, opponents: 3 },
+    { start: 30, end: 90, shown: 2, actual: 2, drops: 26, encounter: 400, opponents: 3 },
+    { start: 90, end: 210, shown: 3, actual: 4, drops: 51, encounter: 900, opponents: 4 },
+    { start: 210, end: 330, shown: 4, actual: 6, drops: 51, encounter: 1400, opponents: 4 },
+    { start: 330, end: 450, shown: 5, actual: 7, drops: 51, encounter: 2000, opponents: 4 },
+    { start: 450, end: 570, shown: 6, actual: 8, drops: 52, encounter: 2700, opponents: 5 },
+    { start: 570, end: 690, shown: 7, actual: 9, drops: 51, encounter: 3500, opponents: 5 },
+    { start: 690, end: 810, shown: 8, actual: 10, drops: 52, encounter: 4400, opponents: 5 },
+    { start: 810, end: 930, shown: 9, actual: 11, drops: 51, encounter: 5400, opponents: 6 },
+    { start: 930, end: 1050, shown: 10, actual: 12, drops: 52, encounter: 6500, opponents: 6 },
+   ] as DropMapEntry[];
 
 export interface VPDetails {
     seconds: number;
@@ -27,93 +28,75 @@ export interface VPDetails {
     total_vp: number;
     total_opponents: number;
     total_encounters: number;
-    vp_per_min: number;
+    is_overflow: boolean;
 }
 
 export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
-    const passiveMul = Math.ceil(bonuses.reduce((p, n) => (p) + (n * 100), 0) + 100) / 100;
+
     const vpdetails = {
         seconds,
         total_drops: 0,
         total_encounters: 0,
         total_opponents: 0,
         total_vp: 0,
-        vp_per_min: 60 / 140
+        is_overflow: true
     } as VPDetails;
 
-    const droprate = 140;
+    let dropvp = 50 + bonuses.reduce((p, n) => p + n, 0);
+    let total = 0;
+    let drops = DropMap.map(elem => ({
+        ... elem,
+        start: elem.start * 60,
+        end: elem.end * 60
+    }));
 
-    const max = RampUpMap[RampUpMap.length - 1];
-    const minutes = seconds / 60;
-
-    let multiplier = 0;
-    let encounter = 0;
-    let passive = 0;
-
-    const win = (n: number, mul: number) => (10 * (mul * mul)) * n;
-
-    for (let entry of RampUpMap) {
-        if (entry.start > minutes) break;
-        multiplier++;
-        encounter += win(entry.challenges, multiplier);
-        vpdetails.total_encounters++;
-        vpdetails.total_opponents += entry.challenges;
-    }
-
-    if (minutes > max.start) {
-        let count = max.start + 120;
-        while (count < minutes) {
-            multiplier++;
-            encounter += win(max.challenges, multiplier);
+    for (let drop of drops) {
+        if (seconds >= drop.end) {
+            total += (dropvp * drop.drops * drop.actual) + (drop.encounter * drop.opponents);
+            vpdetails.total_drops += drop.drops;
             vpdetails.total_encounters++;
-            vpdetails.total_opponents += max.challenges;
-            count += 120;
-        }
-    }
-
-    const dropmax = Math.floor(seconds / droprate) * droprate;
-    const secmax = max.start * 60;
-    const secdiv = 120 * 60;
-
-    for (let sec = droprate; sec <= dropmax; sec += droprate) {
-        if (sec >= secmax) {
-            let cpasv = Math.floor((sec - secmax) / secdiv);
-            passive += Math.floor(passiveMul * (max.passive + (cpasv * 7)));
+            vpdetails.total_opponents += drop.opponents;
         }
         else {
-            let fi = RampUpMap.findIndex(f => (f.start * 60) > sec) - 1;
-            if (fi < 0) continue;
-            let f = RampUpMap[fi];
-            passive += Math.floor(passiveMul * f.passive);
+            vpdetails.is_overflow = false;
+            let remainder = seconds - drop.start;
+            let dps = drop.drops / (drop.end - drop.start);
+            remainder *= dps;
+            vpdetails.total_drops += Math.floor(remainder);
+            total += (dropvp * drop.actual * Math.floor(remainder));
+            break;
         }
-        vpdetails.total_drops++;
     }
 
-    vpdetails.total_vp = passive + encounter;
-    vpdetails.vp_per_min = vpdetails.total_vp / minutes;
+    vpdetails.total_vp = total;
     return vpdetails;
 }
 
 
 /*
-base encounter VP is 10, and each drop is 10 x (multiplier)^2.
-The multiplier is shown during the encounter and goes up when passed. The number of rounds per encounter gradually increases.
-It starts with 3x 3 round, then 4x 4 rounds, 5x 5 rounds, and 6 for all the rest.
-example: for the very first encounter (1 min), you can get a total of 3 x 10 x 1^2 = 30 VP.
-At the 10th, it's 5 x 10 x 10^2 = 5000 VP
+50 baseline
++10 per small bonus crew (+50 or +100 AM)
++25 per featured crew (+150 AM)
 
-Passive VP
-base passive VP goes 1,2,3,6,12,18,25,32,39, [+7]..., etc. and changes at encounters
-encounter cadence is 1, 5, 15, 30, 45, 60, 90, 120, 240, [+120]..., etc. minutes
-crew VP bonuses are 15% (variant/trait) and 30% (featured)
-drops are every 140 seconds
-example: let's say you have 3 featured crew, 4 trait, 3 variant, 2 other:
-VP_bonus = 3x30% + 4x15% + 3x15% = 195%.
-The first drop happens at 2m20s, so after the first encounter,
-and the base VP per drop is 2.
-With 195% bonus, VP_drop_1 = (1 + 1.95)*2 = 5.9 -> 5VP (floored not rounded).
-The 10th drop happens at 23m20s which is after the 3rd encounter,
-so base VP is now 6 and VP_drop_10 = (1+1.95)*6 = 17.7 -> 17VP.
-Between hours 2 and 4 of the voyage, each drop is (1+1.95)*46 = 135.7 -> 135VP
+For example, if you're running 4 event crew and 8 small bonus, your VP drops will start at 230.
+
+Multipliers and encounter drops:
+
+First note: My original math was incorrect because the game lies. My notes below "shows 1x" are the in-game representation of your multiplier; the "actual 1x" is what the game actually calculates. You get +1 to your multiplier up until 1:30, then +2 for the next two encounters, then +1 for the rest of your run.
+
+Second note: The number of drops you get between encounters varies, because the drops happen at just over 140 seconds, something like 141.xx. There will be a varying number of drops as shown below as your voyage has little leap-years to catch up.
+
+Third note: Encounter math: The max chain we've observed is 6, and I don't think there is room for more in the UI. Your per-battle VP drops are NOT based on your calculated VP drop bonus, it's a straightline increment based on the previous bonus.
+
+under :30   shows 1x,  actual 1x  - 12 drops - Encounter 100  VP x 3 opponents
+0:30-1:30   shows 2x,  actual 2x  - 26 drops - Encounter 400  VP x 3 opponents (+300)
+1:30-3:30   shows 3x,  actual 4x  - 51 drops - Encounter 900  VP x 4 opponents (+400)
+3:30-5:30   shows 4x,  actual 6x  - 51 drops - Encounter 1400 VP x 4 opponents (+500)
+5:30-7:30   shows 5x,  actual 7x  - 51 drops - Encounter 2000 VP x 4 opponents (+600)
+7:30-9:30   shows 6x,  actual 8x  - 52 drops - Encounter 2700 VP x 5 opponents (+700)
+9:30-11:30  shows 7x,  actual 9x  - 51 drops - Encounter 3500 VP x 5 opponents (+800)
+11:30-13:30 shows 8x,  actual 10x - 52 drops - Encounter 4400 VP x 5 opponents (+900)
+13:30-15:30 shows 9x,  actual 11x - 51 drops - Encounter 5400 VP x 6 opponents (+1000)
+
 
 */

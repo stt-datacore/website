@@ -3,21 +3,18 @@
 import { Ship } from "./ship";
 import { BossBattlesRoot, Energy } from "./boss";
 import { CaptainsBridgeRoot } from "./bridge";
-import { BaseSkills, ComputedSkill, CapAchiever, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, Skill } from "./crew";
+import { BaseSkills, ComputedSkill, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, Skill } from "./crew";
 import { ShipAction, ShipBonus } from "./ship";
 import { EquipmentItem } from "./equipment";
 import { Collection, Icon } from "./game-elements";
 import { ShuttleAdventure } from "./shuttle";
-import { IVoyageEventContent } from "./voyage";
-import { ArchetypeRoot20 } from "./archetype";
+import { ArchetypeRoot17, ArchetypeRoot20 } from "./archetype";
 
 export const ISM_ID = 14152;
 
-export type TranslateMethod = (key: string, options?: { [key: string]: string | number }) => string;
+export type TranslateMethod = (key: string, options?: { [key: string]: string }) => string;
 
 export type PlayerBuffMode = 'none' | 'player' | 'max' | 'quipment';
-
-export type GauntletPlayerBuffMode = 'none' | 'player' | 'max' | 'quipment' | 'max_quipment_2' | 'max_quipment_3';
 
 export type PlayerImmortalMode = 'owned' | 'min' | 2 | 3 | 4 | 'full' | 'frozen' | 'shown_full';
 
@@ -154,8 +151,8 @@ export interface Character {
   stored_immortals: StoredImmortal[]
   c_stored_immortals?: number[]
   replay_energy_max: number
-  replay_energy_rate: number
-  seconds_from_replay_energy_basis: number
+  replay_energy_rate?: number
+  seconds_from_replay_energy_basis?: number
   replay_energy_overflow: number
   boost_windows?: BoostWindow[]
   seconds_from_last_boost_claim?: number
@@ -379,12 +376,6 @@ export enum CompletionState {
    * Display as immortal, no way to reference.
    * (Same as -2/DisplayAsImmortal but with different wording)
    */
-  DisplayAsImmortalSelected = -11,
-
-  /**
-   * Display as immortal, no way to reference.
-   * (Same as -2/DisplayAsImmortal but with different wording)
-   */
   DisplayAsImmortalStatic = -5,
 
   /**
@@ -433,10 +424,7 @@ export interface CompactCrew {
   level: number;
   max_level?: number;
   rarity: number;
-  max_rarity: number;
-  traits?: string[];
   equipment: number[][] | number[];
-  skill_order: string[];
   base_skills?: BaseSkills;
   skills?: BaseSkills;
   favorite?: boolean;
@@ -487,10 +475,6 @@ export interface PlayerCrew extends CrewMember, CompactCrew, IntermediateSkillDa
 
   kwipment: number[][] | number[];
   kwipment_expiration: number[][] | number[];
-
-  /** Used internally, not part of game data */
-  kwipment_prospects?: boolean;
-
   //kwipment_expirations?: Date[];
   q_bits: number;
 
@@ -674,6 +658,10 @@ export interface NodeMatches {
   [key: string]: NodeMatch;
 }
 
+export interface CapAchiever {
+  name: string
+  date: number
+}
 
 export interface PlayerEquipmentItem extends BuffBase {
   id?: number
@@ -821,7 +809,6 @@ export interface GameEvent {
   next_threshold_points?: number
   next_threshold_rewards?: any[]
   bonus?: string[];
-  discovered?: Date;
 }
 
 
@@ -861,29 +848,27 @@ export interface SquadronRankedBracket {
   quantity: number
 }
 
-  export interface Content {
-    content_type: string
-    crew_bonuses?: CrewBonuses
-    gather_pools?: GatherPool[]
-    craft_bonus?: number
-    refresh_cost?: RefreshCost
-    supports_buffs?: boolean
-    shuttles?: Shuttle[]
-    bonus_crew?: string[]
-    bonus_traits?: string[]
-    voyage_symbol?: string;	// encounter_voyage
-    primary_skill?: string;
-    secondary_skill?: string;
-    antimatter_bonus_per_crew_trait?: number;
-    antimatter_bonus_crew_traits?: string[];
-    antimatter_bonus_for_featured_crew?: number;
-    featured_crews?: string[];
-    antimatter_bonus_per_ship_trait?: number;
-    antimatter_bonus_ship_traits?: string[];
-    antimatter_bonus_for_featured_ship?: number;
-    featured_ships?: string[];
-    event_ships?: number[];
-  }
+export interface Content {
+  content_type: string
+  crew_bonuses?: CrewBonuses
+  gather_pools?: GatherPool[]
+  craft_bonus?: number
+  refresh_cost?: RefreshCost
+  supports_buffs?: boolean
+  shuttles?: Shuttle[]
+  bonus_crew?: string[]
+  bonus_traits?: string[]
+  featured_crews?: string[];
+  antimatter_bonus_for_featured_crew?: number;
+  antimatter_bonus_crew_traits?: string[];
+  antimatter_bonus_per_crew_trait?: number;
+  antimatter_bonus_ship_traits?: string[];
+  featured_ships?: string[];
+  antimatter_bonus_per_ship_trait?: number;
+  antimatter_bonus_for_featured_ship?: number;
+  primary_skill?: string;
+  secondary_skill?: string;
+}
 
 export interface CrewBonuses {
   [key: string]: number;
@@ -1109,37 +1094,13 @@ export interface Voyage {
   recalled_at: string
   completed_at: any
   voyage_duration: number
-  skill_aggregates: Aggregates
+  skill_aggregates: BaseSkills
   seconds_between_dilemmas: number
   seconds_since_last_dilemma: number
   first_leave: boolean
   time_to_next_event: number
-  ship_id: number;
-  next_interaction: number;
+  ship_id: number
   crew_slots: VoyageCrewSlot[]
-  event_content?: IVoyageEventContent;
-}
-
-export interface EncounterVoyage extends Voyage {
-    phase_id: number;
-    event_instance_id: number;
-    encounter: number;
-    encounter_skip_boost?: {
-        boost_duration: number;
-        boost_archetype: number;
-    }
-    fast_forward_boost?: {
-        estimated_hp: number;
-    }
-}
-
-export interface Aggregates {
-	command_skill: Skill;
-	science_skill: Skill;
-	security_skill: Skill;
-	engineering_skill: Skill;
-	diplomacy_skill: Skill;
-	medicine_skill: Skill;
 }
 
 export interface PendingRewards {
@@ -1185,6 +1146,7 @@ export interface Summary {
 
 export interface CryoCollection extends Collection {
   id: number
+  type_id?: number
   name: string
   image?: string
   description?: string

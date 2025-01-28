@@ -226,7 +226,7 @@ export const FarmTable = (props: FarmTableProps) => {
 
     function renderTableRow(row: FarmSources, phrases: string[]) {
 
-        return <Table.Row key={row.source.name + '_row_' + `${row.source.mastery}`}>
+        return <Table.Row key={row.source.name + '_row'}>
             <Table.Cell width={4}>
                 <h3>{row.source.name}</h3>
                 <div style={{ fontSize: '1em' }}>
@@ -246,7 +246,7 @@ export const FarmTable = (props: FarmTableProps) => {
                     flexWrap: 'wrap'
                 }}>
                     {row.items.map((item, idx) => {
-                        if (!item) return <div key={`empty_${idx}_event_demand_${row.source.name}_${row.source.mastery}`}></div>
+                        if (!item) return <div key={`empty_${idx}_event_demand`}></div>
                         const itemHi = phrases.some(p => item!.name.toLowerCase().includes(p));
                         return <div
                             key={item.symbol + "_event_demand_mapping" + idx.toString()}

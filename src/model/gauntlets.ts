@@ -37,8 +37,6 @@ export interface Gauntlet {
     revive_cost?: GauntletReviveCost;
     revive_and_save_cost?: GauntletReviveAndSaveCost;
     opponents?: Opponent[];
-
-    fromApi?: boolean;
 }
 
 export interface ContestData {
@@ -126,7 +124,6 @@ export interface Opponent {
     icon: Icon2;
     name: string;
     crew_contest_data: CrewContestData;
-    bracket_id?: string;
 }
 
 export interface Icon2 {
@@ -150,7 +147,7 @@ export interface GauntletContestCrew {
     crit_chance: number;
 }
 
-export type GauntletViewMode = "big" | "small" | "table" | "pair_cards" | "opponent_table";
+export type GauntletViewMode = "big" | "small" | "table" | "pair_cards";
 
 // export const SKILLS = {
 //     command_skill: "CMD",

@@ -105,15 +105,9 @@ export function appelate(text: string) {
 	let curr: string = "";
 	let cpos = 0;
 
-	text = text.toLowerCase();
-
 	const match = new RegExp(/[A-Za-z0-9']/);
 
 	for (let ch of text) {
-		if (ch === ch.toUpperCase() && !curr.endsWith(" ")) {
-			curr += " ";
-			cpos = 0;
-		}
 		if (match.test(ch)) {
 			if (cpos++ === 0) {
 				curr += ch.toUpperCase();
@@ -131,10 +125,6 @@ export function appelate(text: string) {
 	return curr;
 }
 
-export function translatePseudocolumn(name: string, t: TranslateMethod) {
-	return t(`base.pseudocolumns.${name}`);
-}
-
 export const getImageName = (reward) => {
 	let img = reward.icon?.file.replace(/\//g, '_');
 	if (img.slice(0, 1) === '_') img = img.slice(1); else img = '/atlas/' + img;
@@ -142,13 +132,6 @@ export const getImageName = (reward) => {
 	return img;
 };
 
-
-export function printNCrew(n: number, t: TranslateMethod, total = false) {
-	return t(total ? 'global.n_total_x' : 'global.n_x', {
-		n: n.toLocaleString(),
-		x: n === 1 ? t('base.crewman') : t('base.crewman')
-	});
-}
 
 
 /** Check if the device, itself, (not the resolution) is a mobile device */
@@ -330,101 +313,4 @@ export function formatRunTime(seconds: number, t: TranslateMethod) {
 		return `${two(hours)}:${two(minutes)}:${two(seconds)}`
 	}
 	return `${two(days)}:${two(hours)}:${two(minutes)}:${two(seconds)}`
-}
-
-/**
- * Process all permutations of combination of items of the specified size.
- *
- * Using this method with count_only, and a check method, you can iterate through combinations
- * without having to store them in memory.
- *
- * When used in conjunction with a multi-worker, start_idx and count can be used together to
- * specify which segments of the domain to operate on.
- *
- * @param array The items to combine
- * @param size The size of each combination
- * @param count The number of iterations to perform
- * @param count_only True to only count (and call the check method). Do not return the combinations.
- * @param start_idx The index at which to start processing or storing combinations.
- * @param check The method that performs an operation on each combination.
- * @returns If count_only is true, then nothing is returned. Otherwise the combinations are returned.
- */
-export function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[]) => U[] | false) {
-    var current_iter = 0n;
-    const mmin = start_idx ?? 0n;
-    const mmax = (count ?? 0n) + mmin;
-    function p(t: T[], i: number) {
-        if (t.length === size) {
-            if (current_iter >= mmin && (!mmax || current_iter < mmax)) {
-                if (!check) {
-                    result.push(t as any);
-                }
-                else {
-                    let response = check(t);
-                    if (response) {
-                        if (!count_only) {
-                            result.push(response);
-                        }
-                    }
-                }
-            }
-            current_iter++;
-            return;
-        }
-        if (i + 1 > array.length) {
-            return;
-        }
-
-        if (mmax !== 0n && current_iter >= mmax) return;
-        p([ ...t, array[i] ], i + 1);
-        p(t, i + 1);
-    }
-
-    var result = [] as U[][];
-
-    p([], 0);
-    return result;
-}
-
-/**
- * Perform a factorial on the specified number
- */
-export function factorial(number: number) {
-	let result = 1;
-	for (let i = 1; i <= number; i++) {
-		result *= i;
-	}
-	return result;
-}
-
-/**
- * Perform a factorial on the specified number (bigint version)
- */
-export function factorialBig(number: bigint) {
-    let result = 1n;
-
-    for (let i = 1n; i <= number; i++) {
-        result *= i;
-    }
-    return result;
-}
-
-/**
- * Calculate the total number of combinations of groups of items of a list. (bigint version)
- * @param itemCount The total number of items in the list.
- * @param groupSize The number of items in each group.
- * @returns The total number of combinations of the specified size.
- */
-export function getComboCount(itemCount: number, groupSize: number): number {
-	return (factorial(itemCount) / (factorial(itemCount - groupSize) * factorial(groupSize)));
-}
-
-/**
- * Calculate the total number of combinations of groups of items of a list.
- * @param itemCount The total number of items in the list.
- * @param groupSize The number of items in each group.
- * @returns The total number of combinations of the specified size.
- */
-export function getComboCountBig(itemCount: bigint, groupSize: bigint): bigint {
-	return (factorialBig(itemCount) / (factorialBig(itemCount - groupSize) * factorialBig(groupSize)));
 }

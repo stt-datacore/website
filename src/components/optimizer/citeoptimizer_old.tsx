@@ -72,7 +72,7 @@
 
 // class CiteOptimizer extends React.Component<CiteOptimizerProps, CiteOptimizerState> {
 // 	static contextType = GlobalContext;
-// 	declare context: React.ContextType<typeof GlobalContext>;
+// 	context!: React.ContextType<typeof GlobalContext>;
 // 	private lastCiteMode: CiteMode | undefined = undefined;
 // 	private tiny = TinyStore.getStore('citeOptimizer');
 
@@ -82,9 +82,9 @@
 // 		if (plink) {
 // 			this.tiny.setValue<BetaTachyonSettings>('betaTachyonSettings', plink);
 // 		}
-
+		
 // 		let prospects: LockedProspect[] = this.tiny.getValue<LockedProspect[]>('lockedProspects', []) ?? [];
-
+		
 // 		this.state = {
 // 			citePage: 1,
 // 			trainingPage: 1,
@@ -112,7 +112,7 @@
 // 		};
 // 	}
 
-// 	readonly setUnowned = (value: boolean) => {
+// 	readonly setUnowned = (value: boolean) => {		
 // 		this.tiny.setValue('unowned', value, true);
 // 		this.setState({ ...this.state, unownedProspects: value });
 // 	}
@@ -151,7 +151,7 @@
 // 				if (skillset) {
 // 					c.base_skills = skillset.base_skills;
 // 				}
-// 				if (buffConfig) {
+// 				if (buffConfig) {					
 // 					applyCrewBuffs(c, buffConfig);
 // 				}
 // 				Object.keys(c.base_skills).forEach((skill) => {
@@ -201,11 +201,11 @@
 // 			for (let crew of this.context.core.crew) {
 // 				let sko = printSkillOrder(crew).replace(/_skill/g, '');
 // 				crewsk[crew.symbol] = sko;
-
+				
 // 			}
-
+			
 // 			this.setState({ ... this.state, crewSkills: crewsk });
-
+			
 // 			if (this.state.prospects.length && this.state.appliedProspects.length !== this.state.prospects.length) {
 // 				this.applyProspects();
 // 			}
@@ -281,30 +281,30 @@
 
 // 		if (!this.context.player.playerData) return;
 
-// 		let playerData = JSON.parse(JSON.stringify(this.context.player.playerData)) as PlayerData;
+// 		let playerData = JSON.parse(JSON.stringify(this.context.player.playerData)) as PlayerData;		
 
 // 		if (this.state.appliedProspects?.length) {
 // 			playerData.player.character.crew = playerData.player.character.crew.concat(this.state.appliedProspects);
 // 		}
 
 // 		const engine = this.state.citeMode?.engine ?? "original";
-
+		
 // 		playerData.citeMode = citeMode;
 
 // 		worker.addEventListener('message', (message: { data: { result: any; }; }) => {
 // 			const result = message.data.result as CiteData;
 
 // 			if (engine === 'beta_tachyon_pulse') {
-// 				let skmap = {} as { [key: string]: SkillOrderRarity };
+// 				let skmap = {} as { [key: string]: SkillOrderRarity };		
 // 				result.skillOrderRarities.forEach(sko => skmap[sko.skillorder] = sko);
 // 				let retrievable = result.crewToRetrieve.filter(f => playerData.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length))
 // 				result.crewToRetrieve = retrievable.map((r, i) => ({ ...r, pickerId: i + 1 }));
-// 				this.setState({ citeData: result, skoMap: skmap });
+// 				this.setState({ citeData: result, skoMap: skmap });	
 // 			}
 // 			else {
 // 				let retrievable = result.crewToCite.filter(f => playerData.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length))
 // 				result.crewToRetrieve = retrievable.map((r, i) => ({ ...JSON.parse(JSON.stringify(r)), pickerId: i + 1 }));
-// 				this.setState({ citeData: result });
+// 				this.setState({ citeData: result });	
 // 			}
 
 // 		});
@@ -323,7 +323,7 @@
 // 		else {
 // 			worker.postMessage({
 // 				worker: workerName,
-// 				config: {
+// 				config: { 
 // 					playerData,
 // 					inputCrew: allCrew,
 // 					collections,
@@ -331,7 +331,7 @@
 // 					settings: this.state.betaTachyonSettings,
 // 					coreItems: this.context.core.items
 // 				} as BetaTachyonRunnerConfig
-// 			});
+// 			});	
 // 		}
 // 	}
 
@@ -339,13 +339,13 @@
 
 // 	private createStateAccessors<T>(name: string, persist?: boolean): [T, (value: T) => void] { return [
 // 		this.state[name],
-// 		persist ?
+// 		persist ? 
 // 		(value: T) => {
 // 			this.tiny.setValue(name, value, true);
 // 			this.setState((prevState) => { prevState[name] = value; return prevState; });
-// 		}
+// 		} 
 // 		:
-// 		(value: T) => this.setState((prevState) => { prevState[name] = value; return prevState; })
+// 		(value: T) => this.setState((prevState) => { prevState[name] = value; return prevState; })	
 // 	] };
 
 // 	renderVoyageGroups(data: CiteData, confine?: string[]) {
@@ -561,7 +561,7 @@
 
 // 		return crew.sort((a, b) => {
 // 			let r = 0;
-
+			
 // 			if (sort === 'pickerId' && a.pickerId && b.pickerId) {
 // 				r = a.pickerId - b.pickerId;
 // 			}
@@ -569,7 +569,7 @@
 // 				r  = a.name.localeCompare(b.name);
 // 			}
 // 			else if (sort === 'rarity') {
-// 				r = a.max_rarity - b.max_rarity;
+// 				r = a.max_rarity - b.max_rarity;				
 // 				if (!r) r = a.rarity - b.rarity;
 // 			}
 // 			else if (sort === 'quipment_score') {
@@ -620,16 +620,16 @@
 // 				if (this.getChecked(a.symbol)) r--;
 // 				if (this.getChecked(b.symbol)) r++;
 // 			}
-
+			
 // 			if (direction === 'descending') r *= -1;
-
+			
 // 			if (!r) {
 // 				r = (a.pickerId ?? 0) - (b.pickerId ?? 0);
 // 			}
 // 			if (!r) {
 // 				r = a.name.localeCompare(b.name);
-// 			}
-
+// 			}			
+			
 // 			return r;
 // 		})
 // 	}
@@ -666,23 +666,23 @@
 // 			<Table sortable celled selectable striped collapsing unstackable compact="very">
 // 				<Table.Header>
 // 					<Table.Row>
-// 						<Table.HeaderCell
+// 						<Table.HeaderCell 
 // 							onClick={(e) => sort === 'pickerId' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('pickerId')}
 // 							sorted={sort === 'pickerId' ? direction : undefined}>
 
 // 							Rank
 // 						</Table.HeaderCell>
-// 						<Table.HeaderCell
+// 						<Table.HeaderCell 
 // 							onClick={(e) => sort === 'name' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('name')}
 // 							sorted={sort === 'name' ? direction : undefined}>
 // 							Crew
 // 						</Table.HeaderCell>
-// 						<Table.HeaderCell
+// 						<Table.HeaderCell 
 // 							onClick={(e) => sort === 'rarity' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('rarity')}
 // 							sorted={sort === 'rarity' ? direction : undefined}>
 // 							Rarity
 // 						</Table.HeaderCell>
-// 						{(engine !== 'beta_tachyon_pulse' || showEV) && <Table.HeaderCell
+// 						{(engine !== 'beta_tachyon_pulse' || showEV) && <Table.HeaderCell 
 // 							onClick={(e) => sort === 'finalEV' ? this.setDirection(direction === 'descending' ? 'ascending' : 'descending') : this.setSort('finalEV')}
 // 							sorted={sort === 'finalEV' ? direction : undefined}>
 // 							Final EV
@@ -750,14 +750,14 @@
 // 				<Table.Body>
 // 					{data.slice(baseRow, baseRow + paginationRows).map((row, idx: number) => {
 // 						let cop: PlayerCrew | undefined;
-
+						
 // 						if (this.state.citeMode?.engine === 'beta_tachyon_pulse') {
 // 							cop = this.state.appliedProspects.find(c => c.id === row.id) ?? this.context.player.playerData?.player.character.crew.find(c => c.id == row.id);
 // 						}
 // 						else {
 // 							cop = this.state.appliedProspects.find(c => c.name === row.name) ?? this.context.player.playerData?.player.character.crew.find(c => c.name == row.name);
 // 						}
-
+						
 // 						const crew = cop;
 // 						const crew_quipment_score = Math.round(((row.quipment_score ?? 0) / maxQuip) * 1000) / 10;
 // 						const crew_sparsity = Math.round(((row.groupSparsity ?? 0)) * 1000) / 10;
@@ -881,14 +881,14 @@
 // 															</i>
 // 														</div>
 // 														//<Rating icon='star' size='mini' style={{color: CONFIG.RARITIES[skoMap[skp].rarity].color}} disabled rating={skoMap[skp].rarity} maxRating={5} />
-// 														}
+// 														} 
 // 														content={
 // 															<div>
 // 																<b>Skill Order:</b><br/>
 // 																<b style={{color: rarecolor}}>{CONFIG.RARITIES[skoMap[skp].rarity].name}</b>
 // 																{skoMap[skp].skills.map((sk, idx) => <div key={sk+idx.toString()}>{idx+1}. {appelate(sk)}</div>)}
 // 																<hr />
-// 																<div>Crew Rank: <i style={{
+// 																<div>Crew Rank: <i style={{																
 // 																	fontWeight: "bold",
 // 																	color: gradeToColor(row.scoreTrip ?? 0) ?? 'lightgreen'
 // 																	}}>
@@ -898,7 +898,7 @@
 // 																<div>Total Crew: <b>{skoMap[skp].count}</b></div>
 // 															</div>
 // 														} />
-
+													
 // 												</div>}
 // 											</div>
 // 										</div>
@@ -940,7 +940,7 @@
 // 								onPageChange={(event, { activePage }) => setPaginationPage(activePage as number)}
 // 							/>
 // 							<div style={{ paddingLeft: '2em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-
+								
 // 								<div style={{marginRight:"0.5em"}}>{t('global.rows_per_page')}:</div>
 // 								<Dropdown
 // 									inline
@@ -1116,7 +1116,7 @@
 // 		const compareCount = this.state.checks?.filter(z => z.checked)?.length;
 // 		const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
-// 		const corePool = this.context.core.crew.filter(c =>
+// 		const corePool = this.context.core.crew.filter(c => 
 // 		{
 // 			let res = Object.keys(c.base_skills).length === 3 && (!citeMode.rarities?.length || citeMode.rarities.includes(c.max_rarity));
 // 			if (res && unownedProspects) {
@@ -1174,7 +1174,7 @@
 // 							}}
 // 							/>
 
-// 						{engine === 'beta_tachyon_pulse' &&
+// 						{engine === 'beta_tachyon_pulse' && 
 // 						<>
 // 						<BetaTachyonSettingsPopup
 // 							isOpen={this.state.settingsOpen}
@@ -1186,7 +1186,7 @@
 // 								}} />
 // 							<Checkbox label={'Show EV Columns'} checked={showEV} onChange={(e, { checked }) => setShowEV(!!checked) } />
 // 						</>}
-
+							
 // 					</div>
 // 				</Segment>
 // 				<Segment>
@@ -1271,12 +1271,12 @@
 // 				</Segment>
 // 				<Segment>
 // 					<h3>Prospects</h3>
-
-// 					<Checkbox checked={unownedProspects} onChange={(e, { checked }) => this.setUnowned(!!checked)}
+					
+// 					<Checkbox checked={unownedProspects} onChange={(e, { checked }) => this.setUnowned(!!checked)} 
 // 							label={'Unowned Crew Only'} />
 
 // 					<div style={{ display: "flex", flexDirection: "row", gap: "1em", alignItems: "center", marginTop: "0.5em"}}>
-
+					
 // 						<div style={{display: "block"}}>
 // 						<ProspectPicker
 // 							prospects={prospects}

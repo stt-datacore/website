@@ -1,6 +1,6 @@
 import { CrewMember } from "../model/crew";
 import { PolestarCombo } from "../model/game-elements";
-import { CompactCrew, PlayerCrew } from "../model/player";
+import { PlayerCrew } from "../model/player";
 
 
 
@@ -97,30 +97,4 @@ export function findPolestars(crew: PlayerCrew | CrewMember, roster: (PlayerCrew
         optimals.push(crewPolestarCombos[i]);
     }
     return optimals;
-}
-
-export interface RetrievalCost {
-    credits: number,
-    quantum: number
-}
-
-const UniqueRetrievalCredits = [0, 50000, 100000, 500000, 1000000, 5000000];
-const UniqueRetrievalQuantum = [0, 100, 300, 500, 800, 900];
-
-export function calculateRetrievalCost<T extends { max_rarity: number }>(items: T[]): RetrievalCost {
-    const credits = [0, 0, 0, 0, 0, 0];
-    const quantum = [0, 0, 0, 0, 0, 0];
-
-    const crewlen = items.length;
-    const discountFactor = (1 - (0.01 * (crewlen - 1)));
-
-    for (let item of items) {
-        credits[item.max_rarity] += (UniqueRetrievalCredits[item.max_rarity] * discountFactor);
-        quantum[item.max_rarity] += UniqueRetrievalQuantum[item.max_rarity];
-    }
-
-    return {
-        credits: Math.ceil(credits.reduce((p, n) => p + n) / crewlen),
-        quantum: Math.ceil(quantum.reduce((p, n) => p + n) / crewlen)
-    };
 }

@@ -29,8 +29,6 @@ export interface IEventData {
 	seconds_to_end: number;
 	image: string;
 	bonus: string[];	/* ALL bonus crew by symbol */
-  bonus_ships: string[];	/* ALL bonus ships by symbol */
-	featured_ships: string[];	/* ONLY featured ships by symbol */
 	featured: string[];	/* ONLY featured crew by symbol */
 	bonusGuessed?: boolean;
 };

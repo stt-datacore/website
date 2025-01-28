@@ -5,14 +5,13 @@ import { Segment, Accordion, Table, Rating, Icon, SemanticICONS } from 'semantic
 import { BaseSkills, CrewMember, SkillData } from '../../model/crew';
 import { GlobalContext } from '../../context/globalcontext';
 import CrewStat from '../../components/crewstat';
-import { applyCrewBuffs, crewGender, getShortNameFromTrait, getVariantTraits, prettyObtained } from '../../utils/crewutils';
+import { applyCrewBuffs, crewGender, prettyObtained } from '../../utils/crewutils';
 
 import { ShipSkill } from './shipskill';
 import { CrewRankHighlights, CrewRanks } from './crew_ranks';
 import { OwnedLabel } from '../crewtables/commonoptions';
 import { CrewItemsView } from './crew_items';
 import { PlayerCrew } from '../../model/player';
-import { CollectionDisplay } from './crew_presenter';
 
 type ValidField =
 	'collections' |
@@ -26,10 +25,8 @@ type ValidField =
 	'ranks' |
 	'rarity' |
 	'ship_ability' |
-	'short_name' |
 	'skills' |
-	'traits' |
-	'cap_achiever';
+	'traits';
 
 const defaultFields = [
 	'flavor',
@@ -38,13 +35,11 @@ const defaultFields = [
 	'ship_ability',
 	'rank_highlights',
 	'ranks',
-	'short_name',
 	'traits',
 	'collections',
 	'nicknames',
 	'cross_fuses',
-	'date_added',
-	'cap_achiever'
+	'date_added'
 ] as ValidField[];
 
 export interface IFieldOverride {
@@ -62,19 +57,12 @@ type ClassicPresenterProps = {
 
 export const ClassicPresenter = (props: ClassicPresenterProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { crew, compact, markdownRemark } = props;
 	const myCrew = playerData ? playerData.player.character.crew : undefined;
 
 	const fields = props.fields ?? defaultFields;
 	const elements = [] as JSX.Element[];
-	if (!crew.cap_achiever && myCrew) {
-		let fc = myCrew.find(f => f.symbol === crew.symbol);
-		if (fc?.cap_achiever) {
-			crew.cap_achiever = fc.cap_achiever;
-		}
-	}
 	fields.forEach(field => {
 		const fieldOverride = props.fieldOverrides?.find(fo => fo.field === field);
 		if (fieldOverride) {
@@ -82,7 +70,7 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 		}
 		else {
 			if (field === 'collections')
-				elements.push(<p><b>{t('base.collections')}: </b><CollectionDisplay style={{display: 'inline'}} key={field} crew={crew} /></p>);
+				elements.push(<Collections key={field} crew={crew} />);
 
 			if (field === 'crew_demands')
 				elements.push(<CrewDemands key={field} crew={crew} />);
@@ -92,9 +80,6 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 
 			if (field === 'date_added')
 				elements.push(<DateAdded key={field} crew={crew} />);
-
-			if (field === 'cap_achiever')
-				elements.push(<CapAchiever key={field} crew={crew} />);
 
 			// crew_flavor_text id required for cypress test!
 			if (field === 'flavor' && crew.flavor)
@@ -123,9 +108,6 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 			if (field === 'skills')
 				elements.push(<Skills key={field} crew={crew} rarity={crew.max_rarity} compact={compact} />);
 
-			if (field === 'short_name')
-				elements.push(<ShortName key={field} crew={crew} />);
-
 			if (field === 'traits')
 				elements.push(<Traits key={field} crew={crew} />);
 		}
@@ -138,23 +120,23 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 	);
 };
 
-// const Collections = (props: { crew: CrewMember }) => {
-// 	const { crew } = props;
-// 	const { t } = React.useContext(GlobalContext).localized;
-// 	if (crew.collections.length === 0) return (<></>);
-// 	return (
-// 		<p>
-// 			<b>{t('base.collections')}: </b>
-// 			{crew.collections
-// 				.map(col => (
-// 					<Link key={col} to={`/collections?select=${encodeURIComponent(col)}`}>
-// 						{col}
-// 					</Link>
-// 				))
-// 				.reduce((prev, curr) => <>{prev}, {curr}</>)}
-// 		</p>
-// 	);
-// };
+const Collections = (props: { crew: CrewMember }) => {
+	const { crew } = props;
+	const { t } = React.useContext(GlobalContext).localized;
+	if (crew.collections.length === 0) return (<></>);
+	return (
+		<p>
+			<b>{t('base.collections')}: </b>
+			{crew.collections
+				.map(col => (
+					<Link key={col} to={`/collections?select=${encodeURIComponent(col)}`}>
+						{col}
+					</Link>
+				))
+				.reduce((prev, curr) => <>{prev}, {curr}</>)}
+		</p>
+	);
+};
 
 const CrewDemands = (props: { crew: CrewMember }) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
@@ -167,7 +149,7 @@ const CrewDemands = (props: { crew: CrewMember }) => {
 	};
 	return (
 		<div style={{ margin: '1em 0' }}>
-			{tfmt("crew_views.faction_items", {
+			{tfmt("crew_views.faction_items", { 
 				n: <b>{crewDemands.factionOnlyTotal}</b>
 			})}
 			<span style={{ display: 'inline-block' }}>
@@ -205,31 +187,6 @@ const DateAdded = (props: { crew: CrewMember }) => {
 	return (
 		<p>
 			<b>{t('base.release_date')}: </b>{new Date(crew.date_added).toLocaleDateString()} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
-		</p>
-	);
-};
-
-
-const CapAchiever = (props: { crew: CrewMember }) => {
-	const { crew } = props;
-	const globalContext = React.useContext(GlobalContext);
-	const { t } = globalContext.localized;
-	if (!crew.cap_achiever) return <></>
-	return (
-		<p>
-			<b>{t('base.cap_achiever')}: </b>{crew.cap_achiever.name} ({new Date(crew.cap_achiever.date * 1000).toLocaleDateString()})
-		</p>
-	);
-};
-
-const ShortName = (props: { crew: CrewMember }) => {
-	const { crew } = props;
-	const globalContext = React.useContext(GlobalContext);
-	const { t } = globalContext.localized;
-	const shortNames = getVariantTraits(crew).map((t) => getShortNameFromTrait(t, crew)).join(", ");
-	return (
-		<p>
-			<b>{t('base.short_name')}: </b>{shortNames}
 		</p>
 	);
 };
@@ -334,7 +291,7 @@ const Nicknames = (props: { crew: CrewMember }) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { crew } = props;
 
-	if (!crew.nicknames || crew.nicknames.length === 0 || !crew.nicknames[0].cleverThing) return (<></>);
+	if (!crew.nicknames || crew.nicknames.length === 0) return (<></>);
 	return (
 		<p>
 			<b>{t("crew_page.aka_colon")} </b>
@@ -422,7 +379,7 @@ export const Skills = (props: SkillsProps) => {
 			{(!playerLevels || !owned) && <div style={{marginTop:"0.5em"}}>
 				{owned && <OwnedLabel statsPopup={true} crew={owned} />}
 			</div> ||
-			<div className='ui segment'>
+			<div className='ui segment'>				
 				{!!owned?.immortal && <>
 					{owned.immortal > 0 ? <><Icon name='snowflake' /> {owned.immortal} {t('crew_states.frozen', { __gender: crewGender(crew) })}</> : <><Icon name='check' color='green' /> {t('crew_states.immortalized', { __gender: crewGender(crew) })}</>}</> ||  <>{t('base.level')} {owned?.level}				</>}
 				<CrewItemsView crew={owned as PlayerCrew} />

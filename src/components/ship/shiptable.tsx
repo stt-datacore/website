@@ -7,12 +7,11 @@ import { ShipHoverStat, ShipTarget } from '../hovering/shiphoverstat';
 import { GlobalContext } from '../../context/globalcontext';
 import { navigate } from 'gatsby';
 import { RarityFilter } from '../crewtables/commonoptions';
-import { ShipAbilityPicker, ShipOwnership, TraitPicker, TriggerPicker } from '../crewtables/shipoptions';
+import { ShipAbilityPicker, TraitPicker, TriggerPicker } from '../crewtables/shipoptions';
 import { isMobile } from 'react-device-detect';
-import { getShipsInUse, mergeShips } from '../../utils/shiputils';
+import { getShipsInUse } from '../../utils/shiputils';
 import CONFIG from '../CONFIG';
 import { TinyStore } from '../../utils/tiny';
-import { formatRank } from './utils';
 
 type ShipTableProps = {
 	event_ships?: string[];
@@ -36,7 +35,6 @@ type ShipTableState = {
 	textFilter?: string;
 	shipsInUse?: ShipInUse[];
 	onlyUsed?: boolean;
-	ownership?: 'owned' | 'unowned'
 };
 
 const pagingOptions = [
@@ -46,11 +44,12 @@ const pagingOptions = [
 	{ key: '3', value: '100', text: '100' }
 ];
 
+
 class ShipTable extends Component<ShipTableProps, ShipTableState> {
 	static contextType = GlobalContext;
-	declare context: React.ContextType<typeof GlobalContext>;
-	inited: boolean = false;
-	hasPlayer: boolean = false;
+	context!: React.ContextType<typeof GlobalContext>;
+	inited: boolean;
+	hasPlayer: boolean;
 	private readonly tiny = TinyStore.getStore('profile_ships');
 	constructor(props: ShipTableProps) {
 		super(props);
@@ -97,7 +96,7 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 	}
 
 	initData() {
-		const hp = !!this.context.player.playerData?.player?.character?.crew?.length;
+		const hp = !!this.context.player.playerData;
 		if (hp !== this.hasPlayer) {
 			this.inited = false;
 			this.hasPlayer = hp;
@@ -106,51 +105,18 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 		const { event_ships } = this.props;
 
 		this.inited = true;
-		let schematics = [...this.context.core.ship_schematics];
-
-		const constellation = {
-			symbol: 'constellation_ship',
-			rarity: 1,
-			max_level: 5,
-			antimatter: 1250,
-			name: 'Constellation Class',
-			icon: { file: '/ship_previews_fed_constellationclass' },
-			traits: ['federation','explorer'],
-			owned: true,
-			battle_stations: [
-				{
-					skill: 'command_skill'
-				},
-				{
-					skill: 'diplomacy_skill'
-				}
-			]
-		} as Ship;
-
-		schematics.push({
-			ship: constellation,
-			rarity: constellation.rarity,
-			cost: 0,
-			id: 1,
-			icon: constellation.icon!
-		});
-
-		if (this.context.player.playerShips?.length && this.context.player.playerData) {
-			let playerships = [...this.context.player.playerData.player.character.ships];
-			let merged = mergeShips(schematics, playerships);
+		if (this.context.player.playerShips?.length) {
 			let shipsInUse = getShipsInUse(this.context.player);
 			this.setState({
 				... this.state,
-				data: merged?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => this.transmogrify(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0),
+				data: this.context.player.playerShips?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => this.transmogrify(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0),
 				shipsInUse
 			});
 		}
 		else {
-			let coreships = [...this.context.core.ships];
-			coreships.push(constellation);
 			this.setState({
 				... this.state,
-				data: coreships?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => this.transmogrify(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0)
+				data: this.context.core.ships?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => this.transmogrify(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0)
 			});
 		}
 
@@ -243,12 +209,6 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 		})
 	}
 
-	private readonly setOwnedFilter = (filter?: 'owned' | 'unowned') => {
-		window.setTimeout(() => {
-			this.setState({...this.state, ownership: filter});
-		})
-	}
-
 	private readonly setAbilityFilter = (filter: string[]) => {
 		window.setTimeout(() => {
 			this.setState({...this.state, abilityFilter: filter});
@@ -268,7 +228,7 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 		const { localized } = this.context;
 		const { t, SHIP_TRAIT_NAMES } = localized;
 		const trait_names = localized.SHIP_TRAIT_NAMES;
-		const { ownership, textFilter, grantFilter, traitFilter, abilityFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
+		const { textFilter, grantFilter, traitFilter, abilityFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
 
 		const dataContext = this.context;
 		if (!dataContext || (!dataContext.core.ships && !dataContext.player.playerShips)) return <></>;
@@ -280,8 +240,6 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 			if (grantFilter && !!grantFilter?.length && !ship.actions?.some((action) => grantFilter.some((gf) => Number.parseInt(gf) === action.status))) return false;
 			if (abilityFilter && !!abilityFilter?.length && !ship.actions?.some((action) => abilityFilter.some((af) => action.ability?.type.toString() === af))) return false;
 			if (traitFilter && !!traitFilter?.length && !ship.traits?.some((trait) => traitFilter.includes(trait))) return false;
-			if (ownership === 'owned' && !ship.owned) return false;
-			if (ownership === 'unowned' && ship.owned) return false;
 			if (textFilter?.length) {
 				const usearch = textFilter.toLocaleUpperCase();
 				if (!ship.name?.toLocaleUpperCase().includes(usearch)
@@ -296,40 +254,23 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 
 		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
 
+		const setActiveShip = (ship: Ship | null | undefined) => {
+			this.setState({...this.state, activeShip: ship});
+		}
+
 		const navToShip = (ship: Ship) => {
 			navigate('/ship_info?ship='+ship.symbol);
 		}
 
-		const withranks = data.some(s => s.ranks);
 		// Pagination
-
 		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
 
 		return (<div>
-			{!this.props.event_ships?.length &&
-
-			<div style={{
+			{!this.props.event_ships?.length && <div style={{
 				display: "flex",
-				flexDirection: "column",
-				gap: "0.5em",
+				flexDirection: "row",
+				gap: "0.5em"
 			}}>
-				<div style={{
-					display: "flex",
-					flexDirection: "row",
-					gap: "0.5em",
-				}}>
-					<RarityFilter
-						altTitle={t('hints.filter_ship_rarity')}
-						rarityFilter={rarityFilter ?? []}
-						setRarityFilter={this.setRarityFilter}
-					/>
-						<TriggerPicker grants={true} altTitle={t('hints.filter_ship_grants')} selectedTriggers={grantFilter} setSelectedTriggers={(value) => this.setGrantFilter(value as string[])} />
-
-					<ShipAbilityPicker ship={true} selectedAbilities={this.state.abilityFilter} setSelectedAbilities={(value) => this.setAbilityFilter(value as string[])} />
-					<TraitPicker ship={true} selectedTraits={this.state.traitFilter} setSelectedTraits={(value) => this.setTraitFilter(value as string[])} />
-					{!!this.hasPlayer && <ShipOwnership selectedValue={this.state.ownership} setSelectedValue={this.setOwnedFilter} />}
-				</div>
-				<div>
 				<Input
 					style={{ width: isMobile ? '100%' : '30%' }}
 					iconPosition="left"
@@ -342,10 +283,19 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 							<Icon name='delete' />
 						</Button>
 				</Input>
-				</div>
+
+				<RarityFilter
+					altTitle={t('hints.filter_ship_rarity')}
+					rarityFilter={rarityFilter ?? []}
+					setRarityFilter={this.setRarityFilter}
+				/>
+					<TriggerPicker grants={true} altTitle={t('hints.filter_ship_grants')} selectedTriggers={grantFilter} setSelectedTriggers={(value) => this.setGrantFilter(value as string[])} />
+
+				<ShipAbilityPicker ship={true} selectedAbilities={this.state.abilityFilter} setSelectedAbilities={(value) => this.setAbilityFilter(value as string[])} />
+				<TraitPicker ship={true} selectedTraits={this.state.traitFilter} setSelectedTraits={(value) => this.setTraitFilter(value as string[])} />
 			</div>}
-			{!this.props.event_ships?.length && !!this.hasPlayer &&
-			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '1em', margin: '1em 0'}}>
+			{!this.props.event_ships?.length &&
+			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1em', margin: '1em'}}>
 				<Checkbox label={t('ship.show.only_in_use')} checked={this.state.onlyUsed ?? false} onChange={(e, { checked }) => this.setOnlyUsed(checked as boolean)} />
 			</div>}
 			{!!this.props.event_ships?.length &&
@@ -368,27 +318,6 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 						>
 							{t('ship.ship')}
 						</Table.HeaderCell>
-						{withranks && <>
-							<Table.HeaderCell
-								sorted={column === 'ranks.overall' ? direction ?? undefined  : undefined}
-								onClick={() => this._handleSort('ranks.overall')}
-								>
-								{t('rank_names.ship_rank')}
-							</Table.HeaderCell>
-							<Table.HeaderCell
-								sorted={column === 'ranks.arena' ? direction ?? undefined  : undefined}
-								onClick={() => this._handleSort('ranks.arena')}
-								>
-
-								{t('rank_names.arena_rank')}
-							</Table.HeaderCell>
-							<Table.HeaderCell
-								sorted={column === 'ranks.fbb' ? direction ?? undefined  : undefined}
-								onClick={() => this._handleSort('ranks.fbb')}
-								>
-								{t('rank_names.fbb_rank')}
-							</Table.HeaderCell>
-						</>}
 						<Table.HeaderCell
 							width={1}
 							sorted={column === 'antimatter' ? direction ?? undefined  : undefined}
@@ -464,11 +393,6 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 									<div style={{ gridArea: 'usages', fontWeight: 'bold'}}>{this.printUsage(ship)}</div>
 								</div>
 							</Table.Cell>
-							{withranks && <>
-								<Table.Cell>{formatRank('ship', ship.ranks?.overall, t)}</Table.Cell>
-								<Table.Cell>{formatRank('ship', ship.ranks?.arena, t)}</Table.Cell>
-								<Table.Cell>{formatRank('ship', ship.ranks?.fbb, t)}</Table.Cell>
-							</>}
 							<Table.Cell>{ship.antimatter}</Table.Cell>
 							<Table.Cell>{ship.accuracy}</Table.Cell>
 							<Table.Cell>{ship.attack} ({ship.attacks_per_second}/s)</Table.Cell>

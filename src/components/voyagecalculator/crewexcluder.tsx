@@ -7,11 +7,10 @@ import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps, ModalOption 
 import { CalculatorContext } from './context';
 import CrewPicker from '../../components/crewpicker';
 import { IEventScoredCrew } from '../eventplanner/model';
-import { computeEventBest } from '../../utils/events';
+import { computeEventBest, guessCurrentEventId } from '../../utils/events';
 import { GlobalContext } from '../../context/globalcontext';
-import { oneCrewCopy } from '../../utils/crewutils';
+import { crewCopy, oneCrewCopy } from '../../utils/crewutils';
 import CONFIG from '../CONFIG';
-import { QuipmentPopover } from './quipment/quipmentpopover';
 
 interface ISelectOption {
 	key: string;
@@ -32,7 +31,8 @@ type SelectedBonusType = '' | 'all' | 'featured' | 'matrix';
 export const CrewExcluder = (props: CrewExcluderProps) => {
 	const calculatorContext = React.useContext(CalculatorContext);
 	const globalContext = React.useContext(GlobalContext);
-	const { voyageConfig, events } = calculatorContext;
+	const { events, voySymbol } = calculatorContext;
+	const { ephemeral } = globalContext.player;
 	const { excludedCrewIds, updateExclusions, considerFrozen } = props;
 
 	const [selectedEvent, setSelectedEvent] = React.useState<string>('');
@@ -48,10 +48,10 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 	React.useEffect(() => {
 		let activeEvent: string = '';
 		let activeBonus: SelectedBonusType = 'all';
-		let phase: string = '';
+		let phase = '';
 		events.forEach(gameEvent => {
 			if (gameEvent && gameEvent.seconds_to_end > 0 && gameEvent.seconds_to_start < 86400) {
-				if (gameEvent.content_types.includes('shuttles') || gameEvent.content_types.includes('gather') || (gameEvent.content_types.includes('voyage') && voyageConfig.voyage_type !== 'encounter')) {
+				if (gameEvent.content_types.includes('shuttles') || gameEvent.content_types.includes('gather') || gameEvent.content_types.includes('voyage')) {
 					activeEvent = gameEvent.symbol;
 
 					let date = (new Date((new Date()).toLocaleString('en-US', { timeZone: 'America/New_York' })));
@@ -69,18 +69,8 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 					if (phase === 'gather') {
 						activeBonus = 'matrix';
 					}
-					else if (phase === 'shuttles') {
+					else if (phase === 'shuttles' || phase === 'voyage') {
 						activeBonus = 'all';
-					}
-					else if (phase === 'voyage') {
-						// Don't auto-exclude event crew if seeking recommendations for active voyage event
-						if (voyageConfig.voyage_type === 'encounter') {
-							activeEvent = '';
-							activeBonus = '';
-						}
-						else {
-							activeBonus = 'all';
-						}
 					}
 					// if (!gameEvent.content_types.includes('shuttles')) activeBonus = 'featured';
 				}
@@ -95,24 +85,30 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		if (selectedEvent) {
 			const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 			if (activeEvent) {
-				const crewIds = props.rosterCrew.filter(c =>
-					(selectedBonus === 'all' && activeEvent.bonus.includes(c.symbol))
-					|| (selectedBonus === 'featured' && activeEvent.featured.includes(c.symbol))
-					|| (selectedBonus === 'matrix' && bestCombos.includes(c.id))
-				).sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
-				updateExclusions([...new Set([...crewIds])]);
+				if (ephemeral?.voyageDescriptions?.length && ephemeral.voyageDescriptions.some(vd => vd.name === voySymbol && vd.voyage_type === 'encounter') &&
+					activeEvent.content_types.includes('voyage')) {
+						updateExclusions([]);
+				}
+				else {
+					const crewIds = props.rosterCrew.filter(c =>
+						(selectedBonus === 'all' && activeEvent.bonus.includes(c.symbol))
+						|| (selectedBonus === 'featured' && activeEvent.featured.includes(c.symbol))
+						|| (selectedBonus === 'matrix' && bestCombos.includes(c.id))
+					).sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
+					updateExclusions([...new Set([...crewIds])]);
+				}
 			}
 		}
 		else {
 			updateExclusions([]);
 		}
-	}, [selectedEvent, selectedBonus, bestCombos]);
+	}, [selectedEvent, selectedBonus, bestCombos, voySymbol]);
 
 	React.useEffect(() => {
 		if (selectedEvent && phase) {
 			const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 			if (activeEvent) {
-				const rosterCrew = props.rosterCrew
+				const rosterCrew = (globalContext.player.playerData?.player.character.crew ?? globalContext.core.crew)
 					.filter(f => !!considerFrozen || (f.id && f.id > 0))
 					.filter((c) => activeEvent.bonus.indexOf(c.symbol) >= 0)
 					.map(m => (oneCrewCopy(m) as IEventScoredCrew));
@@ -237,9 +233,6 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		return (
 			<Label key={crew.id} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center' }}>
 				<Image spaced='right' src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
-				{crew.kwipment?.some(q => q || q[1]) &&
-					<QuipmentPopover ignoreProspects={true} crew={crew} showQuipment={true} />
-				}
 				{crew.name}
 				<Icon name='delete' onClick={() => deExcludeCrewId(crew.id)} />
 			</Label>
@@ -312,7 +305,7 @@ const DEFAULT_EXCLUDER_OPTIONS = {
 
 class ExcluderOptionsModal extends OptionsModal<IExcluderModalOptions> {
 	state: { isDefault: boolean; isDirty: boolean; options: any; modalIsOpen: boolean; };
-	declare props: any;
+	props: any;
 
 	protected getOptionGroups(): OptionGroup[] {
 		return [

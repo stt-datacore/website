@@ -233,7 +233,7 @@ export const Collaborator = (props: CollaboratorProps) => {
 			});
 		}
 
-		const route = `${API_URL}api/getBossBattle?fleetId=${control?.fleetId}&id=${bossBattleId}`;
+		const route = `${API_URL}api/getBossBattle?id=${bossBattleId}`;
 		return fetch(route)
 			.then((response: Response) => response.json())
 			.then((result: Collaboration[]) => {
@@ -340,7 +340,6 @@ export const Collaborator = (props: CollaboratorProps) => {
 			postRequests.push({
 				route: `${API_URL}api/postBossBattleSolves`,
 				body: JSON.stringify({
-					fleetId: control?.fleetId,
 					bossBattleId,
 					chainIndex,
 					solves: newSolves
@@ -359,7 +358,6 @@ export const Collaborator = (props: CollaboratorProps) => {
 			postRequests.push({
 				route: `${API_URL}api/postBossBattleTrials`,
 				body: JSON.stringify({
-					fleetId: control?.fleetId,
 					bossBattleId,
 					chainIndex,
 					trials: newTrials

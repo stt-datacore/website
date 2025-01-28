@@ -1,5 +1,4 @@
 import { SupportedLanguage } from "../context/localizedcontext";
-import { shortToSkill } from "../utils/crewutils";
 
 export interface Rarity {
 	name: string;
@@ -180,8 +179,6 @@ export default class CONFIG {
 		12: 'Reflection Damage',
 	};
 
-	static readonly OFFENSE_ABILITIES = [0, 1, 4, 5, 7, 8, 10, 12];
-	static readonly DEFENSE_ABILITIES = [2, 3, 6, 9, 10, 11];
 
 	static readonly SHIP_BATTLE_ABILITY_ICON: { [index: number]: string } = {
 		0: '',
@@ -250,13 +247,6 @@ export default class CONFIG {
 		"MED",
 		"MED"
 	]
-
-	static readonly getSlotSkill = (slot: string, short?: boolean) => {
-		let sidx = CONFIG.VOYAGE_CREW_SLOTS.findIndex(fi => fi === slot);
-		if (sidx === -1) return '';
-		if (short) return CONFIG.VOYAGE_SLOT_SKILLS[sidx];
-		else return shortToSkill(CONFIG.VOYAGE_SLOT_SKILLS[sidx])!;
-	}
 
 	static readonly CITATION_COST = [0, 500, 4500, 18000, 50000];
 
@@ -561,8 +551,7 @@ export default class CONFIG {
 				{ name: 'Episch', imageUrl: 'mastery_highest_icon' }
 			)
 
-			this.SKILLS.command_skill = 'Kommando';
-			//this.SKILLS.command_skill = 'Befehl';
+			this.SKILLS.command_skill = 'Befehl';
 			this.SKILLS.science_skill = 'Wissenschaft';
 			this.SKILLS.security_skill = 'Sicherheit';
 			this.SKILLS.engineering_skill = 'Ingenieurwesen';
