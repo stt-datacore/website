@@ -6,7 +6,7 @@ on:
 
   push:
     branches:
-      - 'master'
+      - 'sync-beta-mods'
 
 jobs:
     merge-master:
