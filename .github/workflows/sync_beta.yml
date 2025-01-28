@@ -3,26 +3,42 @@ run-name: Keep the beta branch syncronised with the master branch and active PRs
 on:
   pull_request:
     types: [opened, ready_for_review, reopened, synchronize, labeled]
-  
+
   push:
     branches:
-      - 'master'
+      - 'sync-beta-mods'
 
 jobs:
     merge-master:
         name: Merge pr or master branches into beta
         runs-on: ubuntu-latest
         if: |
-          github.ref_name == 'master' || 
+          github.ref_name == 'sync-beta-mods' ||
           (github.event.pull_request.draft == false &&
           github.event.pull_request.mergeable == true &&
           github.event.pull_request.head.repo.fork == false &&
           contains(github.event.pull_request.labels.*.name, 'beta'))
 
         steps:
-            - name: merge with beta
-              uses: devmasx/merge-branch@master
+            - name: Website - Checkout
+              uses: actions/checkout@v4
               with:
-                type: now
-                target_branch: beta
-                github_token: ${{ secrets.GITHUB_TOKEN }}
+                repository: stt-datacore/website
+                ref: sync-beta-mods
+                token: ${{ secrets.GITHUB_TOKEN }}
+                path: website
+
+            - name: Merge into Beta
+              run: |
+                cd website
+                git config user.name github-actions
+                git config user.email github-actions@github.com
+                git checkout beta
+                git merge -X theirs --no-edit sync-beta-mods
+                git push
+
+              # uses: devmasx/merge-branch@master
+              # with:
+              #   type: now
+              #   target_branch: beta
+              #   github_token: ${{ secrets.GITHUB_TOKEN }}
