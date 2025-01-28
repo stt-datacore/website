@@ -35,7 +35,7 @@ jobs:
                 git config user.email github-actions@github.com
                 git fetch --depth 1 origin sync-beta-mods
                 git checkout origin/beta
-                git merge -X theirs --no-commit --no-ff origin/sync-beta-mods
+                git merge -X theirs --no-commit --no-ff --allow-unrelated-histories origin/sync-beta-mods
                 git commit -m "Automated merge of sync-beta-mods into beta"
                 git push origin HEAD:beta
               # uses: devmasx/merge-branch@master
